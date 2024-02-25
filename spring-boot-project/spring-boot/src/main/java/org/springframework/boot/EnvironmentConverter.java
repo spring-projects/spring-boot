@@ -79,13 +79,13 @@ final class EnvironmentConverter {
 	}
 
 	/**
-     * Converts the given ConfigurableEnvironment to the specified type of ConfigurableEnvironment.
-     * 
-     * @param environment the ConfigurableEnvironment to be converted
-     * @param type the type of ConfigurableEnvironment to convert to
-     * @return the converted ConfigurableEnvironment
-     */
-    private ConfigurableEnvironment convertEnvironment(ConfigurableEnvironment environment,
+	 * Converts the given ConfigurableEnvironment to the specified type of
+	 * ConfigurableEnvironment.
+	 * @param environment the ConfigurableEnvironment to be converted
+	 * @param type the type of ConfigurableEnvironment to convert to
+	 * @return the converted ConfigurableEnvironment
+	 */
+	private ConfigurableEnvironment convertEnvironment(ConfigurableEnvironment environment,
 			Class<? extends ConfigurableEnvironment> type) {
 		ConfigurableEnvironment result = createEnvironment(type);
 		result.setActiveProfiles(environment.getActiveProfiles());
@@ -95,13 +95,13 @@ final class EnvironmentConverter {
 	}
 
 	/**
-     * Creates a new instance of a ConfigurableEnvironment based on the provided type.
-     * 
-     * @param type the class of the ConfigurableEnvironment to create
-     * @return a new instance of the ConfigurableEnvironment
-     * @throws IllegalArgumentException if the provided type is not a valid ConfigurableEnvironment class
-     */
-    private ConfigurableEnvironment createEnvironment(Class<? extends ConfigurableEnvironment> type) {
+	 * Creates a new instance of a ConfigurableEnvironment based on the provided type.
+	 * @param type the class of the ConfigurableEnvironment to create
+	 * @return a new instance of the ConfigurableEnvironment
+	 * @throws IllegalArgumentException if the provided type is not a valid
+	 * ConfigurableEnvironment class
+	 */
+	private ConfigurableEnvironment createEnvironment(Class<? extends ConfigurableEnvironment> type) {
 		try {
 			Constructor<? extends ConfigurableEnvironment> constructor = type.getDeclaredConstructor();
 			ReflectionUtils.makeAccessible(constructor);
@@ -113,13 +113,13 @@ final class EnvironmentConverter {
 	}
 
 	/**
-     * Copies the property sources from the source environment to the target environment.
-     * Removes any existing property sources in the target environment that are specific to a servlet environment.
-     * 
-     * @param source The source environment from which to copy the property sources.
-     * @param target The target environment to which the property sources will be copied.
-     */
-    private void copyPropertySources(ConfigurableEnvironment source, ConfigurableEnvironment target) {
+	 * Copies the property sources from the source environment to the target environment.
+	 * Removes any existing property sources in the target environment that are specific
+	 * to a servlet environment.
+	 * @param source The source environment from which to copy the property sources.
+	 * @param target The target environment to which the property sources will be copied.
+	 */
+	private void copyPropertySources(ConfigurableEnvironment source, ConfigurableEnvironment target) {
 		removePropertySources(target.getPropertySources(), isServletEnvironment(target.getClass(), this.classLoader));
 		for (PropertySource<?> propertySource : source.getPropertySources()) {
 			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {
@@ -129,13 +129,13 @@ final class EnvironmentConverter {
 	}
 
 	/**
-     * Checks if the given conversion type is a servlet environment.
-     * 
-     * @param conversionType the class to check
-     * @param classLoader the class loader to use for loading classes
-     * @return {@code true} if the conversion type is a servlet environment, {@code false} otherwise
-     */
-    private boolean isServletEnvironment(Class<?> conversionType, ClassLoader classLoader) {
+	 * Checks if the given conversion type is a servlet environment.
+	 * @param conversionType the class to check
+	 * @param classLoader the class loader to use for loading classes
+	 * @return {@code true} if the conversion type is a servlet environment, {@code false}
+	 * otherwise
+	 */
+	private boolean isServletEnvironment(Class<?> conversionType, ClassLoader classLoader) {
 		try {
 			Class<?> webEnvironmentClass = ClassUtils.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, classLoader);
 			return webEnvironmentClass.isAssignableFrom(conversionType);
@@ -146,12 +146,13 @@ final class EnvironmentConverter {
 	}
 
 	/**
-     * Removes property sources from the given mutable property sources based on the specified conditions.
-     * 
-     * @param propertySources the mutable property sources to remove from
-     * @param isServletEnvironment flag indicating whether the environment is a servlet environment
-     */
-    private void removePropertySources(MutablePropertySources propertySources, boolean isServletEnvironment) {
+	 * Removes property sources from the given mutable property sources based on the
+	 * specified conditions.
+	 * @param propertySources the mutable property sources to remove from
+	 * @param isServletEnvironment flag indicating whether the environment is a servlet
+	 * environment
+	 */
+	private void removePropertySources(MutablePropertySources propertySources, boolean isServletEnvironment) {
 		Set<String> names = new HashSet<>();
 		for (PropertySource<?> propertySource : propertySources) {
 			names.add(propertySource.getName());

@@ -34,12 +34,11 @@ public class WelcomeController {
 	private String message = "Hello World";
 
 	/**
-     * Retrieves the welcome page.
-     * 
-     * @param model the model object to be populated with data
-     * @return the name of the view to be rendered
-     */
-    @GetMapping("/")
+	 * Retrieves the welcome page.
+	 * @param model the model object to be populated with data
+	 * @return the name of the view to be rendered
+	 */
+	@GetMapping("/")
 	public String welcome(Map<String, Object> model) {
 		model.put("time", new Date());
 		model.put("message", this.message);
@@ -47,13 +46,12 @@ public class WelcomeController {
 	}
 
 	/**
-     * Handles the request mapping for "/foo" endpoint.
-     * 
-     * @param model the model object to be populated with data
-     * @return the view name or template to be rendered
-     * @throws RuntimeException if an error occurs while processing the request
-     */
-    @RequestMapping("/foo")
+	 * Handles the request mapping for "/foo" endpoint.
+	 * @param model the model object to be populated with data
+	 * @return the view name or template to be rendered
+	 * @throws RuntimeException if an error occurs while processing the request
+	 */
+	@RequestMapping("/foo")
 	public String foo(Map<String, Object> model) {
 		throw new RuntimeException("Foo");
 	}

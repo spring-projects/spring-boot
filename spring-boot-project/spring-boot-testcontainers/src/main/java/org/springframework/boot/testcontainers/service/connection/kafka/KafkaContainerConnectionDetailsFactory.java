@@ -37,12 +37,11 @@ class KafkaContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<KafkaContainer, KafkaConnectionDetails> {
 
 	/**
-     * Returns the connection details for the Kafka container.
-     * 
-     * @param source the source of the container connection
-     * @return the Kafka connection details
-     */
-    @Override
+	 * Returns the connection details for the Kafka container.
+	 * @param source the source of the container connection
+	 * @return the Kafka connection details
+	 */
+	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
 		return new KafkaContainerConnectionDetails(source);
 	}
@@ -54,20 +53,20 @@ class KafkaContainerConnectionDetailsFactory
 			implements KafkaConnectionDetails {
 
 		/**
-         * Constructs a new KafkaContainerConnectionDetails object with the specified ContainerConnectionSource.
-         *
-         * @param source the ContainerConnectionSource used to create the KafkaContainerConnectionDetails object
-         */
-        private KafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
+		 * Constructs a new KafkaContainerConnectionDetails object with the specified
+		 * ContainerConnectionSource.
+		 * @param source the ContainerConnectionSource used to create the
+		 * KafkaContainerConnectionDetails object
+		 */
+		private KafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
 			super(source);
 		}
 
 		/**
-         * Returns a list of bootstrap servers for the Kafka container connection details.
-         *
-         * @return a list of bootstrap servers
-         */
-        @Override
+		 * Returns a list of bootstrap servers for the Kafka container connection details.
+		 * @return a list of bootstrap servers
+		 */
+		@Override
 		public List<String> getBootstrapServers() {
 			return List.of(getContainer().getBootstrapServers());
 		}

@@ -45,21 +45,21 @@ public class RabbitHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<RabbitHealthIndicator, RabbitTemplate> {
 
 	/**
-     * Constructs a new RabbitHealthContributorAutoConfiguration.
-     * 
-     * @param rabbitHealthIndicator the RabbitHealthIndicator to be used by this configuration
-     */
-    public RabbitHealthContributorAutoConfiguration() {
+	 * Constructs a new RabbitHealthContributorAutoConfiguration.
+	 * @param rabbitHealthIndicator the RabbitHealthIndicator to be used by this
+	 * configuration
+	 */
+	public RabbitHealthContributorAutoConfiguration() {
 		super(RabbitHealthIndicator::new);
 	}
 
 	/**
-     * Creates a RabbitMQ health contributor if no bean with the names "rabbitHealthIndicator" and "rabbitHealthContributor" is present.
-     * 
-     * @param rabbitTemplates a map of RabbitTemplate beans
-     * @return the RabbitMQ health contributor
-     */
-    @Bean
+	 * Creates a RabbitMQ health contributor if no bean with the names
+	 * "rabbitHealthIndicator" and "rabbitHealthContributor" is present.
+	 * @param rabbitTemplates a map of RabbitTemplate beans
+	 * @return the RabbitMQ health contributor
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = { "rabbitHealthIndicator", "rabbitHealthContributor" })
 	public HealthContributor rabbitHealthContributor(Map<String, RabbitTemplate> rabbitTemplates) {
 		return createContributor(rabbitTemplates);

@@ -56,11 +56,10 @@ public final class TestPropertyValues {
 	private final Map<String, Object> properties;
 
 	/**
-     * Constructs a new TestPropertyValues object with the given properties.
-     * 
-     * @param properties the map of properties to be set
-     */
-    private TestPropertyValues(Map<String, Object> properties) {
+	 * Constructs a new TestPropertyValues object with the given properties.
+	 * @param properties the map of properties to be set
+	 */
+	private TestPropertyValues(Map<String, Object> properties) {
 		this.properties = Collections.unmodifiableMap(properties);
 	}
 
@@ -199,25 +198,24 @@ public final class TestPropertyValues {
 	}
 
 	/**
-     * Rethrows the specified throwable.
-     *
-     * @param e the throwable to be rethrown
-     * @param <E> the type of the throwable
-     * @throws E the rethrown throwable
-     */
-    @SuppressWarnings("unchecked")
+	 * Rethrows the specified throwable.
+	 * @param e the throwable to be rethrown
+	 * @param <E> the type of the throwable
+	 * @throws E the rethrown throwable
+	 */
+	@SuppressWarnings("unchecked")
 	private <E extends Throwable> void rethrow(Throwable e) throws E {
 		throw (E) e;
 	}
 
 	/**
-     * Adds the given properties to the specified property sources.
-     * 
-     * @param sources the mutable property sources to add the properties to
-     * @param type the type of property source to add (either Type.MAP or Type.SYSTEM_ENVIRONMENT)
-     * @param name the name of the property source
-     */
-    @SuppressWarnings("unchecked")
+	 * Adds the given properties to the specified property sources.
+	 * @param sources the mutable property sources to add the properties to
+	 * @param type the type of property source to add (either Type.MAP or
+	 * Type.SYSTEM_ENVIRONMENT)
+	 * @param name the name of the property source
+	 */
+	@SuppressWarnings("unchecked")
 	private void addToSources(MutablePropertySources sources, Type type, String name) {
 		if (sources.contains(name)) {
 			PropertySource<?> propertySource = sources.get(name);
@@ -319,32 +317,30 @@ public final class TestPropertyValues {
 		private final String suffix;
 
 		/**
-     * Constructs a new instance of the TestPropertyValues class with the specified source class and suffix.
-     * 
-     * @param sourceClass the class of the property source
-     * @param suffix the suffix to be appended to the property source
-     */
-    Type(Class<? extends MapPropertySource> sourceClass, String suffix) {
+		 * Constructs a new instance of the TestPropertyValues class with the specified
+		 * source class and suffix.
+		 * @param sourceClass the class of the property source
+		 * @param suffix the suffix to be appended to the property source
+		 */
+		Type(Class<? extends MapPropertySource> sourceClass, String suffix) {
 			this.sourceClass = sourceClass;
 			this.suffix = suffix;
 		}
 
 		/**
-     * Returns the class of the source property for this TestPropertyValues instance.
-     *
-     * @return the class of the source property
-     */
-    public Class<? extends MapPropertySource> getSourceClass() {
+		 * Returns the class of the source property for this TestPropertyValues instance.
+		 * @return the class of the source property
+		 */
+		public Class<? extends MapPropertySource> getSourceClass() {
 			return this.sourceClass;
 		}
 
 		/**
-     * Applies a suffix to the given name.
-     * 
-     * @param name the name to apply the suffix to
-     * @return the name with the suffix applied
-     */
-    protected String applySuffix(String name) {
+		 * Applies a suffix to the given name.
+		 * @param name the name to apply the suffix to
+		 * @return the name with the suffix applied
+		 */
+		protected String applySuffix(String name) {
 			return (this.suffix != null) ? name + "-" + this.suffix : name;
 		}
 
@@ -360,34 +356,31 @@ public final class TestPropertyValues {
 		private final String value;
 
 		/**
-         * Constructs a new Pair with the specified name and value.
-         * 
-         * @param name the name of the Pair (must not be empty)
-         * @param value the value of the Pair
-         * @throws IllegalArgumentException if the name is empty
-         */
-        private Pair(String name, String value) {
+		 * Constructs a new Pair with the specified name and value.
+		 * @param name the name of the Pair (must not be empty)
+		 * @param value the value of the Pair
+		 * @throws IllegalArgumentException if the name is empty
+		 */
+		private Pair(String name, String value) {
 			Assert.hasLength(name, "Name must not be empty");
 			this.name = name;
 			this.value = value;
 		}
 
 		/**
-         * Adds the name-value pair to the given properties map.
-         * 
-         * @param properties the map to add the name-value pair to
-         */
-        public void addTo(Map<String, Object> properties) {
+		 * Adds the name-value pair to the given properties map.
+		 * @param properties the map to add the name-value pair to
+		 */
+		public void addTo(Map<String, Object> properties) {
 			properties.put(this.name, this.value);
 		}
 
 		/**
-         * Parses a string representation of a pair and returns a Pair object.
-         * 
-         * @param pair the string representation of the pair
-         * @return a Pair object containing the parsed name and value
-         */
-        public static Pair parse(String pair) {
+		 * Parses a string representation of a pair and returns a Pair object.
+		 * @param pair the string representation of the pair
+		 * @return a Pair object containing the parsed name and value
+		 */
+		public static Pair parse(String pair) {
 			int index = getSeparatorIndex(pair);
 			String name = (index > 0) ? pair.substring(0, index) : pair;
 			String value = (index > 0) ? pair.substring(index + 1) : "";
@@ -395,16 +388,16 @@ public final class TestPropertyValues {
 		}
 
 		/**
-         * Returns the index of the separator character in the given pair string.
-         * The separator character can be either a colon (:) or an equal sign (=).
-         * If the pair string does not contain a colon, the index of the equal sign is returned.
-         * If the pair string does not contain an equal sign, the index of the colon is returned.
-         * If both the colon and equal sign are present, the index of the first occurring separator character is returned.
-         *
-         * @param pair the string representing a pair
-         * @return the index of the separator character in the pair string
-         */
-        private static int getSeparatorIndex(String pair) {
+		 * Returns the index of the separator character in the given pair string. The
+		 * separator character can be either a colon (:) or an equal sign (=). If the pair
+		 * string does not contain a colon, the index of the equal sign is returned. If
+		 * the pair string does not contain an equal sign, the index of the colon is
+		 * returned. If both the colon and equal sign are present, the index of the first
+		 * occurring separator character is returned.
+		 * @param pair the string representing a pair
+		 * @return the index of the separator character in the pair string
+		 */
+		private static int getSeparatorIndex(String pair) {
 			int colonIndex = pair.indexOf(':');
 			int equalIndex = pair.indexOf('=');
 			if (colonIndex == -1) {
@@ -450,49 +443,51 @@ public final class TestPropertyValues {
 		private final Map<String, String> previous;
 
 		/**
-         * Constructs a new SystemPropertiesHandler object.
-         * 
-         * This constructor initializes the previous property values by applying the properties from the TestPropertyValues object.
-         * 
-         * @param TestPropertyValues.this.properties The properties to be applied to the system.
-         */
-        SystemPropertiesHandler() {
+		 * Constructs a new SystemPropertiesHandler object.
+		 *
+		 * This constructor initializes the previous property values by applying the
+		 * properties from the TestPropertyValues object.
+		 * @param TestPropertyValues.this.properties The properties to be applied to the
+		 * system.
+		 */
+		SystemPropertiesHandler() {
 			this.previous = apply(TestPropertyValues.this.properties);
 		}
 
 		/**
-         * Applies the given properties to the system properties and returns a map of the previous values.
-         * 
-         * @param properties the properties to be applied
-         * @return a map containing the previous values of the properties
-         */
-        private Map<String, String> apply(Map<String, ?> properties) {
+		 * Applies the given properties to the system properties and returns a map of the
+		 * previous values.
+		 * @param properties the properties to be applied
+		 * @return a map containing the previous values of the properties
+		 */
+		private Map<String, String> apply(Map<String, ?> properties) {
 			Map<String, String> previous = new LinkedHashMap<>();
 			properties.forEach((name, value) -> previous.put(name, setOrClear(name, (String) value)));
 			return previous;
 		}
 
 		/**
-         * Closes the SystemPropertiesHandler by setting or clearing the previous properties.
-         * 
-         * This method iterates over the previous properties and calls the setOrClear method for each property.
-         * 
-         * @see SystemPropertiesHandler#setOrClear(String)
-         */
-        @Override
+		 * Closes the SystemPropertiesHandler by setting or clearing the previous
+		 * properties.
+		 *
+		 * This method iterates over the previous properties and calls the setOrClear
+		 * method for each property.
+		 *
+		 * @see SystemPropertiesHandler#setOrClear(String)
+		 */
+		@Override
 		public void close() {
 			this.previous.forEach(this::setOrClear);
 		}
 
 		/**
-         * Sets or clears a system property with the given name and value.
-         * 
-         * @param name the name of the system property
-         * @param value the value to set for the system property, or null to clear it
-         * @return the previous value of the system property, or null if it didn't exist
-         * @throws IllegalArgumentException if the name is null
-         */
-        private String setOrClear(String name, String value) {
+		 * Sets or clears a system property with the given name and value.
+		 * @param name the name of the system property
+		 * @param value the value to set for the system property, or null to clear it
+		 * @return the previous value of the system property, or null if it didn't exist
+		 * @throws IllegalArgumentException if the name is null
+		 */
+		private String setOrClear(String name, String value) {
 			Assert.notNull(name, "Name must not be null");
 			if (!StringUtils.hasLength(value)) {
 				return (String) System.getProperties().remove(name);

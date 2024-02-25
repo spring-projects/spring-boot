@@ -38,25 +38,24 @@ class CityServiceImpl implements CityService {
 	private final HotelRepository hotelRepository;
 
 	/**
-     * Constructs a new CityServiceImpl with the specified CityRepository and HotelRepository.
-     * 
-     * @param cityRepository the CityRepository to be used for accessing city data
-     * @param hotelRepository the HotelRepository to be used for accessing hotel data
-     */
-    CityServiceImpl(CityRepository cityRepository, HotelRepository hotelRepository) {
+	 * Constructs a new CityServiceImpl with the specified CityRepository and
+	 * HotelRepository.
+	 * @param cityRepository the CityRepository to be used for accessing city data
+	 * @param hotelRepository the HotelRepository to be used for accessing hotel data
+	 */
+	CityServiceImpl(CityRepository cityRepository, HotelRepository hotelRepository) {
 		this.cityRepository = cityRepository;
 		this.hotelRepository = hotelRepository;
 	}
 
 	/**
-     * Finds cities based on the given search criteria and pageable information.
-     * 
-     * @param criteria the search criteria for filtering cities (must not be null)
-     * @param pageable the pageable information for pagination
-     * @return a Page object containing the cities that match the search criteria
-     * @throws IllegalArgumentException if the criteria is null
-     */
-    @Override
+	 * Finds cities based on the given search criteria and pageable information.
+	 * @param criteria the search criteria for filtering cities (must not be null)
+	 * @param pageable the pageable information for pagination
+	 * @return a Page object containing the cities that match the search criteria
+	 * @throws IllegalArgumentException if the criteria is null
+	 */
+	@Override
 	public Page<City> findCities(CitySearchCriteria criteria, Pageable pageable) {
 
 		Assert.notNull(criteria, "Criteria must not be null");
@@ -79,14 +78,13 @@ class CityServiceImpl implements CityService {
 	}
 
 	/**
-     * Retrieves a city based on its name and country.
-     * 
-     * @param name    the name of the city (must not be null)
-     * @param country the country of the city (must not be null)
-     * @return the city matching the given name and country, or null if not found
-     * @throws IllegalArgumentException if either name or country is null
-     */
-    @Override
+	 * Retrieves a city based on its name and country.
+	 * @param name the name of the city (must not be null)
+	 * @param country the country of the city (must not be null)
+	 * @return the city matching the given name and country, or null if not found
+	 * @throws IllegalArgumentException if either name or country is null
+	 */
+	@Override
 	public City getCity(String name, String country) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(country, "Country must not be null");
@@ -94,14 +92,13 @@ class CityServiceImpl implements CityService {
 	}
 
 	/**
-     * Retrieves a page of hotel summaries for a given city.
-     *
-     * @param city the city for which to retrieve hotel summaries (must not be null)
-     * @param pageable the pagination information (must not be null)
-     * @return a page of hotel summaries
-     * @throws IllegalArgumentException if the city or pageable is null
-     */
-    @Override
+	 * Retrieves a page of hotel summaries for a given city.
+	 * @param city the city for which to retrieve hotel summaries (must not be null)
+	 * @param pageable the pagination information (must not be null)
+	 * @return a page of hotel summaries
+	 * @throws IllegalArgumentException if the city or pageable is null
+	 */
+	@Override
 	public Page<HotelSummary> getHotels(City city, Pageable pageable) {
 		Assert.notNull(city, "City must not be null");
 		return this.hotelRepository.findByCity(city, pageable);

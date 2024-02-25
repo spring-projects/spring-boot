@@ -28,11 +28,10 @@ public class MyBean {
 	private final ElasticsearchTemplate template;
 
 	/**
-     * Constructs a new instance of MyBean with the specified ElasticsearchTemplate.
-     * 
-     * @param template the ElasticsearchTemplate to be used by the MyBean instance
-     */
-    public MyBean(ElasticsearchTemplate template) {
+	 * Constructs a new instance of MyBean with the specified ElasticsearchTemplate.
+	 * @param template the ElasticsearchTemplate to be used by the MyBean instance
+	 */
+	public MyBean(ElasticsearchTemplate template) {
 		this.template = template;
 	}
 

@@ -35,11 +35,10 @@ public interface LibraryScope {
 	LibraryScope COMPILE = new LibraryScope() {
 
 		/**
-     * Returns a string representation of the object.
-     * 
-     * @return the string "compile"
-     */
-    @Override
+		 * Returns a string representation of the object.
+		 * @return the string "compile"
+		 */
+		@Override
 		public String toString() {
 			return "compile";
 		}
@@ -52,11 +51,10 @@ public interface LibraryScope {
 	LibraryScope RUNTIME = new LibraryScope() {
 
 		/**
-     * Returns a string representation of the object.
-     * 
-     * @return the string "runtime"
-     */
-    @Override
+		 * Returns a string representation of the object.
+		 * @return the string "runtime"
+		 */
+		@Override
 		public String toString() {
 			return "runtime";
 		}
@@ -69,11 +67,10 @@ public interface LibraryScope {
 	LibraryScope PROVIDED = new LibraryScope() {
 
 		/**
-     * Returns a string representation of the object.
-     * 
-     * @return the string "provided"
-     */
-    @Override
+		 * Returns a string representation of the object.
+		 * @return the string "provided"
+		 */
+		@Override
 		public String toString() {
 			return "provided";
 		}
@@ -86,11 +83,10 @@ public interface LibraryScope {
 	LibraryScope CUSTOM = new LibraryScope() {
 
 		/**
-     * Returns a string representation of the object.
-     * 
-     * @return the string "custom"
-     */
-    @Override
+		 * Returns a string representation of the object.
+		 * @return the string "custom"
+		 */
+		@Override
 		public String toString() {
 			return "custom";
 		}

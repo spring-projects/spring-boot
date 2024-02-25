@@ -44,24 +44,23 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	private ClassLoader classLoader;
 
 	/**
-     * Set the ClassLoader to be used for loading bean classes.
-     * 
-     * @param classLoader the ClassLoader to be used
-     */
-    @Override
+	 * Set the ClassLoader to be used for loading bean classes.
+	 * @param classLoader the ClassLoader to be used
+	 */
+	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
 	/**
-     * Determines if the given metadata reader matches the specified criteria.
-     * 
-     * @param metadataReader the metadata reader to be checked
-     * @param metadataReaderFactory the factory for creating metadata readers
-     * @return {@code true} if the metadata reader matches the criteria, {@code false} otherwise
-     * @throws IOException if an I/O error occurs while reading the metadata
-     */
-    @Override
+	 * Determines if the given metadata reader matches the specified criteria.
+	 * @param metadataReader the metadata reader to be checked
+	 * @param metadataReaderFactory the factory for creating metadata readers
+	 * @return {@code true} if the metadata reader matches the criteria, {@code false}
+	 * otherwise
+	 * @throws IOException if an I/O error occurs while reading the metadata
+	 */
+	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		if (hasAnnotation()) {
@@ -71,14 +70,15 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	}
 
 	/**
-     * Determines whether to include the given metadata reader based on the specified filters.
-     * 
-     * @param metadataReader the metadata reader to be evaluated
-     * @param metadataReaderFactory the factory for creating new metadata readers
-     * @return {@code true} if the metadata reader should be included, {@code false} otherwise
-     * @throws IOException if an I/O error occurs while reading the metadata
-     */
-    protected boolean include(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+	 * Determines whether to include the given metadata reader based on the specified
+	 * filters.
+	 * @param metadataReader the metadata reader to be evaluated
+	 * @param metadataReaderFactory the factory for creating new metadata readers
+	 * @return {@code true} if the metadata reader should be included, {@code false}
+	 * otherwise
+	 * @throws IOException if an I/O error occurs while reading the metadata
+	 */
+	protected boolean include(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		if (new FilterAnnotations(this.classLoader, getFilters(FilterType.INCLUDE)).anyMatches(metadataReader,
 				metadataReaderFactory)) {
@@ -88,14 +88,14 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	}
 
 	/**
-     * Determines whether the given metadata reader should be included based on the default includes and component includes.
-     * 
-     * @param metadataReader the metadata reader to be checked
-     * @param metadataReaderFactory the metadata reader factory
-     * @return true if the metadata reader should be included, false otherwise
-     * @throws IOException if an I/O error occurs while reading the metadata
-     */
-    protected boolean defaultInclude(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+	 * Determines whether the given metadata reader should be included based on the
+	 * default includes and component includes.
+	 * @param metadataReader the metadata reader to be checked
+	 * @param metadataReaderFactory the metadata reader factory
+	 * @return true if the metadata reader should be included, false otherwise
+	 * @throws IOException if an I/O error occurs while reading the metadata
+	 */
+	protected boolean defaultInclude(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		for (Class<?> include : getDefaultIncludes()) {
 			if (isTypeOrAnnotated(metadataReader, metadataReaderFactory, include)) {
@@ -111,29 +111,31 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	}
 
 	/**
-     * Determines whether to exclude the given metadata reader based on the specified filters.
-     *
-     * @param metadataReader The metadata reader to be evaluated.
-     * @param metadataReaderFactory The factory for creating metadata readers.
-     * @return {@code true} if the metadata reader should be excluded, {@code false} otherwise.
-     * @throws IOException if an I/O error occurs while reading the metadata.
-     */
-    protected boolean exclude(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+	 * Determines whether to exclude the given metadata reader based on the specified
+	 * filters.
+	 * @param metadataReader The metadata reader to be evaluated.
+	 * @param metadataReaderFactory The factory for creating metadata readers.
+	 * @return {@code true} if the metadata reader should be excluded, {@code false}
+	 * otherwise.
+	 * @throws IOException if an I/O error occurs while reading the metadata.
+	 */
+	protected boolean exclude(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		return new FilterAnnotations(this.classLoader, getFilters(FilterType.EXCLUDE)).anyMatches(metadataReader,
 				metadataReaderFactory);
 	}
 
 	/**
-     * Determines if the given metadata reader represents a type that is either of the specified type or annotated with the specified type.
-     * 
-     * @param metadataReader the metadata reader to check
-     * @param metadataReaderFactory the metadata reader factory to use
-     * @param type the type to check against
-     * @return {@code true} if the metadata reader represents a type that is either of the specified type or annotated with the specified type, {@code false} otherwise
-     * @throws IOException if an I/O error occurs while reading the metadata
-     */
-    @SuppressWarnings("unchecked")
+	 * Determines if the given metadata reader represents a type that is either of the
+	 * specified type or annotated with the specified type.
+	 * @param metadataReader the metadata reader to check
+	 * @param metadataReaderFactory the metadata reader factory to use
+	 * @param type the type to check against
+	 * @return {@code true} if the metadata reader represents a type that is either of the
+	 * specified type or annotated with the specified type, {@code false} otherwise
+	 * @throws IOException if an I/O error occurs while reading the metadata
+	 */
+	@SuppressWarnings("unchecked")
 	protected final boolean isTypeOrAnnotated(MetadataReader metadataReader,
 			MetadataReaderFactory metadataReaderFactory, Class<?> type) throws IOException {
 		AnnotationTypeFilter annotationFilter = new AnnotationTypeFilter((Class<? extends Annotation>) type);
@@ -143,40 +145,37 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	}
 
 	/**
-     * Returns a boolean value indicating whether this AnnotationCustomizableTypeExcludeFilter has an annotation.
-     *
-     * @return {@code true} if this AnnotationCustomizableTypeExcludeFilter has an annotation, {@code false} otherwise.
-     */
-    protected abstract boolean hasAnnotation();
+	 * Returns a boolean value indicating whether this
+	 * AnnotationCustomizableTypeExcludeFilter has an annotation.
+	 * @return {@code true} if this AnnotationCustomizableTypeExcludeFilter has an
+	 * annotation, {@code false} otherwise.
+	 */
+	protected abstract boolean hasAnnotation();
 
 	/**
-     * Retrieves an array of filters based on the specified filter type.
-     *
-     * @param type the filter type to retrieve filters for
-     * @return an array of filters of the specified type
-     */
-    protected abstract Filter[] getFilters(FilterType type);
+	 * Retrieves an array of filters based on the specified filter type.
+	 * @param type the filter type to retrieve filters for
+	 * @return an array of filters of the specified type
+	 */
+	protected abstract Filter[] getFilters(FilterType type);
 
 	/**
-     * Returns a boolean value indicating whether to use default filters.
-     *
-     * @return {@code true} if default filters should be used, {@code false} otherwise.
-     */
-    protected abstract boolean isUseDefaultFilters();
+	 * Returns a boolean value indicating whether to use default filters.
+	 * @return {@code true} if default filters should be used, {@code false} otherwise.
+	 */
+	protected abstract boolean isUseDefaultFilters();
 
 	/**
-     * Returns the default includes for this filter.
-     *
-     * @return the set of classes to be included by default
-     */
-    protected abstract Set<Class<?>> getDefaultIncludes();
+	 * Returns the default includes for this filter.
+	 * @return the set of classes to be included by default
+	 */
+	protected abstract Set<Class<?>> getDefaultIncludes();
 
 	/**
-     * Returns the set of component classes to include.
-     *
-     * @return the set of component classes to include
-     */
-    protected abstract Set<Class<?>> getComponentIncludes();
+	 * Returns the set of component classes to include.
+	 * @return the set of component classes to include
+	 */
+	protected abstract Set<Class<?>> getComponentIncludes();
 
 	protected enum FilterType {
 
@@ -185,12 +184,12 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	}
 
 	/**
-     * Compares this AnnotationCustomizableTypeExcludeFilter object to the specified object.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this AnnotationCustomizableTypeExcludeFilter object to the specified
+	 * object.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -210,11 +209,11 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the default implementation of the {@code hashCode()} method.
-     * 
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the default
+	 * implementation of the {@code hashCode()} method.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 0;

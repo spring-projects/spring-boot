@@ -63,26 +63,25 @@ public class ServletEndpointDiscoverer extends EndpointDiscoverer<ExposableServl
 	}
 
 	/**
-     * Determines if the given bean type is exposed as an endpoint type.
-     * 
-     * @param beanType the bean type to check
-     * @return {@code true} if the bean type is exposed as an endpoint type, {@code false} otherwise
-     */
-    @Override
+	 * Determines if the given bean type is exposed as an endpoint type.
+	 * @param beanType the bean type to check
+	 * @return {@code true} if the bean type is exposed as an endpoint type, {@code false}
+	 * otherwise
+	 */
+	@Override
 	protected boolean isEndpointTypeExposed(Class<?> beanType) {
 		return MergedAnnotations.from(beanType, SearchStrategy.SUPERCLASS).isPresent(ServletEndpoint.class);
 	}
 
 	/**
-     * Creates a new ExposableServletEndpoint based on the provided parameters.
-     * 
-     * @param endpointBean the bean representing the endpoint
-     * @param id the unique identifier for the endpoint
-     * @param enabledByDefault whether the endpoint is enabled by default
-     * @param operations the collection of operations supported by the endpoint
-     * @return the created ExposableServletEndpoint
-     */
-    @Override
+	 * Creates a new ExposableServletEndpoint based on the provided parameters.
+	 * @param endpointBean the bean representing the endpoint
+	 * @param id the unique identifier for the endpoint
+	 * @param enabledByDefault whether the endpoint is enabled by default
+	 * @param operations the collection of operations supported by the endpoint
+	 * @return the created ExposableServletEndpoint
+	 */
+	@Override
 	protected ExposableServletEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
 			Collection<Operation> operations) {
 		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, id);
@@ -90,44 +89,41 @@ public class ServletEndpointDiscoverer extends EndpointDiscoverer<ExposableServl
 	}
 
 	/**
-     * Creates an operation for a ServletEndpoint.
-     * 
-     * @param endpointId The ID of the endpoint.
-     * @param operationMethod The discovered operation method.
-     * @param invoker The operation invoker.
-     * @return The created operation.
-     * @throws IllegalStateException if a ServletEndpoint declares operations.
-     */
-    @Override
+	 * Creates an operation for a ServletEndpoint.
+	 * @param endpointId The ID of the endpoint.
+	 * @param operationMethod The discovered operation method.
+	 * @param invoker The operation invoker.
+	 * @return The created operation.
+	 * @throws IllegalStateException if a ServletEndpoint declares operations.
+	 */
+	@Override
 	protected Operation createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
 			OperationInvoker invoker) {
 		throw new IllegalStateException("ServletEndpoints must not declare operations");
 	}
 
 	/**
-     * Creates an operation key for the given operation.
-     * 
-     * @param operation the operation to create the key for
-     * @return the operation key
-     * @throws IllegalStateException if a ServletEndpoint declares operations
-     */
-    @Override
+	 * Creates an operation key for the given operation.
+	 * @param operation the operation to create the key for
+	 * @return the operation key
+	 * @throws IllegalStateException if a ServletEndpoint declares operations
+	 */
+	@Override
 	protected OperationKey createOperationKey(Operation operation) {
 		throw new IllegalStateException("ServletEndpoints must not declare operations");
 	}
 
 	/**
-     * ServletEndpointDiscovererRuntimeHints class.
-     */
-    static class ServletEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
+	 * ServletEndpointDiscovererRuntimeHints class.
+	 */
+	static class ServletEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
 
 		/**
-         * Registers the runtime hints for the ServletEndpointDiscoverer.
-         * 
-         * @param hints the runtime hints to register
-         * @param classLoader the class loader to use for reflection
-         */
-        @Override
+		 * Registers the runtime hints for the ServletEndpointDiscoverer.
+		 * @param hints the runtime hints to register
+		 * @param classLoader the class loader to use for reflection
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.reflection().registerType(ServletEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 		}

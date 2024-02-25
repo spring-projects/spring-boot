@@ -45,21 +45,21 @@ class JasperInitializer extends AbstractLifeCycle {
 	private final ServletContainerInitializer initializer;
 
 	/**
-     * Constructs a new JasperInitializer with the specified WebAppContext.
-     * 
-     * @param context the WebAppContext to be initialized
-     */
-    JasperInitializer(WebAppContext context) {
+	 * Constructs a new JasperInitializer with the specified WebAppContext.
+	 * @param context the WebAppContext to be initialized
+	 */
+	JasperInitializer(WebAppContext context) {
 		this.context = context;
 		this.initializer = newInitializer();
 	}
 
 	/**
-     * Creates a new instance of a {@link ServletContainerInitializer} by iterating through a list of class names.
-     * 
-     * @return a new instance of a {@link ServletContainerInitializer}, or {@code null} if none of the class names could be instantiated
-     */
-    private ServletContainerInitializer newInitializer() {
+	 * Creates a new instance of a {@link ServletContainerInitializer} by iterating
+	 * through a list of class names.
+	 * @return a new instance of a {@link ServletContainerInitializer}, or {@code null} if
+	 * none of the class names could be instantiated
+	 */
+	private ServletContainerInitializer newInitializer() {
 		for (String className : INITIALIZER_CLASSES) {
 			try {
 				Class<?> initializerClass = ClassUtils.forName(className, null);
@@ -73,11 +73,10 @@ class JasperInitializer extends AbstractLifeCycle {
 	}
 
 	/**
-     * Starts the initialization process.
-     * 
-     * @throws Exception if an error occurs during initialization
-     */
-    @Override
+	 * Starts the initialization process.
+	 * @throws Exception if an error occurs during initialization
+	 */
+	@Override
 	protected void doStart() throws Exception {
 		if (this.initializer == null) {
 			return;
@@ -116,12 +115,12 @@ class JasperInitializer extends AbstractLifeCycle {
 	private static final class WarUrlStreamHandlerFactory implements URLStreamHandlerFactory {
 
 		/**
-         * Creates a URL stream handler for the specified protocol.
-         * 
-         * @param protocol the protocol for which the URL stream handler is to be created
-         * @return the URL stream handler for the specified protocol, or null if no handler is found
-         */
-        @Override
+		 * Creates a URL stream handler for the specified protocol.
+		 * @param protocol the protocol for which the URL stream handler is to be created
+		 * @return the URL stream handler for the specified protocol, or null if no
+		 * handler is found
+		 */
+		@Override
 		public URLStreamHandler createURLStreamHandler(String protocol) {
 			if ("war".equals(protocol)) {
 				return new WarUrlStreamHandler();
@@ -139,14 +138,13 @@ class JasperInitializer extends AbstractLifeCycle {
 	private static final class WarUrlStreamHandler extends URLStreamHandler {
 
 		/**
-         * Parses the URL and sets the necessary properties for a WAR URL.
-         * 
-         * @param u     the URL object to be parsed
-         * @param spec  the string representation of the URL
-         * @param start the starting index of the substring to be parsed
-         * @param limit the ending index of the substring to be parsed
-         */
-        @Override
+		 * Parses the URL and sets the necessary properties for a WAR URL.
+		 * @param u the URL object to be parsed
+		 * @param spec the string representation of the URL
+		 * @param start the starting index of the substring to be parsed
+		 * @param limit the ending index of the substring to be parsed
+		 */
+		@Override
 		protected void parseURL(URL u, String spec, int start, int limit) {
 			String path = "jar:" + spec.substring("war:".length());
 			int separator = path.indexOf("*/");
@@ -157,13 +155,12 @@ class JasperInitializer extends AbstractLifeCycle {
 		}
 
 		/**
-         * Opens a connection to the specified URL.
-         *
-         * @param u the URL to open a connection to
-         * @return a URLConnection object representing the connection to the specified URL
-         * @throws IOException if an I/O error occurs while opening the connection
-         */
-        @Override
+		 * Opens a connection to the specified URL.
+		 * @param u the URL to open a connection to
+		 * @return a URLConnection object representing the connection to the specified URL
+		 * @throws IOException if an I/O error occurs while opening the connection
+		 */
+		@Override
 		protected URLConnection openConnection(URL u) throws IOException {
 			return new WarURLConnection(u);
 		}
@@ -178,22 +175,20 @@ class JasperInitializer extends AbstractLifeCycle {
 		private final URLConnection connection;
 
 		/**
-         * Constructs a new WarURLConnection with the specified URL.
-         * 
-         * @param url the URL to connect to
-         * @throws IOException if an I/O error occurs while opening the connection
-         */
-        protected WarURLConnection(URL url) throws IOException {
+		 * Constructs a new WarURLConnection with the specified URL.
+		 * @param url the URL to connect to
+		 * @throws IOException if an I/O error occurs while opening the connection
+		 */
+		protected WarURLConnection(URL url) throws IOException {
 			super(url);
 			this.connection = new URL(url.getFile()).openConnection();
 		}
 
 		/**
-         * Establishes a connection to the server.
-         * 
-         * @throws IOException if an I/O error occurs while connecting
-         */
-        @Override
+		 * Establishes a connection to the server.
+		 * @throws IOException if an I/O error occurs while connecting
+		 */
+		@Override
 		public void connect() throws IOException {
 			if (!this.connected) {
 				this.connection.connect();
@@ -202,12 +197,11 @@ class JasperInitializer extends AbstractLifeCycle {
 		}
 
 		/**
-         * Returns an input stream that reads from this URL connection.
-         * 
-         * @return an input stream that reads from this URL connection
-         * @throws IOException if an I/O error occurs while creating the input stream
-         */
-        @Override
+		 * Returns an input stream that reads from this URL connection.
+		 * @return an input stream that reads from this URL connection
+		 * @throws IOException if an I/O error occurs while creating the input stream
+		 */
+		@Override
 		public InputStream getInputStream() throws IOException {
 			connect();
 			return this.connection.getInputStream();

@@ -42,12 +42,12 @@ import org.springframework.context.annotation.Bean;
 public class ReactiveManagementContextAutoConfiguration {
 
 	/**
-     * Returns a new instance of {@link ManagementContextFactory} for creating a child context for reactive web applications.
-     * This factory is used to configure and create a management context for reactive web servers.
-     * 
-     * @return a new instance of {@link ManagementContextFactory}
-     */
-    @Bean
+	 * Returns a new instance of {@link ManagementContextFactory} for creating a child
+	 * context for reactive web applications. This factory is used to configure and create
+	 * a management context for reactive web servers.
+	 * @return a new instance of {@link ManagementContextFactory}
+	 */
+	@Bean
 	public static ManagementContextFactory reactiveWebChildContextFactory() {
 		return new ManagementContextFactory(WebApplicationType.REACTIVE, ReactiveWebServerFactory.class,
 				ReactiveWebServerFactoryAutoConfiguration.class);

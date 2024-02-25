@@ -37,21 +37,19 @@ class RedisContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<Container<?>, RedisConnectionDetails> {
 
 	/**
-     * Constructs a new RedisContainerConnectionDetailsFactory object.
-     * 
-     * @param name the name of the Redis container
-     */
-    RedisContainerConnectionDetailsFactory() {
+	 * Constructs a new RedisContainerConnectionDetailsFactory object.
+	 * @param name the name of the Redis container
+	 */
+	RedisContainerConnectionDetailsFactory() {
 		super("redis");
 	}
 
 	/**
-     * Returns the Redis connection details for the specified container connection source.
-     * 
-     * @param source the container connection source
-     * @return the Redis connection details
-     */
-    @Override
+	 * Returns the Redis connection details for the specified container connection source.
+	 * @param source the container connection source
+	 * @return the Redis connection details
+	 */
+	@Override
 	public RedisConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 		return new RedisContainerConnectionDetails(source);
 	}
@@ -63,21 +61,23 @@ class RedisContainerConnectionDetailsFactory
 			implements RedisConnectionDetails {
 
 		/**
-         * Constructs a new RedisContainerConnectionDetails object with the specified ContainerConnectionSource.
-         * 
-         * @param source the ContainerConnectionSource used to create the RedisContainerConnectionDetails object
-         */
-        private RedisContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		 * Constructs a new RedisContainerConnectionDetails object with the specified
+		 * ContainerConnectionSource.
+		 * @param source the ContainerConnectionSource used to create the
+		 * RedisContainerConnectionDetails object
+		 */
+		private RedisContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 
 		/**
-         * Returns a Standalone instance representing the connection details of the Redis container.
-         * The Standalone instance contains the host and the first mapped port of the container.
-         *
-         * @return a Standalone instance representing the connection details of the Redis container
-         */
-        @Override
+		 * Returns a Standalone instance representing the connection details of the Redis
+		 * container. The Standalone instance contains the host and the first mapped port
+		 * of the container.
+		 * @return a Standalone instance representing the connection details of the Redis
+		 * container
+		 */
+		@Override
 		public Standalone getStandalone() {
 			return Standalone.of(getContainer().getHost(), getContainer().getFirstMappedPort());
 		}

@@ -37,31 +37,30 @@ public class JettyServerThreadPoolMetricsBinder extends AbstractJettyMetricsBind
 	private final Iterable<Tag> tags;
 
 	/**
-     * Constructs a new JettyServerThreadPoolMetricsBinder with the specified MeterRegistry and an empty list of tags.
-     *
-     * @param meterRegistry the MeterRegistry to bind the metrics to
-     */
-    public JettyServerThreadPoolMetricsBinder(MeterRegistry meterRegistry) {
+	 * Constructs a new JettyServerThreadPoolMetricsBinder with the specified
+	 * MeterRegistry and an empty list of tags.
+	 * @param meterRegistry the MeterRegistry to bind the metrics to
+	 */
+	public JettyServerThreadPoolMetricsBinder(MeterRegistry meterRegistry) {
 		this(meterRegistry, Collections.emptyList());
 	}
 
 	/**
-     * Constructs a new JettyServerThreadPoolMetricsBinder with the specified MeterRegistry and tags.
-     *
-     * @param meterRegistry the MeterRegistry to bind the metrics to
-     * @param tags the tags to associate with the metrics
-     */
-    public JettyServerThreadPoolMetricsBinder(MeterRegistry meterRegistry, Iterable<Tag> tags) {
+	 * Constructs a new JettyServerThreadPoolMetricsBinder with the specified
+	 * MeterRegistry and tags.
+	 * @param meterRegistry the MeterRegistry to bind the metrics to
+	 * @param tags the tags to associate with the metrics
+	 */
+	public JettyServerThreadPoolMetricsBinder(MeterRegistry meterRegistry, Iterable<Tag> tags) {
 		this.meterRegistry = meterRegistry;
 		this.tags = tags;
 	}
 
 	/**
-     * Binds the metrics for the given server's thread pool to the meter registry.
-     * 
-     * @param server the server whose thread pool metrics need to be bound
-     */
-    @Override
+	 * Binds the metrics for the given server's thread pool to the meter registry.
+	 * @param server the server whose thread pool metrics need to be bound
+	 */
+	@Override
 	protected void bindMetrics(Server server) {
 		ThreadPool threadPool = server.getThreadPool();
 		if (threadPool != null) {

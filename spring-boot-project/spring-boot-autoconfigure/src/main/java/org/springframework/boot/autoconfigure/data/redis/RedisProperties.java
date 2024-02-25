@@ -98,245 +98,218 @@ public class RedisProperties {
 	private final Lettuce lettuce = new Lettuce();
 
 	/**
-     * Returns the value of the database property.
-     *
-     * @return the value of the database property
-     */
-    public int getDatabase() {
+	 * Returns the value of the database property.
+	 * @return the value of the database property
+	 */
+	public int getDatabase() {
 		return this.database;
 	}
 
 	/**
-     * Sets the database number for Redis connection.
-     * 
-     * @param database the database number to be set
-     */
-    public void setDatabase(int database) {
+	 * Sets the database number for Redis connection.
+	 * @param database the database number to be set
+	 */
+	public void setDatabase(int database) {
 		this.database = database;
 	}
 
 	/**
-     * Returns the URL of the Redis server.
-     *
-     * @return the URL of the Redis server
-     */
-    public String getUrl() {
+	 * Returns the URL of the Redis server.
+	 * @return the URL of the Redis server
+	 */
+	public String getUrl() {
 		return this.url;
 	}
 
 	/**
-     * Sets the URL for the Redis connection.
-     * 
-     * @param url the URL to set
-     */
-    public void setUrl(String url) {
+	 * Sets the URL for the Redis connection.
+	 * @param url the URL to set
+	 */
+	public void setUrl(String url) {
 		this.url = url;
 	}
 
 	/**
-     * Returns the host of the Redis server.
-     *
-     * @return the host of the Redis server
-     */
-    public String getHost() {
+	 * Returns the host of the Redis server.
+	 * @return the host of the Redis server
+	 */
+	public String getHost() {
 		return this.host;
 	}
 
 	/**
-     * Sets the host for the Redis connection.
-     * 
-     * @param host the host address to set
-     */
-    public void setHost(String host) {
+	 * Sets the host for the Redis connection.
+	 * @param host the host address to set
+	 */
+	public void setHost(String host) {
 		this.host = host;
 	}
 
 	/**
-     * Returns the username associated with the Redis properties.
-     *
-     * @return the username
-     */
-    public String getUsername() {
+	 * Returns the username associated with the Redis properties.
+	 * @return the username
+	 */
+	public String getUsername() {
 		return this.username;
 	}
 
 	/**
-     * Sets the username for the Redis connection.
-     * 
-     * @param username the username to set
-     */
-    public void setUsername(String username) {
+	 * Sets the username for the Redis connection.
+	 * @param username the username to set
+	 */
+	public void setUsername(String username) {
 		this.username = username;
 	}
 
 	/**
-     * Returns the password associated with the Redis connection.
-     *
-     * @return the password associated with the Redis connection
-     */
-    public String getPassword() {
+	 * Returns the password associated with the Redis connection.
+	 * @return the password associated with the Redis connection
+	 */
+	public String getPassword() {
 		return this.password;
 	}
 
 	/**
-     * Sets the password for Redis connection.
-     * 
-     * @param password the password to be set
-     */
-    public void setPassword(String password) {
+	 * Sets the password for Redis connection.
+	 * @param password the password to be set
+	 */
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	/**
-     * Returns the port number.
-     *
-     * @return the port number
-     */
-    public int getPort() {
+	 * Returns the port number.
+	 * @return the port number
+	 */
+	public int getPort() {
 		return this.port;
 	}
 
 	/**
-     * Sets the port number for the Redis connection.
-     * 
-     * @param port the port number to set
-     */
-    public void setPort(int port) {
+	 * Sets the port number for the Redis connection.
+	 * @param port the port number to set
+	 */
+	public void setPort(int port) {
 		this.port = port;
 	}
 
 	/**
-     * Returns the SSL configuration for Redis connection.
-     *
-     * @return the SSL configuration for Redis connection
-     */
-    public Ssl getSsl() {
+	 * Returns the SSL configuration for Redis connection.
+	 * @return the SSL configuration for Redis connection
+	 */
+	public Ssl getSsl() {
 		return this.ssl;
 	}
 
 	/**
-     * Sets the timeout for Redis operations.
-     * 
-     * @param timeout the duration of the timeout
-     */
-    public void setTimeout(Duration timeout) {
+	 * Sets the timeout for Redis operations.
+	 * @param timeout the duration of the timeout
+	 */
+	public void setTimeout(Duration timeout) {
 		this.timeout = timeout;
 	}
 
 	/**
-     * Returns the timeout duration for Redis operations.
-     *
-     * @return the timeout duration
-     */
-    public Duration getTimeout() {
+	 * Returns the timeout duration for Redis operations.
+	 * @return the timeout duration
+	 */
+	public Duration getTimeout() {
 		return this.timeout;
 	}
 
 	/**
-     * Returns the connect timeout duration.
-     *
-     * @return the connect timeout duration
-     */
-    public Duration getConnectTimeout() {
+	 * Returns the connect timeout duration.
+	 * @return the connect timeout duration
+	 */
+	public Duration getConnectTimeout() {
 		return this.connectTimeout;
 	}
 
 	/**
-     * Sets the connection timeout for Redis.
-     * 
-     * @param connectTimeout the connection timeout duration
-     */
-    public void setConnectTimeout(Duration connectTimeout) {
+	 * Sets the connection timeout for Redis.
+	 * @param connectTimeout the connection timeout duration
+	 */
+	public void setConnectTimeout(Duration connectTimeout) {
 		this.connectTimeout = connectTimeout;
 	}
 
 	/**
-     * Returns the name of the client.
-     *
-     * @return the name of the client
-     */
-    public String getClientName() {
+	 * Returns the name of the client.
+	 * @return the name of the client
+	 */
+	public String getClientName() {
 		return this.clientName;
 	}
 
 	/**
-     * Sets the client name for the RedisProperties.
-     * 
-     * @param clientName the client name to be set
-     */
-    public void setClientName(String clientName) {
+	 * Sets the client name for the RedisProperties.
+	 * @param clientName the client name to be set
+	 */
+	public void setClientName(String clientName) {
 		this.clientName = clientName;
 	}
 
 	/**
-     * Returns the client type of the RedisProperties object.
-     * 
-     * @return the client type of the RedisProperties object
-     */
-    public ClientType getClientType() {
+	 * Returns the client type of the RedisProperties object.
+	 * @return the client type of the RedisProperties object
+	 */
+	public ClientType getClientType() {
 		return this.clientType;
 	}
 
 	/**
-     * Sets the client type for Redis connection.
-     * 
-     * @param clientType the client type to be set
-     */
-    public void setClientType(ClientType clientType) {
+	 * Sets the client type for Redis connection.
+	 * @param clientType the client type to be set
+	 */
+	public void setClientType(ClientType clientType) {
 		this.clientType = clientType;
 	}
 
 	/**
-     * Returns the sentinel instance associated with this RedisProperties object.
-     *
-     * @return the sentinel instance
-     */
-    public Sentinel getSentinel() {
+	 * Returns the sentinel instance associated with this RedisProperties object.
+	 * @return the sentinel instance
+	 */
+	public Sentinel getSentinel() {
 		return this.sentinel;
 	}
 
 	/**
-     * Sets the sentinel for the RedisProperties.
-     * 
-     * @param sentinel the sentinel to be set
-     */
-    public void setSentinel(Sentinel sentinel) {
+	 * Sets the sentinel for the RedisProperties.
+	 * @param sentinel the sentinel to be set
+	 */
+	public void setSentinel(Sentinel sentinel) {
 		this.sentinel = sentinel;
 	}
 
 	/**
-     * Returns the cluster associated with this RedisProperties object.
-     *
-     * @return the cluster associated with this RedisProperties object
-     */
-    public Cluster getCluster() {
+	 * Returns the cluster associated with this RedisProperties object.
+	 * @return the cluster associated with this RedisProperties object
+	 */
+	public Cluster getCluster() {
 		return this.cluster;
 	}
 
 	/**
-     * Sets the cluster for the RedisProperties.
-     * 
-     * @param cluster the cluster to be set
-     */
-    public void setCluster(Cluster cluster) {
+	 * Sets the cluster for the RedisProperties.
+	 * @param cluster the cluster to be set
+	 */
+	public void setCluster(Cluster cluster) {
 		this.cluster = cluster;
 	}
 
 	/**
-     * Returns the Jedis instance.
-     *
-     * @return the Jedis instance
-     */
-    public Jedis getJedis() {
+	 * Returns the Jedis instance.
+	 * @return the Jedis instance
+	 */
+	public Jedis getJedis() {
 		return this.jedis;
 	}
 
 	/**
-     * Returns the lettuce instance.
-     *
-     * @return the lettuce instance
-     */
-    public Lettuce getLettuce() {
+	 * Returns the lettuce instance.
+	 * @return the lettuce instance
+	 */
+	public Lettuce getLettuce() {
 		return this.lettuce;
 	}
 
@@ -402,110 +375,100 @@ public class RedisProperties {
 		private Duration timeBetweenEvictionRuns;
 
 		/**
-         * Returns the value of the enabled flag.
-         *
-         * @return the value of the enabled flag
-         */
-        public Boolean getEnabled() {
+		 * Returns the value of the enabled flag.
+		 * @return the value of the enabled flag
+		 */
+		public Boolean getEnabled() {
 			return this.enabled;
 		}
 
 		/**
-         * Sets the enabled status of the Pool.
-         * 
-         * @param enabled the enabled status to be set
-         */
-        public void setEnabled(Boolean enabled) {
+		 * Sets the enabled status of the Pool.
+		 * @param enabled the enabled status to be set
+		 */
+		public void setEnabled(Boolean enabled) {
 			this.enabled = enabled;
 		}
 
 		/**
-         * Returns the maximum number of idle objects that can be held in the pool.
-         *
-         * @return the maximum number of idle objects
-         */
-        public int getMaxIdle() {
+		 * Returns the maximum number of idle objects that can be held in the pool.
+		 * @return the maximum number of idle objects
+		 */
+		public int getMaxIdle() {
 			return this.maxIdle;
 		}
 
 		/**
-         * Sets the maximum number of idle objects in the pool.
-         * 
-         * @param maxIdle the maximum number of idle objects to set
-         */
-        public void setMaxIdle(int maxIdle) {
+		 * Sets the maximum number of idle objects in the pool.
+		 * @param maxIdle the maximum number of idle objects to set
+		 */
+		public void setMaxIdle(int maxIdle) {
 			this.maxIdle = maxIdle;
 		}
 
 		/**
-         * Returns the minimum number of idle objects that should be maintained in the pool.
-         *
-         * @return the minimum number of idle objects
-         */
-        public int getMinIdle() {
+		 * Returns the minimum number of idle objects that should be maintained in the
+		 * pool.
+		 * @return the minimum number of idle objects
+		 */
+		public int getMinIdle() {
 			return this.minIdle;
 		}
 
 		/**
-         * Sets the minimum number of idle objects in the pool.
-         * 
-         * @param minIdle the minimum number of idle objects to set
-         */
-        public void setMinIdle(int minIdle) {
+		 * Sets the minimum number of idle objects in the pool.
+		 * @param minIdle the minimum number of idle objects to set
+		 */
+		public void setMinIdle(int minIdle) {
 			this.minIdle = minIdle;
 		}
 
 		/**
-         * Returns the maximum number of active objects that can be allocated by this pool.
-         *
-         * @return the maximum number of active objects
-         */
-        public int getMaxActive() {
+		 * Returns the maximum number of active objects that can be allocated by this
+		 * pool.
+		 * @return the maximum number of active objects
+		 */
+		public int getMaxActive() {
 			return this.maxActive;
 		}
 
 		/**
-         * Sets the maximum number of active objects in the pool.
-         * 
-         * @param maxActive the maximum number of active objects to set
-         */
-        public void setMaxActive(int maxActive) {
+		 * Sets the maximum number of active objects in the pool.
+		 * @param maxActive the maximum number of active objects to set
+		 */
+		public void setMaxActive(int maxActive) {
 			this.maxActive = maxActive;
 		}
 
 		/**
-         * Returns the maximum wait time for acquiring a resource from the pool.
-         *
-         * @return the maximum wait time as a Duration object
-         */
-        public Duration getMaxWait() {
+		 * Returns the maximum wait time for acquiring a resource from the pool.
+		 * @return the maximum wait time as a Duration object
+		 */
+		public Duration getMaxWait() {
 			return this.maxWait;
 		}
 
 		/**
-         * Sets the maximum wait time for acquiring a resource from the pool.
-         * 
-         * @param maxWait the maximum wait time as a Duration object
-         */
-        public void setMaxWait(Duration maxWait) {
+		 * Sets the maximum wait time for acquiring a resource from the pool.
+		 * @param maxWait the maximum wait time as a Duration object
+		 */
+		public void setMaxWait(Duration maxWait) {
 			this.maxWait = maxWait;
 		}
 
 		/**
-         * Returns the time between eviction runs.
-         *
-         * @return the time between eviction runs
-         */
-        public Duration getTimeBetweenEvictionRuns() {
+		 * Returns the time between eviction runs.
+		 * @return the time between eviction runs
+		 */
+		public Duration getTimeBetweenEvictionRuns() {
 			return this.timeBetweenEvictionRuns;
 		}
 
 		/**
-         * Sets the time between eviction runs for the pool.
-         * 
-         * @param timeBetweenEvictionRuns the duration between eviction runs
-         */
-        public void setTimeBetweenEvictionRuns(Duration timeBetweenEvictionRuns) {
+		 * Sets the time between eviction runs for the pool.
+		 * @param timeBetweenEvictionRuns the duration between eviction runs
+		 */
+		public void setTimeBetweenEvictionRuns(Duration timeBetweenEvictionRuns) {
 			this.timeBetweenEvictionRuns = timeBetweenEvictionRuns;
 		}
 
@@ -529,38 +492,34 @@ public class RedisProperties {
 		private Integer maxRedirects;
 
 		/**
-         * Returns the list of nodes in the cluster.
-         *
-         * @return the list of nodes in the cluster
-         */
-        public List<String> getNodes() {
+		 * Returns the list of nodes in the cluster.
+		 * @return the list of nodes in the cluster
+		 */
+		public List<String> getNodes() {
 			return this.nodes;
 		}
 
 		/**
-         * Sets the list of nodes in the cluster.
-         * 
-         * @param nodes the list of nodes to be set
-         */
-        public void setNodes(List<String> nodes) {
+		 * Sets the list of nodes in the cluster.
+		 * @param nodes the list of nodes to be set
+		 */
+		public void setNodes(List<String> nodes) {
 			this.nodes = nodes;
 		}
 
 		/**
-         * Returns the maximum number of redirects allowed for the Cluster.
-         *
-         * @return the maximum number of redirects
-         */
-        public Integer getMaxRedirects() {
+		 * Returns the maximum number of redirects allowed for the Cluster.
+		 * @return the maximum number of redirects
+		 */
+		public Integer getMaxRedirects() {
 			return this.maxRedirects;
 		}
 
 		/**
-         * Sets the maximum number of redirects allowed for the cluster.
-         * 
-         * @param maxRedirects the maximum number of redirects to be set
-         */
-        public void setMaxRedirects(Integer maxRedirects) {
+		 * Sets the maximum number of redirects allowed for the cluster.
+		 * @param maxRedirects the maximum number of redirects to be set
+		 */
+		public void setMaxRedirects(Integer maxRedirects) {
 			this.maxRedirects = maxRedirects;
 		}
 
@@ -592,83 +551,75 @@ public class RedisProperties {
 		private String password;
 
 		/**
-         * Returns the value of the master property.
-         *
-         * @return the value of the master property
-         */
-        public String getMaster() {
+		 * Returns the value of the master property.
+		 * @return the value of the master property
+		 */
+		public String getMaster() {
 			return this.master;
 		}
 
 		/**
-         * Sets the master for the Sentinel.
-         * 
-         * @param master the master to be set
-         */
-        public void setMaster(String master) {
+		 * Sets the master for the Sentinel.
+		 * @param master the master to be set
+		 */
+		public void setMaster(String master) {
 			this.master = master;
 		}
 
 		/**
-         * Returns the list of nodes.
-         *
-         * @return the list of nodes
-         */
-        public List<String> getNodes() {
+		 * Returns the list of nodes.
+		 * @return the list of nodes
+		 */
+		public List<String> getNodes() {
 			return this.nodes;
 		}
 
 		/**
-         * Sets the list of nodes for the Sentinel.
-         * 
-         * @param nodes the list of nodes to be set
-         */
-        public void setNodes(List<String> nodes) {
+		 * Sets the list of nodes for the Sentinel.
+		 * @param nodes the list of nodes to be set
+		 */
+		public void setNodes(List<String> nodes) {
 			this.nodes = nodes;
 		}
 
 		/**
-         * Returns the username of the Sentinel.
-         *
-         * @return the username of the Sentinel
-         */
-        public String getUsername() {
+		 * Returns the username of the Sentinel.
+		 * @return the username of the Sentinel
+		 */
+		public String getUsername() {
 			return this.username;
 		}
 
 		/**
-         * Sets the username for the Sentinel.
-         * 
-         * @param username the username to be set
-         */
-        public void setUsername(String username) {
+		 * Sets the username for the Sentinel.
+		 * @param username the username to be set
+		 */
+		public void setUsername(String username) {
 			this.username = username;
 		}
 
 		/**
-         * Returns the password of the Sentinel.
-         *
-         * @return the password of the Sentinel
-         */
-        public String getPassword() {
+		 * Returns the password of the Sentinel.
+		 * @return the password of the Sentinel
+		 */
+		public String getPassword() {
 			return this.password;
 		}
 
 		/**
-         * Sets the password for the Sentinel.
-         * 
-         * @param password the password to be set
-         */
-        public void setPassword(String password) {
+		 * Sets the password for the Sentinel.
+		 * @param password the password to be set
+		 */
+		public void setPassword(String password) {
 			this.password = password;
 		}
 
 	}
 
 	/**
-     * Ssl class.
-     */
-    public static class Ssl {
+	 * Ssl class.
+	 */
+	public static class Ssl {
 
 		/**
 		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
@@ -682,38 +633,35 @@ public class RedisProperties {
 		private String bundle;
 
 		/**
-         * Returns a boolean value indicating whether the SSL is enabled.
-         * 
-         * @return true if SSL is enabled, false otherwise
-         */
-        public boolean isEnabled() {
+		 * Returns a boolean value indicating whether the SSL is enabled.
+		 * @return true if SSL is enabled, false otherwise
+		 */
+		public boolean isEnabled() {
 			return (this.enabled != null) ? this.enabled : this.bundle != null;
 		}
 
 		/**
-         * Sets the enabled status of the Ssl object.
-         * 
-         * @param enabled the boolean value indicating whether the Ssl object is enabled or not
-         */
-        public void setEnabled(boolean enabled) {
+		 * Sets the enabled status of the Ssl object.
+		 * @param enabled the boolean value indicating whether the Ssl object is enabled
+		 * or not
+		 */
+		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
 		/**
-         * Returns the bundle associated with this Ssl object.
-         * 
-         * @return the bundle associated with this Ssl object
-         */
-        public String getBundle() {
+		 * Returns the bundle associated with this Ssl object.
+		 * @return the bundle associated with this Ssl object
+		 */
+		public String getBundle() {
 			return this.bundle;
 		}
 
 		/**
-         * Sets the bundle for the Ssl class.
-         * 
-         * @param bundle the bundle to be set
-         */
-        public void setBundle(String bundle) {
+		 * Sets the bundle for the Ssl class.
+		 * @param bundle the bundle to be set
+		 */
+		public void setBundle(String bundle) {
 			this.bundle = bundle;
 		}
 
@@ -730,11 +678,10 @@ public class RedisProperties {
 		private final Pool pool = new Pool();
 
 		/**
-         * Returns the pool associated with this Jedis instance.
-         *
-         * @return the pool associated with this Jedis instance
-         */
-        public Pool getPool() {
+		 * Returns the pool associated with this Jedis instance.
+		 * @return the pool associated with this Jedis instance
+		 */
+		public Pool getPool() {
 			return this.pool;
 		}
 
@@ -758,61 +705,57 @@ public class RedisProperties {
 		private final Cluster cluster = new Cluster();
 
 		/**
-         * Returns the shutdown timeout duration.
-         *
-         * @return the shutdown timeout duration
-         */
-        public Duration getShutdownTimeout() {
+		 * Returns the shutdown timeout duration.
+		 * @return the shutdown timeout duration
+		 */
+		public Duration getShutdownTimeout() {
 			return this.shutdownTimeout;
 		}
 
 		/**
-         * Sets the shutdown timeout for the Lettuce instance.
-         * 
-         * @param shutdownTimeout the duration to wait for the Lettuce instance to shutdown gracefully
-         */
-        public void setShutdownTimeout(Duration shutdownTimeout) {
+		 * Sets the shutdown timeout for the Lettuce instance.
+		 * @param shutdownTimeout the duration to wait for the Lettuce instance to
+		 * shutdown gracefully
+		 */
+		public void setShutdownTimeout(Duration shutdownTimeout) {
 			this.shutdownTimeout = shutdownTimeout;
 		}
 
 		/**
-         * Returns the pool associated with this Lettuce instance.
-         *
-         * @return the pool associated with this Lettuce instance
-         */
-        public Pool getPool() {
+		 * Returns the pool associated with this Lettuce instance.
+		 * @return the pool associated with this Lettuce instance
+		 */
+		public Pool getPool() {
 			return this.pool;
 		}
 
 		/**
-         * Returns the cluster associated with this Lettuce instance.
-         *
-         * @return the cluster associated with this Lettuce instance
-         */
-        public Cluster getCluster() {
+		 * Returns the cluster associated with this Lettuce instance.
+		 * @return the cluster associated with this Lettuce instance
+		 */
+		public Cluster getCluster() {
 			return this.cluster;
 		}
 
 		/**
-         * Cluster class.
-         */
-        public static class Cluster {
+		 * Cluster class.
+		 */
+		public static class Cluster {
 
 			private final Refresh refresh = new Refresh();
 
 			/**
-             * Returns the refresh object associated with this Cluster.
-             *
-             * @return the refresh object associated with this Cluster
-             */
-            public Refresh getRefresh() {
+			 * Returns the refresh object associated with this Cluster.
+			 * @return the refresh object associated with this Cluster
+			 */
+			public Refresh getRefresh() {
 				return this.refresh;
 			}
 
 			/**
-             * Refresh class.
-             */
-            public static class Refresh {
+			 * Refresh class.
+			 */
+			public static class Refresh {
 
 				/**
 				 * Whether to discover and query all cluster nodes for obtaining the
@@ -833,56 +776,54 @@ public class RedisProperties {
 				private boolean adaptive;
 
 				/**
-                 * Returns a boolean value indicating whether dynamic refresh sources are enabled.
-                 * 
-                 * @return true if dynamic refresh sources are enabled, false otherwise
-                 */
-                public boolean isDynamicRefreshSources() {
+				 * Returns a boolean value indicating whether dynamic refresh sources are
+				 * enabled.
+				 * @return true if dynamic refresh sources are enabled, false otherwise
+				 */
+				public boolean isDynamicRefreshSources() {
 					return this.dynamicRefreshSources;
 				}
 
 				/**
-                 * Sets the flag indicating whether dynamic refresh sources are enabled or not.
-                 * 
-                 * @param dynamicRefreshSources the flag indicating whether dynamic refresh sources are enabled or not
-                 */
-                public void setDynamicRefreshSources(boolean dynamicRefreshSources) {
+				 * Sets the flag indicating whether dynamic refresh sources are enabled or
+				 * not.
+				 * @param dynamicRefreshSources the flag indicating whether dynamic
+				 * refresh sources are enabled or not
+				 */
+				public void setDynamicRefreshSources(boolean dynamicRefreshSources) {
 					this.dynamicRefreshSources = dynamicRefreshSources;
 				}
 
 				/**
-                 * Returns the period of time between refreshes.
-                 *
-                 * @return the period of time between refreshes
-                 */
-                public Duration getPeriod() {
+				 * Returns the period of time between refreshes.
+				 * @return the period of time between refreshes
+				 */
+				public Duration getPeriod() {
 					return this.period;
 				}
 
 				/**
-                 * Sets the period for refreshing.
-                 * 
-                 * @param period the duration of the refresh period
-                 */
-                public void setPeriod(Duration period) {
+				 * Sets the period for refreshing.
+				 * @param period the duration of the refresh period
+				 */
+				public void setPeriod(Duration period) {
 					this.period = period;
 				}
 
 				/**
-                 * Returns a boolean value indicating whether the Refresh object is adaptive.
-                 * 
-                 * @return true if the Refresh object is adaptive, false otherwise
-                 */
-                public boolean isAdaptive() {
+				 * Returns a boolean value indicating whether the Refresh object is
+				 * adaptive.
+				 * @return true if the Refresh object is adaptive, false otherwise
+				 */
+				public boolean isAdaptive() {
 					return this.adaptive;
 				}
 
 				/**
-                 * Sets the adaptive flag for the Refresh class.
-                 * 
-                 * @param adaptive the value to set the adaptive flag to
-                 */
-                public void setAdaptive(boolean adaptive) {
+				 * Sets the adaptive flag for the Refresh class.
+				 * @param adaptive the value to set the adaptive flag to
+				 */
+				public void setAdaptive(boolean adaptive) {
 					this.adaptive = adaptive;
 				}
 

@@ -82,31 +82,28 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	private int order = DEFAULT_ORDER;
 
 	/**
-     * Returns the order of this SpringApplicationJsonEnvironmentPostProcessor.
-     * 
-     * @return the order of this SpringApplicationJsonEnvironmentPostProcessor
-     */
-    @Override
+	 * Returns the order of this SpringApplicationJsonEnvironmentPostProcessor.
+	 * @return the order of this SpringApplicationJsonEnvironmentPostProcessor
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
 	/**
-     * Sets the order of the SpringApplicationJsonEnvironmentPostProcessor.
-     * 
-     * @param order the order value to set
-     */
-    public void setOrder(int order) {
+	 * Sets the order of the SpringApplicationJsonEnvironmentPostProcessor.
+	 * @param order the order value to set
+	 */
+	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	/**
-     * Post-processes the environment by processing JSON property sources.
-     * 
-     * @param environment the configurable environment
-     * @param application the spring application
-     */
-    @Override
+	 * Post-processes the environment by processing JSON property sources.
+	 * @param environment the configurable environment
+	 * @param application the spring application
+	 */
+	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		MutablePropertySources propertySources = environment.getPropertySources();
 		propertySources.stream()
@@ -117,12 +114,12 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	}
 
 	/**
-     * Processes the given JSON property value and adds it as a property source to the configurable environment.
-     * 
-     * @param environment the configurable environment to add the property source to
-     * @param propertyValue the JSON property value to process
-     */
-    private void processJson(ConfigurableEnvironment environment, JsonPropertyValue propertyValue) {
+	 * Processes the given JSON property value and adds it as a property source to the
+	 * configurable environment.
+	 * @param environment the configurable environment to add the property source to
+	 * @param propertyValue the JSON property value to process
+	 */
+	private void processJson(ConfigurableEnvironment environment, JsonPropertyValue propertyValue) {
 		JsonParser parser = JsonParserFactory.getJsonParser();
 		Map<String, Object> map = parser.parseMap(propertyValue.getJson());
 		if (!map.isEmpty()) {
@@ -142,25 +139,25 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	}
 
 	/**
-     * Flattens a nested map into a flat map with dot-separated keys.
-     * 
-     * @param prefix the prefix to be added to the keys in the resulting flat map (can be null)
-     * @param result the resulting flat map
-     * @param map the nested map to be flattened
-     */
-    private void flatten(String prefix, Map<String, Object> result, Map<String, Object> map) {
+	 * Flattens a nested map into a flat map with dot-separated keys.
+	 * @param prefix the prefix to be added to the keys in the resulting flat map (can be
+	 * null)
+	 * @param result the resulting flat map
+	 * @param map the nested map to be flattened
+	 */
+	private void flatten(String prefix, Map<String, Object> result, Map<String, Object> map) {
 		String namePrefix = (prefix != null) ? prefix + "." : "";
 		map.forEach((key, value) -> extract(namePrefix + key, result, value));
 	}
 
 	/**
-     * Extracts the values from a nested map or collection and adds them to the result map.
-     * 
-     * @param name   the name of the value being extracted
-     * @param result the map to add the extracted values to
-     * @param value  the value to be extracted
-     */
-    @SuppressWarnings("unchecked")
+	 * Extracts the values from a nested map or collection and adds them to the result
+	 * map.
+	 * @param name the name of the value being extracted
+	 * @param result the map to add the extracted values to
+	 * @param value the value to be extracted
+	 */
+	@SuppressWarnings("unchecked")
 	private void extract(String name, Map<String, Object> result, Object value) {
 		if (value instanceof Map) {
 			if (CollectionUtils.isEmpty((Map<?, ?>) value)) {
@@ -186,12 +183,11 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	}
 
 	/**
-     * Adds a JSON property source to the given environment.
-     * 
-     * @param environment the configurable environment to add the property source to
-     * @param source the property source to be added
-     */
-    private void addJsonPropertySource(ConfigurableEnvironment environment, PropertySource<?> source) {
+	 * Adds a JSON property source to the given environment.
+	 * @param environment the configurable environment to add the property source to
+	 * @param source the property source to be added
+	 */
+	private void addJsonPropertySource(ConfigurableEnvironment environment, PropertySource<?> source) {
 		MutablePropertySources sources = environment.getPropertySources();
 		String name = findPropertySource(sources);
 		if (sources.contains(name)) {
@@ -203,12 +199,12 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	}
 
 	/**
-     * Finds the property source from the given mutable property sources.
-     * 
-     * @param sources the mutable property sources to search from
-     * @return the name of the property source found, or the name of the standard environment system properties property source if not found
-     */
-    private String findPropertySource(MutablePropertySources sources) {
+	 * Finds the property source from the given mutable property sources.
+	 * @param sources the mutable property sources to search from
+	 * @return the name of the property source found, or the name of the standard
+	 * environment system properties property source if not found
+	 */
+	private String findPropertySource(MutablePropertySources sources) {
 		if (ClassUtils.isPresent(SERVLET_ENVIRONMENT_CLASS, null)) {
 			PropertySource<?> servletPropertySource = sources.stream()
 				.filter((source) -> SERVLET_ENVIRONMENT_PROPERTY_SOURCES.contains(source.getName()))
@@ -222,30 +218,29 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	}
 
 	/**
-     * JsonPropertySource class.
-     */
-    private static class JsonPropertySource extends MapPropertySource implements OriginLookup<String> {
+	 * JsonPropertySource class.
+	 */
+	private static class JsonPropertySource extends MapPropertySource implements OriginLookup<String> {
 
 		private final JsonPropertyValue propertyValue;
 
 		/**
-         * Constructs a new JsonPropertySource with the given JsonPropertyValue and source map.
-         * 
-         * @param propertyValue the JsonPropertyValue to be used
-         * @param source the source map containing the properties
-         */
-        JsonPropertySource(JsonPropertyValue propertyValue, Map<String, Object> source) {
+		 * Constructs a new JsonPropertySource with the given JsonPropertyValue and source
+		 * map.
+		 * @param propertyValue the JsonPropertyValue to be used
+		 * @param source the source map containing the properties
+		 */
+		JsonPropertySource(JsonPropertyValue propertyValue, Map<String, Object> source) {
 			super(SPRING_APPLICATION_JSON_PROPERTY, source);
 			this.propertyValue = propertyValue;
 		}
 
 		/**
-         * Retrieves the origin of the property value associated with the given key.
-         * 
-         * @param key the key used to retrieve the property value
-         * @return the origin of the property value
-         */
-        @Override
+		 * Retrieves the origin of the property value associated with the given key.
+		 * @param key the key used to retrieve the property value
+		 * @return the origin of the property value
+		 */
+		@Override
 		public Origin getOrigin(String key) {
 			return this.propertyValue.getOrigin();
 		}
@@ -253,9 +248,9 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	}
 
 	/**
-     * JsonPropertyValue class.
-     */
-    private static class JsonPropertyValue {
+	 * JsonPropertyValue class.
+	 */
+	private static class JsonPropertyValue {
 
 		private static final String[] CANDIDATES = { SPRING_APPLICATION_JSON_PROPERTY,
 				SPRING_APPLICATION_JSON_ENVIRONMENT_VARIABLE };
@@ -267,43 +262,42 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 		private final String json;
 
 		/**
-         * Constructs a new instance of the JsonPropertyValue class with the specified property source, property name, and JSON string.
-         * 
-         * @param propertySource the property source from which to retrieve the property value
-         * @param propertyName the name of the property to retrieve
-         * @param json the JSON string to parse
-         */
-        JsonPropertyValue(PropertySource<?> propertySource, String propertyName, String json) {
+		 * Constructs a new instance of the JsonPropertyValue class with the specified
+		 * property source, property name, and JSON string.
+		 * @param propertySource the property source from which to retrieve the property
+		 * value
+		 * @param propertyName the name of the property to retrieve
+		 * @param json the JSON string to parse
+		 */
+		JsonPropertyValue(PropertySource<?> propertySource, String propertyName, String json) {
 			this.propertySource = propertySource;
 			this.propertyName = propertyName;
 			this.json = json;
 		}
 
 		/**
-         * Returns the JSON string representation of the property value.
-         *
-         * @return the JSON string representation of the property value
-         */
-        String getJson() {
+		 * Returns the JSON string representation of the property value.
+		 * @return the JSON string representation of the property value
+		 */
+		String getJson() {
 			return this.json;
 		}
 
 		/**
-         * Returns the origin of the property value.
-         * 
-         * @return the origin of the property value
-         */
-        Origin getOrigin() {
+		 * Returns the origin of the property value.
+		 * @return the origin of the property value
+		 */
+		Origin getOrigin() {
 			return PropertySourceOrigin.get(this.propertySource, this.propertyName);
 		}
 
 		/**
-         * Retrieves the first non-empty string value from the given property source.
-         * 
-         * @param propertySource the property source to retrieve the value from
-         * @return the first non-empty string value wrapped in a JsonPropertyValue object, or null if no such value is found
-         */
-        static JsonPropertyValue get(PropertySource<?> propertySource) {
+		 * Retrieves the first non-empty string value from the given property source.
+		 * @param propertySource the property source to retrieve the value from
+		 * @return the first non-empty string value wrapped in a JsonPropertyValue object,
+		 * or null if no such value is found
+		 */
+		static JsonPropertyValue get(PropertySource<?> propertySource) {
 			for (String candidate : CANDIDATES) {
 				Object value = propertySource.getProperty(candidate);
 				if (value instanceof String string && StringUtils.hasLength(string)) {

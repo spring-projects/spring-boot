@@ -203,40 +203,37 @@ public class LoggingSystemProperties {
 	}
 
 	/**
-     * Returns the default charset used by the LoggingSystemProperties class.
-     * 
-     * @return The default charset, which is StandardCharsets.UTF_8.
-     */
-    protected Charset getDefaultCharset() {
+	 * Returns the default charset used by the LoggingSystemProperties class.
+	 * @return The default charset, which is StandardCharsets.UTF_8.
+	 */
+	protected Charset getDefaultCharset() {
 		return StandardCharsets.UTF_8;
 	}
 
 	/**
-     * Applies the logging system properties.
-     * 
-     * @param properties the logging system properties to be applied
-     */
-    public final void apply() {
+	 * Applies the logging system properties.
+	 * @param properties the logging system properties to be applied
+	 */
+	public final void apply() {
 		apply(null);
 	}
 
 	/**
-     * Applies the given log file to the logging system using the provided property resolver.
-     * 
-     * @param logFile the log file to be applied
-     * @throws NullPointerException if the logFile is null
-     */
-    public final void apply(LogFile logFile) {
+	 * Applies the given log file to the logging system using the provided property
+	 * resolver.
+	 * @param logFile the log file to be applied
+	 * @throws NullPointerException if the logFile is null
+	 */
+	public final void apply(LogFile logFile) {
 		PropertyResolver resolver = getPropertyResolver();
 		apply(logFile, resolver);
 	}
 
 	/**
-     * Returns the property resolver for the current environment.
-     * 
-     * @return the property resolver
-     */
-    private PropertyResolver getPropertyResolver() {
+	 * Returns the property resolver for the current environment.
+	 * @return the property resolver
+	 */
+	private PropertyResolver getPropertyResolver() {
 		if (this.environment instanceof ConfigurableEnvironment configurableEnvironment) {
 			PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 					configurableEnvironment.getPropertySources());
@@ -248,12 +245,11 @@ public class LoggingSystemProperties {
 	}
 
 	/**
-     * Applies the specified log file and property resolver to the system properties.
-     * 
-     * @param logFile the log file to apply (can be null)
-     * @param resolver the property resolver to apply
-     */
-    protected void apply(LogFile logFile, PropertyResolver resolver) {
+	 * Applies the specified log file and property resolver to the system properties.
+	 * @param logFile the log file to apply (can be null)
+	 * @param resolver the property resolver to apply
+	 */
+	protected void apply(LogFile logFile, PropertyResolver resolver) {
 		String defaultCharsetName = getDefaultCharset().name();
 		setApplicationNameSystemProperty(resolver);
 		setSystemProperty(LoggingSystemProperty.PID, new ApplicationPid().toString());
@@ -273,14 +269,13 @@ public class LoggingSystemProperties {
 	}
 
 	/**
-     * Sets the application name system property based on the provided property resolver.
-     * If the "logging.include-application-name" property is set to true, the application name
-     * is retrieved from the "spring.application.name" property and set as the value of the
-     * system property "logging.system.property.application-name".
-     * 
-     * @param resolver the property resolver used to retrieve the necessary properties
-     */
-    private void setApplicationNameSystemProperty(PropertyResolver resolver) {
+	 * Sets the application name system property based on the provided property resolver.
+	 * If the "logging.include-application-name" property is set to true, the application
+	 * name is retrieved from the "spring.application.name" property and set as the value
+	 * of the system property "logging.system.property.application-name".
+	 * @param resolver the property resolver used to retrieve the necessary properties
+	 */
+	private void setApplicationNameSystemProperty(PropertyResolver resolver) {
 		if (resolver.getProperty("logging.include-application-name", Boolean.class, Boolean.TRUE)) {
 			String applicationName = resolver.getProperty("spring.application.name");
 			if (StringUtils.hasText(applicationName)) {
@@ -291,23 +286,23 @@ public class LoggingSystemProperties {
 	}
 
 	/**
-     * Sets the value of the specified system property using the provided property resolver.
-     * 
-     * @param property the logging system property to set
-     * @param resolver the property resolver used to resolve the value of the system property
-     */
-    private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver) {
+	 * Sets the value of the specified system property using the provided property
+	 * resolver.
+	 * @param property the logging system property to set
+	 * @param resolver the property resolver used to resolve the value of the system
+	 * property
+	 */
+	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver) {
 		setSystemProperty(property, resolver, null);
 	}
 
 	/**
-     * Sets the system property with the given value.
-     * 
-     * @param property the LoggingSystemProperty to set
-     * @param resolver the PropertyResolver to resolve the property value
-     * @param defaultValue the default value to use if the property value is not found
-     */
-    private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver, String defaultValue) {
+	 * Sets the system property with the given value.
+	 * @param property the LoggingSystemProperty to set
+	 * @param resolver the PropertyResolver to resolve the property value
+	 * @param defaultValue the default value to use if the property value is not found
+	 */
+	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver, String defaultValue) {
 		String value = (property.getApplicationPropertyName() != null)
 				? resolver.getProperty(property.getApplicationPropertyName()) : null;
 		value = (value != null) ? value : this.defaultValueResolver.apply(property.getApplicationPropertyName());
@@ -316,12 +311,11 @@ public class LoggingSystemProperties {
 	}
 
 	/**
-     * Sets the value of the specified system property.
-     * 
-     * @param property the LoggingSystemProperty to set the value for
-     * @param value the value to set for the system property
-     */
-    private void setSystemProperty(LoggingSystemProperty property, String value) {
+	 * Sets the value of the specified system property.
+	 * @param property the LoggingSystemProperty to set the value for
+	 * @param value the value to set for the system property
+	 */
+	private void setSystemProperty(LoggingSystemProperty property, String value) {
 		setSystemProperty(property.getEnvironmentVariableName(), value);
 	}
 

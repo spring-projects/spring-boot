@@ -29,12 +29,12 @@ import org.springframework.core.ResolvableType;
 public abstract class AbstractFailureAnalyzer<T extends Throwable> implements FailureAnalyzer {
 
 	/**
-     * Analyzes the given throwable failure and returns a FailureAnalysis object.
-     * 
-     * @param failure the throwable failure to be analyzed
-     * @return a FailureAnalysis object representing the analysis result, or null if no analysis is performed
-     */
-    @Override
+	 * Analyzes the given throwable failure and returns a FailureAnalysis object.
+	 * @param failure the throwable failure to be analyzed
+	 * @return a FailureAnalysis object representing the analysis result, or null if no
+	 * analysis is performed
+	 */
+	@Override
 	public FailureAnalysis analyze(Throwable failure) {
 		T cause = findCause(failure, getCauseType());
 		return (cause != null) ? analyze(failure, cause) : null;
@@ -60,18 +60,16 @@ public abstract class AbstractFailureAnalyzer<T extends Throwable> implements Fa
 	}
 
 	/**
-     * Finds the cause of a failure by traversing the exception chain.
-     * 
-     * @param failure the Throwable object representing the failure
-     * @param type the Class object representing the type of exception to find
-     * @return the cause of the failure if found, null otherwise
-     * @throws ClassCastException if the cause of the failure is not of the specified type
-     * 
-     * @param <E> the type parameter representing the type of exception to find
-     * 
-     * @since version 1.0
-     */
-    @SuppressWarnings("unchecked")
+	 * Finds the cause of a failure by traversing the exception chain.
+	 * @param failure the Throwable object representing the failure
+	 * @param type the Class object representing the type of exception to find
+	 * @return the cause of the failure if found, null otherwise
+	 * @throws ClassCastException if the cause of the failure is not of the specified type
+	 * @param <E> the type parameter representing the type of exception to find
+	 *
+	 * @since version 1.0
+	 */
+	@SuppressWarnings("unchecked")
 	protected final <E extends Throwable> E findCause(Throwable failure, Class<E> type) {
 		while (failure != null) {
 			if (type.isInstance(failure)) {

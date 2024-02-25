@@ -27,9 +27,9 @@ package org.springframework.boot.context.properties.bind;
 public abstract class DataObjectPropertyName {
 
 	/**
-     * This is a private method that does not return any value.
-     */
-    private DataObjectPropertyName() {
+	 * This is a private method that does not return any value.
+	 */
+	private DataObjectPropertyName() {
 	}
 
 	/**

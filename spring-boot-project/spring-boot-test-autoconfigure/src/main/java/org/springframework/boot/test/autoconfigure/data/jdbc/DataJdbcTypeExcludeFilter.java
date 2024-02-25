@@ -35,20 +35,18 @@ public final class DataJdbcTypeExcludeFilter extends StandardAnnotationCustomiza
 	private static final Set<Class<?>> DEFAULT_INCLUDES = Collections.singleton(AbstractJdbcConfiguration.class);
 
 	/**
-     * Constructs a new DataJdbcTypeExcludeFilter with the specified test class.
-     *
-     * @param testClass the test class to be excluded from data JDBC type filtering
-     */
-    DataJdbcTypeExcludeFilter(Class<?> testClass) {
+	 * Constructs a new DataJdbcTypeExcludeFilter with the specified test class.
+	 * @param testClass the test class to be excluded from data JDBC type filtering
+	 */
+	DataJdbcTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 
 	/**
-     * Returns the default includes for this DataJdbcTypeExcludeFilter.
-     * 
-     * @return the default includes for this DataJdbcTypeExcludeFilter
-     */
-    @Override
+	 * Returns the default includes for this DataJdbcTypeExcludeFilter.
+	 * @return the default includes for this DataJdbcTypeExcludeFilter
+	 */
+	@Override
 	protected Set<Class<?>> getDefaultIncludes() {
 		return DEFAULT_INCLUDES;
 	}

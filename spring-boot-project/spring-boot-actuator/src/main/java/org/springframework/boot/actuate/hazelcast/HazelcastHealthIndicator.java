@@ -35,23 +35,21 @@ public class HazelcastHealthIndicator extends AbstractHealthIndicator {
 	private final HazelcastInstance hazelcast;
 
 	/**
-     * Constructs a new HazelcastHealthIndicator with the specified HazelcastInstance.
-     * 
-     * @param hazelcast the HazelcastInstance to be used for health checking
-     * @throws IllegalArgumentException if the HazelcastInstance is null
-     */
-    public HazelcastHealthIndicator(HazelcastInstance hazelcast) {
+	 * Constructs a new HazelcastHealthIndicator with the specified HazelcastInstance.
+	 * @param hazelcast the HazelcastInstance to be used for health checking
+	 * @throws IllegalArgumentException if the HazelcastInstance is null
+	 */
+	public HazelcastHealthIndicator(HazelcastInstance hazelcast) {
 		super("Hazelcast health check failed");
 		Assert.notNull(hazelcast, "HazelcastInstance must not be null");
 		this.hazelcast = hazelcast;
 	}
 
 	/**
-     * Performs a health check on the Hazelcast instance.
-     * 
-     * @param builder the Health.Builder object used to build the health status
-     */
-    @Override
+	 * Performs a health check on the Hazelcast instance.
+	 * @param builder the Health.Builder object used to build the health status
+	 */
+	@Override
 	protected void doHealthCheck(Health.Builder builder) {
 		this.hazelcast.executeTransaction((context) -> {
 			String uuid = this.hazelcast.getLocalEndpoint().getUuid().toString();

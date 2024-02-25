@@ -32,24 +32,22 @@ class HealthIndicatorReactiveAdapter implements ReactiveHealthIndicator {
 	private final HealthIndicator delegate;
 
 	/**
-     * Constructs a new HealthIndicatorReactiveAdapter with the specified delegate.
-     *
-     * @param delegate the delegate HealthIndicator to be used
-     * @throws IllegalArgumentException if the delegate is null
-     */
-    HealthIndicatorReactiveAdapter(HealthIndicator delegate) {
+	 * Constructs a new HealthIndicatorReactiveAdapter with the specified delegate.
+	 * @param delegate the delegate HealthIndicator to be used
+	 * @throws IllegalArgumentException if the delegate is null
+	 */
+	HealthIndicatorReactiveAdapter(HealthIndicator delegate) {
 		Assert.notNull(delegate, "Delegate must not be null");
 		this.delegate = delegate;
 	}
 
 	/**
-     * Returns the health status of the delegate HealthIndicator as a Mono.
-     * The health status is obtained by invoking the health() method of the delegate.
-     * The execution of the health() method is performed on a boundedElastic scheduler.
-     *
-     * @return a Mono that emits the health status of the delegate HealthIndicator
-     */
-    @Override
+	 * Returns the health status of the delegate HealthIndicator as a Mono. The health
+	 * status is obtained by invoking the health() method of the delegate. The execution
+	 * of the health() method is performed on a boundedElastic scheduler.
+	 * @return a Mono that emits the health status of the delegate HealthIndicator
+	 */
+	@Override
 	public Mono<Health> health() {
 		return Mono.fromCallable(this.delegate::health).subscribeOn(Schedulers.boundedElastic());
 	}

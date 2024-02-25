@@ -29,11 +29,10 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
 public class MyWebTestClientBuilderCustomizerConfiguration {
 
 	/**
-     * Configures the REST documentation for the WebTestClient builder.
-     *
-     * @return the customizer for the WebTestClient builder
-     */
-    @Bean
+	 * Configures the REST documentation for the WebTestClient builder.
+	 * @return the customizer for the WebTestClient builder
+	 */
+	@Bean
 	public WebTestClientBuilderCustomizer restDocumentation() {
 		return (builder) -> builder.entityExchangeResultConsumer(document("{method-name}"));
 	}

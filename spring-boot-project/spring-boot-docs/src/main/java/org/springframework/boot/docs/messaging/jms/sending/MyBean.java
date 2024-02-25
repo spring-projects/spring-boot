@@ -28,11 +28,10 @@ public class MyBean {
 	private final JmsTemplate jmsTemplate;
 
 	/**
-     * Constructs a new instance of MyBean with the specified JmsTemplate.
-     * 
-     * @param jmsTemplate the JmsTemplate to be used by this MyBean
-     */
-    public MyBean(JmsTemplate jmsTemplate) {
+	 * Constructs a new instance of MyBean with the specified JmsTemplate.
+	 * @param jmsTemplate the JmsTemplate to be used by this MyBean
+	 */
+	public MyBean(JmsTemplate jmsTemplate) {
 		this.jmsTemplate = jmsTemplate;
 	}
 

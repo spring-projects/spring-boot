@@ -50,15 +50,14 @@ class AccessLogHttpHandlerFactory implements HttpHandlerFactory {
 	private final boolean rotate;
 
 	/**
-     * Constructs a new AccessLogHttpHandlerFactory with the specified parameters.
-     *
-     * @param directory the directory where the access log files will be stored
-     * @param pattern the pattern used to format the access log entries
-     * @param prefix the prefix to be added to the access log file names
-     * @param suffix the suffix to be added to the access log file names
-     * @param rotate true if the access log files should be rotated, false otherwise
-     */
-    AccessLogHttpHandlerFactory(File directory, String pattern, String prefix, String suffix, boolean rotate) {
+	 * Constructs a new AccessLogHttpHandlerFactory with the specified parameters.
+	 * @param directory the directory where the access log files will be stored
+	 * @param pattern the pattern used to format the access log entries
+	 * @param prefix the prefix to be added to the access log file names
+	 * @param suffix the suffix to be added to the access log file names
+	 * @param rotate true if the access log files should be rotated, false otherwise
+	 */
+	AccessLogHttpHandlerFactory(File directory, String pattern, String prefix, String suffix, boolean rotate) {
 		this.directory = directory;
 		this.pattern = pattern;
 		this.prefix = prefix;
@@ -67,13 +66,12 @@ class AccessLogHttpHandlerFactory implements HttpHandlerFactory {
 	}
 
 	/**
-     * Returns an HttpHandler that logs access information to a file.
-     * 
-     * @param next the next HttpHandler in the chain
-     * @return the HttpHandler that logs access information
-     * @throws IllegalStateException if failed to create the AccessLogHandler
-     */
-    @Override
+	 * Returns an HttpHandler that logs access information to a file.
+	 * @param next the next HttpHandler in the chain
+	 * @return the HttpHandler that logs access information
+	 * @throws IllegalStateException if failed to create the AccessLogHandler
+	 */
+	@Override
 	public HttpHandler getHandler(HttpHandler next) {
 		try {
 			createAccessLogDirectoryIfNecessary();
@@ -90,11 +88,11 @@ class AccessLogHttpHandlerFactory implements HttpHandlerFactory {
 	}
 
 	/**
-     * Creates the access log directory if it does not exist.
-     * 
-     * @throws IllegalStateException if the access log directory is not set or if it fails to create the directory
-     */
-    private void createAccessLogDirectoryIfNecessary() {
+	 * Creates the access log directory if it does not exist.
+	 * @throws IllegalStateException if the access log directory is not set or if it fails
+	 * to create the directory
+	 */
+	private void createAccessLogDirectoryIfNecessary() {
 		Assert.state(this.directory != null, "Access log directory is not set");
 		if (!this.directory.isDirectory() && !this.directory.mkdirs()) {
 			throw new IllegalStateException("Failed to create access log directory '" + this.directory + "'");
@@ -102,12 +100,11 @@ class AccessLogHttpHandlerFactory implements HttpHandlerFactory {
 	}
 
 	/**
-     * Creates a new XnioWorker instance.
-     *
-     * @return the created XnioWorker instance
-     * @throws IOException if an I/O error occurs while creating the XnioWorker
-     */
-    private XnioWorker createWorker() throws IOException {
+	 * Creates a new XnioWorker instance.
+	 * @return the created XnioWorker instance
+	 * @throws IOException if an I/O error occurs while creating the XnioWorker
+	 */
+	private XnioWorker createWorker() throws IOException {
 		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
 		return xnio.createWorker(OptionMap.builder().set(Options.THREAD_DAEMON, true).getMap());
 	}
@@ -122,14 +119,13 @@ class AccessLogHttpHandlerFactory implements HttpHandlerFactory {
 		private final XnioWorker worker;
 
 		/**
-         * Constructs a new ClosableAccessLogHandler with the specified parameters.
-         *
-         * @param next the next HttpHandler in the chain
-         * @param worker the XnioWorker used for logging
-         * @param accessLogReceiver the DefaultAccessLogReceiver used for logging
-         * @param formatString the format string for the log entries
-         */
-        ClosableAccessLogHandler(HttpHandler next, XnioWorker worker, DefaultAccessLogReceiver accessLogReceiver,
+		 * Constructs a new ClosableAccessLogHandler with the specified parameters.
+		 * @param next the next HttpHandler in the chain
+		 * @param worker the XnioWorker used for logging
+		 * @param accessLogReceiver the DefaultAccessLogReceiver used for logging
+		 * @param formatString the format string for the log entries
+		 */
+		ClosableAccessLogHandler(HttpHandler next, XnioWorker worker, DefaultAccessLogReceiver accessLogReceiver,
 				String formatString) {
 			super(next, accessLogReceiver, formatString, Undertow.class.getClassLoader());
 			this.worker = worker;
@@ -137,12 +133,13 @@ class AccessLogHttpHandlerFactory implements HttpHandlerFactory {
 		}
 
 		/**
-         * Closes the ClosableAccessLogHandler by closing the accessLogReceiver and shutting down the worker thread.
-         * 
-         * @throws IOException if an I/O error occurs while closing the accessLogReceiver
-         * @throws RuntimeException if an exception occurs while closing the accessLogReceiver
-         */
-        @Override
+		 * Closes the ClosableAccessLogHandler by closing the accessLogReceiver and
+		 * shutting down the worker thread.
+		 * @throws IOException if an I/O error occurs while closing the accessLogReceiver
+		 * @throws RuntimeException if an exception occurs while closing the
+		 * accessLogReceiver
+		 */
+		@Override
 		public void close() throws IOException {
 			try {
 				this.accessLogReceiver.close();

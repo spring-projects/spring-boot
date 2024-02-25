@@ -44,51 +44,49 @@ public class DocumentConstrainedVersions extends DefaultTask {
 	private File outputFile;
 
 	/**
-     * Constructs a new instance of DocumentConstrainedVersions with the specified objectFactory.
-     * 
-     * @param objectFactory the object factory used to create instances of ConstrainedVersion
-     */
-    @Inject
+	 * Constructs a new instance of DocumentConstrainedVersions with the specified
+	 * objectFactory.
+	 * @param objectFactory the object factory used to create instances of
+	 * ConstrainedVersion
+	 */
+	@Inject
 	public DocumentConstrainedVersions(ObjectFactory objectFactory) {
 		this.constrainedVersions = objectFactory.setProperty(ConstrainedVersion.class);
 	}
 
 	/**
-     * Retrieves the set of constrained versions.
-     *
-     * @return The set of constrained versions.
-     */
-    @Input
+	 * Retrieves the set of constrained versions.
+	 * @return The set of constrained versions.
+	 */
+	@Input
 	public SetProperty<ConstrainedVersion> getConstrainedVersions() {
 		return this.constrainedVersions;
 	}
 
 	/**
-     * Returns the output file.
-     *
-     * @return the output file
-     */
-    @OutputFile
+	 * Returns the output file.
+	 * @return the output file
+	 */
+	@OutputFile
 	public File getOutputFile() {
 		return this.outputFile;
 	}
 
 	/**
-     * Sets the output file for the document.
-     * 
-     * @param outputFile the file to set as the output file
-     */
-    public void setOutputFile(File outputFile) {
+	 * Sets the output file for the document.
+	 * @param outputFile the file to set as the output file
+	 */
+	public void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
 	}
 
 	/**
-     * Generates a Javadoc style documentation for the method documentConstrainedVersions.
-     * This method is responsible for documenting the constrained versions of artifacts.
-     *
-     * @throws IOException if an I/O error occurs while writing the documentation to the output file.
-     */
-    @TaskAction
+	 * Generates a Javadoc style documentation for the method documentConstrainedVersions.
+	 * This method is responsible for documenting the constrained versions of artifacts.
+	 * @throws IOException if an I/O error occurs while writing the documentation to the
+	 * output file.
+	 */
+	@TaskAction
 	public void documentConstrainedVersions() throws IOException {
 		this.outputFile.getParentFile().mkdirs();
 		try (PrintWriter writer = new PrintWriter(new FileWriter(this.outputFile))) {

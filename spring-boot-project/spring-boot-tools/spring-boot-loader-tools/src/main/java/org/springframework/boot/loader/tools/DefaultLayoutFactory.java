@@ -27,12 +27,11 @@ import java.io.File;
 public class DefaultLayoutFactory implements LayoutFactory {
 
 	/**
-     * Returns the layout for the given source file.
-     * 
-     * @param source the source file for which to get the layout
-     * @return the layout for the source file
-     */
-    @Override
+	 * Returns the layout for the given source file.
+	 * @param source the source file for which to get the layout
+	 * @return the layout for the source file
+	 */
+	@Override
 	public Layout getLayout(File source) {
 		return Layouts.forFile(source);
 	}

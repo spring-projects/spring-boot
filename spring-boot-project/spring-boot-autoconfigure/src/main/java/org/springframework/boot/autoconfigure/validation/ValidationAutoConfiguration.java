@@ -53,15 +53,16 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 public class ValidationAutoConfiguration {
 
 	/**
-     * Creates a default validator bean if no other bean of type Validator is present in the application context.
-     * The validator bean is configured with a LocalValidatorFactoryBean and a MessageInterpolatorFactory.
-     * The configuration of the validator can be customized by providing a ValidationConfigurationCustomizer bean.
-     * 
-     * @param applicationContext the application context
-     * @param customizers the customizers for the validation configuration
-     * @return the default validator bean
-     */
-    @Bean
+	 * Creates a default validator bean if no other bean of type Validator is present in
+	 * the application context. The validator bean is configured with a
+	 * LocalValidatorFactoryBean and a MessageInterpolatorFactory. The configuration of
+	 * the validator can be customized by providing a ValidationConfigurationCustomizer
+	 * bean.
+	 * @param applicationContext the application context
+	 * @param customizers the customizers for the validation configuration
+	 * @return the default validator bean
+	 */
+	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	@ConditionalOnMissingBean(Validator.class)
 	public static LocalValidatorFactoryBean defaultValidator(ApplicationContext applicationContext,
@@ -75,15 +76,18 @@ public class ValidationAutoConfiguration {
 	}
 
 	/**
-     * Creates a {@link MethodValidationPostProcessor} bean if no other bean of the same type is present in the application context.
-     * The bean is conditionally created based on the absence of a bean with the specified search strategy.
-     * The method takes an {@link Environment} object, an {@link ObjectProvider} of {@link Validator} objects, and an {@link ObjectProvider} of {@link MethodValidationExcludeFilter} objects as parameters.
-     * It creates a {@link FilteredMethodValidationPostProcessor} object with the ordered stream of exclude filters.
-     * The value of the "spring.aop.proxy-target-class" property is retrieved from the environment and used to set the proxyTargetClass property of the processor.
-     * The validator provider is set using the validator object provider.
-     * Finally, the processor is returned.
-     */
-    @Bean
+	 * Creates a {@link MethodValidationPostProcessor} bean if no other bean of the same
+	 * type is present in the application context. The bean is conditionally created based
+	 * on the absence of a bean with the specified search strategy. The method takes an
+	 * {@link Environment} object, an {@link ObjectProvider} of {@link Validator} objects,
+	 * and an {@link ObjectProvider} of {@link MethodValidationExcludeFilter} objects as
+	 * parameters. It creates a {@link FilteredMethodValidationPostProcessor} object with
+	 * the ordered stream of exclude filters. The value of the
+	 * "spring.aop.proxy-target-class" property is retrieved from the environment and used
+	 * to set the proxyTargetClass property of the processor. The validator provider is
+	 * set using the validator object provider. Finally, the processor is returned.
+	 */
+	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public static MethodValidationPostProcessor methodValidationPostProcessor(Environment environment,
 			ObjectProvider<Validator> validator, ObjectProvider<MethodValidationExcludeFilter> excludeFilters) {

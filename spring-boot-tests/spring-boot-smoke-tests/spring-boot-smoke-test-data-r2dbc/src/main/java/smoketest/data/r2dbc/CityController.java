@@ -32,31 +32,29 @@ public class CityController {
 	private final CityRepository repository;
 
 	/**
-     * Constructs a new CityController with the specified CityRepository.
-     * 
-     * @param repository the CityRepository to be used by the CityController
-     */
-    public CityController(CityRepository repository) {
+	 * Constructs a new CityController with the specified CityRepository.
+	 * @param repository the CityRepository to be used by the CityController
+	 */
+	public CityController(CityRepository repository) {
 		this.repository = repository;
 	}
 
 	/**
-     * Retrieves all cities.
-     *
-     * @return a Flux of City objects representing all cities.
-     */
-    @GetMapping("/cities")
+	 * Retrieves all cities.
+	 * @return a Flux of City objects representing all cities.
+	 */
+	@GetMapping("/cities")
 	public Flux<City> findCities() {
 		return this.repository.findAll();
 	}
 
 	/**
-     * Retrieves a city by its ID.
-     *
-     * @param id the ID of the city to retrieve
-     * @return a Mono containing the city with the specified ID, or an empty Mono if no city is found
-     */
-    @GetMapping("/cities/{id}")
+	 * Retrieves a city by its ID.
+	 * @param id the ID of the city to retrieve
+	 * @return a Mono containing the city with the specified ID, or an empty Mono if no
+	 * city is found
+	 */
+	@GetMapping("/cities/{id}")
 	public Mono<City> findCityById(@PathVariable long id) {
 		return this.repository.findById(id);
 	}

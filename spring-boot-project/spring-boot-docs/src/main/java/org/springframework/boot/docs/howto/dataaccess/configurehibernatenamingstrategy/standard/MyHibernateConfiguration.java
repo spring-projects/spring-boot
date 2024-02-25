@@ -28,11 +28,11 @@ import org.springframework.context.annotation.Configuration;
 class MyHibernateConfiguration {
 
 	/**
-     * Returns an instance of PhysicalNamingStrategyStandardImpl that is used as a case-sensitive physical naming strategy.
-     * 
-     * @return an instance of PhysicalNamingStrategyStandardImpl
-     */
-    @Bean
+	 * Returns an instance of PhysicalNamingStrategyStandardImpl that is used as a
+	 * case-sensitive physical naming strategy.
+	 * @return an instance of PhysicalNamingStrategyStandardImpl
+	 */
+	@Bean
 	PhysicalNamingStrategyStandardImpl caseSensitivePhysicalNamingStrategy() {
 		return new PhysicalNamingStrategyStandardImpl();
 	}

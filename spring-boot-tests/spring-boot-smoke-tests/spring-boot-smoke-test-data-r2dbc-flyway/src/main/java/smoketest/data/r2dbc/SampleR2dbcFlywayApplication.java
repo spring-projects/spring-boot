@@ -26,11 +26,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SampleR2dbcFlywayApplication {
 
 	/**
-     * The main method of the SampleR2dbcFlywayApplication class.
-     * 
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+	 * The main method of the SampleR2dbcFlywayApplication class.
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleR2dbcFlywayApplication.class, args);
 	}
 

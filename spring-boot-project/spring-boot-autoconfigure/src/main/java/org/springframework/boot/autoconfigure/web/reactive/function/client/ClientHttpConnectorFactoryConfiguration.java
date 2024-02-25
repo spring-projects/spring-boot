@@ -40,22 +40,21 @@ import org.springframework.http.client.ReactorResourceFactory;
 class ClientHttpConnectorFactoryConfiguration {
 
 	/**
-     * ReactorNetty class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ReactorNetty class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(reactor.netty.http.client.HttpClient.class)
 	@ConditionalOnMissingBean(ClientHttpConnectorFactory.class)
 	@Import(ReactorNettyConfigurations.ReactorResourceFactoryConfiguration.class)
 	static class ReactorNetty {
 
 		/**
-         * Creates a new instance of {@link ReactorClientHttpConnectorFactory}.
-         * 
-         * @param reactorResourceFactory the factory for creating Reactor resources
-         * @param mapperProvider the provider for ReactorNettyHttpClientMapper
-         * @return a new instance of ReactorClientHttpConnectorFactory
-         */
-        @Bean
+		 * Creates a new instance of {@link ReactorClientHttpConnectorFactory}.
+		 * @param reactorResourceFactory the factory for creating Reactor resources
+		 * @param mapperProvider the provider for ReactorNettyHttpClientMapper
+		 * @return a new instance of ReactorClientHttpConnectorFactory
+		 */
+		@Bean
 		ReactorClientHttpConnectorFactory reactorClientHttpConnectorFactory(
 				ReactorResourceFactory reactorResourceFactory,
 				ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider) {
@@ -65,19 +64,18 @@ class ClientHttpConnectorFactoryConfiguration {
 	}
 
 	/**
-     * HttpClient5 class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * HttpClient5 class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ HttpAsyncClients.class, AsyncRequestProducer.class, ReactiveResponseConsumer.class })
 	@ConditionalOnMissingBean(ClientHttpConnectorFactory.class)
 	static class HttpClient5 {
 
 		/**
-         * Creates a new instance of HttpComponentsClientHttpConnectorFactory.
-         * 
-         * @return the HttpComponentsClientHttpConnectorFactory instance
-         */
-        @Bean
+		 * Creates a new instance of HttpComponentsClientHttpConnectorFactory.
+		 * @return the HttpComponentsClientHttpConnectorFactory instance
+		 */
+		@Bean
 		HttpComponentsClientHttpConnectorFactory httpComponentsClientHttpConnectorFactory() {
 			return new HttpComponentsClientHttpConnectorFactory();
 		}
@@ -85,19 +83,18 @@ class ClientHttpConnectorFactoryConfiguration {
 	}
 
 	/**
-     * JdkClient class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JdkClient class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(java.net.http.HttpClient.class)
 	@ConditionalOnMissingBean(ClientHttpConnectorFactory.class)
 	static class JdkClient {
 
 		/**
-         * Creates a new instance of JdkClientHttpConnectorFactory.
-         * 
-         * @return the newly created JdkClientHttpConnectorFactory instance
-         */
-        @Bean
+		 * Creates a new instance of JdkClientHttpConnectorFactory.
+		 * @return the newly created JdkClientHttpConnectorFactory instance
+		 */
+		@Bean
 		JdkClientHttpConnectorFactory jdkClientHttpConnectorFactory() {
 			return new JdkClientHttpConnectorFactory();
 		}

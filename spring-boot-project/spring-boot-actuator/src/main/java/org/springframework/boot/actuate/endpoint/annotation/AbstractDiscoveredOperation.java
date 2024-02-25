@@ -47,41 +47,37 @@ public abstract class AbstractDiscoveredOperation implements Operation {
 	}
 
 	/**
-     * Returns the operation method of the discovered operation.
-     *
-     * @return the operation method of the discovered operation
-     */
-    public OperationMethod getOperationMethod() {
+	 * Returns the operation method of the discovered operation.
+	 * @return the operation method of the discovered operation
+	 */
+	public OperationMethod getOperationMethod() {
 		return this.operationMethod;
 	}
 
 	/**
-     * Returns the type of the operation.
-     * 
-     * @return the type of the operation
-     */
-    @Override
+	 * Returns the type of the operation.
+	 * @return the type of the operation
+	 */
+	@Override
 	public OperationType getType() {
 		return this.operationMethod.getOperationType();
 	}
 
 	/**
-     * Invokes the specified invocation context.
-     *
-     * @param context the invocation context
-     * @return the result of the invocation
-     */
-    @Override
+	 * Invokes the specified invocation context.
+	 * @param context the invocation context
+	 * @return the result of the invocation
+	 */
+	@Override
 	public Object invoke(InvocationContext context) {
 		return this.invoker.invoke(context);
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * 
-     * @return a string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return a string representation of the object
+	 */
+	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this).append("operationMethod", this.operationMethod)
 			.append("invoker", this.invoker);
@@ -90,11 +86,10 @@ public abstract class AbstractDiscoveredOperation implements Operation {
 	}
 
 	/**
-     * Appends the fields of the object to the provided {@link ToStringCreator}.
-     * 
-     * @param creator the {@link ToStringCreator} to append the fields to
-     */
-    protected void appendFields(ToStringCreator creator) {
+	 * Appends the fields of the object to the provided {@link ToStringCreator}.
+	 * @param creator the {@link ToStringCreator} to append the fields to
+	 */
+	protected void appendFields(ToStringCreator creator) {
 	}
 
 }

@@ -29,11 +29,11 @@ import org.springframework.stereotype.Component;
 public class MyTomcatWebServerFactoryCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
 	/**
-     * Customizes the Tomcat servlet web server factory by setting the async timeout for the connector.
-     * 
-     * @param server the Tomcat servlet web server factory to customize
-     */
-    @Override
+	 * Customizes the Tomcat servlet web server factory by setting the async timeout for
+	 * the connector.
+	 * @param server the Tomcat servlet web server factory to customize
+	 */
+	@Override
 	public void customize(TomcatServletWebServerFactory server) {
 		server.addConnectorCustomizers((connector) -> connector.setAsyncTimeout(Duration.ofSeconds(20).toMillis()));
 	}

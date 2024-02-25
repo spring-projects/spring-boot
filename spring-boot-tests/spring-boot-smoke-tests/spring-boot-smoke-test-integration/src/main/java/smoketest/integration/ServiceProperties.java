@@ -36,57 +36,51 @@ public class ServiceProperties {
 	private File outputDir;
 
 	/**
-     * Retrieves the greeting message.
-     *
-     * @return The greeting message.
-     */
-    @ManagedAttribute
+	 * Retrieves the greeting message.
+	 * @return The greeting message.
+	 */
+	@ManagedAttribute
 	public String getGreeting() {
 		return this.greeting;
 	}
 
 	/**
-     * Sets the greeting message.
-     * 
-     * @param greeting the new greeting message
-     */
-    public void setGreeting(String greeting) {
+	 * Sets the greeting message.
+	 * @param greeting the new greeting message
+	 */
+	public void setGreeting(String greeting) {
 		this.greeting = greeting;
 	}
 
 	/**
-     * Returns the input directory.
-     *
-     * @return the input directory
-     */
-    public File getInputDir() {
+	 * Returns the input directory.
+	 * @return the input directory
+	 */
+	public File getInputDir() {
 		return this.inputDir;
 	}
 
 	/**
-     * Sets the input directory for the service properties.
-     * 
-     * @param inputDir the input directory to be set
-     */
-    public void setInputDir(File inputDir) {
+	 * Sets the input directory for the service properties.
+	 * @param inputDir the input directory to be set
+	 */
+	public void setInputDir(File inputDir) {
 		this.inputDir = inputDir;
 	}
 
 	/**
-     * Returns the output directory.
-     *
-     * @return the output directory
-     */
-    public File getOutputDir() {
+	 * Returns the output directory.
+	 * @return the output directory
+	 */
+	public File getOutputDir() {
 		return this.outputDir;
 	}
 
 	/**
-     * Sets the output directory for the ServiceProperties class.
-     * 
-     * @param outputDir the output directory to be set
-     */
-    public void setOutputDir(File outputDir) {
+	 * Sets the output directory for the ServiceProperties class.
+	 * @param outputDir the output directory to be set
+	 */
+	public void setOutputDir(File outputDir) {
 		this.outputDir = outputDir;
 	}
 

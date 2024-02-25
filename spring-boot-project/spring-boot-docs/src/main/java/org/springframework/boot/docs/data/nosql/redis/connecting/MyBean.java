@@ -28,11 +28,10 @@ public class MyBean {
 	private final StringRedisTemplate template;
 
 	/**
-     * Constructs a new instance of MyBean with the specified StringRedisTemplate.
-     *
-     * @param template the StringRedisTemplate to be used by the MyBean instance
-     */
-    public MyBean(StringRedisTemplate template) {
+	 * Constructs a new instance of MyBean with the specified StringRedisTemplate.
+	 * @param template the StringRedisTemplate to be used by the MyBean instance
+	 */
+	public MyBean(StringRedisTemplate template) {
 		this.template = template;
 	}
 

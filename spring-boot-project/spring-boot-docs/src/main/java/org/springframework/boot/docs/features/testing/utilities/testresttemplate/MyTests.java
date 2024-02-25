@@ -31,9 +31,9 @@ class MyTests {
 	private final TestRestTemplate template = new TestRestTemplate();
 
 	/**
-     * Test case to verify the request functionality.
-     */
-    @Test
+	 * Test case to verify the request functionality.
+	 */
+	@Test
 	void testRequest() {
 		ResponseEntity<String> headers = this.template.getForEntity("https://myhost.example.com/example", String.class);
 		assertThat(headers.getHeaders().getLocation()).hasHost("other.example.com");

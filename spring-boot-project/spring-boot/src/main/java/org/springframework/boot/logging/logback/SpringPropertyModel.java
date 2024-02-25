@@ -35,56 +35,50 @@ class SpringPropertyModel extends NamedModel {
 	private String source;
 
 	/**
-     * Returns the scope of the SpringPropertyModel.
-     * 
-     * @return the scope of the SpringPropertyModel
-     */
-    String getScope() {
+	 * Returns the scope of the SpringPropertyModel.
+	 * @return the scope of the SpringPropertyModel
+	 */
+	String getScope() {
 		return this.scope;
 	}
 
 	/**
-     * Sets the scope of the SpringPropertyModel.
-     * 
-     * @param scope the scope to be set for the SpringPropertyModel
-     */
-    void setScope(String scope) {
+	 * Sets the scope of the SpringPropertyModel.
+	 * @param scope the scope to be set for the SpringPropertyModel
+	 */
+	void setScope(String scope) {
 		this.scope = scope;
 	}
 
 	/**
-     * Returns the default value of the SpringPropertyModel.
-     *
-     * @return the default value of the SpringPropertyModel
-     */
-    String getDefaultValue() {
+	 * Returns the default value of the SpringPropertyModel.
+	 * @return the default value of the SpringPropertyModel
+	 */
+	String getDefaultValue() {
 		return this.defaultValue;
 	}
 
 	/**
-     * Sets the default value for the SpringPropertyModel.
-     * 
-     * @param defaultValue the default value to be set
-     */
-    void setDefaultValue(String defaultValue) {
+	 * Sets the default value for the SpringPropertyModel.
+	 * @param defaultValue the default value to be set
+	 */
+	void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 
 	/**
-     * Returns the source of the SpringPropertyModel.
-     *
-     * @return the source of the SpringPropertyModel
-     */
-    String getSource() {
+	 * Returns the source of the SpringPropertyModel.
+	 * @return the source of the SpringPropertyModel
+	 */
+	String getSource() {
 		return this.source;
 	}
 
 	/**
-     * Sets the source of the SpringPropertyModel.
-     * 
-     * @param source the source to set
-     */
-    void setSource(String source) {
+	 * Sets the source of the SpringPropertyModel.
+	 * @param source the source to set
+	 */
+	void setSource(String source) {
 		this.source = source;
 	}
 

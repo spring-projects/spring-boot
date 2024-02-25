@@ -26,12 +26,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SampleReactiveOAuth2ResourceServerApplication {
 
 	/**
-     * The main method of the SampleReactiveOAuth2ResourceServerApplication class.
-     * This method is responsible for running the application.
-     * 
-     * @param args The command line arguments passed to the application.
-     */
-    public static void main(String[] args) {
+	 * The main method of the SampleReactiveOAuth2ResourceServerApplication class. This
+	 * method is responsible for running the application.
+	 * @param args The command line arguments passed to the application.
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleReactiveOAuth2ResourceServerApplication.class);
 	}
 

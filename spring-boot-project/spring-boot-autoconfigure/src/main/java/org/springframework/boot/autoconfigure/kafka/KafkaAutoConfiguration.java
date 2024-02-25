@@ -78,35 +78,34 @@ public class KafkaAutoConfiguration {
 	private final KafkaProperties properties;
 
 	/**
-     * Constructs a new KafkaAutoConfiguration with the specified KafkaProperties.
-     *
-     * @param properties the KafkaProperties to be used for configuration
-     */
-    KafkaAutoConfiguration(KafkaProperties properties) {
+	 * Constructs a new KafkaAutoConfiguration with the specified KafkaProperties.
+	 * @param properties the KafkaProperties to be used for configuration
+	 */
+	KafkaAutoConfiguration(KafkaProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Generates a KafkaConnectionDetails bean if no bean of type KafkaConnectionDetails is already present.
-     * 
-     * @param properties the KafkaProperties object used to configure the Kafka connection
-     * @return a PropertiesKafkaConnectionDetails object representing the Kafka connection details
-     */
-    @Bean
+	 * Generates a KafkaConnectionDetails bean if no bean of type KafkaConnectionDetails
+	 * is already present.
+	 * @param properties the KafkaProperties object used to configure the Kafka connection
+	 * @return a PropertiesKafkaConnectionDetails object representing the Kafka connection
+	 * details
+	 */
+	@Bean
 	@ConditionalOnMissingBean(KafkaConnectionDetails.class)
 	PropertiesKafkaConnectionDetails kafkaConnectionDetails(KafkaProperties properties) {
 		return new PropertiesKafkaConnectionDetails(properties);
 	}
 
 	/**
-     * Creates a KafkaTemplate bean if no bean of type KafkaTemplate is already present.
-     * 
-     * @param kafkaProducerFactory The producer factory used to create the KafkaTemplate.
-     * @param kafkaProducerListener The producer listener used by the KafkaTemplate.
-     * @param messageConverter The message converter used by the KafkaTemplate.
-     * @return The created KafkaTemplate bean.
-     */
-    @Bean
+	 * Creates a KafkaTemplate bean if no bean of type KafkaTemplate is already present.
+	 * @param kafkaProducerFactory The producer factory used to create the KafkaTemplate.
+	 * @param kafkaProducerListener The producer listener used by the KafkaTemplate.
+	 * @param messageConverter The message converter used by the KafkaTemplate.
+	 * @return The created KafkaTemplate bean.
+	 */
+	@Bean
 	@ConditionalOnMissingBean(KafkaTemplate.class)
 	public KafkaTemplate<?, ?> kafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory,
 			ProducerListener<Object, Object> kafkaProducerListener,
@@ -122,26 +121,26 @@ public class KafkaAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of LoggingProducerListener if no other bean of type ProducerListener is present.
-     * This listener logs the events related to Kafka producer.
-     * 
-     * @return the LoggingProducerListener instance
-     */
-    @Bean
+	 * Creates a new instance of LoggingProducerListener if no other bean of type
+	 * ProducerListener is present. This listener logs the events related to Kafka
+	 * producer.
+	 * @return the LoggingProducerListener instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean(ProducerListener.class)
 	public LoggingProducerListener<Object, Object> kafkaProducerListener() {
 		return new LoggingProducerListener<>();
 	}
 
 	/**
-     * Creates a default Kafka consumer factory if no other bean of type ConsumerFactory is present.
-     * 
-     * @param connectionDetails the Kafka connection details
-     * @param customizers the customizers for the consumer factory
-     * @param sslBundles the SSL bundles for the consumer factory
-     * @return the default Kafka consumer factory
-     */
-    @Bean
+	 * Creates a default Kafka consumer factory if no other bean of type ConsumerFactory
+	 * is present.
+	 * @param connectionDetails the Kafka connection details
+	 * @param customizers the customizers for the consumer factory
+	 * @param sslBundles the SSL bundles for the consumer factory
+	 * @return the default Kafka consumer factory
+	 */
+	@Bean
 	@ConditionalOnMissingBean(ConsumerFactory.class)
 	public DefaultKafkaConsumerFactory<?, ?> kafkaConsumerFactory(KafkaConnectionDetails connectionDetails,
 			ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers, ObjectProvider<SslBundles> sslBundles) {
@@ -153,14 +152,14 @@ public class KafkaAutoConfiguration {
 	}
 
 	/**
-     * Creates a Kafka producer factory if no other bean of type ProducerFactory is present.
-     * 
-     * @param connectionDetails the Kafka connection details
-     * @param customizers the customizers for the producer factory
-     * @param sslBundles the SSL bundles for the producer properties
-     * @return the Kafka producer factory
-     */
-    @Bean
+	 * Creates a Kafka producer factory if no other bean of type ProducerFactory is
+	 * present.
+	 * @param connectionDetails the Kafka connection details
+	 * @param customizers the customizers for the producer factory
+	 * @param sslBundles the SSL bundles for the producer properties
+	 * @return the Kafka producer factory
+	 */
+	@Bean
 	@ConditionalOnMissingBean(ProducerFactory.class)
 	public DefaultKafkaProducerFactory<?, ?> kafkaProducerFactory(KafkaConnectionDetails connectionDetails,
 			ObjectProvider<DefaultKafkaProducerFactoryCustomizer> customizers, ObjectProvider<SslBundles> sslBundles) {
@@ -176,12 +175,14 @@ public class KafkaAutoConfiguration {
 	}
 
 	/**
-     * Creates a KafkaTransactionManager bean if the property "spring.kafka.producer.transaction-id-prefix" is present and no other bean of type KafkaTransactionManager is defined.
-     * 
-     * @param producerFactory the ProducerFactory used to create the KafkaTransactionManager
-     * @return the created KafkaTransactionManager bean
-     */
-    @Bean
+	 * Creates a KafkaTransactionManager bean if the property
+	 * "spring.kafka.producer.transaction-id-prefix" is present and no other bean of type
+	 * KafkaTransactionManager is defined.
+	 * @param producerFactory the ProducerFactory used to create the
+	 * KafkaTransactionManager
+	 * @return the created KafkaTransactionManager bean
+	 */
+	@Bean
 	@ConditionalOnProperty(name = "spring.kafka.producer.transaction-id-prefix")
 	@ConditionalOnMissingBean
 	public KafkaTransactionManager<?, ?> kafkaTransactionManager(ProducerFactory<?, ?> producerFactory) {
@@ -189,12 +190,13 @@ public class KafkaAutoConfiguration {
 	}
 
 	/**
-     * Creates a KafkaJaasLoginModuleInitializer bean if the property "spring.kafka.jaas.enabled" is set to true and no other bean of the same type exists.
-     * 
-     * @return the KafkaJaasLoginModuleInitializer bean
-     * @throws IOException if an I/O error occurs while initializing the Jaas login module
-     */
-    @Bean
+	 * Creates a KafkaJaasLoginModuleInitializer bean if the property
+	 * "spring.kafka.jaas.enabled" is set to true and no other bean of the same type
+	 * exists.
+	 * @return the KafkaJaasLoginModuleInitializer bean
+	 * @throws IOException if an I/O error occurs while initializing the Jaas login module
+	 */
+	@Bean
 	@ConditionalOnProperty(name = "spring.kafka.jaas.enabled")
 	@ConditionalOnMissingBean
 	public KafkaJaasLoginModuleInitializer kafkaJaasInitializer() throws IOException {
@@ -211,13 +213,12 @@ public class KafkaAutoConfiguration {
 	}
 
 	/**
-     * Creates a KafkaAdmin bean if no other bean of type KafkaAdmin is present.
-     * 
-     * @param connectionDetails the Kafka connection details
-     * @param sslBundles        the SSL bundles (optional)
-     * @return the KafkaAdmin bean
-     */
-    @Bean
+	 * Creates a KafkaAdmin bean if no other bean of type KafkaAdmin is present.
+	 * @param connectionDetails the Kafka connection details
+	 * @param sslBundles the SSL bundles (optional)
+	 * @return the KafkaAdmin bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public KafkaAdmin kafkaAdmin(KafkaConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
 		Map<String, Object> properties = this.properties.buildAdminProperties(sslBundles.getIfAvailable());
@@ -237,14 +238,13 @@ public class KafkaAutoConfiguration {
 	}
 
 	/**
-     * Configures the retry topic for Kafka based on the properties provided.
-     * This configuration is conditional on the property "spring.kafka.retry.topic.enabled" being set.
-     * It also requires a single candidate KafkaTemplate bean to be available.
-     * 
-     * @param kafkaTemplate The KafkaTemplate bean used for producing messages.
-     * @return The RetryTopicConfiguration for the Kafka retry topic.
-     */
-    @Bean
+	 * Configures the retry topic for Kafka based on the properties provided. This
+	 * configuration is conditional on the property "spring.kafka.retry.topic.enabled"
+	 * being set. It also requires a single candidate KafkaTemplate bean to be available.
+	 * @param kafkaTemplate The KafkaTemplate bean used for producing messages.
+	 * @return The RetryTopicConfiguration for the Kafka retry topic.
+	 */
+	@Bean
 	@ConditionalOnProperty(name = "spring.kafka.retry.topic.enabled")
 	@ConditionalOnSingleCandidate(KafkaTemplate.class)
 	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaTemplate<?, ?> kafkaTemplate) {
@@ -259,12 +259,11 @@ public class KafkaAutoConfiguration {
 	}
 
 	/**
-     * Applies the Kafka connection details for the consumer to the given properties map.
-     * 
-     * @param properties the properties map to apply the connection details to
-     * @param connectionDetails the Kafka connection details for the consumer
-     */
-    private void applyKafkaConnectionDetailsForConsumer(Map<String, Object> properties,
+	 * Applies the Kafka connection details for the consumer to the given properties map.
+	 * @param properties the properties map to apply the connection details to
+	 * @param connectionDetails the Kafka connection details for the consumer
+	 */
+	private void applyKafkaConnectionDetailsForConsumer(Map<String, Object> properties,
 			KafkaConnectionDetails connectionDetails) {
 		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, connectionDetails.getConsumerBootstrapServers());
 		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {
@@ -273,12 +272,11 @@ public class KafkaAutoConfiguration {
 	}
 
 	/**
-     * Applies the Kafka connection details for the producer to the given properties map.
-     * 
-     * @param properties the properties map to apply the connection details to
-     * @param connectionDetails the Kafka connection details for the producer
-     */
-    private void applyKafkaConnectionDetailsForProducer(Map<String, Object> properties,
+	 * Applies the Kafka connection details for the producer to the given properties map.
+	 * @param properties the properties map to apply the connection details to
+	 * @param connectionDetails the Kafka connection details for the producer
+	 */
+	private void applyKafkaConnectionDetailsForProducer(Map<String, Object> properties,
 			KafkaConnectionDetails connectionDetails) {
 		properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, connectionDetails.getProducerBootstrapServers());
 		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {
@@ -287,12 +285,12 @@ public class KafkaAutoConfiguration {
 	}
 
 	/**
-     * Applies the Kafka connection details for the admin client to the given properties map.
-     * 
-     * @param properties the properties map to apply the connection details to
-     * @param connectionDetails the Kafka connection details for the admin client
-     */
-    private void applyKafkaConnectionDetailsForAdmin(Map<String, Object> properties,
+	 * Applies the Kafka connection details for the admin client to the given properties
+	 * map.
+	 * @param properties the properties map to apply the connection details to
+	 * @param connectionDetails the Kafka connection details for the admin client
+	 */
+	private void applyKafkaConnectionDetailsForAdmin(Map<String, Object> properties,
 			KafkaConnectionDetails connectionDetails) {
 		properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, connectionDetails.getAdminBootstrapServers());
 		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {
@@ -301,12 +299,11 @@ public class KafkaAutoConfiguration {
 	}
 
 	/**
-     * Sets the backoff policy for retrying a topic.
-     * 
-     * @param builder the RetryTopicConfigurationBuilder to set the backoff policy on
-     * @param retryTopic the retry topic to get the backoff policy configuration from
-     */
-    private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Topic retryTopic) {
+	 * Sets the backoff policy for retrying a topic.
+	 * @param builder the RetryTopicConfigurationBuilder to set the backoff policy on
+	 * @param retryTopic the retry topic to get the backoff policy configuration from
+	 */
+	private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Topic retryTopic) {
 		long delay = (retryTopic.getDelay() != null) ? retryTopic.getDelay().toMillis() : 0;
 		if (delay > 0) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();

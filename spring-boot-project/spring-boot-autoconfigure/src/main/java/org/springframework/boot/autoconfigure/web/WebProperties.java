@@ -49,47 +49,42 @@ public class WebProperties {
 	private final Resources resources = new Resources();
 
 	/**
-     * Returns the locale of the WebProperties.
-     *
-     * @return the locale of the WebProperties
-     */
-    public Locale getLocale() {
+	 * Returns the locale of the WebProperties.
+	 * @return the locale of the WebProperties
+	 */
+	public Locale getLocale() {
 		return this.locale;
 	}
 
 	/**
-     * Sets the locale for the WebProperties.
-     * 
-     * @param locale the locale to be set
-     */
-    public void setLocale(Locale locale) {
+	 * Sets the locale for the WebProperties.
+	 * @param locale the locale to be set
+	 */
+	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
 
 	/**
-     * Returns the locale resolver used by the WebProperties class.
-     *
-     * @return the locale resolver used by the WebProperties class
-     */
-    public LocaleResolver getLocaleResolver() {
+	 * Returns the locale resolver used by the WebProperties class.
+	 * @return the locale resolver used by the WebProperties class
+	 */
+	public LocaleResolver getLocaleResolver() {
 		return this.localeResolver;
 	}
 
 	/**
-     * Sets the locale resolver for the web properties.
-     * 
-     * @param localeResolver the locale resolver to be set
-     */
-    public void setLocaleResolver(LocaleResolver localeResolver) {
+	 * Sets the locale resolver for the web properties.
+	 * @param localeResolver the locale resolver to be set
+	 */
+	public void setLocaleResolver(LocaleResolver localeResolver) {
 		this.localeResolver = localeResolver;
 	}
 
 	/**
-     * Returns the resources object associated with this WebProperties instance.
-     *
-     * @return the resources object
-     */
-    public Resources getResources() {
+	 * Returns the resources object associated with this WebProperties instance.
+	 * @return the resources object
+	 */
+	public Resources getResources() {
 		return this.resources;
 	}
 
@@ -109,9 +104,9 @@ public class WebProperties {
 	}
 
 	/**
-     * Resources class.
-     */
-    public static class Resources {
+	 * Resources class.
+	 */
+	public static class Resources {
 
 		private static final String[] CLASSPATH_RESOURCE_LOCATIONS = { "classpath:/META-INF/resources/",
 				"classpath:/resources/", "classpath:/static/", "classpath:/public/" };
@@ -134,33 +129,31 @@ public class WebProperties {
 		private final Cache cache = new Cache();
 
 		/**
-         * Returns an array of static locations.
-         *
-         * @return an array of static locations
-         */
-        public String[] getStaticLocations() {
+		 * Returns an array of static locations.
+		 * @return an array of static locations
+		 */
+		public String[] getStaticLocations() {
 			return this.staticLocations;
 		}
 
 		/**
-         * Sets the static locations for the Resources class.
-         * 
-         * @param staticLocations an array of static locations to be set
-         * 
-         * @return void
-         */
-        public void setStaticLocations(String[] staticLocations) {
+		 * Sets the static locations for the Resources class.
+		 * @param staticLocations an array of static locations to be set
+		 * @return void
+		 */
+		public void setStaticLocations(String[] staticLocations) {
 			this.staticLocations = appendSlashIfNecessary(staticLocations);
 			this.customized = true;
 		}
 
 		/**
-         * Appends a slash to each location in the given array if it is not already present.
-         * 
-         * @param staticLocations the array of static locations to be normalized
-         * @return the normalized array of static locations with a slash appended to each location if necessary
-         */
-        private String[] appendSlashIfNecessary(String[] staticLocations) {
+		 * Appends a slash to each location in the given array if it is not already
+		 * present.
+		 * @param staticLocations the array of static locations to be normalized
+		 * @return the normalized array of static locations with a slash appended to each
+		 * location if necessary
+		 */
+		private String[] appendSlashIfNecessary(String[] staticLocations) {
 			String[] normalized = new String[staticLocations.length];
 			for (int i = 0; i < staticLocations.length; i++) {
 				String location = staticLocations[i];
@@ -170,48 +163,43 @@ public class WebProperties {
 		}
 
 		/**
-         * Returns a boolean value indicating whether to add mappings.
-         * 
-         * @return true if mappings should be added, false otherwise
-         */
-        public boolean isAddMappings() {
+		 * Returns a boolean value indicating whether to add mappings.
+		 * @return true if mappings should be added, false otherwise
+		 */
+		public boolean isAddMappings() {
 			return this.addMappings;
 		}
 
 		/**
-         * Sets the value of the addMappings property.
-         * 
-         * @param addMappings the new value for the addMappings property
-         */
-        public void setAddMappings(boolean addMappings) {
+		 * Sets the value of the addMappings property.
+		 * @param addMappings the new value for the addMappings property
+		 */
+		public void setAddMappings(boolean addMappings) {
 			this.customized = true;
 			this.addMappings = addMappings;
 		}
 
 		/**
-         * Returns the chain object.
-         * 
-         * @return the chain object
-         */
-        public Chain getChain() {
+		 * Returns the chain object.
+		 * @return the chain object
+		 */
+		public Chain getChain() {
 			return this.chain;
 		}
 
 		/**
-         * Returns the cache object.
-         *
-         * @return the cache object
-         */
-        public Cache getCache() {
+		 * Returns the cache object.
+		 * @return the cache object
+		 */
+		public Cache getCache() {
 			return this.cache;
 		}
 
 		/**
-         * Checks if the resource has been customized.
-         * 
-         * @return true if the resource has been customized, false otherwise
-         */
-        public boolean hasBeenCustomized() {
+		 * Checks if the resource has been customized.
+		 * @return true if the resource has been customized, false otherwise
+		 */
+		public boolean hasBeenCustomized() {
 			return this.customized || getChain().hasBeenCustomized() || getCache().hasBeenCustomized();
 		}
 
@@ -254,81 +242,73 @@ public class WebProperties {
 			}
 
 			/**
-             * Checks if the Chain object has been customized.
-             * 
-             * @return true if the Chain object has been customized, false otherwise.
-             */
-            private boolean hasBeenCustomized() {
+			 * Checks if the Chain object has been customized.
+			 * @return true if the Chain object has been customized, false otherwise.
+			 */
+			private boolean hasBeenCustomized() {
 				return this.customized || getStrategy().hasBeenCustomized();
 			}
 
 			/**
-             * Sets the enabled status of the Chain.
-             * 
-             * @param enabled the enabled status to be set
-             */
-            public void setEnabled(boolean enabled) {
+			 * Sets the enabled status of the Chain.
+			 * @param enabled the enabled status to be set
+			 */
+			public void setEnabled(boolean enabled) {
 				this.enabled = enabled;
 				this.customized = true;
 			}
 
 			/**
-             * Returns a boolean value indicating whether the cache is enabled or not.
-             *
-             * @return true if the cache is enabled, false otherwise.
-             */
-            public boolean isCache() {
+			 * Returns a boolean value indicating whether the cache is enabled or not.
+			 * @return true if the cache is enabled, false otherwise.
+			 */
+			public boolean isCache() {
 				return this.cache;
 			}
 
 			/**
-             * Sets the cache flag for the Chain.
-             * 
-             * @param cache the boolean value indicating whether to enable caching or not
-             * @return void
-             */
-            public void setCache(boolean cache) {
+			 * Sets the cache flag for the Chain.
+			 * @param cache the boolean value indicating whether to enable caching or not
+			 * @return void
+			 */
+			public void setCache(boolean cache) {
 				this.cache = cache;
 				this.customized = true;
 			}
 
 			/**
-             * Returns the strategy used by the Chain object.
-             * 
-             * @return the strategy used by the Chain object
-             */
-            public Strategy getStrategy() {
+			 * Returns the strategy used by the Chain object.
+			 * @return the strategy used by the Chain object
+			 */
+			public Strategy getStrategy() {
 				return this.strategy;
 			}
 
 			/**
-             * Returns a boolean value indicating whether the Chain is compressed or not.
-             * 
-             * @return true if the Chain is compressed, false otherwise
-             */
-            public boolean isCompressed() {
+			 * Returns a boolean value indicating whether the Chain is compressed or not.
+			 * @return true if the Chain is compressed, false otherwise
+			 */
+			public boolean isCompressed() {
 				return this.compressed;
 			}
 
 			/**
-             * Sets the compressed flag for the Chain.
-             * 
-             * @param compressed the value to set for the compressed flag
-             */
-            public void setCompressed(boolean compressed) {
+			 * Sets the compressed flag for the Chain.
+			 * @param compressed the value to set for the compressed flag
+			 */
+			public void setCompressed(boolean compressed) {
 				this.compressed = compressed;
 				this.customized = true;
 			}
 
 			/**
-             * Returns the enabled status based on the given parameters.
-             * 
-             * @param fixedEnabled  the fixed enabled status
-             * @param contentEnabled  the content enabled status
-             * @param chainEnabled  the chain enabled status
-             * @return the enabled status
-             */
-            static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled, Boolean chainEnabled) {
+			 * Returns the enabled status based on the given parameters.
+			 * @param fixedEnabled the fixed enabled status
+			 * @param contentEnabled the content enabled status
+			 * @param chainEnabled the chain enabled status
+			 * @return the enabled status
+			 */
+			static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled, Boolean chainEnabled) {
 				return (fixedEnabled || contentEnabled) ? Boolean.TRUE : chainEnabled;
 			}
 
@@ -342,29 +322,26 @@ public class WebProperties {
 				private final Content content = new Content();
 
 				/**
-                 * Returns the Fixed object associated with this Strategy.
-                 *
-                 * @return the Fixed object associated with this Strategy
-                 */
-                public Fixed getFixed() {
+				 * Returns the Fixed object associated with this Strategy.
+				 * @return the Fixed object associated with this Strategy
+				 */
+				public Fixed getFixed() {
 					return this.fixed;
 				}
 
 				/**
-                 * Returns the content of the Strategy.
-                 *
-                 * @return the content of the Strategy
-                 */
-                public Content getContent() {
+				 * Returns the content of the Strategy.
+				 * @return the content of the Strategy
+				 */
+				public Content getContent() {
 					return this.content;
 				}
 
 				/**
-                 * Checks if the strategy has been customized.
-                 * 
-                 * @return true if the strategy has been customized, false otherwise
-                 */
-                private boolean hasBeenCustomized() {
+				 * Checks if the strategy has been customized.
+				 * @return true if the strategy has been customized, false otherwise
+				 */
+				private boolean hasBeenCustomized() {
 					return getFixed().hasBeenCustomized() || getContent().hasBeenCustomized();
 				}
 
@@ -387,49 +364,45 @@ public class WebProperties {
 					private String[] paths = new String[] { "/**" };
 
 					/**
-                     * Returns the current status of the content's enabled flag.
-                     *
-                     * @return true if the content is enabled, false otherwise.
-                     */
-                    public boolean isEnabled() {
+					 * Returns the current status of the content's enabled flag.
+					 * @return true if the content is enabled, false otherwise.
+					 */
+					public boolean isEnabled() {
 						return this.enabled;
 					}
 
 					/**
-                     * Sets the enabled status of the content.
-                     * 
-                     * @param enabled the enabled status to be set
-                     */
-                    public void setEnabled(boolean enabled) {
+					 * Sets the enabled status of the content.
+					 * @param enabled the enabled status to be set
+					 */
+					public void setEnabled(boolean enabled) {
 						this.customized = true;
 						this.enabled = enabled;
 					}
 
 					/**
-                     * Returns an array of paths.
-                     *
-                     * @return an array of paths
-                     */
-                    public String[] getPaths() {
+					 * Returns an array of paths.
+					 * @return an array of paths
+					 */
+					public String[] getPaths() {
 						return this.paths;
 					}
 
 					/**
-                     * Sets the paths for the content.
-                     * 
-                     * @param paths an array of strings representing the paths
-                     */
-                    public void setPaths(String[] paths) {
+					 * Sets the paths for the content.
+					 * @param paths an array of strings representing the paths
+					 */
+					public void setPaths(String[] paths) {
 						this.customized = true;
 						this.paths = paths;
 					}
 
 					/**
-                     * Returns a boolean value indicating whether the content has been customized.
-                     * 
-                     * @return true if the content has been customized, false otherwise
-                     */
-                    private boolean hasBeenCustomized() {
+					 * Returns a boolean value indicating whether the content has been
+					 * customized.
+					 * @return true if the content has been customized, false otherwise
+					 */
+					private boolean hasBeenCustomized() {
 						return this.customized;
 					}
 
@@ -459,68 +432,62 @@ public class WebProperties {
 					private String version;
 
 					/**
-                     * Returns the current status of the enabled flag.
-                     *
-                     * @return true if the enabled flag is set, false otherwise.
-                     */
-                    public boolean isEnabled() {
+					 * Returns the current status of the enabled flag.
+					 * @return true if the enabled flag is set, false otherwise.
+					 */
+					public boolean isEnabled() {
 						return this.enabled;
 					}
 
 					/**
-                     * Sets the enabled status of the Fixed object.
-                     * 
-                     * @param enabled the new enabled status
-                     */
-                    public void setEnabled(boolean enabled) {
+					 * Sets the enabled status of the Fixed object.
+					 * @param enabled the new enabled status
+					 */
+					public void setEnabled(boolean enabled) {
 						this.customized = true;
 						this.enabled = enabled;
 					}
 
 					/**
-                     * Returns an array of paths.
-                     *
-                     * @return an array of paths
-                     */
-                    public String[] getPaths() {
+					 * Returns an array of paths.
+					 * @return an array of paths
+					 */
+					public String[] getPaths() {
 						return this.paths;
 					}
 
 					/**
-                     * Sets the paths for the Fixed class.
-                     * 
-                     * @param paths an array of strings representing the paths to be set
-                     */
-                    public void setPaths(String[] paths) {
+					 * Sets the paths for the Fixed class.
+					 * @param paths an array of strings representing the paths to be set
+					 */
+					public void setPaths(String[] paths) {
 						this.customized = true;
 						this.paths = paths;
 					}
 
 					/**
-                     * Returns the version of the Fixed class.
-                     *
-                     * @return the version of the Fixed class
-                     */
-                    public String getVersion() {
+					 * Returns the version of the Fixed class.
+					 * @return the version of the Fixed class
+					 */
+					public String getVersion() {
 						return this.version;
 					}
 
 					/**
-                     * Sets the version of the Fixed class.
-                     * 
-                     * @param version the version to be set
-                     */
-                    public void setVersion(String version) {
+					 * Sets the version of the Fixed class.
+					 * @param version the version to be set
+					 */
+					public void setVersion(String version) {
 						this.customized = true;
 						this.version = version;
 					}
 
 					/**
-                     * Returns a boolean value indicating whether the object has been customized.
-                     *
-                     * @return true if the object has been customized, false otherwise.
-                     */
-                    private boolean hasBeenCustomized() {
+					 * Returns a boolean value indicating whether the object has been
+					 * customized.
+					 * @return true if the object has been customized, false otherwise.
+					 */
+					private boolean hasBeenCustomized() {
 						return this.customized;
 					}
 
@@ -558,57 +525,54 @@ public class WebProperties {
 			private boolean useLastModified = true;
 
 			/**
-             * Returns the period of time for which the cache is valid.
-             *
-             * @return the period of time for which the cache is valid
-             */
-            public Duration getPeriod() {
+			 * Returns the period of time for which the cache is valid.
+			 * @return the period of time for which the cache is valid
+			 */
+			public Duration getPeriod() {
 				return this.period;
 			}
 
 			/**
-             * Sets the period for cache expiration.
-             * 
-             * @param period the duration for cache expiration
-             */
-            public void setPeriod(Duration period) {
+			 * Sets the period for cache expiration.
+			 * @param period the duration for cache expiration
+			 */
+			public void setPeriod(Duration period) {
 				this.customized = true;
 				this.period = period;
 			}
 
 			/**
-             * Returns the Cachecontrol object associated with this Cache.
-             *
-             * @return the Cachecontrol object associated with this Cache
-             */
-            public Cachecontrol getCachecontrol() {
+			 * Returns the Cachecontrol object associated with this Cache.
+			 * @return the Cachecontrol object associated with this Cache
+			 */
+			public Cachecontrol getCachecontrol() {
 				return this.cachecontrol;
 			}
 
 			/**
-             * Returns a boolean value indicating whether the cache should use the last modified timestamp.
-             *
-             * @return true if the cache should use the last modified timestamp, false otherwise
-             */
-            public boolean isUseLastModified() {
+			 * Returns a boolean value indicating whether the cache should use the last
+			 * modified timestamp.
+			 * @return true if the cache should use the last modified timestamp, false
+			 * otherwise
+			 */
+			public boolean isUseLastModified() {
 				return this.useLastModified;
 			}
 
 			/**
-             * Sets whether to use the last modified timestamp for caching.
-             * 
-             * @param useLastModified true to use the last modified timestamp for caching, false otherwise
-             */
-            public void setUseLastModified(boolean useLastModified) {
+			 * Sets whether to use the last modified timestamp for caching.
+			 * @param useLastModified true to use the last modified timestamp for caching,
+			 * false otherwise
+			 */
+			public void setUseLastModified(boolean useLastModified) {
 				this.useLastModified = useLastModified;
 			}
 
 			/**
-             * Checks if the cache has been customized.
-             * 
-             * @return true if the cache has been customized, false otherwise
-             */
-            private boolean hasBeenCustomized() {
+			 * Checks if the cache has been customized.
+			 * @return true if the cache has been customized, false otherwise
+			 */
+			private boolean hasBeenCustomized() {
 				return this.customized || getCachecontrol().hasBeenCustomized();
 			}
 
@@ -688,220 +652,205 @@ public class WebProperties {
 				private Duration sMaxAge;
 
 				/**
-                 * Returns the maximum age of the cache control.
-                 *
-                 * @return the maximum age of the cache control
-                 */
-                public Duration getMaxAge() {
+				 * Returns the maximum age of the cache control.
+				 * @return the maximum age of the cache control
+				 */
+				public Duration getMaxAge() {
 					return this.maxAge;
 				}
 
 				/**
-                 * Sets the maximum age for the cache control.
-                 * 
-                 * @param maxAge the maximum age duration to be set
-                 */
-                public void setMaxAge(Duration maxAge) {
+				 * Sets the maximum age for the cache control.
+				 * @param maxAge the maximum age duration to be set
+				 */
+				public void setMaxAge(Duration maxAge) {
 					this.customized = true;
 					this.maxAge = maxAge;
 				}
 
 				/**
-                 * Returns the value of the noCache property.
-                 * 
-                 * @return the value of the noCache property
-                 */
-                public Boolean getNoCache() {
+				 * Returns the value of the noCache property.
+				 * @return the value of the noCache property
+				 */
+				public Boolean getNoCache() {
 					return this.noCache;
 				}
 
 				/**
-                 * Sets the value of the noCache property.
-                 * 
-                 * @param noCache the new value for the noCache property
-                 */
-                public void setNoCache(Boolean noCache) {
+				 * Sets the value of the noCache property.
+				 * @param noCache the new value for the noCache property
+				 */
+				public void setNoCache(Boolean noCache) {
 					this.customized = true;
 					this.noCache = noCache;
 				}
 
 				/**
-                 * Returns the value of the noStore property.
-                 * 
-                 * @return the value of the noStore property
-                 */
-                public Boolean getNoStore() {
+				 * Returns the value of the noStore property.
+				 * @return the value of the noStore property
+				 */
+				public Boolean getNoStore() {
 					return this.noStore;
 				}
 
 				/**
-                 * Sets the value of the noStore property.
-                 * 
-                 * @param noStore the new value for the noStore property
-                 */
-                public void setNoStore(Boolean noStore) {
+				 * Sets the value of the noStore property.
+				 * @param noStore the new value for the noStore property
+				 */
+				public void setNoStore(Boolean noStore) {
 					this.customized = true;
 					this.noStore = noStore;
 				}
 
 				/**
-                 * Returns the value of the mustRevalidate property.
-                 * 
-                 * @return the value of the mustRevalidate property
-                 */
-                public Boolean getMustRevalidate() {
+				 * Returns the value of the mustRevalidate property.
+				 * @return the value of the mustRevalidate property
+				 */
+				public Boolean getMustRevalidate() {
 					return this.mustRevalidate;
 				}
 
 				/**
-                 * Sets the mustRevalidate flag for the Cachecontrol.
-                 * 
-                 * @param mustRevalidate the value to set for the mustRevalidate flag
-                 */
-                public void setMustRevalidate(Boolean mustRevalidate) {
+				 * Sets the mustRevalidate flag for the Cachecontrol.
+				 * @param mustRevalidate the value to set for the mustRevalidate flag
+				 */
+				public void setMustRevalidate(Boolean mustRevalidate) {
 					this.customized = true;
 					this.mustRevalidate = mustRevalidate;
 				}
 
 				/**
-                 * Returns the value of the noTransform flag.
-                 * 
-                 * @return true if the noTransform flag is set, false otherwise.
-                 */
-                public Boolean getNoTransform() {
+				 * Returns the value of the noTransform flag.
+				 * @return true if the noTransform flag is set, false otherwise.
+				 */
+				public Boolean getNoTransform() {
 					return this.noTransform;
 				}
 
 				/**
-                 * Sets the value of the noTransform property.
-                 * 
-                 * @param noTransform the new value for the noTransform property
-                 */
-                public void setNoTransform(Boolean noTransform) {
+				 * Sets the value of the noTransform property.
+				 * @param noTransform the new value for the noTransform property
+				 */
+				public void setNoTransform(Boolean noTransform) {
 					this.customized = true;
 					this.noTransform = noTransform;
 				}
 
 				/**
-                 * Returns the value of the cachePublic property.
-                 *
-                 * @return the value of the cachePublic property
-                 */
-                public Boolean getCachePublic() {
+				 * Returns the value of the cachePublic property.
+				 * @return the value of the cachePublic property
+				 */
+				public Boolean getCachePublic() {
 					return this.cachePublic;
 				}
 
 				/**
-                 * Sets the cachePublic flag for the Cachecontrol.
-                 * 
-                 * @param cachePublic the value to set the cachePublic flag to
-                 */
-                public void setCachePublic(Boolean cachePublic) {
+				 * Sets the cachePublic flag for the Cachecontrol.
+				 * @param cachePublic the value to set the cachePublic flag to
+				 */
+				public void setCachePublic(Boolean cachePublic) {
 					this.customized = true;
 					this.cachePublic = cachePublic;
 				}
 
 				/**
-                 * Returns the value of the cachePrivate property.
-                 * 
-                 * @return the value of the cachePrivate property
-                 */
-                public Boolean getCachePrivate() {
+				 * Returns the value of the cachePrivate property.
+				 * @return the value of the cachePrivate property
+				 */
+				public Boolean getCachePrivate() {
 					return this.cachePrivate;
 				}
 
 				/**
-                 * Sets the cachePrivate flag.
-                 * 
-                 * @param cachePrivate the value to set for the cachePrivate flag
-                 */
-                public void setCachePrivate(Boolean cachePrivate) {
+				 * Sets the cachePrivate flag.
+				 * @param cachePrivate the value to set for the cachePrivate flag
+				 */
+				public void setCachePrivate(Boolean cachePrivate) {
 					this.customized = true;
 					this.cachePrivate = cachePrivate;
 				}
 
 				/**
-                 * Returns the value of the proxyRevalidate property.
-                 * 
-                 * @return the value of the proxyRevalidate property
-                 */
-                public Boolean getProxyRevalidate() {
+				 * Returns the value of the proxyRevalidate property.
+				 * @return the value of the proxyRevalidate property
+				 */
+				public Boolean getProxyRevalidate() {
 					return this.proxyRevalidate;
 				}
 
 				/**
-                 * Sets the value of the proxyRevalidate flag.
-                 * 
-                 * @param proxyRevalidate the new value for the proxyRevalidate flag
-                 */
-                public void setProxyRevalidate(Boolean proxyRevalidate) {
+				 * Sets the value of the proxyRevalidate flag.
+				 * @param proxyRevalidate the new value for the proxyRevalidate flag
+				 */
+				public void setProxyRevalidate(Boolean proxyRevalidate) {
 					this.customized = true;
 					this.proxyRevalidate = proxyRevalidate;
 				}
 
 				/**
-                 * Returns the duration of time that a cached response can be considered stale while it is being revalidated.
-                 *
-                 * @return the duration of time for stale while revalidate
-                 */
-                public Duration getStaleWhileRevalidate() {
+				 * Returns the duration of time that a cached response can be considered
+				 * stale while it is being revalidated.
+				 * @return the duration of time for stale while revalidate
+				 */
+				public Duration getStaleWhileRevalidate() {
 					return this.staleWhileRevalidate;
 				}
 
 				/**
-                 * Sets the duration for which a response can be considered stale while revalidating.
-                 * 
-                 * @param staleWhileRevalidate the duration for which a response can be considered stale while revalidating
-                 */
-                public void setStaleWhileRevalidate(Duration staleWhileRevalidate) {
+				 * Sets the duration for which a response can be considered stale while
+				 * revalidating.
+				 * @param staleWhileRevalidate the duration for which a response can be
+				 * considered stale while revalidating
+				 */
+				public void setStaleWhileRevalidate(Duration staleWhileRevalidate) {
 					this.customized = true;
 					this.staleWhileRevalidate = staleWhileRevalidate;
 				}
 
 				/**
-                 * Returns the duration for which a cached response can be considered stale if an error occurs.
-                 *
-                 * @return the duration for which a cached response can be considered stale if an error occurs
-                 */
-                public Duration getStaleIfError() {
+				 * Returns the duration for which a cached response can be considered
+				 * stale if an error occurs.
+				 * @return the duration for which a cached response can be considered
+				 * stale if an error occurs
+				 */
+				public Duration getStaleIfError() {
 					return this.staleIfError;
 				}
 
 				/**
-                 * Sets the duration for which a cache entry should be considered stale if an error occurs.
-                 * 
-                 * @param staleIfError the duration for which a cache entry should be considered stale if an error occurs
-                 */
-                public void setStaleIfError(Duration staleIfError) {
+				 * Sets the duration for which a cache entry should be considered stale if
+				 * an error occurs.
+				 * @param staleIfError the duration for which a cache entry should be
+				 * considered stale if an error occurs
+				 */
+				public void setStaleIfError(Duration staleIfError) {
 					this.customized = true;
 					this.staleIfError = staleIfError;
 				}
 
 				/**
-                 * Returns the maximum age of a shared cache entry in seconds.
-                 *
-                 * @return the maximum age of a shared cache entry in seconds
-                 */
-                public Duration getSMaxAge() {
+				 * Returns the maximum age of a shared cache entry in seconds.
+				 * @return the maximum age of a shared cache entry in seconds
+				 */
+				public Duration getSMaxAge() {
 					return this.sMaxAge;
 				}
 
 				/**
-                 * Sets the maximum age of a shared cache entry in seconds.
-                 * 
-                 * @param sMaxAge the maximum age of a shared cache entry
-                 */
-                public void setSMaxAge(Duration sMaxAge) {
+				 * Sets the maximum age of a shared cache entry in seconds.
+				 * @param sMaxAge the maximum age of a shared cache entry
+				 */
+				public void setSMaxAge(Duration sMaxAge) {
 					this.customized = true;
 					this.sMaxAge = sMaxAge;
 				}
 
 				/**
-                 * Converts the current instance of CacheControl to an instance of HttpCacheControl.
-                 * 
-                 * @return The converted HttpCacheControl instance.
-                 */
-                public CacheControl toHttpCacheControl() {
+				 * Converts the current instance of CacheControl to an instance of
+				 * HttpCacheControl.
+				 * @return The converted HttpCacheControl instance.
+				 */
+				public CacheControl toHttpCacheControl() {
 					PropertyMapper map = PropertyMapper.get();
 					CacheControl control = createCacheControl();
 					map.from(this::getMustRevalidate).whenTrue().toCall(control::mustRevalidate);
@@ -926,11 +875,10 @@ public class WebProperties {
 				}
 
 				/**
-                 * Creates a CacheControl object based on the provided configuration.
-                 * 
-                 * @return The created CacheControl object.
-                 */
-                private CacheControl createCacheControl() {
+				 * Creates a CacheControl object based on the provided configuration.
+				 * @return The created CacheControl object.
+				 */
+				private CacheControl createCacheControl() {
 					if (Boolean.TRUE.equals(this.noStore)) {
 						return CacheControl.noStore();
 					}
@@ -944,11 +892,11 @@ public class WebProperties {
 				}
 
 				/**
-                 * Returns a boolean value indicating whether the cache control has been customized.
-                 *
-                 * @return true if the cache control has been customized, false otherwise.
-                 */
-                private boolean hasBeenCustomized() {
+				 * Returns a boolean value indicating whether the cache control has been
+				 * customized.
+				 * @return true if the cache control has been customized, false otherwise.
+				 */
+				private boolean hasBeenCustomized() {
 					return this.customized;
 				}
 

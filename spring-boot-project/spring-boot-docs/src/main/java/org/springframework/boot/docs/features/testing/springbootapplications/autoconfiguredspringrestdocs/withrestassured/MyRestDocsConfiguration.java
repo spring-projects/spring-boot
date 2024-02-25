@@ -28,12 +28,11 @@ import org.springframework.restdocs.templates.TemplateFormats;
 public class MyRestDocsConfiguration implements RestDocsRestAssuredConfigurationCustomizer {
 
 	/**
-     * Customize the RestAssuredRestDocumentationConfigurer.
-     * This method sets the template format to markdown.
-     *
-     * @param configurer The RestAssuredRestDocumentationConfigurer to customize.
-     */
-    @Override
+	 * Customize the RestAssuredRestDocumentationConfigurer. This method sets the template
+	 * format to markdown.
+	 * @param configurer The RestAssuredRestDocumentationConfigurer to customize.
+	 */
+	@Override
 	public void customize(RestAssuredRestDocumentationConfigurer configurer) {
 		configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
 	}

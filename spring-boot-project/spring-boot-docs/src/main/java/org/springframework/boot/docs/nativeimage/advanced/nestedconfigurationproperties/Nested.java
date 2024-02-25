@@ -29,11 +29,10 @@ public class Nested {
 	}
 
 	/**
-     * Sets the number for the Nested class.
-     * 
-     * @param number the number to be set
-     */
-    public void setNumber(int number) {
+	 * Sets the number for the Nested class.
+	 * @param number the number to be set
+	 */
+	public void setNumber(int number) {
 		this.number = number;
 	}
 	// @fold:off

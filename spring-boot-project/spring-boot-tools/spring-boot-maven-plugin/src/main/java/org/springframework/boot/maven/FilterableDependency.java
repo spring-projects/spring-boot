@@ -45,56 +45,50 @@ abstract class FilterableDependency {
 	private String classifier;
 
 	/**
-     * Returns the group ID of the FilterableDependency.
-     *
-     * @return the group ID of the FilterableDependency
-     */
-    String getGroupId() {
+	 * Returns the group ID of the FilterableDependency.
+	 * @return the group ID of the FilterableDependency
+	 */
+	String getGroupId() {
 		return this.groupId;
 	}
 
 	/**
-     * Sets the group ID for the FilterableDependency.
-     * 
-     * @param groupId the group ID to be set
-     */
-    void setGroupId(String groupId) {
+	 * Sets the group ID for the FilterableDependency.
+	 * @param groupId the group ID to be set
+	 */
+	void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
 
 	/**
-     * Returns the artifact ID of the FilterableDependency.
-     *
-     * @return the artifact ID of the FilterableDependency
-     */
-    String getArtifactId() {
+	 * Returns the artifact ID of the FilterableDependency.
+	 * @return the artifact ID of the FilterableDependency
+	 */
+	String getArtifactId() {
 		return this.artifactId;
 	}
 
 	/**
-     * Sets the artifact ID of the FilterableDependency.
-     * 
-     * @param artifactId the artifact ID to be set
-     */
-    void setArtifactId(String artifactId) {
+	 * Sets the artifact ID of the FilterableDependency.
+	 * @param artifactId the artifact ID to be set
+	 */
+	void setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
 	}
 
 	/**
-     * Returns the classifier of the FilterableDependency.
-     *
-     * @return the classifier of the FilterableDependency
-     */
-    String getClassifier() {
+	 * Returns the classifier of the FilterableDependency.
+	 * @return the classifier of the FilterableDependency
+	 */
+	String getClassifier() {
 		return this.classifier;
 	}
 
 	/**
-     * Sets the classifier for the FilterableDependency.
-     * 
-     * @param classifier the classifier to be set
-     */
-    void setClassifier(String classifier) {
+	 * Sets the classifier for the FilterableDependency.
+	 * @param classifier the classifier to be set
+	 */
+	void setClassifier(String classifier) {
 		this.classifier = classifier;
 	}
 

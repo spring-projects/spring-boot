@@ -42,20 +42,18 @@ final class GracefulShutdown {
 	private volatile boolean shuttingDown;
 
 	/**
-     * Gracefully shuts down the provided disposable server.
-     * 
-     * @param disposableServer the supplier of the disposable server to be shut down
-     */
-    GracefulShutdown(Supplier<DisposableServer> disposableServer) {
+	 * Gracefully shuts down the provided disposable server.
+	 * @param disposableServer the supplier of the disposable server to be shut down
+	 */
+	GracefulShutdown(Supplier<DisposableServer> disposableServer) {
 		this.disposableServer = disposableServer;
 	}
 
 	/**
-     * Initiates a graceful shutdown of the server.
-     * 
-     * @param callback the callback function to be executed after the shutdown is complete
-     */
-    void shutDownGracefully(GracefulShutdownCallback callback) {
+	 * Initiates a graceful shutdown of the server.
+	 * @param callback the callback function to be executed after the shutdown is complete
+	 */
+	void shutDownGracefully(GracefulShutdownCallback callback) {
 		DisposableServer server = this.disposableServer.get();
 		if (server == null) {
 			return;
@@ -66,12 +64,11 @@ final class GracefulShutdown {
 	}
 
 	/**
-     * Performs a graceful shutdown of the server.
-     * 
-     * @param callback the callback to be invoked when the shutdown is complete
-     * @param server the server to be shut down
-     */
-    private void doShutdown(GracefulShutdownCallback callback, DisposableServer server) {
+	 * Performs a graceful shutdown of the server.
+	 * @param callback the callback to be invoked when the shutdown is complete
+	 * @param server the server to be shut down
+	 */
+	private void doShutdown(GracefulShutdownCallback callback, DisposableServer server) {
 		this.shuttingDown = true;
 		try {
 			server.disposeNow(Duration.ofNanos(Long.MAX_VALUE));
@@ -89,14 +86,16 @@ final class GracefulShutdown {
 	}
 
 	/**
-     * Aborts the current operation and interrupts the shutdown thread.
-     * 
-     * This method checks if a shutdown thread is currently running and waits until the shutdown process is initiated.
-     * Once the shutdown process is initiated, it interrupts the shutdown thread to forcefully terminate the operation.
-     * 
-     * Note: This method should be used with caution as it forcefully terminates the operation without allowing it to complete gracefully.
-     */
-    void abort() {
+	 * Aborts the current operation and interrupts the shutdown thread.
+	 *
+	 * This method checks if a shutdown thread is currently running and waits until the
+	 * shutdown process is initiated. Once the shutdown process is initiated, it
+	 * interrupts the shutdown thread to forcefully terminate the operation.
+	 *
+	 * Note: This method should be used with caution as it forcefully terminates the
+	 * operation without allowing it to complete gracefully.
+	 */
+	void abort() {
 		Thread shutdownThread = this.shutdownThread;
 		if (shutdownThread != null) {
 			while (!this.shuttingDown) {
@@ -107,13 +106,13 @@ final class GracefulShutdown {
 	}
 
 	/**
-     * Suspends the execution of the current thread for the specified number of milliseconds.
-     * 
-     * @param millis the number of milliseconds to sleep
-     * @throws IllegalArgumentException if the value of millis is negative
-     * @throws InterruptedException if the current thread is interrupted while sleeping
-     */
-    private void sleep(long millis) {
+	 * Suspends the execution of the current thread for the specified number of
+	 * milliseconds.
+	 * @param millis the number of milliseconds to sleep
+	 * @throws IllegalArgumentException if the value of millis is negative
+	 * @throws InterruptedException if the current thread is interrupted while sleeping
+	 */
+	private void sleep(long millis) {
 		try {
 			Thread.sleep(millis);
 		}

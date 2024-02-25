@@ -36,20 +36,19 @@ class CouchbaseHealth {
 	private final DiagnosticsResult diagnostics;
 
 	/**
-     * Creates a new instance of CouchbaseHealth with the specified diagnostics result.
-     * 
-     * @param diagnostics the diagnostics result to be associated with the CouchbaseHealth instance
-     */
-    CouchbaseHealth(DiagnosticsResult diagnostics) {
+	 * Creates a new instance of CouchbaseHealth with the specified diagnostics result.
+	 * @param diagnostics the diagnostics result to be associated with the CouchbaseHealth
+	 * instance
+	 */
+	CouchbaseHealth(DiagnosticsResult diagnostics) {
 		this.diagnostics = diagnostics;
 	}
 
 	/**
-     * Applies the Couchbase health status to the given builder.
-     * 
-     * @param builder the builder to apply the health status to
-     */
-    void applyTo(Builder builder) {
+	 * Applies the Couchbase health status to the given builder.
+	 * @param builder the builder to apply the health status to
+	 */
+	void applyTo(Builder builder) {
 		builder = isCouchbaseUp(this.diagnostics) ? builder.up() : builder.down();
 		builder.withDetail("sdk", this.diagnostics.sdk());
 		builder.withDetail("endpoints",
@@ -62,22 +61,20 @@ class CouchbaseHealth {
 	}
 
 	/**
-     * Checks if the Couchbase cluster is up and running.
-     * 
-     * @param diagnostics the diagnostics result of the Couchbase cluster
-     * @return true if the Couchbase cluster is online, false otherwise
-     */
-    private boolean isCouchbaseUp(DiagnosticsResult diagnostics) {
+	 * Checks if the Couchbase cluster is up and running.
+	 * @param diagnostics the diagnostics result of the Couchbase cluster
+	 * @return true if the Couchbase cluster is online, false otherwise
+	 */
+	private boolean isCouchbaseUp(DiagnosticsResult diagnostics) {
 		return diagnostics.state() == ClusterState.ONLINE;
 	}
 
 	/**
-     * Generates a map containing the description of the given EndpointDiagnostics object.
-     *
-     * @param endpointHealth the EndpointDiagnostics object to describe
-     * @return a map containing the description of the EndpointDiagnostics object
-     */
-    private Map<String, Object> describe(EndpointDiagnostics endpointHealth) {
+	 * Generates a map containing the description of the given EndpointDiagnostics object.
+	 * @param endpointHealth the EndpointDiagnostics object to describe
+	 * @return a map containing the description of the EndpointDiagnostics object
+	 */
+	private Map<String, Object> describe(EndpointDiagnostics endpointHealth) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", endpointHealth.id());
 		map.put("lastActivity", endpointHealth.lastActivity());

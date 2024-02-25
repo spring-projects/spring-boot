@@ -51,16 +51,13 @@ public class ThreadPoolTaskSchedulerBuilder {
 	private final Set<ThreadPoolTaskSchedulerCustomizer> customizers;
 
 	/**
-     * Constructs a new ThreadPoolTaskSchedulerBuilder with default values for all properties.
-     * 
-     * The default values are:
-     * - poolSize: null
-     * - awaitTermination: null
-     * - awaitTerminationPeriod: null
-     * - threadNamePrefix: null
-     * - customizers: null
-     */
-    public ThreadPoolTaskSchedulerBuilder() {
+	 * Constructs a new ThreadPoolTaskSchedulerBuilder with default values for all
+	 * properties.
+	 *
+	 * The default values are: - poolSize: null - awaitTermination: null -
+	 * awaitTerminationPeriod: null - threadNamePrefix: null - customizers: null
+	 */
+	public ThreadPoolTaskSchedulerBuilder() {
 		this.poolSize = null;
 		this.awaitTermination = null;
 		this.awaitTerminationPeriod = null;
@@ -69,15 +66,18 @@ public class ThreadPoolTaskSchedulerBuilder {
 	}
 
 	/**
-     * Constructs a new ThreadPoolTaskSchedulerBuilder with the specified parameters.
-     *
-     * @param poolSize the number of threads to create in the thread pool
-     * @param awaitTermination whether to wait for the termination of all tasks before shutting down the thread pool
-     * @param awaitTerminationPeriod the maximum time to wait for the termination of all tasks, if awaitTermination is enabled
-     * @param threadNamePrefix the prefix to use for the names of the threads in the thread pool
-     * @param taskSchedulerCustomizers the set of customizers to apply to the task scheduler
-     */
-    public ThreadPoolTaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
+	 * Constructs a new ThreadPoolTaskSchedulerBuilder with the specified parameters.
+	 * @param poolSize the number of threads to create in the thread pool
+	 * @param awaitTermination whether to wait for the termination of all tasks before
+	 * shutting down the thread pool
+	 * @param awaitTerminationPeriod the maximum time to wait for the termination of all
+	 * tasks, if awaitTermination is enabled
+	 * @param threadNamePrefix the prefix to use for the names of the threads in the
+	 * thread pool
+	 * @param taskSchedulerCustomizers the set of customizers to apply to the task
+	 * scheduler
+	 */
+	public ThreadPoolTaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
 			String threadNamePrefix, Set<ThreadPoolTaskSchedulerCustomizer> taskSchedulerCustomizers) {
 		this.poolSize = poolSize;
 		this.awaitTermination = awaitTermination;
@@ -225,14 +225,15 @@ public class ThreadPoolTaskSchedulerBuilder {
 	}
 
 	/**
-     * Appends the specified elements to the given set and returns an unmodifiable set containing all elements.
-     *
-     * @param set       the set to append elements to (nullable)
-     * @param additions the elements to be appended to the set
-     * @param <T>       the type of elements in the set
-     * @return an unmodifiable set containing all elements from the original set and the additions
-     */
-    private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
+	 * Appends the specified elements to the given set and returns an unmodifiable set
+	 * containing all elements.
+	 * @param set the set to append elements to (nullable)
+	 * @param additions the elements to be appended to the set
+	 * @param <T> the type of elements in the set
+	 * @return an unmodifiable set containing all elements from the original set and the
+	 * additions
+	 */
+	private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
 		additions.forEach(result::add);
 		return Collections.unmodifiableSet(result);

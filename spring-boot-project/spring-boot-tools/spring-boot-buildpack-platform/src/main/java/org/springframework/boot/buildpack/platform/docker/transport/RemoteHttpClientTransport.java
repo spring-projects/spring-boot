@@ -47,33 +47,32 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 	private static final Timeout SOCKET_TIMEOUT = Timeout.of(30, TimeUnit.MINUTES);
 
 	/**
-     * Constructs a new RemoteHttpClientTransport with the specified HttpClient and HttpHost.
-     *
-     * @param client the HttpClient to be used for the transport
-     * @param host the HttpHost representing the target host
-     */
-    private RemoteHttpClientTransport(HttpClient client, HttpHost host) {
+	 * Constructs a new RemoteHttpClientTransport with the specified HttpClient and
+	 * HttpHost.
+	 * @param client the HttpClient to be used for the transport
+	 * @param host the HttpHost representing the target host
+	 */
+	private RemoteHttpClientTransport(HttpClient client, HttpHost host) {
 		super(client, host);
 	}
 
 	/**
-     * Creates a RemoteHttpClientTransport if possible.
-     * 
-     * @param dockerHost the ResolvedDockerHost to create the transport for
-     * @return the created RemoteHttpClientTransport if successful, null otherwise
-     */
-    static RemoteHttpClientTransport createIfPossible(ResolvedDockerHost dockerHost) {
+	 * Creates a RemoteHttpClientTransport if possible.
+	 * @param dockerHost the ResolvedDockerHost to create the transport for
+	 * @return the created RemoteHttpClientTransport if successful, null otherwise
+	 */
+	static RemoteHttpClientTransport createIfPossible(ResolvedDockerHost dockerHost) {
 		return createIfPossible(dockerHost, new SslContextFactory());
 	}
 
 	/**
-     * Creates a RemoteHttpClientTransport if possible.
-     * 
-     * @param dockerHost the ResolvedDockerHost object representing the Docker host
-     * @param sslContextFactory the SslContextFactory object for SSL configuration
-     * @return a RemoteHttpClientTransport object if the dockerHost is remote, otherwise null
-     */
-    static RemoteHttpClientTransport createIfPossible(ResolvedDockerHost dockerHost,
+	 * Creates a RemoteHttpClientTransport if possible.
+	 * @param dockerHost the ResolvedDockerHost object representing the Docker host
+	 * @param sslContextFactory the SslContextFactory object for SSL configuration
+	 * @return a RemoteHttpClientTransport object if the dockerHost is remote, otherwise
+	 * null
+	 */
+	static RemoteHttpClientTransport createIfPossible(ResolvedDockerHost dockerHost,
 			SslContextFactory sslContextFactory) {
 		if (!dockerHost.isRemote()) {
 			return null;
@@ -87,14 +86,13 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 	}
 
 	/**
-     * Creates a new instance of RemoteHttpClientTransport.
-     * 
-     * @param host              the DockerHost to connect to
-     * @param sslContextFactory the SslContextFactory for secure connections
-     * @param tcpHost           the HttpHost for TCP connections
-     * @return a new instance of RemoteHttpClientTransport
-     */
-    private static RemoteHttpClientTransport create(DockerHost host, SslContextFactory sslContextFactory,
+	 * Creates a new instance of RemoteHttpClientTransport.
+	 * @param host the DockerHost to connect to
+	 * @param sslContextFactory the SslContextFactory for secure connections
+	 * @param tcpHost the HttpHost for TCP connections
+	 * @return a new instance of RemoteHttpClientTransport
+	 */
+	private static RemoteHttpClientTransport create(DockerHost host, SslContextFactory sslContextFactory,
 			HttpHost tcpHost) {
 		SocketConfig socketConfig = SocketConfig.copy(SocketConfig.DEFAULT).setSoTimeout(SOCKET_TIMEOUT).build();
 		PoolingHttpClientConnectionManagerBuilder connectionManagerBuilder = PoolingHttpClientConnectionManagerBuilder
@@ -111,14 +109,16 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 	}
 
 	/**
-     * Returns a secure connection socket factory for the given Docker host and SSL context factory.
-     * 
-     * @param host The Docker host for which the secure connection socket factory is required.
-     * @param sslContextFactory The SSL context factory used to create the SSL context.
-     * @return The secure connection socket factory.
-     * @throws IllegalArgumentException if the certificate path is not specified for TLS verification.
-     */
-    private static LayeredConnectionSocketFactory getSecureConnectionSocketFactory(DockerHost host,
+	 * Returns a secure connection socket factory for the given Docker host and SSL
+	 * context factory.
+	 * @param host The Docker host for which the secure connection socket factory is
+	 * required.
+	 * @param sslContextFactory The SSL context factory used to create the SSL context.
+	 * @return The secure connection socket factory.
+	 * @throws IllegalArgumentException if the certificate path is not specified for TLS
+	 * verification.
+	 */
+	private static LayeredConnectionSocketFactory getSecureConnectionSocketFactory(DockerHost host,
 			SslContextFactory sslContextFactory) {
 		String directory = host.getCertificatePath();
 		Assert.hasText(directory,

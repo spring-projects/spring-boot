@@ -37,22 +37,22 @@ class MariaDbJdbcDockerComposeConnectionDetailsFactory
 	private static final String[] MARIADB_CONTAINER_NAMES = { "mariadb", "bitnami/mariadb" };
 
 	/**
-     * Creates a new instance of the MariaDbJdbcDockerComposeConnectionDetailsFactory class.
-     * This constructor initializes the object with the specified MariaDB container names.
-     *
-     * @param containerNames an array of strings representing the names of the MariaDB containers
-     */
-    protected MariaDbJdbcDockerComposeConnectionDetailsFactory() {
+	 * Creates a new instance of the MariaDbJdbcDockerComposeConnectionDetailsFactory
+	 * class. This constructor initializes the object with the specified MariaDB container
+	 * names.
+	 * @param containerNames an array of strings representing the names of the MariaDB
+	 * containers
+	 */
+	protected MariaDbJdbcDockerComposeConnectionDetailsFactory() {
 		super(MARIADB_CONTAINER_NAMES);
 	}
 
 	/**
-     * Returns the JDBC connection details for a Docker Compose connection source.
-     * 
-     * @param source the Docker Compose connection source
-     * @return the JDBC connection details
-     */
-    @Override
+	 * Returns the JDBC connection details for a Docker Compose connection source.
+	 * @param source the Docker Compose connection source
+	 * @return the JDBC connection details
+	 */
+	@Override
 	protected JdbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new MariaDbJdbcDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -70,42 +70,41 @@ class MariaDbJdbcDockerComposeConnectionDetailsFactory
 		private final String jdbcUrl;
 
 		/**
-         * Constructs a new MariaDbJdbcDockerComposeConnectionDetails object with the provided RunningService.
-         * 
-         * @param service the RunningService object representing the running service
-         */
-        MariaDbJdbcDockerComposeConnectionDetails(RunningService service) {
+		 * Constructs a new MariaDbJdbcDockerComposeConnectionDetails object with the
+		 * provided RunningService.
+		 * @param service the RunningService object representing the running service
+		 */
+		MariaDbJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new MariaDbEnvironment(service.env());
 			this.jdbcUrl = jdbcUrlBuilder.build(service, this.environment.getDatabase());
 		}
 
 		/**
-         * Returns the username associated with this MariaDbJdbcDockerComposeConnectionDetails.
-         *
-         * @return the username associated with this MariaDbJdbcDockerComposeConnectionDetails
-         */
-        @Override
+		 * Returns the username associated with this
+		 * MariaDbJdbcDockerComposeConnectionDetails.
+		 * @return the username associated with this
+		 * MariaDbJdbcDockerComposeConnectionDetails
+		 */
+		@Override
 		public String getUsername() {
 			return this.environment.getUsername();
 		}
 
 		/**
-         * Returns the password for the MariaDB JDBC connection.
-         * 
-         * @return the password for the MariaDB JDBC connection
-         */
-        @Override
+		 * Returns the password for the MariaDB JDBC connection.
+		 * @return the password for the MariaDB JDBC connection
+		 */
+		@Override
 		public String getPassword() {
 			return this.environment.getPassword();
 		}
 
 		/**
-         * Returns the JDBC URL for the MariaDbJdbcDockerComposeConnectionDetails.
-         *
-         * @return the JDBC URL
-         */
-        @Override
+		 * Returns the JDBC URL for the MariaDbJdbcDockerComposeConnectionDetails.
+		 * @return the JDBC URL
+		 */
+		@Override
 		public String getJdbcUrl() {
 			return this.jdbcUrl;
 		}

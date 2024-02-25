@@ -47,19 +47,19 @@ import org.springframework.data.couchbase.repository.CouchbaseRepository;
 public class CouchbaseDataAutoConfiguration {
 
 	/**
-     * ValidationConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ValidationConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Validator.class)
 	public static class ValidationConfiguration {
 
 		/**
-         * Creates a ValidatingCouchbaseEventListener bean if a single candidate of type Validator is available.
-         * 
-         * @param validator the Validator bean to be used for validation
-         * @return the ValidatingCouchbaseEventListener bean
-         */
-        @Bean
+		 * Creates a ValidatingCouchbaseEventListener bean if a single candidate of type
+		 * Validator is available.
+		 * @param validator the Validator bean to be used for validation
+		 * @return the ValidatingCouchbaseEventListener bean
+		 */
+		@Bean
 		@ConditionalOnSingleCandidate(Validator.class)
 		public ValidatingCouchbaseEventListener validationEventListener(Validator validator) {
 			return new ValidatingCouchbaseEventListener(validator);

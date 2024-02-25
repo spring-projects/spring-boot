@@ -79,31 +79,30 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	private final LoggingInitializationContext initializationContext;
 
 	/**
-     * Constructs a new SpringBootJoranConfigurator with the specified LoggingInitializationContext.
-     *
-     * @param initializationContext the LoggingInitializationContext to be used for initialization
-     */
-    SpringBootJoranConfigurator(LoggingInitializationContext initializationContext) {
+	 * Constructs a new SpringBootJoranConfigurator with the specified
+	 * LoggingInitializationContext.
+	 * @param initializationContext the LoggingInitializationContext to be used for
+	 * initialization
+	 */
+	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext) {
 		this.initializationContext = initializationContext;
 	}
 
 	/**
-     * Performs a sanity check on the given top model.
-     * 
-     * @param topModel the top model to perform the sanity check on
-     */
-    @Override
+	 * Performs a sanity check on the given top model.
+	 * @param topModel the top model to perform the sanity check on
+	 */
+	@Override
 	protected void sanityCheck(Model topModel) {
 		super.sanityCheck(topModel);
 		performCheck(new SpringProfileIfNestedWithinSecondPhaseElementSanityChecker(), topModel);
 	}
 
 	/**
-     * Adds model handler associations to the given default processor.
-     * 
-     * @param defaultProcessor the default processor to add model handler associations to
-     */
-    @Override
+	 * Adds model handler associations to the given default processor.
+	 * @param defaultProcessor the default processor to add model handler associations to
+	 */
+	@Override
 	protected void addModelHandlerAssociations(DefaultProcessor defaultProcessor) {
 		defaultProcessor.addHandler(SpringPropertyModel.class,
 				(handlerContext, handlerMic) -> new SpringPropertyModelHandler(this.context,
@@ -115,11 +114,10 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	/**
-     * Adds element selector and action associations to the given rule store.
-     * 
-     * @param ruleStore the rule store to add the associations to
-     */
-    @Override
+	 * Adds element selector and action associations to the given rule store.
+	 * @param ruleStore the rule store to add the associations to
+	 */
+	@Override
 	public void addElementSelectorAndActionAssociations(RuleStore ruleStore) {
 		super.addElementSelectorAndActionAssociations(ruleStore);
 		ruleStore.addRule(new ElementSelector("configuration/springProperty"), SpringPropertyAction::new);
@@ -128,11 +126,10 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	/**
-     * Configures the application using the Ahead-of-Time (AOT) generated artifacts.
-     * 
-     * @return {@code true} if the configuration was successful, {@code false} otherwise.
-     */
-    boolean configureUsingAotGeneratedArtifacts() {
+	 * Configures the application using the Ahead-of-Time (AOT) generated artifacts.
+	 * @return {@code true} if the configuration was successful, {@code false} otherwise.
+	 */
+	boolean configureUsingAotGeneratedArtifacts() {
 		if (!new PatternRules(getContext()).load()) {
 			return false;
 		}
@@ -143,13 +140,13 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	/**
-     * This method processes the given model by calling the superclass's processModel method.
-     * If the application is not running in a native image and AOT processing is in progress,
-     * it adds a LogbackConfigurationAotContribution object to the context's object map.
-     * 
-     * @param model The model to be processed
-     */
-    @Override
+	 * This method processes the given model by calling the superclass's processModel
+	 * method. If the application is not running in a native image and AOT processing is
+	 * in progress, it adds a LogbackConfigurationAotContribution object to the context's
+	 * object map.
+	 * @param model The model to be processed
+	 */
+	@Override
 	public void processModel(Model model) {
 		super.processModel(model);
 		if (!NativeDetector.inNativeImage() && isAotProcessingInProgress()) {
@@ -159,43 +156,43 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	/**
-     * Checks if the Ahead-of-Time (AOT) processing is in progress.
-     * 
-     * @return {@code true} if AOT processing is in progress, {@code false} otherwise.
-     */
-    private boolean isAotProcessingInProgress() {
+	 * Checks if the Ahead-of-Time (AOT) processing is in progress.
+	 * @return {@code true} if AOT processing is in progress, {@code false} otherwise.
+	 */
+	private boolean isAotProcessingInProgress() {
 		return Boolean.getBoolean("spring.aot.processing");
 	}
 
 	/**
-     * LogbackConfigurationAotContribution class.
-     */
-    static final class LogbackConfigurationAotContribution implements BeanFactoryInitializationAotContribution {
+	 * LogbackConfigurationAotContribution class.
+	 */
+	static final class LogbackConfigurationAotContribution implements BeanFactoryInitializationAotContribution {
 
 		private final ModelWriter modelWriter;
 
 		private final PatternRules patternRules;
 
 		/**
-         * Constructs a new instance of LogbackConfigurationAotContribution with the specified parameters.
-         * 
-         * @param model the model to be used
-         * @param interpretationContext the interpretation context to be used
-         * @param context the context to be used
-         */
-        private LogbackConfigurationAotContribution(Model model, ModelInterpretationContext interpretationContext,
+		 * Constructs a new instance of LogbackConfigurationAotContribution with the
+		 * specified parameters.
+		 * @param model the model to be used
+		 * @param interpretationContext the interpretation context to be used
+		 * @param context the context to be used
+		 */
+		private LogbackConfigurationAotContribution(Model model, ModelInterpretationContext interpretationContext,
 				Context context) {
 			this.modelWriter = new ModelWriter(model, interpretationContext);
 			this.patternRules = new PatternRules(context);
 		}
 
 		/**
-         * Applies the Logback configuration AOT contribution to the given generation context and bean factory initialization code.
-         * 
-         * @param generationContext The generation context to apply the contribution to.
-         * @param beanFactoryInitializationCode The bean factory initialization code to apply the contribution to.
-         */
-        @Override
+		 * Applies the Logback configuration AOT contribution to the given generation
+		 * context and bean factory initialization code.
+		 * @param generationContext The generation context to apply the contribution to.
+		 * @param beanFactoryInitializationCode The bean factory initialization code to
+		 * apply the contribution to.
+		 */
+		@Override
 		public void applyTo(GenerationContext generationContext,
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
 			this.modelWriter.writeTo(generationContext);
@@ -205,9 +202,9 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	/**
-     * ModelWriter class.
-     */
-    private static final class ModelWriter {
+	 * ModelWriter class.
+	 */
+	private static final class ModelWriter {
 
 		private static final String MODEL_RESOURCE_LOCATION = "META-INF/spring/logback-model";
 
@@ -216,23 +213,22 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		private final ModelInterpretationContext modelInterpretationContext;
 
 		/**
-         * Constructs a new ModelWriter with the specified model and modelInterpretationContext.
-         * 
-         * @param model the model to be written
-         * @param modelInterpretationContext the context for interpreting the model
-         */
-        private ModelWriter(Model model, ModelInterpretationContext modelInterpretationContext) {
+		 * Constructs a new ModelWriter with the specified model and
+		 * modelInterpretationContext.
+		 * @param model the model to be written
+		 * @param modelInterpretationContext the context for interpreting the model
+		 */
+		private ModelWriter(Model model, ModelInterpretationContext modelInterpretationContext) {
 			this.model = model;
 			this.modelInterpretationContext = modelInterpretationContext;
 		}
 
 		/**
-         * Writes the model to the specified generation context.
-         * 
-         * @param generationContext The generation context to write the model to.
-         * @throws RuntimeException if an IOException occurs during the writing process.
-         */
-        private void writeTo(GenerationContext generationContext) {
+		 * Writes the model to the specified generation context.
+		 * @param generationContext The generation context to write the model to.
+		 * @throws RuntimeException if an IOException occurs during the writing process.
+		 */
+		private void writeTo(GenerationContext generationContext) {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 			try (ObjectOutputStream output = new ObjectOutputStream(bytes)) {
 				output.writeObject(this.model);
@@ -252,12 +248,13 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		/**
-         * Returns a set of classes that are serializable and are used in the given model and its submodels.
-         * 
-         * @param model the model for which to find the serializable classes
-         * @return a set of classes that are serializable and are used in the given model and its submodels
-         */
-        @SuppressWarnings("unchecked")
+		 * Returns a set of classes that are serializable and are used in the given model
+		 * and its submodels.
+		 * @param model the model for which to find the serializable classes
+		 * @return a set of classes that are serializable and are used in the given model
+		 * and its submodels
+		 */
+		@SuppressWarnings("unchecked")
 		private Set<Class<? extends Serializable>> serializationTypes(Model model) {
 			Set<Class<? extends Serializable>> modelClasses = new HashSet<>();
 			Class<?> candidate = model.getClass();
@@ -286,23 +283,21 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		/**
-         * Returns a set of reflection types based on the given model.
-         * 
-         * @param model the model to retrieve reflection types from
-         * @return a set of reflection types
-         */
-        private Set<String> reflectionTypes(Model model) {
+		 * Returns a set of reflection types based on the given model.
+		 * @param model the model to retrieve reflection types from
+		 * @return a set of reflection types
+		 */
+		private Set<String> reflectionTypes(Model model) {
 			return reflectionTypes(model, () -> null);
 		}
 
 		/**
-         * Returns a set of reflection types for the given model and parent supplier.
-         * 
-         * @param model the model to process
-         * @param parent the parent supplier
-         * @return a set of reflection types
-         */
-        private Set<String> reflectionTypes(Model model, Supplier<Object> parent) {
+		 * Returns a set of reflection types for the given model and parent supplier.
+		 * @param model the model to process
+		 * @param parent the parent supplier
+		 * @return a set of reflection types
+		 */
+		private Set<String> reflectionTypes(Model model, Supplier<Object> parent) {
 			Set<String> reflectionTypes = new HashSet<>();
 			Class<?> componentType = determineType(model, parent);
 			if (componentType != null) {
@@ -316,13 +311,14 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		/**
-         * Determines the type of the model based on the provided model and parent supplier.
-         * 
-         * @param model the model to determine the type for
-         * @param parentSupplier the supplier for the parent object
-         * @return the determined type of the model, or null if the type cannot be determined
-         */
-        private Class<?> determineType(Model model, Supplier<Object> parentSupplier) {
+		 * Determines the type of the model based on the provided model and parent
+		 * supplier.
+		 * @param model the model to determine the type for
+		 * @param parentSupplier the supplier for the parent object
+		 * @return the determined type of the model, or null if the type cannot be
+		 * determined
+		 */
+		private Class<?> determineType(Model model, Supplier<Object> parentSupplier) {
 			String className = (model instanceof ComponentModel componentModel) ? componentModel.getClassName() : null;
 			if (className != null) {
 				return loadImportType(className);
@@ -340,23 +336,21 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		/**
-         * Loads the import type for the given class name.
-         * 
-         * @param className the name of the class to load the import type for
-         * @return the loaded import type as a Class object
-         */
-        private Class<?> loadImportType(String className) {
+		 * Loads the import type for the given class name.
+		 * @param className the name of the class to load the import type for
+		 * @return the loaded import type as a Class object
+		 */
+		private Class<?> loadImportType(String className) {
 			return loadComponentType(this.modelInterpretationContext.getImport(className));
 		}
 
 		/**
-         * Infers the type from the parent object using the given supplier and tag.
-         * 
-         * @param parentSupplier the supplier for obtaining the parent object
-         * @param tag the tag used for inferring the type
-         * @return the inferred type from the parent object, or null if unable to infer
-         */
-        private Class<?> inferTypeFromParent(Supplier<Object> parentSupplier, String tag) {
+		 * Infers the type from the parent object using the given supplier and tag.
+		 * @param parentSupplier the supplier for obtaining the parent object
+		 * @param tag the tag used for inferring the type
+		 * @return the inferred type from the parent object, or null if unable to infer
+		 */
+		private Class<?> inferTypeFromParent(Supplier<Object> parentSupplier, String tag) {
 			Object parent = parentSupplier.get();
 			if (parent != null) {
 				try {
@@ -375,13 +369,12 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		/**
-         * Loads the component type based on the given component type string.
-         * 
-         * @param componentType the component type string
-         * @return the loaded component type class
-         * @throws RuntimeException if failed to load the component type
-         */
-        private Class<?> loadComponentType(String componentType) {
+		 * Loads the component type based on the given component type string.
+		 * @param componentType the component type string
+		 * @return the loaded component type class
+		 * @throws RuntimeException if failed to load the component type
+		 */
+		private Class<?> loadComponentType(String componentType) {
 			try {
 				return ClassUtils.forName(this.modelInterpretationContext.subst(componentType),
 						getClass().getClassLoader());
@@ -392,12 +385,11 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		/**
-         * Instantiates an object of the specified type.
-         * 
-         * @param type the class type of the object to be instantiated
-         * @return an instance of the specified type, or null if instantiation fails
-         */
-        private Object instantiate(Class<?> type) {
+		 * Instantiates an object of the specified type.
+		 * @param type the class type of the object to be instantiated
+		 * @return an instance of the specified type, or null if instantiation fails
+		 */
+		private Object instantiate(Class<?> type) {
 			try {
 				return type.getConstructor().newInstance();
 			}
@@ -407,14 +399,13 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		/**
-         * Processes a component by retrieving its bean description from the bean description cache and adding the
-         * parameter types of its adder and setter methods, as well as the component type itself, to the set of
-         * reflection types.
-         * 
-         * @param componentType the class representing the component
-         * @param reflectionTypes the set of reflection types to be updated
-         */
-        private void processComponent(Class<?> componentType, Set<String> reflectionTypes) {
+		 * Processes a component by retrieving its bean description from the bean
+		 * description cache and adding the parameter types of its adder and setter
+		 * methods, as well as the component type itself, to the set of reflection types.
+		 * @param componentType the class representing the component
+		 * @param reflectionTypes the set of reflection types to be updated
+		 */
+		private void processComponent(Class<?> componentType, Set<String> reflectionTypes) {
 			BeanDescription beanDescription = this.modelInterpretationContext.getBeanDescriptionCache()
 				.getBeanDescription(componentType);
 			reflectionTypes.addAll(parameterTypesNames(beanDescription.getPropertyNameToAdder().values()));
@@ -423,12 +414,11 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		/**
-         * Returns a collection of parameter type names for the given methods.
-         * 
-         * @param methods the collection of methods to extract parameter type names from
-         * @return a collection of parameter type names
-         */
-        private Collection<String> parameterTypesNames(Collection<Method> methods) {
+		 * Returns a collection of parameter type names for the given methods.
+		 * @param methods the collection of methods to extract parameter type names from
+		 * @return a collection of parameter type names
+		 */
+		private Collection<String> parameterTypesNames(Collection<Method> methods) {
 			return methods.stream()
 				.filter((method) -> !method.getDeclaringClass().equals(ContextAware.class)
 						&& !method.getDeclaringClass().equals(ContextAwareBase.class))
@@ -443,17 +433,17 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	/**
-     * ModelReader class.
-     */
-    private static final class ModelReader {
+	 * ModelReader class.
+	 */
+	private static final class ModelReader {
 
 		/**
-         * Reads and returns a Model object from the specified resource location.
-         * 
-         * @return The Model object read from the resource location.
-         * @throws RuntimeException if there is an error loading the model from the resource location.
-         */
-        private Model read() {
+		 * Reads and returns a Model object from the specified resource location.
+		 * @return The Model object read from the resource location.
+		 * @throws RuntimeException if there is an error loading the model from the
+		 * resource location.
+		 */
+		private Model read() {
 			try (InputStream modelInput = getClass().getClassLoader()
 				.getResourceAsStream(ModelWriter.MODEL_RESOURCE_LOCATION)) {
 				try (ObjectInputStream input = new ObjectInputStream(modelInput)) {
@@ -471,30 +461,28 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	/**
-     * PatternRules class.
-     */
-    private static final class PatternRules {
+	 * PatternRules class.
+	 */
+	private static final class PatternRules {
 
 		private static final String RESOURCE_LOCATION = "META-INF/spring/logback-pattern-rules";
 
 		private final Context context;
 
 		/**
-         * Constructs a new instance of the PatternRules class with the specified context.
-         *
-         * @param context the context to be used by the PatternRules class
-         */
-        private PatternRules(Context context) {
+		 * Constructs a new instance of the PatternRules class with the specified context.
+		 * @param context the context to be used by the PatternRules class
+		 */
+		private PatternRules(Context context) {
 			this.context = context;
 		}
 
 		/**
-         * Loads the pattern rules from a resource file.
-         * 
-         * @return true if the pattern rules were successfully loaded, false otherwise
-         * @throws RuntimeException if an exception occurs during the loading process
-         */
-        private boolean load() {
+		 * Loads the pattern rules from a resource file.
+		 * @return true if the pattern rules were successfully loaded, false otherwise
+		 * @throws RuntimeException if an exception occurs during the loading process
+		 */
+		private boolean load() {
 			try {
 				ClassPathResource resource = new ClassPathResource(RESOURCE_LOCATION);
 				if (!resource.exists()) {
@@ -513,11 +501,10 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		/**
-         * Retrieves the registry map for pattern rules.
-         * 
-         * @return The registry map containing pattern rules.
-         */
-        @SuppressWarnings("unchecked")
+		 * Retrieves the registry map for pattern rules.
+		 * @return The registry map containing pattern rules.
+		 */
+		@SuppressWarnings("unchecked")
 		private Map<String, String> getRegistryMap() {
 			Map<String, String> patternRuleRegistry = (Map<String, String>) this.context
 				.getObject(CoreConstants.PATTERN_RULE_REGISTRY);
@@ -529,12 +516,12 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		/**
-         * Saves the generation context by adding the registry map as a resource file and registering it as a pattern.
-         * Additionally, it registers the rule class names in the reflection hints for invoking public constructors.
-         * 
-         * @param generationContext The generation context to be saved
-         */
-        private void save(GenerationContext generationContext) {
+		 * Saves the generation context by adding the registry map as a resource file and
+		 * registering it as a pattern. Additionally, it registers the rule class names in
+		 * the reflection hints for invoking public constructors.
+		 * @param generationContext The generation context to be saved
+		 */
+		private void save(GenerationContext generationContext) {
 			Map<String, String> registryMap = getRegistryMap();
 			generationContext.getGeneratedFiles().addResourceFile(RESOURCE_LOCATION, () -> asInputStream(registryMap));
 			generationContext.getRuntimeHints().resources().registerPattern(RESOURCE_LOCATION);
@@ -546,13 +533,13 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		/**
-         * Converts a map of pattern rule registry into an input stream.
-         * 
-         * @param patternRuleRegistry the map of pattern rule registry
-         * @return an input stream representing the pattern rule registry
-         * @throws RuntimeException if an IO exception occurs during the conversion process
-         */
-        private InputStream asInputStream(Map<String, String> patternRuleRegistry) {
+		 * Converts a map of pattern rule registry into an input stream.
+		 * @param patternRuleRegistry the map of pattern rule registry
+		 * @return an input stream representing the pattern rule registry
+		 * @throws RuntimeException if an IO exception occurs during the conversion
+		 * process
+		 */
+		private InputStream asInputStream(Map<String, String> patternRuleRegistry) {
 			Properties properties = CollectionFactory.createSortedProperties(true);
 			patternRuleRegistry.forEach(properties::setProperty);
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();

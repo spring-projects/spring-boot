@@ -50,17 +50,16 @@ import org.springframework.core.io.ClassPathResource;
 public final class RemoteSpringApplication {
 
 	/**
-     * Private constructor for the RemoteSpringApplication class.
-     */
-    private RemoteSpringApplication() {
+	 * Private constructor for the RemoteSpringApplication class.
+	 */
+	private RemoteSpringApplication() {
 	}
 
 	/**
-     * Runs the RemoteSpringApplication with the given command line arguments.
-     * 
-     * @param args the command line arguments
-     */
-    private void run(String[] args) {
+	 * Runs the RemoteSpringApplication with the given command line arguments.
+	 * @param args the command line arguments
+	 */
+	private void run(String[] args) {
 		Restarter.initialize(args, RestartInitializer.NONE);
 		SpringApplication application = new SpringApplication(RemoteClientConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -72,22 +71,20 @@ public final class RemoteSpringApplication {
 	}
 
 	/**
-     * Returns a collection of ApplicationContextInitializers.
-     * 
-     * @return the collection of ApplicationContextInitializers
-     */
-    private Collection<ApplicationContextInitializer<?>> getInitializers() {
+	 * Returns a collection of ApplicationContextInitializers.
+	 * @return the collection of ApplicationContextInitializers
+	 */
+	private Collection<ApplicationContextInitializer<?>> getInitializers() {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		initializers.add(new RestartScopeInitializer());
 		return initializers;
 	}
 
 	/**
-     * Returns a collection of application listeners.
-     * 
-     * @return the collection of application listeners
-     */
-    private Collection<ApplicationListener<?>> getListeners() {
+	 * Returns a collection of application listeners.
+	 * @return the collection of application listeners
+	 */
+	private Collection<ApplicationListener<?>> getListeners() {
 		List<ApplicationListener<?>> listeners = new ArrayList<>();
 		listeners.add(new AnsiOutputApplicationListener());
 		listeners.add(EnvironmentPostProcessorApplicationListener
@@ -98,20 +95,19 @@ public final class RemoteSpringApplication {
 	}
 
 	/**
-     * Retrieves the banner for the RemoteSpringApplication.
-     * 
-     * @return the banner as a {@link Banner} object
-     */
-    private Banner getBanner() {
+	 * Retrieves the banner for the RemoteSpringApplication.
+	 * @return the banner as a {@link Banner} object
+	 */
+	private Banner getBanner() {
 		ClassPathResource banner = new ClassPathResource("remote-banner.txt", RemoteSpringApplication.class);
 		return new ResourceBanner(banner);
 	}
 
 	/**
-     * This method waits indefinitely by continuously sleeping for 1 second.
-     * It catches any InterruptedException and interrupts the current thread.
-     */
-    private void waitIndefinitely() {
+	 * This method waits indefinitely by continuously sleeping for 1 second. It catches
+	 * any InterruptedException and interrupts the current thread.
+	 */
+	private void waitIndefinitely() {
 		while (true) {
 			try {
 				Thread.sleep(1000);

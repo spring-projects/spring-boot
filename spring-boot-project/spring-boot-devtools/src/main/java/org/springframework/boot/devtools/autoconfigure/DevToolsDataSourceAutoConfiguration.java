@@ -63,13 +63,13 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 public class DevToolsDataSourceAutoConfiguration {
 
 	/**
-     * Creates a NonEmbeddedInMemoryDatabaseShutdownExecutor bean.
-     * 
-     * @param dataSource the DataSource bean used for the in-memory database
-     * @param dataSourceProperties the DataSourceProperties bean containing the properties for the in-memory database
-     * @return the NonEmbeddedInMemoryDatabaseShutdownExecutor bean
-     */
-    @Bean
+	 * Creates a NonEmbeddedInMemoryDatabaseShutdownExecutor bean.
+	 * @param dataSource the DataSource bean used for the in-memory database
+	 * @param dataSourceProperties the DataSourceProperties bean containing the properties
+	 * for the in-memory database
+	 * @return the NonEmbeddedInMemoryDatabaseShutdownExecutor bean
+	 */
+	@Bean
 	NonEmbeddedInMemoryDatabaseShutdownExecutor inMemoryDatabaseShutdownExecutor(DataSource dataSource,
 			DataSourceProperties dataSourceProperties) {
 		return new NonEmbeddedInMemoryDatabaseShutdownExecutor(dataSource, dataSourceProperties);
@@ -85,43 +85,47 @@ public class DevToolsDataSourceAutoConfiguration {
 			extends EntityManagerFactoryDependsOnPostProcessor {
 
 		/**
-         * Constructs a new DatabaseShutdownExecutorEntityManagerFactoryDependsOnPostProcessor with the specified in-memory database shutdown executor.
-         *
-         * @param inMemoryDatabaseShutdownExecutor the in-memory database shutdown executor
-         */
-        DatabaseShutdownExecutorEntityManagerFactoryDependsOnPostProcessor() {
+		 * Constructs a new
+		 * DatabaseShutdownExecutorEntityManagerFactoryDependsOnPostProcessor with the
+		 * specified in-memory database shutdown executor.
+		 * @param inMemoryDatabaseShutdownExecutor the in-memory database shutdown
+		 * executor
+		 */
+		DatabaseShutdownExecutorEntityManagerFactoryDependsOnPostProcessor() {
 			super("inMemoryDatabaseShutdownExecutor");
 		}
 
 	}
 
 	/**
-     * NonEmbeddedInMemoryDatabaseShutdownExecutor class.
-     */
-    static final class NonEmbeddedInMemoryDatabaseShutdownExecutor implements DisposableBean {
+	 * NonEmbeddedInMemoryDatabaseShutdownExecutor class.
+	 */
+	static final class NonEmbeddedInMemoryDatabaseShutdownExecutor implements DisposableBean {
 
 		private final DataSource dataSource;
 
 		private final DataSourceProperties dataSourceProperties;
 
 		/**
-         * Constructs a new NonEmbeddedInMemoryDatabaseShutdownExecutor with the specified DataSource and DataSourceProperties.
-         * 
-         * @param dataSource the DataSource to be used for shutting down the non-embedded in-memory database
-         * @param dataSourceProperties the DataSourceProperties containing the configuration for the DataSource
-         */
-        NonEmbeddedInMemoryDatabaseShutdownExecutor(DataSource dataSource, DataSourceProperties dataSourceProperties) {
+		 * Constructs a new NonEmbeddedInMemoryDatabaseShutdownExecutor with the specified
+		 * DataSource and DataSourceProperties.
+		 * @param dataSource the DataSource to be used for shutting down the non-embedded
+		 * in-memory database
+		 * @param dataSourceProperties the DataSourceProperties containing the
+		 * configuration for the DataSource
+		 */
+		NonEmbeddedInMemoryDatabaseShutdownExecutor(DataSource dataSource, DataSourceProperties dataSourceProperties) {
 			this.dataSource = dataSource;
 			this.dataSourceProperties = dataSourceProperties;
 		}
 
 		/**
-         * This method is used to destroy the non-embedded in-memory database.
-         * It iterates through the available in-memory databases and shuts down the one that matches the given data source properties.
-         * 
-         * @throws Exception if an error occurs during the shutdown process
-         */
-        @Override
+		 * This method is used to destroy the non-embedded in-memory database. It iterates
+		 * through the available in-memory databases and shuts down the one that matches
+		 * the given data source properties.
+		 * @throws Exception if an error occurs during the shutdown process
+		 */
+		@Override
 		public void destroy() throws Exception {
 			for (InMemoryDatabase inMemoryDatabase : InMemoryDatabase.values()) {
 				if (inMemoryDatabase.matches(this.dataSourceProperties)) {
@@ -160,12 +164,13 @@ public class DevToolsDataSourceAutoConfiguration {
 			private final Set<String> driverClassNames;
 
 			/**
-         * Constructs a new InMemoryDatabase object with the specified URL prefix and driver class names.
-         * 
-         * @param urlPrefix the URL prefix for the database connection
-         * @param driverClassNames the set of driver class names to be used for the database connection
-         */
-        InMemoryDatabase(String urlPrefix, Set<String> driverClassNames) {
+			 * Constructs a new InMemoryDatabase object with the specified URL prefix and
+			 * driver class names.
+			 * @param urlPrefix the URL prefix for the database connection
+			 * @param driverClassNames the set of driver class names to be used for the
+			 * database connection
+			 */
+			InMemoryDatabase(String urlPrefix, Set<String> driverClassNames) {
 				this(urlPrefix, driverClassNames, (dataSource) -> {
 					try (Connection connection = dataSource.getConnection()) {
 						try (Statement statement = connection.createStatement()) {
@@ -176,37 +181,37 @@ public class DevToolsDataSourceAutoConfiguration {
 			}
 
 			/**
-         * Constructs a new InMemoryDatabase with the specified URL prefix, set of driver class names, and shutdown handler.
-         * 
-         * @param urlPrefix the URL prefix for the database
-         * @param driverClassNames the set of driver class names to be used for the database
-         * @param shutdownHandler the shutdown handler for the database
-         */
-        InMemoryDatabase(String urlPrefix, Set<String> driverClassNames, ShutdownHandler shutdownHandler) {
+			 * Constructs a new InMemoryDatabase with the specified URL prefix, set of
+			 * driver class names, and shutdown handler.
+			 * @param urlPrefix the URL prefix for the database
+			 * @param driverClassNames the set of driver class names to be used for the
+			 * database
+			 * @param shutdownHandler the shutdown handler for the database
+			 */
+			InMemoryDatabase(String urlPrefix, Set<String> driverClassNames, ShutdownHandler shutdownHandler) {
 				this.urlPrefix = urlPrefix;
 				this.driverClassNames = driverClassNames;
 				this.shutdownHandler = shutdownHandler;
 			}
 
 			/**
-         * Checks if the given DataSourceProperties object matches the current instance.
-         * 
-         * @param properties the DataSourceProperties object to be checked
-         * @return true if the properties match, false otherwise
-         */
-        boolean matches(DataSourceProperties properties) {
+			 * Checks if the given DataSourceProperties object matches the current
+			 * instance.
+			 * @param properties the DataSourceProperties object to be checked
+			 * @return true if the properties match, false otherwise
+			 */
+			boolean matches(DataSourceProperties properties) {
 				String url = properties.getUrl();
 				return (url == null || this.urlPrefix == null || url.startsWith(this.urlPrefix))
 						&& this.driverClassNames.contains(properties.determineDriverClassName());
 			}
 
 			/**
-         * Shuts down the given data source.
-         * 
-         * @param dataSource the data source to be shut down
-         * @throws SQLException if an error occurs while shutting down the data source
-         */
-        void shutdown(DataSource dataSource) throws SQLException {
+			 * Shuts down the given data source.
+			 * @param dataSource the data source to be shut down
+			 * @throws SQLException if an error occurs while shutting down the data source
+			 */
+			void shutdown(DataSource dataSource) throws SQLException {
 				this.shutdownHandler.shutdown(dataSource);
 			}
 
@@ -222,28 +227,26 @@ public class DevToolsDataSourceAutoConfiguration {
 	}
 
 	/**
-     * DevToolsDataSourceCondition class.
-     */
-    static class DevToolsDataSourceCondition extends SpringBootCondition implements ConfigurationCondition {
+	 * DevToolsDataSourceCondition class.
+	 */
+	static class DevToolsDataSourceCondition extends SpringBootCondition implements ConfigurationCondition {
 
 		/**
-         * Returns the configuration phase of this method.
-         * 
-         * @return The configuration phase of this method.
-         */
-        @Override
+		 * Returns the configuration phase of this method.
+		 * @return The configuration phase of this method.
+		 */
+		@Override
 		public ConfigurationPhase getConfigurationPhase() {
 			return ConfigurationPhase.REGISTER_BEAN;
 		}
 
 		/**
-         * Determines the outcome of the condition for the DevTools DataSource.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the condition outcome
-         */
-        @Override
+		 * Determines the outcome of the condition for the DevTools DataSource.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the condition outcome
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("DevTools DataSource Condition");
 			String[] dataSourceBeanNames = context.getBeanFactory().getBeanNamesForType(DataSource.class, true, false);

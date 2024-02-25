@@ -26,12 +26,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MyApplication {
 
 	/**
-     * The main method is the entry point of the application.
-     * It disables the Spring DevTools restart feature and starts the application.
-     * 
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It disables the Spring
+	 * DevTools restart feature and starts the application.
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
 		System.setProperty("spring.devtools.restart.enabled", "false");
 		SpringApplication.run(MyApplication.class, args);
 	}

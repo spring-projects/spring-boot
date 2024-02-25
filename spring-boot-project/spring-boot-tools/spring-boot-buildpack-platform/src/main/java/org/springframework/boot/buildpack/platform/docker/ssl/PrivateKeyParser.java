@@ -88,29 +88,27 @@ final class PrivateKeyParser {
 	private static final int[] EC_PARAMETERS = { 0x2b, 0x81, 0x04, 0x00, 0x22 };
 
 	/**
-     * Constructs a new PrivateKeyParser.
-     */
-    private PrivateKeyParser() {
+	 * Constructs a new PrivateKeyParser.
+	 */
+	private PrivateKeyParser() {
 	}
 
 	/**
-     * Creates a PKCS8EncodedKeySpec for PKCS1 RSA keys.
-     * 
-     * @param bytes the byte array containing the key data
-     * @return the PKCS8EncodedKeySpec for the PKCS1 RSA key
-     */
-    private static PKCS8EncodedKeySpec createKeySpecForPkcs1Rsa(byte[] bytes) {
+	 * Creates a PKCS8EncodedKeySpec for PKCS1 RSA keys.
+	 * @param bytes the byte array containing the key data
+	 * @return the PKCS8EncodedKeySpec for the PKCS1 RSA key
+	 */
+	private static PKCS8EncodedKeySpec createKeySpecForPkcs1Rsa(byte[] bytes) {
 		return createKeySpecForAlgorithm(bytes, RSA_ALGORITHM, null);
 	}
 
 	/**
-     * Creates a PKCS8EncodedKeySpec for a SEC1 EC private key.
-     * 
-     * @param bytes the byte array representing the SEC1 EC private key
-     * @return the PKCS8EncodedKeySpec for the SEC1 EC private key
-     * @throws IllegalArgumentException if the key spec is not in the expected format
-     */
-    private static PKCS8EncodedKeySpec createKeySpecForSec1Ec(byte[] bytes) {
+	 * Creates a PKCS8EncodedKeySpec for a SEC1 EC private key.
+	 * @param bytes the byte array representing the SEC1 EC private key
+	 * @return the PKCS8EncodedKeySpec for the SEC1 EC private key
+	 * @throws IllegalArgumentException if the key spec is not in the expected format
+	 */
+	private static PKCS8EncodedKeySpec createKeySpecForSec1Ec(byte[] bytes) {
 		DerElement ecPrivateKey = DerElement.of(bytes);
 		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
 				"Key spec should be an ASN.1 encoded sequence");
@@ -127,14 +125,14 @@ final class PrivateKeyParser {
 	}
 
 	/**
-     * Retrieves the EC parameters from the given DER element.
-     * If the parameters are null, returns the default EC parameters.
-     * 
-     * @param parameters the DER element containing the EC parameters
-     * @return an array of integers representing the EC parameters
-     * @throws IllegalArgumentException if the parameters are not encoded or do not contain an object identifier
-     */
-    private static int[] getEcParameters(DerElement parameters) {
+	 * Retrieves the EC parameters from the given DER element. If the parameters are null,
+	 * returns the default EC parameters.
+	 * @param parameters the DER element containing the EC parameters
+	 * @return an array of integers representing the EC parameters
+	 * @throws IllegalArgumentException if the parameters are not encoded or do not
+	 * contain an object identifier
+	 */
+	private static int[] getEcParameters(DerElement parameters) {
 		if (parameters == null) {
 			return EC_PARAMETERS;
 		}
@@ -146,12 +144,11 @@ final class PrivateKeyParser {
 	}
 
 	/**
-     * Retrieves elliptic curve parameters from a ByteBuffer.
-     * 
-     * @param bytes the ByteBuffer containing the elliptic curve parameters
-     * @return an array of integers representing the elliptic curve parameters
-     */
-    private static int[] getEcParameters(ByteBuffer bytes) {
+	 * Retrieves elliptic curve parameters from a ByteBuffer.
+	 * @param bytes the ByteBuffer containing the elliptic curve parameters
+	 * @return an array of integers representing the elliptic curve parameters
+	 */
+	private static int[] getEcParameters(ByteBuffer bytes) {
 		int[] result = new int[bytes.remaining()];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = bytes.get() & 0xFF;
@@ -160,15 +157,14 @@ final class PrivateKeyParser {
 	}
 
 	/**
-     * Creates a PKCS8EncodedKeySpec for the given byte array, algorithm, and parameters.
-     * 
-     * @param bytes the byte array representing the private key
-     * @param algorithm the algorithm identifier
-     * @param parameters the parameters for the algorithm
-     * @return a PKCS8EncodedKeySpec for the given byte array, algorithm, and parameters
-     * @throws IllegalStateException if an IOException occurs during the encoding process
-     */
-    private static PKCS8EncodedKeySpec createKeySpecForAlgorithm(byte[] bytes, int[] algorithm, int[] parameters) {
+	 * Creates a PKCS8EncodedKeySpec for the given byte array, algorithm, and parameters.
+	 * @param bytes the byte array representing the private key
+	 * @param algorithm the algorithm identifier
+	 * @param parameters the parameters for the algorithm
+	 * @return a PKCS8EncodedKeySpec for the given byte array, algorithm, and parameters
+	 * @throws IllegalStateException if an IOException occurs during the encoding process
+	 */
+	private static PKCS8EncodedKeySpec createKeySpecForAlgorithm(byte[] bytes, int[] algorithm, int[] parameters) {
 		try {
 			DerEncoder encoder = new DerEncoder();
 			encoder.integer(0x00); // Version 0
@@ -218,14 +214,16 @@ final class PrivateKeyParser {
 		private final String[] algorithms;
 
 		/**
-         * Constructs a new PemParser with the specified header, footer, keySpecFactory, and algorithms.
-         * 
-         * @param header the header string used to identify the start of a PEM encoded block
-         * @param footer the footer string used to identify the end of a PEM encoded block
-         * @param keySpecFactory the function used to create a PKCS8EncodedKeySpec from a byte array
-         * @param algorithms the list of algorithms supported by this PemParser
-         */
-        PemParser(String header, String footer, Function<byte[], PKCS8EncodedKeySpec> keySpecFactory,
+		 * Constructs a new PemParser with the specified header, footer, keySpecFactory,
+		 * and algorithms.
+		 * @param header the header string used to identify the start of a PEM encoded
+		 * block
+		 * @param footer the footer string used to identify the end of a PEM encoded block
+		 * @param keySpecFactory the function used to create a PKCS8EncodedKeySpec from a
+		 * byte array
+		 * @param algorithms the list of algorithms supported by this PemParser
+		 */
+		PemParser(String header, String footer, Function<byte[], PKCS8EncodedKeySpec> keySpecFactory,
 				String... algorithms) {
 			this.pattern = Pattern.compile(header + BASE64_TEXT + footer, Pattern.CASE_INSENSITIVE);
 			this.algorithms = algorithms;
@@ -233,34 +231,32 @@ final class PrivateKeyParser {
 		}
 
 		/**
-         * Parses a private key from the given text.
-         *
-         * @param text the text to parse the private key from
-         * @return the parsed private key, or null if the text does not contain a valid private key
-         */
-        PrivateKey parse(String text) {
+		 * Parses a private key from the given text.
+		 * @param text the text to parse the private key from
+		 * @return the parsed private key, or null if the text does not contain a valid
+		 * private key
+		 */
+		PrivateKey parse(String text) {
 			Matcher matcher = this.pattern.matcher(text);
 			return (!matcher.find()) ? null : parse(decodeBase64(matcher.group(1)));
 		}
 
 		/**
-         * Decodes a Base64 encoded string into a byte array.
-         * 
-         * @param content the Base64 encoded string to decode
-         * @return the decoded byte array
-         */
-        private static byte[] decodeBase64(String content) {
+		 * Decodes a Base64 encoded string into a byte array.
+		 * @param content the Base64 encoded string to decode
+		 * @return the decoded byte array
+		 */
+		private static byte[] decodeBase64(String content) {
 			byte[] contentBytes = content.replaceAll("\r", "").replaceAll("\n", "").getBytes();
 			return Base64.getDecoder().decode(contentBytes);
 		}
 
 		/**
-         * Parses a byte array into a private key.
-         *
-         * @param bytes the byte array to parse
-         * @return the parsed private key
-         */
-        private PrivateKey parse(byte[] bytes) {
+		 * Parses a byte array into a private key.
+		 * @param bytes the byte array to parse
+		 * @return the parsed private key
+		 */
+		private PrivateKey parse(byte[] bytes) {
 			PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes);
 			for (String algorithm : this.algorithms) {
 				try {
@@ -284,64 +280,59 @@ final class PrivateKeyParser {
 		private final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
 		/**
-         * Encodes an object identifier using DER encoding.
-         * 
-         * @param encodedObjectIdentifier the object identifier to be encoded
-         * @throws IOException if an I/O error occurs
-         */
-        void objectIdentifier(int... encodedObjectIdentifier) throws IOException {
+		 * Encodes an object identifier using DER encoding.
+		 * @param encodedObjectIdentifier the object identifier to be encoded
+		 * @throws IOException if an I/O error occurs
+		 */
+		void objectIdentifier(int... encodedObjectIdentifier) throws IOException {
 			int code = (encodedObjectIdentifier != null) ? 0x06 : 0x05;
 			codeLengthBytes(code, bytes(encodedObjectIdentifier));
 		}
 
 		/**
-         * Encodes an integer value into a DER-encoded byte array.
-         * 
-         * @param encodedInteger the integer value to be encoded
-         * @throws IOException if an I/O error occurs while encoding the integer
-         */
-        void integer(int... encodedInteger) throws IOException {
+		 * Encodes an integer value into a DER-encoded byte array.
+		 * @param encodedInteger the integer value to be encoded
+		 * @throws IOException if an I/O error occurs while encoding the integer
+		 */
+		void integer(int... encodedInteger) throws IOException {
 			codeLengthBytes(0x02, bytes(encodedInteger));
 		}
 
 		/**
-         * Encodes the given byte array as an octet string.
-         * 
-         * @param bytes the byte array to be encoded
-         * @throws IOException if an I/O error occurs during encoding
-         */
-        void octetString(byte[] bytes) throws IOException {
+		 * Encodes the given byte array as an octet string.
+		 * @param bytes the byte array to be encoded
+		 * @throws IOException if an I/O error occurs during encoding
+		 */
+		void octetString(byte[] bytes) throws IOException {
 			codeLengthBytes(0x04, bytes);
 		}
 
 		/**
-         * Encodes the given sequence of elements into a byte array and passes it to the sequence method.
-         *
-         * @param elements the sequence of elements to be encoded
-         * @throws IOException if an I/O error occurs while encoding the elements
-         */
-        void sequence(int... elements) throws IOException {
+		 * Encodes the given sequence of elements into a byte array and passes it to the
+		 * sequence method.
+		 * @param elements the sequence of elements to be encoded
+		 * @throws IOException if an I/O error occurs while encoding the elements
+		 */
+		void sequence(int... elements) throws IOException {
 			sequence(bytes(elements));
 		}
 
 		/**
-         * Encodes a sequence of bytes using DER encoding.
-         * 
-         * @param bytes the array of bytes to be encoded
-         * @throws IOException if an I/O error occurs during encoding
-         */
-        void sequence(byte[] bytes) throws IOException {
+		 * Encodes a sequence of bytes using DER encoding.
+		 * @param bytes the array of bytes to be encoded
+		 * @throws IOException if an I/O error occurs during encoding
+		 */
+		void sequence(byte[] bytes) throws IOException {
 			codeLengthBytes(0x30, bytes);
 		}
 
 		/**
-         * Writes the given code and byte array to the stream.
-         * 
-         * @param code the code to write
-         * @param bytes the byte array to write
-         * @throws IOException if an I/O error occurs
-         */
-        void codeLengthBytes(int code, byte[] bytes) throws IOException {
+		 * Writes the given code and byte array to the stream.
+		 * @param code the code to write
+		 * @param bytes the byte array to write
+		 * @throws IOException if an I/O error occurs
+		 */
+		void codeLengthBytes(int code, byte[] bytes) throws IOException {
 			this.stream.write(code);
 			int length = (bytes != null) ? bytes.length : 0;
 			if (length <= 127) {
@@ -365,12 +356,11 @@ final class PrivateKeyParser {
 		}
 
 		/**
-         * Converts an array of integers to an array of bytes.
-         *
-         * @param elements the array of integers to be converted
-         * @return the resulting array of bytes, or null if the input array is null
-         */
-        private static byte[] bytes(int... elements) {
+		 * Converts an array of integers to an array of bytes.
+		 * @param elements the array of integers to be converted
+		 * @return the resulting array of bytes, or null if the input array is null
+		 */
+		private static byte[] bytes(int... elements) {
 			if (elements == null) {
 				return null;
 			}
@@ -382,23 +372,21 @@ final class PrivateKeyParser {
 		}
 
 		/**
-         * Converts the byte array to a DER-encoded sequence.
-         * 
-         * @return the DER-encoded sequence as a byte array
-         * @throws IOException if an I/O error occurs during encoding
-         */
-        byte[] toSequence() throws IOException {
+		 * Converts the byte array to a DER-encoded sequence.
+		 * @return the DER-encoded sequence as a byte array
+		 * @throws IOException if an I/O error occurs during encoding
+		 */
+		byte[] toSequence() throws IOException {
 			DerEncoder sequenceEncoder = new DerEncoder();
 			sequenceEncoder.sequence(toByteArray());
 			return sequenceEncoder.toByteArray();
 		}
 
 		/**
-         * Converts the contents of the stream to a byte array.
-         *
-         * @return the byte array representation of the stream
-         */
-        byte[] toByteArray() {
+		 * Converts the contents of the stream to a byte array.
+		 * @return the byte array representation of the stream
+		 */
+		byte[] toByteArray() {
 			return this.stream.toByteArray();
 		}
 
@@ -416,11 +404,10 @@ final class PrivateKeyParser {
 		private final ByteBuffer contents;
 
 		/**
-         * Constructs a new DerElement object from the given ByteBuffer.
-         * 
-         * @param bytes the ByteBuffer containing the DER-encoded data
-         */
-        private DerElement(ByteBuffer bytes) {
+		 * Constructs a new DerElement object from the given ByteBuffer.
+		 * @param bytes the ByteBuffer containing the DER-encoded data
+		 */
+		private DerElement(ByteBuffer bytes) {
 			byte b = bytes.get();
 			this.valueType = ((b & 0x20) == 0) ? ValueType.PRIMITIVE : ValueType.ENCODED;
 			this.tagType = decodeTagType(b, bytes);
@@ -432,13 +419,12 @@ final class PrivateKeyParser {
 		}
 
 		/**
-         * Decodes the tag type from a byte and a ByteBuffer.
-         * 
-         * @param b     the byte containing the tag type
-         * @param bytes the ByteBuffer containing the remaining bytes
-         * @return the decoded tag type as a long
-         */
-        private long decodeTagType(byte b, ByteBuffer bytes) {
+		 * Decodes the tag type from a byte and a ByteBuffer.
+		 * @param b the byte containing the tag type
+		 * @param bytes the ByteBuffer containing the remaining bytes
+		 * @return the decoded tag type as a long
+		 */
+		private long decodeTagType(byte b, ByteBuffer bytes) {
 			long tagType = (b & 0x1F);
 			if (tagType != 0x1F) {
 				return tagType;
@@ -454,13 +440,13 @@ final class PrivateKeyParser {
 		}
 
 		/**
-         * Decodes the length of a DER element from the given ByteBuffer.
-         * 
-         * @param bytes the ByteBuffer containing the DER element
-         * @return the decoded length of the DER element
-         * @throws IllegalStateException if the length encoding is infinite or reserved, or if there is a length overflow
-         */
-        private int decodeLength(ByteBuffer bytes) {
+		 * Decodes the length of a DER element from the given ByteBuffer.
+		 * @param bytes the ByteBuffer containing the DER element
+		 * @return the decoded length of the DER element
+		 * @throws IllegalStateException if the length encoding is infinite or reserved,
+		 * or if there is a length overflow
+		 */
+		private int decodeLength(ByteBuffer bytes) {
 			byte b = bytes.get();
 			if ((b & 0x80) == 0) {
 				return b & 0x7F;
@@ -478,52 +464,52 @@ final class PrivateKeyParser {
 		}
 
 		/**
-         * Checks if the given ValueType is equal to the valueType of this DerElement.
-         * 
-         * @param valueType the ValueType to compare with
-         * @return true if the valueType is equal to the valueType of this DerElement, false otherwise
-         */
-        boolean isType(ValueType valueType) {
+		 * Checks if the given ValueType is equal to the valueType of this DerElement.
+		 * @param valueType the ValueType to compare with
+		 * @return true if the valueType is equal to the valueType of this DerElement,
+		 * false otherwise
+		 */
+		boolean isType(ValueType valueType) {
 			return this.valueType == valueType;
 		}
 
 		/**
-         * Checks if the given ValueType and TagType match the current DerElement's valueType and tagType.
-         * 
-         * @param valueType the ValueType to compare with the current DerElement's valueType
-         * @param tagType the TagType to compare with the current DerElement's tagType
-         * @return true if the valueType and tagType match the current DerElement's valueType and tagType, false otherwise
-         */
-        boolean isType(ValueType valueType, TagType tagType) {
+		 * Checks if the given ValueType and TagType match the current DerElement's
+		 * valueType and tagType.
+		 * @param valueType the ValueType to compare with the current DerElement's
+		 * valueType
+		 * @param tagType the TagType to compare with the current DerElement's tagType
+		 * @return true if the valueType and tagType match the current DerElement's
+		 * valueType and tagType, false otherwise
+		 */
+		boolean isType(ValueType valueType, TagType tagType) {
 			return this.valueType == valueType && this.tagType == tagType.getNumber();
 		}
 
 		/**
-         * Returns the contents of the ByteBuffer.
-         *
-         * @return the contents of the ByteBuffer
-         */
-        ByteBuffer getContents() {
+		 * Returns the contents of the ByteBuffer.
+		 * @return the contents of the ByteBuffer
+		 */
+		ByteBuffer getContents() {
 			return this.contents;
 		}
 
 		/**
-         * Creates a new DerElement object from the given byte array.
-         * 
-         * @param bytes the byte array to create the DerElement from
-         * @return the created DerElement object
-         */
-        static DerElement of(byte[] bytes) {
+		 * Creates a new DerElement object from the given byte array.
+		 * @param bytes the byte array to create the DerElement from
+		 * @return the created DerElement object
+		 */
+		static DerElement of(byte[] bytes) {
 			return of(ByteBuffer.wrap(bytes));
 		}
 
 		/**
-         * Creates a new DerElement object from the given ByteBuffer.
-         * 
-         * @param bytes the ByteBuffer containing the DER encoded data
-         * @return a new DerElement object if the ByteBuffer has remaining bytes, null otherwise
-         */
-        static DerElement of(ByteBuffer bytes) {
+		 * Creates a new DerElement object from the given ByteBuffer.
+		 * @param bytes the ByteBuffer containing the DER encoded data
+		 * @return a new DerElement object if the ByteBuffer has remaining bytes, null
+		 * otherwise
+		 */
+		static DerElement of(ByteBuffer bytes) {
 			return (bytes.remaining() > 0) ? new DerElement(bytes) : null;
 		}
 
@@ -540,20 +526,18 @@ final class PrivateKeyParser {
 			private final int number;
 
 			/**
-         * Creates a new instance of DerElement with the specified number.
-         * 
-         * @param number the number to be assigned to the DerElement
-         */
-        TagType(int number) {
+			 * Creates a new instance of DerElement with the specified number.
+			 * @param number the number to be assigned to the DerElement
+			 */
+			TagType(int number) {
 				this.number = number;
 			}
 
 			/**
-         * Returns the value of the number property.
-         *
-         * @return the value of the number property
-         */
-        int getNumber() {
+			 * Returns the value of the number property.
+			 * @return the value of the number property
+			 */
+			int getNumber() {
 				return this.number;
 			}
 

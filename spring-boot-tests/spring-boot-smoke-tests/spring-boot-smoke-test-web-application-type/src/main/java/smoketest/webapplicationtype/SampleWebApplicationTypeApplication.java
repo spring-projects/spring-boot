@@ -26,12 +26,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SampleWebApplicationTypeApplication {
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring Boot application by calling the SpringApplication.run() method.
-     *
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring Boot
+	 * application by calling the SpringApplication.run() method.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleWebApplicationTypeApplication.class, args);
 	}
 

@@ -41,29 +41,26 @@ class DocumentRoot {
 	private File directory;
 
 	/**
-     * Sets the logger for the DocumentRoot class.
-     * 
-     * @param logger the logger to be set
-     */
-    DocumentRoot(Log logger) {
+	 * Sets the logger for the DocumentRoot class.
+	 * @param logger the logger to be set
+	 */
+	DocumentRoot(Log logger) {
 		this.logger = logger;
 	}
 
 	/**
-     * Returns the directory associated with the DocumentRoot.
-     *
-     * @return the directory associated with the DocumentRoot
-     */
-    File getDirectory() {
+	 * Returns the directory associated with the DocumentRoot.
+	 * @return the directory associated with the DocumentRoot
+	 */
+	File getDirectory() {
 		return this.directory;
 	}
 
 	/**
-     * Sets the directory for the DocumentRoot.
-     * 
-     * @param directory the directory to set
-     */
-    void setDirectory(File directory) {
+	 * Sets the directory for the DocumentRoot.
+	 * @param directory the directory to set
+	 */
+	void setDirectory(File directory) {
 		this.directory = directory;
 	}
 
@@ -87,21 +84,19 @@ class DocumentRoot {
 	}
 
 	/**
-     * Returns the document root file for a WAR file.
-     * 
-     * @return the document root file for a WAR file
-     */
-    private File getWarFileDocumentRoot() {
+	 * Returns the document root file for a WAR file.
+	 * @return the document root file for a WAR file
+	 */
+	private File getWarFileDocumentRoot() {
 		return getArchiveFileDocumentRoot(".war");
 	}
 
 	/**
-     * Retrieves the archive file from the document root based on the given extension.
-     * 
-     * @param extension The file extension to filter the archive file.
-     * @return The archive file from the document root if found, otherwise null.
-     */
-    private File getArchiveFileDocumentRoot(String extension) {
+	 * Retrieves the archive file from the document root based on the given extension.
+	 * @param extension The file extension to filter the archive file.
+	 * @return The archive file from the document root if found, otherwise null.
+	 */
+	private File getArchiveFileDocumentRoot(String extension) {
 		File file = getCodeSourceArchive();
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + file);
@@ -114,30 +109,27 @@ class DocumentRoot {
 	}
 
 	/**
-     * Returns the document root of the exploded WAR file.
-     * 
-     * @return the document root of the exploded WAR file
-     */
-    private File getExplodedWarFileDocumentRoot() {
+	 * Returns the document root of the exploded WAR file.
+	 * @return the document root of the exploded WAR file
+	 */
+	private File getExplodedWarFileDocumentRoot() {
 		return getExplodedWarFileDocumentRoot(getCodeSourceArchive());
 	}
 
 	/**
-     * Returns the code source archive file associated with the current class.
-     * 
-     * @return the code source archive file
-     */
-    private File getCodeSourceArchive() {
+	 * Returns the code source archive file associated with the current class.
+	 * @return the code source archive file
+	 */
+	private File getCodeSourceArchive() {
 		return getCodeSourceArchive(getClass().getProtectionDomain().getCodeSource());
 	}
 
 	/**
-     * Retrieves the source archive file for the given CodeSource.
-     * 
-     * @param codeSource the CodeSource object representing the source location
-     * @return the File object representing the source archive file, or null if not found
-     */
-    File getCodeSourceArchive(CodeSource codeSource) {
+	 * Retrieves the source archive file for the given CodeSource.
+	 * @param codeSource the CodeSource object representing the source location
+	 * @return the File object representing the source archive file, or null if not found
+	 */
+	File getCodeSourceArchive(CodeSource codeSource) {
 		try {
 			URL location = (codeSource != null) ? codeSource.getLocation() : null;
 			if (location == null) {
@@ -163,12 +155,12 @@ class DocumentRoot {
 	}
 
 	/**
-     * Returns the document root directory of the exploded WAR file.
-     * 
-     * @param codeSourceFile the code source file of the exploded WAR file
-     * @return the document root directory as a File object, or null if the code source file is null or does not exist
-     */
-    final File getExplodedWarFileDocumentRoot(File codeSourceFile) {
+	 * Returns the document root directory of the exploded WAR file.
+	 * @param codeSourceFile the code source file of the exploded WAR file
+	 * @return the document root directory as a File object, or null if the code source
+	 * file is null or does not exist
+	 */
+	final File getExplodedWarFileDocumentRoot(File codeSourceFile) {
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + codeSourceFile);
 		}
@@ -184,13 +176,14 @@ class DocumentRoot {
 	}
 
 	/**
-     * Returns the common document root directory.
-     * 
-     * This method checks a list of common document root paths and returns the first one that exists and is a directory.
-     * 
-     * @return The common document root directory as a File object, or null if no valid root directory is found.
-     */
-    private File getCommonDocumentRoot() {
+	 * Returns the common document root directory.
+	 *
+	 * This method checks a list of common document root paths and returns the first one
+	 * that exists and is a directory.
+	 * @return The common document root directory as a File object, or null if no valid
+	 * root directory is found.
+	 */
+	private File getCommonDocumentRoot() {
 		for (String commonDocRoot : COMMON_DOC_ROOTS) {
 			File root = new File(commonDocRoot);
 			if (root.exists() && root.isDirectory()) {
@@ -201,12 +194,12 @@ class DocumentRoot {
 	}
 
 	/**
-     * Logs a message indicating that none of the document roots point to a directory and will be ignored.
-     * 
-     * @param none
-     * @return void
-     */
-    private void logNoDocumentRoots() {
+	 * Logs a message indicating that none of the document roots point to a directory and
+	 * will be ignored.
+	 * @param none
+	 * @return void
+	 */
+	private void logNoDocumentRoots() {
 		this.logger.debug("None of the document roots " + Arrays.asList(COMMON_DOC_ROOTS)
 				+ " point to a directory and will be ignored.");
 	}

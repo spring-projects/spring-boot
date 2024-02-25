@@ -39,12 +39,11 @@ class OperationReflectiveProcessor extends SimpleReflectiveProcessor {
 	private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 	/**
-     * Registers a method hint with the given reflection hints and method.
-     * 
-     * @param hints the reflection hints to register with
-     * @param method the method to register
-     */
-    @Override
+	 * Registers a method hint with the given reflection hints and method.
+	 * @param hints the reflection hints to register with
+	 * @param method the method to register
+	 */
+	@Override
 	protected void registerMethodHint(ReflectionHints hints, Method method) {
 		super.registerMethodHint(hints, method);
 		Type returnType = extractReturnType(method);
@@ -54,12 +53,11 @@ class OperationReflectiveProcessor extends SimpleReflectiveProcessor {
 	}
 
 	/**
-     * Extracts the return type of a given method.
-     * 
-     * @param method the method to extract the return type from
-     * @return the extracted return type
-     */
-    private Type extractReturnType(Method method) {
+	 * Extracts the return type of a given method.
+	 * @param method the method to extract the return type from
+	 * @return the extracted return type
+	 */
+	private Type extractReturnType(Method method) {
 		ResolvableType returnType = ResolvableType.forMethodReturnType(method);
 		if (!WebEndpointResponse.class.isAssignableFrom(method.getReturnType())) {
 			return returnType.getType();
@@ -68,12 +66,11 @@ class OperationReflectiveProcessor extends SimpleReflectiveProcessor {
 	}
 
 	/**
-     * Registers reflection hints for a given type.
-     * 
-     * @param hints the reflection hints to register
-     * @param type the type for which the reflection hints are registered
-     */
-    private void registerReflectionHints(ReflectionHints hints, Type type) {
+	 * Registers reflection hints for a given type.
+	 * @param hints the reflection hints to register
+	 * @param type the type for which the reflection hints are registered
+	 */
+	private void registerReflectionHints(ReflectionHints hints, Type type) {
 		if (!type.equals(Resource.class)) {
 			this.bindingRegistrar.registerReflectionHints(hints, type);
 		}

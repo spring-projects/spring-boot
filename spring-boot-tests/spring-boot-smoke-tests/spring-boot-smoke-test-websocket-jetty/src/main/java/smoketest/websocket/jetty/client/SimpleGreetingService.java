@@ -22,11 +22,10 @@ package smoketest.websocket.jetty.client;
 public class SimpleGreetingService implements GreetingService {
 
 	/**
-     * Returns the greeting message.
-     *
-     * @return the greeting message "Hello world!"
-     */
-    @Override
+	 * Returns the greeting message.
+	 * @return the greeting message "Hello world!"
+	 */
+	@Override
 	public String getGreeting() {
 		return "Hello world!";
 	}

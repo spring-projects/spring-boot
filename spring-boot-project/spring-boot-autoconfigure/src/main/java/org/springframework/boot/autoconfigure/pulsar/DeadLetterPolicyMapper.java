@@ -32,19 +32,20 @@ import org.springframework.util.Assert;
 final class DeadLetterPolicyMapper {
 
 	/**
-     * Constructs a new DeadLetterPolicyMapper.
-     */
-    private DeadLetterPolicyMapper() {
+	 * Constructs a new DeadLetterPolicyMapper.
+	 */
+	private DeadLetterPolicyMapper() {
 	}
 
 	/**
-     * Maps the given PulsarProperties.Consumer.DeadLetterPolicy to a DeadLetterPolicy object.
-     *
-     * @param policy the PulsarProperties.Consumer.DeadLetterPolicy to be mapped
-     * @return the mapped DeadLetterPolicy object
-     * @throws IllegalStateException if the 'max-redelivery-count' property value is not positive
-     */
-    static DeadLetterPolicy map(PulsarProperties.Consumer.DeadLetterPolicy policy) {
+	 * Maps the given PulsarProperties.Consumer.DeadLetterPolicy to a DeadLetterPolicy
+	 * object.
+	 * @param policy the PulsarProperties.Consumer.DeadLetterPolicy to be mapped
+	 * @return the mapped DeadLetterPolicy object
+	 * @throws IllegalStateException if the 'max-redelivery-count' property value is not
+	 * positive
+	 */
+	static DeadLetterPolicy map(PulsarProperties.Consumer.DeadLetterPolicy policy) {
 		Assert.state(policy.getMaxRedeliverCount() > 0,
 				"Pulsar DeadLetterPolicy must have a positive 'max-redelivery-count' property value");
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();

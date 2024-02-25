@@ -64,11 +64,10 @@ public class StandardConfigDataResource extends ConfigDataResource {
 	}
 
 	/**
-     * Returns the reference to the StandardConfigDataReference object.
-     * 
-     * @return the reference to the StandardConfigDataReference object
-     */
-    StandardConfigDataReference getReference() {
+	 * Returns the reference to the StandardConfigDataReference object.
+	 * @return the reference to the StandardConfigDataReference object
+	 */
+	StandardConfigDataReference getReference() {
 		return this.reference;
 	}
 
@@ -91,21 +90,20 @@ public class StandardConfigDataResource extends ConfigDataResource {
 	}
 
 	/**
-     * Returns a boolean value indicating whether the directory is empty or not.
-     *
-     * @return true if the directory is empty, false otherwise
-     */
-    boolean isEmptyDirectory() {
+	 * Returns a boolean value indicating whether the directory is empty or not.
+	 * @return true if the directory is empty, false otherwise
+	 */
+	boolean isEmptyDirectory() {
 		return this.emptyDirectory;
 	}
 
 	/**
-     * Compares this StandardConfigDataResource object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this StandardConfigDataResource object to the specified object for
+	 * equality.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -118,51 +116,48 @@ public class StandardConfigDataResource extends ConfigDataResource {
 	}
 
 	/**
-     * Checks if two resources have the same underlying file or are equal.
-     * 
-     * @param ours the first resource to compare
-     * @param other the second resource to compare
-     * @return true if the resources have the same underlying file or are equal, false otherwise
-     */
-    private boolean isSameUnderlyingResource(Resource ours, Resource other) {
+	 * Checks if two resources have the same underlying file or are equal.
+	 * @param ours the first resource to compare
+	 * @param other the second resource to compare
+	 * @return true if the resources have the same underlying file or are equal, false
+	 * otherwise
+	 */
+	private boolean isSameUnderlyingResource(Resource ours, Resource other) {
 		return ours.equals(other) || isSameFile(getUnderlyingFile(ours), getUnderlyingFile(other));
 	}
 
 	/**
-     * Checks if two files are the same.
-     * 
-     * @param ours the first file to compare
-     * @param other the second file to compare
-     * @return true if the files are the same, false otherwise
-     */
-    private boolean isSameFile(File ours, File other) {
+	 * Checks if two files are the same.
+	 * @param ours the first file to compare
+	 * @param other the second file to compare
+	 * @return true if the files are the same, false otherwise
+	 */
+	private boolean isSameFile(File ours, File other) {
 		return (ours != null) && ours.equals(other);
 	}
 
 	/**
-     * Returns the hash code value for this StandardConfigDataResource object.
-     * 
-     * The hash code is calculated based on the underlying file associated with the resource, if available.
-     * If the underlying file is not available, the hash code is calculated based on the resource itself.
-     * 
-     * @return the hash code value for this StandardConfigDataResource object
-     */
-    @Override
+	 * Returns the hash code value for this StandardConfigDataResource object.
+	 *
+	 * The hash code is calculated based on the underlying file associated with the
+	 * resource, if available. If the underlying file is not available, the hash code is
+	 * calculated based on the resource itself.
+	 * @return the hash code value for this StandardConfigDataResource object
+	 */
+	@Override
 	public int hashCode() {
 		File underlyingFile = getUnderlyingFile(this.resource);
 		return (underlyingFile != null) ? underlyingFile.hashCode() : this.resource.hashCode();
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * If the resource is an instance of FileSystemResource or FileUrlResource,
-     * it returns the file path of the resource.
-     * If an IOException occurs while getting the file path, it ignores the exception.
-     * Otherwise, it returns the string representation of the resource.
-     *
-     * @return a string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object. If the resource is an instance of
+	 * FileSystemResource or FileUrlResource, it returns the file path of the resource. If
+	 * an IOException occurs while getting the file path, it ignores the exception.
+	 * Otherwise, it returns the string representation of the resource.
+	 * @return a string representation of the object
+	 */
+	@Override
 	public String toString() {
 		if (this.resource instanceof FileSystemResource || this.resource instanceof FileUrlResource) {
 			try {
@@ -176,12 +171,11 @@ public class StandardConfigDataResource extends ConfigDataResource {
 	}
 
 	/**
-     * Returns the underlying file for the given resource.
-     * 
-     * @param resource the resource for which to retrieve the underlying file
-     * @return the underlying file for the resource, or null if it cannot be obtained
-     */
-    private File getUnderlyingFile(Resource resource) {
+	 * Returns the underlying file for the given resource.
+	 * @param resource the resource for which to retrieve the underlying file
+	 * @return the underlying file for the resource, or null if it cannot be obtained
+	 */
+	private File getUnderlyingFile(Resource resource) {
 		try {
 			if (resource instanceof ClassPathResource || resource instanceof FileSystemResource
 					|| resource instanceof FileUrlResource) {

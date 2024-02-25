@@ -39,12 +39,12 @@ public class ConfigDataApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	/**
-     * Initializes the application context by adding random value property source to the environment,
-     * applying the config data environment post processor, and moving the default properties property source to the end.
-     * 
-     * @param applicationContext the configurable application context
-     */
-    @Override
+	 * Initializes the application context by adding random value property source to the
+	 * environment, applying the config data environment post processor, and moving the
+	 * default properties property source to the end.
+	 * @param applicationContext the configurable application context
+	 */
+	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		ConfigurableEnvironment environment = applicationContext.getEnvironment();
 		RandomValuePropertySource.addToEnvironment(environment);

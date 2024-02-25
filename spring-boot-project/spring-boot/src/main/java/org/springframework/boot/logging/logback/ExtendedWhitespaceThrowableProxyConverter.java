@@ -30,12 +30,11 @@ import ch.qos.logback.core.CoreConstants;
 public class ExtendedWhitespaceThrowableProxyConverter extends ExtendedThrowableProxyConverter {
 
 	/**
-     * Converts the given throwable proxy to a string representation.
-     * 
-     * @param tp the throwable proxy to convert
-     * @return the string representation of the throwable proxy
-     */
-    @Override
+	 * Converts the given throwable proxy to a string representation.
+	 * @param tp the throwable proxy to convert
+	 * @return the string representation of the throwable proxy
+	 */
+	@Override
 	protected String throwableProxyToString(IThrowableProxy tp) {
 		return CoreConstants.LINE_SEPARATOR + super.throwableProxyToString(tp) + CoreConstants.LINE_SEPARATOR;
 	}

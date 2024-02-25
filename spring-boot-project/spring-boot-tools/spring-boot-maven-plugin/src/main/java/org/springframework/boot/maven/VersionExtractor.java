@@ -33,9 +33,9 @@ import java.util.jar.JarFile;
 final class VersionExtractor {
 
 	/**
-     * Private constructor for the VersionExtractor class.
-     */
-    private VersionExtractor() {
+	 * Private constructor for the VersionExtractor class.
+	 */
+	private VersionExtractor() {
 	}
 
 	/**
@@ -64,13 +64,12 @@ final class VersionExtractor {
 	}
 
 	/**
-     * Retrieves the implementation version of a JAR file.
-     * 
-     * @param jarFile the JAR file from which to extract the implementation version
-     * @return the implementation version of the JAR file, or null if not found
-     * @throws IOException if an I/O error occurs while reading the JAR file
-     */
-    private static String getImplementationVersion(JarFile jarFile) throws IOException {
+	 * Retrieves the implementation version of a JAR file.
+	 * @param jarFile the JAR file from which to extract the implementation version
+	 * @return the implementation version of the JAR file, or null if not found
+	 * @throws IOException if an I/O error occurs while reading the JAR file
+	 */
+	private static String getImplementationVersion(JarFile jarFile) throws IOException {
 		return jarFile.getManifest().getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
 	}
 

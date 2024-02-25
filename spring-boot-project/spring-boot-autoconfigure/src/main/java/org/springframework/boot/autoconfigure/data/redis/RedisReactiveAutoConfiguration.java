@@ -44,18 +44,20 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 public class RedisReactiveAutoConfiguration {
 
 	/**
-     * Creates a {@link ReactiveRedisTemplate} bean if there is no existing bean with the name "reactiveRedisTemplate"
-     * and if a bean of type {@link ReactiveRedisConnectionFactory} is present.
-     * 
-     * The {@link ReactiveRedisTemplate} is configured with a {@link RedisSerializer} using the provided
-     * {@link ResourceLoader} to obtain the class loader. The serialization context is then built using the
-     * {@link RedisSerializationContext} with the same {@link RedisSerializer} for keys, values, hash keys, and hash values.
-     * 
-     * @param reactiveRedisConnectionFactory the {@link ReactiveRedisConnectionFactory} bean
-     * @param resourceLoader the {@link ResourceLoader} used to obtain the class loader
-     * @return the created {@link ReactiveRedisTemplate} bean
-     */
-    @Bean
+	 * Creates a {@link ReactiveRedisTemplate} bean if there is no existing bean with the
+	 * name "reactiveRedisTemplate" and if a bean of type
+	 * {@link ReactiveRedisConnectionFactory} is present.
+	 *
+	 * The {@link ReactiveRedisTemplate} is configured with a {@link RedisSerializer}
+	 * using the provided {@link ResourceLoader} to obtain the class loader. The
+	 * serialization context is then built using the {@link RedisSerializationContext}
+	 * with the same {@link RedisSerializer} for keys, values, hash keys, and hash values.
+	 * @param reactiveRedisConnectionFactory the {@link ReactiveRedisConnectionFactory}
+	 * bean
+	 * @param resourceLoader the {@link ResourceLoader} used to obtain the class loader
+	 * @return the created {@link ReactiveRedisTemplate} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = "reactiveRedisTemplate")
 	@ConditionalOnBean(ReactiveRedisConnectionFactory.class)
 	public ReactiveRedisTemplate<Object, Object> reactiveRedisTemplate(
@@ -72,12 +74,14 @@ public class RedisReactiveAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of ReactiveStringRedisTemplate if no bean with the name "reactiveStringRedisTemplate" is already present in the application context and if a bean of type ReactiveRedisConnectionFactory is present.
-     * 
-     * @param reactiveRedisConnectionFactory the ReactiveRedisConnectionFactory used to create the ReactiveStringRedisTemplate
-     * @return the newly created ReactiveStringRedisTemplate
-     */
-    @Bean
+	 * Creates a new instance of ReactiveStringRedisTemplate if no bean with the name
+	 * "reactiveStringRedisTemplate" is already present in the application context and if
+	 * a bean of type ReactiveRedisConnectionFactory is present.
+	 * @param reactiveRedisConnectionFactory the ReactiveRedisConnectionFactory used to
+	 * create the ReactiveStringRedisTemplate
+	 * @return the newly created ReactiveStringRedisTemplate
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = "reactiveStringRedisTemplate")
 	@ConditionalOnBean(ReactiveRedisConnectionFactory.class)
 	public ReactiveStringRedisTemplate reactiveStringRedisTemplate(

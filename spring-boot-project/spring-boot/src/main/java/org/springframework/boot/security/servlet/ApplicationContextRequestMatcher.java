@@ -48,23 +48,22 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 	private final Object initializeLock = new Object();
 
 	/**
-     * Constructs a new ApplicationContextRequestMatcher with the specified context class.
-     * 
-     * @param contextClass the class representing the application context
-     * @throws IllegalArgumentException if the context class is null
-     */
-    public ApplicationContextRequestMatcher(Class<? extends C> contextClass) {
+	 * Constructs a new ApplicationContextRequestMatcher with the specified context class.
+	 * @param contextClass the class representing the application context
+	 * @throws IllegalArgumentException if the context class is null
+	 */
+	public ApplicationContextRequestMatcher(Class<? extends C> contextClass) {
 		Assert.notNull(contextClass, "Context class must not be null");
 		this.contextClass = contextClass;
 	}
 
 	/**
-     * Determines if the given HttpServletRequest matches the conditions specified by this ApplicationContextRequestMatcher.
-     * 
-     * @param request the HttpServletRequest to be matched
-     * @return true if the request matches the conditions, false otherwise
-     */
-    @Override
+	 * Determines if the given HttpServletRequest matches the conditions specified by this
+	 * ApplicationContextRequestMatcher.
+	 * @param request the HttpServletRequest to be matched
+	 * @return true if the request matches the conditions, false otherwise
+	 */
+	@Override
 	public final boolean matches(HttpServletRequest request) {
 		WebApplicationContext webApplicationContext = WebApplicationContextUtils
 			.getRequiredWebApplicationContext(request.getServletContext());
@@ -84,15 +83,15 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 	}
 
 	/**
-     * Returns the context of type C from the given WebApplicationContext.
-     * If the given webApplicationContext is an instance of the contextClass,
-     * it is casted to type C and returned.
-     * Otherwise, the contextClass is used to retrieve the context from the webApplicationContext.
-     *
-     * @param webApplicationContext the WebApplicationContext from which to retrieve the context
-     * @return the context of type C from the webApplicationContext
-     */
-    @SuppressWarnings("unchecked")
+	 * Returns the context of type C from the given WebApplicationContext. If the given
+	 * webApplicationContext is an instance of the contextClass, it is casted to type C
+	 * and returned. Otherwise, the contextClass is used to retrieve the context from the
+	 * webApplicationContext.
+	 * @param webApplicationContext the WebApplicationContext from which to retrieve the
+	 * context
+	 * @return the context of type C from the webApplicationContext
+	 */
+	@SuppressWarnings("unchecked")
 	private C getContext(WebApplicationContext webApplicationContext) {
 		if (this.contextClass.isInstance(webApplicationContext)) {
 			return (C) webApplicationContext;

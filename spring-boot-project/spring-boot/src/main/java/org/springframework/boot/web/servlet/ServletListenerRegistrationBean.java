@@ -108,25 +108,23 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends Re
 	}
 
 	/**
-     * Returns the description of the ServletListenerRegistrationBean.
-     * 
-     * @return the description of the ServletListenerRegistrationBean
-     * @throws IllegalArgumentException if the listener is null
-     */
-    @Override
+	 * Returns the description of the ServletListenerRegistrationBean.
+	 * @return the description of the ServletListenerRegistrationBean
+	 * @throws IllegalArgumentException if the listener is null
+	 */
+	@Override
 	protected String getDescription() {
 		Assert.notNull(this.listener, "Listener must not be null");
 		return "listener " + this.listener;
 	}
 
 	/**
-     * Registers a listener with the given description and servlet context.
-     * 
-     * @param description the description of the listener
-     * @param servletContext the servlet context to register the listener with
-     * @throws IllegalStateException if failed to add the listener to the servlet context
-     */
-    @Override
+	 * Registers a listener with the given description and servlet context.
+	 * @param description the description of the listener
+	 * @param servletContext the servlet context to register the listener with
+	 * @throws IllegalStateException if failed to add the listener to the servlet context
+	 */
+	@Override
 	protected void register(String description, ServletContext servletContext) {
 		try {
 			servletContext.addListener(this.listener);

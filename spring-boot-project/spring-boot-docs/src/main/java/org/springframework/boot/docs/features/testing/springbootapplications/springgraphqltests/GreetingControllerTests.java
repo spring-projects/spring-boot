@@ -33,9 +33,10 @@ class GreetingControllerTests {
 	private GraphQlTester graphQlTester;
 
 	/**
-     * Test case to verify that the greeting message is correct when a specific name is provided.
-     */
-    @Test
+	 * Test case to verify that the greeting message is correct when a specific name is
+	 * provided.
+	 */
+	@Test
 	void shouldGreetWithSpecificName() {
 		this.graphQlTester.document("{ greeting(name: \"Alice\") } ")
 			.execute()
@@ -45,9 +46,10 @@ class GreetingControllerTests {
 	}
 
 	/**
-     * Test case to verify that the greeting endpoint returns the default greeting message when no name is provided.
-     */
-    @Test
+	 * Test case to verify that the greeting endpoint returns the default greeting message
+	 * when no name is provided.
+	 */
+	@Test
 	void shouldGreetWithDefaultName() {
 		this.graphQlTester.document("{ greeting } ")
 			.execute()

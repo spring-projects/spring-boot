@@ -69,110 +69,99 @@ public class NewRelicProperties extends StepRegistryProperties {
 	private String uri = "https://insights-collector.newrelic.com";
 
 	/**
-     * Returns the value indicating whether the meter name event type is enabled.
-     * 
-     * @return true if the meter name event type is enabled, false otherwise
-     */
-    public boolean isMeterNameEventTypeEnabled() {
+	 * Returns the value indicating whether the meter name event type is enabled.
+	 * @return true if the meter name event type is enabled, false otherwise
+	 */
+	public boolean isMeterNameEventTypeEnabled() {
 		return this.meterNameEventTypeEnabled;
 	}
 
 	/**
-     * Sets the flag indicating whether the meter name event type is enabled.
-     * 
-     * @param meterNameEventTypeEnabled true if the meter name event type is enabled, false otherwise
-     */
-    public void setMeterNameEventTypeEnabled(boolean meterNameEventTypeEnabled) {
+	 * Sets the flag indicating whether the meter name event type is enabled.
+	 * @param meterNameEventTypeEnabled true if the meter name event type is enabled,
+	 * false otherwise
+	 */
+	public void setMeterNameEventTypeEnabled(boolean meterNameEventTypeEnabled) {
 		this.meterNameEventTypeEnabled = meterNameEventTypeEnabled;
 	}
 
 	/**
-     * Returns the event type of the NewRelicProperties object.
-     * 
-     * @return the event type of the NewRelicProperties object
-     */
-    public String getEventType() {
+	 * Returns the event type of the NewRelicProperties object.
+	 * @return the event type of the NewRelicProperties object
+	 */
+	public String getEventType() {
 		return this.eventType;
 	}
 
 	/**
-     * Sets the event type for NewRelicProperties.
-     * 
-     * @param eventType the event type to be set
-     */
-    public void setEventType(String eventType) {
+	 * Sets the event type for NewRelicProperties.
+	 * @param eventType the event type to be set
+	 */
+	public void setEventType(String eventType) {
 		this.eventType = eventType;
 	}
 
 	/**
-     * Returns the client provider type.
-     * 
-     * @return the client provider type
-     */
-    public ClientProviderType getClientProviderType() {
+	 * Returns the client provider type.
+	 * @return the client provider type
+	 */
+	public ClientProviderType getClientProviderType() {
 		return this.clientProviderType;
 	}
 
 	/**
-     * Sets the client provider type for the NewRelicProperties.
-     * 
-     * @param clientProviderType the client provider type to be set
-     */
-    public void setClientProviderType(ClientProviderType clientProviderType) {
+	 * Sets the client provider type for the NewRelicProperties.
+	 * @param clientProviderType the client provider type to be set
+	 */
+	public void setClientProviderType(ClientProviderType clientProviderType) {
 		this.clientProviderType = clientProviderType;
 	}
 
 	/**
-     * Returns the API key.
-     *
-     * @return the API key
-     */
-    public String getApiKey() {
+	 * Returns the API key.
+	 * @return the API key
+	 */
+	public String getApiKey() {
 		return this.apiKey;
 	}
 
 	/**
-     * Sets the API key for New Relic.
-     * 
-     * @param apiKey the API key to be set
-     */
-    public void setApiKey(String apiKey) {
+	 * Sets the API key for New Relic.
+	 * @param apiKey the API key to be set
+	 */
+	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
 	}
 
 	/**
-     * Returns the account ID associated with the NewRelicProperties object.
-     * 
-     * @return the account ID
-     */
-    public String getAccountId() {
+	 * Returns the account ID associated with the NewRelicProperties object.
+	 * @return the account ID
+	 */
+	public String getAccountId() {
 		return this.accountId;
 	}
 
 	/**
-     * Sets the account ID for the New Relic properties.
-     * 
-     * @param accountId the account ID to be set
-     */
-    public void setAccountId(String accountId) {
+	 * Sets the account ID for the New Relic properties.
+	 * @param accountId the account ID to be set
+	 */
+	public void setAccountId(String accountId) {
 		this.accountId = accountId;
 	}
 
 	/**
-     * Returns the URI of the NewRelicProperties object.
-     *
-     * @return the URI of the NewRelicProperties object
-     */
-    public String getUri() {
+	 * Returns the URI of the NewRelicProperties object.
+	 * @return the URI of the NewRelicProperties object
+	 */
+	public String getUri() {
 		return this.uri;
 	}
 
 	/**
-     * Sets the URI for the New Relic properties.
-     * 
-     * @param uri the URI to set
-     */
-    public void setUri(String uri) {
+	 * Sets the URI for the New Relic properties.
+	 * @param uri the URI to set
+	 */
+	public void setUri(String uri) {
 		this.uri = uri;
 	}
 

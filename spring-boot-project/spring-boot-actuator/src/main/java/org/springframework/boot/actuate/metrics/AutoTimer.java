@@ -51,22 +51,20 @@ public interface AutoTimer {
 	AutoTimer DISABLED = new AutoTimer() {
 
 		/**
-     * Returns whether the AutoTimer is enabled or not.
-     * 
-     * @return true if the AutoTimer is enabled, false otherwise.
-     */
-    @Override
+		 * Returns whether the AutoTimer is enabled or not.
+		 * @return true if the AutoTimer is enabled, false otherwise.
+		 */
+		@Override
 		public boolean isEnabled() {
 			return false;
 		}
 
 		/**
-     * Applies the given builder to the AutoTimer.
-     * 
-     * @param builder the builder to apply
-     * @throws IllegalStateException if the AutoTimer is disabled
-     */
-    @Override
+		 * Applies the given builder to the AutoTimer.
+		 * @param builder the builder to apply
+		 * @throws IllegalStateException if the AutoTimer is disabled
+		 */
+		@Override
 		public void apply(Builder builder) {
 			throw new IllegalStateException("AutoTimer is disabled");
 		}

@@ -46,11 +46,10 @@ public class DefaultCommandFactory implements CommandFactory {
 	}
 
 	/**
-     * Returns a collection of commands.
-     * 
-     * @return the collection of commands
-     */
-    @Override
+	 * Returns a collection of commands.
+	 * @return the collection of commands
+	 */
+	@Override
 	public Collection<Command> getCommands() {
 		return DEFAULT_COMMANDS;
 	}

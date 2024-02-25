@@ -40,59 +40,55 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	};
 
 	/**
-     * Constructs a new JarLauncher object.
-     */
-    public JarLauncher() {
+	 * Constructs a new JarLauncher object.
+	 */
+	public JarLauncher() {
 	}
 
 	/**
-     * Constructs a new JarLauncher object with the specified Archive.
-     * 
-     * @param archive the Archive object representing the JAR file to be launched
-     */
-    protected JarLauncher(Archive archive) {
+	 * Constructs a new JarLauncher object with the specified Archive.
+	 * @param archive the Archive object representing the JAR file to be launched
+	 */
+	protected JarLauncher(Archive archive) {
 		super(archive);
 	}
 
 	/**
-     * Returns whether the class path archives should be post-processed.
-     * 
-     * @return {@code true} if the class path archives should be post-processed, {@code false} otherwise.
-     */
-    @Override
+	 * Returns whether the class path archives should be post-processed.
+	 * @return {@code true} if the class path archives should be post-processed,
+	 * {@code false} otherwise.
+	 */
+	@Override
 	protected boolean isPostProcessingClassPathArchives() {
 		return false;
 	}
 
 	/**
-     * Determines if the given entry is a nested archive.
-     * 
-     * @param entry the entry to check
-     * @return true if the entry is a nested archive, false otherwise
-     */
-    @Override
+	 * Determines if the given entry is a nested archive.
+	 * @param entry the entry to check
+	 * @return true if the entry is a nested archive, false otherwise
+	 */
+	@Override
 	protected boolean isNestedArchive(Archive.Entry entry) {
 		return NESTED_ARCHIVE_ENTRY_FILTER.matches(entry);
 	}
 
 	/**
-     * Returns the prefix path for archive entries.
-     * 
-     * @return the prefix path for archive entries
-     */
-    @Override
+	 * Returns the prefix path for archive entries.
+	 * @return the prefix path for archive entries
+	 */
+	@Override
 	protected String getArchiveEntryPathPrefix() {
 		return "BOOT-INF/";
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It launches the JarLauncher by creating a new instance and calling the launch method.
-     *
-     * @param args the command line arguments passed to the application
-     * @throws Exception if an error occurs during the execution of the launch method
-     */
-    public static void main(String[] args) throws Exception {
+	 * The main method is the entry point of the application. It launches the JarLauncher
+	 * by creating a new instance and calling the launch method.
+	 * @param args the command line arguments passed to the application
+	 * @throws Exception if an error occurs during the execution of the launch method
+	 */
+	public static void main(String[] args) throws Exception {
 		new JarLauncher().launch(args);
 	}
 

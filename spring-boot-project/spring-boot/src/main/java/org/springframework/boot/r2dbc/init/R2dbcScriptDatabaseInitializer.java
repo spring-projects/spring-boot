@@ -50,21 +50,20 @@ public class R2dbcScriptDatabaseInitializer extends AbstractScriptDatabaseInitia
 	}
 
 	/**
-     * Determines if the database is an embedded database.
-     * 
-     * @return {@code true} if the database is an embedded database, {@code false} otherwise.
-     */
-    @Override
+	 * Determines if the database is an embedded database.
+	 * @return {@code true} if the database is an embedded database, {@code false}
+	 * otherwise.
+	 */
+	@Override
 	protected boolean isEmbeddedDatabase() {
 		return EmbeddedDatabaseConnection.isEmbedded(this.connectionFactory);
 	}
 
 	/**
-     * Runs the given scripts on the database.
-     * 
-     * @param scripts the scripts to be executed
-     */
-    @Override
+	 * Runs the given scripts on the database.
+	 * @param scripts the scripts to be executed
+	 */
+	@Override
 	protected void runScripts(Scripts scripts) {
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		populator.setContinueOnError(scripts.isContinueOnError());

@@ -24,20 +24,18 @@ public class MyService {
 	private final String name;
 
 	/**
-     * Constructs a new instance of MyService with the specified name.
-     *
-     * @param name the name of the service
-     */
-    public MyService(String name) {
+	 * Constructs a new instance of MyService with the specified name.
+	 * @param name the name of the service
+	 */
+	public MyService(String name) {
 		this.name = name;
 	}
 
 	/**
-     * Returns the name of the object.
-     *
-     * @return the name of the object
-     */
-    public String getName() {
+	 * Returns the name of the object.
+	 * @return the name of the object
+	 */
+	public String getName() {
 		return this.name;
 	}
 

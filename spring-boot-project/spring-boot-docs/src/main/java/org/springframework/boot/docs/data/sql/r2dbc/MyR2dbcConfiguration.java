@@ -29,11 +29,10 @@ import org.springframework.context.annotation.Configuration;
 public class MyR2dbcConfiguration {
 
 	/**
-     * Customizes the connection factory options builder to set the port to 5432.
-     *
-     * @return the connection factory options builder customizer
-     */
-    @Bean
+	 * Customizes the connection factory options builder to set the port to 5432.
+	 * @return the connection factory options builder customizer
+	 */
+	@Bean
 	public ConnectionFactoryOptionsBuilderCustomizer connectionFactoryPortCustomizer() {
 		return (builder) -> builder.option(ConnectionFactoryOptions.PORT, 5432);
 	}

@@ -32,9 +32,9 @@ import org.springframework.security.oauth2.server.resource.introspection.Reactiv
 class ReactiveOAuth2ResourceServerConfiguration {
 
 	/**
-     * JwtConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JwtConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, ReactiveJwtDecoder.class })
 	@Import({ ReactiveOAuth2ResourceServerJwkConfiguration.JwtConfiguration.class,
 			ReactiveOAuth2ResourceServerJwkConfiguration.JwtConverterConfiguration.class,
@@ -44,9 +44,9 @@ class ReactiveOAuth2ResourceServerConfiguration {
 	}
 
 	/**
-     * OpaqueTokenConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * OpaqueTokenConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, ReactiveOpaqueTokenIntrospector.class })
 	@Import({ ReactiveOAuth2ResourceServerOpaqueTokenConfiguration.OpaqueTokenIntrospectionClientConfiguration.class,
 			ReactiveOAuth2ResourceServerOpaqueTokenConfiguration.WebSecurityConfiguration.class })

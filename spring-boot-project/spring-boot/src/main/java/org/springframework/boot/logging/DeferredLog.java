@@ -62,11 +62,10 @@ public class DeferredLog implements Log {
 	}
 
 	/**
-     * Returns a boolean value indicating whether tracing is enabled.
-     * 
-     * @return {@code true} if tracing is enabled, {@code false} otherwise.
-     */
-    @Override
+	 * Returns a boolean value indicating whether tracing is enabled.
+	 * @return {@code true} if tracing is enabled, {@code false} otherwise.
+	 */
+	@Override
 	public boolean isTraceEnabled() {
 		synchronized (this.lines) {
 			return (this.destination == null) || this.destination.isTraceEnabled();
@@ -74,11 +73,10 @@ public class DeferredLog implements Log {
 	}
 
 	/**
-     * Returns a boolean value indicating whether debug mode is enabled.
-     * 
-     * @return true if debug mode is enabled, false otherwise
-     */
-    @Override
+	 * Returns a boolean value indicating whether debug mode is enabled.
+	 * @return true if debug mode is enabled, false otherwise
+	 */
+	@Override
 	public boolean isDebugEnabled() {
 		synchronized (this.lines) {
 			return (this.destination == null) || this.destination.isDebugEnabled();
@@ -86,11 +84,10 @@ public class DeferredLog implements Log {
 	}
 
 	/**
-     * Returns a boolean value indicating whether the info level logging is enabled.
-     * 
-     * @return {@code true} if the info level logging is enabled, {@code false} otherwise.
-     */
-    @Override
+	 * Returns a boolean value indicating whether the info level logging is enabled.
+	 * @return {@code true} if the info level logging is enabled, {@code false} otherwise.
+	 */
+	@Override
 	public boolean isInfoEnabled() {
 		synchronized (this.lines) {
 			return (this.destination == null) || this.destination.isInfoEnabled();
@@ -98,11 +95,10 @@ public class DeferredLog implements Log {
 	}
 
 	/**
-     * Returns a boolean value indicating whether the warn level logging is enabled.
-     * 
-     * @return {@code true} if the warn level logging is enabled, {@code false} otherwise.
-     */
-    @Override
+	 * Returns a boolean value indicating whether the warn level logging is enabled.
+	 * @return {@code true} if the warn level logging is enabled, {@code false} otherwise.
+	 */
+	@Override
 	public boolean isWarnEnabled() {
 		synchronized (this.lines) {
 			return (this.destination == null) || this.destination.isWarnEnabled();
@@ -110,11 +106,10 @@ public class DeferredLog implements Log {
 	}
 
 	/**
-     * Returns a boolean value indicating whether error logging is enabled.
-     * 
-     * @return {@code true} if error logging is enabled, {@code false} otherwise.
-     */
-    @Override
+	 * Returns a boolean value indicating whether error logging is enabled.
+	 * @return {@code true} if error logging is enabled, {@code false} otherwise.
+	 */
+	@Override
 	public boolean isErrorEnabled() {
 		synchronized (this.lines) {
 			return (this.destination == null) || this.destination.isErrorEnabled();
@@ -122,11 +117,11 @@ public class DeferredLog implements Log {
 	}
 
 	/**
-     * Returns a boolean value indicating whether the fatal level logging is enabled.
-     * 
-     * @return {@code true} if the fatal level logging is enabled, {@code false} otherwise.
-     */
-    @Override
+	 * Returns a boolean value indicating whether the fatal level logging is enabled.
+	 * @return {@code true} if the fatal level logging is enabled, {@code false}
+	 * otherwise.
+	 */
+	@Override
 	public boolean isFatalEnabled() {
 		synchronized (this.lines) {
 			return (this.destination == null) || this.destination.isFatalEnabled();
@@ -134,139 +129,126 @@ public class DeferredLog implements Log {
 	}
 
 	/**
-     * Logs a trace message.
-     * 
-     * @param message the message to be logged
-     */
-    @Override
+	 * Logs a trace message.
+	 * @param message the message to be logged
+	 */
+	@Override
 	public void trace(Object message) {
 		log(LogLevel.TRACE, message, null);
 	}
 
 	/**
-     * Logs a trace level message with an optional throwable.
-     * 
-     * @param message the message to be logged
-     * @param t the throwable to be logged (optional)
-     */
-    @Override
+	 * Logs a trace level message with an optional throwable.
+	 * @param message the message to be logged
+	 * @param t the throwable to be logged (optional)
+	 */
+	@Override
 	public void trace(Object message, Throwable t) {
 		log(LogLevel.TRACE, message, t);
 	}
 
 	/**
-     * Logs a debug message.
-     * 
-     * @param message the message to be logged
-     */
-    @Override
+	 * Logs a debug message.
+	 * @param message the message to be logged
+	 */
+	@Override
 	public void debug(Object message) {
 		log(LogLevel.DEBUG, message, null);
 	}
 
 	/**
-     * Logs a debug message with an optional throwable.
-     * 
-     * @param message the debug message to be logged
-     * @param t the throwable to be logged (optional)
-     */
-    @Override
+	 * Logs a debug message with an optional throwable.
+	 * @param message the debug message to be logged
+	 * @param t the throwable to be logged (optional)
+	 */
+	@Override
 	public void debug(Object message, Throwable t) {
 		log(LogLevel.DEBUG, message, t);
 	}
 
 	/**
-     * Logs an informational message.
-     * 
-     * @param message the message to be logged
-     */
-    @Override
+	 * Logs an informational message.
+	 * @param message the message to be logged
+	 */
+	@Override
 	public void info(Object message) {
 		log(LogLevel.INFO, message, null);
 	}
 
 	/**
-     * Logs an informational message with an optional throwable.
-     *
-     * @param message the message to be logged
-     * @param t the throwable to be logged (optional)
-     */
-    @Override
+	 * Logs an informational message with an optional throwable.
+	 * @param message the message to be logged
+	 * @param t the throwable to be logged (optional)
+	 */
+	@Override
 	public void info(Object message, Throwable t) {
 		log(LogLevel.INFO, message, t);
 	}
 
 	/**
-     * Logs a warning message.
-     * 
-     * @param message the warning message to be logged
-     */
-    @Override
+	 * Logs a warning message.
+	 * @param message the warning message to be logged
+	 */
+	@Override
 	public void warn(Object message) {
 		log(LogLevel.WARN, message, null);
 	}
 
 	/**
-     * Logs a warning message with an associated throwable.
-     * 
-     * @param message the warning message to be logged
-     * @param t the throwable associated with the warning message
-     */
-    @Override
+	 * Logs a warning message with an associated throwable.
+	 * @param message the warning message to be logged
+	 * @param t the throwable associated with the warning message
+	 */
+	@Override
 	public void warn(Object message, Throwable t) {
 		log(LogLevel.WARN, message, t);
 	}
 
 	/**
-     * Logs an error message.
-     * 
-     * @param message the error message to be logged
-     */
-    @Override
+	 * Logs an error message.
+	 * @param message the error message to be logged
+	 */
+	@Override
 	public void error(Object message) {
 		log(LogLevel.ERROR, message, null);
 	}
 
 	/**
-     * Logs an error message with the specified throwable.
-     * 
-     * @param message the error message to be logged
-     * @param t the throwable associated with the error
-     */
-    @Override
+	 * Logs an error message with the specified throwable.
+	 * @param message the error message to be logged
+	 * @param t the throwable associated with the error
+	 */
+	@Override
 	public void error(Object message, Throwable t) {
 		log(LogLevel.ERROR, message, t);
 	}
 
 	/**
-     * Logs a fatal message.
-     * 
-     * @param message the message to be logged
-     */
-    @Override
+	 * Logs a fatal message.
+	 * @param message the message to be logged
+	 */
+	@Override
 	public void fatal(Object message) {
 		log(LogLevel.FATAL, message, null);
 	}
 
 	/**
-     * Logs a fatal message with an associated throwable.
-     * 
-     * @param message the message to be logged
-     * @param t the throwable associated with the message
-     */
-    @Override
+	 * Logs a fatal message with an associated throwable.
+	 * @param message the message to be logged
+	 * @param t the throwable associated with the message
+	 */
+	@Override
 	public void fatal(Object message, Throwable t) {
 		log(LogLevel.FATAL, message, t);
 	}
 
 	/**
-     * Logs a message with the specified log level and optional throwable.
-     * 
-     * @param level   the log level of the message
-     * @param message the message to be logged
-     * @param t       the optional throwable associated with the message
-     */
-    private void log(LogLevel level, Object message, Throwable t) {
+	 * Logs a message with the specified log level and optional throwable.
+	 * @param level the log level of the message
+	 * @param message the message to be logged
+	 * @param t the optional throwable associated with the message
+	 */
+	private void log(LogLevel level, Object message, Throwable t) {
 		synchronized (this.lines) {
 			if (this.destination != null) {
 				logTo(this.destination, level, message, t);
@@ -278,13 +260,14 @@ public class DeferredLog implements Log {
 	}
 
 	/**
-     * Switches over the destination of the DeferredLog.
-     * <p>
-     * This method is used to switch the destination of the DeferredLog by obtaining a new destination from the destinationSupplier.
-     * The destination is updated in a synchronized block to ensure thread safety.
-     * </p>
-     */
-    void switchOver() {
+	 * Switches over the destination of the DeferredLog.
+	 * <p>
+	 * This method is used to switch the destination of the DeferredLog by obtaining a new
+	 * destination from the destinationSupplier. The destination is updated in a
+	 * synchronized block to ensure thread safety.
+	 * </p>
+	 */
+	void switchOver() {
 		synchronized (this.lines) {
 			this.destination = this.destinationSupplier.get();
 		}
@@ -356,14 +339,13 @@ public class DeferredLog implements Log {
 	}
 
 	/**
-     * Logs a message with the specified log level and optional throwable.
-     * 
-     * @param log       the log instance to use for logging
-     * @param level     the log level to use
-     * @param message   the message to be logged
-     * @param throwable the optional throwable to be logged
-     */
-    static void logTo(Log log, LogLevel level, Object message, Throwable throwable) {
+	 * Logs a message with the specified log level and optional throwable.
+	 * @param log the log instance to use for logging
+	 * @param level the log level to use
+	 * @param message the message to be logged
+	 * @param throwable the optional throwable to be logged
+	 */
+	static void logTo(Log log, LogLevel level, Object message, Throwable throwable) {
 		switch (level) {
 			case TRACE -> log.trace(message, throwable);
 			case DEBUG -> log.debug(message, throwable);
@@ -375,37 +357,37 @@ public class DeferredLog implements Log {
 	}
 
 	/**
-     * Lines class.
-     */
-    static class Lines implements Iterable<Line> {
+	 * Lines class.
+	 */
+	static class Lines implements Iterable<Line> {
 
 		private final List<Line> lines = new ArrayList<>();
 
 		/**
-         * Adds a new line to the lines list with the specified destination supplier, log level, message, and throwable.
-         * 
-         * @param destinationSupplier the supplier that provides the destination for the log
-         * @param level the log level of the line
-         * @param message the log message
-         * @param throwable the throwable associated with the log, or null if none
-         */
-        void add(Supplier<Log> destinationSupplier, LogLevel level, Object message, Throwable throwable) {
+		 * Adds a new line to the lines list with the specified destination supplier, log
+		 * level, message, and throwable.
+		 * @param destinationSupplier the supplier that provides the destination for the
+		 * log
+		 * @param level the log level of the line
+		 * @param message the log message
+		 * @param throwable the throwable associated with the log, or null if none
+		 */
+		void add(Supplier<Log> destinationSupplier, LogLevel level, Object message, Throwable throwable) {
 			this.lines.add(new Line(destinationSupplier, level, message, throwable));
 		}
 
 		/**
-         * Clears all the lines in the Lines object.
-         */
-        void clear() {
+		 * Clears all the lines in the Lines object.
+		 */
+		void clear() {
 			this.lines.clear();
 		}
 
 		/**
-         * Returns an iterator over the elements in this Lines object in proper sequence.
-         *
-         * @return an iterator over the elements in this Lines object in proper sequence
-         */
-        @Override
+		 * Returns an iterator over the elements in this Lines object in proper sequence.
+		 * @return an iterator over the elements in this Lines object in proper sequence
+		 */
+		@Override
 		public Iterator<Line> iterator() {
 			return this.lines.iterator();
 		}
@@ -413,9 +395,9 @@ public class DeferredLog implements Log {
 	}
 
 	/**
-     * Line class.
-     */
-    static class Line {
+	 * Line class.
+	 */
+	static class Line {
 
 		private final Supplier<Log> destinationSupplier;
 
@@ -426,14 +408,14 @@ public class DeferredLog implements Log {
 		private final Throwable throwable;
 
 		/**
-         * Constructs a new Line object with the specified destination supplier, log level, message, and throwable.
-         * 
-         * @param destinationSupplier the supplier of the log destination
-         * @param level the log level
-         * @param message the log message
-         * @param throwable the throwable associated with the log message
-         */
-        Line(Supplier<Log> destinationSupplier, LogLevel level, Object message, Throwable throwable) {
+		 * Constructs a new Line object with the specified destination supplier, log
+		 * level, message, and throwable.
+		 * @param destinationSupplier the supplier of the log destination
+		 * @param level the log level
+		 * @param message the log message
+		 * @param throwable the throwable associated with the log message
+		 */
+		Line(Supplier<Log> destinationSupplier, LogLevel level, Object message, Throwable throwable) {
 			this.destinationSupplier = destinationSupplier;
 			this.level = level;
 			this.message = message;
@@ -441,38 +423,34 @@ public class DeferredLog implements Log {
 		}
 
 		/**
-         * Returns the destination of the Line.
-         *
-         * @return the destination of the Line
-         */
-        Log getDestination() {
+		 * Returns the destination of the Line.
+		 * @return the destination of the Line
+		 */
+		Log getDestination() {
 			return this.destinationSupplier.get();
 		}
 
 		/**
-         * Returns the log level of the Line object.
-         *
-         * @return the log level of the Line object
-         */
-        LogLevel getLevel() {
+		 * Returns the log level of the Line object.
+		 * @return the log level of the Line object
+		 */
+		LogLevel getLevel() {
 			return this.level;
 		}
 
 		/**
-         * Returns the message associated with this Line object.
-         *
-         * @return the message associated with this Line object
-         */
-        Object getMessage() {
+		 * Returns the message associated with this Line object.
+		 * @return the message associated with this Line object
+		 */
+		Object getMessage() {
 			return this.message;
 		}
 
 		/**
-         * Returns the throwable object associated with this Line.
-         *
-         * @return the throwable object associated with this Line
-         */
-        Throwable getThrowable() {
+		 * Returns the throwable object associated with this Line.
+		 * @return the throwable object associated with this Line
+		 */
+		Throwable getThrowable() {
 			return this.throwable;
 		}
 

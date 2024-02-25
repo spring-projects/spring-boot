@@ -31,33 +31,32 @@ class AliasedIterableConfigurationPropertySource extends AliasedConfigurationPro
 		implements IterableConfigurationPropertySource {
 
 	/**
-     * Constructs a new AliasedIterableConfigurationPropertySource with the specified source and aliases.
-     *
-     * @param source the IterableConfigurationPropertySource to be aliased
-     * @param aliases the ConfigurationPropertyNameAliases to be used for aliasing
-     */
-    AliasedIterableConfigurationPropertySource(IterableConfigurationPropertySource source,
+	 * Constructs a new AliasedIterableConfigurationPropertySource with the specified
+	 * source and aliases.
+	 * @param source the IterableConfigurationPropertySource to be aliased
+	 * @param aliases the ConfigurationPropertyNameAliases to be used for aliasing
+	 */
+	AliasedIterableConfigurationPropertySource(IterableConfigurationPropertySource source,
 			ConfigurationPropertyNameAliases aliases) {
 		super(source, aliases);
 	}
 
 	/**
-     * Returns a stream of ConfigurationPropertyName objects.
-     * 
-     * @return a stream of ConfigurationPropertyName objects
-     */
-    @Override
+	 * Returns a stream of ConfigurationPropertyName objects.
+	 * @return a stream of ConfigurationPropertyName objects
+	 */
+	@Override
 	public Stream<ConfigurationPropertyName> stream() {
 		return getSource().stream().flatMap(this::addAliases);
 	}
 
 	/**
-     * Adds aliases for the given configuration property name.
-     * 
-     * @param name the configuration property name
-     * @return a stream of configuration property names including the given name and its aliases
-     */
-    private Stream<ConfigurationPropertyName> addAliases(ConfigurationPropertyName name) {
+	 * Adds aliases for the given configuration property name.
+	 * @param name the configuration property name
+	 * @return a stream of configuration property names including the given name and its
+	 * aliases
+	 */
+	private Stream<ConfigurationPropertyName> addAliases(ConfigurationPropertyName name) {
 		Stream<ConfigurationPropertyName> names = Stream.of(name);
 		List<ConfigurationPropertyName> aliases = getAliases().getAliases(name);
 		if (CollectionUtils.isEmpty(aliases)) {
@@ -67,11 +66,10 @@ class AliasedIterableConfigurationPropertySource extends AliasedConfigurationPro
 	}
 
 	/**
-     * Returns the source of this AliasedIterableConfigurationPropertySource.
-     * 
-     * @return the source of this AliasedIterableConfigurationPropertySource
-     */
-    @Override
+	 * Returns the source of this AliasedIterableConfigurationPropertySource.
+	 * @return the source of this AliasedIterableConfigurationPropertySource
+	 */
+	@Override
 	protected IterableConfigurationPropertySource getSource() {
 		return (IterableConfigurationPropertySource) super.getSource();
 	}

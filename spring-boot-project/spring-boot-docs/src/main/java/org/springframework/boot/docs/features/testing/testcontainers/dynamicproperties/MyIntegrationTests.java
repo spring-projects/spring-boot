@@ -36,27 +36,24 @@ class MyIntegrationTests {
 	static Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:5");
 
 	/**
-     * This method is a test case for integration testing.
-     * It is used to test the functionality of the integration between different components.
-     * 
-     * @param none
-     * @return void
-     * 
-     * @throws none
-     * 
-     * @since 1.0
-     */
-    @Test
+	 * This method is a test case for integration testing. It is used to test the
+	 * functionality of the integration between different components.
+	 * @param none
+	 * @return void
+	 * @throws none
+	 *
+	 * @since 1.0
+	 */
+	@Test
 	void myTest() {
 		// ...
 	}
 
 	/**
-     * Registers the Neo4j properties in the dynamic property registry.
-     * 
-     * @param registry the dynamic property registry to register the properties with
-     */
-    @DynamicPropertySource
+	 * Registers the Neo4j properties in the dynamic property registry.
+	 * @param registry the dynamic property registry to register the properties with
+	 */
+	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {
 		registry.add("spring.neo4j.uri", neo4j::getBoltUrl);
 	}

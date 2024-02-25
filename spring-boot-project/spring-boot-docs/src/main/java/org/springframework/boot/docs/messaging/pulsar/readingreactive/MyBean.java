@@ -37,20 +37,20 @@ public class MyBean {
 	private final ReactivePulsarReaderFactory<String> pulsarReaderFactory;
 
 	/**
-     * Constructs a new instance of MyBean with the specified ReactivePulsarReaderFactory.
-     *
-     * @param pulsarReaderFactory the ReactivePulsarReaderFactory used to create ReactivePulsarReader instances
-     */
-    public MyBean(ReactivePulsarReaderFactory<String> pulsarReaderFactory) {
+	 * Constructs a new instance of MyBean with the specified ReactivePulsarReaderFactory.
+	 * @param pulsarReaderFactory the ReactivePulsarReaderFactory used to create
+	 * ReactivePulsarReader instances
+	 */
+	public MyBean(ReactivePulsarReaderFactory<String> pulsarReaderFactory) {
 		this.pulsarReaderFactory = pulsarReaderFactory;
 	}
 
 	/**
-     * This method is used to read a message from a Pulsar topic.
-     * It creates a reader with a customizer that sets the topic and start position.
-     * It then reads one message from the reader.
-     */
-    public void someMethod() {
+	 * This method is used to read a message from a Pulsar topic. It creates a reader with
+	 * a customizer that sets the topic and start position. It then reads one message from
+	 * the reader.
+	 */
+	public void someMethod() {
 		ReactiveMessageReaderBuilderCustomizer<String> readerBuilderCustomizer = (readerBuilder) -> readerBuilder
 			.topic("someTopic")
 			.startAtSpec(StartAtSpec.ofInstant(Instant.now().minusSeconds(5)));

@@ -45,22 +45,22 @@ public enum UpgradePolicy implements BiPredicate<DependencyVersion, DependencyVe
 	private final BiPredicate<DependencyVersion, DependencyVersion> delegate;
 
 	/**
-     * Constructs a new UpgradePolicy with the specified delegate.
-     *
-     * @param delegate the BiPredicate used to determine if an upgrade is necessary
-     */
-    UpgradePolicy(BiPredicate<DependencyVersion, DependencyVersion> delegate) {
+	 * Constructs a new UpgradePolicy with the specified delegate.
+	 * @param delegate the BiPredicate used to determine if an upgrade is necessary
+	 */
+	UpgradePolicy(BiPredicate<DependencyVersion, DependencyVersion> delegate) {
 		this.delegate = delegate;
 	}
 
 	/**
-     * Tests if the candidate dependency version is eligible for upgrade based on the current dependency version.
-     * 
-     * @param candidate The candidate dependency version to be tested.
-     * @param current The current dependency version.
-     * @return {@code true} if the candidate dependency version is eligible for upgrade, {@code false} otherwise.
-     */
-    @Override
+	 * Tests if the candidate dependency version is eligible for upgrade based on the
+	 * current dependency version.
+	 * @param candidate The candidate dependency version to be tested.
+	 * @param current The current dependency version.
+	 * @return {@code true} if the candidate dependency version is eligible for upgrade,
+	 * {@code false} otherwise.
+	 */
+	@Override
 	public boolean test(DependencyVersion candidate, DependencyVersion current) {
 		return this.delegate.test(candidate, current);
 	}

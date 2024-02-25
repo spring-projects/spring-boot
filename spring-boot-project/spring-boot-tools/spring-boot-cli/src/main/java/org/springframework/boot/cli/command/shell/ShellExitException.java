@@ -29,9 +29,10 @@ public class ShellExitException extends CommandException {
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * Constructs a new ShellExitException with the default option of rethrowing the exception.
-     */
-    public ShellExitException() {
+	 * Constructs a new ShellExitException with the default option of rethrowing the
+	 * exception.
+	 */
+	public ShellExitException() {
 		super(Option.RETHROW);
 	}
 

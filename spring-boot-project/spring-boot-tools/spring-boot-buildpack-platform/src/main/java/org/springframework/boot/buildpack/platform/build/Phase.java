@@ -129,11 +129,10 @@ class Phase {
 	}
 
 	/**
-     * Returns the name of the Phase object.
-     *
-     * @return the name of the Phase object
-     */
-    @Override
+	 * Returns the name of the Phase object.
+	 * @return the name of the Phase object
+	 */
+	@Override
 	public String toString() {
 		return this.name;
 	}

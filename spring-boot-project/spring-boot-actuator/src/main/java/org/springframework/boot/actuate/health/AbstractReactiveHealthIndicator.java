@@ -75,11 +75,10 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 	}
 
 	/**
-     * Returns the health status of the application.
-     * 
-     * @return a Mono object representing the health status
-     */
-    @Override
+	 * Returns the health status of the application.
+	 * @return a Mono object representing the health status
+	 */
+	@Override
 	public final Mono<Health> health() {
 		try {
 			Health.Builder builder = new Health.Builder();
@@ -92,11 +91,10 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 	}
 
 	/**
-     * Logs the exception if present.
-     * 
-     * @param ex the exception to be logged
-     */
-    private void logExceptionIfPresent(Throwable ex) {
+	 * Logs the exception if present.
+	 * @param ex the exception to be logged
+	 */
+	private void logExceptionIfPresent(Throwable ex) {
 		if (ex != null && this.logger.isWarnEnabled()) {
 			String message = (ex instanceof Exception) ? this.healthCheckFailedMessage.apply(ex) : null;
 			this.logger.warn(StringUtils.hasText(message) ? message : DEFAULT_MESSAGE, ex);
@@ -104,12 +102,13 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 	}
 
 	/**
-     * Handles the failure of a health check by logging the exception and returning a Health object indicating that the health is down.
-     *
-     * @param ex the Throwable object representing the exception that caused the health check failure
-     * @return a Mono object containing a Health object indicating that the health is down
-     */
-    private Mono<Health> handleFailure(Throwable ex) {
+	 * Handles the failure of a health check by logging the exception and returning a
+	 * Health object indicating that the health is down.
+	 * @param ex the Throwable object representing the exception that caused the health
+	 * check failure
+	 * @return a Mono object containing a Health object indicating that the health is down
+	 */
+	private Mono<Health> handleFailure(Throwable ex) {
 		logExceptionIfPresent(ex);
 		return Mono.just(new Health.Builder().down(ex).build());
 	}

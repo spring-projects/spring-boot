@@ -31,11 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MyApplicationArgumentTests {
 
 	/**
-     * Test method to verify that the application arguments are populated correctly.
-     * 
-     * @param args the autowired ApplicationArguments object
-     */
-    @Test
+	 * Test method to verify that the application arguments are populated correctly.
+	 * @param args the autowired ApplicationArguments object
+	 */
+	@Test
 	void applicationArgumentsPopulated(@Autowired ApplicationArguments args) {
 		assertThat(args.getOptionNames()).containsOnly("app.test");
 		assertThat(args.getOptionValues("app.test")).containsOnly("one");

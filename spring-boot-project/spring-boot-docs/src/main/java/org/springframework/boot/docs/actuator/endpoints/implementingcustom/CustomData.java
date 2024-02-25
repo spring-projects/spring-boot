@@ -26,31 +26,28 @@ class CustomData {
 	private final int counter;
 
 	/**
-     * Constructs a new CustomData object with the specified name and counter.
-     * 
-     * @param name the name of the CustomData object
-     * @param counter the counter value of the CustomData object
-     */
-    CustomData(String name, int counter) {
+	 * Constructs a new CustomData object with the specified name and counter.
+	 * @param name the name of the CustomData object
+	 * @param counter the counter value of the CustomData object
+	 */
+	CustomData(String name, int counter) {
 		this.name = name;
 		this.counter = counter;
 	}
 
 	/**
-     * Returns the name of the CustomData object.
-     *
-     * @return the name of the CustomData object
-     */
-    String getName() {
+	 * Returns the name of the CustomData object.
+	 * @return the name of the CustomData object
+	 */
+	String getName() {
 		return this.name;
 	}
 
 	/**
-     * Returns the value of the counter.
-     *
-     * @return the value of the counter
-     */
-    int getCounter() {
+	 * Returns the value of the counter.
+	 * @return the value of the counter
+	 */
+	int getCounter() {
 		return this.counter;
 	}
 

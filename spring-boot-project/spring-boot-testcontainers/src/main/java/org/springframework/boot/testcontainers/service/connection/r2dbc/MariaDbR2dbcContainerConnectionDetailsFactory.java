@@ -37,22 +37,20 @@ class MariaDbR2dbcContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<MariaDBContainer<?>, R2dbcConnectionDetails> {
 
 	/**
-     * Constructs a new MariaDbR2dbcContainerConnectionDetailsFactory.
-     * 
-     * @param connectionName the name of the connection
-     * @param connectionFactoryOptions the options for the connection factory
-     */
-    MariaDbR2dbcContainerConnectionDetailsFactory() {
+	 * Constructs a new MariaDbR2dbcContainerConnectionDetailsFactory.
+	 * @param connectionName the name of the connection
+	 * @param connectionFactoryOptions the options for the connection factory
+	 */
+	MariaDbR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	/**
-     * Returns the R2dbcConnectionDetails for the given ContainerConnectionSource.
-     *
-     * @param source the ContainerConnectionSource for the MariaDB container
-     * @return the R2dbcConnectionDetails for the MariaDB container
-     */
-    @Override
+	 * Returns the R2dbcConnectionDetails for the given ContainerConnectionSource.
+	 * @param source the ContainerConnectionSource for the MariaDB container
+	 * @return the R2dbcConnectionDetails for the MariaDB container
+	 */
+	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
 		return new MariaDbR2dbcDatabaseContainerConnectionDetails(source);
 	}
@@ -64,20 +62,21 @@ class MariaDbR2dbcContainerConnectionDetailsFactory
 			extends ContainerConnectionDetails<MariaDBContainer<?>> implements R2dbcConnectionDetails {
 
 		/**
-         * Constructs a new MariaDbR2dbcDatabaseContainerConnectionDetails object with the specified ContainerConnectionSource.
-         * 
-         * @param source the ContainerConnectionSource used to create the connection details
-         */
-        private MariaDbR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
+		 * Constructs a new MariaDbR2dbcDatabaseContainerConnectionDetails object with the
+		 * specified ContainerConnectionSource.
+		 * @param source the ContainerConnectionSource used to create the connection
+		 * details
+		 */
+		private MariaDbR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
 			super(source);
 		}
 
 		/**
-         * Returns the connection factory options for the MariaDB R2DBC database container.
-         * 
-         * @return the connection factory options
-         */
-        @Override
+		 * Returns the connection factory options for the MariaDB R2DBC database
+		 * container.
+		 * @return the connection factory options
+		 */
+		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
 			return MariaDBR2DBCDatabaseContainer.getOptions(getContainer());
 		}

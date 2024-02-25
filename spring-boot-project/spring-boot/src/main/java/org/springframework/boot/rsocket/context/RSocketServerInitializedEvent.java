@@ -30,11 +30,10 @@ import org.springframework.context.ApplicationEvent;
 public class RSocketServerInitializedEvent extends ApplicationEvent {
 
 	/**
-     * Constructs a new RSocketServerInitializedEvent with the specified RSocketServer.
-     *
-     * @param server the RSocketServer that has been initialized
-     */
-    public RSocketServerInitializedEvent(RSocketServer server) {
+	 * Constructs a new RSocketServerInitializedEvent with the specified RSocketServer.
+	 * @param server the RSocketServer that has been initialized
+	 */
+	public RSocketServerInitializedEvent(RSocketServer server) {
 		super(server);
 	}
 

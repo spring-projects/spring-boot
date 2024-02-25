@@ -39,12 +39,11 @@ class FileDescriptor {
 	private int referenceCount;
 
 	/**
-     * Constructs a new FileDescriptor with the specified handle and closer.
-     * 
-     * @param handle the handle associated with the file descriptor
-     * @param closer the closer function to be called when the file descriptor is closed
-     */
-    FileDescriptor(int handle, IntConsumer closer) {
+	 * Constructs a new FileDescriptor with the specified handle and closer.
+	 * @param handle the handle associated with the file descriptor
+	 * @param closer the closer function to be called when the file descriptor is closed
+	 */
+	FileDescriptor(int handle, IntConsumer closer) {
 		this.openHandle = new Handle(handle);
 		this.closedHandler = new Handle(-1);
 		this.closer = closer;
@@ -61,11 +60,12 @@ class FileDescriptor {
 	}
 
 	/**
-     * Decreases the reference count of the FileDescriptor object and checks if it should be closed.
-     * If the reference count reaches zero and the status is set to CLOSE_PENDING, the closer function is called
-     * with the value of the open handle, and the status is set to CLOSED.
-     */
-    private synchronized void release() {
+	 * Decreases the reference count of the FileDescriptor object and checks if it should
+	 * be closed. If the reference count reaches zero and the status is set to
+	 * CLOSE_PENDING, the closer function is called with the value of the open handle, and
+	 * the status is set to CLOSED.
+	 */
+	private synchronized void release() {
 		this.referenceCount--;
 		if (this.referenceCount == 0 && this.status == Status.CLOSE_PENDING) {
 			this.closer.accept(this.openHandle.value);
@@ -105,38 +105,34 @@ class FileDescriptor {
 		private final int value;
 
 		/**
-         * Sets the value of the handle.
-         * 
-         * @param value the value to be set
-         */
-        private Handle(int value) {
+		 * Sets the value of the handle.
+		 * @param value the value to be set
+		 */
+		private Handle(int value) {
 			this.value = value;
 		}
 
 		/**
-         * Checks if the handle is closed.
-         * 
-         * @return true if the handle is closed, false otherwise
-         */
-        boolean isClosed() {
+		 * Checks if the handle is closed.
+		 * @return true if the handle is closed, false otherwise
+		 */
+		boolean isClosed() {
 			return this.value == -1;
 		}
 
 		/**
-         * Returns the integer value of the Handle object.
-         *
-         * @return the integer value of the Handle object
-         */
-        int intValue() {
+		 * Returns the integer value of the Handle object.
+		 * @return the integer value of the Handle object
+		 */
+		int intValue() {
 			return this.value;
 		}
 
 		/**
-         * Closes the handle.
-         * 
-         * @throws IOException if an I/O error occurs while closing the handle
-         */
-        @Override
+		 * Closes the handle.
+		 * @throws IOException if an I/O error occurs while closing the handle
+		 */
+		@Override
 		public void close() throws IOException {
 			if (!isClosed()) {
 				release();

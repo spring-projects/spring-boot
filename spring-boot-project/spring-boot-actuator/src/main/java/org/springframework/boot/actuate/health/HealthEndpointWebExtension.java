@@ -64,45 +64,45 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 	}
 
 	/**
-     * Returns the health status of the web endpoint.
-     *
-     * @param apiVersion       the version of the API
-     * @param serverNamespace  the namespace of the web server
-     * @param securityContext  the security context
-     * @return                 the health component of the web endpoint
-     */
-    @ReadOperation
+	 * Returns the health status of the web endpoint.
+	 * @param apiVersion the version of the API
+	 * @param serverNamespace the namespace of the web server
+	 * @param securityContext the security context
+	 * @return the health component of the web endpoint
+	 */
+	@ReadOperation
 	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
 			SecurityContext securityContext) {
 		return health(apiVersion, serverNamespace, securityContext, false, NO_PATH);
 	}
 
 	/**
-     * Retrieves the health status of the specified API version, web server namespace, security context, and path.
-     * 
-     * @param apiVersion The API version.
-     * @param serverNamespace The web server namespace.
-     * @param securityContext The security context.
-     * @param path The remaining path segments.
-     * @return The health status of the specified components.
-     */
-    @ReadOperation
+	 * Retrieves the health status of the specified API version, web server namespace,
+	 * security context, and path.
+	 * @param apiVersion The API version.
+	 * @param serverNamespace The web server namespace.
+	 * @param securityContext The security context.
+	 * @param path The remaining path segments.
+	 * @return The health status of the specified components.
+	 */
+	@ReadOperation
 	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
 			SecurityContext securityContext, @Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(apiVersion, serverNamespace, securityContext, false, path);
 	}
 
 	/**
-     * Retrieves the health status of the specified API version, server namespace, security context, and path.
-     * 
-     * @param apiVersion       The API version to retrieve health status for.
-     * @param serverNamespace  The server namespace to retrieve health status for.
-     * @param securityContext  The security context to use for retrieving health status.
-     * @param showAll          Flag indicating whether to show all health components.
-     * @param path             The path to retrieve health status for.
-     * @return                 The health status of the specified API version, server namespace, security context, and path.
-     */
-    public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
+	 * Retrieves the health status of the specified API version, server namespace,
+	 * security context, and path.
+	 * @param apiVersion The API version to retrieve health status for.
+	 * @param serverNamespace The server namespace to retrieve health status for.
+	 * @param securityContext The security context to use for retrieving health status.
+	 * @param showAll Flag indicating whether to show all health components.
+	 * @param path The path to retrieve health status for.
+	 * @return The health status of the specified API version, server namespace, security
+	 * context, and path.
+	 */
+	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
 			SecurityContext securityContext, boolean showAll, String... path) {
 		HealthResult<HealthComponent> result = getHealth(apiVersion, serverNamespace, securityContext, showAll, path);
 		if (result == null) {
@@ -117,28 +117,29 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 	}
 
 	/**
-     * Retrieves the health component of a given contributor.
-     * 
-     * @param contributor the health contributor to retrieve the health component from
-     * @param includeDetails a flag indicating whether to include details in the health component
-     * @return the health component of the contributor
-     */
-    @Override
+	 * Retrieves the health component of a given contributor.
+	 * @param contributor the health contributor to retrieve the health component from
+	 * @param includeDetails a flag indicating whether to include details in the health
+	 * component
+	 * @return the health component of the contributor
+	 */
+	@Override
 	protected HealthComponent getHealth(HealthContributor contributor, boolean includeDetails) {
 		return ((HealthIndicator) contributor).getHealth(includeDetails);
 	}
 
 	/**
-     * Aggregates the contributions from different health indicators and returns a composite health component.
-     * 
-     * @param apiVersion the version of the API
-     * @param contributions a map of health components contributed by different indicators
-     * @param statusAggregator the aggregator to determine the overall status
-     * @param showComponents flag to indicate whether to include individual components in the response
-     * @param groupNames a set of group names to filter the components
-     * @return the composite health component
-     */
-    @Override
+	 * Aggregates the contributions from different health indicators and returns a
+	 * composite health component.
+	 * @param apiVersion the version of the API
+	 * @param contributions a map of health components contributed by different indicators
+	 * @param statusAggregator the aggregator to determine the overall status
+	 * @param showComponents flag to indicate whether to include individual components in
+	 * the response
+	 * @param groupNames a set of group names to filter the components
+	 * @return the composite health component
+	 */
+	@Override
 	protected HealthComponent aggregateContributions(ApiVersion apiVersion, Map<String, HealthComponent> contributions,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
 		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);

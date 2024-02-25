@@ -51,23 +51,24 @@ public class InfluxDbHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<InfluxDbHealthIndicator, InfluxDB> {
 
 	/**
-     * Constructs a new InfluxDbHealthContributorAutoConfiguration.
-     * 
-     * This constructor calls the superclass constructor with the InfluxDbHealthIndicator class as the argument.
-     * 
-     * @see InfluxDbHealthIndicator
-     */
-    public InfluxDbHealthContributorAutoConfiguration() {
+	 * Constructs a new InfluxDbHealthContributorAutoConfiguration.
+	 *
+	 * This constructor calls the superclass constructor with the InfluxDbHealthIndicator
+	 * class as the argument.
+	 *
+	 * @see InfluxDbHealthIndicator
+	 */
+	public InfluxDbHealthContributorAutoConfiguration() {
 		super(InfluxDbHealthIndicator::new);
 	}
 
 	/**
-     * Creates a health contributor for InfluxDB if no existing health indicator or contributor is found.
-     * 
-     * @param influxDbs a map of InfluxDB instances
-     * @return the created health contributor
-     */
-    @Bean
+	 * Creates a health contributor for InfluxDB if no existing health indicator or
+	 * contributor is found.
+	 * @param influxDbs a map of InfluxDB instances
+	 * @return the created health contributor
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = { "influxDbHealthIndicator", "influxDbHealthContributor" })
 	public HealthContributor influxDbHealthContributor(Map<String, InfluxDB> influxDbs) {
 		return createContributor(influxDbs);

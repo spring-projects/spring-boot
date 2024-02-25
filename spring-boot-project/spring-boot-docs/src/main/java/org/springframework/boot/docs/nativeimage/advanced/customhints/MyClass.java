@@ -22,11 +22,10 @@ package org.springframework.boot.docs.nativeimage.advanced.customhints;
 class MyClass {
 
 	/**
-     * Prints a greeting message with the given name.
-     * 
-     * @param name the name to greet
-     */
-    void sayHello(String name) {
+	 * Prints a greeting message with the given name.
+	 * @param name the name to greet
+	 */
+	void sayHello(String name) {
 		System.out.println("Hello " + name);
 	}
 

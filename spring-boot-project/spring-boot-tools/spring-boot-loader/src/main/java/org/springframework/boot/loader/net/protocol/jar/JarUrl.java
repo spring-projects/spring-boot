@@ -30,9 +30,9 @@ import java.util.jar.JarEntry;
 public final class JarUrl {
 
 	/**
-     * Constructs a new JarUrl object.
-     */
-    private JarUrl() {
+	 * Constructs a new JarUrl object.
+	 */
+	private JarUrl() {
 	}
 
 	/**
@@ -82,13 +82,12 @@ public final class JarUrl {
 	}
 
 	/**
-     * Returns the reference to a JAR file or a nested entry within the JAR file.
-     * 
-     * @param file The JAR file.
-     * @param nestedEntryName The name of the nested entry within the JAR file.
-     * @return The reference to the JAR file or the nested entry.
-     */
-    private static String getJarReference(File file, String nestedEntryName) {
+	 * Returns the reference to a JAR file or a nested entry within the JAR file.
+	 * @param file The JAR file.
+	 * @param nestedEntryName The name of the nested entry within the JAR file.
+	 * @return The reference to the JAR file or the nested entry.
+	 */
+	private static String getJarReference(File file, String nestedEntryName) {
 		String jarFilePath = file.toURI().getRawPath().replace("!", "%21");
 		return (nestedEntryName != null) ? "nested:" + jarFilePath + "/!" + nestedEntryName : "file:" + jarFilePath;
 	}

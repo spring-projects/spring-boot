@@ -33,13 +33,13 @@ public abstract class ProgressUpdateEvent extends UpdateEvent {
 	private final String progress;
 
 	/**
-     * Constructs a new ProgressUpdateEvent with the specified status, progress detail, and progress.
-     * 
-     * @param status the status of the progress update event
-     * @param progressDetail the progress detail of the progress update event, can be null
-     * @param progress the progress of the progress update event
-     */
-    protected ProgressUpdateEvent(String status, ProgressDetail progressDetail, String progress) {
+	 * Constructs a new ProgressUpdateEvent with the specified status, progress detail,
+	 * and progress.
+	 * @param status the status of the progress update event
+	 * @param progressDetail the progress detail of the progress update event, can be null
+	 * @param progress the progress of the progress update event
+	 */
+	protected ProgressUpdateEvent(String status, ProgressDetail progressDetail, String progress) {
 		this.status = status;
 		this.progressDetail = (ProgressDetail.isEmpty(progressDetail)) ? null : progressDetail;
 		this.progress = progress;
@@ -79,12 +79,12 @@ public abstract class ProgressUpdateEvent extends UpdateEvent {
 		private final Integer total;
 
 		/**
-         * Constructs a new ProgressDetail object with the specified current and total values.
-         *
-         * @param current the current progress value
-         * @param total the total progress value
-         */
-        @JsonCreator
+		 * Constructs a new ProgressDetail object with the specified current and total
+		 * values.
+		 * @param current the current progress value
+		 * @param total the total progress value
+		 */
+		@JsonCreator
 		public ProgressDetail(Integer current, Integer total) {
 			this.current = current;
 			this.total = total;
@@ -107,12 +107,11 @@ public abstract class ProgressUpdateEvent extends UpdateEvent {
 		}
 
 		/**
-         * Checks if the given ProgressDetail object is empty.
-         * 
-         * @param progressDetail the ProgressDetail object to be checked
-         * @return true if the ProgressDetail object is empty, false otherwise
-         */
-        public static boolean isEmpty(ProgressDetail progressDetail) {
+		 * Checks if the given ProgressDetail object is empty.
+		 * @param progressDetail the ProgressDetail object to be checked
+		 * @return true if the ProgressDetail object is empty, false otherwise
+		 */
+		public static boolean isEmpty(ProgressDetail progressDetail) {
 			return progressDetail == null || progressDetail.current == null || progressDetail.total == null;
 		}
 

@@ -45,20 +45,20 @@ class ArtemisEmbeddedConfigurationFactory {
 	private final ArtemisProperties.Embedded properties;
 
 	/**
-     * Constructs a new ArtemisEmbeddedConfigurationFactory object with the provided ArtemisProperties.
-     * 
-     * @param properties the ArtemisProperties object containing the configuration properties for the embedded Artemis server
-     */
-    ArtemisEmbeddedConfigurationFactory(ArtemisProperties properties) {
+	 * Constructs a new ArtemisEmbeddedConfigurationFactory object with the provided
+	 * ArtemisProperties.
+	 * @param properties the ArtemisProperties object containing the configuration
+	 * properties for the embedded Artemis server
+	 */
+	ArtemisEmbeddedConfigurationFactory(ArtemisProperties properties) {
 		this.properties = properties.getEmbedded();
 	}
 
 	/**
-     * Creates a new configuration object for Artemis embedded server.
-     * 
-     * @return the created configuration object
-     */
-    Configuration createConfiguration() {
+	 * Creates a new configuration object for Artemis embedded server.
+	 * @return the created configuration object
+	 */
+	Configuration createConfiguration() {
 		ConfigurationImpl configuration = new ConfigurationImpl();
 		configuration.setSecurityEnabled(false);
 		configuration.setPersistenceEnabled(this.properties.isPersistent());
@@ -86,25 +86,23 @@ class ArtemisEmbeddedConfigurationFactory {
 	}
 
 	/**
-     * Creates a new CoreAddressConfiguration object with the specified name.
-     * 
-     * @param name the name of the address configuration
-     * @return the created CoreAddressConfiguration object
-     */
-    private CoreAddressConfiguration createAddressConfiguration(String name) {
+	 * Creates a new CoreAddressConfiguration object with the specified name.
+	 * @param name the name of the address configuration
+	 * @return the created CoreAddressConfiguration object
+	 */
+	private CoreAddressConfiguration createAddressConfiguration(String name) {
 		return new CoreAddressConfiguration().setName(name)
 			.addRoutingType(RoutingType.ANYCAST)
 			.addQueueConfiguration(new QueueConfiguration(name).setRoutingType(RoutingType.ANYCAST).setAddress(name));
 	}
 
 	/**
-     * Returns the data directory for the ArtemisEmbeddedConfigurationFactory.
-     * If the data directory is set in the properties, it will be returned.
-     * Otherwise, a temporary directory will be used with the name "artemis-data".
-     * 
-     * @return the absolute path of the data directory
-     */
-    private String getDataDir() {
+	 * Returns the data directory for the ArtemisEmbeddedConfigurationFactory. If the data
+	 * directory is set in the properties, it will be returned. Otherwise, a temporary
+	 * directory will be used with the name "artemis-data".
+	 * @return the absolute path of the data directory
+	 */
+	private String getDataDir() {
 		if (this.properties.getDataDirectory() != null) {
 			return this.properties.getDataDirectory();
 		}

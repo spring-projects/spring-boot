@@ -58,23 +58,28 @@ public class SimpleAsyncTaskExecutorBuilder {
 	private final Duration taskTerminationTimeout;
 
 	/**
-     * Constructs a new SimpleAsyncTaskExecutorBuilder with default values for all parameters.
-     */
-    public SimpleAsyncTaskExecutorBuilder() {
+	 * Constructs a new SimpleAsyncTaskExecutorBuilder with default values for all
+	 * parameters.
+	 */
+	public SimpleAsyncTaskExecutorBuilder() {
 		this(null, null, null, null, null, null);
 	}
 
 	/**
-     * Constructs a new instance of SimpleAsyncTaskExecutorBuilder with the specified parameters.
-     *
-     * @param virtualThreads          a boolean indicating whether to use virtual threads or not
-     * @param threadNamePrefix        the prefix to be used for naming the threads created by the executor
-     * @param concurrencyLimit        the maximum number of concurrent tasks that can be executed by the executor
-     * @param taskDecorator           the task decorator to be applied to the tasks executed by the executor
-     * @param customizers             a set of customizers to be applied to the executor
-     * @param taskTerminationTimeout  the timeout duration for terminating tasks executed by the executor
-     */
-    private SimpleAsyncTaskExecutorBuilder(Boolean virtualThreads, String threadNamePrefix, Integer concurrencyLimit,
+	 * Constructs a new instance of SimpleAsyncTaskExecutorBuilder with the specified
+	 * parameters.
+	 * @param virtualThreads a boolean indicating whether to use virtual threads or not
+	 * @param threadNamePrefix the prefix to be used for naming the threads created by the
+	 * executor
+	 * @param concurrencyLimit the maximum number of concurrent tasks that can be executed
+	 * by the executor
+	 * @param taskDecorator the task decorator to be applied to the tasks executed by the
+	 * executor
+	 * @param customizers a set of customizers to be applied to the executor
+	 * @param taskTerminationTimeout the timeout duration for terminating tasks executed
+	 * by the executor
+	 */
+	private SimpleAsyncTaskExecutorBuilder(Boolean virtualThreads, String threadNamePrefix, Integer concurrencyLimit,
 			TaskDecorator taskDecorator, Set<SimpleAsyncTaskExecutorCustomizer> customizers,
 			Duration taskTerminationTimeout) {
 		this.virtualThreads = virtualThreads;
@@ -240,14 +245,14 @@ public class SimpleAsyncTaskExecutorBuilder {
 	}
 
 	/**
-     * Appends the elements from the specified iterable to the given set.
-     * 
-     * @param set       the set to append elements to (nullable)
-     * @param additions the iterable containing elements to be appended
-     * @param <T>       the type of elements in the set
-     * @return an unmodifiable set containing the original elements from the set and the appended elements
-     */
-    private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
+	 * Appends the elements from the specified iterable to the given set.
+	 * @param set the set to append elements to (nullable)
+	 * @param additions the iterable containing elements to be appended
+	 * @param <T> the type of elements in the set
+	 * @return an unmodifiable set containing the original elements from the set and the
+	 * appended elements
+	 */
+	private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
 		additions.forEach(result::add);
 		return Collections.unmodifiableSet(result);

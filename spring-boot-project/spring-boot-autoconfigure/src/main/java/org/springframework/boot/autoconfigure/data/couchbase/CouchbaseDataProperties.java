@@ -55,92 +55,82 @@ public class CouchbaseDataProperties {
 	private String typeKey = "_class";
 
 	/**
-     * Returns a boolean value indicating whether auto indexing is enabled.
-     * 
-     * @return true if auto indexing is enabled, false otherwise
-     */
-    public boolean isAutoIndex() {
+	 * Returns a boolean value indicating whether auto indexing is enabled.
+	 * @return true if auto indexing is enabled, false otherwise
+	 */
+	public boolean isAutoIndex() {
 		return this.autoIndex;
 	}
 
 	/**
-     * Sets the flag indicating whether auto indexing is enabled or not.
-     * 
-     * @param autoIndex the flag indicating whether auto indexing is enabled or not
-     */
-    public void setAutoIndex(boolean autoIndex) {
+	 * Sets the flag indicating whether auto indexing is enabled or not.
+	 * @param autoIndex the flag indicating whether auto indexing is enabled or not
+	 */
+	public void setAutoIndex(boolean autoIndex) {
 		this.autoIndex = autoIndex;
 	}
 
 	/**
-     * Returns the name of the bucket.
-     *
-     * @return the name of the bucket
-     */
-    public String getBucketName() {
+	 * Returns the name of the bucket.
+	 * @return the name of the bucket
+	 */
+	public String getBucketName() {
 		return this.bucketName;
 	}
 
 	/**
-     * Sets the name of the bucket.
-     * 
-     * @param bucketName the name of the bucket to be set
-     */
-    public void setBucketName(String bucketName) {
+	 * Sets the name of the bucket.
+	 * @param bucketName the name of the bucket to be set
+	 */
+	public void setBucketName(String bucketName) {
 		this.bucketName = bucketName;
 	}
 
 	/**
-     * Returns the name of the scope.
-     *
-     * @return the name of the scope
-     */
-    public String getScopeName() {
+	 * Returns the name of the scope.
+	 * @return the name of the scope
+	 */
+	public String getScopeName() {
 		return this.scopeName;
 	}
 
 	/**
-     * Sets the scope name for the Couchbase data properties.
-     * 
-     * @param scopeName the scope name to be set
-     */
-    public void setScopeName(String scopeName) {
+	 * Sets the scope name for the Couchbase data properties.
+	 * @param scopeName the scope name to be set
+	 */
+	public void setScopeName(String scopeName) {
 		this.scopeName = scopeName;
 	}
 
 	/**
-     * Returns the field naming strategy used by the CouchbaseDataProperties class.
-     * 
-     * @return the field naming strategy
-     */
-    public Class<?> getFieldNamingStrategy() {
+	 * Returns the field naming strategy used by the CouchbaseDataProperties class.
+	 * @return the field naming strategy
+	 */
+	public Class<?> getFieldNamingStrategy() {
 		return this.fieldNamingStrategy;
 	}
 
 	/**
-     * Sets the field naming strategy for the CouchbaseDataProperties class.
-     * 
-     * @param fieldNamingStrategy the field naming strategy to be set
-     */
-    public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
+	 * Sets the field naming strategy for the CouchbaseDataProperties class.
+	 * @param fieldNamingStrategy the field naming strategy to be set
+	 */
+	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
 		this.fieldNamingStrategy = fieldNamingStrategy;
 	}
 
 	/**
-     * Returns the type key of the Couchbase data.
-     *
-     * @return the type key of the Couchbase data
-     */
-    public String getTypeKey() {
+	 * Returns the type key of the Couchbase data.
+	 * @return the type key of the Couchbase data
+	 */
+	public String getTypeKey() {
 		return this.typeKey;
 	}
 
 	/**
-     * Sets the type key for the Couchbase data properties.
-     * 
-     * @param typeKey the type key to be set
-     */
-    public void setTypeKey(String typeKey) {
+	 * Sets the type key for the Couchbase data properties.
+	 * @param typeKey the type key to be set
+	 */
+	public void setTypeKey(String typeKey) {
 		this.typeKey = typeKey;
 	}
 

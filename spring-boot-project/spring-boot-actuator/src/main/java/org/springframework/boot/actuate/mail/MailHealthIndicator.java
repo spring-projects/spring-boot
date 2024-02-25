@@ -34,22 +34,20 @@ public class MailHealthIndicator extends AbstractHealthIndicator {
 	private final JavaMailSenderImpl mailSender;
 
 	/**
-     * Constructs a new MailHealthIndicator with the specified JavaMailSenderImpl.
-     * 
-     * @param mailSender the JavaMailSenderImpl used for sending emails
-     */
-    public MailHealthIndicator(JavaMailSenderImpl mailSender) {
+	 * Constructs a new MailHealthIndicator with the specified JavaMailSenderImpl.
+	 * @param mailSender the JavaMailSenderImpl used for sending emails
+	 */
+	public MailHealthIndicator(JavaMailSenderImpl mailSender) {
 		super("Mail health check failed");
 		this.mailSender = mailSender;
 	}
 
 	/**
-     * Performs a health check on the mail sender.
-     * 
-     * @param builder the builder used to create the health indicator
-     * @throws Exception if an error occurs during the health check
-     */
-    @Override
+	 * Performs a health check on the mail sender.
+	 * @param builder the builder used to create the health indicator
+	 * @throws Exception if an error occurs during the health check
+	 */
+	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
 		String host = this.mailSender.getHost();
 		int port = this.mailSender.getPort();

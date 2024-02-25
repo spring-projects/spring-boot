@@ -22,11 +22,10 @@ package org.springframework.boot.docs.features.testing.springbootapplications.au
 class RemoteVehicleDetailsService {
 
 	/**
-     * Calls the REST service and returns the response as a string.
-     *
-     * @return the response from the REST service as a string
-     */
-    String callRestService() {
+	 * Calls the REST service and returns the response as a string.
+	 * @return the response from the REST service as a string
+	 */
+	String callRestService() {
 		return "hello";
 	}
 

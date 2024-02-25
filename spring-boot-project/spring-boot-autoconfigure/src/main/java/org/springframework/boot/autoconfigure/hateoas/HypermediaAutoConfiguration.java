@@ -58,15 +58,15 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class HypermediaAutoConfiguration {
 
 	/**
-     * Creates a HalConfiguration bean if no other bean of the same type is present in the application context.
-     * This bean is conditionally created based on the presence of the com.fasterxml.jackson.databind.ObjectMapper class
-     * and the value of the spring.hateoas.use-hal-as-default-json-media-type property.
-     * If the property is not present, the bean is created by default.
-     * The created bean is configured with the MediaType.APPLICATION_JSON media type.
-     *
-     * @return the created HalConfiguration bean
-     */
-    @Bean
+	 * Creates a HalConfiguration bean if no other bean of the same type is present in the
+	 * application context. This bean is conditionally created based on the presence of
+	 * the com.fasterxml.jackson.databind.ObjectMapper class and the value of the
+	 * spring.hateoas.use-hal-as-default-json-media-type property. If the property is not
+	 * present, the bean is created by default. The created bean is configured with the
+	 * MediaType.APPLICATION_JSON media type.
+	 * @return the created HalConfiguration bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnClass(name = "com.fasterxml.jackson.databind.ObjectMapper")
 	@ConditionalOnProperty(prefix = "spring.hateoas", name = "use-hal-as-default-json-media-type",
@@ -76,9 +76,9 @@ public class HypermediaAutoConfiguration {
 	}
 
 	/**
-     * HypermediaConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * HypermediaConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(LinkDiscoverers.class)
 	@ConditionalOnClass(ObjectMapper.class)
 	@EnableHypermediaSupport(type = HypermediaType.HAL)

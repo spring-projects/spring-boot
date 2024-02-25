@@ -27,12 +27,11 @@ import org.springframework.stereotype.Controller;
 public class MyController {
 
 	/**
-     * This method is annotated with @PostConstruct and is used to simulate a slow restart process.
-     * It pauses the execution for 5 seconds using Thread.sleep() method.
-     * 
-     * @throws InterruptedException if the thread is interrupted while sleeping
-     */
-    @PostConstruct
+	 * This method is annotated with @PostConstruct and is used to simulate a slow restart
+	 * process. It pauses the execution for 5 seconds using Thread.sleep() method.
+	 * @throws InterruptedException if the thread is interrupted while sleeping
+	 */
+	@PostConstruct
 	public void slowRestart() throws InterruptedException {
 		Thread.sleep(5000);
 	}

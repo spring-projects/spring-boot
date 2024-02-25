@@ -36,9 +36,9 @@ public final class DevToolsLogFactory {
 	private static final Map<Log, Class<?>> logs = new LinkedHashMap<>();
 
 	/**
-     * Private constructor for the DevToolsLogFactory class.
-     */
-    private DevToolsLogFactory() {
+	 * Private constructor for the DevToolsLogFactory class.
+	 */
+	private DevToolsLogFactory() {
 	}
 
 	/**
@@ -62,12 +62,11 @@ public final class DevToolsLogFactory {
 	static class Listener implements ApplicationListener<ApplicationPreparedEvent> {
 
 		/**
-         * This method is called when the application is prepared.
-         * It clears the logs and switches any deferred logs to their respective sources.
-         * 
-         * @param event The ApplicationPreparedEvent object representing the event.
-         */
-        @Override
+		 * This method is called when the application is prepared. It clears the logs and
+		 * switches any deferred logs to their respective sources.
+		 * @param event The ApplicationPreparedEvent object representing the event.
+		 */
+		@Override
 		public void onApplicationEvent(ApplicationPreparedEvent event) {
 			synchronized (logs) {
 				logs.forEach((log, source) -> {

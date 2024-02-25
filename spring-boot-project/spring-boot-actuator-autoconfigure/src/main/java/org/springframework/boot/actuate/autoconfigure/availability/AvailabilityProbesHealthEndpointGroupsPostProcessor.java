@@ -35,23 +35,22 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessor implements HealthEndpo
 	private final boolean addAdditionalPaths;
 
 	/**
-     * Constructor for the AvailabilityProbesHealthEndpointGroupsPostProcessor class.
-     * 
-     * @param environment the environment object used to retrieve properties
-     */
-    AvailabilityProbesHealthEndpointGroupsPostProcessor(Environment environment) {
+	 * Constructor for the AvailabilityProbesHealthEndpointGroupsPostProcessor class.
+	 * @param environment the environment object used to retrieve properties
+	 */
+	AvailabilityProbesHealthEndpointGroupsPostProcessor(Environment environment) {
 		this.addAdditionalPaths = "true"
 			.equalsIgnoreCase(environment.getProperty("management.endpoint.health.probes.add-additional-paths"));
 	}
 
 	/**
-     * This method is used to post-process the HealthEndpointGroups object.
-     * It creates a new AvailabilityProbesHealthEndpointGroups object by passing the original groups and additional paths.
-     *
-     * @param groups The original HealthEndpointGroups object to be post-processed.
-     * @return The post-processed HealthEndpointGroups object with additional paths.
-     */
-    @Override
+	 * This method is used to post-process the HealthEndpointGroups object. It creates a
+	 * new AvailabilityProbesHealthEndpointGroups object by passing the original groups
+	 * and additional paths.
+	 * @param groups The original HealthEndpointGroups object to be post-processed.
+	 * @return The post-processed HealthEndpointGroups object with additional paths.
+	 */
+	@Override
 	public HealthEndpointGroups postProcessHealthEndpointGroups(HealthEndpointGroups groups) {
 		return new AvailabilityProbesHealthEndpointGroups(groups, this.addAdditionalPaths);
 	}

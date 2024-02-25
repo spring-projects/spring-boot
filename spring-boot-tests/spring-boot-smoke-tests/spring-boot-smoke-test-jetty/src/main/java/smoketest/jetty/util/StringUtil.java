@@ -24,19 +24,19 @@ import java.util.Arrays;
 public final class StringUtil {
 
 	/**
-     * Private constructor for the StringUtil class.
-     */
-    private StringUtil() {
+	 * Private constructor for the StringUtil class.
+	 */
+	private StringUtil() {
 	}
 
 	/**
-     * Repeats a given character a specified number of times and returns the resulting string.
-     * 
-     * @param c the character to be repeated
-     * @param length the number of times the character should be repeated
-     * @return the resulting string with the repeated character
-     */
-    public static String repeat(char c, int length) {
+	 * Repeats a given character a specified number of times and returns the resulting
+	 * string.
+	 * @param c the character to be repeated
+	 * @param length the number of times the character should be repeated
+	 * @return the resulting string with the repeated character
+	 */
+	public static String repeat(char c, int length) {
 		char[] chars = new char[length];
 		Arrays.fill(chars, c);
 		return new String(chars);

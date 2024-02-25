@@ -33,61 +33,58 @@ class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<Promethe
 		implements PrometheusConfig {
 
 	/**
-     * Constructs a new PrometheusPropertiesConfigAdapter with the specified PrometheusProperties.
-     * 
-     * @param properties the PrometheusProperties to be used by the adapter
-     */
-    PrometheusPropertiesConfigAdapter(PrometheusProperties properties) {
+	 * Constructs a new PrometheusPropertiesConfigAdapter with the specified
+	 * PrometheusProperties.
+	 * @param properties the PrometheusProperties to be used by the adapter
+	 */
+	PrometheusPropertiesConfigAdapter(PrometheusProperties properties) {
 		super(properties);
 	}
 
 	/**
-     * Returns the prefix for Prometheus metrics export.
-     *
-     * @return the prefix for Prometheus metrics export
-     */
-    @Override
+	 * Returns the prefix for Prometheus metrics export.
+	 * @return the prefix for Prometheus metrics export
+	 */
+	@Override
 	public String prefix() {
 		return "management.prometheus.metrics.export";
 	}
 
 	/**
-     * Retrieves the value associated with the specified key from the PrometheusPropertiesConfigAdapter.
-     *
-     * @param key the key whose associated value is to be retrieved
-     * @return the value to which the specified key is mapped, or null if the key is not found
-     */
-    @Override
+	 * Retrieves the value associated with the specified key from the
+	 * PrometheusPropertiesConfigAdapter.
+	 * @param key the key whose associated value is to be retrieved
+	 * @return the value to which the specified key is mapped, or null if the key is not
+	 * found
+	 */
+	@Override
 	public String get(String key) {
 		return null;
 	}
 
 	/**
-     * Returns the value of the descriptions property.
-     * 
-     * @return the value of the descriptions property
-     */
-    @Override
+	 * Returns the value of the descriptions property.
+	 * @return the value of the descriptions property
+	 */
+	@Override
 	public boolean descriptions() {
 		return get(PrometheusProperties::isDescriptions, PrometheusConfig.super::descriptions);
 	}
 
 	/**
-     * Returns the histogram flavor for the Prometheus configuration.
-     * 
-     * @return the histogram flavor
-     */
-    @Override
+	 * Returns the histogram flavor for the Prometheus configuration.
+	 * @return the histogram flavor
+	 */
+	@Override
 	public HistogramFlavor histogramFlavor() {
 		return get(PrometheusProperties::getHistogramFlavor, PrometheusConfig.super::histogramFlavor);
 	}
 
 	/**
-     * Returns the step duration for the Prometheus configuration.
-     * 
-     * @return the step duration
-     */
-    @Override
+	 * Returns the step duration for the Prometheus configuration.
+	 * @return the step duration
+	 */
+	@Override
 	public Duration step() {
 		return get(PrometheusProperties::getStep, PrometheusConfig.super::step);
 	}

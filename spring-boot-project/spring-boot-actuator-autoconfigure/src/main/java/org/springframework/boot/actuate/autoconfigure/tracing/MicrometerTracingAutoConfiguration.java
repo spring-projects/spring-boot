@@ -76,13 +76,14 @@ public class MicrometerTracingAutoConfiguration {
 	public static final int SENDER_TRACING_OBSERVATION_HANDLER_ORDER = 2000;
 
 	/**
-     * Creates a new instance of DefaultTracingObservationHandler if no other bean of the same type is present.
-     * The order of this bean is set to DEFAULT_TRACING_OBSERVATION_HANDLER_ORDER.
-     * 
-     * @param tracer the Tracer instance to be used by the DefaultTracingObservationHandler
-     * @return a new instance of DefaultTracingObservationHandler
-     */
-    @Bean
+	 * Creates a new instance of DefaultTracingObservationHandler if no other bean of the
+	 * same type is present. The order of this bean is set to
+	 * DEFAULT_TRACING_OBSERVATION_HANDLER_ORDER.
+	 * @param tracer the Tracer instance to be used by the
+	 * DefaultTracingObservationHandler
+	 * @return a new instance of DefaultTracingObservationHandler
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@Order(DEFAULT_TRACING_OBSERVATION_HANDLER_ORDER)
 	public DefaultTracingObservationHandler defaultTracingObservationHandler(Tracer tracer) {
@@ -90,15 +91,17 @@ public class MicrometerTracingAutoConfiguration {
 	}
 
 	/**
-     * Creates a {@link PropagatingSenderTracingObservationHandler} bean if no other bean of the same type is present and if a bean of type {@link Propagator} is present.
-     * The bean is annotated with {@link ConditionalOnMissingBean} and {@link ConditionalOnBean} to ensure it is only created if the required dependencies are available.
-     * The bean is also ordered using the {@link Order} annotation with the value of {@link SENDER_TRACING_OBSERVATION_HANDLER_ORDER}.
-     *
-     * @param tracer the {@link Tracer} bean used for tracing
-     * @param propagator the {@link Propagator} bean used for propagation
-     * @return the created {@link PropagatingSenderTracingObservationHandler} bean
-     */
-    @Bean
+	 * Creates a {@link PropagatingSenderTracingObservationHandler} bean if no other bean
+	 * of the same type is present and if a bean of type {@link Propagator} is present.
+	 * The bean is annotated with {@link ConditionalOnMissingBean} and
+	 * {@link ConditionalOnBean} to ensure it is only created if the required dependencies
+	 * are available. The bean is also ordered using the {@link Order} annotation with the
+	 * value of {@link SENDER_TRACING_OBSERVATION_HANDLER_ORDER}.
+	 * @param tracer the {@link Tracer} bean used for tracing
+	 * @param propagator the {@link Propagator} bean used for propagation
+	 * @return the created {@link PropagatingSenderTracingObservationHandler} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(Propagator.class)
 	@Order(SENDER_TRACING_OBSERVATION_HANDLER_ORDER)
@@ -108,15 +111,18 @@ public class MicrometerTracingAutoConfiguration {
 	}
 
 	/**
-     * Creates a {@link PropagatingReceiverTracingObservationHandler} bean if no other bean of the same type is present in the application context and if a bean of type {@link Propagator} is present.
-     * The bean is annotated with {@link ConditionalOnMissingBean} and {@link ConditionalOnBean} to ensure its creation only when the required conditions are met.
-     * The bean is also ordered using the value specified in the constant {@link RECEIVER_TRACING_OBSERVATION_HANDLER_ORDER}.
-     * 
-     * @param tracer the {@link Tracer} bean used for tracing
-     * @param propagator the {@link Propagator} bean used for propagation
-     * @return the created {@link PropagatingReceiverTracingObservationHandler} bean
-     */
-    @Bean
+	 * Creates a {@link PropagatingReceiverTracingObservationHandler} bean if no other
+	 * bean of the same type is present in the application context and if a bean of type
+	 * {@link Propagator} is present. The bean is annotated with
+	 * {@link ConditionalOnMissingBean} and {@link ConditionalOnBean} to ensure its
+	 * creation only when the required conditions are met. The bean is also ordered using
+	 * the value specified in the constant
+	 * {@link RECEIVER_TRACING_OBSERVATION_HANDLER_ORDER}.
+	 * @param tracer the {@link Tracer} bean used for tracing
+	 * @param propagator the {@link Propagator} bean used for propagation
+	 * @return the created {@link PropagatingReceiverTracingObservationHandler} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(Propagator.class)
 	@Order(RECEIVER_TRACING_OBSERVATION_HANDLER_ORDER)
@@ -126,31 +132,31 @@ public class MicrometerTracingAutoConfiguration {
 	}
 
 	/**
-     * SpanAspectConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * SpanAspectConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Advice.class)
 	@ConditionalOnProperty(prefix = "micrometer.observations.annotations", name = "enabled", havingValue = "true")
 	static class SpanAspectConfiguration {
 
 		/**
-         * Creates a new instance of {@link DefaultNewSpanParser} if no other bean of type {@link NewSpanParser} is present.
-         * 
-         * @return the created instance of {@link DefaultNewSpanParser}
-         */
-        @Bean
+		 * Creates a new instance of {@link DefaultNewSpanParser} if no other bean of type
+		 * {@link NewSpanParser} is present.
+		 * @return the created instance of {@link DefaultNewSpanParser}
+		 */
+		@Bean
 		@ConditionalOnMissingBean(NewSpanParser.class)
 		DefaultNewSpanParser newSpanParser() {
 			return new DefaultNewSpanParser();
 		}
 
 		/**
-         * Creates a new instance of {@link SpanTagAnnotationHandler} if no other bean of the same type is present in the application context.
-         * 
-         * @param beanFactory the {@link BeanFactory} used to retrieve other beans
-         * @return a new instance of {@link SpanTagAnnotationHandler}
-         */
-        @Bean
+		 * Creates a new instance of {@link SpanTagAnnotationHandler} if no other bean of
+		 * the same type is present in the application context.
+		 * @param beanFactory the {@link BeanFactory} used to retrieve other beans
+		 * @return a new instance of {@link SpanTagAnnotationHandler}
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		SpanTagAnnotationHandler spanTagAnnotationHandler(BeanFactory beanFactory) {
 			ValueExpressionResolver valueExpressionResolver = new SpelTagValueExpressionResolver();
@@ -158,14 +164,15 @@ public class MicrometerTracingAutoConfiguration {
 		}
 
 		/**
-         * Creates an instance of ImperativeMethodInvocationProcessor if there is no existing bean of type MethodInvocationProcessor.
-         * 
-         * @param newSpanParser the NewSpanParser bean used for parsing new spans
-         * @param tracer the Tracer bean used for tracing
-         * @param spanTagAnnotationHandler the SpanTagAnnotationHandler bean used for handling span tag annotations
-         * @return an instance of ImperativeMethodInvocationProcessor
-         */
-        @Bean
+		 * Creates an instance of ImperativeMethodInvocationProcessor if there is no
+		 * existing bean of type MethodInvocationProcessor.
+		 * @param newSpanParser the NewSpanParser bean used for parsing new spans
+		 * @param tracer the Tracer bean used for tracing
+		 * @param spanTagAnnotationHandler the SpanTagAnnotationHandler bean used for
+		 * handling span tag annotations
+		 * @return an instance of ImperativeMethodInvocationProcessor
+		 */
+		@Bean
 		@ConditionalOnMissingBean(MethodInvocationProcessor.class)
 		ImperativeMethodInvocationProcessor imperativeMethodInvocationProcessor(NewSpanParser newSpanParser,
 				Tracer tracer, SpanTagAnnotationHandler spanTagAnnotationHandler) {
@@ -173,12 +180,13 @@ public class MicrometerTracingAutoConfiguration {
 		}
 
 		/**
-         * Creates a new instance of {@link SpanAspect} if no other bean of the same type is present.
-         * 
-         * @param methodInvocationProcessor the {@link MethodInvocationProcessor} to be used by the {@link SpanAspect}
-         * @return a new instance of {@link SpanAspect}
-         */
-        @Bean
+		 * Creates a new instance of {@link SpanAspect} if no other bean of the same type
+		 * is present.
+		 * @param methodInvocationProcessor the {@link MethodInvocationProcessor} to be
+		 * used by the {@link SpanAspect}
+		 * @return a new instance of {@link SpanAspect}
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		SpanAspect spanAspect(MethodInvocationProcessor methodInvocationProcessor) {
 			return new SpanAspect(methodInvocationProcessor);
@@ -187,19 +195,18 @@ public class MicrometerTracingAutoConfiguration {
 	}
 
 	/**
-     * SpelTagValueExpressionResolver class.
-     */
-    private static final class SpelTagValueExpressionResolver implements ValueExpressionResolver {
+	 * SpelTagValueExpressionResolver class.
+	 */
+	private static final class SpelTagValueExpressionResolver implements ValueExpressionResolver {
 
 		/**
-         * Resolves the given SpEL expression with the provided parameter.
-         * 
-         * @param expression the SpEL expression to be resolved
-         * @param parameter the parameter to be used in the expression evaluation
-         * @return the result of the expression evaluation as a String
-         * @throws IllegalStateException if unable to evaluate the SpEL expression
-         */
-        @Override
+		 * Resolves the given SpEL expression with the provided parameter.
+		 * @param expression the SpEL expression to be resolved
+		 * @param parameter the parameter to be used in the expression evaluation
+		 * @return the result of the expression evaluation as a String
+		 * @throws IllegalStateException if unable to evaluate the SpEL expression
+		 */
+		@Override
 		public String resolve(String expression, Object parameter) {
 			try {
 				SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();

@@ -35,25 +35,25 @@ public final class ReadinessTimeoutException extends RuntimeException {
 	private final Duration timeout;
 
 	/**
-     * Constructs a new ReadinessTimeoutException with the specified timeout and list of exceptions.
-     *
-     * @param timeout the duration of the timeout
-     * @param exceptions the list of ServiceNotReadyExceptions that occurred during the timeout
-     */
-    ReadinessTimeoutException(Duration timeout, List<ServiceNotReadyException> exceptions) {
+	 * Constructs a new ReadinessTimeoutException with the specified timeout and list of
+	 * exceptions.
+	 * @param timeout the duration of the timeout
+	 * @param exceptions the list of ServiceNotReadyExceptions that occurred during the
+	 * timeout
+	 */
+	ReadinessTimeoutException(Duration timeout, List<ServiceNotReadyException> exceptions) {
 		super(buildMessage(timeout, exceptions));
 		this.timeout = timeout;
 		exceptions.forEach(this::addSuppressed);
 	}
 
 	/**
-     * Builds a message for the ReadinessTimeoutException.
-     * 
-     * @param timeout    the duration of the timeout
-     * @param exceptions the list of ServiceNotReadyExceptions
-     * @return the built message
-     */
-    private static String buildMessage(Duration timeout, List<ServiceNotReadyException> exceptions) {
+	 * Builds a message for the ReadinessTimeoutException.
+	 * @param timeout the duration of the timeout
+	 * @param exceptions the list of ServiceNotReadyExceptions
+	 * @return the built message
+	 */
+	private static String buildMessage(Duration timeout, List<ServiceNotReadyException> exceptions) {
 		List<String> serviceNames = exceptions.stream()
 			.map(ServiceNotReadyException::getService)
 			.filter(Objects::nonNull)

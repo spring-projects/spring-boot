@@ -50,13 +50,14 @@ class CloudFoundrySecurityInterceptor {
 	private static final Mono<SecurityResponse> SUCCESS = Mono.just(SecurityResponse.success());
 
 	/**
-     * Constructs a new CloudFoundrySecurityInterceptor with the specified ReactiveTokenValidator, ReactiveCloudFoundrySecurityService, and applicationId.
-     * 
-     * @param tokenValidator the ReactiveTokenValidator used for token validation
-     * @param cloudFoundrySecurityService the ReactiveCloudFoundrySecurityService used for Cloud Foundry security operations
-     * @param applicationId the ID of the application
-     */
-    CloudFoundrySecurityInterceptor(ReactiveTokenValidator tokenValidator,
+	 * Constructs a new CloudFoundrySecurityInterceptor with the specified
+	 * ReactiveTokenValidator, ReactiveCloudFoundrySecurityService, and applicationId.
+	 * @param tokenValidator the ReactiveTokenValidator used for token validation
+	 * @param cloudFoundrySecurityService the ReactiveCloudFoundrySecurityService used for
+	 * Cloud Foundry security operations
+	 * @param applicationId the ID of the application
+	 */
+	CloudFoundrySecurityInterceptor(ReactiveTokenValidator tokenValidator,
 			ReactiveCloudFoundrySecurityService cloudFoundrySecurityService, String applicationId) {
 		this.tokenValidator = tokenValidator;
 		this.cloudFoundrySecurityService = cloudFoundrySecurityService;
@@ -64,13 +65,12 @@ class CloudFoundrySecurityInterceptor {
 	}
 
 	/**
-     * Pre-handle method for CloudFoundrySecurityInterceptor class.
-     * 
-     * @param exchange the ServerWebExchange object representing the current exchange
-     * @param id the id parameter
-     * @return a Mono object wrapping a SecurityResponse
-     */
-    Mono<SecurityResponse> preHandle(ServerWebExchange exchange, String id) {
+	 * Pre-handle method for CloudFoundrySecurityInterceptor class.
+	 * @param exchange the ServerWebExchange object representing the current exchange
+	 * @param id the id parameter
+	 * @return a Mono object wrapping a SecurityResponse
+	 */
+	Mono<SecurityResponse> preHandle(ServerWebExchange exchange, String id) {
 		ServerHttpRequest request = exchange.getRequest();
 		if (CorsUtils.isPreFlightRequest(request)) {
 			return SUCCESS;
@@ -87,23 +87,21 @@ class CloudFoundrySecurityInterceptor {
 	}
 
 	/**
-     * Logs an error with the provided exception.
-     * 
-     * @param ex the exception to be logged
-     */
-    private void logError(Throwable ex) {
+	 * Logs an error with the provided exception.
+	 * @param ex the exception to be logged
+	 */
+	private void logError(Throwable ex) {
 		logger.error(ex.getMessage(), ex);
 	}
 
 	/**
-     * Checks the access level for a given ID.
-     * 
-     * @param exchange The server web exchange.
-     * @param id The ID to check access level for.
-     * @return A Mono representing the completion of the access level check.
-     * @throws CloudFoundryAuthorizationException if access is denied.
-     */
-    private Mono<Void> check(ServerWebExchange exchange, String id) {
+	 * Checks the access level for a given ID.
+	 * @param exchange The server web exchange.
+	 * @param id The ID to check access level for.
+	 * @return A Mono representing the completion of the access level check.
+	 * @throws CloudFoundryAuthorizationException if access is denied.
+	 */
+	private Mono<Void> check(ServerWebExchange exchange, String id) {
 		try {
 			Token token = getToken(exchange.getRequest());
 			return this.tokenValidator.validate(token)
@@ -120,12 +118,11 @@ class CloudFoundrySecurityInterceptor {
 	}
 
 	/**
-     * Returns an error response based on the provided throwable.
-     *
-     * @param throwable The throwable object representing the error.
-     * @return A Mono object containing the SecurityResponse.
-     */
-    private Mono<SecurityResponse> getErrorResponse(Throwable throwable) {
+	 * Returns an error response based on the provided throwable.
+	 * @param throwable The throwable object representing the error.
+	 * @return A Mono object containing the SecurityResponse.
+	 */
+	private Mono<SecurityResponse> getErrorResponse(Throwable throwable) {
 		if (throwable instanceof CloudFoundryAuthorizationException cfException) {
 			return Mono.just(new SecurityResponse(cfException.getStatusCode(),
 					"{\"security_error\":\"" + cfException.getMessage() + "\"}"));
@@ -134,13 +131,14 @@ class CloudFoundrySecurityInterceptor {
 	}
 
 	/**
-     * Retrieves the token from the Authorization header in the provided ServerHttpRequest.
-     * 
-     * @param request The ServerHttpRequest object from which to retrieve the token.
-     * @return The Token object representing the retrieved token.
-     * @throws CloudFoundryAuthorizationException if the Authorization header is missing or invalid.
-     */
-    private Token getToken(ServerHttpRequest request) {
+	 * Retrieves the token from the Authorization header in the provided
+	 * ServerHttpRequest.
+	 * @param request The ServerHttpRequest object from which to retrieve the token.
+	 * @return The Token object representing the retrieved token.
+	 * @throws CloudFoundryAuthorizationException if the Authorization header is missing
+	 * or invalid.
+	 */
+	private Token getToken(ServerHttpRequest request) {
 		String authorization = request.getHeaders().getFirst("Authorization");
 		String bearerPrefix = "bearer ";
 		if (authorization == null || !authorization.toLowerCase(Locale.ENGLISH).startsWith(bearerPrefix)) {

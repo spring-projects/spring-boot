@@ -30,22 +30,20 @@ import org.springframework.boot.cli.util.Log;
 public class VersionCommand extends AbstractCommand {
 
 	/**
-     * Constructs a new VersionCommand object.
-     * 
-     * @param commandName the name of the command
-     * @param commandDescription the description of the command
-     */
-    public VersionCommand() {
+	 * Constructs a new VersionCommand object.
+	 * @param commandName the name of the command
+	 * @param commandDescription the description of the command
+	 */
+	public VersionCommand() {
 		super("version", "Show the version");
 	}
 
 	/**
-     * Runs the VersionCommand.
-     * 
-     * @param args the command line arguments
-     * @return the exit status of the command
-     */
-    @Override
+	 * Runs the VersionCommand.
+	 * @param args the command line arguments
+	 * @return the exit status of the command
+	 */
+	@Override
 	public ExitStatus run(String... args) {
 		Log.info("Spring CLI v" + getClass().getPackage().getImplementationVersion());
 		return ExitStatus.OK;

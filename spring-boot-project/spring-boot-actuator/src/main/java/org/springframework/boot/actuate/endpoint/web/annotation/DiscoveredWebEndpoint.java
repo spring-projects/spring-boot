@@ -34,27 +34,25 @@ class DiscoveredWebEndpoint extends AbstractDiscoveredEndpoint<WebOperation> imp
 	private final String rootPath;
 
 	/**
-     * Creates a new instance of the DiscoveredWebEndpoint class.
-     * 
-     * @param discoverer The EndpointDiscoverer used to discover the endpoint.
-     * @param endpointBean The bean representing the endpoint.
-     * @param id The unique identifier for the endpoint.
-     * @param rootPath The root path for the endpoint.
-     * @param enabledByDefault Indicates whether the endpoint is enabled by default.
-     * @param operations The collection of WebOperations supported by the endpoint.
-     */
-    DiscoveredWebEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id, String rootPath,
+	 * Creates a new instance of the DiscoveredWebEndpoint class.
+	 * @param discoverer The EndpointDiscoverer used to discover the endpoint.
+	 * @param endpointBean The bean representing the endpoint.
+	 * @param id The unique identifier for the endpoint.
+	 * @param rootPath The root path for the endpoint.
+	 * @param enabledByDefault Indicates whether the endpoint is enabled by default.
+	 * @param operations The collection of WebOperations supported by the endpoint.
+	 */
+	DiscoveredWebEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id, String rootPath,
 			boolean enabledByDefault, Collection<WebOperation> operations) {
 		super(discoverer, endpointBean, id, enabledByDefault, operations);
 		this.rootPath = rootPath;
 	}
 
 	/**
-     * Returns the root path of the DiscoveredWebEndpoint.
-     *
-     * @return the root path of the DiscoveredWebEndpoint
-     */
-    @Override
+	 * Returns the root path of the DiscoveredWebEndpoint.
+	 * @return the root path of the DiscoveredWebEndpoint
+	 */
+	@Override
 	public String getRootPath() {
 		return this.rootPath;
 	}

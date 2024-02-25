@@ -29,12 +29,12 @@ public class DockerNotRunningException extends DockerException {
 	private final String errorOutput;
 
 	/**
-     * Constructs a new DockerNotRunningException with the specified error output and cause.
-     * 
-     * @param errorOutput the error output from Docker
-     * @param cause the cause of the exception
-     */
-    DockerNotRunningException(String errorOutput, Throwable cause) {
+	 * Constructs a new DockerNotRunningException with the specified error output and
+	 * cause.
+	 * @param errorOutput the error output from Docker
+	 * @param cause the cause of the exception
+	 */
+	DockerNotRunningException(String errorOutput, Throwable cause) {
 		super("Docker is not running", cause);
 		this.errorOutput = errorOutput;
 	}

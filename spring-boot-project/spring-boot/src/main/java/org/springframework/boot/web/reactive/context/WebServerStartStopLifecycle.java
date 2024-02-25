@@ -33,54 +33,52 @@ class WebServerStartStopLifecycle implements SmartLifecycle {
 	private volatile boolean running;
 
 	/**
-     * Starts or stops the lifecycle of a web server.
-     * 
-     * @param weServerManager the web server manager responsible for starting or stopping the web server
-     */
-    WebServerStartStopLifecycle(WebServerManager weServerManager) {
+	 * Starts or stops the lifecycle of a web server.
+	 * @param weServerManager the web server manager responsible for starting or stopping
+	 * the web server
+	 */
+	WebServerStartStopLifecycle(WebServerManager weServerManager) {
 		this.weServerManager = weServerManager;
 	}
 
 	/**
-     * Starts the web server.
-     * 
-     * This method starts the web server by calling the start() method of the weServerManager object.
-     * It also sets the running flag to true.
-     */
-    @Override
+	 * Starts the web server.
+	 *
+	 * This method starts the web server by calling the start() method of the
+	 * weServerManager object. It also sets the running flag to true.
+	 */
+	@Override
 	public void start() {
 		this.weServerManager.start();
 		this.running = true;
 	}
 
 	/**
-     * Stops the web server.
-     * 
-     * This method sets the 'running' flag to false and stops the web server manager.
-     */
-    @Override
+	 * Stops the web server.
+	 *
+	 * This method sets the 'running' flag to false and stops the web server manager.
+	 */
+	@Override
 	public void stop() {
 		this.running = false;
 		this.weServerManager.stop();
 	}
 
 	/**
-     * Returns a boolean value indicating whether the web server is currently running.
-     *
-     * @return true if the web server is running, false otherwise
-     */
-    @Override
+	 * Returns a boolean value indicating whether the web server is currently running.
+	 * @return true if the web server is running, false otherwise
+	 */
+	@Override
 	public boolean isRunning() {
 		return this.running;
 	}
 
 	/**
-     * Returns the phase of the lifecycle for graceful shutdown of the web server.
-     * The phase is calculated by subtracting 1024 from the phase of the smart lifecycle.
-     *
-     * @return the phase of the graceful shutdown lifecycle
-     */
-    @Override
+	 * Returns the phase of the lifecycle for graceful shutdown of the web server. The
+	 * phase is calculated by subtracting 1024 from the phase of the smart lifecycle.
+	 * @return the phase of the graceful shutdown lifecycle
+	 */
+	@Override
 	public int getPhase() {
 		return WebServerGracefulShutdownLifecycle.SMART_LIFECYCLE_PHASE - 1024;
 	}

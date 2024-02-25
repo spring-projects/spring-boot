@@ -66,116 +66,108 @@ public class ApplicationRunner extends DefaultTask {
 	private FileCollection classpath;
 
 	/**
-     * Returns the output file property.
-     *
-     * @return the output file property
-     */
-    @OutputFile
+	 * Returns the output file property.
+	 * @return the output file property
+	 */
+	@OutputFile
 	public RegularFileProperty getOutput() {
 		return this.output;
 	}
 
 	/**
-     * Returns the classpath of the ApplicationRunner.
-     *
-     * @return the classpath of the ApplicationRunner
-     */
-    @Classpath
+	 * Returns the classpath of the ApplicationRunner.
+	 * @return the classpath of the ApplicationRunner
+	 */
+	@Classpath
 	public FileCollection getClasspath() {
 		return this.classpath;
 	}
 
 	/**
-     * Sets the classpath for the ApplicationRunner.
-     * 
-     * @param classpath the classpath to be set
-     */
-    public void setClasspath(FileCollection classpath) {
+	 * Sets the classpath for the ApplicationRunner.
+	 * @param classpath the classpath to be set
+	 */
+	public void setClasspath(FileCollection classpath) {
 		this.classpath = classpath;
 	}
 
 	/**
-     * Returns the list of arguments.
-     *
-     * @return the list of arguments
-     */
-    @Input
+	 * Returns the list of arguments.
+	 * @return the list of arguments
+	 */
+	@Input
 	public ListProperty<String> getArgs() {
 		return this.args;
 	}
 
 	/**
-     * Returns the main class property.
-     *
-     * @return the main class property
-     */
-    @Input
+	 * Returns the main class property.
+	 * @return the main class property
+	 */
+	@Input
 	public Property<String> getMainClass() {
 		return this.mainClass;
 	}
 
 	/**
-     * Retrieves the expected logging property.
-     * 
-     * @return the expected logging property
-     */
-    @Input
+	 * Retrieves the expected logging property.
+	 * @return the expected logging property
+	 */
+	@Input
 	public Property<String> getExpectedLogging() {
 		return this.expectedLogging;
 	}
 
 	/**
-     * Returns the normalizations map.
-     *
-     * @return the normalizations map
-     */
-    @Input
+	 * Returns the normalizations map.
+	 * @return the normalizations map
+	 */
+	@Input
 	Map<String, String> getNormalizations() {
 		return this.normalizations;
 	}
 
 	/**
-     * Returns the application jar property.
-     *
-     * @return the application jar property
-     */
-    @Input
+	 * Returns the application jar property.
+	 * @return the application jar property
+	 */
+	@Input
 	public Property<String> getApplicationJar() {
 		return this.applicationJar;
 	}
 
 	/**
-     * Normalizes the Tomcat port.
-     * 
-     * This method updates the normalizations map to replace the Tomcat port with a default port of 8080.
-     * The method searches for patterns in the form of "Tomcat started on port [port] (http)" or "Tomcat initialized with port [port] (http)"
-     * and replaces the [port] with the default port 8080.
-     * 
-     * @return void
-     */
-    public void normalizeTomcatPort() {
+	 * Normalizes the Tomcat port.
+	 *
+	 * This method updates the normalizations map to replace the Tomcat port with a
+	 * default port of 8080. The method searches for patterns in the form of "Tomcat
+	 * started on port [port] (http)" or "Tomcat initialized with port [port] (http)" and
+	 * replaces the [port] with the default port 8080.
+	 * @return void
+	 */
+	public void normalizeTomcatPort() {
 		this.normalizations.put("(Tomcat started on port )[\\d]+( \\(http\\))", "$18080$2");
 		this.normalizations.put("(Tomcat initialized with port )[\\d]+( \\(http\\))", "$18080$2");
 	}
 
 	/**
-     * Normalizes the LiveReload port.
-     * 
-     * This method updates the normalizations map to replace the LiveReload server port with a fixed value.
-     * The LiveReload server port is identified using a regular expression pattern and replaced with the value "$135729".
-     * 
-     * @since 1.0
-     */
-    public void normalizeLiveReloadPort() {
+	 * Normalizes the LiveReload port.
+	 *
+	 * This method updates the normalizations map to replace the LiveReload server port
+	 * with a fixed value. The LiveReload server port is identified using a regular
+	 * expression pattern and replaced with the value "$135729".
+	 *
+	 * @since 1.0
+	 */
+	public void normalizeLiveReloadPort() {
 		this.normalizations.put("(LiveReload server is running on port )[\\d]+", "$135729");
 	}
 
 	/**
-     * Runs the application.
-     * 
-     * @throws IOException if an I/O error occurs
-     */
-    @TaskAction
+	 * Runs the application.
+	 * @throws IOException if an I/O error occurs
+	 */
+	@TaskAction
 	void runApplication() throws IOException {
 		List<String> command = new ArrayList<>();
 		File executable = Jvm.current().getExecutable("java");
@@ -198,13 +190,15 @@ public class ApplicationRunner extends DefaultTask {
 	}
 
 	/**
-     * Waits for the specified logging message to be logged by the given process within a time limit of 60 seconds.
-     * 
-     * @param process The process to monitor for logging messages.
-     * @throws IllegalStateException If the process exits before the expected logging message is logged.
-     * @throws IllegalStateException If the expected logging message is not logged within 60 seconds.
-     */
-    private void awaitLogging(Process process) {
+	 * Waits for the specified logging message to be logged by the given process within a
+	 * time limit of 60 seconds.
+	 * @param process The process to monitor for logging messages.
+	 * @throws IllegalStateException If the process exits before the expected logging
+	 * message is logged.
+	 * @throws IllegalStateException If the expected logging message is not logged within
+	 * 60 seconds.
+	 */
+	private void awaitLogging(Process process) {
 		long end = System.currentTimeMillis() + 60000;
 		String expectedLogging = this.expectedLogging.get();
 		while (System.currentTimeMillis() < end) {
@@ -221,12 +215,12 @@ public class ApplicationRunner extends DefaultTask {
 	}
 
 	/**
-     * Returns a list of strings representing the lines of output.
-     * 
-     * @return a list of strings representing the lines of output
-     * @throws RuntimeException if failed to read lines of output from the specified output path
-     */
-    private List<String> outputLines() {
+	 * Returns a list of strings representing the lines of output.
+	 * @return a list of strings representing the lines of output
+	 * @throws RuntimeException if failed to read lines of output from the specified
+	 * output path
+	 */
+	private List<String> outputLines() {
 		Path outputPath = this.output.get().getAsFile().toPath();
 		try {
 			return Files.readAllLines(outputPath);
@@ -237,11 +231,11 @@ public class ApplicationRunner extends DefaultTask {
 	}
 
 	/**
-     * Normalizes the logging by writing the normalized lines of output to a file.
-     * 
-     * @throws RuntimeException if failed to write the normalized lines of output to the file
-     */
-    private void normalizeLogging() {
+	 * Normalizes the logging by writing the normalized lines of output to a file.
+	 * @throws RuntimeException if failed to write the normalized lines of output to the
+	 * file
+	 */
+	private void normalizeLogging() {
 		List<String> outputLines = outputLines();
 		List<String> normalizedLines = normalize(outputLines);
 		Path outputPath = this.output.get().getAsFile().toPath();
@@ -254,12 +248,12 @@ public class ApplicationRunner extends DefaultTask {
 	}
 
 	/**
-     * Normalizes a list of lines by applying a set of predefined regular expression patterns.
-     * 
-     * @param lines the list of lines to be normalized
-     * @return the normalized list of lines
-     */
-    private List<String> normalize(List<String> lines) {
+	 * Normalizes a list of lines by applying a set of predefined regular expression
+	 * patterns.
+	 * @param lines the list of lines to be normalized
+	 * @return the normalized list of lines
+	 */
+	private List<String> normalize(List<String> lines) {
 		List<String> normalizedLines = lines;
 		Map<String, String> normalizations = new HashMap<>(this.normalizations);
 		normalizations.put("(Starting .* using Java .* with PID [\\d]+ \\().*( started by ).*( in ).*(\\))",
@@ -272,14 +266,14 @@ public class ApplicationRunner extends DefaultTask {
 	}
 
 	/**
-     * Normalizes the given list of lines by replacing occurrences of a specified pattern with a replacement string.
-     * 
-     * @param lines       the list of lines to be normalized
-     * @param pattern     the pattern to be matched for replacement
-     * @param replacement the string to replace the matched pattern
-     * @return the list of normalized lines
-     */
-    private List<String> normalize(List<String> lines, Pattern pattern, String replacement) {
+	 * Normalizes the given list of lines by replacing occurrences of a specified pattern
+	 * with a replacement string.
+	 * @param lines the list of lines to be normalized
+	 * @param pattern the pattern to be matched for replacement
+	 * @param replacement the string to replace the matched pattern
+	 * @return the list of normalized lines
+	 */
+	private List<String> normalize(List<String> lines, Pattern pattern, String replacement) {
 		boolean matched = false;
 		List<String> normalizedLines = new ArrayList<>();
 		for (String line : lines) {
@@ -299,13 +293,13 @@ public class ApplicationRunner extends DefaultTask {
 	}
 
 	/**
-     * Reports any unmatched normalization in the given list of lines using the specified pattern.
-     * 
-     * @param lines   the list of lines to check for unmatched normalization
-     * @param pattern the pattern to match against the lines
-     * @throws IllegalStateException if the pattern does not match any of the lines
-     */
-    private void reportUnmatchedNormalization(List<String> lines, Pattern pattern) {
+	 * Reports any unmatched normalization in the given list of lines using the specified
+	 * pattern.
+	 * @param lines the list of lines to check for unmatched normalization
+	 * @param pattern the pattern to match against the lines
+	 * @throws IllegalStateException if the pattern does not match any of the lines
+	 */
+	private void reportUnmatchedNormalization(List<String> lines, Pattern pattern) {
 		StringBuilder message = new StringBuilder(
 				"'" + pattern + "' did not match any of the following lines of output:");
 		message.append(String.format("%n"));

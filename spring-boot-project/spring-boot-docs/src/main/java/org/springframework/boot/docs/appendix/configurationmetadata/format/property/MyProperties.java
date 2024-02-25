@@ -28,45 +28,40 @@ public class MyProperties {
 	private String name;
 
 	/**
-     * Returns the name of the MyProperties object.
-     *
-     * @return the name of the MyProperties object
-     */
-    public String getName() {
+	 * Returns the name of the MyProperties object.
+	 * @return the name of the MyProperties object
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Sets the name of the property.
-     * 
-     * @param name the name to be set
-     */
-    public void setName(String name) {
+	 * Sets the name of the property.
+	 * @param name the name to be set
+	 */
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-     * Retrieves the target value.
-     * 
-     * @return the target value
-     * 
-     * @deprecated This method is deprecated. Use {@link #getAppName()} instead.
-     *             The replacement property is {@code my.app.name}.
-     */
-    @Deprecated
+	 * Retrieves the target value.
+	 * @return the target value
+	 * @deprecated This method is deprecated. Use {@link #getAppName()} instead. The
+	 * replacement property is {@code my.app.name}.
+	 */
+	@Deprecated
 	@DeprecatedConfigurationProperty(replacement = "my.app.name")
 	public String getTarget() {
 		return this.name;
 	}
 
 	/**
-     * Sets the target for this MyProperties object.
-     * 
-     * @param target the target to be set
-     * 
-     * @deprecated This method is deprecated and should not be used. Use a different method instead.
-     */
-    @Deprecated
+	 * Sets the target for this MyProperties object.
+	 * @param target the target to be set
+	 * @deprecated This method is deprecated and should not be used. Use a different
+	 * method instead.
+	 */
+	@Deprecated
 	public void setTarget(String target) {
 		this.name = target;
 	}

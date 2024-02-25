@@ -70,25 +70,26 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 	}
 
 	/**
-     * Sets the application context for this ClassPathFileSystemWatcher.
-     * 
-     * @param applicationContext the application context to be set
-     * @throws BeansException if an error occurs while setting the application context
-     */
-    @Override
+	 * Sets the application context for this ClassPathFileSystemWatcher.
+	 * @param applicationContext the application context to be set
+	 * @throws BeansException if an error occurs while setting the application context
+	 */
+	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
 	/**
-     * This method is called after all the properties have been set for the ClassPathFileSystemWatcher object.
-     * It starts the file system watcher and adds a listener to it if a restart strategy is provided.
-     * If the stopWatcherOnRestart flag is set to true, it stops the watcher before adding the listener.
-     * The listener is an instance of ClassPathFileChangeListener which is responsible for handling file change events.
-     * 
-     * @throws Exception if an error occurs while setting up the file system watcher or adding the listener
-     */
-    @Override
+	 * This method is called after all the properties have been set for the
+	 * ClassPathFileSystemWatcher object. It starts the file system watcher and adds a
+	 * listener to it if a restart strategy is provided. If the stopWatcherOnRestart flag
+	 * is set to true, it stops the watcher before adding the listener. The listener is an
+	 * instance of ClassPathFileChangeListener which is responsible for handling file
+	 * change events.
+	 * @throws Exception if an error occurs while setting up the file system watcher or
+	 * adding the listener
+	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (this.restartStrategy != null) {
 			FileSystemWatcher watcherToStop = null;
@@ -102,11 +103,10 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 	}
 
 	/**
-     * Stops the file system watcher.
-     * 
-     * @throws Exception if an error occurs while stopping the file system watcher
-     */
-    @Override
+	 * Stops the file system watcher.
+	 * @throws Exception if an error occurs while stopping the file system watcher
+	 */
+	@Override
 	public void destroy() throws Exception {
 		this.fileSystemWatcher.stop();
 	}

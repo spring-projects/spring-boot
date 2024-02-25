@@ -32,17 +32,16 @@ public final class JarModeLauncher {
 	static final String DISABLE_SYSTEM_EXIT = JarModeLauncher.class.getName() + ".DISABLE_SYSTEM_EXIT";
 
 	/**
-     * Private constructor for the JarModeLauncher class.
-     */
-    private JarModeLauncher() {
+	 * Private constructor for the JarModeLauncher class.
+	 */
+	private JarModeLauncher() {
 	}
 
 	/**
-     * The main method of the JarModeLauncher class.
-     * 
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+	 * The main method of the JarModeLauncher class.
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
 		String mode = System.getProperty("jarmode");
 		List<JarMode> candidates = SpringFactoriesLoader.loadFactories(JarMode.class,
 				ClassUtils.getDefaultClassLoader());

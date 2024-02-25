@@ -35,12 +35,13 @@ class AutoConfiguredHealthContributorRegistry extends DefaultHealthContributorRe
 	private final Collection<String> groupNames;
 
 	/**
-     * Constructs a new AutoConfiguredHealthContributorRegistry with the specified contributors and group names.
-     * 
-     * @param contributors a map of contributors, where the key is the contributor name and the value is the contributor instance
-     * @param groupNames a collection of group names
-     */
-    AutoConfiguredHealthContributorRegistry(Map<String, HealthContributor> contributors,
+	 * Constructs a new AutoConfiguredHealthContributorRegistry with the specified
+	 * contributors and group names.
+	 * @param contributors a map of contributors, where the key is the contributor name
+	 * and the value is the contributor instance
+	 * @param groupNames a collection of group names
+	 */
+	AutoConfiguredHealthContributorRegistry(Map<String, HealthContributor> contributors,
 			Collection<String> groupNames) {
 		super(contributors);
 		this.groupNames = groupNames;
@@ -48,25 +49,25 @@ class AutoConfiguredHealthContributorRegistry extends DefaultHealthContributorRe
 	}
 
 	/**
-     * Registers a health contributor with the given name.
-     * 
-     * @param name the name of the contributor
-     * @param contributor the health contributor to be registered
-     * @throws IllegalArgumentException if the name clashes with an existing contributor in the group
-     */
-    @Override
+	 * Registers a health contributor with the given name.
+	 * @param name the name of the contributor
+	 * @param contributor the health contributor to be registered
+	 * @throws IllegalArgumentException if the name clashes with an existing contributor
+	 * in the group
+	 */
+	@Override
 	public void registerContributor(String name, HealthContributor contributor) {
 		assertDoesNotClashWithGroup(name);
 		super.registerContributor(name, contributor);
 	}
 
 	/**
-     * Asserts that the given name does not clash with any group names in the AutoConfiguredHealthContributorRegistry.
-     * 
-     * @param name the name to check for clashes
-     * @throws IllegalStateException if the name clashes with any group name
-     */
-    private void assertDoesNotClashWithGroup(String name) {
+	 * Asserts that the given name does not clash with any group names in the
+	 * AutoConfiguredHealthContributorRegistry.
+	 * @param name the name to check for clashes
+	 * @throws IllegalStateException if the name clashes with any group name
+	 */
+	private void assertDoesNotClashWithGroup(String name) {
 		Assert.state(!this.groupNames.contains(name),
 				() -> "HealthContributor with name \"" + name + "\" clashes with group");
 	}

@@ -118,272 +118,244 @@ public class InfluxProperties extends StepRegistryProperties {
 	private String token;
 
 	/**
-     * Returns the name of the database.
-     *
-     * @return the name of the database
-     */
-    public String getDb() {
+	 * Returns the name of the database.
+	 * @return the name of the database
+	 */
+	public String getDb() {
 		return this.db;
 	}
 
 	/**
-     * Sets the name of the database to be used.
-     * 
-     * @param db the name of the database
-     */
-    public void setDb(String db) {
+	 * Sets the name of the database to be used.
+	 * @param db the name of the database
+	 */
+	public void setDb(String db) {
 		this.db = db;
 	}
 
 	/**
-     * Returns the consistency level for InfluxDB.
-     *
-     * @return the consistency level
-     */
-    public InfluxConsistency getConsistency() {
+	 * Returns the consistency level for InfluxDB.
+	 * @return the consistency level
+	 */
+	public InfluxConsistency getConsistency() {
 		return this.consistency;
 	}
 
 	/**
-     * Sets the consistency level for InfluxDB queries.
-     * 
-     * @param consistency the consistency level to be set
-     */
-    public void setConsistency(InfluxConsistency consistency) {
+	 * Sets the consistency level for InfluxDB queries.
+	 * @param consistency the consistency level to be set
+	 */
+	public void setConsistency(InfluxConsistency consistency) {
 		this.consistency = consistency;
 	}
 
 	/**
-     * Returns the username associated with the InfluxProperties object.
-     *
-     * @return the username
-     */
-    public String getUserName() {
+	 * Returns the username associated with the InfluxProperties object.
+	 * @return the username
+	 */
+	public String getUserName() {
 		return this.userName;
 	}
 
 	/**
-     * Sets the username for the InfluxProperties.
-     * 
-     * @param userName the username to be set
-     */
-    public void setUserName(String userName) {
+	 * Sets the username for the InfluxProperties.
+	 * @param userName the username to be set
+	 */
+	public void setUserName(String userName) {
 		this.userName = userName;
 	}
 
 	/**
-     * Returns the password associated with the InfluxProperties object.
-     *
-     * @return the password
-     */
-    public String getPassword() {
+	 * Returns the password associated with the InfluxProperties object.
+	 * @return the password
+	 */
+	public String getPassword() {
 		return this.password;
 	}
 
 	/**
-     * Sets the password for the InfluxProperties object.
-     * 
-     * @param password the password to be set
-     */
-    public void setPassword(String password) {
+	 * Sets the password for the InfluxProperties object.
+	 * @param password the password to be set
+	 */
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	/**
-     * Returns the retention policy of the InfluxProperties.
-     *
-     * @return the retention policy
-     */
-    public String getRetentionPolicy() {
+	 * Returns the retention policy of the InfluxProperties.
+	 * @return the retention policy
+	 */
+	public String getRetentionPolicy() {
 		return this.retentionPolicy;
 	}
 
 	/**
-     * Sets the retention policy for the InfluxProperties.
-     * 
-     * @param retentionPolicy the retention policy to be set
-     */
-    public void setRetentionPolicy(String retentionPolicy) {
+	 * Sets the retention policy for the InfluxProperties.
+	 * @param retentionPolicy the retention policy to be set
+	 */
+	public void setRetentionPolicy(String retentionPolicy) {
 		this.retentionPolicy = retentionPolicy;
 	}
 
 	/**
-     * Returns the retention duration of the InfluxProperties.
-     * 
-     * @return the retention duration as a String
-     */
-    public String getRetentionDuration() {
+	 * Returns the retention duration of the InfluxProperties.
+	 * @return the retention duration as a String
+	 */
+	public String getRetentionDuration() {
 		return this.retentionDuration;
 	}
 
 	/**
-     * Sets the retention duration for the InfluxProperties.
-     * 
-     * @param retentionDuration the retention duration to be set
-     */
-    public void setRetentionDuration(String retentionDuration) {
+	 * Sets the retention duration for the InfluxProperties.
+	 * @param retentionDuration the retention duration to be set
+	 */
+	public void setRetentionDuration(String retentionDuration) {
 		this.retentionDuration = retentionDuration;
 	}
 
 	/**
-     * Returns the retention replication factor.
-     *
-     * @return the retention replication factor
-     */
-    public Integer getRetentionReplicationFactor() {
+	 * Returns the retention replication factor.
+	 * @return the retention replication factor
+	 */
+	public Integer getRetentionReplicationFactor() {
 		return this.retentionReplicationFactor;
 	}
 
 	/**
-     * Sets the retention replication factor for the InfluxProperties.
-     * 
-     * @param retentionReplicationFactor the retention replication factor to be set
-     */
-    public void setRetentionReplicationFactor(Integer retentionReplicationFactor) {
+	 * Sets the retention replication factor for the InfluxProperties.
+	 * @param retentionReplicationFactor the retention replication factor to be set
+	 */
+	public void setRetentionReplicationFactor(Integer retentionReplicationFactor) {
 		this.retentionReplicationFactor = retentionReplicationFactor;
 	}
 
 	/**
-     * Returns the retention shard duration.
-     * 
-     * @return the retention shard duration
-     */
-    public String getRetentionShardDuration() {
+	 * Returns the retention shard duration.
+	 * @return the retention shard duration
+	 */
+	public String getRetentionShardDuration() {
 		return this.retentionShardDuration;
 	}
 
 	/**
-     * Sets the retention shard duration for the InfluxProperties.
-     * 
-     * @param retentionShardDuration the retention shard duration to be set
-     */
-    public void setRetentionShardDuration(String retentionShardDuration) {
+	 * Sets the retention shard duration for the InfluxProperties.
+	 * @param retentionShardDuration the retention shard duration to be set
+	 */
+	public void setRetentionShardDuration(String retentionShardDuration) {
 		this.retentionShardDuration = retentionShardDuration;
 	}
 
 	/**
-     * Returns the URI of the InfluxProperties.
-     *
-     * @return the URI of the InfluxProperties
-     */
-    public String getUri() {
+	 * Returns the URI of the InfluxProperties.
+	 * @return the URI of the InfluxProperties
+	 */
+	public String getUri() {
 		return this.uri;
 	}
 
 	/**
-     * Sets the URI for the InfluxProperties.
-     * 
-     * @param uri the URI to be set
-     */
-    public void setUri(String uri) {
+	 * Sets the URI for the InfluxProperties.
+	 * @param uri the URI to be set
+	 */
+	public void setUri(String uri) {
 		this.uri = uri;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the data is compressed.
-     * 
-     * @return true if the data is compressed, false otherwise
-     */
-    public boolean isCompressed() {
+	 * Returns a boolean value indicating whether the data is compressed.
+	 * @return true if the data is compressed, false otherwise
+	 */
+	public boolean isCompressed() {
 		return this.compressed;
 	}
 
 	/**
-     * Sets the flag indicating whether the data should be compressed.
-     * 
-     * @param compressed true if the data should be compressed, false otherwise
-     */
-    public void setCompressed(boolean compressed) {
+	 * Sets the flag indicating whether the data should be compressed.
+	 * @param compressed true if the data should be compressed, false otherwise
+	 */
+	public void setCompressed(boolean compressed) {
 		this.compressed = compressed;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the database should be automatically created.
-     *
-     * @return true if the database should be automatically created, false otherwise
-     */
-    public boolean isAutoCreateDb() {
+	 * Returns a boolean value indicating whether the database should be automatically
+	 * created.
+	 * @return true if the database should be automatically created, false otherwise
+	 */
+	public boolean isAutoCreateDb() {
 		return this.autoCreateDb;
 	}
 
 	/**
-     * Sets the flag to automatically create the database if it does not exist.
-     * 
-     * @param autoCreateDb the flag indicating whether to automatically create the database
-     */
-    public void setAutoCreateDb(boolean autoCreateDb) {
+	 * Sets the flag to automatically create the database if it does not exist.
+	 * @param autoCreateDb the flag indicating whether to automatically create the
+	 * database
+	 */
+	public void setAutoCreateDb(boolean autoCreateDb) {
 		this.autoCreateDb = autoCreateDb;
 	}
 
 	/**
-     * Returns the API version of the InfluxDB.
-     *
-     * @return the API version of the InfluxDB
-     */
-    public InfluxApiVersion getApiVersion() {
+	 * Returns the API version of the InfluxDB.
+	 * @return the API version of the InfluxDB
+	 */
+	public InfluxApiVersion getApiVersion() {
 		return this.apiVersion;
 	}
 
 	/**
-     * Sets the API version for the InfluxProperties.
-     * 
-     * @param apiVersion the API version to be set
-     */
-    public void setApiVersion(InfluxApiVersion apiVersion) {
+	 * Sets the API version for the InfluxProperties.
+	 * @param apiVersion the API version to be set
+	 */
+	public void setApiVersion(InfluxApiVersion apiVersion) {
 		this.apiVersion = apiVersion;
 	}
 
 	/**
-     * Returns the organization associated with the InfluxProperties.
-     *
-     * @return the organization associated with the InfluxProperties
-     */
-    public String getOrg() {
+	 * Returns the organization associated with the InfluxProperties.
+	 * @return the organization associated with the InfluxProperties
+	 */
+	public String getOrg() {
 		return this.org;
 	}
 
 	/**
-     * Sets the organization for the InfluxProperties.
-     * 
-     * @param org the organization to set
-     */
-    public void setOrg(String org) {
+	 * Sets the organization for the InfluxProperties.
+	 * @param org the organization to set
+	 */
+	public void setOrg(String org) {
 		this.org = org;
 	}
 
 	/**
-     * Returns the name of the bucket.
-     *
-     * @return the name of the bucket
-     */
-    public String getBucket() {
+	 * Returns the name of the bucket.
+	 * @return the name of the bucket
+	 */
+	public String getBucket() {
 		return this.bucket;
 	}
 
 	/**
-     * Sets the bucket for InfluxProperties.
-     * 
-     * @param bucket the name of the bucket to be set
-     */
-    public void setBucket(String bucket) {
+	 * Sets the bucket for InfluxProperties.
+	 * @param bucket the name of the bucket to be set
+	 */
+	public void setBucket(String bucket) {
 		this.bucket = bucket;
 	}
 
 	/**
-     * Returns the token associated with the InfluxProperties object.
-     *
-     * @return the token associated with the InfluxProperties object
-     */
-    public String getToken() {
+	 * Returns the token associated with the InfluxProperties object.
+	 * @return the token associated with the InfluxProperties object
+	 */
+	public String getToken() {
 		return this.token;
 	}
 
 	/**
-     * Sets the token for authentication.
-     * 
-     * @param token the token to be set
-     */
-    public void setToken(String token) {
+	 * Sets the token for authentication.
+	 * @param token the token to be set
+	 */
+	public void setToken(String token) {
 		this.token = token;
 	}
 

@@ -34,33 +34,35 @@ final class CombinedPatchAndQualifierDependencyVersion extends ArtifactVersionDe
 	private final String original;
 
 	/**
-     * Constructs a new CombinedPatchAndQualifierDependencyVersion object with the specified artifact version and original string.
-     * 
-     * @param artifactVersion the artifact version to be used
-     * @param original the original string to be used
-     */
-    private CombinedPatchAndQualifierDependencyVersion(ArtifactVersion artifactVersion, String original) {
+	 * Constructs a new CombinedPatchAndQualifierDependencyVersion object with the
+	 * specified artifact version and original string.
+	 * @param artifactVersion the artifact version to be used
+	 * @param original the original string to be used
+	 */
+	private CombinedPatchAndQualifierDependencyVersion(ArtifactVersion artifactVersion, String original) {
 		super(artifactVersion);
 		this.original = original;
 	}
 
 	/**
-     * Returns the string representation of the CombinedPatchAndQualifierDependencyVersion object.
-     *
-     * @return the original string value of the CombinedPatchAndQualifierDependencyVersion object
-     */
-    @Override
+	 * Returns the string representation of the CombinedPatchAndQualifierDependencyVersion
+	 * object.
+	 * @return the original string value of the CombinedPatchAndQualifierDependencyVersion
+	 * object
+	 */
+	@Override
 	public String toString() {
 		return this.original;
 	}
 
 	/**
-     * Parses the given version string and returns a CombinedPatchAndQualifierDependencyVersion object.
-     * 
-     * @param version the version string to parse
-     * @return a CombinedPatchAndQualifierDependencyVersion object if the version string is valid, null otherwise
-     */
-    static CombinedPatchAndQualifierDependencyVersion parse(String version) {
+	 * Parses the given version string and returns a
+	 * CombinedPatchAndQualifierDependencyVersion object.
+	 * @param version the version string to parse
+	 * @return a CombinedPatchAndQualifierDependencyVersion object if the version string
+	 * is valid, null otherwise
+	 */
+	static CombinedPatchAndQualifierDependencyVersion parse(String version) {
 		Matcher matcher = PATTERN.matcher(version);
 		if (!matcher.matches()) {
 			return null;

@@ -37,9 +37,9 @@ import org.springframework.core.Ordered;
 public class ServiceConnectionAutoConfiguration {
 
 	/**
-     * Constructs a new ServiceConnectionAutoConfiguration object.
-     */
-    ServiceConnectionAutoConfiguration() {
+	 * Constructs a new ServiceConnectionAutoConfiguration object.
+	 */
+	ServiceConnectionAutoConfiguration() {
 	}
 
 }

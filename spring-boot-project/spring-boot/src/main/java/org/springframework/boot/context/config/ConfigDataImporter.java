@@ -92,14 +92,13 @@ class ConfigDataImporter {
 	}
 
 	/**
-     * Resolves the configuration data for the given locations.
-     * 
-     * @param locationResolverContext The context for resolving the locations.
-     * @param profiles                The profiles to consider during resolution.
-     * @param locations               The list of locations to resolve.
-     * @return                        The list of resolved configuration data.
-     */
-    private List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolverContext locationResolverContext,
+	 * Resolves the configuration data for the given locations.
+	 * @param locationResolverContext The context for resolving the locations.
+	 * @param profiles The profiles to consider during resolution.
+	 * @param locations The list of locations to resolve.
+	 * @return The list of resolved configuration data.
+	 */
+	private List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolverContext locationResolverContext,
 			Profiles profiles, List<ConfigDataLocation> locations) {
 		List<ConfigDataResolutionResult> resolved = new ArrayList<>(locations.size());
 		for (ConfigDataLocation location : locations) {
@@ -109,15 +108,15 @@ class ConfigDataImporter {
 	}
 
 	/**
-     * Resolves the configuration data for a given location.
-     * 
-     * @param locationResolverContext The context for the location resolver.
-     * @param profiles The profiles to consider during resolution.
-     * @param location The location to resolve.
-     * @return A list of {@link ConfigDataResolutionResult} objects representing the resolved configuration data.
-     * @throws ConfigDataNotFoundException If the configuration data is not found.
-     */
-    private List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolverContext locationResolverContext,
+	 * Resolves the configuration data for a given location.
+	 * @param locationResolverContext The context for the location resolver.
+	 * @param profiles The profiles to consider during resolution.
+	 * @param location The location to resolve.
+	 * @return A list of {@link ConfigDataResolutionResult} objects representing the
+	 * resolved configuration data.
+	 * @throws ConfigDataNotFoundException If the configuration data is not found.
+	 */
+	private List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolverContext locationResolverContext,
 			Profiles profiles, ConfigDataLocation location) {
 		try {
 			return this.resolvers.resolve(locationResolverContext, location, profiles);
@@ -129,14 +128,14 @@ class ConfigDataImporter {
 	}
 
 	/**
-     * Loads the configuration data from the given list of candidates.
-     * 
-     * @param loaderContext The loader context to use for loading the data.
-     * @param candidates The list of candidates to load the data from.
-     * @return A map containing the loaded configuration data, with the resolution result as the key and the loaded data as the value.
-     * @throws IOException If an I/O error occurs while loading the data.
-     */
-    private Map<ConfigDataResolutionResult, ConfigData> load(ConfigDataLoaderContext loaderContext,
+	 * Loads the configuration data from the given list of candidates.
+	 * @param loaderContext The loader context to use for loading the data.
+	 * @param candidates The list of candidates to load the data from.
+	 * @return A map containing the loaded configuration data, with the resolution result
+	 * as the key and the loaded data as the value.
+	 * @throws IOException If an I/O error occurs while loading the data.
+	 */
+	private Map<ConfigDataResolutionResult, ConfigData> load(ConfigDataLoaderContext loaderContext,
 			List<ConfigDataResolutionResult> candidates) throws IOException {
 		Map<ConfigDataResolutionResult, ConfigData> result = new LinkedHashMap<>();
 		for (int i = candidates.size() - 1; i >= 0; i--) {
@@ -171,15 +170,14 @@ class ConfigDataImporter {
 	}
 
 	/**
-     * Handles the ConfigDataNotFoundException by checking if it is an instance of ConfigDataResourceNotFoundException.
-     * If it is, updates the exception with the given location.
-     * Then calls the appropriate handler based on the location and resource.
-     *
-     * @param ex       the ConfigDataNotFoundException to handle
-     * @param location the location of the config data
-     * @param resource the resource of the config data
-     */
-    private void handle(ConfigDataNotFoundException ex, ConfigDataLocation location, ConfigDataResource resource) {
+	 * Handles the ConfigDataNotFoundException by checking if it is an instance of
+	 * ConfigDataResourceNotFoundException. If it is, updates the exception with the given
+	 * location. Then calls the appropriate handler based on the location and resource.
+	 * @param ex the ConfigDataNotFoundException to handle
+	 * @param location the location of the config data
+	 * @param resource the resource of the config data
+	 */
+	private void handle(ConfigDataNotFoundException ex, ConfigDataLocation location, ConfigDataResource resource) {
 		if (ex instanceof ConfigDataResourceNotFoundException notFoundException) {
 			ex = notFoundException.withLocation(location);
 		}
@@ -187,13 +185,12 @@ class ConfigDataImporter {
 	}
 
 	/**
-     * Returns the action to be taken when the configuration data is not found.
-     * 
-     * @param location the location of the configuration data
-     * @param resource the resource containing the configuration data
-     * @return the action to be taken when the configuration data is not found
-     */
-    private ConfigDataNotFoundAction getNotFoundAction(ConfigDataLocation location, ConfigDataResource resource) {
+	 * Returns the action to be taken when the configuration data is not found.
+	 * @param location the location of the configuration data
+	 * @param resource the resource containing the configuration data
+	 * @return the action to be taken when the configuration data is not found
+	 */
+	private ConfigDataNotFoundAction getNotFoundAction(ConfigDataLocation location, ConfigDataResource resource) {
 		if (location.isOptional() || (resource != null && resource.isOptional())) {
 			return ConfigDataNotFoundAction.IGNORE;
 		}
@@ -201,20 +198,18 @@ class ConfigDataImporter {
 	}
 
 	/**
-     * Returns a set of loaded locations.
-     *
-     * @return a set of loaded locations
-     */
-    Set<ConfigDataLocation> getLoadedLocations() {
+	 * Returns a set of loaded locations.
+	 * @return a set of loaded locations
+	 */
+	Set<ConfigDataLocation> getLoadedLocations() {
 		return this.loadedLocations;
 	}
 
 	/**
-     * Returns the set of optional locations for importing configuration data.
-     *
-     * @return the set of optional locations
-     */
-    Set<ConfigDataLocation> getOptionalLocations() {
+	 * Returns the set of optional locations for importing configuration data.
+	 * @return the set of optional locations
+	 */
+	Set<ConfigDataLocation> getOptionalLocations() {
 		return this.optionalLocations;
 	}
 

@@ -43,12 +43,13 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class StartupEndpointAutoConfiguration {
 
 	/**
-     * Creates a new instance of the {@link StartupEndpoint} bean if no other bean of the same type is present.
-     * 
-     * @param applicationStartup the {@link BufferingApplicationStartup} to be used by the {@link StartupEndpoint}
-     * @return the created {@link StartupEndpoint} bean
-     */
-    @Bean
+	 * Creates a new instance of the {@link StartupEndpoint} bean if no other bean of the
+	 * same type is present.
+	 * @param applicationStartup the {@link BufferingApplicationStartup} to be used by the
+	 * {@link StartupEndpoint}
+	 * @return the created {@link StartupEndpoint} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public StartupEndpoint startupEndpoint(BufferingApplicationStartup applicationStartup) {
 		return new StartupEndpoint(applicationStartup);
@@ -64,13 +65,12 @@ public class StartupEndpointAutoConfiguration {
 	static class ApplicationStartupCondition extends SpringBootCondition {
 
 		/**
-         * Determines the match outcome for the ApplicationStartup condition.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the condition outcome
-         */
-        @Override
+		 * Determines the match outcome for the ApplicationStartup condition.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the condition outcome
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ApplicationStartup");
 			ApplicationStartup applicationStartup = context.getBeanFactory().getApplicationStartup();

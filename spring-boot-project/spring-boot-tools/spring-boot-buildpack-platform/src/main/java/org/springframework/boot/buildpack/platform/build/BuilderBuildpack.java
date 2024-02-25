@@ -41,31 +41,29 @@ class BuilderBuildpack implements Buildpack {
 	private final BuildpackCoordinates coordinates;
 
 	/**
-     * Constructs a new BuilderBuildpack object with the given buildpack metadata.
-     * 
-     * @param buildpackMetadata the buildpack metadata used to create the BuilderBuildpack object
-     */
-    BuilderBuildpack(BuildpackMetadata buildpackMetadata) {
+	 * Constructs a new BuilderBuildpack object with the given buildpack metadata.
+	 * @param buildpackMetadata the buildpack metadata used to create the BuilderBuildpack
+	 * object
+	 */
+	BuilderBuildpack(BuildpackMetadata buildpackMetadata) {
 		this.coordinates = BuildpackCoordinates.fromBuildpackMetadata(buildpackMetadata);
 	}
 
 	/**
-     * Returns the coordinates of the buildpack.
-     * 
-     * @return the coordinates of the buildpack
-     */
-    @Override
+	 * Returns the coordinates of the buildpack.
+	 * @return the coordinates of the buildpack
+	 */
+	@Override
 	public BuildpackCoordinates getCoordinates() {
 		return this.coordinates;
 	}
 
 	/**
-     * Applies the given consumer function to each layer in the buildpack.
-     * 
-     * @param layers the consumer function to apply to each layer
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Applies the given consumer function to each layer in the buildpack.
+	 * @param layers the consumer function to apply to each layer
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public void apply(IOConsumer<Layer> layers) throws IOException {
 	}
 
@@ -87,13 +85,14 @@ class BuilderBuildpack implements Buildpack {
 	}
 
 	/**
-     * Finds the buildpack metadata for the given builder reference in the given buildpack resolver context.
-     * 
-     * @param context the buildpack resolver context
-     * @param builderReference the builder reference to match against the buildpack metadata
-     * @return the buildpack metadata if found, null otherwise
-     */
-    private static BuildpackMetadata findBuildpackMetadata(BuildpackResolverContext context,
+	 * Finds the buildpack metadata for the given builder reference in the given buildpack
+	 * resolver context.
+	 * @param context the buildpack resolver context
+	 * @param builderReference the builder reference to match against the buildpack
+	 * metadata
+	 * @return the buildpack metadata if found, null otherwise
+	 */
+	private static BuildpackMetadata findBuildpackMetadata(BuildpackResolverContext context,
 			BuilderReference builderReference) {
 		for (BuildpackMetadata candidate : context.getBuildpackMetadata()) {
 			if (builderReference.matches(candidate)) {
@@ -113,44 +112,42 @@ class BuilderBuildpack implements Buildpack {
 		private final String version;
 
 		/**
-         * Constructs a new BuilderReference object with the specified id and version.
-         * 
-         * @param id the id of the BuilderReference
-         * @param version the version of the BuilderReference
-         */
-        BuilderReference(String id, String version) {
+		 * Constructs a new BuilderReference object with the specified id and version.
+		 * @param id the id of the BuilderReference
+		 * @param version the version of the BuilderReference
+		 */
+		BuilderReference(String id, String version) {
 			this.id = id;
 			this.version = version;
 		}
 
 		/**
-         * Returns a string representation of the object.
-         * 
-         * @return the string representation of the object
-         */
-        @Override
+		 * Returns a string representation of the object.
+		 * @return the string representation of the object
+		 */
+		@Override
 		public String toString() {
 			return (this.version != null) ? this.id + "@" + this.version : this.id;
 		}
 
 		/**
-         * Checks if the given BuildpackMetadata object matches the current BuilderReference object.
-         * 
-         * @param candidate The BuildpackMetadata object to be checked for a match.
-         * @return true if the given BuildpackMetadata object matches the current BuilderReference object, false otherwise.
-         */
-        boolean matches(BuildpackMetadata candidate) {
+		 * Checks if the given BuildpackMetadata object matches the current
+		 * BuilderReference object.
+		 * @param candidate The BuildpackMetadata object to be checked for a match.
+		 * @return true if the given BuildpackMetadata object matches the current
+		 * BuilderReference object, false otherwise.
+		 */
+		boolean matches(BuildpackMetadata candidate) {
 			return this.id.equals(candidate.getId())
 					&& (this.version == null || this.version.equals(candidate.getVersion()));
 		}
 
 		/**
-         * Creates a new BuilderReference object based on the given value.
-         * 
-         * @param value the value to create the BuilderReference object from
-         * @return a new BuilderReference object
-         */
-        static BuilderReference of(String value) {
+		 * Creates a new BuilderReference object based on the given value.
+		 * @param value the value to create the BuilderReference object from
+		 * @return a new BuilderReference object
+		 */
+		static BuilderReference of(String value) {
 			if (value.contains("@")) {
 				String[] parts = value.split("@");
 				return new BuilderReference(parts[0], parts[1]);

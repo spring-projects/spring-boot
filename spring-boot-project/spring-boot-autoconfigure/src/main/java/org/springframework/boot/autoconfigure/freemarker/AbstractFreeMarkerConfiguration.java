@@ -30,29 +30,29 @@ abstract class AbstractFreeMarkerConfiguration {
 	private final FreeMarkerProperties properties;
 
 	/**
-     * Constructs a new instance of the {@code AbstractFreeMarkerConfiguration} class with the specified {@code properties}.
-     * 
-     * @param properties the {@code FreeMarkerProperties} object containing the configuration properties
-     */
-    protected AbstractFreeMarkerConfiguration(FreeMarkerProperties properties) {
+	 * Constructs a new instance of the {@code AbstractFreeMarkerConfiguration} class with
+	 * the specified {@code properties}.
+	 * @param properties the {@code FreeMarkerProperties} object containing the
+	 * configuration properties
+	 */
+	protected AbstractFreeMarkerConfiguration(FreeMarkerProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Returns the FreeMarkerProperties object associated with this AbstractFreeMarkerConfiguration.
-     * 
-     * @return the FreeMarkerProperties object
-     */
-    protected final FreeMarkerProperties getProperties() {
+	 * Returns the FreeMarkerProperties object associated with this
+	 * AbstractFreeMarkerConfiguration.
+	 * @return the FreeMarkerProperties object
+	 */
+	protected final FreeMarkerProperties getProperties() {
 		return this.properties;
 	}
 
 	/**
-     * Applies the properties to the FreeMarkerConfigurationFactory.
-     * 
-     * @param factory the FreeMarkerConfigurationFactory to apply the properties to
-     */
-    protected void applyProperties(FreeMarkerConfigurationFactory factory) {
+	 * Applies the properties to the FreeMarkerConfigurationFactory.
+	 * @param factory the FreeMarkerConfigurationFactory to apply the properties to
+	 */
+	protected void applyProperties(FreeMarkerConfigurationFactory factory) {
 		factory.setTemplateLoaderPaths(this.properties.getTemplateLoaderPath());
 		factory.setPreferFileSystemAccess(this.properties.isPreferFileSystemAccess());
 		factory.setDefaultEncoding(this.properties.getCharsetName());

@@ -31,22 +31,21 @@ public class MyService {
 	private final WebClient webClient;
 
 	/**
-     * Constructs a new instance of MyService with the provided WebClient.Builder and WebClientSsl.
-     * 
-     * @param webClientBuilder the WebClient.Builder used to build the WebClient instance
-     * @param ssl the WebClientSsl used to configure SSL settings for the WebClient
-     */
-    public MyService(WebClient.Builder webClientBuilder, WebClientSsl ssl) {
+	 * Constructs a new instance of MyService with the provided WebClient.Builder and
+	 * WebClientSsl.
+	 * @param webClientBuilder the WebClient.Builder used to build the WebClient instance
+	 * @param ssl the WebClientSsl used to configure SSL settings for the WebClient
+	 */
+	public MyService(WebClient.Builder webClientBuilder, WebClientSsl ssl) {
 		this.webClient = webClientBuilder.baseUrl("https://example.org").apply(ssl.fromBundle("mybundle")).build();
 	}
 
 	/**
-     * Makes a REST call to retrieve details for a given name.
-     *
-     * @param name the name for which details are to be retrieved
-     * @return a Mono emitting the details for the given name
-     */
-    public Mono<Details> someRestCall(String name) {
+	 * Makes a REST call to retrieve details for a given name.
+	 * @param name the name for which details are to be retrieved
+	 * @return a Mono emitting the details for the given name
+	 */
+	public Mono<Details> someRestCall(String name) {
 		return this.webClient.get().uri("/{name}/details", name).retrieve().bodyToMono(Details.class);
 	}
 

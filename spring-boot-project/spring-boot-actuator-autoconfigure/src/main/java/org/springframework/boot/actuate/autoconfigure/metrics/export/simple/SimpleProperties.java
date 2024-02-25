@@ -50,56 +50,50 @@ public class SimpleProperties {
 	private CountingMode mode = CountingMode.CUMULATIVE;
 
 	/**
-     * Returns the current status of the enabled flag.
-     *
-     * @return true if the enabled flag is set to true, false otherwise.
-     */
-    public boolean isEnabled() {
+	 * Returns the current status of the enabled flag.
+	 * @return true if the enabled flag is set to true, false otherwise.
+	 */
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
 	/**
-     * Sets the enabled status of the SimpleProperties object.
-     * 
-     * @param enabled the new enabled status to be set
-     */
-    public void setEnabled(boolean enabled) {
+	 * Sets the enabled status of the SimpleProperties object.
+	 * @param enabled the new enabled status to be set
+	 */
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	/**
-     * Returns the step duration.
-     *
-     * @return the step duration
-     */
-    public Duration getStep() {
+	 * Returns the step duration.
+	 * @return the step duration
+	 */
+	public Duration getStep() {
 		return this.step;
 	}
 
 	/**
-     * Sets the step duration for the SimpleProperties class.
-     * 
-     * @param step the duration to set as the step
-     */
-    public void setStep(Duration step) {
+	 * Sets the step duration for the SimpleProperties class.
+	 * @param step the duration to set as the step
+	 */
+	public void setStep(Duration step) {
 		this.step = step;
 	}
 
 	/**
-     * Returns the counting mode of the SimpleProperties object.
-     * 
-     * @return the counting mode of the SimpleProperties object
-     */
-    public CountingMode getMode() {
+	 * Returns the counting mode of the SimpleProperties object.
+	 * @return the counting mode of the SimpleProperties object
+	 */
+	public CountingMode getMode() {
 		return this.mode;
 	}
 
 	/**
-     * Sets the counting mode for the SimpleProperties object.
-     * 
-     * @param mode the counting mode to be set
-     */
-    public void setMode(CountingMode mode) {
+	 * Sets the counting mode for the SimpleProperties object.
+	 * @param mode the counting mode to be set
+	 */
+	public void setMode(CountingMode mode) {
 		this.mode = mode;
 	}
 

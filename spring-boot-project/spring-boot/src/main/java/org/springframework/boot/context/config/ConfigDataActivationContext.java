@@ -56,13 +56,12 @@ class ConfigDataActivationContext {
 	}
 
 	/**
-     * Deduces the appropriate cloud platform based on the given environment and binder.
-     * 
-     * @param environment the environment in which the cloud platform is being deduced
-     * @param binder the binder used to enforce the cloud platform
-     * @return the deduced cloud platform
-     */
-    private CloudPlatform deduceCloudPlatform(Environment environment, Binder binder) {
+	 * Deduces the appropriate cloud platform based on the given environment and binder.
+	 * @param environment the environment in which the cloud platform is being deduced
+	 * @param binder the binder used to enforce the cloud platform
+	 * @return the deduced cloud platform
+	 */
+	private CloudPlatform deduceCloudPlatform(Environment environment, Binder binder) {
 		for (CloudPlatform candidate : CloudPlatform.values()) {
 			if (candidate.isEnforced(binder)) {
 				return candidate;
@@ -97,11 +96,10 @@ class ConfigDataActivationContext {
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * 
-     * @return a string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return a string representation of the object
+	 */
+	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this);
 		creator.append("cloudPlatform", this.cloudPlatform);

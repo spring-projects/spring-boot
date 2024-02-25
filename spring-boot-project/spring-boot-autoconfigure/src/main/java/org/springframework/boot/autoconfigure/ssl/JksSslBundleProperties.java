@@ -39,20 +39,18 @@ public class JksSslBundleProperties extends SslBundleProperties {
 	private final Store truststore = new Store();
 
 	/**
-     * Returns the keystore associated with this JksSslBundleProperties.
-     *
-     * @return the keystore associated with this JksSslBundleProperties
-     */
-    public Store getKeystore() {
+	 * Returns the keystore associated with this JksSslBundleProperties.
+	 * @return the keystore associated with this JksSslBundleProperties
+	 */
+	public Store getKeystore() {
 		return this.keystore;
 	}
 
 	/**
-     * Returns the truststore used by this JksSslBundleProperties.
-     *
-     * @return the truststore used by this JksSslBundleProperties
-     */
-    public Store getTruststore() {
+	 * Returns the truststore used by this JksSslBundleProperties.
+	 * @return the truststore used by this JksSslBundleProperties
+	 */
+	public Store getTruststore() {
 		return this.truststore;
 	}
 
@@ -82,74 +80,66 @@ public class JksSslBundleProperties extends SslBundleProperties {
 		private String password;
 
 		/**
-         * Returns the type of the store.
-         * 
-         * @return the type of the store
-         */
-        public String getType() {
+		 * Returns the type of the store.
+		 * @return the type of the store
+		 */
+		public String getType() {
 			return this.type;
 		}
 
 		/**
-         * Sets the type of the store.
-         * 
-         * @param type the type of the store
-         */
-        public void setType(String type) {
+		 * Sets the type of the store.
+		 * @param type the type of the store
+		 */
+		public void setType(String type) {
 			this.type = type;
 		}
 
 		/**
-         * Returns the provider of the store.
-         *
-         * @return the provider of the store
-         */
-        public String getProvider() {
+		 * Returns the provider of the store.
+		 * @return the provider of the store
+		 */
+		public String getProvider() {
 			return this.provider;
 		}
 
 		/**
-         * Sets the provider for the store.
-         * 
-         * @param provider the provider to be set
-         */
-        public void setProvider(String provider) {
+		 * Sets the provider for the store.
+		 * @param provider the provider to be set
+		 */
+		public void setProvider(String provider) {
 			this.provider = provider;
 		}
 
 		/**
-         * Returns the location of the store.
-         *
-         * @return the location of the store
-         */
-        public String getLocation() {
+		 * Returns the location of the store.
+		 * @return the location of the store
+		 */
+		public String getLocation() {
 			return this.location;
 		}
 
 		/**
-         * Sets the location of the store.
-         * 
-         * @param location the new location of the store
-         */
-        public void setLocation(String location) {
+		 * Sets the location of the store.
+		 * @param location the new location of the store
+		 */
+		public void setLocation(String location) {
 			this.location = location;
 		}
 
 		/**
-         * Returns the password of the Store.
-         *
-         * @return the password of the Store
-         */
-        public String getPassword() {
+		 * Returns the password of the Store.
+		 * @return the password of the Store
+		 */
+		public String getPassword() {
 			return this.password;
 		}
 
 		/**
-         * Sets the password for the Store.
-         * 
-         * @param password the password to be set
-         */
-        public void setPassword(String password) {
+		 * Sets the password for the Store.
+		 * @param password the password to be set
+		 */
+		public void setPassword(String password) {
 			this.password = password;
 		}
 

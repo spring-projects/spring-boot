@@ -32,13 +32,13 @@ class LiquibaseChangelogMissingFailureAnalyzer extends AbstractFailureAnalyzer<C
 	private static final String MESSAGE_SUFFIX = " does not exist";
 
 	/**
-     * Analyzes the failure caused by a missing Liquibase changelog.
-     * 
-     * @param rootFailure the root cause of the failure
-     * @param cause the specific exception that caused the failure
-     * @return a FailureAnalysis object containing information about the failure, or null if the failure is not caused by a missing changelog
-     */
-    @Override
+	 * Analyzes the failure caused by a missing Liquibase changelog.
+	 * @param rootFailure the root cause of the failure
+	 * @param cause the specific exception that caused the failure
+	 * @return a FailureAnalysis object containing information about the failure, or null
+	 * if the failure is not caused by a missing changelog
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, ChangeLogParseException cause) {
 		if (cause.getMessage().endsWith(MESSAGE_SUFFIX)) {
 			String changelogPath = extractChangelogPath(cause);
@@ -49,22 +49,22 @@ class LiquibaseChangelogMissingFailureAnalyzer extends AbstractFailureAnalyzer<C
 	}
 
 	/**
-     * Extracts the changelog path from the given {@link ChangeLogParseException} by removing the message suffix.
-     * 
-     * @param cause the {@link ChangeLogParseException} that occurred
-     * @return the extracted changelog path
-     */
-    private String extractChangelogPath(ChangeLogParseException cause) {
+	 * Extracts the changelog path from the given {@link ChangeLogParseException} by
+	 * removing the message suffix.
+	 * @param cause the {@link ChangeLogParseException} that occurred
+	 * @return the extracted changelog path
+	 */
+	private String extractChangelogPath(ChangeLogParseException cause) {
 		return cause.getMessage().substring(0, cause.getMessage().length() - MESSAGE_SUFFIX.length());
 	}
 
 	/**
-     * Returns the description for the failure of Liquibase to start due to the absence of a changelog file.
-     * 
-     * @param changelogPath the path of the missing changelog file
-     * @return the description message indicating the failure
-     */
-    private String getDescription(String changelogPath) {
+	 * Returns the description for the failure of Liquibase to start due to the absence of
+	 * a changelog file.
+	 * @param changelogPath the path of the missing changelog file
+	 * @return the description message indicating the failure
+	 */
+	private String getDescription(String changelogPath) {
 		return "Liquibase failed to start because no changelog could be found at '" + changelogPath + "'.";
 	}
 

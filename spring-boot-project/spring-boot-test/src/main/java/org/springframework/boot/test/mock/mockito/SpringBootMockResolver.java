@@ -33,26 +33,25 @@ import org.springframework.util.Assert;
 public class SpringBootMockResolver implements MockResolver {
 
 	/**
-     * Resolves the ultimate target object for the given instance.
-     * 
-     * @param instance the instance for which the ultimate target object needs to be resolved
-     * @return the ultimate target object for the given instance
-     */
-    @Override
+	 * Resolves the ultimate target object for the given instance.
+	 * @param instance the instance for which the ultimate target object needs to be
+	 * resolved
+	 * @return the ultimate target object for the given instance
+	 */
+	@Override
 	public Object resolve(Object instance) {
 		return getUltimateTargetObject(instance);
 	}
 
 	/**
-     * Retrieves the ultimate target object from a given candidate object.
-     * 
-     * @param candidate the object to retrieve the ultimate target object from
-     * @param <T> the type of the ultimate target object
-     * @return the ultimate target object
-     * @throws IllegalStateException if failed to unwrap the proxied object
-     * @throws IllegalArgumentException if the candidate object is null
-     */
-    @SuppressWarnings("unchecked")
+	 * Retrieves the ultimate target object from a given candidate object.
+	 * @param candidate the object to retrieve the ultimate target object from
+	 * @param <T> the type of the ultimate target object
+	 * @return the ultimate target object
+	 * @throws IllegalStateException if failed to unwrap the proxied object
+	 * @throws IllegalArgumentException if the candidate object is null
+	 */
+	@SuppressWarnings("unchecked")
 	private static <T> T getUltimateTargetObject(Object candidate) {
 		Assert.notNull(candidate, "Candidate must not be null");
 		try {

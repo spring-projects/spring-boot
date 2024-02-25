@@ -57,13 +57,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class ManagementWebSecurityAutoConfiguration {
 
 	/**
-     * Configures the security filter chain for management endpoints.
-     * 
-     * @param http the HttpSecurity object to configure
-     * @return the configured SecurityFilterChain
-     * @throws Exception if an error occurs during configuration
-     */
-    @Bean
+	 * Configures the security filter chain for management endpoints.
+	 * @param http the HttpSecurity object to configure
+	 * @return the configured SecurityFilterChain
+	 * @throws Exception if an error occurs during configuration
+	 */
+	@Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	SecurityFilterChain managementSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((requests) -> {

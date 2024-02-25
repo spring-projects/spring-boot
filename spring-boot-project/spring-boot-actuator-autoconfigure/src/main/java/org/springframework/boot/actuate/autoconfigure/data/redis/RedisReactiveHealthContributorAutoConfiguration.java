@@ -53,22 +53,22 @@ public class RedisReactiveHealthContributorAutoConfiguration extends
 	private final Map<String, ReactiveRedisConnectionFactory> redisConnectionFactories;
 
 	/**
-     * Constructs a new RedisReactiveHealthContributorAutoConfiguration with the specified Redis connection factories.
-     * 
-     * @param redisConnectionFactories a map of Redis connection factories
-     */
-    RedisReactiveHealthContributorAutoConfiguration(
+	 * Constructs a new RedisReactiveHealthContributorAutoConfiguration with the specified
+	 * Redis connection factories.
+	 * @param redisConnectionFactories a map of Redis connection factories
+	 */
+	RedisReactiveHealthContributorAutoConfiguration(
 			Map<String, ReactiveRedisConnectionFactory> redisConnectionFactories) {
 		super(RedisReactiveHealthIndicator::new);
 		this.redisConnectionFactories = redisConnectionFactories;
 	}
 
 	/**
-     * Creates a ReactiveHealthContributor for Redis if no existing bean with the names "redisHealthIndicator" and "redisHealthContributor" is found.
-     * 
-     * @return the created ReactiveHealthContributor for Redis
-     */
-    @Bean
+	 * Creates a ReactiveHealthContributor for Redis if no existing bean with the names
+	 * "redisHealthIndicator" and "redisHealthContributor" is found.
+	 * @return the created ReactiveHealthContributor for Redis
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = { "redisHealthIndicator", "redisHealthContributor" })
 	public ReactiveHealthContributor redisHealthContributor() {
 		return createContributor(this.redisConnectionFactories);

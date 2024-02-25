@@ -109,57 +109,54 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	private static final Filter FILTER = new AbstractFilter() {
 
 		/**
-     * Filters the given log event.
-     * 
-     * @param event the log event to be filtered
-     * @return the result of the filtering operation, which is Result.DENY in this case
-     */
-    @Override
+		 * Filters the given log event.
+		 * @param event the log event to be filtered
+		 * @return the result of the filtering operation, which is Result.DENY in this
+		 * case
+		 */
+		@Override
 		public Result filter(LogEvent event) {
 			return Result.DENY;
 		}
 
 		/**
-     * Filters log events based on the specified criteria.
-     * 
-     * @param logger the logger associated with the log event
-     * @param level the level of the log event
-     * @param marker the marker associated with the log event
-     * @param msg the message of the log event
-     * @param t the throwable associated with the log event
-     * @return the result of the filtering process
-     */
-    @Override
+		 * Filters log events based on the specified criteria.
+		 * @param logger the logger associated with the log event
+		 * @param level the level of the log event
+		 * @param marker the marker associated with the log event
+		 * @param msg the message of the log event
+		 * @param t the throwable associated with the log event
+		 * @return the result of the filtering process
+		 */
+		@Override
 		public Result filter(Logger logger, Level level, Marker marker, Message msg, Throwable t) {
 			return Result.DENY;
 		}
 
 		/**
-     * Filters log events based on the specified criteria.
-     * 
-     * @param logger the logger associated with the log event
-     * @param level the level of the log event
-     * @param marker the marker associated with the log event
-     * @param msg the message of the log event
-     * @param t the throwable associated with the log event
-     * @return the result of the filtering process
-     */
-    @Override
+		 * Filters log events based on the specified criteria.
+		 * @param logger the logger associated with the log event
+		 * @param level the level of the log event
+		 * @param marker the marker associated with the log event
+		 * @param msg the message of the log event
+		 * @param t the throwable associated with the log event
+		 * @return the result of the filtering process
+		 */
+		@Override
 		public Result filter(Logger logger, Level level, Marker marker, Object msg, Throwable t) {
 			return Result.DENY;
 		}
 
 		/**
-     * Filters log messages based on the specified criteria.
-     * 
-     * @param logger the logger instance
-     * @param level the log level
-     * @param marker the log marker
-     * @param msg the log message
-     * @param params the log message parameters
-     * @return the result of the filter operation
-     */
-    @Override
+		 * Filters log messages based on the specified criteria.
+		 * @param logger the logger instance
+		 * @param level the log level
+		 * @param marker the log marker
+		 * @param msg the log message
+		 * @param params the log message parameters
+		 * @return the result of the filter operation
+		 */
+		@Override
 		public Result filter(Logger logger, Level level, Marker marker, String msg, Object... params) {
 			return Result.DENY;
 		}
@@ -167,32 +164,29 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	};
 
 	/**
-     * Constructs a new Log4J2LoggingSystem with the specified class loader.
-     *
-     * @param classLoader the class loader to be used for loading classes and resources
-     */
-    public Log4J2LoggingSystem(ClassLoader classLoader) {
+	 * Constructs a new Log4J2LoggingSystem with the specified class loader.
+	 * @param classLoader the class loader to be used for loading classes and resources
+	 */
+	public Log4J2LoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
 	}
 
 	/**
-     * Returns an array of standard configuration file locations for Log4J2.
-     * The locations are determined based on the availability of certain classes and properties.
-     * 
-     * The standard configuration file locations are as follows:
-     * - "log4j2-test.properties"
-     * - "log4j2-test.yaml" and "log4j2-test.yml" (if com.fasterxml.jackson.dataformat.yaml.YAMLParser is available)
-     * - "log4j2-test.json" and "log4j2-test.jsn" (if com.fasterxml.jackson.databind.ObjectMapper is available)
-     * - "log4j2-test.xml"
-     * - "log4j2.properties"
-     * - "log4j2.yaml" and "log4j2.yml" (if com.fasterxml.jackson.dataformat.yaml.YAMLParser is available)
-     * - "log4j2.json" and "log4j2.jsn" (if com.fasterxml.jackson.databind.ObjectMapper is available)
-     * - "log4j2.xml"
-     * - The location specified by the "log4j.configurationFile" system property
-     * 
-     * @return an array of standard configuration file locations
-     */
-    @Override
+	 * Returns an array of standard configuration file locations for Log4J2. The locations
+	 * are determined based on the availability of certain classes and properties.
+	 *
+	 * The standard configuration file locations are as follows: -
+	 * "log4j2-test.properties" - "log4j2-test.yaml" and "log4j2-test.yml" (if
+	 * com.fasterxml.jackson.dataformat.yaml.YAMLParser is available) - "log4j2-test.json"
+	 * and "log4j2-test.jsn" (if com.fasterxml.jackson.databind.ObjectMapper is available)
+	 * - "log4j2-test.xml" - "log4j2.properties" - "log4j2.yaml" and "log4j2.yml" (if
+	 * com.fasterxml.jackson.dataformat.yaml.YAMLParser is available) - "log4j2.json" and
+	 * "log4j2.jsn" (if com.fasterxml.jackson.databind.ObjectMapper is available) -
+	 * "log4j2.xml" - The location specified by the "log4j.configurationFile" system
+	 * property
+	 * @return an array of standard configuration file locations
+	 */
+	@Override
 	protected String[] getStandardConfigLocations() {
 		List<String> locations = new ArrayList<>();
 		locations.add("log4j2-test.properties");
@@ -220,26 +214,26 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Checks if a class is available.
-     * 
-     * @param className the name of the class to check
-     * @return true if the class is available, false otherwise
-     */
-    protected boolean isClassAvailable(String className) {
+	 * Checks if a class is available.
+	 * @param className the name of the class to check
+	 * @return true if the class is available, false otherwise
+	 */
+	protected boolean isClassAvailable(String className) {
 		return ClassUtils.isPresent(className, getClassLoader());
 	}
 
 	/**
-     * This method is called before the initialization of the Log4J2LoggingSystem.
-     * It checks if the logger context is already initialized and if not, it adds a filter to the logger configuration.
-     * If the JDK logging bridge handler cannot be configured, it calls the super method before initialization.
-     * 
-     * @see LoggerContext
-     * @see Log4J2LoggingSystem#isAlreadyInitialized(LoggerContext)
-     * @see Log4J2LoggingSystem#configureJdkLoggingBridgeHandler()
-     * @see Configuration#addFilter(Filter)
-     */
-    @Override
+	 * This method is called before the initialization of the Log4J2LoggingSystem. It
+	 * checks if the logger context is already initialized and if not, it adds a filter to
+	 * the logger configuration. If the JDK logging bridge handler cannot be configured,
+	 * it calls the super method before initialization.
+	 *
+	 * @see LoggerContext
+	 * @see Log4J2LoggingSystem#isAlreadyInitialized(LoggerContext)
+	 * @see Log4J2LoggingSystem#configureJdkLoggingBridgeHandler()
+	 * @see Configuration#addFilter(Filter)
+	 */
+	@Override
 	public void beforeInitialize() {
 		LoggerContext loggerContext = getLoggerContext();
 		if (isAlreadyInitialized(loggerContext)) {
@@ -252,16 +246,16 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Configures the JDK logging bridge handler.
-     * 
-     * This method checks if the Java Util Logging (JUL) is using a single console handler at most,
-     * if Log4j LogManager is not installed,
-     * and if the Log4j bridge handler is available.
-     * If all conditions are met, the default root handler is removed and the Log4j bridge handler is installed.
-     * 
-     * @return true if the JDK logging bridge handler is successfully configured, false otherwise.
-     */
-    private boolean configureJdkLoggingBridgeHandler() {
+	 * Configures the JDK logging bridge handler.
+	 *
+	 * This method checks if the Java Util Logging (JUL) is using a single console handler
+	 * at most, if Log4j LogManager is not installed, and if the Log4j bridge handler is
+	 * available. If all conditions are met, the default root handler is removed and the
+	 * Log4j bridge handler is installed.
+	 * @return true if the JDK logging bridge handler is successfully configured, false
+	 * otherwise.
+	 */
+	private boolean configureJdkLoggingBridgeHandler() {
 		try {
 			if (isJulUsingASingleConsoleHandlerAtMost() && !isLog4jLogManagerInstalled()
 					&& isLog4jBridgeHandlerAvailable()) {
@@ -277,42 +271,40 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Checks if the JUL (Java Util Logging) is using a single ConsoleHandler at most.
-     * 
-     * @return true if JUL is using a single ConsoleHandler at most, false otherwise
-     */
-    private boolean isJulUsingASingleConsoleHandlerAtMost() {
+	 * Checks if the JUL (Java Util Logging) is using a single ConsoleHandler at most.
+	 * @return true if JUL is using a single ConsoleHandler at most, false otherwise
+	 */
+	private boolean isJulUsingASingleConsoleHandlerAtMost() {
 		java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();
 		return handlers.length == 0 || (handlers.length == 1 && handlers[0] instanceof ConsoleHandler);
 	}
 
 	/**
-     * Checks if Log4j LogManager is installed.
-     * 
-     * @return true if Log4j LogManager is installed, false otherwise.
-     */
-    private boolean isLog4jLogManagerInstalled() {
+	 * Checks if Log4j LogManager is installed.
+	 * @return true if Log4j LogManager is installed, false otherwise.
+	 */
+	private boolean isLog4jLogManagerInstalled() {
 		final String logManagerClassName = java.util.logging.LogManager.getLogManager().getClass().getName();
 		return LOG4J_LOG_MANAGER.equals(logManagerClassName);
 	}
 
 	/**
-     * Checks if the Log4j Bridge Handler is available.
-     * 
-     * @return {@code true} if the Log4j Bridge Handler is available, {@code false} otherwise.
-     */
-    private boolean isLog4jBridgeHandlerAvailable() {
+	 * Checks if the Log4j Bridge Handler is available.
+	 * @return {@code true} if the Log4j Bridge Handler is available, {@code false}
+	 * otherwise.
+	 */
+	private boolean isLog4jBridgeHandlerAvailable() {
 		return ClassUtils.isPresent(LOG4J_BRIDGE_HANDLER, getClassLoader());
 	}
 
 	/**
-     * Removes the Log4jBridgeHandler from the root logger.
-     * This method closes the handler and removes it from the root logger if it is an instance of Log4jBridgeHandler.
-     * 
-     * @see Log4jBridgeHandler
-     */
-    private void removeLog4jBridgeHandler() {
+	 * Removes the Log4jBridgeHandler from the root logger. This method closes the handler
+	 * and removes it from the root logger if it is an instance of Log4jBridgeHandler.
+	 *
+	 * @see Log4jBridgeHandler
+	 */
+	private void removeLog4jBridgeHandler() {
 		removeDefaultRootHandler();
 		java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
 		for (final Handler handler : rootLogger.getHandlers()) {
@@ -324,15 +316,14 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Removes the default root handler from the Log4J2LoggingSystem class.
-     * This method checks if the root logger has only one handler, which is an instance of ConsoleHandler,
-     * and removes it if found.
-     * 
-     * @throws Throwable if an error occurs while removing the default root handler
-     * 
-     * @since 1.0
-     */
-    private void removeDefaultRootHandler() {
+	 * Removes the default root handler from the Log4J2LoggingSystem class. This method
+	 * checks if the root logger has only one handler, which is an instance of
+	 * ConsoleHandler, and removes it if found.
+	 * @throws Throwable if an error occurs while removing the default root handler
+	 *
+	 * @since 1.0
+	 */
+	private void removeDefaultRootHandler() {
 		try {
 			java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
 			Handler[] handlers = rootLogger.getHandlers();
@@ -346,13 +337,13 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Initializes the logging system with the given initialization context, config location, and log file.
-     * 
-     * @param initializationContext the logging initialization context
-     * @param configLocation the location of the logging configuration file
-     * @param logFile the log file to be used
-     */
-    @Override
+	 * Initializes the logging system with the given initialization context, config
+	 * location, and log file.
+	 * @param initializationContext the logging initialization context
+	 * @param configLocation the location of the logging configuration file
+	 * @param logFile the log file to be used
+	 */
+	@Override
 	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
 		if (isAlreadyInitialized(loggerContext)) {
@@ -369,38 +360,35 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Loads the default configuration for the logging system.
-     * 
-     * @param initializationContext the initialization context for the logging system
-     * @param logFile the log file to be used, or null if not applicable
-     */
-    @Override
+	 * Loads the default configuration for the logging system.
+	 * @param initializationContext the initialization context for the logging system
+	 * @param logFile the log file to be used, or null if not applicable
+	 */
+	@Override
 	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
 		String location = getPackagedConfigFile((logFile != null) ? "log4j2-file.xml" : "log4j2.xml");
 		load(initializationContext, location, logFile);
 	}
 
 	/**
-     * Loads the configuration for the logging system.
-     * 
-     * @param initializationContext the initialization context for the logging system
-     * @param location the location of the configuration file
-     * @param logFile the log file to be used
-     */
-    @Override
+	 * Loads the configuration for the logging system.
+	 * @param initializationContext the initialization context for the logging system
+	 * @param location the location of the configuration file
+	 * @param logFile the log file to be used
+	 */
+	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
 			LogFile logFile) {
 		load(initializationContext, location, logFile);
 	}
 
 	/**
-     * Loads the configuration for the Log4J2LoggingSystem.
-     * 
-     * @param initializationContext the LoggingInitializationContext object
-     * @param location the location of the configuration file
-     * @param logFile the LogFile object
-     */
-    private void load(LoggingInitializationContext initializationContext, String location, LogFile logFile) {
+	 * Loads the configuration for the Log4J2LoggingSystem.
+	 * @param initializationContext the LoggingInitializationContext object
+	 * @param location the location of the configuration file
+	 * @param logFile the LogFile object
+	 */
+	private void load(LoggingInitializationContext initializationContext, String location, LogFile logFile) {
 		List<String> overrides = getOverrides(initializationContext);
 		if (initializationContext != null) {
 			applySystemProperties(initializationContext.getEnvironment(), logFile);
@@ -409,12 +397,12 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Retrieves the list of log4j2 configuration overrides from the provided initialization context.
-     * 
-     * @param initializationContext the logging initialization context
-     * @return the list of log4j2 configuration overrides
-     */
-    private List<String> getOverrides(LoggingInitializationContext initializationContext) {
+	 * Retrieves the list of log4j2 configuration overrides from the provided
+	 * initialization context.
+	 * @param initializationContext the logging initialization context
+	 * @return the list of log4j2 configuration overrides
+	 */
+	private List<String> getOverrides(LoggingInitializationContext initializationContext) {
 		BindResult<List<String>> overrides = Binder.get(initializationContext.getEnvironment())
 			.bind("logging.log4j2.config.override", Bindable.listOf(String.class));
 		return overrides.orElse(Collections.emptyList());
@@ -447,27 +435,26 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Loads the configuration from the specified location.
-     * 
-     * @param location the location of the configuration file
-     * @param context the logger context
-     * @return the loaded configuration
-     * @throws IOException if an I/O error occurs while loading the configuration
-     */
-    private Configuration load(String location, LoggerContext context) throws IOException {
+	 * Loads the configuration from the specified location.
+	 * @param location the location of the configuration file
+	 * @param context the logger context
+	 * @return the loaded configuration
+	 * @throws IOException if an I/O error occurs while loading the configuration
+	 */
+	private Configuration load(String location, LoggerContext context) throws IOException {
 		URL url = ResourceUtils.getURL(location);
 		ConfigurationSource source = getConfigurationSource(url);
 		return ConfigurationFactory.getInstance().getConfiguration(context, source);
 	}
 
 	/**
-     * Retrieves the configuration source for the given URL.
-     * 
-     * @param url The URL of the configuration source.
-     * @return The configuration source.
-     * @throws IOException If an I/O error occurs while retrieving the configuration source.
-     */
-    private ConfigurationSource getConfigurationSource(URL url) throws IOException {
+	 * Retrieves the configuration source for the given URL.
+	 * @param url The URL of the configuration source.
+	 * @return The configuration source.
+	 * @throws IOException If an I/O error occurs while retrieving the configuration
+	 * source.
+	 */
+	private ConfigurationSource getConfigurationSource(URL url) throws IOException {
 		if (FILE_PROTOCOL.equals(url.getProtocol())) {
 			return new ConfigurationSource(url.openStream(), ResourceUtils.getFile(url));
 		}
@@ -481,21 +468,19 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Creates a composite configuration by combining multiple configurations.
-     * 
-     * @param configurations the list of configurations to be combined
-     * @return a composite configuration object
-     */
-    private CompositeConfiguration createComposite(List<Configuration> configurations) {
+	 * Creates a composite configuration by combining multiple configurations.
+	 * @param configurations the list of configurations to be combined
+	 * @return a composite configuration object
+	 */
+	private CompositeConfiguration createComposite(List<Configuration> configurations) {
 		return new CompositeConfiguration(configurations.stream().map(AbstractConfiguration.class::cast).toList());
 	}
 
 	/**
-     * Reinitializes the logging system with the given initialization context.
-     * 
-     * @param initializationContext the logging initialization context
-     */
-    @Override
+	 * Reinitializes the logging system with the given initialization context.
+	 * @param initializationContext the logging initialization context
+	 */
+	@Override
 	protected void reinitialize(LoggingInitializationContext initializationContext) {
 		List<String> overrides = getOverrides(initializationContext);
 		if (!CollectionUtils.isEmpty(overrides)) {
@@ -508,12 +493,13 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Reinitializes the Log4J2 logging system with the provided overrides.
-     * 
-     * @param overrides a list of strings representing the paths to the overriding configurations
-     * @throws RuntimeException if failed to load the overriding configuration from any of the provided paths
-     */
-    private void reinitializeWithOverrides(List<String> overrides) {
+	 * Reinitializes the Log4J2 logging system with the provided overrides.
+	 * @param overrides a list of strings representing the paths to the overriding
+	 * configurations
+	 * @throws RuntimeException if failed to load the overriding configuration from any of
+	 * the provided paths
+	 */
+	private void reinitializeWithOverrides(List<String> overrides) {
 		LoggerContext context = getLoggerContext();
 		Configuration base = context.getConfiguration();
 		List<AbstractConfiguration> configurations = new ArrayList<>();
@@ -531,33 +517,30 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Returns a set of supported log levels.
-     *
-     * @return a set of supported log levels
-     */
-    @Override
+	 * Returns a set of supported log levels.
+	 * @return a set of supported log levels
+	 */
+	@Override
 	public Set<LogLevel> getSupportedLogLevels() {
 		return LEVELS.getSupported();
 	}
 
 	/**
-     * Sets the log level for a specific logger.
-     * 
-     * @param loggerName the name of the logger
-     * @param logLevel the log level to be set
-     */
-    @Override
+	 * Sets the log level for a specific logger.
+	 * @param loggerName the name of the logger
+	 * @param logLevel the log level to be set
+	 */
+	@Override
 	public void setLogLevel(String loggerName, LogLevel logLevel) {
 		setLogLevel(loggerName, LEVELS.convertSystemToNative(logLevel));
 	}
 
 	/**
-     * Sets the log level for a specific logger.
-     * 
-     * @param loggerName the name of the logger
-     * @param level the log level to be set
-     */
-    private void setLogLevel(String loggerName, Level level) {
+	 * Sets the log level for a specific logger.
+	 * @param loggerName the name of the logger
+	 * @param level the log level to be set
+	 */
+	private void setLogLevel(String loggerName, Level level) {
 		LoggerConfig logger = getLogger(loggerName);
 		if (level == null) {
 			clearLogLevel(loggerName, logger);
@@ -569,12 +552,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Clears the log level for the specified logger.
-     * 
-     * @param loggerName the name of the logger
-     * @param logger the logger configuration
-     */
-    private void clearLogLevel(String loggerName, LoggerConfig logger) {
+	 * Clears the log level for the specified logger.
+	 * @param loggerName the name of the logger
+	 * @param logger the logger configuration
+	 */
+	private void clearLogLevel(String loggerName, LoggerConfig logger) {
 		if (logger instanceof LevelSetLoggerConfig) {
 			getLoggerContext().getConfiguration().removeLogger(loggerName);
 		}
@@ -584,13 +566,12 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Sets the log level for a specific logger.
-     * 
-     * @param loggerName the name of the logger
-     * @param logger the logger configuration
-     * @param level the log level to set
-     */
-    private void setLogLevel(String loggerName, LoggerConfig logger, Level level) {
+	 * Sets the log level for a specific logger.
+	 * @param loggerName the name of the logger
+	 * @param logger the logger configuration
+	 * @param level the log level to set
+	 */
+	private void setLogLevel(String loggerName, LoggerConfig logger, Level level) {
 		if (logger == null) {
 			getLoggerContext().getConfiguration()
 				.addLogger(loggerName, new LevelSetLoggerConfig(loggerName, level, true));
@@ -601,11 +582,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Retrieves a list of all logger configurations.
-     * 
-     * @return A list of LoggerConfiguration objects representing the logger configurations.
-     */
-    @Override
+	 * Retrieves a list of all logger configurations.
+	 * @return A list of LoggerConfiguration objects representing the logger
+	 * configurations.
+	 */
+	@Override
 	public List<LoggerConfiguration> getLoggerConfigurations() {
 		List<LoggerConfiguration> result = new ArrayList<>();
 		getAllLoggers().forEach((name, loggerConfig) -> result.add(convertLoggerConfig(name, loggerConfig)));
@@ -614,23 +595,22 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Retrieves the configuration for a specific logger.
-     * 
-     * @param loggerName the name of the logger
-     * @return the configuration for the specified logger, or null if the logger does not exist
-     */
-    @Override
+	 * Retrieves the configuration for a specific logger.
+	 * @param loggerName the name of the logger
+	 * @return the configuration for the specified logger, or null if the logger does not
+	 * exist
+	 */
+	@Override
 	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
 		LoggerConfig loggerConfig = getAllLoggers().get(loggerName);
 		return (loggerConfig != null) ? convertLoggerConfig(loggerName, loggerConfig) : null;
 	}
 
 	/**
-     * Retrieves all the loggers and their configurations.
-     * 
-     * @return a map containing the loggers and their configurations
-     */
-    private Map<String, LoggerConfig> getAllLoggers() {
+	 * Retrieves all the loggers and their configurations.
+	 * @return a map containing the loggers and their configurations
+	 */
+	private Map<String, LoggerConfig> getAllLoggers() {
 		Map<String, LoggerConfig> loggers = new LinkedHashMap<>();
 		for (Logger logger : getLoggerContext().getLoggers()) {
 			addLogger(loggers, logger.getName());
@@ -640,12 +620,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Adds a logger to the given map of loggers.
-     * 
-     * @param loggers the map of loggers to add the logger to
-     * @param name the name of the logger to add
-     */
-    private void addLogger(Map<String, LoggerConfig> loggers, String name) {
+	 * Adds a logger to the given map of loggers.
+	 * @param loggers the map of loggers to add the logger to
+	 * @param name the name of the logger to add
+	 */
+	private void addLogger(Map<String, LoggerConfig> loggers, String name) {
 		Configuration configuration = getLoggerContext().getConfiguration();
 		while (name != null) {
 			loggers.computeIfAbsent(name, configuration::getLoggerConfig);
@@ -654,12 +633,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Returns the sub name of the given name.
-     * 
-     * @param name the name to get the sub name from
-     * @return the sub name of the given name, or null if the name is empty or null
-     */
-    private String getSubName(String name) {
+	 * Returns the sub name of the given name.
+	 * @param name the name to get the sub name from
+	 * @return the sub name of the given name, or null if the name is empty or null
+	 */
+	private String getSubName(String name) {
 		if (!StringUtils.hasLength(name)) {
 			return null;
 		}
@@ -668,13 +646,12 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Converts a LoggerConfig object to a LoggerConfiguration object.
-     * 
-     * @param name The name of the logger.
-     * @param loggerConfig The LoggerConfig object to be converted.
-     * @return The converted LoggerConfiguration object.
-     */
-    private LoggerConfiguration convertLoggerConfig(String name, LoggerConfig loggerConfig) {
+	 * Converts a LoggerConfig object to a LoggerConfiguration object.
+	 * @param name The name of the logger.
+	 * @param loggerConfig The LoggerConfig object to be converted.
+	 * @return The converted LoggerConfiguration object.
+	 */
+	private LoggerConfiguration convertLoggerConfig(String name, LoggerConfig loggerConfig) {
 		if (loggerConfig == null) {
 			return null;
 		}
@@ -688,34 +665,32 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Retrieves the level configuration for a given level.
-     * 
-     * @param level the level for which the configuration is to be retrieved
-     * @return the level configuration for the specified level
-     */
-    private LevelConfiguration getLevelConfiguration(Level level) {
+	 * Retrieves the level configuration for a given level.
+	 * @param level the level for which the configuration is to be retrieved
+	 * @return the level configuration for the specified level
+	 */
+	private LevelConfiguration getLevelConfiguration(Level level) {
 		LogLevel logLevel = LEVELS.convertNativeToSystem(level);
 		return (logLevel != null) ? LevelConfiguration.of(logLevel) : LevelConfiguration.ofCustom(level.name());
 	}
 
 	/**
-     * Returns a Runnable object that can be used as a shutdown handler for the Log4J2LoggingSystem.
-     * The returned Runnable object stops the logger context.
-     *
-     * @return a Runnable object that stops the logger context
-     */
-    @Override
+	 * Returns a Runnable object that can be used as a shutdown handler for the
+	 * Log4J2LoggingSystem. The returned Runnable object stops the logger context.
+	 * @return a Runnable object that stops the logger context
+	 */
+	@Override
 	public Runnable getShutdownHandler() {
 		return () -> getLoggerContext().stop();
 	}
 
 	/**
-     * Cleans up the Log4J2LoggingSystem by removing the Log4j Bridge Handler, marking the logger context as uninitialized,
-     * and removing the filter from the logger context configuration.
-     * If the Log4j Bridge Handler is available, it will be removed.
-     * This method overrides the cleanUp() method from the superclass.
-     */
-    @Override
+	 * Cleans up the Log4J2LoggingSystem by removing the Log4j Bridge Handler, marking the
+	 * logger context as uninitialized, and removing the filter from the logger context
+	 * configuration. If the Log4j Bridge Handler is available, it will be removed. This
+	 * method overrides the cleanUp() method from the superclass.
+	 */
+	@Override
 	public void cleanUp() {
 		if (isLog4jBridgeHandlerAvailable()) {
 			removeLog4jBridgeHandler();
@@ -727,25 +702,23 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Retrieves the LoggerConfig object for the specified logger name.
-     * If the name is empty or equal to the ROOT_LOGGER_NAME constant,
-     * the method returns the LoggerConfig object for the root logger.
-     * 
-     * @param name the name of the logger
-     * @return the LoggerConfig object for the specified logger name
-     */
-    private LoggerConfig getLogger(String name) {
+	 * Retrieves the LoggerConfig object for the specified logger name. If the name is
+	 * empty or equal to the ROOT_LOGGER_NAME constant, the method returns the
+	 * LoggerConfig object for the root logger.
+	 * @param name the name of the logger
+	 * @return the LoggerConfig object for the specified logger name
+	 */
+	private LoggerConfig getLogger(String name) {
 		boolean isRootLogger = !StringUtils.hasLength(name) || ROOT_LOGGER_NAME.equals(name);
 		return findLogger(isRootLogger ? LogManager.ROOT_LOGGER_NAME : name);
 	}
 
 	/**
-     * Finds the LoggerConfig with the specified name.
-     * 
-     * @param name the name of the LoggerConfig to find
-     * @return the LoggerConfig with the specified name, or null if not found
-     */
-    private LoggerConfig findLogger(String name) {
+	 * Finds the LoggerConfig with the specified name.
+	 * @param name the name of the LoggerConfig to find
+	 * @return the LoggerConfig with the specified name, or null if not found
+	 */
+	private LoggerConfig findLogger(String name) {
 		Configuration configuration = getLoggerContext().getConfiguration();
 		if (configuration instanceof AbstractConfiguration abstractConfiguration) {
 			return abstractConfiguration.getLogger(name);
@@ -754,48 +727,45 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Retrieves the LoggerContext instance associated with the Log4J2LoggingSystem class.
-     * 
-     * @return The LoggerContext instance associated with the Log4J2LoggingSystem class.
-     */
-    private LoggerContext getLoggerContext() {
+	 * Retrieves the LoggerContext instance associated with the Log4J2LoggingSystem class.
+	 * @return The LoggerContext instance associated with the Log4J2LoggingSystem class.
+	 */
+	private LoggerContext getLoggerContext() {
 		return (LoggerContext) LogManager.getContext(false);
 	}
 
 	/**
-     * Checks if the logger context is already initialized.
-     * 
-     * @param loggerContext the logger context to check
-     * @return {@code true} if the logger context is already initialized, {@code false} otherwise
-     */
-    private boolean isAlreadyInitialized(LoggerContext loggerContext) {
+	 * Checks if the logger context is already initialized.
+	 * @param loggerContext the logger context to check
+	 * @return {@code true} if the logger context is already initialized, {@code false}
+	 * otherwise
+	 */
+	private boolean isAlreadyInitialized(LoggerContext loggerContext) {
 		return LoggingSystem.class.getName().equals(loggerContext.getExternalContext());
 	}
 
 	/**
-     * Marks the logger context as initialized by setting the external context to the class name of LoggingSystem.
-     * 
-     * @param loggerContext the logger context to be marked as initialized
-     */
-    private void markAsInitialized(LoggerContext loggerContext) {
+	 * Marks the logger context as initialized by setting the external context to the
+	 * class name of LoggingSystem.
+	 * @param loggerContext the logger context to be marked as initialized
+	 */
+	private void markAsInitialized(LoggerContext loggerContext) {
 		loggerContext.setExternalContext(LoggingSystem.class.getName());
 	}
 
 	/**
-     * Marks the logger context as uninitialized by setting the external context to null.
-     * 
-     * @param loggerContext the logger context to mark as uninitialized
-     */
-    private void markAsUninitialized(LoggerContext loggerContext) {
+	 * Marks the logger context as uninitialized by setting the external context to null.
+	 * @param loggerContext the logger context to mark as uninitialized
+	 */
+	private void markAsUninitialized(LoggerContext loggerContext) {
 		loggerContext.setExternalContext(null);
 	}
 
 	/**
-     * Returns the default log correlation pattern.
-     *
-     * @return the default log correlation pattern ("%correlationId")
-     */
-    @Override
+	 * Returns the default log correlation pattern.
+	 * @return the default log correlation pattern ("%correlationId")
+	 */
+	@Override
 	protected String getDefaultLogCorrelationPattern() {
 		return "%correlationId";
 	}
@@ -821,12 +791,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", Factory.class.getClassLoader());
 
 		/**
-         * Returns the logging system based on the specified class loader.
-         * 
-         * @param classLoader the class loader to be used
-         * @return the logging system if it is present, otherwise null
-         */
-        @Override
+		 * Returns the logging system based on the specified class loader.
+		 * @param classLoader the class loader to be used
+		 * @return the logging system if it is present, otherwise null
+		 */
+		@Override
 		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
 			if (PRESENT) {
 				return new Log4J2LoggingSystem(classLoader);
@@ -842,13 +811,14 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	private static class LevelSetLoggerConfig extends LoggerConfig {
 
 		/**
-         * Constructs a new LevelSetLoggerConfig with the specified name, level, and additive flag.
-         * 
-         * @param name the name of the logger configuration
-         * @param level the logging level for the logger configuration
-         * @param additive the flag indicating whether the logger configuration is additive
-         */
-        LevelSetLoggerConfig(String name, Level level, boolean additive) {
+		 * Constructs a new LevelSetLoggerConfig with the specified name, level, and
+		 * additive flag.
+		 * @param name the name of the logger configuration
+		 * @param level the logging level for the logger configuration
+		 * @param additive the flag indicating whether the logger configuration is
+		 * additive
+		 */
+		LevelSetLoggerConfig(String name, Level level, boolean additive) {
 			super(name, level, additive);
 		}
 

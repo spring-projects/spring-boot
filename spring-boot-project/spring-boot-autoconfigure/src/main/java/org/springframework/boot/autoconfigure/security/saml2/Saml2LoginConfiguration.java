@@ -38,13 +38,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 class Saml2LoginConfiguration {
 
 	/**
-     * Configures the SAML security filter chain for the SAML2 login configuration.
-     *
-     * @param http the HttpSecurity object to configure the security filter chain
-     * @return the configured SecurityFilterChain object
-     * @throws Exception if an error occurs while configuring the security filter chain
-     */
-    @Bean
+	 * Configures the SAML security filter chain for the SAML2 login configuration.
+	 * @param http the HttpSecurity object to configure the security filter chain
+	 * @return the configured SecurityFilterChain object
+	 * @throws Exception if an error occurs while configuring the security filter chain
+	 */
+	@Bean
 	SecurityFilterChain samlSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 		http.saml2Login(withDefaults());

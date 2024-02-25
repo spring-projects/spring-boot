@@ -57,63 +57,62 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 	private boolean preferFileSystemAccess;
 
 	/**
-     * Constructs a new instance of the {@code FreeMarkerProperties} class with the default prefix and suffix.
-     */
-    public FreeMarkerProperties() {
+	 * Constructs a new instance of the {@code FreeMarkerProperties} class with the
+	 * default prefix and suffix.
+	 */
+	public FreeMarkerProperties() {
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
 	}
 
 	/**
-     * Returns the settings map.
-     * 
-     * @return the settings map
-     */
-    public Map<String, String> getSettings() {
+	 * Returns the settings map.
+	 * @return the settings map
+	 */
+	public Map<String, String> getSettings() {
 		return this.settings;
 	}
 
 	/**
-     * Sets the settings for the FreeMarkerProperties.
-     * 
-     * @param settings a Map containing the settings to be set
-     */
-    public void setSettings(Map<String, String> settings) {
+	 * Sets the settings for the FreeMarkerProperties.
+	 * @param settings a Map containing the settings to be set
+	 */
+	public void setSettings(Map<String, String> settings) {
 		this.settings = settings;
 	}
 
 	/**
-     * Returns the array of template loader paths.
-     * 
-     * @return the array of template loader paths
-     */
-    public String[] getTemplateLoaderPath() {
+	 * Returns the array of template loader paths.
+	 * @return the array of template loader paths
+	 */
+	public String[] getTemplateLoaderPath() {
 		return this.templateLoaderPath;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the application prefers file system access.
-     * 
-     * @return {@code true} if the application prefers file system access, {@code false} otherwise
-     */
-    public boolean isPreferFileSystemAccess() {
+	 * Returns a boolean value indicating whether the application prefers file system
+	 * access.
+	 * @return {@code true} if the application prefers file system access, {@code false}
+	 * otherwise
+	 */
+	public boolean isPreferFileSystemAccess() {
 		return this.preferFileSystemAccess;
 	}
 
 	/**
-     * Sets the flag indicating whether to prefer file system access for FreeMarker templates.
-     * 
-     * @param preferFileSystemAccess true if file system access is preferred, false otherwise
-     */
-    public void setPreferFileSystemAccess(boolean preferFileSystemAccess) {
+	 * Sets the flag indicating whether to prefer file system access for FreeMarker
+	 * templates.
+	 * @param preferFileSystemAccess true if file system access is preferred, false
+	 * otherwise
+	 */
+	public void setPreferFileSystemAccess(boolean preferFileSystemAccess) {
 		this.preferFileSystemAccess = preferFileSystemAccess;
 	}
 
 	/**
-     * Sets the template loader path for FreeMarker.
-     * 
-     * @param templateLoaderPaths the template loader paths to be set
-     */
-    public void setTemplateLoaderPath(String... templateLoaderPaths) {
+	 * Sets the template loader path for FreeMarker.
+	 * @param templateLoaderPaths the template loader paths to be set
+	 */
+	public void setTemplateLoaderPath(String... templateLoaderPaths) {
 		this.templateLoaderPath = templateLoaderPaths;
 	}
 

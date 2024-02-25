@@ -28,12 +28,11 @@ import org.apache.catalina.core.StandardContext;
 class DisableReferenceClearingContextCustomizer implements TomcatContextCustomizer {
 
 	/**
-     * Customizes the given context by disabling reference clearing for object stream class caches,
-     * RMI targets, and thread locals.
-     *
-     * @param context the context to be customized
-     */
-    @Override
+	 * Customizes the given context by disabling reference clearing for object stream
+	 * class caches, RMI targets, and thread locals.
+	 * @param context the context to be customized
+	 */
+	@Override
 	public void customize(Context context) {
 		if (!(context instanceof StandardContext standardContext)) {
 			return;

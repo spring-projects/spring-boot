@@ -34,13 +34,12 @@ import org.springframework.util.StringUtils;
 public class IssuerUriCondition extends SpringBootCondition {
 
 	/**
-     * Determines the match outcome for the OpenID Connect Issuer URI Condition.
-     * 
-     * @param context the condition context
-     * @param metadata the annotated type metadata
-     * @return the condition outcome
-     */
-    @Override
+	 * Determines the match outcome for the OpenID Connect Issuer URI Condition.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @return the condition outcome
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("OpenID Connect Issuer URI Condition");
 		Environment environment = context.getEnvironment();

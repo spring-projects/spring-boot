@@ -64,110 +64,98 @@ public class RedisSessionProperties {
 	private RepositoryType repositoryType = RepositoryType.DEFAULT;
 
 	/**
-     * Returns the namespace of the Redis session.
-     *
-     * @return the namespace of the Redis session
-     */
-    public String getNamespace() {
+	 * Returns the namespace of the Redis session.
+	 * @return the namespace of the Redis session
+	 */
+	public String getNamespace() {
 		return this.namespace;
 	}
 
 	/**
-     * Sets the namespace for the Redis session.
-     * 
-     * @param namespace the namespace to be set
-     */
-    public void setNamespace(String namespace) {
+	 * Sets the namespace for the Redis session.
+	 * @param namespace the namespace to be set
+	 */
+	public void setNamespace(String namespace) {
 		this.namespace = namespace;
 	}
 
 	/**
-     * Returns the flush mode of the RedisSessionProperties.
-     * 
-     * @return the flush mode of the RedisSessionProperties
-     */
-    public FlushMode getFlushMode() {
+	 * Returns the flush mode of the RedisSessionProperties.
+	 * @return the flush mode of the RedisSessionProperties
+	 */
+	public FlushMode getFlushMode() {
 		return this.flushMode;
 	}
 
 	/**
-     * Sets the flush mode for the Redis session.
-     * 
-     * @param flushMode the flush mode to be set
-     */
-    public void setFlushMode(FlushMode flushMode) {
+	 * Sets the flush mode for the Redis session.
+	 * @param flushMode the flush mode to be set
+	 */
+	public void setFlushMode(FlushMode flushMode) {
 		this.flushMode = flushMode;
 	}
 
 	/**
-     * Returns the save mode of the Redis session properties.
-     * 
-     * @return the save mode of the Redis session properties
-     */
-    public SaveMode getSaveMode() {
+	 * Returns the save mode of the Redis session properties.
+	 * @return the save mode of the Redis session properties
+	 */
+	public SaveMode getSaveMode() {
 		return this.saveMode;
 	}
 
 	/**
-     * Sets the save mode for Redis session properties.
-     * 
-     * @param saveMode the save mode to be set
-     */
-    public void setSaveMode(SaveMode saveMode) {
+	 * Sets the save mode for Redis session properties.
+	 * @param saveMode the save mode to be set
+	 */
+	public void setSaveMode(SaveMode saveMode) {
 		this.saveMode = saveMode;
 	}
 
 	/**
-     * Returns the cron expression used for session cleanup.
-     * 
-     * @return the cron expression used for session cleanup
-     */
-    public String getCleanupCron() {
+	 * Returns the cron expression used for session cleanup.
+	 * @return the cron expression used for session cleanup
+	 */
+	public String getCleanupCron() {
 		return this.cleanupCron;
 	}
 
 	/**
-     * Sets the cron expression for the cleanup task.
-     * 
-     * @param cleanupCron the cron expression for the cleanup task
-     */
-    public void setCleanupCron(String cleanupCron) {
+	 * Sets the cron expression for the cleanup task.
+	 * @param cleanupCron the cron expression for the cleanup task
+	 */
+	public void setCleanupCron(String cleanupCron) {
 		this.cleanupCron = cleanupCron;
 	}
 
 	/**
-     * Returns the configure action associated with this RedisSessionProperties object.
-     * 
-     * @return the configure action
-     */
-    public ConfigureAction getConfigureAction() {
+	 * Returns the configure action associated with this RedisSessionProperties object.
+	 * @return the configure action
+	 */
+	public ConfigureAction getConfigureAction() {
 		return this.configureAction;
 	}
 
 	/**
-     * Sets the configure action for RedisSessionProperties.
-     * 
-     * @param configureAction the configure action to be set
-     */
-    public void setConfigureAction(ConfigureAction configureAction) {
+	 * Sets the configure action for RedisSessionProperties.
+	 * @param configureAction the configure action to be set
+	 */
+	public void setConfigureAction(ConfigureAction configureAction) {
 		this.configureAction = configureAction;
 	}
 
 	/**
-     * Returns the repository type of the RedisSessionProperties.
-     *
-     * @return the repository type of the RedisSessionProperties
-     */
-    public RepositoryType getRepositoryType() {
+	 * Returns the repository type of the RedisSessionProperties.
+	 * @return the repository type of the RedisSessionProperties
+	 */
+	public RepositoryType getRepositoryType() {
 		return this.repositoryType;
 	}
 
 	/**
-     * Sets the repository type for RedisSessionProperties.
-     * 
-     * @param repositoryType the repository type to be set
-     */
-    public void setRepositoryType(RepositoryType repositoryType) {
+	 * Sets the repository type for RedisSessionProperties.
+	 * @param repositoryType the repository type to be set
+	 */
+	public void setRepositoryType(RepositoryType repositoryType) {
 		this.repositoryType = repositoryType;
 	}
 

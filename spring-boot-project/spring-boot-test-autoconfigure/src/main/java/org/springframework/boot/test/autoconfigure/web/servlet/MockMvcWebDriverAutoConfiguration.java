@@ -49,20 +49,25 @@ public class MockMvcWebDriverAutoConfiguration {
 	private static final String SECURITY_CONTEXT_EXECUTOR = "org.springframework.security.concurrent.DelegatingSecurityContextExecutor";
 
 	/**
-     * Creates a {@link MockMvcHtmlUnitDriverBuilder} bean if there is no existing bean of type {@link WebDriver} or {@link MockMvcHtmlUnitDriverBuilder},
-     * and if there is a bean of type {@link MockMvc}.
-     * 
-     * This bean is conditional on the absence of beans of type {@link WebDriver} and {@link MockMvcHtmlUnitDriverBuilder},
-     * and the presence of a bean of type {@link MockMvc}.
-     * 
-     * The created {@link MockMvcHtmlUnitDriverBuilder} bean is configured with the provided {@link MockMvc} instance and {@link Environment} instance.
-     * It uses a {@link LocalHostWebConnectionHtmlUnitDriver} as the delegate, with the specified {@link BrowserVersion}.
-     * 
-     * @param mockMvc the {@link MockMvc} instance to be used for configuring the {@link MockMvcHtmlUnitDriverBuilder}
-     * @param environment the {@link Environment} instance to be used for configuring the {@link MockMvcHtmlUnitDriverBuilder}
-     * @return the created {@link MockMvcHtmlUnitDriverBuilder} bean
-     */
-    @Bean
+	 * Creates a {@link MockMvcHtmlUnitDriverBuilder} bean if there is no existing bean of
+	 * type {@link WebDriver} or {@link MockMvcHtmlUnitDriverBuilder}, and if there is a
+	 * bean of type {@link MockMvc}.
+	 *
+	 * This bean is conditional on the absence of beans of type {@link WebDriver} and
+	 * {@link MockMvcHtmlUnitDriverBuilder}, and the presence of a bean of type
+	 * {@link MockMvc}.
+	 *
+	 * The created {@link MockMvcHtmlUnitDriverBuilder} bean is configured with the
+	 * provided {@link MockMvc} instance and {@link Environment} instance. It uses a
+	 * {@link LocalHostWebConnectionHtmlUnitDriver} as the delegate, with the specified
+	 * {@link BrowserVersion}.
+	 * @param mockMvc the {@link MockMvc} instance to be used for configuring the
+	 * {@link MockMvcHtmlUnitDriverBuilder}
+	 * @param environment the {@link Environment} instance to be used for configuring the
+	 * {@link MockMvcHtmlUnitDriverBuilder}
+	 * @return the created {@link MockMvcHtmlUnitDriverBuilder} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean({ WebDriver.class, MockMvcHtmlUnitDriverBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
 	public MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc, Environment environment) {
@@ -71,12 +76,13 @@ public class MockMvcWebDriverAutoConfiguration {
 	}
 
 	/**
-     * Creates an instance of HtmlUnitDriver if there is no existing bean of type WebDriver and there is a bean of type MockMvcHtmlUnitDriverBuilder.
-     * 
-     * @param builder the MockMvcHtmlUnitDriverBuilder bean used to build the HtmlUnitDriver instance
-     * @return the HtmlUnitDriver instance
-     */
-    @Bean
+	 * Creates an instance of HtmlUnitDriver if there is no existing bean of type
+	 * WebDriver and there is a bean of type MockMvcHtmlUnitDriverBuilder.
+	 * @param builder the MockMvcHtmlUnitDriverBuilder bean used to build the
+	 * HtmlUnitDriver instance
+	 * @return the HtmlUnitDriver instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean(WebDriver.class)
 	@ConditionalOnBean(MockMvcHtmlUnitDriverBuilder.class)
 	public HtmlUnitDriver htmlUnitDriver(MockMvcHtmlUnitDriverBuilder builder) {

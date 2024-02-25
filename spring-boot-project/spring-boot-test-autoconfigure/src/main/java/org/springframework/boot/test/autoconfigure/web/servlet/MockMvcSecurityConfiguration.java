@@ -40,12 +40,12 @@ class MockMvcSecurityConfiguration {
 	private static final String DEFAULT_SECURITY_FILTER_NAME = AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME;
 
 	/**
-     * Returns a SecurityMockMvcBuilderCustomizer bean if a bean with the name DEFAULT_SECURITY_FILTER_NAME is present.
-     * This bean is used to customize the SecurityMockMvcBuilder.
-     *
-     * @return the SecurityMockMvcBuilderCustomizer bean
-     */
-    @Bean
+	 * Returns a SecurityMockMvcBuilderCustomizer bean if a bean with the name
+	 * DEFAULT_SECURITY_FILTER_NAME is present. This bean is used to customize the
+	 * SecurityMockMvcBuilder.
+	 * @return the SecurityMockMvcBuilderCustomizer bean
+	 */
+	@Bean
 	@ConditionalOnBean(name = DEFAULT_SECURITY_FILTER_NAME)
 	SecurityMockMvcBuilderCustomizer securityMockMvcBuilderCustomizer() {
 		return new SecurityMockMvcBuilderCustomizer();
@@ -60,12 +60,12 @@ class MockMvcSecurityConfiguration {
 	class SecurityMockMvcBuilderCustomizer implements MockMvcBuilderCustomizer {
 
 		/**
-         * Customizes the ConfigurableMockMvcBuilder by applying a MockMvcConfigurerAdapter
-         * that sets up a test SecurityContext before the MockMvc is created.
-         * 
-         * @param builder the ConfigurableMockMvcBuilder to be customized
-         */
-        @Override
+		 * Customizes the ConfigurableMockMvcBuilder by applying a
+		 * MockMvcConfigurerAdapter that sets up a test SecurityContext before the MockMvc
+		 * is created.
+		 * @param builder the ConfigurableMockMvcBuilder to be customized
+		 */
+		@Override
 		public void customize(ConfigurableMockMvcBuilder<?> builder) {
 			builder.apply(new MockMvcConfigurerAdapter() {
 

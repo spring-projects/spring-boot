@@ -28,20 +28,19 @@ public class MyBean {
 	private final ReactivePulsarTemplate<String> pulsarTemplate;
 
 	/**
-     * Constructs a new instance of MyBean with the specified ReactivePulsarTemplate.
-     *
-     * @param pulsarTemplate the ReactivePulsarTemplate to be used by this MyBean instance
-     */
-    public MyBean(ReactivePulsarTemplate<String> pulsarTemplate) {
+	 * Constructs a new instance of MyBean with the specified ReactivePulsarTemplate.
+	 * @param pulsarTemplate the ReactivePulsarTemplate to be used by this MyBean instance
+	 */
+	public MyBean(ReactivePulsarTemplate<String> pulsarTemplate) {
 		this.pulsarTemplate = pulsarTemplate;
 	}
 
 	/**
-     * Sends a message to the "someTopic" topic using the PulsarTemplate and subscribes to the result.
-     * 
-     * @return void
-     */
-    public void someMethod() {
+	 * Sends a message to the "someTopic" topic using the PulsarTemplate and subscribes to
+	 * the result.
+	 * @return void
+	 */
+	public void someMethod() {
 		this.pulsarTemplate.send("someTopic", "Hello").subscribe();
 	}
 

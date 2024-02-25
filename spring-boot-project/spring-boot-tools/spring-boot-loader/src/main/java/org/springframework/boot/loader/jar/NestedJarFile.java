@@ -151,12 +151,11 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Returns an InputStream for the raw zip data.
-     * 
-     * @return the InputStream for the raw zip data
-     * @throws IOException if an I/O error occurs while opening the raw zip data
-     */
-    public InputStream getRawZipDataInputStream() throws IOException {
+	 * Returns an InputStream for the raw zip data.
+	 * @return the InputStream for the raw zip data
+	 * @throws IOException if an I/O error occurs while opening the raw zip data
+	 */
+	public InputStream getRawZipDataInputStream() throws IOException {
 		RawZipDataInputStream inputStream = new RawZipDataInputStream(
 				this.resources.zipContent().openRawZipData().asInputStream());
 		this.resources.addInputStream(inputStream);
@@ -164,12 +163,11 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Retrieves the manifest of the nested JAR file.
-     * 
-     * @return The manifest of the nested JAR file.
-     * @throws IOException If an I/O error occurs while retrieving the manifest.
-     */
-    @Override
+	 * Retrieves the manifest of the nested JAR file.
+	 * @return The manifest of the nested JAR file.
+	 * @throws IOException If an I/O error occurs while retrieving the manifest.
+	 */
+	@Override
 	public Manifest getManifest() throws IOException {
 		try {
 			return this.resources.zipContentForManifest()
@@ -182,12 +180,11 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Returns an enumeration of the entries in this nested JAR file.
-     * 
-     * @return an enumeration of the entries in this nested JAR file
-     * @throws IllegalStateException if the nested JAR file is not open
-     */
-    @Override
+	 * Returns an enumeration of the entries in this nested JAR file.
+	 * @return an enumeration of the entries in this nested JAR file
+	 * @throws IllegalStateException if the nested JAR file is not open
+	 */
+	@Override
 	public Enumeration<JarEntry> entries() {
 		synchronized (this) {
 			ensureOpen();
@@ -196,23 +193,23 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Returns a stream of JarEntry objects representing the entries in this NestedJarFile.
-     * 
-     * <p>
-     * The stream is obtained by first ensuring that the NestedJarFile is open, and then
-     * streaming the content entries of the NestedJarFile. Each content entry is then
-     * wrapped in a NestedJarEntry object before being returned in the stream.
-     * </p>
-     * 
-     * <p>
-     * This method is synchronized to ensure thread safety when accessing the NestedJarFile.
-     * </p>
-     * 
-     * @return a stream of JarEntry objects representing the entries in this NestedJarFile
-     * 
-     * @throws IllegalStateException if the NestedJarFile is not open
-     */
-    @Override
+	 * Returns a stream of JarEntry objects representing the entries in this
+	 * NestedJarFile.
+	 *
+	 * <p>
+	 * The stream is obtained by first ensuring that the NestedJarFile is open, and then
+	 * streaming the content entries of the NestedJarFile. Each content entry is then
+	 * wrapped in a NestedJarEntry object before being returned in the stream.
+	 * </p>
+	 *
+	 * <p>
+	 * This method is synchronized to ensure thread safety when accessing the
+	 * NestedJarFile.
+	 * </p>
+	 * @return a stream of JarEntry objects representing the entries in this NestedJarFile
+	 * @throws IllegalStateException if the NestedJarFile is not open
+	 */
+	@Override
 	public Stream<JarEntry> stream() {
 		synchronized (this) {
 			ensureOpen();
@@ -221,28 +218,30 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Returns a stream of versioned JarEntries.
-     * 
-     * <p>
-     * This method returns a stream of JarEntries that represent the versioned content entries in the NestedJarFile.
-     * The stream is obtained by first obtaining a stream of all content entries in the NestedJarFile using the
-     * {@link #streamContentEntries()} method. Then, the base name of each content entry is extracted using the
-     * {@link #getBaseName(JarEntry)} method. The base names are filtered to remove any null values using the
-     * {@link Objects#nonNull(Object)} method. The distinct base names are then mapped to their corresponding JarEntries
-     * using the {@link #getJarEntry(String)} method. Finally, any null JarEntries are filtered out using the
-     * {@link Objects#nonNull(Object)} method.
-     * </p>
-     * 
-     * <p>
-     * This method is synchronized to ensure thread safety when accessing the NestedJarFile. It first checks if the
-     * NestedJarFile is open using the {@link #ensureOpen()} method. If it is open, the stream of versioned JarEntries is
-     * returned. Otherwise, an IllegalStateException is thrown.
-     * </p>
-     * 
-     * @return a stream of versioned JarEntries
-     * @throws IllegalStateException if the NestedJarFile is not open
-     */
-    @Override
+	 * Returns a stream of versioned JarEntries.
+	 *
+	 * <p>
+	 * This method returns a stream of JarEntries that represent the versioned content
+	 * entries in the NestedJarFile. The stream is obtained by first obtaining a stream of
+	 * all content entries in the NestedJarFile using the {@link #streamContentEntries()}
+	 * method. Then, the base name of each content entry is extracted using the
+	 * {@link #getBaseName(JarEntry)} method. The base names are filtered to remove any
+	 * null values using the {@link Objects#nonNull(Object)} method. The distinct base
+	 * names are then mapped to their corresponding JarEntries using the
+	 * {@link #getJarEntry(String)} method. Finally, any null JarEntries are filtered out
+	 * using the {@link Objects#nonNull(Object)} method.
+	 * </p>
+	 *
+	 * <p>
+	 * This method is synchronized to ensure thread safety when accessing the
+	 * NestedJarFile. It first checks if the NestedJarFile is open using the
+	 * {@link #ensureOpen()} method. If it is open, the stream of versioned JarEntries is
+	 * returned. Otherwise, an IllegalStateException is thrown.
+	 * </p>
+	 * @return a stream of versioned JarEntries
+	 * @throws IllegalStateException if the NestedJarFile is not open
+	 */
+	@Override
 	public Stream<JarEntry> versionedStream() {
 		synchronized (this) {
 			ensureOpen();
@@ -255,22 +254,21 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Returns a stream of ZipContent.Entry objects representing the entries in the nested jar file.
-     *
-     * @return a stream of ZipContent.Entry objects
-     */
-    private Stream<ZipContent.Entry> streamContentEntries() {
+	 * Returns a stream of ZipContent.Entry objects representing the entries in the nested
+	 * jar file.
+	 * @return a stream of ZipContent.Entry objects
+	 */
+	private Stream<ZipContent.Entry> streamContentEntries() {
 		ZipContentEntriesSpliterator spliterator = new ZipContentEntriesSpliterator(this.resources.zipContent());
 		return StreamSupport.stream(spliterator, false);
 	}
 
 	/**
-     * Returns the base name of the given ZipContent.Entry.
-     * 
-     * @param contentEntry the ZipContent.Entry to get the base name from
-     * @return the base name of the ZipContent.Entry, or null if the entry is not valid
-     */
-    private String getBaseName(ZipContent.Entry contentEntry) {
+	 * Returns the base name of the given ZipContent.Entry.
+	 * @param contentEntry the ZipContent.Entry to get the base name from
+	 * @return the base name of the ZipContent.Entry, or null if the entry is not valid
+	 */
+	private String getBaseName(ZipContent.Entry contentEntry) {
 		String name = contentEntry.getName();
 		if (!name.startsWith(META_INF_VERSIONS)) {
 			return name;
@@ -293,24 +291,22 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Retrieves the JarEntry with the specified name from the nested jar file.
-     * 
-     * @param name the name of the JarEntry to retrieve
-     * @return the JarEntry with the specified name, or null if not found
-     */
-    @Override
+	 * Retrieves the JarEntry with the specified name from the nested jar file.
+	 * @param name the name of the JarEntry to retrieve
+	 * @return the JarEntry with the specified name, or null if not found
+	 */
+	@Override
 	public JarEntry getJarEntry(String name) {
 		return getNestedJarEntry(name);
 	}
 
 	/**
-     * Returns the JarEntry object for the specified entry name.
-     * This method is overridden from the parent class and delegates the task to the getNestedJarEntry method.
-     * 
-     * @param name the name of the entry to retrieve
-     * @return the JarEntry object for the specified entry name
-     */
-    @Override
+	 * Returns the JarEntry object for the specified entry name. This method is overridden
+	 * from the parent class and delegates the task to the getNestedJarEntry method.
+	 * @param name the name of the entry to retrieve
+	 * @return the JarEntry object for the specified entry name
+	 */
+	@Override
 	public JarEntry getEntry(String name) {
 		return getNestedJarEntry(name);
 	}
@@ -336,13 +332,12 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Retrieves the NestedJarEntry with the specified name.
-     * 
-     * @param name the name of the NestedJarEntry to retrieve
-     * @return the NestedJarEntry with the specified name, or null if not found
-     * @throws NullPointerException if the name is null
-     */
-    private NestedJarEntry getNestedJarEntry(String name) {
+	 * Retrieves the NestedJarEntry with the specified name.
+	 * @param name the name of the NestedJarEntry to retrieve
+	 * @return the NestedJarEntry with the specified name, or null if not found
+	 * @throws NullPointerException if the name is null
+	 */
+	private NestedJarEntry getNestedJarEntry(String name) {
 		Objects.requireNonNull(name, "name");
 		NestedJarEntry lastEntry = this.lastEntry;
 		if (lastEntry != null && name.equals(lastEntry.getName())) {
@@ -359,12 +354,11 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Returns the versioned content entry with the given name.
-     * 
-     * @param name the name of the entry
-     * @return the versioned content entry, or null if not found
-     */
-    private ZipContent.Entry getVersionedContentEntry(String name) {
+	 * Returns the versioned content entry with the given name.
+	 * @param name the name of the entry
+	 * @return the versioned content entry, or null if not found
+	 */
+	private ZipContent.Entry getVersionedContentEntry(String name) {
 		// NOTE: we can't call isMultiRelease() directly because it's a final method and
 		// it inspects the container jar. We use ManifestInfo instead.
 		if (BASE_VERSION >= this.version || name.startsWith(META_INF) || !getManifestInfo().isMultiRelease()) {
@@ -385,14 +379,14 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Retrieves the content entry with the specified name prefix and name from the nested JAR file.
-     * 
-     * @param namePrefix the prefix of the entry name
-     * @param name the name of the entry
-     * @return the content entry with the specified name prefix and name
-     * @throws IllegalStateException if the nested JAR file is not open
-     */
-    private ZipContent.Entry getContentEntry(String namePrefix, String name) {
+	 * Retrieves the content entry with the specified name prefix and name from the nested
+	 * JAR file.
+	 * @param namePrefix the prefix of the entry name
+	 * @param name the name of the entry
+	 * @return the content entry with the specified name prefix and name
+	 * @throws IllegalStateException if the nested JAR file is not open
+	 */
+	private ZipContent.Entry getContentEntry(String namePrefix, String name) {
 		synchronized (this) {
 			ensureOpen();
 			return this.resources.zipContent().getEntry(namePrefix, name);
@@ -400,11 +394,10 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Retrieves the manifest information for this NestedJarFile.
-     * 
-     * @return The ManifestInfo object containing the manifest information.
-     */
-    private ManifestInfo getManifestInfo() {
+	 * Retrieves the manifest information for this NestedJarFile.
+	 * @return The ManifestInfo object containing the manifest information.
+	 */
+	private ManifestInfo getManifestInfo() {
 		ManifestInfo manifestInfo = this.manifestInfo;
 		if (manifestInfo != null) {
 			return manifestInfo;
@@ -418,13 +411,13 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Retrieves the manifest information from the given ZipContent.
-     * 
-     * @param zipContent The ZipContent from which to retrieve the manifest information.
-     * @return The ManifestInfo object containing the manifest information, or ManifestInfo.NONE if the manifest is not found.
-     * @throws UncheckedIOException If an IOException occurs while reading the manifest.
-     */
-    private ManifestInfo getManifestInfo(ZipContent zipContent) {
+	 * Retrieves the manifest information from the given ZipContent.
+	 * @param zipContent The ZipContent from which to retrieve the manifest information.
+	 * @return The ManifestInfo object containing the manifest information, or
+	 * ManifestInfo.NONE if the manifest is not found.
+	 * @throws UncheckedIOException If an IOException occurs while reading the manifest.
+	 */
+	private ManifestInfo getManifestInfo(ZipContent zipContent) {
 		ZipContent.Entry contentEntry = zipContent.getEntry(MANIFEST_NAME);
 		if (contentEntry == null) {
 			return ManifestInfo.NONE;
@@ -441,11 +434,10 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Retrieves the MetaInfVersionsInfo object for this NestedJarFile.
-     * 
-     * @return The MetaInfVersionsInfo object.
-     */
-    private MetaInfVersionsInfo getMetaInfVersionsInfo() {
+	 * Retrieves the MetaInfVersionsInfo object for this NestedJarFile.
+	 * @return The MetaInfVersionsInfo object.
+	 */
+	private MetaInfVersionsInfo getMetaInfVersionsInfo() {
 		MetaInfVersionsInfo metaInfVersionsInfo = this.metaInfVersionsInfo;
 		if (metaInfVersionsInfo != null) {
 			return metaInfVersionsInfo;
@@ -460,14 +452,13 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Returns an input stream for reading the contents of the specified zip entry.
-     * 
-     * @param entry the zip entry to get the input stream for
-     * @return an input stream for reading the contents of the specified zip entry
-     * @throws IOException if an I/O error occurs while creating the input stream
-     * @throws NullPointerException if the entry is null
-     */
-    @Override
+	 * Returns an input stream for reading the contents of the specified zip entry.
+	 * @param entry the zip entry to get the input stream for
+	 * @return an input stream for reading the contents of the specified zip entry
+	 * @throws IOException if an I/O error occurs while creating the input stream
+	 * @throws NullPointerException if the entry is null
+	 */
+	@Override
 	public InputStream getInputStream(ZipEntry entry) throws IOException {
 		Objects.requireNonNull(entry, "entry");
 		if (entry instanceof NestedJarEntry nestedJarEntry && nestedJarEntry.isOwnedBy(this)) {
@@ -477,14 +468,13 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Retrieves an input stream for the specified content entry in the nested JAR file.
-     * 
-     * @param contentEntry the content entry for which to retrieve the input stream
-     * @return the input stream for the specified content entry
-     * @throws IOException if an I/O error occurs while retrieving the input stream
-     * @throws ZipException if the compression method of the content entry is invalid
-     */
-    private InputStream getInputStream(ZipContent.Entry contentEntry) throws IOException {
+	 * Retrieves an input stream for the specified content entry in the nested JAR file.
+	 * @param contentEntry the content entry for which to retrieve the input stream
+	 * @return the input stream for the specified content entry
+	 * @throws IOException if an I/O error occurs while retrieving the input stream
+	 * @throws ZipException if the compression method of the content entry is invalid
+	 */
+	private InputStream getInputStream(ZipContent.Entry contentEntry) throws IOException {
 		int compression = contentEntry.getCompressionMethod();
 		if (compression != ZipEntry.STORED && compression != ZipEntry.DEFLATED) {
 			throw new ZipException("invalid compression method");
@@ -507,12 +497,11 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Returns the comment associated with the nested JAR file.
-     * 
-     * @return the comment of the nested JAR file
-     * @throws IllegalStateException if the nested JAR file is not open
-     */
-    @Override
+	 * Returns the comment associated with the nested JAR file.
+	 * @return the comment of the nested JAR file
+	 * @throws IllegalStateException if the nested JAR file is not open
+	 */
+	@Override
 	public String getComment() {
 		synchronized (this) {
 			ensureOpen();
@@ -521,12 +510,11 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Returns the size of the NestedJarFile.
-     * 
-     * @return the size of the NestedJarFile
-     * @throws IllegalStateException if the NestedJarFile is not open
-     */
-    @Override
+	 * Returns the size of the NestedJarFile.
+	 * @return the size of the NestedJarFile
+	 * @throws IllegalStateException if the NestedJarFile is not open
+	 */
+	@Override
 	public int size() {
 		synchronized (this) {
 			ensureOpen();
@@ -535,12 +523,11 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Closes the NestedJarFile and releases any system resources associated with it.
-     * This method also performs cleanup operations before closing the file.
-     * 
-     * @throws IOException if an I/O error occurs while closing the file
-     */
-    @Override
+	 * Closes the NestedJarFile and releases any system resources associated with it. This
+	 * method also performs cleanup operations before closing the file.
+	 * @throws IOException if an I/O error occurs while closing the file
+	 */
+	@Override
 	public void close() throws IOException {
 		super.close();
 		if (this.closed) {
@@ -558,21 +545,19 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
-     * Returns the name of the NestedJarFile.
-     *
-     * @return the name of the NestedJarFile
-     */
-    @Override
+	 * Returns the name of the NestedJarFile.
+	 * @return the name of the NestedJarFile
+	 */
+	@Override
 	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Ensures that the NestedJarFile is open and initialized.
-     * 
-     * @throws IllegalStateException if the NestedJarFile is closed or not initialized
-     */
-    private void ensureOpen() {
+	 * Ensures that the NestedJarFile is open and initialized.
+	 * @throws IllegalStateException if the NestedJarFile is closed or not initialized
+	 */
+	private void ensureOpen() {
 		if (this.closed) {
 			throw new IllegalStateException("Zip file closed");
 		}
@@ -605,371 +590,350 @@ public class NestedJarFile extends JarFile {
 		private volatile boolean populated;
 
 		/**
-         * Constructs a new NestedJarEntry object with the specified content entry and name.
-         * 
-         * @param contentEntry the entry representing the content of the nested jar
-         */
-        NestedJarEntry(Entry contentEntry) {
+		 * Constructs a new NestedJarEntry object with the specified content entry and
+		 * name.
+		 * @param contentEntry the entry representing the content of the nested jar
+		 */
+		NestedJarEntry(Entry contentEntry) {
 			this(contentEntry, contentEntry.getName());
 		}
 
 		/**
-         * Constructs a new NestedJarEntry with the specified content entry and name.
-         * 
-         * @param contentEntry the content entry of the nested jar
-         * @param name the name of the nested jar entry
-         */
-        NestedJarEntry(ZipContent.Entry contentEntry, String name) {
+		 * Constructs a new NestedJarEntry with the specified content entry and name.
+		 * @param contentEntry the content entry of the nested jar
+		 * @param name the name of the nested jar entry
+		 */
+		NestedJarEntry(ZipContent.Entry contentEntry, String name) {
 			super(contentEntry.getName());
 			this.contentEntry = contentEntry;
 			this.name = name;
 		}
 
 		/**
-         * Returns the time at which this NestedJarEntry was last modified.
-         * 
-         * @return the time at which this NestedJarEntry was last modified, measured in milliseconds since the epoch (00:00:00 GMT, January 1, 1970)
-         */
-        @Override
+		 * Returns the time at which this NestedJarEntry was last modified.
+		 * @return the time at which this NestedJarEntry was last modified, measured in
+		 * milliseconds since the epoch (00:00:00 GMT, January 1, 1970)
+		 */
+		@Override
 		public long getTime() {
 			populate();
 			return super.getTime();
 		}
 
 		/**
-         * Returns the local date and time of the NestedJarEntry.
-         * 
-         * @return the local date and time of the NestedJarEntry
-         */
-        @Override
+		 * Returns the local date and time of the NestedJarEntry.
+		 * @return the local date and time of the NestedJarEntry
+		 */
+		@Override
 		public LocalDateTime getTimeLocal() {
 			populate();
 			return super.getTimeLocal();
 		}
 
 		/**
-         * Sets the time of the nested jar entry.
-         * 
-         * @param time the time to set for the nested jar entry
-         * @throws UnsupportedOperationException if the nested jar entry cannot be modified
-         */
-        @Override
+		 * Sets the time of the nested jar entry.
+		 * @param time the time to set for the nested jar entry
+		 * @throws UnsupportedOperationException if the nested jar entry cannot be
+		 * modified
+		 */
+		@Override
 		public void setTime(long time) {
 			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		/**
-         * Sets the local time of the NestedJarEntry.
-         * 
-         * @param time the local date and time to be set
-         * @throws UnsupportedOperationException if the local time cannot be modified
-         */
-        @Override
+		 * Sets the local time of the NestedJarEntry.
+		 * @param time the local date and time to be set
+		 * @throws UnsupportedOperationException if the local time cannot be modified
+		 */
+		@Override
 		public void setTimeLocal(LocalDateTime time) {
 			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		/**
-         * Returns the last modified time of the nested JAR entry.
-         * <p>
-         * This method first populates the necessary information about the nested JAR entry
-         * and then returns the last modified time of the entry.
-         * </p>
-         *
-         * @return the last modified time of the nested JAR entry
-         */
-        @Override
+		 * Returns the last modified time of the nested JAR entry.
+		 * <p>
+		 * This method first populates the necessary information about the nested JAR
+		 * entry and then returns the last modified time of the entry.
+		 * </p>
+		 * @return the last modified time of the nested JAR entry
+		 */
+		@Override
 		public FileTime getLastModifiedTime() {
 			populate();
 			return super.getLastModifiedTime();
 		}
 
 		/**
-         * Sets the last modified time of this ZipEntry to the specified FileTime.
-         *
-         * @param time the FileTime representing the new last modified time
-         * @return the updated ZipEntry with the new last modified time
-         * @throws UnsupportedOperationException if the last modified time cannot be modified
-         */
-        @Override
+		 * Sets the last modified time of this ZipEntry to the specified FileTime.
+		 * @param time the FileTime representing the new last modified time
+		 * @return the updated ZipEntry with the new last modified time
+		 * @throws UnsupportedOperationException if the last modified time cannot be
+		 * modified
+		 */
+		@Override
 		public ZipEntry setLastModifiedTime(FileTime time) {
 			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		/**
-         * Returns the last access time of the nested JAR entry.
-         * 
-         * @return the last access time of the nested JAR entry
-         */
-        @Override
+		 * Returns the last access time of the nested JAR entry.
+		 * @return the last access time of the nested JAR entry
+		 */
+		@Override
 		public FileTime getLastAccessTime() {
 			populate();
 			return super.getLastAccessTime();
 		}
 
 		/**
-         * Sets the last access time of the nested jar entry.
-         *
-         * @param time the new last access time
-         * @return the updated ZipEntry object
-         * @throws UnsupportedOperationException if the nested jar entry cannot be modified
-         */
-        @Override
+		 * Sets the last access time of the nested jar entry.
+		 * @param time the new last access time
+		 * @return the updated ZipEntry object
+		 * @throws UnsupportedOperationException if the nested jar entry cannot be
+		 * modified
+		 */
+		@Override
 		public ZipEntry setLastAccessTime(FileTime time) {
 			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		/**
-         * Returns the creation time of the nested JAR entry.
-         * 
-         * @return the creation time of the nested JAR entry
-         */
-        @Override
+		 * Returns the creation time of the nested JAR entry.
+		 * @return the creation time of the nested JAR entry
+		 */
+		@Override
 		public FileTime getCreationTime() {
 			populate();
 			return super.getCreationTime();
 		}
 
 		/**
-         * Sets the creation time of this ZipEntry to the specified FileTime.
-         * 
-         * @param time the new creation time for this ZipEntry
-         * @return the updated ZipEntry with the new creation time
-         * @throws UnsupportedOperationException if the creation time cannot be modified
-         */
-        @Override
+		 * Sets the creation time of this ZipEntry to the specified FileTime.
+		 * @param time the new creation time for this ZipEntry
+		 * @return the updated ZipEntry with the new creation time
+		 * @throws UnsupportedOperationException if the creation time cannot be modified
+		 */
+		@Override
 		public ZipEntry setCreationTime(FileTime time) {
 			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		/**
-         * Returns the size of the NestedJarEntry.
-         * 
-         * @return the size of the NestedJarEntry
-         */
-        @Override
+		 * Returns the size of the NestedJarEntry.
+		 * @return the size of the NestedJarEntry
+		 */
+		@Override
 		public long getSize() {
 			return this.contentEntry.getUncompressedSize() & 0xFFFFFFFFL;
 		}
 
 		/**
-         * Sets the size of the nested jar entry.
-         * 
-         * @param size the size of the nested jar entry
-         * @throws UnsupportedOperationException if the size of the nested jar entry cannot be modified
-         */
-        @Override
+		 * Sets the size of the nested jar entry.
+		 * @param size the size of the nested jar entry
+		 * @throws UnsupportedOperationException if the size of the nested jar entry
+		 * cannot be modified
+		 */
+		@Override
 		public void setSize(long size) {
 			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		/**
-         * Returns the compressed size of this nested JAR entry.
-         * <p>
-         * The compressed size is the size of the entry's data in its compressed form.
-         * </p>
-         * <p>
-         * This method first populates the data of the nested JAR entry if it has not been done already,
-         * and then returns the compressed size by calling the superclass's {@code getCompressedSize()} method.
-         * </p>
-         *
-         * @return the compressed size of this nested JAR entry
-         */
-        @Override
+		 * Returns the compressed size of this nested JAR entry.
+		 * <p>
+		 * The compressed size is the size of the entry's data in its compressed form.
+		 * </p>
+		 * <p>
+		 * This method first populates the data of the nested JAR entry if it has not been
+		 * done already, and then returns the compressed size by calling the superclass's
+		 * {@code getCompressedSize()} method.
+		 * </p>
+		 * @return the compressed size of this nested JAR entry
+		 */
+		@Override
 		public long getCompressedSize() {
 			populate();
 			return super.getCompressedSize();
 		}
 
 		/**
-         * Sets the compressed size of the nested jar entry.
-         * 
-         * @param csize the compressed size to be set
-         * @throws UnsupportedOperationException if the compressed size cannot be modified
-         */
-        @Override
+		 * Sets the compressed size of the nested jar entry.
+		 * @param csize the compressed size to be set
+		 * @throws UnsupportedOperationException if the compressed size cannot be modified
+		 */
+		@Override
 		public void setCompressedSize(long csize) {
 			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		/**
-         * Returns the CRC (Cyclic Redundancy Check) value of the nested JAR entry.
-         * <p>
-         * This method populates the nested JAR entry before returning the CRC value.
-         * </p>
-         *
-         * @return the CRC value of the nested JAR entry
-         */
-        @Override
+		 * Returns the CRC (Cyclic Redundancy Check) value of the nested JAR entry.
+		 * <p>
+		 * This method populates the nested JAR entry before returning the CRC value.
+		 * </p>
+		 * @return the CRC value of the nested JAR entry
+		 */
+		@Override
 		public long getCrc() {
 			populate();
 			return super.getCrc();
 		}
 
 		/**
-         * Sets the CRC (Cyclic Redundancy Check) value for this NestedJarEntry.
-         * 
-         * @param crc the CRC value to be set
-         * @throws UnsupportedOperationException if the CRC value cannot be modified
-         */
-        @Override
+		 * Sets the CRC (Cyclic Redundancy Check) value for this NestedJarEntry.
+		 * @param crc the CRC value to be set
+		 * @throws UnsupportedOperationException if the CRC value cannot be modified
+		 */
+		@Override
 		public void setCrc(long crc) {
 			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		/**
-         * Retrieves the method value.
-         * 
-         * @return The method value.
-         */
-        @Override
+		 * Retrieves the method value.
+		 * @return The method value.
+		 */
+		@Override
 		public int getMethod() {
 			populate();
 			return super.getMethod();
 		}
 
 		/**
-         * Sets the method for the NestedJarEntry.
-         * 
-         * @param method the method to be set
-         * @throws CannotBeModifiedException if the method cannot be modified
-         */
-        @Override
+		 * Sets the method for the NestedJarEntry.
+		 * @param method the method to be set
+		 * @throws CannotBeModifiedException if the method cannot be modified
+		 */
+		@Override
 		public void setMethod(int method) {
 			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		/**
-         * Retrieves the extra data associated with this NestedJarEntry.
-         * 
-         * @return the extra data as a byte array
-         */
-        @Override
+		 * Retrieves the extra data associated with this NestedJarEntry.
+		 * @return the extra data as a byte array
+		 */
+		@Override
 		public byte[] getExtra() {
 			populate();
 			return super.getExtra();
 		}
 
 		/**
-         * Sets the extra data for this NestedJarEntry.
-         * 
-         * @param extra the extra data to be set
-         * @throws UnsupportedOperationException if the extra data cannot be modified
-         */
-        @Override
+		 * Sets the extra data for this NestedJarEntry.
+		 * @param extra the extra data to be set
+		 * @throws UnsupportedOperationException if the extra data cannot be modified
+		 */
+		@Override
 		public void setExtra(byte[] extra) {
 			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		/**
-         * Retrieves the comment associated with this NestedJarEntry.
-         * 
-         * @return the comment of this NestedJarEntry
-         */
-        @Override
+		 * Retrieves the comment associated with this NestedJarEntry.
+		 * @return the comment of this NestedJarEntry
+		 */
+		@Override
 		public String getComment() {
 			populate();
 			return super.getComment();
 		}
 
 		/**
-         * Sets the comment for this NestedJarEntry.
-         * 
-         * @param comment the comment to be set
-         * @throws UnsupportedOperationException if the comment cannot be modified
-         */
-        @Override
+		 * Sets the comment for this NestedJarEntry.
+		 * @param comment the comment to be set
+		 * @throws UnsupportedOperationException if the comment cannot be modified
+		 */
+		@Override
 		public void setComment(String comment) {
 			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		/**
-         * Checks if the NestedJarEntry is owned by the specified NestedJarFile.
-         * 
-         * @param nestedJarFile the NestedJarFile to compare with
-         * @return true if the NestedJarEntry is owned by the specified NestedJarFile, false otherwise
-         */
-        boolean isOwnedBy(NestedJarFile nestedJarFile) {
+		 * Checks if the NestedJarEntry is owned by the specified NestedJarFile.
+		 * @param nestedJarFile the NestedJarFile to compare with
+		 * @return true if the NestedJarEntry is owned by the specified NestedJarFile,
+		 * false otherwise
+		 */
+		boolean isOwnedBy(NestedJarFile nestedJarFile) {
 			return NestedJarFile.this == nestedJarFile;
 		}
 
 		/**
-         * Returns the real name of the NestedJarEntry.
-         * 
-         * @return the real name of the NestedJarEntry
-         */
-        @Override
+		 * Returns the real name of the NestedJarEntry.
+		 * @return the real name of the NestedJarEntry
+		 */
+		@Override
 		public String getRealName() {
 			return super.getName();
 		}
 
 		/**
-         * Returns the name of the NestedJarEntry.
-         *
-         * @return the name of the NestedJarEntry
-         */
-        @Override
+		 * Returns the name of the NestedJarEntry.
+		 * @return the name of the NestedJarEntry
+		 */
+		@Override
 		public String getName() {
 			return this.name;
 		}
 
 		/**
-         * Returns the attributes of the nested JAR entry.
-         * 
-         * @return the attributes of the nested JAR entry, or {@code null} if the manifest is not available
-         * @throws IOException if an I/O error occurs while retrieving the manifest
-         */
-        @Override
+		 * Returns the attributes of the nested JAR entry.
+		 * @return the attributes of the nested JAR entry, or {@code null} if the manifest
+		 * is not available
+		 * @throws IOException if an I/O error occurs while retrieving the manifest
+		 */
+		@Override
 		public Attributes getAttributes() throws IOException {
 			Manifest manifest = getManifest();
 			return (manifest != null) ? manifest.getAttributes(getName()) : null;
 		}
 
 		/**
-         * Returns an array of certificates associated with this NestedJarEntry.
-         * 
-         * @return an array of certificates associated with this NestedJarEntry
-         */
-        @Override
+		 * Returns an array of certificates associated with this NestedJarEntry.
+		 * @return an array of certificates associated with this NestedJarEntry
+		 */
+		@Override
 		public Certificate[] getCertificates() {
 			return getSecurityInfo().getCertificates(contentEntry());
 		}
 
 		/**
-         * Returns an array of CodeSigner objects representing the signers of the nested jar entry.
-         * 
-         * @return an array of CodeSigner objects representing the signers of the nested jar entry
-         */
-        @Override
+		 * Returns an array of CodeSigner objects representing the signers of the nested
+		 * jar entry.
+		 * @return an array of CodeSigner objects representing the signers of the nested
+		 * jar entry
+		 */
+		@Override
 		public CodeSigner[] getCodeSigners() {
 			return getSecurityInfo().getCodeSigners(contentEntry());
 		}
 
 		/**
-         * Retrieves the security information of the nested jar file.
-         *
-         * @return the security information of the nested jar file
-         */
-        private SecurityInfo getSecurityInfo() {
+		 * Retrieves the security information of the nested jar file.
+		 * @return the security information of the nested jar file
+		 */
+		private SecurityInfo getSecurityInfo() {
 			return NestedJarFile.this.resources.zipContent().getInfo(SecurityInfo.class, SecurityInfo::get);
 		}
 
 		/**
-         * Returns the content entry of the nested jar entry.
-         * 
-         * @return the content entry of the nested jar entry
-         */
-        ZipContent.Entry contentEntry() {
+		 * Returns the content entry of the nested jar entry.
+		 * @return the content entry of the nested jar entry
+		 */
+		ZipContent.Entry contentEntry() {
 			return this.contentEntry;
 		}
 
 		/**
-         * Populates the NestedJarEntry object with the necessary information from the underlying ZipEntry.
-         * If the object has already been populated, the method does nothing.
-         * 
-         * @throws IllegalStateException if the underlying ZipEntry is null
-         */
-        private void populate() {
+		 * Populates the NestedJarEntry object with the necessary information from the
+		 * underlying ZipEntry. If the object has already been populated, the method does
+		 * nothing.
+		 * @throws IllegalStateException if the underlying ZipEntry is null
+		 */
+		private void populate() {
 			boolean populated = this.populated;
 			if (!populated) {
 				ZipEntry entry = this.contentEntry.as(ZipEntry::new);
@@ -996,31 +960,28 @@ public class NestedJarFile extends JarFile {
 		private int cursor;
 
 		/**
-         * Constructs a new JarEntriesEnumeration object with the specified ZipContent.
-         * 
-         * @param zipContent the ZipContent object to be used for enumeration
-         */
-        JarEntriesEnumeration(ZipContent zipContent) {
+		 * Constructs a new JarEntriesEnumeration object with the specified ZipContent.
+		 * @param zipContent the ZipContent object to be used for enumeration
+		 */
+		JarEntriesEnumeration(ZipContent zipContent) {
 			this.zipContent = zipContent;
 		}
 
 		/**
-         * Returns true if there are more elements in the enumeration, false otherwise.
-         *
-         * @return true if there are more elements, false otherwise
-         */
-        @Override
+		 * Returns true if there are more elements in the enumeration, false otherwise.
+		 * @return true if there are more elements, false otherwise
+		 */
+		@Override
 		public boolean hasMoreElements() {
 			return this.cursor < this.zipContent.size();
 		}
 
 		/**
-         * Returns the next element in the enumeration.
-         * 
-         * @return the next element in the enumeration
-         * @throws NoSuchElementException if there are no more elements in the enumeration
-         */
-        @Override
+		 * Returns the next element in the enumeration.
+		 * @return the next element in the enumeration
+		 * @throws NoSuchElementException if there are no more elements in the enumeration
+		 */
+		@Override
 		public NestedJarEntry nextElement() {
 			if (!hasMoreElements()) {
 				throw new NoSuchElementException();
@@ -1046,24 +1007,24 @@ public class NestedJarFile extends JarFile {
 		private int cursor;
 
 		/**
-         * Constructs a new ZipContentEntriesSpliterator with the specified ZipContent.
-         * 
-         * @param zipContent the ZipContent object to be used by the spliterator
-         */
-        ZipContentEntriesSpliterator(ZipContent zipContent) {
+		 * Constructs a new ZipContentEntriesSpliterator with the specified ZipContent.
+		 * @param zipContent the ZipContent object to be used by the spliterator
+		 */
+		ZipContentEntriesSpliterator(ZipContent zipContent) {
 			super(zipContent.size(), ADDITIONAL_CHARACTERISTICS);
 			this.zipContent = zipContent;
 		}
 
 		/**
-         * Attempts to advance the spliterator to the next element and performs the given action on it.
-         * 
-         * @param action the action to be performed on the next element
-         * @return {@code true} if there is a next element and the action was performed, {@code false} otherwise
-         * @throws IllegalStateException if the spliterator is closed
-         * @throws NullPointerException if the action is null
-         */
-        @Override
+		 * Attempts to advance the spliterator to the next element and performs the given
+		 * action on it.
+		 * @param action the action to be performed on the next element
+		 * @return {@code true} if there is a next element and the action was performed,
+		 * {@code false} otherwise
+		 * @throws IllegalStateException if the spliterator is closed
+		 * @throws NullPointerException if the action is null
+		 */
+		@Override
 		public boolean tryAdvance(Consumer<? super ZipContent.Entry> action) {
 			if (this.cursor < this.zipContent.size()) {
 				synchronized (NestedJarFile.this) {
@@ -1093,38 +1054,37 @@ public class NestedJarFile extends JarFile {
 		private volatile boolean closed;
 
 		/**
-         * Constructs a new JarEntryInputStream object with the given ZipContent.Entry.
-         * 
-         * @param entry the ZipContent.Entry object representing the entry in the JAR file
-         * @throws IOException if an I/O error occurs while opening the content of the entry
-         */
-        JarEntryInputStream(ZipContent.Entry entry) throws IOException {
+		 * Constructs a new JarEntryInputStream object with the given ZipContent.Entry.
+		 * @param entry the ZipContent.Entry object representing the entry in the JAR file
+		 * @throws IOException if an I/O error occurs while opening the content of the
+		 * entry
+		 */
+		JarEntryInputStream(ZipContent.Entry entry) throws IOException {
 			this.uncompressedSize = entry.getUncompressedSize();
 			this.content = entry.openContent();
 		}
 
 		/**
-         * Reads a single byte of data from the input stream.
-         * 
-         * @return the byte read, or -1 if the end of the stream is reached
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Reads a single byte of data from the input stream.
+		 * @return the byte read, or -1 if the end of the stream is reached
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public int read() throws IOException {
 			byte[] b = new byte[1];
 			return (read(b, 0, 1) == 1) ? b[0] & 0xFF : -1;
 		}
 
 		/**
-         * Reads up to len bytes of data from this input stream into an array of bytes.
-         * 
-         * @param b   the buffer into which the data is read.
-         * @param off the start offset in the buffer at which the data is written.
-         * @param len the maximum number of bytes to read.
-         * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the stream has been reached.
-         * @throws IOException if an I/O error occurs.
-         */
-        @Override
+		 * Reads up to len bytes of data from this input stream into an array of bytes.
+		 * @param b the buffer into which the data is read.
+		 * @param off the start offset in the buffer at which the data is written.
+		 * @param len the maximum number of bytes to read.
+		 * @return the total number of bytes read into the buffer, or -1 if there is no
+		 * more data because the end of the stream has been reached.
+		 * @throws IOException if an I/O error occurs.
+		 */
+		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
 			int result;
 			synchronized (NestedJarFile.this) {
@@ -1144,13 +1104,12 @@ public class NestedJarFile extends JarFile {
 		}
 
 		/**
-         * Skips over and discards a specified number of bytes from the input stream.
-         * 
-         * @param n the number of bytes to be skipped
-         * @return the actual number of bytes skipped
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Skips over and discards a specified number of bytes from the input stream.
+		 * @param n the number of bytes to be skipped
+		 * @return the actual number of bytes skipped
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public long skip(long n) throws IOException {
 			long result;
 			synchronized (NestedJarFile.this) {
@@ -1165,54 +1124,55 @@ public class NestedJarFile extends JarFile {
 		}
 
 		/**
-         * Returns the maximum number of bytes that can be skipped forward in the input stream.
-         * 
-         * @param n the number of bytes to skip forward
-         * @return the maximum number of bytes that can be skipped forward without causing an overflow or exceeding the remaining bytes in the input stream
-         */
-        private long maxForwardSkip(long n) {
+		 * Returns the maximum number of bytes that can be skipped forward in the input
+		 * stream.
+		 * @param n the number of bytes to skip forward
+		 * @return the maximum number of bytes that can be skipped forward without causing
+		 * an overflow or exceeding the remaining bytes in the input stream
+		 */
+		private long maxForwardSkip(long n) {
 			boolean willCauseOverflow = (this.pos + n) < 0;
 			return (willCauseOverflow || n > this.remaining) ? this.remaining : n;
 		}
 
 		/**
-         * Returns the maximum number of bytes that can be skipped backwards from the current position in the input stream.
-         * 
-         * @param n the number of bytes to skip backwards
-         * @return the maximum number of bytes that can be skipped backwards
-         */
-        private long maxBackwardSkip(long n) {
+		 * Returns the maximum number of bytes that can be skipped backwards from the
+		 * current position in the input stream.
+		 * @param n the number of bytes to skip backwards
+		 * @return the maximum number of bytes that can be skipped backwards
+		 */
+		private long maxBackwardSkip(long n) {
 			return Math.max(-this.pos, n);
 		}
 
 		/**
-         * Returns the number of bytes that can be read from this input stream without blocking.
-         * 
-         * @return the number of bytes that can be read from this input stream without blocking,
-         *         or {@link Integer#MAX_VALUE} if the remaining bytes is greater than {@link Integer#MAX_VALUE}.
-         */
-        @Override
+		 * Returns the number of bytes that can be read from this input stream without
+		 * blocking.
+		 * @return the number of bytes that can be read from this input stream without
+		 * blocking, or {@link Integer#MAX_VALUE} if the remaining bytes is greater than
+		 * {@link Integer#MAX_VALUE}.
+		 */
+		@Override
 		public int available() {
 			return (this.remaining < Integer.MAX_VALUE) ? (int) this.remaining : Integer.MAX_VALUE;
 		}
 
 		/**
-         * Ensures that the JarEntryInputStream is open.
-         * 
-         * @throws ZipException if the JarEntryInputStream or the enclosing NestedJarFile is closed
-         */
-        private void ensureOpen() throws ZipException {
+		 * Ensures that the JarEntryInputStream is open.
+		 * @throws ZipException if the JarEntryInputStream or the enclosing NestedJarFile
+		 * is closed
+		 */
+		private void ensureOpen() throws ZipException {
 			if (NestedJarFile.this.closed || this.closed) {
 				throw new ZipException("ZipFile closed");
 			}
 		}
 
 		/**
-         * Closes the input stream.
-         * 
-         * @throws IOException if an I/O error occurs while closing the stream
-         */
-        @Override
+		 * Closes the input stream.
+		 * @throws IOException if an I/O error occurs while closing the stream
+		 */
+		@Override
 		public void close() throws IOException {
 			if (this.closed) {
 				return;
@@ -1223,11 +1183,10 @@ public class NestedJarFile extends JarFile {
 		}
 
 		/**
-         * Returns the uncompressed size of the current entry in the JAR file.
-         *
-         * @return the uncompressed size of the current entry
-         */
-        int getUncompressedSize() {
+		 * Returns the uncompressed size of the current entry in the JAR file.
+		 * @return the uncompressed size of the current entry
+		 */
+		int getUncompressedSize() {
 			return this.uncompressedSize;
 		}
 
@@ -1243,35 +1202,34 @@ public class NestedJarFile extends JarFile {
 		private volatile boolean closed;
 
 		/**
-         * Constructs a new JarEntryInflaterInputStream with the specified JarEntryInputStream, NestedJarFileResources, and Inflater.
-         * 
-         * @param inputStream the JarEntryInputStream to read from
-         * @param resources the NestedJarFileResources to use for accessing nested jar files
-         * @param inflater the Inflater to use for decompressing data
-         */
-        JarEntryInflaterInputStream(JarEntryInputStream inputStream, NestedJarFileResources resources) {
+		 * Constructs a new JarEntryInflaterInputStream with the specified
+		 * JarEntryInputStream, NestedJarFileResources, and Inflater.
+		 * @param inputStream the JarEntryInputStream to read from
+		 * @param resources the NestedJarFileResources to use for accessing nested jar
+		 * files
+		 * @param inflater the Inflater to use for decompressing data
+		 */
+		JarEntryInflaterInputStream(JarEntryInputStream inputStream, NestedJarFileResources resources) {
 			this(inputStream, resources, resources.getOrCreateInflater());
 		}
 
 		/**
-         * Constructs a new JarEntryInflaterInputStream with the specified parameters.
-         * 
-         * @param inputStream the JarEntryInputStream to read from
-         * @param resources the NestedJarFileResources associated with the input stream
-         * @param inflater the Inflater to use for decompression
-         */
-        private JarEntryInflaterInputStream(JarEntryInputStream inputStream, NestedJarFileResources resources,
+		 * Constructs a new JarEntryInflaterInputStream with the specified parameters.
+		 * @param inputStream the JarEntryInputStream to read from
+		 * @param resources the NestedJarFileResources associated with the input stream
+		 * @param inflater the Inflater to use for decompression
+		 */
+		private JarEntryInflaterInputStream(JarEntryInputStream inputStream, NestedJarFileResources resources,
 				Inflater inflater) {
 			super(inputStream, inflater, inputStream.getUncompressedSize());
 			this.cleanup = NestedJarFile.this.cleaner.register(this, resources.createInflatorCleanupAction(inflater));
 		}
 
 		/**
-         * Closes the input stream.
-         * 
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Closes the input stream.
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public void close() throws IOException {
 			if (this.closed) {
 				return;
@@ -1292,20 +1250,18 @@ public class NestedJarFile extends JarFile {
 		private volatile boolean closed;
 
 		/**
-         * Constructs a new RawZipDataInputStream object with the specified input stream.
-         * 
-         * @param in the input stream to be read from
-         */
-        RawZipDataInputStream(InputStream in) {
+		 * Constructs a new RawZipDataInputStream object with the specified input stream.
+		 * @param in the input stream to be read from
+		 */
+		RawZipDataInputStream(InputStream in) {
 			super(in);
 		}
 
 		/**
-         * Closes the input stream.
-         * 
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Closes the input stream.
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public void close() throws IOException {
 			if (this.closed) {
 				return;

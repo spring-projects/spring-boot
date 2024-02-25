@@ -26,11 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class MessageController {
 
 	/**
-     * Retrieves a greeting message.
-     * 
-     * @return the greeting message "Hello World"
-     */
-    @GetMapping("/hi")
+	 * Retrieves a greeting message.
+	 * @return the greeting message "Hello World"
+	 */
+	@GetMapping("/hi")
 	public String hello() {
 		return "Hello World";
 	}

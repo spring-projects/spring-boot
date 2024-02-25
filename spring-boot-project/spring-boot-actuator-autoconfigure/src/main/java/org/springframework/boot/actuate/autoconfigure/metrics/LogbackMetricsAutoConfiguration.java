@@ -49,29 +49,28 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class LogbackMetricsAutoConfiguration {
 
 	/**
-     * Creates a new instance of LogbackMetrics if no other bean of the same type is present.
-     * 
-     * @return the LogbackMetrics instance
-     */
-    @Bean
+	 * Creates a new instance of LogbackMetrics if no other bean of the same type is
+	 * present.
+	 * @return the LogbackMetrics instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public LogbackMetrics logbackMetrics() {
 		return new LogbackMetrics();
 	}
 
 	/**
-     * LogbackLoggingCondition class.
-     */
-    static class LogbackLoggingCondition extends SpringBootCondition {
+	 * LogbackLoggingCondition class.
+	 */
+	static class LogbackLoggingCondition extends SpringBootCondition {
 
 		/**
-         * Determines the match outcome for the LogbackLoggingCondition.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the condition outcome
-         */
-        @Override
+		 * Determines the match outcome for the LogbackLoggingCondition.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the condition outcome
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
 			ConditionMessage.Builder message = ConditionMessage.forCondition("LogbackLoggingCondition");

@@ -36,44 +36,41 @@ public class MyRestController {
 	private final CustomerRepository customerRepository;
 
 	/**
-     * Constructs a new instance of MyRestController with the specified UserRepository and CustomerRepository.
-     * 
-     * @param userRepository the UserRepository to be used by the MyRestController
-     * @param customerRepository the CustomerRepository to be used by the MyRestController
-     */
-    public MyRestController(UserRepository userRepository, CustomerRepository customerRepository) {
+	 * Constructs a new instance of MyRestController with the specified UserRepository and
+	 * CustomerRepository.
+	 * @param userRepository the UserRepository to be used by the MyRestController
+	 * @param customerRepository the CustomerRepository to be used by the MyRestController
+	 */
+	public MyRestController(UserRepository userRepository, CustomerRepository customerRepository) {
 		this.userRepository = userRepository;
 		this.customerRepository = customerRepository;
 	}
 
 	/**
-     * Retrieves a user with the specified user ID.
-     *
-     * @param userId the ID of the user to retrieve
-     * @return the user with the specified ID
-     */
-    @GetMapping("/{userId}")
+	 * Retrieves a user with the specified user ID.
+	 * @param userId the ID of the user to retrieve
+	 * @return the user with the specified ID
+	 */
+	@GetMapping("/{userId}")
 	public User getUser(@PathVariable Long userId) {
 		return this.userRepository.findById(userId).get();
 	}
 
 	/**
-     * Retrieves a list of customers associated with a specific user.
-     *
-     * @param userId the ID of the user
-     * @return a list of customers associated with the user
-     */
-    @GetMapping("/{userId}/customers")
+	 * Retrieves a list of customers associated with a specific user.
+	 * @param userId the ID of the user
+	 * @return a list of customers associated with the user
+	 */
+	@GetMapping("/{userId}/customers")
 	public List<Customer> getUserCustomers(@PathVariable Long userId) {
 		return this.userRepository.findById(userId).map(this.customerRepository::findByUser).get();
 	}
 
 	/**
-     * Deletes a user with the specified user ID.
-     * 
-     * @param userId the ID of the user to be deleted
-     */
-    @DeleteMapping("/{userId}")
+	 * Deletes a user with the specified user ID.
+	 * @param userId the ID of the user to be deleted
+	 */
+	@DeleteMapping("/{userId}")
 	public void deleteUser(@PathVariable Long userId) {
 		this.userRepository.deleteById(userId);
 	}

@@ -28,23 +28,21 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 public class MyApplication extends SpringBootServletInitializer {
 
 	/**
-     * Configures the SpringApplicationBuilder for the MyApplication class.
-     * 
-     * @param application the SpringApplicationBuilder to configure
-     * @return the configured SpringApplicationBuilder
-     */
-    @Override
+	 * Configures the SpringApplicationBuilder for the MyApplication class.
+	 * @param application the SpringApplicationBuilder to configure
+	 * @return the configured SpringApplicationBuilder
+	 */
+	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(MyApplication.class);
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring Boot application by calling the SpringApplication.run() method.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring Boot
+	 * application by calling the SpringApplication.run() method.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(MyApplication.class, args);
 	}
 

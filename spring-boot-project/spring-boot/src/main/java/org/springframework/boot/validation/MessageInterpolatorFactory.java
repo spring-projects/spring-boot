@@ -51,11 +51,11 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 	private final MessageSource messageSource;
 
 	/**
-     * Constructs a new MessageInterpolatorFactory with the specified parent factory.
-     * 
-     * @param parentFactory the parent factory to be used for message interpolation, or null if none
-     */
-    public MessageInterpolatorFactory() {
+	 * Constructs a new MessageInterpolatorFactory with the specified parent factory.
+	 * @param parentFactory the parent factory to be used for message interpolation, or
+	 * null if none
+	 */
+	public MessageInterpolatorFactory() {
 		this(null);
 	}
 
@@ -71,12 +71,12 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 	}
 
 	/**
-     * Retrieves the MessageInterpolator object.
-     * 
-     * @return The MessageInterpolator object.
-     * @throws BeansException If there is an error retrieving the MessageInterpolator object.
-     */
-    @Override
+	 * Retrieves the MessageInterpolator object.
+	 * @return The MessageInterpolator object.
+	 * @throws BeansException If there is an error retrieving the MessageInterpolator
+	 * object.
+	 */
+	@Override
 	public MessageInterpolator getObject() throws BeansException {
 		MessageInterpolator messageInterpolator = getMessageInterpolator();
 		if (this.messageSource != null) {
@@ -86,12 +86,12 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 	}
 
 	/**
-     * Returns the message interpolator for the default provider.
-     * 
-     * @return the message interpolator
-     * @throws ValidationException if an error occurs while retrieving the message interpolator
-     */
-    private MessageInterpolator getMessageInterpolator() {
+	 * Returns the message interpolator for the default provider.
+	 * @return the message interpolator
+	 * @throws ValidationException if an error occurs while retrieving the message
+	 * interpolator
+	 */
+	private MessageInterpolator getMessageInterpolator() {
 		try {
 			return Validation.byDefaultProvider().configure().getDefaultMessageInterpolator();
 		}
@@ -105,16 +105,17 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 	}
 
 	/**
-     * Returns the fallback MessageInterpolator.
-     * 
-     * This method attempts to retrieve the fallback MessageInterpolator by iterating through the list of fallbacks defined in the FALLBACKS array. 
-     * It tries to retrieve the fallback MessageInterpolator using each fallback name in the array, and if successful, returns the fallback MessageInterpolator.
-     * If an exception occurs during the retrieval process, it is caught and the method continues to the next fallback name.
-     * If no fallback MessageInterpolator is found, null is returned.
-     * 
-     * @return the fallback MessageInterpolator, or null if no fallback is found
-     */
-    private MessageInterpolator getFallback() {
+	 * Returns the fallback MessageInterpolator.
+	 *
+	 * This method attempts to retrieve the fallback MessageInterpolator by iterating
+	 * through the list of fallbacks defined in the FALLBACKS array. It tries to retrieve
+	 * the fallback MessageInterpolator using each fallback name in the array, and if
+	 * successful, returns the fallback MessageInterpolator. If an exception occurs during
+	 * the retrieval process, it is caught and the method continues to the next fallback
+	 * name. If no fallback MessageInterpolator is found, null is returned.
+	 * @return the fallback MessageInterpolator, or null if no fallback is found
+	 */
+	private MessageInterpolator getFallback() {
 		for (String fallback : FALLBACKS) {
 			try {
 				return getFallback(fallback);
@@ -127,12 +128,11 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 	}
 
 	/**
-     * Returns a fallback MessageInterpolator based on the provided class name.
-     * 
-     * @param fallback the class name of the fallback MessageInterpolator
-     * @return the fallback MessageInterpolator instance
-     */
-    private MessageInterpolator getFallback(String fallback) {
+	 * Returns a fallback MessageInterpolator based on the provided class name.
+	 * @param fallback the class name of the fallback MessageInterpolator
+	 * @return the fallback MessageInterpolator instance
+	 */
+	private MessageInterpolator getFallback(String fallback) {
 		Class<?> interpolatorClass = ClassUtils.resolveClassName(fallback, null);
 		Object interpolator = BeanUtils.instantiateClass(interpolatorClass);
 		return (MessageInterpolator) interpolator;

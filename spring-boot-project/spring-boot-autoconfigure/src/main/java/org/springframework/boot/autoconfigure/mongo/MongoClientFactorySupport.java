@@ -39,46 +39,47 @@ public abstract class MongoClientFactorySupport<T> {
 	private final BiFunction<MongoClientSettings, MongoDriverInformation, T> clientCreator;
 
 	/**
-     * Constructs a new MongoClientFactorySupport with the specified list of builder customizers and client creator.
-     * 
-     * @param builderCustomizers the list of builder customizers to customize the MongoClientSettings builder (can be null)
-     * @param clientCreator the function used to create the MongoClient instance from the MongoClientSettings and MongoDriverInformation
-     */
-    protected MongoClientFactorySupport(List<MongoClientSettingsBuilderCustomizer> builderCustomizers,
+	 * Constructs a new MongoClientFactorySupport with the specified list of builder
+	 * customizers and client creator.
+	 * @param builderCustomizers the list of builder customizers to customize the
+	 * MongoClientSettings builder (can be null)
+	 * @param clientCreator the function used to create the MongoClient instance from the
+	 * MongoClientSettings and MongoDriverInformation
+	 */
+	protected MongoClientFactorySupport(List<MongoClientSettingsBuilderCustomizer> builderCustomizers,
 			BiFunction<MongoClientSettings, MongoDriverInformation, T> clientCreator) {
 		this.builderCustomizers = (builderCustomizers != null) ? builderCustomizers : Collections.emptyList();
 		this.clientCreator = clientCreator;
 	}
 
 	/**
-     * Creates a new MongoDB client using the provided settings.
-     * 
-     * @param settings the settings for the MongoDB client
-     * @return the created MongoDB client
-     */
-    public T createMongoClient(MongoClientSettings settings) {
+	 * Creates a new MongoDB client using the provided settings.
+	 * @param settings the settings for the MongoDB client
+	 * @return the created MongoDB client
+	 */
+	public T createMongoClient(MongoClientSettings settings) {
 		Builder targetSettings = MongoClientSettings.builder(settings);
 		customize(targetSettings);
 		return this.clientCreator.apply(targetSettings.build(), driverInformation());
 	}
 
 	/**
-     * Customizes the given {@link Builder} by applying all registered {@link MongoClientSettingsBuilderCustomizer}s.
-     * 
-     * @param builder the {@link Builder} to be customized
-     */
-    private void customize(Builder builder) {
+	 * Customizes the given {@link Builder} by applying all registered
+	 * {@link MongoClientSettingsBuilderCustomizer}s.
+	 * @param builder the {@link Builder} to be customized
+	 */
+	private void customize(Builder builder) {
 		for (MongoClientSettingsBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
 		}
 	}
 
 	/**
-     * Returns the MongoDriverInformation object containing information about the MongoDB driver used by the application.
-     *
-     * @return the MongoDriverInformation object
-     */
-    private MongoDriverInformation driverInformation() {
+	 * Returns the MongoDriverInformation object containing information about the MongoDB
+	 * driver used by the application.
+	 * @return the MongoDriverInformation object
+	 */
+	private MongoDriverInformation driverInformation() {
 		return MongoDriverInformation.builder(MongoDriverInformation.builder().build())
 			.driverName("spring-boot")
 			.build();

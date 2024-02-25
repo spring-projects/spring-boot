@@ -39,22 +39,21 @@ class Neo4jContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<Neo4jContainer<?>, Neo4jConnectionDetails> {
 
 	/**
-     * Constructs a new Neo4jContainerConnectionDetailsFactory with the specified connection name and authentication token.
-     * 
-     * @param connectionName the name of the connection
-     * @param authTokenClass the class representing the authentication token
-     */
-    Neo4jContainerConnectionDetailsFactory() {
+	 * Constructs a new Neo4jContainerConnectionDetailsFactory with the specified
+	 * connection name and authentication token.
+	 * @param connectionName the name of the connection
+	 * @param authTokenClass the class representing the authentication token
+	 */
+	Neo4jContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "org.neo4j.driver.AuthToken");
 	}
 
 	/**
-     * Returns the connection details for the specified container connection source.
-     *
-     * @param source the container connection source
-     * @return the connection details for the container
-     */
-    @Override
+	 * Returns the connection details for the specified container connection source.
+	 * @param source the container connection source
+	 * @return the connection details for the container
+	 */
+	@Override
 	protected Neo4jConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<Neo4jContainer<?>> source) {
 		return new Neo4jContainerConnectionDetails(source);
@@ -67,30 +66,28 @@ class Neo4jContainerConnectionDetailsFactory
 			implements Neo4jConnectionDetails {
 
 		/**
-         * Constructs a new Neo4jContainerConnectionDetails object with the specified source.
-         * 
-         * @param source the source of the container connection
-         */
-        private Neo4jContainerConnectionDetails(ContainerConnectionSource<Neo4jContainer<?>> source) {
+		 * Constructs a new Neo4jContainerConnectionDetails object with the specified
+		 * source.
+		 * @param source the source of the container connection
+		 */
+		private Neo4jContainerConnectionDetails(ContainerConnectionSource<Neo4jContainer<?>> source) {
 			super(source);
 		}
 
 		/**
-         * Returns the URI of the connection.
-         * 
-         * @return the URI of the connection
-         */
-        @Override
+		 * Returns the URI of the connection.
+		 * @return the URI of the connection
+		 */
+		@Override
 		public URI getUri() {
 			return URI.create(getContainer().getBoltUrl());
 		}
 
 		/**
-         * Retrieves the authentication token for the Neo4j container connection.
-         * 
-         * @return The authentication token for the Neo4j container connection.
-         */
-        @Override
+		 * Retrieves the authentication token for the Neo4j container connection.
+		 * @return The authentication token for the Neo4j container connection.
+		 */
+		@Override
 		public AuthToken getAuthToken() {
 			String password = getContainer().getAdminPassword();
 			return (password != null) ? AuthTokens.basic("neo4j", password) : AuthTokens.none();

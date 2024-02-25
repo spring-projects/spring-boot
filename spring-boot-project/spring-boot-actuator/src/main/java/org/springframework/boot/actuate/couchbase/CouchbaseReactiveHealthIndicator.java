@@ -44,12 +44,11 @@ public class CouchbaseReactiveHealthIndicator extends AbstractReactiveHealthIndi
 	}
 
 	/**
-     * Performs a health check on the Couchbase cluster.
-     * 
-     * @param builder the Health.Builder object used to build the health status
-     * @return a Mono object representing the health status of the Couchbase cluster
-     */
-    @Override
+	 * Performs a health check on the Couchbase cluster.
+	 * @param builder the Health.Builder object used to build the health status
+	 * @return a Mono object representing the health status of the Couchbase cluster
+	 */
+	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
 		return this.cluster.reactive().diagnostics().map((diagnostics) -> {
 			new CouchbaseHealth(diagnostics).applyTo(builder);

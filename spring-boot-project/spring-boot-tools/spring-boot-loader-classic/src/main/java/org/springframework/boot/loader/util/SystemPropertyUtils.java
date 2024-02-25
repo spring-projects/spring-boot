@@ -89,16 +89,17 @@ public abstract class SystemPropertyUtils {
 	}
 
 	/**
-     * Parses a string value containing placeholders and resolves them using the provided properties.
-     * 
-     * @param properties the properties to use for resolving placeholders
-     * @param value the string value containing placeholders
-     * @param current the current placeholder being parsed
-     * @param visitedPlaceholders a set of visited placeholders to detect circular references
-     * @return the string value with all placeholders resolved
-     * @throws IllegalArgumentException if a circular placeholder reference is detected
-     */
-    private static String parseStringValue(Properties properties, String value, String current,
+	 * Parses a string value containing placeholders and resolves them using the provided
+	 * properties.
+	 * @param properties the properties to use for resolving placeholders
+	 * @param value the string value containing placeholders
+	 * @param current the current placeholder being parsed
+	 * @param visitedPlaceholders a set of visited placeholders to detect circular
+	 * references
+	 * @return the string value with all placeholders resolved
+	 * @throws IllegalArgumentException if a circular placeholder reference is detected
+	 */
+	private static String parseStringValue(Properties properties, String value, String current,
 			Set<String> visitedPlaceholders) {
 
 		StringBuilder buf = new StringBuilder(current);
@@ -152,14 +153,14 @@ public abstract class SystemPropertyUtils {
 	}
 
 	/**
-     * Resolves a placeholder in the given text using the provided properties and placeholder name.
-     * 
-     * @param properties the properties to use for resolving the placeholder
-     * @param text the text containing the placeholder
-     * @param placeholderName the name of the placeholder to resolve
-     * @return the resolved value of the placeholder, or null if it could not be resolved
-     */
-    private static String resolvePlaceholder(Properties properties, String text, String placeholderName) {
+	 * Resolves a placeholder in the given text using the provided properties and
+	 * placeholder name.
+	 * @param properties the properties to use for resolving the placeholder
+	 * @param text the text containing the placeholder
+	 * @param placeholderName the name of the placeholder to resolve
+	 * @return the resolved value of the placeholder, or null if it could not be resolved
+	 */
+	private static String resolvePlaceholder(Properties properties, String text, String placeholderName) {
 		String propVal = getProperty(placeholderName, null, text);
 		if (propVal != null) {
 			return propVal;
@@ -168,25 +169,23 @@ public abstract class SystemPropertyUtils {
 	}
 
 	/**
-     * Retrieves the value of the specified property key from the system properties.
-     * If the property key is not found, the default value provided will be returned.
-     * 
-     * @param key the key of the property to retrieve
-     * @return the value of the property, or the default value if not found
-     */
-    public static String getProperty(String key) {
+	 * Retrieves the value of the specified property key from the system properties. If
+	 * the property key is not found, the default value provided will be returned.
+	 * @param key the key of the property to retrieve
+	 * @return the value of the property, or the default value if not found
+	 */
+	public static String getProperty(String key) {
 		return getProperty(key, null, "");
 	}
 
 	/**
-     * Retrieves the value of the specified property key from the system properties.
-     * If the property key is not found, the default value is returned.
-     * 
-     * @param key the property key to retrieve the value for
-     * @param defaultValue the default value to return if the property key is not found
-     * @return the value of the property key if found, otherwise the default value
-     */
-    public static String getProperty(String key, String defaultValue) {
+	 * Retrieves the value of the specified property key from the system properties. If
+	 * the property key is not found, the default value is returned.
+	 * @param key the property key to retrieve the value for
+	 * @param defaultValue the default value to return if the property key is not found
+	 * @return the value of the property key if found, otherwise the default value
+	 */
+	public static String getProperty(String key, String defaultValue) {
 		return getProperty(key, defaultValue, "");
 	}
 
@@ -229,13 +228,13 @@ public abstract class SystemPropertyUtils {
 	}
 
 	/**
-     * Finds the end index of a placeholder in the given character sequence starting from the specified index.
-     * 
-     * @param buf the character sequence to search in
-     * @param startIndex the starting index to search from
-     * @return the end index of the placeholder, or -1 if not found
-     */
-    private static int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
+	 * Finds the end index of a placeholder in the given character sequence starting from
+	 * the specified index.
+	 * @param buf the character sequence to search in
+	 * @param startIndex the starting index to search from
+	 * @return the end index of the placeholder, or -1 if not found
+	 */
+	private static int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
 		int index = startIndex + PLACEHOLDER_PREFIX.length();
 		int withinNestedPlaceholder = 0;
 		while (index < buf.length()) {
@@ -260,14 +259,13 @@ public abstract class SystemPropertyUtils {
 	}
 
 	/**
-     * Checks if a substring matches a portion of a given string.
-     * 
-     * @param str the string to check
-     * @param index the starting index in the string to check from
-     * @param substring the substring to match
-     * @return true if the substring matches the portion of the string, false otherwise
-     */
-    private static boolean substringMatch(CharSequence str, int index, CharSequence substring) {
+	 * Checks if a substring matches a portion of a given string.
+	 * @param str the string to check
+	 * @param index the starting index in the string to check from
+	 * @param substring the substring to match
+	 * @return true if the substring matches the portion of the string, false otherwise
+	 */
+	private static boolean substringMatch(CharSequence str, int index, CharSequence substring) {
 		for (int j = 0; j < substring.length(); j++) {
 			int i = index + j;
 			if (i >= str.length() || str.charAt(i) != substring.charAt(j)) {

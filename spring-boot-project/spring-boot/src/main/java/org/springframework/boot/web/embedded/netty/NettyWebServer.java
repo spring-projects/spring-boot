@@ -120,20 +120,18 @@ public class NettyWebServer implements WebServer {
 	}
 
 	/**
-     * Sets the list of NettyRouteProviders for this NettyWebServer.
-     * 
-     * @param routeProviders the list of NettyRouteProviders to set
-     */
-    public void setRouteProviders(List<NettyRouteProvider> routeProviders) {
+	 * Sets the list of NettyRouteProviders for this NettyWebServer.
+	 * @param routeProviders the list of NettyRouteProviders to set
+	 */
+	public void setRouteProviders(List<NettyRouteProvider> routeProviders) {
 		this.routeProviders = routeProviders;
 	}
 
 	/**
-     * Starts the web server.
-     *
-     * @throws WebServerException if unable to start the server
-     */
-    @Override
+	 * Starts the web server.
+	 * @throws WebServerException if unable to start the server
+	 */
+	@Override
 	public void start() throws WebServerException {
 		if (this.disposableServer == null) {
 			try {
@@ -155,12 +153,11 @@ public class NettyWebServer implements WebServer {
 	}
 
 	/**
-     * Generates a message indicating the details of the Netty server startup.
-     *
-     * @param server the DisposableServer instance representing the Netty server
-     * @return a String message indicating the server details
-     */
-    private String getStartedOnMessage(DisposableServer server) {
+	 * Generates a message indicating the details of the Netty server startup.
+	 * @param server the DisposableServer instance representing the Netty server
+	 * @return a String message indicating the server details
+	 */
+	private String getStartedOnMessage(DisposableServer server) {
 		StringBuilder message = new StringBuilder();
 		tryAppend(message, "port %s", () -> server.port()
 				+ ((this.httpServer.configuration().sslProvider() != null) ? " (https)" : " (http)"));
@@ -169,22 +166,20 @@ public class NettyWebServer implements WebServer {
 	}
 
 	/**
-     * Returns the log message indicating that the server has started.
-     *
-     * @return the log message indicating that the server has started
-     */
-    protected String getStartedLogMessage() {
+	 * Returns the log message indicating that the server has started.
+	 * @return the log message indicating that the server has started
+	 */
+	protected String getStartedLogMessage() {
 		return getStartedOnMessage(this.disposableServer);
 	}
 
 	/**
-     * Tries to append a formatted message to the given StringBuilder.
-     * 
-     * @param message the StringBuilder to append the message to
-     * @param format the format string for the message
-     * @param supplier a supplier that provides the value for the message
-     */
-    private void tryAppend(StringBuilder message, String format, Supplier<Object> supplier) {
+	 * Tries to append a formatted message to the given StringBuilder.
+	 * @param message the StringBuilder to append the message to
+	 * @param format the format string for the message
+	 * @param supplier a supplier that provides the value for the message
+	 */
+	private void tryAppend(StringBuilder message, String format, Supplier<Object> supplier) {
 		try {
 			Object value = supplier.get();
 			message.append((!message.isEmpty()) ? " " : "");
@@ -196,11 +191,10 @@ public class NettyWebServer implements WebServer {
 	}
 
 	/**
-     * Starts the HTTP server.
-     *
-     * @return the DisposableServer representing the running server
-     */
-    DisposableServer startHttpServer() {
+	 * Starts the HTTP server.
+	 * @return the DisposableServer representing the running server
+	 */
+	DisposableServer startHttpServer() {
 		HttpServer server = this.httpServer;
 		if (this.routeProviders.isEmpty()) {
 			server = server.handle(this.handler);
@@ -220,12 +214,11 @@ public class NettyWebServer implements WebServer {
 	}
 
 	/**
-     * Checks if the permission is denied based on the given bind exception cause.
-     *
-     * @param bindExceptionCause the cause of the bind exception
-     * @return true if the permission is denied, false otherwise
-     */
-    private boolean isPermissionDenied(Throwable bindExceptionCause) {
+	 * Checks if the permission is denied based on the given bind exception cause.
+	 * @param bindExceptionCause the cause of the bind exception
+	 * @return true if the permission is denied, false otherwise
+	 */
+	private boolean isPermissionDenied(Throwable bindExceptionCause) {
 		try {
 			if (bindExceptionCause instanceof NativeIoException nativeException) {
 				return nativeException.expectedErr() == ERROR_NO_EACCES;
@@ -237,11 +230,10 @@ public class NettyWebServer implements WebServer {
 	}
 
 	/**
-     * Shuts down the web server gracefully.
-     * 
-     * @param callback the callback to be invoked when the shutdown is complete
-     */
-    @Override
+	 * Shuts down the web server gracefully.
+	 * @param callback the callback to be invoked when the shutdown is complete
+	 */
+	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
 		if (this.gracefulShutdown == null) {
 			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
@@ -251,11 +243,10 @@ public class NettyWebServer implements WebServer {
 	}
 
 	/**
-     * Applies the route providers to the given HttpServerRoutes object.
-     * 
-     * @param routes the HttpServerRoutes object to apply the route providers to
-     */
-    private void applyRouteProviders(HttpServerRoutes routes) {
+	 * Applies the route providers to the given HttpServerRoutes object.
+	 * @param routes the HttpServerRoutes object to apply the route providers to
+	 */
+	private void applyRouteProviders(HttpServerRoutes routes) {
 		for (NettyRouteProvider provider : this.routeProviders) {
 			routes = provider.apply(routes);
 		}
@@ -263,12 +254,11 @@ public class NettyWebServer implements WebServer {
 	}
 
 	/**
-     * Starts a daemon await thread for the given disposable server.
-     * The await thread waits for the server to be disposed before terminating.
-     *
-     * @param disposableServer the disposable server to wait for
-     */
-    private void startDaemonAwaitThread(DisposableServer disposableServer) {
+	 * Starts a daemon await thread for the given disposable server. The await thread
+	 * waits for the server to be disposed before terminating.
+	 * @param disposableServer the disposable server to wait for
+	 */
+	private void startDaemonAwaitThread(DisposableServer disposableServer) {
 		Thread awaitThread = new Thread("server") {
 
 			@Override
@@ -283,11 +273,10 @@ public class NettyWebServer implements WebServer {
 	}
 
 	/**
-     * Stops the web server.
-     *
-     * @throws WebServerException if an error occurs while stopping the web server
-     */
-    @Override
+	 * Stops the web server.
+	 * @throws WebServerException if an error occurs while stopping the web server
+	 */
+	@Override
 	public void stop() throws WebServerException {
 		if (this.disposableServer != null) {
 			if (this.gracefulShutdown != null) {
@@ -309,11 +298,10 @@ public class NettyWebServer implements WebServer {
 	}
 
 	/**
-     * Returns the port number on which the server is listening.
-     * 
-     * @return the port number if the server is running, -1 otherwise
-     */
-    @Override
+	 * Returns the port number on which the server is listening.
+	 * @return the port number if the server is running, -1 otherwise
+	 */
+	@Override
 	public int getPort() {
 		if (this.disposableServer != null) {
 			try {

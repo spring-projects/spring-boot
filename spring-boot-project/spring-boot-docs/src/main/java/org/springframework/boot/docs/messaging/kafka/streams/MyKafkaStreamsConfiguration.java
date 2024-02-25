@@ -35,13 +35,13 @@ import org.springframework.kafka.support.serializer.JsonSerde;
 public class MyKafkaStreamsConfiguration {
 
 	/**
-     * Creates a KStream that reads from the "ks1In" topic, applies the uppercaseValue function to each record,
-     * and writes the transformed records to the "ks1Out" topic.
-     *
-     * @param streamsBuilder the StreamsBuilder object used to build the Kafka Streams topology
-     * @return the KStream object representing the transformed stream
-     */
-    @Bean
+	 * Creates a KStream that reads from the "ks1In" topic, applies the uppercaseValue
+	 * function to each record, and writes the transformed records to the "ks1Out" topic.
+	 * @param streamsBuilder the StreamsBuilder object used to build the Kafka Streams
+	 * topology
+	 * @return the KStream object representing the transformed stream
+	 */
+	@Bean
 	public KStream<Integer, String> kStream(StreamsBuilder streamsBuilder) {
 		KStream<Integer, String> stream = streamsBuilder.stream("ks1In");
 		stream.map(this::uppercaseValue).to("ks1Out", Produced.with(Serdes.Integer(), new JsonSerde<>()));
@@ -49,13 +49,12 @@ public class MyKafkaStreamsConfiguration {
 	}
 
 	/**
-     * Converts the value of a KeyValue pair to uppercase.
-     *
-     * @param key   the key of the KeyValue pair
-     * @param value the value of the KeyValue pair
-     * @return a new KeyValue pair with the same key and the value converted to uppercase
-     */
-    private KeyValue<Integer, String> uppercaseValue(Integer key, String value) {
+	 * Converts the value of a KeyValue pair to uppercase.
+	 * @param key the key of the KeyValue pair
+	 * @param value the value of the KeyValue pair
+	 * @return a new KeyValue pair with the same key and the value converted to uppercase
+	 */
+	private KeyValue<Integer, String> uppercaseValue(Integer key, String value) {
 		return new KeyValue<>(key, value.toUpperCase());
 	}
 

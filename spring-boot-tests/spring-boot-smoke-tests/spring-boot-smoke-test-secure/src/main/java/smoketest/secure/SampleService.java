@@ -27,32 +27,29 @@ import org.springframework.stereotype.Service;
 public class SampleService {
 
 	/**
-     * This method is secured and can only be accessed by users with the "ROLE_USER" role.
-     * It returns a string "Hello Security".
-     *
-     * @return the string "Hello Security"
-     */
-    @Secured("ROLE_USER")
+	 * This method is secured and can only be accessed by users with the "ROLE_USER" role.
+	 * It returns a string "Hello Security".
+	 * @return the string "Hello Security"
+	 */
+	@Secured("ROLE_USER")
 	public String secure() {
 		return "Hello Security";
 	}
 
 	/**
-     * This method is authorized to be accessed by any user.
-     * 
-     * @return The string "Hello World"
-     */
-    @PreAuthorize("true")
+	 * This method is authorized to be accessed by any user.
+	 * @return The string "Hello World"
+	 */
+	@PreAuthorize("true")
 	public String authorized() {
 		return "Hello World";
 	}
 
 	/**
-     * This method is used to deny access and return a goodbye message.
-     * 
-     * @return A string representing the goodbye message.
-     */
-    @PreAuthorize("false")
+	 * This method is used to deny access and return a goodbye message.
+	 * @return A string representing the goodbye message.
+	 */
+	@PreAuthorize("false")
 	public String denied() {
 		return "Goodbye World";
 	}

@@ -49,37 +49,39 @@ import org.springframework.context.annotation.Bean;
 public class JettyMetricsAutoConfiguration {
 
 	/**
-     * Creates a JettyServerThreadPoolMetricsBinder bean if there is no existing bean of type JettyServerThreadPoolMetrics or JettyServerThreadPoolMetricsBinder.
-     * 
-     * @param meterRegistry the MeterRegistry bean used for creating metrics
-     * @return the JettyServerThreadPoolMetricsBinder bean
-     */
-    @Bean
+	 * Creates a JettyServerThreadPoolMetricsBinder bean if there is no existing bean of
+	 * type JettyServerThreadPoolMetrics or JettyServerThreadPoolMetricsBinder.
+	 * @param meterRegistry the MeterRegistry bean used for creating metrics
+	 * @return the JettyServerThreadPoolMetricsBinder bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean({ JettyServerThreadPoolMetrics.class, JettyServerThreadPoolMetricsBinder.class })
 	public JettyServerThreadPoolMetricsBinder jettyServerThreadPoolMetricsBinder(MeterRegistry meterRegistry) {
 		return new JettyServerThreadPoolMetricsBinder(meterRegistry);
 	}
 
 	/**
-     * Creates a new instance of {@link JettyConnectionMetricsBinder} if no bean of type {@link JettyConnectionMetrics} or {@link JettyConnectionMetricsBinder} is present.
-     * 
-     * @param meterRegistry the {@link MeterRegistry} to be used for creating the {@link JettyConnectionMetricsBinder}
-     * @return a new instance of {@link JettyConnectionMetricsBinder}
-     */
-    @Bean
+	 * Creates a new instance of {@link JettyConnectionMetricsBinder} if no bean of type
+	 * {@link JettyConnectionMetrics} or {@link JettyConnectionMetricsBinder} is present.
+	 * @param meterRegistry the {@link MeterRegistry} to be used for creating the
+	 * {@link JettyConnectionMetricsBinder}
+	 * @return a new instance of {@link JettyConnectionMetricsBinder}
+	 */
+	@Bean
 	@ConditionalOnMissingBean({ JettyConnectionMetrics.class, JettyConnectionMetricsBinder.class })
 	public JettyConnectionMetricsBinder jettyConnectionMetricsBinder(MeterRegistry meterRegistry) {
 		return new JettyConnectionMetricsBinder(meterRegistry);
 	}
 
 	/**
-     * Creates a JettySslHandshakeMetricsBinder bean if no existing beans of type JettySslHandshakeMetrics and JettySslHandshakeMetricsBinder are found,
-     * and if the server.ssl.enabled property is set to true.
-     * 
-     * @param meterRegistry the MeterRegistry bean used for creating the JettySslHandshakeMetricsBinder bean
-     * @return the JettySslHandshakeMetricsBinder bean
-     */
-    @Bean
+	 * Creates a JettySslHandshakeMetricsBinder bean if no existing beans of type
+	 * JettySslHandshakeMetrics and JettySslHandshakeMetricsBinder are found, and if the
+	 * server.ssl.enabled property is set to true.
+	 * @param meterRegistry the MeterRegistry bean used for creating the
+	 * JettySslHandshakeMetricsBinder bean
+	 * @return the JettySslHandshakeMetricsBinder bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean({ JettySslHandshakeMetrics.class, JettySslHandshakeMetricsBinder.class })
 	@ConditionalOnProperty(name = "server.ssl.enabled", havingValue = "true")
 	public JettySslHandshakeMetricsBinder jettySslHandshakeMetricsBinder(MeterRegistry meterRegistry) {

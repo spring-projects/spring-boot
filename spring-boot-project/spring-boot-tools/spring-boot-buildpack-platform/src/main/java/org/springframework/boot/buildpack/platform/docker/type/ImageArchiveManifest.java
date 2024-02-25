@@ -38,11 +38,10 @@ public class ImageArchiveManifest extends MappedObject {
 	private final List<ManifestEntry> entries = new ArrayList<>();
 
 	/**
-     * Constructs a new ImageArchiveManifest object from a JsonNode.
-     * 
-     * @param node the JsonNode representing the image archive manifest
-     */
-    protected ImageArchiveManifest(JsonNode node) {
+	 * Constructs a new ImageArchiveManifest object from a JsonNode.
+	 * @param node the JsonNode representing the image archive manifest
+	 */
+	protected ImageArchiveManifest(JsonNode node) {
 		super(node, MethodHandles.lookup());
 		getNode().elements().forEachRemaining((element) -> this.entries.add(ManifestEntry.of(element)));
 	}
@@ -66,18 +65,17 @@ public class ImageArchiveManifest extends MappedObject {
 	}
 
 	/**
-     * ManifestEntry class.
-     */
-    public static class ManifestEntry extends MappedObject {
+	 * ManifestEntry class.
+	 */
+	public static class ManifestEntry extends MappedObject {
 
 		private final List<String> layers;
 
 		/**
-         * Constructs a new ManifestEntry object from the given JSON node.
-         * 
-         * @param node the JSON node representing the manifest entry
-         */
-        protected ManifestEntry(JsonNode node) {
+		 * Constructs a new ManifestEntry object from the given JSON node.
+		 * @param node the JSON node representing the manifest entry
+		 */
+		protected ManifestEntry(JsonNode node) {
 			super(node, MethodHandles.lookup());
 			this.layers = extractLayers();
 		}
@@ -91,21 +89,20 @@ public class ImageArchiveManifest extends MappedObject {
 		}
 
 		/**
-         * Creates a new ManifestEntry object from the given JSON node.
-         * 
-         * @param node the JSON node representing the manifest entry
-         * @return a new ManifestEntry object
-         */
-        static ManifestEntry of(JsonNode node) {
+		 * Creates a new ManifestEntry object from the given JSON node.
+		 * @param node the JSON node representing the manifest entry
+		 * @return a new ManifestEntry object
+		 */
+		static ManifestEntry of(JsonNode node) {
 			return new ManifestEntry(node);
 		}
 
 		/**
-         * Extracts the layers from the ManifestEntry.
-         * 
-         * @return the list of layers extracted from the ManifestEntry, or an empty list if no layers are found
-         */
-        @SuppressWarnings("unchecked")
+		 * Extracts the layers from the ManifestEntry.
+		 * @return the list of layers extracted from the ManifestEntry, or an empty list
+		 * if no layers are found
+		 */
+		@SuppressWarnings("unchecked")
 		private List<String> extractLayers() {
 			List<String> layers = valueAt("/Layers", List.class);
 			if (layers == null) {

@@ -86,13 +86,15 @@ public final class AnnotatedClassFinder {
 	}
 
 	/**
-     * Scans the specified package and its parent packages to find a single class annotated with the specified annotation.
-     * 
-     * @param source the package to scan
-     * @return the class object of the annotated class found, or null if no annotated class is found
-     * @throws IllegalStateException if multiple annotated classes are found in the specified package
-     */
-    private Class<?> scanPackage(String source) {
+	 * Scans the specified package and its parent packages to find a single class
+	 * annotated with the specified annotation.
+	 * @param source the package to scan
+	 * @return the class object of the annotated class found, or null if no annotated
+	 * class is found
+	 * @throws IllegalStateException if multiple annotated classes are found in the
+	 * specified package
+	 */
+	private Class<?> scanPackage(String source) {
 		while (!source.isEmpty()) {
 			Set<BeanDefinition> components = this.scanner.findCandidateComponents(source);
 			if (!components.isEmpty()) {
@@ -106,12 +108,12 @@ public final class AnnotatedClassFinder {
 	}
 
 	/**
-     * Returns the parent package of the given source package.
-     * 
-     * @param sourcePackage the source package for which to find the parent package
-     * @return the parent package of the source package, or an empty string if the source package has no parent
-     */
-    private String getParentPackage(String sourcePackage) {
+	 * Returns the parent package of the given source package.
+	 * @param sourcePackage the source package for which to find the parent package
+	 * @return the parent package of the source package, or an empty string if the source
+	 * package has no parent
+	 */
+	private String getParentPackage(String sourcePackage) {
 		int lastDot = sourcePackage.lastIndexOf('.');
 		return (lastDot != -1) ? sourcePackage.substring(0, lastDot) : "";
 	}
@@ -124,22 +126,21 @@ public final class AnnotatedClassFinder {
 		private final int maxSize;
 
 		/**
-         * Constructs a new Cache object with the specified maximum size.
-         * 
-         * @param maxSize the maximum size of the cache
-         */
-        Cache(int maxSize) {
+		 * Constructs a new Cache object with the specified maximum size.
+		 * @param maxSize the maximum size of the cache
+		 */
+		Cache(int maxSize) {
 			super(16, 0.75f, true);
 			this.maxSize = maxSize;
 		}
 
 		/**
-         * Removes the eldest entry from the cache if the cache size exceeds the maximum size.
-         * 
-         * @param eldest the eldest entry in the cache
-         * @return true if the eldest entry was removed, false otherwise
-         */
-        @Override
+		 * Removes the eldest entry from the cache if the cache size exceeds the maximum
+		 * size.
+		 * @param eldest the eldest entry in the cache
+		 * @return true if the eldest entry was removed, false otherwise
+		 */
+		@Override
 		protected boolean removeEldestEntry(Map.Entry<String, Class<?>> eldest) {
 			return size() > this.maxSize;
 		}

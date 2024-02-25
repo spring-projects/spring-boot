@@ -33,20 +33,21 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 class FreeMarkerNonWebConfiguration extends AbstractFreeMarkerConfiguration {
 
 	/**
-     * Constructs a new FreeMarkerNonWebConfiguration object with the specified properties.
-     * 
-     * @param properties the properties to be used for configuring the FreeMarkerNonWebConfiguration
-     */
-    FreeMarkerNonWebConfiguration(FreeMarkerProperties properties) {
+	 * Constructs a new FreeMarkerNonWebConfiguration object with the specified
+	 * properties.
+	 * @param properties the properties to be used for configuring the
+	 * FreeMarkerNonWebConfiguration
+	 */
+	FreeMarkerNonWebConfiguration(FreeMarkerProperties properties) {
 		super(properties);
 	}
 
 	/**
-     * Creates a FreeMarkerConfigurationFactoryBean if no other bean of the same type is present in the application context.
-     * 
-     * @return the FreeMarkerConfigurationFactoryBean instance
-     */
-    @Bean
+	 * Creates a FreeMarkerConfigurationFactoryBean if no other bean of the same type is
+	 * present in the application context.
+	 * @return the FreeMarkerConfigurationFactoryBean instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	FreeMarkerConfigurationFactoryBean freeMarkerConfiguration() {
 		FreeMarkerConfigurationFactoryBean freeMarkerFactoryBean = new FreeMarkerConfigurationFactoryBean();

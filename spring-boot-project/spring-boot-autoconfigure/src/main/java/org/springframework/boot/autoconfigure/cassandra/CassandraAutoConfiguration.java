@@ -93,36 +93,40 @@ public class CassandraAutoConfiguration {
 	private final CassandraProperties properties;
 
 	/**
-     * Constructs a new CassandraAutoConfiguration object with the specified CassandraProperties.
-     *
-     * @param properties the properties used for configuring CassandraAutoConfiguration
-     */
-    CassandraAutoConfiguration(CassandraProperties properties) {
+	 * Constructs a new CassandraAutoConfiguration object with the specified
+	 * CassandraProperties.
+	 * @param properties the properties used for configuring CassandraAutoConfiguration
+	 */
+	CassandraAutoConfiguration(CassandraProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Creates a new instance of {@link PropertiesCassandraConnectionDetails} if there is no existing bean of type {@link CassandraConnectionDetails}.
-     * 
-     * This method is annotated with {@link ConditionalOnMissingBean} to ensure that it is only executed if there is no other bean of type {@link CassandraConnectionDetails} present in the application context.
-     * 
-     * The created instance of {@link PropertiesCassandraConnectionDetails} is initialized with the properties provided by the {@link Properties} object passed as a parameter to this method.
-     * 
-     * @return a new instance of {@link PropertiesCassandraConnectionDetails} initialized with the properties provided by the {@link Properties} object
-     */
-    @Bean
+	 * Creates a new instance of {@link PropertiesCassandraConnectionDetails} if there is
+	 * no existing bean of type {@link CassandraConnectionDetails}.
+	 *
+	 * This method is annotated with {@link ConditionalOnMissingBean} to ensure that it is
+	 * only executed if there is no other bean of type {@link CassandraConnectionDetails}
+	 * present in the application context.
+	 *
+	 * The created instance of {@link PropertiesCassandraConnectionDetails} is initialized
+	 * with the properties provided by the {@link Properties} object passed as a parameter
+	 * to this method.
+	 * @return a new instance of {@link PropertiesCassandraConnectionDetails} initialized
+	 * with the properties provided by the {@link Properties} object
+	 */
+	@Bean
 	@ConditionalOnMissingBean(CassandraConnectionDetails.class)
 	PropertiesCassandraConnectionDetails cassandraConnectionDetails() {
 		return new PropertiesCassandraConnectionDetails(this.properties);
 	}
 
 	/**
-     * Creates a Cassandra session using the provided CqlSessionBuilder.
-     * 
-     * @param cqlSessionBuilder the CqlSessionBuilder used to build the session
-     * @return the created Cassandra session
-     */
-    @Bean
+	 * Creates a Cassandra session using the provided CqlSessionBuilder.
+	 * @param cqlSessionBuilder the CqlSessionBuilder used to build the session
+	 * @return the created Cassandra session
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@Lazy
 	public CqlSession cassandraSession(CqlSessionBuilder cqlSessionBuilder) {
@@ -130,17 +134,20 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link CqlSessionBuilder} with the provided configurations.
-     * If a bean of type {@link CqlSessionBuilder} is already present, this method will not be invoked.
-     * The scope of the created bean is set to prototype.
-     * 
-     * @param driverConfigLoader The {@link DriverConfigLoader} to be used for loading the driver configuration.
-     * @param connectionDetails The {@link CassandraConnectionDetails} containing the connection details for Cassandra.
-     * @param builderCustomizers The {@link CqlSessionBuilderCustomizer} objects to customize the {@link CqlSessionBuilder}.
-     * @param sslBundles The {@link SslBundles} containing the SSL bundles for configuring SSL.
-     * @return The created {@link CqlSessionBuilder} instance.
-     */
-    @Bean
+	 * Creates a new instance of {@link CqlSessionBuilder} with the provided
+	 * configurations. If a bean of type {@link CqlSessionBuilder} is already present,
+	 * this method will not be invoked. The scope of the created bean is set to prototype.
+	 * @param driverConfigLoader The {@link DriverConfigLoader} to be used for loading the
+	 * driver configuration.
+	 * @param connectionDetails The {@link CassandraConnectionDetails} containing the
+	 * connection details for Cassandra.
+	 * @param builderCustomizers The {@link CqlSessionBuilderCustomizer} objects to
+	 * customize the {@link CqlSessionBuilder}.
+	 * @param sslBundles The {@link SslBundles} containing the SSL bundles for configuring
+	 * SSL.
+	 * @return The created {@link CqlSessionBuilder} instance.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@Scope("prototype")
 	public CqlSessionBuilder cassandraSessionBuilder(DriverConfigLoader driverConfigLoader,
@@ -155,12 +162,13 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Configures authentication for the CqlSessionBuilder using the provided CassandraConnectionDetails.
-     * 
-     * @param builder The CqlSessionBuilder to configure authentication for.
-     * @param connectionDetails The CassandraConnectionDetails containing the authentication details.
-     */
-    private void configureAuthentication(CqlSessionBuilder builder, CassandraConnectionDetails connectionDetails) {
+	 * Configures authentication for the CqlSessionBuilder using the provided
+	 * CassandraConnectionDetails.
+	 * @param builder The CqlSessionBuilder to configure authentication for.
+	 * @param connectionDetails The CassandraConnectionDetails containing the
+	 * authentication details.
+	 */
+	private void configureAuthentication(CqlSessionBuilder builder, CassandraConnectionDetails connectionDetails) {
 		String username = connectionDetails.getUsername();
 		if (username != null) {
 			builder.withAuthCredentials(username, connectionDetails.getPassword());
@@ -168,12 +176,11 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Configures SSL for the CqlSessionBuilder.
-     * 
-     * @param builder the CqlSessionBuilder to configure
-     * @param sslBundles the SslBundles containing SSL configurations
-     */
-    private void configureSsl(CqlSessionBuilder builder, SslBundles sslBundles) {
+	 * Configures SSL for the CqlSessionBuilder.
+	 * @param builder the CqlSessionBuilder to configure
+	 * @param sslBundles the SslBundles containing SSL configurations
+	 */
+	private void configureSsl(CqlSessionBuilder builder, SslBundles sslBundles) {
 		Ssl properties = this.properties.getSsl();
 		if (properties == null || !properties.isEnabled()) {
 			return;
@@ -188,12 +195,12 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Configures the default SSL context for the CqlSessionBuilder.
-     * 
-     * @param builder the CqlSessionBuilder to configure
-     * @throws IllegalStateException if the SSL default context for Cassandra could not be set up
-     */
-    private void configureDefaultSslContext(CqlSessionBuilder builder) {
+	 * Configures the default SSL context for the CqlSessionBuilder.
+	 * @param builder the CqlSessionBuilder to configure
+	 * @throws IllegalStateException if the SSL default context for Cassandra could not be
+	 * set up
+	 */
+	private void configureDefaultSslContext(CqlSessionBuilder builder) {
 		try {
 			builder.withSslContext(SSLContext.getDefault());
 		}
@@ -203,13 +210,13 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Configures SSL for the CqlSessionBuilder using the provided SslBundle.
-     * 
-     * @param builder the CqlSessionBuilder to configure
-     * @param sslBundle the SslBundle containing SSL options and context
-     * @throws IllegalArgumentException if SSL protocol options are specified with Cassandra
-     */
-    private void configureSsl(CqlSessionBuilder builder, SslBundle sslBundle) {
+	 * Configures SSL for the CqlSessionBuilder using the provided SslBundle.
+	 * @param builder the CqlSessionBuilder to configure
+	 * @param sslBundle the SslBundle containing SSL options and context
+	 * @throws IllegalArgumentException if SSL protocol options are specified with
+	 * Cassandra
+	 */
+	private void configureSsl(CqlSessionBuilder builder, SslBundle sslBundle) {
 		SslOptions options = sslBundle.getOptions();
 		Assert.state(options.getEnabledProtocols() == null, "SSL protocol options cannot be specified with Cassandra");
 		builder
@@ -217,14 +224,16 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Creates a {@link DriverConfigLoader} bean for Cassandra driver configuration.
-     * This bean is conditional on the absence of any other bean of the same type.
-     * 
-     * @param connectionDetails the {@link CassandraConnectionDetails} object containing the Cassandra connection details
-     * @param builderCustomizers the {@link ObjectProvider} of {@link DriverConfigLoaderBuilderCustomizer} objects for customizing the driver config loader builder
-     * @return the created {@link DriverConfigLoader} bean
-     */
-    @Bean(destroyMethod = "")
+	 * Creates a {@link DriverConfigLoader} bean for Cassandra driver configuration. This
+	 * bean is conditional on the absence of any other bean of the same type.
+	 * @param connectionDetails the {@link CassandraConnectionDetails} object containing
+	 * the Cassandra connection details
+	 * @param builderCustomizers the {@link ObjectProvider} of
+	 * {@link DriverConfigLoaderBuilderCustomizer} objects for customizing the driver
+	 * config loader builder
+	 * @return the created {@link DriverConfigLoader} bean
+	 */
+	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
 	public DriverConfigLoader cassandraDriverConfigLoader(CassandraConnectionDetails connectionDetails,
 			ObjectProvider<DriverConfigLoaderBuilderCustomizer> builderCustomizers) {
@@ -235,12 +244,12 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Configures the Cassandra connection details and returns the corresponding configuration object.
-     * 
-     * @param connectionDetails The details of the Cassandra connection.
-     * @return The configuration object for the Cassandra connection.
-     */
-    private Config cassandraConfiguration(CassandraConnectionDetails connectionDetails) {
+	 * Configures the Cassandra connection details and returns the corresponding
+	 * configuration object.
+	 * @param connectionDetails The details of the Cassandra connection.
+	 * @return The configuration object for the Cassandra connection.
+	 */
+	private Config cassandraConfiguration(CassandraConnectionDetails connectionDetails) {
 		ConfigFactory.invalidateCaches();
 		Config config = ConfigFactory.defaultOverrides();
 		config = config.withFallback(mapConfig(connectionDetails));
@@ -253,13 +262,12 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Loads the configuration from the given resource.
-     *
-     * @param resource the resource containing the configuration
-     * @return the loaded configuration
-     * @throws IllegalStateException if failed to load the configuration from the resource
-     */
-    private Config loadConfig(Resource resource) {
+	 * Loads the configuration from the given resource.
+	 * @param resource the resource containing the configuration
+	 * @return the loaded configuration
+	 * @throws IllegalStateException if failed to load the configuration from the resource
+	 */
+	private Config loadConfig(Resource resource) {
 		try {
 			return ConfigFactory.parseURL(resource.getURL());
 		}
@@ -269,12 +277,11 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Maps the given Cassandra connection details to a Config object.
-     * 
-     * @param connectionDetails the Cassandra connection details
-     * @return the Config object with the mapped options
-     */
-    private Config mapConfig(CassandraConnectionDetails connectionDetails) {
+	 * Maps the given Cassandra connection details to a Config object.
+	 * @param connectionDetails the Cassandra connection details
+	 * @return the Config object with the mapped options
+	 */
+	private Config mapConfig(CassandraConnectionDetails connectionDetails) {
 		CassandraDriverOptions options = new CassandraDriverOptions();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.properties.getSessionName())
@@ -298,11 +305,11 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Maps the connection options from the given {@link CassandraDriverOptions} object.
-     * 
-     * @param options the {@link CassandraDriverOptions} object containing the connection options
-     */
-    private void mapConnectionOptions(CassandraDriverOptions options) {
+	 * Maps the connection options from the given {@link CassandraDriverOptions} object.
+	 * @param options the {@link CassandraDriverOptions} object containing the connection
+	 * options
+	 */
+	private void mapConnectionOptions(CassandraDriverOptions options) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Connection connectionProperties = this.properties.getConnection();
 		map.from(connectionProperties::getConnectTimeout)
@@ -314,11 +321,11 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Maps the pooling options from the {@link CassandraProperties} to the {@link CassandraDriverOptions}.
-     * 
-     * @param options the {@link CassandraDriverOptions} to map the pooling options to
-     */
-    private void mapPoolingOptions(CassandraDriverOptions options) {
+	 * Maps the pooling options from the {@link CassandraProperties} to the
+	 * {@link CassandraDriverOptions}.
+	 * @param options the {@link CassandraDriverOptions} to map the pooling options to
+	 */
+	private void mapPoolingOptions(CassandraDriverOptions options) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		CassandraProperties.Pool poolProperties = this.properties.getPool();
 		map.from(poolProperties::getIdleTimeout)
@@ -330,11 +337,10 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Maps the request options from the properties to the Cassandra driver options.
-     * 
-     * @param options the Cassandra driver options to map the request options to
-     */
-    private void mapRequestOptions(CassandraDriverOptions options) {
+	 * Maps the request options from the properties to the Cassandra driver options.
+	 * @param options the Cassandra driver options to map the request options to
+	 */
+	private void mapRequestOptions(CassandraDriverOptions options) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Request requestProperties = this.properties.getRequest();
 		map.from(requestProperties::getTimeout)
@@ -364,11 +370,12 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Maps the control connection options from the properties to the provided Cassandra driver options.
-     * 
-     * @param options the Cassandra driver options to map the control connection options to
-     */
-    private void mapControlConnectionOptions(CassandraDriverOptions options) {
+	 * Maps the control connection options from the properties to the provided Cassandra
+	 * driver options.
+	 * @param options the Cassandra driver options to map the control connection options
+	 * to
+	 */
+	private void mapControlConnectionOptions(CassandraDriverOptions options) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Controlconnection controlProperties = this.properties.getControlconnection();
 		map.from(controlProperties::getTimeout)
@@ -377,65 +384,63 @@ public class CassandraAutoConfiguration {
 	}
 
 	/**
-     * Maps the contact points of the Cassandra connection details to a list of strings in the format "host:port".
-     * 
-     * @param connectionDetails the Cassandra connection details containing the contact points
-     * @return a list of strings representing the contact points in the format "host:port"
-     */
-    private List<String> mapContactPoints(CassandraConnectionDetails connectionDetails) {
+	 * Maps the contact points of the Cassandra connection details to a list of strings in
+	 * the format "host:port".
+	 * @param connectionDetails the Cassandra connection details containing the contact
+	 * points
+	 * @return a list of strings representing the contact points in the format "host:port"
+	 */
+	private List<String> mapContactPoints(CassandraConnectionDetails connectionDetails) {
 		return connectionDetails.getContactPoints().stream().map((node) -> node.host() + ":" + node.port()).toList();
 	}
 
 	/**
-     * CassandraDriverOptions class.
-     */
-    private static final class CassandraDriverOptions {
+	 * CassandraDriverOptions class.
+	 */
+	private static final class CassandraDriverOptions {
 
 		private final Map<String, String> options = new LinkedHashMap<>();
 
 		/**
-         * Adds a driver option with the specified value to the CassandraDriverOptions.
-         * 
-         * @param option the driver option to add
-         * @param value the value of the driver option
-         * @return the updated CassandraDriverOptions object
-         */
-        private CassandraDriverOptions add(DriverOption option, String value) {
+		 * Adds a driver option with the specified value to the CassandraDriverOptions.
+		 * @param option the driver option to add
+		 * @param value the value of the driver option
+		 * @return the updated CassandraDriverOptions object
+		 */
+		private CassandraDriverOptions add(DriverOption option, String value) {
 			String key = createKeyFor(option);
 			this.options.put(key, value);
 			return this;
 		}
 
 		/**
-         * Adds a driver option with an integer value to the CassandraDriverOptions.
-         * 
-         * @param option the driver option to add
-         * @param value the integer value of the driver option
-         * @return the updated CassandraDriverOptions object
-         */
-        private CassandraDriverOptions add(DriverOption option, int value) {
+		 * Adds a driver option with an integer value to the CassandraDriverOptions.
+		 * @param option the driver option to add
+		 * @param value the integer value of the driver option
+		 * @return the updated CassandraDriverOptions object
+		 */
+		private CassandraDriverOptions add(DriverOption option, int value) {
 			return add(option, String.valueOf(value));
 		}
 
 		/**
-         * Adds a driver option with an enum value to the CassandraDriverOptions.
-         * 
-         * @param option the driver option to add
-         * @param value the enum value to add
-         * @return the updated CassandraDriverOptions
-         */
-        private CassandraDriverOptions add(DriverOption option, Enum<?> value) {
+		 * Adds a driver option with an enum value to the CassandraDriverOptions.
+		 * @param option the driver option to add
+		 * @param value the enum value to add
+		 * @return the updated CassandraDriverOptions
+		 */
+		private CassandraDriverOptions add(DriverOption option, Enum<?> value) {
 			return add(option, value.name());
 		}
 
 		/**
-         * Adds the specified option with the given values to the Cassandra driver options.
-         * 
-         * @param option the driver option to add
-         * @param values the list of values to associate with the option
-         * @return the updated CassandraDriverOptions object
-         */
-        private CassandraDriverOptions add(DriverOption option, List<String> values) {
+		 * Adds the specified option with the given values to the Cassandra driver
+		 * options.
+		 * @param option the driver option to add
+		 * @param values the list of values to associate with the option
+		 * @return the updated CassandraDriverOptions object
+		 */
+		private CassandraDriverOptions add(DriverOption option, List<String> values) {
 			for (int i = 0; i < values.size(); i++) {
 				this.options.put(String.format("%s.%s", createKeyFor(option), i), values.get(i));
 			}
@@ -443,21 +448,19 @@ public class CassandraAutoConfiguration {
 		}
 
 		/**
-         * Builds a Config object using the provided options.
-         * 
-         * @return the Config object representing the options
-         */
-        private Config build() {
+		 * Builds a Config object using the provided options.
+		 * @return the Config object representing the options
+		 */
+		private Config build() {
 			return ConfigFactory.parseMap(this.options, "Environment");
 		}
 
 		/**
-         * Creates a key for the given DriverOption.
-         * 
-         * @param option the DriverOption for which the key is to be created
-         * @return the key created for the given DriverOption
-         */
-        private static String createKeyFor(DriverOption option) {
+		 * Creates a key for the given DriverOption.
+		 * @param option the DriverOption for which the key is to be created
+		 * @return the key created for the given DriverOption
+		 */
+		private static String createKeyFor(DriverOption option) {
 			return String.format("%s.%s", DefaultDriverConfigLoader.DEFAULT_ROOT_PATH, option.getPath());
 		}
 
@@ -471,20 +474,20 @@ public class CassandraAutoConfiguration {
 		private final CassandraProperties properties;
 
 		/**
-         * Constructs a new instance of PropertiesCassandraConnectionDetails with the specified CassandraProperties.
-         *
-         * @param properties the CassandraProperties object containing the connection details
-         */
-        private PropertiesCassandraConnectionDetails(CassandraProperties properties) {
+		 * Constructs a new instance of PropertiesCassandraConnectionDetails with the
+		 * specified CassandraProperties.
+		 * @param properties the CassandraProperties object containing the connection
+		 * details
+		 */
+		private PropertiesCassandraConnectionDetails(CassandraProperties properties) {
 			this.properties = properties;
 		}
 
 		/**
-         * Returns a list of contact points for the Cassandra connection.
-         * 
-         * @return a list of contact points as Node objects
-         */
-        @Override
+		 * Returns a list of contact points for the Cassandra connection.
+		 * @return a list of contact points as Node objects
+		 */
+		@Override
 		public List<Node> getContactPoints() {
 			List<String> contactPoints = this.properties.getContactPoints();
 			return (contactPoints != null) ? contactPoints.stream().map(this::asNode).toList()
@@ -492,42 +495,38 @@ public class CassandraAutoConfiguration {
 		}
 
 		/**
-         * Returns the username associated with this PropertiesCassandraConnectionDetails.
-         *
-         * @return the username associated with this PropertiesCassandraConnectionDetails
-         */
-        @Override
+		 * Returns the username associated with this PropertiesCassandraConnectionDetails.
+		 * @return the username associated with this PropertiesCassandraConnectionDetails
+		 */
+		@Override
 		public String getUsername() {
 			return this.properties.getUsername();
 		}
 
 		/**
-         * Returns the password for the Cassandra connection.
-         *
-         * @return the password for the Cassandra connection
-         */
-        @Override
+		 * Returns the password for the Cassandra connection.
+		 * @return the password for the Cassandra connection
+		 */
+		@Override
 		public String getPassword() {
 			return this.properties.getPassword();
 		}
 
 		/**
-         * Returns the local datacenter for the Cassandra connection.
-         * 
-         * @return the local datacenter
-         */
-        @Override
+		 * Returns the local datacenter for the Cassandra connection.
+		 * @return the local datacenter
+		 */
+		@Override
 		public String getLocalDatacenter() {
 			return this.properties.getLocalDatacenter();
 		}
 
 		/**
-         * Converts a contact point string into a Node object.
-         * 
-         * @param contactPoint the contact point string to convert
-         * @return a Node object representing the contact point
-         */
-        private Node asNode(String contactPoint) {
+		 * Converts a contact point string into a Node object.
+		 * @param contactPoint the contact point string to convert
+		 * @return a Node object representing the contact point
+		 */
+		private Node asNode(String contactPoint) {
 			int i = contactPoint.lastIndexOf(':');
 			if (i >= 0) {
 				String portCandidate = contactPoint.substring(i + 1);
@@ -540,13 +539,12 @@ public class CassandraAutoConfiguration {
 		}
 
 		/**
-         * Converts a string value to an Integer representing a port number.
-         * 
-         * @param value the string value to be converted
-         * @return the Integer representation of the port number if it is within the valid range (1-65534), 
-         *         otherwise returns null
-         */
-        private Integer asPort(String value) {
+		 * Converts a string value to an Integer representing a port number.
+		 * @param value the string value to be converted
+		 * @return the Integer representation of the port number if it is within the valid
+		 * range (1-65534), otherwise returns null
+		 */
+		private Integer asPort(String value) {
 			try {
 				int i = Integer.parseInt(value);
 				return (i > 0 && i < 65535) ? i : null;

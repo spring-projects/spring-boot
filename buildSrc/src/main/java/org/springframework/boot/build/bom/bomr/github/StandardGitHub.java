@@ -39,24 +39,23 @@ final class StandardGitHub implements GitHub {
 	private final String password;
 
 	/**
-     * Constructs a new instance of the StandardGitHub class with the specified username and password.
-     * 
-     * @param username the username to authenticate with the GitHub API
-     * @param password the password to authenticate with the GitHub API
-     */
-    StandardGitHub(String username, String password) {
+	 * Constructs a new instance of the StandardGitHub class with the specified username
+	 * and password.
+	 * @param username the username to authenticate with the GitHub API
+	 * @param password the password to authenticate with the GitHub API
+	 */
+	StandardGitHub(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}
 
 	/**
-     * Retrieves a GitHub repository by providing the organization and repository name.
-     * 
-     * @param organization the organization name of the repository
-     * @param name the name of the repository
-     * @return the GitHubRepository object representing the requested repository
-     */
-    @Override
+	 * Retrieves a GitHub repository by providing the organization and repository name.
+	 * @param organization the organization name of the repository
+	 * @param name the name of the repository
+	 * @return the GitHubRepository object representing the requested repository
+	 */
+	@Override
 	public GitHubRepository getRepository(String organization, String name) {
 		RestTemplate restTemplate = new RestTemplate(
 				Collections.singletonList(new MappingJackson2HttpMessageConverter(new ObjectMapper())));

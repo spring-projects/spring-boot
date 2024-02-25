@@ -34,13 +34,12 @@ public class SampleController {
 	private CityService cityService;
 
 	/**
-     * Returns the name of the city "Bath" in the UK.
-     * 
-     * @return the name of the city "Bath"
-     * 
-     * @since 1.0
-     */
-    @GetMapping("/")
+	 * Returns the name of the city "Bath" in the UK.
+	 * @return the name of the city "Bath"
+	 *
+	 * @since 1.0
+	 */
+	@GetMapping("/")
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public String helloWorld() {

@@ -47,14 +47,14 @@ import org.springframework.session.data.mongo.config.annotation.web.reactive.Rea
 class MongoReactiveSessionConfiguration {
 
 	/**
-     * Customizes the ReactiveMongoSessionRepository with the provided session properties, mongo session properties, and server properties.
-     * 
-     * @param sessionProperties the session properties
-     * @param mongoSessionProperties the mongo session properties
-     * @param serverProperties the server properties
-     * @return the customized ReactiveSessionRepository
-     */
-    @Bean
+	 * Customizes the ReactiveMongoSessionRepository with the provided session properties,
+	 * mongo session properties, and server properties.
+	 * @param sessionProperties the session properties
+	 * @param mongoSessionProperties the mongo session properties
+	 * @param serverProperties the server properties
+	 * @return the customized ReactiveSessionRepository
+	 */
+	@Bean
 	ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
 			ServerProperties serverProperties) {

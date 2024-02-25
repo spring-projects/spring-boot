@@ -39,12 +39,13 @@ import org.springframework.context.annotation.Bean;
 public class JsonbAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link Jsonb} using the default implementation provided by {@link JsonbBuilder}.
-     * This method is annotated with {@link ConditionalOnMissingBean} to ensure that it is only executed if no other bean of type {@link Jsonb} is already present in the application context.
-     * 
-     * @return a new instance of {@link Jsonb}
-     */
-    @Bean
+	 * Creates a new instance of {@link Jsonb} using the default implementation provided
+	 * by {@link JsonbBuilder}. This method is annotated with
+	 * {@link ConditionalOnMissingBean} to ensure that it is only executed if no other
+	 * bean of type {@link Jsonb} is already present in the application context.
+	 * @return a new instance of {@link Jsonb}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public Jsonb jsonb() {
 		return JsonbBuilder.create();

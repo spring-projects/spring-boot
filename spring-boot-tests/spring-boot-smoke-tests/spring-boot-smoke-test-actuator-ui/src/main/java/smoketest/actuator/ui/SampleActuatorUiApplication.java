@@ -33,12 +33,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class SampleActuatorUiApplication {
 
 	/**
-     * Retrieves the home page.
-     * 
-     * @param model the map containing the model attributes
-     * @return the name of the view to be rendered
-     */
-    @GetMapping("/")
+	 * Retrieves the home page.
+	 * @param model the map containing the model attributes
+	 * @return the name of the view to be rendered
+	 */
+	@GetMapping("/")
 	public String home(Map<String, Object> model) {
 		model.put("message", "Hello World");
 		model.put("title", "Hello Home");
@@ -47,23 +46,21 @@ public class SampleActuatorUiApplication {
 	}
 
 	/**
-     * Handles the request mapping for "/foo" endpoint.
-     * 
-     * @return the response string
-     * @throws RuntimeException if an expected exception occurs in the controller
-     */
-    @RequestMapping("/foo")
+	 * Handles the request mapping for "/foo" endpoint.
+	 * @return the response string
+	 * @throws RuntimeException if an expected exception occurs in the controller
+	 */
+	@RequestMapping("/foo")
 	public String foo() {
 		throw new RuntimeException("Expected exception in controller");
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring Boot application by running the SpringApplication.run() method.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring Boot
+	 * application by running the SpringApplication.run() method.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleActuatorUiApplication.class, args);
 	}
 

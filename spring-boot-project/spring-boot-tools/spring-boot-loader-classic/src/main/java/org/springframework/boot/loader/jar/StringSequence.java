@@ -36,24 +36,25 @@ final class StringSequence implements CharSequence {
 	private int hash;
 
 	/**
-     * Constructs a new StringSequence object with the given source string.
-     * 
-     * @param source the source string to be used for the StringSequence object
-     */
-    StringSequence(String source) {
+	 * Constructs a new StringSequence object with the given source string.
+	 * @param source the source string to be used for the StringSequence object
+	 */
+	StringSequence(String source) {
 		this(source, 0, (source != null) ? source.length() : -1);
 	}
 
 	/**
-     * Constructs a new StringSequence object with the specified source, start, and end values.
-     * 
-     * @param source the source string to create the sequence from (must not be null)
-     * @param start the starting index of the sequence (must be non-negative)
-     * @param end the ending index of the sequence (must be within the bounds of the source string)
-     * @throws NullPointerException if the source string is null
-     * @throws StringIndexOutOfBoundsException if the start or end values are out of bounds
-     */
-    StringSequence(String source, int start, int end) {
+	 * Constructs a new StringSequence object with the specified source, start, and end
+	 * values.
+	 * @param source the source string to create the sequence from (must not be null)
+	 * @param start the starting index of the sequence (must be non-negative)
+	 * @param end the ending index of the sequence (must be within the bounds of the
+	 * source string)
+	 * @throws NullPointerException if the source string is null
+	 * @throws StringIndexOutOfBoundsException if the start or end values are out of
+	 * bounds
+	 */
+	StringSequence(String source, int start, int end) {
 		Objects.requireNonNull(source, "Source must not be null");
 		if (start < 0) {
 			throw new StringIndexOutOfBoundsException(start);
@@ -67,28 +68,27 @@ final class StringSequence implements CharSequence {
 	}
 
 	/**
-     * Returns a new StringSequence that is a subsequence of this StringSequence.
-     * The subsequence starts at the specified index and extends to the end of this StringSequence.
-     *
-     * @param start the starting index of the subsequence
-     * @return a new StringSequence that is a subsequence of this StringSequence
-     * @throws IndexOutOfBoundsException if the start index is out of range
-     */
-    StringSequence subSequence(int start) {
+	 * Returns a new StringSequence that is a subsequence of this StringSequence. The
+	 * subsequence starts at the specified index and extends to the end of this
+	 * StringSequence.
+	 * @param start the starting index of the subsequence
+	 * @return a new StringSequence that is a subsequence of this StringSequence
+	 * @throws IndexOutOfBoundsException if the start index is out of range
+	 */
+	StringSequence subSequence(int start) {
 		return subSequence(start, length());
 	}
 
 	/**
-     * Returns a new StringSequence that is a subsequence of this StringSequence.
-     * The subsequence starts at the specified start index and extends to the
-     * character at index end - 1.
-     *
-     * @param start the start index of the subsequence (inclusive)
-     * @param end the end index of the subsequence (exclusive)
-     * @return a new StringSequence that is a subsequence of this StringSequence
-     * @throws StringIndexOutOfBoundsException if the start or end index is out of range
-     */
-    @Override
+	 * Returns a new StringSequence that is a subsequence of this StringSequence. The
+	 * subsequence starts at the specified start index and extends to the character at
+	 * index end - 1.
+	 * @param start the start index of the subsequence (inclusive)
+	 * @param end the end index of the subsequence (exclusive)
+	 * @return a new StringSequence that is a subsequence of this StringSequence
+	 * @throws StringIndexOutOfBoundsException if the start or end index is out of range
+	 */
+	@Override
 	public StringSequence subSequence(int start, int end) {
 		int subSequenceStart = this.start + start;
 		int subSequenceEnd = this.start + end;
@@ -113,80 +113,77 @@ final class StringSequence implements CharSequence {
 	}
 
 	/**
-     * Returns the length of the StringSequence object.
-     * 
-     * @return the length of the StringSequence object
-     */
-    @Override
+	 * Returns the length of the StringSequence object.
+	 * @return the length of the StringSequence object
+	 */
+	@Override
 	public int length() {
 		return this.end - this.start;
 	}
 
 	/**
-     * Returns the character at the specified index in the StringSequence.
-     *
-     * @param index the index of the character to be returned
-     * @return the character at the specified index
-     * @throws IndexOutOfBoundsException if the index is out of range
-     */
-    @Override
+	 * Returns the character at the specified index in the StringSequence.
+	 * @param index the index of the character to be returned
+	 * @return the character at the specified index
+	 * @throws IndexOutOfBoundsException if the index is out of range
+	 */
+	@Override
 	public char charAt(int index) {
 		return this.source.charAt(this.start + index);
 	}
 
 	/**
-     * Returns the index within this StringSequence of the first occurrence of the specified character,
-     * starting the search at the specified index.
-     *
-     * @param ch the character to search for
-     * @return the index of the first occurrence of the character, relative to the start index
-     */
-    int indexOf(char ch) {
+	 * Returns the index within this StringSequence of the first occurrence of the
+	 * specified character, starting the search at the specified index.
+	 * @param ch the character to search for
+	 * @return the index of the first occurrence of the character, relative to the start
+	 * index
+	 */
+	int indexOf(char ch) {
 		return this.source.indexOf(ch, this.start) - this.start;
 	}
 
 	/**
-     * Returns the index within this StringSequence of the first occurrence of the specified string.
-     * The search for the string starts at the specified start position.
-     *
-     * @param str the string to search for
-     * @return the index of the first occurrence of the specified string, or -1 if the string is not found
-     */
-    int indexOf(String str) {
+	 * Returns the index within this StringSequence of the first occurrence of the
+	 * specified string. The search for the string starts at the specified start position.
+	 * @param str the string to search for
+	 * @return the index of the first occurrence of the specified string, or -1 if the
+	 * string is not found
+	 */
+	int indexOf(String str) {
 		return this.source.indexOf(str, this.start) - this.start;
 	}
 
 	/**
-     * Returns the index within this StringSequence of the first occurrence of the specified string,
-     * starting the search at the specified index.
-     *
-     * @param str the string to search for
-     * @param fromIndex the index to start the search from
-     * @return the index of the first occurrence of the specified string within this StringSequence,
-     *         starting the search at the specified index; or -1 if the string is not found
-     */
-    int indexOf(String str, int fromIndex) {
+	 * Returns the index within this StringSequence of the first occurrence of the
+	 * specified string, starting the search at the specified index.
+	 * @param str the string to search for
+	 * @param fromIndex the index to start the search from
+	 * @return the index of the first occurrence of the specified string within this
+	 * StringSequence, starting the search at the specified index; or -1 if the string is
+	 * not found
+	 */
+	int indexOf(String str, int fromIndex) {
 		return this.source.indexOf(str, this.start + fromIndex) - this.start;
 	}
 
 	/**
-     * Returns true if the string sequence starts with the specified prefix.
-     * 
-     * @param prefix the prefix to check
-     * @return true if the string sequence starts with the prefix, false otherwise
-     */
-    boolean startsWith(String prefix) {
+	 * Returns true if the string sequence starts with the specified prefix.
+	 * @param prefix the prefix to check
+	 * @return true if the string sequence starts with the prefix, false otherwise
+	 */
+	boolean startsWith(String prefix) {
 		return startsWith(prefix, 0);
 	}
 
 	/**
-     * Checks if the specified prefix occurs at the given offset in the string sequence.
-     *
-     * @param prefix the prefix to be checked
-     * @param offset the offset at which to start checking
-     * @return {@code true} if the string sequence starts with the specified prefix at the given offset, {@code false} otherwise
-     */
-    boolean startsWith(String prefix, int offset) {
+	 * Checks if the specified prefix occurs at the given offset in the string sequence.
+	 * @param prefix the prefix to be checked
+	 * @param offset the offset at which to start checking
+	 * @return {@code true} if the string sequence starts with the specified prefix at the
+	 * given offset, {@code false} otherwise
+	 */
+	boolean startsWith(String prefix, int offset) {
 		int prefixLength = prefix.length();
 		int length = length();
 		if (length - prefixLength - offset < 0) {
@@ -196,12 +193,12 @@ final class StringSequence implements CharSequence {
 	}
 
 	/**
-     * Compares this StringSequence object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the specified object is equal to this StringSequence object, false otherwise
-     */
-    @Override
+	 * Compares this StringSequence object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the specified object is equal to this StringSequence object, false
+	 * otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -224,11 +221,10 @@ final class StringSequence implements CharSequence {
 	}
 
 	/**
-     * Returns the hash code value for this StringSequence object.
-     * 
-     * @return the hash code value for this object
-     */
-    @Override
+	 * Returns the hash code value for this StringSequence object.
+	 * @return the hash code value for this object
+	 */
+	@Override
 	public int hashCode() {
 		int hash = this.hash;
 		if (hash == 0 && length() > 0) {
@@ -241,12 +237,11 @@ final class StringSequence implements CharSequence {
 	}
 
 	/**
-     * Returns a string representation of the substring of the source string
-     * specified by the start and end indices.
-     *
-     * @return the substring of the source string
-     */
-    @Override
+	 * Returns a string representation of the substring of the source string specified by
+	 * the start and end indices.
+	 * @return the substring of the source string
+	 */
+	@Override
 	public String toString() {
 		return this.source.substring(this.start, this.end);
 	}

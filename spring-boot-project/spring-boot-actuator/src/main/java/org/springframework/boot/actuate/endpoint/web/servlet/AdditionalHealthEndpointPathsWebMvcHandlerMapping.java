@@ -41,12 +41,12 @@ public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractW
 	private final Set<HealthEndpointGroup> groups;
 
 	/**
-     * Constructs a new AdditionalHealthEndpointPathsWebMvcHandlerMapping with the specified endpoint and groups.
-     * 
-     * @param endpoint the ExposableWebEndpoint representing the endpoint
-     * @param groups the set of HealthEndpointGroup objects
-     */
-    public AdditionalHealthEndpointPathsWebMvcHandlerMapping(ExposableWebEndpoint endpoint,
+	 * Constructs a new AdditionalHealthEndpointPathsWebMvcHandlerMapping with the
+	 * specified endpoint and groups.
+	 * @param endpoint the ExposableWebEndpoint representing the endpoint
+	 * @param groups the set of HealthEndpointGroup objects
+	 */
+	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(ExposableWebEndpoint endpoint,
 			Set<HealthEndpointGroup> groups) {
 		super(new EndpointMapping(""), Collections.singletonList(endpoint), null, false);
 		this.endpoint = endpoint;
@@ -54,12 +54,15 @@ public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractW
 	}
 
 	/**
-     * Initializes the handler methods for the AdditionalHealthEndpointPathsWebMvcHandlerMapping class.
-     * Iterates through each WebOperation of the endpoint and checks if it has a matchAllRemainingPathSegmentsVariable.
-     * If it does, it iterates through each HealthEndpointGroup and checks if it has an additionalPath.
-     * If it does, it registers the mapping for the endpoint, predicate, operation, and additionalPath value.
-     */
-    @Override
+	 * Initializes the handler methods for the
+	 * AdditionalHealthEndpointPathsWebMvcHandlerMapping class. Iterates through each
+	 * WebOperation of the endpoint and checks if it has a
+	 * matchAllRemainingPathSegmentsVariable. If it does, it iterates through each
+	 * HealthEndpointGroup and checks if it has an additionalPath. If it does, it
+	 * registers the mapping for the endpoint, predicate, operation, and additionalPath
+	 * value.
+	 */
+	@Override
 	protected void initHandlerMethods() {
 		for (WebOperation operation : this.endpoint.getOperations()) {
 			WebOperationRequestPredicate predicate = operation.getRequestPredicate();
@@ -76,11 +79,11 @@ public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractW
 	}
 
 	/**
-     * Returns the LinksHandler for handling additional health endpoint paths.
-     *
-     * @return the LinksHandler for handling additional health endpoint paths, or null if not available
-     */
-    @Override
+	 * Returns the LinksHandler for handling additional health endpoint paths.
+	 * @return the LinksHandler for handling additional health endpoint paths, or null if
+	 * not available
+	 */
+	@Override
 	protected LinksHandler getLinksHandler() {
 		return null;
 	}

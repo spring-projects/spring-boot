@@ -48,12 +48,12 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 	private int order = DEFAULT_ORDER;
 
 	/**
-     * This method is used to post-process the environment by replacing the property source with the given environment prefix.
-     * 
-     * @param environment The configurable environment to be processed.
-     * @param application The Spring application.
-     */
-    @Override
+	 * This method is used to post-process the environment by replacing the property
+	 * source with the given environment prefix.
+	 * @param environment The configurable environment to be processed.
+	 * @param application The Spring application.
+	 */
+	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		String sourceName = StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME;
 		PropertySource<?> propertySource = environment.getPropertySources().get(sourceName);
@@ -63,14 +63,13 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 	}
 
 	/**
-     * Replaces a property source in the given environment with a new property source.
-     * 
-     * @param environment         the configurable environment
-     * @param sourceName          the name of the property source to be replaced
-     * @param propertySource      the new property source to be added
-     * @param environmentPrefix   the prefix for environment variables
-     */
-    @SuppressWarnings("unchecked")
+	 * Replaces a property source in the given environment with a new property source.
+	 * @param environment the configurable environment
+	 * @param sourceName the name of the property source to be replaced
+	 * @param propertySource the new property source to be added
+	 * @param environmentPrefix the prefix for environment variables
+	 */
+	@SuppressWarnings("unchecked")
 	private void replacePropertySource(ConfigurableEnvironment environment, String sourceName,
 			PropertySource<?> propertySource, String environmentPrefix) {
 		Map<String, Object> originalSource = (Map<String, Object>) propertySource.getSource();
@@ -80,21 +79,19 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 	}
 
 	/**
-     * Returns the order of this SystemEnvironmentPropertySourceEnvironmentPostProcessor.
-     * 
-     * @return the order of this SystemEnvironmentPropertySourceEnvironmentPostProcessor
-     */
-    @Override
+	 * Returns the order of this SystemEnvironmentPropertySourceEnvironmentPostProcessor.
+	 * @return the order of this SystemEnvironmentPropertySourceEnvironmentPostProcessor
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
 	/**
-     * Sets the order of the SystemEnvironmentPropertySourceEnvironmentPostProcessor.
-     * 
-     * @param order the order to set
-     */
-    public void setOrder(int order) {
+	 * Sets the order of the SystemEnvironmentPropertySourceEnvironmentPostProcessor.
+	 * @param order the order to set
+	 */
+	public void setOrder(int order) {
 		this.order = order;
 	}
 
@@ -107,24 +104,25 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 		private final String prefix;
 
 		/**
-         * Constructs a new OriginAwareSystemEnvironmentPropertySource with the specified name, source, and environment prefix.
-         * 
-         * @param name the name of the property source
-         * @param source the source map containing the properties
-         * @param environmentPrefix the prefix to be used for environment-specific properties
-         */
-        OriginAwareSystemEnvironmentPropertySource(String name, Map<String, Object> source, String environmentPrefix) {
+		 * Constructs a new OriginAwareSystemEnvironmentPropertySource with the specified
+		 * name, source, and environment prefix.
+		 * @param name the name of the property source
+		 * @param source the source map containing the properties
+		 * @param environmentPrefix the prefix to be used for environment-specific
+		 * properties
+		 */
+		OriginAwareSystemEnvironmentPropertySource(String name, Map<String, Object> source, String environmentPrefix) {
 			super(name, source);
 			this.prefix = determinePrefix(environmentPrefix);
 		}
 
 		/**
-         * Determines the prefix for the given environment prefix.
-         * 
-         * @param environmentPrefix the environment prefix to determine the prefix for
-         * @return the determined prefix, or null if the environment prefix is empty or null
-         */
-        private String determinePrefix(String environmentPrefix) {
+		 * Determines the prefix for the given environment prefix.
+		 * @param environmentPrefix the environment prefix to determine the prefix for
+		 * @return the determined prefix, or null if the environment prefix is empty or
+		 * null
+		 */
+		private String determinePrefix(String environmentPrefix) {
 			if (!StringUtils.hasText(environmentPrefix)) {
 				return null;
 			}
@@ -135,34 +133,32 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 		}
 
 		/**
-         * Checks if the property source contains a property with the given name.
-         *
-         * @param name the name of the property to check
-         * @return true if the property source contains the property, false otherwise
-         */
-        @Override
+		 * Checks if the property source contains a property with the given name.
+		 * @param name the name of the property to check
+		 * @return true if the property source contains the property, false otherwise
+		 */
+		@Override
 		public boolean containsProperty(String name) {
 			return super.containsProperty(name);
 		}
 
 		/**
-         * Retrieves the value of the specified property from the system environment.
-         * 
-         * @param name the name of the property to retrieve
-         * @return the value of the property, or null if the property does not exist
-         */
-        @Override
+		 * Retrieves the value of the specified property from the system environment.
+		 * @param name the name of the property to retrieve
+		 * @return the value of the property, or null if the property does not exist
+		 */
+		@Override
 		public Object getProperty(String name) {
 			return super.getProperty(name);
 		}
 
 		/**
-         * Retrieves the origin of a property value based on the provided key.
-         * 
-         * @param key the key of the property
-         * @return the origin of the property value, or null if the property does not exist
-         */
-        @Override
+		 * Retrieves the origin of a property value based on the provided key.
+		 * @param key the key of the property
+		 * @return the origin of the property value, or null if the property does not
+		 * exist
+		 */
+		@Override
 		public Origin getOrigin(String key) {
 			String property = resolvePropertyName(key);
 			if (super.containsProperty(property)) {
@@ -172,11 +168,10 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 		}
 
 		/**
-         * Returns the prefix of the OriginAwareSystemEnvironmentPropertySource.
-         *
-         * @return the prefix of the OriginAwareSystemEnvironmentPropertySource
-         */
-        @Override
+		 * Returns the prefix of the OriginAwareSystemEnvironmentPropertySource.
+		 * @return the prefix of the OriginAwareSystemEnvironmentPropertySource
+		 */
+		@Override
 		public String getPrefix() {
 			return this.prefix;
 		}

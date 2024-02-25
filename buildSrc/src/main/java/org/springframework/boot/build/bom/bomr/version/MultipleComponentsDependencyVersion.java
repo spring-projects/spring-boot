@@ -33,33 +33,32 @@ final class MultipleComponentsDependencyVersion extends ArtifactVersionDependenc
 	private final String original;
 
 	/**
-     * Constructs a new MultipleComponentsDependencyVersion with the specified artifact version and original version string.
-     * 
-     * @param artifactVersion the artifact version for this dependency
-     * @param original the original version string for this dependency
-     */
-    private MultipleComponentsDependencyVersion(ArtifactVersion artifactVersion, String original) {
+	 * Constructs a new MultipleComponentsDependencyVersion with the specified artifact
+	 * version and original version string.
+	 * @param artifactVersion the artifact version for this dependency
+	 * @param original the original version string for this dependency
+	 */
+	private MultipleComponentsDependencyVersion(ArtifactVersion artifactVersion, String original) {
 		super(artifactVersion, new ComparableVersion(original));
 		this.original = original;
 	}
 
 	/**
-     * Returns the string representation of the original value.
-     *
-     * @return the original value as a string
-     */
-    @Override
+	 * Returns the string representation of the original value.
+	 * @return the original value as a string
+	 */
+	@Override
 	public String toString() {
 		return this.original;
 	}
 
 	/**
-     * Parses the input string and returns a MultipleComponentsDependencyVersion object.
-     * 
-     * @param input the input string to be parsed
-     * @return a MultipleComponentsDependencyVersion object if the input string is valid, otherwise null
-     */
-    static MultipleComponentsDependencyVersion parse(String input) {
+	 * Parses the input string and returns a MultipleComponentsDependencyVersion object.
+	 * @param input the input string to be parsed
+	 * @return a MultipleComponentsDependencyVersion object if the input string is valid,
+	 * otherwise null
+	 */
+	static MultipleComponentsDependencyVersion parse(String input) {
 		String[] components = input.split("\\.");
 		if (components.length == 4 || components.length == 5) {
 			ArtifactVersion artifactVersion = new DefaultArtifactVersion(

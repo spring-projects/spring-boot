@@ -33,11 +33,10 @@ public final class SimpleAsyncTaskExecutorAssert
 		extends AbstractAssert<SimpleAsyncTaskExecutorAssert, SimpleAsyncTaskExecutor> {
 
 	/**
-     * Constructs a new instance of the SimpleAsyncTaskExecutorAssert class.
-     * 
-     * @param actual the actual SimpleAsyncTaskExecutor object to be asserted
-     */
-    private SimpleAsyncTaskExecutorAssert(SimpleAsyncTaskExecutor actual) {
+	 * Constructs a new instance of the SimpleAsyncTaskExecutorAssert class.
+	 * @param actual the actual SimpleAsyncTaskExecutor object to be asserted
+	 */
+	private SimpleAsyncTaskExecutorAssert(SimpleAsyncTaskExecutor actual) {
 		super(actual, SimpleAsyncTaskExecutorAssert.class);
 	}
 
@@ -68,12 +67,13 @@ public final class SimpleAsyncTaskExecutorAssert
 	}
 
 	/**
-     * Checks if the SimpleAsyncTaskExecutor produces virtual threads.
-     *
-     * @return {@code true} if the SimpleAsyncTaskExecutor produces virtual threads, {@code false} otherwise.
-     * @throws IllegalStateException if the field SimpleAsyncTaskExecutor.virtualThreadDelegate is not found.
-     */
-    private boolean producesVirtualThreads() {
+	 * Checks if the SimpleAsyncTaskExecutor produces virtual threads.
+	 * @return {@code true} if the SimpleAsyncTaskExecutor produces virtual threads,
+	 * {@code false} otherwise.
+	 * @throws IllegalStateException if the field
+	 * SimpleAsyncTaskExecutor.virtualThreadDelegate is not found.
+	 */
+	private boolean producesVirtualThreads() {
 		Field field = ReflectionUtils.findField(SimpleAsyncTaskExecutor.class, "virtualThreadDelegate");
 		if (field == null) {
 			throw new IllegalStateException("Field SimpleAsyncTaskExecutor.virtualThreadDelegate not found");

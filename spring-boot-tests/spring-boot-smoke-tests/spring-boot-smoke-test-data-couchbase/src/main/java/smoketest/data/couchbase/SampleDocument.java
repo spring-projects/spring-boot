@@ -34,38 +34,34 @@ public class SampleDocument {
 	private String text;
 
 	/**
-     * Returns the ID of the object.
-     *
-     * @return the ID of the object
-     */
-    public String getId() {
+	 * Returns the ID of the object.
+	 * @return the ID of the object
+	 */
+	public String getId() {
 		return this.id;
 	}
 
 	/**
-     * Sets the ID of the object.
-     * 
-     * @param id the ID to be set
-     */
-    public void setId(String id) {
+	 * Sets the ID of the object.
+	 * @param id the ID to be set
+	 */
+	public void setId(String id) {
 		this.id = id;
 	}
 
 	/**
-     * Returns the text of the SampleDocument.
-     *
-     * @return the text of the SampleDocument
-     */
-    public String getText() {
+	 * Returns the text of the SampleDocument.
+	 * @return the text of the SampleDocument
+	 */
+	public String getText() {
 		return this.text;
 	}
 
 	/**
-     * Sets the text of the SampleDocument.
-     * 
-     * @param text the text to be set
-     */
-    public void setText(String text) {
+	 * Sets the text of the SampleDocument.
+	 * @param text the text to be set
+	 */
+	public void setText(String text) {
 		this.text = text;
 	}
 

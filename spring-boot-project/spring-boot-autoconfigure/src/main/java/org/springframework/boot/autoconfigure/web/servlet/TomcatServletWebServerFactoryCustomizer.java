@@ -37,33 +37,32 @@ public class TomcatServletWebServerFactoryCustomizer
 	private final ServerProperties serverProperties;
 
 	/**
-     * Constructs a new TomcatServletWebServerFactoryCustomizer with the specified ServerProperties.
-     *
-     * @param serverProperties the ServerProperties to be used by the customizer
-     */
-    public TomcatServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
+	 * Constructs a new TomcatServletWebServerFactoryCustomizer with the specified
+	 * ServerProperties.
+	 * @param serverProperties the ServerProperties to be used by the customizer
+	 */
+	public TomcatServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		this.serverProperties = serverProperties;
 	}
 
 	/**
-     * Returns the order value for this customizer.
-     * 
-     * The order value determines the order in which the customizer is applied.
-     * A lower value means higher priority.
-     * 
-     * @return the order value for this customizer
-     */
-    @Override
+	 * Returns the order value for this customizer.
+	 *
+	 * The order value determines the order in which the customizer is applied. A lower
+	 * value means higher priority.
+	 * @return the order value for this customizer
+	 */
+	@Override
 	public int getOrder() {
 		return 0;
 	}
 
 	/**
-     * Customize the TomcatServletWebServerFactory with the provided configuration properties.
-     * 
-     * @param factory the TomcatServletWebServerFactory to customize
-     */
-    @Override
+	 * Customize the TomcatServletWebServerFactory with the provided configuration
+	 * properties.
+	 * @param factory the TomcatServletWebServerFactory to customize
+	 */
+	@Override
 	public void customize(TomcatServletWebServerFactory factory) {
 		ServerProperties.Tomcat tomcatProperties = this.serverProperties.getTomcat();
 		if (!ObjectUtils.isEmpty(tomcatProperties.getAdditionalTldSkipPatterns())) {
@@ -77,22 +76,22 @@ public class TomcatServletWebServerFactoryCustomizer
 	}
 
 	/**
-     * Customizes the redirect context root setting for the Tomcat web server factory.
-     * 
-     * @param factory the configurable Tomcat web server factory
-     * @param redirectContextRoot true to enable redirecting the context root, false otherwise
-     */
-    private void customizeRedirectContextRoot(ConfigurableTomcatWebServerFactory factory, boolean redirectContextRoot) {
+	 * Customizes the redirect context root setting for the Tomcat web server factory.
+	 * @param factory the configurable Tomcat web server factory
+	 * @param redirectContextRoot true to enable redirecting the context root, false
+	 * otherwise
+	 */
+	private void customizeRedirectContextRoot(ConfigurableTomcatWebServerFactory factory, boolean redirectContextRoot) {
 		factory.addContextCustomizers((context) -> context.setMapperContextRootRedirectEnabled(redirectContextRoot));
 	}
 
 	/**
-     * Sets the flag to customize the use of relative redirects in the Tomcat web server factory.
-     * 
-     * @param factory the ConfigurableTomcatWebServerFactory to customize
-     * @param useRelativeRedirects the flag indicating whether to use relative redirects
-     */
-    private void customizeUseRelativeRedirects(ConfigurableTomcatWebServerFactory factory,
+	 * Sets the flag to customize the use of relative redirects in the Tomcat web server
+	 * factory.
+	 * @param factory the ConfigurableTomcatWebServerFactory to customize
+	 * @param useRelativeRedirects the flag indicating whether to use relative redirects
+	 */
+	private void customizeUseRelativeRedirects(ConfigurableTomcatWebServerFactory factory,
 			boolean useRelativeRedirects) {
 		factory.addContextCustomizers((context) -> context.setUseRelativeRedirects(useRelativeRedirects));
 	}

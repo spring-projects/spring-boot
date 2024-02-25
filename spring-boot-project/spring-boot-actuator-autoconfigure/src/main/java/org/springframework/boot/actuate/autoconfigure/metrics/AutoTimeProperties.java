@@ -48,56 +48,51 @@ public final class AutoTimeProperties {
 	}
 
 	/**
-     * Returns the current status of the enabled flag.
-     *
-     * @return true if the enabled flag is set to true, false otherwise.
-     */
-    public boolean isEnabled() {
+	 * Returns the current status of the enabled flag.
+	 * @return true if the enabled flag is set to true, false otherwise.
+	 */
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
 	/**
-     * Sets the enabled status of the AutoTimeProperties.
-     * 
-     * @param enabled the enabled status to be set
-     */
-    public void setEnabled(boolean enabled) {
+	 * Sets the enabled status of the AutoTimeProperties.
+	 * @param enabled the enabled status to be set
+	 */
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the histogram is based on percentiles.
-     * 
-     * @return true if the histogram is based on percentiles, false otherwise
-     */
-    public boolean isPercentilesHistogram() {
+	 * Returns a boolean value indicating whether the histogram is based on percentiles.
+	 * @return true if the histogram is based on percentiles, false otherwise
+	 */
+	public boolean isPercentilesHistogram() {
 		return this.percentilesHistogram;
 	}
 
 	/**
-     * Sets whether to generate a percentiles histogram.
-     * 
-     * @param percentilesHistogram true to generate a percentiles histogram, false otherwise
-     */
-    public void setPercentilesHistogram(boolean percentilesHistogram) {
+	 * Sets whether to generate a percentiles histogram.
+	 * @param percentilesHistogram true to generate a percentiles histogram, false
+	 * otherwise
+	 */
+	public void setPercentilesHistogram(boolean percentilesHistogram) {
 		this.percentilesHistogram = percentilesHistogram;
 	}
 
 	/**
-     * Returns an array of percentiles.
-     *
-     * @return an array of percentiles
-     */
-    public double[] getPercentiles() {
+	 * Returns an array of percentiles.
+	 * @return an array of percentiles
+	 */
+	public double[] getPercentiles() {
 		return this.percentiles;
 	}
 
 	/**
-     * Sets the array of percentiles for AutoTimeProperties.
-     * 
-     * @param percentiles the array of percentiles to be set
-     */
-    public void setPercentiles(double[] percentiles) {
+	 * Sets the array of percentiles for AutoTimeProperties.
+	 * @param percentiles the array of percentiles to be set
+	 */
+	public void setPercentiles(double[] percentiles) {
 		this.percentiles = percentiles;
 	}
 

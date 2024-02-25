@@ -40,12 +40,12 @@ import org.springframework.context.annotation.Bean;
 public class MetricsEndpointAutoConfiguration {
 
 	/**
-     * Creates a MetricsEndpoint bean if a MeterRegistry bean is present and no MetricsEndpoint bean is already defined.
-     * 
-     * @param registry the MeterRegistry bean to be used by the MetricsEndpoint
-     * @return the MetricsEndpoint bean
-     */
-    @Bean
+	 * Creates a MetricsEndpoint bean if a MeterRegistry bean is present and no
+	 * MetricsEndpoint bean is already defined.
+	 * @param registry the MeterRegistry bean to be used by the MetricsEndpoint
+	 * @return the MetricsEndpoint bean
+	 */
+	@Bean
 	@ConditionalOnBean(MeterRegistry.class)
 	@ConditionalOnMissingBean
 	public MetricsEndpoint metricsEndpoint(MeterRegistry registry) {

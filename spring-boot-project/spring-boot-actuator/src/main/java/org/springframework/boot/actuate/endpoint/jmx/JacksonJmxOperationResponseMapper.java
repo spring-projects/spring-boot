@@ -39,11 +39,10 @@ public class JacksonJmxOperationResponseMapper implements JmxOperationResponseMa
 	private final JavaType mapType;
 
 	/**
-     * Constructs a new JacksonJmxOperationResponseMapper with the specified ObjectMapper.
-     * 
-     * @param objectMapper the ObjectMapper to be used for mapping JSON responses
-     */
-    public JacksonJmxOperationResponseMapper(ObjectMapper objectMapper) {
+	 * Constructs a new JacksonJmxOperationResponseMapper with the specified ObjectMapper.
+	 * @param objectMapper the ObjectMapper to be used for mapping JSON responses
+	 */
+	public JacksonJmxOperationResponseMapper(ObjectMapper objectMapper) {
 		this.objectMapper = (objectMapper != null) ? objectMapper : new ObjectMapper();
 		this.listType = this.objectMapper.getTypeFactory().constructParametricType(List.class, Object.class);
 		this.mapType = this.objectMapper.getTypeFactory()
@@ -51,12 +50,11 @@ public class JacksonJmxOperationResponseMapper implements JmxOperationResponseMa
 	}
 
 	/**
-     * Maps the response type to a corresponding class.
-     * 
-     * @param responseType the response type to be mapped
-     * @return the mapped class
-     */
-    @Override
+	 * Maps the response type to a corresponding class.
+	 * @param responseType the response type to be mapped
+	 * @return the mapped class
+	 */
+	@Override
 	public Class<?> mapResponseType(Class<?> responseType) {
 		if (CharSequence.class.isAssignableFrom(responseType)) {
 			return String.class;
@@ -68,12 +66,11 @@ public class JacksonJmxOperationResponseMapper implements JmxOperationResponseMa
 	}
 
 	/**
-     * Maps the given response object to the appropriate type.
-     * 
-     * @param response the response object to be mapped
-     * @return the mapped response object
-     */
-    @Override
+	 * Maps the given response object to the appropriate type.
+	 * @param response the response object to be mapped
+	 * @return the mapped response object
+	 */
+	@Override
 	public Object mapResponse(Object response) {
 		if (response == null) {
 			return null;

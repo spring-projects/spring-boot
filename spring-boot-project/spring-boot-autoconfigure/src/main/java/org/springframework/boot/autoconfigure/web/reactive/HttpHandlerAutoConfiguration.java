@@ -52,30 +52,30 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 public class HttpHandlerAutoConfiguration {
 
 	/**
-     * AnnotationConfig class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * AnnotationConfig class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	public static class AnnotationConfig {
 
 		private final ApplicationContext applicationContext;
 
 		/**
-         * Constructs a new AnnotationConfig object with the specified ApplicationContext.
-         * 
-         * @param applicationContext the ApplicationContext to be associated with this AnnotationConfig object
-         */
-        public AnnotationConfig(ApplicationContext applicationContext) {
+		 * Constructs a new AnnotationConfig object with the specified ApplicationContext.
+		 * @param applicationContext the ApplicationContext to be associated with this
+		 * AnnotationConfig object
+		 */
+		public AnnotationConfig(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 
 		/**
-         * Creates and configures an HttpHandler for the WebFlux application.
-         * 
-         * @param propsProvider The provider for WebFluxProperties.
-         * @param handlerBuilderCustomizers The provider for WebHttpHandlerBuilderCustomizer.
-         * @return The configured HttpHandler for the WebFlux application.
-         */
-        @Bean
+		 * Creates and configures an HttpHandler for the WebFlux application.
+		 * @param propsProvider The provider for WebFluxProperties.
+		 * @param handlerBuilderCustomizers The provider for
+		 * WebHttpHandlerBuilderCustomizer.
+		 * @return The configured HttpHandler for the WebFlux application.
+		 */
+		@Bean
 		public HttpHandler httpHandler(ObjectProvider<WebFluxProperties> propsProvider,
 				ObjectProvider<WebHttpHandlerBuilderCustomizer> handlerBuilderCustomizers) {
 			WebHttpHandlerBuilder handlerBuilder = WebHttpHandlerBuilder.applicationContext(this.applicationContext);

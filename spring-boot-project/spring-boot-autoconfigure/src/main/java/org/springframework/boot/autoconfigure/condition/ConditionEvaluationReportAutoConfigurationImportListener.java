@@ -35,12 +35,11 @@ class ConditionEvaluationReportAutoConfigurationImportListener
 	private ConfigurableListableBeanFactory beanFactory;
 
 	/**
-     * This method is called when an AutoConfigurationImportEvent is triggered.
-     * It records the evaluation candidates and exclusions in the ConditionEvaluationReport.
-     * 
-     * @param event The AutoConfigurationImportEvent that triggered this method.
-     */
-    @Override
+	 * This method is called when an AutoConfigurationImportEvent is triggered. It records
+	 * the evaluation candidates and exclusions in the ConditionEvaluationReport.
+	 * @param event The AutoConfigurationImportEvent that triggered this method.
+	 */
+	@Override
 	public void onAutoConfigurationImportEvent(AutoConfigurationImportEvent event) {
 		if (this.beanFactory != null) {
 			ConditionEvaluationReport report = ConditionEvaluationReport.get(this.beanFactory);
@@ -50,15 +49,15 @@ class ConditionEvaluationReportAutoConfigurationImportListener
 	}
 
 	/**
-     * Set the BeanFactory that this listener runs in.
-     * <p>
-     * Invoked after population of normal bean properties but before an init callback such as InitializingBean's
-     * {@code afterPropertiesSet} or a custom init-method. Invoked after ApplicationContextAware's
-     * {@code setApplicationContext}.
-     * @param beanFactory the BeanFactory object to be set
-     * @throws BeansException if any error occurs while setting the BeanFactory
-     */
-    @Override
+	 * Set the BeanFactory that this listener runs in.
+	 * <p>
+	 * Invoked after population of normal bean properties but before an init callback such
+	 * as InitializingBean's {@code afterPropertiesSet} or a custom init-method. Invoked
+	 * after ApplicationContextAware's {@code setApplicationContext}.
+	 * @param beanFactory the BeanFactory object to be set
+	 * @throws BeansException if any error occurs while setting the BeanFactory
+	 */
+	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = (beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory)
 				? listableBeanFactory : null;

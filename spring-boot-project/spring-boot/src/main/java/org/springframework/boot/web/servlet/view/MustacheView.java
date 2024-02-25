@@ -66,27 +66,25 @@ public class MustacheView extends AbstractTemplateView {
 	}
 
 	/**
-     * Checks if the resource exists for the specified locale.
-     * 
-     * @param locale the locale for which to check the resource
-     * @return true if the resource exists, false otherwise
-     * @throws Exception if an error occurs while checking the resource
-     */
-    @Override
+	 * Checks if the resource exists for the specified locale.
+	 * @param locale the locale for which to check the resource
+	 * @return true if the resource exists, false otherwise
+	 * @throws Exception if an error occurs while checking the resource
+	 */
+	@Override
 	public boolean checkResource(Locale locale) throws Exception {
 		Resource resource = getApplicationContext().getResource(getUrl());
 		return (resource != null && resource.exists());
 	}
 
 	/**
-     * Renders the merged template model.
-     * 
-     * @param model     the model containing the data to be rendered
-     * @param request   the HTTP servlet request
-     * @param response  the HTTP servlet response
-     * @throws Exception if an error occurs during rendering
-     */
-    @Override
+	 * Renders the merged template model.
+	 * @param model the model containing the data to be rendered
+	 * @param request the HTTP servlet request
+	 * @param response the HTTP servlet response
+	 * @throws Exception if an error occurs during rendering
+	 */
+	@Override
 	protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		Template template = createTemplate(getApplicationContext().getResource(getUrl()));
@@ -96,26 +94,24 @@ public class MustacheView extends AbstractTemplateView {
 	}
 
 	/**
-     * Creates a template using the given resource.
-     * 
-     * @param resource the resource used to create the template
-     * @return the created template
-     * @throws IOException if an I/O error occurs while reading the resource
-     */
-    private Template createTemplate(Resource resource) throws IOException {
+	 * Creates a template using the given resource.
+	 * @param resource the resource used to create the template
+	 * @return the created template
+	 * @throws IOException if an I/O error occurs while reading the resource
+	 */
+	private Template createTemplate(Resource resource) throws IOException {
 		try (Reader reader = getReader(resource)) {
 			return this.compiler.compile(reader);
 		}
 	}
 
 	/**
-     * Returns a Reader for the given Resource.
-     * 
-     * @param resource the Resource to get the Reader for
-     * @return a Reader for the given Resource
-     * @throws IOException if an I/O error occurs while getting the Reader
-     */
-    private Reader getReader(Resource resource) throws IOException {
+	 * Returns a Reader for the given Resource.
+	 * @param resource the Resource to get the Reader for
+	 * @return a Reader for the given Resource
+	 * @throws IOException if an I/O error occurs while getting the Reader
+	 */
+	private Reader getReader(Resource resource) throws IOException {
 		if (this.charset != null) {
 			return new InputStreamReader(resource.getInputStream(), this.charset);
 		}

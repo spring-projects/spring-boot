@@ -77,12 +77,12 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	private final List<ServletContextInitializer> sortedList;
 
 	/**
-     * Constructs a new instance of ServletContextInitializerBeans with the specified parameters.
-     *
-     * @param beanFactory         the ListableBeanFactory used to retrieve beans
-     * @param initializerTypes    the types of ServletContextInitializers to include
-     */
-    @SafeVarargs
+	 * Constructs a new instance of ServletContextInitializerBeans with the specified
+	 * parameters.
+	 * @param beanFactory the ListableBeanFactory used to retrieve beans
+	 * @param initializerTypes the types of ServletContextInitializers to include
+	 */
+	@SafeVarargs
 	@SuppressWarnings("varargs")
 	public ServletContextInitializerBeans(ListableBeanFactory beanFactory,
 			Class<? extends ServletContextInitializer>... initializerTypes) {
@@ -99,11 +99,10 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Adds the ServletContextInitializer beans to the given bean factory.
-     * 
-     * @param beanFactory the bean factory to add the ServletContextInitializer beans to
-     */
-    private void addServletContextInitializerBeans(ListableBeanFactory beanFactory) {
+	 * Adds the ServletContextInitializer beans to the given bean factory.
+	 * @param beanFactory the bean factory to add the ServletContextInitializer beans to
+	 */
+	private void addServletContextInitializerBeans(ListableBeanFactory beanFactory) {
 		for (Class<? extends ServletContextInitializer> initializerType : this.initializerTypes) {
 			for (Entry<String, ? extends ServletContextInitializer> initializerBean : getOrderedBeansOfType(beanFactory,
 					initializerType)) {
@@ -113,13 +112,12 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Adds a ServletContextInitializer bean to the list of beans.
-     * 
-     * @param beanName the name of the bean
-     * @param initializer the ServletContextInitializer to be added
-     * @param beanFactory the ListableBeanFactory to retrieve the bean from
-     */
-    private void addServletContextInitializerBean(String beanName, ServletContextInitializer initializer,
+	 * Adds a ServletContextInitializer bean to the list of beans.
+	 * @param beanName the name of the bean
+	 * @param initializer the ServletContextInitializer to be added
+	 * @param beanFactory the ListableBeanFactory to retrieve the bean from
+	 */
+	private void addServletContextInitializerBean(String beanName, ServletContextInitializer initializer,
 			ListableBeanFactory beanFactory) {
 		if (initializer instanceof ServletRegistrationBean) {
 			Servlet source = ((ServletRegistrationBean<?>) initializer).getServlet();
@@ -144,15 +142,14 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Adds a ServletContextInitializer bean to the list of initializers.
-     * 
-     * @param type the type of the bean
-     * @param beanName the name of the bean
-     * @param initializer the ServletContextInitializer instance
-     * @param beanFactory the ListableBeanFactory instance
-     * @param source the underlying source object
-     */
-    private void addServletContextInitializerBean(Class<?> type, String beanName, ServletContextInitializer initializer,
+	 * Adds a ServletContextInitializer bean to the list of initializers.
+	 * @param type the type of the bean
+	 * @param beanName the name of the bean
+	 * @param initializer the ServletContextInitializer instance
+	 * @param beanFactory the ListableBeanFactory instance
+	 * @param source the underlying source object
+	 */
+	private void addServletContextInitializerBean(Class<?> type, String beanName, ServletContextInitializer initializer,
 			ListableBeanFactory beanFactory, Object source) {
 		this.initializers.add(type, initializer);
 		if (source != null) {
@@ -168,13 +165,14 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Retrieves the resource description for a given bean name from the provided bean factory.
-     * 
-     * @param beanName the name of the bean to retrieve the resource description for
-     * @param beanFactory the bean factory to retrieve the bean definition from
-     * @return the resource description of the bean, or "unknown" if the bean factory is not an instance of BeanDefinitionRegistry
-     */
-    private String getResourceDescription(String beanName, ListableBeanFactory beanFactory) {
+	 * Retrieves the resource description for a given bean name from the provided bean
+	 * factory.
+	 * @param beanName the name of the bean to retrieve the resource description for
+	 * @param beanFactory the bean factory to retrieve the bean definition from
+	 * @return the resource description of the bean, or "unknown" if the bean factory is
+	 * not an instance of BeanDefinitionRegistry
+	 */
+	private String getResourceDescription(String beanName, ListableBeanFactory beanFactory) {
 		if (beanFactory instanceof BeanDefinitionRegistry registry) {
 			return registry.getBeanDefinition(beanName).getResourceDescription();
 		}
@@ -182,11 +180,10 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Adds adaptable beans to the given bean factory.
-     * 
-     * @param beanFactory the bean factory to add the adaptable beans to
-     */
-    @SuppressWarnings("unchecked")
+	 * Adds adaptable beans to the given bean factory.
+	 * @param beanFactory the bean factory to add the adaptable beans to
+	 */
+	@SuppressWarnings("unchecked")
 	protected void addAdaptableBeans(ListableBeanFactory beanFactory) {
 		MultipartConfigElement multipartConfig = getMultipartConfig(beanFactory);
 		addAsRegistrationBean(beanFactory, Servlet.class, new ServletRegistrationBeanAdapter(multipartConfig));
@@ -198,42 +195,42 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Retrieves the MultipartConfigElement from the given ListableBeanFactory.
-     * 
-     * @param beanFactory the ListableBeanFactory to retrieve the MultipartConfigElement from
-     * @return the MultipartConfigElement retrieved from the beanFactory, or null if none found
-     */
-    private MultipartConfigElement getMultipartConfig(ListableBeanFactory beanFactory) {
+	 * Retrieves the MultipartConfigElement from the given ListableBeanFactory.
+	 * @param beanFactory the ListableBeanFactory to retrieve the MultipartConfigElement
+	 * from
+	 * @return the MultipartConfigElement retrieved from the beanFactory, or null if none
+	 * found
+	 */
+	private MultipartConfigElement getMultipartConfig(ListableBeanFactory beanFactory) {
 		List<Entry<String, MultipartConfigElement>> beans = getOrderedBeansOfType(beanFactory,
 				MultipartConfigElement.class);
 		return beans.isEmpty() ? null : beans.get(0).getValue();
 	}
 
 	/**
-     * Adds a registration bean to the given bean factory.
-     * 
-     * @param beanFactory the listable bean factory to add the registration bean to
-     * @param type the class type of the registration bean
-     * @param adapter the registration bean adapter
-     * @param <T> the type of the registration bean
-     */
-    protected <T> void addAsRegistrationBean(ListableBeanFactory beanFactory, Class<T> type,
+	 * Adds a registration bean to the given bean factory.
+	 * @param beanFactory the listable bean factory to add the registration bean to
+	 * @param type the class type of the registration bean
+	 * @param adapter the registration bean adapter
+	 * @param <T> the type of the registration bean
+	 */
+	protected <T> void addAsRegistrationBean(ListableBeanFactory beanFactory, Class<T> type,
 			RegistrationBeanAdapter<T> adapter) {
 		addAsRegistrationBean(beanFactory, type, type, adapter);
 	}
 
 	/**
-     * Adds the beans of type {@code beanType} as registration beans to the list of initializers.
-     * 
-     * @param beanFactory the bean factory to retrieve the beans from
-     * @param type the type of the registration beans
-     * @param beanType the type of the beans to be added as registration beans
-     * @param adapter the adapter to create the registration beans
-     * 
-     * @param <T> the type of the registration beans
-     * @param <B> the type of the beans to be added as registration beans, which must extend {@code T}
-     */
-    private <T, B extends T> void addAsRegistrationBean(ListableBeanFactory beanFactory, Class<T> type,
+	 * Adds the beans of type {@code beanType} as registration beans to the list of
+	 * initializers.
+	 * @param beanFactory the bean factory to retrieve the beans from
+	 * @param type the type of the registration beans
+	 * @param beanType the type of the beans to be added as registration beans
+	 * @param adapter the adapter to create the registration beans
+	 * @param <T> the type of the registration beans
+	 * @param <B> the type of the beans to be added as registration beans, which must
+	 * extend {@code T}
+	 */
+	private <T, B extends T> void addAsRegistrationBean(ListableBeanFactory beanFactory, Class<T> type,
 			Class<B> beanType, RegistrationBeanAdapter<T> adapter) {
 		List<Map.Entry<String, B>> entries = getOrderedBeansOfType(beanFactory, beanType, this.seen);
 		for (Entry<String, B> entry : entries) {
@@ -254,12 +251,12 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Returns the order of the given value based on the annotation aware order comparator.
-     *
-     * @param value the value for which the order needs to be determined
-     * @return the order of the value
-     */
-    private int getOrder(Object value) {
+	 * Returns the order of the given value based on the annotation aware order
+	 * comparator.
+	 * @param value the value for which the order needs to be determined
+	 * @return the order of the value
+	 */
+	private int getOrder(Object value) {
 		return new AnnotationAwareOrderComparator() {
 			@Override
 			public int getOrder(Object obj) {
@@ -269,29 +266,28 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Retrieves a list of beans of the specified type from the given bean factory,
-     * ordered by their priority.
-     *
-     * @param beanFactory the bean factory to retrieve beans from
-     * @param type the type of beans to retrieve
-     * @param <T> the type parameter for the beans
-     * @return a list of beans of the specified type, ordered by their priority
-     */
-    private <T> List<Entry<String, T>> getOrderedBeansOfType(ListableBeanFactory beanFactory, Class<T> type) {
+	 * Retrieves a list of beans of the specified type from the given bean factory,
+	 * ordered by their priority.
+	 * @param beanFactory the bean factory to retrieve beans from
+	 * @param type the type of beans to retrieve
+	 * @param <T> the type parameter for the beans
+	 * @return a list of beans of the specified type, ordered by their priority
+	 */
+	private <T> List<Entry<String, T>> getOrderedBeansOfType(ListableBeanFactory beanFactory, Class<T> type) {
 		return getOrderedBeansOfType(beanFactory, type, Seen.empty());
 	}
 
 	/**
-     * Retrieves a list of beans of the specified type from the given bean factory,
-     * ordered based on their annotation-aware order.
-     *
-     * @param beanFactory The bean factory to retrieve the beans from.
-     * @param type The type of beans to retrieve.
-     * @param seen A Seen object to keep track of already seen beans.
-     * @param <T> The type of beans to retrieve.
-     * @return A list of beans of the specified type, ordered based on their annotation-aware order.
-     */
-    private <T> List<Entry<String, T>> getOrderedBeansOfType(ListableBeanFactory beanFactory, Class<T> type,
+	 * Retrieves a list of beans of the specified type from the given bean factory,
+	 * ordered based on their annotation-aware order.
+	 * @param beanFactory The bean factory to retrieve the beans from.
+	 * @param type The type of beans to retrieve.
+	 * @param seen A Seen object to keep track of already seen beans.
+	 * @param <T> The type of beans to retrieve.
+	 * @return A list of beans of the specified type, ordered based on their
+	 * annotation-aware order.
+	 */
+	private <T> List<Entry<String, T>> getOrderedBeansOfType(ListableBeanFactory beanFactory, Class<T> type,
 			Seen seen) {
 		String[] names = beanFactory.getBeanNamesForType(type, true, false);
 		Map<String, T> map = new LinkedHashMap<>();
@@ -309,11 +305,11 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Logs the mappings of filters and servlets in the given {@link MultiValueMap} of initializers.
-     * 
-     * @param initializers the {@link MultiValueMap} containing the initializers
-     */
-    private void logMappings(MultiValueMap<Class<?>, ServletContextInitializer> initializers) {
+	 * Logs the mappings of filters and servlets in the given {@link MultiValueMap} of
+	 * initializers.
+	 * @param initializers the {@link MultiValueMap} containing the initializers
+	 */
+	private void logMappings(MultiValueMap<Class<?>, ServletContextInitializer> initializers) {
 		if (logger.isDebugEnabled()) {
 			logMappings("filters", initializers, Filter.class, FilterRegistrationBean.class);
 			logMappings("servlets", initializers, Servlet.class, ServletRegistrationBean.class);
@@ -321,14 +317,13 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Logs the mappings for a given name, initializers, type, and registration type.
-     * 
-     * @param name the name of the mapping
-     * @param initializers the initializers containing the mappings
-     * @param type the type of the mapping
-     * @param registrationType the registration type of the mapping
-     */
-    private void logMappings(String name, MultiValueMap<Class<?>, ServletContextInitializer> initializers,
+	 * Logs the mappings for a given name, initializers, type, and registration type.
+	 * @param name the name of the mapping
+	 * @param initializers the initializers containing the mappings
+	 * @param type the type of the mapping
+	 * @param registrationType the registration type of the mapping
+	 */
+	private void logMappings(String name, MultiValueMap<Class<?>, ServletContextInitializer> initializers,
 			Class<?> type, Class<? extends RegistrationBean> registrationType) {
 		List<ServletContextInitializer> registrations = new ArrayList<>();
 		registrations.addAll(initializers.getOrDefault(registrationType, Collections.emptyList()));
@@ -338,21 +333,21 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Returns an iterator over the elements in this ServletContextInitializerBeans object in proper sequence.
-     *
-     * @return an iterator over the elements in this ServletContextInitializerBeans object in proper sequence
-     */
-    @Override
+	 * Returns an iterator over the elements in this ServletContextInitializerBeans object
+	 * in proper sequence.
+	 * @return an iterator over the elements in this ServletContextInitializerBeans object
+	 * in proper sequence
+	 */
+	@Override
 	public Iterator<ServletContextInitializer> iterator() {
 		return this.sortedList.iterator();
 	}
 
 	/**
-     * Returns the size of the sorted list.
-     *
-     * @return the size of the sorted list
-     */
-    @Override
+	 * Returns the size of the sorted list.
+	 * @return the size of the sorted list
+	 */
+	@Override
 	public int size() {
 		return this.sortedList.size();
 	}
@@ -378,23 +373,23 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 		private final MultipartConfigElement multipartConfig;
 
 		/**
-         * Constructs a new ServletRegistrationBeanAdapter with the specified MultipartConfigElement.
-         * 
-         * @param multipartConfig the MultipartConfigElement to be set for this ServletRegistrationBeanAdapter
-         */
-        ServletRegistrationBeanAdapter(MultipartConfigElement multipartConfig) {
+		 * Constructs a new ServletRegistrationBeanAdapter with the specified
+		 * MultipartConfigElement.
+		 * @param multipartConfig the MultipartConfigElement to be set for this
+		 * ServletRegistrationBeanAdapter
+		 */
+		ServletRegistrationBeanAdapter(MultipartConfigElement multipartConfig) {
 			this.multipartConfig = multipartConfig;
 		}
 
 		/**
-         * Creates a new RegistrationBean for the given name and source Servlet.
-         * 
-         * @param name                     the name of the Servlet
-         * @param source                   the source Servlet
-         * @param totalNumberOfSourceBeans the total number of source beans
-         * @return the created RegistrationBean
-         */
-        @Override
+		 * Creates a new RegistrationBean for the given name and source Servlet.
+		 * @param name the name of the Servlet
+		 * @param source the source Servlet
+		 * @param totalNumberOfSourceBeans the total number of source beans
+		 * @return the created RegistrationBean
+		 */
+		@Override
 		public RegistrationBean createRegistrationBean(String name, Servlet source, int totalNumberOfSourceBeans) {
 			String url = (totalNumberOfSourceBeans != 1) ? "/" + name + "/" : "/";
 			if (name.equals(DISPATCHER_SERVLET_NAME)) {
@@ -414,14 +409,14 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	private static final class FilterRegistrationBeanAdapter implements RegistrationBeanAdapter<Filter> {
 
 		/**
-         * Creates a new RegistrationBean with the specified name, source Filter, and total number of source beans.
-         * 
-         * @param name The name of the RegistrationBean.
-         * @param source The source Filter for the RegistrationBean.
-         * @param totalNumberOfSourceBeans The total number of source beans.
-         * @return The created RegistrationBean.
-         */
-        @Override
+		 * Creates a new RegistrationBean with the specified name, source Filter, and
+		 * total number of source beans.
+		 * @param name The name of the RegistrationBean.
+		 * @param source The source Filter for the RegistrationBean.
+		 * @param totalNumberOfSourceBeans The total number of source beans.
+		 * @return The created RegistrationBean.
+		 */
+		@Override
 		public RegistrationBean createRegistrationBean(String name, Filter source, int totalNumberOfSourceBeans) {
 			FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(source);
 			bean.setName(name);
@@ -437,14 +432,14 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			implements RegistrationBeanAdapter<EventListener> {
 
 		/**
-         * Creates a new RegistrationBean with the given name, source, and total number of source beans.
-         * 
-         * @param name the name of the RegistrationBean
-         * @param source the EventListener source
-         * @param totalNumberOfSourceBeans the total number of source beans
-         * @return the created RegistrationBean
-         */
-        @Override
+		 * Creates a new RegistrationBean with the given name, source, and total number of
+		 * source beans.
+		 * @param name the name of the RegistrationBean
+		 * @param source the EventListener source
+		 * @param totalNumberOfSourceBeans the total number of source beans
+		 * @return the created RegistrationBean
+		 */
+		@Override
 		public RegistrationBean createRegistrationBean(String name, EventListener source,
 				int totalNumberOfSourceBeans) {
 			return new ServletListenerRegistrationBean<>(source);
@@ -453,20 +448,20 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-     * Seen class.
-     */
-    private static final class Seen {
+	 * Seen class.
+	 */
+	private static final class Seen {
 
 		private final Map<Class<?>, Set<Object>> seen = new HashMap<>();
 
 		/**
-         * Adds an object of the specified type to the set of seen objects.
-         * 
-         * @param type the class type of the object
-         * @param object the object to be added
-         * @return {@code true} if the object was successfully added, {@code false} if the object is already present
-         */
-        boolean add(Class<?> type, Object object) {
+		 * Adds an object of the specified type to the set of seen objects.
+		 * @param type the class type of the object
+		 * @param object the object to be added
+		 * @return {@code true} if the object was successfully added, {@code false} if the
+		 * object is already present
+		 */
+		boolean add(Class<?> type, Object object) {
 			if (contains(type, object)) {
 				return false;
 			}
@@ -474,13 +469,12 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 		}
 
 		/**
-         * Checks if the given object is contained in the seen map of the specified type.
-         * 
-         * @param type the type of the object to be checked
-         * @param object the object to be checked for containment
-         * @return true if the object is contained in the seen map, false otherwise
-         */
-        boolean contains(Class<?> type, Object object) {
+		 * Checks if the given object is contained in the seen map of the specified type.
+		 * @param type the type of the object to be checked
+		 * @param object the object to be checked for containment
+		 * @return true if the object is contained in the seen map, false otherwise
+		 */
+		boolean contains(Class<?> type, Object object) {
 			if (this.seen.isEmpty()) {
 				return false;
 			}
@@ -494,11 +488,10 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 		}
 
 		/**
-         * Creates and returns an empty Seen object.
-         * 
-         * @return an empty Seen object
-         */
-        static Seen empty() {
+		 * Creates and returns an empty Seen object.
+		 * @return an empty Seen object
+		 */
+		static Seen empty() {
 			return new Seen();
 		}
 

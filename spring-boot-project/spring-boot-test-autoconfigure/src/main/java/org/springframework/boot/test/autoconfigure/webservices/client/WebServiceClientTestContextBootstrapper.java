@@ -29,12 +29,12 @@ import org.springframework.test.context.TestContextBootstrapper;
 class WebServiceClientTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	/**
-     * Retrieves the properties from the given test class.
-     * 
-     * @param testClass the test class to retrieve properties from
-     * @return an array of properties if the test class is annotated with {@link WebServiceClientTest}, otherwise null
-     */
-    @Override
+	 * Retrieves the properties from the given test class.
+	 * @param testClass the test class to retrieve properties from
+	 * @return an array of properties if the test class is annotated with
+	 * {@link WebServiceClientTest}, otherwise null
+	 */
+	@Override
 	protected String[] getProperties(Class<?> testClass) {
 		WebServiceClientTest webServiceClientTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				WebServiceClientTest.class);

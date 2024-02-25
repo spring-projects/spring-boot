@@ -36,24 +36,24 @@ import org.springframework.util.unit.DataUnit;
 final class StringToDataSizeConverter implements GenericConverter {
 
 	/**
-     * Returns a set of convertible types for the StringToDataSizeConverter class.
-     * 
-     * @return a set containing a single ConvertiblePair object representing the conversion from String to DataSize.
-     */
-    @Override
+	 * Returns a set of convertible types for the StringToDataSizeConverter class.
+	 * @return a set containing a single ConvertiblePair object representing the
+	 * conversion from String to DataSize.
+	 */
+	@Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(String.class, DataSize.class));
 	}
 
 	/**
-     * Converts the given source object to the specified target type.
-     * 
-     * @param source the source object to be converted
-     * @param sourceType the TypeDescriptor of the source object
-     * @param targetType the TypeDescriptor of the target type
-     * @return the converted object of the target type, or null if the source object is empty
-     */
-    @Override
+	 * Converts the given source object to the specified target type.
+	 * @param source the source object to be converted
+	 * @param sourceType the TypeDescriptor of the source object
+	 * @param targetType the TypeDescriptor of the target type
+	 * @return the converted object of the target type, or null if the source object is
+	 * empty
+	 */
+	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;
@@ -62,24 +62,23 @@ final class StringToDataSizeConverter implements GenericConverter {
 	}
 
 	/**
-     * Retrieves the data unit associated with the given target type.
-     * 
-     * @param targetType the type descriptor of the target type
-     * @return the data unit specified by the {@link DataSizeUnit} annotation on the target type, or null if the annotation is not present
-     */
-    private DataUnit getDataUnit(TypeDescriptor targetType) {
+	 * Retrieves the data unit associated with the given target type.
+	 * @param targetType the type descriptor of the target type
+	 * @return the data unit specified by the {@link DataSizeUnit} annotation on the
+	 * target type, or null if the annotation is not present
+	 */
+	private DataUnit getDataUnit(TypeDescriptor targetType) {
 		DataSizeUnit annotation = targetType.getAnnotation(DataSizeUnit.class);
 		return (annotation != null) ? annotation.value() : null;
 	}
 
 	/**
-     * Converts a string representation of data size to a DataSize object.
-     * 
-     * @param source the string representation of the data size
-     * @param unit the unit of the data size
-     * @return the DataSize object representing the converted data size
-     */
-    private DataSize convert(String source, DataUnit unit) {
+	 * Converts a string representation of data size to a DataSize object.
+	 * @param source the string representation of the data size
+	 * @param unit the unit of the data size
+	 * @return the DataSize object representing the converted data size
+	 */
+	private DataSize convert(String source, DataUnit unit) {
 		return DataSize.parse(source, unit);
 	}
 

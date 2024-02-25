@@ -33,13 +33,12 @@ public class VehicleDetails {
 	private final String model;
 
 	/**
-     * Constructs a new VehicleDetails object with the specified make and model.
-     * 
-     * @param make the make of the vehicle (must not be null)
-     * @param model the model of the vehicle (must not be null)
-     * @throws IllegalArgumentException if either make or model is null
-     */
-    @JsonCreator
+	 * Constructs a new VehicleDetails object with the specified make and model.
+	 * @param make the make of the vehicle (must not be null)
+	 * @param model the model of the vehicle (must not be null)
+	 * @throws IllegalArgumentException if either make or model is null
+	 */
+	@JsonCreator
 	public VehicleDetails(@JsonProperty("make") String make, @JsonProperty("model") String model) {
 		Assert.notNull(make, "Make must not be null");
 		Assert.notNull(model, "Model must not be null");
@@ -48,32 +47,29 @@ public class VehicleDetails {
 	}
 
 	/**
-     * Returns the make of the vehicle.
-     *
-     * @return the make of the vehicle
-     */
-    public String getMake() {
+	 * Returns the make of the vehicle.
+	 * @return the make of the vehicle
+	 */
+	public String getMake() {
 		return this.make;
 	}
 
 	/**
-     * Returns the model of the vehicle.
-     * 
-     * @return the model of the vehicle
-     */
-    public String getModel() {
+	 * Returns the model of the vehicle.
+	 * @return the model of the vehicle
+	 */
+	public String getModel() {
 		return this.model;
 	}
 
 	/**
-     * Compares this VehicleDetails object to the specified object for equality.
-     * Returns true if the specified object is also a VehicleDetails object and
-     * has the same make and model as this object.
-     * 
-     * @param obj the object to compare with
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this VehicleDetails object to the specified object for equality. Returns
+	 * true if the specified object is also a VehicleDetails object and has the same make
+	 * and model as this object.
+	 * @param obj the object to compare with
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -86,12 +82,12 @@ public class VehicleDetails {
 	}
 
 	/**
-     * Returns the hash code value for this VehicleDetails object.
-     * The hash code is calculated by multiplying the hash codes of the make and model properties by 31 and adding them together.
-     *
-     * @return the hash code value for this VehicleDetails object
-     */
-    @Override
+	 * Returns the hash code value for this VehicleDetails object. The hash code is
+	 * calculated by multiplying the hash codes of the make and model properties by 31 and
+	 * adding them together.
+	 * @return the hash code value for this VehicleDetails object
+	 */
+	@Override
 	public int hashCode() {
 		return this.make.hashCode() * 31 + this.model.hashCode();
 	}

@@ -39,49 +39,49 @@ public class ExampleServlet extends GenericServlet {
 	private final boolean writeWithoutContentLength;
 
 	/**
-     * Constructs a new ExampleServlet with the specified parameters.
-     * 
-     * @param parameter1 a boolean value indicating the value of the first parameter
-     * @param parameter2 a boolean value indicating the value of the second parameter
-     */
-    public ExampleServlet() {
+	 * Constructs a new ExampleServlet with the specified parameters.
+	 * @param parameter1 a boolean value indicating the value of the first parameter
+	 * @param parameter2 a boolean value indicating the value of the second parameter
+	 */
+	public ExampleServlet() {
 		this(false, false);
 	}
 
 	/**
-     * Constructs a new ExampleServlet with the specified parameters.
-     * 
-     * @param echoRequestInfo
-     *            a boolean indicating whether to echo the request information
-     * @param writeWithoutContentLength
-     *            a boolean indicating whether to write without content length
-     */
-    public ExampleServlet(boolean echoRequestInfo, boolean writeWithoutContentLength) {
+	 * Constructs a new ExampleServlet with the specified parameters.
+	 * @param echoRequestInfo a boolean indicating whether to echo the request information
+	 * @param writeWithoutContentLength a boolean indicating whether to write without
+	 * content length
+	 */
+	public ExampleServlet(boolean echoRequestInfo, boolean writeWithoutContentLength) {
 		this.echoRequestInfo = echoRequestInfo;
 		this.writeWithoutContentLength = writeWithoutContentLength;
 	}
 
 	/**
-     * This method is responsible for handling the service request and generating the response.
-     * It takes in a ServletRequest object and a ServletResponse object as parameters.
-     * It throws ServletException and IOException.
-     * 
-     * The method first initializes a String variable "content" with the value "Hello World".
-     * If the boolean variable "echoRequestInfo" is true, it appends additional information to the "content" string.
-     * This additional information includes the scheme and remote address obtained from the request object.
-     * 
-     * If the boolean variable "writeWithoutContentLength" is true, it sets the content type of the response to "text/plain".
-     * It then obtains the output stream from the response object and writes the content string to it.
-     * Finally, it flushes the output stream.
-     * 
-     * If the boolean variable "writeWithoutContentLength" is false, it obtains the writer from the response object and writes the content string to it.
-     * 
-     * @param request The ServletRequest object representing the incoming request.
-     * @param response The ServletResponse object representing the response to be generated.
-     * @throws ServletException If an exception occurs during the servlet processing.
-     * @throws IOException If an I/O exception occurs.
-     */
-    @Override
+	 * This method is responsible for handling the service request and generating the
+	 * response. It takes in a ServletRequest object and a ServletResponse object as
+	 * parameters. It throws ServletException and IOException.
+	 *
+	 * The method first initializes a String variable "content" with the value "Hello
+	 * World". If the boolean variable "echoRequestInfo" is true, it appends additional
+	 * information to the "content" string. This additional information includes the
+	 * scheme and remote address obtained from the request object.
+	 *
+	 * If the boolean variable "writeWithoutContentLength" is true, it sets the content
+	 * type of the response to "text/plain". It then obtains the output stream from the
+	 * response object and writes the content string to it. Finally, it flushes the output
+	 * stream.
+	 *
+	 * If the boolean variable "writeWithoutContentLength" is false, it obtains the writer
+	 * from the response object and writes the content string to it.
+	 * @param request The ServletRequest object representing the incoming request.
+	 * @param response The ServletResponse object representing the response to be
+	 * generated.
+	 * @throws ServletException If an exception occurs during the servlet processing.
+	 * @throws IOException If an I/O exception occurs.
+	 */
+	@Override
 	public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
 		String content = "Hello World";
 		if (this.echoRequestInfo) {

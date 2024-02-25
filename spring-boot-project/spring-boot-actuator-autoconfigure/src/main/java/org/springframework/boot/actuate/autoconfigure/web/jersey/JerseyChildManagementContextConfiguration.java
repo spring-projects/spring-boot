@@ -44,22 +44,22 @@ import org.springframework.context.annotation.Import;
 public class JerseyChildManagementContextConfiguration {
 
 	/**
-     * Returns the Jersey application path.
-     * 
-     * @return the Jersey application path
-     */
-    @Bean
+	 * Returns the Jersey application path.
+	 * @return the Jersey application path
+	 */
+	@Bean
 	public JerseyApplicationPath jerseyApplicationPath() {
 		return () -> "/";
 	}
 
 	/**
-     * Creates and configures a ResourceConfig object for the JerseyChildManagementContextConfiguration class.
-     * 
-     * @param customizers the ObjectProvider of ManagementContextResourceConfigCustomizer objects used to customize the ResourceConfig
-     * @return the configured ResourceConfig object
-     */
-    @Bean
+	 * Creates and configures a ResourceConfig object for the
+	 * JerseyChildManagementContextConfiguration class.
+	 * @param customizers the ObjectProvider of ManagementContextResourceConfigCustomizer
+	 * objects used to customize the ResourceConfig
+	 * @return the configured ResourceConfig object
+	 */
+	@Bean
 	ResourceConfig resourceConfig(ObjectProvider<ManagementContextResourceConfigCustomizer> customizers) {
 		ResourceConfig resourceConfig = new ResourceConfig();
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(resourceConfig));

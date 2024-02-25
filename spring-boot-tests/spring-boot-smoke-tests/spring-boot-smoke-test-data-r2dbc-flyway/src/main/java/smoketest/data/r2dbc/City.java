@@ -33,69 +33,63 @@ public class City {
 	private String country;
 
 	/**
-     * Constructs a new instance of the City class.
-     * 
-     * This constructor is protected to prevent direct instantiation of the City class.
-     * It can only be accessed by subclasses within the same package or by classes
-     * that inherit from the City class.
-     */
-    protected City() {
+	 * Constructs a new instance of the City class.
+	 *
+	 * This constructor is protected to prevent direct instantiation of the City class. It
+	 * can only be accessed by subclasses within the same package or by classes that
+	 * inherit from the City class.
+	 */
+	protected City() {
 	}
 
 	/**
-     * Constructs a new City object with the specified name and country.
-     * 
-     * @param name the name of the city
-     * @param country the country where the city is located
-     */
-    public City(String name, String country) {
+	 * Constructs a new City object with the specified name and country.
+	 * @param name the name of the city
+	 * @param country the country where the city is located
+	 */
+	public City(String name, String country) {
 		this.name = name;
 		this.country = country;
 	}
 
 	/**
-     * Returns the ID of the city.
-     *
-     * @return the ID of the city
-     */
-    public Long getId() {
+	 * Returns the ID of the city.
+	 * @return the ID of the city
+	 */
+	public Long getId() {
 		return this.id;
 	}
 
 	/**
-     * Returns the name of the city.
-     *
-     * @return the name of the city
-     */
-    public String getName() {
+	 * Returns the name of the city.
+	 * @return the name of the city
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Returns the state of the city.
-     * 
-     * @return the state of the city
-     */
-    public String getState() {
+	 * Returns the state of the city.
+	 * @return the state of the city
+	 */
+	public String getState() {
 		return this.state;
 	}
 
 	/**
-     * Returns the country of the city.
-     *
-     * @return the country of the city
-     */
-    public String getCountry() {
+	 * Returns the country of the city.
+	 * @return the country of the city
+	 */
+	public String getCountry() {
 		return this.country;
 	}
 
 	/**
-     * Returns a string representation of the City object.
-     * The string contains the name, state, and country of the city.
-     *
-     * @return a string representation of the City object
-     */
-    @Override
+	 * Returns a string representation of the City object. The string contains the name,
+	 * state, and country of the city.
+	 * @return a string representation of the City object
+	 */
+	@Override
 	public String toString() {
 		return getName() + "," + getState() + "," + getCountry();
 	}

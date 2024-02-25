@@ -64,9 +64,9 @@ public class GroovyTemplateAutoConfiguration {
 	private static final Log logger = LogFactory.getLog(GroovyTemplateAutoConfiguration.class);
 
 	/**
-     * GroovyMarkupConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * GroovyMarkupConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(GroovyMarkupConfigurer.class)
 	public static class GroovyMarkupConfiguration {
 
@@ -75,32 +75,34 @@ public class GroovyTemplateAutoConfiguration {
 		private final GroovyTemplateProperties properties;
 
 		/**
-         * Constructs a new GroovyMarkupConfiguration with the specified ApplicationContext and GroovyTemplateProperties.
-         * 
-         * @param applicationContext the ApplicationContext to be used
-         * @param properties the GroovyTemplateProperties to be used
-         */
-        public GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties) {
+		 * Constructs a new GroovyMarkupConfiguration with the specified
+		 * ApplicationContext and GroovyTemplateProperties.
+		 * @param applicationContext the ApplicationContext to be used
+		 * @param properties the GroovyTemplateProperties to be used
+		 */
+		public GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties) {
 			this.applicationContext = applicationContext;
 			this.properties = properties;
 			checkTemplateLocationExists();
 		}
 
 		/**
-         * Checks if the template location exists.
-         * 
-         * This method checks if the template location exists by verifying the following conditions:
-         * - The property "checkTemplateLocation" is set to true.
-         * - The "groovy-all" jar is not being used.
-         * 
-         * If the above conditions are met, a TemplateLocation object is created using the resource loader path
-         * specified in the properties. The existence of the template location is then checked using the
-         * application context. If the template location does not exist, a warning message is logged.
-         * 
-         * Note: If templates are not found, it is recommended to add some templates, check the Groovy configuration,
-         * or set the property "spring.groovy.template.check-template-location" to false.
-         */
-        public void checkTemplateLocationExists() {
+		 * Checks if the template location exists.
+		 *
+		 * This method checks if the template location exists by verifying the following
+		 * conditions: - The property "checkTemplateLocation" is set to true. - The
+		 * "groovy-all" jar is not being used.
+		 *
+		 * If the above conditions are met, a TemplateLocation object is created using the
+		 * resource loader path specified in the properties. The existence of the template
+		 * location is then checked using the application context. If the template
+		 * location does not exist, a warning message is logged.
+		 *
+		 * Note: If templates are not found, it is recommended to add some templates,
+		 * check the Groovy configuration, or set the property
+		 * "spring.groovy.template.check-template-location" to false.
+		 */
+		public void checkTemplateLocationExists() {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
 				TemplateLocation location = new TemplateLocation(this.properties.getResourceLoaderPath());
 				if (!location.exists(this.applicationContext)) {
@@ -131,16 +133,16 @@ public class GroovyTemplateAutoConfiguration {
 		}
 
 		/**
-         * Creates and configures a {@link GroovyMarkupConfigurer} bean if a bean of type {@link GroovyMarkupConfig} is not already present.
-         * The configuration properties are read from the "spring.groovy.template.configuration" prefix.
-         * The resource loader path is set based on the properties.
-         * The template caching is enabled or disabled based on the properties.
-         * If a {@link MarkupTemplateEngine} bean is available, it is set as the template engine for the configurer.
-         * 
-         * @param templateEngine an object provider for {@link MarkupTemplateEngine} bean
-         * @return the configured {@link GroovyMarkupConfigurer} bean
-         */
-        @Bean
+		 * Creates and configures a {@link GroovyMarkupConfigurer} bean if a bean of type
+		 * {@link GroovyMarkupConfig} is not already present. The configuration properties
+		 * are read from the "spring.groovy.template.configuration" prefix. The resource
+		 * loader path is set based on the properties. The template caching is enabled or
+		 * disabled based on the properties. If a {@link MarkupTemplateEngine} bean is
+		 * available, it is set as the template engine for the configurer.
+		 * @param templateEngine an object provider for {@link MarkupTemplateEngine} bean
+		 * @return the configured {@link GroovyMarkupConfigurer} bean
+		 */
+		@Bean
 		@ConditionalOnMissingBean(GroovyMarkupConfig.class)
 		@ConfigurationProperties(prefix = "spring.groovy.template.configuration")
 		public GroovyMarkupConfigurer groovyMarkupConfigurer(ObjectProvider<MarkupTemplateEngine> templateEngine) {
@@ -154,22 +156,23 @@ public class GroovyTemplateAutoConfiguration {
 	}
 
 	/**
-     * GroovyWebConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * GroovyWebConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class, UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
 	public static class GroovyWebConfiguration {
 
 		/**
-         * Creates a GroovyMarkupViewResolver bean if there is no existing bean with the name "groovyMarkupViewResolver".
-         * The GroovyTemplateProperties are applied to the created GroovyMarkupViewResolver.
-         * 
-         * @param properties the GroovyTemplateProperties to be applied to the GroovyMarkupViewResolver
-         * @return the created GroovyMarkupViewResolver bean
-         */
-        @Bean
+		 * Creates a GroovyMarkupViewResolver bean if there is no existing bean with the
+		 * name "groovyMarkupViewResolver". The GroovyTemplateProperties are applied to
+		 * the created GroovyMarkupViewResolver.
+		 * @param properties the GroovyTemplateProperties to be applied to the
+		 * GroovyMarkupViewResolver
+		 * @return the created GroovyMarkupViewResolver bean
+		 */
+		@Bean
 		@ConditionalOnMissingBean(name = "groovyMarkupViewResolver")
 		public GroovyMarkupViewResolver groovyMarkupViewResolver(GroovyTemplateProperties properties) {
 			GroovyMarkupViewResolver resolver = new GroovyMarkupViewResolver();

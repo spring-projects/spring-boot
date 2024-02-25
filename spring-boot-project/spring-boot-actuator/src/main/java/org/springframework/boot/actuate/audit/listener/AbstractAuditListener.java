@@ -28,21 +28,19 @@ import org.springframework.context.ApplicationListener;
 public abstract class AbstractAuditListener implements ApplicationListener<AuditApplicationEvent> {
 
 	/**
-     * This method is called when an AuditApplicationEvent is triggered.
-     * It retrieves the AuditEvent from the event parameter and passes it to the onAuditEvent method.
-     * 
-     * @param event The AuditApplicationEvent that was triggered
-     */
-    @Override
+	 * This method is called when an AuditApplicationEvent is triggered. It retrieves the
+	 * AuditEvent from the event parameter and passes it to the onAuditEvent method.
+	 * @param event The AuditApplicationEvent that was triggered
+	 */
+	@Override
 	public void onApplicationEvent(AuditApplicationEvent event) {
 		onAuditEvent(event.getAuditEvent());
 	}
 
 	/**
-     * This method is called when an audit event occurs.
-     * 
-     * @param event the audit event that occurred
-     */
-    protected abstract void onAuditEvent(AuditEvent event);
+	 * This method is called when an audit event occurs.
+	 * @param event the audit event that occurred
+	 */
+	protected abstract void onAuditEvent(AuditEvent event);
 
 }

@@ -30,22 +30,20 @@ public class InMemoryMessageRepository implements MessageRepository {
 	private final ConcurrentMap<Long, Message> messages = new ConcurrentHashMap<>();
 
 	/**
-     * Returns an iterable collection of all messages in the repository.
-     *
-     * @return an iterable collection of all messages
-     */
-    @Override
+	 * Returns an iterable collection of all messages in the repository.
+	 * @return an iterable collection of all messages
+	 */
+	@Override
 	public Iterable<Message> findAll() {
 		return this.messages.values();
 	}
 
 	/**
-     * Saves a message in the repository.
-     * 
-     * @param message the message to be saved
-     * @return the saved message
-     */
-    @Override
+	 * Saves a message in the repository.
+	 * @param message the message to be saved
+	 * @return the saved message
+	 */
+	@Override
 	public Message save(Message message) {
 		Long id = message.getId();
 		if (id == null) {
@@ -57,22 +55,20 @@ public class InMemoryMessageRepository implements MessageRepository {
 	}
 
 	/**
-     * Retrieves a message from the in-memory message repository based on its ID.
-     * 
-     * @param id the ID of the message to be retrieved
-     * @return the message with the specified ID, or null if no message is found
-     */
-    @Override
+	 * Retrieves a message from the in-memory message repository based on its ID.
+	 * @param id the ID of the message to be retrieved
+	 * @return the message with the specified ID, or null if no message is found
+	 */
+	@Override
 	public Message findMessage(Long id) {
 		return this.messages.get(id);
 	}
 
 	/**
-     * Deletes a message from the repository based on its ID.
-     * 
-     * @param id the ID of the message to be deleted
-     */
-    @Override
+	 * Deletes a message from the repository based on its ID.
+	 * @param id the ID of the message to be deleted
+	 */
+	@Override
 	public void deleteMessage(Long id) {
 		this.messages.remove(id);
 	}

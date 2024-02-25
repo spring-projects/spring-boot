@@ -29,20 +29,18 @@ public class ServiceProperties {
 	private String vehicleServiceRootUrl = "http://localhost:8080/vs";
 
 	/**
-     * Returns the root URL of the vehicle service.
-     *
-     * @return the root URL of the vehicle service
-     */
-    public String getVehicleServiceRootUrl() {
+	 * Returns the root URL of the vehicle service.
+	 * @return the root URL of the vehicle service
+	 */
+	public String getVehicleServiceRootUrl() {
 		return this.vehicleServiceRootUrl;
 	}
 
 	/**
-     * Sets the root URL for the vehicle service.
-     * 
-     * @param vehicleServiceRootUrl the root URL for the vehicle service
-     */
-    public void setVehicleServiceRootUrl(String vehicleServiceRootUrl) {
+	 * Sets the root URL for the vehicle service.
+	 * @param vehicleServiceRootUrl the root URL for the vehicle service
+	 */
+	public void setVehicleServiceRootUrl(String vehicleServiceRootUrl) {
 		this.vehicleServiceRootUrl = vehicleServiceRootUrl;
 	}
 

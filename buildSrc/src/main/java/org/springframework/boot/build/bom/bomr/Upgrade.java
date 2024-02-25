@@ -31,31 +31,28 @@ final class Upgrade {
 	private final DependencyVersion version;
 
 	/**
-     * Upgrades the library to the specified version.
-     * 
-     * @param library the library to be upgraded
-     * @param version the version to upgrade to
-     */
-    Upgrade(Library library, DependencyVersion version) {
+	 * Upgrades the library to the specified version.
+	 * @param library the library to be upgraded
+	 * @param version the version to upgrade to
+	 */
+	Upgrade(Library library, DependencyVersion version) {
 		this.library = library;
 		this.version = version;
 	}
 
 	/**
-     * Returns the library object associated with this Upgrade.
-     *
-     * @return the library object associated with this Upgrade
-     */
-    Library getLibrary() {
+	 * Returns the library object associated with this Upgrade.
+	 * @return the library object associated with this Upgrade
+	 */
+	Library getLibrary() {
 		return this.library;
 	}
 
 	/**
-     * Returns the version of the dependency.
-     *
-     * @return the version of the dependency
-     */
-    DependencyVersion getVersion() {
+	 * Returns the version of the dependency.
+	 * @return the version of the dependency
+	 */
+	DependencyVersion getVersion() {
 		return this.version;
 	}
 

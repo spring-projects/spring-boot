@@ -47,24 +47,24 @@ class RequestPredicateFactory {
 	private final EndpointMediaTypes endpointMediaTypes;
 
 	/**
-     * Constructs a new RequestPredicateFactory with the specified EndpointMediaTypes.
-     * 
-     * @param endpointMediaTypes the EndpointMediaTypes to be used by the RequestPredicateFactory (must not be null)
-     * @throws IllegalArgumentException if the endpointMediaTypes parameter is null
-     */
-    RequestPredicateFactory(EndpointMediaTypes endpointMediaTypes) {
+	 * Constructs a new RequestPredicateFactory with the specified EndpointMediaTypes.
+	 * @param endpointMediaTypes the EndpointMediaTypes to be used by the
+	 * RequestPredicateFactory (must not be null)
+	 * @throws IllegalArgumentException if the endpointMediaTypes parameter is null
+	 */
+	RequestPredicateFactory(EndpointMediaTypes endpointMediaTypes) {
 		Assert.notNull(endpointMediaTypes, "EndpointMediaTypes must not be null");
 		this.endpointMediaTypes = endpointMediaTypes;
 	}
 
 	/**
-     * Returns a {@link WebOperationRequestPredicate} based on the given root path and operation method.
-     * 
-     * @param rootPath the root path of the web operation
-     * @param operationMethod the discovered operation method
-     * @return the web operation request predicate
-     */
-    WebOperationRequestPredicate getRequestPredicate(String rootPath, DiscoveredOperationMethod operationMethod) {
+	 * Returns a {@link WebOperationRequestPredicate} based on the given root path and
+	 * operation method.
+	 * @param rootPath the root path of the web operation
+	 * @param operationMethod the discovered operation method
+	 * @return the web operation request predicate
+	 */
+	WebOperationRequestPredicate getRequestPredicate(String rootPath, DiscoveredOperationMethod operationMethod) {
 		Method method = operationMethod.getMethod();
 		OperationParameter[] selectorParameters = operationMethod.getParameters()
 			.stream()
@@ -79,16 +79,16 @@ class RequestPredicateFactory {
 	}
 
 	/**
-     * Retrieves the operation parameter that is annotated with the {@code @Selector} annotation
-     * and has a match value of {@code Match.ALL_REMAINING}.
-     * 
-     * @param selectorParameters an array of operation parameters
-     * @return the operation parameter with the {@code @Selector} annotation and match value of {@code Match.ALL_REMAINING},
-     *         or {@code null} if no such parameter exists
-     * @throws IllegalStateException if more than one operation parameter is annotated with {@code @Selector} and match value of {@code Match.ALL_REMAINING},
-     *                               or if the parameter is not the last parameter in the array
-     */
-    private OperationParameter getAllRemainingPathSegmentsParameter(OperationParameter[] selectorParameters) {
+	 * Retrieves the operation parameter that is annotated with the {@code @Selector}
+	 * annotation and has a match value of {@code Match.ALL_REMAINING}.
+	 * @param selectorParameters an array of operation parameters
+	 * @return the operation parameter with the {@code @Selector} annotation and match
+	 * value of {@code Match.ALL_REMAINING}, or {@code null} if no such parameter exists
+	 * @throws IllegalStateException if more than one operation parameter is annotated
+	 * with {@code @Selector} and match value of {@code Match.ALL_REMAINING}, or if the
+	 * parameter is not the last parameter in the array
+	 */
+	private OperationParameter getAllRemainingPathSegmentsParameter(OperationParameter[] selectorParameters) {
 		OperationParameter trailingPathsParameter = null;
 		for (OperationParameter selectorParameter : selectorParameters) {
 			Selector selector = selectorParameter.getAnnotation(Selector.class);
@@ -106,14 +106,16 @@ class RequestPredicateFactory {
 	}
 
 	/**
-     * Generates a path string based on the given root path, selector parameters, and matchRemainingPathSegments flag.
-     * 
-     * @param rootPath The root path to append the selector parameters to.
-     * @param selectorParameters An array of OperationParameter objects representing the selector parameters.
-     * @param matchRemainingPathSegments A boolean flag indicating whether to match remaining path segments.
-     * @return The generated path string.
-     */
-    private String getPath(String rootPath, OperationParameter[] selectorParameters,
+	 * Generates a path string based on the given root path, selector parameters, and
+	 * matchRemainingPathSegments flag.
+	 * @param rootPath The root path to append the selector parameters to.
+	 * @param selectorParameters An array of OperationParameter objects representing the
+	 * selector parameters.
+	 * @param matchRemainingPathSegments A boolean flag indicating whether to match
+	 * remaining path segments.
+	 * @return The generated path string.
+	 */
+	private String getPath(String rootPath, OperationParameter[] selectorParameters,
 			boolean matchRemainingPathSegments) {
 		StringBuilder path = new StringBuilder(rootPath);
 		for (int i = 0; i < selectorParameters.length; i++) {
@@ -128,23 +130,23 @@ class RequestPredicateFactory {
 	}
 
 	/**
-     * Checks if the given OperationParameter has a Selector annotation.
-     * 
-     * @param parameter the OperationParameter to check
-     * @return true if the OperationParameter has a Selector annotation, false otherwise
-     */
-    private boolean hasSelector(OperationParameter parameter) {
+	 * Checks if the given OperationParameter has a Selector annotation.
+	 * @param parameter the OperationParameter to check
+	 * @return true if the OperationParameter has a Selector annotation, false otherwise
+	 */
+	private boolean hasSelector(OperationParameter parameter) {
 		return parameter.getAnnotation(Selector.class) != null;
 	}
 
 	/**
-     * Returns the collection of media types that the given HTTP method and method consume, if the HTTP method is POST and the method consumes a request body.
-     * 
-     * @param httpMethod the HTTP method
-     * @param method the method
-     * @return the collection of media types that the given HTTP method and method consume, or an empty collection if the conditions are not met
-     */
-    private Collection<String> getConsumes(WebEndpointHttpMethod httpMethod, Method method) {
+	 * Returns the collection of media types that the given HTTP method and method
+	 * consume, if the HTTP method is POST and the method consumes a request body.
+	 * @param httpMethod the HTTP method
+	 * @param method the method
+	 * @return the collection of media types that the given HTTP method and method
+	 * consume, or an empty collection if the conditions are not met
+	 */
+	private Collection<String> getConsumes(WebEndpointHttpMethod httpMethod, Method method) {
 		if (WebEndpointHttpMethod.POST == httpMethod && consumesRequestBody(method)) {
 			return this.endpointMediaTypes.getConsumed();
 		}
@@ -152,13 +154,12 @@ class RequestPredicateFactory {
 	}
 
 	/**
-     * Returns the collection of media types that the given operation method produces.
-     * 
-     * @param operationMethod the discovered operation method
-     * @param method the method object
-     * @return the collection of media types that the operation method produces
-     */
-    private Collection<String> getProduces(DiscoveredOperationMethod operationMethod, Method method) {
+	 * Returns the collection of media types that the given operation method produces.
+	 * @param operationMethod the discovered operation method
+	 * @param method the method object
+	 * @return the collection of media types that the operation method produces
+	 */
+	private Collection<String> getProduces(DiscoveredOperationMethod operationMethod, Method method) {
 		if (!operationMethod.getProducesMediaTypes().isEmpty()) {
 			return operationMethod.getProducesMediaTypes();
 		}
@@ -172,12 +173,11 @@ class RequestPredicateFactory {
 	}
 
 	/**
-     * Determines if the given method produces a resource.
-     * 
-     * @param method the method to check
-     * @return true if the method produces a resource, false otherwise
-     */
-    private boolean producesResource(Method method) {
+	 * Determines if the given method produces a resource.
+	 * @param method the method to check
+	 * @return true if the method produces a resource, false otherwise
+	 */
+	private boolean producesResource(Method method) {
 		if (Resource.class.equals(method.getReturnType())) {
 			return true;
 		}
@@ -189,23 +189,21 @@ class RequestPredicateFactory {
 	}
 
 	/**
-     * Determines if the given method consumes a request body.
-     * 
-     * @param method the method to check
-     * @return true if the method consumes a request body, false otherwise
-     */
-    private boolean consumesRequestBody(Method method) {
+	 * Determines if the given method consumes a request body.
+	 * @param method the method to check
+	 * @return true if the method consumes a request body, false otherwise
+	 */
+	private boolean consumesRequestBody(Method method) {
 		return Stream.of(method.getParameters())
 			.anyMatch((parameter) -> parameter.getAnnotation(Selector.class) == null);
 	}
 
 	/**
-     * Determines the HTTP method based on the given operation type.
-     * 
-     * @param operationType the operation type to determine the HTTP method for
-     * @return the HTTP method to be used for the given operation type
-     */
-    private WebEndpointHttpMethod determineHttpMethod(OperationType operationType) {
+	 * Determines the HTTP method based on the given operation type.
+	 * @param operationType the operation type to determine the HTTP method for
+	 * @return the HTTP method to be used for the given operation type
+	 */
+	private WebEndpointHttpMethod determineHttpMethod(OperationType operationType) {
 		if (operationType == OperationType.WRITE) {
 			return WebEndpointHttpMethod.POST;
 		}

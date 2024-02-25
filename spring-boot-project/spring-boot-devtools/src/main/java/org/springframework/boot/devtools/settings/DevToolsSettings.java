@@ -52,17 +52,16 @@ public class DevToolsSettings {
 	private final List<Pattern> restartExcludePatterns = new ArrayList<>();
 
 	/**
-     * This method is used to configure the settings for the development tools.
-     */
-    DevToolsSettings() {
+	 * This method is used to configure the settings for the development tools.
+	 */
+	DevToolsSettings() {
 	}
 
 	/**
-     * Adds the specified properties to the restart include and exclude patterns.
-     * 
-     * @param properties the properties to be added
-     */
-    void add(Map<?, ?> properties) {
+	 * Adds the specified properties to the restart include and exclude patterns.
+	 * @param properties the properties to be added
+	 */
+	void add(Map<?, ?> properties) {
 		Map<String, Pattern> includes = getPatterns(properties, "restart.include.");
 		this.restartIncludePatterns.addAll(includes.values());
 		Map<String, Pattern> excludes = getPatterns(properties, "restart.exclude.");
@@ -70,13 +69,13 @@ public class DevToolsSettings {
 	}
 
 	/**
-     * Retrieves a map of patterns from the given properties map based on the specified prefix.
-     * 
-     * @param properties the properties map containing the patterns
-     * @param prefix the prefix used to filter the patterns
-     * @return a map of patterns with their corresponding names
-     */
-    private Map<String, Pattern> getPatterns(Map<?, ?> properties, String prefix) {
+	 * Retrieves a map of patterns from the given properties map based on the specified
+	 * prefix.
+	 * @param properties the properties map containing the patterns
+	 * @param prefix the prefix used to filter the patterns
+	 * @return a map of patterns with their corresponding names
+	 */
+	private Map<String, Pattern> getPatterns(Map<?, ?> properties, String prefix) {
 		Map<String, Pattern> patterns = new LinkedHashMap<>();
 		properties.forEach((key, value) -> {
 			String name = String.valueOf(key);
@@ -89,33 +88,32 @@ public class DevToolsSettings {
 	}
 
 	/**
-     * Checks if the given URL is included in the restart include patterns.
-     * 
-     * @param url the URL to check
-     * @return true if the URL is included in the restart include patterns, false otherwise
-     */
-    public boolean isRestartInclude(URL url) {
+	 * Checks if the given URL is included in the restart include patterns.
+	 * @param url the URL to check
+	 * @return true if the URL is included in the restart include patterns, false
+	 * otherwise
+	 */
+	public boolean isRestartInclude(URL url) {
 		return isMatch(url.toString(), this.restartIncludePatterns);
 	}
 
 	/**
-     * Checks if the given URL is excluded from restart based on the restart exclude patterns.
-     * 
-     * @param url the URL to check
-     * @return true if the URL is excluded from restart, false otherwise
-     */
-    public boolean isRestartExclude(URL url) {
+	 * Checks if the given URL is excluded from restart based on the restart exclude
+	 * patterns.
+	 * @param url the URL to check
+	 * @return true if the URL is excluded from restart, false otherwise
+	 */
+	public boolean isRestartExclude(URL url) {
 		return isMatch(url.toString(), this.restartExcludePatterns);
 	}
 
 	/**
-     * Checks if the given URL matches any of the patterns in the provided list.
-     *
-     * @param url      the URL to be checked
-     * @param patterns the list of patterns to match against
-     * @return true if the URL matches any of the patterns, false otherwise
-     */
-    private boolean isMatch(String url, List<Pattern> patterns) {
+	 * Checks if the given URL matches any of the patterns in the provided list.
+	 * @param url the URL to be checked
+	 * @param patterns the list of patterns to match against
+	 * @return true if the URL matches any of the patterns, false otherwise
+	 */
+	private boolean isMatch(String url, List<Pattern> patterns) {
 		for (Pattern pattern : patterns) {
 			if (pattern.matcher(url).find()) {
 				return true;
@@ -125,11 +123,10 @@ public class DevToolsSettings {
 	}
 
 	/**
-     * Retrieves the DevToolsSettings instance.
-     * 
-     * @return the DevToolsSettings instance
-     */
-    public static DevToolsSettings get() {
+	 * Retrieves the DevToolsSettings instance.
+	 * @return the DevToolsSettings instance
+	 */
+	public static DevToolsSettings get() {
 		if (settings == null) {
 			settings = load();
 		}
@@ -137,22 +134,21 @@ public class DevToolsSettings {
 	}
 
 	/**
-     * Loads the DevToolsSettings from the default resource location.
-     * 
-     * @return the loaded DevToolsSettings
-     */
-    static DevToolsSettings load() {
+	 * Loads the DevToolsSettings from the default resource location.
+	 * @return the loaded DevToolsSettings
+	 */
+	static DevToolsSettings load() {
 		return load(SETTINGS_RESOURCE_LOCATION);
 	}
 
 	/**
-     * Loads the DevToolsSettings from the specified location.
-     * 
-     * @param location the location of the DevToolsSettings
-     * @return the loaded DevToolsSettings
-     * @throws IllegalStateException if unable to load the DevToolsSettings from the specified location
-     */
-    static DevToolsSettings load(String location) {
+	 * Loads the DevToolsSettings from the specified location.
+	 * @param location the location of the DevToolsSettings
+	 * @return the loaded DevToolsSettings
+	 * @throws IllegalStateException if unable to load the DevToolsSettings from the
+	 * specified location
+	 */
+	static DevToolsSettings load(String location) {
 		try {
 			DevToolsSettings settings = new DevToolsSettings();
 			Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(location);

@@ -40,13 +40,12 @@ import org.springframework.context.annotation.Configuration;
 class GenericCacheConfiguration {
 
 	/**
-     * Creates a SimpleCacheManager with the specified customizers and caches.
-     * 
-     * @param customizers the customizers to apply to the cache manager
-     * @param caches the collection of caches to be set in the cache manager
-     * @return the configured SimpleCacheManager
-     */
-    @Bean
+	 * Creates a SimpleCacheManager with the specified customizers and caches.
+	 * @param customizers the customizers to apply to the cache manager
+	 * @param caches the collection of caches to be set in the cache manager
+	 * @return the configured SimpleCacheManager
+	 */
+	@Bean
 	SimpleCacheManager cacheManager(CacheManagerCustomizers customizers, Collection<Cache> caches) {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(caches);

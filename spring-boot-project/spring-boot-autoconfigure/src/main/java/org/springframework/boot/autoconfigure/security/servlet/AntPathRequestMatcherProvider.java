@@ -32,21 +32,19 @@ public class AntPathRequestMatcherProvider implements RequestMatcherProvider {
 	private final Function<String, String> pathFactory;
 
 	/**
-     * Constructs a new AntPathRequestMatcherProvider with the specified pathFactory.
-     *
-     * @param pathFactory the function used to create paths
-     */
-    public AntPathRequestMatcherProvider(Function<String, String> pathFactory) {
+	 * Constructs a new AntPathRequestMatcherProvider with the specified pathFactory.
+	 * @param pathFactory the function used to create paths
+	 */
+	public AntPathRequestMatcherProvider(Function<String, String> pathFactory) {
 		this.pathFactory = pathFactory;
 	}
 
 	/**
-     * Returns a RequestMatcher based on the given pattern.
-     * 
-     * @param pattern the pattern to match against
-     * @return a RequestMatcher that matches the given pattern
-     */
-    @Override
+	 * Returns a RequestMatcher based on the given pattern.
+	 * @param pattern the pattern to match against
+	 * @return a RequestMatcher that matches the given pattern
+	 */
+	@Override
 	public RequestMatcher getRequestMatcher(String pattern) {
 		return new AntPathRequestMatcher(this.pathFactory.apply(pattern));
 	}

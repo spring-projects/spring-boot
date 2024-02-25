@@ -28,12 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ExampleController {
 
 	/**
-     * Retrieves the index page.
-     * 
-     * @param jwt The JSON Web Token used for authentication.
-     * @return A string containing a personalized greeting message.
-     */
-    @GetMapping("/")
+	 * Retrieves the index page.
+	 * @param jwt The JSON Web Token used for authentication.
+	 * @return A string containing a personalized greeting message.
+	 */
+	@GetMapping("/")
 	public String index(@AuthenticationPrincipal Jwt jwt) {
 		return String.format("Hello, %s!", jwt.getSubject());
 	}

@@ -29,41 +29,37 @@ public class SampleMessage {
 	private final String message;
 
 	/**
-     * Constructs a new SampleMessage object with the specified id and message.
-     * 
-     * @param id the id of the SampleMessage
-     * @param message the message of the SampleMessage
-     */
-    @JsonCreator
+	 * Constructs a new SampleMessage object with the specified id and message.
+	 * @param id the id of the SampleMessage
+	 * @param message the message of the SampleMessage
+	 */
+	@JsonCreator
 	public SampleMessage(@JsonProperty("id") Integer id, @JsonProperty("message") String message) {
 		this.id = id;
 		this.message = message;
 	}
 
 	/**
-     * Returns the ID of the SampleMessage object.
-     *
-     * @return the ID of the SampleMessage object
-     */
-    public Integer getId() {
+	 * Returns the ID of the SampleMessage object.
+	 * @return the ID of the SampleMessage object
+	 */
+	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-     * Returns the message.
-     *
-     * @return the message
-     */
-    public String getMessage() {
+	 * Returns the message.
+	 * @return the message
+	 */
+	public String getMessage() {
 		return this.message;
 	}
 
 	/**
-     * Returns a string representation of the SampleMessage object.
-     * 
-     * @return a string representation of the SampleMessage object
-     */
-    @Override
+	 * Returns a string representation of the SampleMessage object.
+	 * @return a string representation of the SampleMessage object
+	 */
+	@Override
 	public String toString() {
 		return "SampleMessage{id=" + this.id + ", message='" + this.message + "'}";
 	}

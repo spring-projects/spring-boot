@@ -42,32 +42,31 @@ final class RecordableServletHttpRequest implements RecordableHttpRequest {
 	private final HttpServletRequest request;
 
 	/**
-     * Constructs a new RecordableServletHttpRequest object with the provided HttpServletRequest.
-     * 
-     * @param request the HttpServletRequest object to be associated with the RecordableServletHttpRequest
-     */
-    RecordableServletHttpRequest(HttpServletRequest request) {
+	 * Constructs a new RecordableServletHttpRequest object with the provided
+	 * HttpServletRequest.
+	 * @param request the HttpServletRequest object to be associated with the
+	 * RecordableServletHttpRequest
+	 */
+	RecordableServletHttpRequest(HttpServletRequest request) {
 		this.request = request;
 	}
 
 	/**
-     * Returns the HTTP method of the request.
-     *
-     * @return the HTTP method of the request
-     */
-    @Override
+	 * Returns the HTTP method of the request.
+	 * @return the HTTP method of the request
+	 */
+	@Override
 	public String getMethod() {
 		return this.request.getMethod();
 	}
 
 	/**
-     * Returns the URI of the current request.
-     * If the request has a query string, it appends it to the URI.
-     * If the query string cannot be parsed as a valid URI, it encodes it and appends it to the URI.
-     *
-     * @return the URI of the current request
-     */
-    @Override
+	 * Returns the URI of the current request. If the request has a query string, it
+	 * appends it to the URI. If the query string cannot be parsed as a valid URI, it
+	 * encodes it and appends it to the URI.
+	 * @return the URI of the current request
+	 */
+	@Override
 	public URI getUri() {
 		String queryString = this.request.getQueryString();
 		if (!StringUtils.hasText(queryString)) {
@@ -85,42 +84,39 @@ final class RecordableServletHttpRequest implements RecordableHttpRequest {
 	}
 
 	/**
-     * Appends the given query string to the current request URL.
-     * 
-     * @param queryString the query string to be appended
-     * @return a StringBuffer object representing the modified request URL
-     */
-    private StringBuffer appendQueryString(String queryString) {
+	 * Appends the given query string to the current request URL.
+	 * @param queryString the query string to be appended
+	 * @return a StringBuffer object representing the modified request URL
+	 */
+	private StringBuffer appendQueryString(String queryString) {
 		return this.request.getRequestURL().append("?").append(queryString);
 	}
 
 	/**
-     * Returns the headers of the HTTP request.
-     * 
-     * @return a map containing the headers as key-value pairs, where the key is the header name and the value is a list of header values
-     */
-    @Override
+	 * Returns the headers of the HTTP request.
+	 * @return a map containing the headers as key-value pairs, where the key is the
+	 * header name and the value is a list of header values
+	 */
+	@Override
 	public Map<String, List<String>> getHeaders() {
 		return extractHeaders();
 	}
 
 	/**
-     * Returns the remote address of the client making the request.
-     * 
-     * @return a String representing the remote address of the client
-     */
-    @Override
+	 * Returns the remote address of the client making the request.
+	 * @return a String representing the remote address of the client
+	 */
+	@Override
 	public String getRemoteAddress() {
 		return this.request.getRemoteAddr();
 	}
 
 	/**
-     * Extracts the headers from the current request and returns them as a map.
-     * The map contains the header names as keys and a list of header values as values.
-     * 
-     * @return A map containing the headers of the current request.
-     */
-    private Map<String, List<String>> extractHeaders() {
+	 * Extracts the headers from the current request and returns them as a map. The map
+	 * contains the header names as keys and a list of header values as values.
+	 * @return A map containing the headers of the current request.
+	 */
+	private Map<String, List<String>> extractHeaders() {
 		Map<String, List<String>> headers = new LinkedHashMap<>();
 		Enumeration<String> names = this.request.getHeaderNames();
 		while (names.hasMoreElements()) {

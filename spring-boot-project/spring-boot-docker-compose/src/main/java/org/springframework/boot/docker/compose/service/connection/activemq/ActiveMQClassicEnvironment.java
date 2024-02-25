@@ -31,30 +31,27 @@ class ActiveMQClassicEnvironment {
 	private final String password;
 
 	/**
-     * Constructs a new ActiveMQClassicEnvironment object with the specified environment.
-     * 
-     * @param env the environment map containing the connection user and password
-     */
-    ActiveMQClassicEnvironment(Map<String, String> env) {
+	 * Constructs a new ActiveMQClassicEnvironment object with the specified environment.
+	 * @param env the environment map containing the connection user and password
+	 */
+	ActiveMQClassicEnvironment(Map<String, String> env) {
 		this.user = env.get("ACTIVEMQ_CONNECTION_USER");
 		this.password = env.get("ACTIVEMQ_CONNECTION_PASSWORD");
 	}
 
 	/**
-     * Returns the user associated with the ActiveMQClassicEnvironment.
-     *
-     * @return the user associated with the ActiveMQClassicEnvironment
-     */
-    String getUser() {
+	 * Returns the user associated with the ActiveMQClassicEnvironment.
+	 * @return the user associated with the ActiveMQClassicEnvironment
+	 */
+	String getUser() {
 		return this.user;
 	}
 
 	/**
-     * Returns the password associated with the ActiveMQClassicEnvironment instance.
-     *
-     * @return the password associated with the ActiveMQClassicEnvironment instance
-     */
-    String getPassword() {
+	 * Returns the password associated with the ActiveMQClassicEnvironment instance.
+	 * @return the password associated with the ActiveMQClassicEnvironment instance
+	 */
+	String getPassword() {
 		return this.password;
 	}
 

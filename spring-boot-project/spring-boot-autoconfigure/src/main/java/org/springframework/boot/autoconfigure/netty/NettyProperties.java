@@ -37,20 +37,18 @@ public class NettyProperties {
 	private LeakDetection leakDetection;
 
 	/**
-     * Returns the LeakDetection object associated with this NettyProperties instance.
-     *
-     * @return the LeakDetection object
-     */
-    public LeakDetection getLeakDetection() {
+	 * Returns the LeakDetection object associated with this NettyProperties instance.
+	 * @return the LeakDetection object
+	 */
+	public LeakDetection getLeakDetection() {
 		return this.leakDetection;
 	}
 
 	/**
-     * Sets the leak detection for the NettyProperties.
-     * 
-     * @param leakDetection the leak detection to be set
-     */
-    public void setLeakDetection(LeakDetection leakDetection) {
+	 * Sets the leak detection for the NettyProperties.
+	 * @param leakDetection the leak detection to be set
+	 */
+	public void setLeakDetection(LeakDetection leakDetection) {
 		this.leakDetection = leakDetection;
 	}
 

@@ -42,25 +42,26 @@ class SpringProfileModelHandler extends ModelHandlerBase {
 	private final Environment environment;
 
 	/**
-     * Constructs a new SpringProfileModelHandler with the specified context and environment.
-     * 
-     * @param context the context for the SpringProfileModelHandler
-     * @param environment the environment for the SpringProfileModelHandler
-     */
-    SpringProfileModelHandler(Context context, Environment environment) {
+	 * Constructs a new SpringProfileModelHandler with the specified context and
+	 * environment.
+	 * @param context the context for the SpringProfileModelHandler
+	 * @param environment the environment for the SpringProfileModelHandler
+	 */
+	SpringProfileModelHandler(Context context, Environment environment) {
 		super(context);
 		this.environment = environment;
 	}
 
 	/**
-     * Handles the SpringProfileModel by checking if it should be accepted based on the profiles in the ModelInterpretationContext.
-     * If the profiles are not accepted, the model is marked as skipped.
-     *
-     * @param intercon The ModelInterpretationContext containing the profiles to check against.
-     * @param model The SpringProfileModel to handle.
-     * @throws ModelHandlerException if an error occurs while handling the model.
-     */
-    @Override
+	 * Handles the SpringProfileModel by checking if it should be accepted based on the
+	 * profiles in the ModelInterpretationContext. If the profiles are not accepted, the
+	 * model is marked as skipped.
+	 * @param intercon The ModelInterpretationContext containing the profiles to check
+	 * against.
+	 * @param model The SpringProfileModel to handle.
+	 * @throws ModelHandlerException if an error occurs while handling the model.
+	 */
+	@Override
 	public void handle(ModelInterpretationContext intercon, Model model) throws ModelHandlerException {
 		SpringProfileModel profileModel = (SpringProfileModel) model;
 		if (!acceptsProfiles(intercon, profileModel)) {
@@ -69,13 +70,12 @@ class SpringProfileModelHandler extends ModelHandlerBase {
 	}
 
 	/**
-     * Checks if the given model is accepted by the current environment profiles.
-     * 
-     * @param ic the ModelInterpretationContext
-     * @param model the SpringProfileModel to be checked
-     * @return true if the model is accepted, false otherwise
-     */
-    private boolean acceptsProfiles(ModelInterpretationContext ic, SpringProfileModel model) {
+	 * Checks if the given model is accepted by the current environment profiles.
+	 * @param ic the ModelInterpretationContext
+	 * @param model the SpringProfileModel to be checked
+	 * @return true if the model is accepted, false otherwise
+	 */
+	private boolean acceptsProfiles(ModelInterpretationContext ic, SpringProfileModel model) {
 		if (this.environment == null) {
 			return false;
 		}

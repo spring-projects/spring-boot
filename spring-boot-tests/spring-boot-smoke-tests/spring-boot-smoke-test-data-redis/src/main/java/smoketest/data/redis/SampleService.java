@@ -34,21 +34,19 @@ public class SampleService {
 	private final RedisOperations<Object, Object> operations;
 
 	/**
-     * Constructs a new SampleService with the specified RedisOperations.
-     * 
-     * @param operations the RedisOperations used by the SampleService
-     */
-    public SampleService(RedisOperations<Object, Object> operations) {
+	 * Constructs a new SampleService with the specified RedisOperations.
+	 * @param operations the RedisOperations used by the SampleService
+	 */
+	public SampleService(RedisOperations<Object, Object> operations) {
 		this.operations = operations;
 	}
 
 	/**
-     * Checks if a record exists in Redis for the given PersonHash.
-     * 
-     * @param personHash the PersonHash object to check for a record
-     * @return true if a record exists, false otherwise
-     */
-    public boolean hasRecord(PersonHash personHash) {
+	 * Checks if a record exists in Redis for the given PersonHash.
+	 * @param personHash the PersonHash object to check for a record
+	 * @return true if a record exists, false otherwise
+	 */
+	public boolean hasRecord(PersonHash personHash) {
 		return this.operations.execute((RedisConnection connection) -> connection.keyCommands()
 			.exists(("persons:" + personHash.getId()).getBytes(CHARSET)));
 	}

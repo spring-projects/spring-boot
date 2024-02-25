@@ -31,13 +31,13 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 class RedisUrlSyntaxFailureAnalyzer extends AbstractFailureAnalyzer<RedisUrlSyntaxException> {
 
 	/**
-     * Analyzes the failure caused by a RedisUrlSyntaxException and returns a FailureAnalysis object.
-     * 
-     * @param rootFailure The root cause of the failure.
-     * @param cause The RedisUrlSyntaxException that caused the failure.
-     * @return A FailureAnalysis object containing the analysis of the failure.
-     */
-    @Override
+	 * Analyzes the failure caused by a RedisUrlSyntaxException and returns a
+	 * FailureAnalysis object.
+	 * @param rootFailure The root cause of the failure.
+	 * @param cause The RedisUrlSyntaxException that caused the failure.
+	 * @return A FailureAnalysis object containing the analysis of the failure.
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, RedisUrlSyntaxException cause) {
 		try {
 			URI uri = new URI(cause.getUrl());
@@ -65,23 +65,22 @@ class RedisUrlSyntaxFailureAnalyzer extends AbstractFailureAnalyzer<RedisUrlSynt
 	}
 
 	/**
-     * Returns the default description for an invalid URL used for configuring Spring Data Redis.
-     * 
-     * @param url the invalid URL
-     * @return the default description message
-     */
-    private String getDefaultDescription(String url) {
+	 * Returns the default description for an invalid URL used for configuring Spring Data
+	 * Redis.
+	 * @param url the invalid URL
+	 * @return the default description message
+	 */
+	private String getDefaultDescription(String url) {
 		return "The URL '" + url + "' is not valid for configuring Spring Data Redis. ";
 	}
 
 	/**
-     * Returns the description for an unsupported scheme in a URL.
-     * 
-     * @param url the URL that contains the unsupported scheme
-     * @param scheme the unsupported scheme
-     * @return the description for the unsupported scheme in the URL
-     */
-    private String getUnsupportedSchemeDescription(String url, String scheme) {
+	 * Returns the description for an unsupported scheme in a URL.
+	 * @param url the URL that contains the unsupported scheme
+	 * @param scheme the unsupported scheme
+	 * @return the description for the unsupported scheme in the URL
+	 */
+	private String getUnsupportedSchemeDescription(String url, String scheme) {
 		return getDefaultDescription(url) + "The scheme '" + scheme + "' is not supported.";
 	}
 

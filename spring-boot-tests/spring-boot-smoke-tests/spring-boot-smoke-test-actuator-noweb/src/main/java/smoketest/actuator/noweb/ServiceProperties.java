@@ -30,20 +30,18 @@ public class ServiceProperties {
 	private String name = "World";
 
 	/**
-     * Returns the name of the ServiceProperties object.
-     *
-     * @return the name of the ServiceProperties object
-     */
-    public String getName() {
+	 * Returns the name of the ServiceProperties object.
+	 * @return the name of the ServiceProperties object
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Sets the name of the service.
-     * 
-     * @param name the name to set
-     */
-    public void setName(String name) {
+	 * Sets the name of the service.
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
 		this.name = name;
 	}
 

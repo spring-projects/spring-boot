@@ -33,43 +33,40 @@ import org.springframework.core.PriorityOrdered;
 public class UserConfigurations extends Configurations implements PriorityOrdered {
 
 	/**
-     * Constructs a new UserConfigurations object with the specified collection of classes.
-     * 
-     * @param classes the collection of classes to be used for user configurations
-     */
-    protected UserConfigurations(Collection<Class<?>> classes) {
+	 * Constructs a new UserConfigurations object with the specified collection of
+	 * classes.
+	 * @param classes the collection of classes to be used for user configurations
+	 */
+	protected UserConfigurations(Collection<Class<?>> classes) {
 		super(classes);
 	}
 
 	/**
-     * Returns the order of this configuration bean.
-     * The order is set to the lowest precedence.
-     *
-     * @return the order of this configuration bean
-     */
-    @Override
+	 * Returns the order of this configuration bean. The order is set to the lowest
+	 * precedence.
+	 * @return the order of this configuration bean
+	 */
+	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE;
 	}
 
 	/**
-     * Merges the given set of classes into a new instance of UserConfigurations.
-     * 
-     * @param mergedClasses the set of classes to be merged
-     * @return a new instance of UserConfigurations with the merged classes
-     */
-    @Override
+	 * Merges the given set of classes into a new instance of UserConfigurations.
+	 * @param mergedClasses the set of classes to be merged
+	 * @return a new instance of UserConfigurations with the merged classes
+	 */
+	@Override
 	protected UserConfigurations merge(Set<Class<?>> mergedClasses) {
 		return new UserConfigurations(mergedClasses);
 	}
 
 	/**
-     * Creates a new UserConfigurations object with the specified classes.
-     * 
-     * @param classes the classes to be included in the UserConfigurations object
-     * @return a new UserConfigurations object
-     */
-    public static UserConfigurations of(Class<?>... classes) {
+	 * Creates a new UserConfigurations object with the specified classes.
+	 * @param classes the classes to be included in the UserConfigurations object
+	 * @return a new UserConfigurations object
+	 */
+	public static UserConfigurations of(Class<?>... classes) {
 		return new UserConfigurations(Arrays.asList(classes));
 	}
 

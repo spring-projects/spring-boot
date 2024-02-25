@@ -36,11 +36,11 @@ public class MyAutoConfiguration {
 	public static class SomeServiceConfiguration {
 
 		/**
-         * Creates a new instance of SomeService if no other bean of type SomeService is present in the application context.
-         * 
-         * @return the created SomeService instance
-         */
-        @Bean
+		 * Creates a new instance of SomeService if no other bean of type SomeService is
+		 * present in the application context.
+		 * @return the created SomeService instance
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		public SomeService someService() {
 			return new SomeService();

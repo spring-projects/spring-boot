@@ -66,24 +66,27 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	private final ConfigDataEnvironmentUpdateListener environmentUpdateListener;
 
 	/**
-     * Constructs a new ConfigDataEnvironmentPostProcessor with the specified logFactory and bootstrapContext.
-     * 
-     * @param logFactory the DeferredLogFactory to be used for logging
-     * @param bootstrapContext the ConfigurableBootstrapContext to be used for bootstrapping
-     */
-    public ConfigDataEnvironmentPostProcessor(DeferredLogFactory logFactory,
+	 * Constructs a new ConfigDataEnvironmentPostProcessor with the specified logFactory
+	 * and bootstrapContext.
+	 * @param logFactory the DeferredLogFactory to be used for logging
+	 * @param bootstrapContext the ConfigurableBootstrapContext to be used for
+	 * bootstrapping
+	 */
+	public ConfigDataEnvironmentPostProcessor(DeferredLogFactory logFactory,
 			ConfigurableBootstrapContext bootstrapContext) {
 		this(logFactory, bootstrapContext, null);
 	}
 
 	/**
-     * Constructs a new instance of ConfigDataEnvironmentPostProcessor with the specified parameters.
-     * 
-     * @param logFactory the DeferredLogFactory used for logging
-     * @param bootstrapContext the ConfigurableBootstrapContext used for bootstrapping the application
-     * @param environmentUpdateListener the ConfigDataEnvironmentUpdateListener used for listening to environment updates
-     */
-    private ConfigDataEnvironmentPostProcessor(DeferredLogFactory logFactory,
+	 * Constructs a new instance of ConfigDataEnvironmentPostProcessor with the specified
+	 * parameters.
+	 * @param logFactory the DeferredLogFactory used for logging
+	 * @param bootstrapContext the ConfigurableBootstrapContext used for bootstrapping the
+	 * application
+	 * @param environmentUpdateListener the ConfigDataEnvironmentUpdateListener used for
+	 * listening to environment updates
+	 */
+	private ConfigDataEnvironmentPostProcessor(DeferredLogFactory logFactory,
 			ConfigurableBootstrapContext bootstrapContext,
 			ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
 		this.logFactory = logFactory;
@@ -93,34 +96,33 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	}
 
 	/**
-     * Returns the order value of this post-processor.
-     * 
-     * @return the order value
-     */
-    @Override
+	 * Returns the order value of this post-processor.
+	 * @return the order value
+	 */
+	@Override
 	public int getOrder() {
 		return ORDER;
 	}
 
 	/**
-     * Post-processes the environment by calling the overloaded method with the resource loader and additional profiles.
-     * 
-     * @param environment the configurable environment
-     * @param application the spring application
-     */
-    @Override
+	 * Post-processes the environment by calling the overloaded method with the resource
+	 * loader and additional profiles.
+	 * @param environment the configurable environment
+	 * @param application the spring application
+	 */
+	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		postProcessEnvironment(environment, application.getResourceLoader(), application.getAdditionalProfiles());
 	}
 
 	/**
-     * Post-processes the given environment to add config data.
-     * 
-     * @param environment         the configurable environment to be post-processed
-     * @param resourceLoader      the resource loader to be used for loading resources
-     * @param additionalProfiles  additional profiles to be considered during post-processing
-     */
-    void postProcessEnvironment(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
+	 * Post-processes the given environment to add config data.
+	 * @param environment the configurable environment to be post-processed
+	 * @param resourceLoader the resource loader to be used for loading resources
+	 * @param additionalProfiles additional profiles to be considered during
+	 * post-processing
+	 */
+	void postProcessEnvironment(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
 			Collection<String> additionalProfiles) {
 		this.logger.trace("Post-processing environment to add config data");
 		resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader();
@@ -128,14 +130,15 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	}
 
 	/**
-     * Creates a new instance of ConfigDataEnvironment with the given parameters.
-     * 
-     * @param environment The ConfigurableEnvironment to be used by the ConfigDataEnvironment.
-     * @param resourceLoader The ResourceLoader to be used by the ConfigDataEnvironment.
-     * @param additionalProfiles A collection of additional profiles to be used by the ConfigDataEnvironment.
-     * @return A new instance of ConfigDataEnvironment.
-     */
-    ConfigDataEnvironment getConfigDataEnvironment(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
+	 * Creates a new instance of ConfigDataEnvironment with the given parameters.
+	 * @param environment The ConfigurableEnvironment to be used by the
+	 * ConfigDataEnvironment.
+	 * @param resourceLoader The ResourceLoader to be used by the ConfigDataEnvironment.
+	 * @param additionalProfiles A collection of additional profiles to be used by the
+	 * ConfigDataEnvironment.
+	 * @return A new instance of ConfigDataEnvironment.
+	 */
+	ConfigDataEnvironment getConfigDataEnvironment(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
 			Collection<String> additionalProfiles) {
 		return new ConfigDataEnvironment(this.logFactory, this.bootstrapContext, environment, resourceLoader,
 				additionalProfiles, this.environmentUpdateListener);

@@ -32,20 +32,18 @@ public class SpringDataWebProperties {
 	private final Sort sort = new Sort();
 
 	/**
-     * Returns the Pageable object associated with this instance.
-     *
-     * @return the Pageable object
-     */
-    public Pageable getPageable() {
+	 * Returns the Pageable object associated with this instance.
+	 * @return the Pageable object
+	 */
+	public Pageable getPageable() {
 		return this.pageable;
 	}
 
 	/**
-     * Returns the sort object associated with this SpringDataWebProperties instance.
-     *
-     * @return the sort object
-     */
-    public Sort getSort() {
+	 * Returns the sort object associated with this SpringDataWebProperties instance.
+	 * @return the sort object
+	 */
+	public Sort getSort() {
 		return this.sort;
 	}
 
@@ -92,128 +90,119 @@ public class SpringDataWebProperties {
 		private int maxPageSize = 2000;
 
 		/**
-         * Returns the value of the page parameter.
-         *
-         * @return the value of the page parameter
-         */
-        public String getPageParameter() {
+		 * Returns the value of the page parameter.
+		 * @return the value of the page parameter
+		 */
+		public String getPageParameter() {
 			return this.pageParameter;
 		}
 
 		/**
-         * Sets the page parameter for the Pageable object.
-         * 
-         * @param pageParameter the page parameter to be set
-         */
-        public void setPageParameter(String pageParameter) {
+		 * Sets the page parameter for the Pageable object.
+		 * @param pageParameter the page parameter to be set
+		 */
+		public void setPageParameter(String pageParameter) {
 			this.pageParameter = pageParameter;
 		}
 
 		/**
-         * Returns the size parameter used for pagination.
-         * 
-         * @return the size parameter
-         */
-        public String getSizeParameter() {
+		 * Returns the size parameter used for pagination.
+		 * @return the size parameter
+		 */
+		public String getSizeParameter() {
 			return this.sizeParameter;
 		}
 
 		/**
-         * Sets the size parameter for pagination.
-         * 
-         * @param sizeParameter the size parameter to be set
-         */
-        public void setSizeParameter(String sizeParameter) {
+		 * Sets the size parameter for pagination.
+		 * @param sizeParameter the size parameter to be set
+		 */
+		public void setSizeParameter(String sizeParameter) {
 			this.sizeParameter = sizeParameter;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the parameters in the Pageable class are one-indexed.
-         *
-         * @return {@code true} if the parameters are one-indexed, {@code false} otherwise.
-         */
-        public boolean isOneIndexedParameters() {
+		 * Returns a boolean value indicating whether the parameters in the Pageable class
+		 * are one-indexed.
+		 * @return {@code true} if the parameters are one-indexed, {@code false}
+		 * otherwise.
+		 */
+		public boolean isOneIndexedParameters() {
 			return this.oneIndexedParameters;
 		}
 
 		/**
-         * Sets the flag indicating whether the parameters for pagination should be one-indexed.
-         * 
-         * @param oneIndexedParameters true if the parameters should be one-indexed, false otherwise
-         */
-        public void setOneIndexedParameters(boolean oneIndexedParameters) {
+		 * Sets the flag indicating whether the parameters for pagination should be
+		 * one-indexed.
+		 * @param oneIndexedParameters true if the parameters should be one-indexed, false
+		 * otherwise
+		 */
+		public void setOneIndexedParameters(boolean oneIndexedParameters) {
 			this.oneIndexedParameters = oneIndexedParameters;
 		}
 
 		/**
-         * Returns the prefix used for pagination.
-         *
-         * @return the prefix used for pagination
-         */
-        public String getPrefix() {
+		 * Returns the prefix used for pagination.
+		 * @return the prefix used for pagination
+		 */
+		public String getPrefix() {
 			return this.prefix;
 		}
 
 		/**
-         * Sets the prefix for the Pageable object.
-         * 
-         * @param prefix the prefix to be set
-         */
-        public void setPrefix(String prefix) {
+		 * Sets the prefix for the Pageable object.
+		 * @param prefix the prefix to be set
+		 */
+		public void setPrefix(String prefix) {
 			this.prefix = prefix;
 		}
 
 		/**
-         * Returns the qualifier delimiter used in the Pageable class.
-         *
-         * @return the qualifier delimiter used in the Pageable class
-         */
-        public String getQualifierDelimiter() {
+		 * Returns the qualifier delimiter used in the Pageable class.
+		 * @return the qualifier delimiter used in the Pageable class
+		 */
+		public String getQualifierDelimiter() {
 			return this.qualifierDelimiter;
 		}
 
 		/**
-         * Sets the qualifier delimiter for the Pageable object.
-         * 
-         * @param qualifierDelimiter the delimiter to be used for qualifying the Pageable object
-         */
-        public void setQualifierDelimiter(String qualifierDelimiter) {
+		 * Sets the qualifier delimiter for the Pageable object.
+		 * @param qualifierDelimiter the delimiter to be used for qualifying the Pageable
+		 * object
+		 */
+		public void setQualifierDelimiter(String qualifierDelimiter) {
 			this.qualifierDelimiter = qualifierDelimiter;
 		}
 
 		/**
-         * Returns the default page size.
-         *
-         * @return the default page size
-         */
-        public int getDefaultPageSize() {
+		 * Returns the default page size.
+		 * @return the default page size
+		 */
+		public int getDefaultPageSize() {
 			return this.defaultPageSize;
 		}
 
 		/**
-         * Sets the default page size for pagination.
-         * 
-         * @param defaultPageSize the default page size to be set
-         */
-        public void setDefaultPageSize(int defaultPageSize) {
+		 * Sets the default page size for pagination.
+		 * @param defaultPageSize the default page size to be set
+		 */
+		public void setDefaultPageSize(int defaultPageSize) {
 			this.defaultPageSize = defaultPageSize;
 		}
 
 		/**
-         * Returns the maximum page size.
-         *
-         * @return the maximum page size
-         */
-        public int getMaxPageSize() {
+		 * Returns the maximum page size.
+		 * @return the maximum page size
+		 */
+		public int getMaxPageSize() {
 			return this.maxPageSize;
 		}
 
 		/**
-         * Sets the maximum page size for pagination.
-         * 
-         * @param maxPageSize the maximum page size to be set
-         */
-        public void setMaxPageSize(int maxPageSize) {
+		 * Sets the maximum page size for pagination.
+		 * @param maxPageSize the maximum page size to be set
+		 */
+		public void setMaxPageSize(int maxPageSize) {
 			this.maxPageSize = maxPageSize;
 		}
 
@@ -230,20 +219,18 @@ public class SpringDataWebProperties {
 		private String sortParameter = "sort";
 
 		/**
-         * Returns the sort parameter.
-         *
-         * @return the sort parameter
-         */
-        public String getSortParameter() {
+		 * Returns the sort parameter.
+		 * @return the sort parameter
+		 */
+		public String getSortParameter() {
 			return this.sortParameter;
 		}
 
 		/**
-         * Sets the sort parameter for sorting the data.
-         * 
-         * @param sortParameter the sort parameter to be set
-         */
-        public void setSortParameter(String sortParameter) {
+		 * Sets the sort parameter for sorting the data.
+		 * @param sortParameter the sort parameter to be set
+		 */
+		public void setSortParameter(String sortParameter) {
 			this.sortParameter = sortParameter;
 		}
 

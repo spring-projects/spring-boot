@@ -40,11 +40,10 @@ public final class BindResult<T> {
 	private final T value;
 
 	/**
-     * Constructs a new BindResult object with the specified value.
-     *
-     * @param value the value to be assigned to the BindResult object
-     */
-    private BindResult(T value) {
+	 * Constructs a new BindResult object with the specified value.
+	 * @param value the value to be assigned to the BindResult object
+	 */
+	private BindResult(T value) {
 		this.value = value;
 	}
 
@@ -133,12 +132,11 @@ public final class BindResult<T> {
 	}
 
 	/**
-     * Compares this BindResult object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this BindResult object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -150,24 +148,23 @@ public final class BindResult<T> {
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the hashCode() method in the Object class.
-     * 
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the hashCode()
+	 * method in the Object class.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		return ObjectUtils.nullSafeHashCode(this.value);
 	}
 
 	/**
-     * Creates a new BindResult object with the specified value.
-     * 
-     * @param value the value to be bound
-     * @return a BindResult object containing the specified value
-     * @throws NullPointerException if the value is null
-     * @param <T> the type of the value
-     */
-    @SuppressWarnings("unchecked")
+	 * Creates a new BindResult object with the specified value.
+	 * @param value the value to be bound
+	 * @return a BindResult object containing the specified value
+	 * @throws NullPointerException if the value is null
+	 * @param <T> the type of the value
+	 */
+	@SuppressWarnings("unchecked")
 	static <T> BindResult<T> of(T value) {
 		if (value == null) {
 			return (BindResult<T>) UNBOUND;

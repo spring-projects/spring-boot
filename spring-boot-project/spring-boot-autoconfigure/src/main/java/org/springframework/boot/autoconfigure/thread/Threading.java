@@ -33,12 +33,11 @@ public enum Threading {
 	PLATFORM {
 
 		/**
-     * Checks if the current environment is active.
-     * 
-     * @param environment the environment to check
-     * @return true if the environment is active, false otherwise
-     */
-    @Override
+		 * Checks if the current environment is active.
+		 * @param environment the environment to check
+		 * @return true if the environment is active, false otherwise
+		 */
+		@Override
 		public boolean isActive(Environment environment) {
 			return !VIRTUAL.isActive(environment);
 		}
@@ -51,13 +50,13 @@ public enum Threading {
 	VIRTUAL {
 
 		/**
-     * Checks if the virtual threads feature is active in the given environment.
-     * 
-     * @param environment the environment to check
-     * @return {@code true} if the virtual threads feature is active, {@code false} otherwise
-     * @since 21
-     */
-    @Override
+		 * Checks if the virtual threads feature is active in the given environment.
+		 * @param environment the environment to check
+		 * @return {@code true} if the virtual threads feature is active, {@code false}
+		 * otherwise
+		 * @since 21
+		 */
+		@Override
 		public boolean isActive(Environment environment) {
 			return environment.getProperty("spring.threads.virtual.enabled", boolean.class, false)
 					&& JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.TWENTY_ONE);

@@ -37,23 +37,24 @@ class RedisDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 	private static final int REDIS_PORT = 6379;
 
 	/**
-     * Constructs a new RedisDockerComposeConnectionDetailsFactory object.
-     * 
-     * This constructor initializes the RedisDockerComposeConnectionDetailsFactory object by calling the superclass constructor with the provided REDIS_CONTAINER_NAMES.
-     * 
-     * @param REDIS_CONTAINER_NAMES the names of the Redis containers in the Docker Compose file
-     */
-    RedisDockerComposeConnectionDetailsFactory() {
+	 * Constructs a new RedisDockerComposeConnectionDetailsFactory object.
+	 *
+	 * This constructor initializes the RedisDockerComposeConnectionDetailsFactory object
+	 * by calling the superclass constructor with the provided REDIS_CONTAINER_NAMES.
+	 * @param REDIS_CONTAINER_NAMES the names of the Redis containers in the Docker
+	 * Compose file
+	 */
+	RedisDockerComposeConnectionDetailsFactory() {
 		super(REDIS_CONTAINER_NAMES);
 	}
 
 	/**
-     * Retrieves the connection details for a Redis instance running in a Docker Compose environment.
-     * 
-     * @param source the Docker Compose connection source
-     * @return the Redis connection details
-     */
-    @Override
+	 * Retrieves the connection details for a Redis instance running in a Docker Compose
+	 * environment.
+	 * @param source the Docker Compose connection source
+	 * @return the Redis connection details
+	 */
+	@Override
 	protected RedisConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new RedisDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -67,21 +68,21 @@ class RedisDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 		private final Standalone standalone;
 
 		/**
-         * Constructs a new RedisDockerComposeConnectionDetails object with the specified RunningService.
-         * 
-         * @param service the RunningService object representing the Redis service
-         */
-        RedisDockerComposeConnectionDetails(RunningService service) {
+		 * Constructs a new RedisDockerComposeConnectionDetails object with the specified
+		 * RunningService.
+		 * @param service the RunningService object representing the Redis service
+		 */
+		RedisDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.standalone = Standalone.of(service.host(), service.ports().get(REDIS_PORT));
 		}
 
 		/**
-         * Returns the Standalone instance associated with this RedisDockerComposeConnectionDetails.
-         *
-         * @return the Standalone instance
-         */
-        @Override
+		 * Returns the Standalone instance associated with this
+		 * RedisDockerComposeConnectionDetails.
+		 * @return the Standalone instance
+		 */
+		@Override
 		public Standalone getStandalone() {
 			return this.standalone;
 		}

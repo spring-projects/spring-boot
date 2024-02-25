@@ -50,14 +50,13 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 public class GraphQlQueryByExampleAutoConfiguration {
 
 	/**
-     * Customizes the GraphQlSourceBuilder by registering the QueryByExampleRegistrar.
-     * The QueryByExampleRegistrar is responsible for configuring the runtime wiring
-     * of the GraphQlSourceBuilder with the QueryByExampleExecutor instances provided.
-     * 
-     * @param executors the QueryByExampleExecutor instances to be registered
-     * @return the GraphQlSourceBuilderCustomizer with the configured runtime wiring
-     */
-    @Bean
+	 * Customizes the GraphQlSourceBuilder by registering the QueryByExampleRegistrar. The
+	 * QueryByExampleRegistrar is responsible for configuring the runtime wiring of the
+	 * GraphQlSourceBuilder with the QueryByExampleExecutor instances provided.
+	 * @param executors the QueryByExampleExecutor instances to be registered
+	 * @return the GraphQlSourceBuilderCustomizer with the configured runtime wiring
+	 */
+	@Bean
 	public GraphQlSourceBuilderCustomizer queryByExampleRegistrar(ObjectProvider<QueryByExampleExecutor<?>> executors) {
 		RuntimeWiringConfigurer configurer = QueryByExampleDataFetcher
 			.autoRegistrationConfigurer(executors.orderedStream().toList(), Collections.emptyList());

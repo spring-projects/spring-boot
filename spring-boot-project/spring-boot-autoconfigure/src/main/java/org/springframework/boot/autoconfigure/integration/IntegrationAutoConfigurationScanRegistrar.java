@@ -41,28 +41,30 @@ class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScan
 	private BeanFactory beanFactory;
 
 	/**
-     * Set the BeanFactory that this object runs in.
-     * <p>
-     * Invoked after population of normal bean properties but before an init callback such as InitializingBean's
-     * afterPropertiesSet or a custom init-method. Invoked after ApplicationContextAware's setApplicationContext.
-     * <p>
-     * This method allows the bean instance to perform initialization based on its bean factory context,
-     * such as setting up bean references, initializing proxy objects, etc.
-     * @param beanFactory the BeanFactory object that this object runs in
-     * @throws BeansException if initialization failed
-     */
-    @Override
+	 * Set the BeanFactory that this object runs in.
+	 * <p>
+	 * Invoked after population of normal bean properties but before an init callback such
+	 * as InitializingBean's afterPropertiesSet or a custom init-method. Invoked after
+	 * ApplicationContextAware's setApplicationContext.
+	 * <p>
+	 * This method allows the bean instance to perform initialization based on its bean
+	 * factory context, such as setting up bean references, initializing proxy objects,
+	 * etc.
+	 * @param beanFactory the BeanFactory object that this object runs in
+	 * @throws BeansException if initialization failed
+	 */
+	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
 
 	/**
-     * Register the bean definitions for the IntegrationAutoConfigurationScanRegistrar class.
-     * 
-     * @param importingClassMetadata the metadata of the importing class
-     * @param registry the bean definition registry
-     */
-    @Override
+	 * Register the bean definitions for the IntegrationAutoConfigurationScanRegistrar
+	 * class.
+	 * @param importingClassMetadata the metadata of the importing class
+	 * @param registry the bean definition registry
+	 */
+	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			final BeanDefinitionRegistry registry) {
 		super.registerBeanDefinitions(AnnotationMetadata.introspect(IntegrationComponentScanConfiguration.class),
@@ -70,22 +72,21 @@ class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScan
 	}
 
 	/**
-     * Retrieves the base packages for component scanning.
-     * 
-     * @param componentScan the annotation attributes for the component scan
-     * @param registry the bean definition registry
-     * @return the collection of base packages for component scanning
-     */
-    @Override
+	 * Retrieves the base packages for component scanning.
+	 * @param componentScan the annotation attributes for the component scan
+	 * @param registry the bean definition registry
+	 * @return the collection of base packages for component scanning
+	 */
+	@Override
 	protected Collection<String> getBasePackages(AnnotationAttributes componentScan, BeanDefinitionRegistry registry) {
 		return (AutoConfigurationPackages.has(this.beanFactory) ? AutoConfigurationPackages.get(this.beanFactory)
 				: Collections.emptyList());
 	}
 
 	/**
-     * IntegrationComponentScanConfiguration class.
-     */
-    @IntegrationComponentScan
+	 * IntegrationComponentScanConfiguration class.
+	 */
+	@IntegrationComponentScan
 	private static final class IntegrationComponentScanConfiguration {
 
 	}

@@ -53,12 +53,13 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 	private ClassLoader classLoader;
 
 	/**
-     * Selects the imports for the management context configuration classes based on the provided metadata.
-     * 
-     * @param metadata the annotation metadata
-     * @return an array of fully qualified class names of the selected management context configuration classes
-     */
-    @Override
+	 * Selects the imports for the management context configuration classes based on the
+	 * provided metadata.
+	 * @param metadata the annotation metadata
+	 * @return an array of fully qualified class names of the selected management context
+	 * configuration classes
+	 */
+	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
 		ManagementContextType contextType = (ManagementContextType) metadata
 			.getAnnotationAttributes(EnableManagementContext.class.getName())
@@ -77,11 +78,10 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 	}
 
 	/**
-     * Retrieves the list of ManagementConfigurations.
-     * 
-     * @return the list of ManagementConfigurations
-     */
-    private List<ManagementConfiguration> getConfigurations() {
+	 * Retrieves the list of ManagementConfigurations.
+	 * @return the list of ManagementConfigurations
+	 */
+	private List<ManagementConfiguration> getConfigurations() {
 		SimpleMetadataReaderFactory readerFactory = new SimpleMetadataReaderFactory(this.classLoader);
 		List<ManagementConfiguration> configurations = new ArrayList<>();
 		for (String className : loadFactoryNames()) {
@@ -91,14 +91,14 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 	}
 
 	/**
-     * Adds a configuration to the list of management configurations.
-     * 
-     * @param readerFactory the factory used to create metadata readers
-     * @param configurations the list of management configurations
-     * @param className the name of the class to read annotation metadata for
-     * @throws RuntimeException if failed to read annotation metadata for the specified class
-     */
-    private void addConfiguration(SimpleMetadataReaderFactory readerFactory,
+	 * Adds a configuration to the list of management configurations.
+	 * @param readerFactory the factory used to create metadata readers
+	 * @param configurations the list of management configurations
+	 * @param className the name of the class to read annotation metadata for
+	 * @throws RuntimeException if failed to read annotation metadata for the specified
+	 * class
+	 */
+	private void addConfiguration(SimpleMetadataReaderFactory readerFactory,
 			List<ManagementConfiguration> configurations, String className) {
 		try {
 			MetadataReader metadataReader = readerFactory.getMetadataReader(className);
@@ -110,20 +110,19 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 	}
 
 	/**
-     * Loads the factory names from the {@link ManagementContextConfiguration} class using the provided class loader.
-     * 
-     * @return a list of factory names
-     */
-    protected List<String> loadFactoryNames() {
+	 * Loads the factory names from the {@link ManagementContextConfiguration} class using
+	 * the provided class loader.
+	 * @return a list of factory names
+	 */
+	protected List<String> loadFactoryNames() {
 		return ImportCandidates.load(ManagementContextConfiguration.class, this.classLoader).getCandidates();
 	}
 
 	/**
-     * Sets the class loader to be used for loading beans.
-     * 
-     * @param classLoader the class loader to be used for loading beans
-     */
-    @Override
+	 * Sets the class loader to be used for loading beans.
+	 * @param classLoader the class loader to be used for loading beans
+	 */
+	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
@@ -140,11 +139,12 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 		private final ManagementContextType contextType;
 
 		/**
-         * Constructs a new ManagementConfiguration object with the provided metadata reader.
-         * 
-         * @param metadataReader the metadata reader used to retrieve annotation and class metadata
-         */
-        ManagementConfiguration(MetadataReader metadataReader) {
+		 * Constructs a new ManagementConfiguration object with the provided metadata
+		 * reader.
+		 * @param metadataReader the metadata reader used to retrieve annotation and class
+		 * metadata
+		 */
+		ManagementConfiguration(MetadataReader metadataReader) {
 			AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
 			this.order = readOrder(annotationMetadata);
 			this.className = metadataReader.getClassMetadata().getClassName();
@@ -152,12 +152,12 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 		}
 
 		/**
-         * Reads the context type from the given annotation metadata.
-         * 
-         * @param annotationMetadata the annotation metadata to read from
-         * @return the management context type, defaulting to ManagementContextType.ANY if not specified
-         */
-        private ManagementContextType readContextType(AnnotationMetadata annotationMetadata) {
+		 * Reads the context type from the given annotation metadata.
+		 * @param annotationMetadata the annotation metadata to read from
+		 * @return the management context type, defaulting to ManagementContextType.ANY if
+		 * not specified
+		 */
+		private ManagementContextType readContextType(AnnotationMetadata annotationMetadata) {
 			Map<String, Object> annotationAttributes = annotationMetadata
 				.getAnnotationAttributes(ManagementContextConfiguration.class.getName());
 			return (annotationAttributes != null) ? (ManagementContextType) annotationAttributes.get("value")
@@ -165,42 +165,40 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 		}
 
 		/**
-         * Reads the order value from the given AnnotationMetadata object.
-         * 
-         * @param annotationMetadata the AnnotationMetadata object to read the order value from
-         * @return the order value if present, otherwise returns the lowest precedence value
-         */
-        private int readOrder(AnnotationMetadata annotationMetadata) {
+		 * Reads the order value from the given AnnotationMetadata object.
+		 * @param annotationMetadata the AnnotationMetadata object to read the order value
+		 * from
+		 * @return the order value if present, otherwise returns the lowest precedence
+		 * value
+		 */
+		private int readOrder(AnnotationMetadata annotationMetadata) {
 			Map<String, Object> attributes = annotationMetadata.getAnnotationAttributes(Order.class.getName());
 			Integer order = (attributes != null) ? (Integer) attributes.get("value") : null;
 			return (order != null) ? order : Ordered.LOWEST_PRECEDENCE;
 		}
 
 		/**
-         * Returns the name of the class.
-         *
-         * @return the name of the class
-         */
-        String getClassName() {
+		 * Returns the name of the class.
+		 * @return the name of the class
+		 */
+		String getClassName() {
 			return this.className;
 		}
 
 		/**
-         * Returns the order of the management configuration.
-         *
-         * @return the order of the management configuration
-         */
-        @Override
+		 * Returns the order of the management configuration.
+		 * @return the order of the management configuration
+		 */
+		@Override
 		public int getOrder() {
 			return this.order;
 		}
 
 		/**
-         * Returns the context type of the management configuration.
-         * 
-         * @return the context type of the management configuration
-         */
-        ManagementContextType getContextType() {
+		 * Returns the context type of the management configuration.
+		 * @return the context type of the management configuration
+		 */
+		ManagementContextType getContextType() {
 			return this.contextType;
 		}
 

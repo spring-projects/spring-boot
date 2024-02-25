@@ -32,11 +32,10 @@ public class MyBean {
 	private final DatabaseClient databaseClient;
 
 	/**
-     * Constructs a new instance of MyBean with the specified DatabaseClient.
-     *
-     * @param databaseClient the DatabaseClient to be used by MyBean
-     */
-    public MyBean(DatabaseClient databaseClient) {
+	 * Constructs a new instance of MyBean with the specified DatabaseClient.
+	 * @param databaseClient the DatabaseClient to be used by MyBean
+	 */
+	public MyBean(DatabaseClient databaseClient) {
 		this.databaseClient = databaseClient;
 	}
 

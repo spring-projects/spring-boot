@@ -28,12 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloRestController {
 
 	/**
-     * Retrieves the unique identifier of the current session.
-     * 
-     * @param session the HttpSession object representing the current session
-     * @return a String value representing the unique identifier of the session
-     */
-    @GetMapping("/")
+	 * Retrieves the unique identifier of the current session.
+	 * @param session the HttpSession object representing the current session
+	 * @return a String value representing the unique identifier of the session
+	 */
+	@GetMapping("/")
 	String uid(HttpSession session) {
 		return session.getId();
 	}

@@ -28,11 +28,10 @@ import org.springframework.context.annotation.Configuration;
 public class MyConnectionPoolTagsProviderConfiguration {
 
 	/**
-     * Returns a custom MongoConnectionPoolTagsProvider.
-     * 
-     * @return the custom MongoConnectionPoolTagsProvider
-     */
-    @Bean
+	 * Returns a custom MongoConnectionPoolTagsProvider.
+	 * @return the custom MongoConnectionPoolTagsProvider
+	 */
+	@Bean
 	public MongoConnectionPoolTagsProvider customConnectionPoolTagsProvider() {
 		return new CustomConnectionPoolTagsProvider();
 	}

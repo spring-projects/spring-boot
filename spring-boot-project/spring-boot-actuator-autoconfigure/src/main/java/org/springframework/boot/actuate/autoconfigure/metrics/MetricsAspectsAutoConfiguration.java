@@ -45,25 +45,25 @@ import org.springframework.context.annotation.Bean;
 public class MetricsAspectsAutoConfiguration {
 
 	/**
-     * Creates a new instance of the {@link CountedAspect} class if no other bean of the same type is present.
-     * 
-     * @param registry the {@link MeterRegistry} to be used by the aspect
-     * @return a new instance of the {@link CountedAspect} class
-     */
-    @Bean
+	 * Creates a new instance of the {@link CountedAspect} class if no other bean of the
+	 * same type is present.
+	 * @param registry the {@link MeterRegistry} to be used by the aspect
+	 * @return a new instance of the {@link CountedAspect} class
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	CountedAspect countedAspect(MeterRegistry registry) {
 		return new CountedAspect(registry);
 	}
 
 	/**
-     * Creates a TimedAspect bean if no other bean of the same type is present.
-     * 
-     * @param registry The MeterRegistry used for creating Timed meters.
-     * @param meterTagAnnotationHandler The ObjectProvider for MeterTagAnnotationHandler, used for setting the MeterTagAnnotationHandler of the TimedAspect.
-     * @return The TimedAspect bean.
-     */
-    @Bean
+	 * Creates a TimedAspect bean if no other bean of the same type is present.
+	 * @param registry The MeterRegistry used for creating Timed meters.
+	 * @param meterTagAnnotationHandler The ObjectProvider for MeterTagAnnotationHandler,
+	 * used for setting the MeterTagAnnotationHandler of the TimedAspect.
+	 * @return The TimedAspect bean.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	TimedAspect timedAspect(MeterRegistry registry,
 			ObjectProvider<MeterTagAnnotationHandler> meterTagAnnotationHandler) {

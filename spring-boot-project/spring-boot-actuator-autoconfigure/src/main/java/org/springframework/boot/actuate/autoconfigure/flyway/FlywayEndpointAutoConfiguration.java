@@ -41,12 +41,12 @@ import org.springframework.context.annotation.Bean;
 public class FlywayEndpointAutoConfiguration {
 
 	/**
-     * Creates a FlywayEndpoint bean if a Flyway bean is present in the ApplicationContext and no FlywayEndpoint bean is already defined.
-     * 
-     * @param context the ApplicationContext
-     * @return the FlywayEndpoint bean
-     */
-    @Bean
+	 * Creates a FlywayEndpoint bean if a Flyway bean is present in the ApplicationContext
+	 * and no FlywayEndpoint bean is already defined.
+	 * @param context the ApplicationContext
+	 * @return the FlywayEndpoint bean
+	 */
+	@Bean
 	@ConditionalOnBean(Flyway.class)
 	@ConditionalOnMissingBean
 	public FlywayEndpoint flywayEndpoint(ApplicationContext context) {

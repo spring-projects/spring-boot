@@ -26,11 +26,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SampleSaml2RelyingPartyApplication {
 
 	/**
-     * The main method of the SampleSaml2RelyingPartyApplication class.
-     * 
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+	 * The main method of the SampleSaml2RelyingPartyApplication class.
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleSaml2RelyingPartyApplication.class);
 	}
 

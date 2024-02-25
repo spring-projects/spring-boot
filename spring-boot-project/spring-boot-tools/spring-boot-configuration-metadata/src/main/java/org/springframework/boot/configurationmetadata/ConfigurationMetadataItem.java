@@ -39,11 +39,10 @@ class ConfigurationMetadataItem extends ConfigurationMetadataProperty {
 	}
 
 	/**
-     * Sets the source type for the configuration metadata item.
-     * 
-     * @param sourceType the source type to be set
-     */
-    void setSourceType(String sourceType) {
+	 * Sets the source type for the configuration metadata item.
+	 * @param sourceType the source type to be set
+	 */
+	void setSourceType(String sourceType) {
 		this.sourceType = sourceType;
 	}
 
@@ -58,11 +57,10 @@ class ConfigurationMetadataItem extends ConfigurationMetadataProperty {
 	}
 
 	/**
-     * Sets the source method for this ConfigurationMetadataItem.
-     * 
-     * @param sourceMethod the source method to be set
-     */
-    void setSourceMethod(String sourceMethod) {
+	 * Sets the source method for this ConfigurationMetadataItem.
+	 * @param sourceMethod the source method to be set
+	 */
+	void setSourceMethod(String sourceMethod) {
 		this.sourceMethod = sourceMethod;
 	}
 

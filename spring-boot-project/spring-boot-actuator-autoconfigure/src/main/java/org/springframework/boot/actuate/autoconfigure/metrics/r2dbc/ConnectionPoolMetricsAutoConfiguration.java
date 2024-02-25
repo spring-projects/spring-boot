@@ -49,12 +49,11 @@ import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 public class ConnectionPoolMetricsAutoConfiguration {
 
 	/**
-     * Binds the connection pools to the given MeterRegistry.
-     * 
-     * @param connectionFactories a map of connection factories
-     * @param registry the MeterRegistry to bind the connection pools to
-     */
-    @Autowired
+	 * Binds the connection pools to the given MeterRegistry.
+	 * @param connectionFactories a map of connection factories
+	 * @param registry the MeterRegistry to bind the connection pools to
+	 */
+	@Autowired
 	public void bindConnectionPoolsToRegistry(Map<String, ConnectionFactory> connectionFactories,
 			MeterRegistry registry) {
 		connectionFactories.forEach((beanName, connectionFactory) -> {
@@ -66,12 +65,11 @@ public class ConnectionPoolMetricsAutoConfiguration {
 	}
 
 	/**
-     * Extracts the ConnectionPool from the given candidate object.
-     * 
-     * @param candidate the object to extract the ConnectionPool from
-     * @return the extracted ConnectionPool, or null if not found
-     */
-    private ConnectionPool extractPool(Object candidate) {
+	 * Extracts the ConnectionPool from the given candidate object.
+	 * @param candidate the object to extract the ConnectionPool from
+	 * @return the extracted ConnectionPool, or null if not found
+	 */
+	private ConnectionPool extractPool(Object candidate) {
 		if (candidate instanceof ConnectionPool connectionPool) {
 			return connectionPool;
 		}

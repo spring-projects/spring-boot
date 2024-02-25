@@ -37,29 +37,27 @@ class ConfigurationMetadataHint {
 	private final List<ValueProvider> valueProviders = new ArrayList<>();
 
 	/**
-     * Returns true if the id of the ConfigurationMetadataHint object is not null and ends with the specified key suffix.
-     * 
-     * @return true if the id ends with the key suffix, false otherwise
-     */
-    boolean isMapKeyHints() {
+	 * Returns true if the id of the ConfigurationMetadataHint object is not null and ends
+	 * with the specified key suffix.
+	 * @return true if the id ends with the key suffix, false otherwise
+	 */
+	boolean isMapKeyHints() {
 		return (this.id != null && this.id.endsWith(KEY_SUFFIX));
 	}
 
 	/**
-     * Returns true if the id of the ConfigurationMetadataHint ends with the value suffix.
-     * 
-     * @return true if the id ends with the value suffix, false otherwise
-     */
-    boolean isMapValueHints() {
+	 * Returns true if the id of the ConfigurationMetadataHint ends with the value suffix.
+	 * @return true if the id ends with the value suffix, false otherwise
+	 */
+	boolean isMapValueHints() {
 		return (this.id != null && this.id.endsWith(VALUE_SUFFIX));
 	}
 
 	/**
-     * Resolves the ID by removing the suffix based on the hint type.
-     * 
-     * @return the resolved ID
-     */
-    String resolveId() {
+	 * Resolves the ID by removing the suffix based on the hint type.
+	 * @return the resolved ID
+	 */
+	String resolveId() {
 		if (isMapKeyHints()) {
 			return this.id.substring(0, this.id.length() - KEY_SUFFIX.length());
 		}
@@ -70,38 +68,34 @@ class ConfigurationMetadataHint {
 	}
 
 	/**
-     * Returns the ID of the ConfigurationMetadataHint.
-     *
-     * @return the ID of the ConfigurationMetadataHint
-     */
-    String getId() {
+	 * Returns the ID of the ConfigurationMetadataHint.
+	 * @return the ID of the ConfigurationMetadataHint
+	 */
+	String getId() {
 		return this.id;
 	}
 
 	/**
-     * Sets the ID of the ConfigurationMetadataHint.
-     * 
-     * @param id the ID to set
-     */
-    void setId(String id) {
+	 * Sets the ID of the ConfigurationMetadataHint.
+	 * @param id the ID to set
+	 */
+	void setId(String id) {
 		this.id = id;
 	}
 
 	/**
-     * Returns the list of value hints for this configuration metadata hint.
-     *
-     * @return the list of value hints
-     */
-    List<ValueHint> getValueHints() {
+	 * Returns the list of value hints for this configuration metadata hint.
+	 * @return the list of value hints
+	 */
+	List<ValueHint> getValueHints() {
 		return this.valueHints;
 	}
 
 	/**
-     * Returns the list of value providers.
-     *
-     * @return the list of value providers
-     */
-    List<ValueProvider> getValueProviders() {
+	 * Returns the list of value providers.
+	 * @return the list of value providers
+	 */
+	List<ValueProvider> getValueProviders() {
 		return this.valueProviders;
 	}
 

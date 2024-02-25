@@ -41,39 +41,40 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 public class ScheduledTasksObservabilityAutoConfiguration {
 
 	/**
-     * Creates an instance of ObservabilitySchedulingConfigurer with the provided ObservationRegistry.
-     * 
-     * @param observationRegistry the ObservationRegistry to be used by the ObservabilitySchedulingConfigurer
-     * @return an instance of ObservabilitySchedulingConfigurer
-     */
-    @Bean
+	 * Creates an instance of ObservabilitySchedulingConfigurer with the provided
+	 * ObservationRegistry.
+	 * @param observationRegistry the ObservationRegistry to be used by the
+	 * ObservabilitySchedulingConfigurer
+	 * @return an instance of ObservabilitySchedulingConfigurer
+	 */
+	@Bean
 	ObservabilitySchedulingConfigurer observabilitySchedulingConfigurer(ObservationRegistry observationRegistry) {
 		return new ObservabilitySchedulingConfigurer(observationRegistry);
 	}
 
 	/**
-     * ObservabilitySchedulingConfigurer class.
-     */
-    static final class ObservabilitySchedulingConfigurer implements SchedulingConfigurer {
+	 * ObservabilitySchedulingConfigurer class.
+	 */
+	static final class ObservabilitySchedulingConfigurer implements SchedulingConfigurer {
 
 		private final ObservationRegistry observationRegistry;
 
 		/**
-         * Constructs a new ObservabilitySchedulingConfigurer with the specified ObservationRegistry.
-         * 
-         * @param observationRegistry the ObservationRegistry to be used for observability scheduling
-         */
-        ObservabilitySchedulingConfigurer(ObservationRegistry observationRegistry) {
+		 * Constructs a new ObservabilitySchedulingConfigurer with the specified
+		 * ObservationRegistry.
+		 * @param observationRegistry the ObservationRegistry to be used for observability
+		 * scheduling
+		 */
+		ObservabilitySchedulingConfigurer(ObservationRegistry observationRegistry) {
 			this.observationRegistry = observationRegistry;
 		}
 
 		/**
-         * Configures the tasks for scheduling.
-         * 
-         * @param taskRegistrar the task registrar to configure
-         * @see ScheduledTaskRegistrar
-         */
-        @Override
+		 * Configures the tasks for scheduling.
+		 * @param taskRegistrar the task registrar to configure
+		 * @see ScheduledTaskRegistrar
+		 */
+		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
 			taskRegistrar.setObservationRegistry(this.observationRegistry);
 		}

@@ -60,12 +60,12 @@ class DirectorySnapshot {
 	}
 
 	/**
-     * Recursively collects all files from the given source directory and adds them to the result set.
-     * 
-     * @param source The source directory from which to collect files.
-     * @param result The set to which the collected files will be added.
-     */
-    private void collectFiles(File source, Set<FileSnapshot> result) {
+	 * Recursively collects all files from the given source directory and adds them to the
+	 * result set.
+	 * @param source The source directory from which to collect files.
+	 * @param result The set to which the collected files will be added.
+	 */
+	private void collectFiles(File source, Set<FileSnapshot> result) {
 		File[] children = source.listFiles();
 		if (children != null) {
 			for (File child : children) {
@@ -80,14 +80,15 @@ class DirectorySnapshot {
 	}
 
 	/**
-     * Returns the list of changed files based on the given snapshot and trigger filter.
-     * 
-     * @param snapshot the directory snapshot to compare against
-     * @param triggerFilter the file filter to determine which files should trigger a change
-     * @return a ChangedFiles object containing the list of changed files
-     * @throws IllegalArgumentException if the snapshot is null or the snapshot source directory is not the same as the current directory
-     */
-    ChangedFiles getChangedFiles(DirectorySnapshot snapshot, FileFilter triggerFilter) {
+	 * Returns the list of changed files based on the given snapshot and trigger filter.
+	 * @param snapshot the directory snapshot to compare against
+	 * @param triggerFilter the file filter to determine which files should trigger a
+	 * change
+	 * @return a ChangedFiles object containing the list of changed files
+	 * @throws IllegalArgumentException if the snapshot is null or the snapshot source
+	 * directory is not the same as the current directory
+	 */
+	ChangedFiles getChangedFiles(DirectorySnapshot snapshot, FileFilter triggerFilter) {
 		Assert.notNull(snapshot, "Snapshot must not be null");
 		File directory = this.directory;
 		Assert.isTrue(snapshot.directory.equals(directory),
@@ -114,22 +115,21 @@ class DirectorySnapshot {
 	}
 
 	/**
-     * Determines whether to accept a changed file based on the provided trigger filter and file snapshot.
-     * 
-     * @param triggerFilter the filter used to determine whether to accept the file
-     * @param file the file snapshot to be checked
-     * @return true if the file should be accepted, false otherwise
-     */
-    private boolean acceptChangedFile(FileFilter triggerFilter, FileSnapshot file) {
+	 * Determines whether to accept a changed file based on the provided trigger filter
+	 * and file snapshot.
+	 * @param triggerFilter the filter used to determine whether to accept the file
+	 * @param file the file snapshot to be checked
+	 * @return true if the file should be accepted, false otherwise
+	 */
+	private boolean acceptChangedFile(FileFilter triggerFilter, FileSnapshot file) {
 		return (triggerFilter == null || !triggerFilter.accept(file.getFile()));
 	}
 
 	/**
-     * Returns a map of files and their corresponding file snapshots.
-     * 
-     * @return a map of files and their corresponding file snapshots
-     */
-    private Map<File, FileSnapshot> getFilesMap() {
+	 * Returns a map of files and their corresponding file snapshots.
+	 * @return a map of files and their corresponding file snapshots
+	 */
+	private Map<File, FileSnapshot> getFilesMap() {
 		Map<File, FileSnapshot> files = new LinkedHashMap<>();
 		for (FileSnapshot file : this.files) {
 			files.put(file.getFile(), file);
@@ -138,12 +138,11 @@ class DirectorySnapshot {
 	}
 
 	/**
-     * Compares this DirectorySnapshot object with the specified object for equality.
-     * 
-     * @param obj the object to compare with
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this DirectorySnapshot object with the specified object for equality.
+	 * @param obj the object to compare with
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -158,13 +157,13 @@ class DirectorySnapshot {
 	}
 
 	/**
-     * Compares this DirectorySnapshot object with another DirectorySnapshot object and checks if they are equal.
-     * 
-     * @param other The DirectorySnapshot object to compare with.
-     * @param filter The FileFilter object to use for filtering the files.
-     * @return true if the DirectorySnapshot objects are equal, false otherwise.
-     */
-    boolean equals(DirectorySnapshot other, FileFilter filter) {
+	 * Compares this DirectorySnapshot object with another DirectorySnapshot object and
+	 * checks if they are equal.
+	 * @param other The DirectorySnapshot object to compare with.
+	 * @param filter The FileFilter object to use for filtering the files.
+	 * @return true if the DirectorySnapshot objects are equal, false otherwise.
+	 */
+	boolean equals(DirectorySnapshot other, FileFilter filter) {
 		if (this.directory.equals(other.directory)) {
 			Set<FileSnapshot> ourFiles = filter(this.files, filter);
 			Set<FileSnapshot> otherFiles = filter(other.files, filter);
@@ -174,13 +173,12 @@ class DirectorySnapshot {
 	}
 
 	/**
-     * Filters a set of FileSnapshots based on a given FileFilter.
-     * 
-     * @param source the set of FileSnapshots to be filtered
-     * @param filter the FileFilter used to filter the FileSnapshots
-     * @return a new set of FileSnapshots that pass the filter
-     */
-    private Set<FileSnapshot> filter(Set<FileSnapshot> source, FileFilter filter) {
+	 * Filters a set of FileSnapshots based on a given FileFilter.
+	 * @param source the set of FileSnapshots to be filtered
+	 * @param filter the FileFilter used to filter the FileSnapshots
+	 * @return a new set of FileSnapshots that pass the filter
+	 */
+	private Set<FileSnapshot> filter(Set<FileSnapshot> source, FileFilter filter) {
 		if (filter == null) {
 			return source;
 		}
@@ -194,11 +192,10 @@ class DirectorySnapshot {
 	}
 
 	/**
-     * Returns the hash code value for this DirectorySnapshot object.
-     * 
-     * @return the hash code value for this DirectorySnapshot object
-     */
-    @Override
+	 * Returns the hash code value for this DirectorySnapshot object.
+	 * @return the hash code value for this DirectorySnapshot object
+	 */
+	@Override
 	public int hashCode() {
 		int hashCode = this.directory.hashCode();
 		hashCode = 31 * hashCode + this.files.hashCode();
@@ -214,12 +211,11 @@ class DirectorySnapshot {
 	}
 
 	/**
-     * Returns a string representation of the DirectorySnapshot object.
-     * The string includes the directory path and the time of the snapshot.
-     *
-     * @return a string representation of the DirectorySnapshot object
-     */
-    @Override
+	 * Returns a string representation of the DirectorySnapshot object. The string
+	 * includes the directory path and the time of the snapshot.
+	 * @return a string representation of the DirectorySnapshot object
+	 */
+	@Override
 	public String toString() {
 		return this.directory + " snapshot at " + this.time;
 	}

@@ -31,12 +31,11 @@ public class MyBean {
 	private final AmqpTemplate amqpTemplate;
 
 	/**
-     * Constructs a new instance of MyBean with the specified AmqpAdmin and AmqpTemplate.
-     * 
-     * @param amqpAdmin the AmqpAdmin to be used by this MyBean
-     * @param amqpTemplate the AmqpTemplate to be used by this MyBean
-     */
-    public MyBean(AmqpAdmin amqpAdmin, AmqpTemplate amqpTemplate) {
+	 * Constructs a new instance of MyBean with the specified AmqpAdmin and AmqpTemplate.
+	 * @param amqpAdmin the AmqpAdmin to be used by this MyBean
+	 * @param amqpTemplate the AmqpTemplate to be used by this MyBean
+	 */
+	public MyBean(AmqpAdmin amqpAdmin, AmqpTemplate amqpTemplate) {
 		this.amqpAdmin = amqpAdmin;
 		this.amqpTemplate = amqpTemplate;
 	}
@@ -47,9 +46,9 @@ public class MyBean {
 	}
 
 	/**
-     * Sends a message "hello" to the AMQP server.
-     */
-    public void someOtherMethod() {
+	 * Sends a message "hello" to the AMQP server.
+	 */
+	public void someOtherMethod() {
 		this.amqpTemplate.convertAndSend("hello");
 	}
 	// @fold:off

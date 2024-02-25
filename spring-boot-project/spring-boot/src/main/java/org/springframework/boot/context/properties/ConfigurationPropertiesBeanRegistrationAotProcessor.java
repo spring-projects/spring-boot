@@ -45,12 +45,12 @@ import org.springframework.javapoet.CodeBlock;
 class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistrationAotProcessor {
 
 	/**
-     * Processes the given registered bean ahead of time.
-     * 
-     * @param registeredBean the registered bean to process
-     * @return the BeanRegistrationAotContribution object, or null if the registered bean is not an immutable configuration properties bean definition
-     */
-    @Override
+	 * Processes the given registered bean ahead of time.
+	 * @param registeredBean the registered bean to process
+	 * @return the BeanRegistrationAotContribution object, or null if the registered bean
+	 * is not an immutable configuration properties bean definition
+	 */
+	@Override
 	public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
 		if (!isImmutableConfigurationPropertiesBeanDefinition(registeredBean.getMergedBeanDefinition())) {
 			return null;
@@ -62,19 +62,20 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 	}
 
 	/**
-     * Determines if the given bean definition represents an immutable configuration properties bean definition.
-     * 
-     * @param beanDefinition the bean definition to check
-     * @return true if the bean definition represents an immutable configuration properties bean definition, false otherwise
-     */
-    private boolean isImmutableConfigurationPropertiesBeanDefinition(BeanDefinition beanDefinition) {
+	 * Determines if the given bean definition represents an immutable configuration
+	 * properties bean definition.
+	 * @param beanDefinition the bean definition to check
+	 * @return true if the bean definition represents an immutable configuration
+	 * properties bean definition, false otherwise
+	 */
+	private boolean isImmutableConfigurationPropertiesBeanDefinition(BeanDefinition beanDefinition) {
 		return BindMethod.VALUE_OBJECT.equals(BindMethodAttribute.get(beanDefinition));
 	}
 
 	/**
-     * ConfigurationPropertiesBeanRegistrationCodeFragments class.
-     */
-    private static class ConfigurationPropertiesBeanRegistrationCodeFragments
+	 * ConfigurationPropertiesBeanRegistrationCodeFragments class.
+	 */
+	private static class ConfigurationPropertiesBeanRegistrationCodeFragments
 			extends BeanRegistrationCodeFragmentsDecorator {
 
 		private static final String REGISTERED_BEAN_PARAMETER_NAME = "registeredBean";
@@ -82,28 +83,27 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 		private final RegisteredBean registeredBean;
 
 		/**
-         * Constructs a new ConfigurationPropertiesBeanRegistrationCodeFragments object with the specified
-         * BeanRegistrationCodeFragments and RegisteredBean.
-         * 
-         * @param codeFragments the BeanRegistrationCodeFragments to be used
-         * @param registeredBean the RegisteredBean to be used
-         */
-        ConfigurationPropertiesBeanRegistrationCodeFragments(BeanRegistrationCodeFragments codeFragments,
+		 * Constructs a new ConfigurationPropertiesBeanRegistrationCodeFragments object
+		 * with the specified BeanRegistrationCodeFragments and RegisteredBean.
+		 * @param codeFragments the BeanRegistrationCodeFragments to be used
+		 * @param registeredBean the RegisteredBean to be used
+		 */
+		ConfigurationPropertiesBeanRegistrationCodeFragments(BeanRegistrationCodeFragments codeFragments,
 				RegisteredBean registeredBean) {
 			super(codeFragments);
 			this.registeredBean = registeredBean;
 		}
 
 		/**
-         * Generates the code block for setting the properties of a bean definition based on the attributes of a configuration properties class.
-         * 
-         * @param generationContext The generation context.
-         * @param beanRegistrationCode The bean registration code.
-         * @param beanDefinition The root bean definition.
-         * @param attributeFilter The attribute filter.
-         * @return The code block for setting the bean definition properties.
-         */
-        @Override
+		 * Generates the code block for setting the properties of a bean definition based
+		 * on the attributes of a configuration properties class.
+		 * @param generationContext The generation context.
+		 * @param beanRegistrationCode The bean registration code.
+		 * @param beanDefinition The root bean definition.
+		 * @param attributeFilter The attribute filter.
+		 * @return The code block for setting the bean definition properties.
+		 */
+		@Override
 		public CodeBlock generateSetBeanDefinitionPropertiesCode(GenerationContext generationContext,
 				BeanRegistrationCode beanRegistrationCode, RootBeanDefinition beanDefinition,
 				Predicate<String> attributeFilter) {
@@ -112,25 +112,24 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 		}
 
 		/**
-         * Returns the target class name for the given registered bean.
-         * 
-         * @param registeredBean the registered bean
-         * @return the target class name
-         */
-        @Override
+		 * Returns the target class name for the given registered bean.
+		 * @param registeredBean the registered bean
+		 * @return the target class name
+		 */
+		@Override
 		public ClassName getTarget(RegisteredBean registeredBean) {
 			return ClassName.get(this.registeredBean.getBeanClass());
 		}
 
 		/**
-         * Generates the code for the instance supplier method.
-         *
-         * @param generationContext The generation context.
-         * @param beanRegistrationCode The bean registration code.
-         * @param allowDirectSupplierShortcut Flag indicating whether to allow direct supplier shortcut.
-         * @return The code block representing the instance supplier method.
-         */
-        @Override
+		 * Generates the code for the instance supplier method.
+		 * @param generationContext The generation context.
+		 * @param beanRegistrationCode The bean registration code.
+		 * @param allowDirectSupplierShortcut Flag indicating whether to allow direct
+		 * supplier shortcut.
+		 * @return The code block representing the instance supplier method.
+		 */
+		@Override
 		public CodeBlock generateInstanceSupplierCode(GenerationContext generationContext,
 				BeanRegistrationCode beanRegistrationCode, boolean allowDirectSupplierShortcut) {
 			GeneratedMethod generatedMethod = beanRegistrationCode.getMethods().add("getInstance", (method) -> {

@@ -49,51 +49,46 @@ public class DocumentAutoConfigurationClasses extends DefaultTask {
 	private File outputDir;
 
 	/**
-     * Returns the auto configuration files.
-     *
-     * @return the auto configuration files
-     */
-    @InputFiles
+	 * Returns the auto configuration files.
+	 * @return the auto configuration files
+	 */
+	@InputFiles
 	public FileCollection getAutoConfiguration() {
 		return this.autoConfiguration;
 	}
 
 	/**
-     * Sets the auto configuration files for the document auto configuration classes.
-     * 
-     * @param autoConfiguration the collection of auto configuration files
-     */
-    public void setAutoConfiguration(FileCollection autoConfiguration) {
+	 * Sets the auto configuration files for the document auto configuration classes.
+	 * @param autoConfiguration the collection of auto configuration files
+	 */
+	public void setAutoConfiguration(FileCollection autoConfiguration) {
 		this.autoConfiguration = autoConfiguration;
 	}
 
 	/**
-     * Returns the output directory.
-     *
-     * @return the output directory
-     */
-    @OutputDirectory
+	 * Returns the output directory.
+	 * @return the output directory
+	 */
+	@OutputDirectory
 	public File getOutputDir() {
 		return this.outputDir;
 	}
 
 	/**
-     * Sets the output directory for the generated files.
-     * 
-     * @param outputDir the output directory to set
-     */
-    public void setOutputDir(File outputDir) {
+	 * Sets the output directory for the generated files.
+	 * @param outputDir the output directory to set
+	 */
+	public void setOutputDir(File outputDir) {
 		this.outputDir = outputDir;
 	}
 
 	/**
-     * This method is responsible for documenting the auto configuration classes.
-     * It reads the metadata files for each auto configuration and generates a table
-     * with the relevant information.
-     *
-     * @throws IOException if there is an error reading the metadata files
-     */
-    @TaskAction
+	 * This method is responsible for documenting the auto configuration classes. It reads
+	 * the metadata files for each auto configuration and generates a table with the
+	 * relevant information.
+	 * @throws IOException if there is an error reading the metadata files
+	 */
+	@TaskAction
 	void documentAutoConfigurationClasses() throws IOException {
 		for (File metadataFile : this.autoConfiguration) {
 			Properties metadata = new Properties();
@@ -107,12 +102,12 @@ public class DocumentAutoConfigurationClasses extends DefaultTask {
 	}
 
 	/**
-     * Writes a table of auto configuration classes to a file in AsciiDoc format.
-     * 
-     * @param autoConfigurationClasses the AutoConfiguration object containing the classes to be written
-     * @throws IOException if an I/O error occurs while writing the file
-     */
-    private void writeTable(AutoConfiguration autoConfigurationClasses) throws IOException {
+	 * Writes a table of auto configuration classes to a file in AsciiDoc format.
+	 * @param autoConfigurationClasses the AutoConfiguration object containing the classes
+	 * to be written
+	 * @throws IOException if an I/O error occurs while writing the file
+	 */
+	private void writeTable(AutoConfiguration autoConfigurationClasses) throws IOException {
 		this.outputDir.mkdirs();
 		try (PrintWriter writer = new PrintWriter(
 				new FileWriter(new File(this.outputDir, autoConfigurationClasses.module + ".adoc")))) {
@@ -132,21 +127,22 @@ public class DocumentAutoConfigurationClasses extends DefaultTask {
 	}
 
 	/**
-     * AutoConfiguration class.
-     */
-    private static final class AutoConfiguration {
+	 * AutoConfiguration class.
+	 */
+	private static final class AutoConfiguration {
 
 		private final String module;
 
 		private final SortedSet<AutoConfigurationClass> classes;
 
 		/**
-         * Constructs a new AutoConfiguration object with the specified module and class names.
-         * 
-         * @param module the module name associated with the auto configuration
-         * @param classNames the set of class names to be included in the auto configuration
-         */
-        private AutoConfiguration(String module, Set<String> classNames) {
+		 * Constructs a new AutoConfiguration object with the specified module and class
+		 * names.
+		 * @param module the module name associated with the auto configuration
+		 * @param classNames the set of class names to be included in the auto
+		 * configuration
+		 */
+		private AutoConfiguration(String module, Set<String> classNames) {
 			this.module = module;
 			this.classes = classNames.stream().map((className) -> {
 				String path = className.replace('.', '/');
@@ -158,33 +154,33 @@ public class DocumentAutoConfigurationClasses extends DefaultTask {
 	}
 
 	/**
-     * AutoConfigurationClass class.
-     */
-    private static final class AutoConfigurationClass implements Comparable<AutoConfigurationClass> {
+	 * AutoConfigurationClass class.
+	 */
+	private static final class AutoConfigurationClass implements Comparable<AutoConfigurationClass> {
 
 		private final String name;
 
 		private final String path;
 
 		/**
-         * Constructs a new AutoConfigurationClass with the specified name and path.
-         *
-         * @param name the name of the auto configuration class
-         * @param path the path of the auto configuration class
-         */
-        private AutoConfigurationClass(String name, String path) {
+		 * Constructs a new AutoConfigurationClass with the specified name and path.
+		 * @param name the name of the auto configuration class
+		 * @param path the path of the auto configuration class
+		 */
+		private AutoConfigurationClass(String name, String path) {
 			this.name = name;
 			this.path = path;
 		}
 
 		/**
-         * Compares this AutoConfigurationClass object with the specified object for order.
-         * Returns a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
-         * 
-         * @param other the object to be compared
-         * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object
-         */
-        @Override
+		 * Compares this AutoConfigurationClass object with the specified object for
+		 * order. Returns a negative integer, zero, or a positive integer as this object
+		 * is less than, equal to, or greater than the specified object.
+		 * @param other the object to be compared
+		 * @return a negative integer, zero, or a positive integer as this object is less
+		 * than, equal to, or greater than the specified object
+		 */
+		@Override
 		public int compareTo(AutoConfigurationClass other) {
 			return this.name.compareTo(other.name);
 		}

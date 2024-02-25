@@ -36,12 +36,11 @@ class CouchbaseContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<CouchbaseContainer, CouchbaseConnectionDetails> {
 
 	/**
-     * Returns the connection details for the Couchbase container.
-     * 
-     * @param source the source of the container connection
-     * @return the connection details for the Couchbase container
-     */
-    @Override
+	 * Returns the connection details for the Couchbase container.
+	 * @param source the source of the container connection
+	 * @return the connection details for the Couchbase container
+	 */
+	@Override
 	protected CouchbaseConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<CouchbaseContainer> source) {
 		return new CouchbaseContainerConnectionDetails(source);
@@ -54,40 +53,38 @@ class CouchbaseContainerConnectionDetailsFactory
 			extends ContainerConnectionDetails<CouchbaseContainer> implements CouchbaseConnectionDetails {
 
 		/**
-         * Constructs a new CouchbaseContainerConnectionDetails object with the provided source.
-         *
-         * @param source the source of the container connection
-         */
-        private CouchbaseContainerConnectionDetails(ContainerConnectionSource<CouchbaseContainer> source) {
+		 * Constructs a new CouchbaseContainerConnectionDetails object with the provided
+		 * source.
+		 * @param source the source of the container connection
+		 */
+		private CouchbaseContainerConnectionDetails(ContainerConnectionSource<CouchbaseContainer> source) {
 			super(source);
 		}
 
 		/**
-         * Returns the username associated with the Couchbase container connection details.
-         *
-         * @return the username associated with the Couchbase container connection details
-         */
-        @Override
+		 * Returns the username associated with the Couchbase container connection
+		 * details.
+		 * @return the username associated with the Couchbase container connection details
+		 */
+		@Override
 		public String getUsername() {
 			return getContainer().getUsername();
 		}
 
 		/**
-         * Returns the password for the Couchbase container connection.
-         * 
-         * @return the password for the Couchbase container connection
-         */
-        @Override
+		 * Returns the password for the Couchbase container connection.
+		 * @return the password for the Couchbase container connection
+		 */
+		@Override
 		public String getPassword() {
 			return getContainer().getPassword();
 		}
 
 		/**
-         * Returns the connection string for the Couchbase container.
-         * 
-         * @return the connection string
-         */
-        @Override
+		 * Returns the connection string for the Couchbase container.
+		 * @return the connection string
+		 */
+		@Override
 		public String getConnectionString() {
 			return getContainer().getConnectionString();
 		}

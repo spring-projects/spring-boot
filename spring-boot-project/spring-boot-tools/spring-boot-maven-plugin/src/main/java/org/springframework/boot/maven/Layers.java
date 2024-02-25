@@ -59,11 +59,10 @@ public class Layers {
 	}
 
 	/**
-     * Sets the configuration file for the Layers class.
-     * 
-     * @param configuration the configuration file to be set
-     */
-    public void setConfiguration(File configuration) {
+	 * Sets the configuration file for the Layers class.
+	 * @param configuration the configuration file to be set
+	 */
+	public void setConfiguration(File configuration) {
 		this.configuration = configuration;
 	}
 

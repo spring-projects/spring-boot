@@ -27,12 +27,11 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 class JavaLoggingSystemRuntimeHints implements RuntimeHintsRegistrar {
 
 	/**
-     * Registers the hints for the Java Logging System.
-     * 
-     * @param hints the runtime hints to register
-     * @param classLoader the class loader to use for loading resources
-     */
-    @Override
+	 * Registers the hints for the Java Logging System.
+	 * @param hints the runtime hints to register
+	 * @param classLoader the class loader to use for loading resources
+	 */
+	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		hints.resources().registerPattern("org/springframework/boot/logging/java/logging.properties");
 		hints.resources().registerPattern("org/springframework/boot/logging/java/logging-file.properties");

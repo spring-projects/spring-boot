@@ -41,37 +41,34 @@ public class BasicJsonParser extends AbstractJsonParser {
 	private static final int MAX_DEPTH = 1000;
 
 	/**
-     * Parses a JSON string into a Map object.
-     * 
-     * @param json the JSON string to parse
-     * @return a Map object representing the parsed JSON
-     * @throws Exception if an error occurs during parsing
-     */
-    @Override
+	 * Parses a JSON string into a Map object.
+	 * @param json the JSON string to parse
+	 * @return a Map object representing the parsed JSON
+	 * @throws Exception if an error occurs during parsing
+	 */
+	@Override
 	public Map<String, Object> parseMap(String json) {
 		return tryParse(() -> parseMap(json, (jsonToParse) -> parseMapInternal(0, jsonToParse)), Exception.class);
 	}
 
 	/**
-     * Parses a JSON string into a list of objects.
-     * 
-     * @param json the JSON string to parse
-     * @return a list of objects parsed from the JSON string
-     * @throws Exception if an error occurs during parsing
-     */
-    @Override
+	 * Parses a JSON string into a list of objects.
+	 * @param json the JSON string to parse
+	 * @return a list of objects parsed from the JSON string
+	 * @throws Exception if an error occurs during parsing
+	 */
+	@Override
 	public List<Object> parseList(String json) {
 		return tryParse(() -> parseList(json, (jsonToParse) -> parseListInternal(0, jsonToParse)), Exception.class);
 	}
 
 	/**
-     * Parses a JSON string representing a list and returns a List of Objects.
-     * 
-     * @param nesting the current nesting level of the JSON string
-     * @param json the JSON string to be parsed
-     * @return a List of Objects parsed from the JSON string
-     */
-    private List<Object> parseListInternal(int nesting, String json) {
+	 * Parses a JSON string representing a list and returns a List of Objects.
+	 * @param nesting the current nesting level of the JSON string
+	 * @param json the JSON string to be parsed
+	 * @return a List of Objects parsed from the JSON string
+	 */
+	private List<Object> parseListInternal(int nesting, String json) {
 		List<Object> list = new ArrayList<>();
 		json = trimLeadingCharacter(trimTrailingCharacter(json, ']'), '[').trim();
 		for (String value : tokenize(json)) {
@@ -81,14 +78,13 @@ public class BasicJsonParser extends AbstractJsonParser {
 	}
 
 	/**
-     * Parses the given JSON string and returns the corresponding object representation.
-     * 
-     * @param nesting the current nesting level of the JSON string
-     * @param json the JSON string to be parsed
-     * @return the parsed object representation of the JSON string
-     * @throws IllegalStateException if the JSON string is too deeply nested
-     */
-    private Object parseInternal(int nesting, String json) {
+	 * Parses the given JSON string and returns the corresponding object representation.
+	 * @param nesting the current nesting level of the JSON string
+	 * @param json the JSON string to be parsed
+	 * @return the parsed object representation of the JSON string
+	 * @throws IllegalStateException if the JSON string is too deeply nested
+	 */
+	private Object parseInternal(int nesting, String json) {
 		if (nesting > MAX_DEPTH) {
 			throw new IllegalStateException("JSON is too deeply nested");
 		}
@@ -117,14 +113,13 @@ public class BasicJsonParser extends AbstractJsonParser {
 	}
 
 	/**
-     * Parses a JSON string and returns a Map representation of the JSON object.
-     * 
-     * @param nesting the current nesting level of the JSON object
-     * @param json the JSON string to be parsed
-     * @return a Map containing the key-value pairs of the JSON object
-     * @throws IllegalArgumentException if the JSON string is not valid
-     */
-    private Map<String, Object> parseMapInternal(int nesting, String json) {
+	 * Parses a JSON string and returns a Map representation of the JSON object.
+	 * @param nesting the current nesting level of the JSON object
+	 * @param json the JSON string to be parsed
+	 * @return a Map containing the key-value pairs of the JSON object
+	 * @throws IllegalArgumentException if the JSON string is not valid
+	 */
+	private Map<String, Object> parseMapInternal(int nesting, String json) {
 		Map<String, Object> map = new LinkedHashMap<>();
 		json = trimLeadingCharacter(trimTrailingCharacter(json, '}'), '{').trim();
 		for (String pair : tokenize(json)) {
@@ -139,13 +134,12 @@ public class BasicJsonParser extends AbstractJsonParser {
 	}
 
 	/**
-     * Removes the trailing occurrences of a specified character from a given string.
-     * 
-     * @param string the string to be trimmed
-     * @param c the character to be removed from the end of the string
-     * @return the trimmed string
-     */
-    private static String trimTrailingCharacter(String string, char c) {
+	 * Removes the trailing occurrences of a specified character from a given string.
+	 * @param string the string to be trimmed
+	 * @param c the character to be removed from the end of the string
+	 * @return the trimmed string
+	 */
+	private static String trimTrailingCharacter(String string, char c) {
 		if (!string.isEmpty() && string.charAt(string.length() - 1) == c) {
 			return string.substring(0, string.length() - 1);
 		}
@@ -153,13 +147,12 @@ public class BasicJsonParser extends AbstractJsonParser {
 	}
 
 	/**
-     * Removes the leading occurrences of a specified character from a given string.
-     *
-     * @param string the string to be trimmed
-     * @param c the character to be removed from the beginning of the string
-     * @return the trimmed string
-     */
-    private static String trimLeadingCharacter(String string, char c) {
+	 * Removes the leading occurrences of a specified character from a given string.
+	 * @param string the string to be trimmed
+	 * @param c the character to be removed from the beginning of the string
+	 * @return the trimmed string
+	 */
+	private static String trimLeadingCharacter(String string, char c) {
 		if (!string.isEmpty() && string.charAt(0) == c) {
 			return string.substring(1);
 		}
@@ -167,12 +160,11 @@ public class BasicJsonParser extends AbstractJsonParser {
 	}
 
 	/**
-     * Tokenizes a JSON string into a list of individual tokens.
-     * 
-     * @param json the JSON string to tokenize
-     * @return a list of tokens extracted from the JSON string
-     */
-    private List<String> tokenize(String json) {
+	 * Tokenizes a JSON string into a list of individual tokens.
+	 * @param json the JSON string to tokenize
+	 * @return a list of tokens extracted from the JSON string
+	 */
+	private List<String> tokenize(String json) {
 		List<String> list = new ArrayList<>();
 		int index = 0;
 		int inObject = 0;

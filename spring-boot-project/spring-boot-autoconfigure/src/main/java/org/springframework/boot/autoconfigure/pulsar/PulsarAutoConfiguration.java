@@ -78,25 +78,26 @@ public class PulsarAutoConfiguration {
 	private PulsarPropertiesMapper propertiesMapper;
 
 	/**
-     * Constructs a new PulsarAutoConfiguration object with the specified PulsarProperties.
-     * 
-     * @param properties the PulsarProperties object containing the configuration properties for Pulsar
-     */
-    PulsarAutoConfiguration(PulsarProperties properties) {
+	 * Constructs a new PulsarAutoConfiguration object with the specified
+	 * PulsarProperties.
+	 * @param properties the PulsarProperties object containing the configuration
+	 * properties for Pulsar
+	 */
+	PulsarAutoConfiguration(PulsarProperties properties) {
 		this.properties = properties;
 		this.propertiesMapper = new PulsarPropertiesMapper(properties);
 	}
 
 	/**
-     * Creates a default PulsarProducerFactory bean if no other bean of type PulsarProducerFactory is present and the property
-     * spring.pulsar.producer.cache.enabled is set to false.
-     * 
-     * @param pulsarClient the PulsarClient bean
-     * @param topicResolver the TopicResolver bean
-     * @param customizersProvider the ObjectProvider for ProducerBuilderCustomizer beans
-     * @return the DefaultPulsarProducerFactory bean
-     */
-    @Bean
+	 * Creates a default PulsarProducerFactory bean if no other bean of type
+	 * PulsarProducerFactory is present and the property
+	 * spring.pulsar.producer.cache.enabled is set to false.
+	 * @param pulsarClient the PulsarClient bean
+	 * @param topicResolver the TopicResolver bean
+	 * @param customizersProvider the ObjectProvider for ProducerBuilderCustomizer beans
+	 * @return the DefaultPulsarProducerFactory bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(PulsarProducerFactory.class)
 	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "false")
 	DefaultPulsarProducerFactory<?> pulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver,
@@ -108,21 +109,24 @@ public class PulsarAutoConfiguration {
 	}
 
 	/**
-     * Creates a caching Pulsar producer factory if no other bean of type {@link PulsarProducerFactory} is present and the property
-     * {@code spring.pulsar.producer.cache.enabled} is set to {@code true} (or not set at all).
-     * 
-     * The caching Pulsar producer factory is responsible for creating and managing Pulsar producers. It uses a cache to store
-     * and reuse producer instances, improving performance by avoiding the overhead of creating a new producer for each message.
-     * 
-     * The cache properties, such as expiration time, maximum size, and initial capacity, are obtained from the application's
-     * configuration file.
-     * 
-     * @param pulsarClient the Pulsar client used to create producers
-     * @param topicResolver the topic resolver used to resolve topic names
-     * @param customizersProvider a provider for customizers that can customize the producer builder
-     * @return a caching Pulsar producer factory
-     */
-    @Bean
+	 * Creates a caching Pulsar producer factory if no other bean of type
+	 * {@link PulsarProducerFactory} is present and the property
+	 * {@code spring.pulsar.producer.cache.enabled} is set to {@code true} (or not set at
+	 * all).
+	 *
+	 * The caching Pulsar producer factory is responsible for creating and managing Pulsar
+	 * producers. It uses a cache to store and reuse producer instances, improving
+	 * performance by avoiding the overhead of creating a new producer for each message.
+	 *
+	 * The cache properties, such as expiration time, maximum size, and initial capacity,
+	 * are obtained from the application's configuration file.
+	 * @param pulsarClient the Pulsar client used to create producers
+	 * @param topicResolver the topic resolver used to resolve topic names
+	 * @param customizersProvider a provider for customizers that can customize the
+	 * producer builder
+	 * @return a caching Pulsar producer factory
+	 */
+	@Bean
 	@ConditionalOnMissingBean(PulsarProducerFactory.class)
 	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
 	CachingPulsarProducerFactory<?> cachingPulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver,
@@ -136,12 +140,11 @@ public class PulsarAutoConfiguration {
 	}
 
 	/**
-     * Returns a list of lambda-safe producer builder customizers.
-     * 
-     * @param customizersProvider the provider for producer builder customizers
-     * @return the list of lambda-safe producer builder customizers
-     */
-    private List<ProducerBuilderCustomizer<Object>> lambdaSafeProducerBuilderCustomizers(
+	 * Returns a list of lambda-safe producer builder customizers.
+	 * @param customizersProvider the provider for producer builder customizers
+	 * @return the list of lambda-safe producer builder customizers
+	 */
+	private List<ProducerBuilderCustomizer<Object>> lambdaSafeProducerBuilderCustomizers(
 			ObjectProvider<ProducerBuilderCustomizer<?>> customizersProvider) {
 		List<ProducerBuilderCustomizer<?>> customizers = new ArrayList<>();
 		customizers.add(this.propertiesMapper::customizeProducerBuilder);
@@ -150,12 +153,11 @@ public class PulsarAutoConfiguration {
 	}
 
 	/**
-     * Applies the customizers to the given producer builder.
-     *
-     * @param customizers the list of producer builder customizers
-     * @param builder the producer builder to customize
-     */
-    @SuppressWarnings("unchecked")
+	 * Applies the customizers to the given producer builder.
+	 * @param customizers the list of producer builder customizers
+	 * @param builder the producer builder to customize
+	 */
+	@SuppressWarnings("unchecked")
 	private void applyProducerBuilderCustomizers(List<ProducerBuilderCustomizer<?>> customizers,
 			ProducerBuilder<?> builder) {
 		LambdaSafe.callbacks(ProducerBuilderCustomizer.class, customizers, builder)
@@ -163,15 +165,18 @@ public class PulsarAutoConfiguration {
 	}
 
 	/**
-     * Creates a PulsarTemplate bean if there is no existing bean of the same type.
-     * 
-     * @param pulsarProducerFactory the PulsarProducerFactory used to create the PulsarTemplate
-     * @param producerInterceptors the list of ProducerInterceptors to be applied to the PulsarTemplate
-     * @param schemaResolver the SchemaResolver used to resolve schemas for the PulsarTemplate
-     * @param topicResolver the TopicResolver used to resolve topics for the PulsarTemplate
-     * @return the created PulsarTemplate bean
-     */
-    @Bean
+	 * Creates a PulsarTemplate bean if there is no existing bean of the same type.
+	 * @param pulsarProducerFactory the PulsarProducerFactory used to create the
+	 * PulsarTemplate
+	 * @param producerInterceptors the list of ProducerInterceptors to be applied to the
+	 * PulsarTemplate
+	 * @param schemaResolver the SchemaResolver used to resolve schemas for the
+	 * PulsarTemplate
+	 * @param topicResolver the TopicResolver used to resolve topics for the
+	 * PulsarTemplate
+	 * @return the created PulsarTemplate bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	PulsarTemplate<?> pulsarTemplate(PulsarProducerFactory<?> pulsarProducerFactory,
 			ObjectProvider<ProducerInterceptor> producerInterceptors, SchemaResolver schemaResolver,
@@ -181,13 +186,15 @@ public class PulsarAutoConfiguration {
 	}
 
 	/**
-     * Creates a default {@link PulsarConsumerFactory} bean if no other bean of the same type is present.
-     * 
-     * @param pulsarClient The {@link PulsarClient} instance to be used by the consumer factory.
-     * @param customizersProvider The provider for {@link ConsumerBuilderCustomizer} instances.
-     * @return The created {@link DefaultPulsarConsumerFactory} bean.
-     */
-    @Bean
+	 * Creates a default {@link PulsarConsumerFactory} bean if no other bean of the same
+	 * type is present.
+	 * @param pulsarClient The {@link PulsarClient} instance to be used by the consumer
+	 * factory.
+	 * @param customizersProvider The provider for {@link ConsumerBuilderCustomizer}
+	 * instances.
+	 * @return The created {@link DefaultPulsarConsumerFactory} bean.
+	 */
+	@Bean
 	@ConditionalOnMissingBean(PulsarConsumerFactory.class)
 	DefaultPulsarConsumerFactory<?> pulsarConsumerFactory(PulsarClient pulsarClient,
 			ObjectProvider<ConsumerBuilderCustomizer<?>> customizersProvider) {
@@ -200,12 +207,11 @@ public class PulsarAutoConfiguration {
 	}
 
 	/**
-     * Applies the customizers to the given consumer builder.
-     * 
-     * @param customizers the list of consumer builder customizers
-     * @param builder the consumer builder to customize
-     */
-    @SuppressWarnings("unchecked")
+	 * Applies the customizers to the given consumer builder.
+	 * @param customizers the list of consumer builder customizers
+	 * @param builder the consumer builder to customize
+	 */
+	@SuppressWarnings("unchecked")
 	private void applyConsumerBuilderCustomizers(List<ConsumerBuilderCustomizer<?>> customizers,
 			ConsumerBuilder<?> builder) {
 		LambdaSafe.callbacks(ConsumerBuilderCustomizer.class, customizers, builder)
@@ -213,28 +219,42 @@ public class PulsarAutoConfiguration {
 	}
 
 	/**
-     * Creates a {@link ConcurrentPulsarListenerContainerFactory} bean if there is no existing bean with the name "pulsarListenerContainerFactory".
-     * This factory is used to create concurrent Pulsar listener containers.
-     * 
-     * The factory is conditionally created using the {@link ConditionalOnMissingBean} annotation, which ensures that it is only created if there is no existing bean with the specified name.
-     * 
-     * The factory requires a {@link PulsarConsumerFactory} bean, a {@link SchemaResolver} bean, a {@link TopicResolver} bean, and an {@link Environment} bean as dependencies.
-     * 
-     * The factory also creates a {@link PulsarContainerProperties} object and sets the provided {@link SchemaResolver} and {@link TopicResolver} beans as properties.
-     * 
-     * If the environment is configured to use virtual threads, the factory sets a {@link VirtualThreadTaskExecutor} as the consumer task executor in the container properties.
-     * 
-     * The factory also applies any customizations to the container properties using the {@link PulsarPropertiesMapper} bean.
-     * 
-     * Finally, the factory returns a new instance of {@link ConcurrentPulsarListenerContainerFactory} with the provided dependencies and container properties.
-     * 
-     * @param pulsarConsumerFactory the {@link PulsarConsumerFactory} bean to use for creating Pulsar consumers
-     * @param schemaResolver the {@link SchemaResolver} bean to use for resolving Pulsar schemas
-     * @param topicResolver the {@link TopicResolver} bean to use for resolving Pulsar topics
-     * @param environment the {@link Environment} bean to use for accessing the application's environment
-     * @return a new instance of {@link ConcurrentPulsarListenerContainerFactory}
-     */
-    @Bean
+	 * Creates a {@link ConcurrentPulsarListenerContainerFactory} bean if there is no
+	 * existing bean with the name "pulsarListenerContainerFactory". This factory is used
+	 * to create concurrent Pulsar listener containers.
+	 *
+	 * The factory is conditionally created using the {@link ConditionalOnMissingBean}
+	 * annotation, which ensures that it is only created if there is no existing bean with
+	 * the specified name.
+	 *
+	 * The factory requires a {@link PulsarConsumerFactory} bean, a {@link SchemaResolver}
+	 * bean, a {@link TopicResolver} bean, and an {@link Environment} bean as
+	 * dependencies.
+	 *
+	 * The factory also creates a {@link PulsarContainerProperties} object and sets the
+	 * provided {@link SchemaResolver} and {@link TopicResolver} beans as properties.
+	 *
+	 * If the environment is configured to use virtual threads, the factory sets a
+	 * {@link VirtualThreadTaskExecutor} as the consumer task executor in the container
+	 * properties.
+	 *
+	 * The factory also applies any customizations to the container properties using the
+	 * {@link PulsarPropertiesMapper} bean.
+	 *
+	 * Finally, the factory returns a new instance of
+	 * {@link ConcurrentPulsarListenerContainerFactory} with the provided dependencies and
+	 * container properties.
+	 * @param pulsarConsumerFactory the {@link PulsarConsumerFactory} bean to use for
+	 * creating Pulsar consumers
+	 * @param schemaResolver the {@link SchemaResolver} bean to use for resolving Pulsar
+	 * schemas
+	 * @param topicResolver the {@link TopicResolver} bean to use for resolving Pulsar
+	 * topics
+	 * @param environment the {@link Environment} bean to use for accessing the
+	 * application's environment
+	 * @return a new instance of {@link ConcurrentPulsarListenerContainerFactory}
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = "pulsarListenerContainerFactory")
 	ConcurrentPulsarListenerContainerFactory<?> pulsarListenerContainerFactory(
 			PulsarConsumerFactory<Object> pulsarConsumerFactory, SchemaResolver schemaResolver,
@@ -250,13 +270,15 @@ public class PulsarAutoConfiguration {
 	}
 
 	/**
-     * Creates a default {@link PulsarReaderFactory} bean if no other bean of type {@link PulsarReaderFactory} is present.
-     * 
-     * @param pulsarClient The {@link PulsarClient} instance to be used by the reader factory.
-     * @param customizersProvider The {@link ObjectProvider} of {@link ReaderBuilderCustomizer} instances.
-     * @return The created {@link DefaultPulsarReaderFactory} bean.
-     */
-    @Bean
+	 * Creates a default {@link PulsarReaderFactory} bean if no other bean of type
+	 * {@link PulsarReaderFactory} is present.
+	 * @param pulsarClient The {@link PulsarClient} instance to be used by the reader
+	 * factory.
+	 * @param customizersProvider The {@link ObjectProvider} of
+	 * {@link ReaderBuilderCustomizer} instances.
+	 * @return The created {@link DefaultPulsarReaderFactory} bean.
+	 */
+	@Bean
 	@ConditionalOnMissingBean(PulsarReaderFactory.class)
 	DefaultPulsarReaderFactory<?> pulsarReaderFactory(PulsarClient pulsarClient,
 			ObjectProvider<ReaderBuilderCustomizer<?>> customizersProvider) {
@@ -269,26 +291,25 @@ public class PulsarAutoConfiguration {
 	}
 
 	/**
-     * Applies the customizers to the reader builder.
-     * 
-     * @param customizers the list of reader builder customizers
-     * @param builder the reader builder to customize
-     */
-    @SuppressWarnings("unchecked")
+	 * Applies the customizers to the reader builder.
+	 * @param customizers the list of reader builder customizers
+	 * @param builder the reader builder to customize
+	 */
+	@SuppressWarnings("unchecked")
 	private void applyReaderBuilderCustomizers(List<ReaderBuilderCustomizer<?>> customizers, ReaderBuilder<?> builder) {
 		LambdaSafe.callbacks(ReaderBuilderCustomizer.class, customizers, builder)
 			.invoke((customizer) -> customizer.customize(builder));
 	}
 
 	/**
-     * Creates a default PulsarReaderContainerFactory bean if no bean with the name "pulsarReaderContainerFactory" is present.
-     * 
-     * @param pulsarReaderFactory The PulsarReaderFactory bean.
-     * @param schemaResolver The SchemaResolver bean.
-     * @param environment The Environment bean.
-     * @return The DefaultPulsarReaderContainerFactory bean.
-     */
-    @Bean
+	 * Creates a default PulsarReaderContainerFactory bean if no bean with the name
+	 * "pulsarReaderContainerFactory" is present.
+	 * @param pulsarReaderFactory The PulsarReaderFactory bean.
+	 * @param schemaResolver The SchemaResolver bean.
+	 * @param environment The Environment bean.
+	 * @return The DefaultPulsarReaderContainerFactory bean.
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = "pulsarReaderContainerFactory")
 	DefaultPulsarReaderContainerFactory<?> pulsarReaderContainerFactory(PulsarReaderFactory<?> pulsarReaderFactory,
 			SchemaResolver schemaResolver, Environment environment) {
@@ -302,9 +323,9 @@ public class PulsarAutoConfiguration {
 	}
 
 	/**
-     * EnablePulsarConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * EnablePulsarConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@EnablePulsar
 	@ConditionalOnMissingBean(name = { PulsarAnnotationSupportBeanNames.PULSAR_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME,
 			PulsarAnnotationSupportBeanNames.PULSAR_READER_ANNOTATION_PROCESSOR_BEAN_NAME })

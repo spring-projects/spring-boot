@@ -31,11 +31,12 @@ import org.springframework.boot.availability.LivenessState;
 public class LivenessStateHealthIndicator extends AvailabilityStateHealthIndicator {
 
 	/**
-     * Constructs a new LivenessStateHealthIndicator with the given ApplicationAvailability.
-     * 
-     * @param availability the ApplicationAvailability to use for checking the liveness state
-     */
-    public LivenessStateHealthIndicator(ApplicationAvailability availability) {
+	 * Constructs a new LivenessStateHealthIndicator with the given
+	 * ApplicationAvailability.
+	 * @param availability the ApplicationAvailability to use for checking the liveness
+	 * state
+	 */
+	public LivenessStateHealthIndicator(ApplicationAvailability availability) {
 		super(availability, LivenessState.class, (statusMappings) -> {
 			statusMappings.add(LivenessState.CORRECT, Status.UP);
 			statusMappings.add(LivenessState.BROKEN, Status.DOWN);
@@ -43,12 +44,13 @@ public class LivenessStateHealthIndicator extends AvailabilityStateHealthIndicat
 	}
 
 	/**
-     * Returns the state of the application's liveness based on the provided ApplicationAvailability object.
-     * 
-     * @param applicationAvailability the ApplicationAvailability object used to determine the liveness state
-     * @return the liveness state of the application
-     */
-    @Override
+	 * Returns the state of the application's liveness based on the provided
+	 * ApplicationAvailability object.
+	 * @param applicationAvailability the ApplicationAvailability object used to determine
+	 * the liveness state
+	 * @return the liveness state of the application
+	 */
+	@Override
 	protected AvailabilityState getState(ApplicationAvailability applicationAvailability) {
 		return applicationAvailability.getLivenessState();
 	}

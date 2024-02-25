@@ -36,13 +36,15 @@ import org.springframework.data.couchbase.repository.config.ReactiveRepositoryOp
 class CouchbaseReactiveDataConfiguration {
 
 	/**
-     * Creates a new instance of ReactiveCouchbaseTemplate using the provided CouchbaseClientFactory and MappingCouchbaseConverter.
-     * 
-     * @param couchbaseClientFactory The CouchbaseClientFactory used to create the underlying Couchbase client.
-     * @param mappingCouchbaseConverter The MappingCouchbaseConverter used for object mapping.
-     * @return A new instance of ReactiveCouchbaseTemplate.
-     */
-    @Bean(name = BeanNames.REACTIVE_COUCHBASE_TEMPLATE)
+	 * Creates a new instance of ReactiveCouchbaseTemplate using the provided
+	 * CouchbaseClientFactory and MappingCouchbaseConverter.
+	 * @param couchbaseClientFactory The CouchbaseClientFactory used to create the
+	 * underlying Couchbase client.
+	 * @param mappingCouchbaseConverter The MappingCouchbaseConverter used for object
+	 * mapping.
+	 * @return A new instance of ReactiveCouchbaseTemplate.
+	 */
+	@Bean(name = BeanNames.REACTIVE_COUCHBASE_TEMPLATE)
 	@ConditionalOnMissingBean(name = BeanNames.REACTIVE_COUCHBASE_TEMPLATE)
 	ReactiveCouchbaseTemplate reactiveCouchbaseTemplate(CouchbaseClientFactory couchbaseClientFactory,
 			MappingCouchbaseConverter mappingCouchbaseConverter) {
@@ -50,13 +52,14 @@ class CouchbaseReactiveDataConfiguration {
 	}
 
 	/**
-     * Creates a new instance of ReactiveRepositoryOperationsMapping bean if it is missing in the application context.
-     * This bean is responsible for mapping reactive repository operations to the corresponding Couchbase template.
-     * 
-     * @param reactiveCouchbaseTemplate The reactive Couchbase template used for repository operations.
-     * @return The ReactiveRepositoryOperationsMapping bean.
-     */
-    @Bean(name = BeanNames.REACTIVE_COUCHBASE_OPERATIONS_MAPPING)
+	 * Creates a new instance of ReactiveRepositoryOperationsMapping bean if it is missing
+	 * in the application context. This bean is responsible for mapping reactive
+	 * repository operations to the corresponding Couchbase template.
+	 * @param reactiveCouchbaseTemplate The reactive Couchbase template used for
+	 * repository operations.
+	 * @return The ReactiveRepositoryOperationsMapping bean.
+	 */
+	@Bean(name = BeanNames.REACTIVE_COUCHBASE_OPERATIONS_MAPPING)
 	@ConditionalOnMissingBean(name = BeanNames.REACTIVE_COUCHBASE_OPERATIONS_MAPPING)
 	ReactiveRepositoryOperationsMapping reactiveCouchbaseRepositoryOperationsMapping(
 			ReactiveCouchbaseTemplate reactiveCouchbaseTemplate) {

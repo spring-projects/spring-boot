@@ -45,12 +45,13 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
 public class TaskSchedulingAutoConfiguration {
 
 	/**
-     * Creates a {@link LazyInitializationExcludeFilter} bean that excludes beans annotated with {@link Scheduled} from lazy initialization.
-     * This bean is conditional on the presence of the {@link TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME} bean.
-     * 
-     * @return the {@link LazyInitializationExcludeFilter} bean
-     */
-    @Bean
+	 * Creates a {@link LazyInitializationExcludeFilter} bean that excludes beans
+	 * annotated with {@link Scheduled} from lazy initialization. This bean is conditional
+	 * on the presence of the
+	 * {@link TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME} bean.
+	 * @return the {@link LazyInitializationExcludeFilter} bean
+	 */
+	@Bean
 	@ConditionalOnBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
 	public static LazyInitializationExcludeFilter scheduledBeanLazyInitializationExcludeFilter() {
 		return new ScheduledBeanLazyInitializationExcludeFilter();

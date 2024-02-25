@@ -32,12 +32,11 @@ import org.springframework.ws.transport.WebServiceMessageSender;
 public class MyWebServiceTemplateConfiguration {
 
 	/**
-     * Creates a new instance of {@link WebServiceTemplate} with custom configuration.
-     * 
-     * @param builder the {@link WebServiceTemplateBuilder} used to build the template
-     * @return the configured {@link WebServiceTemplate}
-     */
-    @Bean
+	 * Creates a new instance of {@link WebServiceTemplate} with custom configuration.
+	 * @param builder the {@link WebServiceTemplateBuilder} used to build the template
+	 * @return the configured {@link WebServiceTemplate}
+	 */
+	@Bean
 	public WebServiceTemplate webServiceTemplate(WebServiceTemplateBuilder builder) {
 		// @formatter:off
 		WebServiceMessageSender sender = new HttpWebServiceMessageSenderBuilder()

@@ -59,15 +59,14 @@ public class InactiveConfigDataAccessException extends ConfigDataException {
 	}
 
 	/**
-     * Returns the error message for an inactive property source.
-     * 
-     * @param propertySource The inactive property source.
-     * @param location The location from which the property source was imported.
-     * @param propertyName The name of the property.
-     * @param origin The origin of the property.
-     * @return The error message.
-     */
-    private static String getMessage(PropertySource<?> propertySource, ConfigDataResource location, String propertyName,
+	 * Returns the error message for an inactive property source.
+	 * @param propertySource The inactive property source.
+	 * @param location The location from which the property source was imported.
+	 * @param propertyName The name of the property.
+	 * @param origin The origin of the property.
+	 * @return The error message.
+	 */
+	private static String getMessage(PropertySource<?> propertySource, ConfigDataResource location, String propertyName,
 			Origin origin) {
 		StringBuilder message = new StringBuilder("Inactive property source '");
 		message.append(propertySource.getName());

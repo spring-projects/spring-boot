@@ -55,22 +55,22 @@ public class StartupEndpoint {
 	}
 
 	/**
-     * Retrieves a snapshot of the startup timeline.
-     * 
-     * @return A {@link StartupDescriptor} object containing the buffered startup timeline.
-     */
-    @ReadOperation
+	 * Retrieves a snapshot of the startup timeline.
+	 * @return A {@link StartupDescriptor} object containing the buffered startup
+	 * timeline.
+	 */
+	@ReadOperation
 	public StartupDescriptor startupSnapshot() {
 		StartupTimeline startupTimeline = this.applicationStartup.getBufferedTimeline();
 		return new StartupDescriptor(startupTimeline);
 	}
 
 	/**
-     * Retrieves the startup timeline from the application startup and creates a new StartupDescriptor object.
-     * 
-     * @return The StartupDescriptor object containing the startup timeline.
-     */
-    @WriteOperation
+	 * Retrieves the startup timeline from the application startup and creates a new
+	 * StartupDescriptor object.
+	 * @return The StartupDescriptor object containing the startup timeline.
+	 */
+	@WriteOperation
 	public StartupDescriptor startup() {
 		StartupTimeline startupTimeline = this.applicationStartup.drainBufferedTimeline();
 		return new StartupDescriptor(startupTimeline);
@@ -86,40 +86,38 @@ public class StartupEndpoint {
 		private final StartupTimeline timeline;
 
 		/**
-         * Constructs a new StartupDescriptor object with the given StartupTimeline.
-         * 
-         * @param timeline the StartupTimeline object to be associated with the StartupDescriptor
-         * @since 1.0
-         */
-        private StartupDescriptor(StartupTimeline timeline) {
+		 * Constructs a new StartupDescriptor object with the given StartupTimeline.
+		 * @param timeline the StartupTimeline object to be associated with the
+		 * StartupDescriptor
+		 * @since 1.0
+		 */
+		private StartupDescriptor(StartupTimeline timeline) {
 			this.timeline = timeline;
 			this.springBootVersion = SpringBootVersion.getVersion();
 		}
 
 		/**
-         * Returns the version of Spring Boot.
-         *
-         * @return the version of Spring Boot
-         */
-        public String getSpringBootVersion() {
+		 * Returns the version of Spring Boot.
+		 * @return the version of Spring Boot
+		 */
+		public String getSpringBootVersion() {
 			return this.springBootVersion;
 		}
 
 		/**
-         * Returns the timeline of the startup.
-         *
-         * @return the timeline of the startup
-         */
-        public StartupTimeline getTimeline() {
+		 * Returns the timeline of the startup.
+		 * @return the timeline of the startup
+		 */
+		public StartupTimeline getTimeline() {
 			return this.timeline;
 		}
 
 	}
 
 	/**
-     * StartupEndpointRuntimeHints class.
-     */
-    static class StartupEndpointRuntimeHints implements RuntimeHintsRegistrar {
+	 * StartupEndpointRuntimeHints class.
+	 */
+	static class StartupEndpointRuntimeHints implements RuntimeHintsRegistrar {
 
 		private static final TypeReference DEFAULT_TAG = TypeReference
 			.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag");
@@ -134,12 +132,11 @@ public class StartupEndpoint {
 			.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep");
 
 		/**
-         * Registers hints for the runtime endpoint.
-         * 
-         * @param hints The runtime hints to register.
-         * @param classLoader The class loader to use for reflection.
-         */
-        @Override
+		 * Registers hints for the runtime endpoint.
+		 * @param hints The runtime hints to register.
+		 * @param classLoader The class loader to use for reflection.
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.reflection()
 				.registerType(DEFAULT_TAG, (typeHint) -> typeHint.onReachableType(BUFFERED_STARTUP_STEP)

@@ -44,28 +44,27 @@ public class GroovyTemplateProperties extends AbstractTemplateViewResolverProper
 	private String resourceLoaderPath = DEFAULT_RESOURCE_LOADER_PATH;
 
 	/**
-     * Constructs a new instance of GroovyTemplateProperties with the default prefix, suffix, and request context attribute.
-     */
-    public GroovyTemplateProperties() {
+	 * Constructs a new instance of GroovyTemplateProperties with the default prefix,
+	 * suffix, and request context attribute.
+	 */
+	public GroovyTemplateProperties() {
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
 		setRequestContextAttribute(DEFAULT_REQUEST_CONTEXT_ATTRIBUTE);
 	}
 
 	/**
-     * Returns the resource loader path.
-     * 
-     * @return the resource loader path
-     */
-    public String getResourceLoaderPath() {
+	 * Returns the resource loader path.
+	 * @return the resource loader path
+	 */
+	public String getResourceLoaderPath() {
 		return this.resourceLoaderPath;
 	}
 
 	/**
-     * Sets the resource loader path for the Groovy template properties.
-     * 
-     * @param resourceLoaderPath the resource loader path to set
-     */
-    public void setResourceLoaderPath(String resourceLoaderPath) {
+	 * Sets the resource loader path for the Groovy template properties.
+	 * @param resourceLoaderPath the resource loader path to set
+	 */
+	public void setResourceLoaderPath(String resourceLoaderPath) {
 		this.resourceLoaderPath = resourceLoaderPath;
 	}
 

@@ -54,21 +54,19 @@ public class AvailabilityChangeEvent<S extends AvailabilityState> extends Payloa
 	}
 
 	/**
-     * Returns the ResolvableType of the AvailabilityChangeEvent.
-     * 
-     * @return the ResolvableType of the AvailabilityChangeEvent
-     */
-    @Override
+	 * Returns the ResolvableType of the AvailabilityChangeEvent.
+	 * @return the ResolvableType of the AvailabilityChangeEvent
+	 */
+	@Override
 	public ResolvableType getResolvableType() {
 		return ResolvableType.forClassWithGenerics(getClass(), getStateType());
 	}
 
 	/**
-     * Returns the type of the state.
-     * 
-     * @return the type of the state
-     */
-    private Class<?> getStateType() {
+	 * Returns the type of the state.
+	 * @return the type of the state
+	 */
+	private Class<?> getStateType() {
 		S state = getState();
 		if (state instanceof Enum) {
 			return ((Enum<?>) state).getDeclaringClass();

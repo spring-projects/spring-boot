@@ -56,24 +56,26 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class JooqAutoConfiguration {
 
 	/**
-     * Creates a {@link DataSourceConnectionProvider} bean if no other bean of type {@link ConnectionProvider} is present.
-     * 
-     * @param dataSource the {@link DataSource} to be used by the {@link DataSourceConnectionProvider}
-     * @return the created {@link DataSourceConnectionProvider} bean
-     */
-    @Bean
+	 * Creates a {@link DataSourceConnectionProvider} bean if no other bean of type
+	 * {@link ConnectionProvider} is present.
+	 * @param dataSource the {@link DataSource} to be used by the
+	 * {@link DataSourceConnectionProvider}
+	 * @return the created {@link DataSourceConnectionProvider} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(ConnectionProvider.class)
 	public DataSourceConnectionProvider dataSourceConnectionProvider(DataSource dataSource) {
 		return new DataSourceConnectionProvider(new TransactionAwareDataSourceProxy(dataSource));
 	}
 
 	/**
-     * Creates a SpringTransactionProvider bean if a PlatformTransactionManager bean is present and a TransactionProvider bean is missing.
-     * 
-     * @param txManager the PlatformTransactionManager bean to be used by the SpringTransactionProvider
-     * @return the created SpringTransactionProvider bean
-     */
-    @Bean
+	 * Creates a SpringTransactionProvider bean if a PlatformTransactionManager bean is
+	 * present and a TransactionProvider bean is missing.
+	 * @param txManager the PlatformTransactionManager bean to be used by the
+	 * SpringTransactionProvider
+	 * @return the created SpringTransactionProvider bean
+	 */
+	@Bean
 	@ConditionalOnBean(PlatformTransactionManager.class)
 	@ConditionalOnMissingBean(TransactionProvider.class)
 	public SpringTransactionProvider transactionProvider(PlatformTransactionManager txManager) {
@@ -81,13 +83,14 @@ public class JooqAutoConfiguration {
 	}
 
 	/**
-     * Creates a {@link DefaultExecuteListenerProvider} bean with the given {@link ExceptionTranslatorExecuteListener}.
-     * This bean is used to translate exceptions thrown by jOOQ into Spring DataAccessExceptions.
-     *
-     * @param exceptionTranslatorExecuteListener The {@link ExceptionTranslatorExecuteListener} to be used for exception translation.
-     * @return The {@link DefaultExecuteListenerProvider} bean.
-     */
-    @Bean
+	 * Creates a {@link DefaultExecuteListenerProvider} bean with the given
+	 * {@link ExceptionTranslatorExecuteListener}. This bean is used to translate
+	 * exceptions thrown by jOOQ into Spring DataAccessExceptions.
+	 * @param exceptionTranslatorExecuteListener The
+	 * {@link ExceptionTranslatorExecuteListener} to be used for exception translation.
+	 * @return The {@link DefaultExecuteListenerProvider} bean.
+	 */
+	@Bean
 	@Order(0)
 	public DefaultExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider(
 			ExceptionTranslatorExecuteListener exceptionTranslatorExecuteListener) {
@@ -95,51 +98,54 @@ public class JooqAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link ExceptionTranslatorExecuteListener} if no bean of type {@link ExceptionTranslatorExecuteListener} is already present in the application context.
-     * 
-     * This method is annotated with {@link Bean} and {@link ConditionalOnMissingBean} annotations to ensure that the bean is only created if no other bean of the same type is already present.
-     * 
-     * The created instance is the default implementation of {@link ExceptionTranslatorExecuteListener}.
-     * 
-     * @return the created instance of {@link ExceptionTranslatorExecuteListener}
-     */
-    @Bean
+	 * Creates a new instance of {@link ExceptionTranslatorExecuteListener} if no bean of
+	 * type {@link ExceptionTranslatorExecuteListener} is already present in the
+	 * application context.
+	 *
+	 * This method is annotated with {@link Bean} and {@link ConditionalOnMissingBean}
+	 * annotations to ensure that the bean is only created if no other bean of the same
+	 * type is already present.
+	 *
+	 * The created instance is the default implementation of
+	 * {@link ExceptionTranslatorExecuteListener}.
+	 * @return the created instance of {@link ExceptionTranslatorExecuteListener}
+	 */
+	@Bean
 	@ConditionalOnMissingBean(ExceptionTranslatorExecuteListener.class)
 	public ExceptionTranslatorExecuteListener jooqExceptionTranslator() {
 		return ExceptionTranslatorExecuteListener.DEFAULT;
 	}
 
 	/**
-     * DslContextConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * DslContextConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(DSLContext.class)
 	@EnableConfigurationProperties(JooqProperties.class)
 	public static class DslContextConfiguration {
 
 		/**
-         * Creates a new instance of DefaultDSLContext using the provided configuration.
-         *
-         * @param configuration the configuration to be used for creating the DSLContext
-         * @return a new instance of DefaultDSLContext
-         */
-        @Bean
+		 * Creates a new instance of DefaultDSLContext using the provided configuration.
+		 * @param configuration the configuration to be used for creating the DSLContext
+		 * @return a new instance of DefaultDSLContext
+		 */
+		@Bean
 		public DefaultDSLContext dslContext(org.jooq.Configuration configuration) {
 			return new DefaultDSLContext(configuration);
 		}
 
 		/**
-         * Creates a JOOQ configuration bean if no other bean of type {@link org.jooq.Configuration} is present.
-         * 
-         * @param properties The JOOQ properties.
-         * @param connectionProvider The connection provider.
-         * @param dataSource The data source.
-         * @param transactionProvider The transaction provider.
-         * @param executeListenerProviders The execute listener providers.
-         * @param configurationCustomizers The configuration customizers.
-         * @return The JOOQ configuration.
-         */
-        @Bean
+		 * Creates a JOOQ configuration bean if no other bean of type
+		 * {@link org.jooq.Configuration} is present.
+		 * @param properties The JOOQ properties.
+		 * @param connectionProvider The connection provider.
+		 * @param dataSource The data source.
+		 * @param transactionProvider The transaction provider.
+		 * @param executeListenerProviders The execute listener providers.
+		 * @param configurationCustomizers The configuration customizers.
+		 * @return The JOOQ configuration.
+		 */
+		@Bean
 		@ConditionalOnMissingBean(org.jooq.Configuration.class)
 		public DefaultConfiguration jooqConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
 				DataSource dataSource, ObjectProvider<TransactionProvider> transactionProvider,

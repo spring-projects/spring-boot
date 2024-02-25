@@ -43,13 +43,12 @@ public class HttpRestartServerHandler implements Handler {
 	}
 
 	/**
-     * Handles the HTTP request and response.
-     * 
-     * @param request the server HTTP request
-     * @param response the server HTTP response
-     * @throws IOException if an I/O error occurs while handling the request and response
-     */
-    @Override
+	 * Handles the HTTP request and response.
+	 * @param request the server HTTP request
+	 * @param response the server HTTP response
+	 * @throws IOException if an I/O error occurs while handling the request and response
+	 */
+	@Override
 	public void handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		this.server.handle(request, response);
 	}

@@ -29,21 +29,19 @@ public class SampleApplicationRunner implements ApplicationRunner {
 	private final SampleMessageGateway gateway;
 
 	/**
-     * Constructs a new SampleApplicationRunner with the specified SampleMessageGateway.
-     * 
-     * @param gateway the SampleMessageGateway to be used by the SampleApplicationRunner
-     */
-    public SampleApplicationRunner(SampleMessageGateway gateway) {
+	 * Constructs a new SampleApplicationRunner with the specified SampleMessageGateway.
+	 * @param gateway the SampleMessageGateway to be used by the SampleApplicationRunner
+	 */
+	public SampleApplicationRunner(SampleMessageGateway gateway) {
 		this.gateway = gateway;
 	}
 
 	/**
-     * This method is used to run the application with the given arguments.
-     * 
-     * @param args The arguments passed to the application.
-     * @throws Exception If an error occurs while running the application.
-     */
-    @Override
+	 * This method is used to run the application with the given arguments.
+	 * @param args The arguments passed to the application.
+	 * @throws Exception If an error occurs while running the application.
+	 */
+	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		for (String arg : args.getNonOptionArgs()) {
 			this.gateway.echo(arg);

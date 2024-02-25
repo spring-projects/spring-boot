@@ -34,68 +34,63 @@ class ArtemisContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<ArtemisContainer, ArtemisConnectionDetails> {
 
 	/**
-     * Returns the connection details for the given container connection source.
-     * 
-     * @param source the container connection source
-     * @return the Artemis connection details
-     */
-    @Override
+	 * Returns the connection details for the given container connection source.
+	 * @param source the container connection source
+	 * @return the Artemis connection details
+	 */
+	@Override
 	protected ArtemisConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<ArtemisContainer> source) {
 		return new ArtemisContainerConnectionDetails(source);
 	}
 
 	/**
-     * ArtemisContainerConnectionDetails class.
-     */
-    private static final class ArtemisContainerConnectionDetails extends ContainerConnectionDetails<ArtemisContainer>
+	 * ArtemisContainerConnectionDetails class.
+	 */
+	private static final class ArtemisContainerConnectionDetails extends ContainerConnectionDetails<ArtemisContainer>
 			implements ArtemisConnectionDetails {
 
 		/**
-         * Constructs a new instance of ArtemisContainerConnectionDetails with the specified source.
-         *
-         * @param source the source of the container connection details
-         */
-        private ArtemisContainerConnectionDetails(ContainerConnectionSource<ArtemisContainer> source) {
+		 * Constructs a new instance of ArtemisContainerConnectionDetails with the
+		 * specified source.
+		 * @param source the source of the container connection details
+		 */
+		private ArtemisContainerConnectionDetails(ContainerConnectionSource<ArtemisContainer> source) {
 			super(source);
 		}
 
 		/**
-         * Returns the mode of the Artemis container connection.
-         *
-         * @return the mode of the Artemis container connection
-         */
-        @Override
+		 * Returns the mode of the Artemis container connection.
+		 * @return the mode of the Artemis container connection
+		 */
+		@Override
 		public ArtemisMode getMode() {
 			return ArtemisMode.NATIVE;
 		}
 
 		/**
-         * Returns the broker URL of the Artemis container connection details.
-         * 
-         * @return the broker URL of the Artemis container connection details
-         */
-        @Override
+		 * Returns the broker URL of the Artemis container connection details.
+		 * @return the broker URL of the Artemis container connection details
+		 */
+		@Override
 		public String getBrokerUrl() {
 			return getContainer().getBrokerUrl();
 		}
 
 		/**
-         * Returns the user associated with the container connection details.
-         * 
-         * @return the user associated with the container connection details
-         */
-        @Override
+		 * Returns the user associated with the container connection details.
+		 * @return the user associated with the container connection details
+		 */
+		@Override
 		public String getUser() {
 			return getContainer().getUser();
 		}
 
 		/**
-         * Returns the password associated with the container.
-         * 
-         * @return the password associated with the container
-         */
-        @Override
+		 * Returns the password associated with the container.
+		 * @return the password associated with the container
+		 */
+		@Override
 		public String getPassword() {
 			return getContainer().getPassword();
 		}

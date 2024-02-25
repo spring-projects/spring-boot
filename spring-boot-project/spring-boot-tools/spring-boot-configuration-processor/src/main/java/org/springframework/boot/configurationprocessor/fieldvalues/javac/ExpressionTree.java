@@ -41,31 +41,28 @@ class ExpressionTree extends ReflectionWrapper {
 	private final Method arrayValueMethod = findMethod(this.newArrayTreeType, "getInitializers");
 
 	/**
-     * Constructs a new ExpressionTree object with the specified instance.
-     * 
-     * @param instance the instance of the ExpressionTree object
-     */
-    ExpressionTree(Object instance) {
+	 * Constructs a new ExpressionTree object with the specified instance.
+	 * @param instance the instance of the ExpressionTree object
+	 */
+	ExpressionTree(Object instance) {
 		super("com.sun.source.tree.ExpressionTree", instance);
 	}
 
 	/**
-     * Returns the kind of the expression tree.
-     * 
-     * @return the kind of the expression tree
-     * @throws Exception if an error occurs while retrieving the kind
-     */
-    String getKind() throws Exception {
+	 * Returns the kind of the expression tree.
+	 * @return the kind of the expression tree
+	 * @throws Exception if an error occurs while retrieving the kind
+	 */
+	String getKind() throws Exception {
 		return findMethod("getKind").invoke(getInstance()).toString();
 	}
 
 	/**
-     * Returns the literal value of the expression tree.
-     * 
-     * @return the literal value of the expression tree
-     * @throws Exception if an error occurs while retrieving the literal value
-     */
-    Object getLiteralValue() throws Exception {
+	 * Returns the literal value of the expression tree.
+	 * @return the literal value of the expression tree
+	 * @throws Exception if an error occurs while retrieving the literal value
+	 */
+	Object getLiteralValue() throws Exception {
 		if (this.literalTreeType.isAssignableFrom(getInstance().getClass())) {
 			return this.literalValueMethod.invoke(getInstance());
 		}
@@ -73,12 +70,11 @@ class ExpressionTree extends ReflectionWrapper {
 	}
 
 	/**
-     * Retrieves the factory value.
-     * 
-     * @return the factory value, or null if the factory value cannot be retrieved
-     * @throws Exception if an error occurs while retrieving the factory value
-     */
-    Object getFactoryValue() throws Exception {
+	 * Retrieves the factory value.
+	 * @return the factory value, or null if the factory value cannot be retrieved
+	 * @throws Exception if an error occurs while retrieving the factory value
+	 */
+	Object getFactoryValue() throws Exception {
 		if (this.methodInvocationTreeType.isAssignableFrom(getInstance().getClass())) {
 			List<?> arguments = (List<?>) this.methodInvocationArgumentsMethod.invoke(getInstance());
 			if (arguments.size() == 1) {
@@ -89,12 +85,11 @@ class ExpressionTree extends ReflectionWrapper {
 	}
 
 	/**
-     * Retrieves an array expression from the current instance.
-     * 
-     * @return A list of expression trees representing the array expression.
-     * @throws Exception if an error occurs while retrieving the array expression.
-     */
-    List<? extends ExpressionTree> getArrayExpression() throws Exception {
+	 * Retrieves an array expression from the current instance.
+	 * @return A list of expression trees representing the array expression.
+	 * @throws Exception if an error occurs while retrieving the array expression.
+	 */
+	List<? extends ExpressionTree> getArrayExpression() throws Exception {
 		if (this.newArrayTreeType.isAssignableFrom(getInstance().getClass())) {
 			List<?> elements = (List<?>) this.arrayValueMethod.invoke(getInstance());
 			List<ExpressionTree> result = new ArrayList<>();

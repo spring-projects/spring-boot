@@ -24,11 +24,10 @@ import org.springframework.boot.SpringApplication;
 public class TestMyApplication {
 
 	/**
-     * The main method of the TestMyApplication class.
-     * 
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+	 * The main method of the TestMyApplication class.
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
 		SpringApplication.from(MyApplication::main).with(MyContainersConfiguration.class).run(args);
 	}
 

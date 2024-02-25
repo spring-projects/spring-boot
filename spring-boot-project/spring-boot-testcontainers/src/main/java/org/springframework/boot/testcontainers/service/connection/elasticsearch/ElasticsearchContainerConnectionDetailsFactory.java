@@ -41,12 +41,11 @@ class ElasticsearchContainerConnectionDetailsFactory
 	private static final int DEFAULT_PORT = 9200;
 
 	/**
-     * Returns the connection details for the Elasticsearch container.
-     * 
-     * @param source the source of the container connection
-     * @return the connection details for the Elasticsearch container
-     */
-    @Override
+	 * Returns the connection details for the Elasticsearch container.
+	 * @param source the source of the container connection
+	 * @return the connection details for the Elasticsearch container
+	 */
+	@Override
 	protected ElasticsearchConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<ElasticsearchContainer> source) {
 		return new ElasticsearchContainerConnectionDetails(source);
@@ -60,20 +59,19 @@ class ElasticsearchContainerConnectionDetailsFactory
 			extends ContainerConnectionDetails<ElasticsearchContainer> implements ElasticsearchConnectionDetails {
 
 		/**
-         * Constructs a new ElasticsearchContainerConnectionDetails object with the specified source.
-         *
-         * @param source the source of the container connection
-         */
-        private ElasticsearchContainerConnectionDetails(ContainerConnectionSource<ElasticsearchContainer> source) {
+		 * Constructs a new ElasticsearchContainerConnectionDetails object with the
+		 * specified source.
+		 * @param source the source of the container connection
+		 */
+		private ElasticsearchContainerConnectionDetails(ContainerConnectionSource<ElasticsearchContainer> source) {
 			super(source);
 		}
 
 		/**
-         * Retrieves the list of nodes for the Elasticsearch container connection details.
-         * 
-         * @return the list of nodes
-         */
-        @Override
+		 * Retrieves the list of nodes for the Elasticsearch container connection details.
+		 * @return the list of nodes
+		 */
+		@Override
 		public List<Node> getNodes() {
 			String host = getContainer().getHost();
 			Integer port = getContainer().getMappedPort(DEFAULT_PORT);

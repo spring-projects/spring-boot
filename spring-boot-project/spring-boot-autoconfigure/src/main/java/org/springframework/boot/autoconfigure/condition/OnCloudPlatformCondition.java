@@ -33,13 +33,13 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnCloudPlatformCondition extends SpringBootCondition {
 
 	/**
-     * Determines the match outcome for the conditional annotation @ConditionalOnCloudPlatform.
-     * 
-     * @param context the condition context
-     * @param metadata the annotated type metadata
-     * @return the condition outcome
-     */
-    @Override
+	 * Determines the match outcome for the conditional
+	 * annotation @ConditionalOnCloudPlatform.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @return the condition outcome
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnCloudPlatform.class.getName());
 		CloudPlatform cloudPlatform = (CloudPlatform) attributes.get("value");
@@ -47,13 +47,13 @@ class OnCloudPlatformCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Returns the outcome of the match condition for the given environment and cloud platform.
-     * 
-     * @param environment the environment to check the condition against
-     * @param cloudPlatform the cloud platform to check the condition against
-     * @return the outcome of the match condition
-     */
-    private ConditionOutcome getMatchOutcome(Environment environment, CloudPlatform cloudPlatform) {
+	 * Returns the outcome of the match condition for the given environment and cloud
+	 * platform.
+	 * @param environment the environment to check the condition against
+	 * @param cloudPlatform the cloud platform to check the condition against
+	 * @return the outcome of the match condition
+	 */
+	private ConditionOutcome getMatchOutcome(Environment environment, CloudPlatform cloudPlatform) {
 		String name = cloudPlatform.name();
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnCloudPlatform.class);
 		if (cloudPlatform.isActive(environment)) {

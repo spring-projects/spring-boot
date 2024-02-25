@@ -58,13 +58,12 @@ public class H2ConsoleAutoConfiguration {
 	private static final Log logger = LogFactory.getLog(H2ConsoleAutoConfiguration.class);
 
 	/**
-     * Registers the H2 console servlet for accessing the H2 database console.
-     * 
-     * @param properties the H2 console properties
-     * @param dataSource the data source provider
-     * @return the servlet registration bean for the H2 console
-     */
-    @Bean
+	 * Registers the H2 console servlet for accessing the H2 database console.
+	 * @param properties the H2 console properties
+	 * @param dataSource the data source provider
+	 * @return the servlet registration bean for the H2 console
+	 */
+	@Bean
 	public ServletRegistrationBean<JakartaWebServlet> h2Console(H2ConsoleProperties properties,
 			ObjectProvider<DataSource> dataSource) {
 		String path = properties.getPath();
@@ -79,12 +78,12 @@ public class H2ConsoleAutoConfiguration {
 	}
 
 	/**
-     * Sets the thread context class loader to the specified class loader, executes the given action, and then restores the previous class loader.
-     * 
-     * @param classLoader the class loader to set as the thread context class loader
-     * @param action the action to be executed
-     */
-    private void withThreadContextClassLoader(ClassLoader classLoader, Runnable action) {
+	 * Sets the thread context class loader to the specified class loader, executes the
+	 * given action, and then restores the previous class loader.
+	 * @param classLoader the class loader to set as the thread context class loader
+	 * @param action the action to be executed
+	 */
+	private void withThreadContextClassLoader(ClassLoader classLoader, Runnable action) {
 		ClassLoader previous = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(classLoader);
@@ -96,12 +95,11 @@ public class H2ConsoleAutoConfiguration {
 	}
 
 	/**
-     * Logs the available data sources and their connection URLs.
-     * 
-     * @param dataSource the ObjectProvider of DataSource objects
-     * @param path the path of the H2 console
-     */
-    private void logDataSources(ObjectProvider<DataSource> dataSource, String path) {
+	 * Logs the available data sources and their connection URLs.
+	 * @param dataSource the ObjectProvider of DataSource objects
+	 * @param path the path of the H2 console
+	 */
+	private void logDataSources(ObjectProvider<DataSource> dataSource, String path) {
 		List<String> urls = dataSource.orderedStream().map(this::getConnectionUrl).filter(Objects::nonNull).toList();
 		if (!urls.isEmpty()) {
 			logger.info(LogMessage.format("H2 console available at '%s'. %s available at %s", path,
@@ -110,12 +108,12 @@ public class H2ConsoleAutoConfiguration {
 	}
 
 	/**
-     * Returns the connection URL of the given DataSource.
-     *
-     * @param dataSource the DataSource to get the connection URL from
-     * @return the connection URL as a String, enclosed in single quotes, or null if an exception occurs
-     */
-    private String getConnectionUrl(DataSource dataSource) {
+	 * Returns the connection URL of the given DataSource.
+	 * @param dataSource the DataSource to get the connection URL from
+	 * @return the connection URL as a String, enclosed in single quotes, or null if an
+	 * exception occurs
+	 */
+	private String getConnectionUrl(DataSource dataSource) {
 		try (Connection connection = dataSource.getConnection()) {
 			return "'" + connection.getMetaData().getURL() + "'";
 		}
@@ -125,12 +123,11 @@ public class H2ConsoleAutoConfiguration {
 	}
 
 	/**
-     * Configures the settings for the H2 console.
-     * 
-     * @param registration the servlet registration bean for the H2 console
-     * @param settings the settings for the H2 console
-     */
-    private void configureH2ConsoleSettings(ServletRegistrationBean<JakartaWebServlet> registration,
+	 * Configures the settings for the H2 console.
+	 * @param registration the servlet registration bean for the H2 console
+	 * @param settings the settings for the H2 console
+	 */
+	private void configureH2ConsoleSettings(ServletRegistrationBean<JakartaWebServlet> registration,
 			Settings settings) {
 		if (settings.isTrace()) {
 			registration.addInitParameter("trace", "");

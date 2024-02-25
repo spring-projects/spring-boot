@@ -27,12 +27,12 @@ import org.springframework.context.annotation.Condition;
 class OnEnabledHealthIndicatorCondition extends OnEndpointElementCondition {
 
 	/**
-     * Constructs a new OnEnabledHealthIndicatorCondition with the specified prefix and annotation class.
-     * 
-     * @param prefix the prefix to use for health indicator names
-     * @param annotationClass the annotation class to check for enabled health indicators
-     */
-    OnEnabledHealthIndicatorCondition() {
+	 * Constructs a new OnEnabledHealthIndicatorCondition with the specified prefix and
+	 * annotation class.
+	 * @param prefix the prefix to use for health indicator names
+	 * @param annotationClass the annotation class to check for enabled health indicators
+	 */
+	OnEnabledHealthIndicatorCondition() {
 		super("management.health.", ConditionalOnEnabledHealthIndicator.class);
 	}
 

@@ -26,30 +26,29 @@ class PropertiesPulsarConnectionDetails implements PulsarConnectionDetails {
 	private final PulsarProperties pulsarProperties;
 
 	/**
-     * Constructs a new instance of PropertiesPulsarConnectionDetails with the specified PulsarProperties.
-     * 
-     * @param pulsarProperties the PulsarProperties object containing the properties for the Pulsar connection
-     */
-    PropertiesPulsarConnectionDetails(PulsarProperties pulsarProperties) {
+	 * Constructs a new instance of PropertiesPulsarConnectionDetails with the specified
+	 * PulsarProperties.
+	 * @param pulsarProperties the PulsarProperties object containing the properties for
+	 * the Pulsar connection
+	 */
+	PropertiesPulsarConnectionDetails(PulsarProperties pulsarProperties) {
 		this.pulsarProperties = pulsarProperties;
 	}
 
 	/**
-     * Returns the broker URL for the Pulsar connection.
-     * 
-     * @return the broker URL
-     */
-    @Override
+	 * Returns the broker URL for the Pulsar connection.
+	 * @return the broker URL
+	 */
+	@Override
 	public String getBrokerUrl() {
 		return this.pulsarProperties.getClient().getServiceUrl();
 	}
 
 	/**
-     * Returns the admin URL for the Pulsar connection.
-     * 
-     * @return the admin URL
-     */
-    @Override
+	 * Returns the admin URL for the Pulsar connection.
+	 * @return the admin URL
+	 */
+	@Override
 	public String getAdminUrl() {
 		return this.pulsarProperties.getAdmin().getServiceUrl();
 	}

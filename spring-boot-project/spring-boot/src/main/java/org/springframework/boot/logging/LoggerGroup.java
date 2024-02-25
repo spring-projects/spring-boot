@@ -37,59 +37,54 @@ public final class LoggerGroup {
 	private LogLevel configuredLevel;
 
 	/**
-     * Constructs a new LoggerGroup with the specified name and members.
-     * 
-     * @param name the name of the LoggerGroup
-     * @param members the list of members in the LoggerGroup
-     */
-    LoggerGroup(String name, List<String> members) {
+	 * Constructs a new LoggerGroup with the specified name and members.
+	 * @param name the name of the LoggerGroup
+	 * @param members the list of members in the LoggerGroup
+	 */
+	LoggerGroup(String name, List<String> members) {
 		this.name = name;
 		this.members = Collections.unmodifiableList(new ArrayList<>(members));
 	}
 
 	/**
-     * Returns the name of the LoggerGroup.
-     *
-     * @return the name of the LoggerGroup
-     */
-    public String getName() {
+	 * Returns the name of the LoggerGroup.
+	 * @return the name of the LoggerGroup
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Returns the list of members in the LoggerGroup.
-     *
-     * @return the list of members in the LoggerGroup
-     */
-    public List<String> getMembers() {
+	 * Returns the list of members in the LoggerGroup.
+	 * @return the list of members in the LoggerGroup
+	 */
+	public List<String> getMembers() {
 		return this.members;
 	}
 
 	/**
-     * Checks if the LoggerGroup has any members.
-     * 
-     * @return true if the LoggerGroup has members, false otherwise.
-     */
-    public boolean hasMembers() {
+	 * Checks if the LoggerGroup has any members.
+	 * @return true if the LoggerGroup has members, false otherwise.
+	 */
+	public boolean hasMembers() {
 		return !this.members.isEmpty();
 	}
 
 	/**
-     * Returns the configured log level.
-     *
-     * @return the configured log level
-     */
-    public LogLevel getConfiguredLevel() {
+	 * Returns the configured log level.
+	 * @return the configured log level
+	 */
+	public LogLevel getConfiguredLevel() {
 		return this.configuredLevel;
 	}
 
 	/**
-     * Configures the log level for the LoggerGroup.
-     * 
-     * @param level the log level to be configured
-     * @param configurer the BiConsumer used to configure the log level for each member of the LoggerGroup
-     */
-    public void configureLogLevel(LogLevel level, BiConsumer<String, LogLevel> configurer) {
+	 * Configures the log level for the LoggerGroup.
+	 * @param level the log level to be configured
+	 * @param configurer the BiConsumer used to configure the log level for each member of
+	 * the LoggerGroup
+	 */
+	public void configureLogLevel(LogLevel level, BiConsumer<String, LogLevel> configurer) {
 		this.configuredLevel = level;
 		this.members.forEach((name) -> configurer.accept(name, level));
 	}

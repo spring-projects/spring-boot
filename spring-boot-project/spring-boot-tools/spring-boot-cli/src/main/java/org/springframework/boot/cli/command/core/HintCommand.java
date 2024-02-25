@@ -39,23 +39,22 @@ public class HintCommand extends AbstractCommand {
 	private final CommandRunner commandRunner;
 
 	/**
-     * Constructs a new HintCommand with the specified CommandRunner.
-     * 
-     * @param commandRunner the CommandRunner to provide hints for shell auto-completion
-     */
-    public HintCommand(CommandRunner commandRunner) {
+	 * Constructs a new HintCommand with the specified CommandRunner.
+	 * @param commandRunner the CommandRunner to provide hints for shell auto-completion
+	 */
+	public HintCommand(CommandRunner commandRunner) {
 		super("hint", "Provides hints for shell auto-completion");
 		this.commandRunner = commandRunner;
 	}
 
 	/**
-     * Runs the command with the given arguments and provides hints based on the arguments.
-     * 
-     * @param args the command line arguments
-     * @return the exit status of the command
-     * @throws Exception if an error occurs while running the command
-     */
-    @Override
+	 * Runs the command with the given arguments and provides hints based on the
+	 * arguments.
+	 * @param args the command line arguments
+	 * @return the exit status of the command
+	 * @throws Exception if an error occurs while running the command
+	 */
+	@Override
 	public ExitStatus run(String... args) throws Exception {
 		try {
 			int index = (args.length != 0) ? Integer.parseInt(args[0]) - 1 : 0;
@@ -83,11 +82,10 @@ public class HintCommand extends AbstractCommand {
 	}
 
 	/**
-     * Displays command hints based on the starting string.
-     * 
-     * @param starting the starting string to match with command hints
-     */
-    private void showCommandHints(String starting) {
+	 * Displays command hints based on the starting string.
+	 * @param starting the starting string to match with command hints
+	 */
+	private void showCommandHints(String starting) {
 		for (Command command : this.commandRunner) {
 			if (isHintMatch(command, starting)) {
 				Log.info(command.getName() + " " + command.getDescription());
@@ -96,13 +94,12 @@ public class HintCommand extends AbstractCommand {
 	}
 
 	/**
-     * Checks if the given command is a match for the hint.
-     * 
-     * @param command the command to check
-     * @param starting the starting string to match against
-     * @return true if the command is a match for the hint, false otherwise
-     */
-    private boolean isHintMatch(Command command, String starting) {
+	 * Checks if the given command is a match for the hint.
+	 * @param command the command to check
+	 * @param starting the starting string to match against
+	 * @return true if the command is a match for the hint, false otherwise
+	 */
+	private boolean isHintMatch(Command command, String starting) {
 		if (command instanceof HintCommand) {
 			return false;
 		}
@@ -111,13 +108,13 @@ public class HintCommand extends AbstractCommand {
 	}
 
 	/**
-     * Displays command option hints based on the specified command name, specified arguments, and starting string.
-     * 
-     * @param commandName the name of the command to find
-     * @param specifiedArguments the list of specified arguments
-     * @param starting the starting string to filter the options
-     */
-    private void showCommandOptionHints(String commandName, List<String> specifiedArguments, String starting) {
+	 * Displays command option hints based on the specified command name, specified
+	 * arguments, and starting string.
+	 * @param commandName the name of the command to find
+	 * @param specifiedArguments the list of specified arguments
+	 * @param starting the starting string to filter the options
+	 */
+	private void showCommandOptionHints(String commandName, List<String> specifiedArguments, String starting) {
 		Command command = this.commandRunner.findCommand(commandName);
 		if (command != null) {
 			for (OptionHelp help : command.getOptionsHelp()) {
@@ -133,13 +130,13 @@ public class HintCommand extends AbstractCommand {
 	}
 
 	/**
-     * Checks if any of the specified arguments have already been used.
-     * 
-     * @param help               the OptionHelp object containing the available options
-     * @param specifiedArguments the list of specified arguments to check
-     * @return true if any of the specified arguments have already been used, false otherwise
-     */
-    private boolean alreadyUsed(OptionHelp help, List<String> specifiedArguments) {
+	 * Checks if any of the specified arguments have already been used.
+	 * @param help the OptionHelp object containing the available options
+	 * @param specifiedArguments the list of specified arguments to check
+	 * @return true if any of the specified arguments have already been used, false
+	 * otherwise
+	 */
+	private boolean alreadyUsed(OptionHelp help, List<String> specifiedArguments) {
 		for (String argument : specifiedArguments) {
 			if (help.getOptions().contains(argument)) {
 				return true;

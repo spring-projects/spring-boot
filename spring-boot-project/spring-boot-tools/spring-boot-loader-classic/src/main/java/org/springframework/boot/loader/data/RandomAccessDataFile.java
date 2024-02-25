@@ -73,25 +73,24 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	/**
-     * Returns an input stream for reading the data from the RandomAccessDataFile.
-     *
-     * @return an input stream for reading the data from the RandomAccessDataFile.
-     * @throws IOException if an I/O error occurs.
-     */
-    @Override
+	 * Returns an input stream for reading the data from the RandomAccessDataFile.
+	 * @return an input stream for reading the data from the RandomAccessDataFile.
+	 * @throws IOException if an I/O error occurs.
+	 */
+	@Override
 	public InputStream getInputStream() throws IOException {
 		return new DataInputStream();
 	}
 
 	/**
-     * Returns a subsection of the random access data.
-     *
-     * @param offset the starting offset of the subsection
-     * @param length the length of the subsection
-     * @return a new RandomAccessData object representing the subsection
-     * @throws IndexOutOfBoundsException if the offset or length is negative, or if the sum of offset and length exceeds the length of the data
-     */
-    @Override
+	 * Returns a subsection of the random access data.
+	 * @param offset the starting offset of the subsection
+	 * @param length the length of the subsection
+	 * @return a new RandomAccessData object representing the subsection
+	 * @throws IndexOutOfBoundsException if the offset or length is negative, or if the
+	 * sum of offset and length exceeds the length of the data
+	 */
+	@Override
 	public RandomAccessData getSubsection(long offset, long length) {
 		if (offset < 0 || length < 0 || offset + length > this.length) {
 			throw new IndexOutOfBoundsException();
@@ -100,27 +99,25 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	/**
-     * Reads the entire content of the file and returns it as a byte array.
-     *
-     * @return the content of the file as a byte array
-     * @throws IOException if an I/O error occurs while reading the file
-     */
-    @Override
+	 * Reads the entire content of the file and returns it as a byte array.
+	 * @return the content of the file as a byte array
+	 * @throws IOException if an I/O error occurs while reading the file
+	 */
+	@Override
 	public byte[] read() throws IOException {
 		return read(0, this.length);
 	}
 
 	/**
-     * Reads a specified length of bytes from the file starting at the given offset.
-     * 
-     * @param offset the starting offset in the file
-     * @param length the number of bytes to read
-     * @return a byte array containing the read bytes
-     * @throws IOException if an I/O error occurs
-     * @throws IndexOutOfBoundsException if the offset is greater than the file length
-     * @throws EOFException if the offset plus length is greater than the file length
-     */
-    @Override
+	 * Reads a specified length of bytes from the file starting at the given offset.
+	 * @param offset the starting offset in the file
+	 * @param length the number of bytes to read
+	 * @return a byte array containing the read bytes
+	 * @throws IOException if an I/O error occurs
+	 * @throws IndexOutOfBoundsException if the offset is greater than the file length
+	 * @throws EOFException if the offset plus length is greater than the file length
+	 */
+	@Override
 	public byte[] read(long offset, long length) throws IOException {
 		if (offset > this.length) {
 			throw new IndexOutOfBoundsException();
@@ -134,13 +131,13 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	/**
-     * Reads a byte from the specified position in the file.
-     *
-     * @param position the position from which to read the byte
-     * @return the byte value at the specified position, or -1 if the position is beyond the file length
-     * @throws IOException if an I/O error occurs while reading the byte
-     */
-    private int readByte(long position) throws IOException {
+	 * Reads a byte from the specified position in the file.
+	 * @param position the position from which to read the byte
+	 * @return the byte value at the specified position, or -1 if the position is beyond
+	 * the file length
+	 * @throws IOException if an I/O error occurs while reading the byte
+	 */
+	private int readByte(long position) throws IOException {
 		if (position >= this.length) {
 			return -1;
 		}
@@ -148,16 +145,16 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	/**
-     * Reads bytes from the file at the specified position.
-     *
-     * @param bytes    the byte array to read the data into
-     * @param position the position in the file to start reading from
-     * @param offset   the offset in the byte array to start writing the data into
-     * @param length   the number of bytes to read
-     * @return the number of bytes read, or -1 if the position is beyond the end of the file
-     * @throws IOException if an I/O error occurs while reading the file
-     */
-    private int read(byte[] bytes, long position, int offset, int length) throws IOException {
+	 * Reads bytes from the file at the specified position.
+	 * @param bytes the byte array to read the data into
+	 * @param position the position in the file to start reading from
+	 * @param offset the offset in the byte array to start writing the data into
+	 * @param length the number of bytes to read
+	 * @return the number of bytes read, or -1 if the position is beyond the end of the
+	 * file
+	 * @throws IOException if an I/O error occurs while reading the file
+	 */
+	private int read(byte[] bytes, long position, int offset, int length) throws IOException {
 		if (position > this.length) {
 			return -1;
 		}
@@ -165,21 +162,20 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	/**
-     * Returns the size of the RandomAccessDataFile.
-     *
-     * @return the size of the RandomAccessDataFile
-     */
-    @Override
+	 * Returns the size of the RandomAccessDataFile.
+	 * @return the size of the RandomAccessDataFile
+	 */
+	@Override
 	public long getSize() {
 		return this.length;
 	}
 
 	/**
-     * Closes the RandomAccessDataFile and releases any system resources associated with it.
-     * 
-     * @throws IOException if an I/O error occurs while closing the file
-     */
-    public void close() throws IOException {
+	 * Closes the RandomAccessDataFile and releases any system resources associated with
+	 * it.
+	 * @throws IOException if an I/O error occurs while closing the file
+	 */
+	public void close() throws IOException {
 		this.fileAccess.close();
 	}
 
@@ -191,13 +187,13 @@ public class RandomAccessDataFile implements RandomAccessData {
 		private int position;
 
 		/**
-         * Reads the next byte of data from the input stream. The value byte is returned as an int in the range 0 to 255.
-         * If no byte is available because the end of the stream has been reached, the value -1 is returned.
-         *
-         * @return the next byte of data, or -1 if the end of the stream has been reached
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Reads the next byte of data from the input stream. The value byte is returned
+		 * as an int in the range 0 to 255. If no byte is available because the end of the
+		 * stream has been reached, the value -1 is returned.
+		 * @return the next byte of data, or -1 if the end of the stream has been reached
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public int read() throws IOException {
 			int read = RandomAccessDataFile.this.readByte(this.position);
 			if (read > -1) {
@@ -207,31 +203,32 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		/**
-         * Reads up to {@code b.length} bytes of data from this input stream into an array of bytes.
-         * This method blocks until some input is available.
-         * 
-         * @param b the buffer into which the data is read.
-         * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the stream has been reached.
-         * @throws IOException if an I/O error occurs.
-         * @throws NullPointerException if {@code b} is {@code null}.
-         */
-        @Override
+		 * Reads up to {@code b.length} bytes of data from this input stream into an array
+		 * of bytes. This method blocks until some input is available.
+		 * @param b the buffer into which the data is read.
+		 * @return the total number of bytes read into the buffer, or -1 if there is no
+		 * more data because the end of the stream has been reached.
+		 * @throws IOException if an I/O error occurs.
+		 * @throws NullPointerException if {@code b} is {@code null}.
+		 */
+		@Override
 		public int read(byte[] b) throws IOException {
 			return read(b, 0, (b != null) ? b.length : 0);
 		}
 
 		/**
-         * Reads up to len bytes of data from the input stream into an array of bytes.
-         * 
-         * @param b   the buffer into which the data is read.
-         * @param off the start offset in array b at which the data is written.
-         * @param len the maximum number of bytes to read.
-         * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the stream has been reached.
-         * @throws IOException              if an I/O error occurs.
-         * @throws NullPointerException     if the byte array b is null.
-         * @throws IndexOutOfBoundsException if off is negative, len is negative, or len is greater than b.length - off.
-         */
-        @Override
+		 * Reads up to len bytes of data from the input stream into an array of bytes.
+		 * @param b the buffer into which the data is read.
+		 * @param off the start offset in array b at which the data is written.
+		 * @param len the maximum number of bytes to read.
+		 * @return the total number of bytes read into the buffer, or -1 if there is no
+		 * more data because the end of the stream has been reached.
+		 * @throws IOException if an I/O error occurs.
+		 * @throws NullPointerException if the byte array b is null.
+		 * @throws IndexOutOfBoundsException if off is negative, len is negative, or len
+		 * is greater than b.length - off.
+		 */
+		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
 			if (b == null) {
 				throw new NullPointerException("Bytes must not be null");
@@ -260,24 +257,23 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		/**
-         * Skips over and discards the specified number of bytes from the input stream.
-         * 
-         * @param n the number of bytes to be skipped
-         * @return the actual number of bytes skipped
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Skips over and discards the specified number of bytes from the input stream.
+		 * @param n the number of bytes to be skipped
+		 * @return the actual number of bytes skipped
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public long skip(long n) throws IOException {
 			return (n <= 0) ? 0 : moveOn(cap(n));
 		}
 
 		/**
-         * Returns the number of bytes that can be read from this input stream without blocking.
-         * 
-         * @return the number of bytes available to be read from this input stream
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Returns the number of bytes that can be read from this input stream without
+		 * blocking.
+		 * @return the number of bytes available to be read from this input stream
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public int available() throws IOException {
 			return (int) RandomAccessDataFile.this.length - this.position;
 		}
@@ -305,9 +301,9 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	/**
-     * FileAccess class.
-     */
-    private static final class FileAccess {
+	 * FileAccess class.
+	 */
+	private static final class FileAccess {
 
 		private final Object monitor = new Object();
 
@@ -316,26 +312,25 @@ public class RandomAccessDataFile implements RandomAccessData {
 		private RandomAccessFile randomAccessFile;
 
 		/**
-         * Constructs a new FileAccess object with the specified file.
-         * 
-         * @param file the file to be accessed
-         */
-        private FileAccess(File file) {
+		 * Constructs a new FileAccess object with the specified file.
+		 * @param file the file to be accessed
+		 */
+		private FileAccess(File file) {
 			this.file = file;
 			openIfNecessary();
 		}
 
 		/**
-         * Reads bytes from the file at the specified position.
-         *
-         * @param bytes    the byte array to read the data into
-         * @param position the position in the file to start reading from
-         * @param offset   the offset in the byte array to start writing the data into
-         * @param length   the maximum number of bytes to read
-         * @return the total number of bytes read into the byte array, or -1 if there is no more data because the end of the file has been reached
-         * @throws IOException if an I/O error occurs
-         */
-        private int read(byte[] bytes, long position, int offset, int length) throws IOException {
+		 * Reads bytes from the file at the specified position.
+		 * @param bytes the byte array to read the data into
+		 * @param position the position in the file to start reading from
+		 * @param offset the offset in the byte array to start writing the data into
+		 * @param length the maximum number of bytes to read
+		 * @return the total number of bytes read into the byte array, or -1 if there is
+		 * no more data because the end of the file has been reached
+		 * @throws IOException if an I/O error occurs
+		 */
+		private int read(byte[] bytes, long position, int offset, int length) throws IOException {
 			synchronized (this.monitor) {
 				openIfNecessary();
 				this.randomAccessFile.seek(position);
@@ -344,14 +339,14 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		/**
-         * Opens the file if necessary.
-         * 
-         * If the randomAccessFile is null, it attempts to open the file in read mode using RandomAccessFile.
-         * If the file does not exist, it throws an IllegalArgumentException.
-         * 
-         * @throws IllegalArgumentException if the file does not exist
-         */
-        private void openIfNecessary() {
+		 * Opens the file if necessary.
+		 *
+		 * If the randomAccessFile is null, it attempts to open the file in read mode
+		 * using RandomAccessFile. If the file does not exist, it throws an
+		 * IllegalArgumentException.
+		 * @throws IllegalArgumentException if the file does not exist
+		 */
+		private void openIfNecessary() {
 			if (this.randomAccessFile == null) {
 				try {
 					this.randomAccessFile = new RandomAccessFile(this.file, "r");
@@ -364,11 +359,10 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		/**
-         * Closes the random access file.
-         * 
-         * @throws IOException if an I/O error occurs while closing the file
-         */
-        private void close() throws IOException {
+		 * Closes the random access file.
+		 * @throws IOException if an I/O error occurs while closing the file
+		 */
+		private void close() throws IOException {
 			synchronized (this.monitor) {
 				if (this.randomAccessFile != null) {
 					this.randomAccessFile.close();
@@ -378,13 +372,12 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		/**
-         * Reads a byte from the file at the specified position.
-         *
-         * @param position the position in the file to read the byte from
-         * @return the byte read from the file
-         * @throws IOException if an I/O error occurs
-         */
-        private int readByte(long position) throws IOException {
+		 * Reads a byte from the file at the specified position.
+		 * @param position the position in the file to read the byte from
+		 * @return the byte read from the file
+		 * @throws IOException if an I/O error occurs
+		 */
+		private int readByte(long position) throws IOException {
 			synchronized (this.monitor) {
 				openIfNecessary();
 				this.randomAccessFile.seek(position);

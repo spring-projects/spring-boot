@@ -39,33 +39,30 @@ public class ThreadDumpEndpoint {
 	private final PlainTextThreadDumpFormatter plainTextFormatter = new PlainTextThreadDumpFormatter();
 
 	/**
-     * Retrieves a thread dump and returns it as a ThreadDumpDescriptor object.
-     *
-     * @return The thread dump as a ThreadDumpDescriptor object.
-     */
-    @ReadOperation
+	 * Retrieves a thread dump and returns it as a ThreadDumpDescriptor object.
+	 * @return The thread dump as a ThreadDumpDescriptor object.
+	 */
+	@ReadOperation
 	public ThreadDumpDescriptor threadDump() {
 		return getFormattedThreadDump(ThreadDumpDescriptor::new);
 	}
 
 	/**
-     * Retrieves a formatted thread dump in plain text format.
-     *
-     * @return the formatted thread dump as a string
-     */
-    @ReadOperation(produces = "text/plain;charset=UTF-8")
+	 * Retrieves a formatted thread dump in plain text format.
+	 * @return the formatted thread dump as a string
+	 */
+	@ReadOperation(produces = "text/plain;charset=UTF-8")
 	public String textThreadDump() {
 		return getFormattedThreadDump(this.plainTextFormatter::format);
 	}
 
 	/**
-     * Retrieves a formatted thread dump using the provided formatter function.
-     * 
-     * @param formatter the function used to format the thread dump
-     * @return the formatted thread dump
-     * @param <T> the type of the formatted thread dump
-     */
-    private <T> T getFormattedThreadDump(Function<ThreadInfo[], T> formatter) {
+	 * Retrieves a formatted thread dump using the provided formatter function.
+	 * @param formatter the function used to format the thread dump
+	 * @return the formatted thread dump
+	 * @param <T> the type of the formatted thread dump
+	 */
+	private <T> T getFormattedThreadDump(Function<ThreadInfo[], T> formatter) {
 		return formatter.apply(ManagementFactory.getThreadMXBean().dumpAllThreads(true, true));
 	}
 
@@ -77,20 +74,21 @@ public class ThreadDumpEndpoint {
 		private final List<ThreadInfo> threads;
 
 		/**
-         * Constructs a new ThreadDumpDescriptor with the given array of ThreadInfo objects.
-         * 
-         * @param threads the array of ThreadInfo objects representing the thread dump
-         */
-        private ThreadDumpDescriptor(ThreadInfo[] threads) {
+		 * Constructs a new ThreadDumpDescriptor with the given array of ThreadInfo
+		 * objects.
+		 * @param threads the array of ThreadInfo objects representing the thread dump
+		 */
+		private ThreadDumpDescriptor(ThreadInfo[] threads) {
 			this.threads = Arrays.asList(threads);
 		}
 
 		/**
-         * Returns the list of ThreadInfo objects representing the threads in the ThreadDumpDescriptor.
-         *
-         * @return the list of ThreadInfo objects representing the threads in the ThreadDumpDescriptor
-         */
-        public List<ThreadInfo> getThreads() {
+		 * Returns the list of ThreadInfo objects representing the threads in the
+		 * ThreadDumpDescriptor.
+		 * @return the list of ThreadInfo objects representing the threads in the
+		 * ThreadDumpDescriptor
+		 */
+		public List<ThreadInfo> getThreads() {
 			return this.threads;
 		}
 

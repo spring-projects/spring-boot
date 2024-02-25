@@ -50,13 +50,14 @@ final class DispatcherServletHandlerMappings {
 	private final WebApplicationContext applicationContext;
 
 	/**
-     * Constructs a new DispatcherServletHandlerMappings object with the specified name, dispatcherServlet, and applicationContext.
-     * 
-     * @param name the name of the DispatcherServletHandlerMappings object
-     * @param dispatcherServlet the DispatcherServlet object associated with the mappings
-     * @param applicationContext the WebApplicationContext object associated with the mappings
-     */
-    DispatcherServletHandlerMappings(String name, DispatcherServlet dispatcherServlet,
+	 * Constructs a new DispatcherServletHandlerMappings object with the specified name,
+	 * dispatcherServlet, and applicationContext.
+	 * @param name the name of the DispatcherServletHandlerMappings object
+	 * @param dispatcherServlet the DispatcherServlet object associated with the mappings
+	 * @param applicationContext the WebApplicationContext object associated with the
+	 * mappings
+	 */
+	DispatcherServletHandlerMappings(String name, DispatcherServlet dispatcherServlet,
 			WebApplicationContext applicationContext) {
 		this.name = name;
 		this.dispatcherServlet = dispatcherServlet;
@@ -64,11 +65,10 @@ final class DispatcherServletHandlerMappings {
 	}
 
 	/**
-     * Retrieves the list of handler mappings configured in the DispatcherServlet.
-     * 
-     * @return The list of handler mappings.
-     */
-    List<HandlerMapping> getHandlerMappings() {
+	 * Retrieves the list of handler mappings configured in the DispatcherServlet.
+	 * @return The list of handler mappings.
+	 */
+	List<HandlerMapping> getHandlerMappings() {
 		List<HandlerMapping> handlerMappings = this.dispatcherServlet.getHandlerMappings();
 		if (handlerMappings == null) {
 			initializeDispatcherServletIfPossible();
@@ -78,20 +78,22 @@ final class DispatcherServletHandlerMappings {
 	}
 
 	/**
-     * Initializes the dispatcher servlet if possible.
-     * 
-     * This method checks if the application context is an instance of ServletWebServerApplicationContext.
-     * If it is, it retrieves the web server from the application context and checks its type.
-     * If the web server is an instance of UndertowServletWebServer, it initializes the servlet using UndertowServletInitializer.
-     * If the web server is an instance of TomcatWebServer, it initializes the servlet using TomcatServletInitializer.
-     * 
-     * @see ServletWebServerApplicationContext
-     * @see UndertowServletWebServer
-     * @see UndertowServletInitializer
-     * @see TomcatWebServer
-     * @see TomcatServletInitializer
-     */
-    private void initializeDispatcherServletIfPossible() {
+	 * Initializes the dispatcher servlet if possible.
+	 *
+	 * This method checks if the application context is an instance of
+	 * ServletWebServerApplicationContext. If it is, it retrieves the web server from the
+	 * application context and checks its type. If the web server is an instance of
+	 * UndertowServletWebServer, it initializes the servlet using
+	 * UndertowServletInitializer. If the web server is an instance of TomcatWebServer, it
+	 * initializes the servlet using TomcatServletInitializer.
+	 *
+	 * @see ServletWebServerApplicationContext
+	 * @see UndertowServletWebServer
+	 * @see UndertowServletInitializer
+	 * @see TomcatWebServer
+	 * @see TomcatServletInitializer
+	 */
+	private void initializeDispatcherServletIfPossible() {
 		if (!(this.applicationContext instanceof ServletWebServerApplicationContext webServerApplicationContext)) {
 			return;
 		}
@@ -105,45 +107,43 @@ final class DispatcherServletHandlerMappings {
 	}
 
 	/**
-     * Returns the name of the DispatcherServletHandlerMappings object.
-     *
-     * @return the name of the DispatcherServletHandlerMappings object
-     */
-    String getName() {
+	 * Returns the name of the DispatcherServletHandlerMappings object.
+	 * @return the name of the DispatcherServletHandlerMappings object
+	 */
+	String getName() {
 		return this.name;
 	}
 
 	/**
-     * TomcatServletInitializer class.
-     */
-    private static final class TomcatServletInitializer {
+	 * TomcatServletInitializer class.
+	 */
+	private static final class TomcatServletInitializer {
 
 		private final TomcatWebServer webServer;
 
 		/**
-         * Constructs a new TomcatServletInitializer with the specified TomcatWebServer.
-         *
-         * @param webServer the TomcatWebServer to be associated with this TomcatServletInitializer
-         */
-        private TomcatServletInitializer(TomcatWebServer webServer) {
+		 * Constructs a new TomcatServletInitializer with the specified TomcatWebServer.
+		 * @param webServer the TomcatWebServer to be associated with this
+		 * TomcatServletInitializer
+		 */
+		private TomcatServletInitializer(TomcatWebServer webServer) {
 			this.webServer = webServer;
 		}
 
 		/**
-         * Initializes a servlet with the given name.
-         * 
-         * @param name the name of the servlet to initialize
-         */
-        void initializeServlet(String name) {
+		 * Initializes a servlet with the given name.
+		 * @param name the name of the servlet to initialize
+		 */
+		void initializeServlet(String name) {
 			findContext().ifPresent((context) -> initializeServlet(context, name));
 		}
 
 		/**
-         * Finds the first Context object within the Tomcat Host.
-         *
-         * @return an Optional containing the first Context object found, or an empty Optional if no Context object is found
-         */
-        private Optional<Context> findContext() {
+		 * Finds the first Context object within the Tomcat Host.
+		 * @return an Optional containing the first Context object found, or an empty
+		 * Optional if no Context object is found
+		 */
+		private Optional<Context> findContext() {
 			return Stream.of(this.webServer.getTomcat().getHost().findChildren())
 				.filter(Context.class::isInstance)
 				.map(Context.class::cast)
@@ -151,12 +151,11 @@ final class DispatcherServletHandlerMappings {
 		}
 
 		/**
-         * Initializes the servlet with the given context and name.
-         * 
-         * @param context the context in which the servlet is initialized
-         * @param name the name of the servlet to be initialized
-         */
-        private void initializeServlet(Context context, String name) {
+		 * Initializes the servlet with the given context and name.
+		 * @param context the context in which the servlet is initialized
+		 * @param name the name of the servlet to be initialized
+		 */
+		private void initializeServlet(Context context, String name) {
 			Container child = context.findChild(name);
 			if (child instanceof StandardWrapper wrapper) {
 				try {
@@ -171,27 +170,27 @@ final class DispatcherServletHandlerMappings {
 	}
 
 	/**
-     * UndertowServletInitializer class.
-     */
-    private static final class UndertowServletInitializer {
+	 * UndertowServletInitializer class.
+	 */
+	private static final class UndertowServletInitializer {
 
 		private final UndertowServletWebServer webServer;
 
 		/**
-         * Constructs a new UndertowServletInitializer with the specified UndertowServletWebServer.
-         *
-         * @param webServer the UndertowServletWebServer to be associated with the UndertowServletInitializer
-         */
-        private UndertowServletInitializer(UndertowServletWebServer webServer) {
+		 * Constructs a new UndertowServletInitializer with the specified
+		 * UndertowServletWebServer.
+		 * @param webServer the UndertowServletWebServer to be associated with the
+		 * UndertowServletInitializer
+		 */
+		private UndertowServletInitializer(UndertowServletWebServer webServer) {
 			this.webServer = webServer;
 		}
 
 		/**
-         * Initializes a servlet with the given name.
-         * 
-         * @param name the name of the servlet to initialize
-         */
-        void initializeServlet(String name) {
+		 * Initializes a servlet with the given name.
+		 * @param name the name of the servlet to initialize
+		 */
+		void initializeServlet(String name) {
 			try {
 				this.webServer.getDeploymentManager().getDeployment().getServlets().getManagedServlet(name).forceInit();
 			}

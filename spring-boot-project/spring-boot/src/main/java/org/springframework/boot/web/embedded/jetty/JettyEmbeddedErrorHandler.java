@@ -32,12 +32,13 @@ import org.eclipse.jetty.http.HttpMethod;
 class JettyEmbeddedErrorHandler extends ErrorPageErrorHandler {
 
 	/**
-     * Determines if an error page should be displayed for a specific HTTP method.
-     * 
-     * @param method the HTTP method for which to check if an error page should be displayed
-     * @return true if an error page should be displayed for the given method, false otherwise
-     */
-    @Override
+	 * Determines if an error page should be displayed for a specific HTTP method.
+	 * @param method the HTTP method for which to check if an error page should be
+	 * displayed
+	 * @return true if an error page should be displayed for the given method, false
+	 * otherwise
+	 */
+	@Override
 	public boolean errorPageForMethod(String method) {
 		return true;
 	}

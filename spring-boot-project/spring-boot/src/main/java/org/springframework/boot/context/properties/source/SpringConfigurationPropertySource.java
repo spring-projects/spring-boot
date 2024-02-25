@@ -74,12 +74,13 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	/**
-     * Retrieves the configuration property with the given name from the SpringConfigurationPropertySource.
-     * 
-     * @param name the name of the configuration property
-     * @return the ConfigurationProperty object representing the configuration property, or null if not found
-     */
-    @Override
+	 * Retrieves the configuration property with the given name from the
+	 * SpringConfigurationPropertySource.
+	 * @param name the name of the configuration property
+	 * @return the ConfigurationProperty object representing the configuration property,
+	 * or null if not found
+	 */
+	@Override
 	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		if (name == null) {
 			return null;
@@ -102,12 +103,12 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	/**
-     * Checks if the configuration property source contains a descendant of the given configuration property name.
-     * 
-     * @param name the configuration property name to check for descendants
-     * @return the state of the configuration property (CONTAINS, ABSENT, UNKNOWN)
-     */
-    @Override
+	 * Checks if the configuration property source contains a descendant of the given
+	 * configuration property name.
+	 * @param name the configuration property name to check for descendants
+	 * @return the state of the configuration property (CONTAINS, ABSENT, UNKNOWN)
+	 */
+	@Override
 	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		PropertySource<?> source = getPropertySource();
 		Object underlyingSource = source.getSource();
@@ -123,13 +124,14 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	/**
-     * Checks if the given ConfigurationPropertyName contains a descendant of the specified prefix.
-     * 
-     * @param prefix the prefix to check against
-     * @param name the ConfigurationPropertyName to check
-     * @return the ConfigurationPropertyState indicating if the descendant is present or absent
-     */
-    private static ConfigurationPropertyState containsDescendantOfForRandom(String prefix,
+	 * Checks if the given ConfigurationPropertyName contains a descendant of the
+	 * specified prefix.
+	 * @param prefix the prefix to check against
+	 * @param name the ConfigurationPropertyName to check
+	 * @return the ConfigurationPropertyState indicating if the descendant is present or
+	 * absent
+	 */
+	private static ConfigurationPropertyState containsDescendantOfForRandom(String prefix,
 			ConfigurationPropertyName name) {
 		if (name.getNumberOfElements() > 1 && name.getElement(0, Form.DASHED).equals(prefix)) {
 			return ConfigurationPropertyState.PRESENT;
@@ -138,39 +140,37 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	/**
-     * Returns the underlying source of the configuration property.
-     *
-     * @return the underlying source of the configuration property
-     */
-    @Override
+	 * Returns the underlying source of the configuration property.
+	 * @return the underlying source of the configuration property
+	 */
+	@Override
 	public Object getUnderlyingSource() {
 		return this.propertySource;
 	}
 
 	/**
-     * Returns the property source associated with this SpringConfigurationPropertySource instance.
-     *
-     * @return the property source
-     */
-    protected PropertySource<?> getPropertySource() {
+	 * Returns the property source associated with this SpringConfigurationPropertySource
+	 * instance.
+	 * @return the property source
+	 */
+	protected PropertySource<?> getPropertySource() {
 		return this.propertySource;
 	}
 
 	/**
-     * Returns the array of PropertyMapper objects used by this SpringConfigurationPropertySource.
-     * 
-     * @return the array of PropertyMapper objects
-     */
-    protected final PropertyMapper[] getMappers() {
+	 * Returns the array of PropertyMapper objects used by this
+	 * SpringConfigurationPropertySource.
+	 * @return the array of PropertyMapper objects
+	 */
+	protected final PropertyMapper[] getMappers() {
 		return this.mappers;
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * 
-     * @return a string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return a string representation of the object
+	 */
+	@Override
 	public String toString() {
 		return this.propertySource.toString();
 	}
@@ -192,15 +192,14 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	/**
-     * Returns an array of PropertyMapper objects based on the given PropertySource.
-     * If the PropertySource is an instance of SystemEnvironmentPropertySource and has a system environment name,
-     * it returns the SYSTEM_ENVIRONMENT_MAPPERS array.
-     * Otherwise, it returns the DEFAULT_MAPPERS array.
-     *
-     * @param source the PropertySource to get the PropertyMappers from
-     * @return an array of PropertyMapper objects based on the given PropertySource
-     */
-    private static PropertyMapper[] getPropertyMappers(PropertySource<?> source) {
+	 * Returns an array of PropertyMapper objects based on the given PropertySource. If
+	 * the PropertySource is an instance of SystemEnvironmentPropertySource and has a
+	 * system environment name, it returns the SYSTEM_ENVIRONMENT_MAPPERS array.
+	 * Otherwise, it returns the DEFAULT_MAPPERS array.
+	 * @param source the PropertySource to get the PropertyMappers from
+	 * @return an array of PropertyMapper objects based on the given PropertySource
+	 */
+	private static PropertyMapper[] getPropertyMappers(PropertySource<?> source) {
 		if (source instanceof SystemEnvironmentPropertySource && hasSystemEnvironmentName(source)) {
 			return SYSTEM_ENVIRONMENT_MAPPERS;
 		}
@@ -208,24 +207,24 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	/**
-     * Checks if the given property source has the name of the system environment property source.
-     * 
-     * @param source the property source to check
-     * @return true if the property source has the name of the system environment property source, false otherwise
-     */
-    private static boolean hasSystemEnvironmentName(PropertySource<?> source) {
+	 * Checks if the given property source has the name of the system environment property
+	 * source.
+	 * @param source the property source to check
+	 * @return true if the property source has the name of the system environment property
+	 * source, false otherwise
+	 */
+	private static boolean hasSystemEnvironmentName(PropertySource<?> source) {
 		String name = source.getName();
 		return StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(name)
 				|| name.endsWith("-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
 	}
 
 	/**
-     * Checks if the given PropertySource is fully enumerable.
-     * 
-     * @param source the PropertySource to check
-     * @return true if the PropertySource is fully enumerable, false otherwise
-     */
-    private static boolean isFullEnumerable(PropertySource<?> source) {
+	 * Checks if the given PropertySource is fully enumerable.
+	 * @param source the PropertySource to check
+	 * @return true if the PropertySource is fully enumerable, false otherwise
+	 */
+	private static boolean isFullEnumerable(PropertySource<?> source) {
 		PropertySource<?> rootSource = getRootSource(source);
 		if (rootSource.getSource() instanceof Map) {
 			// Check we're not security restricted
@@ -240,12 +239,11 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	/**
-     * Retrieves the root property source from the given property source.
-     * 
-     * @param source the property source to retrieve the root from
-     * @return the root property source
-     */
-    private static PropertySource<?> getRootSource(PropertySource<?> source) {
+	 * Retrieves the root property source from the given property source.
+	 * @param source the property source to retrieve the root from
+	 * @return the root property source
+	 */
+	private static PropertySource<?> getRootSource(PropertySource<?> source) {
 		while (source.getSource() != null && source.getSource() instanceof PropertySource) {
 			source = (PropertySource<?>) source.getSource();
 		}

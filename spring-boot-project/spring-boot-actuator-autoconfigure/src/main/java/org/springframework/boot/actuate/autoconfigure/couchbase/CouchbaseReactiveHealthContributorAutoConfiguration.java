@@ -49,20 +49,22 @@ public class CouchbaseReactiveHealthContributorAutoConfiguration
 		extends CompositeReactiveHealthContributorConfiguration<CouchbaseReactiveHealthIndicator, Cluster> {
 
 	/**
-     * Constructs a new instance of CouchbaseReactiveHealthContributorAutoConfiguration.
-     * This constructor initializes the class by calling the superclass constructor with the CouchbaseReactiveHealthIndicator class as the argument.
-     */
-    public CouchbaseReactiveHealthContributorAutoConfiguration() {
+	 * Constructs a new instance of CouchbaseReactiveHealthContributorAutoConfiguration.
+	 * This constructor initializes the class by calling the superclass constructor with
+	 * the CouchbaseReactiveHealthIndicator class as the argument.
+	 */
+	public CouchbaseReactiveHealthContributorAutoConfiguration() {
 		super(CouchbaseReactiveHealthIndicator::new);
 	}
 
 	/**
-     * Creates a ReactiveHealthContributor for Couchbase clusters if no existing bean with the names "couchbaseHealthIndicator" or "couchbaseHealthContributor" is found.
-     * 
-     * @param clusters a map of Couchbase clusters, where the key is the cluster name and the value is the Cluster object
-     * @return the ReactiveHealthContributor for Couchbase clusters
-     */
-    @Bean
+	 * Creates a ReactiveHealthContributor for Couchbase clusters if no existing bean with
+	 * the names "couchbaseHealthIndicator" or "couchbaseHealthContributor" is found.
+	 * @param clusters a map of Couchbase clusters, where the key is the cluster name and
+	 * the value is the Cluster object
+	 * @return the ReactiveHealthContributor for Couchbase clusters
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = { "couchbaseHealthIndicator", "couchbaseHealthContributor" })
 	public ReactiveHealthContributor couchbaseHealthContributor(Map<String, Cluster> clusters) {
 		return createContributor(clusters);

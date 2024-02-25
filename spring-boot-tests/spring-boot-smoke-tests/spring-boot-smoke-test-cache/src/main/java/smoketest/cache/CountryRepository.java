@@ -28,12 +28,11 @@ import org.springframework.stereotype.Component;
 public class CountryRepository {
 
 	/**
-     * Retrieves a country by its code.
-     * 
-     * @param code the code of the country to retrieve
-     * @return the country with the specified code
-     */
-    @Cacheable
+	 * Retrieves a country by its code.
+	 * @param code the code of the country to retrieve
+	 * @return the country with the specified code
+	 */
+	@Cacheable
 	public Country findByCode(String code) {
 		System.out.println("---> Loading country with code '" + code + "'");
 		return new Country(code);

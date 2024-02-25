@@ -30,11 +30,11 @@ class ExcludeFilterApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	/**
-     * Initializes the application context by registering the TestTypeExcludeFilter with the bean factory.
-     * 
-     * @param applicationContext the configurable application context to be initialized
-     */
-    @Override
+	 * Initializes the application context by registering the TestTypeExcludeFilter with
+	 * the bean factory.
+	 * @param applicationContext the configurable application context to be initialized
+	 */
+	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		TestTypeExcludeFilter.registerWith(applicationContext.getBeanFactory());
 	}

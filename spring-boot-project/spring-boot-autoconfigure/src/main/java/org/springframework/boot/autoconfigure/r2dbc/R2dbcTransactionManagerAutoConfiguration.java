@@ -43,12 +43,13 @@ import org.springframework.transaction.ReactiveTransactionManager;
 public class R2dbcTransactionManagerAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link R2dbcTransactionManager} if no other bean of type {@link ReactiveTransactionManager} is present.
-     * 
-     * @param connectionFactory the {@link ConnectionFactory} to be used by the transaction manager
-     * @return the {@link R2dbcTransactionManager} instance
-     */
-    @Bean
+	 * Creates a new instance of {@link R2dbcTransactionManager} if no other bean of type
+	 * {@link ReactiveTransactionManager} is present.
+	 * @param connectionFactory the {@link ConnectionFactory} to be used by the
+	 * transaction manager
+	 * @return the {@link R2dbcTransactionManager} instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean(ReactiveTransactionManager.class)
 	public R2dbcTransactionManager connectionFactoryTransactionManager(ConnectionFactory connectionFactory) {
 		return new R2dbcTransactionManager(connectionFactory);

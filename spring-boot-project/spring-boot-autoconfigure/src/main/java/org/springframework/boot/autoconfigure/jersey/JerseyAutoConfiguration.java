@@ -91,13 +91,15 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	private final ResourceConfig config;
 
 	/**
-     * Constructs a new JerseyAutoConfiguration object with the specified JerseyProperties, ResourceConfig, and ResourceConfigCustomizer.
-     * 
-     * @param jersey the JerseyProperties object containing the configuration properties for Jersey
-     * @param config the ResourceConfig object representing the configuration for Jersey
-     * @param customizers the ObjectProvider of ResourceConfigCustomizer objects used to customize the ResourceConfig
-     */
-    public JerseyAutoConfiguration(JerseyProperties jersey, ResourceConfig config,
+	 * Constructs a new JerseyAutoConfiguration object with the specified
+	 * JerseyProperties, ResourceConfig, and ResourceConfigCustomizer.
+	 * @param jersey the JerseyProperties object containing the configuration properties
+	 * for Jersey
+	 * @param config the ResourceConfig object representing the configuration for Jersey
+	 * @param customizers the ObjectProvider of ResourceConfigCustomizer objects used to
+	 * customize the ResourceConfig
+	 */
+	public JerseyAutoConfiguration(JerseyProperties jersey, ResourceConfig config,
 			ObjectProvider<ResourceConfigCustomizer> customizers) {
 		this.jersey = jersey;
 		this.config = config;
@@ -105,11 +107,11 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	/**
-     * Registers the RequestContextFilter as a filter bean if no other bean of type RequestContextFilter is present.
-     * 
-     * @return The FilterRegistrationBean for the RequestContextFilter.
-     */
-    @Bean
+	 * Registers the RequestContextFilter as a filter bean if no other bean of type
+	 * RequestContextFilter is present.
+	 * @return The FilterRegistrationBean for the RequestContextFilter.
+	 */
+	@Bean
 	@ConditionalOnMissingFilterBean(RequestContextFilter.class)
 	public FilterRegistrationBean<RequestContextFilter> requestContextFilter() {
 		FilterRegistrationBean<RequestContextFilter> registration = new FilterRegistrationBean<>();
@@ -120,33 +122,36 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	/**
-     * Creates a new instance of {@link JerseyApplicationPath} if no bean of this type exists in the application context.
-     * The created instance uses the provided {@link Jersey} configuration and the application path specified in the configuration.
-     * 
-     * @return a new instance of {@link JerseyApplicationPath} with the specified configuration
-     */
-    @Bean
+	 * Creates a new instance of {@link JerseyApplicationPath} if no bean of this type
+	 * exists in the application context. The created instance uses the provided
+	 * {@link Jersey} configuration and the application path specified in the
+	 * configuration.
+	 * @return a new instance of {@link JerseyApplicationPath} with the specified
+	 * configuration
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public JerseyApplicationPath jerseyApplicationPath() {
 		return new DefaultJerseyApplicationPath(this.jersey.getApplicationPath(), this.config);
 	}
 
 	/**
-     * Creates a FilterRegistrationBean for the Jersey ServletContainer filter.
-     * This method is conditional on the absence of a bean named "jerseyFilterRegistration" and the presence of a property "spring.jersey.type" with the value "filter".
-     * The registration is configured with the provided JerseyApplicationPath and other properties from the configuration.
-     * The filter is set to the ServletContainer with the provided config.
-     * The URL patterns are set to the applicationPath's URL mapping.
-     * The order is set to the order specified in the jersey filter configuration.
-     * The filter's context path is set to the stripped pattern of the applicationPath's path.
-     * Additional init parameters are added to the registration.
-     * The name of the registration is set to "jerseyFilter".
-     * The dispatcher types are set to all dispatcher types.
-     * 
-     * @param applicationPath the JerseyApplicationPath to configure the filter registration
-     * @return the created FilterRegistrationBean for the Jersey ServletContainer filter
-     */
-    @Bean
+	 * Creates a FilterRegistrationBean for the Jersey ServletContainer filter. This
+	 * method is conditional on the absence of a bean named "jerseyFilterRegistration" and
+	 * the presence of a property "spring.jersey.type" with the value "filter". The
+	 * registration is configured with the provided JerseyApplicationPath and other
+	 * properties from the configuration. The filter is set to the ServletContainer with
+	 * the provided config. The URL patterns are set to the applicationPath's URL mapping.
+	 * The order is set to the order specified in the jersey filter configuration. The
+	 * filter's context path is set to the stripped pattern of the applicationPath's path.
+	 * Additional init parameters are added to the registration. The name of the
+	 * registration is set to "jerseyFilter". The dispatcher types are set to all
+	 * dispatcher types.
+	 * @param applicationPath the JerseyApplicationPath to configure the filter
+	 * registration
+	 * @return the created FilterRegistrationBean for the Jersey ServletContainer filter
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = "jerseyFilterRegistration")
 	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "filter")
 	public FilterRegistrationBean<ServletContainer> jerseyFilterRegistration(JerseyApplicationPath applicationPath) {
@@ -162,12 +167,11 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	/**
-     * Removes the trailing "/*" pattern from the given path.
-     * 
-     * @param path the path to be stripped
-     * @return the stripped path
-     */
-    private String stripPattern(String path) {
+	 * Removes the trailing "/*" pattern from the given path.
+	 * @param path the path to be stripped
+	 * @return the stripped path
+	 */
+	private String stripPattern(String path) {
 		if (path.endsWith("/*")) {
 			path = path.substring(0, path.lastIndexOf("/*"));
 		}
@@ -175,13 +179,14 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	/**
-     * Creates a ServletRegistrationBean for the Jersey servlet.
-     * This method is conditional on the absence of a bean named "jerseyServletRegistration" and the property "spring.jersey.type" having a value of "servlet" (or being missing).
-     * 
-     * @param applicationPath the JerseyApplicationPath bean used to determine the URL mapping for the servlet
-     * @return the ServletRegistrationBean for the Jersey servlet
-     */
-    @Bean
+	 * Creates a ServletRegistrationBean for the Jersey servlet. This method is
+	 * conditional on the absence of a bean named "jerseyServletRegistration" and the
+	 * property "spring.jersey.type" having a value of "servlet" (or being missing).
+	 * @param applicationPath the JerseyApplicationPath bean used to determine the URL
+	 * mapping for the servlet
+	 * @return the ServletRegistrationBean for the Jersey servlet
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = "jerseyServletRegistration")
 	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "servlet", matchIfMissing = true)
 	public ServletRegistrationBean<ServletContainer> jerseyServletRegistration(JerseyApplicationPath applicationPath) {
@@ -195,30 +200,29 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	/**
-     * Returns the name of the servlet registration for this configuration.
-     * The name is obtained by getting the user class of the configuration class and returning its name.
-     *
-     * @return the name of the servlet registration
-     */
-    private String getServletRegistrationName() {
+	 * Returns the name of the servlet registration for this configuration. The name is
+	 * obtained by getting the user class of the configuration class and returning its
+	 * name.
+	 * @return the name of the servlet registration
+	 */
+	private String getServletRegistrationName() {
 		return ClassUtils.getUserClass(this.config.getClass()).getName();
 	}
 
 	/**
-     * Adds the initialization parameters to the given DynamicRegistrationBean.
-     * 
-     * @param registration the DynamicRegistrationBean to add the initialization parameters to
-     */
-    private void addInitParameters(DynamicRegistrationBean<?> registration) {
+	 * Adds the initialization parameters to the given DynamicRegistrationBean.
+	 * @param registration the DynamicRegistrationBean to add the initialization
+	 * parameters to
+	 */
+	private void addInitParameters(DynamicRegistrationBean<?> registration) {
 		this.jersey.getInit().forEach(registration::addInitParameter);
 	}
 
 	/**
-     * Sets the ServletContext for the JerseyAutoConfiguration class.
-     * 
-     * @param servletContext the ServletContext to be set
-     */
-    @Override
+	 * Sets the ServletContext for the JerseyAutoConfiguration class.
+	 * @param servletContext the ServletContext to be set
+	 */
+	@Override
 	public void setServletContext(ServletContext servletContext) {
 		String servletRegistrationName = getServletRegistrationName();
 		ServletRegistration registration = servletContext.getServletRegistration(servletRegistrationName);
@@ -231,20 +235,22 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	/**
-     * JerseyWebApplicationInitializer class.
-     */
-    @Order(Ordered.HIGHEST_PRECEDENCE)
+	 * JerseyWebApplicationInitializer class.
+	 */
+	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public static final class JerseyWebApplicationInitializer implements WebApplicationInitializer {
 
 		/**
-         * This method is called during the startup of the application.
-         * It is used to switch off the Jersey WebApplicationInitializer by setting the "contextConfigLocation" parameter to "<NONE>".
-         * This is necessary because the Jersey WebApplicationInitializer tries to register a ContextLoaderListener which is not needed.
-         *
-         * @param servletContext the ServletContext object representing the application's servlet context
-         * @throws ServletException if an error occurs during the initialization process
-         */
-        @Override
+		 * This method is called during the startup of the application. It is used to
+		 * switch off the Jersey WebApplicationInitializer by setting the
+		 * "contextConfigLocation" parameter to "<NONE>". This is necessary because the
+		 * Jersey WebApplicationInitializer tries to register a ContextLoaderListener
+		 * which is not needed.
+		 * @param servletContext the ServletContext object representing the application's
+		 * servlet context
+		 * @throws ServletException if an error occurs during the initialization process
+		 */
+		@Override
 		public void onStartup(ServletContext servletContext) throws ServletException {
 			// We need to switch *off* the Jersey WebApplicationInitializer because it
 			// will try and register a ContextLoaderListener which we don't need
@@ -254,20 +260,20 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	/**
-     * JacksonResourceConfigCustomizer class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JacksonResourceConfigCustomizer class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JacksonFeature.class)
 	@ConditionalOnSingleCandidate(ObjectMapper.class)
 	static class JacksonResourceConfigCustomizer {
 
 		/**
-         * Returns a customizer for configuring the ResourceConfig with Jackson.
-         * 
-         * @param objectMapper the ObjectMapper instance to be used for JSON serialization and deserialization
-         * @return the customizer for configuring the ResourceConfig with Jackson
-         */
-        @Bean
+		 * Returns a customizer for configuring the ResourceConfig with Jackson.
+		 * @param objectMapper the ObjectMapper instance to be used for JSON serialization
+		 * and deserialization
+		 * @return the customizer for configuring the ResourceConfig with Jackson
+		 */
+		@Bean
 		ResourceConfigCustomizer jacksonResourceConfigCustomizer(ObjectMapper objectMapper) {
 			return (ResourceConfig config) -> {
 				config.register(JacksonFeature.class);
@@ -276,19 +282,19 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		}
 
 		/**
-         * JaxbObjectMapperCustomizer class.
-         */
-        @Configuration(proxyBeanMethods = false)
+		 * JaxbObjectMapperCustomizer class.
+		 */
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass({ JakartaXmlBindAnnotationIntrospector.class, XmlElement.class })
 		static class JaxbObjectMapperCustomizer {
 
 			/**
-             * Adds a JakartaXmlBindAnnotationIntrospector to the provided ObjectMapper.
-             * This introspector is used to handle JAXB annotations during serialization and deserialization.
-             * 
-             * @param objectMapper the ObjectMapper to customize
-             */
-            @Autowired
+			 * Adds a JakartaXmlBindAnnotationIntrospector to the provided ObjectMapper.
+			 * This introspector is used to handle JAXB annotations during serialization
+			 * and deserialization.
+			 * @param objectMapper the ObjectMapper to customize
+			 */
+			@Autowired
 			void addJaxbAnnotationIntrospector(ObjectMapper objectMapper) {
 				JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector = new JakartaXmlBindAnnotationIntrospector(
 						objectMapper.getTypeFactory());
@@ -298,15 +304,17 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			}
 
 			/**
-             * Creates a pair of AnnotationIntrospector by combining the given MapperConfig's AnnotationIntrospector
-             * with the JakartaXmlBindAnnotationIntrospector.
-             *
-             * @param config the MapperConfig from which to retrieve the AnnotationIntrospector
-             * @param jaxbAnnotationIntrospector the JakartaXmlBindAnnotationIntrospector to be combined with the
-             *                                   AnnotationIntrospector from the MapperConfig
-             * @return the pair of AnnotationIntrospector created by combining the two provided introspectors
-             */
-            private AnnotationIntrospector createPair(MapperConfig<?> config,
+			 * Creates a pair of AnnotationIntrospector by combining the given
+			 * MapperConfig's AnnotationIntrospector with the
+			 * JakartaXmlBindAnnotationIntrospector.
+			 * @param config the MapperConfig from which to retrieve the
+			 * AnnotationIntrospector
+			 * @param jaxbAnnotationIntrospector the JakartaXmlBindAnnotationIntrospector
+			 * to be combined with the AnnotationIntrospector from the MapperConfig
+			 * @return the pair of AnnotationIntrospector created by combining the two
+			 * provided introspectors
+			 */
+			private AnnotationIntrospector createPair(MapperConfig<?> config,
 					JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector) {
 				return AnnotationIntrospector.pair(config.getAnnotationIntrospector(), jaxbAnnotationIntrospector);
 			}
@@ -314,28 +322,27 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		}
 
 		/**
-         * ObjectMapperContextResolver class.
-         */
-        private static final class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
+		 * ObjectMapperContextResolver class.
+		 */
+		private static final class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
 
 			private final ObjectMapper objectMapper;
 
 			/**
-             * Constructs a new ObjectMapperContextResolver with the specified ObjectMapper.
-             *
-             * @param objectMapper the ObjectMapper to be used by the context resolver
-             */
-            private ObjectMapperContextResolver(ObjectMapper objectMapper) {
+			 * Constructs a new ObjectMapperContextResolver with the specified
+			 * ObjectMapper.
+			 * @param objectMapper the ObjectMapper to be used by the context resolver
+			 */
+			private ObjectMapperContextResolver(ObjectMapper objectMapper) {
 				this.objectMapper = objectMapper;
 			}
 
 			/**
-             * Returns the ObjectMapper instance associated with the specified class.
-             * 
-             * @param type the class for which the ObjectMapper instance is requested
-             * @return the ObjectMapper instance associated with the specified class
-             */
-            @Override
+			 * Returns the ObjectMapper instance associated with the specified class.
+			 * @param type the class for which the ObjectMapper instance is requested
+			 * @return the ObjectMapper instance associated with the specified class
+			 */
+			@Override
 			public ObjectMapper getContext(Class<?> type) {
 				return this.objectMapper;
 			}

@@ -44,12 +44,11 @@ public class LogUpdateEvent extends UpdateEvent {
 	private final String string;
 
 	/**
-     * Logs an update event with the specified stream type and payload.
-     * 
-     * @param streamType the type of the stream
-     * @param payload the payload data as a byte array
-     */
-    LogUpdateEvent(StreamType streamType, byte[] payload) {
+	 * Logs an update event with the specified stream type and payload.
+	 * @param streamType the type of the stream
+	 * @param payload the payload data as a byte array
+	 */
+	LogUpdateEvent(StreamType streamType, byte[] payload) {
 		this.streamType = streamType;
 		this.payload = payload;
 		String string = new String(payload, StandardCharsets.UTF_8);
@@ -59,11 +58,11 @@ public class LogUpdateEvent extends UpdateEvent {
 	}
 
 	/**
-     * Prints the LogUpdateEvent object based on the stream type.
-     * If the stream type is STD_OUT, the object is printed to the standard output stream.
-     * If the stream type is STD_ERR, the object is printed to the standard error stream.
-     */
-    public void print() {
+	 * Prints the LogUpdateEvent object based on the stream type. If the stream type is
+	 * STD_OUT, the object is printed to the standard output stream. If the stream type is
+	 * STD_ERR, the object is printed to the standard error stream.
+	 */
+	public void print() {
 		switch (this.streamType) {
 			case STD_OUT -> System.out.println(this);
 			case STD_ERR -> System.err.println(this);
@@ -71,41 +70,38 @@ public class LogUpdateEvent extends UpdateEvent {
 	}
 
 	/**
-     * Returns the stream type of the LogUpdateEvent.
-     *
-     * @return the stream type of the LogUpdateEvent
-     */
-    public StreamType getStreamType() {
+	 * Returns the stream type of the LogUpdateEvent.
+	 * @return the stream type of the LogUpdateEvent
+	 */
+	public StreamType getStreamType() {
 		return this.streamType;
 	}
 
 	/**
-     * Returns the payload of the LogUpdateEvent.
-     *
-     * @return the payload as a byte array
-     */
-    public byte[] getPayload() {
+	 * Returns the payload of the LogUpdateEvent.
+	 * @return the payload as a byte array
+	 */
+	public byte[] getPayload() {
 		return this.payload;
 	}
 
 	/**
-     * Returns a string representation of the LogUpdateEvent object.
-     * 
-     * @return the string representation of the LogUpdateEvent object
-     */
-    @Override
+	 * Returns a string representation of the LogUpdateEvent object.
+	 * @return the string representation of the LogUpdateEvent object
+	 */
+	@Override
 	public String toString() {
 		return this.string;
 	}
 
 	/**
-     * Reads all log update events from the given input stream and passes them to the consumer.
-     * 
-     * @param inputStream the input stream to read the log update events from
-     * @param consumer the consumer to accept the log update events
-     * @throws IOException if an I/O error occurs while reading the input stream
-     */
-    static void readAll(InputStream inputStream, Consumer<LogUpdateEvent> consumer) throws IOException {
+	 * Reads all log update events from the given input stream and passes them to the
+	 * consumer.
+	 * @param inputStream the input stream to read the log update events from
+	 * @param consumer the consumer to accept the log update events
+	 * @throws IOException if an I/O error occurs while reading the input stream
+	 */
+	static void readAll(InputStream inputStream, Consumer<LogUpdateEvent> consumer) throws IOException {
 		try {
 			LogUpdateEvent event;
 			while ((event = LogUpdateEvent.read(inputStream)) != null) {
@@ -123,13 +119,12 @@ public class LogUpdateEvent extends UpdateEvent {
 	}
 
 	/**
-     * Reads the LogUpdateEvent from the given InputStream.
-     * 
-     * @param inputStream the InputStream to read from
-     * @return the LogUpdateEvent read from the InputStream, or null if the header is null
-     * @throws IOException if an I/O error occurs while reading from the InputStream
-     */
-    private static LogUpdateEvent read(InputStream inputStream) throws IOException {
+	 * Reads the LogUpdateEvent from the given InputStream.
+	 * @param inputStream the InputStream to read from
+	 * @return the LogUpdateEvent read from the InputStream, or null if the header is null
+	 * @throws IOException if an I/O error occurs while reading from the InputStream
+	 */
+	private static LogUpdateEvent read(InputStream inputStream) throws IOException {
 		byte[] header = read(inputStream, 8);
 		if (header == null) {
 			return null;
@@ -144,14 +139,14 @@ public class LogUpdateEvent extends UpdateEvent {
 	}
 
 	/**
-     * Reads data from an InputStream and returns it as a byte array.
-     * 
-     * @param inputStream the InputStream to read from
-     * @param size the size of the data to read
-     * @return the byte array containing the read data, or null if the end of the stream is reached
-     * @throws IOException if an I/O error occurs while reading from the stream
-     */
-    private static byte[] read(InputStream inputStream, long size) throws IOException {
+	 * Reads data from an InputStream and returns it as a byte array.
+	 * @param inputStream the InputStream to read from
+	 * @param size the size of the data to read
+	 * @return the byte array containing the read data, or null if the end of the stream
+	 * is reached
+	 * @throws IOException if an I/O error occurs while reading from the stream
+	 */
+	private static byte[] read(InputStream inputStream, long size) throws IOException {
 		byte[] data = new byte[(int) size];
 		int offset = 0;
 		do {
@@ -186,13 +181,12 @@ public class LogUpdateEvent extends UpdateEvent {
 		STD_ERR;
 
 		/**
-     * Returns the StreamType corresponding to the given id.
-     * 
-     * @param id the id of the StreamType
-     * @return the StreamType corresponding to the given id
-     * @throws IllegalArgumentException if the id is out of bounds
-     */
-    static StreamType forId(byte id) {
+		 * Returns the StreamType corresponding to the given id.
+		 * @param id the id of the StreamType
+		 * @return the StreamType corresponding to the given id
+		 * @throws IllegalArgumentException if the id is out of bounds
+		 */
+		static StreamType forId(byte id) {
 			int upperBound = values().length;
 			Assert.state(id > 0 && id < upperBound,
 					() -> "Stream type is out of bounds. Must be >= 0 and < " + upperBound + ", but was " + id);

@@ -46,23 +46,24 @@ public class LdapHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<LdapHealthIndicator, LdapOperations> {
 
 	/**
-     * Constructs a new instance of LdapHealthContributorAutoConfiguration.
-     * 
-     * This constructor calls the superclass constructor with a lambda expression that creates a new instance of LdapHealthIndicator.
-     * 
-     * @see LdapHealthIndicator
-     */
-    public LdapHealthContributorAutoConfiguration() {
+	 * Constructs a new instance of LdapHealthContributorAutoConfiguration.
+	 *
+	 * This constructor calls the superclass constructor with a lambda expression that
+	 * creates a new instance of LdapHealthIndicator.
+	 *
+	 * @see LdapHealthIndicator
+	 */
+	public LdapHealthContributorAutoConfiguration() {
 		super(LdapHealthIndicator::new);
 	}
 
 	/**
-     * Creates a {@link HealthContributor} for LDAP health check if no existing bean with the names "ldapHealthIndicator" and "ldapHealthContributor" is found.
-     * 
-     * @param ldapOperations a map of {@link LdapOperations} beans
-     * @return the created {@link HealthContributor} for LDAP health check
-     */
-    @Bean
+	 * Creates a {@link HealthContributor} for LDAP health check if no existing bean with
+	 * the names "ldapHealthIndicator" and "ldapHealthContributor" is found.
+	 * @param ldapOperations a map of {@link LdapOperations} beans
+	 * @return the created {@link HealthContributor} for LDAP health check
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = { "ldapHealthIndicator", "ldapHealthContributor" })
 	public HealthContributor ldapHealthContributor(Map<String, LdapOperations> ldapOperations) {
 		return createContributor(ldapOperations);

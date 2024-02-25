@@ -42,26 +42,24 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	private final List<ExitCodeGenerator> generators = new ArrayList<>();
 
 	/**
-     * Adds multiple ExitCodeExceptionMappers to handle a specific Throwable exception.
-     * 
-     * @param exception the Throwable exception to be handled
-     * @param mappers   the ExitCodeExceptionMappers to be added
-     * @throws IllegalArgumentException if exception or mappers is null
-     */
-    void addAll(Throwable exception, ExitCodeExceptionMapper... mappers) {
+	 * Adds multiple ExitCodeExceptionMappers to handle a specific Throwable exception.
+	 * @param exception the Throwable exception to be handled
+	 * @param mappers the ExitCodeExceptionMappers to be added
+	 * @throws IllegalArgumentException if exception or mappers is null
+	 */
+	void addAll(Throwable exception, ExitCodeExceptionMapper... mappers) {
 		Assert.notNull(exception, "Exception must not be null");
 		Assert.notNull(mappers, "Mappers must not be null");
 		addAll(exception, Arrays.asList(mappers));
 	}
 
 	/**
-     * Adds the given exception to all the provided mappers.
-     * 
-     * @param exception the exception to be added
-     * @param mappers   the collection of mappers to add the exception to
-     * @throws IllegalArgumentException if the exception or mappers are null
-     */
-    void addAll(Throwable exception, Iterable<? extends ExitCodeExceptionMapper> mappers) {
+	 * Adds the given exception to all the provided mappers.
+	 * @param exception the exception to be added
+	 * @param mappers the collection of mappers to add the exception to
+	 * @throws IllegalArgumentException if the exception or mappers are null
+	 */
+	void addAll(Throwable exception, Iterable<? extends ExitCodeExceptionMapper> mappers) {
 		Assert.notNull(exception, "Exception must not be null");
 		Assert.notNull(mappers, "Mappers must not be null");
 		for (ExitCodeExceptionMapper mapper : mappers) {
@@ -70,36 +68,35 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	}
 
 	/**
-     * Adds a new exit code generator based on the provided exception and mapper.
-     * 
-     * @param exception the exception to be mapped to an exit code
-     * @param mapper the mapper used to map the exception to an exit code
-     * @throws IllegalArgumentException if either the exception or the mapper is null
-     */
-    void add(Throwable exception, ExitCodeExceptionMapper mapper) {
+	 * Adds a new exit code generator based on the provided exception and mapper.
+	 * @param exception the exception to be mapped to an exit code
+	 * @param mapper the mapper used to map the exception to an exit code
+	 * @throws IllegalArgumentException if either the exception or the mapper is null
+	 */
+	void add(Throwable exception, ExitCodeExceptionMapper mapper) {
 		Assert.notNull(exception, "Exception must not be null");
 		Assert.notNull(mapper, "Mapper must not be null");
 		add(new MappedExitCodeGenerator(exception, mapper));
 	}
 
 	/**
-     * Adds all the given ExitCodeGenerator objects to the list of generators.
-     * 
-     * @param generators the ExitCodeGenerator objects to be added
-     * @throws IllegalArgumentException if the generators parameter is null
-     */
-    void addAll(ExitCodeGenerator... generators) {
+	 * Adds all the given ExitCodeGenerator objects to the list of generators.
+	 * @param generators the ExitCodeGenerator objects to be added
+	 * @throws IllegalArgumentException if the generators parameter is null
+	 */
+	void addAll(ExitCodeGenerator... generators) {
 		Assert.notNull(generators, "Generators must not be null");
 		addAll(Arrays.asList(generators));
 	}
 
 	/**
-     * Adds all the exit code generators from the given iterable to the list of generators.
-     * 
-     * @param generators the iterable containing the exit code generators to be added (must not be null)
-     * @throws IllegalArgumentException if the generators parameter is null
-     */
-    void addAll(Iterable<? extends ExitCodeGenerator> generators) {
+	 * Adds all the exit code generators from the given iterable to the list of
+	 * generators.
+	 * @param generators the iterable containing the exit code generators to be added
+	 * (must not be null)
+	 * @throws IllegalArgumentException if the generators parameter is null
+	 */
+	void addAll(Iterable<? extends ExitCodeGenerator> generators) {
 		Assert.notNull(generators, "Generators must not be null");
 		for (ExitCodeGenerator generator : generators) {
 			add(generator);
@@ -107,23 +104,21 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	}
 
 	/**
-     * Adds an ExitCodeGenerator to the list of generators.
-     * 
-     * @param generator the ExitCodeGenerator to be added (must not be null)
-     * @throws IllegalArgumentException if the generator is null
-     */
-    void add(ExitCodeGenerator generator) {
+	 * Adds an ExitCodeGenerator to the list of generators.
+	 * @param generator the ExitCodeGenerator to be added (must not be null)
+	 * @throws IllegalArgumentException if the generator is null
+	 */
+	void add(ExitCodeGenerator generator) {
 		Assert.notNull(generator, "Generator must not be null");
 		this.generators.add(generator);
 		AnnotationAwareOrderComparator.sort(this.generators);
 	}
 
 	/**
-     * Returns an iterator over the elements in this ExitCodeGenerators collection.
-     *
-     * @return an iterator over the elements in this collection
-     */
-    @Override
+	 * Returns an iterator over the elements in this ExitCodeGenerators collection.
+	 * @return an iterator over the elements in this collection
+	 */
+	@Override
 	public Iterator<ExitCodeGenerator> iterator() {
 		return this.generators.iterator();
 	}
@@ -161,22 +156,22 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 		private final ExitCodeExceptionMapper mapper;
 
 		/**
-         * Constructs a new MappedExitCodeGenerator with the specified exception and mapper.
-         * 
-         * @param exception the Throwable exception to be mapped
-         * @param mapper the ExitCodeExceptionMapper used to map the exception to an exit code
-         */
-        MappedExitCodeGenerator(Throwable exception, ExitCodeExceptionMapper mapper) {
+		 * Constructs a new MappedExitCodeGenerator with the specified exception and
+		 * mapper.
+		 * @param exception the Throwable exception to be mapped
+		 * @param mapper the ExitCodeExceptionMapper used to map the exception to an exit
+		 * code
+		 */
+		MappedExitCodeGenerator(Throwable exception, ExitCodeExceptionMapper mapper) {
 			this.exception = exception;
 			this.mapper = mapper;
 		}
 
 		/**
-         * Returns the exit code based on the exception thrown.
-         * 
-         * @return the exit code
-         */
-        @Override
+		 * Returns the exit code based on the exception thrown.
+		 * @return the exit code
+		 */
+		@Override
 		public int getExitCode() {
 			return this.mapper.getExitCode(this.exception);
 		}

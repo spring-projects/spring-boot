@@ -34,11 +34,10 @@ public class GenericService implements MessageService {
 	private String name;
 
 	/**
-     * Returns the message composed of the hello string and the name string.
-     * 
-     * @return the message composed of the hello string and the name string
-     */
-    @Override
+	 * Returns the message composed of the hello string and the name string.
+	 * @return the message composed of the hello string and the name string
+	 */
+	@Override
 	public String getMessage() {
 		return this.hello + " " + this.name;
 	}

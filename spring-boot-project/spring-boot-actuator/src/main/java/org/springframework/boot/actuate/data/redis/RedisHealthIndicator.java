@@ -39,24 +39,22 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 	private final RedisConnectionFactory redisConnectionFactory;
 
 	/**
-     * Constructs a new RedisHealthIndicator with the specified RedisConnectionFactory.
-     * 
-     * @param connectionFactory the RedisConnectionFactory to be used for health check
-     * @throws IllegalArgumentException if the connectionFactory is null
-     */
-    public RedisHealthIndicator(RedisConnectionFactory connectionFactory) {
+	 * Constructs a new RedisHealthIndicator with the specified RedisConnectionFactory.
+	 * @param connectionFactory the RedisConnectionFactory to be used for health check
+	 * @throws IllegalArgumentException if the connectionFactory is null
+	 */
+	public RedisHealthIndicator(RedisConnectionFactory connectionFactory) {
 		super("Redis health check failed");
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		this.redisConnectionFactory = connectionFactory;
 	}
 
 	/**
-     * Performs a health check on the Redis connection.
-     * 
-     * @param builder the Health.Builder object used to build the health status
-     * @throws Exception if an error occurs during the health check
-     */
-    @Override
+	 * Performs a health check on the Redis connection.
+	 * @param builder the Health.Builder object used to build the health status
+	 * @throws Exception if an error occurs during the health check
+	 */
+	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		RedisConnection connection = RedisConnectionUtils.getConnection(this.redisConnectionFactory);
 		try {
@@ -68,12 +66,11 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	/**
-     * Performs a health check on the Redis connection.
-     * 
-     * @param builder the Health.Builder object to build the health status
-     * @param connection the RedisConnection object to perform the health check on
-     */
-    private void doHealthCheck(Health.Builder builder, RedisConnection connection) {
+	 * Performs a health check on the Redis connection.
+	 * @param builder the Health.Builder object to build the health status
+	 * @param connection the RedisConnection object to perform the health check on
+	 */
+	private void doHealthCheck(Health.Builder builder, RedisConnection connection) {
 		if (connection instanceof RedisClusterConnection clusterConnection) {
 			RedisHealth.fromClusterInfo(builder, clusterConnection.clusterGetClusterInfo());
 		}

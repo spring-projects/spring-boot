@@ -55,11 +55,10 @@ public class InMemoryHttpExchangeRepository implements HttpExchangeRepository {
 	}
 
 	/**
-     * Returns a list of all HttpExchange objects stored in the repository.
-     *
-     * @return a list of HttpExchange objects
-     */
-    @Override
+	 * Returns a list of all HttpExchange objects stored in the repository.
+	 * @return a list of HttpExchange objects
+	 */
+	@Override
 	public List<HttpExchange> findAll() {
 		synchronized (this.httpExchanges) {
 			return List.copyOf(this.httpExchanges);
@@ -67,11 +66,10 @@ public class InMemoryHttpExchangeRepository implements HttpExchangeRepository {
 	}
 
 	/**
-     * Adds a new HttpExchange to the repository.
-     * 
-     * @param exchange the HttpExchange to be added
-     */
-    @Override
+	 * Adds a new HttpExchange to the repository.
+	 * @param exchange the HttpExchange to be added
+	 */
+	@Override
 	public void add(HttpExchange exchange) {
 		synchronized (this.httpExchanges) {
 			while (this.httpExchanges.size() >= this.capacity) {

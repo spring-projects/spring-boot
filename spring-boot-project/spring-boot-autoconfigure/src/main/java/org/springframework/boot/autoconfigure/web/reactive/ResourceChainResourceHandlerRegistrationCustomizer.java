@@ -34,32 +34,30 @@ class ResourceChainResourceHandlerRegistrationCustomizer implements ResourceHand
 	private final Resources resourceProperties;
 
 	/**
-     * Constructs a new instance of ResourceChainResourceHandlerRegistrationCustomizer with the specified Resources.
-     *
-     * @param resources the Resources object to be used by the customizer
-     */
-    ResourceChainResourceHandlerRegistrationCustomizer(Resources resources) {
+	 * Constructs a new instance of ResourceChainResourceHandlerRegistrationCustomizer
+	 * with the specified Resources.
+	 * @param resources the Resources object to be used by the customizer
+	 */
+	ResourceChainResourceHandlerRegistrationCustomizer(Resources resources) {
 		this.resourceProperties = resources;
 	}
 
 	/**
-     * Customize the resource handler registration by configuring the resource chain.
-     * 
-     * @param registration the resource handler registration to customize
-     */
-    @Override
+	 * Customize the resource handler registration by configuring the resource chain.
+	 * @param registration the resource handler registration to customize
+	 */
+	@Override
 	public void customize(ResourceHandlerRegistration registration) {
 		Resources.Chain properties = this.resourceProperties.getChain();
 		configureResourceChain(properties, registration.resourceChain(properties.isCache()));
 	}
 
 	/**
-     * Configures the resource chain for the given properties and chain registration.
-     * 
-     * @param properties the resource chain properties
-     * @param chain the resource chain registration
-     */
-    private void configureResourceChain(Resources.Chain properties, ResourceChainRegistration chain) {
+	 * Configures the resource chain for the given properties and chain registration.
+	 * @param properties the resource chain properties
+	 * @param chain the resource chain registration
+	 */
+	private void configureResourceChain(Resources.Chain properties, ResourceChainRegistration chain) {
 		Resources.Chain.Strategy strategy = properties.getStrategy();
 		if (properties.isCompressed()) {
 			chain.addResolver(new EncodedResourceResolver());
@@ -70,12 +68,11 @@ class ResourceChainResourceHandlerRegistrationCustomizer implements ResourceHand
 	}
 
 	/**
-     * Returns a ResourceResolver based on the provided properties.
-     * 
-     * @param properties the Resource.Chain.Strategy properties
-     * @return a ResourceResolver object
-     */
-    private ResourceResolver getVersionResourceResolver(Resources.Chain.Strategy properties) {
+	 * Returns a ResourceResolver based on the provided properties.
+	 * @param properties the Resource.Chain.Strategy properties
+	 * @return a ResourceResolver object
+	 */
+	private ResourceResolver getVersionResourceResolver(Resources.Chain.Strategy properties) {
 		VersionResourceResolver resolver = new VersionResourceResolver();
 		if (properties.getFixed().isEnabled()) {
 			String version = properties.getFixed().getVersion();

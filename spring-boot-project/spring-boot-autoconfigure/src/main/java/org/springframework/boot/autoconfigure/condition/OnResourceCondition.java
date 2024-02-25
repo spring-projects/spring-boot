@@ -39,13 +39,13 @@ import org.springframework.util.MultiValueMap;
 class OnResourceCondition extends SpringBootCondition {
 
 	/**
-     * Determines the outcome of the condition based on the presence of specified resource locations.
-     * 
-     * @param context the condition context
-     * @param metadata the annotated type metadata
-     * @return the condition outcome
-     */
-    @Override
+	 * Determines the outcome of the condition based on the presence of specified resource
+	 * locations.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @return the condition outcome
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata
 			.getAllAnnotationAttributes(ConditionalOnResource.class.getName(), true);
@@ -72,12 +72,11 @@ class OnResourceCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Collects values from a list of objects and adds them to a list of strings.
-     * 
-     * @param names  the list of strings to add the collected values to
-     * @param values the list of objects containing the values to collect
-     */
-    private void collectValues(List<String> names, List<Object> values) {
+	 * Collects values from a list of objects and adds them to a list of strings.
+	 * @param names the list of strings to add the collected values to
+	 * @param values the list of objects containing the values to collect
+	 */
+	private void collectValues(List<String> names, List<Object> values) {
 		for (Object value : values) {
 			for (Object item : (Object[]) value) {
 				names.add((String) item);

@@ -51,82 +51,75 @@ public class HomebrewFormula extends DefaultTask {
 	private File outputDir;
 
 	/**
-     * Constructor for HomebrewFormula class.
-     * 
-     * This method initializes the HomebrewFormula object and sets the version property
-     * to the current version of the project.
-     * 
-     * @param version the version of the project
-     */
-    public HomebrewFormula() {
+	 * Constructor for HomebrewFormula class.
+	 *
+	 * This method initializes the HomebrewFormula object and sets the version property to
+	 * the current version of the project.
+	 * @param version the version of the project
+	 */
+	public HomebrewFormula() {
 		getInputs().property("version", getProject().provider(getProject()::getVersion));
 	}
 
 	/**
-     * Retrieves the archive file associated with this HomebrewFormula.
-     * 
-     * @return The archive file.
-     */
-    @InputFile
+	 * Retrieves the archive file associated with this HomebrewFormula.
+	 * @return The archive file.
+	 */
+	@InputFile
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public RegularFile getArchive() {
 		return this.archive.get();
 	}
 
 	/**
-     * Sets the archive for the HomebrewFormula.
-     * 
-     * @param archive the Provider object representing the archive file
-     */
-    public void setArchive(Provider<RegularFile> archive) {
+	 * Sets the archive for the HomebrewFormula.
+	 * @param archive the Provider object representing the archive file
+	 */
+	public void setArchive(Provider<RegularFile> archive) {
 		this.archive = archive;
 	}
 
 	/**
-     * Returns the template file used by this HomebrewFormula.
-     * 
-     * @return the template file
-     */
-    @InputFile
+	 * Returns the template file used by this HomebrewFormula.
+	 * @return the template file
+	 */
+	@InputFile
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public File getTemplate() {
 		return this.template;
 	}
 
 	/**
-     * Sets the template file for the HomebrewFormula.
-     * 
-     * @param template the template file to be set
-     */
-    public void setTemplate(File template) {
+	 * Sets the template file for the HomebrewFormula.
+	 * @param template the template file to be set
+	 */
+	public void setTemplate(File template) {
 		this.template = template;
 	}
 
 	/**
-     * Returns the output directory for the HomebrewFormula.
-     *
-     * @return the output directory
-     */
-    @OutputDirectory
+	 * Returns the output directory for the HomebrewFormula.
+	 * @return the output directory
+	 */
+	@OutputDirectory
 	public File getOutputDir() {
 		return this.outputDir;
 	}
 
 	/**
-     * Sets the output directory for the HomebrewFormula.
-     * 
-     * @param outputDir the output directory to be set
-     */
-    public void setOutputDir(File outputDir) {
+	 * Sets the output directory for the HomebrewFormula.
+	 * @param outputDir the output directory to be set
+	 */
+	public void setOutputDir(File outputDir) {
 		this.outputDir = outputDir;
 	}
 
 	/**
-     * Creates a descriptor using the provided additional properties.
-     * 
-     * @param additionalProperties a map of additional properties to be used in the descriptor creation
-     */
-    protected void createDescriptor(Map<String, Object> additionalProperties) {
+	 * Creates a descriptor using the provided additional properties.
+	 * @param additionalProperties a map of additional properties to be used in the
+	 * descriptor creation
+	 */
+	protected void createDescriptor(Map<String, Object> additionalProperties) {
 		getProject().copy((copy) -> {
 			copy.from(this.template);
 			copy.into(this.outputDir);
@@ -135,12 +128,13 @@ public class HomebrewFormula extends DefaultTask {
 	}
 
 	/**
-     * Returns a map of properties for the HomebrewFormula.
-     * 
-     * @param additionalProperties a map of additional properties to be included in the result
-     * @return a map of properties including the additional properties, hash, repo, and project
-     */
-    private Map<String, Object> getProperties(Map<String, Object> additionalProperties) {
+	 * Returns a map of properties for the HomebrewFormula.
+	 * @param additionalProperties a map of additional properties to be included in the
+	 * result
+	 * @return a map of properties including the additional properties, hash, repo, and
+	 * project
+	 */
+	private Map<String, Object> getProperties(Map<String, Object> additionalProperties) {
 		Map<String, Object> properties = new HashMap<>(additionalProperties);
 		Project project = getProject();
 		properties.put("hash", sha256(this.archive.get().getAsFile()));
@@ -150,13 +144,13 @@ public class HomebrewFormula extends DefaultTask {
 	}
 
 	/**
-     * Calculates the SHA-256 hash value of a given file.
-     * 
-     * @param file the file for which the SHA-256 hash value needs to be calculated
-     * @return the SHA-256 hash value of the file as a hexadecimal string
-     * @throws TaskExecutionException if an error occurs during the calculation of the hash value
-     */
-    private String sha256(File file) {
+	 * Calculates the SHA-256 hash value of a given file.
+	 * @param file the file for which the SHA-256 hash value needs to be calculated
+	 * @return the SHA-256 hash value of the file as a hexadecimal string
+	 * @throws TaskExecutionException if an error occurs during the calculation of the
+	 * hash value
+	 */
+	private String sha256(File file) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			return new DigestUtils(digest).digestAsHex(file);
@@ -167,11 +161,12 @@ public class HomebrewFormula extends DefaultTask {
 	}
 
 	/**
-     * Creates a formula by calling the {@link #createDescriptor(Map)} method with an empty map.
-     * 
-     * @see HomebrewFormula#createDescriptor(Map)
-     */
-    @TaskAction
+	 * Creates a formula by calling the {@link #createDescriptor(Map)} method with an
+	 * empty map.
+	 *
+	 * @see HomebrewFormula#createDescriptor(Map)
+	 */
+	@TaskAction
 	void createFormula() {
 		createDescriptor(Collections.emptyMap());
 	}

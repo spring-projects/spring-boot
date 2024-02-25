@@ -40,39 +40,36 @@ public class ParentContextApplicationContextInitializer
 	private final ApplicationContext parent;
 
 	/**
-     * Constructs a new ParentContextApplicationContextInitializer with the specified parent ApplicationContext.
-     *
-     * @param parent the parent ApplicationContext to set
-     */
-    public ParentContextApplicationContextInitializer(ApplicationContext parent) {
+	 * Constructs a new ParentContextApplicationContextInitializer with the specified
+	 * parent ApplicationContext.
+	 * @param parent the parent ApplicationContext to set
+	 */
+	public ParentContextApplicationContextInitializer(ApplicationContext parent) {
 		this.parent = parent;
 	}
 
 	/**
-     * Sets the order of the ParentContextApplicationContextInitializer.
-     * 
-     * @param order the order value to set
-     */
-    public void setOrder(int order) {
+	 * Sets the order of the ParentContextApplicationContextInitializer.
+	 * @param order the order value to set
+	 */
+	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	/**
-     * Returns the order value of this ParentContextApplicationContextInitializer.
-     *
-     * @return the order value of this ParentContextApplicationContextInitializer
-     */
-    @Override
+	 * Returns the order value of this ParentContextApplicationContextInitializer.
+	 * @return the order value of this ParentContextApplicationContextInitializer
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
 	/**
-     * Initializes the application context.
-     * 
-     * @param applicationContext the configurable application context to be initialized
-     */
-    @Override
+	 * Initializes the application context.
+	 * @param applicationContext the configurable application context to be initialized
+	 */
+	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		if (applicationContext != this.parent) {
 			applicationContext.setParent(this.parent);
@@ -81,30 +78,29 @@ public class ParentContextApplicationContextInitializer
 	}
 
 	/**
-     * EventPublisher class.
-     */
-    private static final class EventPublisher implements ApplicationListener<ContextRefreshedEvent>, Ordered {
+	 * EventPublisher class.
+	 */
+	private static final class EventPublisher implements ApplicationListener<ContextRefreshedEvent>, Ordered {
 
 		private static final EventPublisher INSTANCE = new EventPublisher();
 
 		/**
-         * Returns the order of this EventPublisher.
-         * 
-         * @return the order of this EventPublisher
-         */
-        @Override
+		 * Returns the order of this EventPublisher.
+		 * @return the order of this EventPublisher
+		 */
+		@Override
 		public int getOrder() {
 			return Ordered.HIGHEST_PRECEDENCE;
 		}
 
 		/**
-         * This method is called when the application context is refreshed.
-         * It checks if the context is an instance of ConfigurableApplicationContext and if it is the source of the event.
-         * If both conditions are true, it publishes a ParentContextAvailableEvent to the context.
-         * 
-         * @param event The ContextRefreshedEvent that triggered this method.
-         */
-        @Override
+		 * This method is called when the application context is refreshed. It checks if
+		 * the context is an instance of ConfigurableApplicationContext and if it is the
+		 * source of the event. If both conditions are true, it publishes a
+		 * ParentContextAvailableEvent to the context.
+		 * @param event The ContextRefreshedEvent that triggered this method.
+		 */
+		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			ApplicationContext context = event.getApplicationContext();
 			if (context instanceof ConfigurableApplicationContext && context == event.getSource()) {
@@ -121,20 +117,20 @@ public class ParentContextApplicationContextInitializer
 	public static class ParentContextAvailableEvent extends ApplicationEvent {
 
 		/**
-         * Constructs a new ParentContextAvailableEvent with the specified ConfigurableApplicationContext.
-         * 
-         * @param applicationContext the ConfigurableApplicationContext associated with this event
-         */
-        public ParentContextAvailableEvent(ConfigurableApplicationContext applicationContext) {
+		 * Constructs a new ParentContextAvailableEvent with the specified
+		 * ConfigurableApplicationContext.
+		 * @param applicationContext the ConfigurableApplicationContext associated with
+		 * this event
+		 */
+		public ParentContextAvailableEvent(ConfigurableApplicationContext applicationContext) {
 			super(applicationContext);
 		}
 
 		/**
-         * Returns the application context associated with this event.
-         * 
-         * @return the application context
-         */
-        public ConfigurableApplicationContext getApplicationContext() {
+		 * Returns the application context associated with this event.
+		 * @return the application context
+		 */
+		public ConfigurableApplicationContext getApplicationContext() {
 			return (ConfigurableApplicationContext) getSource();
 		}
 

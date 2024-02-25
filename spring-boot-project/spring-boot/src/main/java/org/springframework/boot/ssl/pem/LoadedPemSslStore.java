@@ -43,12 +43,12 @@ final class LoadedPemSslStore implements PemSslStore {
 	private final Supplier<PrivateKey> privateKeySupplier;
 
 	/**
-     * Constructs a new LoadedPemSslStore with the specified PemSslStoreDetails.
-     * 
-     * @param details the PemSslStoreDetails containing the necessary information to load the SSL store
-     * @throws IllegalArgumentException if the details parameter is null
-     */
-    LoadedPemSslStore(PemSslStoreDetails details) {
+	 * Constructs a new LoadedPemSslStore with the specified PemSslStoreDetails.
+	 * @param details the PemSslStoreDetails containing the necessary information to load
+	 * the SSL store
+	 * @throws IllegalArgumentException if the details parameter is null
+	 */
+	LoadedPemSslStore(PemSslStoreDetails details) {
 		Assert.notNull(details, "Details must not be null");
 		this.details = details;
 		this.certificatesSupplier = supplier(() -> loadCertificates(details));
@@ -56,37 +56,35 @@ final class LoadedPemSslStore implements PemSslStore {
 	}
 
 	/**
-     * Returns a supplier that wraps the given ThrowingSupplier and handles any checked exceptions by converting them to UncheckedIOExceptions.
-     * 
-     * @param supplier the ThrowingSupplier to be wrapped
-     * @return a Supplier that wraps the given ThrowingSupplier
-     * @throws NullPointerException if the supplier is null
-     */
-    private static <T> Supplier<T> supplier(ThrowingSupplier<T> supplier) {
+	 * Returns a supplier that wraps the given ThrowingSupplier and handles any checked
+	 * exceptions by converting them to UncheckedIOExceptions.
+	 * @param supplier the ThrowingSupplier to be wrapped
+	 * @return a Supplier that wraps the given ThrowingSupplier
+	 * @throws NullPointerException if the supplier is null
+	 */
+	private static <T> Supplier<T> supplier(ThrowingSupplier<T> supplier) {
 		return SingletonSupplier.of(supplier.throwing(LoadedPemSslStore::asUncheckedIOException));
 	}
 
 	/**
-     * Converts an exception to an unchecked IO exception with a specified message.
-     * 
-     * @param message the detail message for the exception
-     * @param cause the exception to be converted
-     * @return an unchecked IO exception with the specified message and cause
-     */
-    private static UncheckedIOException asUncheckedIOException(String message, Exception cause) {
+	 * Converts an exception to an unchecked IO exception with a specified message.
+	 * @param message the detail message for the exception
+	 * @param cause the exception to be converted
+	 * @return an unchecked IO exception with the specified message and cause
+	 */
+	private static UncheckedIOException asUncheckedIOException(String message, Exception cause) {
 		return new UncheckedIOException(message, (IOException) cause);
 	}
 
 	/**
-     * Loads the X509 certificates from the provided PemSslStoreDetails.
-     * 
-     * @param details the PemSslStoreDetails containing the certificates
-     * @return a List of X509Certificates loaded from the PemSslStoreDetails
-     * @throws IOException if an I/O error occurs while loading the certificates
-     * @throws IllegalArgumentException if the provided PemSslStoreDetails is null
-     * @throws IllegalStateException if the loaded certificates are empty
-     */
-    private static List<X509Certificate> loadCertificates(PemSslStoreDetails details) throws IOException {
+	 * Loads the X509 certificates from the provided PemSslStoreDetails.
+	 * @param details the PemSslStoreDetails containing the certificates
+	 * @return a List of X509Certificates loaded from the PemSslStoreDetails
+	 * @throws IOException if an I/O error occurs while loading the certificates
+	 * @throws IllegalArgumentException if the provided PemSslStoreDetails is null
+	 * @throws IllegalStateException if the loaded certificates are empty
+	 */
+	private static List<X509Certificate> loadCertificates(PemSslStoreDetails details) throws IOException {
 		PemContent pemContent = PemContent.load(details.certificates());
 		if (pemContent == null) {
 			return null;
@@ -97,63 +95,57 @@ final class LoadedPemSslStore implements PemSslStore {
 	}
 
 	/**
-     * Loads a private key from a PEM SSL store details.
-     * 
-     * @param details the PEM SSL store details containing the private key
-     * @return the loaded private key, or null if the private key could not be loaded
-     * @throws IOException if an I/O error occurs while loading the private key
-     */
-    private static PrivateKey loadPrivateKey(PemSslStoreDetails details) throws IOException {
+	 * Loads a private key from a PEM SSL store details.
+	 * @param details the PEM SSL store details containing the private key
+	 * @return the loaded private key, or null if the private key could not be loaded
+	 * @throws IOException if an I/O error occurs while loading the private key
+	 */
+	private static PrivateKey loadPrivateKey(PemSslStoreDetails details) throws IOException {
 		PemContent pemContent = PemContent.load(details.privateKey());
 		return (pemContent != null) ? pemContent.getPrivateKey(details.privateKeyPassword()) : null;
 	}
 
 	/**
-     * Returns the type of the SSL store.
-     * 
-     * @return the type of the SSL store
-     */
-    @Override
+	 * Returns the type of the SSL store.
+	 * @return the type of the SSL store
+	 */
+	@Override
 	public String type() {
 		return this.details.type();
 	}
 
 	/**
-     * Returns the alias of the LoadedPemSslStore.
-     * 
-     * @return the alias of the LoadedPemSslStore
-     */
-    @Override
+	 * Returns the alias of the LoadedPemSslStore.
+	 * @return the alias of the LoadedPemSslStore
+	 */
+	@Override
 	public String alias() {
 		return this.details.alias();
 	}
 
 	/**
-     * Returns the password for the loaded PEM SSL store.
-     *
-     * @return the password for the loaded PEM SSL store
-     */
-    @Override
+	 * Returns the password for the loaded PEM SSL store.
+	 * @return the password for the loaded PEM SSL store
+	 */
+	@Override
 	public String password() {
 		return this.details.password();
 	}
 
 	/**
-     * Returns a list of X509Certificates.
-     *
-     * @return the list of X509Certificates
-     */
-    @Override
+	 * Returns a list of X509Certificates.
+	 * @return the list of X509Certificates
+	 */
+	@Override
 	public List<X509Certificate> certificates() {
 		return this.certificatesSupplier.get();
 	}
 
 	/**
-     * Returns the private key associated with this LoadedPemSslStore.
-     *
-     * @return the private key
-     */
-    @Override
+	 * Returns the private key associated with this LoadedPemSslStore.
+	 * @return the private key
+	 */
+	@Override
 	public PrivateKey privateKey() {
 		return this.privateKeySupplier.get();
 	}

@@ -29,23 +29,23 @@ public class VehicleIdentificationNumberAttributeConverter
 		implements AttributeConverter<VehicleIdentificationNumber, String> {
 
 	/**
-     * Converts a VehicleIdentificationNumber object to a database column value.
-     * 
-     * @param attribute the VehicleIdentificationNumber object to be converted
-     * @return the string representation of the VehicleIdentificationNumber object
-     */
-    @Override
+	 * Converts a VehicleIdentificationNumber object to a database column value.
+	 * @param attribute the VehicleIdentificationNumber object to be converted
+	 * @return the string representation of the VehicleIdentificationNumber object
+	 */
+	@Override
 	public String convertToDatabaseColumn(VehicleIdentificationNumber attribute) {
 		return attribute.toString();
 	}
 
 	/**
-     * Converts a database string representation of a VehicleIdentificationNumber to a VehicleIdentificationNumber object.
-     * 
-     * @param dbData the database string representation of the VehicleIdentificationNumber
-     * @return the VehicleIdentificationNumber object created from the database string representation
-     */
-    @Override
+	 * Converts a database string representation of a VehicleIdentificationNumber to a
+	 * VehicleIdentificationNumber object.
+	 * @param dbData the database string representation of the VehicleIdentificationNumber
+	 * @return the VehicleIdentificationNumber object created from the database string
+	 * representation
+	 */
+	@Override
 	public VehicleIdentificationNumber convertToEntityAttribute(String dbData) {
 		return new VehicleIdentificationNumber(dbData);
 	}

@@ -161,21 +161,19 @@ public class BasicJsonTester {
 	}
 
 	/**
-     * Verifies if the BasicJsonTester is initialized.
-     * 
-     * @throws IllegalStateException if the BasicJsonTester is not initialized
-     */
-    private void verify() {
+	 * Verifies if the BasicJsonTester is initialized.
+	 * @throws IllegalStateException if the BasicJsonTester is not initialized
+	 */
+	private void verify() {
 		Assert.state(this.loader != null, "Uninitialized BasicJsonTester");
 	}
 
 	/**
-     * Returns a JsonContent object with the specified JSON string.
-     * 
-     * @param json the JSON string to be used for creating the JsonContent object
-     * @return a JsonContent object with the specified JSON string
-     */
-    private JsonContent<Object> getJsonContent(String json) {
+	 * Returns a JsonContent object with the specified JSON string.
+	 * @param json the JSON string to be used for creating the JsonContent object
+	 * @return a JsonContent object with the specified JSON string
+	 */
+	private JsonContent<Object> getJsonContent(String json) {
 		return new JsonContent<>(this.loader.getResourceLoadClass(), null, json);
 	}
 

@@ -49,25 +49,23 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 	private final List<TypeFilter> filters;
 
 	/**
-     * Creates a new instance of the FilterAnnotations class.
-     * 
-     * @param classLoader the class loader to use for loading classes
-     * @param filters an array of filters to apply
-     * @throws IllegalArgumentException if the filters parameter is null
-     */
-    public FilterAnnotations(ClassLoader classLoader, Filter[] filters) {
+	 * Creates a new instance of the FilterAnnotations class.
+	 * @param classLoader the class loader to use for loading classes
+	 * @param filters an array of filters to apply
+	 * @throws IllegalArgumentException if the filters parameter is null
+	 */
+	public FilterAnnotations(ClassLoader classLoader, Filter[] filters) {
 		Assert.notNull(filters, "Filters must not be null");
 		this.classLoader = classLoader;
 		this.filters = createTypeFilters(filters);
 	}
 
 	/**
-     * Creates a list of TypeFilters based on the given array of filters.
-     * 
-     * @param filters the array of filters to create TypeFilters from
-     * @return an unmodifiable list of TypeFilters
-     */
-    private List<TypeFilter> createTypeFilters(Filter[] filters) {
+	 * Creates a list of TypeFilters based on the given array of filters.
+	 * @param filters the array of filters to create TypeFilters from
+	 * @return an unmodifiable list of TypeFilters
+	 */
+	private List<TypeFilter> createTypeFilters(Filter[] filters) {
 		List<TypeFilter> typeFilters = new ArrayList<>();
 		for (Filter filter : filters) {
 			for (Class<?> filterClass : filter.classes()) {
@@ -81,14 +79,14 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 	}
 
 	/**
-     * Creates a type filter based on the given filter type and filter class.
-     *
-     * @param filterType   the type of filter to create
-     * @param filterClass  the class to use for the filter
-     * @return the created type filter
-     * @throws IllegalArgumentException if the filter type is not supported with a class value
-     */
-    @SuppressWarnings("unchecked")
+	 * Creates a type filter based on the given filter type and filter class.
+	 * @param filterType the type of filter to create
+	 * @param filterClass the class to use for the filter
+	 * @return the created type filter
+	 * @throws IllegalArgumentException if the filter type is not supported with a class
+	 * value
+	 */
+	@SuppressWarnings("unchecked")
 	private TypeFilter createTypeFilter(FilterType filterType, Class<?> filterClass) {
 		return switch (filterType) {
 			case ANNOTATION -> {
@@ -107,14 +105,14 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 	}
 
 	/**
-     * Creates a TypeFilter based on the given filter type and pattern.
-     *
-     * @param filterType the type of filter to create
-     * @param pattern the pattern to use for filtering
-     * @return the created TypeFilter
-     * @throws IllegalArgumentException if the filter type is not supported with a string pattern
-     */
-    private TypeFilter createTypeFilter(FilterType filterType, String pattern) {
+	 * Creates a TypeFilter based on the given filter type and pattern.
+	 * @param filterType the type of filter to create
+	 * @param pattern the pattern to use for filtering
+	 * @return the created TypeFilter
+	 * @throws IllegalArgumentException if the filter type is not supported with a string
+	 * pattern
+	 */
+	private TypeFilter createTypeFilter(FilterType filterType, String pattern) {
 		return switch (filterType) {
 			case ASPECTJ -> new AspectJTypeFilter(pattern, this.classLoader);
 			case REGEX -> new RegexPatternTypeFilter(Pattern.compile(pattern));
@@ -124,24 +122,24 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 	}
 
 	/**
-     * Returns an iterator over the elements in this collection.
-     *
-     * @return an iterator over the elements in this collection
-     */
-    @Override
+	 * Returns an iterator over the elements in this collection.
+	 * @return an iterator over the elements in this collection
+	 */
+	@Override
 	public Iterator<TypeFilter> iterator() {
 		return this.filters.iterator();
 	}
 
 	/**
-     * Checks if any of the filters in the list match the given metadata reader and metadata reader factory.
-     * 
-     * @param metadataReader the metadata reader to be matched against the filters
-     * @param metadataReaderFactory the metadata reader factory used to create metadata readers
-     * @return true if any of the filters match the metadata reader, false otherwise
-     * @throws IOException if an I/O error occurs while reading the metadata
-     */
-    public boolean anyMatches(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+	 * Checks if any of the filters in the list match the given metadata reader and
+	 * metadata reader factory.
+	 * @param metadataReader the metadata reader to be matched against the filters
+	 * @param metadataReaderFactory the metadata reader factory used to create metadata
+	 * readers
+	 * @return true if any of the filters match the metadata reader, false otherwise
+	 * @throws IOException if an I/O error occurs while reading the metadata
+	 */
+	public boolean anyMatches(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		for (TypeFilter filter : this) {
 			if (filter.match(metadataReader, metadataReaderFactory)) {

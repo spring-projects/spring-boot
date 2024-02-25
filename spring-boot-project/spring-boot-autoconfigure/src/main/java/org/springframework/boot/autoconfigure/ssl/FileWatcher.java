@@ -95,11 +95,10 @@ class FileWatcher implements Closeable {
 	}
 
 	/**
-     * Closes the FileWatcher and stops the associated thread.
-     * 
-     * @throws IOException if an I/O error occurs while closing the FileWatcher
-     */
-    @Override
+	 * Closes the FileWatcher and stops the associated thread.
+	 * @throws IOException if an I/O error occurs while closing the FileWatcher
+	 */
+	@Override
 	public void close() throws IOException {
 		synchronized (this.lock) {
 			if (this.thread != null) {
@@ -128,33 +127,30 @@ class FileWatcher implements Closeable {
 		private volatile boolean running = true;
 
 		/**
-         * Creates a new WatcherThread object.
-         * 
-         * @throws IOException if an I/O error occurs.
-         */
-        WatcherThread() throws IOException {
+		 * Creates a new WatcherThread object.
+		 * @throws IOException if an I/O error occurs.
+		 */
+		WatcherThread() throws IOException {
 			setName("ssl-bundle-watcher");
 			setDaemon(true);
 			setUncaughtExceptionHandler(this::onThreadException);
 		}
 
 		/**
-         * Handles uncaught exceptions in the file watcher thread.
-         * 
-         * @param thread    the thread in which the exception occurred
-         * @param throwable the uncaught exception that occurred
-         */
-        private void onThreadException(Thread thread, Throwable throwable) {
+		 * Handles uncaught exceptions in the file watcher thread.
+		 * @param thread the thread in which the exception occurred
+		 * @param throwable the uncaught exception that occurred
+		 */
+		private void onThreadException(Thread thread, Throwable throwable) {
 			logger.error("Uncaught exception in file watcher thread", throwable);
 		}
 
 		/**
-         * Registers the given registration with the watcher thread.
-         * 
-         * @param registration the registration to be registered
-         * @throws IOException if the path is neither a file nor a directory
-         */
-        void register(Registration registration) throws IOException {
+		 * Registers the given registration with the watcher thread.
+		 * @param registration the registration to be registered
+		 * @throws IOException if the path is neither a file nor a directory
+		 */
+		void register(Registration registration) throws IOException {
 			for (Path path : registration.paths()) {
 				if (!Files.isRegularFile(path) && !Files.isDirectory(path)) {
 					throw new IOException("'%s' is neither a file nor a directory".formatted(path));
@@ -166,24 +162,25 @@ class FileWatcher implements Closeable {
 		}
 
 		/**
-         * Registers the specified directory with the watch service.
-         * 
-         * @param directory the path of the directory to be registered
-         * @return the watch key representing the registered directory
-         * @throws IOException if an I/O error occurs
-         */
-        private WatchKey register(Path directory) throws IOException {
+		 * Registers the specified directory with the watch service.
+		 * @param directory the path of the directory to be registered
+		 * @return the watch key representing the registered directory
+		 * @throws IOException if an I/O error occurs
+		 */
+		private WatchKey register(Path directory) throws IOException {
 			logger.debug(LogMessage.format("Registering '%s'", directory));
 			return directory.register(this.watchService, StandardWatchEventKinds.ENTRY_CREATE,
 					StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
 		}
 
 		/**
-         * This method is the main logic of the WatcherThread class. It runs in a separate thread and continuously monitors
-         * the file system for changes using a WatchService. It accumulates the actions to be performed when a change is detected
-         * and executes them after a quiet period. The thread stops running when the WatchService is closed.
-         */
-        @Override
+		 * This method is the main logic of the WatcherThread class. It runs in a separate
+		 * thread and continuously monitors the file system for changes using a
+		 * WatchService. It accumulates the actions to be performed when a change is
+		 * detected and executes them after a quiet period. The thread stops running when
+		 * the WatchService is closed.
+		 */
+		@Override
 		public void run() {
 			logger.debug("Watch thread started");
 			Set<Runnable> actions = new HashSet<>();
@@ -212,11 +209,11 @@ class FileWatcher implements Closeable {
 		}
 
 		/**
-         * Runs the specified action safely by catching any throwable exceptions and logging them.
-         * 
-         * @param action the action to be executed
-         */
-        private void runSafely(Runnable action) {
+		 * Runs the specified action safely by catching any throwable exceptions and
+		 * logging them.
+		 * @param action the action to be executed
+		 */
+		private void runSafely(Runnable action) {
 			try {
 				action.run();
 			}
@@ -226,12 +223,11 @@ class FileWatcher implements Closeable {
 		}
 
 		/**
-         * Accumulates the actions to be executed for the given watch key.
-         * 
-         * @param key     the watch key for which actions need to be accumulated
-         * @param actions the set of actions to be accumulated
-         */
-        private void accumulate(WatchKey key, Set<Runnable> actions) {
+		 * Accumulates the actions to be executed for the given watch key.
+		 * @param key the watch key for which actions need to be accumulated
+		 * @param actions the set of actions to be accumulated
+		 */
+		private void accumulate(WatchKey key, Set<Runnable> actions) {
 			List<Registration> registrations = this.registrations.get(key);
 			Path directory = (Path) key.watchable();
 			for (WatchEvent<?> event : key.pollEvents()) {
@@ -245,11 +241,11 @@ class FileWatcher implements Closeable {
 		}
 
 		/**
-         * Closes the WatcherThread by setting the running flag to false and closing the watch service.
-         * 
-         * @throws IOException if an I/O error occurs while closing the watch service
-         */
-        @Override
+		 * Closes the WatcherThread by setting the running flag to false and closing the
+		 * watch service.
+		 * @throws IOException if an I/O error occurs while closing the watch service
+		 */
+		@Override
 		public void close() throws IOException {
 			this.running = false;
 			this.watchService.close();
@@ -260,13 +256,14 @@ class FileWatcher implements Closeable {
 	/**
 	 * An individual watch registration.
 	 */
-	private record /**
-     * Registers a set of paths and an action to be executed when any of the registered paths are modified.
-     * 
-     * @param paths  the set of paths to be registered
-     * @param action the action to be executed when any of the registered paths are modified
-     */
-    Registration(Set<Path> paths, Runnable action) {
+	private record/**
+					 * Registers a set of paths and an action to be executed when any of
+					 * the registered paths are modified.
+					 * @param paths the set of paths to be registered
+					 * @param action the action to be executed when any of the registered
+					 * paths are modified
+					 */
+	Registration(Set<Path> paths, Runnable action) {
 
 		Registration {
 			paths = paths.stream().map(Path::toAbsolutePath).collect(Collectors.toSet());

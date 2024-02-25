@@ -114,113 +114,102 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	private MetadataGenerationEnvironment metadataEnv;
 
 	/**
-     * Returns the configuration properties annotation.
-     *
-     * @return the configuration properties annotation
-     */
-    protected String configurationPropertiesAnnotation() {
+	 * Returns the configuration properties annotation.
+	 * @return the configuration properties annotation
+	 */
+	protected String configurationPropertiesAnnotation() {
 		return CONFIGURATION_PROPERTIES_ANNOTATION;
 	}
 
 	/**
-     * Returns the value of the nested configuration property annotation.
-     *
-     * @return the value of the nested configuration property annotation
-     */
-    protected String nestedConfigurationPropertyAnnotation() {
+	 * Returns the value of the nested configuration property annotation.
+	 * @return the value of the nested configuration property annotation
+	 */
+	protected String nestedConfigurationPropertyAnnotation() {
 		return NESTED_CONFIGURATION_PROPERTY_ANNOTATION;
 	}
 
 	/**
-     * Returns the value of the deprecated configuration property annotation.
-     *
-     * @return the value of the deprecated configuration property annotation
-     */
-    protected String deprecatedConfigurationPropertyAnnotation() {
+	 * Returns the value of the deprecated configuration property annotation.
+	 * @return the value of the deprecated configuration property annotation
+	 */
+	protected String deprecatedConfigurationPropertyAnnotation() {
 		return DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION;
 	}
 
 	/**
-     * Returns the constructor binding annotation.
-     *
-     * @return the constructor binding annotation
-     */
-    protected String constructorBindingAnnotation() {
+	 * Returns the constructor binding annotation.
+	 * @return the constructor binding annotation
+	 */
+	protected String constructorBindingAnnotation() {
 		return CONSTRUCTOR_BINDING_ANNOTATION;
 	}
 
 	/**
-     * Returns the value of the AUTOWIRED_ANNOTATION constant.
-     *
-     * @return the value of the AUTOWIRED_ANNOTATION constant
-     */
-    protected String autowiredAnnotation() {
+	 * Returns the value of the AUTOWIRED_ANNOTATION constant.
+	 * @return the value of the AUTOWIRED_ANNOTATION constant
+	 */
+	protected String autowiredAnnotation() {
 		return AUTOWIRED_ANNOTATION;
 	}
 
 	/**
-     * Returns the default value annotation.
-     *
-     * @return the default value annotation
-     */
-    protected String defaultValueAnnotation() {
+	 * Returns the default value annotation.
+	 * @return the default value annotation
+	 */
+	protected String defaultValueAnnotation() {
 		return DEFAULT_VALUE_ANNOTATION;
 	}
 
 	/**
-     * Returns a set of endpoint annotations.
-     *
-     * @return the set of endpoint annotations
-     */
-    protected Set<String> endpointAnnotations() {
+	 * Returns a set of endpoint annotations.
+	 * @return the set of endpoint annotations
+	 */
+	protected Set<String> endpointAnnotations() {
 		return new HashSet<>(Arrays.asList(CONTROLLER_ENDPOINT_ANNOTATION, ENDPOINT_ANNOTATION, JMX_ENDPOINT_ANNOTATION,
 				REST_CONTROLLER_ENDPOINT_ANNOTATION, SERVLET_ENDPOINT_ANNOTATION, WEB_ENDPOINT_ANNOTATION));
 	}
 
 	/**
-     * Returns the value of the read operation annotation.
-     *
-     * @return the value of the read operation annotation
-     */
-    protected String readOperationAnnotation() {
+	 * Returns the value of the read operation annotation.
+	 * @return the value of the read operation annotation
+	 */
+	protected String readOperationAnnotation() {
 		return READ_OPERATION_ANNOTATION;
 	}
 
 	/**
-     * Returns the name annotation.
-     *
-     * @return the name annotation
-     */
-    protected String nameAnnotation() {
+	 * Returns the name annotation.
+	 * @return the name annotation
+	 */
+	protected String nameAnnotation() {
 		return NAME_ANNOTATION;
 	}
 
 	/**
-     * Returns the latest supported source version.
-     *
-     * @return the latest supported source version
-     */
-    @Override
+	 * Returns the latest supported source version.
+	 * @return the latest supported source version
+	 */
+	@Override
 	public SourceVersion getSupportedSourceVersion() {
 		return SourceVersion.latestSupported();
 	}
 
 	/**
-     * Returns a set of supported options for the ConfigurationMetadataAnnotationProcessor.
-     *
-     * @return a set of supported options
-     */
-    @Override
+	 * Returns a set of supported options for the
+	 * ConfigurationMetadataAnnotationProcessor.
+	 * @return a set of supported options
+	 */
+	@Override
 	public Set<String> getSupportedOptions() {
 		return SUPPORTED_OPTIONS;
 	}
 
 	/**
-     * Initializes the ConfigurationMetadataAnnotationProcessor.
-     * 
-     * @param env the ProcessingEnvironment object used for processing annotations
-     */
-    @Override
+	 * Initializes the ConfigurationMetadataAnnotationProcessor.
+	 * @param env the ProcessingEnvironment object used for processing annotations
+	 */
+	@Override
 	public synchronized void init(ProcessingEnvironment env) {
 		super.init(env);
 		this.metadataStore = new MetadataStore(env);
@@ -232,13 +221,13 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Processes the annotations and generates metadata for configuration properties and endpoints.
-     * 
-     * @param annotations the set of annotations to process
-     * @param roundEnv the round environment for the current processing round
-     * @return false to indicate that the processing is not complete
-     */
-    @Override
+	 * Processes the annotations and generates metadata for configuration properties and
+	 * endpoints.
+	 * @param annotations the set of annotations to process
+	 * @param roundEnv the round environment for the current processing round
+	 * @return false to indicate that the processing is not complete
+	 */
+	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		this.metadataCollector.processing(roundEnv);
 		TypeElement annotationType = this.metadataEnv.getConfigurationPropertiesAnnotationElement();
@@ -265,13 +254,13 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Retrieves a map of elements annotated or meta-annotated with the specified annotation.
-     * 
-     * @param roundEnv the round environment
-     * @param annotation the annotation to search for
-     * @return a map of elements and their corresponding annotations
-     */
-    private Map<Element, List<Element>> getElementsAnnotatedOrMetaAnnotatedWith(RoundEnvironment roundEnv,
+	 * Retrieves a map of elements annotated or meta-annotated with the specified
+	 * annotation.
+	 * @param roundEnv the round environment
+	 * @param annotation the annotation to search for
+	 * @return a map of elements and their corresponding annotations
+	 */
+	private Map<Element, List<Element>> getElementsAnnotatedOrMetaAnnotatedWith(RoundEnvironment roundEnv,
 			TypeElement annotation) {
 		Map<Element, List<Element>> result = new LinkedHashMap<>();
 		for (Element element : roundEnv.getRootElements()) {
@@ -284,12 +273,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Processes the given element by extracting configuration meta-data.
-     * 
-     * @param element The element to process.
-     * @throws IllegalStateException If an error occurs while processing the configuration meta-data.
-     */
-    private void processElement(Element element) {
+	 * Processes the given element by extracting configuration meta-data.
+	 * @param element The element to process.
+	 * @throws IllegalStateException If an error occurs while processing the configuration
+	 * meta-data.
+	 */
+	private void processElement(Element element) {
 		try {
 			AnnotationMirror annotation = this.metadataEnv.getConfigurationPropertiesAnnotation(element);
 			if (annotation != null) {
@@ -308,26 +297,24 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Processes an annotated type element.
-     * 
-     * @param prefix the prefix to be added to the group name
-     * @param element the type element to be processed
-     * @param seen a deque of type elements that have been seen
-     */
-    private void processAnnotatedTypeElement(String prefix, TypeElement element, Deque<TypeElement> seen) {
+	 * Processes an annotated type element.
+	 * @param prefix the prefix to be added to the group name
+	 * @param element the type element to be processed
+	 * @param seen a deque of type elements that have been seen
+	 */
+	private void processAnnotatedTypeElement(String prefix, TypeElement element, Deque<TypeElement> seen) {
 		String type = this.metadataEnv.getTypeUtils().getQualifiedName(element);
 		this.metadataCollector.add(ItemMetadata.newGroup(prefix, type, type, null));
 		processTypeElement(prefix, element, null, seen);
 	}
 
 	/**
-     * Processes an executable element.
-     * 
-     * @param prefix the prefix for the configuration properties
-     * @param element the executable element to process
-     * @param seen a deque of type elements that have been seen during processing
-     */
-    private void processExecutableElement(String prefix, ExecutableElement element, Deque<TypeElement> seen) {
+	 * Processes an executable element.
+	 * @param prefix the prefix for the configuration properties
+	 * @param element the executable element to process
+	 * @param seen a deque of type elements that have been seen during processing
+	 */
+	private void processExecutableElement(String prefix, ExecutableElement element, Deque<TypeElement> seen) {
 		if ((!element.getModifiers().contains(Modifier.PRIVATE))
 				&& (TypeKind.VOID != element.getReturnType().getKind())) {
 			Element returns = this.processingEnv.getTypeUtils().asElement(element.getReturnType());
@@ -350,14 +337,14 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Processes a TypeElement and its nested elements to resolve property descriptors and collect metadata.
-     * 
-     * @param prefix the prefix for the property descriptors
-     * @param element the TypeElement to process
-     * @param source the ExecutableElement representing the source of the processing
-     * @param seen a Deque of TypeElements that have already been processed
-     */
-    private void processTypeElement(String prefix, TypeElement element, ExecutableElement source,
+	 * Processes a TypeElement and its nested elements to resolve property descriptors and
+	 * collect metadata.
+	 * @param prefix the prefix for the property descriptors
+	 * @param element the TypeElement to process
+	 * @param source the ExecutableElement representing the source of the processing
+	 * @param seen a Deque of TypeElements that have already been processed
+	 */
+	private void processTypeElement(String prefix, TypeElement element, ExecutableElement source,
 			Deque<TypeElement> seen) {
 		if (!seen.contains(element)) {
 			seen.push(element);
@@ -375,15 +362,15 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Processes the endpoint by retrieving the annotation name and annotation mirror.
-     * If the element is an instance of TypeElement, it calls the processEndpoint method
-     * to further process the annotation and type element.
-     *
-     * @param element     the element to process
-     * @param annotations the list of annotations associated with the element
-     * @throws IllegalStateException if there is an error processing the configuration meta-data
-     */
-    private void processEndpoint(Element element, List<Element> annotations) {
+	 * Processes the endpoint by retrieving the annotation name and annotation mirror. If
+	 * the element is an instance of TypeElement, it calls the processEndpoint method to
+	 * further process the annotation and type element.
+	 * @param element the element to process
+	 * @param annotations the list of annotations associated with the element
+	 * @throws IllegalStateException if there is an error processing the configuration
+	 * meta-data
+	 */
+	private void processEndpoint(Element element, List<Element> annotations) {
 		try {
 			String annotationName = this.metadataEnv.getTypeUtils().getQualifiedName(annotations.get(0));
 			AnnotationMirror annotation = this.metadataEnv.getAnnotation(element, annotationName);
@@ -397,12 +384,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Processes the given endpoint annotation and element.
-     * 
-     * @param annotation the annotation mirror
-     * @param element the type element
-     */
-    private void processEndpoint(AnnotationMirror annotation, TypeElement element) {
+	 * Processes the given endpoint annotation and element.
+	 * @param annotation the annotation mirror
+	 * @param element the type element
+	 */
+	private void processEndpoint(AnnotationMirror annotation, TypeElement element) {
 		Map<String, Object> elementValues = this.metadataEnv.getAnnotationElementValues(annotation);
 		String endpointId = (String) elementValues.get("id");
 		if (endpointId == null || endpointId.isEmpty()) {
@@ -423,14 +409,13 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Checks if the enabled value matches the existing value for an item metadata.
-     * 
-     * @param existing The existing item metadata.
-     * @param enabledByDefault The new enabled value.
-     * @param sourceType The source type of the new enabled value.
-     * @throws IllegalStateException if the existing value conflicts with the new value.
-     */
-    private void checkEnabledValueMatchesExisting(ItemMetadata existing, boolean enabledByDefault, String sourceType) {
+	 * Checks if the enabled value matches the existing value for an item metadata.
+	 * @param existing The existing item metadata.
+	 * @param enabledByDefault The new enabled value.
+	 * @param sourceType The source type of the new enabled value.
+	 * @throws IllegalStateException if the existing value conflicts with the new value.
+	 */
+	private void checkEnabledValueMatchesExisting(ItemMetadata existing, boolean enabledByDefault, String sourceType) {
 		boolean existingDefaultValue = (boolean) existing.getDefaultValue();
 		if (enabledByDefault != existingDefaultValue) {
 			throw new IllegalStateException(
@@ -441,12 +426,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Checks if the given TypeElement has a main read operation.
-     * 
-     * @param element the TypeElement to check
-     * @return true if the TypeElement has a main read operation, false otherwise
-     */
-    private boolean hasMainReadOperation(TypeElement element) {
+	 * Checks if the given TypeElement has a main read operation.
+	 * @param element the TypeElement to check
+	 * @return true if the TypeElement has a main read operation, false otherwise
+	 */
+	private boolean hasMainReadOperation(TypeElement element) {
 		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
 			if (this.metadataEnv.getReadOperationAnnotation(method) != null
 					&& (TypeKind.VOID != method.getReturnType().getKind()) && hasNoOrOptionalParameters(method)) {
@@ -457,12 +441,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Checks if the given method has no or optional parameters.
-     * 
-     * @param method the ExecutableElement representing the method to check
-     * @return true if the method has no or optional parameters, false otherwise
-     */
-    private boolean hasNoOrOptionalParameters(ExecutableElement method) {
+	 * Checks if the given method has no or optional parameters.
+	 * @param method the ExecutableElement representing the method to check
+	 * @return true if the method has no or optional parameters, false otherwise
+	 */
+	private boolean hasNoOrOptionalParameters(ExecutableElement method) {
 		for (VariableElement parameter : method.getParameters()) {
 			if (!this.metadataEnv.hasNullableAnnotation(parameter)) {
 				return false;
@@ -472,12 +455,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Returns the prefix value from the given annotation.
-     * 
-     * @param annotation the annotation mirror
-     * @return the prefix value if found, otherwise the value
-     */
-    private String getPrefix(AnnotationMirror annotation) {
+	 * Returns the prefix value from the given annotation.
+	 * @param annotation the annotation mirror
+	 * @return the prefix value if found, otherwise the value
+	 */
+	private String getPrefix(AnnotationMirror annotation) {
 		String prefix = this.metadataEnv.getAnnotationElementStringValue(annotation, "prefix");
 		if (prefix != null) {
 			return prefix;
@@ -486,12 +468,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Writes the metadata to the metadata store.
-     * 
-     * @return The configuration metadata that was written, or null if no metadata items were present.
-     * @throws Exception if an error occurs while writing the metadata.
-     */
-    protected ConfigurationMetadata writeMetadata() throws Exception {
+	 * Writes the metadata to the metadata store.
+	 * @return The configuration metadata that was written, or null if no metadata items
+	 * were present.
+	 * @throws Exception if an error occurs while writing the metadata.
+	 */
+	protected ConfigurationMetadata writeMetadata() throws Exception {
 		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
 		metadata = mergeAdditionalMetadata(metadata);
 		if (!metadata.getItems().isEmpty()) {
@@ -502,12 +484,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Merges additional metadata with the given ConfigurationMetadata object.
-     * 
-     * @param metadata The ConfigurationMetadata object to merge additional metadata with.
-     * @return The merged ConfigurationMetadata object.
-     */
-    private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata) {
+	 * Merges additional metadata with the given ConfigurationMetadata object.
+	 * @param metadata The ConfigurationMetadata object to merge additional metadata with.
+	 * @return The merged ConfigurationMetadata object.
+	 */
+	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata) {
 		try {
 			ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
 			merged.merge(this.metadataStore.readAdditionalMetadata());
@@ -527,33 +508,30 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	/**
-     * Returns the stack trace of the given exception as a string.
-     *
-     * @param ex the exception for which to retrieve the stack trace
-     * @return the stack trace of the exception as a string
-     */
-    private String getStackTrace(Exception ex) {
+	 * Returns the stack trace of the given exception as a string.
+	 * @param ex the exception for which to retrieve the stack trace
+	 * @return the stack trace of the exception as a string
+	 */
+	private String getStackTrace(Exception ex) {
 		StringWriter writer = new StringWriter();
 		ex.printStackTrace(new PrintWriter(writer, true));
 		return writer.toString();
 	}
 
 	/**
-     * Logs a warning message.
-     *
-     * @param msg the warning message to be logged
-     */
-    private void logWarning(String msg) {
+	 * Logs a warning message.
+	 * @param msg the warning message to be logged
+	 */
+	private void logWarning(String msg) {
 		log(Kind.WARNING, msg);
 	}
 
 	/**
-     * Logs a message with the specified kind.
-     * 
-     * @param kind the kind of message to be logged
-     * @param msg the message to be logged
-     */
-    private void log(Kind kind, String msg) {
+	 * Logs a message with the specified kind.
+	 * @param kind the kind of message to be logged
+	 * @param msg the message to be logged
+	 */
+	private void log(Kind kind, String msg) {
 		this.processingEnv.getMessager().printMessage(kind, msg);
 	}
 

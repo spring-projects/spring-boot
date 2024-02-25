@@ -47,13 +47,12 @@ public final class ConfigDataLocation implements OriginProvider {
 	private final Origin origin;
 
 	/**
-     * Constructs a new ConfigDataLocation with the specified parameters.
-     *
-     * @param optional true if the location is optional, false otherwise
-     * @param value the value of the location
-     * @param origin the origin of the location
-     */
-    private ConfigDataLocation(boolean optional, String value, Origin origin) {
+	 * Constructs a new ConfigDataLocation with the specified parameters.
+	 * @param optional true if the location is optional, false otherwise
+	 * @param value the value of the location
+	 * @param origin the origin of the location
+	 */
+	private ConfigDataLocation(boolean optional, String value, Origin origin) {
 		this.value = value;
 		this.optional = optional;
 		this.origin = origin;
@@ -100,11 +99,10 @@ public final class ConfigDataLocation implements OriginProvider {
 	}
 
 	/**
-     * Returns the origin of the ConfigDataLocation.
-     *
-     * @return the origin of the ConfigDataLocation
-     */
-    @Override
+	 * Returns the origin of the ConfigDataLocation.
+	 * @return the origin of the ConfigDataLocation
+	 */
+	@Override
 	public Origin getOrigin() {
 		return this.origin;
 	}
@@ -136,12 +134,11 @@ public final class ConfigDataLocation implements OriginProvider {
 	}
 
 	/**
-     * Compares this ConfigDataLocation object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this ConfigDataLocation object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -154,23 +151,21 @@ public final class ConfigDataLocation implements OriginProvider {
 	}
 
 	/**
-     * Returns the hash code value for this ConfigDataLocation object.
-     * 
-     * @return the hash code value for this object
-     */
-    @Override
+	 * Returns the hash code value for this ConfigDataLocation object.
+	 * @return the hash code value for this object
+	 */
+	@Override
 	public int hashCode() {
 		return this.value.hashCode();
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * If the location is not optional, the value is returned as is.
-     * If the location is optional, the value is returned with an optional prefix.
-     *
-     * @return the string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object. If the location is not optional, the
+	 * value is returned as is. If the location is optional, the value is returned with an
+	 * optional prefix.
+	 * @return the string representation of the object
+	 */
+	@Override
 	public String toString() {
 		return (!this.optional) ? this.value : OPTIONAL_PREFIX + this.value;
 	}

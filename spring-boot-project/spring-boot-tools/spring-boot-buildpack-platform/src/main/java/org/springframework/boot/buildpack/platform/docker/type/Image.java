@@ -47,11 +47,10 @@ public class Image extends MappedObject {
 	private final String created;
 
 	/**
-     * Constructs a new Image object from the given JSON node.
-     * 
-     * @param node the JSON node representing the image
-     */
-    Image(JsonNode node) {
+	 * Constructs a new Image object from the given JSON node.
+	 * @param node the JSON node representing the image
+	 */
+	Image(JsonNode node) {
 		super(node, MethodHandles.lookup());
 		this.digests = getDigests(getNode().at("/RepoDigests"));
 		this.config = new ImageConfig(getNode().at("/Config"));
@@ -61,12 +60,11 @@ public class Image extends MappedObject {
 	}
 
 	/**
-     * Returns a list of digests extracted from the given JSON node.
-     * 
-     * @param node the JSON node to extract digests from
-     * @return a list of digests
-     */
-    private List<String> getDigests(JsonNode node) {
+	 * Returns a list of digests extracted from the given JSON node.
+	 * @param node the JSON node to extract digests from
+	 * @return a list of digests
+	 */
+	private List<String> getDigests(JsonNode node) {
 		if (node.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -76,12 +74,12 @@ public class Image extends MappedObject {
 	}
 
 	/**
-     * Extracts a list of LayerIds from an array of layer names.
-     * 
-     * @param layers the array of layer names
-     * @return a list of LayerIds extracted from the layer names, or an empty list if the input is null
-     */
-    private List<LayerId> extractLayers(String[] layers) {
+	 * Extracts a list of LayerIds from an array of layer names.
+	 * @param layers the array of layer names
+	 * @return a list of LayerIds extracted from the layer names, or an empty list if the
+	 * input is null
+	 */
+	private List<LayerId> extractLayers(String[] layers) {
 		if (layers == null) {
 			return Collections.emptyList();
 		}

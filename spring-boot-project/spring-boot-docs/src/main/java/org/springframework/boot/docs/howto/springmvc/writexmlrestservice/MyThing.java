@@ -32,11 +32,10 @@ public class MyThing {
 	}
 
 	/**
-     * Sets the name of the MyThing object.
-     * 
-     * @param name the name to be set
-     */
-    public void setName(String name) {
+	 * Sets the name of the MyThing object.
+	 * @param name the name to be set
+	 */
+	public void setName(String name) {
 		this.name = name;
 	}
 	// @fold:off

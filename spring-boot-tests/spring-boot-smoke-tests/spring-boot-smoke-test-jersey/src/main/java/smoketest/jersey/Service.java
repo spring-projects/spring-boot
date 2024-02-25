@@ -29,11 +29,10 @@ public class Service {
 	private String msg;
 
 	/**
-     * Returns the message stored in the Service object.
-     *
-     * @return the message stored in the Service object.
-     */
-    public String message() {
+	 * Returns the message stored in the Service object.
+	 * @return the message stored in the Service object.
+	 */
+	public String message() {
 		return this.msg;
 	}
 

@@ -62,9 +62,9 @@ import org.springframework.util.StringUtils;
 public class DataSourceAutoConfiguration {
 
 	/**
-     * EmbeddedDatabaseConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * EmbeddedDatabaseConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(EmbeddedDatabaseCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import(EmbeddedDataSourceConfiguration.class)
@@ -73,9 +73,9 @@ public class DataSourceAutoConfiguration {
 	}
 
 	/**
-     * PooledDataSourceConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * PooledDataSourceConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(PooledDataSourceCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import({ DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class,
@@ -84,12 +84,13 @@ public class DataSourceAutoConfiguration {
 	protected static class PooledDataSourceConfiguration {
 
 		/**
-         * Creates a new instance of {@link PropertiesJdbcConnectionDetails} if no bean of type {@link JdbcConnectionDetails} is present.
-         * 
-         * @param properties the {@link DataSourceProperties} used to configure the JDBC connection details
-         * @return a new instance of {@link PropertiesJdbcConnectionDetails}
-         */
-        @Bean
+		 * Creates a new instance of {@link PropertiesJdbcConnectionDetails} if no bean of
+		 * type {@link JdbcConnectionDetails} is present.
+		 * @param properties the {@link DataSourceProperties} used to configure the JDBC
+		 * connection details
+		 * @return a new instance of {@link PropertiesJdbcConnectionDetails}
+		 */
+		@Bean
 		@ConditionalOnMissingBean(JdbcConnectionDetails.class)
 		PropertiesJdbcConnectionDetails jdbcConnectionDetails(DataSourceProperties properties) {
 			return new PropertiesJdbcConnectionDetails(properties);
@@ -104,26 +105,26 @@ public class DataSourceAutoConfiguration {
 	static class PooledDataSourceCondition extends AnyNestedCondition {
 
 		/**
-         * Constructs a new PooledDataSourceCondition with the specified configuration phase.
-         * 
-         * @param configurationPhase the configuration phase for the condition
-         */
-        PooledDataSourceCondition() {
+		 * Constructs a new PooledDataSourceCondition with the specified configuration
+		 * phase.
+		 * @param configurationPhase the configuration phase for the condition
+		 */
+		PooledDataSourceCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
 		/**
-         * ExplicitType class.
-         */
-        @ConditionalOnProperty(prefix = "spring.datasource", name = "type")
+		 * ExplicitType class.
+		 */
+		@ConditionalOnProperty(prefix = "spring.datasource", name = "type")
 		static class ExplicitType {
 
 		}
 
 		/**
-         * PooledDataSourceAvailable class.
-         */
-        @Conditional(PooledDataSourceAvailableCondition.class)
+		 * PooledDataSourceAvailable class.
+		 */
+		@Conditional(PooledDataSourceAvailableCondition.class)
 		static class PooledDataSourceAvailable {
 
 		}
@@ -136,13 +137,12 @@ public class DataSourceAutoConfiguration {
 	static class PooledDataSourceAvailableCondition extends SpringBootCondition {
 
 		/**
-         * Determines the match outcome for the PooledDataSourceAvailableCondition.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the condition outcome
-         */
-        @Override
+		 * Determines the match outcome for the PooledDataSourceAvailableCondition.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the condition outcome
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("PooledDataSource");
 			if (DataSourceBuilder.findType(context.getClassLoader()) != null) {
@@ -165,13 +165,12 @@ public class DataSourceAutoConfiguration {
 		private final SpringBootCondition pooledCondition = new PooledDataSourceCondition();
 
 		/**
-         * Determines the match outcome for the EmbeddedDatabaseCondition.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the condition outcome
-         */
-        @Override
+		 * Determines the match outcome for the EmbeddedDatabaseCondition.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the condition outcome
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("EmbeddedDataSource");
 			if (hasDataSourceUrlProperty(context)) {
@@ -188,12 +187,11 @@ public class DataSourceAutoConfiguration {
 		}
 
 		/**
-         * Checks if the environment contains the property for the data source URL.
-         * 
-         * @param context the condition context
-         * @return true if the property exists and has a non-empty value, false otherwise
-         */
-        private boolean hasDataSourceUrlProperty(ConditionContext context) {
+		 * Checks if the environment contains the property for the data source URL.
+		 * @param context the condition context
+		 * @return true if the property exists and has a non-empty value, false otherwise
+		 */
+		private boolean hasDataSourceUrlProperty(ConditionContext context) {
 			Environment environment = context.getEnvironment();
 			if (environment.containsProperty(DATASOURCE_URL_PROPERTY)) {
 				try {

@@ -42,11 +42,10 @@ public abstract class DockerSpec {
 	private final DockerRegistrySpec publishRegistry;
 
 	/**
-     * Constructs a new DockerSpec object.
-     * 
-     * @param objects the object factory used to create instances of DockerRegistrySpec
-     */
-    @Inject
+	 * Constructs a new DockerSpec object.
+	 * @param objects the object factory used to create instances of DockerRegistrySpec
+	 */
+	@Inject
 	public DockerSpec(ObjectFactory objects) {
 		this.builderRegistry = objects.newInstance(DockerRegistrySpec.class);
 		this.publishRegistry = objects.newInstance(DockerRegistrySpec.class);
@@ -55,58 +54,55 @@ public abstract class DockerSpec {
 	}
 
 	/**
-     * Constructs a new DockerSpec object with the specified builderRegistry and publishRegistry.
-     * 
-     * @param builderRegistry the DockerRegistrySpec object representing the builder registry
-     * @param publishRegistry the DockerRegistrySpec object representing the publish registry
-     */
-    DockerSpec(DockerRegistrySpec builderRegistry, DockerRegistrySpec publishRegistry) {
+	 * Constructs a new DockerSpec object with the specified builderRegistry and
+	 * publishRegistry.
+	 * @param builderRegistry the DockerRegistrySpec object representing the builder
+	 * registry
+	 * @param publishRegistry the DockerRegistrySpec object representing the publish
+	 * registry
+	 */
+	DockerSpec(DockerRegistrySpec builderRegistry, DockerRegistrySpec publishRegistry) {
 		this.builderRegistry = builderRegistry;
 		this.publishRegistry = publishRegistry;
 	}
 
 	/**
-     * Retrieves the context property.
-     *
-     * @return The context property.
-     */
-    @Input
+	 * Retrieves the context property.
+	 * @return The context property.
+	 */
+	@Input
 	@Optional
 	public abstract Property<String> getContext();
 
 	/**
-     * Retrieves the value of the optional property "Host".
-     *
-     * @return The value of the optional property "Host".
-     */
-    @Input
+	 * Retrieves the value of the optional property "Host".
+	 * @return The value of the optional property "Host".
+	 */
+	@Input
 	@Optional
 	public abstract Property<String> getHost();
 
 	/**
-     * Retrieves the value of the optional property "tlsVerify".
-     *
-     * @return The value of the optional property "tlsVerify".
-     */
-    @Input
+	 * Retrieves the value of the optional property "tlsVerify".
+	 * @return The value of the optional property "tlsVerify".
+	 */
+	@Input
 	@Optional
 	public abstract Property<Boolean> getTlsVerify();
 
 	/**
-     * Retrieves the value of the optional property "certPath".
-     *
-     * @return The value of the optional property "certPath".
-     */
-    @Input
+	 * Retrieves the value of the optional property "certPath".
+	 * @return The value of the optional property "certPath".
+	 */
+	@Input
 	@Optional
 	public abstract Property<String> getCertPath();
 
 	/**
-     * Retrieves the value of the optional property bindHostToBuilder.
-     *
-     * @return the value of the optional property bindHostToBuilder
-     */
-    @Input
+	 * Retrieves the value of the optional property bindHostToBuilder.
+	 * @return the value of the optional property bindHostToBuilder
+	 */
+	@Input
 	@Optional
 	public abstract Property<Boolean> getBindHostToBuilder();
 
@@ -164,13 +160,13 @@ public abstract class DockerSpec {
 	}
 
 	/**
-     * Customizes the Docker host configuration based on the provided context and host values.
-     * 
-     * @param dockerConfiguration The Docker configuration to be customized.
-     * @return The customized Docker configuration.
-     * @throws GradleException If both context and host are provided.
-     */
-    private DockerConfiguration customizeHost(DockerConfiguration dockerConfiguration) {
+	 * Customizes the Docker host configuration based on the provided context and host
+	 * values.
+	 * @param dockerConfiguration The Docker configuration to be customized.
+	 * @return The customized Docker configuration.
+	 * @throws GradleException If both context and host are provided.
+	 */
+	private DockerConfiguration customizeHost(DockerConfiguration dockerConfiguration) {
 		String context = getContext().getOrNull();
 		String host = getHost().getOrNull();
 		if (context != null && host != null) {
@@ -187,13 +183,13 @@ public abstract class DockerSpec {
 	}
 
 	/**
-     * Customizes the authentication for the Docker builder registry in the given Docker configuration.
-     * 
-     * @param dockerConfiguration The Docker configuration to be customized.
-     * @return The customized Docker configuration.
-     * @throws GradleException If the Docker builder registry configuration is invalid.
-     */
-    private DockerConfiguration customizeBuilderAuthentication(DockerConfiguration dockerConfiguration) {
+	 * Customizes the authentication for the Docker builder registry in the given Docker
+	 * configuration.
+	 * @param dockerConfiguration The Docker configuration to be customized.
+	 * @return The customized Docker configuration.
+	 * @throws GradleException If the Docker builder registry configuration is invalid.
+	 */
+	private DockerConfiguration customizeBuilderAuthentication(DockerConfiguration dockerConfiguration) {
 		if (this.builderRegistry == null || this.builderRegistry.hasEmptyAuth()) {
 			return dockerConfiguration;
 		}
@@ -210,13 +206,12 @@ public abstract class DockerSpec {
 	}
 
 	/**
-     * Customizes the authentication configuration for publishing Docker images.
-     * 
-     * @param dockerConfiguration the original Docker configuration
-     * @return the customized Docker configuration with authentication settings
-     * @throws GradleException if the Docker publish registry configuration is invalid
-     */
-    private DockerConfiguration customizePublishAuthentication(DockerConfiguration dockerConfiguration) {
+	 * Customizes the authentication configuration for publishing Docker images.
+	 * @param dockerConfiguration the original Docker configuration
+	 * @return the customized Docker configuration with authentication settings
+	 * @throws GradleException if the Docker publish registry configuration is invalid
+	 */
+	private DockerConfiguration customizePublishAuthentication(DockerConfiguration dockerConfiguration) {
 		if (this.publishRegistry == null || this.publishRegistry.hasEmptyAuth()) {
 			return dockerConfiguration.withEmptyPublishRegistryAuthentication();
 		}
@@ -278,21 +273,20 @@ public abstract class DockerSpec {
 		public abstract Property<String> getToken();
 
 		/**
-         * Checks if any of the authentication fields (username, password, url, email, token) is empty.
-         * 
-         * @return true if any of the authentication fields is empty, false otherwise.
-         */
-        boolean hasEmptyAuth() {
+		 * Checks if any of the authentication fields (username, password, url, email,
+		 * token) is empty.
+		 * @return true if any of the authentication fields is empty, false otherwise.
+		 */
+		boolean hasEmptyAuth() {
 			return nonePresent(getUsername(), getPassword(), getUrl(), getEmail(), getToken());
 		}
 
 		/**
-         * Checks if none of the given properties are present.
-         * 
-         * @param properties the properties to check
-         * @return true if none of the properties are present, false otherwise
-         */
-        private boolean nonePresent(Property<?>... properties) {
+		 * Checks if none of the given properties are present.
+		 * @param properties the properties to check
+		 * @return true if none of the properties are present, false otherwise
+		 */
+		private boolean nonePresent(Property<?>... properties) {
 			for (Property<?> property : properties) {
 				if (property.isPresent()) {
 					return false;
@@ -302,21 +296,19 @@ public abstract class DockerSpec {
 		}
 
 		/**
-         * Checks if the user has authentication credentials.
-         * 
-         * @return true if both the username and password are present, false otherwise.
-         */
-        boolean hasUserAuth() {
+		 * Checks if the user has authentication credentials.
+		 * @return true if both the username and password are present, false otherwise.
+		 */
+		boolean hasUserAuth() {
 			return allPresent(getUsername(), getPassword());
 		}
 
 		/**
-         * Checks if all the given properties are present.
-         * 
-         * @param properties the properties to be checked
-         * @return true if all properties are present, false otherwise
-         */
-        private boolean allPresent(Property<?>... properties) {
+		 * Checks if all the given properties are present.
+		 * @param properties the properties to be checked
+		 * @return true if all properties are present, false otherwise
+		 */
+		private boolean allPresent(Property<?>... properties) {
 			for (Property<?> property : properties) {
 				if (!property.isPresent()) {
 					return false;
@@ -326,11 +318,10 @@ public abstract class DockerSpec {
 		}
 
 		/**
-         * Returns true if the Docker registry has token authentication enabled.
-         * 
-         * @return true if token authentication is enabled, false otherwise
-         */
-        boolean hasTokenAuth() {
+		 * Returns true if the Docker registry has token authentication enabled.
+		 * @return true if token authentication is enabled, false otherwise
+		 */
+		boolean hasTokenAuth() {
 			return getToken().isPresent();
 		}
 

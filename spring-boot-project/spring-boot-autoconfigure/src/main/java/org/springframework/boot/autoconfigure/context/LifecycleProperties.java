@@ -36,20 +36,18 @@ public class LifecycleProperties {
 	private Duration timeoutPerShutdownPhase = Duration.ofSeconds(30);
 
 	/**
-     * Returns the timeout duration per shutdown phase.
-     *
-     * @return the timeout duration per shutdown phase
-     */
-    public Duration getTimeoutPerShutdownPhase() {
+	 * Returns the timeout duration per shutdown phase.
+	 * @return the timeout duration per shutdown phase
+	 */
+	public Duration getTimeoutPerShutdownPhase() {
 		return this.timeoutPerShutdownPhase;
 	}
 
 	/**
-     * Sets the timeout duration for each shutdown phase.
-     * 
-     * @param timeoutPerShutdownPhase the timeout duration for each shutdown phase
-     */
-    public void setTimeoutPerShutdownPhase(Duration timeoutPerShutdownPhase) {
+	 * Sets the timeout duration for each shutdown phase.
+	 * @param timeoutPerShutdownPhase the timeout duration for each shutdown phase
+	 */
+	public void setTimeoutPerShutdownPhase(Duration timeoutPerShutdownPhase) {
 		this.timeoutPerShutdownPhase = timeoutPerShutdownPhase;
 	}
 

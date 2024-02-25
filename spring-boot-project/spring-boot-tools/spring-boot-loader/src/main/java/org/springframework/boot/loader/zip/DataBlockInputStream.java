@@ -37,38 +37,36 @@ class DataBlockInputStream extends InputStream {
 	private volatile boolean closed;
 
 	/**
-     * Constructs a new DataBlockInputStream with the specified DataBlock.
-     * 
-     * @param dataBlock the DataBlock to be used by the input stream
-     * @throws IOException if an I/O error occurs
-     */
-    DataBlockInputStream(DataBlock dataBlock) throws IOException {
+	 * Constructs a new DataBlockInputStream with the specified DataBlock.
+	 * @param dataBlock the DataBlock to be used by the input stream
+	 * @throws IOException if an I/O error occurs
+	 */
+	DataBlockInputStream(DataBlock dataBlock) throws IOException {
 		this.dataBlock = dataBlock;
 		this.remaining = dataBlock.size();
 	}
 
 	/**
-     * Reads a single byte of data from the input stream.
-     *
-     * @return the byte read, or -1 if the end of the stream is reached
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Reads a single byte of data from the input stream.
+	 * @return the byte read, or -1 if the end of the stream is reached
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public int read() throws IOException {
 		byte[] b = new byte[1];
 		return (read(b, 0, 1) == 1) ? b[0] & 0xFF : -1;
 	}
 
 	/**
-     * Reads up to len bytes of data from the data block into the specified byte array.
-     * 
-     * @param b the byte array to read the data into
-     * @param off the starting offset in the byte array
-     * @param len the maximum number of bytes to read
-     * @return the total number of bytes read into the byte array, or -1 if there is no more data because the end of the data block has been reached
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Reads up to len bytes of data from the data block into the specified byte array.
+	 * @param b the byte array to read the data into
+	 * @param off the starting offset in the byte array
+	 * @param len the maximum number of bytes to read
+	 * @return the total number of bytes read into the byte array, or -1 if there is no
+	 * more data because the end of the data block has been reached
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public int read(byte[] b, int off, int len) throws IOException {
 		ensureOpen();
 		ByteBuffer dst = ByteBuffer.wrap(b, off, len);
@@ -81,13 +79,12 @@ class DataBlockInputStream extends InputStream {
 	}
 
 	/**
-     * Skips over and discards a specified number of bytes from the input stream.
-     * 
-     * @param n the number of bytes to be skipped
-     * @return the actual number of bytes skipped
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Skips over and discards a specified number of bytes from the input stream.
+	 * @param n the number of bytes to be skipped
+	 * @return the actual number of bytes skipped
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public long skip(long n) throws IOException {
 		long count = (n > 0) ? maxForwardSkip(n) : maxBackwardSkip(n);
 		this.pos += count;
@@ -96,35 +93,35 @@ class DataBlockInputStream extends InputStream {
 	}
 
 	/**
-     * Returns the maximum number of bytes that can be skipped forward in the data block.
-     * 
-     * @param n the number of bytes to skip forward
-     * @return the maximum number of bytes that can be skipped forward without causing an overflow or exceeding the remaining bytes in the data block
-     */
-    private long maxForwardSkip(long n) {
+	 * Returns the maximum number of bytes that can be skipped forward in the data block.
+	 * @param n the number of bytes to skip forward
+	 * @return the maximum number of bytes that can be skipped forward without causing an
+	 * overflow or exceeding the remaining bytes in the data block
+	 */
+	private long maxForwardSkip(long n) {
 		boolean willCauseOverflow = (this.pos + n) < 0;
 		return (willCauseOverflow || n > this.remaining) ? this.remaining : n;
 	}
 
 	/**
-     * Returns the maximum number of bytes that can be skipped backwards from the current position.
-     * 
-     * @param n the number of bytes to skip backwards
-     * @return the maximum number of bytes that can be skipped backwards
-     */
-    private long maxBackwardSkip(long n) {
+	 * Returns the maximum number of bytes that can be skipped backwards from the current
+	 * position.
+	 * @param n the number of bytes to skip backwards
+	 * @return the maximum number of bytes that can be skipped backwards
+	 */
+	private long maxBackwardSkip(long n) {
 		return Math.max(-this.pos, n);
 	}
 
 	/**
-     * Returns the number of bytes that can be read from this DataBlockInputStream without blocking.
-     * If the stream is closed, it returns 0.
-     * If the remaining bytes is less than Integer.MAX_VALUE, it returns the remaining bytes.
-     * If the remaining bytes is greater than or equal to Integer.MAX_VALUE, it returns Integer.MAX_VALUE.
-     *
-     * @return the number of bytes that can be read from this DataBlockInputStream without blocking
-     */
-    @Override
+	 * Returns the number of bytes that can be read from this DataBlockInputStream without
+	 * blocking. If the stream is closed, it returns 0. If the remaining bytes is less
+	 * than Integer.MAX_VALUE, it returns the remaining bytes. If the remaining bytes is
+	 * greater than or equal to Integer.MAX_VALUE, it returns Integer.MAX_VALUE.
+	 * @return the number of bytes that can be read from this DataBlockInputStream without
+	 * blocking
+	 */
+	@Override
 	public int available() {
 		if (this.closed) {
 			return 0;
@@ -133,22 +130,20 @@ class DataBlockInputStream extends InputStream {
 	}
 
 	/**
-     * Ensures that the input stream is open.
-     * 
-     * @throws IOException if the input stream is closed
-     */
-    private void ensureOpen() throws IOException {
+	 * Ensures that the input stream is open.
+	 * @throws IOException if the input stream is closed
+	 */
+	private void ensureOpen() throws IOException {
 		if (this.closed) {
 			throw new IOException("InputStream closed");
 		}
 	}
 
 	/**
-     * Closes the DataBlockInputStream.
-     * 
-     * @throws IOException if an I/O error occurs while closing the stream
-     */
-    @Override
+	 * Closes the DataBlockInputStream.
+	 * @throws IOException if an I/O error occurs while closing the stream
+	 */
+	@Override
 	public void close() throws IOException {
 		if (this.closed) {
 			return;

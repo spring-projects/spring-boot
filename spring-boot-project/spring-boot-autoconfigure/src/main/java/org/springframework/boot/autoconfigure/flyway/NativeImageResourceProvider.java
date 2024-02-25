@@ -65,15 +65,16 @@ class NativeImageResourceProvider implements ResourceProvider {
 	private boolean initialized;
 
 	/**
-     * Constructs a new NativeImageResourceProvider with the specified parameters.
-     * 
-     * @param scanner the scanner used to scan for native image resources
-     * @param classLoader the class loader used to load the native image resources
-     * @param locations the collection of locations where the native image resources are located
-     * @param encoding the character encoding used to read the native image resources
-     * @param failOnMissingLocations flag indicating whether to fail if any of the specified locations are missing
-     */
-    NativeImageResourceProvider(Scanner<?> scanner, ClassLoader classLoader, Collection<Location> locations,
+	 * Constructs a new NativeImageResourceProvider with the specified parameters.
+	 * @param scanner the scanner used to scan for native image resources
+	 * @param classLoader the class loader used to load the native image resources
+	 * @param locations the collection of locations where the native image resources are
+	 * located
+	 * @param encoding the character encoding used to read the native image resources
+	 * @param failOnMissingLocations flag indicating whether to fail if any of the
+	 * specified locations are missing
+	 */
+	NativeImageResourceProvider(Scanner<?> scanner, ClassLoader classLoader, Collection<Location> locations,
 			Charset encoding, boolean failOnMissingLocations) {
 		this.scanner = scanner;
 		this.classLoader = classLoader;
@@ -83,12 +84,11 @@ class NativeImageResourceProvider implements ResourceProvider {
 	}
 
 	/**
-     * Retrieves a loadable resource with the given name.
-     * 
-     * @param name the name of the resource to retrieve
-     * @return the loadable resource with the given name, or null if not found
-     */
-    @Override
+	 * Retrieves a loadable resource with the given name.
+	 * @param name the name of the resource to retrieve
+	 * @return the loadable resource with the given name, or null if not found
+	 */
+	@Override
 	public LoadableResource getResource(String name) {
 		if (!NativeDetector.inNativeImage()) {
 			return this.scanner.getResource(name);
@@ -104,15 +104,15 @@ class NativeImageResourceProvider implements ResourceProvider {
 	}
 
 	/**
-     * Retrieves a collection of loadable resources based on the given prefix and suffixes.
-     * If the application is not running in a native image, the resources are obtained using the scanner.
-     * Otherwise, the resources are obtained from the located resources.
-     * 
-     * @param prefix   the prefix of the resource filenames
-     * @param suffixes an array of suffixes to filter the resource filenames
-     * @return a collection of loadable resources
-     */
-    @Override
+	 * Retrieves a collection of loadable resources based on the given prefix and
+	 * suffixes. If the application is not running in a native image, the resources are
+	 * obtained using the scanner. Otherwise, the resources are obtained from the located
+	 * resources.
+	 * @param prefix the prefix of the resource filenames
+	 * @param suffixes an array of suffixes to filter the resource filenames
+	 * @return a collection of loadable resources
+	 */
+	@Override
 	public Collection<LoadableResource> getResources(String prefix, String[] suffixes) {
 		if (!NativeDetector.inNativeImage()) {
 			return this.scanner.getResources(prefix, suffixes);
@@ -130,28 +130,28 @@ class NativeImageResourceProvider implements ResourceProvider {
 	}
 
 	/**
-     * Converts a LocatedResource object to a ClassPathResource object.
-     * 
-     * @param locatedResource the LocatedResource object to convert
-     * @return the converted ClassPathResource object
-     */
-    private ClassPathResource asClassPathResource(LocatedResource locatedResource) {
+	 * Converts a LocatedResource object to a ClassPathResource object.
+	 * @param locatedResource the LocatedResource object to convert
+	 * @return the converted ClassPathResource object
+	 */
+	private ClassPathResource asClassPathResource(LocatedResource locatedResource) {
 		Location location = locatedResource.location();
 		String fileNameWithAbsolutePath = location.getPath() + "/" + locatedResource.resource().getFilename();
 		return new ClassPathResource(location, fileNameWithAbsolutePath, this.classLoader, this.encoding);
 	}
 
 	/**
-     * Ensures that the NativeImageResourceProvider is initialized.
-     * 
-     * This method acquires a lock to ensure thread safety. If the NativeImageResourceProvider
-     * has not been initialized yet, it calls the initialize() method to perform the initialization
-     * and sets the initialized flag to true.
-     * 
-     * @throws IllegalStateException if the NativeImageResourceProvider is already initialized
-     * @throws InterruptedException if the thread is interrupted while waiting to acquire the lock
-     */
-    private void ensureInitialized() {
+	 * Ensures that the NativeImageResourceProvider is initialized.
+	 *
+	 * This method acquires a lock to ensure thread safety. If the
+	 * NativeImageResourceProvider has not been initialized yet, it calls the initialize()
+	 * method to perform the initialization and sets the initialized flag to true.
+	 * @throws IllegalStateException if the NativeImageResourceProvider is already
+	 * initialized
+	 * @throws InterruptedException if the thread is interrupted while waiting to acquire
+	 * the lock
+	 */
+	private void ensureInitialized() {
 		this.lock.lock();
 		try {
 			if (!this.initialized) {
@@ -165,18 +165,19 @@ class NativeImageResourceProvider implements ResourceProvider {
 	}
 
 	/**
-     * Initializes the NativeImageResourceProvider.
-     * 
-     * This method uses a PathMatchingResourcePatternResolver to resolve the locations of the resources.
-     * It iterates through each location and checks if it is a classpath location.
-     * If it is not a classpath location, it continues to the next location.
-     * If the root resource for the location does not exist, it checks if the failOnMissingLocations flag is set.
-     * If the flag is set, it throws a FlywayException with an appropriate message.
-     * If the flag is not set, it continues to the next location.
-     * If the root resource exists, it retrieves all the resources within the location using the getResources method.
-     * It then adds each located resource to the locatedResources list.
-     */
-    private void initialize() {
+	 * Initializes the NativeImageResourceProvider.
+	 *
+	 * This method uses a PathMatchingResourcePatternResolver to resolve the locations of
+	 * the resources. It iterates through each location and checks if it is a classpath
+	 * location. If it is not a classpath location, it continues to the next location. If
+	 * the root resource for the location does not exist, it checks if the
+	 * failOnMissingLocations flag is set. If the flag is set, it throws a FlywayException
+	 * with an appropriate message. If the flag is not set, it continues to the next
+	 * location. If the root resource exists, it retrieves all the resources within the
+	 * location using the getResources method. It then adds each located resource to the
+	 * locatedResources list.
+	 */
+	private void initialize() {
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 		for (Location location : this.locations) {
 			if (!location.isClassPath()) {
@@ -197,15 +198,16 @@ class NativeImageResourceProvider implements ResourceProvider {
 	}
 
 	/**
-     * Retrieves an array of resources located at the specified root path.
-     * 
-     * @param resolver the PathMatchingResourcePatternResolver used to resolve the resources
-     * @param location the Location of the resources
-     * @param root the root Resource from which to retrieve the resources
-     * @return an array of Resource objects representing the resources located at the root path
-     * @throws UncheckedIOException if an IOException occurs while listing the resources
-     */
-    private Resource[] getResources(PathMatchingResourcePatternResolver resolver, Location location, Resource root) {
+	 * Retrieves an array of resources located at the specified root path.
+	 * @param resolver the PathMatchingResourcePatternResolver used to resolve the
+	 * resources
+	 * @param location the Location of the resources
+	 * @param root the root Resource from which to retrieve the resources
+	 * @return an array of Resource objects representing the resources located at the root
+	 * path
+	 * @throws UncheckedIOException if an IOException occurs while listing the resources
+	 */
+	private Resource[] getResources(PathMatchingResourcePatternResolver resolver, Location location, Resource root) {
 		try {
 			return resolver.getResources(root.getURI() + "/*");
 		}

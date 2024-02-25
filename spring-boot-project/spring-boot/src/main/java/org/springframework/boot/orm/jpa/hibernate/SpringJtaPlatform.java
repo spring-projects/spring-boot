@@ -39,32 +39,31 @@ public class SpringJtaPlatform extends AbstractJtaPlatform {
 	private final JtaTransactionManager transactionManager;
 
 	/**
-     * Constructs a new SpringJtaPlatform with the specified JtaTransactionManager.
-     * 
-     * @param transactionManager the JtaTransactionManager to be used by this SpringJtaPlatform (must not be null)
-     * @throws IllegalArgumentException if the transactionManager is null
-     */
-    public SpringJtaPlatform(JtaTransactionManager transactionManager) {
+	 * Constructs a new SpringJtaPlatform with the specified JtaTransactionManager.
+	 * @param transactionManager the JtaTransactionManager to be used by this
+	 * SpringJtaPlatform (must not be null)
+	 * @throws IllegalArgumentException if the transactionManager is null
+	 */
+	public SpringJtaPlatform(JtaTransactionManager transactionManager) {
 		Assert.notNull(transactionManager, "TransactionManager must not be null");
 		this.transactionManager = transactionManager;
 	}
 
 	/**
-     * Retrieves the transaction manager by locating it from the current instance of the SpringJtaPlatform class.
-     * 
-     * @return the transaction manager instance
-     */
-    @Override
+	 * Retrieves the transaction manager by locating it from the current instance of the
+	 * SpringJtaPlatform class.
+	 * @return the transaction manager instance
+	 */
+	@Override
 	protected TransactionManager locateTransactionManager() {
 		return this.transactionManager.getTransactionManager();
 	}
 
 	/**
-     * Retrieves the UserTransaction object by locating the transaction manager.
-     * 
-     * @return the UserTransaction object
-     */
-    @Override
+	 * Retrieves the UserTransaction object by locating the transaction manager.
+	 * @return the UserTransaction object
+	 */
+	@Override
 	protected UserTransaction locateUserTransaction() {
 		return this.transactionManager.getUserTransaction();
 	}

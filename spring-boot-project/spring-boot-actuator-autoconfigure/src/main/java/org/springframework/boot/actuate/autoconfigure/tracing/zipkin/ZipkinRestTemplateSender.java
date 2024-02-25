@@ -36,65 +36,64 @@ class ZipkinRestTemplateSender extends HttpSender {
 	private final RestTemplate restTemplate;
 
 	/**
-     * Constructs a new ZipkinRestTemplateSender with the specified endpoint and RestTemplate.
-     *
-     * @param endpoint the URL endpoint to send the Zipkin spans to
-     * @param restTemplate the RestTemplate instance to use for sending the spans
-     */
-    ZipkinRestTemplateSender(String endpoint, RestTemplate restTemplate) {
+	 * Constructs a new ZipkinRestTemplateSender with the specified endpoint and
+	 * RestTemplate.
+	 * @param endpoint the URL endpoint to send the Zipkin spans to
+	 * @param restTemplate the RestTemplate instance to use for sending the spans
+	 */
+	ZipkinRestTemplateSender(String endpoint, RestTemplate restTemplate) {
 		this.endpoint = endpoint;
 		this.restTemplate = restTemplate;
 	}
 
 	/**
-     * Sends the encoded spans in a batched format using a REST template.
-     * 
-     * @param batchedEncodedSpans the batched encoded spans to be sent
-     * @return the HTTP POST call object used to send the spans
-     */
-    @Override
+	 * Sends the encoded spans in a batched format using a REST template.
+	 * @param batchedEncodedSpans the batched encoded spans to be sent
+	 * @return the HTTP POST call object used to send the spans
+	 */
+	@Override
 	public HttpPostCall sendSpans(byte[] batchedEncodedSpans) {
 		return new RestTemplateHttpPostCall(this.endpoint, batchedEncodedSpans, this.restTemplate);
 	}
 
 	/**
-     * RestTemplateHttpPostCall class.
-     */
-    private static class RestTemplateHttpPostCall extends HttpPostCall {
+	 * RestTemplateHttpPostCall class.
+	 */
+	private static class RestTemplateHttpPostCall extends HttpPostCall {
 
 		private final String endpoint;
 
 		private final RestTemplate restTemplate;
 
 		/**
-         * Sends a HTTP POST request to the specified endpoint using the provided body and RestTemplate.
-         * 
-         * @param endpoint the URL endpoint to send the request to
-         * @param body the byte array representing the request body
-         * @param restTemplate the RestTemplate instance to use for making the request
-         */
-        RestTemplateHttpPostCall(String endpoint, byte[] body, RestTemplate restTemplate) {
+		 * Sends a HTTP POST request to the specified endpoint using the provided body and
+		 * RestTemplate.
+		 * @param endpoint the URL endpoint to send the request to
+		 * @param body the byte array representing the request body
+		 * @param restTemplate the RestTemplate instance to use for making the request
+		 */
+		RestTemplateHttpPostCall(String endpoint, byte[] body, RestTemplate restTemplate) {
 			super(body);
 			this.endpoint = endpoint;
 			this.restTemplate = restTemplate;
 		}
 
 		/**
-         * Creates a clone of the RestTemplateHttpPostCall object.
-         * 
-         * @return a new instance of the RestTemplateHttpPostCall object with the same endpoint, uncompressed body, and restTemplate.
-         */
-        @Override
+		 * Creates a clone of the RestTemplateHttpPostCall object.
+		 * @return a new instance of the RestTemplateHttpPostCall object with the same
+		 * endpoint, uncompressed body, and restTemplate.
+		 */
+		@Override
 		public Call<Void> clone() {
 			return new RestTemplateHttpPostCall(this.endpoint, getUncompressedBody(), this.restTemplate);
 		}
 
 		/**
-         * Executes a POST request to the specified endpoint using the provided body and default headers.
-         * 
-         * @return null
-         */
-        @Override
+		 * Executes a POST request to the specified endpoint using the provided body and
+		 * default headers.
+		 * @return null
+		 */
+		@Override
 		protected Void doExecute() {
 			HttpEntity<byte[]> request = new HttpEntity<>(getBody(), getDefaultHeaders());
 			this.restTemplate.exchange(this.endpoint, HttpMethod.POST, request, Void.class);
@@ -102,11 +101,11 @@ class ZipkinRestTemplateSender extends HttpSender {
 		}
 
 		/**
-         * Executes the enqueue operation for the RestTemplateHttpPostCall.
-         * 
-         * @param callback the callback to be invoked after the enqueue operation is completed
-         */
-        @Override
+		 * Executes the enqueue operation for the RestTemplateHttpPostCall.
+		 * @param callback the callback to be invoked after the enqueue operation is
+		 * completed
+		 */
+		@Override
 		protected void doEnqueue(Callback<Void> callback) {
 			try {
 				doExecute();

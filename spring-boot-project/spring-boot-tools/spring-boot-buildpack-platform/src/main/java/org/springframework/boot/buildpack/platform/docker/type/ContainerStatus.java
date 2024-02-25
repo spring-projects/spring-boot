@@ -37,23 +37,23 @@ public class ContainerStatus extends MappedObject {
 	private final String waitingErrorMessage;
 
 	/**
-     * Creates a new ContainerStatus object with the specified status code and waiting error message.
-     * 
-     * @param statusCode the status code of the container
-     * @param waitingErrorMessage the error message to display when the container is in a waiting state
-     */
-    ContainerStatus(int statusCode, String waitingErrorMessage) {
+	 * Creates a new ContainerStatus object with the specified status code and waiting
+	 * error message.
+	 * @param statusCode the status code of the container
+	 * @param waitingErrorMessage the error message to display when the container is in a
+	 * waiting state
+	 */
+	ContainerStatus(int statusCode, String waitingErrorMessage) {
 		super(null, null);
 		this.statusCode = statusCode;
 		this.waitingErrorMessage = waitingErrorMessage;
 	}
 
 	/**
-     * Constructs a new ContainerStatus object with the provided JSON node.
-     * 
-     * @param node the JSON node containing the container status information
-     */
-    ContainerStatus(JsonNode node) {
+	 * Constructs a new ContainerStatus object with the provided JSON node.
+	 * @param node the JSON node containing the container status information
+	 */
+	ContainerStatus(JsonNode node) {
 		super(node, MethodHandles.lookup());
 		this.statusCode = valueAt("/StatusCode", Integer.class);
 		this.waitingErrorMessage = valueAt("/Error/Message", String.class);

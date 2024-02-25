@@ -39,14 +39,14 @@ class SpringPropertyAction extends BaseModelAction {
 	private static final String DEFAULT_VALUE_ATTRIBUTE = "defaultValue";
 
 	/**
-     * Builds the current model for a Spring property based on the provided interpretation context, name, and attributes.
-     * 
-     * @param interpretationContext The interpretation context for the SAX event.
-     * @param name The name of the Spring property.
-     * @param attributes The attributes of the Spring property.
-     * @return The built SpringPropertyModel.
-     */
-    @Override
+	 * Builds the current model for a Spring property based on the provided interpretation
+	 * context, name, and attributes.
+	 * @param interpretationContext The interpretation context for the SAX event.
+	 * @param name The name of the Spring property.
+	 * @param attributes The attributes of the Spring property.
+	 * @return The built SpringPropertyModel.
+	 */
+	@Override
 	protected Model buildCurrentModel(SaxEventInterpretationContext interpretationContext, String name,
 			Attributes attributes) {
 		SpringPropertyModel model = new SpringPropertyModel();

@@ -31,13 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MyOutputCaptureTests {
 
 	/**
-     * This method is a test case that checks if the output contains the word "World".
-     * It uses the CapturedOutput parameter to capture the output of the test.
-     * The test prints "Hello World!" to the console and asserts that the captured output contains the word "World".
-     *
-     * @param output the CapturedOutput object used to capture the output of the test
-     */
-    @Test
+	 * This method is a test case that checks if the output contains the word "World". It
+	 * uses the CapturedOutput parameter to capture the output of the test. The test
+	 * prints "Hello World!" to the console and asserts that the captured output contains
+	 * the word "World".
+	 * @param output the CapturedOutput object used to capture the output of the test
+	 */
+	@Test
 	void testName(CapturedOutput output) {
 		System.out.println("Hello World!");
 		assertThat(output).contains("World");

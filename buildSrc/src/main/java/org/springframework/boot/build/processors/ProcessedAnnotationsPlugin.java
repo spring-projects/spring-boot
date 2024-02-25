@@ -29,12 +29,11 @@ import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 public class ProcessedAnnotationsPlugin implements Plugin<Project> {
 
 	/**
-     * Applies the AptEclipsePlugin to the given project and configures the EclipseModel
-     * to include the synchronization tasks for JDT APT, JDT, and Factorypath.
-     * 
-     * @param project the project to apply the plugin and configure the EclipseModel for
-     */
-    @Override
+	 * Applies the AptEclipsePlugin to the given project and configures the EclipseModel
+	 * to include the synchronization tasks for JDT APT, JDT, and Factorypath.
+	 * @param project the project to apply the plugin and configure the EclipseModel for
+	 */
+	@Override
 	public void apply(Project project) {
 		project.getPlugins().apply(AptEclipsePlugin.class);
 		project.getExtensions()

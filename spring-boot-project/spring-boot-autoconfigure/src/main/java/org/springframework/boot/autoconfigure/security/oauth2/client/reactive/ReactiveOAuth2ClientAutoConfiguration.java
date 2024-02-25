@@ -47,23 +47,23 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 public class ReactiveOAuth2ClientAutoConfiguration {
 
 	/**
-     * NonServletApplicationCondition class.
-     */
-    static class NonServletApplicationCondition extends NoneNestedConditions {
+	 * NonServletApplicationCondition class.
+	 */
+	static class NonServletApplicationCondition extends NoneNestedConditions {
 
 		/**
-         * Constructs a new NonServletApplicationCondition with the specified configuration phase.
-         * 
-         * @param configurationPhase the configuration phase for this condition
-         */
-        NonServletApplicationCondition() {
+		 * Constructs a new NonServletApplicationCondition with the specified
+		 * configuration phase.
+		 * @param configurationPhase the configuration phase for this condition
+		 */
+		NonServletApplicationCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
 		/**
-         * ServletApplicationCondition class.
-         */
-        @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+		 * ServletApplicationCondition class.
+		 */
+		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 		static class ServletApplicationCondition {
 
 		}

@@ -76,13 +76,14 @@ public class BatchDataSourceScriptDatabaseInitializer extends DataSourceScriptDa
 	}
 
 	/**
-     * Resolves the schema locations based on the provided data source and JDBC properties.
-     * 
-     * @param dataSource the data source to be used for resolving the schema locations
-     * @param properties the JDBC properties containing the platform and schema information
-     * @return a list of resolved schema locations
-     */
-    private static List<String> resolveSchemaLocations(DataSource dataSource, BatchProperties.Jdbc properties) {
+	 * Resolves the schema locations based on the provided data source and JDBC
+	 * properties.
+	 * @param dataSource the data source to be used for resolving the schema locations
+	 * @param properties the JDBC properties containing the platform and schema
+	 * information
+	 * @return a list of resolved schema locations
+	 */
+	private static List<String> resolveSchemaLocations(DataSource dataSource, BatchProperties.Jdbc properties) {
 		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
 		if (StringUtils.hasText(properties.getPlatform())) {
 			return platformResolver.resolveAll(properties.getPlatform(), properties.getSchema());

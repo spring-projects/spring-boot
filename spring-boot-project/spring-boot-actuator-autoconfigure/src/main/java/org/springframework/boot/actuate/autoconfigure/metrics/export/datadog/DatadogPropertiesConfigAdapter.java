@@ -30,71 +30,65 @@ class DatadogPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter
 		implements DatadogConfig {
 
 	/**
-     * Constructs a new DatadogPropertiesConfigAdapter with the specified DatadogProperties.
-     *
-     * @param properties the DatadogProperties to be used for configuring the adapter
-     */
-    DatadogPropertiesConfigAdapter(DatadogProperties properties) {
+	 * Constructs a new DatadogPropertiesConfigAdapter with the specified
+	 * DatadogProperties.
+	 * @param properties the DatadogProperties to be used for configuring the adapter
+	 */
+	DatadogPropertiesConfigAdapter(DatadogProperties properties) {
 		super(properties);
 	}
 
 	/**
-     * Returns the prefix for exporting metrics to Datadog.
-     * The prefix is used to configure the property key for exporting metrics.
-     * 
-     * @return the prefix for exporting metrics to Datadog
-     */
-    @Override
+	 * Returns the prefix for exporting metrics to Datadog. The prefix is used to
+	 * configure the property key for exporting metrics.
+	 * @return the prefix for exporting metrics to Datadog
+	 */
+	@Override
 	public String prefix() {
 		return "management.datadog.metrics.export";
 	}
 
 	/**
-     * Returns the API key for the Datadog configuration.
-     * 
-     * @return the API key
-     */
-    @Override
+	 * Returns the API key for the Datadog configuration.
+	 * @return the API key
+	 */
+	@Override
 	public String apiKey() {
 		return get(DatadogProperties::getApiKey, DatadogConfig.super::apiKey);
 	}
 
 	/**
-     * Returns the application key for the Datadog configuration.
-     * 
-     * @return the application key
-     */
-    @Override
+	 * Returns the application key for the Datadog configuration.
+	 * @return the application key
+	 */
+	@Override
 	public String applicationKey() {
 		return get(DatadogProperties::getApplicationKey, DatadogConfig.super::applicationKey);
 	}
 
 	/**
-     * Returns the host tag for the Datadog configuration.
-     * 
-     * @return the host tag
-     */
-    @Override
+	 * Returns the host tag for the Datadog configuration.
+	 * @return the host tag
+	 */
+	@Override
 	public String hostTag() {
 		return get(DatadogProperties::getHostTag, DatadogConfig.super::hostTag);
 	}
 
 	/**
-     * Returns the URI for the Datadog properties.
-     * 
-     * @return the URI for the Datadog properties
-     */
-    @Override
+	 * Returns the URI for the Datadog properties.
+	 * @return the URI for the Datadog properties
+	 */
+	@Override
 	public String uri() {
 		return get(DatadogProperties::getUri, DatadogConfig.super::uri);
 	}
 
 	/**
-     * Returns the value of the descriptions property.
-     * 
-     * @return true if descriptions are enabled, false otherwise
-     */
-    @Override
+	 * Returns the value of the descriptions property.
+	 * @return true if descriptions are enabled, false otherwise
+	 */
+	@Override
 	public boolean descriptions() {
 		return get(DatadogProperties::isDescriptions, DatadogConfig.super::descriptions);
 	}

@@ -28,23 +28,21 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 public class SampleTomcatJspApplication extends SpringBootServletInitializer {
 
 	/**
-     * Configures the Spring application builder.
-     * 
-     * @param application the Spring application builder
-     * @return the sources of the Spring application
-     */
-    @Override
+	 * Configures the Spring application builder.
+	 * @param application the Spring application builder
+	 * @return the sources of the Spring application
+	 */
+	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(SampleTomcatJspApplication.class);
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring Boot application by running the SpringApplication.run() method.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring Boot
+	 * application by running the SpringApplication.run() method.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleTomcatJspApplication.class, args);
 	}
 

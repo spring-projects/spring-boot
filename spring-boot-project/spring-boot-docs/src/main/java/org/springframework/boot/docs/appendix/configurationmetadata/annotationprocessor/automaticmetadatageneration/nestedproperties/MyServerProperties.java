@@ -34,29 +34,26 @@ public class MyServerProperties {
 	}
 
 	/**
-     * Sets the name of the server.
-     * 
-     * @param name the name to set
-     */
-    public void setName(String name) {
+	 * Sets the name of the server.
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-     * Returns the host object associated with this server properties.
-     *
-     * @return the host object
-     */
-    public Host getHost() {
+	 * Returns the host object associated with this server properties.
+	 * @return the host object
+	 */
+	public Host getHost() {
 		return this.host;
 	}
 
 	/**
-     * Sets the host for the server properties.
-     * 
-     * @param host the host to be set
-     */
-    public void setHost(Host host) {
+	 * Sets the host for the server properties.
+	 * @param host the host to be set
+	 */
+	public void setHost(Host host) {
 		this.host = host;
 	}
 	// @fold:off
@@ -73,29 +70,26 @@ public class MyServerProperties {
 		}
 
 		/**
-         * Sets the IP address of the host.
-         * 
-         * @param ip the IP address to be set
-         */
-        public void setIp(String ip) {
+		 * Sets the IP address of the host.
+		 * @param ip the IP address to be set
+		 */
+		public void setIp(String ip) {
 			this.ip = ip;
 		}
 
 		/**
-         * Returns the port number of the host.
-         *
-         * @return the port number
-         */
-        public int getPort() {
+		 * Returns the port number of the host.
+		 * @return the port number
+		 */
+		public int getPort() {
 			return this.port;
 		}
 
 		/**
-         * Sets the port number for the host.
-         * 
-         * @param port the port number to be set
-         */
-        public void setPort(int port) {
+		 * Sets the port number for the host.
+		 * @param port the port number to be set
+		 */
+		public void setPort(int port) {
 			this.port = port;
 		}
 		// @fold:off // getters/setters ...

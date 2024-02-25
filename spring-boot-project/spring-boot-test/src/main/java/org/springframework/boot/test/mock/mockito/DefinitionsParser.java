@@ -49,18 +49,18 @@ class DefinitionsParser {
 	private final Map<Definition, Field> definitionFields;
 
 	/**
-     * Constructs a new DefinitionsParser object with an empty set of definitions.
-     */
-    DefinitionsParser() {
+	 * Constructs a new DefinitionsParser object with an empty set of definitions.
+	 */
+	DefinitionsParser() {
 		this(Collections.emptySet());
 	}
 
 	/**
-     * Constructs a new DefinitionsParser object with the given existing definitions.
-     * 
-     * @param existing the collection of existing definitions to be added to the parser (optional)
-     */
-    DefinitionsParser(Collection<? extends Definition> existing) {
+	 * Constructs a new DefinitionsParser object with the given existing definitions.
+	 * @param existing the collection of existing definitions to be added to the parser
+	 * (optional)
+	 */
+	DefinitionsParser(Collection<? extends Definition> existing) {
 		this.definitions = new LinkedHashSet<>();
 		this.definitionFields = new LinkedHashMap<>();
 		if (existing != null) {
@@ -69,22 +69,21 @@ class DefinitionsParser {
 	}
 
 	/**
-     * Parses the given source class and its fields.
-     * 
-     * @param source the class to be parsed
-     */
-    void parse(Class<?> source) {
+	 * Parses the given source class and its fields.
+	 * @param source the class to be parsed
+	 */
+	void parse(Class<?> source) {
 		parseElement(source, null);
 		ReflectionUtils.doWithFields(source, (element) -> parseElement(element, source));
 	}
 
 	/**
-     * Parses the given annotated element and extracts the annotations of type MockBean and SpyBean.
-     * 
-     * @param element the annotated element to parse
-     * @param source the source class from which the element is derived
-     */
-    private void parseElement(AnnotatedElement element, Class<?> source) {
+	 * Parses the given annotated element and extracts the annotations of type MockBean
+	 * and SpyBean.
+	 * @param element the annotated element to parse
+	 * @param source the source class from which the element is derived
+	 */
+	private void parseElement(AnnotatedElement element, Class<?> source) {
 		MergedAnnotations annotations = MergedAnnotations.from(element, SearchStrategy.SUPERCLASS);
 		annotations.stream(MockBean.class)
 			.map(MergedAnnotation::synthesize)
@@ -95,15 +94,17 @@ class DefinitionsParser {
 	}
 
 	/**
-     * Parses the {@code MockBean} annotation and creates mock definitions based on the provided parameters.
-     * 
-     * @param annotation the {@code MockBean} annotation to parse
-     * @param element the annotated element
-     * @param source the source class
-     * @throws IllegalStateException if unable to deduce the type to mock from the annotated element
-     * @throws IllegalStateException if the name attribute is used when mocking multiple classes
-     */
-    private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element, Class<?> source) {
+	 * Parses the {@code MockBean} annotation and creates mock definitions based on the
+	 * provided parameters.
+	 * @param annotation the {@code MockBean} annotation to parse
+	 * @param element the annotated element
+	 * @param source the source class
+	 * @throws IllegalStateException if unable to deduce the type to mock from the
+	 * annotated element
+	 * @throws IllegalStateException if the name attribute is used when mocking multiple
+	 * classes
+	 */
+	private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element, Class<?> source) {
 		Set<ResolvableType> typesToMock = getOrDeduceTypes(element, annotation.value(), source);
 		Assert.state(!typesToMock.isEmpty(), () -> "Unable to deduce type to mock from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
@@ -118,15 +119,16 @@ class DefinitionsParser {
 	}
 
 	/**
-     * Parses the {@code @SpyBean} annotation and creates spy definitions for the annotated element.
-     *
-     * @param annotation the {@code @SpyBean} annotation
-     * @param element the annotated element
-     * @param source the source class
-     * @throws IllegalStateException if unable to deduce the type to spy from the element
-     * @throws IllegalStateException if the name attribute is used when spying multiple classes
-     */
-    private void parseSpyBeanAnnotation(SpyBean annotation, AnnotatedElement element, Class<?> source) {
+	 * Parses the {@code @SpyBean} annotation and creates spy definitions for the
+	 * annotated element.
+	 * @param annotation the {@code @SpyBean} annotation
+	 * @param element the annotated element
+	 * @param source the source class
+	 * @throws IllegalStateException if unable to deduce the type to spy from the element
+	 * @throws IllegalStateException if the name attribute is used when spying multiple
+	 * classes
+	 */
+	private void parseSpyBeanAnnotation(SpyBean annotation, AnnotatedElement element, Class<?> source) {
 		Set<ResolvableType> typesToSpy = getOrDeduceTypes(element, annotation.value(), source);
 		Assert.state(!typesToSpy.isEmpty(), () -> "Unable to deduce type to spy from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
@@ -140,15 +142,13 @@ class DefinitionsParser {
 	}
 
 	/**
-     * Adds a definition to the DefinitionsParser.
-     * 
-     * @param element the annotated element to which the definition belongs
-     * @param definition the definition to be added
-     * @param type the type of the definition
-     * 
-     * @throws IllegalStateException if a duplicate definition is found
-     */
-    private void addDefinition(AnnotatedElement element, Definition definition, String type) {
+	 * Adds a definition to the DefinitionsParser.
+	 * @param element the annotated element to which the definition belongs
+	 * @param definition the definition to be added
+	 * @param type the type of the definition
+	 * @throws IllegalStateException if a duplicate definition is found
+	 */
+	private void addDefinition(AnnotatedElement element, Definition definition, String type) {
 		boolean isNewDefinition = this.definitions.add(definition);
 		Assert.state(isNewDefinition, () -> "Duplicate " + type + " definition " + definition);
 		if (element instanceof Field field) {
@@ -157,14 +157,14 @@ class DefinitionsParser {
 	}
 
 	/**
-     * Retrieves or deduces the types based on the provided annotated element, value, and source class.
-     * 
-     * @param element the annotated element to retrieve or deduce types from
-     * @param value the array of classes to retrieve or deduce types from
-     * @param source the source class to retrieve or deduce types from
-     * @return a set of ResolvableType objects representing the retrieved or deduced types
-     */
-    private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element, Class<?>[] value, Class<?> source) {
+	 * Retrieves or deduces the types based on the provided annotated element, value, and
+	 * source class.
+	 * @param element the annotated element to retrieve or deduce types from
+	 * @param value the array of classes to retrieve or deduce types from
+	 * @param source the source class to retrieve or deduce types from
+	 * @return a set of ResolvableType objects representing the retrieved or deduced types
+	 */
+	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element, Class<?>[] value, Class<?> source) {
 		Set<ResolvableType> types = new LinkedHashSet<>();
 		for (Class<?> clazz : value) {
 			types.add(ResolvableType.forClass(clazz));
@@ -177,21 +177,19 @@ class DefinitionsParser {
 	}
 
 	/**
-     * Returns an unmodifiable set of definitions.
-     * 
-     * @return an unmodifiable set of definitions
-     */
-    Set<Definition> getDefinitions() {
+	 * Returns an unmodifiable set of definitions.
+	 * @return an unmodifiable set of definitions
+	 */
+	Set<Definition> getDefinitions() {
 		return Collections.unmodifiableSet(this.definitions);
 	}
 
 	/**
-     * Retrieves the field associated with the given definition.
-     * 
-     * @param definition the definition for which the field is to be retrieved
-     * @return the field associated with the given definition
-     */
-    Field getField(Definition definition) {
+	 * Retrieves the field associated with the given definition.
+	 * @param definition the definition for which the field is to be retrieved
+	 * @return the field associated with the given definition
+	 */
+	Field getField(Definition definition) {
 		return this.definitionFields.get(definition);
 	}
 

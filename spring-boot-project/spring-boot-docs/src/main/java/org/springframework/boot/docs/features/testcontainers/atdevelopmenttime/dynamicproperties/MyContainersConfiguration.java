@@ -29,12 +29,12 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 public class MyContainersConfiguration {
 
 	/**
-     * Creates and configures a MongoDBContainer for integration testing.
-     * 
-     * @param properties the dynamic property registry to add the MongoDB container properties to
-     * @return the configured MongoDBContainer
-     */
-    @Bean
+	 * Creates and configures a MongoDBContainer for integration testing.
+	 * @param properties the dynamic property registry to add the MongoDB container
+	 * properties to
+	 * @return the configured MongoDBContainer
+	 */
+	@Bean
 	public MongoDBContainer mongoDbContainer(DynamicPropertyRegistry properties) {
 		MongoDBContainer container = new MongoDBContainer("mongo:5.0");
 		properties.add("spring.data.mongodb.host", container::getHost);

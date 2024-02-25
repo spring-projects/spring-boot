@@ -63,27 +63,25 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	}
 
 	/**
-     * Determines if the given bean type is exposed as an endpoint type.
-     * 
-     * @param beanType the bean type to check
-     * @return true if the bean type is exposed as an endpoint type, false otherwise
-     */
-    @Override
+	 * Determines if the given bean type is exposed as an endpoint type.
+	 * @param beanType the bean type to check
+	 * @return true if the bean type is exposed as an endpoint type, false otherwise
+	 */
+	@Override
 	protected boolean isEndpointTypeExposed(Class<?> beanType) {
 		MergedAnnotations annotations = MergedAnnotations.from(beanType, SearchStrategy.SUPERCLASS);
 		return annotations.isPresent(ControllerEndpoint.class) || annotations.isPresent(RestControllerEndpoint.class);
 	}
 
 	/**
-     * Creates a new {@link ExposableControllerEndpoint} based on the provided parameters.
-     * 
-     * @param endpointBean the bean representing the endpoint
-     * @param id the unique identifier for the endpoint
-     * @param enabledByDefault whether the endpoint is enabled by default
-     * @param operations the collection of operations supported by the endpoint
-     * @return the created {@link ExposableControllerEndpoint}
-     */
-    @Override
+	 * Creates a new {@link ExposableControllerEndpoint} based on the provided parameters.
+	 * @param endpointBean the bean representing the endpoint
+	 * @param id the unique identifier for the endpoint
+	 * @param enabledByDefault whether the endpoint is enabled by default
+	 * @param operations the collection of operations supported by the endpoint
+	 * @return the created {@link ExposableControllerEndpoint}
+	 */
+	@Override
 	protected ExposableControllerEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
 			Collection<Operation> operations) {
 		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, id);
@@ -91,44 +89,41 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	}
 
 	/**
-     * Creates an operation for a controller endpoint.
-     * 
-     * @param endpointId The ID of the endpoint.
-     * @param operationMethod The discovered operation method.
-     * @param invoker The operation invoker.
-     * @return The created operation.
-     * @throws IllegalStateException if a controller endpoint declares operations.
-     */
-    @Override
+	 * Creates an operation for a controller endpoint.
+	 * @param endpointId The ID of the endpoint.
+	 * @param operationMethod The discovered operation method.
+	 * @param invoker The operation invoker.
+	 * @return The created operation.
+	 * @throws IllegalStateException if a controller endpoint declares operations.
+	 */
+	@Override
 	protected Operation createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
 			OperationInvoker invoker) {
 		throw new IllegalStateException("ControllerEndpoints must not declare operations");
 	}
 
 	/**
-     * Creates an operation key for the given operation.
-     * 
-     * @param operation the operation for which to create the key
-     * @return the operation key
-     * @throws IllegalStateException if the ControllerEndpoints declare operations
-     */
-    @Override
+	 * Creates an operation key for the given operation.
+	 * @param operation the operation for which to create the key
+	 * @return the operation key
+	 * @throws IllegalStateException if the ControllerEndpoints declare operations
+	 */
+	@Override
 	protected OperationKey createOperationKey(Operation operation) {
 		throw new IllegalStateException("ControllerEndpoints must not declare operations");
 	}
 
 	/**
-     * ControllerEndpointDiscovererRuntimeHints class.
-     */
-    static class ControllerEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
+	 * ControllerEndpointDiscovererRuntimeHints class.
+	 */
+	static class ControllerEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
 
 		/**
-         * Registers runtime hints for the ControllerEndpointDiscoverer class.
-         * 
-         * @param hints The RuntimeHints object containing the hints to be registered.
-         * @param classLoader The ClassLoader to be used for loading classes.
-         */
-        @Override
+		 * Registers runtime hints for the ControllerEndpointDiscoverer class.
+		 * @param hints The RuntimeHints object containing the hints to be registered.
+		 * @param classLoader The ClassLoader to be used for loading classes.
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.reflection()
 				.registerType(ControllerEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);

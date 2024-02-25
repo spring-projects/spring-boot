@@ -47,12 +47,11 @@ public class Layer {
 	}
 
 	/**
-     * Compares this Layer object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this Layer object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -64,21 +63,19 @@ public class Layer {
 	}
 
 	/**
-     * Returns the hash code value for the Layer object.
-     * 
-     * @return the hash code value for the Layer object
-     */
-    @Override
+	 * Returns the hash code value for the Layer object.
+	 * @return the hash code value for the Layer object
+	 */
+	@Override
 	public int hashCode() {
 		return this.name.hashCode();
 	}
 
 	/**
-     * Returns the string representation of the Layer object.
-     *
-     * @return the name of the Layer object
-     */
-    @Override
+	 * Returns the string representation of the Layer object.
+	 * @return the name of the Layer object
+	 */
+	@Override
 	public String toString() {
 		return this.name;
 	}

@@ -33,11 +33,11 @@ import org.springframework.context.annotation.Bean;
 public class HealthContributorAutoConfiguration {
 
 	/**
-     * Creates a new instance of PingHealthIndicator if the "ping" health indicator is enabled.
-     * 
-     * @return the PingHealthIndicator instance
-     */
-    @Bean
+	 * Creates a new instance of PingHealthIndicator if the "ping" health indicator is
+	 * enabled.
+	 * @return the PingHealthIndicator instance
+	 */
+	@Bean
 	@ConditionalOnEnabledHealthIndicator("ping")
 	public PingHealthIndicator pingHealthContributor() {
 		return new PingHealthIndicator();

@@ -31,23 +31,22 @@ import org.springframework.boot.logging.LogLevel;
 class ConditionEvaluationReportLoggingProcessor implements BeanFactoryInitializationAotProcessor {
 
 	/**
-     * Logs the condition evaluation report for the given bean factory.
-     * 
-     * @param beanFactory the bean factory to log the condition evaluation report for
-     * @return the BeanFactoryInitializationAotContribution object
-     */
-    @Override
+	 * Logs the condition evaluation report for the given bean factory.
+	 * @param beanFactory the bean factory to log the condition evaluation report for
+	 * @return the BeanFactoryInitializationAotContribution object
+	 */
+	@Override
 	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
 		logConditionEvaluationReport(beanFactory);
 		return null;
 	}
 
 	/**
-     * Logs the condition evaluation report for the given bean factory.
-     * 
-     * @param beanFactory the bean factory to retrieve the condition evaluation report from
-     */
-    private void logConditionEvaluationReport(ConfigurableListableBeanFactory beanFactory) {
+	 * Logs the condition evaluation report for the given bean factory.
+	 * @param beanFactory the bean factory to retrieve the condition evaluation report
+	 * from
+	 */
+	private void logConditionEvaluationReport(ConfigurableListableBeanFactory beanFactory) {
 		new ConditionEvaluationReportLogger(LogLevel.DEBUG, () -> ConditionEvaluationReport.get(beanFactory))
 			.logReport(false);
 	}

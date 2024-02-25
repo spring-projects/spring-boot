@@ -36,20 +36,18 @@ public class CloudFoundryInfoEndpointWebExtension {
 	private final InfoEndpoint delegate;
 
 	/**
-     * Constructs a new CloudFoundryInfoEndpointWebExtension with the specified delegate.
-     *
-     * @param delegate the delegate InfoEndpoint to be used
-     */
-    public CloudFoundryInfoEndpointWebExtension(InfoEndpoint delegate) {
+	 * Constructs a new CloudFoundryInfoEndpointWebExtension with the specified delegate.
+	 * @param delegate the delegate InfoEndpoint to be used
+	 */
+	public CloudFoundryInfoEndpointWebExtension(InfoEndpoint delegate) {
 		this.delegate = delegate;
 	}
 
 	/**
-     * Retrieves information about the Cloud Foundry endpoint.
-     * 
-     * @return A map containing the information about the Cloud Foundry endpoint.
-     */
-    @ReadOperation
+	 * Retrieves information about the Cloud Foundry endpoint.
+	 * @return A map containing the information about the Cloud Foundry endpoint.
+	 */
+	@ReadOperation
 	public Map<String, Object> info() {
 		return this.delegate.info();
 	}

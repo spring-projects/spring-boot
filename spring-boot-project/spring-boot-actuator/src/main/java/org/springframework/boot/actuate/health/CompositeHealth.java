@@ -44,14 +44,14 @@ public class CompositeHealth extends HealthComponent {
 	private final Map<String, HealthComponent> details;
 
 	/**
-     * Constructs a new CompositeHealth object with the specified API version, status, and components.
-     * 
-     * @param apiVersion the API version of the health check
-     * @param status the status of the health check
-     * @param components the map of health components
-     * @throws IllegalArgumentException if the status is null
-     */
-    CompositeHealth(ApiVersion apiVersion, Status status, Map<String, HealthComponent> components) {
+	 * Constructs a new CompositeHealth object with the specified API version, status, and
+	 * components.
+	 * @param apiVersion the API version of the health check
+	 * @param status the status of the health check
+	 * @param components the map of health components
+	 * @throws IllegalArgumentException if the status is null
+	 */
+	CompositeHealth(ApiVersion apiVersion, Status status, Map<String, HealthComponent> components) {
 		Assert.notNull(status, "Status must not be null");
 		this.status = status;
 		this.components = (apiVersion != ApiVersion.V3) ? null : sort(components);
@@ -59,42 +59,41 @@ public class CompositeHealth extends HealthComponent {
 	}
 
 	/**
-     * Sorts the given map of health components by their keys in ascending order.
-     * 
-     * @param components the map of health components to be sorted (can be null)
-     * @return a new TreeMap containing the sorted health components, or the original map if it is null
-     */
-    private Map<String, HealthComponent> sort(Map<String, HealthComponent> components) {
+	 * Sorts the given map of health components by their keys in ascending order.
+	 * @param components the map of health components to be sorted (can be null)
+	 * @return a new TreeMap containing the sorted health components, or the original map
+	 * if it is null
+	 */
+	private Map<String, HealthComponent> sort(Map<String, HealthComponent> components) {
 		return (components != null) ? new TreeMap<>(components) : components;
 	}
 
 	/**
-     * Returns the status of the CompositeHealth object.
-     *
-     * @return the status of the CompositeHealth object
-     */
-    @Override
+	 * Returns the status of the CompositeHealth object.
+	 * @return the status of the CompositeHealth object
+	 */
+	@Override
 	public Status getStatus() {
 		return this.status;
 	}
 
 	/**
-     * Returns the components of the CompositeHealth.
-     * 
-     * @return a map containing the components of the CompositeHealth. The keys are the names of the components and the values are the HealthComponent objects.
-     *         If the map is empty, an empty map will be returned.
-     */
-    @JsonInclude(Include.NON_EMPTY)
+	 * Returns the components of the CompositeHealth.
+	 * @return a map containing the components of the CompositeHealth. The keys are the
+	 * names of the components and the values are the HealthComponent objects. If the map
+	 * is empty, an empty map will be returned.
+	 */
+	@JsonInclude(Include.NON_EMPTY)
 	public Map<String, HealthComponent> getComponents() {
 		return this.components;
 	}
 
 	/**
-     * Retrieves the details of the health components.
-     * 
-     * @return A map containing the details of the health components. The map is empty if there are no details available.
-     */
-    @JsonInclude(Include.NON_EMPTY)
+	 * Retrieves the details of the health components.
+	 * @return A map containing the details of the health components. The map is empty if
+	 * there are no details available.
+	 */
+	@JsonInclude(Include.NON_EMPTY)
 	@JsonProperty
 	public Map<String, HealthComponent> getDetails() {
 		return this.details;

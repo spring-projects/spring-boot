@@ -47,56 +47,50 @@ public class HazelcastSessionProperties {
 	private SaveMode saveMode = SaveMode.ON_SET_ATTRIBUTE;
 
 	/**
-     * Returns the name of the map.
-     *
-     * @return the name of the map
-     */
-    public String getMapName() {
+	 * Returns the name of the map.
+	 * @return the name of the map
+	 */
+	public String getMapName() {
 		return this.mapName;
 	}
 
 	/**
-     * Sets the name of the map.
-     * 
-     * @param mapName the name of the map
-     */
-    public void setMapName(String mapName) {
+	 * Sets the name of the map.
+	 * @param mapName the name of the map
+	 */
+	public void setMapName(String mapName) {
 		this.mapName = mapName;
 	}
 
 	/**
-     * Returns the flush mode of the session.
-     *
-     * @return the flush mode of the session
-     */
-    public FlushMode getFlushMode() {
+	 * Returns the flush mode of the session.
+	 * @return the flush mode of the session
+	 */
+	public FlushMode getFlushMode() {
 		return this.flushMode;
 	}
 
 	/**
-     * Sets the flush mode for the session.
-     * 
-     * @param flushMode the flush mode to be set
-     */
-    public void setFlushMode(FlushMode flushMode) {
+	 * Sets the flush mode for the session.
+	 * @param flushMode the flush mode to be set
+	 */
+	public void setFlushMode(FlushMode flushMode) {
 		this.flushMode = flushMode;
 	}
 
 	/**
-     * Returns the save mode of the Hazelcast session properties.
-     *
-     * @return the save mode of the Hazelcast session properties
-     */
-    public SaveMode getSaveMode() {
+	 * Returns the save mode of the Hazelcast session properties.
+	 * @return the save mode of the Hazelcast session properties
+	 */
+	public SaveMode getSaveMode() {
 		return this.saveMode;
 	}
 
 	/**
-     * Sets the save mode for the Hazelcast session properties.
-     * 
-     * @param saveMode the save mode to be set
-     */
-    public void setSaveMode(SaveMode saveMode) {
+	 * Sets the save mode for the Hazelcast session properties.
+	 * @param saveMode the save mode to be set
+	 */
+	public void setSaveMode(SaveMode saveMode) {
 		this.saveMode = saveMode;
 	}
 

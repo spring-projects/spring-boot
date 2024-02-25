@@ -103,12 +103,12 @@ public final class Status {
 	}
 
 	/**
-     * Compares this Status object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the specified object is equal to this Status object, false otherwise
-     */
-    @Override
+	 * Compares this Status object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the specified object is equal to this Status object, false
+	 * otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -120,21 +120,19 @@ public final class Status {
 	}
 
 	/**
-     * Returns the hash code value for this Status object.
-     * 
-     * @return the hash code value for this object
-     */
-    @Override
+	 * Returns the hash code value for this Status object.
+	 * @return the hash code value for this object
+	 */
+	@Override
 	public int hashCode() {
 		return this.code.hashCode();
 	}
 
 	/**
-     * Returns the string representation of the Status object.
-     *
-     * @return the code of the Status object as a string
-     */
-    @Override
+	 * Returns the string representation of the Status object.
+	 * @return the code of the Status object as a string
+	 */
+	@Override
 	public String toString() {
 		return this.code;
 	}

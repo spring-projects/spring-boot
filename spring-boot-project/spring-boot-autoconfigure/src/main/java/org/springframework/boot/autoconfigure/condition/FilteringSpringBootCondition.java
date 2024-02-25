@@ -44,13 +44,14 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 	private ClassLoader beanClassLoader;
 
 	/**
-     * Matches the given auto configuration classes against the auto configuration metadata.
-     * 
-     * @param autoConfigurationClasses the array of auto configuration classes to match
-     * @param autoConfigurationMetadata the auto configuration metadata to match against
-     * @return an array of booleans indicating whether each auto configuration class matches or not
-     */
-    @Override
+	 * Matches the given auto configuration classes against the auto configuration
+	 * metadata.
+	 * @param autoConfigurationClasses the array of auto configuration classes to match
+	 * @param autoConfigurationMetadata the auto configuration metadata to match against
+	 * @return an array of booleans indicating whether each auto configuration class
+	 * matches or not
+	 */
+	@Override
 	public boolean[] match(String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata) {
 		ConditionEvaluationReport report = ConditionEvaluationReport.find(this.beanFactory);
 		ConditionOutcome[] outcomes = getOutcomes(autoConfigurationClasses, autoConfigurationMetadata);
@@ -68,63 +69,59 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 	}
 
 	/**
-     * Returns an array of ConditionOutcome objects based on the provided auto configuration classes and metadata.
-     *
-     * @param autoConfigurationClasses   an array of auto configuration classes
-     * @param autoConfigurationMetadata the auto configuration metadata
-     * @return an array of ConditionOutcome objects
-     */
-    protected abstract ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
+	 * Returns an array of ConditionOutcome objects based on the provided auto
+	 * configuration classes and metadata.
+	 * @param autoConfigurationClasses an array of auto configuration classes
+	 * @param autoConfigurationMetadata the auto configuration metadata
+	 * @return an array of ConditionOutcome objects
+	 */
+	protected abstract ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
 			AutoConfigurationMetadata autoConfigurationMetadata);
 
 	/**
-     * Sets the bean factory for this FilteringSpringBootCondition.
-     * 
-     * @param beanFactory the bean factory to set
-     * @throws BeansException if an error occurs while setting the bean factory
-     */
-    @Override
+	 * Sets the bean factory for this FilteringSpringBootCondition.
+	 * @param beanFactory the bean factory to set
+	 * @throws BeansException if an error occurs while setting the bean factory
+	 */
+	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
 
 	/**
-     * Returns the BeanFactory associated with this FilteringSpringBootCondition.
-     *
-     * @return the BeanFactory associated with this FilteringSpringBootCondition
-     */
-    protected final BeanFactory getBeanFactory() {
+	 * Returns the BeanFactory associated with this FilteringSpringBootCondition.
+	 * @return the BeanFactory associated with this FilteringSpringBootCondition
+	 */
+	protected final BeanFactory getBeanFactory() {
 		return this.beanFactory;
 	}
 
 	/**
-     * Returns the class loader used for loading the beans.
-     *
-     * @return the class loader used for loading the beans
-     */
-    protected final ClassLoader getBeanClassLoader() {
+	 * Returns the class loader used for loading the beans.
+	 * @return the class loader used for loading the beans
+	 */
+	protected final ClassLoader getBeanClassLoader() {
 		return this.beanClassLoader;
 	}
 
 	/**
-     * Sets the class loader to be used for loading beans.
-     * 
-     * @param classLoader the class loader to be set
-     */
-    @Override
+	 * Sets the class loader to be used for loading beans.
+	 * @param classLoader the class loader to be set
+	 */
+	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.beanClassLoader = classLoader;
 	}
 
 	/**
-     * Filters a collection of class names based on a given class name filter and class loader.
-     * 
-     * @param classNames the collection of class names to be filtered
-     * @param classNameFilter the class name filter to be applied
-     * @param classLoader the class loader to be used for filtering
-     * @return a list of class names that match the given filter and class loader
-     */
-    protected final List<String> filter(Collection<String> classNames, ClassNameFilter classNameFilter,
+	 * Filters a collection of class names based on a given class name filter and class
+	 * loader.
+	 * @param classNames the collection of class names to be filtered
+	 * @param classNameFilter the class name filter to be applied
+	 * @param classLoader the class loader to be used for filtering
+	 * @return a list of class names that match the given filter and class loader
+	 */
+	protected final List<String> filter(Collection<String> classNames, ClassNameFilter classNameFilter,
 			ClassLoader classLoader) {
 		if (CollectionUtils.isEmpty(classNames)) {
 			return Collections.emptyList();
@@ -158,13 +155,13 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 		PRESENT {
 
 			/**
-     * Determines if the given class name is present in the specified class loader.
-     * 
-     * @param className the name of the class to check
-     * @param classLoader the class loader to search in
-     * @return true if the class is present, false otherwise
-     */
-    @Override
+			 * Determines if the given class name is present in the specified class
+			 * loader.
+			 * @param className the name of the class to check
+			 * @param classLoader the class loader to search in
+			 * @return true if the class is present, false otherwise
+			 */
+			@Override
 			public boolean matches(String className, ClassLoader classLoader) {
 				return isPresent(className, classLoader);
 			}
@@ -174,13 +171,14 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 		MISSING {
 
 			/**
-     * Determines if the given class name matches the condition by checking if it is not present in the specified class loader.
-     * 
-     * @param className the name of the class to check
-     * @param classLoader the class loader to use for checking
-     * @return true if the class name does not exist in the class loader, false otherwise
-     */
-    @Override
+			 * Determines if the given class name matches the condition by checking if it
+			 * is not present in the specified class loader.
+			 * @param className the name of the class to check
+			 * @param classLoader the class loader to use for checking
+			 * @return true if the class name does not exist in the class loader, false
+			 * otherwise
+			 */
+			@Override
 			public boolean matches(String className, ClassLoader classLoader) {
 				return !isPresent(className, classLoader);
 			}
@@ -188,22 +186,22 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 		};
 
 		/**
-     * Checks if the given class name matches the specified class loader.
-     *
-     * @param className   the name of the class to be checked
-     * @param classLoader the class loader to be used for checking
-     * @return {@code true} if the class name matches the class loader, {@code false} otherwise
-     */
-    abstract boolean matches(String className, ClassLoader classLoader);
+		 * Checks if the given class name matches the specified class loader.
+		 * @param className the name of the class to be checked
+		 * @param classLoader the class loader to be used for checking
+		 * @return {@code true} if the class name matches the class loader, {@code false}
+		 * otherwise
+		 */
+		abstract boolean matches(String className, ClassLoader classLoader);
 
 		/**
-     * Checks if a class with the given name is present in the classpath.
-     * 
-     * @param className the fully qualified name of the class to check
-     * @param classLoader the class loader to use for loading the class (optional, defaults to the default class loader)
-     * @return true if the class is present, false otherwise
-     */
-    static boolean isPresent(String className, ClassLoader classLoader) {
+		 * Checks if a class with the given name is present in the classpath.
+		 * @param className the fully qualified name of the class to check
+		 * @param classLoader the class loader to use for loading the class (optional,
+		 * defaults to the default class loader)
+		 * @return true if the class is present, false otherwise
+		 */
+		static boolean isPresent(String className, ClassLoader classLoader) {
 			if (classLoader == null) {
 				classLoader = ClassUtils.getDefaultClassLoader();
 			}

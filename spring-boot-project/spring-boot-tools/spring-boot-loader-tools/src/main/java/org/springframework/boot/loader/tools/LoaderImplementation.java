@@ -37,11 +37,10 @@ public enum LoaderImplementation {
 	private final String jarResourceName;
 
 	/**
-     * Constructs a new LoaderImplementation object with the specified jar resource name.
-     * 
-     * @param jarResourceName the name of the jar resource
-     */
-    LoaderImplementation(String jarResourceName) {
+	 * Constructs a new LoaderImplementation object with the specified jar resource name.
+	 * @param jarResourceName the name of the jar resource
+	 */
+	LoaderImplementation(String jarResourceName) {
 		this.jarResourceName = jarResourceName;
 	}
 

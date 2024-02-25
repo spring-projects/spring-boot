@@ -61,12 +61,12 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Finds the resource with the specified name.
-     * 
-     * @param name the name of the resource
-     * @return the URL object representing the resource, or null if the resource is not found
-     */
-    @Override
+	 * Finds the resource with the specified name.
+	 * @param name the name of the resource
+	 * @return the URL object representing the resource, or null if the resource is not
+	 * found
+	 */
+	@Override
 	public URL findResource(String name) {
 		if (!this.hasJarUrls) {
 			return super.findResource(name);
@@ -81,14 +81,14 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Overrides the findResources method to provide optimized resource searching in case the class loader has JAR URLs.
-     * If the class loader does not have JAR URLs, the method falls back to the default implementation.
-     * 
-     * @param name The name of the resource to be found.
-     * @return An enumeration of URLs representing the resources found.
-     * @throws IOException If an I/O error occurs while finding the resources.
-     */
-    @Override
+	 * Overrides the findResources method to provide optimized resource searching in case
+	 * the class loader has JAR URLs. If the class loader does not have JAR URLs, the
+	 * method falls back to the default implementation.
+	 * @param name The name of the resource to be found.
+	 * @return An enumeration of URLs representing the resources found.
+	 * @throws IOException If an I/O error occurs while finding the resources.
+	 */
+	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
 		if (!this.hasJarUrls) {
 			return super.findResources(name);
@@ -103,14 +103,14 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Loads the specified class with the given name.
-     * 
-     * @param name    the name of the class to be loaded
-     * @param resolve indicates whether or not to resolve the class
-     * @return the loaded class
-     * @throws ClassNotFoundException if the class with the specified name could not be found
-     */
-    @Override
+	 * Loads the specified class with the given name.
+	 * @param name the name of the class to be loaded
+	 * @param resolve indicates whether or not to resolve the class
+	 * @return the loaded class
+	 * @throws ClassNotFoundException if the class with the specified name could not be
+	 * found
+	 */
+	@Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		if (!this.hasJarUrls) {
 			return super.loadClass(name, resolve);
@@ -155,16 +155,16 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Defines a package for a given class in the specified package name.
-     * If the package is in the list of undefinable packages, the method returns without defining the package.
-     * The method checks if the class and package entries exist in the jar file associated with the given URL.
-     * If they exist and the jar file has a manifest, the package is defined using the manifest and the URL.
-     * If the package cannot be defined, it is added to the list of undefinable packages.
-     * 
-     * @param className the name of the class
-     * @param packageName the name of the package
-     */
-    private void definePackage(String className, String packageName) {
+	 * Defines a package for a given class in the specified package name. If the package
+	 * is in the list of undefinable packages, the method returns without defining the
+	 * package. The method checks if the class and package entries exist in the jar file
+	 * associated with the given URL. If they exist and the jar file has a manifest, the
+	 * package is defined using the manifest and the URL. If the package cannot be
+	 * defined, it is added to the list of undefinable packages.
+	 * @param className the name of the class
+	 * @param packageName the name of the package
+	 */
+	private void definePackage(String className, String packageName) {
 		if (this.undefinablePackages.contains(packageName)) {
 			return;
 		}
@@ -189,13 +189,14 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Tolerates a race condition due to being parallel capable.
-     * 
-     * @param ex the IllegalArgumentException indicating that the package has already been defined
-     * @param packageName the name of the package
-     * @throws AssertionError if the package has already been defined but could not be found
-     */
-    private void tolerateRaceConditionDueToBeingParallelCapable(IllegalArgumentException ex, String packageName)
+	 * Tolerates a race condition due to being parallel capable.
+	 * @param ex the IllegalArgumentException indicating that the package has already been
+	 * defined
+	 * @param packageName the name of the package
+	 * @throws AssertionError if the package has already been defined but could not be
+	 * found
+	 */
+	private void tolerateRaceConditionDueToBeingParallelCapable(IllegalArgumentException ex, String packageName)
 			throws AssertionError {
 		if (getDefinedPackage(packageName) == null) {
 			// This should never happen as the IllegalArgumentException indicates that the
@@ -207,25 +208,24 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Checks if the given entry exists in the specified JarFile.
-     * 
-     * @param jarFile the JarFile to check
-     * @param name the name of the entry to check for
-     * @return true if the entry exists, false otherwise
-     */
-    private boolean hasEntry(JarFile jarFile, String name) {
+	 * Checks if the given entry exists in the specified JarFile.
+	 * @param jarFile the JarFile to check
+	 * @param name the name of the entry to check for
+	 * @return true if the entry exists, false otherwise
+	 */
+	private boolean hasEntry(JarFile jarFile, String name) {
 		return (jarFile instanceof NestedJarFile nestedJarFile) ? nestedJarFile.hasEntry(name)
 				: jarFile.getEntry(name) != null;
 	}
 
 	/**
-     * Retrieves the JarFile associated with the given URL.
-     * 
-     * @param url The URL of the JarFile to retrieve.
-     * @return The JarFile associated with the given URL, or null if the URL does not point to a JarFile.
-     * @throws IOException If an I/O error occurs while retrieving the JarFile.
-     */
-    private JarFile getJarFile(URL url) throws IOException {
+	 * Retrieves the JarFile associated with the given URL.
+	 * @param url The URL of the JarFile to retrieve.
+	 * @return The JarFile associated with the given URL, or null if the URL does not
+	 * point to a JarFile.
+	 * @throws IOException If an I/O error occurs while retrieving the JarFile.
+	 */
+	private JarFile getJarFile(URL url) throws IOException {
 		JarFile jarFile = this.jarFiles.get(url);
 		if (jarFile != null) {
 			return jarFile;
@@ -267,11 +267,10 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Clears the cache for the specified URL.
-     * 
-     * @param url the URL for which the cache needs to be cleared
-     */
-    private void clearCache(URL url) {
+	 * Clears the cache for the specified URL.
+	 * @param url the URL for which the cache needs to be cleared
+	 */
+	private void clearCache(URL url) {
 		try {
 			URLConnection connection = url.openConnection();
 			if (connection instanceof JarURLConnection jarUrlConnection) {
@@ -284,12 +283,11 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Clears the cache for the given JarURLConnection.
-     * 
-     * @param connection the JarURLConnection to clear the cache for
-     * @throws IOException if an I/O error occurs while clearing the cache
-     */
-    private void clearCache(JarURLConnection connection) throws IOException {
+	 * Clears the cache for the given JarURLConnection.
+	 * @param connection the JarURLConnection to clear the cache for
+	 * @throws IOException if an I/O error occurs while clearing the cache
+	 */
+	private void clearCache(JarURLConnection connection) throws IOException {
 		JarFile jarFile = connection.getJarFile();
 		if (jarFile instanceof NestedJarFile nestedJarFile) {
 			nestedJarFile.clearCache();
@@ -297,33 +295,31 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Checks if the given URL is a JAR URL.
-     * 
-     * @param url the URL to check
-     * @return true if the URL is a JAR URL, false otherwise
-     */
-    private boolean isJarUrl(URL url) {
+	 * Checks if the given URL is a JAR URL.
+	 * @param url the URL to check
+	 * @return true if the URL is a JAR URL, false otherwise
+	 */
+	private boolean isJarUrl(URL url) {
 		return "jar".equals(url.getProtocol());
 	}
 
 	/**
-     * Closes the JarUrlClassLoader and releases any resources associated with it.
-     * This method overrides the close() method in the superclass and also clears any loaded jar files.
-     * 
-     * @throws IOException if an I/O error occurs while closing the JarUrlClassLoader
-     */
-    @Override
+	 * Closes the JarUrlClassLoader and releases any resources associated with it. This
+	 * method overrides the close() method in the superclass and also clears any loaded
+	 * jar files.
+	 * @throws IOException if an I/O error occurs while closing the JarUrlClassLoader
+	 */
+	@Override
 	public void close() throws IOException {
 		super.close();
 		clearJarFiles();
 	}
 
 	/**
-     * Clears all the Jar files in the JarUrlClassLoader.
-     * 
-     * @throws IOException if an I/O error occurs while closing the Jar files
-     */
-    private void clearJarFiles() throws IOException {
+	 * Clears all the Jar files in the JarUrlClassLoader.
+	 * @throws IOException if an I/O error occurs while closing the Jar files
+	 */
+	private void clearJarFiles() throws IOException {
 		synchronized (this.jarFiles) {
 			for (JarFile jarFile : this.jarFiles.values()) {
 				jarFile.close();
@@ -340,20 +336,18 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 		private final Enumeration<URL> delegate;
 
 		/**
-         * Constructs a new OptimizedEnumeration object with the specified delegate.
-         * 
-         * @param delegate the Enumeration object to be delegated to
-         */
-        OptimizedEnumeration(Enumeration<URL> delegate) {
+		 * Constructs a new OptimizedEnumeration object with the specified delegate.
+		 * @param delegate the Enumeration object to be delegated to
+		 */
+		OptimizedEnumeration(Enumeration<URL> delegate) {
 			this.delegate = delegate;
 		}
 
 		/**
-         * Returns true if this enumeration contains more elements.
-         * 
-         * @return true if this enumeration contains more elements, false otherwise
-         */
-        @Override
+		 * Returns true if this enumeration contains more elements.
+		 * @return true if this enumeration contains more elements, false otherwise
+		 */
+		@Override
 		public boolean hasMoreElements() {
 			Optimizations.enable(false);
 			try {
@@ -366,11 +360,10 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 		}
 
 		/**
-         * Returns the next element in the enumeration.
-         * 
-         * @return the next element in the enumeration
-         */
-        @Override
+		 * Returns the next element in the enumeration.
+		 * @return the next element in the enumeration
+		 */
+		@Override
 		public URL nextElement() {
 			Optimizations.enable(false);
 			try {

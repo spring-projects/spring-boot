@@ -52,35 +52,37 @@ public class InfluxMetricsExportAutoConfiguration {
 	private final InfluxProperties properties;
 
 	/**
-     * Constructs a new instance of InfluxMetricsExportAutoConfiguration with the specified InfluxProperties.
-     * 
-     * @param properties the InfluxProperties to be used for configuration
-     */
-    public InfluxMetricsExportAutoConfiguration(InfluxProperties properties) {
+	 * Constructs a new instance of InfluxMetricsExportAutoConfiguration with the
+	 * specified InfluxProperties.
+	 * @param properties the InfluxProperties to be used for configuration
+	 */
+	public InfluxMetricsExportAutoConfiguration(InfluxProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Creates a new instance of InfluxConfig if no bean of type InfluxConfig is already present in the application context.
-     * This method is annotated with @Bean and @ConditionalOnMissingBean, which ensures that this bean is only created if no other bean of the same type is already present.
-     * The method returns an instance of InfluxPropertiesConfigAdapter, which is a configuration adapter for InfluxDB properties.
-     * 
-     * @return the InfluxConfig bean
-     */
-    @Bean
+	 * Creates a new instance of InfluxConfig if no bean of type InfluxConfig is already
+	 * present in the application context. This method is annotated with @Bean
+	 * and @ConditionalOnMissingBean, which ensures that this bean is only created if no
+	 * other bean of the same type is already present. The method returns an instance of
+	 * InfluxPropertiesConfigAdapter, which is a configuration adapter for InfluxDB
+	 * properties.
+	 * @return the InfluxConfig bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public InfluxConfig influxConfig() {
 		return new InfluxPropertiesConfigAdapter(this.properties);
 	}
 
 	/**
-     * Creates an instance of InfluxMeterRegistry if no other bean of the same type is present.
-     * 
-     * @param influxConfig the configuration for InfluxDB
-     * @param clock the clock used for measuring time
-     * @return the created InfluxMeterRegistry instance
-     */
-    @Bean
+	 * Creates an instance of InfluxMeterRegistry if no other bean of the same type is
+	 * present.
+	 * @param influxConfig the configuration for InfluxDB
+	 * @param clock the clock used for measuring time
+	 * @return the created InfluxMeterRegistry instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public InfluxMeterRegistry influxMeterRegistry(InfluxConfig influxConfig, Clock clock) {
 		return InfluxMeterRegistry.builder(influxConfig)

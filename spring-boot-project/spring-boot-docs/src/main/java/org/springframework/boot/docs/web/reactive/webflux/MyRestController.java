@@ -37,45 +37,43 @@ public class MyRestController {
 	private final CustomerRepository customerRepository;
 
 	/**
-     * Constructs a new instance of MyRestController with the specified UserRepository and CustomerRepository.
-     * 
-     * @param userRepository the UserRepository to be used by the MyRestController
-     * @param customerRepository the CustomerRepository to be used by the MyRestController
-     */
-    public MyRestController(UserRepository userRepository, CustomerRepository customerRepository) {
+	 * Constructs a new instance of MyRestController with the specified UserRepository and
+	 * CustomerRepository.
+	 * @param userRepository the UserRepository to be used by the MyRestController
+	 * @param customerRepository the CustomerRepository to be used by the MyRestController
+	 */
+	public MyRestController(UserRepository userRepository, CustomerRepository customerRepository) {
 		this.userRepository = userRepository;
 		this.customerRepository = customerRepository;
 	}
 
 	/**
-     * Retrieves a user with the given userId.
-     *
-     * @param userId the ID of the user to retrieve
-     * @return a Mono containing the user with the given userId
-     */
-    @GetMapping("/{userId}")
+	 * Retrieves a user with the given userId.
+	 * @param userId the ID of the user to retrieve
+	 * @return a Mono containing the user with the given userId
+	 */
+	@GetMapping("/{userId}")
 	public Mono<User> getUser(@PathVariable Long userId) {
 		return this.userRepository.findById(userId);
 	}
 
 	/**
-     * Retrieves the customers associated with a specific user.
-     *
-     * @param userId the ID of the user
-     * @return a Flux of Customer objects representing the customers associated with the user
-     */
-    @GetMapping("/{userId}/customers")
+	 * Retrieves the customers associated with a specific user.
+	 * @param userId the ID of the user
+	 * @return a Flux of Customer objects representing the customers associated with the
+	 * user
+	 */
+	@GetMapping("/{userId}/customers")
 	public Flux<Customer> getUserCustomers(@PathVariable Long userId) {
 		return this.userRepository.findById(userId).flatMapMany(this.customerRepository::findByUser);
 	}
 
 	/**
-     * Deletes a user with the given userId.
-     *
-     * @param userId the ID of the user to be deleted
-     * @return a Mono representing the completion of the deletion operation
-     */
-    @DeleteMapping("/{userId}")
+	 * Deletes a user with the given userId.
+	 * @param userId the ID of the user to be deleted
+	 * @return a Mono representing the completion of the deletion operation
+	 */
+	@DeleteMapping("/{userId}")
 	public Mono<Void> deleteUser(@PathVariable Long userId) {
 		return this.userRepository.deleteById(userId);
 	}

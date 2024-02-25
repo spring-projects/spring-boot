@@ -32,13 +32,12 @@ import org.springframework.util.FileCopyUtils;
 class InputStreamSourceToByteArrayConverter implements Converter<InputStreamSource, byte[]> {
 
 	/**
-     * Converts an InputStreamSource to a byte array.
-     * 
-     * @param source the InputStreamSource to convert
-     * @return the byte array representation of the InputStreamSource
-     * @throws IllegalStateException if unable to read from the InputStreamSource
-     */
-    @Override
+	 * Converts an InputStreamSource to a byte array.
+	 * @param source the InputStreamSource to convert
+	 * @return the byte array representation of the InputStreamSource
+	 * @throws IllegalStateException if unable to read from the InputStreamSource
+	 */
+	@Override
 	public byte[] convert(InputStreamSource source) {
 		try {
 			return FileCopyUtils.copyToByteArray(source.getInputStream());
@@ -49,12 +48,11 @@ class InputStreamSourceToByteArrayConverter implements Converter<InputStreamSour
 	}
 
 	/**
-     * Returns the name of the given InputStreamSource.
-     * 
-     * @param source the InputStreamSource to get the name from
-     * @return the name of the InputStreamSource
-     */
-    private String getName(InputStreamSource source) {
+	 * Returns the name of the given InputStreamSource.
+	 * @param source the InputStreamSource to get the name from
+	 * @return the name of the InputStreamSource
+	 */
+	private String getName(InputStreamSource source) {
 		Origin origin = Origin.from(source);
 		if (origin != null) {
 			return origin.toString();

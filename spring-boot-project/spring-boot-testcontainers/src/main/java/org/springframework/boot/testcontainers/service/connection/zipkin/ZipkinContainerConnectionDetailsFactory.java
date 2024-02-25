@@ -38,24 +38,23 @@ class ZipkinContainerConnectionDetailsFactory
 	private static final int ZIPKIN_PORT = 9411;
 
 	/**
-     * Constructs a new ZipkinContainerConnectionDetailsFactory.
-     * 
-     * @param groupId the Maven group ID of the Zipkin container
-     * @param artifactId the Maven artifact ID of the Zipkin container
-     * @param autoConfigurationClass the fully qualified class name of the auto-configuration class for Zipkin
-     */
-    ZipkinContainerConnectionDetailsFactory() {
+	 * Constructs a new ZipkinContainerConnectionDetailsFactory.
+	 * @param groupId the Maven group ID of the Zipkin container
+	 * @param artifactId the Maven artifact ID of the Zipkin container
+	 * @param autoConfigurationClass the fully qualified class name of the
+	 * auto-configuration class for Zipkin
+	 */
+	ZipkinContainerConnectionDetailsFactory() {
 		super("openzipkin/zipkin",
 				"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration");
 	}
 
 	/**
-     * Returns the ZipkinConnectionDetails for the given ContainerConnectionSource.
-     * 
-     * @param source the ContainerConnectionSource to get the connection details from
-     * @return the ZipkinConnectionDetails for the given ContainerConnectionSource
-     */
-    @Override
+	 * Returns the ZipkinConnectionDetails for the given ContainerConnectionSource.
+	 * @param source the ContainerConnectionSource to get the connection details from
+	 * @return the ZipkinConnectionDetails for the given ContainerConnectionSource
+	 */
+	@Override
 	protected ZipkinConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 		return new ZipkinContainerConnectionDetails(source);
 	}
@@ -67,21 +66,21 @@ class ZipkinContainerConnectionDetailsFactory
 			implements ZipkinConnectionDetails {
 
 		/**
-         * Constructs a new ZipkinContainerConnectionDetails with the specified ContainerConnectionSource.
-         *
-         * @param source the ContainerConnectionSource used to create the connection details
-         */
-        ZipkinContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		 * Constructs a new ZipkinContainerConnectionDetails with the specified
+		 * ContainerConnectionSource.
+		 * @param source the ContainerConnectionSource used to create the connection
+		 * details
+		 */
+		ZipkinContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 
 		/**
-         * Returns the endpoint URL for sending spans to the Zipkin server.
-         * The URL is constructed using the host and mapped port of the container.
-         * 
-         * @return the endpoint URL for sending spans
-         */
-        @Override
+		 * Returns the endpoint URL for sending spans to the Zipkin server. The URL is
+		 * constructed using the host and mapped port of the container.
+		 * @return the endpoint URL for sending spans
+		 */
+		@Override
 		public String getSpanEndpoint() {
 			return "http://" + getContainer().getHost() + ":" + getContainer().getMappedPort(ZIPKIN_PORT)
 					+ "/api/v2/spans";

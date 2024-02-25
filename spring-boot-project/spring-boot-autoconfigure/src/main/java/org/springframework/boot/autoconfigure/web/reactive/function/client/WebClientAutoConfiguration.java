@@ -48,13 +48,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientAutoConfiguration {
 
 	/**
-     * Creates a new instance of WebClient.Builder with prototype scope.
-     * If there is no existing bean of type WebClient.Builder, this method will be used.
-     * 
-     * @param customizerProvider ObjectProvider of WebClientCustomizer to customize the WebClient.Builder
-     * @return WebClient.Builder instance
-     */
-    @Bean
+	 * Creates a new instance of WebClient.Builder with prototype scope. If there is no
+	 * existing bean of type WebClient.Builder, this method will be used.
+	 * @param customizerProvider ObjectProvider of WebClientCustomizer to customize the
+	 * WebClient.Builder
+	 * @return WebClient.Builder instance
+	 */
+	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
 	public WebClient.Builder webClientBuilder(ObjectProvider<WebClientCustomizer> customizerProvider) {
@@ -64,13 +64,14 @@ public class WebClientAutoConfiguration {
 	}
 
 	/**
-     * Creates an instance of AutoConfiguredWebClientSsl if WebClientSsl bean is missing and SslBundles bean is present.
-     * 
-     * @param clientHttpConnectorFactory The factory for creating the client HTTP connector.
-     * @param sslBundles The SSL bundles for configuring the WebClientSsl.
-     * @return An instance of AutoConfiguredWebClientSsl.
-     */
-    @Bean
+	 * Creates an instance of AutoConfiguredWebClientSsl if WebClientSsl bean is missing
+	 * and SslBundles bean is present.
+	 * @param clientHttpConnectorFactory The factory for creating the client HTTP
+	 * connector.
+	 * @param sslBundles The SSL bundles for configuring the WebClientSsl.
+	 * @return An instance of AutoConfiguredWebClientSsl.
+	 */
+	@Bean
 	@ConditionalOnMissingBean(WebClientSsl.class)
 	@ConditionalOnBean(SslBundles.class)
 	AutoConfiguredWebClientSsl webClientSsl(ClientHttpConnectorFactory<?> clientHttpConnectorFactory,
@@ -79,20 +80,19 @@ public class WebClientAutoConfiguration {
 	}
 
 	/**
-     * WebClientCodecsConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * WebClientCodecsConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(CodecCustomizer.class)
 	protected static class WebClientCodecsConfiguration {
 
 		/**
-         * Creates a WebClientCodecCustomizer bean if no other bean of the same type is present.
-         * The bean is ordered with a priority of 0.
-         * 
-         * @param codecCustomizers an ObjectProvider of CodecCustomizer beans
-         * @return a WebClientCodecCustomizer bean with the provided CodecCustomizer beans
-         */
-        @Bean
+		 * Creates a WebClientCodecCustomizer bean if no other bean of the same type is
+		 * present. The bean is ordered with a priority of 0.
+		 * @param codecCustomizers an ObjectProvider of CodecCustomizer beans
+		 * @return a WebClientCodecCustomizer bean with the provided CodecCustomizer beans
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		@Order(0)
 		public WebClientCodecCustomizer exchangeStrategiesCustomizer(ObjectProvider<CodecCustomizer> codecCustomizers) {

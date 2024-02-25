@@ -27,11 +27,12 @@ import org.springframework.context.annotation.Configuration;
 public class MySameSiteConfiguration {
 
 	/**
-     * Returns a CookieSameSiteSupplier that sets the SameSite attribute of cookies to "Lax" when the cookie name matches the pattern "myapp.*".
-     * 
-     * @return a CookieSameSiteSupplier that sets the SameSite attribute of cookies to "Lax" when the cookie name matches the pattern "myapp.*"
-     */
-    @Bean
+	 * Returns a CookieSameSiteSupplier that sets the SameSite attribute of cookies to
+	 * "Lax" when the cookie name matches the pattern "myapp.*".
+	 * @return a CookieSameSiteSupplier that sets the SameSite attribute of cookies to
+	 * "Lax" when the cookie name matches the pattern "myapp.*"
+	 */
+	@Bean
 	public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
 		return CookieSameSiteSupplier.ofLax().whenHasNameMatching("myapp.*");
 	}

@@ -88,12 +88,11 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	}
 
 	/**
-     * Called when the application starts up.
-     * 
-     * @param servletContext the ServletContext object
-     * @throws ServletException if an error occurs during startup
-     */
-    @Override
+	 * Called when the application starts up.
+	 * @param servletContext the ServletContext object
+	 * @throws ServletException if an error occurs during startup
+	 */
+	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		servletContext.setAttribute(LoggingApplicationListener.REGISTER_SHUTDOWN_HOOK_PROPERTY, false);
 		// Logger initialization is deferred in case an ordered
@@ -132,12 +131,11 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	}
 
 	/**
-     * Creates the root application context for the Spring Boot application.
-     * 
-     * @param servletContext the servlet context
-     * @return the root application context
-     */
-    protected WebApplicationContext createRootApplicationContext(ServletContext servletContext) {
+	 * Creates the root application context for the Spring Boot application.
+	 * @param servletContext the servlet context
+	 * @return the root application context
+	 */
+	protected WebApplicationContext createRootApplicationContext(ServletContext servletContext) {
 		SpringApplicationBuilder builder = createSpringApplicationBuilder();
 		builder.main(getClass());
 		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
@@ -187,12 +185,12 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	}
 
 	/**
-     * Retrieves the existing root web application context from the given servlet context.
-     * 
-     * @param servletContext the servlet context from which to retrieve the root web application context
-     * @return the existing root web application context if found, null otherwise
-     */
-    private ApplicationContext getExistingRootWebApplicationContext(ServletContext servletContext) {
+	 * Retrieves the existing root web application context from the given servlet context.
+	 * @param servletContext the servlet context from which to retrieve the root web
+	 * application context
+	 * @return the existing root web application context if found, null otherwise
+	 */
+	private ApplicationContext getExistingRootWebApplicationContext(ServletContext servletContext) {
 		Object context = servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 		if (context instanceof ApplicationContext applicationContext) {
 			return applicationContext;
@@ -223,21 +221,21 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		private final ServletContext servletContext;
 
 		/**
-         * Constructs a new WebEnvironmentPropertySourceInitializer with the specified ServletContext.
-         *
-         * @param servletContext the ServletContext to be used by the initializer
-         */
-        private WebEnvironmentPropertySourceInitializer(ServletContext servletContext) {
+		 * Constructs a new WebEnvironmentPropertySourceInitializer with the specified
+		 * ServletContext.
+		 * @param servletContext the ServletContext to be used by the initializer
+		 */
+		private WebEnvironmentPropertySourceInitializer(ServletContext servletContext) {
 			this.servletContext = servletContext;
 		}
 
 		/**
-         * This method is called when the application environment is prepared.
-         * It initializes the property sources for the configurable web environment.
-         * 
-         * @param event The ApplicationEnvironmentPreparedEvent object representing the event.
-         */
-        @Override
+		 * This method is called when the application environment is prepared. It
+		 * initializes the property sources for the configurable web environment.
+		 * @param event The ApplicationEnvironmentPreparedEvent object representing the
+		 * event.
+		 */
+		@Override
 		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 			ConfigurableEnvironment environment = event.getEnvironment();
 			if (environment instanceof ConfigurableWebEnvironment configurableWebEnvironment) {
@@ -246,12 +244,11 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		}
 
 		/**
-         * Returns the order of this initializer.
-         * The order is set to the highest precedence.
-         *
-         * @return the order of this initializer
-         */
-        @Override
+		 * Returns the order of this initializer. The order is set to the highest
+		 * precedence.
+		 * @return the order of this initializer
+		 */
+		@Override
 		public int getOrder() {
 			return Ordered.HIGHEST_PRECEDENCE;
 		}
@@ -266,35 +263,34 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		private final ServletContext servletContext;
 
 		/**
-         * Constructs a new SpringBootContextLoaderListener with the specified WebApplicationContext and ServletContext.
-         *
-         * @param applicationContext the WebApplicationContext to be used by this listener
-         * @param servletContext the ServletContext to be used by this listener
-         */
-        SpringBootContextLoaderListener(WebApplicationContext applicationContext, ServletContext servletContext) {
+		 * Constructs a new SpringBootContextLoaderListener with the specified
+		 * WebApplicationContext and ServletContext.
+		 * @param applicationContext the WebApplicationContext to be used by this listener
+		 * @param servletContext the ServletContext to be used by this listener
+		 */
+		SpringBootContextLoaderListener(WebApplicationContext applicationContext, ServletContext servletContext) {
 			super(applicationContext);
 			this.servletContext = servletContext;
 		}
 
 		/**
-         * Called when the ServletContext is initialized.
-         * This method is a no-op because the application context is already initialized.
-         *
-         * @param event the ServletContextEvent containing the ServletContext that is being initialized
-         */
-        @Override
+		 * Called when the ServletContext is initialized. This method is a no-op because
+		 * the application context is already initialized.
+		 * @param event the ServletContextEvent containing the ServletContext that is
+		 * being initialized
+		 */
+		@Override
 		public void contextInitialized(ServletContextEvent event) {
 			// no-op because the application context is already initialized
 		}
 
 		/**
-         * Called when the ServletContext is about to be destroyed. 
-         * This method is responsible for deregistering JDBC drivers to prevent memory leaks.
-         * 
-         * @param event the ServletContextEvent representing the event that occurred
-         * @throws IllegalArgumentException if the event is null
-         */
-        @Override
+		 * Called when the ServletContext is about to be destroyed. This method is
+		 * responsible for deregistering JDBC drivers to prevent memory leaks.
+		 * @param event the ServletContextEvent representing the event that occurred
+		 * @throws IllegalArgumentException if the event is null
+		 */
+		@Override
 		public void contextDestroyed(ServletContextEvent event) {
 			try {
 				super.contextDestroyed(event);

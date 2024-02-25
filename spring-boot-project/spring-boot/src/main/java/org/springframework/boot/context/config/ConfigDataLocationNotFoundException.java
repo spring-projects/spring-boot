@@ -69,42 +69,39 @@ public class ConfigDataLocationNotFoundException extends ConfigDataNotFoundExcep
 	}
 
 	/**
-     * Returns the origin of the configuration data location not found exception.
-     * 
-     * @return the origin of the exception
-     */
-    @Override
+	 * Returns the origin of the configuration data location not found exception.
+	 * @return the origin of the exception
+	 */
+	@Override
 	public Origin getOrigin() {
 		return Origin.from(this.location);
 	}
 
 	/**
-     * Returns the description of the reference.
-     * 
-     * @return the description of the reference
-     */
-    @Override
+	 * Returns the description of the reference.
+	 * @return the description of the reference
+	 */
+	@Override
 	public String getReferenceDescription() {
 		return getReferenceDescription(this.location);
 	}
 
 	/**
-     * Returns a message indicating that the config data at the specified location cannot be found.
-     *
-     * @param location the location of the config data
-     * @return a message indicating that the config data cannot be found
-     */
-    private static String getMessage(ConfigDataLocation location) {
+	 * Returns a message indicating that the config data at the specified location cannot
+	 * be found.
+	 * @param location the location of the config data
+	 * @return a message indicating that the config data cannot be found
+	 */
+	private static String getMessage(ConfigDataLocation location) {
 		return String.format("Config data %s cannot be found", getReferenceDescription(location));
 	}
 
 	/**
-     * Returns the description of the given ConfigDataLocation.
-     *
-     * @param location the ConfigDataLocation to get the description for
-     * @return the description of the ConfigDataLocation
-     */
-    private static String getReferenceDescription(ConfigDataLocation location) {
+	 * Returns the description of the given ConfigDataLocation.
+	 * @param location the ConfigDataLocation to get the description for
+	 * @return the description of the ConfigDataLocation
+	 */
+	private static String getReferenceDescription(ConfigDataLocation location) {
 		return String.format("location '%s'", location);
 	}
 

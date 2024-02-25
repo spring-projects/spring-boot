@@ -70,171 +70,157 @@ public class ElasticsearchProperties {
 	private final Restclient restclient = new Restclient();
 
 	/**
-     * Returns the list of URIs.
-     *
-     * @return the list of URIs
-     */
-    public List<String> getUris() {
+	 * Returns the list of URIs.
+	 * @return the list of URIs
+	 */
+	public List<String> getUris() {
 		return this.uris;
 	}
 
 	/**
-     * Sets the list of URIs for Elasticsearch.
-     * 
-     * @param uris the list of URIs to set
-     */
-    public void setUris(List<String> uris) {
+	 * Sets the list of URIs for Elasticsearch.
+	 * @param uris the list of URIs to set
+	 */
+	public void setUris(List<String> uris) {
 		this.uris = uris;
 	}
 
 	/**
-     * Returns the username associated with the Elasticsearch properties.
-     *
-     * @return the username
-     */
-    public String getUsername() {
+	 * Returns the username associated with the Elasticsearch properties.
+	 * @return the username
+	 */
+	public String getUsername() {
 		return this.username;
 	}
 
 	/**
-     * Sets the username for authentication.
-     * 
-     * @param username the username to set
-     */
-    public void setUsername(String username) {
+	 * Sets the username for authentication.
+	 * @param username the username to set
+	 */
+	public void setUsername(String username) {
 		this.username = username;
 	}
 
 	/**
-     * Returns the password.
-     *
-     * @return the password
-     */
-    public String getPassword() {
+	 * Returns the password.
+	 * @return the password
+	 */
+	public String getPassword() {
 		return this.password;
 	}
 
 	/**
-     * Sets the password for the Elasticsearch connection.
-     * 
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
+	 * Sets the password for the Elasticsearch connection.
+	 * @param password the password to set
+	 */
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	/**
-     * Returns the connection timeout duration.
-     *
-     * @return the connection timeout duration
-     */
-    public Duration getConnectionTimeout() {
+	 * Returns the connection timeout duration.
+	 * @return the connection timeout duration
+	 */
+	public Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
 	/**
-     * Sets the connection timeout for the Elasticsearch client.
-     * 
-     * @param connectionTimeout the connection timeout duration
-     */
-    public void setConnectionTimeout(Duration connectionTimeout) {
+	 * Sets the connection timeout for the Elasticsearch client.
+	 * @param connectionTimeout the connection timeout duration
+	 */
+	public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
 
 	/**
-     * Returns the socket timeout duration.
-     *
-     * @return the socket timeout duration
-     */
-    public Duration getSocketTimeout() {
+	 * Returns the socket timeout duration.
+	 * @return the socket timeout duration
+	 */
+	public Duration getSocketTimeout() {
 		return this.socketTimeout;
 	}
 
 	/**
-     * Sets the socket timeout for the Elasticsearch client.
-     * 
-     * @param socketTimeout the duration of the socket timeout
-     */
-    public void setSocketTimeout(Duration socketTimeout) {
+	 * Sets the socket timeout for the Elasticsearch client.
+	 * @param socketTimeout the duration of the socket timeout
+	 */
+	public void setSocketTimeout(Duration socketTimeout) {
 		this.socketTimeout = socketTimeout;
 	}
 
 	/**
-     * Returns the value indicating whether the socket keep-alive option is enabled.
-     *
-     * @return {@code true} if the socket keep-alive option is enabled, {@code false} otherwise
-     */
-    public boolean isSocketKeepAlive() {
+	 * Returns the value indicating whether the socket keep-alive option is enabled.
+	 * @return {@code true} if the socket keep-alive option is enabled, {@code false}
+	 * otherwise
+	 */
+	public boolean isSocketKeepAlive() {
 		return this.socketKeepAlive;
 	}
 
 	/**
-     * Sets the value indicating whether the socket keep-alive option is enabled.
-     * 
-     * @param socketKeepAlive the value indicating whether the socket keep-alive option is enabled
-     */
-    public void setSocketKeepAlive(boolean socketKeepAlive) {
+	 * Sets the value indicating whether the socket keep-alive option is enabled.
+	 * @param socketKeepAlive the value indicating whether the socket keep-alive option is
+	 * enabled
+	 */
+	public void setSocketKeepAlive(boolean socketKeepAlive) {
 		this.socketKeepAlive = socketKeepAlive;
 	}
 
 	/**
-     * Returns the path prefix.
-     * 
-     * @return the path prefix
-     */
-    public String getPathPrefix() {
+	 * Returns the path prefix.
+	 * @return the path prefix
+	 */
+	public String getPathPrefix() {
 		return this.pathPrefix;
 	}
 
 	/**
-     * Sets the path prefix for Elasticsearch.
-     * 
-     * @param pathPrefix the path prefix to be set
-     */
-    public void setPathPrefix(String pathPrefix) {
+	 * Sets the path prefix for Elasticsearch.
+	 * @param pathPrefix the path prefix to be set
+	 */
+	public void setPathPrefix(String pathPrefix) {
 		this.pathPrefix = pathPrefix;
 	}
 
 	/**
-     * Returns the RestClient object associated with this ElasticsearchProperties instance.
-     *
-     * @return the RestClient object
-     */
-    public Restclient getRestclient() {
+	 * Returns the RestClient object associated with this ElasticsearchProperties
+	 * instance.
+	 * @return the RestClient object
+	 */
+	public Restclient getRestclient() {
 		return this.restclient;
 	}
 
 	/**
-     * Restclient class.
-     */
-    public static class Restclient {
+	 * Restclient class.
+	 */
+	public static class Restclient {
 
 		private final Sniffer sniffer = new Sniffer();
 
 		private final Ssl ssl = new Ssl();
 
 		/**
-         * Returns the Sniffer object associated with this RestClient.
-         * 
-         * @return the Sniffer object
-         */
-        public Sniffer getSniffer() {
+		 * Returns the Sniffer object associated with this RestClient.
+		 * @return the Sniffer object
+		 */
+		public Sniffer getSniffer() {
 			return this.sniffer;
 		}
 
 		/**
-         * Returns the SSL object associated with this RestClient.
-         *
-         * @return the SSL object
-         */
-        public Ssl getSsl() {
+		 * Returns the SSL object associated with this RestClient.
+		 * @return the SSL object
+		 */
+		public Ssl getSsl() {
 			return this.ssl;
 		}
 
 		/**
-         * Sniffer class.
-         */
-        public static class Sniffer {
+		 * Sniffer class.
+		 */
+		public static class Sniffer {
 
 			/**
 			 * Interval between consecutive ordinary sniff executions.
@@ -247,47 +233,43 @@ public class ElasticsearchProperties {
 			private Duration delayAfterFailure = Duration.ofMinutes(1);
 
 			/**
-             * Returns the interval between two events.
-             *
-             * @return the interval between two events
-             */
-            public Duration getInterval() {
+			 * Returns the interval between two events.
+			 * @return the interval between two events
+			 */
+			public Duration getInterval() {
 				return this.interval;
 			}
 
 			/**
-             * Sets the interval at which the sniffer should run.
-             * 
-             * @param interval the duration between each execution of the sniffer
-             */
-            public void setInterval(Duration interval) {
+			 * Sets the interval at which the sniffer should run.
+			 * @param interval the duration between each execution of the sniffer
+			 */
+			public void setInterval(Duration interval) {
 				this.interval = interval;
 			}
 
 			/**
-             * Returns the delay after a failure occurs.
-             * 
-             * @return the delay after a failure occurs
-             */
-            public Duration getDelayAfterFailure() {
+			 * Returns the delay after a failure occurs.
+			 * @return the delay after a failure occurs
+			 */
+			public Duration getDelayAfterFailure() {
 				return this.delayAfterFailure;
 			}
 
 			/**
-             * Sets the delay after a failure.
-             * 
-             * @param delayAfterFailure the duration of delay after a failure
-             */
-            public void setDelayAfterFailure(Duration delayAfterFailure) {
+			 * Sets the delay after a failure.
+			 * @param delayAfterFailure the duration of delay after a failure
+			 */
+			public void setDelayAfterFailure(Duration delayAfterFailure) {
 				this.delayAfterFailure = delayAfterFailure;
 			}
 
 		}
 
 		/**
-         * Ssl class.
-         */
-        public static class Ssl {
+		 * Ssl class.
+		 */
+		public static class Ssl {
 
 			/**
 			 * SSL bundle name.
@@ -295,20 +277,18 @@ public class ElasticsearchProperties {
 			private String bundle;
 
 			/**
-             * Returns the bundle associated with this Ssl object.
-             * 
-             * @return the bundle associated with this Ssl object
-             */
-            public String getBundle() {
+			 * Returns the bundle associated with this Ssl object.
+			 * @return the bundle associated with this Ssl object
+			 */
+			public String getBundle() {
 				return this.bundle;
 			}
 
 			/**
-             * Sets the bundle for the Ssl class.
-             * 
-             * @param bundle the bundle to be set
-             */
-            public void setBundle(String bundle) {
+			 * Sets the bundle for the Ssl class.
+			 * @param bundle the bundle to be set
+			 */
+			public void setBundle(String bundle) {
 				this.bundle = bundle;
 			}
 

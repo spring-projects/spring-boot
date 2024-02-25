@@ -34,13 +34,12 @@ import org.springframework.context.annotation.Bean;
 public class ShutdownEndpointAutoConfiguration {
 
 	/**
-     * Creates a new instance of the ShutdownEndpoint class.
-     * This method is annotated with @Bean and @ConditionalOnMissingBean.
-     * The destroyMethod attribute is set to an empty string.
-     * 
-     * @return the created ShutdownEndpoint instance
-     */
-    @Bean(destroyMethod = "")
+	 * Creates a new instance of the ShutdownEndpoint class. This method is annotated
+	 * with @Bean and @ConditionalOnMissingBean. The destroyMethod attribute is set to an
+	 * empty string.
+	 * @return the created ShutdownEndpoint instance
+	 */
+	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
 	public ShutdownEndpoint shutdownEndpoint() {
 		return new ShutdownEndpoint();

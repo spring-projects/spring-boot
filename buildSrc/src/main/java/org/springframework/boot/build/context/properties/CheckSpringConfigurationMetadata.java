@@ -54,64 +54,58 @@ public class CheckSpringConfigurationMetadata extends DefaultTask {
 	private final RegularFileProperty metadataLocation;
 
 	/**
-     * Constructor for the CheckSpringConfigurationMetadata class.
-     * Initializes the metadataLocation and reportLocation properties.
-     */
-    public CheckSpringConfigurationMetadata() {
+	 * Constructor for the CheckSpringConfigurationMetadata class. Initializes the
+	 * metadataLocation and reportLocation properties.
+	 */
+	public CheckSpringConfigurationMetadata() {
 		this.metadataLocation = getProject().getObjects().fileProperty();
 		this.reportLocation = getProject().getObjects().fileProperty();
 	}
 
 	/**
-     * Returns the location of the report file.
-     *
-     * @return the location of the report file
-     */
-    @OutputFile
+	 * Returns the location of the report file.
+	 * @return the location of the report file
+	 */
+	@OutputFile
 	public RegularFileProperty getReportLocation() {
 		return this.reportLocation;
 	}
 
 	/**
-     * Retrieves the metadata location of the input file.
-     * 
-     * @return The metadata location of the input file.
-     */
-    @InputFile
+	 * Retrieves the metadata location of the input file.
+	 * @return The metadata location of the input file.
+	 */
+	@InputFile
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public RegularFileProperty getMetadataLocation() {
 		return this.metadataLocation;
 	}
 
 	/**
-     * Sets the list of exclusions for the CheckSpringConfigurationMetadata class.
-     * 
-     * @param exclusions the list of exclusions to be set
-     */
-    public void setExclusions(List<String> exclusions) {
+	 * Sets the list of exclusions for the CheckSpringConfigurationMetadata class.
+	 * @param exclusions the list of exclusions to be set
+	 */
+	public void setExclusions(List<String> exclusions) {
 		this.exclusions = exclusions;
 	}
 
 	/**
-     * Retrieves the list of exclusions.
-     *
-     * @return the list of exclusions
-     */
-    @Input
+	 * Retrieves the list of exclusions.
+	 * @return the list of exclusions
+	 */
+	@Input
 	public List<String> getExclusions() {
 		return this.exclusions;
 	}
 
 	/**
-     * Checks the Spring configuration metadata.
-     * 
-     * @throws JsonParseException if there is an error parsing the JSON.
-     * @throws IOException if there is an error reading or writing the file.
-     * 
-     * @throws GradleException if problems are found in the Spring configuration metadata.
-     *         The details can be found in the generated report file.
-     */
-    @TaskAction
+	 * Checks the Spring configuration metadata.
+	 * @throws JsonParseException if there is an error parsing the JSON.
+	 * @throws IOException if there is an error reading or writing the file.
+	 * @throws GradleException if problems are found in the Spring configuration metadata.
+	 * The details can be found in the generated report file.
+	 */
+	@TaskAction
 	void check() throws JsonParseException, IOException {
 		Report report = createReport();
 		File reportFile = getReportLocation().get().getAsFile();
@@ -123,14 +117,14 @@ public class CheckSpringConfigurationMetadata extends DefaultTask {
 	}
 
 	/**
-     * Creates a report based on the metadata file.
-     * 
-     * @return The generated report.
-     * @throws IOException            If an I/O error occurs while reading the metadata file.
-     * @throws JsonParseException    If the metadata file is not a valid JSON.
-     * @throws JsonMappingException  If there is an error mapping the JSON to the Report object.
-     */
-    @SuppressWarnings("unchecked")
+	 * Creates a report based on the metadata file.
+	 * @return The generated report.
+	 * @throws IOException If an I/O error occurs while reading the metadata file.
+	 * @throws JsonParseException If the metadata file is not a valid JSON.
+	 * @throws JsonMappingException If there is an error mapping the JSON to the Report
+	 * object.
+	 */
+	@SuppressWarnings("unchecked")
 	private Report createReport() throws IOException, JsonParseException, JsonMappingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		File file = this.metadataLocation.get().getAsFile();
@@ -147,12 +141,11 @@ public class CheckSpringConfigurationMetadata extends DefaultTask {
 	}
 
 	/**
-     * Checks if a given property name is excluded based on the list of exclusions.
-     * 
-     * @param propertyName the name of the property to check
-     * @return true if the property is excluded, false otherwise
-     */
-    private boolean isExcluded(String propertyName) {
+	 * Checks if a given property name is excluded based on the list of exclusions.
+	 * @param propertyName the name of the property to check
+	 * @return true if the property is excluded, false otherwise
+	 */
+	private boolean isExcluded(String propertyName) {
 		for (String exclusion : this.exclusions) {
 			if (propertyName.equals(exclusion)) {
 				return true;
@@ -167,59 +160,54 @@ public class CheckSpringConfigurationMetadata extends DefaultTask {
 	}
 
 	/**
-     * Checks if a property is deprecated.
-     * 
-     * @param property the property to check
-     * @return true if the property is deprecated, false otherwise
-     */
-    @SuppressWarnings("unchecked")
+	 * Checks if a property is deprecated.
+	 * @param property the property to check
+	 * @return true if the property is deprecated, false otherwise
+	 */
+	@SuppressWarnings("unchecked")
 	private boolean isDeprecated(Map<String, Object> property) {
 		return (Map<String, Object>) property.get("deprecation") != null;
 	}
 
 	/**
-     * Checks if the given property is described.
-     * 
-     * @param property the property to check
-     * @return true if the property is described, false otherwise
-     */
-    private boolean isDescribed(Map<String, Object> property) {
+	 * Checks if the given property is described.
+	 * @param property the property to check
+	 * @return true if the property is described, false otherwise
+	 */
+	private boolean isDescribed(Map<String, Object> property) {
 		return property.get("description") != null;
 	}
 
 	/**
-     * Report class.
-     */
-    private static final class Report implements Iterable<String> {
+	 * Report class.
+	 */
+	private static final class Report implements Iterable<String> {
 
 		private final List<String> propertiesWithNoDescription = new ArrayList<>();
 
 		private final Path source;
 
 		/**
-         * Constructs a new Report object with the specified source path.
-         * 
-         * @param source the path to the source file
-         */
-        private Report(Path source) {
+		 * Constructs a new Report object with the specified source path.
+		 * @param source the path to the source file
+		 */
+		private Report(Path source) {
 			this.source = source;
 		}
 
 		/**
-         * Checks if the report has any properties with no description.
-         * 
-         * @return true if the report has properties with no description, false otherwise.
-         */
-        private boolean hasProblems() {
+		 * Checks if the report has any properties with no description.
+		 * @return true if the report has properties with no description, false otherwise.
+		 */
+		private boolean hasProblems() {
 			return !this.propertiesWithNoDescription.isEmpty();
 		}
 
 		/**
-         * Returns an iterator over the lines of the report.
-         * 
-         * @return an iterator over the lines of the report
-         */
-        @Override
+		 * Returns an iterator over the lines of the report.
+		 * @return an iterator over the lines of the report
+		 */
+		@Override
 		public Iterator<String> iterator() {
 			List<String> lines = new ArrayList<>();
 			lines.add(this.source.toString());

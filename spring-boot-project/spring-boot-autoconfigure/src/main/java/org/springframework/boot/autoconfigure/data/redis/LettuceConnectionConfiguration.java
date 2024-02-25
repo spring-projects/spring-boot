@@ -68,17 +68,21 @@ import org.springframework.util.StringUtils;
 class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	/**
-     * Constructs a new LettuceConnectionConfiguration with the specified RedisProperties, RedisStandaloneConfiguration provider,
-     * RedisSentinelConfiguration provider, RedisClusterConfiguration provider, RedisConnectionDetails, and SslBundles provider.
-     * 
-     * @param properties the RedisProperties object containing the configuration properties for Redis
-     * @param standaloneConfigurationProvider the provider for RedisStandaloneConfiguration
-     * @param sentinelConfigurationProvider the provider for RedisSentinelConfiguration
-     * @param clusterConfigurationProvider the provider for RedisClusterConfiguration
-     * @param connectionDetails the RedisConnectionDetails object containing the connection details for Redis
-     * @param sslBundles the provider for SslBundles
-     */
-    LettuceConnectionConfiguration(RedisProperties properties,
+	 * Constructs a new LettuceConnectionConfiguration with the specified RedisProperties,
+	 * RedisStandaloneConfiguration provider, RedisSentinelConfiguration provider,
+	 * RedisClusterConfiguration provider, RedisConnectionDetails, and SslBundles
+	 * provider.
+	 * @param properties the RedisProperties object containing the configuration
+	 * properties for Redis
+	 * @param standaloneConfigurationProvider the provider for
+	 * RedisStandaloneConfiguration
+	 * @param sentinelConfigurationProvider the provider for RedisSentinelConfiguration
+	 * @param clusterConfigurationProvider the provider for RedisClusterConfiguration
+	 * @param connectionDetails the RedisConnectionDetails object containing the
+	 * connection details for Redis
+	 * @param sslBundles the provider for SslBundles
+	 */
+	LettuceConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
@@ -88,13 +92,12 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	/**
-     * Creates and configures the default client resources for Lettuce connection.
-     * If no custom client resources are provided, a default instance will be created.
-     * 
-     * @param customizers the customizers for the client resources builder
-     * @return the configured default client resources
-     */
-    @Bean(destroyMethod = "shutdown")
+	 * Creates and configures the default client resources for Lettuce connection. If no
+	 * custom client resources are provided, a default instance will be created.
+	 * @param customizers the customizers for the client resources builder
+	 * @return the configured default client resources
+	 */
+	@Bean(destroyMethod = "shutdown")
 	@ConditionalOnMissingBean(ClientResources.class)
 	DefaultClientResources lettuceClientResources(ObjectProvider<ClientResourcesBuilderCustomizer> customizers) {
 		DefaultClientResources.Builder builder = DefaultClientResources.builder();
@@ -103,14 +106,16 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	/**
-     * Creates a RedisConnectionFactory using Lettuce library if no RedisConnectionFactory bean is already present.
-     * This method is conditionally executed only if the Threading mode is set to PLATFORM.
-     * 
-     * @param builderCustomizers ObjectProvider of LettuceClientConfigurationBuilderCustomizer to customize the Lettuce client configuration builder
-     * @param clientResources ClientResources to be used by the Lettuce client
-     * @return RedisConnectionFactory created using Lettuce library
-     */
-    @Bean
+	 * Creates a RedisConnectionFactory using Lettuce library if no RedisConnectionFactory
+	 * bean is already present. This method is conditionally executed only if the
+	 * Threading mode is set to PLATFORM.
+	 * @param builderCustomizers ObjectProvider of
+	 * LettuceClientConfigurationBuilderCustomizer to customize the Lettuce client
+	 * configuration builder
+	 * @param clientResources ClientResources to be used by the Lettuce client
+	 * @return RedisConnectionFactory created using Lettuce library
+	 */
+	@Bean
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
 	@ConditionalOnThreading(Threading.PLATFORM)
 	LettuceConnectionFactory redisConnectionFactory(
@@ -120,16 +125,18 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	/**
-     * Creates a LettuceConnectionFactory bean for virtual threading.
-     * This bean is conditional on the absence of a RedisConnectionFactory bean and the use of virtual threading.
-     * It uses the LettuceClientConfigurationBuilderCustomizer and ClientResources beans provided by the ObjectProvider.
-     * It creates a LettuceConnectionFactory with a SimpleAsyncTaskExecutor configured for virtual threading.
-     * 
-     * @param builderCustomizers The ObjectProvider for LettuceClientConfigurationBuilderCustomizer beans.
-     * @param clientResources The ClientResources bean.
-     * @return The LettuceConnectionFactory bean for virtual threading.
-     */
-    @Bean
+	 * Creates a LettuceConnectionFactory bean for virtual threading. This bean is
+	 * conditional on the absence of a RedisConnectionFactory bean and the use of virtual
+	 * threading. It uses the LettuceClientConfigurationBuilderCustomizer and
+	 * ClientResources beans provided by the ObjectProvider. It creates a
+	 * LettuceConnectionFactory with a SimpleAsyncTaskExecutor configured for virtual
+	 * threading.
+	 * @param builderCustomizers The ObjectProvider for
+	 * LettuceClientConfigurationBuilderCustomizer beans.
+	 * @param clientResources The ClientResources bean.
+	 * @return The LettuceConnectionFactory bean for virtual threading.
+	 */
+	@Bean
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	LettuceConnectionFactory redisConnectionFactoryVirtualThreads(
@@ -143,13 +150,14 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	/**
-     * Creates a LettuceConnectionFactory with the given builder customizers and client resources.
-     * 
-     * @param builderCustomizers the object provider for LettuceClientConfigurationBuilderCustomizer instances
-     * @param clientResources the client resources for the connection factory
-     * @return a LettuceConnectionFactory instance
-     */
-    private LettuceConnectionFactory createConnectionFactory(
+	 * Creates a LettuceConnectionFactory with the given builder customizers and client
+	 * resources.
+	 * @param builderCustomizers the object provider for
+	 * LettuceClientConfigurationBuilderCustomizer instances
+	 * @param clientResources the client resources for the connection factory
+	 * @return a LettuceConnectionFactory instance
+	 */
+	private LettuceConnectionFactory createConnectionFactory(
 			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers,
 			ClientResources clientResources) {
 		LettuceClientConfiguration clientConfig = getLettuceClientConfiguration(builderCustomizers, clientResources,
@@ -158,15 +166,18 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	/**
-     * Creates a LettuceConnectionFactory based on the provided client configuration.
-     * If a sentinel configuration is available, a LettuceConnectionFactory with the sentinel configuration and client configuration is created.
-     * If a cluster configuration is available, a LettuceConnectionFactory with the cluster configuration and client configuration is created.
-     * If neither sentinel nor cluster configuration is available, a LettuceConnectionFactory with the standalone configuration and client configuration is created.
-     *
-     * @param clientConfiguration the client configuration to be used for creating the LettuceConnectionFactory
-     * @return a LettuceConnectionFactory based on the provided client configuration
-     */
-    private LettuceConnectionFactory createLettuceConnectionFactory(LettuceClientConfiguration clientConfiguration) {
+	 * Creates a LettuceConnectionFactory based on the provided client configuration. If a
+	 * sentinel configuration is available, a LettuceConnectionFactory with the sentinel
+	 * configuration and client configuration is created. If a cluster configuration is
+	 * available, a LettuceConnectionFactory with the cluster configuration and client
+	 * configuration is created. If neither sentinel nor cluster configuration is
+	 * available, a LettuceConnectionFactory with the standalone configuration and client
+	 * configuration is created.
+	 * @param clientConfiguration the client configuration to be used for creating the
+	 * LettuceConnectionFactory
+	 * @return a LettuceConnectionFactory based on the provided client configuration
+	 */
+	private LettuceConnectionFactory createLettuceConnectionFactory(LettuceClientConfiguration clientConfiguration) {
 		if (getSentinelConfig() != null) {
 			return new LettuceConnectionFactory(getSentinelConfig(), clientConfiguration);
 		}
@@ -177,14 +188,15 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	/**
-     * Returns the LettuceClientConfiguration for the Lettuce connection.
-     * 
-     * @param builderCustomizers ObjectProvider of LettuceClientConfigurationBuilderCustomizer to customize the LettuceClientConfigurationBuilder
-     * @param clientResources ClientResources for the Lettuce connection
-     * @param pool Pool for the Lettuce connection
-     * @return LettuceClientConfiguration for the Lettuce connection
-     */
-    private LettuceClientConfiguration getLettuceClientConfiguration(
+	 * Returns the LettuceClientConfiguration for the Lettuce connection.
+	 * @param builderCustomizers ObjectProvider of
+	 * LettuceClientConfigurationBuilderCustomizer to customize the
+	 * LettuceClientConfigurationBuilder
+	 * @param clientResources ClientResources for the Lettuce connection
+	 * @param pool Pool for the Lettuce connection
+	 * @return LettuceClientConfiguration for the Lettuce connection
+	 */
+	private LettuceClientConfiguration getLettuceClientConfiguration(
 			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers,
 			ClientResources clientResources, Pool pool) {
 		LettuceClientConfigurationBuilder builder = createBuilder(pool);
@@ -199,14 +211,13 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	/**
-     * Creates a LettuceClientConfigurationBuilder based on the provided Pool.
-     * If the Pool is enabled, it uses a PoolBuilderFactory to create the builder.
-     * Otherwise, it creates a default LettuceClientConfiguration builder.
-     *
-     * @param pool the Pool to be used for creating the builder
-     * @return a LettuceClientConfigurationBuilder based on the provided Pool
-     */
-    private LettuceClientConfigurationBuilder createBuilder(Pool pool) {
+	 * Creates a LettuceClientConfigurationBuilder based on the provided Pool. If the Pool
+	 * is enabled, it uses a PoolBuilderFactory to create the builder. Otherwise, it
+	 * creates a default LettuceClientConfiguration builder.
+	 * @param pool the Pool to be used for creating the builder
+	 * @return a LettuceClientConfigurationBuilder based on the provided Pool
+	 */
+	private LettuceClientConfigurationBuilder createBuilder(Pool pool) {
 		if (isPoolEnabled(pool)) {
 			return new PoolBuilderFactory().createBuilder(pool);
 		}
@@ -214,11 +225,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	/**
-     * Applies the properties to the LettuceClientConfigurationBuilder.
-     * 
-     * @param builder the LettuceClientConfigurationBuilder to apply the properties to
-     */
-    private void applyProperties(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
+	 * Applies the properties to the LettuceClientConfigurationBuilder.
+	 * @param builder the LettuceClientConfigurationBuilder to apply the properties to
+	 */
+	private void applyProperties(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
 		if (isSslEnabled()) {
 			builder.useSsl();
 		}
@@ -237,11 +247,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	/**
-     * Creates the client options for the Lettuce connection.
-     * 
-     * @return the client options
-     */
-    private ClientOptions createClientOptions() {
+	 * Creates the client options for the Lettuce connection.
+	 * @return the client options
+	 */
+	private ClientOptions createClientOptions() {
 		ClientOptions.Builder builder = initializeClientOptionsBuilder();
 		Duration connectTimeout = getProperties().getConnectTimeout();
 		if (connectTimeout != null) {
@@ -265,13 +274,12 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	/**
-     * Initializes the ClientOptions.Builder based on the properties provided.
-     * If the cluster property is not null, it initializes the ClusterClientOptions.Builder
-     * and sets the ClusterTopologyRefreshOptions based on the refresh properties.
-     * 
-     * @return the initialized ClientOptions.Builder
-     */
-    private ClientOptions.Builder initializeClientOptionsBuilder() {
+	 * Initializes the ClientOptions.Builder based on the properties provided. If the
+	 * cluster property is not null, it initializes the ClusterClientOptions.Builder and
+	 * sets the ClusterTopologyRefreshOptions based on the refresh properties.
+	 * @return the initialized ClientOptions.Builder
+	 */
+	private ClientOptions.Builder initializeClientOptionsBuilder() {
 		if (getProperties().getCluster() != null) {
 			ClusterClientOptions.Builder builder = ClusterClientOptions.builder();
 			Refresh refreshProperties = getProperties().getLettuce().getCluster().getRefresh();
@@ -289,11 +297,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	/**
-     * Customizes the Lettuce client configuration from a URL.
-     * 
-     * @param builder the Lettuce client configuration builder
-     */
-    private void customizeConfigurationFromUrl(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
+	 * Customizes the Lettuce client configuration from a URL.
+	 * @param builder the Lettuce client configuration builder
+	 */
+	private void customizeConfigurationFromUrl(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
 		if (urlUsesSsl()) {
 			builder.useSsl();
 		}
@@ -305,22 +312,23 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	private static final class PoolBuilderFactory {
 
 		/**
-         * Creates a LettuceClientConfigurationBuilder object with the provided Pool properties.
-         * 
-         * @param properties the Pool properties to be used for configuring the Lettuce client
-         * @return a LettuceClientConfigurationBuilder object with the provided Pool properties
-         */
-        LettuceClientConfigurationBuilder createBuilder(Pool properties) {
+		 * Creates a LettuceClientConfigurationBuilder object with the provided Pool
+		 * properties.
+		 * @param properties the Pool properties to be used for configuring the Lettuce
+		 * client
+		 * @return a LettuceClientConfigurationBuilder object with the provided Pool
+		 * properties
+		 */
+		LettuceClientConfigurationBuilder createBuilder(Pool properties) {
 			return LettucePoolingClientConfiguration.builder().poolConfig(getPoolConfig(properties));
 		}
 
 		/**
-         * Returns a GenericObjectPoolConfig based on the provided Pool properties.
-         * 
-         * @param properties the Pool properties to configure the GenericObjectPoolConfig
-         * @return a GenericObjectPoolConfig configured with the provided properties
-         */
-        private GenericObjectPoolConfig<?> getPoolConfig(Pool properties) {
+		 * Returns a GenericObjectPoolConfig based on the provided Pool properties.
+		 * @param properties the Pool properties to configure the GenericObjectPoolConfig
+		 * @return a GenericObjectPoolConfig configured with the provided properties
+		 */
+		private GenericObjectPoolConfig<?> getPoolConfig(Pool properties) {
 			GenericObjectPoolConfig<?> config = new GenericObjectPoolConfig<>();
 			config.setMaxTotal(properties.getMaxActive());
 			config.setMaxIdle(properties.getMaxIdle());

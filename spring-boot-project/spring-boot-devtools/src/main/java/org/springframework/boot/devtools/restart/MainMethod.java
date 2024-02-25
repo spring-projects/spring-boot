@@ -31,34 +31,31 @@ class MainMethod {
 	private final Method method;
 
 	/**
-     * This method is the entry point of the MainMethod class.
-     * It creates an instance of the MainMethod class and passes the current thread as a parameter.
-     * 
-     * @param thread the current thread
-     */
-    MainMethod() {
+	 * This method is the entry point of the MainMethod class. It creates an instance of
+	 * the MainMethod class and passes the current thread as a parameter.
+	 * @param thread the current thread
+	 */
+	MainMethod() {
 		this(Thread.currentThread());
 	}
 
 	/**
-     * Sets the main method for the specified thread.
-     * 
-     * @param thread the thread for which the main method is to be set (must not be null)
-     * @throws IllegalArgumentException if the thread is null
-     */
-    MainMethod(Thread thread) {
+	 * Sets the main method for the specified thread.
+	 * @param thread the thread for which the main method is to be set (must not be null)
+	 * @throws IllegalArgumentException if the thread is null
+	 */
+	MainMethod(Thread thread) {
 		Assert.notNull(thread, "Thread must not be null");
 		this.method = getMainMethod(thread);
 	}
 
 	/**
-     * Returns the main method of a given thread.
-     * 
-     * @param thread the thread to search for the main method
-     * @return the main method of the given thread
-     * @throws IllegalStateException if the main method cannot be found
-     */
-    private Method getMainMethod(Thread thread) {
+	 * Returns the main method of a given thread.
+	 * @param thread the thread to search for the main method
+	 * @return the main method of the given thread
+	 * @throws IllegalStateException if the main method cannot be found
+	 */
+	private Method getMainMethod(Thread thread) {
 		StackTraceElement[] stackTrace = thread.getStackTrace();
 		for (int i = stackTrace.length - 1; i >= 0; i--) {
 			StackTraceElement element = stackTrace[i];
@@ -73,12 +70,11 @@ class MainMethod {
 	}
 
 	/**
-     * Retrieves the main method from the given StackTraceElement.
-     * 
-     * @param element The StackTraceElement representing the method.
-     * @return The main method if found and static, null otherwise.
-     */
-    private Method getMainMethod(StackTraceElement element) {
+	 * Retrieves the main method from the given StackTraceElement.
+	 * @param element The StackTraceElement representing the method.
+	 * @return The main method if found and static, null otherwise.
+	 */
+	private Method getMainMethod(StackTraceElement element) {
 		try {
 			Class<?> elementClass = Class.forName(element.getClassName());
 			Method method = elementClass.getDeclaredMethod("main", String[].class);

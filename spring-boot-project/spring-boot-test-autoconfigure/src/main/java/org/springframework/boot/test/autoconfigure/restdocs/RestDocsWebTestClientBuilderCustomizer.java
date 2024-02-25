@@ -34,34 +34,32 @@ class RestDocsWebTestClientBuilderCustomizer implements WebTestClientBuilderCust
 	private final WebTestClientRestDocumentationConfigurer delegate;
 
 	/**
-     * Constructs a new RestDocsWebTestClientBuilderCustomizer with the specified properties and delegate.
-     * 
-     * @param properties the RestDocsProperties to be used
-     * @param delegate the WebTestClientRestDocumentationConfigurer to be used
-     */
-    RestDocsWebTestClientBuilderCustomizer(RestDocsProperties properties,
+	 * Constructs a new RestDocsWebTestClientBuilderCustomizer with the specified
+	 * properties and delegate.
+	 * @param properties the RestDocsProperties to be used
+	 * @param delegate the WebTestClientRestDocumentationConfigurer to be used
+	 */
+	RestDocsWebTestClientBuilderCustomizer(RestDocsProperties properties,
 			WebTestClientRestDocumentationConfigurer delegate) {
 		this.properties = properties;
 		this.delegate = delegate;
 	}
 
 	/**
-     * Customize the WebTestClient.Builder by setting the base URL and adding a filter.
-     * 
-     * @param builder the WebTestClient.Builder to customize
-     */
-    @Override
+	 * Customize the WebTestClient.Builder by setting the base URL and adding a filter.
+	 * @param builder the WebTestClient.Builder to customize
+	 */
+	@Override
 	public void customize(WebTestClient.Builder builder) {
 		customizeBaseUrl(builder);
 		builder.filter(this.delegate);
 	}
 
 	/**
-     * Customizes the base URL for the WebTestClient builder.
-     * 
-     * @param builder the WebTestClient builder to customize
-     */
-    private void customizeBaseUrl(WebTestClient.Builder builder) {
+	 * Customizes the base URL for the WebTestClient builder.
+	 * @param builder the WebTestClient builder to customize
+	 */
+	private void customizeBaseUrl(WebTestClient.Builder builder) {
 		String scheme = this.properties.getUriScheme();
 		String host = this.properties.getUriHost();
 		String baseUrl = (StringUtils.hasText(scheme) ? scheme : "http") + "://"
@@ -74,13 +72,12 @@ class RestDocsWebTestClientBuilderCustomizer implements WebTestClientBuilderCust
 	}
 
 	/**
-     * Checks if the given port is a standard port for the specified scheme.
-     * 
-     * @param scheme the scheme (e.g., "http" or "https")
-     * @param port the port number
-     * @return true if the port is a standard port for the scheme, false otherwise
-     */
-    private boolean isStandardPort(String scheme, Integer port) {
+	 * Checks if the given port is a standard port for the specified scheme.
+	 * @param scheme the scheme (e.g., "http" or "https")
+	 * @param port the port number
+	 * @return true if the port is a standard port for the scheme, false otherwise
+	 */
+	private boolean isStandardPort(String scheme, Integer port) {
 		if (port == null) {
 			return true;
 		}

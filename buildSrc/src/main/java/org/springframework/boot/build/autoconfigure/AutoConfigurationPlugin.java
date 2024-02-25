@@ -74,13 +74,12 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	private static final String AUTO_CONFIGURATION_IMPORTS_PATH = "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports";
 
 	/**
-     * Applies the AutoConfigurationPlugin to the given project.
-     * This plugin is responsible for configuring the project with the necessary dependencies and tasks
-     * for auto-configuration metadata generation and architecture checks.
-     *
-     * @param project the project to apply the plugin to
-     */
-    @Override
+	 * Applies the AutoConfigurationPlugin to the given project. This plugin is
+	 * responsible for configuring the project with the necessary dependencies and tasks
+	 * for auto-configuration metadata generation and architecture checks.
+	 * @param project the project to apply the plugin to
+	 */
+	@Override
 	public void apply(Project project) {
 		project.getPlugins().apply(DeployedPlugin.class);
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
@@ -125,14 +124,14 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * This method returns an ArchRule that enforces that all classes annotated with
-     * {@code org.springframework.boot.autoconfigure.AutoConfiguration} should be listed in the
-     * {@code AutoConfigurationImports} provided by the given {@code imports} provider.
-     * 
-     * @param imports The provider of {@code AutoConfigurationImports} to check against.
-     * @return An ArchRule that enforces the above condition.
-     */
-    private ArchRule allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
+	 * This method returns an ArchRule that enforces that all classes annotated with
+	 * {@code org.springframework.boot.autoconfigure.AutoConfiguration} should be listed
+	 * in the {@code AutoConfigurationImports} provided by the given {@code imports}
+	 * provider.
+	 * @param imports The provider of {@code AutoConfigurationImports} to check against.
+	 * @return An ArchRule that enforces the above condition.
+	 */
+	private ArchRule allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
 			Provider<AutoConfigurationImports> imports) {
 		return ArchRuleDefinition.classes()
 			.that()
@@ -142,12 +141,13 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * Returns an ArchCondition that checks if a JavaClass is listed in the AutoConfigurationImports.
-     * 
-     * @param imports the Provider of AutoConfigurationImports
-     * @return the ArchCondition that checks if a JavaClass is listed in the AutoConfigurationImports
-     */
-    private ArchCondition<JavaClass> beListedInAutoConfigurationImports(Provider<AutoConfigurationImports> imports) {
+	 * Returns an ArchCondition that checks if a JavaClass is listed in the
+	 * AutoConfigurationImports.
+	 * @param imports the Provider of AutoConfigurationImports
+	 * @return the ArchCondition that checks if a JavaClass is listed in the
+	 * AutoConfigurationImports
+	 */
+	private ArchCondition<JavaClass> beListedInAutoConfigurationImports(Provider<AutoConfigurationImports> imports) {
 		return new ArchCondition<>("be listed in " + AUTO_CONFIGURATION_IMPORTS_PATH) {
 
 			@Override
@@ -163,14 +163,14 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * Returns a Provider of AutoConfigurationImports based on the given project and resources directory.
-     * 
-     * @param project The project to be used.
-     * @param resourcesDirectory The directory where the resources are located.
-     * @return A Provider of AutoConfigurationImports.
-     * @throws RuntimeException if failed to read AutoConfiguration.imports file.
-     */
-    private Provider<AutoConfigurationImports> autoConfigurationImports(Project project, File resourcesDirectory) {
+	 * Returns a Provider of AutoConfigurationImports based on the given project and
+	 * resources directory.
+	 * @param project The project to be used.
+	 * @param resourcesDirectory The directory where the resources are located.
+	 * @return A Provider of AutoConfigurationImports.
+	 * @throws RuntimeException if failed to read AutoConfiguration.imports file.
+	 */
+	private Provider<AutoConfigurationImports> autoConfigurationImports(Project project, File resourcesDirectory) {
 		Path importsFile = new File(resourcesDirectory, AUTO_CONFIGURATION_IMPORTS_PATH).toPath();
 		return project.provider(() -> {
 			try {

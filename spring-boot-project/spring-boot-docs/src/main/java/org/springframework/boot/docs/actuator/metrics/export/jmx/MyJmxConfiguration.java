@@ -33,25 +33,24 @@ import org.springframework.context.annotation.Configuration;
 public class MyJmxConfiguration {
 
 	/**
-     * Creates a JmxMeterRegistry instance with the given JmxConfig and Clock.
-     * 
-     * @param config the JmxConfig object to configure the JmxMeterRegistry
-     * @param clock the Clock object to provide the current time
-     * @return a new JmxMeterRegistry instance
-     */
-    @Bean
+	 * Creates a JmxMeterRegistry instance with the given JmxConfig and Clock.
+	 * @param config the JmxConfig object to configure the JmxMeterRegistry
+	 * @param clock the Clock object to provide the current time
+	 * @return a new JmxMeterRegistry instance
+	 */
+	@Bean
 	public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
 		return new JmxMeterRegistry(config, clock, this::toHierarchicalName);
 	}
 
 	/**
-     * Converts a Meter.Id object to a hierarchical name using the specified NamingConvention.
-     * 
-     * @param id The Meter.Id object to convert.
-     * @param convention The NamingConvention to use for the conversion.
-     * @return The hierarchical name generated from the Meter.Id object.
-     */
-    private String toHierarchicalName(Meter.Id id, NamingConvention convention) {
+	 * Converts a Meter.Id object to a hierarchical name using the specified
+	 * NamingConvention.
+	 * @param id The Meter.Id object to convert.
+	 * @param convention The NamingConvention to use for the conversion.
+	 * @return The hierarchical name generated from the Meter.Id object.
+	 */
+	private String toHierarchicalName(Meter.Id id, NamingConvention convention) {
 		return /**/ HierarchicalNameMapper.DEFAULT.toHierarchicalName(id, convention);
 	}
 

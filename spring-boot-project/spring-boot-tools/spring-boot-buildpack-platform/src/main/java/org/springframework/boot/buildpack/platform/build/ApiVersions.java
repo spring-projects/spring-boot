@@ -36,11 +36,10 @@ final class ApiVersions {
 	private final ApiVersion[] apiVersions;
 
 	/**
-     * Constructs a new instance of the ApiVersions class with the specified versions.
-     * 
-     * @param versions the versions to be set for the ApiVersions instance
-     */
-    private ApiVersions(ApiVersion... versions) {
+	 * Constructs a new instance of the ApiVersions class with the specified versions.
+	 * @param versions the versions to be set for the ApiVersions instance
+	 */
+	private ApiVersions(ApiVersion... versions) {
 		this.apiVersions = versions;
 	}
 
@@ -66,12 +65,12 @@ final class ApiVersions {
 	}
 
 	/**
-     * Compares this ApiVersions object with the specified object for equality.
-     * 
-     * @param obj the object to compare with
-     * @return true if the specified object is equal to this ApiVersions object, false otherwise
-     */
-    @Override
+	 * Compares this ApiVersions object with the specified object for equality.
+	 * @param obj the object to compare with
+	 * @return true if the specified object is equal to this ApiVersions object, false
+	 * otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -85,21 +84,19 @@ final class ApiVersions {
 	}
 
 	/**
-     * Returns the hash code value for the array of API versions.
-     * 
-     * @return the hash code value for the array of API versions
-     */
-    @Override
+	 * Returns the hash code value for the array of API versions.
+	 * @return the hash code value for the array of API versions
+	 */
+	@Override
 	public int hashCode() {
 		return Arrays.hashCode(this.apiVersions);
 	}
 
 	/**
-     * Returns a string representation of the array of API versions.
-     * 
-     * @return a comma-delimited string representation of the API versions
-     */
-    @Override
+	 * Returns a string representation of the array of API versions.
+	 * @return a comma-delimited string representation of the API versions
+	 */
+	@Override
 	public String toString() {
 		return StringUtils.arrayToCommaDelimitedString(this.apiVersions);
 	}
@@ -115,13 +112,14 @@ final class ApiVersions {
 	}
 
 	/**
-     * Creates an instance of {@link ApiVersions} with the specified major version and a range of minor versions.
-     * 
-     * @param major the major version number
-     * @param minorsInclusive a stream of minor versions (inclusive)
-     * @return an instance of {@link ApiVersions} with the specified major and minor versions
-     */
-    static ApiVersions of(int major, IntStream minorsInclusive) {
+	 * Creates an instance of {@link ApiVersions} with the specified major version and a
+	 * range of minor versions.
+	 * @param major the major version number
+	 * @param minorsInclusive a stream of minor versions (inclusive)
+	 * @return an instance of {@link ApiVersions} with the specified major and minor
+	 * versions
+	 */
+	static ApiVersions of(int major, IntStream minorsInclusive) {
 		return new ApiVersions(
 				minorsInclusive.mapToObj((minor) -> ApiVersion.of(major, minor)).toArray(ApiVersion[]::new));
 	}

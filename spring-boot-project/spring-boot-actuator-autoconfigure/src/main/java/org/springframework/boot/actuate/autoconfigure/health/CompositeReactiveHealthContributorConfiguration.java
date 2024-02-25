@@ -47,12 +47,12 @@ public abstract class CompositeReactiveHealthContributorConfiguration<I extends 
 	}
 
 	/**
-     * Creates a composite ReactiveHealthContributor from a map of beans.
-     * 
-     * @param beans a map of beans where the key is the name of the bean and the value is the bean itself
-     * @return a composite ReactiveHealthContributor created from the provided beans
-     */
-    @Override
+	 * Creates a composite ReactiveHealthContributor from a map of beans.
+	 * @param beans a map of beans where the key is the name of the bean and the value is
+	 * the bean itself
+	 * @return a composite ReactiveHealthContributor created from the provided beans
+	 */
+	@Override
 	protected final ReactiveHealthContributor createComposite(Map<String, B> beans) {
 		return CompositeReactiveHealthContributor.fromMap(beans, this::createIndicator);
 	}

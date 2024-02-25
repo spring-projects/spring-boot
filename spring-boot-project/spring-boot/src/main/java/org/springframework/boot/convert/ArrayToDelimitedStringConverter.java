@@ -36,45 +36,45 @@ final class ArrayToDelimitedStringConverter implements ConditionalGenericConvert
 	private final CollectionToDelimitedStringConverter delegate;
 
 	/**
-     * Constructs a new ArrayToDelimitedStringConverter with the specified ConversionService.
-     * 
-     * @param conversionService the ConversionService to be used for converting elements in the array
-     */
-    ArrayToDelimitedStringConverter(ConversionService conversionService) {
+	 * Constructs a new ArrayToDelimitedStringConverter with the specified
+	 * ConversionService.
+	 * @param conversionService the ConversionService to be used for converting elements
+	 * in the array
+	 */
+	ArrayToDelimitedStringConverter(ConversionService conversionService) {
 		this.delegate = new CollectionToDelimitedStringConverter(conversionService);
 	}
 
 	/**
-     * Returns a set of convertible types for the ArrayToDelimitedStringConverter class.
-     * 
-     * @return a set containing a single ConvertiblePair object representing the conversion from Object[] to String.
-     */
-    @Override
+	 * Returns a set of convertible types for the ArrayToDelimitedStringConverter class.
+	 * @return a set containing a single ConvertiblePair object representing the
+	 * conversion from Object[] to String.
+	 */
+	@Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(Object[].class, String.class));
 	}
 
 	/**
-     * Determines if the given source type and target type can be converted by this converter.
-     * 
-     * @param sourceType the source type to be converted
-     * @param targetType the target type to be converted to
-     * @return true if the conversion is possible, false otherwise
-     */
-    @Override
+	 * Determines if the given source type and target type can be converted by this
+	 * converter.
+	 * @param sourceType the source type to be converted
+	 * @param targetType the target type to be converted to
+	 * @return true if the conversion is possible, false otherwise
+	 */
+	@Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return this.delegate.matches(sourceType, targetType);
 	}
 
 	/**
-     * Converts an array to a delimited string.
-     * 
-     * @param source the source object to be converted
-     * @param sourceType the TypeDescriptor for the source object
-     * @param targetType the TypeDescriptor for the target object
-     * @return the converted object
-     */
-    @Override
+	 * Converts an array to a delimited string.
+	 * @param source the source object to be converted
+	 * @param sourceType the TypeDescriptor for the source object
+	 * @param targetType the TypeDescriptor for the target object
+	 * @return the converted object
+	 */
+	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		List<Object> list = Arrays.asList(ObjectUtils.toObjectArray(source));
 		return this.delegate.convert(list, sourceType, targetType);

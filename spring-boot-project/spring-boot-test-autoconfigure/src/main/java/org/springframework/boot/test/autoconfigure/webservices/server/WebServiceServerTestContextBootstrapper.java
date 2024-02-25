@@ -31,25 +31,25 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
 class WebServiceServerTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	/**
-     * Processes the merged context configuration by calling the superclass method and creating a new instance of 
-     * WebMergedContextConfiguration with the processed configuration and the determined resource base path.
-     * 
-     * @param mergedConfig the merged context configuration to be processed
-     * @return the processed merged context configuration
-     */
-    @Override
+	 * Processes the merged context configuration by calling the superclass method and
+	 * creating a new instance of WebMergedContextConfiguration with the processed
+	 * configuration and the determined resource base path.
+	 * @param mergedConfig the merged context configuration to be processed
+	 * @return the processed merged context configuration
+	 */
+	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(MergedContextConfiguration mergedConfig) {
 		MergedContextConfiguration processedMergedConfiguration = super.processMergedContextConfiguration(mergedConfig);
 		return new WebMergedContextConfiguration(processedMergedConfiguration, determineResourceBasePath(mergedConfig));
 	}
 
 	/**
-     * Retrieves the properties from the given test class.
-     * 
-     * @param testClass the test class to retrieve properties from
-     * @return an array of properties if the test class is annotated with {@link WebServiceServerTest}, otherwise null
-     */
-    @Override
+	 * Retrieves the properties from the given test class.
+	 * @param testClass the test class to retrieve properties from
+	 * @return an array of properties if the test class is annotated with
+	 * {@link WebServiceServerTest}, otherwise null
+	 */
+	@Override
 	protected String[] getProperties(Class<?> testClass) {
 		WebServiceServerTest webServiceServerTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				WebServiceServerTest.class);

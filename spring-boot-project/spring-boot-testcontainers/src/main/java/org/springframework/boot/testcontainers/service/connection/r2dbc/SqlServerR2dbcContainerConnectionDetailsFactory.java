@@ -37,22 +37,21 @@ class SqlServerR2dbcContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<MSSQLServerContainer<?>, R2dbcConnectionDetails> {
 
 	/**
-     * Constructs a new SqlServerR2dbcContainerConnectionDetailsFactory with the specified connection name and connection factory options.
-     *
-     * @param connectionName the name of the connection
-     * @param connectionFactoryOptions the options for the connection factory
-     */
-    SqlServerR2dbcContainerConnectionDetailsFactory() {
+	 * Constructs a new SqlServerR2dbcContainerConnectionDetailsFactory with the specified
+	 * connection name and connection factory options.
+	 * @param connectionName the name of the connection
+	 * @param connectionFactoryOptions the options for the connection factory
+	 */
+	SqlServerR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	/**
-     * Returns the R2dbcConnectionDetails for the container connection.
-     *
-     * @param source the ContainerConnectionSource for the MSSQLServerContainer
-     * @return the R2dbcConnectionDetails for the container connection
-     */
-    @Override
+	 * Returns the R2dbcConnectionDetails for the container connection.
+	 * @param source the ContainerConnectionSource for the MSSQLServerContainer
+	 * @return the R2dbcConnectionDetails for the container connection
+	 */
+	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<MSSQLServerContainer<?>> source) {
 		return new MsSqlServerR2dbcDatabaseContainerConnectionDetails(source);
@@ -65,21 +64,22 @@ class SqlServerR2dbcContainerConnectionDetailsFactory
 			extends ContainerConnectionDetails<MSSQLServerContainer<?>> implements R2dbcConnectionDetails {
 
 		/**
-         * Constructs a new MsSqlServerR2dbcDatabaseContainerConnectionDetails object with the provided ContainerConnectionSource.
-         * 
-         * @param source the ContainerConnectionSource used to create the connection details
-         */
-        private MsSqlServerR2dbcDatabaseContainerConnectionDetails(
+		 * Constructs a new MsSqlServerR2dbcDatabaseContainerConnectionDetails object with
+		 * the provided ContainerConnectionSource.
+		 * @param source the ContainerConnectionSource used to create the connection
+		 * details
+		 */
+		private MsSqlServerR2dbcDatabaseContainerConnectionDetails(
 				ContainerConnectionSource<MSSQLServerContainer<?>> source) {
 			super(source);
 		}
 
 		/**
-         * Returns the connection factory options for the MsSqlServerR2dbcDatabaseContainerConnectionDetails.
-         * 
-         * @return the connection factory options
-         */
-        @Override
+		 * Returns the connection factory options for the
+		 * MsSqlServerR2dbcDatabaseContainerConnectionDetails.
+		 * @return the connection factory options
+		 */
+		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
 			return MSSQLR2DBCDatabaseContainer.getOptions(getContainer());
 		}

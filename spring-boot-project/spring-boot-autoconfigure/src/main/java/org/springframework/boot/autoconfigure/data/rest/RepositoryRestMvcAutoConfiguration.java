@@ -56,13 +56,12 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public class RepositoryRestMvcAutoConfiguration {
 
 	/**
-     * Creates a SpringBootRepositoryRestConfigurer bean.
-     * 
-     * @param objectMapperBuilder the object provider for Jackson2ObjectMapperBuilder
-     * @param properties the repository rest properties
-     * @return the SpringBootRepositoryRestConfigurer bean
-     */
-    @Bean
+	 * Creates a SpringBootRepositoryRestConfigurer bean.
+	 * @param objectMapperBuilder the object provider for Jackson2ObjectMapperBuilder
+	 * @param properties the repository rest properties
+	 * @return the SpringBootRepositoryRestConfigurer bean
+	 */
+	@Bean
 	public SpringBootRepositoryRestConfigurer springBootRepositoryRestConfigurer(
 			ObjectProvider<Jackson2ObjectMapperBuilder> objectMapperBuilder, RepositoryRestProperties properties) {
 		return new SpringBootRepositoryRestConfigurer(objectMapperBuilder.getIfAvailable(), properties);

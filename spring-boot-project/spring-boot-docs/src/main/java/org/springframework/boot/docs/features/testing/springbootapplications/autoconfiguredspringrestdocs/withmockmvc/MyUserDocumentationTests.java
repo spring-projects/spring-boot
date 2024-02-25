@@ -39,11 +39,10 @@ class MyUserDocumentationTests {
 	private MockMvc mvc;
 
 	/**
-     * Test case to list users.
-     * 
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
+	 * Test case to list users.
+	 * @throws Exception if an error occurs during the test
+	 */
+	@Test
 	void listUsers() throws Exception {
 		this.mvc.perform(get("/users").accept(MediaType.TEXT_PLAIN))
 			.andExpect(status().isOk())

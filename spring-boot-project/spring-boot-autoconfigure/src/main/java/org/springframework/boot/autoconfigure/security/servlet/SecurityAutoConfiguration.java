@@ -44,12 +44,13 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
 public class SecurityAutoConfiguration {
 
 	/**
-     * Creates a new instance of DefaultAuthenticationEventPublisher if no bean of type AuthenticationEventPublisher is present.
-     * 
-     * @param publisher the ApplicationEventPublisher to be used by the DefaultAuthenticationEventPublisher
-     * @return a DefaultAuthenticationEventPublisher instance
-     */
-    @Bean
+	 * Creates a new instance of DefaultAuthenticationEventPublisher if no bean of type
+	 * AuthenticationEventPublisher is present.
+	 * @param publisher the ApplicationEventPublisher to be used by the
+	 * DefaultAuthenticationEventPublisher
+	 * @return a DefaultAuthenticationEventPublisher instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean(AuthenticationEventPublisher.class)
 	public DefaultAuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher publisher) {
 		return new DefaultAuthenticationEventPublisher(publisher);

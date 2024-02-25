@@ -37,25 +37,24 @@ public class LocalHostWebClient extends WebClient {
 	private final Environment environment;
 
 	/**
-     * Constructs a new LocalHostWebClient with the specified environment.
-     * 
-     * @param environment the environment to be used by the LocalHostWebClient (must not be null)
-     * @throws IllegalArgumentException if the environment is null
-     */
-    public LocalHostWebClient(Environment environment) {
+	 * Constructs a new LocalHostWebClient with the specified environment.
+	 * @param environment the environment to be used by the LocalHostWebClient (must not
+	 * be null)
+	 * @throws IllegalArgumentException if the environment is null
+	 */
+	public LocalHostWebClient(Environment environment) {
 		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;
 	}
 
 	/**
-     * Retrieves a page from the specified URL.
-     * 
-     * @param url the URL of the page to retrieve
-     * @return the retrieved page
-     * @throws IOException if an I/O error occurs while retrieving the page
-     * @throws FailingHttpStatusCodeException if the HTTP status code indicates a failure
-     */
-    @Override
+	 * Retrieves a page from the specified URL.
+	 * @param url the URL of the page to retrieve
+	 * @return the retrieved page
+	 * @throws IOException if an I/O error occurs while retrieving the page
+	 * @throws FailingHttpStatusCodeException if the HTTP status code indicates a failure
+	 */
+	@Override
 	public <P extends Page> P getPage(String url) throws IOException, FailingHttpStatusCodeException {
 		if (url.startsWith("/")) {
 			String port = this.environment.getProperty("local.server.port", "8080");

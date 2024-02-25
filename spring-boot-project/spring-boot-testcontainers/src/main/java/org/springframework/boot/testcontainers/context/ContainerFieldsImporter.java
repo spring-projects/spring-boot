@@ -35,12 +35,13 @@ import org.springframework.util.ReflectionUtils;
 class ContainerFieldsImporter {
 
 	/**
-     * Registers bean definitions for the given definition class in the provided bean definition registry.
-     * 
-     * @param registry the bean definition registry to register the bean definitions with
-     * @param definitionClass the class containing the container fields to register as bean definitions
-     */
-    void registerBeanDefinitions(BeanDefinitionRegistry registry, Class<?> definitionClass) {
+	 * Registers bean definitions for the given definition class in the provided bean
+	 * definition registry.
+	 * @param registry the bean definition registry to register the bean definitions with
+	 * @param definitionClass the class containing the container fields to register as
+	 * bean definitions
+	 */
+	void registerBeanDefinitions(BeanDefinitionRegistry registry, Class<?> definitionClass) {
 		for (Field field : getContainerFields(definitionClass)) {
 			assertValid(field);
 			Container<?> container = getContainer(field);
@@ -49,47 +50,42 @@ class ContainerFieldsImporter {
 	}
 
 	/**
-     * Retrieves a list of container fields from the specified class.
-     * 
-     * @param containersClass the class to retrieve container fields from
-     * @return a list of container fields found in the class
-     */
-    private List<Field> getContainerFields(Class<?> containersClass) {
+	 * Retrieves a list of container fields from the specified class.
+	 * @param containersClass the class to retrieve container fields from
+	 * @return a list of container fields found in the class
+	 */
+	private List<Field> getContainerFields(Class<?> containersClass) {
 		List<Field> containerFields = new ArrayList<>();
 		ReflectionUtils.doWithFields(containersClass, containerFields::add, this::isContainerField);
 		return List.copyOf(containerFields);
 	}
 
 	/**
-     * Checks if the given field is a container field.
-     * 
-     * @param candidate the field to be checked
-     * @return true if the field is a container field, false otherwise
-     */
-    private boolean isContainerField(Field candidate) {
+	 * Checks if the given field is a container field.
+	 * @param candidate the field to be checked
+	 * @return true if the field is a container field, false otherwise
+	 */
+	private boolean isContainerField(Field candidate) {
 		return Container.class.isAssignableFrom(candidate.getType());
 	}
 
 	/**
-     * Asserts that the given field is valid.
-     * 
-     * @param field the field to be validated
-     * 
-     * @throws IllegalStateException if the field is not static
-     */
-    private void assertValid(Field field) {
+	 * Asserts that the given field is valid.
+	 * @param field the field to be validated
+	 * @throws IllegalStateException if the field is not static
+	 */
+	private void assertValid(Field field) {
 		Assert.state(Modifier.isStatic(field.getModifiers()),
 				() -> "Container field '" + field.getName() + "' must be static");
 	}
 
 	/**
-     * Retrieves the container object from the given field.
-     * 
-     * @param field the field from which to retrieve the container object
-     * @return the container object
-     * @throws IllegalStateException if the container field has a null value
-     */
-    private Container<?> getContainer(Field field) {
+	 * Retrieves the container object from the given field.
+	 * @param field the field from which to retrieve the container object
+	 * @return the container object
+	 * @throws IllegalStateException if the container field has a null value
+	 */
+	private Container<?> getContainer(Field field) {
 		ReflectionUtils.makeAccessible(field);
 		Container<?> container = (Container<?>) ReflectionUtils.getField(field, null);
 		Assert.state(container != null, () -> "Container field '" + field.getName() + "' must not have a null value");
@@ -97,25 +93,24 @@ class ContainerFieldsImporter {
 	}
 
 	/**
-     * Registers a bean definition in the given bean definition registry for a field in a container.
-     * 
-     * @param registry the bean definition registry to register the bean definition with
-     * @param field the field for which the bean definition is being registered
-     * @param container the container containing the field
-     */
-    private void registerBeanDefinition(BeanDefinitionRegistry registry, Field field, Container<?> container) {
+	 * Registers a bean definition in the given bean definition registry for a field in a
+	 * container.
+	 * @param registry the bean definition registry to register the bean definition with
+	 * @param field the field for which the bean definition is being registered
+	 * @param container the container containing the field
+	 */
+	private void registerBeanDefinition(BeanDefinitionRegistry registry, Field field, Container<?> container) {
 		TestcontainerFieldBeanDefinition beanDefinition = new TestcontainerFieldBeanDefinition(field, container);
 		String beanName = generateBeanName(field);
 		registry.registerBeanDefinition(beanName, beanDefinition);
 	}
 
 	/**
-     * Generates a bean name for the given field.
-     * 
-     * @param field the field for which the bean name is generated
-     * @return the generated bean name
-     */
-    private String generateBeanName(Field field) {
+	 * Generates a bean name for the given field.
+	 * @param field the field for which the bean name is generated
+	 * @return the generated bean name
+	 */
+	private String generateBeanName(Field field) {
 		return "importTestContainer.%s.%s".formatted(field.getDeclaringClass().getName(), field.getName());
 	}
 

@@ -41,14 +41,14 @@ import org.springframework.util.Assert;
 class SessionRepositoryFilterConfiguration {
 
 	/**
-     * Creates a DelegatingFilterProxyRegistrationBean for the SessionRepositoryFilter.
-     * 
-     * @param sessionProperties the session properties
-     * @param beanFactory the bean factory
-     * @return the DelegatingFilterProxyRegistrationBean for the SessionRepositoryFilter
-     * @throws IllegalStateException if there is not exactly one SessionRepositoryFilter bean
-     */
-    @Bean
+	 * Creates a DelegatingFilterProxyRegistrationBean for the SessionRepositoryFilter.
+	 * @param sessionProperties the session properties
+	 * @param beanFactory the bean factory
+	 * @return the DelegatingFilterProxyRegistrationBean for the SessionRepositoryFilter
+	 * @throws IllegalStateException if there is not exactly one SessionRepositoryFilter
+	 * bean
+	 */
+	@Bean
 	DelegatingFilterProxyRegistrationBean sessionRepositoryFilterRegistration(SessionProperties sessionProperties,
 			ListableBeanFactory beanFactory) {
 		String[] targetBeanNames = beanFactory.getBeanNamesForType(SessionRepositoryFilter.class, false, false);
@@ -61,12 +61,11 @@ class SessionRepositoryFilterConfiguration {
 	}
 
 	/**
-     * Returns the set of dispatcher types for the filter.
-     * 
-     * @param sessionProperties the session properties containing the servlet properties
-     * @return the set of dispatcher types for the filter, or null if not specified
-     */
-    private EnumSet<DispatcherType> getDispatcherTypes(SessionProperties sessionProperties) {
+	 * Returns the set of dispatcher types for the filter.
+	 * @param sessionProperties the session properties containing the servlet properties
+	 * @return the set of dispatcher types for the filter, or null if not specified
+	 */
+	private EnumSet<DispatcherType> getDispatcherTypes(SessionProperties sessionProperties) {
 		SessionProperties.Servlet servletProperties = sessionProperties.getServlet();
 		if (servletProperties.getFilterDispatcherTypes() == null) {
 			return null;

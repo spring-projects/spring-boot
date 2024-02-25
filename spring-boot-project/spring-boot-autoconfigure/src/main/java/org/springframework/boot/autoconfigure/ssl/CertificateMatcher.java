@@ -50,13 +50,12 @@ class CertificateMatcher {
 	private final byte[] generatedSignature;
 
 	/**
-     * Constructs a new CertificateMatcher object with the provided private key.
-     * 
-     * @param privateKey the private key to be used for signature generation
-     * @throws IllegalArgumentException if the private key is null
-     * @throws IllegalArgumentException if the signature creation fails
-     */
-    CertificateMatcher(PrivateKey privateKey) {
+	 * Constructs a new CertificateMatcher object with the provided private key.
+	 * @param privateKey the private key to be used for signature generation
+	 * @throws IllegalArgumentException if the private key is null
+	 * @throws IllegalArgumentException if the signature creation fails
+	 */
+	CertificateMatcher(PrivateKey privateKey) {
 		Assert.notNull(privateKey, "Private key must not be null");
 		this.privateKey = privateKey;
 		this.signature = createSignature(privateKey);
@@ -65,12 +64,12 @@ class CertificateMatcher {
 	}
 
 	/**
-     * Creates a signature object using the provided private key.
-     * 
-     * @param privateKey the private key to be used for creating the signature
-     * @return the signature object created using the private key, or null if the algorithm is not supported
-     */
-    private Signature createSignature(PrivateKey privateKey) {
+	 * Creates a signature object using the provided private key.
+	 * @param privateKey the private key to be used for creating the signature
+	 * @return the signature object created using the private key, or null if the
+	 * algorithm is not supported
+	 */
+	private Signature createSignature(PrivateKey privateKey) {
 		try {
 			String algorithm = getSignatureAlgorithm(privateKey);
 			return (algorithm != null) ? Signature.getInstance(algorithm) : null;
@@ -81,14 +80,18 @@ class CertificateMatcher {
 	}
 
 	/**
-     * Returns the signature algorithm corresponding to the given private key.
-     *
-     * @param privateKey the private key for which to determine the signature algorithm
-     * @return the signature algorithm corresponding to the private key, or null if the algorithm is not recognized
-     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html#signature-algorithms">Signature Algorithms</a>
-     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html#keypairgenerator-algorithms">Key Pair Generator Algorithms</a>
-     */
-    private static String getSignatureAlgorithm(PrivateKey privateKey) {
+	 * Returns the signature algorithm corresponding to the given private key.
+	 * @param privateKey the private key for which to determine the signature algorithm
+	 * @return the signature algorithm corresponding to the private key, or null if the
+	 * algorithm is not recognized
+	 * @see <a href=
+	 * "https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html#signature-algorithms">Signature
+	 * Algorithms</a>
+	 * @see <a href=
+	 * "https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html#keypairgenerator-algorithms">Key
+	 * Pair Generator Algorithms</a>
+	 */
+	private static String getSignatureAlgorithm(PrivateKey privateKey) {
 		// https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html#signature-algorithms
 		// https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html#keypairgenerator-algorithms
 		return switch (privateKey.getAlgorithm()) {
@@ -101,43 +104,42 @@ class CertificateMatcher {
 	}
 
 	/**
-     * Checks if the generated signature matches any of the certificates in the given list.
-     *
-     * @param certificates the list of certificates to check against
-     * @return true if the generated signature matches any of the certificates, false otherwise
-     */
-    boolean matchesAny(List<? extends Certificate> certificates) {
+	 * Checks if the generated signature matches any of the certificates in the given
+	 * list.
+	 * @param certificates the list of certificates to check against
+	 * @return true if the generated signature matches any of the certificates, false
+	 * otherwise
+	 */
+	boolean matchesAny(List<? extends Certificate> certificates) {
 		return (this.generatedSignature != null) && certificates.stream().anyMatch(this::matches);
 	}
 
 	/**
-     * Checks if the given certificate matches the public key of the certificate.
-     *
-     * @param certificate the certificate to be checked
-     * @return true if the certificate matches the public key, false otherwise
-     */
-    boolean matches(Certificate certificate) {
+	 * Checks if the given certificate matches the public key of the certificate.
+	 * @param certificate the certificate to be checked
+	 * @return true if the certificate matches the public key, false otherwise
+	 */
+	boolean matches(Certificate certificate) {
 		return matches(certificate.getPublicKey());
 	}
 
 	/**
-     * Checks if the given public key matches the generated signature.
-     * 
-     * @param publicKey the public key to be checked
-     * @return true if the public key matches the generated signature, false otherwise
-     */
-    private boolean matches(PublicKey publicKey) {
+	 * Checks if the given public key matches the generated signature.
+	 * @param publicKey the public key to be checked
+	 * @return true if the public key matches the generated signature, false otherwise
+	 */
+	private boolean matches(PublicKey publicKey) {
 		return (this.generatedSignature != null)
 				&& Objects.equals(this.privateKey.getAlgorithm(), publicKey.getAlgorithm()) && verify(publicKey);
 	}
 
 	/**
-     * Verifies the authenticity of a public key by comparing it with a generated signature.
-     * 
-     * @param publicKey the public key to be verified
-     * @return true if the public key is authentic, false otherwise
-     */
-    private boolean verify(PublicKey publicKey) {
+	 * Verifies the authenticity of a public key by comparing it with a generated
+	 * signature.
+	 * @param publicKey the public key to be verified
+	 * @return true if the public key is authentic, false otherwise
+	 */
+	private boolean verify(PublicKey publicKey) {
 		try {
 			this.signature.initVerify(publicKey);
 			this.signature.update(DATA);
@@ -149,13 +151,13 @@ class CertificateMatcher {
 	}
 
 	/**
-     * Signs the given data using the provided signature algorithm and private key.
-     * 
-     * @param signature the signature algorithm to use for signing
-     * @param privateKey the private key to use for signing
-     * @return the signed data as a byte array, or null if an error occurred during signing
-     */
-    private static byte[] sign(Signature signature, PrivateKey privateKey) {
+	 * Signs the given data using the provided signature algorithm and private key.
+	 * @param signature the signature algorithm to use for signing
+	 * @param privateKey the private key to use for signing
+	 * @return the signed data as a byte array, or null if an error occurred during
+	 * signing
+	 */
+	private static byte[] sign(Signature signature, PrivateKey privateKey) {
 		try {
 			signature.initSign(privateKey);
 			signature.update(DATA);

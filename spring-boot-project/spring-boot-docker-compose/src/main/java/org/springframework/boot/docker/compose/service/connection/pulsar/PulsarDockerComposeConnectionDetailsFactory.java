@@ -36,19 +36,22 @@ class PulsarDockerComposeConnectionDetailsFactory
 	private static final int ADMIN_PORT = 8080;
 
 	/**
-     * Constructs a new PulsarDockerComposeConnectionDetailsFactory with the default Docker image "apachepulsar/pulsar".
-     */
-    PulsarDockerComposeConnectionDetailsFactory() {
+	 * Constructs a new PulsarDockerComposeConnectionDetailsFactory with the default
+	 * Docker image "apachepulsar/pulsar".
+	 */
+	PulsarDockerComposeConnectionDetailsFactory() {
 		super("apachepulsar/pulsar");
 	}
 
 	/**
-     * Returns the PulsarConnectionDetails object for the given DockerComposeConnectionSource.
-     * 
-     * @param source the DockerComposeConnectionSource object containing the running service information
-     * @return the PulsarConnectionDetails object for the given DockerComposeConnectionSource
-     */
-    @Override
+	 * Returns the PulsarConnectionDetails object for the given
+	 * DockerComposeConnectionSource.
+	 * @param source the DockerComposeConnectionSource object containing the running
+	 * service information
+	 * @return the PulsarConnectionDetails object for the given
+	 * DockerComposeConnectionSource
+	 */
+	@Override
 	protected PulsarConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new PulsarDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -64,11 +67,11 @@ class PulsarDockerComposeConnectionDetailsFactory
 		private final String adminUrl;
 
 		/**
-         * Constructs a new PulsarDockerComposeConnectionDetails object with the provided RunningService.
-         * 
-         * @param service the RunningService object representing the Pulsar service
-         */
-        PulsarDockerComposeConnectionDetails(RunningService service) {
+		 * Constructs a new PulsarDockerComposeConnectionDetails object with the provided
+		 * RunningService.
+		 * @param service the RunningService object representing the Pulsar service
+		 */
+		PulsarDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			ConnectionPorts ports = service.ports();
 			this.brokerUrl = "pulsar://%s:%s".formatted(service.host(), ports.get(BROKER_PORT));
@@ -76,21 +79,19 @@ class PulsarDockerComposeConnectionDetailsFactory
 		}
 
 		/**
-         * Returns the broker URL for the Pulsar Docker Compose connection details.
-         *
-         * @return the broker URL
-         */
-        @Override
+		 * Returns the broker URL for the Pulsar Docker Compose connection details.
+		 * @return the broker URL
+		 */
+		@Override
 		public String getBrokerUrl() {
 			return this.brokerUrl;
 		}
 
 		/**
-         * Returns the admin URL for the Pulsar Docker Compose connection details.
-         *
-         * @return the admin URL
-         */
-        @Override
+		 * Returns the admin URL for the Pulsar Docker Compose connection details.
+		 * @return the admin URL
+		 */
+		@Override
 		public String getAdminUrl() {
 			return this.adminUrl;
 		}

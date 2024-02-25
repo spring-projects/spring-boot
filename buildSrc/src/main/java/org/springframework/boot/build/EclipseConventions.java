@@ -34,11 +34,11 @@ import org.gradle.plugins.ide.eclipse.model.Library;
 class EclipseConventions {
 
 	/**
-     * Applies the Eclipse plugin to the given project and configures the classpath for the Eclipse model.
-     * 
-     * @param project the project to apply the Eclipse plugin to
-     */
-    void apply(Project project) {
+	 * Applies the Eclipse plugin to the given project and configures the classpath for
+	 * the Eclipse model.
+	 * @param project the project to apply the Eclipse plugin to
+	 */
+	void apply(Project project) {
 		project.getPlugins().withType(EclipsePlugin.class, (eclipse) -> {
 			EclipseModel eclipseModel = project.getExtensions().getByType(EclipseModel.class);
 			eclipseModel.classpath(this::configureClasspath);
@@ -46,20 +46,21 @@ class EclipseConventions {
 	}
 
 	/**
-     * Configures the classpath for the Eclipse project.
-     * 
-     * @param classpath The EclipseClasspath object representing the classpath to be configured.
-     */
-    private void configureClasspath(EclipseClasspath classpath) {
+	 * Configures the classpath for the Eclipse project.
+	 * @param classpath The EclipseClasspath object representing the classpath to be
+	 * configured.
+	 */
+	private void configureClasspath(EclipseClasspath classpath) {
 		classpath.file(this::configureClasspathFile);
 	}
 
 	/**
-     * Configures the classpath file by removing Kotlin plugin contributed build directories.
-     * 
-     * @param merger the XmlFileContentMerger used to merge the content of the classpath file
-     */
-    private void configureClasspathFile(XmlFileContentMerger merger) {
+	 * Configures the classpath file by removing Kotlin plugin contributed build
+	 * directories.
+	 * @param merger the XmlFileContentMerger used to merge the content of the classpath
+	 * file
+	 */
+	private void configureClasspathFile(XmlFileContentMerger merger) {
 		merger.whenMerged((content) -> {
 			if (content instanceof Classpath classpath) {
 				classpath.getEntries().removeIf(this::isKotlinPluginContributedBuildDirectory);
@@ -68,33 +69,32 @@ class EclipseConventions {
 	}
 
 	/**
-     * Checks if the given classpath entry is a Kotlin plugin contributed build directory.
-     * 
-     * @param entry the classpath entry to check
-     * @return true if the entry is a Kotlin plugin contributed build directory, false otherwise
-     */
-    private boolean isKotlinPluginContributedBuildDirectory(ClasspathEntry entry) {
+	 * Checks if the given classpath entry is a Kotlin plugin contributed build directory.
+	 * @param entry the classpath entry to check
+	 * @return true if the entry is a Kotlin plugin contributed build directory, false
+	 * otherwise
+	 */
+	private boolean isKotlinPluginContributedBuildDirectory(ClasspathEntry entry) {
 		return (entry instanceof Library library) && isKotlinPluginContributedBuildDirectory(library.getPath())
 				&& isTest(library);
 	}
 
 	/**
-     * Checks if the given path is a Kotlin plugin contributed build directory.
-     * 
-     * @param path the path to be checked
-     * @return true if the path is a Kotlin plugin contributed build directory, false otherwise
-     */
-    private boolean isKotlinPluginContributedBuildDirectory(String path) {
+	 * Checks if the given path is a Kotlin plugin contributed build directory.
+	 * @param path the path to be checked
+	 * @return true if the path is a Kotlin plugin contributed build directory, false
+	 * otherwise
+	 */
+	private boolean isKotlinPluginContributedBuildDirectory(String path) {
 		return path.contains("/main") && (path.contains("/build/classes/") || path.contains("/build/resources/"));
 	}
 
 	/**
-     * Checks if the given library is a test library.
-     * 
-     * @param library the library to check
-     * @return true if the library is a test library, false otherwise
-     */
-    private boolean isTest(Library library) {
+	 * Checks if the given library is a test library.
+	 * @param library the library to check
+	 * @return true if the library is a test library, false otherwise
+	 */
+	private boolean isTest(Library library) {
 		Object value = library.getEntryAttributes().get("test");
 		return (value instanceof String string && Boolean.parseBoolean(string));
 	}

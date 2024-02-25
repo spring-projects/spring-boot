@@ -53,36 +53,38 @@ public class OtlpMetricsExportAutoConfiguration {
 	private final OtlpProperties properties;
 
 	/**
-     * Constructs a new instance of OtlpMetricsExportAutoConfiguration with the specified OtlpProperties.
-     * 
-     * @param properties the OtlpProperties to be used for configuration
-     */
-    OtlpMetricsExportAutoConfiguration(OtlpProperties properties) {
+	 * Constructs a new instance of OtlpMetricsExportAutoConfiguration with the specified
+	 * OtlpProperties.
+	 * @param properties the OtlpProperties to be used for configuration
+	 */
+	OtlpMetricsExportAutoConfiguration(OtlpProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Creates an instance of OtlpMetricsConnectionDetails if no other bean of the same type is present.
-     * Uses the properties provided to create a new instance of PropertiesOtlpMetricsConnectionDetails.
-     * 
-     * @return the created instance of OtlpMetricsConnectionDetails
-     */
-    @Bean
+	 * Creates an instance of OtlpMetricsConnectionDetails if no other bean of the same
+	 * type is present. Uses the properties provided to create a new instance of
+	 * PropertiesOtlpMetricsConnectionDetails.
+	 * @return the created instance of OtlpMetricsConnectionDetails
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	OtlpMetricsConnectionDetails otlpMetricsConnectionDetails() {
 		return new PropertiesOtlpMetricsConnectionDetails(this.properties);
 	}
 
 	/**
-     * Creates an instance of {@link OtlpConfig} based on the provided properties, connection details, and environment.
-     * This method is annotated with {@link ConditionalOnMissingBean} to ensure that it is only executed if there is no existing bean of type {@link OtlpConfig}.
-     * 
-     * @param openTelemetryProperties The properties for OpenTelemetry.
-     * @param connectionDetails The connection details for OTLP metrics.
-     * @param environment The environment.
-     * @return An instance of {@link OtlpConfig} based on the provided properties, connection details, and environment.
-     */
-    @Bean
+	 * Creates an instance of {@link OtlpConfig} based on the provided properties,
+	 * connection details, and environment. This method is annotated with
+	 * {@link ConditionalOnMissingBean} to ensure that it is only executed if there is no
+	 * existing bean of type {@link OtlpConfig}.
+	 * @param openTelemetryProperties The properties for OpenTelemetry.
+	 * @param connectionDetails The connection details for OTLP metrics.
+	 * @param environment The environment.
+	 * @return An instance of {@link OtlpConfig} based on the provided properties,
+	 * connection details, and environment.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	OtlpConfig otlpConfig(OpenTelemetryProperties openTelemetryProperties,
 			OtlpMetricsConnectionDetails connectionDetails, Environment environment) {
@@ -91,13 +93,13 @@ public class OtlpMetricsExportAutoConfiguration {
 	}
 
 	/**
-     * Creates an instance of OtlpMeterRegistry if no other bean of the same type is present.
-     * 
-     * @param otlpConfig The configuration for the OTLP exporter.
-     * @param clock The clock used for measuring time.
-     * @return An instance of OtlpMeterRegistry.
-     */
-    @Bean
+	 * Creates an instance of OtlpMeterRegistry if no other bean of the same type is
+	 * present.
+	 * @param otlpConfig The configuration for the OTLP exporter.
+	 * @param clock The clock used for measuring time.
+	 * @return An instance of OtlpMeterRegistry.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock) {
 		return new OtlpMeterRegistry(otlpConfig, clock);
@@ -111,20 +113,19 @@ public class OtlpMetricsExportAutoConfiguration {
 		private final OtlpProperties properties;
 
 		/**
-         * Constructs a new instance of PropertiesOtlpMetricsConnectionDetails with the specified properties.
-         * 
-         * @param properties the OTLP properties to be used for the connection details
-         */
-        PropertiesOtlpMetricsConnectionDetails(OtlpProperties properties) {
+		 * Constructs a new instance of PropertiesOtlpMetricsConnectionDetails with the
+		 * specified properties.
+		 * @param properties the OTLP properties to be used for the connection details
+		 */
+		PropertiesOtlpMetricsConnectionDetails(OtlpProperties properties) {
 			this.properties = properties;
 		}
 
 		/**
-         * Returns the URL of the connection details.
-         *
-         * @return the URL of the connection details
-         */
-        @Override
+		 * Returns the URL of the connection details.
+		 * @return the URL of the connection details
+		 */
+		@Override
 		public String getUrl() {
 			return this.properties.getUrl();
 		}

@@ -47,11 +47,10 @@ public class MyProperties {
 	}
 
 	/**
-     * Returns the read timeout duration.
-     *
-     * @return the read timeout duration
-     */
-    public Duration getReadTimeout() {
+	 * Returns the read timeout duration.
+	 * @return the read timeout duration
+	 */
+	public Duration getReadTimeout() {
 		return this.readTimeout;
 	}
 	// @fold:off

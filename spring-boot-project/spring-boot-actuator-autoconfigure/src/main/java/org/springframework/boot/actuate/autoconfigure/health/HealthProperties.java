@@ -50,54 +50,48 @@ public abstract class HealthProperties {
 	private Set<String> roles = new HashSet<>();
 
 	/**
-     * Returns the status of the HealthProperties.
-     *
-     * @return the status of the HealthProperties
-     */
-    public Status getStatus() {
+	 * Returns the status of the HealthProperties.
+	 * @return the status of the HealthProperties
+	 */
+	public Status getStatus() {
 		return this.status;
 	}
 
 	/**
-     * Returns the show components of the HealthProperties.
-     *
-     * @return the show components of the HealthProperties
-     */
-    public Show getShowComponents() {
+	 * Returns the show components of the HealthProperties.
+	 * @return the show components of the HealthProperties
+	 */
+	public Show getShowComponents() {
 		return this.showComponents;
 	}
 
 	/**
-     * Sets the showComponents property of the HealthProperties class.
-     * 
-     * @param showComponents the Show object to set as the showComponents property
-     */
-    public void setShowComponents(Show showComponents) {
+	 * Sets the showComponents property of the HealthProperties class.
+	 * @param showComponents the Show object to set as the showComponents property
+	 */
+	public void setShowComponents(Show showComponents) {
 		this.showComponents = showComponents;
 	}
 
 	/**
-     * Retrieves the details of a show.
-     *
-     * @return the show details
-     */
-    public abstract Show getShowDetails();
+	 * Retrieves the details of a show.
+	 * @return the show details
+	 */
+	public abstract Show getShowDetails();
 
 	/**
-     * Returns the set of roles associated with the HealthProperties object.
-     *
-     * @return the set of roles
-     */
-    public Set<String> getRoles() {
+	 * Returns the set of roles associated with the HealthProperties object.
+	 * @return the set of roles
+	 */
+	public Set<String> getRoles() {
 		return this.roles;
 	}
 
 	/**
-     * Sets the roles for the HealthProperties.
-     * 
-     * @param roles the set of roles to be set
-     */
-    public void setRoles(Set<String> roles) {
+	 * Sets the roles for the HealthProperties.
+	 * @param roles the set of roles to be set
+	 */
+	public void setRoles(Set<String> roles) {
 		this.roles = roles;
 	}
 
@@ -118,31 +112,28 @@ public abstract class HealthProperties {
 		private final Map<String, Integer> httpMapping = new HashMap<>();
 
 		/**
-         * Returns the order list.
-         * 
-         * @return the order list
-         */
-        public List<String> getOrder() {
+		 * Returns the order list.
+		 * @return the order list
+		 */
+		public List<String> getOrder() {
 			return this.order;
 		}
 
 		/**
-         * Sets the order of the status.
-         * 
-         * @param statusOrder the list of status order
-         */
-        public void setOrder(List<String> statusOrder) {
+		 * Sets the order of the status.
+		 * @param statusOrder the list of status order
+		 */
+		public void setOrder(List<String> statusOrder) {
 			if (statusOrder != null && !statusOrder.isEmpty()) {
 				this.order = statusOrder;
 			}
 		}
 
 		/**
-         * Returns the HTTP mapping as a Map object.
-         *
-         * @return the HTTP mapping as a Map object.
-         */
-        public Map<String, Integer> getHttpMapping() {
+		 * Returns the HTTP mapping as a Map object.
+		 * @return the HTTP mapping as a Map object.
+		 */
+		public Map<String, Integer> getHttpMapping() {
 			return this.httpMapping;
 		}
 

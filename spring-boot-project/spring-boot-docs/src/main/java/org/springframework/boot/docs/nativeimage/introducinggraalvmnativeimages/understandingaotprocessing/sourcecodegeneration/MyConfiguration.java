@@ -26,11 +26,10 @@ import org.springframework.context.annotation.Configuration;
 public class MyConfiguration {
 
 	/**
-     * Creates and returns a new instance of MyBean.
-     * 
-     * @return a new instance of MyBean
-     */
-    @Bean
+	 * Creates and returns a new instance of MyBean.
+	 * @return a new instance of MyBean
+	 */
+	@Bean
 	public MyBean myBean() {
 		return new MyBean();
 	}

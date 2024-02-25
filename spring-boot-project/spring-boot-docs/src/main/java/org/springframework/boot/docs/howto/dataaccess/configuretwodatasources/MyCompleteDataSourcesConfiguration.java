@@ -33,13 +33,14 @@ import org.springframework.context.annotation.Primary;
 public class MyCompleteDataSourcesConfiguration {
 
 	/**
-     * Returns the DataSourceProperties object for the first data source.
-     * This method is annotated with @Bean and @Primary to indicate that it is a bean definition and the primary data source.
-     * The configuration properties for the first data source are specified using the @ConfigurationProperties annotation with the prefix "app.datasource.first".
-     * 
-     * @return The DataSourceProperties object for the first data source.
-     */
-    @Bean
+	 * Returns the DataSourceProperties object for the first data source. This method is
+	 * annotated with @Bean and @Primary to indicate that it is a bean definition and the
+	 * primary data source. The configuration properties for the first data source are
+	 * specified using the @ConfigurationProperties annotation with the prefix
+	 * "app.datasource.first".
+	 * @return The DataSourceProperties object for the first data source.
+	 */
+	@Bean
 	@Primary
 	@ConfigurationProperties("app.datasource.first")
 	public DataSourceProperties firstDataSourceProperties() {
@@ -47,12 +48,13 @@ public class MyCompleteDataSourcesConfiguration {
 	}
 
 	/**
-     * Creates a primary HikariDataSource bean using the configuration properties specified in "app.datasource.first.configuration".
-     * 
-     * @param firstDataSourceProperties the DataSourceProperties object containing the configuration properties for the first data source
-     * @return a HikariDataSource object representing the first data source
-     */
-    @Bean
+	 * Creates a primary HikariDataSource bean using the configuration properties
+	 * specified in "app.datasource.first.configuration".
+	 * @param firstDataSourceProperties the DataSourceProperties object containing the
+	 * configuration properties for the first data source
+	 * @return a HikariDataSource object representing the first data source
+	 */
+	@Bean
 	@Primary
 	@ConfigurationProperties("app.datasource.first.configuration")
 	public HikariDataSource firstDataSource(DataSourceProperties firstDataSourceProperties) {
@@ -60,23 +62,22 @@ public class MyCompleteDataSourcesConfiguration {
 	}
 
 	/**
-     * Retrieves the properties for the second data source.
-     * 
-     * @return The DataSourceProperties object containing the properties for the second data source.
-     */
-    @Bean
+	 * Retrieves the properties for the second data source.
+	 * @return The DataSourceProperties object containing the properties for the second
+	 * data source.
+	 */
+	@Bean
 	@ConfigurationProperties("app.datasource.second")
 	public DataSourceProperties secondDataSourceProperties() {
 		return new DataSourceProperties();
 	}
 
 	/**
-     * Creates a second data source using the provided secondDataSourceProperties.
-     * 
-     * @param secondDataSourceProperties the properties for the second data source
-     * @return the second data source
-     */
-    @Bean
+	 * Creates a second data source using the provided secondDataSourceProperties.
+	 * @param secondDataSourceProperties the properties for the second data source
+	 * @return the second data source
+	 */
+	@Bean
 	@ConfigurationProperties("app.datasource.second.configuration")
 	public BasicDataSource secondDataSource(
 			@Qualifier("secondDataSourceProperties") DataSourceProperties secondDataSourceProperties) {

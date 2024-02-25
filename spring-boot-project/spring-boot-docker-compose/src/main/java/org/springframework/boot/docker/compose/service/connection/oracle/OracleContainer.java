@@ -32,31 +32,30 @@ enum OracleContainer {
 	private final String defaultDatabase;
 
 	/**
-     * Constructs a new OracleContainer object with the specified image name and default database.
-     * 
-     * @param imageName the name of the Oracle image to be used for the container
-     * @param defaultDatabase the name of the default database to be used for the container
-     */
-    OracleContainer(String imageName, String defaultDatabase) {
+	 * Constructs a new OracleContainer object with the specified image name and default
+	 * database.
+	 * @param imageName the name of the Oracle image to be used for the container
+	 * @param defaultDatabase the name of the default database to be used for the
+	 * container
+	 */
+	OracleContainer(String imageName, String defaultDatabase) {
 		this.imageName = imageName;
 		this.defaultDatabase = defaultDatabase;
 	}
 
 	/**
-     * Returns the name of the image.
-     *
-     * @return the name of the image
-     */
-    String getImageName() {
+	 * Returns the name of the image.
+	 * @return the name of the image
+	 */
+	String getImageName() {
 		return this.imageName;
 	}
 
 	/**
-     * Returns the default database of the OracleContainer.
-     *
-     * @return the default database of the OracleContainer
-     */
-    String getDefaultDatabase() {
+	 * Returns the default database of the OracleContainer.
+	 * @return the default database of the OracleContainer
+	 */
+	String getDefaultDatabase() {
 		return this.defaultDatabase;
 	}
 

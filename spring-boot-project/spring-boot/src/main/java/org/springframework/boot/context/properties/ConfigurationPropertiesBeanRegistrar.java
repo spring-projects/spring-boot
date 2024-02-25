@@ -44,21 +44,20 @@ final class ConfigurationPropertiesBeanRegistrar {
 	private final BeanFactory beanFactory;
 
 	/**
-     * Constructs a new ConfigurationPropertiesBeanRegistrar with the specified BeanDefinitionRegistry.
-     * 
-     * @param registry the BeanDefinitionRegistry to use for registering bean definitions
-     */
-    ConfigurationPropertiesBeanRegistrar(BeanDefinitionRegistry registry) {
+	 * Constructs a new ConfigurationPropertiesBeanRegistrar with the specified
+	 * BeanDefinitionRegistry.
+	 * @param registry the BeanDefinitionRegistry to use for registering bean definitions
+	 */
+	ConfigurationPropertiesBeanRegistrar(BeanDefinitionRegistry registry) {
 		this.registry = registry;
 		this.beanFactory = (BeanFactory) this.registry;
 	}
 
 	/**
-     * Registers a class as a configuration properties bean.
-     * 
-     * @param type the class to be registered
-     */
-    void register(Class<?> type) {
+	 * Registers a class as a configuration properties bean.
+	 * @param type the class to be registered
+	 */
+	void register(Class<?> type) {
 		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotations
 			.from(type, SearchStrategy.TYPE_HIERARCHY)
 			.get(ConfigurationProperties.class);
@@ -66,12 +65,13 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	/**
-     * Registers a bean definition for the given type with the specified configuration properties annotation.
-     * 
-     * @param type the class type of the bean
-     * @param annotation the merged annotation containing the configuration properties information
-     */
-    void register(Class<?> type, MergedAnnotation<ConfigurationProperties> annotation) {
+	 * Registers a bean definition for the given type with the specified configuration
+	 * properties annotation.
+	 * @param type the class type of the bean
+	 * @param annotation the merged annotation containing the configuration properties
+	 * information
+	 */
+	void register(Class<?> type, MergedAnnotation<ConfigurationProperties> annotation) {
 		String name = getName(type, annotation);
 		if (!containsBeanDefinition(name)) {
 			registerBeanDefinition(name, type, annotation);
@@ -79,38 +79,37 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	/**
-     * Returns the name of the configuration properties bean based on the provided type and annotation.
-     * If the annotation is present, it retrieves the prefix value from the annotation and appends it to the type name.
-     * If the prefix is not empty, it concatenates the prefix and type name with a hyphen.
-     * If the prefix is empty, it returns just the type name.
-     *
-     * @param type      the type of the configuration properties bean
-     * @param annotation the merged annotation containing the prefix value
-     * @return the name of the configuration properties bean
-     */
-    private String getName(Class<?> type, MergedAnnotation<ConfigurationProperties> annotation) {
+	 * Returns the name of the configuration properties bean based on the provided type
+	 * and annotation. If the annotation is present, it retrieves the prefix value from
+	 * the annotation and appends it to the type name. If the prefix is not empty, it
+	 * concatenates the prefix and type name with a hyphen. If the prefix is empty, it
+	 * returns just the type name.
+	 * @param type the type of the configuration properties bean
+	 * @param annotation the merged annotation containing the prefix value
+	 * @return the name of the configuration properties bean
+	 */
+	private String getName(Class<?> type, MergedAnnotation<ConfigurationProperties> annotation) {
 		String prefix = annotation.isPresent() ? annotation.getString("prefix") : "";
 		return (StringUtils.hasText(prefix) ? prefix + "-" + type.getName() : type.getName());
 	}
 
 	/**
-     * Check if the specified bean definition is contained in the bean factory.
-     *
-     * @param name the name of the bean definition to check
-     * @return {@code true} if the bean definition is contained, {@code false} otherwise
-     */
-    private boolean containsBeanDefinition(String name) {
+	 * Check if the specified bean definition is contained in the bean factory.
+	 * @param name the name of the bean definition to check
+	 * @return {@code true} if the bean definition is contained, {@code false} otherwise
+	 */
+	private boolean containsBeanDefinition(String name) {
 		return containsBeanDefinition(this.beanFactory, name);
 	}
 
 	/**
-     * Checks if the given bean factory contains a bean definition with the specified name.
-     * 
-     * @param beanFactory the bean factory to check
-     * @param name the name of the bean definition to check for
-     * @return true if the bean factory contains the bean definition, false otherwise
-     */
-    private boolean containsBeanDefinition(BeanFactory beanFactory, String name) {
+	 * Checks if the given bean factory contains a bean definition with the specified
+	 * name.
+	 * @param beanFactory the bean factory to check
+	 * @param name the name of the bean definition to check for
+	 * @return true if the bean factory contains the bean definition, false otherwise
+	 */
+	private boolean containsBeanDefinition(BeanFactory beanFactory, String name) {
 		if (beanFactory instanceof ListableBeanFactory listableBeanFactory
 				&& listableBeanFactory.containsBeanDefinition(name)) {
 			return true;
@@ -122,14 +121,15 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	/**
-     * Registers a bean definition for a configuration properties bean.
-     * 
-     * @param beanName the name of the bean
-     * @param type the class of the bean
-     * @param annotation the merged annotation containing the {@link ConfigurationProperties} annotation
-     * @throws IllegalStateException if the {@link ConfigurationProperties} annotation is not present on the bean class
-     */
-    private void registerBeanDefinition(String beanName, Class<?> type,
+	 * Registers a bean definition for a configuration properties bean.
+	 * @param beanName the name of the bean
+	 * @param type the class of the bean
+	 * @param annotation the merged annotation containing the
+	 * {@link ConfigurationProperties} annotation
+	 * @throws IllegalStateException if the {@link ConfigurationProperties} annotation is
+	 * not present on the bean class
+	 */
+	private void registerBeanDefinition(String beanName, Class<?> type,
 			MergedAnnotation<ConfigurationProperties> annotation) {
 		Assert.state(annotation.isPresent(), () -> "No " + ConfigurationProperties.class.getSimpleName()
 				+ " annotation found on  '" + type.getName() + "'.");
@@ -137,13 +137,12 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	/**
-     * Creates a bean definition for the given bean name and type.
-     * 
-     * @param beanName the name of the bean
-     * @param type the class type of the bean
-     * @return the created bean definition
-     */
-    private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
+	 * Creates a bean definition for the given bean name and type.
+	 * @param beanName the name of the bean
+	 * @param type the class type of the bean
+	 * @return the created bean definition
+	 */
+	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
 		BindMethod bindMethod = ConfigurationPropertiesBean.deduceBindMethod(type);
 		RootBeanDefinition definition = new RootBeanDefinition(type);
 		BindMethodAttribute.set(definition, bindMethod);

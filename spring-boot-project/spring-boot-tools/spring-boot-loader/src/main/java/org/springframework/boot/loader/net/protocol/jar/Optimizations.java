@@ -26,45 +26,42 @@ final class Optimizations {
 	private static final ThreadLocal<Boolean> status = new ThreadLocal<>();
 
 	/**
-     * This is a private constructor for the Optimizations class.
-     * It is used to prevent the instantiation of the class.
-     */
-    private Optimizations() {
+	 * This is a private constructor for the Optimizations class. It is used to prevent
+	 * the instantiation of the class.
+	 */
+	private Optimizations() {
 	}
 
 	/**
-     * Enables the specified optimization.
-     * 
-     * @param readContents true to enable the optimization, false otherwise
-     */
-    static void enable(boolean readContents) {
+	 * Enables the specified optimization.
+	 * @param readContents true to enable the optimization, false otherwise
+	 */
+	static void enable(boolean readContents) {
 		status.set(readContents);
 	}
 
 	/**
-     * Disables the optimization.
-     * This method removes the status.
-     */
-    static void disable() {
+	 * Disables the optimization. This method removes the status.
+	 */
+	static void disable() {
 		status.remove();
 	}
 
 	/**
-     * Returns a boolean value indicating whether the optimization is enabled or not.
-     * 
-     * @return {@code true} if the optimization is enabled, {@code false} otherwise.
-     */
-    static boolean isEnabled() {
+	 * Returns a boolean value indicating whether the optimization is enabled or not.
+	 * @return {@code true} if the optimization is enabled, {@code false} otherwise.
+	 */
+	static boolean isEnabled() {
 		return status.get() != null;
 	}
 
 	/**
-     * Checks if the specified readContents value is equal to the current status value.
-     * 
-     * @param readContents the readContents value to compare with the current status value
-     * @return true if the readContents value is equal to the current status value, false otherwise
-     */
-    static boolean isEnabled(boolean readContents) {
+	 * Checks if the specified readContents value is equal to the current status value.
+	 * @param readContents the readContents value to compare with the current status value
+	 * @return true if the readContents value is equal to the current status value, false
+	 * otherwise
+	 */
+	static boolean isEnabled(boolean readContents) {
 		return Boolean.valueOf(readContents).equals(status.get());
 	}
 

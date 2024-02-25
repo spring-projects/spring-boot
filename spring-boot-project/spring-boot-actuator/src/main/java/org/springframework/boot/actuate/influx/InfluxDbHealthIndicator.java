@@ -39,22 +39,21 @@ public class InfluxDbHealthIndicator extends AbstractHealthIndicator {
 	private final InfluxDB influxDb;
 
 	/**
-     * Constructs a new InfluxDbHealthIndicator with the specified InfluxDB instance.
-     * 
-     * @param influxDb the InfluxDB instance to be used for health checks (must not be null)
-     */
-    public InfluxDbHealthIndicator(InfluxDB influxDb) {
+	 * Constructs a new InfluxDbHealthIndicator with the specified InfluxDB instance.
+	 * @param influxDb the InfluxDB instance to be used for health checks (must not be
+	 * null)
+	 */
+	public InfluxDbHealthIndicator(InfluxDB influxDb) {
 		super("InfluxDB health check failed");
 		Assert.notNull(influxDb, "InfluxDB must not be null");
 		this.influxDb = influxDb;
 	}
 
 	/**
-     * Performs a health check on the InfluxDB connection.
-     * 
-     * @param builder the Health.Builder object used to build the health status
-     */
-    @Override
+	 * Performs a health check on the InfluxDB connection.
+	 * @param builder the Health.Builder object used to build the health status
+	 */
+	@Override
 	protected void doHealthCheck(Health.Builder builder) {
 		Pong pong = this.influxDb.ping();
 		builder.up().withDetail("version", pong.getVersion());

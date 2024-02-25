@@ -176,13 +176,14 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	}
 
 	/**
-     * Retrieves the custom layers based on the provided configuration file.
-     * 
-     * @param configuration The configuration file containing the custom layers information.
-     * @return The custom layers retrieved from the configuration file.
-     * @throws IllegalStateException if there is an error processing the custom layers configuration.
-     */
-    private CustomLayers getCustomLayers(File configuration) {
+	 * Retrieves the custom layers based on the provided configuration file.
+	 * @param configuration The configuration file containing the custom layers
+	 * information.
+	 * @return The custom layers retrieved from the configuration file.
+	 * @throws IllegalStateException if there is an error processing the custom layers
+	 * configuration.
+	 */
+	private CustomLayers getCustomLayers(File configuration) {
 		try {
 			Document document = getDocumentIfAvailable(configuration);
 			return new CustomLayersProvider().getLayers(document);
@@ -194,13 +195,12 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	}
 
 	/**
-     * Retrieves a Document object if the specified XML file is available.
-     * 
-     * @param xmlFile the XML file to be parsed
-     * @return the Document object representing the parsed XML file
-     * @throws Exception if an error occurs during parsing
-     */
-    private Document getDocumentIfAvailable(File xmlFile) throws Exception {
+	 * Retrieves a Document object if the specified XML file is available.
+	 * @param xmlFile the XML file to be parsed
+	 * @return the Document object representing the parsed XML file
+	 * @throws Exception if an error occurs during parsing
+	 */
+	private Document getDocumentIfAvailable(File xmlFile) throws Exception {
 		InputSource inputSource = new InputSource(new FileInputStream(xmlFile));
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(true);
@@ -221,11 +221,10 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	}
 
 	/**
-     * Returns an array of additional filters to be applied when filtering artifacts.
-     * 
-     * @return an array of additional filters
-     */
-    private ArtifactsFilter[] getAdditionalFilters() {
+	 * Returns an array of additional filters to be applied when filtering artifacts.
+	 * @return an array of additional filters
+	 */
+	private ArtifactsFilter[] getAdditionalFilters() {
 		List<ArtifactsFilter> filters = new ArrayList<>();
 		if (this.excludeDevtools) {
 			filters.add(DEVTOOLS_EXCLUDE_FILTER);
@@ -252,12 +251,11 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	}
 
 	/**
-     * Retrieves the artifact with the specified classifier.
-     * 
-     * @param classifier the classifier of the artifact to retrieve
-     * @return the artifact with the specified classifier, or null if not found
-     */
-    private Artifact getArtifact(String classifier) {
+	 * Retrieves the artifact with the specified classifier.
+	 * @param classifier the classifier of the artifact to retrieve
+	 * @return the artifact with the specified classifier, or null if not found
+	 */
+	private Artifact getArtifact(String classifier) {
 		if (classifier != null) {
 			for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
 				if (classifier.equals(attachedArtifact.getClassifier()) && attachedArtifact.getFile() != null
@@ -270,14 +268,15 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	}
 
 	/**
-     * Returns the target file with the specified final name, classifier, and target directory.
-     * 
-     * @param finalName       the final name of the target file
-     * @param classifier      the classifier of the target file
-     * @param targetDirectory the target directory where the file will be located
-     * @return the target file with the specified final name, classifier, and target directory
-     */
-    protected File getTargetFile(String finalName, String classifier, File targetDirectory) {
+	 * Returns the target file with the specified final name, classifier, and target
+	 * directory.
+	 * @param finalName the final name of the target file
+	 * @param classifier the classifier of the target file
+	 * @param targetDirectory the target directory where the file will be located
+	 * @return the target file with the specified final name, classifier, and target
+	 * directory
+	 */
+	protected File getTargetFile(String finalName, String classifier, File targetDirectory) {
 		String classifierSuffix = (classifier != null) ? classifier.trim() : "";
 		if (!classifierSuffix.isEmpty() && !classifierSuffix.startsWith("-")) {
 			classifierSuffix = "-" + classifierSuffix;
@@ -322,20 +321,18 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 		private final Layout layout;
 
 		/**
-     * Sets the layout type for the packager.
-     * 
-     * @param layout the layout type to be set
-     */
-    LayoutType(Layout layout) {
+		 * Sets the layout type for the packager.
+		 * @param layout the layout type to be set
+		 */
+		LayoutType(Layout layout) {
 			this.layout = layout;
 		}
 
 		/**
-     * Returns the layout of the packager.
-     * 
-     * @return the layout of the packager
-     */
-    public Layout layout() {
+		 * Returns the layout of the packager.
+		 * @return the layout of the packager
+		 */
+		public Layout layout() {
 			return this.layout;
 		}
 

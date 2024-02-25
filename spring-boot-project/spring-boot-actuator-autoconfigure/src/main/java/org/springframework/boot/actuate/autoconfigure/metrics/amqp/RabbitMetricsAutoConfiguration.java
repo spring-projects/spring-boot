@@ -44,12 +44,11 @@ import org.springframework.context.annotation.Bean;
 public class RabbitMetricsAutoConfiguration {
 
 	/**
-     * Creates a RabbitConnectionFactoryMetricsPostProcessor bean.
-     * 
-     * @param applicationContext the ApplicationContext used for creating the bean
-     * @return the RabbitConnectionFactoryMetricsPostProcessor bean
-     */
-    @Bean
+	 * Creates a RabbitConnectionFactoryMetricsPostProcessor bean.
+	 * @param applicationContext the ApplicationContext used for creating the bean
+	 * @return the RabbitConnectionFactoryMetricsPostProcessor bean
+	 */
+	@Bean
 	public static RabbitConnectionFactoryMetricsPostProcessor rabbitConnectionFactoryMetricsPostProcessor(
 			ApplicationContext applicationContext) {
 		return new RabbitConnectionFactoryMetricsPostProcessor(applicationContext);

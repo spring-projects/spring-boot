@@ -41,56 +41,50 @@ public class Tag {
 	private List<Note> notes;
 
 	/**
-     * Returns the ID of the Tag.
-     *
-     * @return the ID of the Tag
-     */
-    public long getId() {
+	 * Returns the ID of the Tag.
+	 * @return the ID of the Tag
+	 */
+	public long getId() {
 		return this.id;
 	}
 
 	/**
-     * Sets the ID of the Tag.
-     * 
-     * @param id the ID to set
-     */
-    public void setId(long id) {
+	 * Sets the ID of the Tag.
+	 * @param id the ID to set
+	 */
+	public void setId(long id) {
 		this.id = id;
 	}
 
 	/**
-     * Returns the name of the Tag.
-     *
-     * @return the name of the Tag
-     */
-    public String getName() {
+	 * Returns the name of the Tag.
+	 * @return the name of the Tag
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Sets the name of the Tag.
-     * 
-     * @param name the name to be set
-     */
-    public void setName(String name) {
+	 * Sets the name of the Tag.
+	 * @param name the name to be set
+	 */
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-     * Returns the list of notes.
-     *
-     * @return the list of notes
-     */
-    public List<Note> getNotes() {
+	 * Returns the list of notes.
+	 * @return the list of notes
+	 */
+	public List<Note> getNotes() {
 		return this.notes;
 	}
 
 	/**
-     * Sets the list of notes for this tag.
-     * 
-     * @param notes the list of notes to be set
-     */
-    public void setNotes(List<Note> notes) {
+	 * Sets the list of notes for this tag.
+	 * @param notes the list of notes to be set
+	 */
+	public void setNotes(List<Note> notes) {
 		this.notes = notes;
 	}
 

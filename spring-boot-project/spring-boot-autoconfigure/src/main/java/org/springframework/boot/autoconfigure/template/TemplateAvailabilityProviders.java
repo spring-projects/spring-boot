@@ -57,12 +57,11 @@ public class TemplateAvailabilityProviders {
 	private final Map<String, TemplateAvailabilityProvider> cache = new LinkedHashMap<>(CACHE_LIMIT, 0.75f, true) {
 
 		/**
-     * Removes the eldest entry from the map if the size exceeds the cache limit.
-     * 
-     * @param eldest the eldest entry in the map
-     * @return {@code true} if the eldest entry was removed, {@code false} otherwise
-     */
-    @Override
+		 * Removes the eldest entry from the map if the size exceeds the cache limit.
+		 * @param eldest the eldest entry in the map
+		 * @return {@code true} if the eldest entry was removed, {@code false} otherwise
+		 */
+		@Override
 		protected boolean removeEldestEntry(Map.Entry<String, TemplateAvailabilityProvider> eldest) {
 			if (size() > CACHE_LIMIT) {
 				TemplateAvailabilityProviders.this.resolved.remove(eldest.getKey());
@@ -150,15 +149,16 @@ public class TemplateAvailabilityProviders {
 	}
 
 	/**
-     * Finds the TemplateAvailabilityProvider that can provide the template for the given view.
-     * 
-     * @param view The name of the view for which the template is required.
-     * @param environment The environment in which the template is being searched.
-     * @param classLoader The class loader to use for loading the template.
-     * @param resourceLoader The resource loader to use for loading the template.
-     * @return The TemplateAvailabilityProvider that can provide the template, or null if no provider is found.
-     */
-    private TemplateAvailabilityProvider findProvider(String view, Environment environment, ClassLoader classLoader,
+	 * Finds the TemplateAvailabilityProvider that can provide the template for the given
+	 * view.
+	 * @param view The name of the view for which the template is required.
+	 * @param environment The environment in which the template is being searched.
+	 * @param classLoader The class loader to use for loading the template.
+	 * @param resourceLoader The resource loader to use for loading the template.
+	 * @return The TemplateAvailabilityProvider that can provide the template, or null if
+	 * no provider is found.
+	 */
+	private TemplateAvailabilityProvider findProvider(String view, Environment environment, ClassLoader classLoader,
 			ResourceLoader resourceLoader) {
 		for (TemplateAvailabilityProvider candidate : this.providers) {
 			if (candidate.isTemplateAvailable(view, environment, classLoader, resourceLoader)) {
@@ -169,20 +169,19 @@ public class TemplateAvailabilityProviders {
 	}
 
 	/**
-     * NoTemplateAvailabilityProvider class.
-     */
-    private static final class NoTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
+	 * NoTemplateAvailabilityProvider class.
+	 */
+	private static final class NoTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
 		/**
-         * Checks if a template is available for the given view.
-         * 
-         * @param view the name of the view
-         * @param environment the environment in which the template is being checked
-         * @param classLoader the class loader to use for loading the template
-         * @param resourceLoader the resource loader to use for loading the template
-         * @return true if a template is available, false otherwise
-         */
-        @Override
+		 * Checks if a template is available for the given view.
+		 * @param view the name of the view
+		 * @param environment the environment in which the template is being checked
+		 * @param classLoader the class loader to use for loading the template
+		 * @param resourceLoader the resource loader to use for loading the template
+		 * @return true if a template is available, false otherwise
+		 */
+		@Override
 		public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
 				ResourceLoader resourceLoader) {
 			return false;

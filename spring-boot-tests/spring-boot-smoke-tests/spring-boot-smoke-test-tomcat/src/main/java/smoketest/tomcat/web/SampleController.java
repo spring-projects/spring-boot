@@ -35,34 +35,33 @@ public class SampleController {
 	private final HttpHeaderService httpHeaderService;
 
 	/**
-     * Constructs a new SampleController with the specified HelloWorldService and HttpHeaderService.
-     * 
-     * @param helloWorldService the HelloWorldService to be used by the SampleController
-     * @param httpHeaderService the HttpHeaderService to be used by the SampleController
-     */
-    public SampleController(HelloWorldService helloWorldService, HttpHeaderService httpHeaderService) {
+	 * Constructs a new SampleController with the specified HelloWorldService and
+	 * HttpHeaderService.
+	 * @param helloWorldService the HelloWorldService to be used by the SampleController
+	 * @param httpHeaderService the HttpHeaderService to be used by the SampleController
+	 */
+	public SampleController(HelloWorldService helloWorldService, HttpHeaderService httpHeaderService) {
 		this.helloWorldService = helloWorldService;
 		this.httpHeaderService = httpHeaderService;
 	}
 
 	/**
-     * Retrieves the hello world message.
-     * 
-     * @return the hello world message
-     */
-    @GetMapping("/")
+	 * Retrieves the hello world message.
+	 * @return the hello world message
+	 */
+	@GetMapping("/")
 	@ResponseBody
 	public String helloWorld() {
 		return this.helloWorldService.getHelloMessage();
 	}
 
 	/**
-     * Retrieves the maximum HTTP response header value and adds it to the response header.
-     * 
-     * @param response the HttpServletResponse object used to add the header
-     * @return the hello message obtained from the HelloWorldService
-     */
-    @GetMapping("/max-http-response-header")
+	 * Retrieves the maximum HTTP response header value and adds it to the response
+	 * header.
+	 * @param response the HttpServletResponse object used to add the header
+	 * @return the hello message obtained from the HelloWorldService
+	 */
+	@GetMapping("/max-http-response-header")
 	@ResponseBody
 	public String maxHttpResponseHeader(HttpServletResponse response) {
 		String headerValue = this.httpHeaderService.getHeaderValue();

@@ -44,12 +44,12 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	private final RuntimeException startupFailure;
 
 	/**
-     * Constructs a new AssertProviderApplicationContextInvocationHandler with the specified applicationContextType and contextSupplier.
-     * 
-     * @param applicationContextType the type of the application context
-     * @param contextSupplier the supplier for the application context
-     */
-    AssertProviderApplicationContextInvocationHandler(Class<?> applicationContextType, Supplier<?> contextSupplier) {
+	 * Constructs a new AssertProviderApplicationContextInvocationHandler with the
+	 * specified applicationContextType and contextSupplier.
+	 * @param applicationContextType the type of the application context
+	 * @param contextSupplier the supplier for the application context
+	 */
+	AssertProviderApplicationContextInvocationHandler(Class<?> applicationContextType, Supplier<?> contextSupplier) {
 		this.applicationContextType = applicationContextType;
 		Object contextOrStartupFailure = getContextOrStartupFailure(contextSupplier);
 		if (contextOrStartupFailure instanceof RuntimeException runtimeException) {
@@ -63,12 +63,12 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	}
 
 	/**
-     * Retrieves the context or startup failure using the provided context supplier.
-     * 
-     * @param contextSupplier the supplier used to retrieve the context
-     * @return the context if successfully retrieved, or the startup failure if an exception occurred
-     */
-    private Object getContextOrStartupFailure(Supplier<?> contextSupplier) {
+	 * Retrieves the context or startup failure using the provided context supplier.
+	 * @param contextSupplier the supplier used to retrieve the context
+	 * @return the context if successfully retrieved, or the startup failure if an
+	 * exception occurred
+	 */
+	private Object getContextOrStartupFailure(Supplier<?> contextSupplier) {
 		try {
 			return contextSupplier.get();
 		}
@@ -78,15 +78,14 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	}
 
 	/**
-     * Invokes the specified method on the proxy object.
-     * 
-     * @param proxy the proxy object
-     * @param method the method to be invoked
-     * @param args the arguments to be passed to the method
-     * @return the result of the method invocation
-     * @throws Throwable if an exception occurs during the method invocation
-     */
-    @Override
+	 * Invokes the specified method on the proxy object.
+	 * @param proxy the proxy object
+	 * @param method the method to be invoked
+	 * @param args the arguments to be passed to the method
+	 * @return the result of the method invocation
+	 * @throws Throwable if an exception occurs during the method invocation
+	 */
+	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		if (isToString(method)) {
 			return toString();
@@ -107,27 +106,26 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	}
 
 	/**
-     * Checks if the given method is the toString() method.
-     * 
-     * @param method the method to check
-     * @return true if the method is the toString() method and has no parameters, false otherwise
-     */
-    private boolean isToString(Method method) {
+	 * Checks if the given method is the toString() method.
+	 * @param method the method to check
+	 * @return true if the method is the toString() method and has no parameters, false
+	 * otherwise
+	 */
+	private boolean isToString(Method method) {
 		return ("toString".equals(method.getName()) && method.getParameterCount() == 0);
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * If the startupFailure is not null, it returns a string indicating that the application context is unstarted,
-     * along with the type of the startup failure.
-     * Otherwise, it creates a ToStringCreator object and appends the id, applicationName, and beanDefinitionCount
-     * of the applicationContext to it.
-     * Finally, it returns a string indicating that the application is started, along with the string representation
-     * of the ToStringCreator object.
-     *
-     * @return a string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object. If the startupFailure is not null,
+	 * it returns a string indicating that the application context is unstarted, along
+	 * with the type of the startup failure. Otherwise, it creates a ToStringCreator
+	 * object and appends the id, applicationName, and beanDefinitionCount of the
+	 * applicationContext to it. Finally, it returns a string indicating that the
+	 * application is started, along with the string representation of the ToStringCreator
+	 * object.
+	 * @return a string representation of the object
+	 */
+	@Override
 	public String toString() {
 		if (this.startupFailure != null) {
 			return "Unstarted application context " + this.applicationContextType.getName() + "[startupFailure="
@@ -141,24 +139,23 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	}
 
 	/**
-     * Checks if the given method is the "getSourceApplicationContext" method.
-     * 
-     * @param method the method to check
-     * @return true if the method is "getSourceApplicationContext" and has either no parameters or a single parameter of type Class, false otherwise
-     */
-    private boolean isGetSourceContext(Method method) {
+	 * Checks if the given method is the "getSourceApplicationContext" method.
+	 * @param method the method to check
+	 * @return true if the method is "getSourceApplicationContext" and has either no
+	 * parameters or a single parameter of type Class, false otherwise
+	 */
+	private boolean isGetSourceContext(Method method) {
 		return "getSourceApplicationContext".equals(method.getName()) && ((method.getParameterCount() == 0)
 				|| Arrays.equals(new Class<?>[] { Class.class }, method.getParameterTypes()));
 	}
 
 	/**
-     * Retrieves the source context from the provided arguments.
-     * 
-     * @param args the arguments passed to the method
-     * @return the source ApplicationContext context
-     * @throws IllegalArgumentException if the first argument is not an instance of Class
-     */
-    private Object getSourceContext(Object[] args) {
+	 * Retrieves the source context from the provided arguments.
+	 * @param args the arguments passed to the method
+	 * @return the source ApplicationContext context
+	 * @throws IllegalArgumentException if the first argument is not an instance of Class
+	 */
+	private Object getSourceContext(Object[] args) {
 		ApplicationContext context = getStartedApplicationContext();
 		if (!ObjectUtils.isEmpty(args)) {
 			Assert.isInstanceOf((Class<?>) args[0], context);
@@ -167,61 +164,58 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	}
 
 	/**
-     * Checks if the given method is the "getStartupFailure" method with no parameters.
-     * 
-     * @param method the method to check
-     * @return true if the method is "getStartupFailure" with no parameters, false otherwise
-     */
-    private boolean isGetStartupFailure(Method method) {
+	 * Checks if the given method is the "getStartupFailure" method with no parameters.
+	 * @param method the method to check
+	 * @return true if the method is "getStartupFailure" with no parameters, false
+	 * otherwise
+	 */
+	private boolean isGetStartupFailure(Method method) {
 		return ("getStartupFailure".equals(method.getName()) && method.getParameterCount() == 0);
 	}
 
 	/**
-     * Returns the startup failure object.
-     *
-     * @return the startup failure object
-     */
-    private Object getStartupFailure() {
+	 * Returns the startup failure object.
+	 * @return the startup failure object
+	 */
+	private Object getStartupFailure() {
 		return this.startupFailure;
 	}
 
 	/**
-     * Checks if the given method is the "assertThat" method.
-     * 
-     * @param method the method to check
-     * @return true if the method is the "assertThat" method with no parameters, false otherwise
-     */
-    private boolean isAssertThat(Method method) {
+	 * Checks if the given method is the "assertThat" method.
+	 * @param method the method to check
+	 * @return true if the method is the "assertThat" method with no parameters, false
+	 * otherwise
+	 */
+	private boolean isAssertThat(Method method) {
 		return ("assertThat".equals(method.getName()) && method.getParameterCount() == 0);
 	}
 
 	/**
-     * Returns an instance of ApplicationContextAssert that wraps the given proxy object.
-     * 
-     * @param proxy the proxy object to be wrapped
-     * @return an instance of ApplicationContextAssert
-     */
-    private Object getAssertThat(Object proxy) {
+	 * Returns an instance of ApplicationContextAssert that wraps the given proxy object.
+	 * @param proxy the proxy object to be wrapped
+	 * @return an instance of ApplicationContextAssert
+	 */
+	private Object getAssertThat(Object proxy) {
 		return new ApplicationContextAssert<>((ApplicationContext) proxy, this.startupFailure);
 	}
 
 	/**
-     * Checks if the given method is a close method.
-     * 
-     * @param method the method to check
-     * @return true if the method is a close method, false otherwise
-     */
-    private boolean isCloseMethod(Method method) {
+	 * Checks if the given method is a close method.
+	 * @param method the method to check
+	 * @return true if the method is a close method, false otherwise
+	 */
+	private boolean isCloseMethod(Method method) {
 		return ("close".equals(method.getName()) && method.getParameterCount() == 0);
 	}
 
 	/**
-     * Invokes the close method on the applicationContext if it is an instance of Closeable.
-     * 
-     * @return null
-     * @throws IOException if an I/O error occurs while closing the applicationContext
-     */
-    private Object invokeClose() throws IOException {
+	 * Invokes the close method on the applicationContext if it is an instance of
+	 * Closeable.
+	 * @return null
+	 * @throws IOException if an I/O error occurs while closing the applicationContext
+	 */
+	private Object invokeClose() throws IOException {
 		if (this.applicationContext instanceof Closeable closeable) {
 			closeable.close();
 		}
@@ -229,14 +223,13 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	}
 
 	/**
-     * Invokes a method on the application context object.
-     * 
-     * @param method the method to be invoked
-     * @param args the arguments to be passed to the method
-     * @return the result of the method invocation
-     * @throws Throwable if an exception occurs during the method invocation
-     */
-    private Object invokeApplicationContextMethod(Method method, Object[] args) throws Throwable {
+	 * Invokes a method on the application context object.
+	 * @param method the method to be invoked
+	 * @param args the arguments to be passed to the method
+	 * @return the result of the method invocation
+	 * @throws Throwable if an exception occurs during the method invocation
+	 */
+	private Object invokeApplicationContextMethod(Method method, Object[] args) throws Throwable {
 		try {
 			return method.invoke(getStartedApplicationContext(), args);
 		}
@@ -246,12 +239,11 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	}
 
 	/**
-     * Returns the application context that has been started.
-     * 
-     * @return the started application context
-     * @throws IllegalStateException if the application context failed to start
-     */
-    private ApplicationContext getStartedApplicationContext() {
+	 * Returns the application context that has been started.
+	 * @return the started application context
+	 * @throws IllegalStateException if the application context failed to start
+	 */
+	private ApplicationContext getStartedApplicationContext() {
 		if (this.startupFailure != null) {
 			throw new IllegalStateException(this + " failed to start", this.startupFailure);
 		}

@@ -32,11 +32,10 @@ import org.springframework.context.annotation.Configuration;
 public class MyPostgresR2dbcConfiguration {
 
 	/**
-     * Customizes the Postgres connection factory options.
-     * 
-     * @return the connection factory options builder customizer
-     */
-    @Bean
+	 * Customizes the Postgres connection factory options.
+	 * @return the connection factory options builder customizer
+	 */
+	@Bean
 	public ConnectionFactoryOptionsBuilderCustomizer postgresCustomizer() {
 		Map<String, String> options = new HashMap<>();
 		options.put("lock_timeout", "30s");

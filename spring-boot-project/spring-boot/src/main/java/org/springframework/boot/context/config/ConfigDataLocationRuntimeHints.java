@@ -41,12 +41,12 @@ class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 	private static final Log logger = LogFactory.getLog(ConfigDataLocationRuntimeHints.class);
 
 	/**
-     * Registers application configuration hints for the specified file names, locations, and extensions.
-     * 
-     * @param hints the runtime hints to register
-     * @param classLoader the class loader to use for loading resources
-     */
-    @Override
+	 * Registers application configuration hints for the specified file names, locations,
+	 * and extensions.
+	 * @param hints the runtime hints to register
+	 * @param classLoader the class loader to use for loading resources
+	 */
+	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		List<String> fileNames = getFileNames(classLoader);
 		List<String> locations = getLocations(classLoader);
@@ -111,12 +111,11 @@ class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 	}
 
 	/**
-     * Returns the SpringFactoriesLoader instance for the given class loader.
-     * 
-     * @param classLoader the class loader to use for loading resources
-     * @return the SpringFactoriesLoader instance
-     */
-    protected SpringFactoriesLoader getSpringFactoriesLoader(ClassLoader classLoader) {
+	 * Returns the SpringFactoriesLoader instance for the given class loader.
+	 * @param classLoader the class loader to use for loading resources
+	 * @return the SpringFactoriesLoader instance
+	 */
+	protected SpringFactoriesLoader getSpringFactoriesLoader(ClassLoader classLoader) {
 		return SpringFactoriesLoader.forDefaultResourceLocation(classLoader);
 	}
 

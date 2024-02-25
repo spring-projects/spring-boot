@@ -32,20 +32,20 @@ import org.springframework.beans.DirectFieldAccessor;
 public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<HikariDataSource> {
 
 	/**
-     * Constructs a new HikariDataSourcePoolMetadata object with the specified HikariDataSource.
-     * 
-     * @param dataSource the HikariDataSource object to be used for constructing the pool metadata
-     */
-    public HikariDataSourcePoolMetadata(HikariDataSource dataSource) {
+	 * Constructs a new HikariDataSourcePoolMetadata object with the specified
+	 * HikariDataSource.
+	 * @param dataSource the HikariDataSource object to be used for constructing the pool
+	 * metadata
+	 */
+	public HikariDataSourcePoolMetadata(HikariDataSource dataSource) {
 		super(dataSource);
 	}
 
 	/**
-     * Returns the number of active connections in the Hikari connection pool.
-     * 
-     * @return the number of active connections, or null if an exception occurs
-     */
-    @Override
+	 * Returns the number of active connections in the Hikari connection pool.
+	 * @return the number of active connections, or null if an exception occurs
+	 */
+	@Override
 	public Integer getActive() {
 		try {
 			return getHikariPool().getActiveConnections();
@@ -56,11 +56,10 @@ public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 	}
 
 	/**
-     * Returns the number of idle connections in the HikariCP pool.
-     * 
-     * @return the number of idle connections, or null if an exception occurs
-     */
-    @Override
+	 * Returns the number of idle connections in the HikariCP pool.
+	 * @return the number of idle connections, or null if an exception occurs
+	 */
+	@Override
 	public Integer getIdle() {
 		try {
 			return getHikariPool().getIdleConnections();
@@ -71,50 +70,47 @@ public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 	}
 
 	/**
-     * Retrieves the HikariPool object associated with this HikariDataSourcePoolMetadata instance.
-     *
-     * @return the HikariPool object associated with this HikariDataSourcePoolMetadata instance.
-     */
-    private HikariPool getHikariPool() {
+	 * Retrieves the HikariPool object associated with this HikariDataSourcePoolMetadata
+	 * instance.
+	 * @return the HikariPool object associated with this HikariDataSourcePoolMetadata
+	 * instance.
+	 */
+	private HikariPool getHikariPool() {
 		return (HikariPool) new DirectFieldAccessor(getDataSource()).getPropertyValue("pool");
 	}
 
 	/**
-     * Returns the maximum pool size of the data source.
-     * 
-     * @return the maximum pool size of the data source
-     */
-    @Override
+	 * Returns the maximum pool size of the data source.
+	 * @return the maximum pool size of the data source
+	 */
+	@Override
 	public Integer getMax() {
 		return getDataSource().getMaximumPoolSize();
 	}
 
 	/**
-     * Returns the minimum number of idle connections in the HikariCP data source pool.
-     *
-     * @return the minimum number of idle connections
-     */
-    @Override
+	 * Returns the minimum number of idle connections in the HikariCP data source pool.
+	 * @return the minimum number of idle connections
+	 */
+	@Override
 	public Integer getMin() {
 		return getDataSource().getMinimumIdle();
 	}
 
 	/**
-     * Returns the validation query for the Hikari data source.
-     * 
-     * @return the validation query
-     */
-    @Override
+	 * Returns the validation query for the Hikari data source.
+	 * @return the validation query
+	 */
+	@Override
 	public String getValidationQuery() {
 		return getDataSource().getConnectionTestQuery();
 	}
 
 	/**
-     * Returns the default auto-commit mode of the underlying data source.
-     * 
-     * @return the default auto-commit mode of the underlying data source
-     */
-    @Override
+	 * Returns the default auto-commit mode of the underlying data source.
+	 * @return the default auto-commit mode of the underlying data source
+	 */
+	@Override
 	public Boolean getDefaultAutoCommit() {
 		return getDataSource().isAutoCommit();
 	}

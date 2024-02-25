@@ -40,13 +40,13 @@ abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C>
 	private final Map<String, C> map;
 
 	/**
-     * Constructs a new NamedContributorsMapAdapter with the specified map and value adapter.
-     * 
-     * @param map the map to be adapted
-     * @param valueAdapter the function used to adapt the values in the map
-     * @throws IllegalArgumentException if the map or valueAdapter is null
-     */
-    NamedContributorsMapAdapter(Map<String, V> map, Function<V, ? extends C> valueAdapter) {
+	 * Constructs a new NamedContributorsMapAdapter with the specified map and value
+	 * adapter.
+	 * @param map the map to be adapted
+	 * @param valueAdapter the function used to adapt the values in the map
+	 * @throws IllegalArgumentException if the map or valueAdapter is null
+	 */
+	NamedContributorsMapAdapter(Map<String, V> map, Function<V, ? extends C> valueAdapter) {
 		Assert.notNull(map, "Map must not be null");
 		Assert.notNull(valueAdapter, "ValueAdapter must not be null");
 		map.keySet().forEach(this::validateKey);
@@ -58,36 +58,33 @@ abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C>
 	}
 
 	/**
-     * Validates the given key.
-     * 
-     * @param value the key to be validated
-     * @throws IllegalArgumentException if the key is null or contains a '/'
-     */
-    private void validateKey(String value) {
+	 * Validates the given key.
+	 * @param value the key to be validated
+	 * @throws IllegalArgumentException if the key is null or contains a '/'
+	 */
+	private void validateKey(String value) {
 		Assert.notNull(value, "Map must not contain null keys");
 		Assert.isTrue(!value.contains("/"), "Map keys must not contain a '/'");
 	}
 
 	/**
-     * Adapts a value to a contributor using the provided value adapter function.
-     * 
-     * @param value the value to be adapted
-     * @param valueAdapter the function used to adapt the value to a contributor
-     * @return the adapted contributor
-     * @throws IllegalArgumentException if the value is null
-     */
-    private C adapt(V value, Function<V, ? extends C> valueAdapter) {
+	 * Adapts a value to a contributor using the provided value adapter function.
+	 * @param value the value to be adapted
+	 * @param valueAdapter the function used to adapt the value to a contributor
+	 * @return the adapted contributor
+	 * @throws IllegalArgumentException if the value is null
+	 */
+	private C adapt(V value, Function<V, ? extends C> valueAdapter) {
 		C contributor = (value != null) ? valueAdapter.apply(value) : null;
 		Assert.notNull(contributor, "Map must not contain null values");
 		return contributor;
 	}
 
 	/**
-     * Returns an iterator over the elements in this NamedContributorsMapAdapter.
-     *
-     * @return an iterator over the elements in this NamedContributorsMapAdapter
-     */
-    @Override
+	 * Returns an iterator over the elements in this NamedContributorsMapAdapter.
+	 * @return an iterator over the elements in this NamedContributorsMapAdapter
+	 */
+	@Override
 	public Iterator<NamedContributor<C>> iterator() {
 		Iterator<Entry<String, C>> iterator = this.map.entrySet().iterator();
 		return new Iterator<>() {
@@ -107,12 +104,11 @@ abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C>
 	}
 
 	/**
-     * Retrieves the contributor with the specified name from the map.
-     *
-     * @param name the name of the contributor to retrieve
-     * @return the contributor with the specified name, or null if not found
-     */
-    @Override
+	 * Retrieves the contributor with the specified name from the map.
+	 * @param name the name of the contributor to retrieve
+	 * @return the contributor with the specified name, or null if not found
+	 */
+	@Override
 	public C getContributor(String name) {
 		return this.map.get(name);
 	}

@@ -29,11 +29,10 @@ import org.springframework.stereotype.Component;
 public class MyComponent {
 
 	/**
-     * Constructs a new instance of MyComponent with the specified SslBundles.
-     * 
-     * @param sslBundles the SslBundles object containing SSL bundles
-     */
-    @SuppressWarnings("unused")
+	 * Constructs a new instance of MyComponent with the specified SslBundles.
+	 * @param sslBundles the SslBundles object containing SSL bundles
+	 */
+	@SuppressWarnings("unused")
 	public MyComponent(SslBundles sslBundles) {
 		SslBundle sslBundle = sslBundles.getBundle("mybundle");
 		SSLContext sslContext = sslBundle.createSslContext();

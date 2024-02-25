@@ -86,22 +86,21 @@ public class EmbeddedLdapAutoConfiguration {
 	private InMemoryDirectoryServer server;
 
 	/**
-     * Constructs a new instance of EmbeddedLdapAutoConfiguration with the specified EmbeddedLdapProperties.
-     *
-     * @param embeddedProperties the properties for configuring the embedded LDAP server
-     */
-    public EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties) {
+	 * Constructs a new instance of EmbeddedLdapAutoConfiguration with the specified
+	 * EmbeddedLdapProperties.
+	 * @param embeddedProperties the properties for configuring the embedded LDAP server
+	 */
+	public EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties) {
 		this.embeddedProperties = embeddedProperties;
 	}
 
 	/**
-     * Creates and configures an in-memory LDAP directory server.
-     * 
-     * @param applicationContext the application context
-     * @return the in-memory directory server
-     * @throws LDAPException if an error occurs while configuring the directory server
-     */
-    @Bean
+	 * Creates and configures an in-memory LDAP directory server.
+	 * @param applicationContext the application context
+	 * @return the in-memory directory server
+	 * @throws LDAPException if an error occurs while configuring the directory server
+	 */
+	@Bean
 	public InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext) throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
@@ -121,13 +120,12 @@ public class EmbeddedLdapAutoConfiguration {
 	}
 
 	/**
-     * Sets the schema for the InMemoryDirectoryServerConfig.
-     * If validation is disabled, the schema is set to null.
-     * If a schema resource is provided, the schema is set using that resource.
-     * 
-     * @param config the InMemoryDirectoryServerConfig to set the schema for
-     */
-    private void setSchema(InMemoryDirectoryServerConfig config) {
+	 * Sets the schema for the InMemoryDirectoryServerConfig. If validation is disabled,
+	 * the schema is set to null. If a schema resource is provided, the schema is set
+	 * using that resource.
+	 * @param config the InMemoryDirectoryServerConfig to set the schema for
+	 */
+	private void setSchema(InMemoryDirectoryServerConfig config) {
 		if (!this.embeddedProperties.getValidation().isEnabled()) {
 			config.setSchema(null);
 			return;
@@ -139,13 +137,12 @@ public class EmbeddedLdapAutoConfiguration {
 	}
 
 	/**
-     * Sets the schema for the InMemoryDirectoryServerConfig using the provided resource.
-     * 
-     * @param config the InMemoryDirectoryServerConfig to set the schema for
-     * @param resource the resource containing the schema definition
-     * @throws IllegalStateException if unable to load the schema from the resource
-     */
-    private void setSchema(InMemoryDirectoryServerConfig config, Resource resource) {
+	 * Sets the schema for the InMemoryDirectoryServerConfig using the provided resource.
+	 * @param config the InMemoryDirectoryServerConfig to set the schema for
+	 * @param resource the resource containing the schema definition
+	 * @throws IllegalStateException if unable to load the schema from the resource
+	 */
+	private void setSchema(InMemoryDirectoryServerConfig config, Resource resource) {
 		try {
 			Schema defaultSchema = Schema.getDefaultStandardSchema();
 			Schema schema = Schema.getSchema(resource.getInputStream());
@@ -157,12 +154,11 @@ public class EmbeddedLdapAutoConfiguration {
 	}
 
 	/**
-     * Imports LDIF data into the embedded LDAP server.
-     * 
-     * @param applicationContext the application context
-     * @throws IllegalStateException if unable to load the LDIF data
-     */
-    private void importLdif(ApplicationContext applicationContext) {
+	 * Imports LDIF data into the embedded LDAP server.
+	 * @param applicationContext the application context
+	 * @throws IllegalStateException if unable to load the LDIF data
+	 */
+	private void importLdif(ApplicationContext applicationContext) {
 		String location = this.embeddedProperties.getLdif();
 		if (StringUtils.hasText(location)) {
 			try {
@@ -180,12 +176,11 @@ public class EmbeddedLdapAutoConfiguration {
 	}
 
 	/**
-     * Sets the port property for the embedded LDAP server.
-     * 
-     * @param context the application context
-     * @param port the port number to set
-     */
-    private void setPortProperty(ApplicationContext context, int port) {
+	 * Sets the port property for the embedded LDAP server.
+	 * @param context the application context
+	 * @param port the port number to set
+	 */
+	private void setPortProperty(ApplicationContext context, int port) {
 		if (context instanceof ConfigurableApplicationContext configurableContext) {
 			MutablePropertySources sources = configurableContext.getEnvironment().getPropertySources();
 			getLdapPorts(sources).put("local.ldap.port", port);
@@ -196,12 +191,11 @@ public class EmbeddedLdapAutoConfiguration {
 	}
 
 	/**
-     * Retrieves the LDAP ports from the given property sources.
-     * 
-     * @param sources the mutable property sources
-     * @return a map containing the LDAP ports
-     */
-    @SuppressWarnings("unchecked")
+	 * Retrieves the LDAP ports from the given property sources.
+	 * @param sources the mutable property sources
+	 * @return a map containing the LDAP ports
+	 */
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> getLdapPorts(MutablePropertySources sources) {
 		PropertySource<?> propertySource = sources.get(PROPERTY_SOURCE_NAME);
 		if (propertySource == null) {
@@ -212,12 +206,12 @@ public class EmbeddedLdapAutoConfiguration {
 	}
 
 	/**
-     * Closes the server if it is not null.
-     * 
-     * @precondition The server must be initialized.
-     * @postcondition The server will be shut down.
-     */
-    @PreDestroy
+	 * Closes the server if it is not null.
+	 *
+	 * @precondition The server must be initialized.
+	 * @postcondition The server will be shut down.
+	 */
+	@PreDestroy
 	public void close() {
 		if (this.server != null) {
 			this.server.shutDown(true);
@@ -233,13 +227,13 @@ public class EmbeddedLdapAutoConfiguration {
 		private static final Bindable<List<String>> STRING_LIST = Bindable.listOf(String.class);
 
 		/**
-         * Determines the match outcome for the condition based on the presence of the "base-dn" property in the environment.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the condition outcome
-         */
-        @Override
+		 * Determines the match outcome for the condition based on the presence of the
+		 * "base-dn" property in the environment.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the condition outcome
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			Builder message = ConditionMessage.forCondition("Embedded LDAP");
 			Environment environment = context.getEnvironment();
@@ -255,35 +249,48 @@ public class EmbeddedLdapAutoConfiguration {
 	}
 
 	/**
-     * EmbeddedLdapContextConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * EmbeddedLdapContextConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ContextSource.class)
 	static class EmbeddedLdapContextConfiguration {
 
 		/**
-         * Creates an instance of LdapContextSource for connecting to an LDAP server.
-         * 
-         * This method is annotated with @Bean, indicating that it is a bean definition method that should be processed by the Spring container.
-         * 
-         * It is also annotated with @DependsOn("directoryServer"), indicating that the bean creation should be dependent on the "directoryServer" bean being created first.
-         * 
-         * The method is annotated with @ConditionalOnMissingBean, indicating that the bean should only be created if there is no existing bean of the same type.
-         * 
-         * The method takes in three parameters: environment, properties, and embeddedProperties. The environment parameter is of type Environment and is used to access the application's environment variables. The properties parameter is of type LdapProperties and contains the LDAP configuration properties. The embeddedProperties parameter is of type EmbeddedLdapProperties and contains the embedded LDAP configuration properties.
-         * 
-         * The method creates an instance of LdapContextSource and sets the base DN using the properties.getBase() method.
-         * 
-         * If the embeddedProperties.getCredential().isAvailable() method returns true, the method sets the user DN and password using the embeddedProperties.getCredential().getUsername() and embeddedProperties.getCredential().getPassword() methods, respectively.
-         * 
-         * The method sets the LDAP server URLs using the properties.determineUrls(environment) method.
-         * 
-         * @param environment The application's environment variables.
-         * @param properties The LDAP configuration properties.
-         * @param embeddedProperties The embedded LDAP configuration properties.
-         * @return An instance of LdapContextSource for connecting to an LDAP server.
-         */
-        @Bean
+		 * Creates an instance of LdapContextSource for connecting to an LDAP server.
+		 *
+		 * This method is annotated with @Bean, indicating that it is a bean definition
+		 * method that should be processed by the Spring container.
+		 *
+		 * It is also annotated with @DependsOn("directoryServer"), indicating that the
+		 * bean creation should be dependent on the "directoryServer" bean being created
+		 * first.
+		 *
+		 * The method is annotated with @ConditionalOnMissingBean, indicating that the
+		 * bean should only be created if there is no existing bean of the same type.
+		 *
+		 * The method takes in three parameters: environment, properties, and
+		 * embeddedProperties. The environment parameter is of type Environment and is
+		 * used to access the application's environment variables. The properties
+		 * parameter is of type LdapProperties and contains the LDAP configuration
+		 * properties. The embeddedProperties parameter is of type EmbeddedLdapProperties
+		 * and contains the embedded LDAP configuration properties.
+		 *
+		 * The method creates an instance of LdapContextSource and sets the base DN using
+		 * the properties.getBase() method.
+		 *
+		 * If the embeddedProperties.getCredential().isAvailable() method returns true,
+		 * the method sets the user DN and password using the
+		 * embeddedProperties.getCredential().getUsername() and
+		 * embeddedProperties.getCredential().getPassword() methods, respectively.
+		 *
+		 * The method sets the LDAP server URLs using the
+		 * properties.determineUrls(environment) method.
+		 * @param environment The application's environment variables.
+		 * @param properties The LDAP configuration properties.
+		 * @param embeddedProperties The embedded LDAP configuration properties.
+		 * @return An instance of LdapContextSource for connecting to an LDAP server.
+		 */
+		@Bean
 		@DependsOn("directoryServer")
 		@ConditionalOnMissingBean
 		LdapContextSource ldapContextSource(Environment environment, LdapProperties properties,
@@ -301,17 +308,17 @@ public class EmbeddedLdapAutoConfiguration {
 	}
 
 	/**
-     * EmbeddedLdapAutoConfigurationRuntimeHints class.
-     */
-    static class EmbeddedLdapAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
+	 * EmbeddedLdapAutoConfigurationRuntimeHints class.
+	 */
+	static class EmbeddedLdapAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
 
 		/**
-         * Registers hints for the runtime configuration of the EmbeddedLdapAutoConfiguration class.
-         * 
-         * @param hints The RuntimeHints object to register the hints with.
-         * @param classLoader The ClassLoader to use for loading resources.
-         */
-        @Override
+		 * Registers hints for the runtime configuration of the
+		 * EmbeddedLdapAutoConfiguration class.
+		 * @param hints The RuntimeHints object to register the hints with.
+		 * @param classLoader The ClassLoader to use for loading resources.
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources()
 				.registerPatternIfPresent(classLoader, "schema.ldif", (hint) -> hint.includes("schema.ldif"));

@@ -39,12 +39,12 @@ class RabbitContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<RabbitMQContainer, RabbitConnectionDetails> {
 
 	/**
-     * Returns the RabbitConnectionDetails for the specified ContainerConnectionSource.
-     * 
-     * @param source the ContainerConnectionSource for which to retrieve the RabbitConnectionDetails
-     * @return the RabbitConnectionDetails for the specified ContainerConnectionSource
-     */
-    @Override
+	 * Returns the RabbitConnectionDetails for the specified ContainerConnectionSource.
+	 * @param source the ContainerConnectionSource for which to retrieve the
+	 * RabbitConnectionDetails
+	 * @return the RabbitConnectionDetails for the specified ContainerConnectionSource
+	 */
+	@Override
 	protected RabbitConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<RabbitMQContainer> source) {
 		return new RabbitMqContainerConnectionDetails(source);
@@ -57,40 +57,38 @@ class RabbitContainerConnectionDetailsFactory
 			implements RabbitConnectionDetails {
 
 		/**
-         * Constructs a new RabbitMqContainerConnectionDetails object with the specified ContainerConnectionSource.
-         * 
-         * @param source the ContainerConnectionSource used to create the RabbitMQ container connection details
-         */
-        private RabbitMqContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {
+		 * Constructs a new RabbitMqContainerConnectionDetails object with the specified
+		 * ContainerConnectionSource.
+		 * @param source the ContainerConnectionSource used to create the RabbitMQ
+		 * container connection details
+		 */
+		private RabbitMqContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {
 			super(source);
 		}
 
 		/**
-         * Returns the username of the RabbitMQ container connection details.
-         * 
-         * @return the username of the RabbitMQ container connection details
-         */
-        @Override
+		 * Returns the username of the RabbitMQ container connection details.
+		 * @return the username of the RabbitMQ container connection details
+		 */
+		@Override
 		public String getUsername() {
 			return getContainer().getAdminUsername();
 		}
 
 		/**
-         * Returns the password for the admin user of the RabbitMQ container.
-         *
-         * @return the password for the admin user
-         */
-        @Override
+		 * Returns the password for the admin user of the RabbitMQ container.
+		 * @return the password for the admin user
+		 */
+		@Override
 		public String getPassword() {
 			return getContainer().getAdminPassword();
 		}
 
 		/**
-         * Retrieves a list of addresses for the RabbitMQ container connection.
-         * 
-         * @return a list of addresses
-         */
-        @Override
+		 * Retrieves a list of addresses for the RabbitMQ container connection.
+		 * @return a list of addresses
+		 */
+		@Override
 		public List<Address> getAddresses() {
 			URI uri = URI.create(getContainer().getAmqpUrl());
 			return List.of(new Address(uri.getHost(), uri.getPort()));

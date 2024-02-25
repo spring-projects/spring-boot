@@ -63,13 +63,16 @@ import org.springframework.util.StringUtils;
 public class Neo4jAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link PropertiesNeo4jConnectionDetails} if there is no existing bean of type {@link Neo4jConnectionDetails}.
-     * 
-     * @param properties the {@link Neo4jProperties} object containing the Neo4j connection details
-     * @param authTokenManager the {@link AuthTokenManager} object provider
-     * @return a new instance of {@link PropertiesNeo4jConnectionDetails} with the provided properties and auth token manager, or null if the auth token manager is not available
-     */
-    @Bean
+	 * Creates a new instance of {@link PropertiesNeo4jConnectionDetails} if there is no
+	 * existing bean of type {@link Neo4jConnectionDetails}.
+	 * @param properties the {@link Neo4jProperties} object containing the Neo4j
+	 * connection details
+	 * @param authTokenManager the {@link AuthTokenManager} object provider
+	 * @return a new instance of {@link PropertiesNeo4jConnectionDetails} with the
+	 * provided properties and auth token manager, or null if the auth token manager is
+	 * not available
+	 */
+	@Bean
 	@ConditionalOnMissingBean(Neo4jConnectionDetails.class)
 	PropertiesNeo4jConnectionDetails neo4jConnectionDetails(Neo4jProperties properties,
 			ObjectProvider<AuthTokenManager> authTokenManager) {
@@ -77,15 +80,14 @@ public class Neo4jAutoConfiguration {
 	}
 
 	/**
-     * Creates a Neo4j driver bean if no other bean of type Driver is present.
-     * 
-     * @param properties the Neo4j properties
-     * @param environment the environment
-     * @param connectionDetails the Neo4j connection details
-     * @param configBuilderCustomizers the config builder customizers
-     * @return the Neo4j driver bean
-     */
-    @Bean
+	 * Creates a Neo4j driver bean if no other bean of type Driver is present.
+	 * @param properties the Neo4j properties
+	 * @param environment the environment
+	 * @param connectionDetails the Neo4j connection details
+	 * @param configBuilderCustomizers the config builder customizers
+	 * @return the Neo4j driver bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public Driver neo4jDriver(Neo4jProperties properties, Environment environment,
 			Neo4jConnectionDetails connectionDetails,
@@ -102,14 +104,13 @@ public class Neo4jAutoConfiguration {
 	}
 
 	/**
-     * Configures the driver configuration for Neo4j.
-     * 
-     * @param properties The Neo4j properties.
-     * @param connectionDetails The Neo4j connection details.
-     * @param customizers The list of customizers to apply to the driver configuration.
-     * @return The configured driver configuration.
-     */
-    Config mapDriverConfig(Neo4jProperties properties, Neo4jConnectionDetails connectionDetails,
+	 * Configures the driver configuration for Neo4j.
+	 * @param properties The Neo4j properties.
+	 * @param connectionDetails The Neo4j connection details.
+	 * @param customizers The list of customizers to apply to the driver configuration.
+	 * @return The configured driver configuration.
+	 */
+	Config mapDriverConfig(Neo4jProperties properties, Neo4jConnectionDetails connectionDetails,
 			List<ConfigBuilderCustomizer> customizers) {
 		Config.ConfigBuilder builder = Config.builder();
 		configurePoolSettings(builder, properties.getPool());
@@ -122,13 +123,12 @@ public class Neo4jAutoConfiguration {
 	}
 
 	/**
-     * Checks if the given scheme is a simple scheme.
-     * 
-     * @param scheme the scheme to be checked
-     * @return true if the scheme is a simple scheme, false otherwise
-     * @throws IllegalArgumentException if the scheme is not a supported scheme
-     */
-    private boolean isSimpleScheme(String scheme) {
+	 * Checks if the given scheme is a simple scheme.
+	 * @param scheme the scheme to be checked
+	 * @return true if the scheme is a simple scheme, false otherwise
+	 * @throws IllegalArgumentException if the scheme is not a supported scheme
+	 */
+	private boolean isSimpleScheme(String scheme) {
 		String lowerCaseScheme = scheme.toLowerCase(Locale.ENGLISH);
 		try {
 			Scheme.validateScheme(lowerCaseScheme);
@@ -140,12 +140,11 @@ public class Neo4jAutoConfiguration {
 	}
 
 	/**
-     * Configures the pool settings for the given builder and pool.
-     * 
-     * @param builder the ConfigBuilder to configure
-     * @param pool the Pool to use for configuration
-     */
-    private void configurePoolSettings(Config.ConfigBuilder builder, Pool pool) {
+	 * Configures the pool settings for the given builder and pool.
+	 * @param builder the ConfigBuilder to configure
+	 * @param pool the Pool to use for configuration
+	 */
+	private void configurePoolSettings(Config.ConfigBuilder builder, Pool pool) {
 		if (pool.isLogLeakedSessions()) {
 			builder.withLeakedSessionsLogging();
 		}
@@ -166,15 +165,14 @@ public class Neo4jAutoConfiguration {
 	}
 
 	/**
-     * Configures the driver settings based on the provided properties.
-     * 
-     * @param builder The ConfigBuilder object used to configure the driver settings.
-     * @param properties The Neo4jProperties object containing the driver properties.
-     * @param withEncryptionAndTrustSettings A boolean indicating whether to apply encryption and trust settings.
-     * 
-     * @throws IllegalArgumentException if the builder or properties are null.
-     */
-    private void configureDriverSettings(Config.ConfigBuilder builder, Neo4jProperties properties,
+	 * Configures the driver settings based on the provided properties.
+	 * @param builder The ConfigBuilder object used to configure the driver settings.
+	 * @param properties The Neo4jProperties object containing the driver properties.
+	 * @param withEncryptionAndTrustSettings A boolean indicating whether to apply
+	 * encryption and trust settings.
+	 * @throws IllegalArgumentException if the builder or properties are null.
+	 */
+	private void configureDriverSettings(Config.ConfigBuilder builder, Neo4jProperties properties,
 			boolean withEncryptionAndTrustSettings) {
 		if (withEncryptionAndTrustSettings) {
 			applyEncryptionAndTrustSettings(builder, properties.getSecurity());
@@ -184,15 +182,17 @@ public class Neo4jAutoConfiguration {
 	}
 
 	/**
-     * Applies encryption and trust settings to the given ConfigBuilder object based on the provided security properties.
-     * If the security properties indicate that encryption is enabled, the builder is configured with encryption.
-     * Otherwise, the builder is configured without encryption.
-     * The trust strategy is also set on the builder based on the trust strategy specified in the security properties.
-     * 
-     * @param builder The ConfigBuilder object to apply the encryption and trust settings to.
-     * @param securityProperties The security properties containing the encryption and trust configuration.
-     */
-    private void applyEncryptionAndTrustSettings(Config.ConfigBuilder builder,
+	 * Applies encryption and trust settings to the given ConfigBuilder object based on
+	 * the provided security properties. If the security properties indicate that
+	 * encryption is enabled, the builder is configured with encryption. Otherwise, the
+	 * builder is configured without encryption. The trust strategy is also set on the
+	 * builder based on the trust strategy specified in the security properties.
+	 * @param builder The ConfigBuilder object to apply the encryption and trust settings
+	 * to.
+	 * @param securityProperties The security properties containing the encryption and
+	 * trust configuration.
+	 */
+	private void applyEncryptionAndTrustSettings(Config.ConfigBuilder builder,
 			Neo4jProperties.Security securityProperties) {
 		if (securityProperties.isEncrypted()) {
 			builder.withEncryption();
@@ -204,12 +204,12 @@ public class Neo4jAutoConfiguration {
 	}
 
 	/**
-     * Maps the trust strategy from the given security properties to the corresponding Neo4j configuration.
-     * 
-     * @param securityProperties the security properties containing the trust strategy
-     * @return the mapped trust strategy
-     */
-    private Config.TrustStrategy mapTrustStrategy(Neo4jProperties.Security securityProperties) {
+	 * Maps the trust strategy from the given security properties to the corresponding
+	 * Neo4j configuration.
+	 * @param securityProperties the security properties containing the trust strategy
+	 * @return the mapped trust strategy
+	 */
+	private Config.TrustStrategy mapTrustStrategy(Neo4jProperties.Security securityProperties) {
 		String propertyName = "spring.neo4j.security.trust-strategy";
 		Security.TrustStrategy strategy = securityProperties.getTrustStrategy();
 		TrustStrategy trustStrategy = createTrustStrategy(securityProperties, propertyName, strategy);
@@ -223,16 +223,18 @@ public class Neo4jAutoConfiguration {
 	}
 
 	/**
-     * Creates a trust strategy based on the provided security properties, property name, and strategy.
-     * 
-     * @param securityProperties The security properties containing the certificate file.
-     * @param propertyName The name of the property being configured.
-     * @param strategy The trust strategy to be created.
-     * @return The created trust strategy.
-     * @throws InvalidConfigurationPropertyValueException If the certificate file is missing or invalid for the configured trust strategy.
-     * @throws InvalidConfigurationPropertyValueException If the provided trust strategy is unknown.
-     */
-    private TrustStrategy createTrustStrategy(Neo4jProperties.Security securityProperties, String propertyName,
+	 * Creates a trust strategy based on the provided security properties, property name,
+	 * and strategy.
+	 * @param securityProperties The security properties containing the certificate file.
+	 * @param propertyName The name of the property being configured.
+	 * @param strategy The trust strategy to be created.
+	 * @return The created trust strategy.
+	 * @throws InvalidConfigurationPropertyValueException If the certificate file is
+	 * missing or invalid for the configured trust strategy.
+	 * @throws InvalidConfigurationPropertyValueException If the provided trust strategy
+	 * is unknown.
+	 */
+	private TrustStrategy createTrustStrategy(Neo4jProperties.Security securityProperties, String propertyName,
 			Security.TrustStrategy strategy) {
 		return switch (strategy) {
 			case TRUST_ALL_CERTIFICATES -> TrustStrategy.trustAllCertificates();
@@ -260,34 +262,34 @@ public class Neo4jAutoConfiguration {
 		private final AuthTokenManager authTokenManager;
 
 		/**
-         * Constructs a new instance of PropertiesNeo4jConnectionDetails with the specified properties and authTokenManager.
-         * 
-         * @param properties the Neo4jProperties object containing the connection details
-         * @param authTokenManager the AuthTokenManager object for managing authentication tokens
-         */
-        PropertiesNeo4jConnectionDetails(Neo4jProperties properties, AuthTokenManager authTokenManager) {
+		 * Constructs a new instance of PropertiesNeo4jConnectionDetails with the
+		 * specified properties and authTokenManager.
+		 * @param properties the Neo4jProperties object containing the connection details
+		 * @param authTokenManager the AuthTokenManager object for managing authentication
+		 * tokens
+		 */
+		PropertiesNeo4jConnectionDetails(Neo4jProperties properties, AuthTokenManager authTokenManager) {
 			this.properties = properties;
 			this.authTokenManager = authTokenManager;
 		}
 
 		/**
-         * Returns the URI of the connection.
-         * 
-         * @return the URI of the connection
-         */
-        @Override
+		 * Returns the URI of the connection.
+		 * @return the URI of the connection
+		 */
+		@Override
 		public URI getUri() {
 			URI uri = this.properties.getUri();
 			return (uri != null) ? uri : Neo4jConnectionDetails.super.getUri();
 		}
 
 		/**
-         * Retrieves the authentication token for the Neo4j connection.
-         * 
-         * @return The authentication token.
-         * @throws IllegalStateException if both username and kerberos ticket are specified.
-         */
-        @Override
+		 * Retrieves the authentication token for the Neo4j connection.
+		 * @return The authentication token.
+		 * @throws IllegalStateException if both username and kerberos ticket are
+		 * specified.
+		 */
+		@Override
 		public AuthToken getAuthToken() {
 			Authentication authentication = this.properties.getAuthentication();
 			String username = authentication.getUsername();
@@ -308,11 +310,11 @@ public class Neo4jAutoConfiguration {
 		}
 
 		/**
-         * Returns the AuthTokenManager object associated with this PropertiesNeo4jConnectionDetails instance.
-         *
-         * @return the AuthTokenManager object
-         */
-        @Override
+		 * Returns the AuthTokenManager object associated with this
+		 * PropertiesNeo4jConnectionDetails instance.
+		 * @return the AuthTokenManager object
+		 */
+		@Override
 		public AuthTokenManager getAuthTokenManager() {
 			return this.authTokenManager;
 		}

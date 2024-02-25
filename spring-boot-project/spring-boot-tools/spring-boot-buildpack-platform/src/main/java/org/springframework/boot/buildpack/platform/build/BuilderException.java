@@ -29,12 +29,11 @@ public class BuilderException extends RuntimeException {
 	private final int statusCode;
 
 	/**
-     * Constructs a new BuilderException with the specified operation and status code.
-     * 
-     * @param operation the operation that caused the exception
-     * @param statusCode the status code associated with the exception
-     */
-    BuilderException(String operation, int statusCode) {
+	 * Constructs a new BuilderException with the specified operation and status code.
+	 * @param operation the operation that caused the exception
+	 * @param statusCode the status code associated with the exception
+	 */
+	BuilderException(String operation, int statusCode) {
 		super(buildMessage(operation, statusCode));
 		this.operation = operation;
 		this.statusCode = statusCode;
@@ -57,13 +56,12 @@ public class BuilderException extends RuntimeException {
 	}
 
 	/**
-     * Builds a message for a BuilderException.
-     * 
-     * @param operation the operation being performed
-     * @param statusCode the status code of the failed operation
-     * @return the built message
-     */
-    private static String buildMessage(String operation, int statusCode) {
+	 * Builds a message for a BuilderException.
+	 * @param operation the operation being performed
+	 * @param statusCode the status code of the failed operation
+	 * @return the built message
+	 */
+	private static String buildMessage(String operation, int statusCode) {
 		StringBuilder message = new StringBuilder("Builder");
 		if (operation != null && !operation.isEmpty()) {
 			message.append(" lifecycle '").append(operation).append("'");

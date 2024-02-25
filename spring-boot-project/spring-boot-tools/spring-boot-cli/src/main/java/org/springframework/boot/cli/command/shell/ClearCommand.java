@@ -32,23 +32,21 @@ class ClearCommand extends AbstractCommand {
 	private final ConsoleReader consoleReader;
 
 	/**
-     * Clears the screen.
-     * 
-     * @param consoleReader the ConsoleReader object used to read user input
-     */
-    ClearCommand(ConsoleReader consoleReader) {
+	 * Clears the screen.
+	 * @param consoleReader the ConsoleReader object used to read user input
+	 */
+	ClearCommand(ConsoleReader consoleReader) {
 		super("clear", "Clear the screen");
 		this.consoleReader = consoleReader;
 	}
 
 	/**
-     * Clears the console screen and sets the prompt to an empty string.
-     * 
-     * @param args the command line arguments
-     * @return the exit status of the command
-     * @throws Exception if an error occurs while executing the command
-     */
-    @Override
+	 * Clears the console screen and sets the prompt to an empty string.
+	 * @param args the command line arguments
+	 * @return the exit status of the command
+	 * @throws Exception if an error occurs while executing the command
+	 */
+	@Override
 	public ExitStatus run(String... args) throws Exception {
 		this.consoleReader.setPrompt("");
 		this.consoleReader.clearScreen();

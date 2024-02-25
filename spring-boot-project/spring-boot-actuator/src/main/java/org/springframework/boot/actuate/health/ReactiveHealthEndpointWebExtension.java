@@ -64,29 +64,27 @@ public class ReactiveHealthEndpointWebExtension
 	}
 
 	/**
-     * Retrieves the health status of the web endpoint.
-     *
-     * @param apiVersion        The version of the API.
-     * @param serverNamespace   The namespace of the web server.
-     * @param securityContext   The security context for the request.
-     * @return                  A Mono containing the health status of the web endpoint.
-     */
-    @ReadOperation
+	 * Retrieves the health status of the web endpoint.
+	 * @param apiVersion The version of the API.
+	 * @param serverNamespace The namespace of the web server.
+	 * @param securityContext The security context for the request.
+	 * @return A Mono containing the health status of the web endpoint.
+	 */
+	@ReadOperation
 	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext) {
 		return health(apiVersion, serverNamespace, securityContext, false, NO_PATH);
 	}
 
 	/**
-     * Retrieves the health status of the web endpoint.
-     *
-     * @param apiVersion       The version of the API.
-     * @param serverNamespace  The namespace of the web server.
-     * @param securityContext  The security context.
-     * @param path             The remaining path segments.
-     * @return                 A Mono containing the health status of the web endpoint.
-     */
-    @ReadOperation
+	 * Retrieves the health status of the web endpoint.
+	 * @param apiVersion The version of the API.
+	 * @param serverNamespace The namespace of the web server.
+	 * @param securityContext The security context.
+	 * @param path The remaining path segments.
+	 * @return A Mono containing the health status of the web endpoint.
+	 */
+	@ReadOperation
 	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext,
 			@Selector(match = Match.ALL_REMAINING) String... path) {
@@ -94,16 +92,16 @@ public class ReactiveHealthEndpointWebExtension
 	}
 
 	/**
-     * Retrieves the health status of the specified API version, server namespace, security context, and path.
-     * 
-     * @param apiVersion       The API version to retrieve health for.
-     * @param serverNamespace  The server namespace to retrieve health for.
-     * @param securityContext  The security context to retrieve health for.
-     * @param showAll          Flag indicating whether to show all health components.
-     * @param path             The path to retrieve health for.
-     * @return                 A Mono containing the WebEndpointResponse with the health status.
-     */
-    public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
+	 * Retrieves the health status of the specified API version, server namespace,
+	 * security context, and path.
+	 * @param apiVersion The API version to retrieve health for.
+	 * @param serverNamespace The server namespace to retrieve health for.
+	 * @param securityContext The security context to retrieve health for.
+	 * @param showAll Flag indicating whether to show all health components.
+	 * @param path The path to retrieve health for.
+	 * @return A Mono containing the WebEndpointResponse with the health status.
+	 */
+	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext, boolean showAll, String... path) {
 		HealthResult<Mono<? extends HealthComponent>> result = getHealth(apiVersion, serverNamespace, securityContext,
 				showAll, path);
@@ -120,28 +118,30 @@ public class ReactiveHealthEndpointWebExtension
 	}
 
 	/**
-     * Retrieves the health of a given ReactiveHealthContributor.
-     *
-     * @param contributor     the ReactiveHealthContributor to retrieve the health from
-     * @param includeDetails  a boolean indicating whether to include detailed health information
-     * @return a Mono emitting the HealthComponent representing the health of the contributor
-     */
-    @Override
+	 * Retrieves the health of a given ReactiveHealthContributor.
+	 * @param contributor the ReactiveHealthContributor to retrieve the health from
+	 * @param includeDetails a boolean indicating whether to include detailed health
+	 * information
+	 * @return a Mono emitting the HealthComponent representing the health of the
+	 * contributor
+	 */
+	@Override
 	protected Mono<? extends HealthComponent> getHealth(ReactiveHealthContributor contributor, boolean includeDetails) {
 		return ((ReactiveHealthIndicator) contributor).getHealth(includeDetails);
 	}
 
 	/**
-     * Aggregates the contributions from different health components and returns the composite health.
-     *
-     * @param apiVersion       the API version
-     * @param contributions    the map of health component contributions
-     * @param statusAggregator the status aggregator
-     * @param showComponents   flag to indicate whether to show individual components in the composite health
-     * @param groupNames       the set of group names to include in the composite health
-     * @return a Mono of the composite health component
-     */
-    @Override
+	 * Aggregates the contributions from different health components and returns the
+	 * composite health.
+	 * @param apiVersion the API version
+	 * @param contributions the map of health component contributions
+	 * @param statusAggregator the status aggregator
+	 * @param showComponents flag to indicate whether to show individual components in the
+	 * composite health
+	 * @param groupNames the set of group names to include in the composite health
+	 * @return a Mono of the composite health component
+	 */
+	@Override
 	protected Mono<? extends HealthComponent> aggregateContributions(ApiVersion apiVersion,
 			Map<String, Mono<? extends HealthComponent>> contributions, StatusAggregator statusAggregator,
 			boolean showComponents, Set<String> groupNames) {
@@ -162,40 +162,36 @@ public class ReactiveHealthEndpointWebExtension
 		private final HealthComponent health;
 
 		/**
-         * Constructs a new NamedHealthComponent with the given name and health component.
-         * 
-         * @param pair the pair of objects containing the name and health component
-         */
-        private NamedHealthComponent(Object... pair) {
+		 * Constructs a new NamedHealthComponent with the given name and health component.
+		 * @param pair the pair of objects containing the name and health component
+		 */
+		private NamedHealthComponent(Object... pair) {
 			this.name = (String) pair[0];
 			this.health = (HealthComponent) pair[1];
 		}
 
 		/**
-         * Returns the name of the NamedHealthComponent.
-         *
-         * @return the name of the NamedHealthComponent
-         */
-        String getName() {
+		 * Returns the name of the NamedHealthComponent.
+		 * @return the name of the NamedHealthComponent
+		 */
+		String getName() {
 			return this.name;
 		}
 
 		/**
-         * Returns the health of the NamedHealthComponent.
-         *
-         * @return the health of the NamedHealthComponent
-         */
-        HealthComponent getHealth() {
+		 * Returns the health of the NamedHealthComponent.
+		 * @return the health of the NamedHealthComponent
+		 */
+		HealthComponent getHealth() {
 			return this.health;
 		}
 
 		/**
-         * Creates a Mono of NamedHealthComponent using the given entry.
-         * 
-         * @param entry the entry containing the name and health component
-         * @return a Mono of NamedHealthComponent
-         */
-        static Mono<NamedHealthComponent> create(Map.Entry<String, Mono<? extends HealthComponent>> entry) {
+		 * Creates a Mono of NamedHealthComponent using the given entry.
+		 * @param entry the entry containing the name and health component
+		 * @return a Mono of NamedHealthComponent
+		 */
+		static Mono<NamedHealthComponent> create(Map.Entry<String, Mono<? extends HealthComponent>> entry) {
 			Mono<String> name = Mono.just(entry.getKey());
 			Mono<? extends HealthComponent> health = entry.getValue();
 			return Mono.zip(NamedHealthComponent::new, name, health);

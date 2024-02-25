@@ -34,42 +34,41 @@ class JarEntryCertification {
 	private final CodeSigner[] codeSigners;
 
 	/**
-     * Constructs a new JarEntryCertification object with the specified certificates and code signers.
-     * 
-     * @param certificates an array of certificates associated with the jar entry
-     * @param codeSigners an array of code signers associated with the jar entry
-     */
-    JarEntryCertification(Certificate[] certificates, CodeSigner[] codeSigners) {
+	 * Constructs a new JarEntryCertification object with the specified certificates and
+	 * code signers.
+	 * @param certificates an array of certificates associated with the jar entry
+	 * @param codeSigners an array of code signers associated with the jar entry
+	 */
+	JarEntryCertification(Certificate[] certificates, CodeSigner[] codeSigners) {
 		this.certificates = certificates;
 		this.codeSigners = codeSigners;
 	}
 
 	/**
-     * Returns an array of certificates associated with this JarEntryCertification.
-     * 
-     * @return an array of certificates, or null if no certificates are associated with this JarEntryCertification
-     */
-    Certificate[] getCertificates() {
+	 * Returns an array of certificates associated with this JarEntryCertification.
+	 * @return an array of certificates, or null if no certificates are associated with
+	 * this JarEntryCertification
+	 */
+	Certificate[] getCertificates() {
 		return (this.certificates != null) ? this.certificates.clone() : null;
 	}
 
 	/**
-     * Returns an array of CodeSigner objects representing the signers of the JAR entry.
-     * 
-     * @return an array of CodeSigner objects representing the signers of the JAR entry,
-     *         or null if there are no signers
-     */
-    CodeSigner[] getCodeSigners() {
+	 * Returns an array of CodeSigner objects representing the signers of the JAR entry.
+	 * @return an array of CodeSigner objects representing the signers of the JAR entry,
+	 * or null if there are no signers
+	 */
+	CodeSigner[] getCodeSigners() {
 		return (this.codeSigners != null) ? this.codeSigners.clone() : null;
 	}
 
 	/**
-     * Creates a JarEntryCertification object from a given JarEntry.
-     * 
-     * @param certifiedEntry the JarEntry to create the certification from
-     * @return the JarEntryCertification object representing the certification of the given JarEntry
-     */
-    static JarEntryCertification from(java.util.jar.JarEntry certifiedEntry) {
+	 * Creates a JarEntryCertification object from a given JarEntry.
+	 * @param certifiedEntry the JarEntry to create the certification from
+	 * @return the JarEntryCertification object representing the certification of the
+	 * given JarEntry
+	 */
+	static JarEntryCertification from(java.util.jar.JarEntry certifiedEntry) {
 		Certificate[] certificates = (certifiedEntry != null) ? certifiedEntry.getCertificates() : null;
 		CodeSigner[] codeSigners = (certifiedEntry != null) ? certifiedEntry.getCodeSigners() : null;
 		if (certificates == null && codeSigners == null) {

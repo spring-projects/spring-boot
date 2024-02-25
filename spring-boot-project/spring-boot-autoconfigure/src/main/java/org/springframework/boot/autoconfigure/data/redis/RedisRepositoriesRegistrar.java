@@ -33,39 +33,36 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 class RedisRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	/**
-     * Returns the annotation class that is used to enable Redis repositories.
-     *
-     * @return the annotation class {@code EnableRedisRepositories}
-     */
-    @Override
+	 * Returns the annotation class that is used to enable Redis repositories.
+	 * @return the annotation class {@code EnableRedisRepositories}
+	 */
+	@Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableRedisRepositories.class;
 	}
 
 	/**
-     * Returns the configuration class for enabling Redis repositories.
-     * 
-     * @return the configuration class for enabling Redis repositories
-     */
-    @Override
+	 * Returns the configuration class for enabling Redis repositories.
+	 * @return the configuration class for enabling Redis repositories
+	 */
+	@Override
 	protected Class<?> getConfiguration() {
 		return EnableRedisRepositoriesConfiguration.class;
 	}
 
 	/**
-     * Returns the repository configuration extension for Redis repositories.
-     * 
-     * @return the RedisRepositoryConfigurationExtension instance
-     */
-    @Override
+	 * Returns the repository configuration extension for Redis repositories.
+	 * @return the RedisRepositoryConfigurationExtension instance
+	 */
+	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new RedisRepositoryConfigurationExtension();
 	}
 
 	/**
-     * EnableRedisRepositoriesConfiguration class.
-     */
-    @EnableRedisRepositories
+	 * EnableRedisRepositoriesConfiguration class.
+	 */
+	@EnableRedisRepositories
 	private static final class EnableRedisRepositoriesConfiguration {
 
 	}

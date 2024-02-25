@@ -42,11 +42,11 @@ class RecordableServerHttpRequest implements RecordableHttpRequest {
 	private final String remoteAddress;
 
 	/**
-     * Constructs a new RecordableServerHttpRequest object based on the provided ServerHttpRequest.
-     * 
-     * @param request the ServerHttpRequest to be recorded
-     */
-    RecordableServerHttpRequest(ServerHttpRequest request) {
+	 * Constructs a new RecordableServerHttpRequest object based on the provided
+	 * ServerHttpRequest.
+	 * @param request the ServerHttpRequest to be recorded
+	 */
+	RecordableServerHttpRequest(ServerHttpRequest request) {
 		this.method = request.getMethod().name();
 		this.headers = request.getHeaders();
 		this.uri = request.getURI();
@@ -54,53 +54,49 @@ class RecordableServerHttpRequest implements RecordableHttpRequest {
 	}
 
 	/**
-     * Returns the remote address of the client making the request.
-     * 
-     * @param request the server HTTP request
-     * @return the remote address as a string, or null if the remote address is not available
-     */
-    private static String getRemoteAddress(ServerHttpRequest request) {
+	 * Returns the remote address of the client making the request.
+	 * @param request the server HTTP request
+	 * @return the remote address as a string, or null if the remote address is not
+	 * available
+	 */
+	private static String getRemoteAddress(ServerHttpRequest request) {
 		InetSocketAddress remoteAddress = request.getRemoteAddress();
 		InetAddress address = (remoteAddress != null) ? remoteAddress.getAddress() : null;
 		return (address != null) ? address.toString() : null;
 	}
 
 	/**
-     * Returns the HTTP method of the server request.
-     *
-     * @return the HTTP method of the server request
-     */
-    @Override
+	 * Returns the HTTP method of the server request.
+	 * @return the HTTP method of the server request
+	 */
+	@Override
 	public String getMethod() {
 		return this.method;
 	}
 
 	/**
-     * Returns the URI of the server HTTP request.
-     *
-     * @return the URI of the server HTTP request
-     */
-    @Override
+	 * Returns the URI of the server HTTP request.
+	 * @return the URI of the server HTTP request
+	 */
+	@Override
 	public URI getUri() {
 		return this.uri;
 	}
 
 	/**
-     * Returns the headers of the server HTTP request.
-     *
-     * @return a map containing the headers of the server HTTP request
-     */
-    @Override
+	 * Returns the headers of the server HTTP request.
+	 * @return a map containing the headers of the server HTTP request
+	 */
+	@Override
 	public Map<String, List<String>> getHeaders() {
 		return new LinkedHashMap<>(this.headers);
 	}
 
 	/**
-     * Returns the remote address of the client that sent the request.
-     *
-     * @return the remote address of the client
-     */
-    @Override
+	 * Returns the remote address of the client that sent the request.
+	 * @return the remote address of the client
+	 */
+	@Override
 	public String getRemoteAddress() {
 		return this.remoteAddress;
 	}

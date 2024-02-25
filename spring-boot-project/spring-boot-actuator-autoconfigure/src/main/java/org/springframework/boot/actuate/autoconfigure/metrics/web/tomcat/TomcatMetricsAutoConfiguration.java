@@ -42,13 +42,14 @@ import org.springframework.context.annotation.Bean;
 public class TomcatMetricsAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link TomcatMetricsBinder} if a {@link MeterRegistry} bean is present and
-     * if there are no existing beans of type {@link TomcatMetrics} or {@link TomcatMetricsBinder}.
-     * 
-     * @param meterRegistry the {@link MeterRegistry} bean to be used for creating the {@link TomcatMetricsBinder}
-     * @return a new instance of {@link TomcatMetricsBinder}
-     */
-    @Bean
+	 * Creates a new instance of {@link TomcatMetricsBinder} if a {@link MeterRegistry}
+	 * bean is present and if there are no existing beans of type {@link TomcatMetrics} or
+	 * {@link TomcatMetricsBinder}.
+	 * @param meterRegistry the {@link MeterRegistry} bean to be used for creating the
+	 * {@link TomcatMetricsBinder}
+	 * @return a new instance of {@link TomcatMetricsBinder}
+	 */
+	@Bean
 	@ConditionalOnBean(MeterRegistry.class)
 	@ConditionalOnMissingBean({ TomcatMetrics.class, TomcatMetricsBinder.class })
 	public TomcatMetricsBinder tomcatMetricsBinder(MeterRegistry meterRegistry) {

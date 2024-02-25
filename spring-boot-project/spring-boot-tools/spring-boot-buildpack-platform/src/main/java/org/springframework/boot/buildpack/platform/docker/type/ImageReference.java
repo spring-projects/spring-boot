@@ -48,14 +48,13 @@ public final class ImageReference {
 	private final String string;
 
 	/**
-     * Constructs a new ImageReference object with the specified name, tag, and digest.
-     * 
-     * @param name   the name of the image (must not be null)
-     * @param tag    the tag of the image
-     * @param digest the digest of the image
-     * @throws IllegalArgumentException if the name is null
-     */
-    private ImageReference(ImageName name, String tag, String digest) {
+	 * Constructs a new ImageReference object with the specified name, tag, and digest.
+	 * @param name the name of the image (must not be null)
+	 * @param tag the tag of the image
+	 * @param digest the digest of the image
+	 * @throws IllegalArgumentException if the name is null
+	 */
+	private ImageReference(ImageName name, String tag, String digest) {
 		Assert.notNull(name, "Name must not be null");
 		this.name = name;
 		this.tag = tag;
@@ -98,12 +97,11 @@ public final class ImageReference {
 	}
 
 	/**
-     * Compares this ImageReference object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this ImageReference object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -120,12 +118,12 @@ public final class ImageReference {
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the default implementation of the hashCode() method.
-     * The hash code is calculated based on the name, tag, and digest of the ImageReference object.
-     *
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the default
+	 * implementation of the hashCode() method. The hash code is calculated based on the
+	 * name, tag, and digest of the ImageReference object.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -136,33 +134,30 @@ public final class ImageReference {
 	}
 
 	/**
-     * Returns a string representation of the ImageReference object.
-     *
-     * @return the string representation of the ImageReference object
-     */
-    @Override
+	 * Returns a string representation of the ImageReference object.
+	 * @return the string representation of the ImageReference object
+	 */
+	@Override
 	public String toString() {
 		return this.string;
 	}
 
 	/**
-     * Converts the ImageReference object to a legacy string representation.
-     * 
-     * @return the legacy string representation of the ImageReference object
-     */
-    public String toLegacyString() {
+	 * Converts the ImageReference object to a legacy string representation.
+	 * @return the legacy string representation of the ImageReference object
+	 */
+	public String toLegacyString() {
 		return buildString(this.name.toLegacyString(), this.tag, this.digest);
 	}
 
 	/**
-     * Builds a string representation of an image reference.
-     * 
-     * @param name   the name of the image
-     * @param tag    the tag of the image (optional)
-     * @param digest the digest of the image (optional)
-     * @return the string representation of the image reference
-     */
-    private String buildString(String name, String tag, String digest) {
+	 * Builds a string representation of an image reference.
+	 * @param name the name of the image
+	 * @param tag the tag of the image (optional)
+	 * @param digest the digest of the image (optional)
+	 * @return the string representation of the image reference
+	 */
+	private String buildString(String name, String tag, String digest) {
 		StringBuilder string = new StringBuilder(name);
 		if (tag != null) {
 			string.append(":").append(tag);
@@ -309,22 +304,20 @@ public final class ImageReference {
 	}
 
 	/**
-     * Checks if the given path is in lowercase.
-     * 
-     * @param path the path to be checked
-     * @return true if the path is in lowercase, false otherwise
-     */
-    private static boolean isLowerCase(String path) {
+	 * Checks if the given path is in lowercase.
+	 * @param path the path to be checked
+	 * @return true if the path is in lowercase, false otherwise
+	 */
+	private static boolean isLowerCase(String path) {
 		return path.toLowerCase(Locale.ENGLISH).equals(path);
 	}
 
 	/**
-     * Checks if the given path matches the regular expression pattern for a file path.
-     * 
-     * @param path the path to be checked
-     * @return true if the path matches the regular expression pattern, false otherwise
-     */
-    private static boolean matchesPathRegex(String path) {
+	 * Checks if the given path matches the regular expression pattern for a file path.
+	 * @param path the path to be checked
+	 * @return true if the path matches the regular expression pattern, false otherwise
+	 */
+	private static boolean matchesPathRegex(String path) {
 		return Regex.PATH.matcher(path).matches();
 	}
 

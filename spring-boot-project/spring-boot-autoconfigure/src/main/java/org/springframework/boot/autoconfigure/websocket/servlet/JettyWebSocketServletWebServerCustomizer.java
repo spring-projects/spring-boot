@@ -40,12 +40,11 @@ public class JettyWebSocketServletWebServerCustomizer
 		implements WebServerFactoryCustomizer<JettyServletWebServerFactory>, Ordered {
 
 	/**
-     * Customize the Jetty servlet web server factory.
-     * This method adds configurations to the factory to ensure the proper setup of WebSocket components and containers.
-     * 
-     * @param factory the Jetty servlet web server factory to customize
-     */
-    @Override
+	 * Customize the Jetty servlet web server factory. This method adds configurations to
+	 * the factory to ensure the proper setup of WebSocket components and containers.
+	 * @param factory the Jetty servlet web server factory to customize
+	 */
+	@Override
 	public void customize(JettyServletWebServerFactory factory) {
 		factory.addConfigurations(new AbstractConfiguration(new AbstractConfiguration.Builder()) {
 
@@ -69,14 +68,13 @@ public class JettyWebSocketServletWebServerCustomizer
 	}
 
 	/**
-     * Returns the order value for this customizer.
-     * 
-     * The order determines the order in which the customizers are applied.
-     * A lower value means higher precedence.
-     * 
-     * @return the order value for this customizer
-     */
-    @Override
+	 * Returns the order value for this customizer.
+	 *
+	 * The order determines the order in which the customizers are applied. A lower value
+	 * means higher precedence.
+	 * @return the order value for this customizer
+	 */
+	@Override
 	public int getOrder() {
 		return 0;
 	}

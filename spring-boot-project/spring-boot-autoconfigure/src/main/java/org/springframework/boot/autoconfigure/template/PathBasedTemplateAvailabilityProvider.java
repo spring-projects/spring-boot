@@ -41,13 +41,13 @@ public abstract class PathBasedTemplateAvailabilityProvider implements TemplateA
 	private final String propertyPrefix;
 
 	/**
-     * Constructs a new PathBasedTemplateAvailabilityProvider with the specified parameters.
-     * 
-     * @param className the fully qualified class name of the provider
-     * @param propertiesClass the class of the template availability properties
-     * @param propertyPrefix the prefix for the properties
-     */
-    @SuppressWarnings("unchecked")
+	 * Constructs a new PathBasedTemplateAvailabilityProvider with the specified
+	 * parameters.
+	 * @param className the fully qualified class name of the provider
+	 * @param propertiesClass the class of the template availability properties
+	 * @param propertyPrefix the prefix for the properties
+	 */
+	@SuppressWarnings("unchecked")
 	public PathBasedTemplateAvailabilityProvider(String className,
 			Class<? extends TemplateAvailabilityProperties> propertiesClass, String propertyPrefix) {
 		this.className = className;
@@ -56,15 +56,15 @@ public abstract class PathBasedTemplateAvailabilityProvider implements TemplateA
 	}
 
 	/**
-     * Checks if a template is available for the given view.
-     * 
-     * @param view the name of the view
-     * @param environment the environment in which the template is being checked
-     * @param classLoader the class loader to use for checking the presence of the template class
-     * @param resourceLoader the resource loader to use for loading the template resource
-     * @return true if the template is available, false otherwise
-     */
-    @Override
+	 * Checks if a template is available for the given view.
+	 * @param view the name of the view
+	 * @param environment the environment in which the template is being checked
+	 * @param classLoader the class loader to use for checking the presence of the
+	 * template class
+	 * @param resourceLoader the resource loader to use for loading the template resource
+	 * @return true if the template is available, false otherwise
+	 */
+	@Override
 	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
 			ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent(this.className, classLoader)) {
@@ -76,14 +76,13 @@ public abstract class PathBasedTemplateAvailabilityProvider implements TemplateA
 	}
 
 	/**
-     * Checks if a template is available for the given view.
-     * 
-     * @param view the view name
-     * @param resourceLoader the resource loader
-     * @param properties the template availability properties
-     * @return true if the template is available, false otherwise
-     */
-    private boolean isTemplateAvailable(String view, ResourceLoader resourceLoader,
+	 * Checks if a template is available for the given view.
+	 * @param view the view name
+	 * @param resourceLoader the resource loader
+	 * @param properties the template availability properties
+	 * @return true if the template is available, false otherwise
+	 */
+	private boolean isTemplateAvailable(String view, ResourceLoader resourceLoader,
 			TemplateAvailabilityProperties properties) {
 		String location = properties.getPrefix() + view + properties.getSuffix();
 		for (String path : properties.getLoaderPath()) {
@@ -95,65 +94,60 @@ public abstract class PathBasedTemplateAvailabilityProvider implements TemplateA
 	}
 
 	/**
-     * TemplateAvailabilityProperties class.
-     */
-    protected abstract static class TemplateAvailabilityProperties {
+	 * TemplateAvailabilityProperties class.
+	 */
+	protected abstract static class TemplateAvailabilityProperties {
 
 		private String prefix;
 
 		private String suffix;
 
 		/**
-         * Constructs a new TemplateAvailabilityProperties object with the specified prefix and suffix.
-         * 
-         * @param prefix the prefix to be used for template availability checks
-         * @param suffix the suffix to be used for template availability checks
-         */
-        protected TemplateAvailabilityProperties(String prefix, String suffix) {
+		 * Constructs a new TemplateAvailabilityProperties object with the specified
+		 * prefix and suffix.
+		 * @param prefix the prefix to be used for template availability checks
+		 * @param suffix the suffix to be used for template availability checks
+		 */
+		protected TemplateAvailabilityProperties(String prefix, String suffix) {
 			this.prefix = prefix;
 			this.suffix = suffix;
 		}
 
 		/**
-         * Returns the list of paths to be used for loading templates.
-         *
-         * @return the list of paths to be used for loading templates
-         */
-        protected abstract List<String> getLoaderPath();
+		 * Returns the list of paths to be used for loading templates.
+		 * @return the list of paths to be used for loading templates
+		 */
+		protected abstract List<String> getLoaderPath();
 
 		/**
-         * Returns the prefix used for template availability checks.
-         * 
-         * @return the prefix used for template availability checks
-         */
-        public String getPrefix() {
+		 * Returns the prefix used for template availability checks.
+		 * @return the prefix used for template availability checks
+		 */
+		public String getPrefix() {
 			return this.prefix;
 		}
 
 		/**
-         * Sets the prefix for template availability properties.
-         * 
-         * @param prefix the prefix to be set
-         */
-        public void setPrefix(String prefix) {
+		 * Sets the prefix for template availability properties.
+		 * @param prefix the prefix to be set
+		 */
+		public void setPrefix(String prefix) {
 			this.prefix = prefix;
 		}
 
 		/**
-         * Returns the suffix used to resolve templates.
-         * 
-         * @return the suffix used to resolve templates
-         */
-        public String getSuffix() {
+		 * Returns the suffix used to resolve templates.
+		 * @return the suffix used to resolve templates
+		 */
+		public String getSuffix() {
 			return this.suffix;
 		}
 
 		/**
-         * Sets the suffix for template availability properties.
-         * 
-         * @param suffix the suffix to be set
-         */
-        public void setSuffix(String suffix) {
+		 * Sets the suffix for template availability properties.
+		 * @param suffix the suffix to be set
+		 */
+		public void setSuffix(String suffix) {
 			this.suffix = suffix;
 		}
 

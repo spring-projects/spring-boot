@@ -48,52 +48,50 @@ public class ResolvedDockerHost extends DockerHost {
 	private static final String DOCKER_CONTEXT = "DOCKER_CONTEXT";
 
 	/**
-     * Constructs a new ResolvedDockerHost object with the specified address.
-     * 
-     * @param address the address of the Docker host
-     */
-    ResolvedDockerHost(String address) {
+	 * Constructs a new ResolvedDockerHost object with the specified address.
+	 * @param address the address of the Docker host
+	 */
+	ResolvedDockerHost(String address) {
 		super(address);
 	}
 
 	/**
-     * Constructs a new ResolvedDockerHost object with the specified address, secure flag, and certificate path.
-     * 
-     * @param address the address of the Docker host
-     * @param secure a boolean flag indicating whether the connection to the Docker host should be secure
-     * @param certificatePath the path to the certificate file for secure connection
-     */
-    ResolvedDockerHost(String address, boolean secure, String certificatePath) {
+	 * Constructs a new ResolvedDockerHost object with the specified address, secure flag,
+	 * and certificate path.
+	 * @param address the address of the Docker host
+	 * @param secure a boolean flag indicating whether the connection to the Docker host
+	 * should be secure
+	 * @param certificatePath the path to the certificate file for secure connection
+	 */
+	ResolvedDockerHost(String address, boolean secure, String certificatePath) {
 		super(address, secure, certificatePath);
 	}
 
 	/**
-     * Returns the address of the resolved Docker host.
-     * If the address starts with the UNIX_SOCKET_PREFIX, it will be stripped off before returning.
-     * 
-     * @return the address of the resolved Docker host
-     */
-    @Override
+	 * Returns the address of the resolved Docker host. If the address starts with the
+	 * UNIX_SOCKET_PREFIX, it will be stripped off before returning.
+	 * @return the address of the resolved Docker host
+	 */
+	@Override
 	public String getAddress() {
 		return super.getAddress().startsWith(UNIX_SOCKET_PREFIX)
 				? super.getAddress().substring(UNIX_SOCKET_PREFIX.length()) : super.getAddress();
 	}
 
 	/**
-     * Checks if the address of the Docker host is remote.
-     * 
-     * @return true if the address starts with "http" or "tcp", indicating a remote host, false otherwise.
-     */
-    public boolean isRemote() {
+	 * Checks if the address of the Docker host is remote.
+	 * @return true if the address starts with "http" or "tcp", indicating a remote host,
+	 * false otherwise.
+	 */
+	public boolean isRemote() {
 		return getAddress().startsWith("http") || getAddress().startsWith("tcp");
 	}
 
 	/**
-     * Checks if the address of the file is a local file reference.
-     * 
-     * @return true if the address is a local file reference, false otherwise
-     */
-    public boolean isLocalFileReference() {
+	 * Checks if the address of the file is a local file reference.
+	 * @return true if the address is a local file reference, false otherwise
+	 */
+	public boolean isLocalFileReference() {
 		try {
 			return Files.exists(Paths.get(getAddress()));
 		}
@@ -103,23 +101,23 @@ public class ResolvedDockerHost extends DockerHost {
 	}
 
 	/**
-     * Creates a ResolvedDockerHost object from the given DockerHostConfiguration object.
-     * 
-     * @param dockerHost the DockerHostConfiguration object to create the ResolvedDockerHost from
-     * @return a ResolvedDockerHost object representing the resolved Docker host
-     */
-    public static ResolvedDockerHost from(DockerHostConfiguration dockerHost) {
+	 * Creates a ResolvedDockerHost object from the given DockerHostConfiguration object.
+	 * @param dockerHost the DockerHostConfiguration object to create the
+	 * ResolvedDockerHost from
+	 * @return a ResolvedDockerHost object representing the resolved Docker host
+	 */
+	public static ResolvedDockerHost from(DockerHostConfiguration dockerHost) {
 		return from(Environment.SYSTEM, dockerHost);
 	}
 
 	/**
-     * Resolves the Docker host based on the given environment and Docker host configuration.
-     * 
-     * @param environment The environment containing the Docker host information.
-     * @param dockerHost The Docker host configuration.
-     * @return The resolved Docker host.
-     */
-    static ResolvedDockerHost from(Environment environment, DockerHostConfiguration dockerHost) {
+	 * Resolves the Docker host based on the given environment and Docker host
+	 * configuration.
+	 * @param environment The environment containing the Docker host information.
+	 * @param dockerHost The Docker host configuration.
+	 * @return The resolved Docker host.
+	 */
+	static ResolvedDockerHost from(Environment environment, DockerHostConfiguration dockerHost) {
 		DockerConfigurationMetadata config = DockerConfigurationMetadata.from(environment);
 		if (environment.get(DOCKER_CONTEXT) != null) {
 			DockerContext context = config.forContext(environment.get(DOCKER_CONTEXT));
@@ -145,12 +143,11 @@ public class ResolvedDockerHost extends DockerHost {
 	}
 
 	/**
-     * Checks if the given value is true.
-     * 
-     * @param value the value to be checked
-     * @return true if the value is not null and equals to 1, false otherwise
-     */
-    private static boolean isTrue(String value) {
+	 * Checks if the given value is true.
+	 * @param value the value to be checked
+	 * @return true if the value is not null and equals to 1, false otherwise
+	 */
+	private static boolean isTrue(String value) {
 		try {
 			return (value != null) && (Integer.parseInt(value) == 1);
 		}

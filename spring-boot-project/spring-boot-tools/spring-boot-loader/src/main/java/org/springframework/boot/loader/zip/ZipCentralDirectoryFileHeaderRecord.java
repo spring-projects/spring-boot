@@ -125,14 +125,13 @@ record ZipCentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNee
 	}
 
 	/**
-     * Returns the value of the specified ChronoField within the given range.
-     *
-     * @param value the value to be checked
-     * @param field the ChronoField to retrieve the value from
-     * @return the value of the ChronoField within the specified range
-     * @throws ArithmeticException if the value is out of the range of the ChronoField
-     */
-    private static int getChronoValue(long value, ChronoField field) {
+	 * Returns the value of the specified ChronoField within the given range.
+	 * @param value the value to be checked
+	 * @param field the ChronoField to retrieve the value from
+	 * @return the value of the ChronoField within the specified range
+	 * @throws ArithmeticException if the value is out of the range of the ChronoField
+	 */
+	private static int getChronoValue(long value, ChronoField field) {
 		ValueRange range = field.range();
 		return Math.toIntExact(Math.min(Math.max(value, range.getMinimum()), range.getMaximum()));
 	}

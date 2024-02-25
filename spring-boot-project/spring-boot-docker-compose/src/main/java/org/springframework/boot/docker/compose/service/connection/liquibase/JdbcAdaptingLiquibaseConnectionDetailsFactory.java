@@ -30,12 +30,13 @@ class JdbcAdaptingLiquibaseConnectionDetailsFactory
 		implements ConnectionDetailsFactory<JdbcConnectionDetails, LiquibaseConnectionDetails> {
 
 	/**
-     * Returns the LiquibaseConnectionDetails object based on the provided JdbcConnectionDetails.
-     * 
-     * @param input the JdbcConnectionDetails object containing the connection details
-     * @return the LiquibaseConnectionDetails object with the same connection details as the input
-     */
-    @Override
+	 * Returns the LiquibaseConnectionDetails object based on the provided
+	 * JdbcConnectionDetails.
+	 * @param input the JdbcConnectionDetails object containing the connection details
+	 * @return the LiquibaseConnectionDetails object with the same connection details as
+	 * the input
+	 */
+	@Override
 	public LiquibaseConnectionDetails getConnectionDetails(JdbcConnectionDetails input) {
 		return new LiquibaseConnectionDetails() {
 

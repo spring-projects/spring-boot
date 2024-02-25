@@ -78,24 +78,22 @@ class CentralDirectoryEndRecord {
 	}
 
 	/**
-     * Creates a block of bytes from the end of the given RandomAccessData object.
-     * 
-     * @param data the RandomAccessData object to read from
-     * @param size the maximum size of the block to create
-     * @return a byte array containing the block of bytes from the end of the data
-     * @throws IOException if an I/O error occurs while reading the data
-     */
-    private byte[] createBlockFromEndOfData(RandomAccessData data, int size) throws IOException {
+	 * Creates a block of bytes from the end of the given RandomAccessData object.
+	 * @param data the RandomAccessData object to read from
+	 * @param size the maximum size of the block to create
+	 * @return a byte array containing the block of bytes from the end of the data
+	 * @throws IOException if an I/O error occurs while reading the data
+	 */
+	private byte[] createBlockFromEndOfData(RandomAccessData data, int size) throws IOException {
 		int length = (int) Math.min(data.getSize(), size);
 		return data.read(data.getSize() - length, length);
 	}
 
 	/**
-     * Checks if the Central Directory End Record is valid.
-     * 
-     * @return true if the Central Directory End Record is valid, false otherwise
-     */
-    private boolean isValid() {
+	 * Checks if the Central Directory End Record is valid.
+	 * @return true if the Central Directory End Record is valid, false otherwise
+	 */
+	private boolean isValid() {
 		if (this.block.length < MINIMUM_SIZE || Bytes.littleEndianValue(this.block, this.offset + 0, 4) != SIGNATURE) {
 			return false;
 		}
@@ -149,22 +147,20 @@ class CentralDirectoryEndRecord {
 	}
 
 	/**
-     * Returns the comment associated with the central directory end record.
-     * 
-     * @return the comment as a string
-     */
-    String getComment() {
+	 * Returns the comment associated with the central directory end record.
+	 * @return the comment as a string
+	 */
+	String getComment() {
 		int commentLength = (int) Bytes.littleEndianValue(this.block, this.offset + COMMENT_LENGTH_OFFSET, 2);
 		AsciiBytes comment = new AsciiBytes(this.block, this.offset + COMMENT_LENGTH_OFFSET + 2, commentLength);
 		return comment.toString();
 	}
 
 	/**
-     * Returns a boolean value indicating whether the ZIP file is in ZIP64 format.
-     *
-     * @return {@code true} if the ZIP file is in ZIP64 format, {@code false} otherwise.
-     */
-    boolean isZip64() {
+	 * Returns a boolean value indicating whether the ZIP file is in ZIP64 format.
+	 * @return {@code true} if the ZIP file is in ZIP64 format, {@code false} otherwise.
+	 */
+	boolean isZip64() {
 		return this.zip64End != null;
 	}
 
@@ -191,14 +187,15 @@ class CentralDirectoryEndRecord {
 		private final int numberOfRecords;
 
 		/**
-         * Reads the Zip64 end of central directory record from the given RandomAccessData
-         * using the provided Zip64Locator.
-         * 
-         * @param data the RandomAccessData containing the Zip64 end of central directory record
-         * @param locator the Zip64Locator used to locate the Zip64 end of central directory record
-         * @throws IOException if an I/O error occurs while reading the data
-         */
-        private Zip64End(RandomAccessData data, Zip64Locator locator) throws IOException {
+		 * Reads the Zip64 end of central directory record from the given RandomAccessData
+		 * using the provided Zip64Locator.
+		 * @param data the RandomAccessData containing the Zip64 end of central directory
+		 * record
+		 * @param locator the Zip64Locator used to locate the Zip64 end of central
+		 * directory record
+		 * @throws IOException if an I/O error occurs while reading the data
+		 */
+		private Zip64End(RandomAccessData data, Zip64Locator locator) throws IOException {
 			this.locator = locator;
 			byte[] block = data.read(locator.getZip64EndOffset(), 56);
 			this.centralDirectoryOffset = Bytes.littleEndianValue(block, ZIP64_ENDOFF, 8);
@@ -253,12 +250,11 @@ class CentralDirectoryEndRecord {
 		private final long offset;
 
 		/**
-         * Constructs a new Zip64Locator with the specified offset and block.
-         * 
-         * @param offset the offset of the Zip64Locator
-         * @param block the block containing the Zip64Locator data
-         */
-        private Zip64Locator(long offset, byte[] block) {
+		 * Constructs a new Zip64Locator with the specified offset and block.
+		 * @param offset the offset of the Zip64Locator
+		 * @param block the block containing the Zip64Locator data
+		 */
+		private Zip64Locator(long offset, byte[] block) {
 			this.offset = offset;
 			this.zip64EndOffset = Bytes.littleEndianValue(block, ZIP64_LOCOFF, 8);
 		}
@@ -280,14 +276,15 @@ class CentralDirectoryEndRecord {
 		}
 
 		/**
-         * Finds the Zip64 locator in the given RandomAccessData starting from the specified central directory end offset.
-         * 
-         * @param data The RandomAccessData to search for the Zip64 locator.
-         * @param centralDirectoryEndOffset The offset of the central directory end in the RandomAccessData.
-         * @return The Zip64Locator if found, or null if not found.
-         * @throws IOException if an I/O error occurs while reading the RandomAccessData.
-         */
-        private static Zip64Locator find(RandomAccessData data, long centralDirectoryEndOffset) throws IOException {
+		 * Finds the Zip64 locator in the given RandomAccessData starting from the
+		 * specified central directory end offset.
+		 * @param data The RandomAccessData to search for the Zip64 locator.
+		 * @param centralDirectoryEndOffset The offset of the central directory end in the
+		 * RandomAccessData.
+		 * @return The Zip64Locator if found, or null if not found.
+		 * @throws IOException if an I/O error occurs while reading the RandomAccessData.
+		 */
+		private static Zip64Locator find(RandomAccessData data, long centralDirectoryEndOffset) throws IOException {
 			long offset = centralDirectoryEndOffset - ZIP64_LOCSIZE;
 			if (offset >= 0) {
 				byte[] block = data.read(offset, ZIP64_LOCSIZE);

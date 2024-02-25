@@ -38,14 +38,13 @@ class UrlJarFile extends JarFile {
 	private final Consumer<JarFile> closeAction;
 
 	/**
-     * Constructs a new UrlJarFile by opening the specified file for reading.
-     * 
-     * @param file the file to be opened as a UrlJarFile
-     * @param version the version of the Java runtime environment
-     * @param closeAction the action to be performed when the UrlJarFile is closed
-     * @throws IOException if an I/O error occurs while opening the file
-     */
-    UrlJarFile(File file, Runtime.Version version, Consumer<JarFile> closeAction) throws IOException {
+	 * Constructs a new UrlJarFile by opening the specified file for reading.
+	 * @param file the file to be opened as a UrlJarFile
+	 * @param version the version of the Java runtime environment
+	 * @param closeAction the action to be performed when the UrlJarFile is closed
+	 * @throws IOException if an I/O error occurs while opening the file
+	 */
+	UrlJarFile(File file, Runtime.Version version, Consumer<JarFile> closeAction) throws IOException {
 		super(file, true, ZipFile.OPEN_READ, version);
 		// Registered only for test cleanup since parent class is JarFile
 		Cleaner.instance.register(this, null);
@@ -54,35 +53,32 @@ class UrlJarFile extends JarFile {
 	}
 
 	/**
-     * Returns a ZipEntry object for the specified entry name.
-     * 
-     * @param name the name of the entry
-     * @return a ZipEntry object for the specified entry name
-     */
-    @Override
+	 * Returns a ZipEntry object for the specified entry name.
+	 * @param name the name of the entry
+	 * @return a ZipEntry object for the specified entry name
+	 */
+	@Override
 	public ZipEntry getEntry(String name) {
 		return UrlJarEntry.of(super.getEntry(name), this.manifest);
 	}
 
 	/**
-     * Returns the manifest of the URL jar file.
-     *
-     * @return the manifest of the URL jar file
-     * @throws IOException if an I/O error occurs while retrieving the manifest
-     */
-    @Override
+	 * Returns the manifest of the URL jar file.
+	 * @return the manifest of the URL jar file
+	 * @throws IOException if an I/O error occurs while retrieving the manifest
+	 */
+	@Override
 	public Manifest getManifest() throws IOException {
 		return this.manifest.get();
 	}
 
 	/**
-     * Closes the UrlJarFile and releases any system resources associated with it.
-     * This method overrides the close() method in the superclass and throws an IOException.
-     * If a close action is set, it will be executed before closing the UrlJarFile.
-     *
-     * @throws IOException if an I/O error occurs while closing the UrlJarFile
-     */
-    @Override
+	 * Closes the UrlJarFile and releases any system resources associated with it. This
+	 * method overrides the close() method in the superclass and throws an IOException. If
+	 * a close action is set, it will be executed before closing the UrlJarFile.
+	 * @throws IOException if an I/O error occurs while closing the UrlJarFile
+	 */
+	@Override
 	public void close() throws IOException {
 		if (this.closeAction != null) {
 			this.closeAction.accept(this);

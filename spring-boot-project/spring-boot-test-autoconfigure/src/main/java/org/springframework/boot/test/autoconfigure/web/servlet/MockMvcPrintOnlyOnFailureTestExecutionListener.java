@@ -30,27 +30,25 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 class MockMvcPrintOnlyOnFailureTestExecutionListener extends AbstractTestExecutionListener {
 
 	/**
-     * Returns the order of this test execution listener.
-     * The order is set to the lowest precedence minus 100.
-     *
-     * @return the order of this test execution listener
-     */
-    @Override
+	 * Returns the order of this test execution listener. The order is set to the lowest
+	 * precedence minus 100.
+	 * @return the order of this test execution listener
+	 */
+	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE - 100;
 	}
 
 	/**
-     * This method is called after each test method is executed.
-     * It checks if there is a DeferredLinesWriter instance in the application context.
-     * If there is, it checks if there is a test exception.
-     * If there is a test exception, it writes the deferred result.
-     * Finally, it clears the DeferredLinesWriter.
-     *
-     * @param testContext the TestContext object containing information about the test execution
-     * @throws Exception if an error occurs during the execution of the method
-     */
-    @Override
+	 * This method is called after each test method is executed. It checks if there is a
+	 * DeferredLinesWriter instance in the application context. If there is, it checks if
+	 * there is a test exception. If there is a test exception, it writes the deferred
+	 * result. Finally, it clears the DeferredLinesWriter.
+	 * @param testContext the TestContext object containing information about the test
+	 * execution
+	 * @throws Exception if an error occurs during the execution of the method
+	 */
+	@Override
 	public void afterTestMethod(TestContext testContext) throws Exception {
 		DeferredLinesWriter writer = DeferredLinesWriter.get(testContext.getApplicationContext());
 		if (writer != null) {

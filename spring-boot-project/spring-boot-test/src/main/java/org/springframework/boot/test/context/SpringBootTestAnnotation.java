@@ -49,45 +49,44 @@ class SpringBootTestAnnotation implements ContextCustomizer {
 	private final UseMainMethod useMainMethod;
 
 	/**
-     * Constructs a new instance of the {@code SpringBootTestAnnotation} class with the specified {@code testClass}.
-     * 
-     * @param testClass the class to find the merged {@code SpringBootTest} annotation from
-     */
-    SpringBootTestAnnotation(Class<?> testClass) {
+	 * Constructs a new instance of the {@code SpringBootTestAnnotation} class with the
+	 * specified {@code testClass}.
+	 * @param testClass the class to find the merged {@code SpringBootTest} annotation
+	 * from
+	 */
+	SpringBootTestAnnotation(Class<?> testClass) {
 		this(TestContextAnnotationUtils.findMergedAnnotation(testClass, SpringBootTest.class));
 	}
 
 	/**
-     * Constructs a new instance of the {@code SpringBootTestAnnotation} class.
-     * 
-     * @param annotation the {@code SpringBootTest} annotation to be used for initialization
-     */
-    private SpringBootTestAnnotation(SpringBootTest annotation) {
+	 * Constructs a new instance of the {@code SpringBootTestAnnotation} class.
+	 * @param annotation the {@code SpringBootTest} annotation to be used for
+	 * initialization
+	 */
+	private SpringBootTestAnnotation(SpringBootTest annotation) {
 		this.args = (annotation != null) ? annotation.args() : NO_ARGS;
 		this.webEnvironment = (annotation != null) ? annotation.webEnvironment() : WebEnvironment.NONE;
 		this.useMainMethod = (annotation != null) ? annotation.useMainMethod() : UseMainMethod.NEVER;
 	}
 
 	/**
-     * Customize the application context.
-     * 
-     * This method is called during the initialization of the application context in a Spring Boot test.
-     * It allows for customizing the context before it is fully loaded.
-     * 
-     * @param context the configurable application context
-     * @param mergedConfig the merged context configuration
-     */
-    @Override
+	 * Customize the application context.
+	 *
+	 * This method is called during the initialization of the application context in a
+	 * Spring Boot test. It allows for customizing the context before it is fully loaded.
+	 * @param context the configurable application context
+	 * @param mergedConfig the merged context configuration
+	 */
+	@Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 	}
 
 	/**
-     * Compares this object with the specified object for equality.
-     * 
-     * @param obj the object to compare with
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this object with the specified object for equality.
+	 * @param obj the object to compare with
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -103,13 +102,13 @@ class SpringBootTestAnnotation implements ContextCustomizer {
 	}
 
 	/**
-     * Returns the hash code value for this {@code SpringBootTestAnnotation} object.
-     * 
-     * The hash code is calculated based on the values of the {@code args} array, {@code useMainMethod} and {@code webEnvironment} fields.
-     * 
-     * @return the hash code value for this object
-     */
-    @Override
+	 * Returns the hash code value for this {@code SpringBootTestAnnotation} object.
+	 *
+	 * The hash code is calculated based on the values of the {@code args} array,
+	 * {@code useMainMethod} and {@code webEnvironment} fields.
+	 * @return the hash code value for this object
+	 */
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -119,29 +118,26 @@ class SpringBootTestAnnotation implements ContextCustomizer {
 	}
 
 	/**
-     * Returns the arguments passed to the SpringBootTestAnnotation class.
-     *
-     * @return an array of strings representing the arguments
-     */
-    String[] getArgs() {
+	 * Returns the arguments passed to the SpringBootTestAnnotation class.
+	 * @return an array of strings representing the arguments
+	 */
+	String[] getArgs() {
 		return this.args;
 	}
 
 	/**
-     * Returns the web environment of the SpringBootTestAnnotation.
-     *
-     * @return the web environment of the SpringBootTestAnnotation
-     */
-    WebEnvironment getWebEnvironment() {
+	 * Returns the web environment of the SpringBootTestAnnotation.
+	 * @return the web environment of the SpringBootTestAnnotation
+	 */
+	WebEnvironment getWebEnvironment() {
 		return this.webEnvironment;
 	}
 
 	/**
-     * Returns the value of the useMainMethod property.
-     *
-     * @return the value of the useMainMethod property
-     */
-    UseMainMethod getUseMainMethod() {
+	 * Returns the value of the useMainMethod property.
+	 * @return the value of the useMainMethod property
+	 */
+	UseMainMethod getUseMainMethod() {
 		return this.useMainMethod;
 	}
 

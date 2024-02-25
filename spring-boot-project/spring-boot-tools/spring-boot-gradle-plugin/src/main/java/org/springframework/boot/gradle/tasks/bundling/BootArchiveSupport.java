@@ -86,13 +86,14 @@ class BootArchiveSupport {
 	private LaunchScriptConfiguration launchScript;
 
 	/**
-     * Creates a new instance of BootArchiveSupport with the specified parameters.
-     * 
-     * @param loaderMainClass The main class to be used as the entry point for the boot archive.
-     * @param librarySpec The specification for copying library files to the boot archive.
-     * @param compressionResolver The function used to resolve the compression method for each file in the boot archive.
-     */
-    BootArchiveSupport(String loaderMainClass, Spec<FileCopyDetails> librarySpec,
+	 * Creates a new instance of BootArchiveSupport with the specified parameters.
+	 * @param loaderMainClass The main class to be used as the entry point for the boot
+	 * archive.
+	 * @param librarySpec The specification for copying library files to the boot archive.
+	 * @param compressionResolver The function used to resolve the compression method for
+	 * each file in the boot archive.
+	 */
+	BootArchiveSupport(String loaderMainClass, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver) {
 		this.loaderMainClass = loaderMainClass;
 		this.librarySpec = librarySpec;
@@ -101,19 +102,18 @@ class BootArchiveSupport {
 	}
 
 	/**
-     * Configures the manifest file with the provided parameters.
-     * 
-     * @param manifest              the manifest object to be configured
-     * @param mainClass             the main class of the application
-     * @param classes               the classes directory of the application
-     * @param lib                   the lib directory of the application
-     * @param classPathIndex        the classpath index of the application
-     * @param layersIndex           the layers index of the application
-     * @param jdkVersion            the JDK version used for building the application
-     * @param implementationTitle   the title of the implementation
-     * @param implementationVersion the version of the implementation
-     */
-    void configureManifest(Manifest manifest, String mainClass, String classes, String lib, String classPathIndex,
+	 * Configures the manifest file with the provided parameters.
+	 * @param manifest the manifest object to be configured
+	 * @param mainClass the main class of the application
+	 * @param classes the classes directory of the application
+	 * @param lib the lib directory of the application
+	 * @param classPathIndex the classpath index of the application
+	 * @param layersIndex the layers index of the application
+	 * @param jdkVersion the JDK version used for building the application
+	 * @param implementationTitle the title of the implementation
+	 * @param implementationVersion the version of the implementation
+	 */
+	void configureManifest(Manifest manifest, String mainClass, String classes, String lib, String classPathIndex,
 			String layersIndex, String jdkVersion, String implementationTitle, Object implementationVersion) {
 		Attributes attributes = manifest.getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
@@ -138,42 +138,41 @@ class BootArchiveSupport {
 	}
 
 	/**
-     * Determines the version of Spring Boot.
-     * 
-     * @return The version of Spring Boot if available, otherwise "unknown".
-     */
-    private String determineSpringBootVersion() {
+	 * Determines the version of Spring Boot.
+	 * @return The version of Spring Boot if available, otherwise "unknown".
+	 */
+	private String determineSpringBootVersion() {
 		String version = getClass().getPackage().getImplementationVersion();
 		return (version != null) ? version : "unknown";
 	}
 
 	/**
-     * Creates a copy action for a given JAR file with resolved dependencies, loader implementation,
-     * and support for signature files.
-     * 
-     * @param jar the JAR file to create a copy action for
-     * @param resolvedDependencies the resolved dependencies for the JAR file
-     * @param loaderImplementation the loader implementation to use for the copy action
-     * @param supportsSignatureFile flag indicating whether the copy action should support signature files
-     * @return the created copy action
-     */
-    CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
+	 * Creates a copy action for a given JAR file with resolved dependencies, loader
+	 * implementation, and support for signature files.
+	 * @param jar the JAR file to create a copy action for
+	 * @param resolvedDependencies the resolved dependencies for the JAR file
+	 * @param loaderImplementation the loader implementation to use for the copy action
+	 * @param supportsSignatureFile flag indicating whether the copy action should support
+	 * signature files
+	 * @return the created copy action
+	 */
+	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
 			LoaderImplementation loaderImplementation, boolean supportsSignatureFile) {
 		return createCopyAction(jar, resolvedDependencies, loaderImplementation, supportsSignatureFile, null, null);
 	}
 
 	/**
-     * Creates a copy action for a given JAR file.
-     * 
-     * @param jar The JAR file to create a copy action for.
-     * @param resolvedDependencies The resolved dependencies for the JAR file.
-     * @param loaderImplementation The loader implementation for the JAR file.
-     * @param supportsSignatureFile A flag indicating if the JAR file supports signature files.
-     * @param layerResolver The layer resolver for the JAR file.
-     * @param layerToolsLocation The location of the layer tools for the JAR file.
-     * @return The copy action for the JAR file.
-     */
-    CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
+	 * Creates a copy action for a given JAR file.
+	 * @param jar The JAR file to create a copy action for.
+	 * @param resolvedDependencies The resolved dependencies for the JAR file.
+	 * @param loaderImplementation The loader implementation for the JAR file.
+	 * @param supportsSignatureFile A flag indicating if the JAR file supports signature
+	 * files.
+	 * @param layerResolver The layer resolver for the JAR file.
+	 * @param layerToolsLocation The location of the layer tools for the JAR file.
+	 * @return The copy action for the JAR file.
+	 */
+	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
 			LoaderImplementation loaderImplementation, boolean supportsSignatureFile, LayerResolver layerResolver,
 			String layerToolsLocation) {
 		File output = jar.getArchiveFile().get().getAsFile();
@@ -196,35 +195,34 @@ class BootArchiveSupport {
 	}
 
 	/**
-     * Returns the directory mode for the given CopySpec.
-     * 
-     * @param copySpec the CopySpec to get the directory mode from
-     * @return the directory mode as an Integer
-     */
-    private Integer getDirMode(CopySpec copySpec) {
+	 * Returns the directory mode for the given CopySpec.
+	 * @param copySpec the CopySpec to get the directory mode from
+	 * @return the directory mode as an Integer
+	 */
+	private Integer getDirMode(CopySpec copySpec) {
 		return getMode(copySpec, "getDirPermissions", copySpec::getDirMode);
 	}
 
 	/**
-     * Returns the file mode for the given CopySpec.
-     * 
-     * @param copySpec the CopySpec to get the file mode from
-     * @return the file mode as an Integer
-     */
-    private Integer getFileMode(CopySpec copySpec) {
+	 * Returns the file mode for the given CopySpec.
+	 * @param copySpec the CopySpec to get the file mode from
+	 * @return the file mode as an Integer
+	 */
+	private Integer getFileMode(CopySpec copySpec) {
 		return getMode(copySpec, "getFilePermissions", copySpec::getFileMode);
 	}
 
 	/**
-     * Retrieves the mode of the specified copySpec using the given methodName and fallback supplier.
-     * 
-     * @param copySpec the copySpec to retrieve the mode from
-     * @param methodName the name of the method to invoke on the copySpec
-     * @param fallback the fallback supplier to use if the Gradle version is less than 8.3
-     * @return the mode of the copySpec, or the fallback value if the Gradle version is less than 8.3
-     * @throws GradleException if there is an error retrieving the permissions
-     */
-    @SuppressWarnings("unchecked")
+	 * Retrieves the mode of the specified copySpec using the given methodName and
+	 * fallback supplier.
+	 * @param copySpec the copySpec to retrieve the mode from
+	 * @param methodName the name of the method to invoke on the copySpec
+	 * @param fallback the fallback supplier to use if the Gradle version is less than 8.3
+	 * @return the mode of the copySpec, or the fallback value if the Gradle version is
+	 * less than 8.3
+	 * @throws GradleException if there is an error retrieving the permissions
+	 */
+	@SuppressWarnings("unchecked")
 	private Integer getMode(CopySpec copySpec, String methodName, Supplier<Integer> fallback) {
 		if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
 			try {
@@ -241,80 +239,74 @@ class BootArchiveSupport {
 	}
 
 	/**
-     * Checks if the given Jar is using the default loader.
-     * 
-     * @param jar the Jar to check
-     * @return true if the Jar is using the default loader, false otherwise
-     */
-    private boolean isUsingDefaultLoader(Jar jar) {
+	 * Checks if the given Jar is using the default loader.
+	 * @param jar the Jar to check
+	 * @return true if the Jar is using the default loader, false otherwise
+	 */
+	private boolean isUsingDefaultLoader(Jar jar) {
 		return DEFAULT_LAUNCHER_CLASSES.contains(jar.getManifest().getAttributes().get("Main-Class"));
 	}
 
 	/**
-     * Returns the launch script configuration for the BootArchiveSupport class.
-     *
-     * @return the launch script configuration
-     */
-    LaunchScriptConfiguration getLaunchScript() {
+	 * Returns the launch script configuration for the BootArchiveSupport class.
+	 * @return the launch script configuration
+	 */
+	LaunchScriptConfiguration getLaunchScript() {
 		return this.launchScript;
 	}
 
 	/**
-     * Sets the launch script configuration for the boot archive.
-     * 
-     * @param launchScript the launch script configuration to be set
-     */
-    void setLaunchScript(LaunchScriptConfiguration launchScript) {
+	 * Sets the launch script configuration for the boot archive.
+	 * @param launchScript the launch script configuration to be set
+	 */
+	void setLaunchScript(LaunchScriptConfiguration launchScript) {
 		this.launchScript = launchScript;
 	}
 
 	/**
-     * Adds the specified patterns to the list of patterns that require unpacking.
-     * 
-     * @param patterns the patterns to be added
-     */
-    void requiresUnpack(String... patterns) {
+	 * Adds the specified patterns to the list of patterns that require unpacking.
+	 * @param patterns the patterns to be added
+	 */
+	void requiresUnpack(String... patterns) {
 		this.requiresUnpack.include(patterns);
 	}
 
 	/**
-     * Adds the specified {@code spec} to the list of requirements that need to be unpacked.
-     * 
-     * @param spec the specification of the file tree element to be included in the unpacking process
-     */
-    void requiresUnpack(Spec<FileTreeElement> spec) {
+	 * Adds the specified {@code spec} to the list of requirements that need to be
+	 * unpacked.
+	 * @param spec the specification of the file tree element to be included in the
+	 * unpacking process
+	 */
+	void requiresUnpack(Spec<FileTreeElement> spec) {
 		this.requiresUnpack.include(spec);
 	}
 
 	/**
-     * Excludes non-zip library files from the given FileCopyDetails.
-     * 
-     * @param details the FileCopyDetails to exclude non-zip library files from
-     */
-    void excludeNonZipLibraryFiles(FileCopyDetails details) {
+	 * Excludes non-zip library files from the given FileCopyDetails.
+	 * @param details the FileCopyDetails to exclude non-zip library files from
+	 */
+	void excludeNonZipLibraryFiles(FileCopyDetails details) {
 		if (this.librarySpec.isSatisfiedBy(details)) {
 			excludeNonZipFiles(details);
 		}
 	}
 
 	/**
-     * Excludes non-zip files from the given FileCopyDetails object.
-     * 
-     * @param details the FileCopyDetails object containing the file to be checked
-     */
-    void excludeNonZipFiles(FileCopyDetails details) {
+	 * Excludes non-zip files from the given FileCopyDetails object.
+	 * @param details the FileCopyDetails object containing the file to be checked
+	 */
+	void excludeNonZipFiles(FileCopyDetails details) {
 		if (!isZip(details.getFile())) {
 			details.exclude();
 		}
 	}
 
 	/**
-     * Checks if the given file is a ZIP archive.
-     * 
-     * @param file the file to be checked
-     * @return true if the file is a ZIP archive, false otherwise
-     */
-    private boolean isZip(File file) {
+	 * Checks if the given file is a ZIP archive.
+	 * @param file the file to be checked
+	 * @return true if the file is a ZIP archive, false otherwise
+	 */
+	private boolean isZip(File file) {
 		try {
 			try (FileInputStream fileInputStream = new FileInputStream(file)) {
 				return isZip(fileInputStream);
@@ -326,13 +318,12 @@ class BootArchiveSupport {
 	}
 
 	/**
-     * Checks if the given input stream represents a ZIP file.
-     *
-     * @param inputStream the input stream to check
-     * @return true if the input stream is a ZIP file, false otherwise
-     * @throws IOException if an I/O error occurs while reading the input stream
-     */
-    private boolean isZip(InputStream inputStream) throws IOException {
+	 * Checks if the given input stream represents a ZIP file.
+	 * @param inputStream the input stream to check
+	 * @return true if the input stream is a ZIP file, false otherwise
+	 * @throws IOException if an I/O error occurs while reading the input stream
+	 */
+	private boolean isZip(InputStream inputStream) throws IOException {
 		for (byte headerByte : ZIP_FILE_HEADER) {
 			if (inputStream.read() != headerByte) {
 				return false;
@@ -342,20 +333,19 @@ class BootArchiveSupport {
 	}
 
 	/**
-     * Moves all module-info.class files found in the specified CopySpec to the root directory.
-     * 
-     * @param spec the CopySpec containing the files to be checked and moved
-     */
-    void moveModuleInfoToRoot(CopySpec spec) {
+	 * Moves all module-info.class files found in the specified CopySpec to the root
+	 * directory.
+	 * @param spec the CopySpec containing the files to be checked and moved
+	 */
+	void moveModuleInfoToRoot(CopySpec spec) {
 		spec.filesMatching("module-info.class", this::moveToRoot);
 	}
 
 	/**
-     * Moves the specified file copy details to the root directory.
-     * 
-     * @param details the file copy details to be moved
-     */
-    void moveToRoot(FileCopyDetails details) {
+	 * Moves the specified file copy details to the root directory.
+	 * @param details the file copy details to be moved
+	 */
+	void moveToRoot(FileCopyDetails details) {
 		details.setRelativePath(details.getRelativeSourcePath());
 	}
 
@@ -367,21 +357,19 @@ class BootArchiveSupport {
 		private final CopyAction delegate;
 
 		/**
-         * Constructs a new ReproducibleOrderingCopyAction with the specified delegate.
-         * 
-         * @param delegate the CopyAction delegate to be used
-         */
-        private ReproducibleOrderingCopyAction(CopyAction delegate) {
+		 * Constructs a new ReproducibleOrderingCopyAction with the specified delegate.
+		 * @param delegate the CopyAction delegate to be used
+		 */
+		private ReproducibleOrderingCopyAction(CopyAction delegate) {
 			this.delegate = delegate;
 		}
 
 		/**
-         * Executes the copy action processing stream.
-         * 
-         * @param stream the copy action processing stream
-         * @return the work result of the execution
-         */
-        @Override
+		 * Executes the copy action processing stream.
+		 * @param stream the copy action processing stream
+		 * @return the work result of the execution
+		 */
+		@Override
 		public WorkResult execute(CopyActionProcessingStream stream) {
 			return this.delegate.execute((action) -> {
 				Map<RelativePath, FileCopyDetailsInternal> detailsByPath = new TreeMap<>();

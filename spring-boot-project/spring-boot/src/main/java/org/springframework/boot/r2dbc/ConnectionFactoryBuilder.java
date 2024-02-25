@@ -68,11 +68,11 @@ public final class ConnectionFactoryBuilder {
 	private final List<ConnectionFactoryDecorator> decorators = new ArrayList<>();
 
 	/**
-     * Constructs a new ConnectionFactoryBuilder with the specified optionsBuilder.
-     * 
-     * @param optionsBuilder the Builder object used to set options for the ConnectionFactory
-     */
-    private ConnectionFactoryBuilder(Builder optionsBuilder) {
+	 * Constructs a new ConnectionFactoryBuilder with the specified optionsBuilder.
+	 * @param optionsBuilder the Builder object used to set options for the
+	 * ConnectionFactory
+	 */
+	private ConnectionFactoryBuilder(Builder optionsBuilder) {
 		this.optionsBuilder = optionsBuilder;
 	}
 
@@ -116,12 +116,12 @@ public final class ConnectionFactoryBuilder {
 	}
 
 	/**
-     * Extracts the options from a given ConnectionFactory if possible.
-     * 
-     * @param connectionFactory the ConnectionFactory to extract options from
-     * @return the options of the ConnectionFactory, or null if the ConnectionFactory does not support options
-     */
-    private static ConnectionFactoryOptions extractOptionsIfPossible(ConnectionFactory connectionFactory) {
+	 * Extracts the options from a given ConnectionFactory if possible.
+	 * @param connectionFactory the ConnectionFactory to extract options from
+	 * @return the options of the ConnectionFactory, or null if the ConnectionFactory does
+	 * not support options
+	 */
+	private static ConnectionFactoryOptions extractOptionsIfPossible(ConnectionFactory connectionFactory) {
 		OptionsCapableConnectionFactory optionsCapable = OptionsCapableConnectionFactory.unwrapFrom(connectionFactory);
 		if (optionsCapable != null) {
 			return optionsCapable.getOptions();
@@ -230,17 +230,17 @@ public final class ConnectionFactoryBuilder {
 	}
 
 	/**
-     * OptionsCapableWrapper class.
-     */
-    private static class OptionsCapableWrapper {
+	 * OptionsCapableWrapper class.
+	 */
+	private static class OptionsCapableWrapper {
 
 		/**
-         * Builds and wraps a ConnectionFactory with the provided options.
-         * 
-         * @param options the ConnectionFactoryOptions to be used for building the ConnectionFactory
-         * @return a wrapped ConnectionFactory with the provided options
-         */
-        ConnectionFactory buildAndWrap(ConnectionFactoryOptions options) {
+		 * Builds and wraps a ConnectionFactory with the provided options.
+		 * @param options the ConnectionFactoryOptions to be used for building the
+		 * ConnectionFactory
+		 * @return a wrapped ConnectionFactory with the provided options
+		 */
+		ConnectionFactory buildAndWrap(ConnectionFactoryOptions options) {
 			ConnectionFactory connectionFactory = ConnectionFactories.get(options);
 			return new OptionsCapableConnectionFactory(options, connectionFactory);
 		}
@@ -248,20 +248,20 @@ public final class ConnectionFactoryBuilder {
 	}
 
 	/**
-     * PoolingAwareOptionsCapableWrapper class.
-     */
-    static final class PoolingAwareOptionsCapableWrapper extends OptionsCapableWrapper {
+	 * PoolingAwareOptionsCapableWrapper class.
+	 */
+	static final class PoolingAwareOptionsCapableWrapper extends OptionsCapableWrapper {
 
 		private final PoolingConnectionFactoryProvider poolingProvider = new PoolingConnectionFactoryProvider();
 
 		/**
-         * Builds and wraps a ConnectionFactory based on the provided options.
-         * If the pooling provider does not support the options, it falls back to the default implementation.
-         * 
-         * @param options the ConnectionFactoryOptions to build and wrap
-         * @return the built and wrapped ConnectionFactory
-         */
-        @Override
+		 * Builds and wraps a ConnectionFactory based on the provided options. If the
+		 * pooling provider does not support the options, it falls back to the default
+		 * implementation.
+		 * @param options the ConnectionFactoryOptions to build and wrap
+		 * @return the built and wrapped ConnectionFactory
+		 */
+		@Override
 		ConnectionFactory buildAndWrap(ConnectionFactoryOptions options) {
 			if (!this.poolingProvider.supports(options)) {
 				return super.buildAndWrap(options);
@@ -274,13 +274,14 @@ public final class ConnectionFactoryBuilder {
 		}
 
 		/**
-         * Returns a new {@link ConnectionFactoryOptions} object with the delegate driver and protocol options.
-         * 
-         * @param options the original {@link ConnectionFactoryOptions} object
-         * @return a new {@link ConnectionFactoryOptions} object with the delegate driver and protocol options
-         * @throws IllegalArgumentException if the protocol is not valid
-         */
-        private ConnectionFactoryOptions delegateFactoryOptions(ConnectionFactoryOptions options) {
+		 * Returns a new {@link ConnectionFactoryOptions} object with the delegate driver
+		 * and protocol options.
+		 * @param options the original {@link ConnectionFactoryOptions} object
+		 * @return a new {@link ConnectionFactoryOptions} object with the delegate driver
+		 * and protocol options
+		 * @throws IllegalArgumentException if the protocol is not valid
+		 */
+		private ConnectionFactoryOptions delegateFactoryOptions(ConnectionFactoryOptions options) {
 			String protocol = toString(options.getRequiredValue(ConnectionFactoryOptions.PROTOCOL));
 			if (protocol.trim().isEmpty()) {
 				throw new IllegalArgumentException(String.format("Protocol %s is not valid.", protocol));
@@ -296,13 +297,16 @@ public final class ConnectionFactoryBuilder {
 		}
 
 		/**
-         * Creates a ConnectionPoolConfiguration object based on the provided options and connection factory.
-         *
-         * @param options           the ConnectionFactoryOptions object containing the connection pool configuration options
-         * @param connectionFactory the ConnectionFactory object used to create connections
-         * @return a ConnectionPoolConfiguration object with the specified configuration options
-         */
-        @SuppressWarnings("unchecked")
+		 * Creates a ConnectionPoolConfiguration object based on the provided options and
+		 * connection factory.
+		 * @param options the ConnectionFactoryOptions object containing the connection
+		 * pool configuration options
+		 * @param connectionFactory the ConnectionFactory object used to create
+		 * connections
+		 * @return a ConnectionPoolConfiguration object with the specified configuration
+		 * options
+		 */
+		@SuppressWarnings("unchecked")
 		ConnectionPoolConfiguration connectionPoolConfiguration(ConnectionFactoryOptions options,
 				ConnectionFactory connectionFactory) {
 			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory);
@@ -357,68 +361,63 @@ public final class ConnectionFactoryBuilder {
 		}
 
 		/**
-         * Returns a string representation of the specified object.
-         * 
-         * @param object the object to be converted to a string
-         * @return the string representation of the object
-         */
-        private String toString(Object object) {
+		 * Returns a string representation of the specified object.
+		 * @param object the object to be converted to a string
+		 * @return the string representation of the object
+		 */
+		private String toString(Object object) {
 			return toType(String.class, object, String::valueOf);
 		}
 
 		/**
-         * Converts an object to an Integer.
-         * 
-         * @param object the object to be converted
-         * @return the converted Integer value
-         */
-        private Integer toInteger(Object object) {
+		 * Converts an object to an Integer.
+		 * @param object the object to be converted
+		 * @return the converted Integer value
+		 */
+		private Integer toInteger(Object object) {
 			return toType(Integer.class, object, Integer::valueOf);
 		}
 
 		/**
-         * Converts an object to a Duration.
-         * 
-         * @param object the object to be converted
-         * @return the converted Duration object
-         * @throws DateTimeParseException if the object cannot be parsed into a Duration
-         */
-        private Duration toDuration(Object object) {
+		 * Converts an object to a Duration.
+		 * @param object the object to be converted
+		 * @return the converted Duration object
+		 * @throws DateTimeParseException if the object cannot be parsed into a Duration
+		 */
+		private Duration toDuration(Object object) {
 			return toType(Duration.class, object, Duration::parse);
 		}
 
 		/**
-         * Converts an object to a Boolean value.
-         * 
-         * @param object the object to be converted
-         * @return the Boolean value of the object
-         */
-        private Boolean toBoolean(Object object) {
+		 * Converts an object to a Boolean value.
+		 * @param object the object to be converted
+		 * @return the Boolean value of the object
+		 */
+		private Boolean toBoolean(Object object) {
 			return toType(Boolean.class, object, Boolean::valueOf);
 		}
 
 		/**
-         * Converts an object to a ValidationDepth enum value.
-         * 
-         * @param object the object to be converted
-         * @return the converted ValidationDepth enum value
-         */
-        private ValidationDepth toValidationDepth(Object object) {
+		 * Converts an object to a ValidationDepth enum value.
+		 * @param object the object to be converted
+		 * @return the converted ValidationDepth enum value
+		 */
+		private ValidationDepth toValidationDepth(Object object) {
 			return toType(ValidationDepth.class, object,
 					(string) -> ValidationDepth.valueOf(string.toUpperCase(Locale.ENGLISH)));
 		}
 
 		/**
-         * Converts an object to the specified type using the provided converter function.
-         * 
-         * @param <T> the type to convert the object to
-         * @param type the class representing the type to convert the object to
-         * @param object the object to be converted
-         * @param converter the function used to convert a string to the specified type
-         * @return the converted object of the specified type
-         * @throws IllegalArgumentException if the object cannot be converted to the specified type
-         */
-        private <T> T toType(Class<T> type, Object object, Function<String, T> converter) {
+		 * Converts an object to the specified type using the provided converter function.
+		 * @param <T> the type to convert the object to
+		 * @param type the class representing the type to convert the object to
+		 * @param object the object to be converted
+		 * @param converter the function used to convert a string to the specified type
+		 * @return the converted object of the specified type
+		 * @throws IllegalArgumentException if the object cannot be converted to the
+		 * specified type
+		 */
+		private <T> T toType(Class<T> type, Object object, Function<String, T> converter) {
 			if (type.isInstance(object)) {
 				return type.cast(object);
 			}

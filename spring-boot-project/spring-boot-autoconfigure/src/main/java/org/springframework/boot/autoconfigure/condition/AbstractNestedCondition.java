@@ -47,34 +47,33 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 	private final ConfigurationPhase configurationPhase;
 
 	/**
-     * Constructs a new instance of AbstractNestedCondition with the specified configuration phase.
-     *
-     * @param configurationPhase the configuration phase to be set (must not be null)
-     * @throws IllegalArgumentException if the configuration phase is null
-     */
-    AbstractNestedCondition(ConfigurationPhase configurationPhase) {
+	 * Constructs a new instance of AbstractNestedCondition with the specified
+	 * configuration phase.
+	 * @param configurationPhase the configuration phase to be set (must not be null)
+	 * @throws IllegalArgumentException if the configuration phase is null
+	 */
+	AbstractNestedCondition(ConfigurationPhase configurationPhase) {
 		Assert.notNull(configurationPhase, "ConfigurationPhase must not be null");
 		this.configurationPhase = configurationPhase;
 	}
 
 	/**
-     * Returns the configuration phase of this AbstractNestedCondition.
-     *
-     * @return the configuration phase of this AbstractNestedCondition
-     */
-    @Override
+	 * Returns the configuration phase of this AbstractNestedCondition.
+	 * @return the configuration phase of this AbstractNestedCondition
+	 */
+	@Override
 	public ConfigurationPhase getConfigurationPhase() {
 		return this.configurationPhase;
 	}
 
 	/**
-     * Determines the match outcome for the given condition context and annotated type metadata.
-     * 
-     * @param context the condition context
-     * @param metadata the annotated type metadata
-     * @return the match outcome for the condition
-     */
-    @Override
+	 * Determines the match outcome for the given condition context and annotated type
+	 * metadata.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @return the match outcome for the condition
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String className = getClass().getName();
 		MemberConditions memberConditions = new MemberConditions(context, this.configurationPhase, className);
@@ -83,17 +82,16 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 	}
 
 	/**
-     * Returns the final outcome of a member match based on the given member outcomes.
-     *
-     * @param memberOutcomes the member match outcomes to evaluate
-     * @return the final outcome of the member match
-     */
-    protected abstract ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes);
+	 * Returns the final outcome of a member match based on the given member outcomes.
+	 * @param memberOutcomes the member match outcomes to evaluate
+	 * @return the final outcome of the member match
+	 */
+	protected abstract ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes);
 
 	/**
-     * MemberMatchOutcomes class.
-     */
-    protected static class MemberMatchOutcomes {
+	 * MemberMatchOutcomes class.
+	 */
+	protected static class MemberMatchOutcomes {
 
 		private final List<ConditionOutcome> all;
 
@@ -102,11 +100,11 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		private final List<ConditionOutcome> nonMatches;
 
 		/**
-         * Creates a new instance of MemberMatchOutcomes with the given MemberConditions.
-         * 
-         * @param memberConditions the MemberConditions object containing the match outcomes
-         */
-        public MemberMatchOutcomes(MemberConditions memberConditions) {
+		 * Creates a new instance of MemberMatchOutcomes with the given MemberConditions.
+		 * @param memberConditions the MemberConditions object containing the match
+		 * outcomes
+		 */
+		public MemberMatchOutcomes(MemberConditions memberConditions) {
 			this.all = Collections.unmodifiableList(memberConditions.getMatchOutcomes());
 			List<ConditionOutcome> matches = new ArrayList<>();
 			List<ConditionOutcome> nonMatches = new ArrayList<>();
@@ -118,38 +116,36 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		}
 
 		/**
-         * Retrieves all the condition outcomes.
-         * 
-         * @return a list of ConditionOutcome objects representing all the condition outcomes
-         */
-        public List<ConditionOutcome> getAll() {
+		 * Retrieves all the condition outcomes.
+		 * @return a list of ConditionOutcome objects representing all the condition
+		 * outcomes
+		 */
+		public List<ConditionOutcome> getAll() {
 			return this.all;
 		}
 
 		/**
-         * Returns the list of ConditionOutcomes representing the matches.
-         *
-         * @return the list of ConditionOutcomes representing the matches
-         */
-        public List<ConditionOutcome> getMatches() {
+		 * Returns the list of ConditionOutcomes representing the matches.
+		 * @return the list of ConditionOutcomes representing the matches
+		 */
+		public List<ConditionOutcome> getMatches() {
 			return this.matches;
 		}
 
 		/**
-         * Returns a list of ConditionOutcomes that did not match.
-         *
-         * @return a list of ConditionOutcomes that did not match
-         */
-        public List<ConditionOutcome> getNonMatches() {
+		 * Returns a list of ConditionOutcomes that did not match.
+		 * @return a list of ConditionOutcomes that did not match
+		 */
+		public List<ConditionOutcome> getNonMatches() {
 			return this.nonMatches;
 		}
 
 	}
 
 	/**
-     * MemberConditions class.
-     */
-    private static class MemberConditions {
+	 * MemberConditions class.
+	 */
+	private static class MemberConditions {
 
 		private final ConditionContext context;
 
@@ -158,13 +154,15 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		private final Map<AnnotationMetadata, List<Condition>> memberConditions;
 
 		/**
-         * Initializes a new instance of the MemberConditions class.
-         * 
-         * @param context the ConditionContext object representing the context in which the conditions are evaluated
-         * @param phase the ConfigurationPhase object representing the phase in which the conditions are evaluated
-         * @param className the name of the class for which the member conditions are being evaluated
-         */
-        MemberConditions(ConditionContext context, ConfigurationPhase phase, String className) {
+		 * Initializes a new instance of the MemberConditions class.
+		 * @param context the ConditionContext object representing the context in which
+		 * the conditions are evaluated
+		 * @param phase the ConfigurationPhase object representing the phase in which the
+		 * conditions are evaluated
+		 * @param className the name of the class for which the member conditions are
+		 * being evaluated
+		 */
+		MemberConditions(ConditionContext context, ConfigurationPhase phase, String className) {
 			this.context = context;
 			this.readerFactory = new SimpleMetadataReaderFactory(context.getResourceLoader());
 			String[] members = getMetadata(className).getMemberClassNames();
@@ -172,14 +170,15 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		}
 
 		/**
-         * Retrieves the member conditions for a given set of members, configuration phase, and class name.
-         * 
-         * @param members the array of member names
-         * @param phase the configuration phase
-         * @param className the name of the class
-         * @return a map containing the annotation metadata and corresponding list of conditions for each member
-         */
-        private Map<AnnotationMetadata, List<Condition>> getMemberConditions(String[] members, ConfigurationPhase phase,
+		 * Retrieves the member conditions for a given set of members, configuration
+		 * phase, and class name.
+		 * @param members the array of member names
+		 * @param phase the configuration phase
+		 * @param className the name of the class
+		 * @return a map containing the annotation metadata and corresponding list of
+		 * conditions for each member
+		 */
+		private Map<AnnotationMetadata, List<Condition>> getMemberConditions(String[] members, ConfigurationPhase phase,
 				String className) {
 			MultiValueMap<AnnotationMetadata, Condition> memberConditions = new LinkedMultiValueMap<>();
 			for (String member : members) {
@@ -196,14 +195,15 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		}
 
 		/**
-         * Validates the member condition based on the given condition, nested phase, and nested class name.
-         * 
-         * @param condition         The condition to be validated.
-         * @param nestedPhase       The nested phase to be checked.
-         * @param nestedClassName   The name of the nested class.
-         * @throws IllegalStateException if the nested condition uses a configuration phase that is inappropriate for the given condition.
-         */
-        private void validateMemberCondition(Condition condition, ConfigurationPhase nestedPhase,
+		 * Validates the member condition based on the given condition, nested phase, and
+		 * nested class name.
+		 * @param condition The condition to be validated.
+		 * @param nestedPhase The nested phase to be checked.
+		 * @param nestedClassName The name of the nested class.
+		 * @throws IllegalStateException if the nested condition uses a configuration
+		 * phase that is inappropriate for the given condition.
+		 */
+		private void validateMemberCondition(Condition condition, ConfigurationPhase nestedPhase,
 				String nestedClassName) {
 			if (nestedPhase == ConfigurationPhase.PARSE_CONFIGURATION
 					&& condition instanceof ConfigurationCondition configurationCondition) {
@@ -216,13 +216,12 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		}
 
 		/**
-         * Retrieves the annotation metadata for a given class name.
-         * 
-         * @param className the name of the class to retrieve the metadata for
-         * @return the annotation metadata for the specified class
-         * @throws IllegalStateException if an error occurs while retrieving the metadata
-         */
-        private AnnotationMetadata getMetadata(String className) {
+		 * Retrieves the annotation metadata for a given class name.
+		 * @param className the name of the class to retrieve the metadata for
+		 * @return the annotation metadata for the specified class
+		 * @throws IllegalStateException if an error occurs while retrieving the metadata
+		 */
+		private AnnotationMetadata getMetadata(String className) {
 			try {
 				return this.readerFactory.getMetadataReader(className).getAnnotationMetadata();
 			}
@@ -232,12 +231,11 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		}
 
 		/**
-         * Retrieves the condition classes from the given metadata.
-         * 
-         * @param metadata the annotated type metadata
-         * @return a list of condition classes as string arrays
-         */
-        @SuppressWarnings("unchecked")
+		 * Retrieves the condition classes from the given metadata.
+		 * @param metadata the annotated type metadata
+		 * @return a list of condition classes as string arrays
+		 */
+		@SuppressWarnings("unchecked")
 		private List<String[]> getConditionClasses(AnnotatedTypeMetadata metadata) {
 			MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(Conditional.class.getName(),
 					true);
@@ -246,23 +244,22 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		}
 
 		/**
-         * Retrieves the condition object based on the provided condition class name.
-         * 
-         * @param conditionClassName the fully qualified name of the condition class
-         * @return the condition object
-         * @throws IllegalArgumentException if the condition class cannot be resolved or instantiated
-         */
-        private Condition getCondition(String conditionClassName) {
+		 * Retrieves the condition object based on the provided condition class name.
+		 * @param conditionClassName the fully qualified name of the condition class
+		 * @return the condition object
+		 * @throws IllegalArgumentException if the condition class cannot be resolved or
+		 * instantiated
+		 */
+		private Condition getCondition(String conditionClassName) {
 			Class<?> conditionClass = ClassUtils.resolveClassName(conditionClassName, this.context.getClassLoader());
 			return (Condition) BeanUtils.instantiateClass(conditionClass);
 		}
 
 		/**
-         * Returns a list of ConditionOutcomes for the match.
-         * 
-         * @return the list of ConditionOutcomes for the match
-         */
-        List<ConditionOutcome> getMatchOutcomes() {
+		 * Returns a list of ConditionOutcomes for the match.
+		 * @return the list of ConditionOutcomes for the match
+		 */
+		List<ConditionOutcome> getMatchOutcomes() {
 			List<ConditionOutcome> outcomes = new ArrayList<>();
 			this.memberConditions.forEach((metadata, conditions) -> outcomes
 				.add(new MemberOutcomes(this.context, metadata, conditions).getUltimateOutcome()));
@@ -272,9 +269,9 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 	}
 
 	/**
-     * MemberOutcomes class.
-     */
-    private static class MemberOutcomes {
+	 * MemberOutcomes class.
+	 */
+	private static class MemberOutcomes {
 
 		private final ConditionContext context;
 
@@ -283,13 +280,13 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		private final List<ConditionOutcome> outcomes;
 
 		/**
-         * Constructs a new instance of MemberOutcomes with the given ConditionContext, AnnotationMetadata, and List of Conditions.
-         * 
-         * @param context the ConditionContext used for evaluating conditions
-         * @param metadata the AnnotationMetadata used for evaluating conditions
-         * @param conditions the List of Conditions to evaluate
-         */
-        MemberOutcomes(ConditionContext context, AnnotationMetadata metadata, List<Condition> conditions) {
+		 * Constructs a new instance of MemberOutcomes with the given ConditionContext,
+		 * AnnotationMetadata, and List of Conditions.
+		 * @param context the ConditionContext used for evaluating conditions
+		 * @param metadata the AnnotationMetadata used for evaluating conditions
+		 * @param conditions the List of Conditions to evaluate
+		 */
+		MemberOutcomes(ConditionContext context, AnnotationMetadata metadata, List<Condition> conditions) {
 			this.context = context;
 			this.metadata = metadata;
 			this.outcomes = new ArrayList<>(conditions.size());
@@ -299,13 +296,12 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		}
 
 		/**
-         * Returns the condition outcome for the given metadata and condition.
-         * 
-         * @param metadata the annotation metadata
-         * @param condition the condition to evaluate
-         * @return the condition outcome
-         */
-        private ConditionOutcome getConditionOutcome(AnnotationMetadata metadata, Condition condition) {
+		 * Returns the condition outcome for the given metadata and condition.
+		 * @param metadata the annotation metadata
+		 * @param condition the condition to evaluate
+		 * @return the condition outcome
+		 */
+		private ConditionOutcome getConditionOutcome(AnnotationMetadata metadata, Condition condition) {
 			if (condition instanceof SpringBootCondition springBootCondition) {
 				return springBootCondition.getMatchOutcome(this.context, metadata);
 			}
@@ -313,11 +309,10 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		}
 
 		/**
-         * Returns the ultimate outcome of the nested conditions.
-         * 
-         * @return The ultimate outcome of the nested conditions.
-         */
-        ConditionOutcome getUltimateOutcome() {
+		 * Returns the ultimate outcome of the nested conditions.
+		 * @return The ultimate outcome of the nested conditions.
+		 */
+		ConditionOutcome getUltimateOutcome() {
 			ConditionMessage.Builder message = ConditionMessage
 				.forCondition("NestedCondition on " + ClassUtils.getShortName(this.metadata.getClassName()));
 			if (this.outcomes.size() == 1) {

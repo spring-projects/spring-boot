@@ -42,21 +42,20 @@ public class AutoConfigurations extends Configurations implements Ordered {
 	private static final Ordered ORDER = new AutoConfigurationImportSelector();
 
 	/**
-     * Constructs a new AutoConfigurations object with the specified collection of classes.
-     *
-     * @param classes the collection of classes to be used for auto-configurations
-     */
-    protected AutoConfigurations(Collection<Class<?>> classes) {
+	 * Constructs a new AutoConfigurations object with the specified collection of
+	 * classes.
+	 * @param classes the collection of classes to be used for auto-configurations
+	 */
+	protected AutoConfigurations(Collection<Class<?>> classes) {
 		super(classes);
 	}
 
 	/**
-     * Sorts the given collection of classes based on their priority order.
-     * 
-     * @param classes the collection of classes to be sorted
-     * @return a sorted collection of classes
-     */
-    @Override
+	 * Sorts the given collection of classes based on their priority order.
+	 * @param classes the collection of classes to be sorted
+	 * @return a sorted collection of classes
+	 */
+	@Override
 	protected Collection<Class<?>> sort(Collection<Class<?>> classes) {
 		List<String> names = classes.stream().map(Class::getName).toList();
 		List<String> sorted = SORTER.getInPriorityOrder(names);
@@ -66,33 +65,30 @@ public class AutoConfigurations extends Configurations implements Ordered {
 	}
 
 	/**
-     * Returns the order of the AutoConfigurations class.
-     * 
-     * @return the order of the AutoConfigurations class
-     */
-    @Override
+	 * Returns the order of the AutoConfigurations class.
+	 * @return the order of the AutoConfigurations class
+	 */
+	@Override
 	public int getOrder() {
 		return ORDER.getOrder();
 	}
 
 	/**
-     * Merges the given set of merged classes into a new instance of AutoConfigurations.
-     *
-     * @param mergedClasses the set of merged classes to be merged
-     * @return a new instance of AutoConfigurations with the merged classes
-     */
-    @Override
+	 * Merges the given set of merged classes into a new instance of AutoConfigurations.
+	 * @param mergedClasses the set of merged classes to be merged
+	 * @return a new instance of AutoConfigurations with the merged classes
+	 */
+	@Override
 	protected AutoConfigurations merge(Set<Class<?>> mergedClasses) {
 		return new AutoConfigurations(mergedClasses);
 	}
 
 	/**
-     * Creates an instance of AutoConfigurations with the specified classes.
-     * 
-     * @param classes the classes to be used for auto configuration
-     * @return an instance of AutoConfigurations
-     */
-    public static AutoConfigurations of(Class<?>... classes) {
+	 * Creates an instance of AutoConfigurations with the specified classes.
+	 * @param classes the classes to be used for auto configuration
+	 * @return an instance of AutoConfigurations
+	 */
+	public static AutoConfigurations of(Class<?>... classes) {
 		return new AutoConfigurations(Arrays.asList(classes));
 	}
 

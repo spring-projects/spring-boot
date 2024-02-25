@@ -57,83 +57,74 @@ public class CacheProperties {
 	private final Redis redis = new Redis();
 
 	/**
-     * Returns the type of cache.
-     * 
-     * @return the type of cache
-     */
-    public CacheType getType() {
+	 * Returns the type of cache.
+	 * @return the type of cache
+	 */
+	public CacheType getType() {
 		return this.type;
 	}
 
 	/**
-     * Sets the type of cache.
-     * 
-     * @param mode the cache type to be set
-     */
-    public void setType(CacheType mode) {
+	 * Sets the type of cache.
+	 * @param mode the cache type to be set
+	 */
+	public void setType(CacheType mode) {
 		this.type = mode;
 	}
 
 	/**
-     * Returns the list of cache names.
-     *
-     * @return the list of cache names
-     */
-    public List<String> getCacheNames() {
+	 * Returns the list of cache names.
+	 * @return the list of cache names
+	 */
+	public List<String> getCacheNames() {
 		return this.cacheNames;
 	}
 
 	/**
-     * Sets the names of the caches.
-     * 
-     * @param cacheNames the list of cache names to be set
-     */
-    public void setCacheNames(List<String> cacheNames) {
+	 * Sets the names of the caches.
+	 * @param cacheNames the list of cache names to be set
+	 */
+	public void setCacheNames(List<String> cacheNames) {
 		this.cacheNames = cacheNames;
 	}
 
 	/**
-     * Returns the caffeine object associated with this CacheProperties instance.
-     *
-     * @return the caffeine object
-     */
-    public Caffeine getCaffeine() {
+	 * Returns the caffeine object associated with this CacheProperties instance.
+	 * @return the caffeine object
+	 */
+	public Caffeine getCaffeine() {
 		return this.caffeine;
 	}
 
 	/**
-     * Returns the Couchbase instance associated with this CacheProperties object.
-     *
-     * @return the Couchbase instance
-     */
-    public Couchbase getCouchbase() {
+	 * Returns the Couchbase instance associated with this CacheProperties object.
+	 * @return the Couchbase instance
+	 */
+	public Couchbase getCouchbase() {
 		return this.couchbase;
 	}
 
 	/**
-     * Returns the Infinispan instance associated with this CacheProperties object.
-     *
-     * @return the Infinispan instance
-     */
-    public Infinispan getInfinispan() {
+	 * Returns the Infinispan instance associated with this CacheProperties object.
+	 * @return the Infinispan instance
+	 */
+	public Infinispan getInfinispan() {
 		return this.infinispan;
 	}
 
 	/**
-     * Returns the JCache instance associated with this CacheProperties object.
-     *
-     * @return the JCache instance
-     */
-    public JCache getJcache() {
+	 * Returns the JCache instance associated with this CacheProperties object.
+	 * @return the JCache instance
+	 */
+	public JCache getJcache() {
 		return this.jcache;
 	}
 
 	/**
-     * Returns the Redis instance associated with this CacheProperties object.
-     *
-     * @return the Redis instance
-     */
-    public Redis getRedis() {
+	 * Returns the Redis instance associated with this CacheProperties object.
+	 * @return the Redis instance
+	 */
+	public Redis getRedis() {
 		return this.redis;
 	}
 
@@ -165,20 +156,18 @@ public class CacheProperties {
 		private String spec;
 
 		/**
-         * Returns the specification of the Caffeine.
-         *
-         * @return the specification of the Caffeine
-         */
-        public String getSpec() {
+		 * Returns the specification of the Caffeine.
+		 * @return the specification of the Caffeine
+		 */
+		public String getSpec() {
 			return this.spec;
 		}
 
 		/**
-         * Sets the specification of the Caffeine.
-         * 
-         * @param spec the specification of the Caffeine
-         */
-        public void setSpec(String spec) {
+		 * Sets the specification of the Caffeine.
+		 * @param spec the specification of the Caffeine
+		 */
+		public void setSpec(String spec) {
 			this.spec = spec;
 		}
 
@@ -196,20 +185,18 @@ public class CacheProperties {
 		private Duration expiration;
 
 		/**
-         * Returns the expiration duration of the Couchbase object.
-         *
-         * @return the expiration duration of the Couchbase object
-         */
-        public Duration getExpiration() {
+		 * Returns the expiration duration of the Couchbase object.
+		 * @return the expiration duration of the Couchbase object
+		 */
+		public Duration getExpiration() {
 			return this.expiration;
 		}
 
 		/**
-         * Sets the expiration duration for the Couchbase object.
-         * 
-         * @param expiration the duration after which the object will expire
-         */
-        public void setExpiration(Duration expiration) {
+		 * Sets the expiration duration for the Couchbase object.
+		 * @param expiration the duration after which the object will expire
+		 */
+		public void setExpiration(Duration expiration) {
 			this.expiration = expiration;
 		}
 
@@ -226,20 +213,18 @@ public class CacheProperties {
 		private Resource config;
 
 		/**
-         * Retrieves the configuration resource.
-         *
-         * @return the configuration resource
-         */
-        public Resource getConfig() {
+		 * Retrieves the configuration resource.
+		 * @return the configuration resource
+		 */
+		public Resource getConfig() {
 			return this.config;
 		}
 
 		/**
-         * Sets the configuration resource for the Infinispan instance.
-         * 
-         * @param config the configuration resource to be set
-         */
-        public void setConfig(Resource config) {
+		 * Sets the configuration resource for the Infinispan instance.
+		 * @param config the configuration resource to be set
+		 */
+		public void setConfig(Resource config) {
 			this.config = config;
 		}
 
@@ -264,38 +249,34 @@ public class CacheProperties {
 		private String provider;
 
 		/**
-         * Returns the provider of the JCache.
-         *
-         * @return the provider of the JCache
-         */
-        public String getProvider() {
+		 * Returns the provider of the JCache.
+		 * @return the provider of the JCache
+		 */
+		public String getProvider() {
 			return this.provider;
 		}
 
 		/**
-         * Sets the provider for the JCache.
-         * 
-         * @param provider the provider to be set for the JCache
-         */
-        public void setProvider(String provider) {
+		 * Sets the provider for the JCache.
+		 * @param provider the provider to be set for the JCache
+		 */
+		public void setProvider(String provider) {
 			this.provider = provider;
 		}
 
 		/**
-         * Returns the configuration resource.
-         *
-         * @return the configuration resource
-         */
-        public Resource getConfig() {
+		 * Returns the configuration resource.
+		 * @return the configuration resource
+		 */
+		public Resource getConfig() {
 			return this.config;
 		}
 
 		/**
-         * Sets the configuration resource for the JCache.
-         * 
-         * @param config the configuration resource to be set
-         */
-        public void setConfig(Resource config) {
+		 * Sets the configuration resource for the JCache.
+		 * @param config the configuration resource to be set
+		 */
+		public void setConfig(Resource config) {
 			this.config = config;
 		}
 
@@ -332,92 +313,84 @@ public class CacheProperties {
 		private boolean enableStatistics;
 
 		/**
-         * Returns the time to live (TTL) of the Redis object.
-         *
-         * @return the time to live (TTL) of the Redis object
-         */
-        public Duration getTimeToLive() {
+		 * Returns the time to live (TTL) of the Redis object.
+		 * @return the time to live (TTL) of the Redis object
+		 */
+		public Duration getTimeToLive() {
 			return this.timeToLive;
 		}
 
 		/**
-         * Sets the time to live for the Redis object.
-         * 
-         * @param timeToLive the duration of time to live for the Redis object
-         */
-        public void setTimeToLive(Duration timeToLive) {
+		 * Sets the time to live for the Redis object.
+		 * @param timeToLive the duration of time to live for the Redis object
+		 */
+		public void setTimeToLive(Duration timeToLive) {
 			this.timeToLive = timeToLive;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the Redis cache allows storing null values.
-         *
-         * @return {@code true} if the Redis cache allows storing null values, {@code false} otherwise.
-         */
-        public boolean isCacheNullValues() {
+		 * Returns a boolean value indicating whether the Redis cache allows storing null
+		 * values.
+		 * @return {@code true} if the Redis cache allows storing null values,
+		 * {@code false} otherwise.
+		 */
+		public boolean isCacheNullValues() {
 			return this.cacheNullValues;
 		}
 
 		/**
-         * Sets whether to cache null values in Redis.
-         * 
-         * @param cacheNullValues true to cache null values, false otherwise
-         */
-        public void setCacheNullValues(boolean cacheNullValues) {
+		 * Sets whether to cache null values in Redis.
+		 * @param cacheNullValues true to cache null values, false otherwise
+		 */
+		public void setCacheNullValues(boolean cacheNullValues) {
 			this.cacheNullValues = cacheNullValues;
 		}
 
 		/**
-         * Returns the key prefix used in Redis.
-         *
-         * @return the key prefix used in Redis
-         */
-        public String getKeyPrefix() {
+		 * Returns the key prefix used in Redis.
+		 * @return the key prefix used in Redis
+		 */
+		public String getKeyPrefix() {
 			return this.keyPrefix;
 		}
 
 		/**
-         * Sets the key prefix for Redis operations.
-         * 
-         * @param keyPrefix the key prefix to be set
-         */
-        public void setKeyPrefix(String keyPrefix) {
+		 * Sets the key prefix for Redis operations.
+		 * @param keyPrefix the key prefix to be set
+		 */
+		public void setKeyPrefix(String keyPrefix) {
 			this.keyPrefix = keyPrefix;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the use of key prefix is enabled.
-         * 
-         * @return true if the use of key prefix is enabled, false otherwise
-         */
-        public boolean isUseKeyPrefix() {
+		 * Returns a boolean value indicating whether the use of key prefix is enabled.
+		 * @return true if the use of key prefix is enabled, false otherwise
+		 */
+		public boolean isUseKeyPrefix() {
 			return this.useKeyPrefix;
 		}
 
 		/**
-         * Sets whether to use a key prefix for Redis operations.
-         * 
-         * @param useKeyPrefix true to use a key prefix, false otherwise
-         */
-        public void setUseKeyPrefix(boolean useKeyPrefix) {
+		 * Sets whether to use a key prefix for Redis operations.
+		 * @param useKeyPrefix true to use a key prefix, false otherwise
+		 */
+		public void setUseKeyPrefix(boolean useKeyPrefix) {
 			this.useKeyPrefix = useKeyPrefix;
 		}
 
 		/**
-         * Returns a boolean value indicating whether statistics are enabled.
-         * 
-         * @return true if statistics are enabled, false otherwise
-         */
-        public boolean isEnableStatistics() {
+		 * Returns a boolean value indicating whether statistics are enabled.
+		 * @return true if statistics are enabled, false otherwise
+		 */
+		public boolean isEnableStatistics() {
 			return this.enableStatistics;
 		}
 
 		/**
-         * Sets the flag to enable or disable statistics tracking.
-         * 
-         * @param enableStatistics true to enable statistics tracking, false to disable it
-         */
-        public void setEnableStatistics(boolean enableStatistics) {
+		 * Sets the flag to enable or disable statistics tracking.
+		 * @param enableStatistics true to enable statistics tracking, false to disable it
+		 */
+		public void setEnableStatistics(boolean enableStatistics) {
 			this.enableStatistics = enableStatistics;
 		}
 

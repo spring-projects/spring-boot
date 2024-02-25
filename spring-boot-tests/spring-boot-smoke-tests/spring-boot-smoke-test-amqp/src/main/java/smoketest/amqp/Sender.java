@@ -28,11 +28,10 @@ public class Sender {
 	private RabbitTemplate rabbitTemplate;
 
 	/**
-     * Sends a message to the "foo" queue.
-     * 
-     * @param message the message to be sent
-     */
-    public void send(String message) {
+	 * Sends a message to the "foo" queue.
+	 * @param message the message to be sent
+	 */
+	public void send(String message) {
 		this.rabbitTemplate.convertAndSend("foo", message);
 	}
 

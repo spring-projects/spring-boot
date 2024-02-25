@@ -28,11 +28,10 @@ import org.springframework.http.converter.HttpMessageConverter;
 public class MyHttpMessageConvertersConfiguration {
 
 	/**
-     * Returns a custom set of HttpMessageConverters.
-     * 
-     * @return the custom HttpMessageConverters
-     */
-    @Bean
+	 * Returns a custom set of HttpMessageConverters.
+	 * @return the custom HttpMessageConverters
+	 */
+	@Bean
 	public HttpMessageConverters customConverters() {
 		HttpMessageConverter<?> additional = new AdditionalHttpMessageConverter();
 		HttpMessageConverter<?> another = new AnotherHttpMessageConverter();

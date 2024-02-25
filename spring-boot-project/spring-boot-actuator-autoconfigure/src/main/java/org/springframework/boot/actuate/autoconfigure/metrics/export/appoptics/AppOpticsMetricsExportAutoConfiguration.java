@@ -52,37 +52,39 @@ public class AppOpticsMetricsExportAutoConfiguration {
 	private final AppOpticsProperties properties;
 
 	/**
-     * Constructs a new instance of the {@code AppOpticsMetricsExportAutoConfiguration} class with the specified {@code AppOpticsProperties}.
-     *
-     * @param properties the {@code AppOpticsProperties} object to be used for configuration
-     */
-    public AppOpticsMetricsExportAutoConfiguration(AppOpticsProperties properties) {
+	 * Constructs a new instance of the {@code AppOpticsMetricsExportAutoConfiguration}
+	 * class with the specified {@code AppOpticsProperties}.
+	 * @param properties the {@code AppOpticsProperties} object to be used for
+	 * configuration
+	 */
+	public AppOpticsMetricsExportAutoConfiguration(AppOpticsProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Creates an instance of {@link AppOpticsConfig} if no other bean of the same type is present.
-     * This method is annotated with {@link ConditionalOnMissingBean} to ensure that it is only executed
-     * if there is no other bean of type {@link AppOpticsConfig} already defined.
-     * The created instance is of type {@link AppOpticsPropertiesConfigAdapter} and is initialized with
-     * the properties provided by {@code this.properties}.
-     *
-     * @return an instance of {@link AppOpticsConfig} configured with the properties from {@code this.properties}
-     */
-    @Bean
+	 * Creates an instance of {@link AppOpticsConfig} if no other bean of the same type is
+	 * present. This method is annotated with {@link ConditionalOnMissingBean} to ensure
+	 * that it is only executed if there is no other bean of type {@link AppOpticsConfig}
+	 * already defined. The created instance is of type
+	 * {@link AppOpticsPropertiesConfigAdapter} and is initialized with the properties
+	 * provided by {@code this.properties}.
+	 * @return an instance of {@link AppOpticsConfig} configured with the properties from
+	 * {@code this.properties}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public AppOpticsConfig appOpticsConfig() {
 		return new AppOpticsPropertiesConfigAdapter(this.properties);
 	}
 
 	/**
-     * Creates a new instance of AppOpticsMeterRegistry if no other bean of the same type is present.
-     * 
-     * @param config The configuration for the AppOpticsMeterRegistry.
-     * @param clock The clock used for measuring time.
-     * @return The created AppOpticsMeterRegistry instance.
-     */
-    @Bean
+	 * Creates a new instance of AppOpticsMeterRegistry if no other bean of the same type
+	 * is present.
+	 * @param config The configuration for the AppOpticsMeterRegistry.
+	 * @param clock The clock used for measuring time.
+	 * @return The created AppOpticsMeterRegistry instance.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public AppOpticsMeterRegistry appOpticsMeterRegistry(AppOpticsConfig config, Clock clock) {
 		return AppOpticsMeterRegistry.builder(config)

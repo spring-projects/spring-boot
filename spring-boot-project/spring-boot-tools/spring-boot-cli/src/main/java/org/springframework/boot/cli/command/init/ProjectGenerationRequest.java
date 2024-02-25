@@ -83,11 +83,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the service URL for the ProjectGenerationRequest.
-     * 
-     * @param serviceUrl the service URL to be set
-     */
-    void setServiceUrl(String serviceUrl) {
+	 * Sets the service URL for the ProjectGenerationRequest.
+	 * @param serviceUrl the service URL to be set
+	 */
+	void setServiceUrl(String serviceUrl) {
 		this.serviceUrl = serviceUrl;
 	}
 
@@ -100,13 +99,11 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the output directory for the project generation.
-     * 
-     * @param output the output directory path
-     * 
-     * @throws IllegalArgumentException if the output directory is null
-     */
-    void setOutput(String output) {
+	 * Sets the output directory for the project generation.
+	 * @param output the output directory path
+	 * @throws IllegalArgumentException if the output directory is null
+	 */
+	void setOutput(String output) {
 		if (output != null && output.endsWith("/")) {
 			this.output = output.substring(0, output.length() - 1);
 			this.extract = true;
@@ -126,11 +123,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the flag indicating whether to extract the project.
-     * 
-     * @param extract true if the project should be extracted, false otherwise
-     */
-    void setExtract(boolean extract) {
+	 * Sets the flag indicating whether to extract the project.
+	 * @param extract true if the project should be extracted, false otherwise
+	 */
+	void setExtract(boolean extract) {
 		this.extract = extract;
 	}
 
@@ -143,11 +139,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the group ID for the project generation request.
-     * 
-     * @param groupId the group ID to be set
-     */
-    void setGroupId(String groupId) {
+	 * Sets the group ID for the project generation request.
+	 * @param groupId the group ID to be set
+	 */
+	void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
 
@@ -160,11 +155,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the artifact ID for the project generation request.
-     * 
-     * @param artifactId the artifact ID to be set
-     */
-    void setArtifactId(String artifactId) {
+	 * Sets the artifact ID for the project generation request.
+	 * @param artifactId the artifact ID to be set
+	 */
+	void setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
 	}
 
@@ -177,11 +171,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the version of the project generation request.
-     * 
-     * @param version the version to set
-     */
-    void setVersion(String version) {
+	 * Sets the version of the project generation request.
+	 * @param version the version to set
+	 */
+	void setVersion(String version) {
 		this.version = version;
 	}
 
@@ -194,11 +187,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the name of the project generation request.
-     * 
-     * @param name the name to set
-     */
-    void setName(String name) {
+	 * Sets the name of the project generation request.
+	 * @param name the name to set
+	 */
+	void setName(String name) {
 		this.name = name;
 	}
 
@@ -211,11 +203,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the description of the project generation request.
-     * 
-     * @param description the description to be set
-     */
-    void setDescription(String description) {
+	 * Sets the description of the project generation request.
+	 * @param description the description to be set
+	 */
+	void setDescription(String description) {
 		this.description = description;
 	}
 
@@ -228,11 +219,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the package name for the project generation request.
-     * 
-     * @param packageName the package name to be set
-     */
-    void setPackageName(String packageName) {
+	 * Sets the package name for the project generation request.
+	 * @param packageName the package name to be set
+	 */
+	void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
 
@@ -246,11 +236,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the type of the project generation request.
-     * 
-     * @param type the type of the project generation request
-     */
-    void setType(String type) {
+	 * Sets the type of the project generation request.
+	 * @param type the type of the project generation request
+	 */
+	void setType(String type) {
 		this.type = type;
 	}
 
@@ -263,11 +252,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the packaging for the project.
-     * 
-     * @param packaging the packaging to be set
-     */
-    void setPackaging(String packaging) {
+	 * Sets the packaging for the project.
+	 * @param packaging the packaging to be set
+	 */
+	void setPackaging(String packaging) {
 		this.packaging = packaging;
 	}
 
@@ -281,11 +269,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the build for the project generation request.
-     * 
-     * @param build the build to be set
-     */
-    void setBuild(String build) {
+	 * Sets the build for the project generation request.
+	 * @param build the build to be set
+	 */
+	void setBuild(String build) {
 		this.build = build;
 	}
 
@@ -299,11 +286,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the format for the project generation request.
-     * 
-     * @param format the format to be set
-     */
-    void setFormat(String format) {
+	 * Sets the format for the project generation request.
+	 * @param format the format to be set
+	 */
+	void setFormat(String format) {
 		this.format = format;
 	}
 
@@ -316,11 +302,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the flag to enable or disable type detection.
-     * 
-     * @param detectType true to enable type detection, false to disable type detection
-     */
-    void setDetectType(boolean detectType) {
+	 * Sets the flag to enable or disable type detection.
+	 * @param detectType true to enable type detection, false to disable type detection
+	 */
+	void setDetectType(boolean detectType) {
 		this.detectType = detectType;
 	}
 
@@ -333,11 +318,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the Java version for the project generation request.
-     * 
-     * @param javaVersion the Java version to be set
-     */
-    void setJavaVersion(String javaVersion) {
+	 * Sets the Java version for the project generation request.
+	 * @param javaVersion the Java version to be set
+	 */
+	void setJavaVersion(String javaVersion) {
 		this.javaVersion = javaVersion;
 	}
 
@@ -350,11 +334,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the language for the project generation request.
-     * 
-     * @param language the language to set
-     */
-    void setLanguage(String language) {
+	 * Sets the language for the project generation request.
+	 * @param language the language to set
+	 */
+	void setLanguage(String language) {
 		this.language = language;
 	}
 
@@ -367,11 +350,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Sets the boot version for the project generation request.
-     * 
-     * @param bootVersion the boot version to be set
-     */
-    void setBootVersion(String bootVersion) {
+	 * Sets the boot version for the project generation request.
+	 * @param bootVersion the boot version to be set
+	 */
+	void setBootVersion(String bootVersion) {
 		this.bootVersion = bootVersion;
 	}
 
@@ -448,13 +430,13 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Determines the project type based on the provided metadata.
-     * 
-     * @param metadata the InitializrServiceMetadata containing the project types
-     * @return the determined ProjectType
-     * @throws ReportableException if no project type is found or if multiple project types are found with the same build and format
-     */
-    protected ProjectType determineProjectType(InitializrServiceMetadata metadata) {
+	 * Determines the project type based on the provided metadata.
+	 * @param metadata the InitializrServiceMetadata containing the project types
+	 * @return the determined ProjectType
+	 * @throws ReportableException if no project type is found or if multiple project
+	 * types are found with the same build and format
+	 */
+	protected ProjectType determineProjectType(InitializrServiceMetadata metadata) {
 		if (this.type != null) {
 			ProjectType result = metadata.getProjectTypes().get(this.type);
 			if (result == null) {
@@ -509,13 +491,12 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-     * Filters the given map of projects based on the specified tag and tag value.
-     * 
-     * @param projects the map of projects to be filtered
-     * @param tag the tag to filter the projects on
-     * @param tagValue the value of the tag to filter the projects on
-     */
-    private static void filter(Map<String, ProjectType> projects, String tag, String tagValue) {
+	 * Filters the given map of projects based on the specified tag and tag value.
+	 * @param projects the map of projects to be filtered
+	 * @param tag the tag to filter the projects on
+	 * @param tagValue the value of the tag to filter the projects on
+	 */
+	private static void filter(Map<String, ProjectType> projects, String tag, String tagValue) {
 		projects.entrySet().removeIf((entry) -> !tagValue.equals(entry.getValue().getTags().get(tag)));
 	}
 

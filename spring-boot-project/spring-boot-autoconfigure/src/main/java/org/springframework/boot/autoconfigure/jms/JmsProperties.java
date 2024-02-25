@@ -62,108 +62,97 @@ public class JmsProperties {
 	private final Template template = new Template();
 
 	/**
-     * Returns a boolean value indicating whether the domain is pub/sub.
-     * 
-     * @return true if the domain is pub/sub, false otherwise
-     */
-    public boolean isPubSubDomain() {
+	 * Returns a boolean value indicating whether the domain is pub/sub.
+	 * @return true if the domain is pub/sub, false otherwise
+	 */
+	public boolean isPubSubDomain() {
 		return this.pubSubDomain;
 	}
 
 	/**
-     * Sets the value of the pubSubDomain property.
-     * 
-     * @param pubSubDomain the new value for the pubSubDomain property
-     */
-    public void setPubSubDomain(boolean pubSubDomain) {
+	 * Sets the value of the pubSubDomain property.
+	 * @param pubSubDomain the new value for the pubSubDomain property
+	 */
+	public void setPubSubDomain(boolean pubSubDomain) {
 		this.pubSubDomain = pubSubDomain;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the subscription is durable.
-     *
-     * @return true if the subscription is durable, false otherwise
-     */
-    public boolean isSubscriptionDurable() {
+	 * Returns a boolean value indicating whether the subscription is durable.
+	 * @return true if the subscription is durable, false otherwise
+	 */
+	public boolean isSubscriptionDurable() {
 		return this.subscriptionDurable;
 	}
 
 	/**
-     * Sets the flag indicating whether the subscription is durable or not.
-     * 
-     * @param subscriptionDurable true if the subscription is durable, false otherwise
-     */
-    public void setSubscriptionDurable(boolean subscriptionDurable) {
+	 * Sets the flag indicating whether the subscription is durable or not.
+	 * @param subscriptionDurable true if the subscription is durable, false otherwise
+	 */
+	public void setSubscriptionDurable(boolean subscriptionDurable) {
 		this.subscriptionDurable = subscriptionDurable;
 	}
 
 	/**
-     * Returns the client ID.
-     * 
-     * @return the client ID
-     */
-    public String getClientId() {
+	 * Returns the client ID.
+	 * @return the client ID
+	 */
+	public String getClientId() {
 		return this.clientId;
 	}
 
 	/**
-     * Sets the client ID for the JMS properties.
-     * 
-     * @param clientId the client ID to be set
-     */
-    public void setClientId(String clientId) {
+	 * Sets the client ID for the JMS properties.
+	 * @param clientId the client ID to be set
+	 */
+	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
 
 	/**
-     * Returns the JNDI name.
-     *
-     * @return the JNDI name
-     */
-    public String getJndiName() {
+	 * Returns the JNDI name.
+	 * @return the JNDI name
+	 */
+	public String getJndiName() {
 		return this.jndiName;
 	}
 
 	/**
-     * Sets the JNDI name for the JMS properties.
-     * 
-     * @param jndiName the JNDI name to be set
-     */
-    public void setJndiName(String jndiName) {
+	 * Sets the JNDI name for the JMS properties.
+	 * @param jndiName the JNDI name to be set
+	 */
+	public void setJndiName(String jndiName) {
 		this.jndiName = jndiName;
 	}
 
 	/**
-     * Returns the cache object.
-     * 
-     * @return the cache object
-     */
-    public Cache getCache() {
+	 * Returns the cache object.
+	 * @return the cache object
+	 */
+	public Cache getCache() {
 		return this.cache;
 	}
 
 	/**
-     * Returns the listener associated with this JmsProperties object.
-     *
-     * @return the listener associated with this JmsProperties object
-     */
-    public Listener getListener() {
+	 * Returns the listener associated with this JmsProperties object.
+	 * @return the listener associated with this JmsProperties object
+	 */
+	public Listener getListener() {
 		return this.listener;
 	}
 
 	/**
-     * Returns the template associated with this JmsProperties object.
-     *
-     * @return the template associated with this JmsProperties object
-     */
-    public Template getTemplate() {
+	 * Returns the template associated with this JmsProperties object.
+	 * @return the template associated with this JmsProperties object
+	 */
+	public Template getTemplate() {
 		return this.template;
 	}
 
 	/**
-     * Cache class.
-     */
-    public static class Cache {
+	 * Cache class.
+	 */
+	public static class Cache {
 
 		/**
 		 * Whether to cache sessions.
@@ -186,83 +175,75 @@ public class JmsProperties {
 		private int sessionCacheSize = 1;
 
 		/**
-         * Returns the current status of the cache.
-         * 
-         * @return true if the cache is enabled, false otherwise.
-         */
-        public boolean isEnabled() {
+		 * Returns the current status of the cache.
+		 * @return true if the cache is enabled, false otherwise.
+		 */
+		public boolean isEnabled() {
 			return this.enabled;
 		}
 
 		/**
-         * Sets the enabled status of the cache.
-         * 
-         * @param enabled the enabled status to be set
-         */
-        public void setEnabled(boolean enabled) {
+		 * Sets the enabled status of the cache.
+		 * @param enabled the enabled status to be set
+		 */
+		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the cache is for consumers.
-         * 
-         * @return true if the cache is for consumers, false otherwise
-         */
-        public boolean isConsumers() {
+		 * Returns a boolean value indicating whether the cache is for consumers.
+		 * @return true if the cache is for consumers, false otherwise
+		 */
+		public boolean isConsumers() {
 			return this.consumers;
 		}
 
 		/**
-         * Sets the value of the consumers flag.
-         * 
-         * @param consumers the new value for the consumers flag
-         */
-        public void setConsumers(boolean consumers) {
+		 * Sets the value of the consumers flag.
+		 * @param consumers the new value for the consumers flag
+		 */
+		public void setConsumers(boolean consumers) {
 			this.consumers = consumers;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the cache is for producers.
-         * 
-         * @return true if the cache is for producers, false otherwise
-         */
-        public boolean isProducers() {
+		 * Returns a boolean value indicating whether the cache is for producers.
+		 * @return true if the cache is for producers, false otherwise
+		 */
+		public boolean isProducers() {
 			return this.producers;
 		}
 
 		/**
-         * Sets the value of the "producers" flag in the Cache class.
-         * 
-         * @param producers the new value for the "producers" flag
-         */
-        public void setProducers(boolean producers) {
+		 * Sets the value of the "producers" flag in the Cache class.
+		 * @param producers the new value for the "producers" flag
+		 */
+		public void setProducers(boolean producers) {
 			this.producers = producers;
 		}
 
 		/**
-         * Returns the size of the session cache.
-         *
-         * @return the size of the session cache
-         */
-        public int getSessionCacheSize() {
+		 * Returns the size of the session cache.
+		 * @return the size of the session cache
+		 */
+		public int getSessionCacheSize() {
 			return this.sessionCacheSize;
 		}
 
 		/**
-         * Sets the size of the session cache.
-         * 
-         * @param sessionCacheSize the size of the session cache to be set
-         */
-        public void setSessionCacheSize(int sessionCacheSize) {
+		 * Sets the size of the session cache.
+		 * @param sessionCacheSize the size of the session cache to be set
+		 */
+		public void setSessionCacheSize(int sessionCacheSize) {
 			this.sessionCacheSize = sessionCacheSize;
 		}
 
 	}
 
 	/**
-     * Listener class.
-     */
-    public static class Listener {
+	 * Listener class.
+	 */
+	public static class Listener {
 
 		/**
 		 * Start the container automatically on startup.
@@ -290,126 +271,115 @@ public class JmsProperties {
 		private final Session session = new Session();
 
 		/**
-         * Returns a boolean value indicating whether the listener is set to automatically start.
-         * 
-         * @return true if the listener is set to automatically start, false otherwise
-         */
-        public boolean isAutoStartup() {
+		 * Returns a boolean value indicating whether the listener is set to automatically
+		 * start.
+		 * @return true if the listener is set to automatically start, false otherwise
+		 */
+		public boolean isAutoStartup() {
 			return this.autoStartup;
 		}
 
 		/**
-         * Sets the auto startup flag for the listener.
-         * 
-         * @param autoStartup the auto startup flag to set
-         */
-        public void setAutoStartup(boolean autoStartup) {
+		 * Sets the auto startup flag for the listener.
+		 * @param autoStartup the auto startup flag to set
+		 */
+		public void setAutoStartup(boolean autoStartup) {
 			this.autoStartup = autoStartup;
 		}
 
 		/**
-         * Returns the acknowledge mode for the listener session.
-         * 
-         * @return the acknowledge mode for the listener session
-         * @deprecated This method is deprecated since version 3.2.0 and will be removed in a future release.
-         *             Use {@link #getAcknowledgeMode()} instead.
-         * @see #getAcknowledgeMode()
-         * @since 3.2.0
-         */
-        @Deprecated(since = "3.2.0", forRemoval = true)
+		 * Returns the acknowledge mode for the listener session.
+		 * @return the acknowledge mode for the listener session
+		 * @deprecated This method is deprecated since version 3.2.0 and will be removed
+		 * in a future release. Use {@link #getAcknowledgeMode()} instead.
+		 * @see #getAcknowledgeMode()
+		 * @since 3.2.0
+		 */
+		@Deprecated(since = "3.2.0", forRemoval = true)
 		@DeprecatedConfigurationProperty(replacement = "spring.jms.listener.session.acknowledge-mode", since = "3.2.0")
 		public AcknowledgeMode getAcknowledgeMode() {
 			return this.session.getAcknowledgeMode();
 		}
 
 		/**
-         * Sets the acknowledge mode for the session.
-         * 
-         * @param acknowledgeMode the acknowledge mode to be set
-         * 
-         * @deprecated This method is deprecated since version 3.2.0 and will be removed in a future release.
-         * 
-         * @see AcknowledgeMode
-         */
-        @Deprecated(since = "3.2.0", forRemoval = true)
+		 * Sets the acknowledge mode for the session.
+		 * @param acknowledgeMode the acknowledge mode to be set
+		 * @deprecated This method is deprecated since version 3.2.0 and will be removed
+		 * in a future release.
+		 *
+		 * @see AcknowledgeMode
+		 */
+		@Deprecated(since = "3.2.0", forRemoval = true)
 		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
 			this.session.setAcknowledgeMode(acknowledgeMode);
 		}
 
 		/**
-         * Retrieves the concurrency level for the listener.
-         * 
-         * @return the concurrency level
-         * 
-         * @deprecated This method has been deprecated since version 3.2.0 and will be removed in a future release. 
-         *             Use {@link #getMinConcurrency()} instead.
-         * 
-         * @see #getMinConcurrency()
-         * @see DeprecatedConfigurationProperty
-         */
-        @DeprecatedConfigurationProperty(replacement = "spring.jms.listener.min-concurrency", since = "3.2.0")
+		 * Retrieves the concurrency level for the listener.
+		 * @return the concurrency level
+		 * @deprecated This method has been deprecated since version 3.2.0 and will be
+		 * removed in a future release. Use {@link #getMinConcurrency()} instead.
+		 *
+		 * @see #getMinConcurrency()
+		 * @see DeprecatedConfigurationProperty
+		 */
+		@DeprecatedConfigurationProperty(replacement = "spring.jms.listener.min-concurrency", since = "3.2.0")
 		@Deprecated(since = "3.2.0", forRemoval = true)
 		public Integer getConcurrency() {
 			return this.minConcurrency;
 		}
 
 		/**
-         * Sets the concurrency level for the listener.
-         * 
-         * @param concurrency the concurrency level to be set
-         * 
-         * @deprecated This method has been deprecated since version 3.2.0 and will be removed in a future release.
-         * 
-         * @see Listener#getConcurrency()
-         * @see Listener#minConcurrency
-         */
-        @Deprecated(since = "3.2.0", forRemoval = true)
+		 * Sets the concurrency level for the listener.
+		 * @param concurrency the concurrency level to be set
+		 * @deprecated This method has been deprecated since version 3.2.0 and will be
+		 * removed in a future release.
+		 *
+		 * @see Listener#getConcurrency()
+		 * @see Listener#minConcurrency
+		 */
+		@Deprecated(since = "3.2.0", forRemoval = true)
 		public void setConcurrency(Integer concurrency) {
 			this.minConcurrency = concurrency;
 		}
 
 		/**
-         * Returns the minimum concurrency level for the listener.
-         *
-         * @return the minimum concurrency level
-         */
-        public Integer getMinConcurrency() {
+		 * Returns the minimum concurrency level for the listener.
+		 * @return the minimum concurrency level
+		 */
+		public Integer getMinConcurrency() {
 			return this.minConcurrency;
 		}
 
 		/**
-         * Sets the minimum concurrency level for the listener.
-         * 
-         * @param minConcurrency the minimum concurrency level to be set
-         */
-        public void setMinConcurrency(Integer minConcurrency) {
+		 * Sets the minimum concurrency level for the listener.
+		 * @param minConcurrency the minimum concurrency level to be set
+		 */
+		public void setMinConcurrency(Integer minConcurrency) {
 			this.minConcurrency = minConcurrency;
 		}
 
 		/**
-         * Returns the maximum concurrency value.
-         *
-         * @return the maximum concurrency value
-         */
-        public Integer getMaxConcurrency() {
+		 * Returns the maximum concurrency value.
+		 * @return the maximum concurrency value
+		 */
+		public Integer getMaxConcurrency() {
 			return this.maxConcurrency;
 		}
 
 		/**
-         * Sets the maximum concurrency for the listener.
-         * 
-         * @param maxConcurrency the maximum concurrency to be set
-         */
-        public void setMaxConcurrency(Integer maxConcurrency) {
+		 * Sets the maximum concurrency for the listener.
+		 * @param maxConcurrency the maximum concurrency to be set
+		 */
+		public void setMaxConcurrency(Integer maxConcurrency) {
 			this.maxConcurrency = maxConcurrency;
 		}
 
 		/**
-         * Formats the concurrency range.
-         * 
-         * @return The formatted concurrency range as a string.
-         */
-        public String formatConcurrency() {
+		 * Formats the concurrency range.
+		 * @return The formatted concurrency range as a string.
+		 */
+		public String formatConcurrency() {
 			if (this.minConcurrency == null) {
 				return (this.maxConcurrency != null) ? "1-" + this.maxConcurrency : null;
 			}
@@ -418,36 +388,33 @@ public class JmsProperties {
 		}
 
 		/**
-         * Returns the receive timeout duration.
-         *
-         * @return the receive timeout duration
-         */
-        public Duration getReceiveTimeout() {
+		 * Returns the receive timeout duration.
+		 * @return the receive timeout duration
+		 */
+		public Duration getReceiveTimeout() {
 			return this.receiveTimeout;
 		}
 
 		/**
-         * Sets the receive timeout for the listener.
-         * 
-         * @param receiveTimeout the receive timeout duration to be set
-         */
-        public void setReceiveTimeout(Duration receiveTimeout) {
+		 * Sets the receive timeout for the listener.
+		 * @param receiveTimeout the receive timeout duration to be set
+		 */
+		public void setReceiveTimeout(Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
 		}
 
 		/**
-         * Returns the current session.
-         * 
-         * @return the current session
-         */
-        public Session getSession() {
+		 * Returns the current session.
+		 * @return the current session
+		 */
+		public Session getSession() {
 			return this.session;
 		}
 
 		/**
-         * Session class.
-         */
-        public static class Session {
+		 * Session class.
+		 */
+		public static class Session {
 
 			/**
 			 * Acknowledge mode of the listener container.
@@ -461,38 +428,34 @@ public class JmsProperties {
 			private Boolean transacted;
 
 			/**
-             * Returns the acknowledge mode of the session.
-             * 
-             * @return the acknowledge mode of the session
-             */
-            public AcknowledgeMode getAcknowledgeMode() {
+			 * Returns the acknowledge mode of the session.
+			 * @return the acknowledge mode of the session
+			 */
+			public AcknowledgeMode getAcknowledgeMode() {
 				return this.acknowledgeMode;
 			}
 
 			/**
-             * Sets the acknowledge mode for this session.
-             * 
-             * @param acknowledgeMode the acknowledge mode to be set
-             */
-            public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+			 * Sets the acknowledge mode for this session.
+			 * @param acknowledgeMode the acknowledge mode to be set
+			 */
+			public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
 				this.acknowledgeMode = acknowledgeMode;
 			}
 
 			/**
-             * Returns the value of the transacted property.
-             * 
-             * @return true if the session is transacted, false otherwise
-             */
-            public Boolean getTransacted() {
+			 * Returns the value of the transacted property.
+			 * @return true if the session is transacted, false otherwise
+			 */
+			public Boolean getTransacted() {
 				return this.transacted;
 			}
 
 			/**
-             * Sets the transacted flag for the session.
-             * 
-             * @param transacted the transacted flag to be set
-             */
-            public void setTransacted(Boolean transacted) {
+			 * Sets the transacted flag for the session.
+			 * @param transacted the transacted flag to be set
+			 */
+			public void setTransacted(Boolean transacted) {
 				this.transacted = transacted;
 			}
 
@@ -501,9 +464,9 @@ public class JmsProperties {
 	}
 
 	/**
-     * Template class.
-     */
-    public static class Template {
+	 * Template class.
+	 */
+	public static class Template {
 
 		/**
 		 * Default destination to use on send and receive operations that do not have a
@@ -548,101 +511,90 @@ public class JmsProperties {
 		private final Session session = new Session();
 
 		/**
-         * Returns the default destination.
-         * 
-         * @return the default destination
-         */
-        public String getDefaultDestination() {
+		 * Returns the default destination.
+		 * @return the default destination
+		 */
+		public String getDefaultDestination() {
 			return this.defaultDestination;
 		}
 
 		/**
-         * Sets the default destination for the Template.
-         * 
-         * @param defaultDestination the default destination to be set
-         */
-        public void setDefaultDestination(String defaultDestination) {
+		 * Sets the default destination for the Template.
+		 * @param defaultDestination the default destination to be set
+		 */
+		public void setDefaultDestination(String defaultDestination) {
 			this.defaultDestination = defaultDestination;
 		}
 
 		/**
-         * Returns the delivery delay for this Template.
-         *
-         * @return the delivery delay for this Template
-         */
-        public Duration getDeliveryDelay() {
+		 * Returns the delivery delay for this Template.
+		 * @return the delivery delay for this Template
+		 */
+		public Duration getDeliveryDelay() {
 			return this.deliveryDelay;
 		}
 
 		/**
-         * Sets the delivery delay for the template.
-         * 
-         * @param deliveryDelay the duration of the delivery delay
-         */
-        public void setDeliveryDelay(Duration deliveryDelay) {
+		 * Sets the delivery delay for the template.
+		 * @param deliveryDelay the duration of the delivery delay
+		 */
+		public void setDeliveryDelay(Duration deliveryDelay) {
 			this.deliveryDelay = deliveryDelay;
 		}
 
 		/**
-         * Returns the delivery mode of the template.
-         * 
-         * @return the delivery mode of the template
-         */
-        public DeliveryMode getDeliveryMode() {
+		 * Returns the delivery mode of the template.
+		 * @return the delivery mode of the template
+		 */
+		public DeliveryMode getDeliveryMode() {
 			return this.deliveryMode;
 		}
 
 		/**
-         * Sets the delivery mode for the template.
-         * 
-         * @param deliveryMode the delivery mode to be set
-         */
-        public void setDeliveryMode(DeliveryMode deliveryMode) {
+		 * Sets the delivery mode for the template.
+		 * @param deliveryMode the delivery mode to be set
+		 */
+		public void setDeliveryMode(DeliveryMode deliveryMode) {
 			this.deliveryMode = deliveryMode;
 		}
 
 		/**
-         * Returns the priority of the Template.
-         *
-         * @return the priority of the Template
-         */
-        public Integer getPriority() {
+		 * Returns the priority of the Template.
+		 * @return the priority of the Template
+		 */
+		public Integer getPriority() {
 			return this.priority;
 		}
 
 		/**
-         * Sets the priority of the template.
-         * 
-         * @param priority the priority to be set
-         */
-        public void setPriority(Integer priority) {
+		 * Sets the priority of the template.
+		 * @param priority the priority to be set
+		 */
+		public void setPriority(Integer priority) {
 			this.priority = priority;
 		}
 
 		/**
-         * Returns the time to live for the object.
-         *
-         * @return the time to live as a Duration object
-         */
-        public Duration getTimeToLive() {
+		 * Returns the time to live for the object.
+		 * @return the time to live as a Duration object
+		 */
+		public Duration getTimeToLive() {
 			return this.timeToLive;
 		}
 
 		/**
-         * Sets the time to live for the template.
-         * 
-         * @param timeToLive the duration representing the time to live
-         */
-        public void setTimeToLive(Duration timeToLive) {
+		 * Sets the time to live for the template.
+		 * @param timeToLive the duration representing the time to live
+		 */
+		public void setTimeToLive(Duration timeToLive) {
 			this.timeToLive = timeToLive;
 		}
 
 		/**
-         * Determines if QoS (Quality of Service) is enabled.
-         * 
-         * @return true if QoS is enabled, false otherwise
-         */
-        public boolean determineQosEnabled() {
+		 * Determines if QoS (Quality of Service) is enabled.
+		 * @return true if QoS is enabled, false otherwise
+		 */
+		public boolean determineQosEnabled() {
 			if (this.qosEnabled != null) {
 				return this.qosEnabled;
 			}
@@ -650,54 +602,49 @@ public class JmsProperties {
 		}
 
 		/**
-         * Returns the value of the QoS enabled flag.
-         * 
-         * @return true if QoS is enabled, false otherwise
-         */
-        public Boolean getQosEnabled() {
+		 * Returns the value of the QoS enabled flag.
+		 * @return true if QoS is enabled, false otherwise
+		 */
+		public Boolean getQosEnabled() {
 			return this.qosEnabled;
 		}
 
 		/**
-         * Sets the QoS enabled flag.
-         * 
-         * @param qosEnabled the QoS enabled flag to set
-         */
-        public void setQosEnabled(Boolean qosEnabled) {
+		 * Sets the QoS enabled flag.
+		 * @param qosEnabled the QoS enabled flag to set
+		 */
+		public void setQosEnabled(Boolean qosEnabled) {
 			this.qosEnabled = qosEnabled;
 		}
 
 		/**
-         * Returns the receive timeout duration.
-         *
-         * @return the receive timeout duration
-         */
-        public Duration getReceiveTimeout() {
+		 * Returns the receive timeout duration.
+		 * @return the receive timeout duration
+		 */
+		public Duration getReceiveTimeout() {
 			return this.receiveTimeout;
 		}
 
 		/**
-         * Sets the receive timeout for the Template.
-         * 
-         * @param receiveTimeout the receive timeout duration to be set
-         */
-        public void setReceiveTimeout(Duration receiveTimeout) {
+		 * Sets the receive timeout for the Template.
+		 * @param receiveTimeout the receive timeout duration to be set
+		 */
+		public void setReceiveTimeout(Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
 		}
 
 		/**
-         * Returns the session object associated with this Template.
-         *
-         * @return the session object
-         */
-        public Session getSession() {
+		 * Returns the session object associated with this Template.
+		 * @return the session object
+		 */
+		public Session getSession() {
 			return this.session;
 		}
 
 		/**
-         * Session class.
-         */
-        public static class Session {
+		 * Session class.
+		 */
+		public static class Session {
 
 			/**
 			 * Acknowledge mode used when creating sessions.
@@ -710,38 +657,34 @@ public class JmsProperties {
 			private boolean transacted = false;
 
 			/**
-             * Returns the acknowledge mode of the session.
-             * 
-             * @return the acknowledge mode of the session
-             */
-            public AcknowledgeMode getAcknowledgeMode() {
+			 * Returns the acknowledge mode of the session.
+			 * @return the acknowledge mode of the session
+			 */
+			public AcknowledgeMode getAcknowledgeMode() {
 				return this.acknowledgeMode;
 			}
 
 			/**
-             * Sets the acknowledge mode for this session.
-             * 
-             * @param acknowledgeMode the acknowledge mode to be set
-             */
-            public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+			 * Sets the acknowledge mode for this session.
+			 * @param acknowledgeMode the acknowledge mode to be set
+			 */
+			public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
 				this.acknowledgeMode = acknowledgeMode;
 			}
 
 			/**
-             * Returns a boolean value indicating whether the session is transacted.
-             * 
-             * @return true if the session is transacted, false otherwise
-             */
-            public boolean isTransacted() {
+			 * Returns a boolean value indicating whether the session is transacted.
+			 * @return true if the session is transacted, false otherwise
+			 */
+			public boolean isTransacted() {
 				return this.transacted;
 			}
 
 			/**
-             * Sets the transacted flag for the session.
-             * 
-             * @param transacted the value to set for the transacted flag
-             */
-            public void setTransacted(boolean transacted) {
+			 * Sets the transacted flag for the session.
+			 * @param transacted the value to set for the transacted flag
+			 */
+			public void setTransacted(boolean transacted) {
 				this.transacted = transacted;
 			}
 
@@ -767,20 +710,18 @@ public class JmsProperties {
 		private final int value;
 
 		/**
-     * Sets the delivery mode for the JMS message.
-     * 
-     * @param value the delivery mode value to be set
-     */
-    DeliveryMode(int value) {
+		 * Sets the delivery mode for the JMS message.
+		 * @param value the delivery mode value to be set
+		 */
+		DeliveryMode(int value) {
 			this.value = value;
 		}
 
 		/**
-     * Returns the value of the JmsProperties object.
-     *
-     * @return the value of the JmsProperties object.
-     */
-    public int getValue() {
+		 * Returns the value of the JmsProperties object.
+		 * @return the value of the JmsProperties object.
+		 */
+		public int getValue() {
 			return this.value;
 		}
 

@@ -32,11 +32,10 @@ class Neo4jEnvironment {
 	private final AuthToken authToken;
 
 	/**
-     * Constructs a new Neo4jEnvironment object with the provided environment variables.
-     * 
-     * @param env a Map containing the environment variables
-     */
-    Neo4jEnvironment(Map<String, String> env) {
+	 * Constructs a new Neo4jEnvironment object with the provided environment variables.
+	 * @param env a Map containing the environment variables
+	 */
+	Neo4jEnvironment(Map<String, String> env) {
 		AuthToken authToken = parse(env.get("NEO4J_AUTH"));
 		if (authToken == null && env.containsKey("NEO4J_PASSWORD")) {
 			authToken = parse("neo4j/" + env.get("NEO4J_PASSWORD"));
@@ -45,13 +44,12 @@ class Neo4jEnvironment {
 	}
 
 	/**
-     * Parses the NEO4J_AUTH environment variable and returns an AuthToken object.
-     * 
-     * @param neo4jAuth the value of the NEO4J_AUTH environment variable
-     * @return an AuthToken object representing the parsed authentication token
-     * @throws IllegalStateException if the NEO4J_AUTH value is not valid
-     */
-    private AuthToken parse(String neo4jAuth) {
+	 * Parses the NEO4J_AUTH environment variable and returns an AuthToken object.
+	 * @param neo4jAuth the value of the NEO4J_AUTH environment variable
+	 * @return an AuthToken object representing the parsed authentication token
+	 * @throws IllegalStateException if the NEO4J_AUTH value is not valid
+	 */
+	private AuthToken parse(String neo4jAuth) {
 		if (neo4jAuth == null) {
 			return null;
 		}
@@ -68,11 +66,10 @@ class Neo4jEnvironment {
 	}
 
 	/**
-     * Returns the authentication token associated with the Neo4j environment.
-     *
-     * @return the authentication token
-     */
-    AuthToken getAuthToken() {
+	 * Returns the authentication token associated with the Neo4j environment.
+	 * @return the authentication token
+	 */
+	AuthToken getAuthToken() {
 		return this.authToken;
 	}
 

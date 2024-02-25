@@ -30,13 +30,14 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 public class MyJmsConfiguration {
 
 	/**
-     * Creates a JMS listener container factory with the given connection factory and configurer.
-     * 
-     * @param connectionFactory the connection factory to be used by the listener container factory
-     * @param configurer the configurer to be used by the listener container factory
-     * @return the created JMS listener container factory
-     */
-    @Bean
+	 * Creates a JMS listener container factory with the given connection factory and
+	 * configurer.
+	 * @param connectionFactory the connection factory to be used by the listener
+	 * container factory
+	 * @param configurer the configurer to be used by the listener container factory
+	 * @return the created JMS listener container factory
+	 */
+	@Bean
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
 			DefaultJmsListenerContainerFactoryConfigurer configurer) {
 		DefaultJmsListenerContainerFactory listenerFactory = new DefaultJmsListenerContainerFactory();

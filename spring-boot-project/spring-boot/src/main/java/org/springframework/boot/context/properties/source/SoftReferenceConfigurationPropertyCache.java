@@ -42,45 +42,46 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 	private volatile Instant lastAccessed = now();
 
 	/**
-     * Constructs a new SoftReferenceConfigurationPropertyCache with the specified expiration setting.
-     * 
-     * @param neverExpire true if the cache should never expire, false otherwise
-     */
-    SoftReferenceConfigurationPropertyCache(boolean neverExpire) {
+	 * Constructs a new SoftReferenceConfigurationPropertyCache with the specified
+	 * expiration setting.
+	 * @param neverExpire true if the cache should never expire, false otherwise
+	 */
+	SoftReferenceConfigurationPropertyCache(boolean neverExpire) {
 		this.neverExpire = neverExpire;
 	}
 
 	/**
-     * Enables the SoftReferenceConfigurationPropertyCache.
-     * Sets the time to live for the cache to unlimited.
-     */
-    @Override
+	 * Enables the SoftReferenceConfigurationPropertyCache. Sets the time to live for the
+	 * cache to unlimited.
+	 */
+	@Override
 	public void enable() {
 		this.timeToLive = UNLIMITED;
 	}
 
 	/**
-     * Disables the SoftReferenceConfigurationPropertyCache by setting the timeToLive to null.
-     */
-    @Override
+	 * Disables the SoftReferenceConfigurationPropertyCache by setting the timeToLive to
+	 * null.
+	 */
+	@Override
 	public void disable() {
 		this.timeToLive = null;
 	}
 
 	/**
-     * Sets the time to live for the cache entries.
-     * 
-     * @param timeToLive the time to live duration for the cache entries
-     */
-    @Override
+	 * Sets the time to live for the cache entries.
+	 * @param timeToLive the time to live duration for the cache entries
+	 */
+	@Override
 	public void setTimeToLive(Duration timeToLive) {
 		this.timeToLive = (timeToLive == null || timeToLive.isZero()) ? null : timeToLive;
 	}
 
 	/**
-     * Clears the SoftReferenceConfigurationPropertyCache by setting the lastAccessed property to null.
-     */
-    @Override
+	 * Clears the SoftReferenceConfigurationPropertyCache by setting the lastAccessed
+	 * property to null.
+	 */
+	@Override
 	public void clear() {
 		this.lastAccessed = null;
 	}
@@ -108,11 +109,10 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 	}
 
 	/**
-     * Checks if the SoftReferenceConfigurationPropertyCache has expired.
-     * 
-     * @return true if the cache has expired, false otherwise
-     */
-    private boolean hasExpired() {
+	 * Checks if the SoftReferenceConfigurationPropertyCache has expired.
+	 * @return true if the cache has expired, false otherwise
+	 */
+	private boolean hasExpired() {
 		if (this.neverExpire) {
 			return false;
 		}
@@ -125,30 +125,27 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 	}
 
 	/**
-     * Returns the current instant.
-     *
-     * @return the current instant
-     */
-    protected Instant now() {
+	 * Returns the current instant.
+	 * @return the current instant
+	 */
+	protected Instant now() {
 		return Instant.now();
 	}
 
 	/**
-     * Returns the value stored in the SoftReferenceConfigurationPropertyCache.
-     * 
-     * @return the value stored in the SoftReferenceConfigurationPropertyCache
-     */
-    protected T getValue() {
+	 * Returns the value stored in the SoftReferenceConfigurationPropertyCache.
+	 * @return the value stored in the SoftReferenceConfigurationPropertyCache
+	 */
+	protected T getValue() {
 		return this.value.get();
 	}
 
 	/**
-     * Sets the value of the SoftReferenceConfigurationPropertyCache.
-     * 
-     * @param value the value to be set
-     * @param <T> the type of the value
-     */
-    protected void setValue(T value) {
+	 * Sets the value of the SoftReferenceConfigurationPropertyCache.
+	 * @param value the value to be set
+	 * @param <T> the type of the value
+	 */
+	protected void setValue(T value) {
 		this.value = new SoftReference<>(value);
 	}
 

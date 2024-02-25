@@ -67,28 +67,28 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	private ClassLoader classLoader;
 
 	/**
-     * Creates a new instance of {@link PropertiesJdbcConnectionDetails} if no bean of type {@link JdbcConnectionDetails} is present.
-     * 
-     * @param properties the {@link DataSourceProperties} used to configure the JDBC connection details
-     * @return a new instance of {@link PropertiesJdbcConnectionDetails}
-     */
-    @Bean
+	 * Creates a new instance of {@link PropertiesJdbcConnectionDetails} if no bean of
+	 * type {@link JdbcConnectionDetails} is present.
+	 * @param properties the {@link DataSourceProperties} used to configure the JDBC
+	 * connection details
+	 * @return a new instance of {@link PropertiesJdbcConnectionDetails}
+	 */
+	@Bean
 	@ConditionalOnMissingBean(JdbcConnectionDetails.class)
 	PropertiesJdbcConnectionDetails jdbcConnectionDetails(DataSourceProperties properties) {
 		return new PropertiesJdbcConnectionDetails(properties);
 	}
 
 	/**
-     * Creates and configures a DataSource bean.
-     * 
-     * @param wrapper           the XADataSourceWrapper used to wrap the DataSource
-     * @param properties        the DataSourceProperties used to configure the DataSource
-     * @param connectionDetails the JdbcConnectionDetails used to configure the DataSource
-     * @param xaDataSource      the XADataSource used to create the DataSource (optional)
-     * @return the configured DataSource bean
-     * @throws Exception if an error occurs during DataSource creation or configuration
-     */
-    @Bean
+	 * Creates and configures a DataSource bean.
+	 * @param wrapper the XADataSourceWrapper used to wrap the DataSource
+	 * @param properties the DataSourceProperties used to configure the DataSource
+	 * @param connectionDetails the JdbcConnectionDetails used to configure the DataSource
+	 * @param xaDataSource the XADataSource used to create the DataSource (optional)
+	 * @return the configured DataSource bean
+	 * @throws Exception if an error occurs during DataSource creation or configuration
+	 */
+	@Bean
 	public DataSource dataSource(XADataSourceWrapper wrapper, DataSourceProperties properties,
 			JdbcConnectionDetails connectionDetails, ObjectProvider<XADataSource> xaDataSource) throws Exception {
 		return wrapper
@@ -96,24 +96,25 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	}
 
 	/**
-     * Set the class loader to be used for loading beans.
-     * 
-     * @param classLoader the class loader to be used for loading beans
-     */
-    @Override
+	 * Set the class loader to be used for loading beans.
+	 * @param classLoader the class loader to be used for loading beans
+	 */
+	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
 	/**
-     * Creates an XADataSource based on the provided DataSourceProperties and JdbcConnectionDetails.
-     * 
-     * @param properties the DataSourceProperties containing the necessary configuration properties
-     * @param connectionDetails the JdbcConnectionDetails containing the connection details
-     * @return the created XADataSource
-     * @throws IllegalStateException if no XA DataSource class name is specified
-     */
-    private XADataSource createXaDataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails) {
+	 * Creates an XADataSource based on the provided DataSourceProperties and
+	 * JdbcConnectionDetails.
+	 * @param properties the DataSourceProperties containing the necessary configuration
+	 * properties
+	 * @param connectionDetails the JdbcConnectionDetails containing the connection
+	 * details
+	 * @return the created XADataSource
+	 * @throws IllegalStateException if no XA DataSource class name is specified
+	 */
+	private XADataSource createXaDataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails) {
 		String className = connectionDetails.getXaDataSourceClassName();
 		Assert.state(StringUtils.hasLength(className), "No XA DataSource class name specified");
 		XADataSource dataSource = createXaDataSourceInstance(className);
@@ -122,13 +123,12 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	}
 
 	/**
-     * Creates an instance of XADataSource based on the provided class name.
-     * 
-     * @param className the fully qualified class name of the XADataSource implementation
-     * @return the created XADataSource instance
-     * @throws IllegalStateException if unable to create the XADataSource instance
-     */
-    private XADataSource createXaDataSourceInstance(String className) {
+	 * Creates an instance of XADataSource based on the provided class name.
+	 * @param className the fully qualified class name of the XADataSource implementation
+	 * @return the created XADataSource instance
+	 * @throws IllegalStateException if unable to create the XADataSource instance
+	 */
+	private XADataSource createXaDataSourceInstance(String className) {
 		try {
 			Class<?> dataSourceClass = ClassUtils.forName(className, this.classLoader);
 			Object instance = BeanUtils.instantiateClass(dataSourceClass);
@@ -141,28 +141,32 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	}
 
 	/**
-     * Binds the XA properties to the target XADataSource using the provided DataSourceProperties and JdbcConnectionDetails.
-     * 
-     * @param target the XADataSource to bind the properties to
-     * @param dataSourceProperties the DataSourceProperties containing the properties to bind
-     * @param connectionDetails the JdbcConnectionDetails containing the connection details to bind
-     */
-    private void bindXaProperties(XADataSource target, DataSourceProperties dataSourceProperties,
+	 * Binds the XA properties to the target XADataSource using the provided
+	 * DataSourceProperties and JdbcConnectionDetails.
+	 * @param target the XADataSource to bind the properties to
+	 * @param dataSourceProperties the DataSourceProperties containing the properties to
+	 * bind
+	 * @param connectionDetails the JdbcConnectionDetails containing the connection
+	 * details to bind
+	 */
+	private void bindXaProperties(XADataSource target, DataSourceProperties dataSourceProperties,
 			JdbcConnectionDetails connectionDetails) {
 		Binder binder = new Binder(getBinderSource(dataSourceProperties, connectionDetails));
 		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(target));
 	}
 
 	/**
-     * Returns a ConfigurationPropertySource for the binder, using the provided DataSourceProperties and JdbcConnectionDetails.
-     * The properties map is populated with the XA properties from the DataSourceProperties, and the username and password
-     * from the JdbcConnectionDetails. If a URL is present in the JdbcConnectionDetails, it is also added to the properties map.
-     * 
-     * @param dataSourceProperties the DataSourceProperties containing the XA properties
-     * @param connectionDetails the JdbcConnectionDetails containing the username, password, and optional URL
-     * @return the ConfigurationPropertySource for the binder
-     */
-    private ConfigurationPropertySource getBinderSource(DataSourceProperties dataSourceProperties,
+	 * Returns a ConfigurationPropertySource for the binder, using the provided
+	 * DataSourceProperties and JdbcConnectionDetails. The properties map is populated
+	 * with the XA properties from the DataSourceProperties, and the username and password
+	 * from the JdbcConnectionDetails. If a URL is present in the JdbcConnectionDetails,
+	 * it is also added to the properties map.
+	 * @param dataSourceProperties the DataSourceProperties containing the XA properties
+	 * @param connectionDetails the JdbcConnectionDetails containing the username,
+	 * password, and optional URL
+	 * @return the ConfigurationPropertySource for the binder
+	 */
+	private ConfigurationPropertySource getBinderSource(DataSourceProperties dataSourceProperties,
 			JdbcConnectionDetails connectionDetails) {
 		Map<Object, Object> properties = new HashMap<>(dataSourceProperties.getXa().getProperties());
 		properties.computeIfAbsent("user", (key) -> connectionDetails.getUsername());

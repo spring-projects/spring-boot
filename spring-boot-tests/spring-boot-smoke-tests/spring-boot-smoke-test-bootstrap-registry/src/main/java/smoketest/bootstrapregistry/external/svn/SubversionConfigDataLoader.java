@@ -41,35 +41,35 @@ class SubversionConfigDataLoader implements ConfigDataLoader<SubversionConfigDat
 	private static final ApplicationListener<BootstrapContextClosedEvent> closeListener = SubversionConfigDataLoader::onBootstrapContextClosed;
 
 	/**
-     * Constructs a new SubversionConfigDataLoader with the specified BootstrapRegistry.
-     * 
-     * @param bootstrapRegistry the BootstrapRegistry to be used for registration and close listener addition
-     */
-    SubversionConfigDataLoader(BootstrapRegistry bootstrapRegistry) {
+	 * Constructs a new SubversionConfigDataLoader with the specified BootstrapRegistry.
+	 * @param bootstrapRegistry the BootstrapRegistry to be used for registration and
+	 * close listener addition
+	 */
+	SubversionConfigDataLoader(BootstrapRegistry bootstrapRegistry) {
 		bootstrapRegistry.registerIfAbsent(SubversionClient.class, this::createSubversionClient);
 		bootstrapRegistry.addCloseListener(closeListener);
 	}
 
 	/**
-     * Creates a SubversionClient object using the provided BootstrapContext.
-     * 
-     * @param bootstrapContext the BootstrapContext containing the necessary information for creating the SubversionClient
-     * @return a SubversionClient object
-     */
-    private SubversionClient createSubversionClient(BootstrapContext bootstrapContext) {
+	 * Creates a SubversionClient object using the provided BootstrapContext.
+	 * @param bootstrapContext the BootstrapContext containing the necessary information
+	 * for creating the SubversionClient
+	 * @return a SubversionClient object
+	 */
+	private SubversionClient createSubversionClient(BootstrapContext bootstrapContext) {
 		return new SubversionClient(bootstrapContext.get(SubversionServerCertificate.class));
 	}
 
 	/**
-     * Loads the configuration data from a SubversionConfigDataResource.
-     * 
-     * @param context the ConfigDataLoaderContext
-     * @param resource the SubversionConfigDataResource to load from
-     * @return the loaded ConfigData
-     * @throws IOException if an I/O error occurs while loading the data
-     * @throws ConfigDataLocationNotFoundException if the location of the resource is not found
-     */
-    @Override
+	 * Loads the configuration data from a SubversionConfigDataResource.
+	 * @param context the ConfigDataLoaderContext
+	 * @param resource the SubversionConfigDataResource to load from
+	 * @return the loaded ConfigData
+	 * @throws IOException if an I/O error occurs while loading the data
+	 * @throws ConfigDataLocationNotFoundException if the location of the resource is not
+	 * found
+	 */
+	@Override
 	public ConfigData load(ConfigDataLoaderContext context, SubversionConfigDataResource resource)
 			throws IOException, ConfigDataLocationNotFoundException {
 		context.getBootstrapContext()
@@ -81,12 +81,12 @@ class SubversionConfigDataLoader implements ConfigDataLoader<SubversionConfigDat
 	}
 
 	/**
-     * This method is called when the bootstrap context is closed.
-     * It registers the SubversionClient bean in the application context.
-     *
-     * @param event the BootstrapContextClosedEvent containing the application context and bootstrap context
-     */
-    private static void onBootstrapContextClosed(BootstrapContextClosedEvent event) {
+	 * This method is called when the bootstrap context is closed. It registers the
+	 * SubversionClient bean in the application context.
+	 * @param event the BootstrapContextClosedEvent containing the application context and
+	 * bootstrap context
+	 */
+	private static void onBootstrapContextClosed(BootstrapContextClosedEvent event) {
 		event.getApplicationContext()
 			.getBeanFactory()
 			.registerSingleton("subversionClient", event.getBootstrapContext().get(SubversionClient.class));

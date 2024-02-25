@@ -22,12 +22,11 @@ package org.springframework.boot.docs.features.testing.springbootapplications.sp
 class VehicleDetails {
 
 	/**
-     * Constructs a new VehicleDetails object with the specified make and model.
-     * 
-     * @param make the make of the vehicle
-     * @param model the model of the vehicle
-     */
-    VehicleDetails(String make, String model) {
+	 * Constructs a new VehicleDetails object with the specified make and model.
+	 * @param make the make of the vehicle
+	 * @param model the model of the vehicle
+	 */
+	VehicleDetails(String make, String model) {
 	}
 
 }

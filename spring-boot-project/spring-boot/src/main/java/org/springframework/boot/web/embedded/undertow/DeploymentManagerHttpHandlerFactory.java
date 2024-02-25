@@ -37,33 +37,32 @@ class DeploymentManagerHttpHandlerFactory implements HttpHandlerFactory {
 	private final DeploymentManager deploymentManager;
 
 	/**
-     * Constructs a new DeploymentManagerHttpHandlerFactory with the specified DeploymentManager.
-     * 
-     * @param deploymentManager the DeploymentManager to be used by the factory
-     */
-    DeploymentManagerHttpHandlerFactory(DeploymentManager deploymentManager) {
+	 * Constructs a new DeploymentManagerHttpHandlerFactory with the specified
+	 * DeploymentManager.
+	 * @param deploymentManager the DeploymentManager to be used by the factory
+	 */
+	DeploymentManagerHttpHandlerFactory(DeploymentManager deploymentManager) {
 		this.deploymentManager = deploymentManager;
 	}
 
 	/**
-     * Returns the HTTP handler for the DeploymentManagerHttpHandlerFactory.
-     * 
-     * @param next the next HTTP handler in the chain
-     * @return the HTTP handler for the DeploymentManagerHttpHandlerFactory
-     * @throws IllegalStateException if the next HTTP handler is not null
-     */
-    @Override
+	 * Returns the HTTP handler for the DeploymentManagerHttpHandlerFactory.
+	 * @param next the next HTTP handler in the chain
+	 * @return the HTTP handler for the DeploymentManagerHttpHandlerFactory
+	 * @throws IllegalStateException if the next HTTP handler is not null
+	 */
+	@Override
 	public HttpHandler getHandler(HttpHandler next) {
 		Assert.state(next == null, "DeploymentManagerHttpHandlerFactory must be first");
 		return new DeploymentManagerHandler(this.deploymentManager);
 	}
 
 	/**
-     * Returns the DeploymentManager instance associated with this DeploymentManagerHttpHandlerFactory.
-     *
-     * @return the DeploymentManager instance
-     */
-    DeploymentManager getDeploymentManager() {
+	 * Returns the DeploymentManager instance associated with this
+	 * DeploymentManagerHttpHandlerFactory.
+	 * @return the DeploymentManager instance
+	 */
+	DeploymentManager getDeploymentManager() {
 		return this.deploymentManager;
 	}
 
@@ -77,12 +76,12 @@ class DeploymentManagerHttpHandlerFactory implements HttpHandlerFactory {
 		private final HttpHandler handler;
 
 		/**
-         * Constructs a new DeploymentManagerHandler with the specified DeploymentManager.
-         * 
-         * @param deploymentManager the DeploymentManager to be used by this handler
-         * @throws RuntimeException if a ServletException occurs during the start of the DeploymentManager
-         */
-        DeploymentManagerHandler(DeploymentManager deploymentManager) {
+		 * Constructs a new DeploymentManagerHandler with the specified DeploymentManager.
+		 * @param deploymentManager the DeploymentManager to be used by this handler
+		 * @throws RuntimeException if a ServletException occurs during the start of the
+		 * DeploymentManager
+		 */
+		DeploymentManagerHandler(DeploymentManager deploymentManager) {
 			this.deploymentManager = deploymentManager;
 			try {
 				this.handler = deploymentManager.start();
@@ -93,23 +92,24 @@ class DeploymentManagerHttpHandlerFactory implements HttpHandlerFactory {
 		}
 
 		/**
-         * Handles the HTTP server exchange request.
-         * 
-         * @param exchange the HTTP server exchange object
-         * @throws Exception if an error occurs while handling the request
-         */
-        @Override
+		 * Handles the HTTP server exchange request.
+		 * @param exchange the HTTP server exchange object
+		 * @throws Exception if an error occurs while handling the request
+		 */
+		@Override
 		public void handleRequest(HttpServerExchange exchange) throws Exception {
 			this.handler.handleRequest(exchange);
 		}
 
 		/**
-         * Closes the DeploymentManagerHandler by stopping and undeploying the deployment manager.
-         * 
-         * @throws IOException if an I/O error occurs while closing the DeploymentManagerHandler
-         * @throws RuntimeException if a ServletException occurs while stopping or undeploying the deployment manager
-         */
-        @Override
+		 * Closes the DeploymentManagerHandler by stopping and undeploying the deployment
+		 * manager.
+		 * @throws IOException if an I/O error occurs while closing the
+		 * DeploymentManagerHandler
+		 * @throws RuntimeException if a ServletException occurs while stopping or
+		 * undeploying the deployment manager
+		 */
+		@Override
 		public void close() throws IOException {
 			try {
 				this.deploymentManager.stop();
@@ -121,11 +121,11 @@ class DeploymentManagerHttpHandlerFactory implements HttpHandlerFactory {
 		}
 
 		/**
-         * Returns the DeploymentManager object associated with this DeploymentManagerHandler.
-         *
-         * @return the DeploymentManager object
-         */
-        DeploymentManager getDeploymentManager() {
+		 * Returns the DeploymentManager object associated with this
+		 * DeploymentManagerHandler.
+		 * @return the DeploymentManager object
+		 */
+		DeploymentManager getDeploymentManager() {
 			return this.deploymentManager;
 		}
 

@@ -29,21 +29,19 @@ class DockerRegistryTokenAuthentication extends JsonEncodedDockerRegistryAuthent
 	private final String token;
 
 	/**
-     * Constructs a new DockerRegistryTokenAuthentication object with the specified token.
-     * 
-     * @param token the token used for authentication
-     */
-    DockerRegistryTokenAuthentication(String token) {
+	 * Constructs a new DockerRegistryTokenAuthentication object with the specified token.
+	 * @param token the token used for authentication
+	 */
+	DockerRegistryTokenAuthentication(String token) {
 		this.token = token;
 		createAuthHeader();
 	}
 
 	/**
-     * Returns the token associated with this DockerRegistryTokenAuthentication instance.
-     *
-     * @return the token associated with this DockerRegistryTokenAuthentication instance
-     */
-    String getToken() {
+	 * Returns the token associated with this DockerRegistryTokenAuthentication instance.
+	 * @return the token associated with this DockerRegistryTokenAuthentication instance
+	 */
+	String getToken() {
 		return this.token;
 	}
 

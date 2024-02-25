@@ -72,110 +72,106 @@ public class MessageSourceProperties {
 	private boolean useCodeAsDefaultMessage = false;
 
 	/**
-     * Returns the basename of the MessageSourceProperties.
-     *
-     * @return the basename of the MessageSourceProperties
-     */
-    public String getBasename() {
+	 * Returns the basename of the MessageSourceProperties.
+	 * @return the basename of the MessageSourceProperties
+	 */
+	public String getBasename() {
 		return this.basename;
 	}
 
 	/**
-     * Sets the basename for the message source properties.
-     * 
-     * @param basename the basename to set
-     */
-    public void setBasename(String basename) {
+	 * Sets the basename for the message source properties.
+	 * @param basename the basename to set
+	 */
+	public void setBasename(String basename) {
 		this.basename = basename;
 	}
 
 	/**
-     * Returns the encoding used by the MessageSourceProperties.
-     *
-     * @return the encoding used by the MessageSourceProperties
-     */
-    public Charset getEncoding() {
+	 * Returns the encoding used by the MessageSourceProperties.
+	 * @return the encoding used by the MessageSourceProperties
+	 */
+	public Charset getEncoding() {
 		return this.encoding;
 	}
 
 	/**
-     * Sets the encoding for the message source.
-     * 
-     * @param encoding the encoding to be set
-     */
-    public void setEncoding(Charset encoding) {
+	 * Sets the encoding for the message source.
+	 * @param encoding the encoding to be set
+	 */
+	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
 	}
 
 	/**
-     * Returns the cache duration for the message source.
-     *
-     * @return the cache duration for the message source
-     */
-    public Duration getCacheDuration() {
+	 * Returns the cache duration for the message source.
+	 * @return the cache duration for the message source
+	 */
+	public Duration getCacheDuration() {
 		return this.cacheDuration;
 	}
 
 	/**
-     * Sets the cache duration for the message source.
-     * 
-     * @param cacheDuration the cache duration to be set
-     */
-    public void setCacheDuration(Duration cacheDuration) {
+	 * Sets the cache duration for the message source.
+	 * @param cacheDuration the cache duration to be set
+	 */
+	public void setCacheDuration(Duration cacheDuration) {
 		this.cacheDuration = cacheDuration;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the fallback to the system locale is enabled.
-     *
-     * @return {@code true} if fallback to the system locale is enabled, {@code false} otherwise
-     */
-    public boolean isFallbackToSystemLocale() {
+	 * Returns a boolean value indicating whether the fallback to the system locale is
+	 * enabled.
+	 * @return {@code true} if fallback to the system locale is enabled, {@code false}
+	 * otherwise
+	 */
+	public boolean isFallbackToSystemLocale() {
 		return this.fallbackToSystemLocale;
 	}
 
 	/**
-     * Sets the flag indicating whether to fallback to the system locale if a message is not found in the specified locale.
-     * 
-     * @param fallbackToSystemLocale true to enable fallback to system locale, false otherwise
-     */
-    public void setFallbackToSystemLocale(boolean fallbackToSystemLocale) {
+	 * Sets the flag indicating whether to fallback to the system locale if a message is
+	 * not found in the specified locale.
+	 * @param fallbackToSystemLocale true to enable fallback to system locale, false
+	 * otherwise
+	 */
+	public void setFallbackToSystemLocale(boolean fallbackToSystemLocale) {
 		this.fallbackToSystemLocale = fallbackToSystemLocale;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the message format should always be used.
-     * 
-     * @return true if the message format should always be used, false otherwise
-     */
-    public boolean isAlwaysUseMessageFormat() {
+	 * Returns a boolean value indicating whether the message format should always be
+	 * used.
+	 * @return true if the message format should always be used, false otherwise
+	 */
+	public boolean isAlwaysUseMessageFormat() {
 		return this.alwaysUseMessageFormat;
 	}
 
 	/**
-     * Sets the flag indicating whether to always use message format for resolving messages.
-     * 
-     * @param alwaysUseMessageFormat the flag indicating whether to always use message format
-     */
-    public void setAlwaysUseMessageFormat(boolean alwaysUseMessageFormat) {
+	 * Sets the flag indicating whether to always use message format for resolving
+	 * messages.
+	 * @param alwaysUseMessageFormat the flag indicating whether to always use message
+	 * format
+	 */
+	public void setAlwaysUseMessageFormat(boolean alwaysUseMessageFormat) {
 		this.alwaysUseMessageFormat = alwaysUseMessageFormat;
 	}
 
 	/**
-     * Returns a boolean value indicating whether to use the code as the default message.
-     * 
-     * @return true if the code should be used as the default message, false otherwise
-     */
-    public boolean isUseCodeAsDefaultMessage() {
+	 * Returns a boolean value indicating whether to use the code as the default message.
+	 * @return true if the code should be used as the default message, false otherwise
+	 */
+	public boolean isUseCodeAsDefaultMessage() {
 		return this.useCodeAsDefaultMessage;
 	}
 
 	/**
-     * Sets the flag indicating whether to use the code as the default message.
-     * 
-     * @param useCodeAsDefaultMessage the flag indicating whether to use the code as the default message
-     */
-    public void setUseCodeAsDefaultMessage(boolean useCodeAsDefaultMessage) {
+	 * Sets the flag indicating whether to use the code as the default message.
+	 * @param useCodeAsDefaultMessage the flag indicating whether to use the code as the
+	 * default message
+	 */
+	public void setUseCodeAsDefaultMessage(boolean useCodeAsDefaultMessage) {
 		this.useCodeAsDefaultMessage = useCodeAsDefaultMessage;
 	}
 

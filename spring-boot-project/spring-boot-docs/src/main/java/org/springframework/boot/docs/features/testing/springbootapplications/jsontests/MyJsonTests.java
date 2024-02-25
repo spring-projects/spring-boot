@@ -34,11 +34,10 @@ class MyJsonTests {
 	private JacksonTester<VehicleDetails> json;
 
 	/**
-     * Test method to serialize the VehicleDetails object.
-     * 
-     * @throws Exception if an error occurs during serialization
-     */
-    @Test
+	 * Test method to serialize the VehicleDetails object.
+	 * @throws Exception if an error occurs during serialization
+	 */
+	@Test
 	void serialize() throws Exception {
 		VehicleDetails details = new VehicleDetails("Honda", "Civic");
 		// Assert against a `.json` file in the same package as the test
@@ -49,11 +48,10 @@ class MyJsonTests {
 	}
 
 	/**
-     * Test method to deserialize a JSON string into a VehicleDetails object.
-     * 
-     * @throws Exception if an error occurs during deserialization
-     */
-    @Test
+	 * Test method to deserialize a JSON string into a VehicleDetails object.
+	 * @throws Exception if an error occurs during deserialization
+	 */
+	@Test
 	void deserialize() throws Exception {
 		String content = "{\"make\":\"Ford\",\"model\":\"Focus\"}";
 		assertThat(this.json.parse(content)).isEqualTo(new VehicleDetails("Ford", "Focus"));

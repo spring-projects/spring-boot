@@ -52,46 +52,44 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 	private final List<FailureAnalyzer> analyzers;
 
 	/**
-     * Constructs a new FailureAnalyzers object with the given ConfigurableApplicationContext and default resource location.
-     * 
-     * @param context the ConfigurableApplicationContext to be used
-     */
-    public FailureAnalyzers(ConfigurableApplicationContext context) {
+	 * Constructs a new FailureAnalyzers object with the given
+	 * ConfigurableApplicationContext and default resource location.
+	 * @param context the ConfigurableApplicationContext to be used
+	 */
+	public FailureAnalyzers(ConfigurableApplicationContext context) {
 		this(context,
 				SpringFactoriesLoader.forDefaultResourceLocation((context != null) ? context.getClassLoader() : null));
 	}
 
 	/**
-     * Constructs a new FailureAnalyzers object with the given ConfigurableApplicationContext and SpringFactoriesLoader.
-     * 
-     * @param context the ConfigurableApplicationContext to be used
-     * @param springFactoriesLoader the SpringFactoriesLoader to be used
-     */
-    FailureAnalyzers(ConfigurableApplicationContext context, SpringFactoriesLoader springFactoriesLoader) {
+	 * Constructs a new FailureAnalyzers object with the given
+	 * ConfigurableApplicationContext and SpringFactoriesLoader.
+	 * @param context the ConfigurableApplicationContext to be used
+	 * @param springFactoriesLoader the SpringFactoriesLoader to be used
+	 */
+	FailureAnalyzers(ConfigurableApplicationContext context, SpringFactoriesLoader springFactoriesLoader) {
 		this.springFactoriesLoader = springFactoriesLoader;
 		this.analyzers = loadFailureAnalyzers(context, this.springFactoriesLoader);
 	}
 
 	/**
-     * Loads the failure analyzers from the specified context and spring factories loader.
-     * 
-     * @param context the configurable application context
-     * @param springFactoriesLoader the spring factories loader
-     * @return the list of loaded failure analyzers
-     */
-    private static List<FailureAnalyzer> loadFailureAnalyzers(ConfigurableApplicationContext context,
+	 * Loads the failure analyzers from the specified context and spring factories loader.
+	 * @param context the configurable application context
+	 * @param springFactoriesLoader the spring factories loader
+	 * @return the list of loaded failure analyzers
+	 */
+	private static List<FailureAnalyzer> loadFailureAnalyzers(ConfigurableApplicationContext context,
 			SpringFactoriesLoader springFactoriesLoader) {
 		return springFactoriesLoader.load(FailureAnalyzer.class, getArgumentResolver(context),
 				FailureHandler.logging(logger));
 	}
 
 	/**
-     * Returns the argument resolver for the given application context.
-     * 
-     * @param context the configurable application context
-     * @return the argument resolver, or null if the context is null
-     */
-    private static ArgumentResolver getArgumentResolver(ConfigurableApplicationContext context) {
+	 * Returns the argument resolver for the given application context.
+	 * @param context the configurable application context
+	 * @return the argument resolver, or null if the context is null
+	 */
+	private static ArgumentResolver getArgumentResolver(ConfigurableApplicationContext context) {
 		if (context == null) {
 			return null;
 		}
@@ -101,25 +99,23 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 	}
 
 	/**
-     * Reports an exception by analyzing it using the provided analyzers.
-     * 
-     * @param failure the Throwable object representing the exception to be reported
-     * @return true if the exception was successfully reported, false otherwise
-     */
-    @Override
+	 * Reports an exception by analyzing it using the provided analyzers.
+	 * @param failure the Throwable object representing the exception to be reported
+	 * @return true if the exception was successfully reported, false otherwise
+	 */
+	@Override
 	public boolean reportException(Throwable failure) {
 		FailureAnalysis analysis = analyze(failure, this.analyzers);
 		return report(analysis);
 	}
 
 	/**
-     * Analyzes the given throwable failure using a list of failure analyzers.
-     * 
-     * @param failure   the throwable failure to be analyzed
-     * @param analyzers the list of failure analyzers to be used for analysis
-     * @return the failure analysis result, or null if no analysis result is found
-     */
-    private FailureAnalysis analyze(Throwable failure, List<FailureAnalyzer> analyzers) {
+	 * Analyzes the given throwable failure using a list of failure analyzers.
+	 * @param failure the throwable failure to be analyzed
+	 * @param analyzers the list of failure analyzers to be used for analysis
+	 * @return the failure analysis result, or null if no analysis result is found
+	 */
+	private FailureAnalysis analyze(Throwable failure, List<FailureAnalyzer> analyzers) {
 		for (FailureAnalyzer analyzer : analyzers) {
 			try {
 				FailureAnalysis analysis = analyzer.analyze(failure);
@@ -135,12 +131,11 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 	}
 
 	/**
-     * Reports the failure analysis using the provided analysis object.
-     * 
-     * @param analysis the FailureAnalysis object containing the details of the failure
-     * @return true if the analysis was reported successfully, false otherwise
-     */
-    private boolean report(FailureAnalysis analysis) {
+	 * Reports the failure analysis using the provided analysis object.
+	 * @param analysis the FailureAnalysis object containing the details of the failure
+	 * @return true if the analysis was reported successfully, false otherwise
+	 */
+	private boolean report(FailureAnalysis analysis) {
 		List<FailureAnalysisReporter> reporters = this.springFactoriesLoader.load(FailureAnalysisReporter.class);
 		if (analysis == null || reporters.isEmpty()) {
 			return false;

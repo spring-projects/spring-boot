@@ -37,11 +37,11 @@ class MyJmxTests {
 	private MBeanServer mBeanServer;
 
 	/**
-     * This is an example test method that verifies if the MBean server contains the "java.lang" domain.
-     * 
-     * @throws AssertionError if the "java.lang" domain is not found in the MBean server
-     */
-    @Test
+	 * This is an example test method that verifies if the MBean server contains the
+	 * "java.lang" domain.
+	 * @throws AssertionError if the "java.lang" domain is not found in the MBean server
+	 */
+	@Test
 	void exampleTest() {
 		assertThat(this.mBeanServer.getDomains()).contains("java.lang");
 		// ...

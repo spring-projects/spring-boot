@@ -41,12 +41,11 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 class JndiJtaConfiguration {
 
 	/**
-     * Creates a JtaTransactionManager bean.
-     * 
-     * @param transactionManagerCustomizers the customizers for the transaction manager
-     * @return the JtaTransactionManager bean
-     */
-    @Bean
+	 * Creates a JtaTransactionManager bean.
+	 * @param transactionManagerCustomizers the customizers for the transaction manager
+	 * @return the JtaTransactionManager bean
+	 */
+	@Bean
 	JtaTransactionManager transactionManager(
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager();

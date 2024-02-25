@@ -58,13 +58,15 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 public class MongoDataAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link PropertiesMongoConnectionDetails} if there is no existing bean of type {@link MongoConnectionDetails}.
-     * Uses the provided {@link MongoProperties} to construct the {@link PropertiesMongoConnectionDetails}.
-     * 
-     * @param properties the {@link MongoProperties} used to construct the {@link PropertiesMongoConnectionDetails}
-     * @return a new instance of {@link PropertiesMongoConnectionDetails} if there is no existing bean of type {@link MongoConnectionDetails}
-     */
-    @Bean
+	 * Creates a new instance of {@link PropertiesMongoConnectionDetails} if there is no
+	 * existing bean of type {@link MongoConnectionDetails}. Uses the provided
+	 * {@link MongoProperties} to construct the {@link PropertiesMongoConnectionDetails}.
+	 * @param properties the {@link MongoProperties} used to construct the
+	 * {@link PropertiesMongoConnectionDetails}
+	 * @return a new instance of {@link PropertiesMongoConnectionDetails} if there is no
+	 * existing bean of type {@link MongoConnectionDetails}
+	 */
+	@Bean
 	@ConditionalOnMissingBean(MongoConnectionDetails.class)
 	PropertiesMongoConnectionDetails mongoConnectionDetails(MongoProperties properties) {
 		return new PropertiesMongoConnectionDetails(properties);

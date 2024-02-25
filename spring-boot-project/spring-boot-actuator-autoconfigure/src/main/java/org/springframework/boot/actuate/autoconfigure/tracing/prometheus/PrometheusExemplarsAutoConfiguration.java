@@ -45,15 +45,16 @@ import org.springframework.util.function.SingletonSupplier;
 public class PrometheusExemplarsAutoConfiguration {
 
 	/**
-     * Returns a {@link SpanContextSupplier} bean if no other bean of the same type is present in the application context.
-     * The returned bean is an instance of {@link LazyTracingSpanContextSupplier} which is responsible for supplying
-     * span context information for tracing purposes. It uses an {@link ObjectProvider} to lazily retrieve an instance
-     * of {@link Tracer} from the application context.
-     *
-     * @param tracerProvider the object provider for retrieving an instance of {@link Tracer}
-     * @return a {@link SpanContextSupplier} bean
-     */
-    @Bean
+	 * Returns a {@link SpanContextSupplier} bean if no other bean of the same type is
+	 * present in the application context. The returned bean is an instance of
+	 * {@link LazyTracingSpanContextSupplier} which is responsible for supplying span
+	 * context information for tracing purposes. It uses an {@link ObjectProvider} to
+	 * lazily retrieve an instance of {@link Tracer} from the application context.
+	 * @param tracerProvider the object provider for retrieving an instance of
+	 * {@link Tracer}
+	 * @return a {@link SpanContextSupplier} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	SpanContextSupplier spanContextSupplier(ObjectProvider<Tracer> tracerProvider) {
 		return new LazyTracingSpanContextSupplier(tracerProvider);
@@ -69,42 +70,38 @@ public class PrometheusExemplarsAutoConfiguration {
 		private final SingletonSupplier<Tracer> tracer;
 
 		/**
-         * Constructs a new LazyTracingSpanContextSupplier with the given tracer provider.
-         * 
-         * @param tracerProvider the provider for obtaining the Tracer object
-         */
-        LazyTracingSpanContextSupplier(ObjectProvider<Tracer> tracerProvider) {
+		 * Constructs a new LazyTracingSpanContextSupplier with the given tracer provider.
+		 * @param tracerProvider the provider for obtaining the Tracer object
+		 */
+		LazyTracingSpanContextSupplier(ObjectProvider<Tracer> tracerProvider) {
 			this.tracer = SingletonSupplier.of(tracerProvider::getObject);
 		}
 
 		/**
-         * Returns the trace ID associated with the current span.
-         * 
-         * @return the trace ID as a String, or null if there is no current span
-         */
-        @Override
+		 * Returns the trace ID associated with the current span.
+		 * @return the trace ID as a String, or null if there is no current span
+		 */
+		@Override
 		public String getTraceId() {
 			Span currentSpan = currentSpan();
 			return (currentSpan != null) ? currentSpan.context().traceId() : null;
 		}
 
 		/**
-         * Returns the span ID of the current span.
-         * 
-         * @return the span ID of the current span, or null if there is no current span
-         */
-        @Override
+		 * Returns the span ID of the current span.
+		 * @return the span ID of the current span, or null if there is no current span
+		 */
+		@Override
 		public String getSpanId() {
 			Span currentSpan = currentSpan();
 			return (currentSpan != null) ? currentSpan.context().spanId() : null;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the current span is sampled.
-         * 
-         * @return true if the current span is sampled, false otherwise
-         */
-        @Override
+		 * Returns a boolean value indicating whether the current span is sampled.
+		 * @return true if the current span is sampled, false otherwise
+		 */
+		@Override
 		public boolean isSampled() {
 			Span currentSpan = currentSpan();
 			if (currentSpan == null) {
@@ -115,11 +112,11 @@ public class PrometheusExemplarsAutoConfiguration {
 		}
 
 		/**
-         * Returns the current span from the tracer obtained by the LazyTracingSpanContextSupplier.
-         *
-         * @return the current span
-         */
-        private Span currentSpan() {
+		 * Returns the current span from the tracer obtained by the
+		 * LazyTracingSpanContextSupplier.
+		 * @return the current span
+		 */
+		private Span currentSpan() {
 			return this.tracer.obtain().currentSpan();
 		}
 

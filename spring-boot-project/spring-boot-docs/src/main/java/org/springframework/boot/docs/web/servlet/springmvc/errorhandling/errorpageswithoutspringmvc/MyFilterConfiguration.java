@@ -31,11 +31,10 @@ import org.springframework.context.annotation.Configuration;
 public class MyFilterConfiguration {
 
 	/**
-     * Registers a filter for handling requests.
-     * 
-     * @return The filter registration bean for the configured filter.
-     */
-    @Bean
+	 * Registers a filter for handling requests.
+	 * @return The filter registration bean for the configured filter.
+	 */
+	@Bean
 	public FilterRegistrationBean<MyFilter> myFilter() {
 		FilterRegistrationBean<MyFilter> registration = new FilterRegistrationBean<>(new MyFilter());
 		// ...

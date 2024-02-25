@@ -36,50 +36,53 @@ class OpenTelemetryTracingContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<Container<?>, OtlpTracingConnectionDetails> {
 
 	/**
-     * Constructs a new instance of the OpenTelemetryTracingContainerConnectionDetailsFactory class.
-     * 
-     * @param imageName the name of the Docker image for the OpenTelemetry Collector Contrib
-     * @param autoConfigurationClass the fully qualified class name of the OtlpAutoConfiguration class from Spring Boot Actuator
-     */
-    OpenTelemetryTracingContainerConnectionDetailsFactory() {
+	 * Constructs a new instance of the
+	 * OpenTelemetryTracingContainerConnectionDetailsFactory class.
+	 * @param imageName the name of the Docker image for the OpenTelemetry Collector
+	 * Contrib
+	 * @param autoConfigurationClass the fully qualified class name of the
+	 * OtlpAutoConfiguration class from Spring Boot Actuator
+	 */
+	OpenTelemetryTracingContainerConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
 				"org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfiguration");
 	}
 
 	/**
-     * Returns the OpenTelemetryTracingContainerConnectionDetails for the given ContainerConnectionSource.
-     *
-     * @param source the ContainerConnectionSource from which to retrieve the connection details
-     * @return the OpenTelemetryTracingContainerConnectionDetails for the given ContainerConnectionSource
-     */
-    @Override
+	 * Returns the OpenTelemetryTracingContainerConnectionDetails for the given
+	 * ContainerConnectionSource.
+	 * @param source the ContainerConnectionSource from which to retrieve the connection
+	 * details
+	 * @return the OpenTelemetryTracingContainerConnectionDetails for the given
+	 * ContainerConnectionSource
+	 */
+	@Override
 	protected OtlpTracingConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<Container<?>> source) {
 		return new OpenTelemetryTracingContainerConnectionDetails(source);
 	}
 
 	/**
-     * OpenTelemetryTracingContainerConnectionDetails class.
-     */
-    private static final class OpenTelemetryTracingContainerConnectionDetails
+	 * OpenTelemetryTracingContainerConnectionDetails class.
+	 */
+	private static final class OpenTelemetryTracingContainerConnectionDetails
 			extends ContainerConnectionDetails<Container<?>> implements OtlpTracingConnectionDetails {
 
 		/**
-         * Constructs a new OpenTelemetryTracingContainerConnectionDetails object with the specified ContainerConnectionSource.
-         * 
-         * @param source the source of the container connection
-         */
-        private OpenTelemetryTracingContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		 * Constructs a new OpenTelemetryTracingContainerConnectionDetails object with the
+		 * specified ContainerConnectionSource.
+		 * @param source the source of the container connection
+		 */
+		private OpenTelemetryTracingContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 
 		/**
-         * Returns the URL for the OpenTelemetry tracing container connection.
-         * The URL is constructed using the host and mapped port of the container.
-         *
-         * @return the URL for the OpenTelemetry tracing container connection
-         */
-        @Override
+		 * Returns the URL for the OpenTelemetry tracing container connection. The URL is
+		 * constructed using the host and mapped port of the container.
+		 * @return the URL for the OpenTelemetry tracing container connection
+		 */
+		@Override
 		public String getUrl() {
 			return "http://%s:%d/v1/traces".formatted(getContainer().getHost(), getContainer().getMappedPort(4318));
 		}

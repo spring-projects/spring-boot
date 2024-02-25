@@ -38,13 +38,14 @@ import org.springframework.util.StringUtils;
 class DataSourceInitializationConfiguration {
 
 	/**
-     * Creates a {@link SqlDataSourceScriptDatabaseInitializer} bean to initialize the database using SQL scripts.
-     * 
-     * @param dataSource the {@link DataSource} to be used for database initialization
-     * @param properties the {@link SqlInitializationProperties} containing the initialization properties
-     * @return the {@link SqlDataSourceScriptDatabaseInitializer} bean
-     */
-    @Bean
+	 * Creates a {@link SqlDataSourceScriptDatabaseInitializer} bean to initialize the
+	 * database using SQL scripts.
+	 * @param dataSource the {@link DataSource} to be used for database initialization
+	 * @param properties the {@link SqlInitializationProperties} containing the
+	 * initialization properties
+	 * @return the {@link SqlDataSourceScriptDatabaseInitializer} bean
+	 */
+	@Bean
 	SqlDataSourceScriptDatabaseInitializer dataSourceScriptDatabaseInitializer(DataSource dataSource,
 			SqlInitializationProperties properties) {
 		return new SqlDataSourceScriptDatabaseInitializer(
@@ -52,16 +53,15 @@ class DataSourceInitializationConfiguration {
 	}
 
 	/**
-     * Determines the appropriate data source based on the provided username and password.
-     * If both username and password are provided, a new data source is created with the provided credentials.
-     * Otherwise, the original data source is returned.
-     *
-     * @param dataSource the original data source
-     * @param username   the username for the new data source (optional)
-     * @param password   the password for the new data source (optional)
-     * @return the determined data source
-     */
-    private static DataSource determineDataSource(DataSource dataSource, String username, String password) {
+	 * Determines the appropriate data source based on the provided username and password.
+	 * If both username and password are provided, a new data source is created with the
+	 * provided credentials. Otherwise, the original data source is returned.
+	 * @param dataSource the original data source
+	 * @param username the username for the new data source (optional)
+	 * @param password the password for the new data source (optional)
+	 * @return the determined data source
+	 */
+	private static DataSource determineDataSource(DataSource dataSource, String username, String password) {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 			return DataSourceBuilder.derivedFrom(dataSource)
 				.username(username)

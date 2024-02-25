@@ -28,21 +28,21 @@ import org.springframework.core.convert.converter.Converter;
 public class SampleWebUiApplication {
 
 	/**
-     * Creates a new instance of the MessageRepository interface using the InMemoryMessageRepository implementation.
-     * 
-     * @return a new instance of the MessageRepository interface
-     */
-    @Bean
+	 * Creates a new instance of the MessageRepository interface using the
+	 * InMemoryMessageRepository implementation.
+	 * @return a new instance of the MessageRepository interface
+	 */
+	@Bean
 	public MessageRepository messageRepository() {
 		return new InMemoryMessageRepository();
 	}
 
 	/**
-     * Returns a converter that converts a String representation of a message ID into a Message object.
-     * 
-     * @return the message converter
-     */
-    @Bean
+	 * Returns a converter that converts a String representation of a message ID into a
+	 * Message object.
+	 * @return the message converter
+	 */
+	@Bean
 	public Converter<String, Message> messageConverter() {
 		return new Converter<>() {
 			@Override
@@ -53,12 +53,11 @@ public class SampleWebUiApplication {
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring Boot application by calling the SpringApplication.run() method.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring Boot
+	 * application by calling the SpringApplication.run() method.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleWebUiApplication.class, args);
 	}
 

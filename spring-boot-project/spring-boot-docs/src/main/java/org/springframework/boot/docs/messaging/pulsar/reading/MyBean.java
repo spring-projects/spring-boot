@@ -26,11 +26,10 @@ import org.springframework.stereotype.Component;
 public class MyBean {
 
 	/**
-     * Process a message with the given content.
-     * 
-     * @param content the content of the message to be processed
-     */
-    @PulsarReader(topics = "someTopic", startMessageId = "earliest")
+	 * Process a message with the given content.
+	 * @param content the content of the message to be processed
+	 */
+	@PulsarReader(topics = "someTopic", startMessageId = "earliest")
 	public void processMessage(String content) {
 		// ...
 	}

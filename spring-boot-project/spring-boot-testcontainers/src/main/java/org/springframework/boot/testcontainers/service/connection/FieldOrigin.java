@@ -34,23 +34,22 @@ class FieldOrigin implements Origin {
 	private final Field field;
 
 	/**
-     * Initializes a new instance of the FieldOrigin class with the specified field.
-     * 
-     * @param field the field to set as the origin
-     * @throws IllegalArgumentException if the field is null
-     */
-    FieldOrigin(Field field) {
+	 * Initializes a new instance of the FieldOrigin class with the specified field.
+	 * @param field the field to set as the origin
+	 * @throws IllegalArgumentException if the field is null
+	 */
+	FieldOrigin(Field field) {
 		Assert.notNull(field, "Field must not be null");
 		this.field = field;
 	}
 
 	/**
-     * Compares this FieldOrigin object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the specified object is equal to this FieldOrigin object, false otherwise
-     */
-    @Override
+	 * Compares this FieldOrigin object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the specified object is equal to this FieldOrigin object, false
+	 * otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -63,23 +62,21 @@ class FieldOrigin implements Origin {
 	}
 
 	/**
-     * Returns a hash code value for the object. 
-     * The hash code is generated based on the hash code of the field.
-     *
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns a hash code value for the object. The hash code is generated based on the
+	 * hash code of the field.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		return this.field.hashCode();
 	}
 
 	/**
-     * Returns a string representation of the current object.
-     * The string representation is in the format of the declaring class name followed by a dot and the field name.
-     *
-     * @return a string representation of the current object
-     */
-    @Override
+	 * Returns a string representation of the current object. The string representation is
+	 * in the format of the declaring class name followed by a dot and the field name.
+	 * @return a string representation of the current object
+	 */
+	@Override
 	public String toString() {
 		return ClassUtils.getShortName(this.field.getDeclaringClass()) + "." + this.field.getName();
 	}

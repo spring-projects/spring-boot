@@ -61,32 +61,30 @@ public class JettyWebServerFactoryCustomizer
 	private final ServerProperties serverProperties;
 
 	/**
-     * Constructs a new JettyWebServerFactoryCustomizer with the specified environment and server properties.
-     * 
-     * @param environment the environment used for configuration
-     * @param serverProperties the server properties used for configuration
-     */
-    public JettyWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
+	 * Constructs a new JettyWebServerFactoryCustomizer with the specified environment and
+	 * server properties.
+	 * @param environment the environment used for configuration
+	 * @param serverProperties the server properties used for configuration
+	 */
+	public JettyWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
 		this.environment = environment;
 		this.serverProperties = serverProperties;
 	}
 
 	/**
-     * Returns the order value for this customizer.
-     * 
-     * @return the order value
-     */
-    @Override
+	 * Returns the order value for this customizer.
+	 * @return the order value
+	 */
+	@Override
 	public int getOrder() {
 		return ORDER;
 	}
 
 	/**
-     * Customize the Jetty web server factory.
-     *
-     * @param factory the configurable Jetty web server factory
-     */
-    @Override
+	 * Customize the Jetty web server factory.
+	 * @param factory the configurable Jetty web server factory
+	 */
+	@Override
 	public void customize(ConfigurableJettyWebServerFactory factory) {
 		ServerProperties.Jetty properties = this.serverProperties.getJetty();
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
@@ -117,21 +115,20 @@ public class JettyWebServerFactoryCustomizer
 	}
 
 	/**
-     * Checks if the given value is positive.
-     * 
-     * @param value the value to be checked
-     * @return true if the value is positive, false otherwise
-     */
-    private boolean isPositive(Integer value) {
+	 * Checks if the given value is positive.
+	 * @param value the value to be checked
+	 * @return true if the value is positive, false otherwise
+	 */
+	private boolean isPositive(Integer value) {
 		return value > 0;
 	}
 
 	/**
-     * Returns a boolean value indicating whether to use forward headers or deduce it based on the active cloud platform.
-     * 
-     * @return {@code true} if forward headers should be used, {@code false} otherwise
-     */
-    private boolean getOrDeduceUseForwardHeaders() {
+	 * Returns a boolean value indicating whether to use forward headers or deduce it
+	 * based on the active cloud platform.
+	 * @return {@code true} if forward headers should be used, {@code false} otherwise
+	 */
+	private boolean getOrDeduceUseForwardHeaders() {
 		if (this.serverProperties.getForwardHeadersStrategy() == null) {
 			CloudPlatform platform = CloudPlatform.getActive(this.environment);
 			return platform != null && platform.isUsingForwardHeaders();
@@ -140,12 +137,11 @@ public class JettyWebServerFactoryCustomizer
 	}
 
 	/**
-     * Customizes the idle timeout for the Jetty web server factory.
-     * 
-     * @param factory           the configurable Jetty web server factory
-     * @param connectionTimeout the duration of the idle timeout
-     */
-    private void customizeIdleTimeout(ConfigurableJettyWebServerFactory factory, Duration connectionTimeout) {
+	 * Customizes the idle timeout for the Jetty web server factory.
+	 * @param factory the configurable Jetty web server factory
+	 * @param connectionTimeout the duration of the idle timeout
+	 */
+	private void customizeIdleTimeout(ConfigurableJettyWebServerFactory factory, Duration connectionTimeout) {
 		factory.addServerCustomizers((server) -> {
 			for (org.eclipse.jetty.server.Connector connector : server.getConnectors()) {
 				if (connector instanceof AbstractConnector abstractConnector) {
@@ -156,12 +152,11 @@ public class JettyWebServerFactoryCustomizer
 	}
 
 	/**
-     * Customizes the maximum HTTP form post size for the given Jetty web server factory.
-     * 
-     * @param factory The configurable Jetty web server factory to customize.
-     * @param maxHttpFormPostSize The maximum HTTP form post size to set.
-     */
-    private void customizeMaxHttpFormPostSize(ConfigurableJettyWebServerFactory factory, int maxHttpFormPostSize) {
+	 * Customizes the maximum HTTP form post size for the given Jetty web server factory.
+	 * @param factory The configurable Jetty web server factory to customize.
+	 * @param maxHttpFormPostSize The maximum HTTP form post size to set.
+	 */
+	private void customizeMaxHttpFormPostSize(ConfigurableJettyWebServerFactory factory, int maxHttpFormPostSize) {
 		factory.addServerCustomizers(new JettyServerCustomizer() {
 
 			@Override
@@ -191,12 +186,11 @@ public class JettyWebServerFactoryCustomizer
 	}
 
 	/**
-     * Customizes the access log configuration for the Jetty web server factory.
-     * 
-     * @param factory    the configurable Jetty web server factory
-     * @param properties the access log properties
-     */
-    private void customizeAccessLog(ConfigurableJettyWebServerFactory factory,
+	 * Customizes the access log configuration for the Jetty web server factory.
+	 * @param factory the configurable Jetty web server factory
+	 * @param properties the access log properties
+	 */
+	private void customizeAccessLog(ConfigurableJettyWebServerFactory factory,
 			ServerProperties.Jetty.Accesslog properties) {
 		factory.addServerCustomizers((server) -> {
 			RequestLogWriter logWriter = new RequestLogWriter();
@@ -218,15 +212,14 @@ public class JettyWebServerFactoryCustomizer
 	}
 
 	/**
-     * Returns the log format for the Jetty access log based on the provided properties.
-     * If a custom format is specified in the properties, it will be returned.
-     * If the format is set to EXTENDED_NCSA, the extended NCSA format will be returned.
-     * Otherwise, the default NCSA format will be returned.
-     *
-     * @param properties The Jetty access log properties.
-     * @return The log format for the Jetty access log.
-     */
-    private String getLogFormat(ServerProperties.Jetty.Accesslog properties) {
+	 * Returns the log format for the Jetty access log based on the provided properties.
+	 * If a custom format is specified in the properties, it will be returned. If the
+	 * format is set to EXTENDED_NCSA, the extended NCSA format will be returned.
+	 * Otherwise, the default NCSA format will be returned.
+	 * @param properties The Jetty access log properties.
+	 * @return The log format for the Jetty access log.
+	 */
+	private String getLogFormat(ServerProperties.Jetty.Accesslog properties) {
 		if (properties.getCustomFormat() != null) {
 			return properties.getCustomFormat();
 		}
@@ -237,46 +230,46 @@ public class JettyWebServerFactoryCustomizer
 	}
 
 	/**
-     * MaxHttpRequestHeaderSizeCustomizer class.
-     */
-    private static class MaxHttpRequestHeaderSizeCustomizer implements JettyServerCustomizer {
+	 * MaxHttpRequestHeaderSizeCustomizer class.
+	 */
+	private static class MaxHttpRequestHeaderSizeCustomizer implements JettyServerCustomizer {
 
 		private final int maxRequestHeaderSize;
 
 		/**
-         * Constructs a new MaxHttpRequestHeaderSizeCustomizer with the specified maximum request header size.
-         *
-         * @param maxRequestHeaderSize the maximum size of the request header
-         */
-        MaxHttpRequestHeaderSizeCustomizer(int maxRequestHeaderSize) {
+		 * Constructs a new MaxHttpRequestHeaderSizeCustomizer with the specified maximum
+		 * request header size.
+		 * @param maxRequestHeaderSize the maximum size of the request header
+		 */
+		MaxHttpRequestHeaderSizeCustomizer(int maxRequestHeaderSize) {
 			this.maxRequestHeaderSize = maxRequestHeaderSize;
 		}
 
 		/**
-         * Customizes the server by setting the maximum request header size for each connector.
-         * 
-         * @param server the server to be customized
-         */
-        @Override
+		 * Customizes the server by setting the maximum request header size for each
+		 * connector.
+		 * @param server the server to be customized
+		 */
+		@Override
 		public void customize(Server server) {
 			Arrays.stream(server.getConnectors()).forEach(this::customize);
 		}
 
 		/**
-         * Customizes the given Jetty server connector by customizing each connection factory.
-         * 
-         * @param connector the Jetty server connector to be customized
-         */
-        private void customize(org.eclipse.jetty.server.Connector connector) {
+		 * Customizes the given Jetty server connector by customizing each connection
+		 * factory.
+		 * @param connector the Jetty server connector to be customized
+		 */
+		private void customize(org.eclipse.jetty.server.Connector connector) {
 			connector.getConnectionFactories().forEach(this::customize);
 		}
 
 		/**
-         * Customizes the given ConnectionFactory by setting the maximum request header size.
-         * 
-         * @param factory the ConnectionFactory to be customized
-         */
-        private void customize(ConnectionFactory factory) {
+		 * Customizes the given ConnectionFactory by setting the maximum request header
+		 * size.
+		 * @param factory the ConnectionFactory to be customized
+		 */
+		private void customize(ConnectionFactory factory) {
 			if (factory instanceof HttpConfiguration.ConnectionFactory) {
 				((HttpConfiguration.ConnectionFactory) factory).getHttpConfiguration()
 					.setRequestHeaderSize(this.maxRequestHeaderSize);
@@ -286,46 +279,46 @@ public class JettyWebServerFactoryCustomizer
 	}
 
 	/**
-     * MaxHttpResponseHeaderSizeCustomizer class.
-     */
-    private static class MaxHttpResponseHeaderSizeCustomizer implements JettyServerCustomizer {
+	 * MaxHttpResponseHeaderSizeCustomizer class.
+	 */
+	private static class MaxHttpResponseHeaderSizeCustomizer implements JettyServerCustomizer {
 
 		private final int maxResponseHeaderSize;
 
 		/**
-         * Constructs a new MaxHttpResponseHeaderSizeCustomizer with the specified maximum response header size.
-         *
-         * @param maxResponseHeaderSize the maximum size of the response header
-         */
-        MaxHttpResponseHeaderSizeCustomizer(int maxResponseHeaderSize) {
+		 * Constructs a new MaxHttpResponseHeaderSizeCustomizer with the specified maximum
+		 * response header size.
+		 * @param maxResponseHeaderSize the maximum size of the response header
+		 */
+		MaxHttpResponseHeaderSizeCustomizer(int maxResponseHeaderSize) {
 			this.maxResponseHeaderSize = maxResponseHeaderSize;
 		}
 
 		/**
-         * Customizes the server by setting the maximum response header size for each connector.
-         * 
-         * @param server the server to be customized
-         */
-        @Override
+		 * Customizes the server by setting the maximum response header size for each
+		 * connector.
+		 * @param server the server to be customized
+		 */
+		@Override
 		public void customize(Server server) {
 			Arrays.stream(server.getConnectors()).forEach(this::customize);
 		}
 
 		/**
-         * Customizes the given Jetty server connector by customizing each connection factory.
-         * 
-         * @param connector the Jetty server connector to be customized
-         */
-        private void customize(org.eclipse.jetty.server.Connector connector) {
+		 * Customizes the given Jetty server connector by customizing each connection
+		 * factory.
+		 * @param connector the Jetty server connector to be customized
+		 */
+		private void customize(org.eclipse.jetty.server.Connector connector) {
 			connector.getConnectionFactories().forEach(this::customize);
 		}
 
 		/**
-         * Customizes the given ConnectionFactory by setting the maximum response header size.
-         * 
-         * @param factory the ConnectionFactory to customize
-         */
-        private void customize(ConnectionFactory factory) {
+		 * Customizes the given ConnectionFactory by setting the maximum response header
+		 * size.
+		 * @param factory the ConnectionFactory to customize
+		 */
+		private void customize(ConnectionFactory factory) {
 			if (factory instanceof HttpConfiguration.ConnectionFactory httpConnectionFactory) {
 				httpConnectionFactory.getHttpConfiguration().setResponseHeaderSize(this.maxResponseHeaderSize);
 			}

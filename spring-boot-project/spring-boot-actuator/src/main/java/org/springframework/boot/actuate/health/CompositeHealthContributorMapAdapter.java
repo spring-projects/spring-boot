@@ -29,12 +29,13 @@ class CompositeHealthContributorMapAdapter<V> extends NamedContributorsMapAdapte
 		implements CompositeHealthContributor {
 
 	/**
-     * Constructs a new CompositeHealthContributorMapAdapter with the specified map and value adapter.
-     * 
-     * @param map the map to be adapted
-     * @param valueAdapter the function used to adapt the values in the map to HealthContributor instances
-     */
-    CompositeHealthContributorMapAdapter(Map<String, V> map, Function<V, ? extends HealthContributor> valueAdapter) {
+	 * Constructs a new CompositeHealthContributorMapAdapter with the specified map and
+	 * value adapter.
+	 * @param map the map to be adapted
+	 * @param valueAdapter the function used to adapt the values in the map to
+	 * HealthContributor instances
+	 */
+	CompositeHealthContributorMapAdapter(Map<String, V> map, Function<V, ? extends HealthContributor> valueAdapter) {
 		super(map, valueAdapter);
 	}
 

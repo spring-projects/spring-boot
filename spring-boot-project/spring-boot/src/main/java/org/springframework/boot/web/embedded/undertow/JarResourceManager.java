@@ -40,12 +40,11 @@ class JarResourceManager implements ResourceManager {
 	private final String jarPath;
 
 	/**
-     * Constructs a new JarResourceManager with the specified jar file.
-     * 
-     * @param jarFile the jar file to be used as the resource manager
-     * @throws IllegalArgumentException if the jar file path is malformed
-     */
-    JarResourceManager(File jarFile) {
+	 * Constructs a new JarResourceManager with the specified jar file.
+	 * @param jarFile the jar file to be used as the resource manager
+	 * @throws IllegalArgumentException if the jar file path is malformed
+	 */
+	JarResourceManager(File jarFile) {
 		try {
 			this.jarPath = jarFile.getAbsoluteFile().toURI().toURL().toString();
 		}
@@ -55,13 +54,12 @@ class JarResourceManager implements ResourceManager {
 	}
 
 	/**
-     * Retrieves a resource from the specified path within the JAR file.
-     * 
-     * @param path the path of the resource to retrieve
-     * @return the resource at the specified path, or null if it does not exist
-     * @throws IOException if an I/O error occurs while retrieving the resource
-     */
-    @Override
+	 * Retrieves a resource from the specified path within the JAR file.
+	 * @param path the path of the resource to retrieve
+	 * @return the resource at the specified path, or null if it does not exist
+	 * @throws IOException if an I/O error occurs while retrieving the resource
+	 */
+	@Override
 	public Resource getResource(String path) throws IOException {
 		URL url = new URL("jar:" + this.jarPath + "!" + (path.startsWith("/") ? path : "/" + path));
 		URLResource resource = new URLResource(url, path);
@@ -72,44 +70,42 @@ class JarResourceManager implements ResourceManager {
 	}
 
 	/**
-     * Returns whether the JarResourceManager supports resource change listeners.
-     * 
-     * @return {@code false} if resource change listeners are not supported, {@code true} otherwise.
-     */
-    @Override
+	 * Returns whether the JarResourceManager supports resource change listeners.
+	 * @return {@code false} if resource change listeners are not supported, {@code true}
+	 * otherwise.
+	 */
+	@Override
 	public boolean isResourceChangeListenerSupported() {
 		return false;
 	}
 
 	/**
-     * Registers a resource change listener.
-     * 
-     * @param listener the resource change listener to register
-     * @throws UnsupportedOperationException if resource change listener is not supported
-     */
-    @Override
+	 * Registers a resource change listener.
+	 * @param listener the resource change listener to register
+	 * @throws UnsupportedOperationException if resource change listener is not supported
+	 */
+	@Override
 	public void registerResourceChangeListener(ResourceChangeListener listener) {
 		throw UndertowMessages.MESSAGES.resourceChangeListenerNotSupported();
 
 	}
 
 	/**
-     * Removes the specified resource change listener from this JarResourceManager.
-     * 
-     * @param listener the resource change listener to be removed
-     * @throws UnsupportedOperationException if resource change listeners are not supported by this JarResourceManager
-     */
-    @Override
+	 * Removes the specified resource change listener from this JarResourceManager.
+	 * @param listener the resource change listener to be removed
+	 * @throws UnsupportedOperationException if resource change listeners are not
+	 * supported by this JarResourceManager
+	 */
+	@Override
 	public void removeResourceChangeListener(ResourceChangeListener listener) {
 		throw UndertowMessages.MESSAGES.resourceChangeListenerNotSupported();
 	}
 
 	/**
-     * Closes the resource manager.
-     *
-     * @throws IOException if an I/O error occurs while closing the resource manager.
-     */
-    @Override
+	 * Closes the resource manager.
+	 * @throws IOException if an I/O error occurs while closing the resource manager.
+	 */
+	@Override
 	public void close() throws IOException {
 
 	}

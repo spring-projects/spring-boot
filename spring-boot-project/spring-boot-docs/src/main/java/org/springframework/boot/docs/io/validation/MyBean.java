@@ -29,13 +29,13 @@ import org.springframework.validation.annotation.Validated;
 public class MyBean {
 
 	/**
-     * Finds an archive by its code and author.
-     * 
-     * @param code   the code of the archive to find (must be between 8 and 10 characters long)
-     * @param author the author of the archive
-     * @return the found archive, or null if no archive is found
-     */
-    public Archive findByCodeAndAuthor(@Size(min = 8, max = 10) String code, Author author) {
+	 * Finds an archive by its code and author.
+	 * @param code the code of the archive to find (must be between 8 and 10 characters
+	 * long)
+	 * @param author the author of the archive
+	 * @return the found archive, or null if no archive is found
+	 */
+	public Archive findByCodeAndAuthor(@Size(min = 8, max = 10) String code, Author author) {
 		return /**/ null;
 	}
 

@@ -28,23 +28,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SampleWebSecureApplication implements WebMvcConfigurer {
 
 	/**
-     * Adds view controllers to the registry.
-     * 
-     * @param registry the ViewControllerRegistry to add the view controllers to
-     */
-    @Override
+	 * Adds view controllers to the registry.
+	 * @param registry the ViewControllerRegistry to add the view controllers to
+	 */
+	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/").setViewName("home");
 		registry.addViewController("/login").setViewName("login");
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It initializes and runs the Spring Boot application using the SpringApplicationBuilder.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It initializes and runs the
+	 * Spring Boot application using the SpringApplicationBuilder.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		new SpringApplicationBuilder(SampleWebSecureApplication.class).run(args);
 	}
 

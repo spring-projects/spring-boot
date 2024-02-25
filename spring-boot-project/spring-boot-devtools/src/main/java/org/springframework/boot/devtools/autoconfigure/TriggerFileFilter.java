@@ -32,23 +32,21 @@ public class TriggerFileFilter implements FileFilter {
 	private final String name;
 
 	/**
-     * Creates a new TriggerFileFilter with the specified name.
-     * 
-     * @param name the name of the TriggerFileFilter (must not be null)
-     * @throws IllegalArgumentException if the name is null
-     */
-    public TriggerFileFilter(String name) {
+	 * Creates a new TriggerFileFilter with the specified name.
+	 * @param name the name of the TriggerFileFilter (must not be null)
+	 * @throws IllegalArgumentException if the name is null
+	 */
+	public TriggerFileFilter(String name) {
 		Assert.notNull(name, "Name must not be null");
 		this.name = name;
 	}
 
 	/**
-     * Determines whether or not the specified file should be accepted by this filter.
-     * 
-     * @param file the file to be checked
-     * @return true if the file should be accepted, false otherwise
-     */
-    @Override
+	 * Determines whether or not the specified file should be accepted by this filter.
+	 * @param file the file to be checked
+	 * @return true if the file should be accepted, false otherwise
+	 */
+	@Override
 	public boolean accept(File file) {
 		return file.getName().equals(this.name);
 	}

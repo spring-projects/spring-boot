@@ -25,18 +25,17 @@ import java.util.Random;
 public final class RandomStringUtil {
 
 	/**
-     * Private constructor for the RandomStringUtil class.
-     */
-    private RandomStringUtil() {
+	 * Private constructor for the RandomStringUtil class.
+	 */
+	private RandomStringUtil() {
 	}
 
 	/**
-     * Generates a random base64 encoded string of the specified length.
-     *
-     * @param length the length of the string to generate
-     * @return a random base64 encoded string
-     */
-    public static String getRandomBase64EncodedString(int length) {
+	 * Generates a random base64 encoded string of the specified length.
+	 * @param length the length of the string to generate
+	 * @return a random base64 encoded string
+	 */
+	public static String getRandomBase64EncodedString(int length) {
 		byte[] responseHeader = new byte[length];
 		new Random().nextBytes(responseHeader);
 		return Base64.getEncoder().encodeToString(responseHeader);

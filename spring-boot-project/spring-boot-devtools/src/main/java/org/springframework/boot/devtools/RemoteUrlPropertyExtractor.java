@@ -43,14 +43,14 @@ class RemoteUrlPropertyExtractor implements ApplicationListener<ApplicationEnvir
 	private static final String NON_OPTION_ARGS = CommandLinePropertySource.DEFAULT_NON_OPTION_ARGS_PROPERTY_NAME;
 
 	/**
-     * This method is called when the application environment is prepared.
-     * It extracts the remote URL from the environment properties and adds it as a property source.
-     * 
-     * @param event The ApplicationEnvironmentPreparedEvent object representing the event.
-     *              It contains the environment properties.
-     * @throws IllegalStateException If the remote URL is not specified or if it is malformed.
-     */
-    @Override
+	 * This method is called when the application environment is prepared. It extracts the
+	 * remote URL from the environment properties and adds it as a property source.
+	 * @param event The ApplicationEnvironmentPreparedEvent object representing the event.
+	 * It contains the environment properties.
+	 * @throws IllegalStateException If the remote URL is not specified or if it is
+	 * malformed.
+	 */
+	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
 		String url = cleanRemoteUrl(environment.getProperty(NON_OPTION_ARGS));
@@ -68,12 +68,11 @@ class RemoteUrlPropertyExtractor implements ApplicationListener<ApplicationEnvir
 	}
 
 	/**
-     * Cleans the remote URL by removing the trailing slash if present.
-     * 
-     * @param url the remote URL to be cleaned
-     * @return the cleaned remote URL
-     */
-    private String cleanRemoteUrl(String url) {
+	 * Cleans the remote URL by removing the trailing slash if present.
+	 * @param url the remote URL to be cleaned
+	 * @return the cleaned remote URL
+	 */
+	private String cleanRemoteUrl(String url) {
 		if (StringUtils.hasText(url) && url.endsWith("/")) {
 			return url.substring(0, url.length() - 1);
 		}
@@ -81,14 +80,13 @@ class RemoteUrlPropertyExtractor implements ApplicationListener<ApplicationEnvir
 	}
 
 	/**
-     * Returns the order of this RemoteUrlPropertyExtractor bean.
-     * 
-     * The order determines the precedence of this bean when multiple beans are present in the application context.
-     * A higher order value means a higher precedence.
-     * 
-     * @return the order of this RemoteUrlPropertyExtractor bean
-     */
-    @Override
+	 * Returns the order of this RemoteUrlPropertyExtractor bean.
+	 *
+	 * The order determines the precedence of this bean when multiple beans are present in
+	 * the application context. A higher order value means a higher precedence.
+	 * @return the order of this RemoteUrlPropertyExtractor bean
+	 */
+	@Override
 	public int getOrder() {
 		return Ordered.HIGHEST_PRECEDENCE;
 	}

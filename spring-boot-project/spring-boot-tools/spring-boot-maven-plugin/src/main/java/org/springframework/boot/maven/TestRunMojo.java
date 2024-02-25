@@ -62,11 +62,10 @@ public class TestRunMojo extends AbstractRunMojo {
 	private File testClassesDirectory;
 
 	/**
-     * Returns the list of directories containing the compiled classes.
-     * 
-     * @return the list of directories containing the compiled classes
-     */
-    @Override
+	 * Returns the list of directories containing the compiled classes.
+	 * @return the list of directories containing the compiled classes
+	 */
+	@Override
 	protected List<File> getClassesDirectories() {
 		ArrayList<File> classesDirectories = new ArrayList<>(super.getClassesDirectories());
 		classesDirectories.add(0, this.testClassesDirectory);
@@ -74,21 +73,19 @@ public class TestRunMojo extends AbstractRunMojo {
 	}
 
 	/**
-     * Returns whether the test classpath should be used.
-     *
-     * @return {@code true} if the test classpath should be used, {@code false} otherwise.
-     */
-    @Override
+	 * Returns whether the test classpath should be used.
+	 * @return {@code true} if the test classpath should be used, {@code false} otherwise.
+	 */
+	@Override
 	protected boolean isUseTestClasspath() {
 		return true;
 	}
 
 	/**
-     * Resolves the JVM arguments for the test run.
-     * 
-     * @return the resolved JVM arguments
-     */
-    @Override
+	 * Resolves the JVM arguments for the test run.
+	 * @return the resolved JVM arguments
+	 */
+	@Override
 	protected RunArguments resolveJvmArguments() {
 		RunArguments jvmArguments = super.resolveJvmArguments();
 		if (this.optimizedLaunch) {
@@ -98,16 +95,16 @@ public class TestRunMojo extends AbstractRunMojo {
 	}
 
 	/**
-     * Runs the Java process with the given executor, working directory, arguments, and environment variables.
-     * 
-     * @param processExecutor The Java process executor.
-     * @param workingDirectory The working directory for the process.
-     * @param args The arguments for the process.
-     * @param environmentVariables The environment variables for the process.
-     * @throws MojoExecutionException If an error occurs during the execution of the Mojo.
-     * @throws MojoFailureException If the Mojo fails.
-     */
-    @Override
+	 * Runs the Java process with the given executor, working directory, arguments, and
+	 * environment variables.
+	 * @param processExecutor The Java process executor.
+	 * @param workingDirectory The working directory for the process.
+	 * @param args The arguments for the process.
+	 * @param environmentVariables The environment variables for the process.
+	 * @throws MojoExecutionException If an error occurs during the execution of the Mojo.
+	 * @throws MojoFailureException If the Mojo fails.
+	 */
+	@Override
 	protected void run(JavaProcessExecutor processExecutor, File workingDirectory, List<String> args,
 			Map<String, String> environmentVariables) throws MojoExecutionException, MojoFailureException {
 		processExecutor
@@ -117,25 +114,24 @@ public class TestRunMojo extends AbstractRunMojo {
 	}
 
 	/**
-     * RunProcessKiller class.
-     */
-    private static final class RunProcessKiller implements Runnable {
+	 * RunProcessKiller class.
+	 */
+	private static final class RunProcessKiller implements Runnable {
 
 		private final RunProcess runProcess;
 
 		/**
-         * Initializes a new instance of the RunProcessKiller class.
-         * 
-         * @param runProcess the RunProcess object to be killed
-         */
-        private RunProcessKiller(RunProcess runProcess) {
+		 * Initializes a new instance of the RunProcessKiller class.
+		 * @param runProcess the RunProcess object to be killed
+		 */
+		private RunProcessKiller(RunProcess runProcess) {
 			this.runProcess = runProcess;
 		}
 
 		/**
-         * This method is used to kill the running process.
-         */
-        @Override
+		 * This method is used to kill the running process.
+		 */
+		@Override
 		public void run() {
 			this.runProcess.kill();
 		}

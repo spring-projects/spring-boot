@@ -54,31 +54,28 @@ class OperationMethodParameter implements OperationParameter {
 	}
 
 	/**
-     * Returns the name of the OperationMethodParameter.
-     *
-     * @return the name of the OperationMethodParameter
-     */
-    @Override
+	 * Returns the name of the OperationMethodParameter.
+	 * @return the name of the OperationMethodParameter
+	 */
+	@Override
 	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Returns the type of the parameter.
-     * 
-     * @return the type of the parameter
-     */
-    @Override
+	 * Returns the type of the parameter.
+	 * @return the type of the parameter
+	 */
+	@Override
 	public Class<?> getType() {
 		return this.parameter.getType();
 	}
 
 	/**
-     * Returns a boolean value indicating whether the parameter is mandatory.
-     * 
-     * @return true if the parameter is mandatory, false otherwise
-     */
-    @Override
+	 * Returns a boolean value indicating whether the parameter is mandatory.
+	 * @return true if the parameter is mandatory, false otherwise
+	 */
+	@Override
 	public boolean isMandatory() {
 		if (!ObjectUtils.isEmpty(this.parameter.getAnnotationsByType(Nullable.class))) {
 			return false;
@@ -90,42 +87,41 @@ class OperationMethodParameter implements OperationParameter {
 	}
 
 	/**
-     * Returns the annotation of the specified type if present on this parameter.
-     * 
-     * @param annotation the class object representing the annotation type
-     * @return the annotation of the specified type if present, or null if not present
-     * @throws NullPointerException if the specified annotation is null
-     * @throws TypeNotPresentException if the annotation type is not accessible
-     * @throws AnnotationTypeMismatchException if the annotation is not of the specified type
-     */
-    @Override
+	 * Returns the annotation of the specified type if present on this parameter.
+	 * @param annotation the class object representing the annotation type
+	 * @return the annotation of the specified type if present, or null if not present
+	 * @throws NullPointerException if the specified annotation is null
+	 * @throws TypeNotPresentException if the annotation type is not accessible
+	 * @throws AnnotationTypeMismatchException if the annotation is not of the specified
+	 * type
+	 */
+	@Override
 	public <T extends Annotation> T getAnnotation(Class<T> annotation) {
 		return this.parameter.getAnnotation(annotation);
 	}
 
 	/**
-     * Returns a string representation of the OperationMethodParameter object.
-     * The string representation includes the name of the parameter and its type.
-     *
-     * @return a string representation of the OperationMethodParameter object
-     */
-    @Override
+	 * Returns a string representation of the OperationMethodParameter object. The string
+	 * representation includes the name of the parameter and its type.
+	 * @return a string representation of the OperationMethodParameter object
+	 */
+	@Override
 	public String toString() {
 		return this.name + " of type " + this.parameter.getType().getName();
 	}
 
 	/**
-     * Jsr305 class.
-     */
-    private static final class Jsr305 {
+	 * Jsr305 class.
+	 */
+	private static final class Jsr305 {
 
 		/**
-         * Checks if a parameter is mandatory based on the presence of the {@code Nonnull} annotation and its {@code when} value.
-         * 
-         * @param parameter the parameter to check
-         * @return {@code true} if the parameter is mandatory, {@code false} otherwise
-         */
-        boolean isMandatory(Parameter parameter) {
+		 * Checks if a parameter is mandatory based on the presence of the {@code Nonnull}
+		 * annotation and its {@code when} value.
+		 * @param parameter the parameter to check
+		 * @return {@code true} if the parameter is mandatory, {@code false} otherwise
+		 */
+		boolean isMandatory(Parameter parameter) {
 			MergedAnnotation<Nonnull> annotation = MergedAnnotations.from(parameter).get(Nonnull.class);
 			return !annotation.isPresent() || annotation.getEnum("when", When.class) == When.ALWAYS;
 		}

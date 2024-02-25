@@ -90,14 +90,17 @@ import org.springframework.util.StringUtils;
 public class IntegrationAutoConfiguration {
 
 	/**
-     * Creates an instance of {@link org.springframework.integration.context.IntegrationProperties} bean
-     * if there is no existing bean with the name {@link IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME}.
-     * The properties are mapped from the provided {@link IntegrationProperties} object.
-     *
-     * @param properties the {@link IntegrationProperties} object containing the properties to be mapped
-     * @return the created {@link org.springframework.integration.context.IntegrationProperties} bean
-     */
-    @Bean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
+	 * Creates an instance of
+	 * {@link org.springframework.integration.context.IntegrationProperties} bean if there
+	 * is no existing bean with the name
+	 * {@link IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME}. The
+	 * properties are mapped from the provided {@link IntegrationProperties} object.
+	 * @param properties the {@link IntegrationProperties} object containing the
+	 * properties to be mapped
+	 * @return the created
+	 * {@link org.springframework.integration.context.IntegrationProperties} bean
+	 */
+	@Bean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
 	@ConditionalOnMissingBean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
 	public static org.springframework.integration.context.IntegrationProperties integrationGlobalProperties(
 			IntegrationProperties properties) {
@@ -130,14 +133,16 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationConfiguration {
 
 		/**
-         * Creates a default PollerMetadata bean if no other bean with the same name is present.
-         * The default PollerMetadata is configured based on the integrationProperties.
-         * 
-         * @param integrationProperties the IntegrationProperties object containing the poller configuration
-         * @return the PollerMetadata bean
-         * @throws MutuallyExclusiveConfigurationPropertiesException if multiple non-null values are found in the poller configuration
-         */
-        @Bean(PollerMetadata.DEFAULT_POLLER)
+		 * Creates a default PollerMetadata bean if no other bean with the same name is
+		 * present. The default PollerMetadata is configured based on the
+		 * integrationProperties.
+		 * @param integrationProperties the IntegrationProperties object containing the
+		 * poller configuration
+		 * @return the PollerMetadata bean
+		 * @throws MutuallyExclusiveConfigurationPropertiesException if multiple non-null
+		 * values are found in the poller configuration
+		 */
+		@Bean(PollerMetadata.DEFAULT_POLLER)
 		@ConditionalOnMissingBean(name = PollerMetadata.DEFAULT_POLLER)
 		public PollerMetadata defaultPollerMetadata(IntegrationProperties integrationProperties) {
 			IntegrationProperties.Poller poller = integrationProperties.getPoller();
@@ -156,12 +161,12 @@ public class IntegrationAutoConfiguration {
 		}
 
 		/**
-         * Converts an IntegrationProperties.Poller object into a Trigger object.
-         * 
-         * @param poller the IntegrationProperties.Poller object to convert
-         * @return a Trigger object based on the provided poller object, or null if the poller object is null
-         */
-        private Trigger asTrigger(IntegrationProperties.Poller poller) {
+		 * Converts an IntegrationProperties.Poller object into a Trigger object.
+		 * @param poller the IntegrationProperties.Poller object to convert
+		 * @return a Trigger object based on the provided poller object, or null if the
+		 * poller object is null
+		 */
+		private Trigger asTrigger(IntegrationProperties.Poller poller) {
 			if (StringUtils.hasText(poller.getCron())) {
 				return new CronTrigger(poller.getCron());
 			}
@@ -175,14 +180,16 @@ public class IntegrationAutoConfiguration {
 		}
 
 		/**
-         * Creates a periodic trigger with the specified period, initial delay, and fixed rate.
-         * 
-         * @param period the duration between each execution of the trigger
-         * @param initialDelay the duration to wait before the first execution of the trigger
-         * @param fixedRate true if the trigger should be executed at a fixed rate, false if it should be executed at a fixed delay
-         * @return the created periodic trigger
-         */
-        private Trigger createPeriodicTrigger(Duration period, Duration initialDelay, boolean fixedRate) {
+		 * Creates a periodic trigger with the specified period, initial delay, and fixed
+		 * rate.
+		 * @param period the duration between each execution of the trigger
+		 * @param initialDelay the duration to wait before the first execution of the
+		 * trigger
+		 * @param fixedRate true if the trigger should be executed at a fixed rate, false
+		 * if it should be executed at a fixed delay
+		 * @return the created periodic trigger
+		 */
+		private Trigger createPeriodicTrigger(Duration period, Duration initialDelay, boolean fixedRate) {
 			PeriodicTrigger trigger = new PeriodicTrigger(period);
 			if (initialDelay != null) {
 				trigger.setInitialDelay(initialDelay);
@@ -204,13 +211,13 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationTaskSchedulerConfiguration {
 
 		/**
-         * Returns the task scheduler bean for the integration context.
-         * 
-         * @param taskSchedulerBuilder The task scheduler builder.
-         * @param threadPoolTaskSchedulerBuilderProvider The provider for the thread pool task scheduler builder.
-         * @return The task scheduler bean.
-         */
-        @Bean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
+		 * Returns the task scheduler bean for the integration context.
+		 * @param taskSchedulerBuilder The task scheduler builder.
+		 * @param threadPoolTaskSchedulerBuilderProvider The provider for the thread pool
+		 * task scheduler builder.
+		 * @return The task scheduler bean.
+		 */
+		@Bean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
 		public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder taskSchedulerBuilder,
 				ObjectProvider<ThreadPoolTaskSchedulerBuilder> threadPoolTaskSchedulerBuilderProvider) {
 			ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder = threadPoolTaskSchedulerBuilderProvider
@@ -234,13 +241,12 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationJmxConfiguration {
 
 		/**
-         * Creates and configures an instance of IntegrationMBeanExporter.
-         * 
-         * @param beanFactory the BeanFactory used to retrieve the MBeanServer bean
-         * @param properties the JmxProperties used to configure the exporter
-         * @return the configured IntegrationMBeanExporter instance
-         */
-        @Bean
+		 * Creates and configures an instance of IntegrationMBeanExporter.
+		 * @param beanFactory the BeanFactory used to retrieve the MBeanServer bean
+		 * @param properties the JmxProperties used to configure the exporter
+		 * @return the configured IntegrationMBeanExporter instance
+		 */
+		@Bean
 		public IntegrationMBeanExporter integrationMbeanExporter(BeanFactory beanFactory, JmxProperties properties) {
 			IntegrationMBeanExporter exporter = new IntegrationMBeanExporter();
 			String defaultDomain = properties.getDefaultDomain();
@@ -263,9 +269,9 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationManagementConfiguration {
 
 		/**
-         * EnableIntegrationManagementConfiguration class.
-         */
-        @Configuration(proxyBeanMethods = false)
+		 * EnableIntegrationManagementConfiguration class.
+		 */
+		@Configuration(proxyBeanMethods = false)
 		@EnableIntegrationManagement(
 				defaultLoggingEnabled = "${spring.integration.management.default-logging-enabled:true}",
 				observationPatterns = "${spring.integration.management.observation-patterns:}")
@@ -295,15 +301,16 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationJdbcConfiguration {
 
 		/**
-         * Creates a new instance of IntegrationDataSourceScriptDatabaseInitializer if there is no existing bean of type
-         * IntegrationDataSourceScriptDatabaseInitializer. This initializer is responsible for initializing the integration
-         * data source by executing SQL scripts on the provided data source.
-         *
-         * @param dataSource the data source to be initialized
-         * @param properties the integration properties containing JDBC configuration
-         * @return a new instance of IntegrationDataSourceScriptDatabaseInitializer
-         */
-        @Bean
+		 * Creates a new instance of IntegrationDataSourceScriptDatabaseInitializer if
+		 * there is no existing bean of type
+		 * IntegrationDataSourceScriptDatabaseInitializer. This initializer is responsible
+		 * for initializing the integration data source by executing SQL scripts on the
+		 * provided data source.
+		 * @param dataSource the data source to be initialized
+		 * @param properties the integration properties containing JDBC configuration
+		 * @return a new instance of IntegrationDataSourceScriptDatabaseInitializer
+		 */
+		@Bean
 		@ConditionalOnMissingBean(IntegrationDataSourceScriptDatabaseInitializer.class)
 		public IntegrationDataSourceScriptDatabaseInitializer integrationDataSourceInitializer(DataSource dataSource,
 				IntegrationProperties properties) {
@@ -327,26 +334,26 @@ public class IntegrationAutoConfiguration {
 		static class AnyRSocketChannelAdapterAvailable extends AnyNestedCondition {
 
 			/**
-             * Checks if there is any RSocket channel adapter available.
-             * 
-             * @return true if there is any RSocket channel adapter available, false otherwise
-             */
-            AnyRSocketChannelAdapterAvailable() {
+			 * Checks if there is any RSocket channel adapter available.
+			 * @return true if there is any RSocket channel adapter available, false
+			 * otherwise
+			 */
+			AnyRSocketChannelAdapterAvailable() {
 				super(ConfigurationPhase.REGISTER_BEAN);
 			}
 
 			/**
-             * IntegrationRSocketEndpointAvailable class.
-             */
-            @ConditionalOnBean(IntegrationRSocketEndpoint.class)
+			 * IntegrationRSocketEndpointAvailable class.
+			 */
+			@ConditionalOnBean(IntegrationRSocketEndpoint.class)
 			static class IntegrationRSocketEndpointAvailable {
 
 			}
 
 			/**
-             * RSocketOutboundGatewayAvailable class.
-             */
-            @ConditionalOnBean(RSocketOutboundGateway.class)
+			 * RSocketOutboundGatewayAvailable class.
+			 */
+			@ConditionalOnBean(RSocketOutboundGateway.class)
 			static class RSocketOutboundGatewayAvailable {
 
 			}
@@ -354,21 +361,23 @@ public class IntegrationAutoConfiguration {
 		}
 
 		/**
-         * IntegrationRSocketServerConfiguration class.
-         */
-        @Configuration(proxyBeanMethods = false)
+		 * IntegrationRSocketServerConfiguration class.
+		 */
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(TcpServerTransport.class)
 		@AutoConfigureBefore(RSocketMessagingAutoConfiguration.class)
 		protected static class IntegrationRSocketServerConfiguration {
 
 			/**
-             * Creates a new instance of {@link RSocketMessageHandler} if no bean of type {@link ServerRSocketMessageHandler} is present.
-             * 
-             * @param rSocketStrategies the {@link RSocketStrategies} to be used by the message handler
-             * @param integrationProperties the {@link IntegrationProperties} containing the RSocket server configuration
-             * @return the created {@link RSocketMessageHandler}
-             */
-            @Bean
+			 * Creates a new instance of {@link RSocketMessageHandler} if no bean of type
+			 * {@link ServerRSocketMessageHandler} is present.
+			 * @param rSocketStrategies the {@link RSocketStrategies} to be used by the
+			 * message handler
+			 * @param integrationProperties the {@link IntegrationProperties} containing
+			 * the RSocket server configuration
+			 * @return the created {@link RSocketMessageHandler}
+			 */
+			@Bean
 			@ConditionalOnMissingBean(ServerRSocketMessageHandler.class)
 			public RSocketMessageHandler serverRSocketMessageHandler(RSocketStrategies rSocketStrategies,
 					IntegrationProperties integrationProperties) {
@@ -380,12 +389,13 @@ public class IntegrationAutoConfiguration {
 			}
 
 			/**
-             * Creates a new instance of {@link ServerRSocketConnector} if no other bean of the same type is present.
-             * 
-             * @param messageHandler the {@link ServerRSocketMessageHandler} to be used by the connector
-             * @return a new instance of {@link ServerRSocketConnector}
-             */
-            @Bean
+			 * Creates a new instance of {@link ServerRSocketConnector} if no other bean
+			 * of the same type is present.
+			 * @param messageHandler the {@link ServerRSocketMessageHandler} to be used by
+			 * the connector
+			 * @return a new instance of {@link ServerRSocketConnector}
+			 */
+			@Bean
 			@ConditionalOnMissingBean
 			public ServerRSocketConnector serverRSocketConnector(ServerRSocketMessageHandler messageHandler) {
 				return new ServerRSocketConnector(messageHandler);
@@ -394,21 +404,22 @@ public class IntegrationAutoConfiguration {
 		}
 
 		/**
-         * IntegrationRSocketClientConfiguration class.
-         */
-        @Configuration(proxyBeanMethods = false)
+		 * IntegrationRSocketClientConfiguration class.
+		 */
+		@Configuration(proxyBeanMethods = false)
 		protected static class IntegrationRSocketClientConfiguration {
 
 			/**
-             * Creates a ClientRSocketConnector bean for connecting to a remote RSocket server.
-             * This bean is conditionally created only if no other bean of the same type is present,
-             * and if the RemoteRSocketServerAddressConfigured condition is met.
-             * 
-             * @param integrationProperties The integration properties containing the RSocket client configuration.
-             * @param rSocketStrategies The RSocket strategies to be used by the client.
-             * @return The created ClientRSocketConnector bean.
-             */
-            @Bean
+			 * Creates a ClientRSocketConnector bean for connecting to a remote RSocket
+			 * server. This bean is conditionally created only if no other bean of the
+			 * same type is present, and if the RemoteRSocketServerAddressConfigured
+			 * condition is met.
+			 * @param integrationProperties The integration properties containing the
+			 * RSocket client configuration.
+			 * @param rSocketStrategies The RSocket strategies to be used by the client.
+			 * @return The created ClientRSocketConnector bean.
+			 */
+			@Bean
 			@ConditionalOnMissingBean
 			@Conditional(RemoteRSocketServerAddressConfigured.class)
 			public ClientRSocketConnector clientRSocketConnector(IntegrationProperties integrationProperties,
@@ -428,28 +439,29 @@ public class IntegrationAutoConfiguration {
 			static class RemoteRSocketServerAddressConfigured extends AnyNestedCondition {
 
 				/**
-                 * Constructor for the RemoteRSocketServerAddressConfigured class.
-                 * 
-                 * Initializes a new instance of the class with the specified configuration phase.
-                 * 
-                 * @param configurationPhase The configuration phase for the RemoteRSocketServerAddressConfigured class.
-                 */
-                RemoteRSocketServerAddressConfigured() {
+				 * Constructor for the RemoteRSocketServerAddressConfigured class.
+				 *
+				 * Initializes a new instance of the class with the specified
+				 * configuration phase.
+				 * @param configurationPhase The configuration phase for the
+				 * RemoteRSocketServerAddressConfigured class.
+				 */
+				RemoteRSocketServerAddressConfigured() {
 					super(ConfigurationPhase.REGISTER_BEAN);
 				}
 
 				/**
-                 * WebSocketAddressConfigured class.
-                 */
-                @ConditionalOnProperty(prefix = "spring.integration.rsocket.client", name = "uri")
+				 * WebSocketAddressConfigured class.
+				 */
+				@ConditionalOnProperty(prefix = "spring.integration.rsocket.client", name = "uri")
 				static class WebSocketAddressConfigured {
 
 				}
 
 				/**
-                 * TcpAddressConfigured class.
-                 */
-                @ConditionalOnProperty(prefix = "spring.integration.rsocket.client", name = { "host", "port" })
+				 * TcpAddressConfigured class.
+				 */
+				@ConditionalOnProperty(prefix = "spring.integration.rsocket.client", name = { "host", "port" })
 				static class TcpAddressConfigured {
 
 				}
@@ -461,18 +473,17 @@ public class IntegrationAutoConfiguration {
 	}
 
 	/**
-     * OnIntegrationDatasourceInitializationCondition class.
-     */
-    static class OnIntegrationDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
+	 * OnIntegrationDatasourceInitializationCondition class.
+	 */
+	static class OnIntegrationDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
 
 		/**
-         * Constructor for the OnIntegrationDatasourceInitializationCondition class.
-         * Initializes the condition with the specified name and property key.
-         *
-         * @param name the name of the condition
-         * @param propertyKey the property key for the condition
-         */
-        OnIntegrationDatasourceInitializationCondition() {
+		 * Constructor for the OnIntegrationDatasourceInitializationCondition class.
+		 * Initializes the condition with the specified name and property key.
+		 * @param name the name of the condition
+		 * @param propertyKey the property key for the condition
+		 */
+		OnIntegrationDatasourceInitializationCondition() {
 			super("Integration", "spring.integration.jdbc.initialize-schema");
 		}
 

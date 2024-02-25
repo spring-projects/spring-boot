@@ -146,12 +146,11 @@ public class Restarter {
 	}
 
 	/**
-     * Returns the name of the main class associated with the specified thread.
-     * 
-     * @param thread the thread for which to retrieve the main class name
-     * @return the name of the main class, or null if an exception occurred
-     */
-    private String getMainClassName(Thread thread) {
+	 * Returns the name of the main class associated with the specified thread.
+	 * @param thread the thread for which to retrieve the main class name
+	 * @return the name of the main class, or null if an exception occurred
+	 */
+	private String getMainClassName(Thread thread) {
 		try {
 			return new MainMethod(thread).getDeclaringClassName();
 		}
@@ -161,11 +160,11 @@ public class Restarter {
 	}
 
 	/**
-     * Initializes the Restarter.
-     * 
-     * @param restartOnInitialize true if the application should be restarted immediately after initialization, false otherwise
-     */
-    protected void initialize(boolean restartOnInitialize) {
+	 * Initializes the Restarter.
+	 * @param restartOnInitialize true if the application should be restarted immediately
+	 * after initialization, false otherwise
+	 */
+	protected void initialize(boolean restartOnInitialize) {
 		preInitializeLeakyClasses();
 		if (this.initialUrls != null) {
 			this.urls.addAll(Arrays.asList(this.initialUrls));
@@ -177,16 +176,18 @@ public class Restarter {
 	}
 
 	/**
-     * Restarts the application immediately.
-     * 
-     * This method attempts to restart the application by calling the {@code start} method with a {@code FailureHandler.NONE} parameter,
-     * cleaning up caches, and exiting the current thread using the {@code SilentExitExceptionHandler.exitCurrentThread} method.
-     * 
-     * If an exception occurs during the restart process, a warning message is logged using the logger of the Restarter class.
-     * 
-     * @throws Exception if an exception occurs during the restart process
-     */
-    private void immediateRestart() {
+	 * Restarts the application immediately.
+	 *
+	 * This method attempts to restart the application by calling the {@code start} method
+	 * with a {@code FailureHandler.NONE} parameter, cleaning up caches, and exiting the
+	 * current thread using the {@code SilentExitExceptionHandler.exitCurrentThread}
+	 * method.
+	 *
+	 * If an exception occurs during the restart process, a warning message is logged
+	 * using the logger of the Restarter class.
+	 * @throws Exception if an exception occurs during the restart process
+	 */
+	private void immediateRestart() {
 		try {
 			getLeakSafeThread().callAndWait(() -> {
 				start(FailureHandler.NONE);
@@ -293,12 +294,11 @@ public class Restarter {
 	}
 
 	/**
-     * Starts the application by relaunching it with a new class loader.
-     * 
-     * @return the throwable exception if any occurred during the start process
-     * @throws Exception if unable to find the main class to restart
-     */
-    private Throwable doStart() throws Exception {
+	 * Starts the application by relaunching it with a new class loader.
+	 * @return the throwable exception if any occurred during the start process
+	 * @throws Exception if unable to find the main class to restart
+	 */
+	private Throwable doStart() throws Exception {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
 		URL[] urls = this.urls.toArray(new URL[0]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
@@ -348,27 +348,25 @@ public class Restarter {
 	}
 
 	/**
-     * Cleans up the caches used by the Restarter class.
-     * This method flushes the Introspector caches and then cleans up any known caches.
-     */
-    private void cleanupCaches() {
+	 * Cleans up the caches used by the Restarter class. This method flushes the
+	 * Introspector caches and then cleans up any known caches.
+	 */
+	private void cleanupCaches() {
 		Introspector.flushCaches();
 		cleanupKnownCaches();
 	}
 
 	/**
-     * Cleans up known caches.
-     * 
-     * This method is used to clean up soft reference caches early rather than waiting for memory limits to be reached.
-     * It performs the following tasks:
-     * 1. Clears the cache for ResolvableType.
-     * 2. Cleans the cache for cached introspection results.
-     * 3. Clears the cache for ReflectionUtils.
-     * 4. Clears the cache for AnnotationUtils.
-     * 
-     * @since [version number]
-     */
-    private void cleanupKnownCaches() {
+	 * Cleans up known caches.
+	 *
+	 * This method is used to clean up soft reference caches early rather than waiting for
+	 * memory limits to be reached. It performs the following tasks: 1. Clears the cache
+	 * for ResolvableType. 2. Cleans the cache for cached introspection results. 3. Clears
+	 * the cache for ReflectionUtils. 4. Clears the cache for AnnotationUtils.
+	 *
+	 * @since [version number]
+	 */
+	private void cleanupKnownCaches() {
 		// Whilst not strictly necessary it helps to clean up soft reference caches
 		// early rather than waiting for memory limits to be reached
 		ResolvableType.clearCache();
@@ -378,24 +376,25 @@ public class Restarter {
 	}
 
 	/**
-     * Clears the cached introspection results cache.
-     * This method clears the accepted class loaders, strong class cache, and soft class cache
-     * in the CachedIntrospectionResults class.
-     */
-    private void cleanCachedIntrospectionResultsCache() {
+	 * Clears the cached introspection results cache. This method clears the accepted
+	 * class loaders, strong class cache, and soft class cache in the
+	 * CachedIntrospectionResults class.
+	 */
+	private void cleanCachedIntrospectionResultsCache() {
 		clear(CachedIntrospectionResults.class, "acceptedClassLoaders");
 		clear(CachedIntrospectionResults.class, "strongClassCache");
 		clear(CachedIntrospectionResults.class, "softClassCache");
 	}
 
 	/**
-     * Clears the cache of AnnotationUtils.
-     * This method attempts to clear the cache by calling AnnotationUtils.clearCache().
-     * If an exception is thrown during the cache clearing process, it falls back to manually clearing the cache by calling clear() method on AnnotationUtils class for "findAnnotationCache" and "annotatedInterfaceCache".
-     * 
-     * @throws Throwable if an exception occurs during the cache clearing process
-     */
-    private void clearAnnotationUtilsCache() {
+	 * Clears the cache of AnnotationUtils. This method attempts to clear the cache by
+	 * calling AnnotationUtils.clearCache(). If an exception is thrown during the cache
+	 * clearing process, it falls back to manually clearing the cache by calling clear()
+	 * method on AnnotationUtils class for "findAnnotationCache" and
+	 * "annotatedInterfaceCache".
+	 * @throws Throwable if an exception occurs during the cache clearing process
+	 */
+	private void clearAnnotationUtilsCache() {
 		try {
 			AnnotationUtils.clearCache();
 		}
@@ -406,12 +405,11 @@ public class Restarter {
 	}
 
 	/**
-     * Clears the specified field in the given class.
-     * 
-     * @param type      the class containing the field
-     * @param fieldName the name of the field to be cleared
-     */
-    private void clear(Class<?> type, String fieldName) {
+	 * Clears the specified field in the given class.
+	 * @param type the class containing the field
+	 * @param fieldName the name of the field to be cleared
+	 */
+	private void clear(Class<?> type, String fieldName) {
 		try {
 			Field field = type.getDeclaredField(fieldName);
 			field.setAccessible(true);
@@ -431,12 +429,11 @@ public class Restarter {
 	}
 
 	/**
-     * Checks if the given object is from the RestartClassLoader.
-     * 
-     * @param object the object to check
-     * @return true if the object is from the RestartClassLoader, false otherwise
-     */
-    private boolean isFromRestartClassLoader(Object object) {
+	 * Checks if the given object is from the RestartClassLoader.
+	 * @param object the object to check
+	 * @return true if the object is from the RestartClassLoader, false otherwise
+	 */
+	private boolean isFromRestartClassLoader(Object object) {
 		return (object instanceof Class && ((Class<?>) object).getClassLoader() instanceof RestartClassLoader);
 	}
 
@@ -469,22 +466,20 @@ public class Restarter {
 	}
 
 	/**
-     * Checks if the task is finished.
-     * 
-     * @return true if the task is finished, false otherwise.
-     */
-    boolean isFinished() {
+	 * Checks if the task is finished.
+	 * @return true if the task is finished, false otherwise.
+	 */
+	boolean isFinished() {
 		synchronized (this.monitor) {
 			return this.finished;
 		}
 	}
 
 	/**
-     * Prepares the application context for restarting.
-     * 
-     * @param applicationContext the configurable application context to prepare
-     */
-    void prepare(ConfigurableApplicationContext applicationContext) {
+	 * Prepares the application context for restarting.
+	 * @param applicationContext the configurable application context to prepare
+	 */
+	void prepare(ConfigurableApplicationContext applicationContext) {
 		if (!this.enabled || (applicationContext != null && applicationContext.getParent() != null)) {
 			return;
 		}
@@ -495,34 +490,33 @@ public class Restarter {
 	}
 
 	/**
-     * Removes the given ConfigurableApplicationContext from the list of root contexts.
-     * 
-     * @param applicationContext the ConfigurableApplicationContext to be removed
-     */
-    void remove(ConfigurableApplicationContext applicationContext) {
+	 * Removes the given ConfigurableApplicationContext from the list of root contexts.
+	 * @param applicationContext the ConfigurableApplicationContext to be removed
+	 */
+	void remove(ConfigurableApplicationContext applicationContext) {
 		if (applicationContext != null) {
 			this.rootContexts.remove(applicationContext);
 		}
 	}
 
 	/**
-     * Prepares the application context by setting the resource loader and class loader files.
-     * 
-     * @param applicationContext the generic application context to be prepared
-     */
-    private void prepare(GenericApplicationContext applicationContext) {
+	 * Prepares the application context by setting the resource loader and class loader
+	 * files.
+	 * @param applicationContext the generic application context to be prepared
+	 */
+	private void prepare(GenericApplicationContext applicationContext) {
 		ResourceLoader resourceLoader = new ClassLoaderFilesResourcePatternResolver(applicationContext,
 				this.classLoaderFiles);
 		applicationContext.setResourceLoader(resourceLoader);
 	}
 
 	/**
-     * Retrieves a LeakSafeThread from the Restarter's leakSafeThreads queue.
-     * 
-     * @return the retrieved LeakSafeThread
-     * @throws IllegalStateException if the thread is interrupted while waiting to take the first element from the queue
-     */
-    private LeakSafeThread getLeakSafeThread() {
+	 * Retrieves a LeakSafeThread from the Restarter's leakSafeThreads queue.
+	 * @return the retrieved LeakSafeThread
+	 * @throws IllegalStateException if the thread is interrupted while waiting to take
+	 * the first element from the queue
+	 */
+	private LeakSafeThread getLeakSafeThread() {
 		try {
 			return this.leakSafeThreads.takeFirst();
 		}
@@ -533,24 +527,24 @@ public class Restarter {
 	}
 
 	/**
-     * Retrieves the value of the attribute with the specified name from the Restarter's attributes map.
-     * If the attribute does not exist, it is added to the map using the provided objectFactory to create the attribute value.
-     * 
-     * @param name the name of the attribute to retrieve or add
-     * @param objectFactory the object factory used to create the attribute value if it does not exist
-     * @return the value of the attribute with the specified name
-     */
-    public Object getOrAddAttribute(String name, final ObjectFactory<?> objectFactory) {
+	 * Retrieves the value of the attribute with the specified name from the Restarter's
+	 * attributes map. If the attribute does not exist, it is added to the map using the
+	 * provided objectFactory to create the attribute value.
+	 * @param name the name of the attribute to retrieve or add
+	 * @param objectFactory the object factory used to create the attribute value if it
+	 * does not exist
+	 * @return the value of the attribute with the specified name
+	 */
+	public Object getOrAddAttribute(String name, final ObjectFactory<?> objectFactory) {
 		return this.attributes.computeIfAbsent(name, (ignore) -> objectFactory.getObject());
 	}
 
 	/**
-     * Removes the attribute with the specified name from the Restarter's attributes.
-     * 
-     * @param name the name of the attribute to be removed
-     * @return the value of the removed attribute, or null if the attribute does not exist
-     */
-    public Object removeAttribute(String name) {
+	 * Removes the attribute with the specified name from the Restarter's attributes.
+	 * @param name the name of the attribute to be removed
+	 * @return the value of the removed attribute, or null if the attribute does not exist
+	 */
+	public Object removeAttribute(String name) {
 		return this.attributes.remove(name);
 	}
 
@@ -682,32 +676,31 @@ public class Restarter {
 		private Object result;
 
 		/**
-         * Constructor for the LeakSafeThread class.
-         * Sets the daemon flag of the thread to false.
-         */
-        LeakSafeThread() {
+		 * Constructor for the LeakSafeThread class. Sets the daemon flag of the thread to
+		 * false.
+		 */
+		LeakSafeThread() {
 			setDaemon(false);
 		}
 
 		/**
-         * Sets the callable object to be executed by the thread and starts the thread.
-         * 
-         * @param callable the callable object to be executed
-         */
-        void call(Callable<?> callable) {
+		 * Sets the callable object to be executed by the thread and starts the thread.
+		 * @param callable the callable object to be executed
+		 */
+		void call(Callable<?> callable) {
 			this.callable = callable;
 			start();
 		}
 
 		/**
-         * Executes the given callable in a separate thread and waits for its completion.
-         * 
-         * @param callable the callable to be executed
-         * @param <V> the type of the callable's result
-         * @return the result of the callable's execution
-         * @throws IllegalStateException if the current thread is interrupted while waiting for the callable's completion
-         */
-        @SuppressWarnings("unchecked")
+		 * Executes the given callable in a separate thread and waits for its completion.
+		 * @param callable the callable to be executed
+		 * @param <V> the type of the callable's result
+		 * @return the result of the callable's execution
+		 * @throws IllegalStateException if the current thread is interrupted while
+		 * waiting for the callable's completion
+		 */
+		@SuppressWarnings("unchecked")
 		<V> V callAndWait(Callable<V> callable) {
 			this.callable = callable;
 			start();
@@ -722,12 +715,13 @@ public class Restarter {
 		}
 
 		/**
-         * This method is the implementation of the run() method in the LeakSafeThread class.
-         * It is responsible for refreshing the ActionThread and indirectly calling AccessController.getContext().
-         * It puts a new LeakSafeThread into the leakSafeThreads collection and calls the callable object.
-         * If any exception occurs, it prints the stack trace and exits the system with code 1.
-         */
-        @Override
+		 * This method is the implementation of the run() method in the LeakSafeThread
+		 * class. It is responsible for refreshing the ActionThread and indirectly calling
+		 * AccessController.getContext(). It puts a new LeakSafeThread into the
+		 * leakSafeThreads collection and calls the callable object. If any exception
+		 * occurs, it prints the stack trace and exits the system with code 1.
+		 */
+		@Override
 		public void run() {
 			// We are safe to refresh the ActionThread (and indirectly call
 			// AccessController.getContext()) since our stack doesn't include the
@@ -750,12 +744,11 @@ public class Restarter {
 	private final class LeakSafeThreadFactory implements ThreadFactory {
 
 		/**
-         * Creates a new thread with a specified runnable.
-         * 
-         * @param runnable the runnable to be executed by the new thread
-         * @return the newly created thread
-         */
-        @Override
+		 * Creates a new thread with a specified runnable.
+		 * @param runnable the runnable to be executed by the new thread
+		 * @return the newly created thread
+		 */
+		@Override
 		public Thread newThread(Runnable runnable) {
 			return getLeakSafeThread().callAndWait(() -> {
 				Thread thread = new Thread(runnable);

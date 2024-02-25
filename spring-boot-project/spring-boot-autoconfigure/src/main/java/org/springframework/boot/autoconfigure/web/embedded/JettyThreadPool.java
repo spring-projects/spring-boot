@@ -35,18 +35,17 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 final class JettyThreadPool {
 
 	/**
-     * Constructs a new JettyThreadPool object.
-     */
-    private JettyThreadPool() {
+	 * Constructs a new JettyThreadPool object.
+	 */
+	private JettyThreadPool() {
 	}
 
 	/**
-     * Creates a new QueuedThreadPool with the specified properties.
-     * 
-     * @param properties the server properties for configuring the thread pool
-     * @return a new QueuedThreadPool instance
-     */
-    static QueuedThreadPool create(ServerProperties.Jetty.Threads properties) {
+	 * Creates a new QueuedThreadPool with the specified properties.
+	 * @param properties the server properties for configuring the thread pool
+	 * @return a new QueuedThreadPool instance
+	 */
+	static QueuedThreadPool create(ServerProperties.Jetty.Threads properties) {
 		BlockingQueue<Runnable> queue = determineBlockingQueue(properties.getMaxQueueCapacity());
 		int maxThreadCount = (properties.getMax() > 0) ? properties.getMax() : 200;
 		int minThreadCount = (properties.getMin() > 0) ? properties.getMin() : 8;
@@ -56,12 +55,12 @@ final class JettyThreadPool {
 	}
 
 	/**
-     * Determines the appropriate blocking queue implementation based on the given maximum queue capacity.
-     * 
-     * @param maxQueueCapacity the maximum capacity of the queue
-     * @return the blocking queue implementation
-     */
-    private static BlockingQueue<Runnable> determineBlockingQueue(Integer maxQueueCapacity) {
+	 * Determines the appropriate blocking queue implementation based on the given maximum
+	 * queue capacity.
+	 * @param maxQueueCapacity the maximum capacity of the queue
+	 * @return the blocking queue implementation
+	 */
+	private static BlockingQueue<Runnable> determineBlockingQueue(Integer maxQueueCapacity) {
 		if (maxQueueCapacity == null) {
 			return null;
 		}

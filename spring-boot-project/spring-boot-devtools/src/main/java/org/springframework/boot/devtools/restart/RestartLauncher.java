@@ -32,14 +32,15 @@ class RestartLauncher extends Thread {
 	private Throwable error;
 
 	/**
-     * Restarts the launcher with the specified class loader, main class name, arguments, and exception handler.
-     * 
-     * @param classLoader the class loader to use for restarting the launcher
-     * @param mainClassName the fully qualified name of the main class to be executed
-     * @param args the command line arguments to be passed to the main class
-     * @param exceptionHandler the uncaught exception handler to be set for the restarted main thread
-     */
-    RestartLauncher(ClassLoader classLoader, String mainClassName, String[] args,
+	 * Restarts the launcher with the specified class loader, main class name, arguments,
+	 * and exception handler.
+	 * @param classLoader the class loader to use for restarting the launcher
+	 * @param mainClassName the fully qualified name of the main class to be executed
+	 * @param args the command line arguments to be passed to the main class
+	 * @param exceptionHandler the uncaught exception handler to be set for the restarted
+	 * main thread
+	 */
+	RestartLauncher(ClassLoader classLoader, String mainClassName, String[] args,
 			UncaughtExceptionHandler exceptionHandler) {
 		this.mainClassName = mainClassName;
 		this.args = args;
@@ -50,12 +51,11 @@ class RestartLauncher extends Thread {
 	}
 
 	/**
-     * This method is responsible for running the main method of a specified class.
-     * It uses reflection to dynamically load the class and invoke its main method.
-     * 
-     * @throws Throwable if an error occurs during the execution of the main method
-     */
-    @Override
+	 * This method is responsible for running the main method of a specified class. It
+	 * uses reflection to dynamically load the class and invoke its main method.
+	 * @throws Throwable if an error occurs during the execution of the main method
+	 */
+	@Override
 	public void run() {
 		try {
 			Class<?> mainClass = Class.forName(this.mainClassName, false, getContextClassLoader());
@@ -70,11 +70,10 @@ class RestartLauncher extends Thread {
 	}
 
 	/**
-     * Returns the error associated with the RestartLauncher object.
-     * 
-     * @return the error associated with the RestartLauncher object
-     */
-    Throwable getError() {
+	 * Returns the error associated with the RestartLauncher object.
+	 * @return the error associated with the RestartLauncher object
+	 */
+	Throwable getError() {
 		return this.error;
 	}
 

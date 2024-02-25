@@ -37,45 +37,45 @@ class DataSourceBeanCreationFailureAnalyzer extends AbstractFailureAnalyzer<Data
 	private final Environment environment;
 
 	/**
-     * Constructs a new instance of DataSourceBeanCreationFailureAnalyzer with the specified environment.
-     * 
-     * @param environment the environment to be used by the analyzer
-     */
-    DataSourceBeanCreationFailureAnalyzer(Environment environment) {
+	 * Constructs a new instance of DataSourceBeanCreationFailureAnalyzer with the
+	 * specified environment.
+	 * @param environment the environment to be used by the analyzer
+	 */
+	DataSourceBeanCreationFailureAnalyzer(Environment environment) {
 		this.environment = environment;
 	}
 
 	/**
-     * Analyzes the failure caused by a DataSourceBeanCreationException and returns a FailureAnalysis object.
-     * 
-     * @param rootFailure the root cause of the failure
-     * @param cause the DataSourceBeanCreationException that caused the failure
-     * @return a FailureAnalysis object containing information about the failure
-     */
-    @Override
+	 * Analyzes the failure caused by a DataSourceBeanCreationException and returns a
+	 * FailureAnalysis object.
+	 * @param rootFailure the root cause of the failure
+	 * @param cause the DataSourceBeanCreationException that caused the failure
+	 * @return a FailureAnalysis object containing information about the failure
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, DataSourceBeanCreationException cause) {
 		return getFailureAnalysis(cause);
 	}
 
 	/**
-     * Generates a FailureAnalysis object based on the given DataSourceBeanCreationException.
-     * 
-     * @param cause the DataSourceBeanCreationException that caused the failure
-     * @return a FailureAnalysis object containing the description, action, and cause of the failure
-     */
-    private FailureAnalysis getFailureAnalysis(DataSourceBeanCreationException cause) {
+	 * Generates a FailureAnalysis object based on the given
+	 * DataSourceBeanCreationException.
+	 * @param cause the DataSourceBeanCreationException that caused the failure
+	 * @return a FailureAnalysis object containing the description, action, and cause of
+	 * the failure
+	 */
+	private FailureAnalysis getFailureAnalysis(DataSourceBeanCreationException cause) {
 		String description = getDescription(cause);
 		String action = getAction(cause);
 		return new FailureAnalysis(description, action, cause);
 	}
 
 	/**
-     * Returns a description of the DataSource configuration failure.
-     * 
-     * @param cause the exception that caused the failure
-     * @return a string describing the failure
-     */
-    private String getDescription(DataSourceBeanCreationException cause) {
+	 * Returns a description of the DataSource configuration failure.
+	 * @param cause the exception that caused the failure
+	 * @return a string describing the failure
+	 */
+	private String getDescription(DataSourceBeanCreationException cause) {
 		StringBuilder description = new StringBuilder();
 		description.append("Failed to configure a DataSource: ");
 		if (!StringUtils.hasText(cause.getProperties().getUrl())) {
@@ -87,12 +87,12 @@ class DataSourceBeanCreationFailureAnalyzer extends AbstractFailureAnalyzer<Data
 	}
 
 	/**
-     * Returns the recommended action to be taken when a DataSourceBeanCreationException occurs.
-     * 
-     * @param cause the DataSourceBeanCreationException that caused the failure
-     * @return the recommended action as a String
-     */
-    private String getAction(DataSourceBeanCreationException cause) {
+	 * Returns the recommended action to be taken when a DataSourceBeanCreationException
+	 * occurs.
+	 * @param cause the DataSourceBeanCreationException that caused the failure
+	 * @return the recommended action as a String
+	 */
+	private String getAction(DataSourceBeanCreationException cause) {
 		StringBuilder action = new StringBuilder();
 		action.append(String.format("Consider the following:%n"));
 		if (EmbeddedDatabaseConnection.NONE == cause.getConnection()) {
@@ -110,11 +110,10 @@ class DataSourceBeanCreationFailureAnalyzer extends AbstractFailureAnalyzer<Data
 	}
 
 	/**
-     * Returns a string representation of the active profiles.
-     * 
-     * @return a string representation of the active profiles
-     */
-    private String getActiveProfiles() {
+	 * Returns a string representation of the active profiles.
+	 * @return a string representation of the active profiles
+	 */
+	private String getActiveProfiles() {
 		StringBuilder message = new StringBuilder();
 		String[] profiles = this.environment.getActiveProfiles();
 		if (ObjectUtils.isEmpty(profiles)) {

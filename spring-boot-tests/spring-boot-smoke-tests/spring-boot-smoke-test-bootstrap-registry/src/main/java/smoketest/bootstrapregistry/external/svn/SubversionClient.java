@@ -26,21 +26,19 @@ public class SubversionClient {
 	private final SubversionServerCertificate serverCertificate;
 
 	/**
-     * Constructs a new SubversionClient object with the specified server certificate.
-     * 
-     * @param serverCertificate the server certificate to be used for authentication
-     */
-    public SubversionClient(SubversionServerCertificate serverCertificate) {
+	 * Constructs a new SubversionClient object with the specified server certificate.
+	 * @param serverCertificate the server certificate to be used for authentication
+	 */
+	public SubversionClient(SubversionServerCertificate serverCertificate) {
 		this.serverCertificate = serverCertificate;
 	}
 
 	/**
-     * Loads data from the specified location in the Subversion repository.
-     * 
-     * @param location the location in the Subversion repository to load data from
-     * @return the loaded data along with the server certificate
-     */
-    public String load(String location) {
+	 * Loads data from the specified location in the Subversion repository.
+	 * @param location the location in the Subversion repository to load data from
+	 * @return the loaded data along with the server certificate
+	 */
+	public String load(String location) {
 		return "data from svn / " + location + "[" + this.serverCertificate + "]";
 	}
 

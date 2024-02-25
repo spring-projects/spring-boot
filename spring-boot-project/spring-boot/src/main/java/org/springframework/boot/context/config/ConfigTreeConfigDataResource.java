@@ -36,43 +36,40 @@ public class ConfigTreeConfigDataResource extends ConfigDataResource {
 	private final Path path;
 
 	/**
-     * Constructs a new ConfigTreeConfigDataResource with the specified path.
-     * 
-     * @param path the path to the configuration data resource (must not be null)
-     * @throws IllegalArgumentException if the path is null
-     */
-    ConfigTreeConfigDataResource(String path) {
+	 * Constructs a new ConfigTreeConfigDataResource with the specified path.
+	 * @param path the path to the configuration data resource (must not be null)
+	 * @throws IllegalArgumentException if the path is null
+	 */
+	ConfigTreeConfigDataResource(String path) {
 		Assert.notNull(path, "Path must not be null");
 		this.path = Paths.get(path).toAbsolutePath();
 	}
 
 	/**
-     * Constructs a new ConfigTreeConfigDataResource with the specified path.
-     * 
-     * @param path the path to the config data resource
-     * @throws IllegalArgumentException if the path is null
-     */
-    ConfigTreeConfigDataResource(Path path) {
+	 * Constructs a new ConfigTreeConfigDataResource with the specified path.
+	 * @param path the path to the config data resource
+	 * @throws IllegalArgumentException if the path is null
+	 */
+	ConfigTreeConfigDataResource(Path path) {
 		Assert.notNull(path, "Path must not be null");
 		this.path = path.toAbsolutePath();
 	}
 
 	/**
-     * Returns the path of the ConfigTreeConfigDataResource.
-     *
-     * @return the path of the ConfigTreeConfigDataResource
-     */
-    Path getPath() {
+	 * Returns the path of the ConfigTreeConfigDataResource.
+	 * @return the path of the ConfigTreeConfigDataResource
+	 */
+	Path getPath() {
 		return this.path;
 	}
 
 	/**
-     * Compares this ConfigTreeConfigDataResource object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this ConfigTreeConfigDataResource object to the specified object for
+	 * equality.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -85,22 +82,20 @@ public class ConfigTreeConfigDataResource extends ConfigDataResource {
 	}
 
 	/**
-     * Returns the hash code value for this ConfigTreeConfigDataResource object.
-     * The hash code is generated based on the path of the resource.
-     *
-     * @return the hash code value for this ConfigTreeConfigDataResource object
-     */
-    @Override
+	 * Returns the hash code value for this ConfigTreeConfigDataResource object. The hash
+	 * code is generated based on the path of the resource.
+	 * @return the hash code value for this ConfigTreeConfigDataResource object
+	 */
+	@Override
 	public int hashCode() {
 		return this.path.hashCode();
 	}
 
 	/**
-     * Returns a string representation of the ConfigTreeConfigDataResource object.
-     * 
-     * @return a string representation of the object in the format "config tree [path]"
-     */
-    @Override
+	 * Returns a string representation of the ConfigTreeConfigDataResource object.
+	 * @return a string representation of the object in the format "config tree [path]"
+	 */
+	@Override
 	public String toString() {
 		return "config tree [" + this.path + "]";
 	}

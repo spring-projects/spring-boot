@@ -22,12 +22,11 @@ package org.springframework.boot.docs.web.servlet.springmvc.errorhandling;
 class MyErrorBody {
 
 	/**
-     * Constructs a new MyErrorBody object with the specified value and message.
-     *
-     * @param value   the value of the error body
-     * @param message the message of the error body
-     */
-    MyErrorBody(int value, String message) {
+	 * Constructs a new MyErrorBody object with the specified value and message.
+	 * @param value the value of the error body
+	 * @param message the message of the error body
+	 */
+	MyErrorBody(int value, String message) {
 	}
 
 }

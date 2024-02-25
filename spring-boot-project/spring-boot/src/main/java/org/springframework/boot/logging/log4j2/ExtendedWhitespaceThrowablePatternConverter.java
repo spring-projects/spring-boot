@@ -39,23 +39,22 @@ public final class ExtendedWhitespaceThrowablePatternConverter extends Throwable
 	private final ExtendedThrowablePatternConverter delegate;
 
 	/**
-     * Constructs a new instance of ExtendedWhitespaceThrowablePatternConverter.
-     * 
-     * @param configuration the configuration object
-     * @param options the options array
-     */
-    private ExtendedWhitespaceThrowablePatternConverter(Configuration configuration, String[] options) {
+	 * Constructs a new instance of ExtendedWhitespaceThrowablePatternConverter.
+	 * @param configuration the configuration object
+	 * @param options the options array
+	 */
+	private ExtendedWhitespaceThrowablePatternConverter(Configuration configuration, String[] options) {
 		super("WhitespaceExtendedThrowable", "throwable", options, configuration);
 		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration, options);
 	}
 
 	/**
-     * Formats the log event by appending the separator before and after the log message if there is a thrown exception.
-     * 
-     * @param event   the log event to be formatted
-     * @param buffer  the StringBuilder to append the formatted log event to
-     */
-    @Override
+	 * Formats the log event by appending the separator before and after the log message
+	 * if there is a thrown exception.
+	 * @param event the log event to be formatted
+	 * @param buffer the StringBuilder to append the formatted log event to
+	 */
+	@Override
 	public void format(LogEvent event, StringBuilder buffer) {
 		if (event.getThrown() != null) {
 			buffer.append(this.options.getSeparator());

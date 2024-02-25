@@ -57,12 +57,11 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	/**
-     * Performs a health check by checking the available disk space at a given path.
-     * 
-     * @param builder the Health.Builder object used to build the health status
-     * @throws Exception if an error occurs during the health check
-     */
-    @Override
+	 * Performs a health check by checking the available disk space at a given path.
+	 * @param builder the Health.Builder object used to build the health status
+	 * @throws Exception if an error occurs during the health check
+	 */
+	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		long diskFreeInBytes = this.path.getUsableSpace();
 		if (diskFreeInBytes >= this.threshold.toBytes()) {

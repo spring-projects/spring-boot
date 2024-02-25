@@ -42,34 +42,32 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable.mapOf(String.class, String.class);
 
 	/**
-     * Constructs a new MapBinder with the specified context.
-     *
-     * @param context the context to be used by the MapBinder
-     */
-    MapBinder(Context context) {
+	 * Constructs a new MapBinder with the specified context.
+	 * @param context the context to be used by the MapBinder
+	 */
+	MapBinder(Context context) {
 		super(context);
 	}
 
 	/**
-     * Determines whether recursive binding is allowed for the given configuration property source.
-     * 
-     * @param source the configuration property source to check
-     * @return true if recursive binding is allowed, false otherwise
-     */
-    @Override
+	 * Determines whether recursive binding is allowed for the given configuration
+	 * property source.
+	 * @param source the configuration property source to check
+	 * @return true if recursive binding is allowed, false otherwise
+	 */
+	@Override
 	protected boolean isAllowRecursiveBinding(ConfigurationPropertySource source) {
 		return true;
 	}
 
 	/**
-     * Binds an aggregate configuration property to a map.
-     * 
-     * @param name The name of the configuration property.
-     * @param target The target bindable object.
-     * @param elementBinder The element binder for binding individual elements of the map.
-     * @return The bound map object.
-     */
-    @Override
+	 * Binds an aggregate configuration property to a map.
+	 * @param name The name of the configuration property.
+	 * @param target The target bindable object.
+	 * @param elementBinder The element binder for binding individual elements of the map.
+	 * @return The bound map object.
+	 */
+	@Override
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
 		Map<Object, Object> map = CollectionFactory
@@ -93,12 +91,12 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	/**
-     * Checks if the given ConfigurationPropertyName has any descendants in the sources of the current context.
-     * 
-     * @param name the ConfigurationPropertyName to check for descendants
-     * @return true if the ConfigurationPropertyName has descendants, false otherwise
-     */
-    private boolean hasDescendants(ConfigurationPropertyName name) {
+	 * Checks if the given ConfigurationPropertyName has any descendants in the sources of
+	 * the current context.
+	 * @param name the ConfigurationPropertyName to check for descendants
+	 * @return true if the ConfigurationPropertyName has descendants, false otherwise
+	 */
+	private boolean hasDescendants(ConfigurationPropertyName name) {
 		for (ConfigurationPropertySource source : getContext().getSources()) {
 			if (source.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT) {
 				return true;
@@ -108,12 +106,11 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	/**
-     * Resolves the target bindable object.
-     * 
-     * @param target the target bindable object to be resolved
-     * @return the resolved target bindable object
-     */
-    private Bindable<?> resolveTarget(Bindable<?> target) {
+	 * Resolves the target bindable object.
+	 * @param target the target bindable object to be resolved
+	 * @return the resolved target bindable object
+	 */
+	private Bindable<?> resolveTarget(Bindable<?> target) {
 		Class<?> type = target.getType().resolve(Object.class);
 		if (Properties.class.isAssignableFrom(type)) {
 			return STRING_STRING_MAP;
@@ -122,13 +119,12 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	/**
-     * Merges the existing map with the additional map.
-     * 
-     * @param existing a supplier that provides the existing map
-     * @param additional the additional map to be merged
-     * @return the merged map
-     */
-    @Override
+	 * Merges the existing map with the additional map.
+	 * @param existing a supplier that provides the existing map
+	 * @param additional the additional map to be merged
+	 * @return the merged map
+	 */
+	@Override
 	protected Map<Object, Object> merge(Supplier<Map<Object, Object>> existing, Map<Object, Object> additional) {
 		Map<Object, Object> existingMap = getExistingIfPossible(existing);
 		if (existingMap == null) {
@@ -146,12 +142,11 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	/**
-     * Retrieves an existing map if available, otherwise returns null.
-     * 
-     * @param existing a supplier function that provides an existing map
-     * @return the existing map if available, otherwise null
-     */
-    private Map<Object, Object> getExistingIfPossible(Supplier<Map<Object, Object>> existing) {
+	 * Retrieves an existing map if available, otherwise returns null.
+	 * @param existing a supplier function that provides an existing map
+	 * @return the existing map if available, otherwise null
+	 */
+	private Map<Object, Object> getExistingIfPossible(Supplier<Map<Object, Object>> existing) {
 		try {
 			return existing.get();
 		}
@@ -161,13 +156,13 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	/**
-     * Creates a new map by copying the elements from the given map if possible.
-     * If an exception occurs during the copy process, the original map is returned.
-     * 
-     * @param map the map to be copied
-     * @return a new map with the copied elements, or the original map if copying is not possible
-     */
-    private Map<Object, Object> copyIfPossible(Map<Object, Object> map) {
+	 * Creates a new map by copying the elements from the given map if possible. If an
+	 * exception occurs during the copy process, the original map is returned.
+	 * @param map the map to be copied
+	 * @return a new map with the copied elements, or the original map if copying is not
+	 * possible
+	 */
+	private Map<Object, Object> copyIfPossible(Map<Object, Object> map) {
 		try {
 			return createNewMap(map.getClass(), map);
 		}
@@ -177,22 +172,22 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	/**
-     * Creates a new map of the specified class and populates it with the elements from the given map.
-     * 
-     * @param mapClass the class of the new map to be created
-     * @param map the map containing the elements to be added to the new map
-     * @return a new map of the specified class with the elements from the given map
-     */
-    private Map<Object, Object> createNewMap(Class<?> mapClass, Map<Object, Object> map) {
+	 * Creates a new map of the specified class and populates it with the elements from
+	 * the given map.
+	 * @param mapClass the class of the new map to be created
+	 * @param map the map containing the elements to be added to the new map
+	 * @return a new map of the specified class with the elements from the given map
+	 */
+	private Map<Object, Object> createNewMap(Class<?> mapClass, Map<Object, Object> map) {
 		Map<Object, Object> result = CollectionFactory.createMap(mapClass, map.size());
 		result.putAll(map);
 		return result;
 	}
 
 	/**
-     * EntryBinder class.
-     */
-    private class EntryBinder {
+	 * EntryBinder class.
+	 */
+	private class EntryBinder {
 
 		private final ConfigurationPropertyName root;
 
@@ -205,13 +200,13 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		private final ResolvableType valueType;
 
 		/**
-         * Constructs a new EntryBinder with the specified root configuration property name, target bindable, and element binder.
-         * 
-         * @param root the root configuration property name
-         * @param target the target bindable
-         * @param elementBinder the element binder
-         */
-        EntryBinder(ConfigurationPropertyName root, Bindable<?> target, AggregateElementBinder elementBinder) {
+		 * Constructs a new EntryBinder with the specified root configuration property
+		 * name, target bindable, and element binder.
+		 * @param root the root configuration property name
+		 * @param target the target bindable
+		 * @param elementBinder the element binder
+		 */
+		EntryBinder(ConfigurationPropertyName root, Bindable<?> target, AggregateElementBinder elementBinder) {
 			this.root = root;
 			this.elementBinder = elementBinder;
 			this.mapType = target.getType().asMap();
@@ -220,12 +215,12 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		/**
-         * Binds entries from the given {@link ConfigurationPropertySource} to the provided {@link Map}.
-         * 
-         * @param source the {@link ConfigurationPropertySource} to bind entries from
-         * @param map the {@link Map} to bind entries to
-         */
-        void bindEntries(ConfigurationPropertySource source, Map<Object, Object> map) {
+		 * Binds entries from the given {@link ConfigurationPropertySource} to the
+		 * provided {@link Map}.
+		 * @param source the {@link ConfigurationPropertySource} to bind entries from
+		 * @param map the {@link Map} to bind entries to
+		 */
+		void bindEntries(ConfigurationPropertySource source, Map<Object, Object> map) {
 			if (source instanceof IterableConfigurationPropertySource iterableSource) {
 				for (ConfigurationPropertyName name : iterableSource) {
 					Bindable<?> valueBindable = getValueBindable(name);
@@ -237,15 +232,14 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		/**
-         * Returns a Bindable object for the given ConfigurationPropertyName.
-         * If the given name is not a parent of the root and the value is treated as a nested map,
-         * returns a Bindable object of the mapType.
-         * Otherwise, returns a Bindable object of the valueType.
-         *
-         * @param name the ConfigurationPropertyName to get the Bindable object for
-         * @return a Bindable object for the given ConfigurationPropertyName
-         */
-        private Bindable<?> getValueBindable(ConfigurationPropertyName name) {
+		 * Returns a Bindable object for the given ConfigurationPropertyName. If the given
+		 * name is not a parent of the root and the value is treated as a nested map,
+		 * returns a Bindable object of the mapType. Otherwise, returns a Bindable object
+		 * of the valueType.
+		 * @param name the ConfigurationPropertyName to get the Bindable object for
+		 * @return a Bindable object for the given ConfigurationPropertyName
+		 */
+		private Bindable<?> getValueBindable(ConfigurationPropertyName name) {
 			if (!this.root.isParentOf(name) && isValueTreatedAsNestedMap()) {
 				return Bindable.of(this.mapType);
 			}
@@ -253,13 +247,12 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		/**
-         * Returns the entry name for the given configuration property source and name.
-         * 
-         * @param source the configuration property source
-         * @param name the configuration property name
-         * @return the entry name
-         */
-        private ConfigurationPropertyName getEntryName(ConfigurationPropertySource source,
+		 * Returns the entry name for the given configuration property source and name.
+		 * @param source the configuration property source
+		 * @param name the configuration property name
+		 * @return the entry name
+		 */
+		private ConfigurationPropertyName getEntryName(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
 			Class<?> resolved = this.valueType.resolve(Object.class);
 			if (Collection.class.isAssignableFrom(resolved) || this.valueType.isArray()) {
@@ -272,12 +265,12 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		/**
-         * Chops the given ConfigurationPropertyName at the first numeric index encountered.
-         * 
-         * @param name the ConfigurationPropertyName to be chopped
-         * @return the chopped ConfigurationPropertyName
-         */
-        private ConfigurationPropertyName chopNameAtNumericIndex(ConfigurationPropertyName name) {
+		 * Chops the given ConfigurationPropertyName at the first numeric index
+		 * encountered.
+		 * @param name the ConfigurationPropertyName to be chopped
+		 * @return the chopped ConfigurationPropertyName
+		 */
+		private ConfigurationPropertyName chopNameAtNumericIndex(ConfigurationPropertyName name) {
 			int start = this.root.getNumberOfElements() + 1;
 			int size = name.getNumberOfElements();
 			for (int i = start; i < size; i++) {
@@ -289,24 +282,22 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		/**
-         * Checks if the value is treated as a nested map.
-         * 
-         * @return true if the value is treated as a nested map, false otherwise
-         */
-        private boolean isValueTreatedAsNestedMap() {
+		 * Checks if the value is treated as a nested map.
+		 * @return true if the value is treated as a nested map, false otherwise
+		 */
+		private boolean isValueTreatedAsNestedMap() {
 			return Object.class.equals(this.valueType.resolve(Object.class));
 		}
 
 		/**
-         * Checks if the given configuration property is a scalar value.
-         * A scalar value is defined as a value that is either of a primitive type or a String,
-         * or an enum type.
-         * 
-         * @param source the configuration property source
-         * @param name the name of the configuration property
-         * @return true if the configuration property is a scalar value, false otherwise
-         */
-        private boolean isScalarValue(ConfigurationPropertySource source, ConfigurationPropertyName name) {
+		 * Checks if the given configuration property is a scalar value. A scalar value is
+		 * defined as a value that is either of a primitive type or a String, or an enum
+		 * type.
+		 * @param source the configuration property source
+		 * @param name the name of the configuration property
+		 * @return true if the configuration property is a scalar value, false otherwise
+		 */
+		private boolean isScalarValue(ConfigurationPropertySource source, ConfigurationPropertyName name) {
 			Class<?> resolved = this.valueType.resolve(Object.class);
 			if (!resolved.getName().startsWith("java.lang") && !resolved.isEnum()) {
 				return false;
@@ -321,12 +312,11 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		/**
-         * Returns the key name for the given ConfigurationPropertyName.
-         * 
-         * @param name the ConfigurationPropertyName to get the key name for
-         * @return the key name as a String
-         */
-        private String getKeyName(ConfigurationPropertyName name) {
+		 * Returns the key name for the given ConfigurationPropertyName.
+		 * @param name the ConfigurationPropertyName to get the key name for
+		 * @return the key name as a String
+		 */
+		private String getKeyName(ConfigurationPropertyName name) {
 			StringBuilder result = new StringBuilder();
 			for (int i = this.root.getNumberOfElements(); i < name.getNumberOfElements(); i++) {
 				if (!result.isEmpty()) {

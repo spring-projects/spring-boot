@@ -45,11 +45,10 @@ public class BoundConfigurationProperties {
 	private static final String BEAN_NAME = BoundConfigurationProperties.class.getName();
 
 	/**
-     * Adds a configuration property to the properties map.
-     * 
-     * @param configurationProperty the configuration property to be added
-     */
-    void add(ConfigurationProperty configurationProperty) {
+	 * Adds a configuration property to the properties map.
+	 * @param configurationProperty the configuration property to be added
+	 */
+	void add(ConfigurationProperty configurationProperty) {
 		this.properties.put(configurationProperty.getName(), configurationProperty);
 	}
 
@@ -84,12 +83,11 @@ public class BoundConfigurationProperties {
 	}
 
 	/**
-     * Registers the BoundConfigurationProperties bean definition in the given registry.
-     * 
-     * @param registry the BeanDefinitionRegistry to register the bean definition with
-     * @throws IllegalArgumentException if the registry is null
-     */
-    static void register(BeanDefinitionRegistry registry) {
+	 * Registers the BoundConfigurationProperties bean definition in the given registry.
+	 * @param registry the BeanDefinitionRegistry to register the bean definition with
+	 * @throws IllegalArgumentException if the registry is null
+	 */
+	static void register(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "Registry must not be null");
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(BoundConfigurationProperties.class)

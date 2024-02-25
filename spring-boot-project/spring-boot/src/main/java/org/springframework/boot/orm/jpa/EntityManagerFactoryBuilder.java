@@ -95,12 +95,11 @@ public class EntityManagerFactoryBuilder {
 	}
 
 	/**
-     * Sets the data source for the EntityManagerFactoryBuilder.
-     * 
-     * @param dataSource the data source to be set
-     * @return a new Builder object with the specified data source
-     */
-    public Builder dataSource(DataSource dataSource) {
+	 * Sets the data source for the EntityManagerFactoryBuilder.
+	 * @param dataSource the data source to be set
+	 * @return a new Builder object with the specified data source
+	 */
+	public Builder dataSource(DataSource dataSource) {
 		return new Builder(dataSource);
 	}
 
@@ -145,11 +144,10 @@ public class EntityManagerFactoryBuilder {
 		private boolean jta;
 
 		/**
-         * Constructs a new Builder object with the specified DataSource.
-         *
-         * @param dataSource the DataSource to be used by the Builder
-         */
-        private Builder(DataSource dataSource) {
+		 * Constructs a new Builder object with the specified DataSource.
+		 * @param dataSource the DataSource to be used by the Builder
+		 */
+		private Builder(DataSource dataSource) {
 			this.dataSource = dataSource;
 		}
 
@@ -244,11 +242,10 @@ public class EntityManagerFactoryBuilder {
 		}
 
 		/**
-         * Builds a LocalContainerEntityManagerFactoryBean with the configured properties.
-         * 
-         * @return the built LocalContainerEntityManagerFactoryBean
-         */
-        public LocalContainerEntityManagerFactoryBean build() {
+		 * Builds a LocalContainerEntityManagerFactoryBean with the configured properties.
+		 * @return the built LocalContainerEntityManagerFactoryBean
+		 */
+		public LocalContainerEntityManagerFactoryBean build() {
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
 				entityManagerFactoryBean

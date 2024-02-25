@@ -85,11 +85,10 @@ class TypeUtils {
 	private final Map<TypeElement, TypeDescriptor> typeDescriptors = new HashMap<>();
 
 	/**
-     * Constructs a new TypeUtils object with the given ProcessingEnvironment.
-     * 
-     * @param env the ProcessingEnvironment to be used
-     */
-    TypeUtils(ProcessingEnvironment env) {
+	 * Constructs a new TypeUtils object with the given ProcessingEnvironment.
+	 * @param env the ProcessingEnvironment to be used
+	 */
+	TypeUtils(ProcessingEnvironment env) {
 		this.env = env;
 		this.types = env.getTypeUtils();
 		this.typeExtractor = new TypeExtractor(this.types);
@@ -98,15 +97,15 @@ class TypeUtils {
 	}
 
 	/**
-     * Returns the declared type with the specified number of type arguments for the given type class.
-     * 
-     * @param types the Types utility object
-     * @param typeClass the class representing the type
-     * @param numberOfTypeArgs the number of type arguments for the declared type
-     * @return the declared type with the specified number of type arguments
-     * @throws IllegalArgumentException if the type element or type arguments are invalid
-     */
-    private TypeMirror getDeclaredType(Types types, Class<?> typeClass, int numberOfTypeArgs) {
+	 * Returns the declared type with the specified number of type arguments for the given
+	 * type class.
+	 * @param types the Types utility object
+	 * @param typeClass the class representing the type
+	 * @param numberOfTypeArgs the number of type arguments for the declared type
+	 * @return the declared type with the specified number of type arguments
+	 * @throws IllegalArgumentException if the type element or type arguments are invalid
+	 */
+	private TypeMirror getDeclaredType(Types types, Class<?> typeClass, int numberOfTypeArgs) {
 		TypeMirror[] typeArgs = new TypeMirror[numberOfTypeArgs];
 		Arrays.setAll(typeArgs, (i) -> types.getWildcardType(null, null));
 		TypeElement typeElement = this.env.getElementUtils().getTypeElement(typeClass.getName());
@@ -120,23 +119,21 @@ class TypeUtils {
 	}
 
 	/**
-     * Checks if two TypeMirrors are of the same type.
-     * 
-     * @param t1 the first TypeMirror to compare
-     * @param t2 the second TypeMirror to compare
-     * @return true if the TypeMirrors are of the same type, false otherwise
-     */
-    boolean isSameType(TypeMirror t1, TypeMirror t2) {
+	 * Checks if two TypeMirrors are of the same type.
+	 * @param t1 the first TypeMirror to compare
+	 * @param t2 the second TypeMirror to compare
+	 * @return true if the TypeMirrors are of the same type, false otherwise
+	 */
+	boolean isSameType(TypeMirror t1, TypeMirror t2) {
 		return this.types.isSameType(t1, t2);
 	}
 
 	/**
-     * Returns the element corresponding to the given type.
-     *
-     * @param type the type mirror
-     * @return the element corresponding to the given type
-     */
-    Element asElement(TypeMirror type) {
+	 * Returns the element corresponding to the given type.
+	 * @param type the type mirror
+	 * @return the element corresponding to the given type
+	 */
+	Element asElement(TypeMirror type) {
 		return this.types.asElement(type);
 	}
 
@@ -178,12 +175,11 @@ class TypeUtils {
 	}
 
 	/**
-     * Returns the element type of a collection type.
-     * 
-     * @param type the type to get the element type from
-     * @return the element type of the collection type, or null if not found
-     */
-    private TypeMirror getCollectionElementType(TypeMirror type) {
+	 * Returns the element type of a collection type.
+	 * @param type the type to get the element type from
+	 * @return the element type of the collection type, or null if not found
+	 */
+	private TypeMirror getCollectionElementType(TypeMirror type) {
 		if (((TypeElement) this.types.asElement(type)).getQualifiedName().contentEquals(Collection.class.getName())) {
 			DeclaredType declaredType = (DeclaredType) type;
 			// raw type, just "Collection"
@@ -204,23 +200,21 @@ class TypeUtils {
 	}
 
 	/**
-     * Checks if the given type is a Collection or Map.
-     *
-     * @param type the TypeMirror to check
-     * @return true if the type is a Collection or Map, false otherwise
-     */
-    boolean isCollectionOrMap(TypeMirror type) {
+	 * Checks if the given type is a Collection or Map.
+	 * @param type the TypeMirror to check
+	 * @return true if the type is a Collection or Map, false otherwise
+	 */
+	boolean isCollectionOrMap(TypeMirror type) {
 		return this.env.getTypeUtils().isAssignable(type, this.collectionType)
 				|| this.env.getTypeUtils().isAssignable(type, this.mapType);
 	}
 
 	/**
-     * Retrieves the Javadoc comment for the given element.
-     * 
-     * @param element the element to retrieve the Javadoc comment for
-     * @return the Javadoc comment for the element, or null if no comment is found
-     */
-    String getJavaDoc(Element element) {
+	 * Retrieves the Javadoc comment for the given element.
+	 * @param element the element to retrieve the Javadoc comment for
+	 * @return the Javadoc comment for the element, or null if no comment is found
+	 */
+	String getJavaDoc(Element element) {
 		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
 			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
@@ -242,12 +236,12 @@ class TypeUtils {
 	}
 
 	/**
-     * Returns the wrapper class or primitive type for the given TypeMirror.
-     * 
-     * @param typeMirror the TypeMirror to get the wrapper class or primitive type for
-     * @return the wrapper class or primitive type for the given TypeMirror, or null if not found
-     */
-    TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
+	 * Returns the wrapper class or primitive type for the given TypeMirror.
+	 * @param typeMirror the TypeMirror to get the wrapper class or primitive type for
+	 * @return the wrapper class or primitive type for the given TypeMirror, or null if
+	 * not found
+	 */
+	TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
 		Class<?> candidate = getWrapperFor(typeMirror);
 		if (candidate != null) {
 			return this.env.getElementUtils().getTypeElement(candidate.getName()).asType();
@@ -260,32 +254,29 @@ class TypeUtils {
 	}
 
 	/**
-     * Returns the wrapper class for the given type.
-     * 
-     * @param type the type mirror for which the wrapper class is to be returned
-     * @return the wrapper class for the given type, or null if no wrapper class exists
-     */
-    private Class<?> getWrapperFor(TypeMirror type) {
+	 * Returns the wrapper class for the given type.
+	 * @param type the type mirror for which the wrapper class is to be returned
+	 * @return the wrapper class for the given type, or null if no wrapper class exists
+	 */
+	private Class<?> getWrapperFor(TypeMirror type) {
 		return PRIMITIVE_WRAPPERS.get(type.getKind());
 	}
 
 	/**
-     * Returns the primitive type corresponding to the given type mirror.
-     *
-     * @param type the type mirror
-     * @return the primitive type corresponding to the given type mirror
-     */
-    private TypeKind getPrimitiveFor(TypeMirror type) {
+	 * Returns the primitive type corresponding to the given type mirror.
+	 * @param type the type mirror
+	 * @return the primitive type corresponding to the given type mirror
+	 */
+	private TypeKind getPrimitiveFor(TypeMirror type) {
 		return WRAPPER_TO_PRIMITIVE.get(type.toString());
 	}
 
 	/**
-     * Resolves the TypeDescriptor for the given TypeElement.
-     * 
-     * @param element the TypeElement to resolve the TypeDescriptor for
-     * @return the resolved TypeDescriptor
-     */
-    TypeDescriptor resolveTypeDescriptor(TypeElement element) {
+	 * Resolves the TypeDescriptor for the given TypeElement.
+	 * @param element the TypeElement to resolve the TypeDescriptor for
+	 * @return the resolved TypeDescriptor
+	 */
+	TypeDescriptor resolveTypeDescriptor(TypeElement element) {
 		if (this.typeDescriptors.containsKey(element)) {
 			return this.typeDescriptors.get(element);
 		}
@@ -293,12 +284,11 @@ class TypeUtils {
 	}
 
 	/**
-     * Creates a TypeDescriptor for the given TypeElement.
-     * 
-     * @param element the TypeElement to create the TypeDescriptor for
-     * @return the created TypeDescriptor
-     */
-    private TypeDescriptor createTypeDescriptor(TypeElement element) {
+	 * Creates a TypeDescriptor for the given TypeElement.
+	 * @param element the TypeElement to create the TypeDescriptor for
+	 * @return the created TypeDescriptor
+	 */
+	private TypeDescriptor createTypeDescriptor(TypeElement element) {
 		TypeDescriptor descriptor = new TypeDescriptor();
 		process(descriptor, element.asType());
 		this.typeDescriptors.put(element, descriptor);
@@ -306,12 +296,11 @@ class TypeUtils {
 	}
 
 	/**
-     * Processes the given TypeDescriptor and TypeMirror.
-     * 
-     * @param descriptor the TypeDescriptor to process
-     * @param type the TypeMirror to process
-     */
-    private void process(TypeDescriptor descriptor, TypeMirror type) {
+	 * Processes the given TypeDescriptor and TypeMirror.
+	 * @param descriptor the TypeDescriptor to process
+	 * @param type the TypeMirror to process
+	 */
+	private void process(TypeDescriptor descriptor, TypeMirror type) {
 		if (type.getKind() == TypeKind.DECLARED) {
 			DeclaredType declaredType = (DeclaredType) type;
 			DeclaredType freshType = (DeclaredType) this.env.getElementUtils()
@@ -337,22 +326,20 @@ class TypeUtils {
 		private final Types types;
 
 		/**
-         * Constructs a new TypeExtractor with the specified Types object.
-         * 
-         * @param types the Types object to be used for type extraction
-         */
-        TypeExtractor(Types types) {
+		 * Constructs a new TypeExtractor with the specified Types object.
+		 * @param types the Types object to be used for type extraction
+		 */
+		TypeExtractor(Types types) {
 			this.types = types;
 		}
 
 		/**
-         * Visits a declared type and returns its qualified name with type arguments.
-         * 
-         * @param type the declared type to visit
-         * @param descriptor the type descriptor
-         * @return the qualified name of the declared type with type arguments
-         */
-        @Override
+		 * Visits a declared type and returns its qualified name with type arguments.
+		 * @param type the declared type to visit
+		 * @param descriptor the type descriptor
+		 * @return the qualified name of the declared type with type arguments
+		 */
+		@Override
 		public String visitDeclared(DeclaredType type, TypeDescriptor descriptor) {
 			TypeElement enclosingElement = getEnclosingTypeElement(type);
 			String qualifiedName = determineQualifiedName(type, enclosingElement);
@@ -371,16 +358,16 @@ class TypeUtils {
 		}
 
 		/**
-         * Determines the qualified name of a given DeclaredType, taking into account the enclosing element.
-         * If the enclosing element is not null, the qualified name is constructed by concatenating the qualified name of the enclosing element,
-         * the dollar sign ($) and the simple name of the type element.
-         * If the enclosing element is null, the qualified name is obtained directly from the type element.
-         *
-         * @param type             the DeclaredType for which to determine the qualified name
-         * @param enclosingElement the enclosing TypeElement, can be null
-         * @return the qualified name of the given DeclaredType
-         */
-        private String determineQualifiedName(DeclaredType type, TypeElement enclosingElement) {
+		 * Determines the qualified name of a given DeclaredType, taking into account the
+		 * enclosing element. If the enclosing element is not null, the qualified name is
+		 * constructed by concatenating the qualified name of the enclosing element, the
+		 * dollar sign ($) and the simple name of the type element. If the enclosing
+		 * element is null, the qualified name is obtained directly from the type element.
+		 * @param type the DeclaredType for which to determine the qualified name
+		 * @param enclosingElement the enclosing TypeElement, can be null
+		 * @return the qualified name of the given DeclaredType
+		 */
+		private String determineQualifiedName(DeclaredType type, TypeElement enclosingElement) {
 			if (enclosingElement != null) {
 				return getQualifiedName(enclosingElement) + "$" + type.asElement().getSimpleName();
 			}
@@ -388,13 +375,12 @@ class TypeUtils {
 		}
 
 		/**
-         * Visits a TypeVariable and returns a String representation of it.
-         * 
-         * @param t the TypeVariable to visit
-         * @param descriptor the TypeDescriptor used for resolving generics
-         * @return a String representation of the TypeVariable
-         */
-        @Override
+		 * Visits a TypeVariable and returns a String representation of it.
+		 * @param t the TypeVariable to visit
+		 * @param descriptor the TypeDescriptor used for resolving generics
+		 * @return a String representation of the TypeVariable
+		 */
+		@Override
 		public String visitTypeVariable(TypeVariable t, TypeDescriptor descriptor) {
 			TypeMirror typeMirror = descriptor.resolveGeneric(t);
 			if (typeMirror != null) {
@@ -414,12 +400,11 @@ class TypeUtils {
 		}
 
 		/**
-         * Checks if the given TypeVariable has a cycle in its upper bound.
-         * 
-         * @param variable the TypeVariable to check for cycles
-         * @return true if a cycle is found in the upper bound, false otherwise
-         */
-        private boolean hasCycle(TypeVariable variable) {
+		 * Checks if the given TypeVariable has a cycle in its upper bound.
+		 * @param variable the TypeVariable to check for cycles
+		 * @return true if a cycle is found in the upper bound, false otherwise
+		 */
+		private boolean hasCycle(TypeVariable variable) {
 			TypeMirror upperBound = variable.getUpperBound();
 			if (upperBound instanceof DeclaredType declaredType) {
 				return declaredType.getTypeArguments().stream().anyMatch((candidate) -> candidate.equals(variable));
@@ -428,49 +413,46 @@ class TypeUtils {
 		}
 
 		/**
-         * Visits an ArrayType and returns the corresponding string representation.
-         * 
-         * @param t the ArrayType to visit
-         * @param descriptor the TypeDescriptor associated with the ArrayType
-         * @return the string representation of the ArrayType
-         */
-        @Override
+		 * Visits an ArrayType and returns the corresponding string representation.
+		 * @param t the ArrayType to visit
+		 * @param descriptor the TypeDescriptor associated with the ArrayType
+		 * @return the string representation of the ArrayType
+		 */
+		@Override
 		public String visitArray(ArrayType t, TypeDescriptor descriptor) {
 			return t.getComponentType().accept(this, descriptor) + "[]";
 		}
 
 		/**
-         * Visits a primitive type and returns its boxed class name.
-         * 
-         * @param t the primitive type to visit
-         * @param descriptor the type descriptor
-         * @return the qualified name of the boxed class for the primitive type
-         */
-        @Override
+		 * Visits a primitive type and returns its boxed class name.
+		 * @param t the primitive type to visit
+		 * @param descriptor the type descriptor
+		 * @return the qualified name of the boxed class for the primitive type
+		 */
+		@Override
 		public String visitPrimitive(PrimitiveType t, TypeDescriptor descriptor) {
 			return this.types.boxedClass(t).getQualifiedName().toString();
 		}
 
 		/**
-         * Returns the default action for the given TypeMirror and TypeDescriptor.
-         * 
-         * @param t the TypeMirror to perform the default action on
-         * @param descriptor the TypeDescriptor associated with the TypeMirror
-         * @return the result of the default action as a String
-         */
-        @Override
+		 * Returns the default action for the given TypeMirror and TypeDescriptor.
+		 * @param t the TypeMirror to perform the default action on
+		 * @param descriptor the TypeDescriptor associated with the TypeMirror
+		 * @return the result of the default action as a String
+		 */
+		@Override
 		protected String defaultAction(TypeMirror t, TypeDescriptor descriptor) {
 			return t.toString();
 		}
 
 		/**
-         * Returns the qualified name of the given element.
-         * 
-         * @param element the element whose qualified name is to be retrieved
-         * @return the qualified name of the element, or null if the element is null
-         * @throws IllegalStateException if the qualified name cannot be extracted from the element
-         */
-        String getQualifiedName(Element element) {
+		 * Returns the qualified name of the given element.
+		 * @param element the element whose qualified name is to be retrieved
+		 * @return the qualified name of the element, or null if the element is null
+		 * @throws IllegalStateException if the qualified name cannot be extracted from
+		 * the element
+		 */
+		String getQualifiedName(Element element) {
 			if (element == null) {
 				return null;
 			}
@@ -486,12 +468,11 @@ class TypeUtils {
 		}
 
 		/**
-         * Returns the enclosing TypeElement of the given TypeMirror.
-         * 
-         * @param type the TypeMirror to get the enclosing TypeElement from
-         * @return the enclosing TypeElement, or null if not found
-         */
-        private TypeElement getEnclosingTypeElement(TypeMirror type) {
+		 * Returns the enclosing TypeElement of the given TypeMirror.
+		 * @param type the TypeMirror to get the enclosing TypeElement from
+		 * @return the enclosing TypeElement, or null if not found
+		 */
+		private TypeElement getEnclosingTypeElement(TypeMirror type) {
 			if (type instanceof DeclaredType declaredType) {
 				Element enclosingElement = declaredType.asElement().getEnclosingElement();
 				if (enclosingElement instanceof TypeElement typeElement) {
@@ -511,31 +492,30 @@ class TypeUtils {
 		private final Map<TypeVariable, TypeMirror> generics = new HashMap<>();
 
 		/**
-         * Returns an unmodifiable map of the generic type variables and their corresponding type mirrors.
-         *
-         * @return an unmodifiable map of the generic type variables and their corresponding type mirrors
-         */
-        Map<TypeVariable, TypeMirror> getGenerics() {
+		 * Returns an unmodifiable map of the generic type variables and their
+		 * corresponding type mirrors.
+		 * @return an unmodifiable map of the generic type variables and their
+		 * corresponding type mirrors
+		 */
+		Map<TypeVariable, TypeMirror> getGenerics() {
 			return Collections.unmodifiableMap(this.generics);
 		}
 
 		/**
-         * Resolves the generic type of the given {@code TypeVariable}.
-         * 
-         * @param typeVariable the {@code TypeVariable} to resolve
-         * @return the resolved generic type
-         */
-        TypeMirror resolveGeneric(TypeVariable typeVariable) {
+		 * Resolves the generic type of the given {@code TypeVariable}.
+		 * @param typeVariable the {@code TypeVariable} to resolve
+		 * @return the resolved generic type
+		 */
+		TypeMirror resolveGeneric(TypeVariable typeVariable) {
 			return resolveGeneric(getParameterName(typeVariable));
 		}
 
 		/**
-         * Resolves the generic type for the given parameter name.
-         * 
-         * @param parameterName the name of the parameter
-         * @return the resolved generic type as a TypeMirror, or null if not found
-         */
-        TypeMirror resolveGeneric(String parameterName) {
+		 * Resolves the generic type for the given parameter name.
+		 * @param parameterName the name of the parameter
+		 * @return the resolved generic type as a TypeMirror, or null if not found
+		 */
+		TypeMirror resolveGeneric(String parameterName) {
 			return this.generics.entrySet()
 				.stream()
 				.filter((e) -> getParameterName(e.getKey()).equals(parameterName))
@@ -545,12 +525,11 @@ class TypeUtils {
 		}
 
 		/**
-         * Registers the given variable and resolution if necessary.
-         * 
-         * @param variable   the variable to be registered
-         * @param resolution the resolution to be registered
-         */
-        private void registerIfNecessary(TypeMirror variable, TypeMirror resolution) {
+		 * Registers the given variable and resolution if necessary.
+		 * @param variable the variable to be registered
+		 * @param resolution the resolution to be registered
+		 */
+		private void registerIfNecessary(TypeMirror variable, TypeMirror resolution) {
 			if (variable instanceof TypeVariable typeVariable) {
 				if (this.generics.keySet()
 					.stream()
@@ -561,12 +540,11 @@ class TypeUtils {
 		}
 
 		/**
-         * Returns the name of the parameter represented by the given TypeVariable.
-         *
-         * @param typeVariable the TypeVariable representing the parameter
-         * @return the name of the parameter
-         */
-        private String getParameterName(TypeVariable typeVariable) {
+		 * Returns the name of the parameter represented by the given TypeVariable.
+		 * @param typeVariable the TypeVariable representing the parameter
+		 * @return the name of the parameter
+		 */
+		private String getParameterName(TypeVariable typeVariable) {
 			return typeVariable.asElement().getSimpleName().toString();
 		}
 

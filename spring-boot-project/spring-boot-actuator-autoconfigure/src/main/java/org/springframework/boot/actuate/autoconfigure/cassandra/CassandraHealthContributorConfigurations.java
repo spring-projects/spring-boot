@@ -39,30 +39,31 @@ import org.springframework.context.annotation.Configuration;
 class CassandraHealthContributorConfigurations {
 
 	/**
-     * CassandraDriverConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * CassandraDriverConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(CqlSession.class)
 	static class CassandraDriverConfiguration
 			extends CompositeHealthContributorConfiguration<CassandraDriverHealthIndicator, CqlSession> {
 
 		/**
-         * Constructs a new CassandraDriverConfiguration object.
-         * 
-         * This constructor initializes the CassandraDriverHealthIndicator by calling the super constructor.
-         * The CassandraDriverHealthIndicator is responsible for monitoring the health of the Cassandra driver.
-         */
-        CassandraDriverConfiguration() {
+		 * Constructs a new CassandraDriverConfiguration object.
+		 *
+		 * This constructor initializes the CassandraDriverHealthIndicator by calling the
+		 * super constructor. The CassandraDriverHealthIndicator is responsible for
+		 * monitoring the health of the Cassandra driver.
+		 */
+		CassandraDriverConfiguration() {
 			super(CassandraDriverHealthIndicator::new);
 		}
 
 		/**
-         * Creates a Cassandra health contributor if no bean with the names "cassandraHealthIndicator" and "cassandraHealthContributor" exists.
-         * 
-         * @param sessions a map of CqlSession instances
-         * @return the created Cassandra health contributor
-         */
-        @Bean
+		 * Creates a Cassandra health contributor if no bean with the names
+		 * "cassandraHealthIndicator" and "cassandraHealthContributor" exists.
+		 * @param sessions a map of CqlSession instances
+		 * @return the created Cassandra health contributor
+		 */
+		@Bean
 		@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })
 		HealthContributor cassandraHealthContributor(Map<String, CqlSession> sessions) {
 			return createContributor(sessions);
@@ -71,31 +72,33 @@ class CassandraHealthContributorConfigurations {
 	}
 
 	/**
-     * CassandraReactiveDriverConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * CassandraReactiveDriverConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(CqlSession.class)
 	static class CassandraReactiveDriverConfiguration extends
 			CompositeReactiveHealthContributorConfiguration<CassandraDriverReactiveHealthIndicator, CqlSession> {
 
 		/**
-         * Constructs a new CassandraReactiveDriverConfiguration object.
-         * 
-         * This constructor initializes the CassandraReactiveDriverConfiguration object by calling the superclass constructor with a new instance of CassandraDriverReactiveHealthIndicator.
-         * 
-         * @see CassandraDriverReactiveHealthIndicator
-         */
-        CassandraReactiveDriverConfiguration() {
+		 * Constructs a new CassandraReactiveDriverConfiguration object.
+		 *
+		 * This constructor initializes the CassandraReactiveDriverConfiguration object by
+		 * calling the superclass constructor with a new instance of
+		 * CassandraDriverReactiveHealthIndicator.
+		 *
+		 * @see CassandraDriverReactiveHealthIndicator
+		 */
+		CassandraReactiveDriverConfiguration() {
 			super(CassandraDriverReactiveHealthIndicator::new);
 		}
 
 		/**
-         * Creates a ReactiveHealthContributor for Cassandra if no existing bean with the names "cassandraHealthIndicator" and "cassandraHealthContributor" is found.
-         * 
-         * @param sessions a map of CqlSession instances
-         * @return the created ReactiveHealthContributor for Cassandra
-         */
-        @Bean
+		 * Creates a ReactiveHealthContributor for Cassandra if no existing bean with the
+		 * names "cassandraHealthIndicator" and "cassandraHealthContributor" is found.
+		 * @param sessions a map of CqlSession instances
+		 * @return the created ReactiveHealthContributor for Cassandra
+		 */
+		@Bean
 		@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })
 		ReactiveHealthContributor cassandraHealthContributor(Map<String, CqlSession> sessions) {
 			return createContributor(sessions);

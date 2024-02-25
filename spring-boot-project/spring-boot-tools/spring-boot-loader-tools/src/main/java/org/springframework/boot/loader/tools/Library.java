@@ -129,11 +129,10 @@ public class Library {
 	}
 
 	/**
-     * Returns the last modified timestamp of the file.
-     *
-     * @return the last modified timestamp of the file
-     */
-    long getLastModified() {
+	 * Returns the last modified timestamp of the file.
+	 * @return the last modified timestamp of the file
+	 */
+	long getLastModified() {
 		return this.file.lastModified();
 	}
 

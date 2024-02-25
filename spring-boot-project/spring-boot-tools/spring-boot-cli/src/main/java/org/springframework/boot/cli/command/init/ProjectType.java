@@ -38,15 +38,15 @@ class ProjectType {
 	private final Map<String, String> tags = new HashMap<>();
 
 	/**
-     * Constructs a new ProjectType with the specified id, name, action, defaultType, and tags.
-     * 
-     * @param id the id of the ProjectType
-     * @param name the name of the ProjectType
-     * @param action the action of the ProjectType
-     * @param defaultType the default type of the ProjectType
-     * @param tags the tags associated with the ProjectType
-     */
-    ProjectType(String id, String name, String action, boolean defaultType, Map<String, String> tags) {
+	 * Constructs a new ProjectType with the specified id, name, action, defaultType, and
+	 * tags.
+	 * @param id the id of the ProjectType
+	 * @param name the name of the ProjectType
+	 * @param action the action of the ProjectType
+	 * @param defaultType the default type of the ProjectType
+	 * @param tags the tags associated with the ProjectType
+	 */
+	ProjectType(String id, String name, String action, boolean defaultType, Map<String, String> tags) {
 		this.id = id;
 		this.name = name;
 		this.action = action;
@@ -57,47 +57,42 @@ class ProjectType {
 	}
 
 	/**
-     * Returns the ID of the ProjectType.
-     *
-     * @return the ID of the ProjectType
-     */
-    String getId() {
+	 * Returns the ID of the ProjectType.
+	 * @return the ID of the ProjectType
+	 */
+	String getId() {
 		return this.id;
 	}
 
 	/**
-     * Returns the name of the ProjectType.
-     *
-     * @return the name of the ProjectType
-     */
-    String getName() {
+	 * Returns the name of the ProjectType.
+	 * @return the name of the ProjectType
+	 */
+	String getName() {
 		return this.name;
 	}
 
 	/**
-     * Returns the action of the ProjectType.
-     *
-     * @return the action of the ProjectType
-     */
-    String getAction() {
+	 * Returns the action of the ProjectType.
+	 * @return the action of the ProjectType
+	 */
+	String getAction() {
 		return this.action;
 	}
 
 	/**
-     * Returns a boolean value indicating whether this ProjectType is the default type.
-     * 
-     * @return true if this ProjectType is the default type, false otherwise.
-     */
-    boolean isDefaultType() {
+	 * Returns a boolean value indicating whether this ProjectType is the default type.
+	 * @return true if this ProjectType is the default type, false otherwise.
+	 */
+	boolean isDefaultType() {
 		return this.defaultType;
 	}
 
 	/**
-     * Returns an unmodifiable map of tags.
-     *
-     * @return an unmodifiable map of tags
-     */
-    Map<String, String> getTags() {
+	 * Returns an unmodifiable map of tags.
+	 * @return an unmodifiable map of tags
+	 */
+	Map<String, String> getTags() {
 		return Collections.unmodifiableMap(this.tags);
 	}
 

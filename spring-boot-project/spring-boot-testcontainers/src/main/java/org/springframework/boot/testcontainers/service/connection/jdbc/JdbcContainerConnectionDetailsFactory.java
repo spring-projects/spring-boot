@@ -35,12 +35,11 @@ class JdbcContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<JdbcDatabaseContainer<?>, JdbcConnectionDetails> {
 
 	/**
-     * Returns the connection details for the specified container connection source.
-     *
-     * @param source the container connection source
-     * @return the connection details for the container
-     */
-    @Override
+	 * Returns the connection details for the specified container connection source.
+	 * @param source the container connection source
+	 * @return the connection details for the container
+	 */
+	@Override
 	protected JdbcConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 		return new JdbcContainerConnectionDetails(source);
@@ -53,50 +52,47 @@ class JdbcContainerConnectionDetailsFactory
 			extends ContainerConnectionDetails<JdbcDatabaseContainer<?>> implements JdbcConnectionDetails {
 
 		/**
-         * Constructs a new JdbcContainerConnectionDetails object with the specified ContainerConnectionSource.
-         * 
-         * @param source the ContainerConnectionSource used to create the JdbcContainerConnectionDetails object
-         */
-        private JdbcContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
+		 * Constructs a new JdbcContainerConnectionDetails object with the specified
+		 * ContainerConnectionSource.
+		 * @param source the ContainerConnectionSource used to create the
+		 * JdbcContainerConnectionDetails object
+		 */
+		private JdbcContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 			super(source);
 		}
 
 		/**
-         * Returns the username associated with this JdbcContainerConnectionDetails.
-         * 
-         * @return the username associated with this JdbcContainerConnectionDetails
-         */
-        @Override
+		 * Returns the username associated with this JdbcContainerConnectionDetails.
+		 * @return the username associated with this JdbcContainerConnectionDetails
+		 */
+		@Override
 		public String getUsername() {
 			return getContainer().getUsername();
 		}
 
 		/**
-         * Returns the password associated with this JdbcContainerConnectionDetails.
-         * 
-         * @return the password associated with this JdbcContainerConnectionDetails
-         */
-        @Override
+		 * Returns the password associated with this JdbcContainerConnectionDetails.
+		 * @return the password associated with this JdbcContainerConnectionDetails
+		 */
+		@Override
 		public String getPassword() {
 			return getContainer().getPassword();
 		}
 
 		/**
-         * Returns the JDBC URL of the container.
-         * 
-         * @return the JDBC URL of the container
-         */
-        @Override
+		 * Returns the JDBC URL of the container.
+		 * @return the JDBC URL of the container
+		 */
+		@Override
 		public String getJdbcUrl() {
 			return getContainer().getJdbcUrl();
 		}
 
 		/**
-         * Returns the driver class name used by the container.
-         * 
-         * @return the driver class name
-         */
-        @Override
+		 * Returns the driver class name used by the container.
+		 * @return the driver class name
+		 */
+		@Override
 		public String getDriverClassName() {
 			return getContainer().getDriverClassName();
 		}

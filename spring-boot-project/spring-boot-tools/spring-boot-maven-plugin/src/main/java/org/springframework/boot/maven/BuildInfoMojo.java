@@ -105,12 +105,11 @@ public class BuildInfoMojo extends AbstractMojo {
 	private boolean skip;
 
 	/**
-     * Executes the build-info goal.
-     * 
-     * @throws MojoExecutionException if an error occurs during execution
-     * @throws MojoFailureException if the build-info generation fails
-     */
-    @Override
+	 * Executes the build-info goal.
+	 * @throws MojoExecutionException if an error occurs during execution
+	 * @throws MojoFailureException if the build-info generation fails
+	 */
+	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
 			getLog().debug("skipping build-info as per configuration.");
@@ -130,11 +129,10 @@ public class BuildInfoMojo extends AbstractMojo {
 	}
 
 	/**
-     * Retrieves the project details.
-     * 
-     * @return the project details
-     */
-    private ProjectDetails getProjectDetails() {
+	 * Retrieves the project details.
+	 * @return the project details
+	 */
+	private ProjectDetails getProjectDetails() {
 		String group = getIfNotExcluded("group", this.project.getGroupId());
 		String artifact = getIfNotExcluded("artifact", this.project.getArtifactId());
 		String version = getIfNotExcluded("version", this.project.getVersion());
@@ -145,23 +143,22 @@ public class BuildInfoMojo extends AbstractMojo {
 	}
 
 	/**
-     * Returns the value if the specified name is not excluded.
-     * 
-     * @param name the name of the property
-     * @param value the value to be returned if not excluded
-     * @return the value if not excluded, or null if excluded
-     */
-    private <T> T getIfNotExcluded(String name, T value) {
+	 * Returns the value if the specified name is not excluded.
+	 * @param name the name of the property
+	 * @param value the value to be returned if not excluded
+	 * @return the value if not excluded, or null if excluded
+	 */
+	private <T> T getIfNotExcluded(String name, T value) {
 		return (this.excludeInfoProperties == null || !this.excludeInfoProperties.contains(name)) ? value : null;
 	}
 
 	/**
-     * Applies exclusions to the given source map.
-     * 
-     * @param source the source map to apply exclusions to
-     * @return a new map with exclusions applied, or the original source map if it is null or if the excludeInfoProperties is null
-     */
-    private Map<String, String> applyExclusions(Map<String, String> source) {
+	 * Applies exclusions to the given source map.
+	 * @param source the source map to apply exclusions to
+	 * @return a new map with exclusions applied, or the original source map if it is null
+	 * or if the excludeInfoProperties is null
+	 */
+	private Map<String, String> applyExclusions(Map<String, String> source) {
 		if (source == null || this.excludeInfoProperties == null) {
 			return source;
 		}
@@ -171,11 +168,10 @@ public class BuildInfoMojo extends AbstractMojo {
 	}
 
 	/**
-     * Returns the build time of the project.
-     * 
-     * @return the build time as an Instant object
-     */
-    private Instant getBuildTime() {
+	 * Returns the build time of the project.
+	 * @return the build time as an Instant object
+	 */
+	private Instant getBuildTime() {
 		if (this.time == null || this.time.isEmpty()) {
 			Date startTime = this.session.getRequest().getStartTime();
 			return (startTime != null) ? startTime.toInstant() : Instant.now();

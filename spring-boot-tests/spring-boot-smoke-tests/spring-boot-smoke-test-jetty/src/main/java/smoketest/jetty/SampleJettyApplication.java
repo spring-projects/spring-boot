@@ -26,12 +26,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SampleJettyApplication {
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Jetty server by running the SampleJettyApplication class.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Jetty server
+	 * by running the SampleJettyApplication class.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleJettyApplication.class, args);
 	}
 

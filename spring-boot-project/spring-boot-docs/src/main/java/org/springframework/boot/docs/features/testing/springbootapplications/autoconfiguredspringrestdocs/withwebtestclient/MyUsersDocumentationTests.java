@@ -36,9 +36,9 @@ class MyUsersDocumentationTests {
 	private WebTestClient webTestClient;
 
 	/**
-     * Test case to list users.
-     */
-    @Test
+	 * Test case to list users.
+	 */
+	@Test
 	void listUsers() {
 		// @formatter:off
 		this.webTestClient

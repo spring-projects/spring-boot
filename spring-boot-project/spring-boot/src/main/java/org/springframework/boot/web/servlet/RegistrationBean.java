@@ -43,14 +43,13 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	private boolean enabled = true;
 
 	/**
-     * This method is called when the application starts up.
-     * It registers the servlet context for the specified description.
-     * If the registration is disabled, it logs a message and returns.
-     *
-     * @param servletContext the servlet context to register
-     * @throws ServletException if an error occurs during registration
-     */
-    @Override
+	 * This method is called when the application starts up. It registers the servlet
+	 * context for the specified description. If the registration is disabled, it logs a
+	 * message and returns.
+	 * @param servletContext the servlet context to register
+	 * @throws ServletException if an error occurs during registration
+	 */
+	@Override
 	public final void onStartup(ServletContext servletContext) throws ServletException {
 		String description = getDescription();
 		if (!isEnabled()) {

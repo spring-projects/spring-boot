@@ -43,33 +43,31 @@ class Snippets {
 	private final List<Snippet> snippets = new ArrayList<>();
 
 	/**
-     * Initializes the Snippets object with the given configuration property metadata.
-     * 
-     * @param configurationPropertyMetadata the configuration property metadata used to initialize the Snippets object
-     */
-    Snippets(FileCollection configurationPropertyMetadata) {
+	 * Initializes the Snippets object with the given configuration property metadata.
+	 * @param configurationPropertyMetadata the configuration property metadata used to
+	 * initialize the Snippets object
+	 */
+	Snippets(FileCollection configurationPropertyMetadata) {
 		this.properties = ConfigurationProperties.fromFiles(configurationPropertyMetadata);
 	}
 
 	/**
-     * Adds a new snippet to the list of snippets.
-     * 
-     * @param anchor the anchor of the snippet
-     * @param title the title of the snippet
-     * @param config the configuration for the snippet
-     */
-    void add(String anchor, String title, Consumer<Snippet.Config> config) {
+	 * Adds a new snippet to the list of snippets.
+	 * @param anchor the anchor of the snippet
+	 * @param title the title of the snippet
+	 * @param config the configuration for the snippet
+	 */
+	void add(String anchor, String title, Consumer<Snippet.Config> config) {
 		this.snippets.add(new Snippet(anchor, title, config));
 	}
 
 	/**
-     * Writes the snippets to the specified output directory.
-     * 
-     * @param outputDirectory the path to the output directory
-     * @throws IOException if an I/O error occurs
-     * @throws IllegalStateException if any keys were not written to the documentation
-     */
-    void writeTo(Path outputDirectory) throws IOException {
+	 * Writes the snippets to the specified output directory.
+	 * @param outputDirectory the path to the output directory
+	 * @throws IOException if an I/O error occurs
+	 * @throws IllegalStateException if any keys were not written to the documentation
+	 */
+	void writeTo(Path outputDirectory) throws IOException {
 		createDirectory(outputDirectory);
 		Set<String> remaining = this.properties.stream()
 			.filter((property) -> !property.isDeprecated())
@@ -86,15 +84,15 @@ class Snippets {
 	}
 
 	/**
-     * Writes the given snippet to the specified output directory and returns a set of added properties.
-     * 
-     * @param outputDirectory The path of the output directory.
-     * @param snippet The snippet to be written.
-     * @param remaining The set of remaining properties.
-     * @return The set of added properties.
-     * @throws IOException If an I/O error occurs while writing the snippet.
-     */
-    private Set<String> writeSnippet(Path outputDirectory, Snippet snippet, Set<String> remaining) throws IOException {
+	 * Writes the given snippet to the specified output directory and returns a set of
+	 * added properties.
+	 * @param outputDirectory The path of the output directory.
+	 * @param snippet The snippet to be written.
+	 * @param remaining The set of remaining properties.
+	 * @return The set of added properties.
+	 * @throws IOException If an I/O error occurs while writing the snippet.
+	 */
+	private Set<String> writeSnippet(Path outputDirectory, Snippet snippet, Set<String> remaining) throws IOException {
 		Table table = new Table();
 		Set<String> added = new HashSet<>();
 		snippet.forEachOverride((prefix, description) -> {
@@ -119,13 +117,12 @@ class Snippets {
 	}
 
 	/**
-     * Generates an Asciidoc document for the given Snippet and Table.
-     * 
-     * @param snippet The Snippet object to generate the Asciidoc for.
-     * @param table The Table object to include in the Asciidoc.
-     * @return The generated Asciidoc document.
-     */
-    private Asciidoc getAsciidoc(Snippet snippet, Table table) {
+	 * Generates an Asciidoc document for the given Snippet and Table.
+	 * @param snippet The Snippet object to generate the Asciidoc for.
+	 * @param table The Table object to include in the Asciidoc.
+	 * @return The generated Asciidoc document.
+	 */
+	private Asciidoc getAsciidoc(Snippet snippet, Table table) {
 		Asciidoc asciidoc = new Asciidoc();
 		// We have to prepend 'appendix.' as a section id here, otherwise the
 		// spring-asciidoctor-extensions:section-id asciidoctor extension complains
@@ -136,17 +133,16 @@ class Snippets {
 	}
 
 	/**
-     * Writes the given Asciidoc content to the specified output directory.
-     * The content is written to a file with the same name as the snippet's anchor,
-     * with the extension ".adoc".
-     * If the file already exists, it is deleted and replaced with the new content.
-     * 
-     * @param outputDirectory the directory where the Asciidoc file will be written
-     * @param snippet the snippet containing the anchor and content to be written
-     * @param asciidoc the Asciidoc content to be written
-     * @throws IOException if an I/O error occurs while writing the file
-     */
-    private void writeAsciidoc(Path outputDirectory, Snippet snippet, Asciidoc asciidoc) throws IOException {
+	 * Writes the given Asciidoc content to the specified output directory. The content is
+	 * written to a file with the same name as the snippet's anchor, with the extension
+	 * ".adoc". If the file already exists, it is deleted and replaced with the new
+	 * content.
+	 * @param outputDirectory the directory where the Asciidoc file will be written
+	 * @param snippet the snippet containing the anchor and content to be written
+	 * @param asciidoc the Asciidoc content to be written
+	 * @throws IOException if an I/O error occurs while writing the file
+	 */
+	private void writeAsciidoc(Path outputDirectory, Snippet snippet, Asciidoc asciidoc) throws IOException {
 		String[] parts = (snippet.getAnchor()).split("\\.");
 		Path path = outputDirectory;
 		for (int i = 0; i < parts.length; i++) {
@@ -161,13 +157,12 @@ class Snippets {
 	}
 
 	/**
-     * Creates a directory at the specified path.
-     * 
-     * @param path the path where the directory should be created
-     * @throws IOException if an I/O error occurs while creating the directory
-     * @throws IllegalArgumentException if the specified path is invalid
-     */
-    private void createDirectory(Path path) throws IOException {
+	 * Creates a directory at the specified path.
+	 * @param path the path where the directory should be created
+	 * @throws IOException if an I/O error occurs while creating the directory
+	 * @throws IllegalArgumentException if the specified path is invalid
+	 */
+	private void createDirectory(Path path) throws IOException {
 		assertValidOutputDirectory(path);
 		if (!Files.exists(path)) {
 			Files.createDirectory(path);
@@ -175,12 +170,12 @@ class Snippets {
 	}
 
 	/**
-     * Asserts that the given output directory path is valid.
-     * 
-     * @param path the output directory path to be validated
-     * @throws IllegalArgumentException if the directory path is null or if it already exists and is not a directory
-     */
-    private void assertValidOutputDirectory(Path path) {
+	 * Asserts that the given output directory path is valid.
+	 * @param path the output directory path to be validated
+	 * @throws IllegalArgumentException if the directory path is null or if it already
+	 * exists and is not a directory
+	 */
+	private void assertValidOutputDirectory(Path path) {
 		if (path == null) {
 			throw new IllegalArgumentException("Directory path should not be null");
 		}

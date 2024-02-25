@@ -28,21 +28,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class SampleController {
 
 	/**
-     * Returns a greeting message "Hello World".
-     * 
-     * @return the greeting message "Hello World"
-     */
-    @GetMapping("/")
+	 * Returns a greeting message "Hello World".
+	 * @return the greeting message "Hello World"
+	 */
+	@GetMapping("/")
 	public String helloWorld() {
 		return "Hello World";
 	}
 
 	/**
-     * Retrieves a string asynchronously that says "Hello World".
-     *
-     * @return a {@link java.util.concurrent.Callable} that returns the string "async: Hello World"
-     */
-    @GetMapping("/async")
+	 * Retrieves a string asynchronously that says "Hello World".
+	 * @return a {@link java.util.concurrent.Callable} that returns the string "async:
+	 * Hello World"
+	 */
+	@GetMapping("/async")
 	public Callable<String> helloWorldAsync() {
 		return () -> "async: Hello World";
 	}

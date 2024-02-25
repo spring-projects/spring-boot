@@ -29,21 +29,19 @@ public class GreetingController {
 	private final GreetingService greetingService;
 
 	/**
-     * Constructs a new GreetingController with the specified GreetingService.
-     * 
-     * @param greetingService the GreetingService to be used by the controller
-     */
-    public GreetingController(GreetingService greetingService) {
+	 * Constructs a new GreetingController with the specified GreetingService.
+	 * @param greetingService the GreetingService to be used by the controller
+	 */
+	public GreetingController(GreetingService greetingService) {
 		this.greetingService = greetingService;
 	}
 
 	/**
-     * Retrieves a greeting message for the given name.
-     *
-     * @param name the name to greet
-     * @return the greeting message
-     */
-    @QueryMapping
+	 * Retrieves a greeting message for the given name.
+	 * @param name the name to greet
+	 * @return the greeting message
+	 */
+	@QueryMapping
 	public String greeting(@Argument String name) {
 		return this.greetingService.greet(name);
 	}

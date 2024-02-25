@@ -50,11 +50,11 @@ public class TransactionManagerCustomizers {
 	}
 
 	/**
-     * Constructs a new instance of TransactionManagerCustomizers with the specified list of customizers.
-     *
-     * @param customizers the list of customizers to be applied to the transaction manager
-     */
-    private TransactionManagerCustomizers(List<? extends TransactionManagerCustomizer<?>> customizers) {
+	 * Constructs a new instance of TransactionManagerCustomizers with the specified list
+	 * of customizers.
+	 * @param customizers the list of customizers to be applied to the transaction manager
+	 */
+	private TransactionManagerCustomizers(List<? extends TransactionManagerCustomizer<?>> customizers) {
 		this.customizers = customizers;
 	}
 

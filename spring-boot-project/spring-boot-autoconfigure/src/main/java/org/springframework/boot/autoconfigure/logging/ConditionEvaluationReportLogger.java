@@ -43,34 +43,33 @@ class ConditionEvaluationReportLogger {
 	private final LogLevel logLevel;
 
 	/**
-     * Constructs a new ConditionEvaluationReportLogger with the specified log level and report supplier.
-     * 
-     * @param logLevel the log level to be used for logging the condition evaluation report
-     * @param reportSupplier the supplier that provides the condition evaluation report
-     * @throws IllegalArgumentException if the log level is not INFO or DEBUG
-     */
-    ConditionEvaluationReportLogger(LogLevel logLevel, Supplier<ConditionEvaluationReport> reportSupplier) {
+	 * Constructs a new ConditionEvaluationReportLogger with the specified log level and
+	 * report supplier.
+	 * @param logLevel the log level to be used for logging the condition evaluation
+	 * report
+	 * @param reportSupplier the supplier that provides the condition evaluation report
+	 * @throws IllegalArgumentException if the log level is not INFO or DEBUG
+	 */
+	ConditionEvaluationReportLogger(LogLevel logLevel, Supplier<ConditionEvaluationReport> reportSupplier) {
 		Assert.isTrue(isInfoOrDebug(logLevel), "LogLevel must be INFO or DEBUG");
 		this.logLevel = logLevel;
 		this.reportSupplier = reportSupplier;
 	}
 
 	/**
-     * Checks if the given log level is either INFO or DEBUG.
-     * 
-     * @param logLevelForReport the log level to be checked
-     * @return true if the log level is INFO or DEBUG, false otherwise
-     */
-    private boolean isInfoOrDebug(LogLevel logLevelForReport) {
+	 * Checks if the given log level is either INFO or DEBUG.
+	 * @param logLevelForReport the log level to be checked
+	 * @return true if the log level is INFO or DEBUG, false otherwise
+	 */
+	private boolean isInfoOrDebug(LogLevel logLevelForReport) {
 		return LogLevel.INFO.equals(logLevelForReport) || LogLevel.DEBUG.equals(logLevelForReport);
 	}
 
 	/**
-     * Logs the condition evaluation report.
-     * 
-     * @param isCrashReport a boolean indicating whether the report is a crash report
-     */
-    void logReport(boolean isCrashReport) {
+	 * Logs the condition evaluation report.
+	 * @param isCrashReport a boolean indicating whether the report is a crash report
+	 */
+	void logReport(boolean isCrashReport) {
 		ConditionEvaluationReport report = this.reportSupplier.get();
 		if (report == null) {
 			this.logger.info("Unable to provide the condition evaluation report");
@@ -97,11 +96,10 @@ class ConditionEvaluationReportLogger {
 	}
 
 	/**
-     * Logs a message with the specified log level.
-     * 
-     * @param logLevel the log level to use
-     */
-    private void logMessage(String logLevel) {
+	 * Logs a message with the specified log level.
+	 * @param logLevel the log level to use
+	 */
+	private void logMessage(String logLevel) {
 		this.logger.info(String.format("%n%nError starting ApplicationContext. To display the "
 				+ "condition evaluation report re-run your application with '%s' enabled.", logLevel));
 	}

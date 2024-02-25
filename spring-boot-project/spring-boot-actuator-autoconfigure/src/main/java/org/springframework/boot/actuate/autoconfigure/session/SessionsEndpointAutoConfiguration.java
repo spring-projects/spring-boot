@@ -48,21 +48,22 @@ import org.springframework.session.SessionRepository;
 public class SessionsEndpointAutoConfiguration {
 
 	/**
-     * ServletSessionEndpointConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ServletSessionEndpointConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnBean(SessionRepository.class)
 	static class ServletSessionEndpointConfiguration {
 
 		/**
-         * Creates a new SessionsEndpoint bean if no other bean of the same type is present.
-         * 
-         * @param sessionRepository The session repository to be used by the endpoint.
-         * @param indexedSessionRepository An optional indexed session repository to be used by the endpoint.
-         * @return The created SessionsEndpoint bean.
-         */
-        @Bean
+		 * Creates a new SessionsEndpoint bean if no other bean of the same type is
+		 * present.
+		 * @param sessionRepository The session repository to be used by the endpoint.
+		 * @param indexedSessionRepository An optional indexed session repository to be
+		 * used by the endpoint.
+		 * @return The created SessionsEndpoint bean.
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		SessionsEndpoint sessionEndpoint(SessionRepository<? extends Session> sessionRepository,
 				ObjectProvider<FindByIndexNameSessionRepository<? extends Session>> indexedSessionRepository) {
@@ -72,21 +73,24 @@ public class SessionsEndpointAutoConfiguration {
 	}
 
 	/**
-     * ReactiveSessionEndpointConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ReactiveSessionEndpointConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@ConditionalOnBean(ReactiveSessionRepository.class)
 	static class ReactiveSessionEndpointConfiguration {
 
 		/**
-         * Creates a new {@link ReactiveSessionsEndpoint} bean if no other bean of the same type is present.
-         * 
-         * @param sessionRepository The {@link ReactiveSessionRepository} used to manage sessions.
-         * @param indexedSessionRepository The {@link ReactiveFindByIndexNameSessionRepository} used to manage indexed sessions.
-         * @return The {@link ReactiveSessionsEndpoint} bean.
-         */
-        @Bean
+		 * Creates a new {@link ReactiveSessionsEndpoint} bean if no other bean of the
+		 * same type is present.
+		 * @param sessionRepository The {@link ReactiveSessionRepository} used to manage
+		 * sessions.
+		 * @param indexedSessionRepository The
+		 * {@link ReactiveFindByIndexNameSessionRepository} used to manage indexed
+		 * sessions.
+		 * @return The {@link ReactiveSessionsEndpoint} bean.
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		ReactiveSessionsEndpoint sessionsEndpoint(ReactiveSessionRepository<? extends Session> sessionRepository,
 				ObjectProvider<ReactiveFindByIndexNameSessionRepository<? extends Session>> indexedSessionRepository) {

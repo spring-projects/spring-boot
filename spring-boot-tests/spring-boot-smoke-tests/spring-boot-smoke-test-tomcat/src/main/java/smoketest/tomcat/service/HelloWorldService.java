@@ -29,11 +29,10 @@ public class HelloWorldService {
 	private String name;
 
 	/**
-     * Returns a hello message with the name of the person.
-     *
-     * @return the hello message
-     */
-    public String getHelloMessage() {
+	 * Returns a hello message with the name of the person.
+	 * @return the hello message
+	 */
+	public String getHelloMessage() {
 		return "Hello " + this.name;
 	}
 

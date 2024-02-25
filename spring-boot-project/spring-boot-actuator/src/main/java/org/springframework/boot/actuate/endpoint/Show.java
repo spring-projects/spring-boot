@@ -75,13 +75,12 @@ public enum Show {
 	}
 
 	/**
-     * Checks if the user is authorized based on the provided security context and roles.
-     * 
-     * @param securityContext The security context containing the user's information.
-     * @param roles The roles to check for authorization.
-     * @return True if the user is authorized, false otherwise.
-     */
-    private boolean isAuthorized(SecurityContext securityContext, Collection<String> roles) {
+	 * Checks if the user is authorized based on the provided security context and roles.
+	 * @param securityContext The security context containing the user's information.
+	 * @param roles The roles to check for authorization.
+	 * @return True if the user is authorized, false otherwise.
+	 */
+	private boolean isAuthorized(SecurityContext securityContext, Collection<String> roles) {
 		Principal principal = securityContext.getPrincipal();
 		if (principal == null) {
 			return false;
@@ -108,12 +107,12 @@ public enum Show {
 	}
 
 	/**
-     * Checks if the given principal is an instance of Spring Security Authentication.
-     * 
-     * @param principal the principal to be checked
-     * @return true if the principal is an instance of Spring Security Authentication, false otherwise
-     */
-    private boolean isSpringSecurityAuthentication(Principal principal) {
+	 * Checks if the given principal is an instance of Spring Security Authentication.
+	 * @param principal the principal to be checked
+	 * @return true if the principal is an instance of Spring Security Authentication,
+	 * false otherwise
+	 */
+	private boolean isSpringSecurityAuthentication(Principal principal) {
 		return ClassUtils.isPresent("org.springframework.security.core.Authentication", null)
 				&& (principal instanceof Authentication);
 	}

@@ -39,22 +39,20 @@ public class SampleProfileApplication implements CommandLineRunner {
 	private MessageService helloWorldService;
 
 	/**
-     * This method is the entry point of the application and is responsible for printing the message
-     * returned by the helloWorldService.
-     *
-     * @param args The command line arguments passed to the application.
-     */
-    @Override
+	 * This method is the entry point of the application and is responsible for printing
+	 * the message returned by the helloWorldService.
+	 * @param args The command line arguments passed to the application.
+	 */
+	@Override
 	public void run(String... args) {
 		System.out.println(this.helloWorldService.getMessage());
 	}
 
 	/**
-     * The main method of the SampleProfileApplication class.
-     * 
-     * @param args The command line arguments passed to the application.
-     */
-    public static void main(String... args) {
+	 * The main method of the SampleProfileApplication class.
+	 * @param args The command line arguments passed to the application.
+	 */
+	public static void main(String... args) {
 		SpringApplication application = new SpringApplication(SampleProfileApplication.class) {
 
 			@Override

@@ -37,9 +37,9 @@ class MyRepositoryTests {
 	private UserRepository repository;
 
 	/**
-     * Test case to verify the functionality of the example method.
-     */
-    @Test
+	 * Test case to verify the functionality of the example method.
+	 */
+	@Test
 	void testExample() {
 		this.entityManager.persist(new User("sboot", "1234"));
 		User user = this.repository.findByUsername("sboot");

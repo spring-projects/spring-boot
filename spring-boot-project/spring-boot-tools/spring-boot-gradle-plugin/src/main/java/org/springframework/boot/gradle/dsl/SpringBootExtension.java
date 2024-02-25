@@ -101,11 +101,10 @@ public class SpringBootExtension {
 	}
 
 	/**
-     * Configures the BuildInfo task.
-     * 
-     * @param task The BuildInfo task to be configured.
-     */
-    private void configureBuildInfoTask(BuildInfo task) {
+	 * Configures the BuildInfo task.
+	 * @param task The BuildInfo task to be configured.
+	 */
+	private void configureBuildInfoTask(BuildInfo task) {
 		task.setGroup(BasePlugin.BUILD_GROUP);
 		task.setDescription("Generates a META-INF/build-info.properties file.");
 		task.getDestinationDir()
@@ -114,11 +113,10 @@ public class SpringBootExtension {
 	}
 
 	/**
-     * Determines the output directory for the main source set resources.
-     * 
-     * @return The output directory for the main source set resources.
-     */
-    private File determineMainSourceSetResourcesOutputDir() {
+	 * Determines the output directory for the main source set resources.
+	 * @return The output directory for the main source set resources.
+	 */
+	private File determineMainSourceSetResourcesOutputDir() {
 		return this.project.getExtensions()
 			.getByType(JavaPluginExtension.class)
 			.getSourceSets()
@@ -128,21 +126,19 @@ public class SpringBootExtension {
 	}
 
 	/**
-     * Determines the base name of the artifact.
-     * 
-     * @return The base name of the artifact, or null if no artifact task is found.
-     */
-    private String determineArtifactBaseName() {
+	 * Determines the base name of the artifact.
+	 * @return The base name of the artifact, or null if no artifact task is found.
+	 */
+	private String determineArtifactBaseName() {
 		Jar artifactTask = findArtifactTask();
 		return (artifactTask != null) ? artifactTask.getArchiveBaseName().get() : null;
 	}
 
 	/**
-     * Finds the artifact task for the Spring Boot extension.
-     * 
-     * @return The artifact task (Jar) if found, otherwise the bootJar task (Jar).
-     */
-    private Jar findArtifactTask() {
+	 * Finds the artifact task for the Spring Boot extension.
+	 * @return The artifact task (Jar) if found, otherwise the bootJar task (Jar).
+	 */
+	private Jar findArtifactTask() {
 		Jar artifactTask = (Jar) this.project.getTasks().findByName("bootWar");
 		if (artifactTask != null) {
 			return artifactTask;

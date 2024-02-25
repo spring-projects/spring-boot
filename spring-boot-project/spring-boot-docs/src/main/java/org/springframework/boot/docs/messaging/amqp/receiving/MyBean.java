@@ -26,12 +26,11 @@ import org.springframework.stereotype.Component;
 public class MyBean {
 
 	/**
-     * This method is a message listener for the "someQueue" queue.
-     * It processes the received message content.
-     *
-     * @param content the content of the message to be processed
-     */
-    @RabbitListener(queues = "someQueue")
+	 * This method is a message listener for the "someQueue" queue. It processes the
+	 * received message content.
+	 * @param content the content of the message to be processed
+	 */
+	@RabbitListener(queues = "someQueue")
 	public void processMessage(String content) {
 		// ...
 	}

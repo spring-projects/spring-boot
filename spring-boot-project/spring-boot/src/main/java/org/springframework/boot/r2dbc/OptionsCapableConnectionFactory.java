@@ -49,40 +49,38 @@ public class OptionsCapableConnectionFactory implements Wrapped<ConnectionFactor
 	}
 
 	/**
-     * Returns the ConnectionFactoryOptions associated with this OptionsCapableConnectionFactory.
-     *
-     * @return the ConnectionFactoryOptions associated with this OptionsCapableConnectionFactory
-     */
-    public ConnectionFactoryOptions getOptions() {
+	 * Returns the ConnectionFactoryOptions associated with this
+	 * OptionsCapableConnectionFactory.
+	 * @return the ConnectionFactoryOptions associated with this
+	 * OptionsCapableConnectionFactory
+	 */
+	public ConnectionFactoryOptions getOptions() {
 		return this.options;
 	}
 
 	/**
-     * Creates a new connection.
-     *
-     * @return a Publisher that emits a Connection object
-     */
-    @Override
+	 * Creates a new connection.
+	 * @return a Publisher that emits a Connection object
+	 */
+	@Override
 	public Publisher<? extends Connection> create() {
 		return this.delegate.create();
 	}
 
 	/**
-     * Returns the metadata of the connection factory.
-     *
-     * @return the metadata of the connection factory
-     */
-    @Override
+	 * Returns the metadata of the connection factory.
+	 * @return the metadata of the connection factory
+	 */
+	@Override
 	public ConnectionFactoryMetadata getMetadata() {
 		return this.delegate.getMetadata();
 	}
 
 	/**
-     * Returns the underlying ConnectionFactory object.
-     *
-     * @return the underlying ConnectionFactory object
-     */
-    @Override
+	 * Returns the underlying ConnectionFactory object.
+	 * @return the underlying ConnectionFactory object
+	 */
+	@Override
 	public ConnectionFactory unwrap() {
 		return this.delegate;
 	}

@@ -51,11 +51,10 @@ public class RabbitMetrics implements MeterBinder {
 	}
 
 	/**
-     * Binds the RabbitMetrics instance to the provided MeterRegistry.
-     * 
-     * @param registry the MeterRegistry to bind to
-     */
-    @Override
+	 * Binds the RabbitMetrics instance to the provided MeterRegistry.
+	 * @param registry the MeterRegistry to bind to
+	 */
+	@Override
 	public void bindTo(MeterRegistry registry) {
 		this.connectionFactory.setMetricsCollector(new MicrometerMetricsCollector(registry, "rabbitmq", this.tags));
 	}

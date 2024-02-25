@@ -37,25 +37,24 @@ import org.springframework.util.ClassUtils;
 public class YamlPropertySourceLoader implements PropertySourceLoader {
 
 	/**
-     * Returns an array of file extensions supported by the YamlPropertySourceLoader.
-     * 
-     * @return an array of file extensions (e.g., "yml", "yaml")
-     */
-    @Override
+	 * Returns an array of file extensions supported by the YamlPropertySourceLoader.
+	 * @return an array of file extensions (e.g., "yml", "yaml")
+	 */
+	@Override
 	public String[] getFileExtensions() {
 		return new String[] { "yml", "yaml" };
 	}
 
 	/**
-     * Loads the YAML property source from the given resource.
-     * 
-     * @param name     the name of the property source
-     * @param resource the resource containing the YAML data
-     * @return a list of property sources loaded from the YAML data
-     * @throws IOException if an I/O error occurs while loading the YAML data
-     * @throws IllegalStateException if the snakeyaml library is not found on the classpath
-     */
-    @Override
+	 * Loads the YAML property source from the given resource.
+	 * @param name the name of the property source
+	 * @param resource the resource containing the YAML data
+	 * @return a list of property sources loaded from the YAML data
+	 * @throws IOException if an I/O error occurs while loading the YAML data
+	 * @throws IllegalStateException if the snakeyaml library is not found on the
+	 * classpath
+	 */
+	@Override
 	public List<PropertySource<?>> load(String name, Resource resource) throws IOException {
 		if (!ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", getClass().getClassLoader())) {
 			throw new IllegalStateException(

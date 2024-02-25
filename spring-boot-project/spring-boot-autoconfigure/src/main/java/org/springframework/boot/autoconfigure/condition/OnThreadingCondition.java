@@ -33,13 +33,13 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnThreadingCondition extends SpringBootCondition {
 
 	/**
-     * Determines the outcome of the condition match based on the specified threading value.
-     * 
-     * @param context the condition context
-     * @param metadata the annotated type metadata
-     * @return the condition outcome
-     */
-    @Override
+	 * Determines the outcome of the condition match based on the specified threading
+	 * value.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @return the condition outcome
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnThreading.class.getName());
 		Threading threading = (Threading) attributes.get("value");
@@ -47,13 +47,12 @@ class OnThreadingCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Returns the outcome of the match condition for the given environment and threading.
-     * 
-     * @param environment the environment to check the threading against
-     * @param threading the threading to check for activation
-     * @return the condition outcome indicating whether the threading is active or not
-     */
-    private ConditionOutcome getMatchOutcome(Environment environment, Threading threading) {
+	 * Returns the outcome of the match condition for the given environment and threading.
+	 * @param environment the environment to check the threading against
+	 * @param threading the threading to check for activation
+	 * @return the condition outcome indicating whether the threading is active or not
+	 */
+	private ConditionOutcome getMatchOutcome(Environment environment, Threading threading) {
 		String name = threading.name();
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnThreading.class);
 		if (threading.isActive(environment)) {

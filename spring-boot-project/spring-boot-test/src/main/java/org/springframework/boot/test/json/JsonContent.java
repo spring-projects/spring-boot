@@ -90,11 +90,10 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	}
 
 	/**
-     * Returns a string representation of the JsonContent object.
-     * 
-     * @return a string representation of the JsonContent object
-     */
-    @Override
+	 * Returns a string representation of the JsonContent object.
+	 * @return a string representation of the JsonContent object
+	 */
+	@Override
 	public String toString() {
 		String createdFrom = (this.type != null) ? " created from " + this.type : "";
 		return "JsonContent " + this.json + createdFrom;

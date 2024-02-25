@@ -42,28 +42,25 @@ public class Handler extends URLStreamHandler {
 	static final Handler INSTANCE = new Handler();
 
 	/**
-     * Opens a connection to the specified URL.
-     * 
-     * @param url the URL to open a connection to
-     * @return the URLConnection object representing the connection to the URL
-     * @throws IOException if an I/O error occurs while opening the connection
-     */
-    @Override
+	 * Opens a connection to the specified URL.
+	 * @param url the URL to open a connection to
+	 * @return the URLConnection object representing the connection to the URL
+	 * @throws IOException if an I/O error occurs while opening the connection
+	 */
+	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
 		return JarUrlConnection.open(url);
 	}
 
 	/**
-     * Parses the given URL and extracts the necessary information.
-     * 
-     * @param url   the URL object to be parsed
-     * @param spec  the URL string to be parsed
-     * @param start the starting index of the URL string to be parsed
-     * @param limit the ending index of the URL string to be parsed
-     * 
-     * @throws IllegalStateException if nested JAR URLs are encountered
-     */
-    @Override
+	 * Parses the given URL and extracts the necessary information.
+	 * @param url the URL object to be parsed
+	 * @param spec the URL string to be parsed
+	 * @param start the starting index of the URL string to be parsed
+	 * @param limit the ending index of the URL string to be parsed
+	 * @throws IllegalStateException if nested JAR URLs are encountered
+	 */
+	@Override
 	protected void parseURL(URL url, String spec, int start, int limit) {
 		if (spec.regionMatches(true, start, "jar:", 0, 4)) {
 			throw new IllegalStateException("Nested JAR URLs are not supported");
@@ -75,16 +72,15 @@ public class Handler extends URLStreamHandler {
 	}
 
 	/**
-     * Extracts the path from the given URL and specification.
-     * 
-     * @param url         the URL from which to extract the path
-     * @param spec        the specification from which to extract the path
-     * @param start       the starting index of the path
-     * @param limit       the ending index of the path
-     * @param anchorIndex the index of the anchor in the specification
-     * @return the extracted path
-     */
-    private String extractPath(URL url, String spec, int start, int limit, int anchorIndex) {
+	 * Extracts the path from the given URL and specification.
+	 * @param url the URL from which to extract the path
+	 * @param spec the specification from which to extract the path
+	 * @param start the starting index of the path
+	 * @param limit the ending index of the path
+	 * @param anchorIndex the index of the anchor in the specification
+	 * @return the extracted path
+	 */
+	private String extractPath(URL url, String spec, int start, int limit, int anchorIndex) {
 		if (anchorIndex == start) {
 			return extractAnchorOnlyPath(url);
 		}
@@ -95,25 +91,23 @@ public class Handler extends URLStreamHandler {
 	}
 
 	/**
-     * Extracts the anchor-only path from the given URL.
-     * 
-     * @param url the URL from which to extract the anchor-only path
-     * @return the anchor-only path of the URL
-     */
-    private String extractAnchorOnlyPath(URL url) {
+	 * Extracts the anchor-only path from the given URL.
+	 * @param url the URL from which to extract the anchor-only path
+	 * @return the anchor-only path of the URL
+	 */
+	private String extractAnchorOnlyPath(URL url) {
 		return url.getPath();
 	}
 
 	/**
-     * Extracts the absolute path from the given spec string.
-     * 
-     * @param spec   the spec string to extract the absolute path from
-     * @param start  the starting index of the absolute path in the spec string
-     * @param limit  the ending index of the absolute path in the spec string
-     * @return       the extracted absolute path
-     * @throws IllegalStateException if no "!/" is found in the spec string
-     */
-    private String extractAbsolutePath(String spec, int start, int limit) {
+	 * Extracts the absolute path from the given spec string.
+	 * @param spec the spec string to extract the absolute path from
+	 * @param start the starting index of the absolute path in the spec string
+	 * @param limit the ending index of the absolute path in the spec string
+	 * @return the extracted absolute path
+	 * @throws IllegalStateException if no "!/" is found in the spec string
+	 */
+	private String extractAbsolutePath(String spec, int start, int limit) {
 		int indexOfSeparator = indexOfSeparator(spec, start, limit);
 		if (indexOfSeparator == -1) {
 			throw new IllegalStateException("no !/ in spec");
@@ -124,30 +118,29 @@ public class Handler extends URLStreamHandler {
 	}
 
 	/**
-     * Extracts the relative path from the given URL and spec, starting from the specified index and ending at the specified limit.
-     * 
-     * @param url   the URL from which to extract the relative path
-     * @param spec  the spec from which to extract the relative path
-     * @param start the starting index of the relative path in the spec
-     * @param limit the ending index of the relative path in the spec
-     * @return the extracted relative path
-     */
-    private String extractRelativePath(URL url, String spec, int start, int limit) {
+	 * Extracts the relative path from the given URL and spec, starting from the specified
+	 * index and ending at the specified limit.
+	 * @param url the URL from which to extract the relative path
+	 * @param spec the spec from which to extract the relative path
+	 * @param start the starting index of the relative path in the spec
+	 * @param limit the ending index of the relative path in the spec
+	 * @return the extracted relative path
+	 */
+	private String extractRelativePath(URL url, String spec, int start, int limit) {
 		String contextPath = extractContextPath(url, spec, start);
 		String path = contextPath + spec.substring(start, limit);
 		return Canonicalizer.canonicalizeAfter(path, indexOfSeparator(path) + 1);
 	}
 
 	/**
-     * Extracts the context path from the given URL and specification.
-     * 
-     * @param url   the URL from which to extract the context path
-     * @param spec  the specification of the context path
-     * @param start the starting index for extracting the context path
-     * @return the extracted context path
-     * @throws IllegalStateException if the URL or specification is malformed
-     */
-    private String extractContextPath(URL url, String spec, int start) {
+	 * Extracts the context path from the given URL and specification.
+	 * @param url the URL from which to extract the context path
+	 * @param spec the specification of the context path
+	 * @param start the starting index for extracting the context path
+	 * @return the extracted context path
+	 * @throws IllegalStateException if the URL or specification is malformed
+	 */
+	private String extractContextPath(URL url, String spec, int start) {
 		String contextPath = url.getPath();
 		if (spec.regionMatches(false, start, "/", 0, 1)) {
 			int indexOfContextPathSeparator = indexOfSeparator(contextPath);
@@ -164,13 +157,12 @@ public class Handler extends URLStreamHandler {
 	}
 
 	/**
-     * Asserts that the inner URL is not malformed.
-     * 
-     * @param spec the specification of the URL
-     * @param innerUrl the inner URL to be checked
-     * @throws IllegalStateException if the URL is invalid
-     */
-    private void assertInnerUrlIsNotMalformed(String spec, String innerUrl) {
+	 * Asserts that the inner URL is not malformed.
+	 * @param spec the specification of the URL
+	 * @param innerUrl the inner URL to be checked
+	 * @throws IllegalStateException if the URL is invalid
+	 */
+	private void assertInnerUrlIsNotMalformed(String spec, String innerUrl) {
 		if (innerUrl.startsWith("nested:")) {
 			org.springframework.boot.loader.net.protocol.nested.Handler.assertUrlIsNotMalformed(innerUrl);
 			return;
@@ -184,12 +176,11 @@ public class Handler extends URLStreamHandler {
 	}
 
 	/**
-     * Calculates the hash code for a given URL.
-     * 
-     * @param url the URL to calculate the hash code for
-     * @return the hash code of the URL
-     */
-    @Override
+	 * Calculates the hash code for a given URL.
+	 * @param url the URL to calculate the hash code for
+	 * @return the hash code of the URL
+	 */
+	@Override
 	protected int hashCode(URL url) {
 		String protocol = url.getProtocol();
 		int hash = (protocol != null) ? protocol.hashCode() : 0;
@@ -210,13 +201,12 @@ public class Handler extends URLStreamHandler {
 	}
 
 	/**
-     * Compares two URLs to determine if they refer to the same file.
-     * 
-     * @param url1 the first URL to compare
-     * @param url2 the second URL to compare
-     * @return true if the URLs refer to the same file, false otherwise
-     */
-    @Override
+	 * Compares two URLs to determine if they refer to the same file.
+	 * @param url1 the first URL to compare
+	 * @param url2 the second URL to compare
+	 * @return true if the URLs refer to the same file, false otherwise
+	 */
+	@Override
 	protected boolean sameFile(URL url1, URL url2) {
 		if (!url1.getProtocol().equals(PROTOCOL) || !url2.getProtocol().equals(PROTOCOL)) {
 			return false;
@@ -247,25 +237,26 @@ public class Handler extends URLStreamHandler {
 	}
 
 	/**
-     * Returns the index of the first occurrence of a separator character in the given string.
-     * 
-     * @param spec the string to search for a separator character
-     * @return the index of the first occurrence of a separator character, or -1 if not found
-     */
-    static int indexOfSeparator(String spec) {
+	 * Returns the index of the first occurrence of a separator character in the given
+	 * string.
+	 * @param spec the string to search for a separator character
+	 * @return the index of the first occurrence of a separator character, or -1 if not
+	 * found
+	 */
+	static int indexOfSeparator(String spec) {
 		return indexOfSeparator(spec, 0, spec.length());
 	}
 
 	/**
-     * Returns the index of the separator in the given string, starting from the specified start index and ending at the specified limit index.
-     * The separator is defined as the character '!' followed by a forward slash '/'.
-     * 
-     * @param spec   the string to search for the separator
-     * @param start  the starting index of the search
-     * @param limit  the ending index of the search
-     * @return       the index of the separator, or -1 if not found
-     */
-    static int indexOfSeparator(String spec, int start, int limit) {
+	 * Returns the index of the separator in the given string, starting from the specified
+	 * start index and ending at the specified limit index. The separator is defined as
+	 * the character '!' followed by a forward slash '/'.
+	 * @param spec the string to search for the separator
+	 * @param start the starting index of the search
+	 * @param limit the ending index of the search
+	 * @return the index of the separator, or -1 if not found
+	 */
+	static int indexOfSeparator(String spec, int start, int limit) {
 		for (int i = limit - 1; i >= start; i--) {
 			if (spec.charAt(i) == '!' && (i + 1) < limit && spec.charAt(i + 1) == '/') {
 				return i;

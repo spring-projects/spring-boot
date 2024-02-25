@@ -61,11 +61,10 @@ public class PropertySourceOrigin implements Origin {
 	}
 
 	/**
-     * Returns a string representation of the PropertySourceOrigin object.
-     * 
-     * @return a string representation of the PropertySourceOrigin object
-     */
-    @Override
+	 * Returns a string representation of the PropertySourceOrigin object.
+	 * @return a string representation of the PropertySourceOrigin object
+	 */
+	@Override
 	public String toString() {
 		return "\"" + this.propertyName + "\" from property source \"" + this.propertySource.getName() + "\"";
 	}

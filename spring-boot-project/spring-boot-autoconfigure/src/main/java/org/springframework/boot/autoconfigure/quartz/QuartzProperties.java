@@ -76,135 +76,128 @@ public class QuartzProperties {
 	private final Jdbc jdbc = new Jdbc();
 
 	/**
-     * Returns the type of job store used by the Quartz scheduler.
-     * 
-     * @return the job store type
-     */
-    public JobStoreType getJobStoreType() {
+	 * Returns the type of job store used by the Quartz scheduler.
+	 * @return the job store type
+	 */
+	public JobStoreType getJobStoreType() {
 		return this.jobStoreType;
 	}
 
 	/**
-     * Sets the type of job store for Quartz.
-     * 
-     * @param jobStoreType the type of job store to be set
-     */
-    public void setJobStoreType(JobStoreType jobStoreType) {
+	 * Sets the type of job store for Quartz.
+	 * @param jobStoreType the type of job store to be set
+	 */
+	public void setJobStoreType(JobStoreType jobStoreType) {
 		this.jobStoreType = jobStoreType;
 	}
 
 	/**
-     * Returns the name of the scheduler.
-     *
-     * @return the name of the scheduler
-     */
-    public String getSchedulerName() {
+	 * Returns the name of the scheduler.
+	 * @return the name of the scheduler
+	 */
+	public String getSchedulerName() {
 		return this.schedulerName;
 	}
 
 	/**
-     * Sets the name of the scheduler.
-     * 
-     * @param schedulerName the name of the scheduler
-     */
-    public void setSchedulerName(String schedulerName) {
+	 * Sets the name of the scheduler.
+	 * @param schedulerName the name of the scheduler
+	 */
+	public void setSchedulerName(String schedulerName) {
 		this.schedulerName = schedulerName;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the auto startup feature is enabled or not.
-     * 
-     * @return true if auto startup is enabled, false otherwise
-     */
-    public boolean isAutoStartup() {
+	 * Returns a boolean value indicating whether the auto startup feature is enabled or
+	 * not.
+	 * @return true if auto startup is enabled, false otherwise
+	 */
+	public boolean isAutoStartup() {
 		return this.autoStartup;
 	}
 
 	/**
-     * Sets the flag indicating whether the Quartz scheduler should automatically start when the application starts.
-     * 
-     * @param autoStartup the flag indicating whether the Quartz scheduler should automatically start
-     */
-    public void setAutoStartup(boolean autoStartup) {
+	 * Sets the flag indicating whether the Quartz scheduler should automatically start
+	 * when the application starts.
+	 * @param autoStartup the flag indicating whether the Quartz scheduler should
+	 * automatically start
+	 */
+	public void setAutoStartup(boolean autoStartup) {
 		this.autoStartup = autoStartup;
 	}
 
 	/**
-     * Returns the startup delay for the QuartzProperties.
-     *
-     * @return the startup delay for the QuartzProperties
-     */
-    public Duration getStartupDelay() {
+	 * Returns the startup delay for the QuartzProperties.
+	 * @return the startup delay for the QuartzProperties
+	 */
+	public Duration getStartupDelay() {
 		return this.startupDelay;
 	}
 
 	/**
-     * Sets the startup delay for the Quartz scheduler.
-     * 
-     * @param startupDelay the duration of the startup delay
-     */
-    public void setStartupDelay(Duration startupDelay) {
+	 * Sets the startup delay for the Quartz scheduler.
+	 * @param startupDelay the duration of the startup delay
+	 */
+	public void setStartupDelay(Duration startupDelay) {
 		this.startupDelay = startupDelay;
 	}
 
 	/**
-     * Returns the value indicating whether the system should wait for jobs to complete on shutdown.
-     * 
-     * @return {@code true} if the system should wait for jobs to complete on shutdown, {@code false} otherwise
-     */
-    public boolean isWaitForJobsToCompleteOnShutdown() {
+	 * Returns the value indicating whether the system should wait for jobs to complete on
+	 * shutdown.
+	 * @return {@code true} if the system should wait for jobs to complete on shutdown,
+	 * {@code false} otherwise
+	 */
+	public boolean isWaitForJobsToCompleteOnShutdown() {
 		return this.waitForJobsToCompleteOnShutdown;
 	}
 
 	/**
-     * Sets whether to wait for jobs to complete on shutdown.
-     * 
-     * @param waitForJobsToCompleteOnShutdown true to wait for jobs to complete on shutdown, false otherwise
-     */
-    public void setWaitForJobsToCompleteOnShutdown(boolean waitForJobsToCompleteOnShutdown) {
+	 * Sets whether to wait for jobs to complete on shutdown.
+	 * @param waitForJobsToCompleteOnShutdown true to wait for jobs to complete on
+	 * shutdown, false otherwise
+	 */
+	public void setWaitForJobsToCompleteOnShutdown(boolean waitForJobsToCompleteOnShutdown) {
 		this.waitForJobsToCompleteOnShutdown = waitForJobsToCompleteOnShutdown;
 	}
 
 	/**
-     * Returns a boolean value indicating whether existing jobs should be overwritten.
-     * 
-     * @return true if existing jobs should be overwritten, false otherwise
-     */
-    public boolean isOverwriteExistingJobs() {
+	 * Returns a boolean value indicating whether existing jobs should be overwritten.
+	 * @return true if existing jobs should be overwritten, false otherwise
+	 */
+	public boolean isOverwriteExistingJobs() {
 		return this.overwriteExistingJobs;
 	}
 
 	/**
-     * Sets the flag indicating whether existing jobs should be overwritten.
-     * 
-     * @param overwriteExistingJobs true if existing jobs should be overwritten, false otherwise
-     */
-    public void setOverwriteExistingJobs(boolean overwriteExistingJobs) {
+	 * Sets the flag indicating whether existing jobs should be overwritten.
+	 * @param overwriteExistingJobs true if existing jobs should be overwritten, false
+	 * otherwise
+	 */
+	public void setOverwriteExistingJobs(boolean overwriteExistingJobs) {
 		this.overwriteExistingJobs = overwriteExistingJobs;
 	}
 
 	/**
-     * Returns the properties of the QuartzProperties object.
-     * 
-     * @return a Map containing the properties as key-value pairs
-     */
-    public Map<String, String> getProperties() {
+	 * Returns the properties of the QuartzProperties object.
+	 * @return a Map containing the properties as key-value pairs
+	 */
+	public Map<String, String> getProperties() {
 		return this.properties;
 	}
 
 	/**
-     * Returns the Jdbc object associated with this QuartzProperties instance.
-     *
-     * @return the Jdbc object
-     */
-    public Jdbc getJdbc() {
+	 * Returns the Jdbc object associated with this QuartzProperties instance.
+	 * @return the Jdbc object
+	 */
+	public Jdbc getJdbc() {
 		return this.jdbc;
 	}
 
 	/**
-     * Jdbc class.
-     */
-    public static class Jdbc {
+	 * Jdbc class.
+	 */
+	public static class Jdbc {
 
 		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/quartz/impl/"
 				+ "jdbcjobstore/tables_@@platform@@.sql";
@@ -231,74 +224,66 @@ public class QuartzProperties {
 		private List<String> commentPrefix = new ArrayList<>(Arrays.asList("#", "--"));
 
 		/**
-         * Returns the schema of the Jdbc object.
-         *
-         * @return the schema of the Jdbc object
-         */
-        public String getSchema() {
+		 * Returns the schema of the Jdbc object.
+		 * @return the schema of the Jdbc object
+		 */
+		public String getSchema() {
 			return this.schema;
 		}
 
 		/**
-         * Sets the schema for the JDBC connection.
-         * 
-         * @param schema the name of the schema to be set
-         */
-        public void setSchema(String schema) {
+		 * Sets the schema for the JDBC connection.
+		 * @param schema the name of the schema to be set
+		 */
+		public void setSchema(String schema) {
 			this.schema = schema;
 		}
 
 		/**
-         * Returns the platform of the JDBC connection.
-         * 
-         * @return the platform of the JDBC connection
-         */
-        public String getPlatform() {
+		 * Returns the platform of the JDBC connection.
+		 * @return the platform of the JDBC connection
+		 */
+		public String getPlatform() {
 			return this.platform;
 		}
 
 		/**
-         * Sets the platform for the JDBC connection.
-         * 
-         * @param platform the platform to be set
-         */
-        public void setPlatform(String platform) {
+		 * Sets the platform for the JDBC connection.
+		 * @param platform the platform to be set
+		 */
+		public void setPlatform(String platform) {
 			this.platform = platform;
 		}
 
 		/**
-         * Returns the initialization mode for the database schema.
-         * 
-         * @return the initialization mode for the database schema
-         */
-        public DatabaseInitializationMode getInitializeSchema() {
+		 * Returns the initialization mode for the database schema.
+		 * @return the initialization mode for the database schema
+		 */
+		public DatabaseInitializationMode getInitializeSchema() {
 			return this.initializeSchema;
 		}
 
 		/**
-         * Sets the mode for initializing the database schema.
-         * 
-         * @param initializeSchema the mode for initializing the database schema
-         */
-        public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
+		 * Sets the mode for initializing the database schema.
+		 * @param initializeSchema the mode for initializing the database schema
+		 */
+		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 			this.initializeSchema = initializeSchema;
 		}
 
 		/**
-         * Returns the list of comment prefixes.
-         * 
-         * @return the list of comment prefixes
-         */
-        public List<String> getCommentPrefix() {
+		 * Returns the list of comment prefixes.
+		 * @return the list of comment prefixes
+		 */
+		public List<String> getCommentPrefix() {
 			return this.commentPrefix;
 		}
 
 		/**
-         * Sets the comment prefix for the Jdbc class.
-         * 
-         * @param commentPrefix the list of comment prefixes to be set
-         */
-        public void setCommentPrefix(List<String> commentPrefix) {
+		 * Sets the comment prefix for the Jdbc class.
+		 * @param commentPrefix the list of comment prefixes to be set
+		 */
+		public void setCommentPrefix(List<String> commentPrefix) {
 			this.commentPrefix = commentPrefix;
 		}
 

@@ -42,17 +42,16 @@ public final class SharedObjectMapper {
 	}
 
 	/**
-     * Private constructor for the SharedObjectMapper class.
-     */
-    private SharedObjectMapper() {
+	 * Private constructor for the SharedObjectMapper class.
+	 */
+	private SharedObjectMapper() {
 	}
 
 	/**
-     * Returns the shared instance of the ObjectMapper class.
-     * 
-     * @return the shared instance of the ObjectMapper class
-     */
-    public static ObjectMapper get() {
+	 * Returns the shared instance of the ObjectMapper class.
+	 * @return the shared instance of the ObjectMapper class
+	 */
+	public static ObjectMapper get() {
 		return INSTANCE;
 	}
 

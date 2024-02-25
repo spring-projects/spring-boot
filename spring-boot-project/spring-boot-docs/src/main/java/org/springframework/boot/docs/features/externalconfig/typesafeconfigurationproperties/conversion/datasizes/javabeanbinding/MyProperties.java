@@ -38,29 +38,26 @@ public class MyProperties {
 	}
 
 	/**
-     * Sets the buffer size for the MyProperties class.
-     * 
-     * @param bufferSize the buffer size to be set
-     */
-    public void setBufferSize(DataSize bufferSize) {
+	 * Sets the buffer size for the MyProperties class.
+	 * @param bufferSize the buffer size to be set
+	 */
+	public void setBufferSize(DataSize bufferSize) {
 		this.bufferSize = bufferSize;
 	}
 
 	/**
-     * Returns the size threshold for the data.
-     *
-     * @return the size threshold for the data
-     */
-    public DataSize getSizeThreshold() {
+	 * Returns the size threshold for the data.
+	 * @return the size threshold for the data
+	 */
+	public DataSize getSizeThreshold() {
 		return this.sizeThreshold;
 	}
 
 	/**
-     * Sets the size threshold for the MyProperties object.
-     * 
-     * @param sizeThreshold the size threshold to be set
-     */
-    public void setSizeThreshold(DataSize sizeThreshold) {
+	 * Sets the size threshold for the MyProperties object.
+	 * @param sizeThreshold the size threshold to be set
+	 */
+	public void setSizeThreshold(DataSize sizeThreshold) {
 		this.sizeThreshold = sizeThreshold;
 	}
 	// @fold:off

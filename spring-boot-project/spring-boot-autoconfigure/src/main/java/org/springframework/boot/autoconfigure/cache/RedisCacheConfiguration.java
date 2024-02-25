@@ -53,17 +53,17 @@ import org.springframework.data.redis.serializer.RedisSerializationContext.Seria
 class RedisCacheConfiguration {
 
 	/**
-     * Create a RedisCacheManager bean.
-     *
-     * @param cacheProperties the cache properties
-     * @param cacheManagerCustomizers the cache manager customizers
-     * @param redisCacheConfiguration the Redis cache configuration
-     * @param redisCacheManagerBuilderCustomizers the Redis cache manager builder customizers
-     * @param redisConnectionFactory the Redis connection factory
-     * @param resourceLoader the resource loader
-     * @return the RedisCacheManager bean
-     */
-    @Bean
+	 * Create a RedisCacheManager bean.
+	 * @param cacheProperties the cache properties
+	 * @param cacheManagerCustomizers the cache manager customizers
+	 * @param redisCacheConfiguration the Redis cache configuration
+	 * @param redisCacheManagerBuilderCustomizers the Redis cache manager builder
+	 * customizers
+	 * @param redisConnectionFactory the Redis connection factory
+	 * @param resourceLoader the resource loader
+	 * @return the RedisCacheManager bean
+	 */
+	@Bean
 	RedisCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers cacheManagerCustomizers,
 			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
 			ObjectProvider<RedisCacheManagerBuilderCustomizer> redisCacheManagerBuilderCustomizers,
@@ -83,15 +83,16 @@ class RedisCacheConfiguration {
 	}
 
 	/**
-     * Determines the Redis cache configuration based on the provided cache properties, Redis cache configuration,
-     * and class loader.
-     *
-     * @param cacheProperties The cache properties used to determine the Redis cache configuration.
-     * @param redisCacheConfiguration The Redis cache configuration provided as an object provider.
-     * @param classLoader The class loader used to create the Redis cache configuration.
-     * @return The determined Redis cache configuration.
-     */
-    private org.springframework.data.redis.cache.RedisCacheConfiguration determineConfiguration(
+	 * Determines the Redis cache configuration based on the provided cache properties,
+	 * Redis cache configuration, and class loader.
+	 * @param cacheProperties The cache properties used to determine the Redis cache
+	 * configuration.
+	 * @param redisCacheConfiguration The Redis cache configuration provided as an object
+	 * provider.
+	 * @param classLoader The class loader used to create the Redis cache configuration.
+	 * @return The determined Redis cache configuration.
+	 */
+	private org.springframework.data.redis.cache.RedisCacheConfiguration determineConfiguration(
 			CacheProperties cacheProperties,
 			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
 			ClassLoader classLoader) {
@@ -99,13 +100,14 @@ class RedisCacheConfiguration {
 	}
 
 	/**
-     * Creates a RedisCacheConfiguration based on the provided CacheProperties and ClassLoader.
-     * 
-     * @param cacheProperties the CacheProperties containing the Redis cache configuration properties
-     * @param classLoader the ClassLoader used for serialization
-     * @return the RedisCacheConfiguration object
-     */
-    private org.springframework.data.redis.cache.RedisCacheConfiguration createConfiguration(
+	 * Creates a RedisCacheConfiguration based on the provided CacheProperties and
+	 * ClassLoader.
+	 * @param cacheProperties the CacheProperties containing the Redis cache configuration
+	 * properties
+	 * @param classLoader the ClassLoader used for serialization
+	 * @return the RedisCacheConfiguration object
+	 */
+	private org.springframework.data.redis.cache.RedisCacheConfiguration createConfiguration(
 			CacheProperties cacheProperties, ClassLoader classLoader) {
 		Redis redisProperties = cacheProperties.getRedis();
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration

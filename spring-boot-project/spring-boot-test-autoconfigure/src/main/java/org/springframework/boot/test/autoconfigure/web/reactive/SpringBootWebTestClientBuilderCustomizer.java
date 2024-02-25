@@ -53,20 +53,19 @@ public class SpringBootWebTestClientBuilderCustomizer implements WebTestClientBu
 	}
 
 	/**
-     * Sets the timeout for the web test client.
-     * 
-     * @param timeout the duration of the timeout
-     */
-    public void setTimeout(Duration timeout) {
+	 * Sets the timeout for the web test client.
+	 * @param timeout the duration of the timeout
+	 */
+	public void setTimeout(Duration timeout) {
 		this.timeout = timeout;
 	}
 
 	/**
-     * Customizes the given builder by setting the response timeout and configuring the WebTestClient codecs.
-     *
-     * @param builder the builder to customize
-     */
-    @Override
+	 * Customizes the given builder by setting the response timeout and configuring the
+	 * WebTestClient codecs.
+	 * @param builder the builder to customize
+	 */
+	@Override
 	public void customize(Builder builder) {
 		if (this.timeout != null) {
 			builder.responseTimeout(this.timeout);
@@ -75,11 +74,10 @@ public class SpringBootWebTestClientBuilderCustomizer implements WebTestClientBu
 	}
 
 	/**
-     * Customizes the codecs used by the WebTestClient.
-     * 
-     * @param builder the WebTestClient.Builder to customize
-     */
-    private void customizeWebTestClientCodecs(WebTestClient.Builder builder) {
+	 * Customizes the codecs used by the WebTestClient.
+	 * @param builder the WebTestClient.Builder to customize
+	 */
+	private void customizeWebTestClientCodecs(WebTestClient.Builder builder) {
 		if (!CollectionUtils.isEmpty(this.codecCustomizers)) {
 			builder.exchangeStrategies(
 					ExchangeStrategies.builder().codecs(applyCustomizers(this.codecCustomizers)).build());
@@ -87,12 +85,12 @@ public class SpringBootWebTestClientBuilderCustomizer implements WebTestClientBu
 	}
 
 	/**
-     * Applies the given collection of {@link CodecCustomizer}s to the provided {@link ClientCodecConfigurer}.
-     * 
-     * @param customizers the collection of {@link CodecCustomizer}s to apply
-     * @return a {@link Consumer} that applies the customizers to the codecs
-     */
-    private Consumer<ClientCodecConfigurer> applyCustomizers(Collection<CodecCustomizer> customizers) {
+	 * Applies the given collection of {@link CodecCustomizer}s to the provided
+	 * {@link ClientCodecConfigurer}.
+	 * @param customizers the collection of {@link CodecCustomizer}s to apply
+	 * @return a {@link Consumer} that applies the customizers to the codecs
+	 */
+	private Consumer<ClientCodecConfigurer> applyCustomizers(Collection<CodecCustomizer> customizers) {
 		return (codecs) -> customizers.forEach((customizer) -> customizer.customize(codecs));
 	}
 

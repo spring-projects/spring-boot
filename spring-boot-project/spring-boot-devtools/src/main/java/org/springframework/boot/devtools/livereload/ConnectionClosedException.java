@@ -26,9 +26,10 @@ import java.io.IOException;
 class ConnectionClosedException extends IOException {
 
 	/**
-     * Constructs a new ConnectionClosedException with the default message "Connection closed".
-     */
-    ConnectionClosedException() {
+	 * Constructs a new ConnectionClosedException with the default message "Connection
+	 * closed".
+	 */
+	ConnectionClosedException() {
 		super("Connection closed");
 	}
 

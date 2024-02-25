@@ -34,12 +34,11 @@ public class SampleJob extends QuartzJobBean {
 	}
 
 	/**
-     * Executes the job.
-     * 
-     * @param context the job execution context
-     * @throws JobExecutionException if there is an error executing the job
-     */
-    @Override
+	 * Executes the job.
+	 * @param context the job execution context
+	 * @throws JobExecutionException if there is an error executing the job
+	 */
+	@Override
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 		System.out.println(String.format("Hello %s!", this.name));
 	}

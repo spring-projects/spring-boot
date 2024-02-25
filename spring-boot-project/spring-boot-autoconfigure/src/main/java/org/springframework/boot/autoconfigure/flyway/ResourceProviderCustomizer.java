@@ -27,11 +27,10 @@ import org.flywaydb.core.api.configuration.FluentConfiguration;
 class ResourceProviderCustomizer {
 
 	/**
-     * Customizes the provided FluentConfiguration object.
-     *
-     * @param configuration the FluentConfiguration object to be customized
-     */
-    void customize(FluentConfiguration configuration) {
+	 * Customizes the provided FluentConfiguration object.
+	 * @param configuration the FluentConfiguration object to be customized
+	 */
+	void customize(FluentConfiguration configuration) {
 	}
 
 }

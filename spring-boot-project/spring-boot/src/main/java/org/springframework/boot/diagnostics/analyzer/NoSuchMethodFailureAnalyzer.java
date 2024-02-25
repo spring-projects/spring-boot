@@ -38,13 +38,13 @@ import org.springframework.util.ClassUtils;
 class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodError> {
 
 	/**
-     * Analyzes a NoSuchMethodError exception and generates a FailureAnalysis object.
-     * 
-     * @param rootFailure The root cause of the exception.
-     * @param cause The NoSuchMethodError exception.
-     * @return A FailureAnalysis object containing the description, action, and cause of the exception, or null if the analysis fails.
-     */
-    @Override
+	 * Analyzes a NoSuchMethodError exception and generates a FailureAnalysis object.
+	 * @param rootFailure The root cause of the exception.
+	 * @param cause The NoSuchMethodError exception.
+	 * @return A FailureAnalysis object containing the description, action, and cause of
+	 * the exception, or null if the analysis fails.
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchMethodError cause) {
 		NoSuchMethodDescriptor callerDescriptor = getCallerMethodDescriptor(cause);
 		if (callerDescriptor == null) {
@@ -60,12 +60,12 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 	}
 
 	/**
-     * Retrieves the method descriptor of the caller method that caused the specified NoSuchMethodError.
-     * 
-     * @param cause the NoSuchMethodError that occurred
-     * @return the method descriptor of the caller method
-     */
-    private NoSuchMethodDescriptor getCallerMethodDescriptor(NoSuchMethodError cause) {
+	 * Retrieves the method descriptor of the caller method that caused the specified
+	 * NoSuchMethodError.
+	 * @param cause the NoSuchMethodError that occurred
+	 * @return the method descriptor of the caller method
+	 */
+	private NoSuchMethodDescriptor getCallerMethodDescriptor(NoSuchMethodError cause) {
 		StackTraceElement firstStackTraceElement = cause.getStackTrace()[0];
 		String message = firstStackTraceElement.toString();
 		String className = firstStackTraceElement.getClassName();
@@ -73,25 +73,23 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 	}
 
 	/**
-     * Retrieves the NoSuchMethodDescriptor for the given cause.
-     * 
-     * @param cause the cause of the NoSuchMethodError
-     * @return the NoSuchMethodDescriptor for the given cause
-     */
-    protected NoSuchMethodDescriptor getNoSuchMethodDescriptor(String cause) {
+	 * Retrieves the NoSuchMethodDescriptor for the given cause.
+	 * @param cause the cause of the NoSuchMethodError
+	 * @return the NoSuchMethodDescriptor for the given cause
+	 */
+	protected NoSuchMethodDescriptor getNoSuchMethodDescriptor(String cause) {
 		String message = cleanMessage(cause);
 		String className = extractClassName(message);
 		return getDescriptorForClass(message, className);
 	}
 
 	/**
-     * Retrieves the descriptor for a class based on the provided class name.
-     * 
-     * @param message    the error message to be included in the descriptor
-     * @param className  the name of the class to retrieve the descriptor for
-     * @return           the descriptor for the class, or null if it cannot be found
-     */
-    private NoSuchMethodDescriptor getDescriptorForClass(String message, String className) {
+	 * Retrieves the descriptor for a class based on the provided class name.
+	 * @param message the error message to be included in the descriptor
+	 * @param className the name of the class to retrieve the descriptor for
+	 * @return the descriptor for the class, or null if it cannot be found
+	 */
+	private NoSuchMethodDescriptor getDescriptorForClass(String message, String className) {
 		if (className == null) {
 			return null;
 		}
@@ -111,12 +109,11 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 	}
 
 	/**
-     * Cleans the given message by removing the "(loaded from" part if present.
-     *
-     * @param message the message to be cleaned
-     * @return the cleaned message
-     */
-    private String cleanMessage(String message) {
+	 * Cleans the given message by removing the "(loaded from" part if present.
+	 * @param message the message to be cleaned
+	 * @return the cleaned message
+	 */
+	private String cleanMessage(String message) {
 		int loadedFromIndex = message.indexOf(" (loaded from");
 		if (loadedFromIndex == -1) {
 			return message;
@@ -125,12 +122,11 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 	}
 
 	/**
-     * Extracts the class name from the given message.
-     * 
-     * @param message the message to extract the class name from
-     * @return the extracted class name, or null if the class name cannot be extracted
-     */
-    private String extractClassName(String message) {
+	 * Extracts the class name from the given message.
+	 * @param message the message to extract the class name from
+	 * @return the extracted class name, or null if the class name cannot be extracted
+	 */
+	private String extractClassName(String message) {
 		if (message.startsWith("'") && message.endsWith("'")) {
 			int splitIndex = message.indexOf(' ');
 			if (splitIndex == -1) {
@@ -152,12 +148,12 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 	}
 
 	/**
-     * Finds candidates for a given class name.
-     * 
-     * @param className the name of the class to find candidates for
-     * @return a list of URLs representing the candidates found, or null if an error occurs
-     */
-    private List<URL> findCandidates(String className) {
+	 * Finds candidates for a given class name.
+	 * @param className the name of the class to find candidates for
+	 * @return a list of URLs representing the candidates found, or null if an error
+	 * occurs
+	 */
+	private List<URL> findCandidates(String className) {
 		try {
 			return Collections.list(NoSuchMethodFailureAnalyzer.class.getClassLoader()
 				.getResources(ClassUtils.convertClassNameToResourcePath(className) + ".class"));
@@ -168,12 +164,11 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 	}
 
 	/**
-     * Loads the specified class using the class name.
-     * 
-     * @param className the name of the class to be loaded
-     * @return the loaded class if successful, null otherwise
-     */
-    private Class<?> load(String className) {
+	 * Loads the specified class using the class name.
+	 * @param className the name of the class to be loaded
+	 * @return the loaded class if successful, null otherwise
+	 */
+	private Class<?> load(String className) {
 		try {
 			return Class.forName(className, false, getClass().getClassLoader());
 		}
@@ -183,12 +178,12 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 	}
 
 	/**
-     * Retrieves the type hierarchy of a given class.
-     * 
-     * @param type the class for which the type hierarchy is to be retrieved
-     * @return a list of ClassDescriptor objects representing the type hierarchy, or null if an error occurs
-     */
-    private List<ClassDescriptor> getTypeHierarchy(Class<?> type) {
+	 * Retrieves the type hierarchy of a given class.
+	 * @param type the class for which the type hierarchy is to be retrieved
+	 * @return a list of ClassDescriptor objects representing the type hierarchy, or null
+	 * if an error occurs
+	 */
+	private List<ClassDescriptor> getTypeHierarchy(Class<?> type) {
 		try {
 			List<ClassDescriptor> typeHierarchy = new ArrayList<>();
 			while (type != null && !type.equals(Object.class)) {
@@ -204,13 +199,12 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 	}
 
 	/**
-     * Generates a description of a NoSuchMethodError failure.
-     * 
-     * @param callerDescriptor The descriptor of the calling method.
-     * @param calledDescriptor The descriptor of the called method.
-     * @return A string containing the description of the failure.
-     */
-    private String getDescription(NoSuchMethodDescriptor callerDescriptor, NoSuchMethodDescriptor calledDescriptor) {
+	 * Generates a description of a NoSuchMethodError failure.
+	 * @param callerDescriptor The descriptor of the calling method.
+	 * @param calledDescriptor The descriptor of the called method.
+	 * @return A string containing the description of the failure.
+	 */
+	private String getDescription(NoSuchMethodDescriptor callerDescriptor, NoSuchMethodDescriptor calledDescriptor) {
 		StringWriter description = new StringWriter();
 		PrintWriter writer = new PrintWriter(description);
 		writer.println("An attempt was made to call a method that does not"
@@ -258,13 +252,12 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 	}
 
 	/**
-     * Returns the action to be taken based on the caller and called method descriptors.
-     * 
-     * @param callerDescriptor the descriptor of the caller method
-     * @param calledDescriptor the descriptor of the called method
-     * @return the action to be taken
-     */
-    private String getAction(NoSuchMethodDescriptor callerDescriptor, NoSuchMethodDescriptor calledDescriptor) {
+	 * Returns the action to be taken based on the caller and called method descriptors.
+	 * @param callerDescriptor the descriptor of the caller method
+	 * @param calledDescriptor the descriptor of the called method
+	 * @return the action to be taken
+	 */
+	private String getAction(NoSuchMethodDescriptor callerDescriptor, NoSuchMethodDescriptor calledDescriptor) {
 		if (callerDescriptor.getClassName().equals(calledDescriptor.getClassName())) {
 			return "Correct the classpath of your application so that it contains a single, compatible version of "
 					+ calledDescriptor.getClassName();
@@ -276,9 +269,9 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 	}
 
 	/**
-     * NoSuchMethodDescriptor class.
-     */
-    protected static class NoSuchMethodDescriptor {
+	 * NoSuchMethodDescriptor class.
+	 */
+	protected static class NoSuchMethodDescriptor {
 
 		private final String errorMessage;
 
@@ -289,14 +282,16 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		private final List<ClassDescriptor> typeHierarchy;
 
 		/**
-         * Constructs a new NoSuchMethodDescriptor with the specified error message, class name, candidate locations, and type hierarchy.
-         * 
-         * @param errorMessage the error message describing the cause of the exception
-         * @param className the name of the class where the method was not found
-         * @param candidateLocations the list of URLs representing the locations where the method was searched for
-         * @param typeHierarchy the list of ClassDescriptors representing the type hierarchy of the class where the method was not found
-         */
-        public NoSuchMethodDescriptor(String errorMessage, String className, List<URL> candidateLocations,
+		 * Constructs a new NoSuchMethodDescriptor with the specified error message, class
+		 * name, candidate locations, and type hierarchy.
+		 * @param errorMessage the error message describing the cause of the exception
+		 * @param className the name of the class where the method was not found
+		 * @param candidateLocations the list of URLs representing the locations where the
+		 * method was searched for
+		 * @param typeHierarchy the list of ClassDescriptors representing the type
+		 * hierarchy of the class where the method was not found
+		 */
+		public NoSuchMethodDescriptor(String errorMessage, String className, List<URL> candidateLocations,
 				List<ClassDescriptor> typeHierarchy) {
 			this.errorMessage = errorMessage;
 			this.className = className;
@@ -305,78 +300,71 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		}
 
 		/**
-         * Returns the error message associated with the NoSuchMethodDescriptor.
-         *
-         * @return the error message
-         */
-        public String getErrorMessage() {
+		 * Returns the error message associated with the NoSuchMethodDescriptor.
+		 * @return the error message
+		 */
+		public String getErrorMessage() {
 			return this.errorMessage;
 		}
 
 		/**
-         * Returns the name of the class.
-         *
-         * @return the name of the class
-         */
-        public String getClassName() {
+		 * Returns the name of the class.
+		 * @return the name of the class
+		 */
+		public String getClassName() {
 			return this.className;
 		}
 
 		/**
-         * Returns the list of candidate locations.
-         *
-         * @return the list of candidate locations
-         */
-        public List<URL> getCandidateLocations() {
+		 * Returns the list of candidate locations.
+		 * @return the list of candidate locations
+		 */
+		public List<URL> getCandidateLocations() {
 			return this.candidateLocations;
 		}
 
 		/**
-         * Returns the type hierarchy of the class.
-         * 
-         * @return the type hierarchy as a list of ClassDescriptors
-         */
-        public List<ClassDescriptor> getTypeHierarchy() {
+		 * Returns the type hierarchy of the class.
+		 * @return the type hierarchy as a list of ClassDescriptors
+		 */
+		public List<ClassDescriptor> getTypeHierarchy() {
 			return this.typeHierarchy;
 		}
 
 	}
 
 	/**
-     * ClassDescriptor class.
-     */
-    protected static class ClassDescriptor {
+	 * ClassDescriptor class.
+	 */
+	protected static class ClassDescriptor {
 
 		private final String name;
 
 		private final URL location;
 
 		/**
-         * Constructs a new ClassDescriptor with the specified name and location.
-         * 
-         * @param name the name of the class
-         * @param location the location of the class
-         */
-        public ClassDescriptor(String name, URL location) {
+		 * Constructs a new ClassDescriptor with the specified name and location.
+		 * @param name the name of the class
+		 * @param location the location of the class
+		 */
+		public ClassDescriptor(String name, URL location) {
 			this.name = name;
 			this.location = location;
 		}
 
 		/**
-         * Returns the name of the ClassDescriptor object.
-         *
-         * @return the name of the ClassDescriptor object
-         */
-        public String getName() {
+		 * Returns the name of the ClassDescriptor object.
+		 * @return the name of the ClassDescriptor object
+		 */
+		public String getName() {
 			return this.name;
 		}
 
 		/**
-         * Returns the location of the ClassDescriptor.
-         * 
-         * @return the location of the ClassDescriptor
-         */
-        public URL getLocation() {
+		 * Returns the location of the ClassDescriptor.
+		 * @return the location of the ClassDescriptor
+		 */
+		public URL getLocation() {
 			return this.location;
 		}
 

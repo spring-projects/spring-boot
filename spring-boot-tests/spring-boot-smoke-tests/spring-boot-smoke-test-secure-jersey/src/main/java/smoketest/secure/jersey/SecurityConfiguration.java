@@ -33,13 +33,13 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfiguration {
 
 	/**
-     * Creates an instance of InMemoryUserDetailsManager with two users: "user" and "admin".
-     * The "user" user has the password "password" and the authority "ROLE_USER".
-     * The "admin" user has the password "admin" and the authorities "ROLE_ACTUATOR" and "ROLE_USER".
-     * 
-     * @return the InMemoryUserDetailsManager instance
-     */
-    @Bean
+	 * Creates an instance of InMemoryUserDetailsManager with two users: "user" and
+	 * "admin". The "user" user has the password "password" and the authority "ROLE_USER".
+	 * The "admin" user has the password "admin" and the authorities "ROLE_ACTUATOR" and
+	 * "ROLE_USER".
+	 * @return the InMemoryUserDetailsManager instance
+	 */
+	@Bean
 	@SuppressWarnings("deprecation")
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
 		return new InMemoryUserDetailsManager(
@@ -56,13 +56,12 @@ public class SecurityConfiguration {
 	}
 
 	/**
-     * Configures the security filter chain for the HTTP requests.
-     * 
-     * @param http the HttpSecurity object to configure
-     * @return the configured SecurityFilterChain
-     * @throws Exception if an error occurs during configuration
-     */
-    @Bean
+	 * Configures the security filter chain for the HTTP requests.
+	 * @param http the HttpSecurity object to configure
+	 * @return the configured SecurityFilterChain
+	 * @throws Exception if an error occurs during configuration
+	 */
+	@Bean
 	SecurityFilterChain configure(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((requests) -> {
 			requests.requestMatchers(EndpointRequest.to("health")).permitAll();

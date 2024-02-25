@@ -201,9 +201,9 @@ final class TldPatterns {
 	}
 
 	/**
-     * Private constructor for the TldPatterns class.
-     */
-    private TldPatterns() {
+	 * Private constructor for the TldPatterns class.
+	 */
+	private TldPatterns() {
 	}
 
 }

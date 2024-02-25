@@ -47,14 +47,17 @@ import org.springframework.core.env.Environment;
 public class EndpointAutoConfiguration {
 
 	/**
-     * Creates a {@link ParameterValueMapper} bean for mapping endpoint operation parameters.
-     * This bean is conditional on the absence of any other bean of the same type.
-     * 
-     * @param converters         an {@link ObjectProvider} of {@link Converter} instances for converting endpoint parameters
-     * @param genericConverters  an {@link ObjectProvider} of {@link GenericConverter} instances for converting endpoint parameters
-     * @return                   a {@link ParameterValueMapper} instance using the provided converters and generic converters
-     */
-    @Bean
+	 * Creates a {@link ParameterValueMapper} bean for mapping endpoint operation
+	 * parameters. This bean is conditional on the absence of any other bean of the same
+	 * type.
+	 * @param converters an {@link ObjectProvider} of {@link Converter} instances for
+	 * converting endpoint parameters
+	 * @param genericConverters an {@link ObjectProvider} of {@link GenericConverter}
+	 * instances for converting endpoint parameters
+	 * @return a {@link ParameterValueMapper} instance using the provided converters and
+	 * generic converters
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public ParameterValueMapper endpointOperationParameterMapper(
 			@EndpointConverter ObjectProvider<Converter<?, ?>> converters,
@@ -65,15 +68,16 @@ public class EndpointAutoConfiguration {
 	}
 
 	/**
-     * Creates a ConversionService with the given list of converters and generic converters.
-     * If both lists are empty, returns the shared instance of ApplicationConversionService.
-     * Otherwise, creates a new instance of ApplicationConversionService and adds the converters to it.
-     * 
-     * @param converters       the list of converters to be added to the ConversionService
-     * @param genericConverters the list of generic converters to be added to the ConversionService
-     * @return the created ConversionService
-     */
-    private ConversionService createConversionService(List<Converter<?, ?>> converters,
+	 * Creates a ConversionService with the given list of converters and generic
+	 * converters. If both lists are empty, returns the shared instance of
+	 * ApplicationConversionService. Otherwise, creates a new instance of
+	 * ApplicationConversionService and adds the converters to it.
+	 * @param converters the list of converters to be added to the ConversionService
+	 * @param genericConverters the list of generic converters to be added to the
+	 * ConversionService
+	 * @return the created ConversionService
+	 */
+	private ConversionService createConversionService(List<Converter<?, ?>> converters,
 			List<GenericConverter> genericConverters) {
 		if (genericConverters.isEmpty() && converters.isEmpty()) {
 			return ApplicationConversionService.getSharedInstance();
@@ -85,14 +89,15 @@ public class EndpointAutoConfiguration {
 	}
 
 	/**
-     * Creates a caching operation invoker advisor bean if no other bean of the same type is present.
-     * This advisor is used to cache the results of endpoint invocations.
-     * The caching strategy is determined by the EndpointIdTimeToLivePropertyFunction, which is created using the provided environment.
-     *
-     * @param environment the environment used to create the EndpointIdTimeToLivePropertyFunction
-     * @return the caching operation invoker advisor bean
-     */
-    @Bean
+	 * Creates a caching operation invoker advisor bean if no other bean of the same type
+	 * is present. This advisor is used to cache the results of endpoint invocations. The
+	 * caching strategy is determined by the EndpointIdTimeToLivePropertyFunction, which
+	 * is created using the provided environment.
+	 * @param environment the environment used to create the
+	 * EndpointIdTimeToLivePropertyFunction
+	 * @return the caching operation invoker advisor bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public CachingOperationInvokerAdvisor endpointCachingOperationInvokerAdvisor(Environment environment) {
 		return new CachingOperationInvokerAdvisor(new EndpointIdTimeToLivePropertyFunction(environment));

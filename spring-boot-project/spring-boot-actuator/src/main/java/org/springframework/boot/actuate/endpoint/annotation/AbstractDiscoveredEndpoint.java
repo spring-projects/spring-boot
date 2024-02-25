@@ -58,32 +58,30 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation> extends Ab
 	}
 
 	/**
-     * Returns the endpoint bean associated with this discovered endpoint.
-     *
-     * @return the endpoint bean associated with this discovered endpoint
-     */
-    @Override
+	 * Returns the endpoint bean associated with this discovered endpoint.
+	 * @return the endpoint bean associated with this discovered endpoint
+	 */
+	@Override
 	public Object getEndpointBean() {
 		return this.endpointBean;
 	}
 
 	/**
-     * Checks if this endpoint was discovered by the specified discoverer.
-     * 
-     * @param discoverer the discoverer class to check against
-     * @return true if this endpoint was discovered by the specified discoverer, false otherwise
-     */
-    @Override
+	 * Checks if this endpoint was discovered by the specified discoverer.
+	 * @param discoverer the discoverer class to check against
+	 * @return true if this endpoint was discovered by the specified discoverer, false
+	 * otherwise
+	 */
+	@Override
 	public boolean wasDiscoveredBy(Class<? extends EndpointDiscoverer<?, ?>> discoverer) {
 		return discoverer.isInstance(this.discoverer);
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * 
-     * @return a string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return a string representation of the object
+	 */
+	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this).append("discoverer", this.discoverer.getClass().getName())
 			.append("endpointBean", this.endpointBean.getClass().getName());
@@ -92,11 +90,10 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation> extends Ab
 	}
 
 	/**
-     * Appends the fields of the object to the provided {@link ToStringCreator}.
-     * 
-     * @param creator the {@link ToStringCreator} to append the fields to
-     */
-    protected void appendFields(ToStringCreator creator) {
+	 * Appends the fields of the object to the provided {@link ToStringCreator}.
+	 * @param creator the {@link ToStringCreator} to append the fields to
+	 */
+	protected void appendFields(ToStringCreator creator) {
 	}
 
 }

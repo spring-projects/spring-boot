@@ -103,14 +103,15 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 	}
 
 	/**
-     * Constructs a new ConfigTreePropertySource with the given name, source directory, and options.
-     * 
-     * @param name the name of the property source
-     * @param sourceDirectory the path to the source directory
-     * @param options the set of options to be applied
-     * @throws IllegalArgumentException if the source directory does not exist or is not a directory
-     */
-    private ConfigTreePropertySource(String name, Path sourceDirectory, Set<Option> options) {
+	 * Constructs a new ConfigTreePropertySource with the given name, source directory,
+	 * and options.
+	 * @param name the name of the property source
+	 * @param sourceDirectory the path to the source directory
+	 * @param options the set of options to be applied
+	 * @throws IllegalArgumentException if the source directory does not exist or is not a
+	 * directory
+	 */
+	private ConfigTreePropertySource(String name, Path sourceDirectory, Set<Option> options) {
 		super(name, sourceDirectory);
 		Assert.isTrue(Files.exists(sourceDirectory), () -> "Directory '" + sourceDirectory + "' does not exist");
 		Assert.isTrue(Files.isDirectory(sourceDirectory), () -> "File '" + sourceDirectory + "' is not a directory");
@@ -120,45 +121,44 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 	}
 
 	/**
-     * Returns an array of property names.
-     *
-     * @return the array of property names
-     */
-    @Override
+	 * Returns an array of property names.
+	 * @return the array of property names
+	 */
+	@Override
 	public String[] getPropertyNames() {
 		return this.names.clone();
 	}
 
 	/**
-     * Retrieves the value of a property with the specified name.
-     * 
-     * @param name the name of the property to retrieve
-     * @return the value of the property, or null if the property does not exist
-     */
-    @Override
+	 * Retrieves the value of a property with the specified name.
+	 * @param name the name of the property to retrieve
+	 * @return the value of the property, or null if the property does not exist
+	 */
+	@Override
 	public Value getProperty(String name) {
 		PropertyFile propertyFile = this.propertyFiles.get(name);
 		return (propertyFile != null) ? propertyFile.getContent() : null;
 	}
 
 	/**
-     * Retrieves the origin of a property file with the given name.
-     * 
-     * @param name the name of the property file
-     * @return the origin of the property file, or null if the property file does not exist
-     */
-    @Override
+	 * Retrieves the origin of a property file with the given name.
+	 * @param name the name of the property file
+	 * @return the origin of the property file, or null if the property file does not
+	 * exist
+	 */
+	@Override
 	public Origin getOrigin(String name) {
 		PropertyFile propertyFile = this.propertyFiles.get(name);
 		return (propertyFile != null) ? propertyFile.getOrigin() : null;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the ConfigTreePropertySource is immutable.
-     * 
-     * @return {@code true} if the ConfigTreePropertySource is immutable, {@code false} otherwise.
-     */
-    @Override
+	 * Returns a boolean value indicating whether the ConfigTreePropertySource is
+	 * immutable.
+	 * @return {@code true} if the ConfigTreePropertySource is immutable, {@code false}
+	 * otherwise.
+	 */
+	@Override
 	public boolean isImmutable() {
 		return !this.options.contains(Option.ALWAYS_READ);
 	}
@@ -214,12 +214,11 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		private final boolean autoTrimTrailingNewLine;
 
 		/**
-         * Constructs a new PropertyFile object with the given path and options.
-         * 
-         * @param path the path of the property file
-         * @param options the set of options for the property file
-         */
-        private PropertyFile(Path path, Set<Option> options) {
+		 * Constructs a new PropertyFile object with the given path and options.
+		 * @param path the path of the property file
+		 * @param options the set of options for the property file
+		 */
+		private PropertyFile(Path path, Set<Option> options) {
 			this.path = path;
 			this.resource = new PathResource(path);
 			this.origin = new TextResourceOrigin(this.resource, START_OF_FILE);
@@ -229,15 +228,14 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		}
 
 		/**
-         * Retrieves the content of the property file.
-         * 
-         * @return The content of the property file as a PropertyFileContent object.
-         *         If the content has been previously cached, the cached content is returned.
-         *         Otherwise, a new PropertyFileContent object is created and returned.
-         *         The new object is initialized with the path, resource, origin, autoTrimTrailingNewLine,
-         *         and false values.
-         */
-        PropertyFileContent getContent() {
+		 * Retrieves the content of the property file.
+		 * @return The content of the property file as a PropertyFileContent object. If
+		 * the content has been previously cached, the cached content is returned.
+		 * Otherwise, a new PropertyFileContent object is created and returned. The new
+		 * object is initialized with the path, resource, origin, autoTrimTrailingNewLine,
+		 * and false values.
+		 */
+		PropertyFileContent getContent() {
 			if (this.cachedContent != null) {
 				return this.cachedContent;
 			}
@@ -245,23 +243,21 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		}
 
 		/**
-         * Returns the origin of the PropertyFile.
-         *
-         * @return the origin of the PropertyFile
-         */
-        Origin getOrigin() {
+		 * Returns the origin of the PropertyFile.
+		 * @return the origin of the PropertyFile
+		 */
+		Origin getOrigin() {
 			return this.origin;
 		}
 
 		/**
-         * Finds all property files in the specified source directory.
-         * 
-         * @param sourceDirectory the directory to search for property files
-         * @param options         a set of options to customize the search behavior
-         * @return a map of property file names to PropertyFile objects
-         * @throws IllegalStateException if unable to find files in the source directory
-         */
-        static Map<String, PropertyFile> findAll(Path sourceDirectory, Set<Option> options) {
+		 * Finds all property files in the specified source directory.
+		 * @param sourceDirectory the directory to search for property files
+		 * @param options a set of options to customize the search behavior
+		 * @return a map of property file names to PropertyFile objects
+		 * @throws IllegalStateException if unable to find files in the source directory
+		 */
+		static Map<String, PropertyFile> findAll(Path sourceDirectory, Set<Option> options) {
 			try {
 				Map<String, PropertyFile> propertyFiles = new TreeMap<>();
 				try (Stream<Path> pathStream = Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isPropertyFile,
@@ -284,23 +280,21 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		}
 
 		/**
-         * Checks if the given path is a property file.
-         * 
-         * @param path the path to check
-         * @param attributes the attributes of the file
-         * @return true if the path is a property file, false otherwise
-         */
-        private static boolean isPropertyFile(Path path, BasicFileAttributes attributes) {
+		 * Checks if the given path is a property file.
+		 * @param path the path to check
+		 * @param attributes the attributes of the file
+		 * @return true if the path is a property file, false otherwise
+		 */
+		private static boolean isPropertyFile(Path path, BasicFileAttributes attributes) {
 			return !hasHiddenPathElement(path) && (attributes.isRegularFile() || attributes.isSymbolicLink());
 		}
 
 		/**
-         * Checks if the given path contains a hidden path element.
-         * 
-         * @param path the path to be checked
-         * @return true if the path contains a hidden path element, false otherwise
-         */
-        private static boolean hasHiddenPathElement(Path path) {
+		 * Checks if the given path contains a hidden path element.
+		 * @param path the path to be checked
+		 * @return true if the path contains a hidden path element, false otherwise
+		 */
+		private static boolean hasHiddenPathElement(Path path) {
 			for (Path element : path) {
 				if (element.toString().startsWith("..")) {
 					return true;
@@ -310,12 +304,12 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		}
 
 		/**
-         * Returns the name of the file or directory represented by the given relative path.
-         * 
-         * @param relativePath the relative path to the file or directory
-         * @return the name of the file or directory
-         */
-        private static String getName(Path relativePath) {
+		 * Returns the name of the file or directory represented by the given relative
+		 * path.
+		 * @param relativePath the relative path to the file or directory
+		 * @return the name of the file or directory
+		 */
+		private static String getName(Path relativePath) {
 			int nameCount = relativePath.getNameCount();
 			if (nameCount == 1) {
 				return relativePath.toString();
@@ -350,15 +344,15 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		private volatile byte[] content;
 
 		/**
-         * Constructs a new PropertyFileContent object with the specified parameters.
-         * 
-         * @param path the path of the property file
-         * @param resource the resource associated with the property file
-         * @param origin the origin of the property file
-         * @param cacheContent true if the content should be cached, false otherwise
-         * @param autoTrimTrailingNewLine true if trailing new lines should be automatically trimmed, false otherwise
-         */
-        private PropertyFileContent(Path path, Resource resource, Origin origin, boolean cacheContent,
+		 * Constructs a new PropertyFileContent object with the specified parameters.
+		 * @param path the path of the property file
+		 * @param resource the resource associated with the property file
+		 * @param origin the origin of the property file
+		 * @param cacheContent true if the content should be cached, false otherwise
+		 * @param autoTrimTrailingNewLine true if trailing new lines should be
+		 * automatically trimmed, false otherwise
+		 */
+		private PropertyFileContent(Path path, Resource resource, Origin origin, boolean cacheContent,
 				boolean autoTrimTrailingNewLine) {
 			this.path = path;
 			this.resource = resource;
@@ -368,60 +362,57 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		}
 
 		/**
-         * Returns the origin of the PropertyFileContent.
-         *
-         * @return the origin of the PropertyFileContent
-         */
-        @Override
+		 * Returns the origin of the PropertyFileContent.
+		 * @return the origin of the PropertyFileContent
+		 */
+		@Override
 		public Origin getOrigin() {
 			return this.origin;
 		}
 
 		/**
-         * Returns the length of the string representation of the PropertyFileContent object.
-         *
-         * @return the length of the string representation
-         */
-        @Override
+		 * Returns the length of the string representation of the PropertyFileContent
+		 * object.
+		 * @return the length of the string representation
+		 */
+		@Override
 		public int length() {
 			return toString().length();
 		}
 
 		/**
-         * Returns the character at the specified index in the content of the property file.
-         *
-         * @param index the index of the character to be returned
-         * @return the character at the specified index
-         * @throws IndexOutOfBoundsException if the index is out of range (index < 0 || index >= length())
-         */
-        @Override
+		 * Returns the character at the specified index in the content of the property
+		 * file.
+		 * @param index the index of the character to be returned
+		 * @return the character at the specified index
+		 * @throws IndexOutOfBoundsException if the index is out of range (index < 0 ||
+		 * index >= length())
+		 */
+		@Override
 		public char charAt(int index) {
 			return toString().charAt(index);
 		}
 
 		/**
-         * Returns a new CharSequence that is a subsequence of this sequence.
-         * The subsequence starts with the character at the specified index and
-         * ends with the character at index end - 1. The length of the
-         * returned sequence is end - start.
-         *
-         * @param start the start index, inclusive
-         * @param end the end index, exclusive
-         * @return the specified subsequence
-         * @throws IndexOutOfBoundsException if start or end are negative,
-         *         if end is greater than length(), or if start is greater than end
-         */
-        @Override
+		 * Returns a new CharSequence that is a subsequence of this sequence. The
+		 * subsequence starts with the character at the specified index and ends with the
+		 * character at index end - 1. The length of the returned sequence is end - start.
+		 * @param start the start index, inclusive
+		 * @param end the end index, exclusive
+		 * @return the specified subsequence
+		 * @throws IndexOutOfBoundsException if start or end are negative, if end is
+		 * greater than length(), or if start is greater than end
+		 */
+		@Override
 		public CharSequence subSequence(int start, int end) {
 			return toString().subSequence(start, end);
 		}
 
 		/**
-         * Returns a string representation of the PropertyFileContent object.
-         * 
-         * @return the string representation of the PropertyFileContent object
-         */
-        @Override
+		 * Returns a string representation of the PropertyFileContent object.
+		 * @return the string representation of the PropertyFileContent object
+		 */
+		@Override
 		public String toString() {
 			String string = new String(getBytes());
 			if (this.autoTrimTrailingNewLine) {
@@ -431,12 +422,11 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		}
 
 		/**
-         * Removes trailing new line characters from the given string.
-         * 
-         * @param string the string to be processed
-         * @return the string without trailing new line characters
-         */
-        private String autoTrimTrailingNewLine(String string) {
+		 * Removes trailing new line characters from the given string.
+		 * @param string the string to be processed
+		 * @return the string without trailing new line characters
+		 */
+		private String autoTrimTrailingNewLine(String string) {
 			if (!string.endsWith("\n")) {
 				return string;
 			}
@@ -455,12 +445,11 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		}
 
 		/**
-         * Returns an input stream for reading the content of the property file.
-         * 
-         * @return an input stream for reading the content of the property file
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Returns an input stream for reading the content of the property file.
+		 * @return an input stream for reading the content of the property file
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public InputStream getInputStream() throws IOException {
 			if (!this.cacheContent) {
 				assertStillExists();
@@ -470,12 +459,11 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		}
 
 		/**
-         * Retrieves the content of the property file as a byte array.
-         * 
-         * @return the content of the property file as a byte array
-         * @throws IllegalStateException if an I/O error occurs
-         */
-        private byte[] getBytes() {
+		 * Retrieves the content of the property file as a byte array.
+		 * @return the content of the property file as a byte array
+		 * @throws IllegalStateException if an I/O error occurs
+		 */
+		private byte[] getBytes() {
 			try {
 				if (!this.cacheContent) {
 					assertStillExists();
@@ -501,11 +489,10 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		}
 
 		/**
-         * Asserts that the property file still exists.
-         * 
-         * @throws IllegalStateException if the property file no longer exists
-         */
-        private void assertStillExists() {
+		 * Asserts that the property file still exists.
+		 * @throws IllegalStateException if the property file no longer exists
+		 */
+		private void assertStillExists() {
 			Assert.state(Files.exists(this.path), () -> "The property file '" + this.path + "' no longer exists");
 		}
 

@@ -40,24 +40,27 @@ public class RemoteVehicleDetailsService implements VehicleDetailsService {
 	private final RestTemplate restTemplate;
 
 	/**
-     * Constructs a new RemoteVehicleDetailsService with the specified ServiceProperties and RestTemplateBuilder.
-     * 
-     * @param properties the ServiceProperties object containing the root URL of the vehicle service
-     * @param restTemplateBuilder the RestTemplateBuilder used to build the RestTemplate for making HTTP requests
-     */
-    public RemoteVehicleDetailsService(ServiceProperties properties, RestTemplateBuilder restTemplateBuilder) {
+	 * Constructs a new RemoteVehicleDetailsService with the specified ServiceProperties
+	 * and RestTemplateBuilder.
+	 * @param properties the ServiceProperties object containing the root URL of the
+	 * vehicle service
+	 * @param restTemplateBuilder the RestTemplateBuilder used to build the RestTemplate
+	 * for making HTTP requests
+	 */
+	public RemoteVehicleDetailsService(ServiceProperties properties, RestTemplateBuilder restTemplateBuilder) {
 		this.restTemplate = restTemplateBuilder.rootUri(properties.getVehicleServiceRootUrl()).build();
 	}
 
 	/**
-     * Retrieves the details of a vehicle based on its Vehicle Identification Number (VIN).
-     * 
-     * @param vin The Vehicle Identification Number (VIN) of the vehicle.
-     * @return The VehicleDetails object containing the details of the vehicle.
-     * @throws VehicleIdentificationNumberNotFoundException If the VIN is not found in the database.
-     * @throws IllegalArgumentException If the VIN is null.
-     */
-    @Override
+	 * Retrieves the details of a vehicle based on its Vehicle Identification Number
+	 * (VIN).
+	 * @param vin The Vehicle Identification Number (VIN) of the vehicle.
+	 * @return The VehicleDetails object containing the details of the vehicle.
+	 * @throws VehicleIdentificationNumberNotFoundException If the VIN is not found in the
+	 * database.
+	 * @throws IllegalArgumentException If the VIN is null.
+	 */
+	@Override
 	public VehicleDetails getVehicleDetails(VehicleIdentificationNumber vin)
 			throws VehicleIdentificationNumberNotFoundException {
 		Assert.notNull(vin, "VIN must not be null");

@@ -41,33 +41,31 @@ public class CloudFoundryHealthEndpointWebExtension {
 	private final HealthEndpointWebExtension delegate;
 
 	/**
-     * Constructs a new CloudFoundryHealthEndpointWebExtension with the specified delegate.
-     *
-     * @param delegate the delegate HealthEndpointWebExtension to be used
-     */
-    public CloudFoundryHealthEndpointWebExtension(HealthEndpointWebExtension delegate) {
+	 * Constructs a new CloudFoundryHealthEndpointWebExtension with the specified
+	 * delegate.
+	 * @param delegate the delegate HealthEndpointWebExtension to be used
+	 */
+	public CloudFoundryHealthEndpointWebExtension(HealthEndpointWebExtension delegate) {
 		this.delegate = delegate;
 	}
 
 	/**
-     * Retrieves the health status of the API.
-     * 
-     * @param apiVersion The version of the API.
-     * @return The health status of the API.
-     */
-    @ReadOperation
+	 * Retrieves the health status of the API.
+	 * @param apiVersion The version of the API.
+	 * @return The health status of the API.
+	 */
+	@ReadOperation
 	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion) {
 		return this.delegate.health(apiVersion, null, SecurityContext.NONE, true);
 	}
 
 	/**
-     * Retrieves the health status of the application.
-     * 
-     * @param apiVersion The version of the API.
-     * @param path The remaining path segments.
-     * @return The health component containing the health status.
-     */
-    @ReadOperation
+	 * Retrieves the health status of the application.
+	 * @param apiVersion The version of the API.
+	 * @param path The remaining path segments.
+	 * @return The health component containing the health status.
+	 */
+	@ReadOperation
 	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion,
 			@Selector(match = Match.ALL_REMAINING) String... path) {
 		return this.delegate.health(apiVersion, null, SecurityContext.NONE, true, path);

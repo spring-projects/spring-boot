@@ -32,33 +32,31 @@ class CompoundRow extends Row {
 	private final String description;
 
 	/**
-     * Constructs a new CompoundRow object with the given Snippet, prefix, and description.
-     * 
-     * @param snippet the Snippet object to be used
-     * @param prefix the prefix string to be used
-     * @param description the description of the CompoundRow object
-     */
-    CompoundRow(Snippet snippet, String prefix, String description) {
+	 * Constructs a new CompoundRow object with the given Snippet, prefix, and
+	 * description.
+	 * @param snippet the Snippet object to be used
+	 * @param prefix the prefix string to be used
+	 * @param description the description of the CompoundRow object
+	 */
+	CompoundRow(Snippet snippet, String prefix, String description) {
 		super(snippet, prefix);
 		this.description = description;
 		this.propertyNames = new TreeSet<>();
 	}
 
 	/**
-     * Adds a ConfigurationProperty to the list of property names.
-     * 
-     * @param property the ConfigurationProperty to be added
-     */
-    void addProperty(ConfigurationProperty property) {
+	 * Adds a ConfigurationProperty to the list of property names.
+	 * @param property the ConfigurationProperty to be added
+	 */
+	void addProperty(ConfigurationProperty property) {
 		this.propertyNames.add(property.getDisplayName());
 	}
 
 	/**
-     * Writes the given Asciidoc object to append the compound row.
-     * 
-     * @param asciidoc the Asciidoc object to write to
-     */
-    @Override
+	 * Writes the given Asciidoc object to append the compound row.
+	 * @param asciidoc the Asciidoc object to write to
+	 */
+	@Override
 	void write(Asciidoc asciidoc) {
 		asciidoc.append("|");
 		asciidoc.append("[[" + getAnchor() + "]]");

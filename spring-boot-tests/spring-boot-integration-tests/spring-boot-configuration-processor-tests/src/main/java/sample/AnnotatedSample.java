@@ -35,21 +35,19 @@ public class AnnotatedSample {
 	private String name;
 
 	/**
-     * Returns the name of the object.
-     *
-     * @return the name of the object
-     */
-    @Valid
+	 * Returns the name of the object.
+	 * @return the name of the object
+	 */
+	@Valid
 	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Sets the name of the object.
-     * 
-     * @param name the name to be set
-     */
-    public void setName(String name) {
+	 * Sets the name of the object.
+	 * @param name the name to be set
+	 */
+	public void setName(String name) {
 		this.name = name;
 	}
 

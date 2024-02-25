@@ -30,11 +30,10 @@ public class MyBean implements EnvironmentAware {
 	private String instanceId;
 
 	/**
-     * Sets the environment for the MyBean instance.
-     * 
-     * @param environment the environment object containing the properties
-     */
-    @Override
+	 * Sets the environment for the MyBean instance.
+	 * @param environment the environment object containing the properties
+	 */
+	@Override
 	public void setEnvironment(Environment environment) {
 		this.instanceId = environment.getProperty("vcap.application.instance_id");
 	}

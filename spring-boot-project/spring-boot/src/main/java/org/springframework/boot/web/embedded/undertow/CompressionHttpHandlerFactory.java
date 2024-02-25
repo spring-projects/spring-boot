@@ -47,21 +47,20 @@ class CompressionHttpHandlerFactory implements HttpHandlerFactory {
 	private final Compression compression;
 
 	/**
-     * Constructs a new CompressionHttpHandlerFactory with the specified compression algorithm.
-     * 
-     * @param compression the compression algorithm to be used by the factory
-     */
-    CompressionHttpHandlerFactory(Compression compression) {
+	 * Constructs a new CompressionHttpHandlerFactory with the specified compression
+	 * algorithm.
+	 * @param compression the compression algorithm to be used by the factory
+	 */
+	CompressionHttpHandlerFactory(Compression compression) {
 		this.compression = compression;
 	}
 
 	/**
-     * Returns the HTTP handler with compression enabled.
-     * 
-     * @param next the next HTTP handler in the chain
-     * @return the HTTP handler with compression enabled
-     */
-    @Override
+	 * Returns the HTTP handler with compression enabled.
+	 * @param next the next HTTP handler in the chain
+	 * @return the HTTP handler with compression enabled
+	 */
+	@Override
 	public HttpHandler getHandler(HttpHandler next) {
 		if (!this.compression.getEnabled()) {
 			return next;
@@ -73,12 +72,12 @@ class CompressionHttpHandlerFactory implements HttpHandlerFactory {
 	}
 
 	/**
-     * Returns an array of predicates for compression based on the given Compression object.
-     * 
-     * @param compression the Compression object containing the compression settings
-     * @return an array of predicates for compression
-     */
-    private static Predicate[] getCompressionPredicates(Compression compression) {
+	 * Returns an array of predicates for compression based on the given Compression
+	 * object.
+	 * @param compression the Compression object containing the compression settings
+	 * @return an array of predicates for compression
+	 */
+	private static Predicate[] getCompressionPredicates(Compression compression) {
 		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(new MaxSizePredicate((int) compression.getMinResponseSize().toBytes()));
 		predicates.add(new CompressibleMimeTypePredicate(compression.getMimeTypes()));
@@ -99,11 +98,11 @@ class CompressionHttpHandlerFactory implements HttpHandlerFactory {
 		private final List<MimeType> mimeTypes;
 
 		/**
-         * Constructs a new CompressibleMimeTypePredicate with the given array of mime types.
-         * 
-         * @param mimeTypes the array of mime types to be used for the predicate
-         */
-        CompressibleMimeTypePredicate(String[] mimeTypes) {
+		 * Constructs a new CompressibleMimeTypePredicate with the given array of mime
+		 * types.
+		 * @param mimeTypes the array of mime types to be used for the predicate
+		 */
+		CompressibleMimeTypePredicate(String[] mimeTypes) {
 			this.mimeTypes = new ArrayList<>(mimeTypes.length);
 			for (String mimeTypeString : mimeTypes) {
 				this.mimeTypes.add(MimeTypeUtils.parseMimeType(mimeTypeString));
@@ -111,12 +110,12 @@ class CompressionHttpHandlerFactory implements HttpHandlerFactory {
 		}
 
 		/**
-         * Resolves if the given HttpServerExchange response content type is compressible.
-         * 
-         * @param value The HttpServerExchange object representing the HTTP request and response.
-         * @return true if the content type is compressible, false otherwise.
-         */
-        @Override
+		 * Resolves if the given HttpServerExchange response content type is compressible.
+		 * @param value The HttpServerExchange object representing the HTTP request and
+		 * response.
+		 * @return true if the content type is compressible, false otherwise.
+		 */
+		@Override
 		public boolean resolve(HttpServerExchange value) {
 			String contentType = value.getResponseHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
 			if (contentType != null) {
@@ -146,22 +145,21 @@ class CompressionHttpHandlerFactory implements HttpHandlerFactory {
 		private final Predicate maxContentSize;
 
 		/**
-         * Constructs a MaxSizePredicate object with the specified maximum content size.
-         * 
-         * @param size the maximum content size to be used for filtering
-         */
-        MaxSizePredicate(int size) {
+		 * Constructs a MaxSizePredicate object with the specified maximum content size.
+		 * @param size the maximum content size to be used for filtering
+		 */
+		MaxSizePredicate(int size) {
 			this.maxContentSize = Predicates.requestLargerThan(size);
 		}
 
 		/**
-         * Resolves whether the given HttpServerExchange value satisfies the maximum content size predicate.
-         * 
-         * @param value the HttpServerExchange value to be resolved
-         * @return true if the content length of the response headers is within the maximum content size limit, 
-         *         false otherwise
-         */
-        @Override
+		 * Resolves whether the given HttpServerExchange value satisfies the maximum
+		 * content size predicate.
+		 * @param value the HttpServerExchange value to be resolved
+		 * @return true if the content length of the response headers is within the
+		 * maximum content size limit, false otherwise
+		 */
+		@Override
 		public boolean resolve(HttpServerExchange value) {
 			if (value.getResponseHeaders().contains(Headers.CONTENT_LENGTH)) {
 				return this.maxContentSize.resolve(value);

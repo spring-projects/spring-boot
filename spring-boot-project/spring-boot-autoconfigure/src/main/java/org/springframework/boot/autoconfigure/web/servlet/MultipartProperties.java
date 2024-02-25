@@ -87,128 +87,116 @@ public class MultipartProperties {
 	private boolean strictServletCompliance = false;
 
 	/**
-     * Returns the value of the enabled property.
-     *
-     * @return true if the property is enabled, false otherwise.
-     */
-    public boolean getEnabled() {
+	 * Returns the value of the enabled property.
+	 * @return true if the property is enabled, false otherwise.
+	 */
+	public boolean getEnabled() {
 		return this.enabled;
 	}
 
 	/**
-     * Sets the enabled status of the MultipartProperties.
-     * 
-     * @param enabled the enabled status to be set
-     */
-    public void setEnabled(boolean enabled) {
+	 * Sets the enabled status of the MultipartProperties.
+	 * @param enabled the enabled status to be set
+	 */
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	/**
-     * Returns the location of the MultipartProperties.
-     * 
-     * @return the location of the MultipartProperties
-     */
-    public String getLocation() {
+	 * Returns the location of the MultipartProperties.
+	 * @return the location of the MultipartProperties
+	 */
+	public String getLocation() {
 		return this.location;
 	}
 
 	/**
-     * Sets the location of the multipart file.
-     * 
-     * @param location the location of the multipart file
-     */
-    public void setLocation(String location) {
+	 * Sets the location of the multipart file.
+	 * @param location the location of the multipart file
+	 */
+	public void setLocation(String location) {
 		this.location = location;
 	}
 
 	/**
-     * Returns the maximum file size allowed for multipart file uploads.
-     *
-     * @return the maximum file size allowed
-     */
-    public DataSize getMaxFileSize() {
+	 * Returns the maximum file size allowed for multipart file uploads.
+	 * @return the maximum file size allowed
+	 */
+	public DataSize getMaxFileSize() {
 		return this.maxFileSize;
 	}
 
 	/**
-     * Sets the maximum file size for multipart requests.
-     * 
-     * @param maxFileSize the maximum file size to be set
-     */
-    public void setMaxFileSize(DataSize maxFileSize) {
+	 * Sets the maximum file size for multipart requests.
+	 * @param maxFileSize the maximum file size to be set
+	 */
+	public void setMaxFileSize(DataSize maxFileSize) {
 		this.maxFileSize = maxFileSize;
 	}
 
 	/**
-     * Returns the maximum request size allowed for multipart requests.
-     *
-     * @return the maximum request size as a DataSize object
-     */
-    public DataSize getMaxRequestSize() {
+	 * Returns the maximum request size allowed for multipart requests.
+	 * @return the maximum request size as a DataSize object
+	 */
+	public DataSize getMaxRequestSize() {
 		return this.maxRequestSize;
 	}
 
 	/**
-     * Sets the maximum request size for multipart requests.
-     * 
-     * @param maxRequestSize the maximum request size to be set
-     */
-    public void setMaxRequestSize(DataSize maxRequestSize) {
+	 * Sets the maximum request size for multipart requests.
+	 * @param maxRequestSize the maximum request size to be set
+	 */
+	public void setMaxRequestSize(DataSize maxRequestSize) {
 		this.maxRequestSize = maxRequestSize;
 	}
 
 	/**
-     * Returns the file size threshold for multipart file uploads.
-     * 
-     * @return the file size threshold
-     */
-    public DataSize getFileSizeThreshold() {
+	 * Returns the file size threshold for multipart file uploads.
+	 * @return the file size threshold
+	 */
+	public DataSize getFileSizeThreshold() {
 		return this.fileSizeThreshold;
 	}
 
 	/**
-     * Sets the file size threshold for multipart requests.
-     * 
-     * @param fileSizeThreshold the file size threshold to be set
-     */
-    public void setFileSizeThreshold(DataSize fileSizeThreshold) {
+	 * Sets the file size threshold for multipart requests.
+	 * @param fileSizeThreshold the file size threshold to be set
+	 */
+	public void setFileSizeThreshold(DataSize fileSizeThreshold) {
 		this.fileSizeThreshold = fileSizeThreshold;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the resolving is done lazily.
-     *
-     * @return {@code true} if the resolving is done lazily, {@code false} otherwise.
-     */
-    public boolean isResolveLazily() {
+	 * Returns a boolean value indicating whether the resolving is done lazily.
+	 * @return {@code true} if the resolving is done lazily, {@code false} otherwise.
+	 */
+	public boolean isResolveLazily() {
 		return this.resolveLazily;
 	}
 
 	/**
-     * Sets the flag indicating whether to resolve lazily.
-     * 
-     * @param resolveLazily the flag indicating whether to resolve lazily
-     */
-    public void setResolveLazily(boolean resolveLazily) {
+	 * Sets the flag indicating whether to resolve lazily.
+	 * @param resolveLazily the flag indicating whether to resolve lazily
+	 */
+	public void setResolveLazily(boolean resolveLazily) {
 		this.resolveLazily = resolveLazily;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the strict servlet compliance is enabled.
-     * 
-     * @return true if strict servlet compliance is enabled, false otherwise
-     */
-    public boolean isStrictServletCompliance() {
+	 * Returns a boolean value indicating whether the strict servlet compliance is
+	 * enabled.
+	 * @return true if strict servlet compliance is enabled, false otherwise
+	 */
+	public boolean isStrictServletCompliance() {
 		return this.strictServletCompliance;
 	}
 
 	/**
-     * Sets the flag indicating whether strict servlet compliance is enabled or not.
-     * 
-     * @param strictServletCompliance the flag indicating whether strict servlet compliance is enabled or not
-     */
-    public void setStrictServletCompliance(boolean strictServletCompliance) {
+	 * Sets the flag indicating whether strict servlet compliance is enabled or not.
+	 * @param strictServletCompliance the flag indicating whether strict servlet
+	 * compliance is enabled or not
+	 */
+	public void setStrictServletCompliance(boolean strictServletCompliance) {
 		this.strictServletCompliance = strictServletCompliance;
 	}
 

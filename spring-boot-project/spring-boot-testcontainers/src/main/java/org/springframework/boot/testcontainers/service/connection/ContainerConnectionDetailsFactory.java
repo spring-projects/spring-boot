@@ -80,12 +80,12 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	}
 
 	/**
-     * Retrieves the connection details for a container connection source.
-     * 
-     * @param source the container connection source
-     * @return the connection details for the specified source, or null if the required classes are not available or the source does not accept the connection details
-     */
-    @Override
+	 * Retrieves the connection details for a container connection source.
+	 * @param source the container connection source
+	 * @return the connection details for the specified source, or null if the required
+	 * classes are not available or the source does not accept the connection details
+	 */
+	@Override
 	public final D getConnectionDetails(ContainerConnectionSource<C> source) {
 		if (!hasRequiredClasses()) {
 			return null;
@@ -105,21 +105,19 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	}
 
 	/**
-     * Checks if the ContainerConnectionDetailsFactory has all the required classes.
-     * 
-     * @return true if all the required classes are present, false otherwise
-     */
-    private boolean hasRequiredClasses() {
+	 * Checks if the ContainerConnectionDetailsFactory has all the required classes.
+	 * @return true if all the required classes are present, false otherwise
+	 */
+	private boolean hasRequiredClasses() {
 		return ObjectUtils.isEmpty(this.requiredClassNames) || Arrays.stream(this.requiredClassNames)
 			.allMatch((requiredClassName) -> ClassUtils.isPresent(requiredClassName, null));
 	}
 
 	/**
-     * Resolves the generic types of the {@link ContainerConnectionDetailsFactory} class.
-     * 
-     * @return an array of {@link Class} objects representing the resolved generic types
-     */
-    private Class<?>[] resolveGenerics() {
+	 * Resolves the generic types of the {@link ContainerConnectionDetailsFactory} class.
+	 * @return an array of {@link Class} objects representing the resolved generic types
+	 */
+	private Class<?>[] resolveGenerics() {
 		return ResolvableType.forClass(ContainerConnectionDetailsFactory.class, getClass()).resolveGenerics();
 	}
 
@@ -155,11 +153,11 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		}
 
 		/**
-         * Initializes the container by getting the container supplier from the source and assigning it to the container variable.
-         * 
-         * @throws Exception if an error occurs during the initialization process
-         */
-        @Override
+		 * Initializes the container by getting the container supplier from the source and
+		 * assigning it to the container variable.
+		 * @throws Exception if an error occurs during the initialization process
+		 */
+		@Override
 		public void afterPropertiesSet() throws Exception {
 			this.container = this.source.getContainerSupplier().get();
 		}
@@ -176,11 +174,10 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		}
 
 		/**
-         * Returns the origin of the container connection details.
-         * 
-         * @return the origin of the container connection details
-         */
-        @Override
+		 * Returns the origin of the container connection details.
+		 * @return the origin of the container connection details
+		 */
+		@Override
 		public Origin getOrigin() {
 			return this.source.getOrigin();
 		}
@@ -188,19 +185,18 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	}
 
 	/**
-     * ContainerConnectionDetailsFactoriesRuntimeHints class.
-     */
-    static class ContainerConnectionDetailsFactoriesRuntimeHints implements RuntimeHintsRegistrar {
+	 * ContainerConnectionDetailsFactoriesRuntimeHints class.
+	 */
+	static class ContainerConnectionDetailsFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 
 		private static final Log logger = LogFactory.getLog(ContainerConnectionDetailsFactoriesRuntimeHints.class);
 
 		/**
-         * Registers hints for runtime connection details factories.
-         * 
-         * @param hints the runtime hints to register
-         * @param classLoader the class loader to use for loading classes
-         */
-        @Override
+		 * Registers hints for runtime connection details factories.
+		 * @param hints the runtime hints to register
+		 * @param classLoader the class loader to use for loading classes
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			SpringFactoriesLoader.forDefaultResourceLocation(classLoader)
 				.load(ConnectionDetailsFactory.class, FailureHandler.logging(logger))
@@ -211,12 +207,13 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		}
 
 		/**
-         * Returns a stream of required class names based on the given connection details factory.
-         *
-         * @param connectionDetailsFactory the connection details factory to retrieve required class names from
-         * @return a stream of required class names
-         */
-        private Stream<String> requiredClassNames(ConnectionDetailsFactory<?, ?> connectionDetailsFactory) {
+		 * Returns a stream of required class names based on the given connection details
+		 * factory.
+		 * @param connectionDetailsFactory the connection details factory to retrieve
+		 * required class names from
+		 * @return a stream of required class names
+		 */
+		private Stream<String> requiredClassNames(ConnectionDetailsFactory<?, ?> connectionDetailsFactory) {
 			return (connectionDetailsFactory instanceof ContainerConnectionDetailsFactory<?, ?> containerConnectionDetailsFactory)
 					? Stream.of(containerConnectionDetailsFactory.requiredClassNames) : Stream.empty();
 		}

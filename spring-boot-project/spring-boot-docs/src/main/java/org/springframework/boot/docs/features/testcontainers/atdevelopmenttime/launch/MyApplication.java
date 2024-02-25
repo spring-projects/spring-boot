@@ -22,11 +22,10 @@ package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.
 public class MyApplication {
 
 	/**
-     * The main method is the entry point of the application.
-     * 
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application.
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
 	}
 
 }

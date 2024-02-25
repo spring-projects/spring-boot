@@ -32,20 +32,21 @@ class JavaCompilerPluginConfiguration {
 	private final MavenProject project;
 
 	/**
-     * Constructs a new JavaCompilerPluginConfiguration object with the specified MavenProject.
-     * 
-     * @param project the MavenProject object to be associated with this JavaCompilerPluginConfiguration
-     */
-    JavaCompilerPluginConfiguration(MavenProject project) {
+	 * Constructs a new JavaCompilerPluginConfiguration object with the specified
+	 * MavenProject.
+	 * @param project the MavenProject object to be associated with this
+	 * JavaCompilerPluginConfiguration
+	 */
+	JavaCompilerPluginConfiguration(MavenProject project) {
 		this.project = project;
 	}
 
 	/**
-     * Returns the major version of the source code used in the JavaCompilerPluginConfiguration.
-     * 
-     * @return The major version of the source code.
-     */
-    String getSourceMajorVersion() {
+	 * Returns the major version of the source code used in the
+	 * JavaCompilerPluginConfiguration.
+	 * @return The major version of the source code.
+	 */
+	String getSourceMajorVersion() {
 		String version = getConfigurationValue("source");
 
 		if (version == null) {
@@ -56,15 +57,15 @@ class JavaCompilerPluginConfiguration {
 	}
 
 	/**
-     * Returns the target major version of the Java compiler.
-     * 
-     * This method retrieves the target version from the configuration value "target". If the configuration value is null,
-     * it retrieves the target version from the property value "maven.compiler.target". The major version is then extracted
-     * from the retrieved version string using the majorVersionFor() method.
-     * 
-     * @return the target major version of the Java compiler
-     */
-    String getTargetMajorVersion() {
+	 * Returns the target major version of the Java compiler.
+	 *
+	 * This method retrieves the target version from the configuration value "target". If
+	 * the configuration value is null, it retrieves the target version from the property
+	 * value "maven.compiler.target". The major version is then extracted from the
+	 * retrieved version string using the majorVersionFor() method.
+	 * @return the target major version of the Java compiler
+	 */
+	String getTargetMajorVersion() {
 		String version = getConfigurationValue("target");
 
 		if (version == null) {
@@ -75,15 +76,14 @@ class JavaCompilerPluginConfiguration {
 	}
 
 	/**
-     * Returns the release version of the Java compiler.
-     * 
-     * This method first checks the "release" configuration value. If it is null,
-     * then it checks the "maven.compiler.release" property. The major version of
-     * the release version is returned.
-     * 
-     * @return the major version of the release version
-     */
-    String getReleaseVersion() {
+	 * Returns the release version of the Java compiler.
+	 *
+	 * This method first checks the "release" configuration value. If it is null, then it
+	 * checks the "maven.compiler.release" property. The major version of the release
+	 * version is returned.
+	 * @return the major version of the release version
+	 */
+	String getReleaseVersion() {
 		String version = getConfigurationValue("release");
 
 		if (version == null) {
@@ -94,12 +94,11 @@ class JavaCompilerPluginConfiguration {
 	}
 
 	/**
-     * Retrieves the value of a configuration property.
-     * 
-     * @param propertyName the name of the property to retrieve
-     * @return the value of the specified property, or null if the property is not found
-     */
-    private String getConfigurationValue(String propertyName) {
+	 * Retrieves the value of a configuration property.
+	 * @param propertyName the name of the property to retrieve
+	 * @return the value of the specified property, or null if the property is not found
+	 */
+	private String getConfigurationValue(String propertyName) {
 		Plugin plugin = this.project.getPlugin("org.apache.maven.plugins:maven-compiler-plugin");
 		if (plugin != null) {
 			Object pluginConfiguration = plugin.getConfiguration();
@@ -111,12 +110,12 @@ class JavaCompilerPluginConfiguration {
 	}
 
 	/**
-     * Retrieves the value of a specified property.
-     * 
-     * @param propertyName the name of the property to retrieve
-     * @return the value of the property as a string, or null if the property does not exist
-     */
-    private String getPropertyValue(String propertyName) {
+	 * Retrieves the value of a specified property.
+	 * @param propertyName the name of the property to retrieve
+	 * @return the value of the property as a string, or null if the property does not
+	 * exist
+	 */
+	private String getPropertyValue(String propertyName) {
 		if (this.project.getProperties().containsKey(propertyName)) {
 			return this.project.getProperties().get(propertyName).toString();
 		}
@@ -124,13 +123,13 @@ class JavaCompilerPluginConfiguration {
 	}
 
 	/**
-     * Retrieves the value of a specific node in the given Xpp3Dom object.
-     * 
-     * @param dom The Xpp3Dom object to search for the node.
-     * @param childNames The names of the child nodes to traverse in order to reach the desired node.
-     * @return The value of the desired node, or null if the node is not found.
-     */
-    private String getNodeValue(Xpp3Dom dom, String... childNames) {
+	 * Retrieves the value of a specific node in the given Xpp3Dom object.
+	 * @param dom The Xpp3Dom object to search for the node.
+	 * @param childNames The names of the child nodes to traverse in order to reach the
+	 * desired node.
+	 * @return The value of the desired node, or null if the node is not found.
+	 */
+	private String getNodeValue(Xpp3Dom dom, String... childNames) {
 		Xpp3Dom childNode = dom.getChild(childNames[0]);
 
 		if (childNode == null) {
@@ -145,12 +144,12 @@ class JavaCompilerPluginConfiguration {
 	}
 
 	/**
-     * Returns the major version for the given version.
-     * 
-     * @param version the version to get the major version for
-     * @return the major version of the given version, or the same version if it does not start with "1."
-     */
-    private String majorVersionFor(String version) {
+	 * Returns the major version for the given version.
+	 * @param version the version to get the major version for
+	 * @return the major version of the given version, or the same version if it does not
+	 * start with "1."
+	 */
+	private String majorVersionFor(String version) {
 		if (version != null && version.startsWith("1.")) {
 			return version.substring("1.".length());
 		}

@@ -37,24 +37,25 @@ import org.springframework.ws.test.client.MockWebServiceServer;
 public class MockWebServiceServerAutoConfiguration {
 
 	/**
-     * Creates a new instance of TestMockWebServiceServer with a MockWebServiceMessageSender.
-     * This method is annotated with @Bean to indicate that it is a Spring bean.
-     * 
-     * @return the created TestMockWebServiceServer instance
-     */
-    @Bean
+	 * Creates a new instance of TestMockWebServiceServer with a
+	 * MockWebServiceMessageSender. This method is annotated with @Bean to indicate that
+	 * it is a Spring bean.
+	 * @return the created TestMockWebServiceServer instance
+	 */
+	@Bean
 	public TestMockWebServiceServer mockWebServiceServer() {
 		return new TestMockWebServiceServer(new MockWebServiceMessageSender());
 	}
 
 	/**
-     * Creates a {@link MockWebServiceServerWebServiceTemplateCustomizer} bean that customizes the {@link WebServiceTemplate}
-     * with a {@link MockWebServiceServer} instance.
-     *
-     * @param mockWebServiceServer the {@link TestMockWebServiceServer} instance to be used for customizing the {@link WebServiceTemplate}
-     * @return the {@link MockWebServiceServerWebServiceTemplateCustomizer} bean
-     */
-    @Bean
+	 * Creates a {@link MockWebServiceServerWebServiceTemplateCustomizer} bean that
+	 * customizes the {@link WebServiceTemplate} with a {@link MockWebServiceServer}
+	 * instance.
+	 * @param mockWebServiceServer the {@link TestMockWebServiceServer} instance to be
+	 * used for customizing the {@link WebServiceTemplate}
+	 * @return the {@link MockWebServiceServerWebServiceTemplateCustomizer} bean
+	 */
+	@Bean
 	public MockWebServiceServerWebServiceTemplateCustomizer mockWebServiceServerWebServiceTemplateCustomizer(
 			TestMockWebServiceServer mockWebServiceServer) {
 		return new MockWebServiceServerWebServiceTemplateCustomizer(mockWebServiceServer);

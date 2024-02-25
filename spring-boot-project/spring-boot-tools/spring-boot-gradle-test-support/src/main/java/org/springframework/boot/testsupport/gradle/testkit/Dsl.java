@@ -33,31 +33,28 @@ public enum Dsl {
 	private final String extension;
 
 	/**
-     * Creates a new instance of the Dsl class with the specified name and extension.
-     * 
-     * @param name      the name of the DSL
-     * @param extension the file extension associated with the DSL
-     */
-    Dsl(String name, String extension) {
+	 * Creates a new instance of the Dsl class with the specified name and extension.
+	 * @param name the name of the DSL
+	 * @param extension the file extension associated with the DSL
+	 */
+	Dsl(String name, String extension) {
 		this.name = name;
 		this.extension = extension;
 	}
 
 	/**
-     * Returns the name of the Dsl object.
-     *
-     * @return the name of the Dsl object
-     */
-    public String getName() {
+	 * Returns the name of the Dsl object.
+	 * @return the name of the Dsl object
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Returns the extension of the file.
-     *
-     * @return the extension of the file
-     */
-    String getExtension() {
+	 * Returns the extension of the file.
+	 * @return the extension of the file
+	 */
+	String getExtension() {
 		return this.extension;
 	}
 

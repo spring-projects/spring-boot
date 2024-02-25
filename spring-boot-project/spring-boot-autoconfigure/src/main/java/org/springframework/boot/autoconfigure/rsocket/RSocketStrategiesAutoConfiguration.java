@@ -54,12 +54,11 @@ public class RSocketStrategiesAutoConfiguration {
 	private static final String PATHPATTERN_ROUTEMATCHER_CLASS = "org.springframework.web.util.pattern.PathPatternRouteMatcher";
 
 	/**
-     * Creates and configures the RSocketStrategies bean.
-     * 
-     * @param customizers the object provider for RSocketStrategiesCustomizer instances
-     * @return the configured RSocketStrategies bean
-     */
-    @Bean
+	 * Creates and configures the RSocketStrategies bean.
+	 * @param customizers the object provider for RSocketStrategiesCustomizer instances
+	 * @return the configured RSocketStrategies bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public RSocketStrategies rSocketStrategies(ObjectProvider<RSocketStrategiesCustomizer> customizers) {
 		RSocketStrategies.Builder builder = RSocketStrategies.builder();
@@ -71,24 +70,26 @@ public class RSocketStrategiesAutoConfiguration {
 	}
 
 	/**
-     * JacksonCborStrategyConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JacksonCborStrategyConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ ObjectMapper.class, CBORFactory.class })
 	protected static class JacksonCborStrategyConfiguration {
 
 		private static final MediaType[] SUPPORTED_TYPES = { MediaType.APPLICATION_CBOR };
 
 		/**
-         * Customizes the RSocket strategies to use Jackson CBOR encoding and decoding.
-         * This customizer is only applied if a bean of type Jackson2ObjectMapperBuilder is present.
-         * The customizer sets up the RSocket strategies to use a Jackson ObjectMapper configured with CBOR factory.
-         * It configures the RSocket decoder to use Jackson2CborDecoder and the encoder to use Jackson2CborEncoder.
-         * 
-         * @param builder the Jackson2ObjectMapperBuilder bean used to create the Jackson ObjectMapper
-         * @return the RSocketStrategiesCustomizer that applies the customizations to the RSocket strategies
-         */
-        @Bean
+		 * Customizes the RSocket strategies to use Jackson CBOR encoding and decoding.
+		 * This customizer is only applied if a bean of type Jackson2ObjectMapperBuilder
+		 * is present. The customizer sets up the RSocket strategies to use a Jackson
+		 * ObjectMapper configured with CBOR factory. It configures the RSocket decoder to
+		 * use Jackson2CborDecoder and the encoder to use Jackson2CborEncoder.
+		 * @param builder the Jackson2ObjectMapperBuilder bean used to create the Jackson
+		 * ObjectMapper
+		 * @return the RSocketStrategiesCustomizer that applies the customizations to the
+		 * RSocket strategies
+		 */
+		@Bean
 		@Order(0)
 		@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
 		public RSocketStrategiesCustomizer jacksonCborRSocketStrategyCustomizer(Jackson2ObjectMapperBuilder builder) {
@@ -102,9 +103,9 @@ public class RSocketStrategiesAutoConfiguration {
 	}
 
 	/**
-     * JacksonJsonStrategyConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JacksonJsonStrategyConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	protected static class JacksonJsonStrategyConfiguration {
 
@@ -112,15 +113,15 @@ public class RSocketStrategiesAutoConfiguration {
 				new MediaType("application", "*+json") };
 
 		/**
-         * Customizes the RSocket strategies to use Jackson JSON encoding and decoding.
-         * This customizer is only applied if an ObjectMapper bean is present.
-         * The customizer sets the Jackson2JsonDecoder and Jackson2JsonEncoder as the decoder and encoder respectively,
-         * using the provided ObjectMapper and supported types.
-         *
-         * @param objectMapper the ObjectMapper bean used for JSON encoding and decoding
-         * @return the RSocketStrategiesCustomizer that applies the Jackson JSON strategy customization
-         */
-        @Bean
+		 * Customizes the RSocket strategies to use Jackson JSON encoding and decoding.
+		 * This customizer is only applied if an ObjectMapper bean is present. The
+		 * customizer sets the Jackson2JsonDecoder and Jackson2JsonEncoder as the decoder
+		 * and encoder respectively, using the provided ObjectMapper and supported types.
+		 * @param objectMapper the ObjectMapper bean used for JSON encoding and decoding
+		 * @return the RSocketStrategiesCustomizer that applies the Jackson JSON strategy
+		 * customization
+		 */
+		@Bean
 		@Order(1)
 		@ConditionalOnBean(ObjectMapper.class)
 		public RSocketStrategiesCustomizer jacksonJsonRSocketStrategyCustomizer(ObjectMapper objectMapper) {

@@ -28,13 +28,12 @@ import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 class MyApplicationTests {
 
 	/**
-     * This is an example test method.
-     * It is used to demonstrate how to write test cases in JUnit.
-     * 
-     * @param None
-     * @return None
-     */
-    @Test
+	 * This is an example test method. It is used to demonstrate how to write test cases
+	 * in JUnit.
+	 * @param None
+	 * @return None
+	 */
+	@Test
 	void exampleTest() {
 		// ...
 	}

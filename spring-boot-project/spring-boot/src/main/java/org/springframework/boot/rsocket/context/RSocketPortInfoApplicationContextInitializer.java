@@ -47,20 +47,19 @@ public class RSocketPortInfoApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	/**
-     * Initializes the ConfigurableApplicationContext by adding an application listener.
-     * The listener is responsible for handling events related to the application context.
-     * 
-     * @param applicationContext the ConfigurableApplicationContext to be initialized
-     */
-    @Override
+	 * Initializes the ConfigurableApplicationContext by adding an application listener.
+	 * The listener is responsible for handling events related to the application context.
+	 * @param applicationContext the ConfigurableApplicationContext to be initialized
+	 */
+	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		applicationContext.addApplicationListener(new Listener(applicationContext));
 	}
 
 	/**
-     * Listener class.
-     */
-    private static class Listener implements ApplicationListener<RSocketServerInitializedEvent> {
+	 * Listener class.
+	 */
+	private static class Listener implements ApplicationListener<RSocketServerInitializedEvent> {
 
 		private static final String PROPERTY_NAME = "local.rsocket.server.port";
 
@@ -69,21 +68,20 @@ public class RSocketPortInfoApplicationContextInitializer
 		private final ConfigurableApplicationContext applicationContext;
 
 		/**
-         * Constructs a new Listener with the specified ConfigurableApplicationContext.
-         * 
-         * @param applicationContext the ConfigurableApplicationContext to be set
-         */
-        Listener(ConfigurableApplicationContext applicationContext) {
+		 * Constructs a new Listener with the specified ConfigurableApplicationContext.
+		 * @param applicationContext the ConfigurableApplicationContext to be set
+		 */
+		Listener(ConfigurableApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 
 		/**
-         * This method is called when the RSocket server is initialized.
-         * It sets the port property in the application context if the server address is not null.
-         *
-         * @param event The RSocketServerInitializedEvent object representing the server initialization event.
-         */
-        @Override
+		 * This method is called when the RSocket server is initialized. It sets the port
+		 * property in the application context if the server address is not null.
+		 * @param event The RSocketServerInitializedEvent object representing the server
+		 * initialization event.
+		 */
+		@Override
 		public void onApplicationEvent(RSocketServerInitializedEvent event) {
 			if (event.getServer().address() != null) {
 				setPortProperty(this.applicationContext, event.getServer().address().getPort());
@@ -91,12 +89,12 @@ public class RSocketPortInfoApplicationContextInitializer
 		}
 
 		/**
-         * Sets the port property for the given ApplicationContext and its parent ApplicationContexts.
-         * 
-         * @param context the ApplicationContext to set the port property for
-         * @param port the port value to set
-         */
-        private void setPortProperty(ApplicationContext context, int port) {
+		 * Sets the port property for the given ApplicationContext and its parent
+		 * ApplicationContexts.
+		 * @param context the ApplicationContext to set the port property for
+		 * @param port the port value to set
+		 */
+		private void setPortProperty(ApplicationContext context, int port) {
 			if (context instanceof ConfigurableApplicationContext configurableContext) {
 				setPortProperty(configurableContext.getEnvironment(), port);
 			}
@@ -106,12 +104,11 @@ public class RSocketPortInfoApplicationContextInitializer
 		}
 
 		/**
-         * Sets the port property in the given environment.
-         * 
-         * @param environment the configurable environment
-         * @param port the port value to be set
-         */
-        private void setPortProperty(ConfigurableEnvironment environment, int port) {
+		 * Sets the port property in the given environment.
+		 * @param environment the configurable environment
+		 * @param port the port value to be set
+		 */
+		private void setPortProperty(ConfigurableEnvironment environment, int port) {
 			MutablePropertySources sources = environment.getPropertySources();
 			PropertySource<?> source = sources.get(PROPERTY_SOURCE_NAME);
 			if (source == null) {
@@ -122,12 +119,11 @@ public class RSocketPortInfoApplicationContextInitializer
 		}
 
 		/**
-         * Sets the port property for the specified source.
-         * 
-         * @param port the port value to set
-         * @param source the property source to update
-         */
-        @SuppressWarnings("unchecked")
+		 * Sets the port property for the specified source.
+		 * @param port the port value to set
+		 * @param source the property source to update
+		 */
+		@SuppressWarnings("unchecked")
 		private void setPortProperty(int port, PropertySource<?> source) {
 			((Map<String, Object>) source.getSource()).put(PROPERTY_NAME, port);
 		}

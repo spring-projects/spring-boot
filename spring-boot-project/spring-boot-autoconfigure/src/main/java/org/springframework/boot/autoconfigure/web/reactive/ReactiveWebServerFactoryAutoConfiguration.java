@@ -63,25 +63,26 @@ import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 public class ReactiveWebServerFactoryAutoConfiguration {
 
 	/**
-     * Customizes the ReactiveWebServerFactory based on the provided server properties and SSL bundles.
-     * 
-     * @param serverProperties the server properties to be used for customization
-     * @param sslBundles the SSL bundles to be used for customization (optional)
-     * @return the ReactiveWebServerFactoryCustomizer instance
-     */
-    @Bean
+	 * Customizes the ReactiveWebServerFactory based on the provided server properties and
+	 * SSL bundles.
+	 * @param serverProperties the server properties to be used for customization
+	 * @param sslBundles the SSL bundles to be used for customization (optional)
+	 * @return the ReactiveWebServerFactoryCustomizer instance
+	 */
+	@Bean
 	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(ServerProperties serverProperties,
 			ObjectProvider<SslBundles> sslBundles) {
 		return new ReactiveWebServerFactoryCustomizer(serverProperties, sslBundles.getIfAvailable());
 	}
 
 	/**
-     * Creates a customizer for the Tomcat Reactive Web Server Factory based on the presence of the Tomcat class.
-     * 
-     * @param serverProperties the server properties to be used for customizing the Tomcat Reactive Web Server Factory
-     * @return the TomcatReactiveWebServerFactoryCustomizer instance
-     */
-    @Bean
+	 * Creates a customizer for the Tomcat Reactive Web Server Factory based on the
+	 * presence of the Tomcat class.
+	 * @param serverProperties the server properties to be used for customizing the Tomcat
+	 * Reactive Web Server Factory
+	 * @return the TomcatReactiveWebServerFactoryCustomizer instance
+	 */
+	@Bean
 	@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
 	public TomcatReactiveWebServerFactoryCustomizer tomcatReactiveWebServerFactoryCustomizer(
 			ServerProperties serverProperties) {
@@ -89,12 +90,13 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of ForwardedHeaderTransformer if no other bean of the same type is present in the application context and if the property "server.forward-headers-strategy" is set to "framework".
-     * This bean is conditionally created using the @ConditionalOnMissingBean and @ConditionalOnProperty annotations.
-     * 
-     * @return The created ForwardedHeaderTransformer bean.
-     */
-    @Bean
+	 * Creates a new instance of ForwardedHeaderTransformer if no other bean of the same
+	 * type is present in the application context and if the property
+	 * "server.forward-headers-strategy" is set to "framework". This bean is conditionally
+	 * created using the @ConditionalOnMissingBean and @ConditionalOnProperty annotations.
+	 * @return The created ForwardedHeaderTransformer bean.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(value = "server.forward-headers-strategy", havingValue = "framework")
 	public ForwardedHeaderTransformer forwardedHeaderTransformer() {
@@ -110,25 +112,25 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 		private ConfigurableListableBeanFactory beanFactory;
 
 		/**
-         * Set the BeanFactory that this object runs in.
-         * <p>
-         * Invoked after population of normal bean properties but before an init callback such as InitializingBean's
-         * {@code afterPropertiesSet} or a custom init-method. Invoked after ResourceLoaderAware's {@code setResourceLoader},
-         * ApplicationEventPublisherAware's {@code setApplicationEventPublisher} and MessageSourceAware's
-         * {@code setMessageSource}.
-         * <p>
-         * This method will be invoked after any bean properties have been set and before any custom init-method or
-         * afterPropertiesSet callbacks are invoked.
-         * <p>
-         * This implementation saves the reference to the BeanFactory in a field for later use, mainly for
-         * resolving bean names specified in annotations.
-         * <p>
-         * Can be overridden in subclasses for further initialization purposes.
-         *
-         * @param beanFactory the BeanFactory object to be used by this object
-         * @throws BeansException if initialization failed
-         */
-        @Override
+		 * Set the BeanFactory that this object runs in.
+		 * <p>
+		 * Invoked after population of normal bean properties but before an init callback
+		 * such as InitializingBean's {@code afterPropertiesSet} or a custom init-method.
+		 * Invoked after ResourceLoaderAware's {@code setResourceLoader},
+		 * ApplicationEventPublisherAware's {@code setApplicationEventPublisher} and
+		 * MessageSourceAware's {@code setMessageSource}.
+		 * <p>
+		 * This method will be invoked after any bean properties have been set and before
+		 * any custom init-method or afterPropertiesSet callbacks are invoked.
+		 * <p>
+		 * This implementation saves the reference to the BeanFactory in a field for later
+		 * use, mainly for resolving bean names specified in annotations.
+		 * <p>
+		 * Can be overridden in subclasses for further initialization purposes.
+		 * @param beanFactory the BeanFactory object to be used by this object
+		 * @throws BeansException if initialization failed
+		 */
+		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 			if (beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
 				this.beanFactory = listableBeanFactory;
@@ -136,12 +138,11 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 		}
 
 		/**
-         * Register the bean definitions for the BeanPostProcessorsRegistrar class.
-         * 
-         * @param importingClassMetadata the metadata of the importing class
-         * @param registry the bean definition registry
-         */
-        @Override
+		 * Register the bean definitions for the BeanPostProcessorsRegistrar class.
+		 * @param importingClassMetadata the metadata of the importing class
+		 * @param registry the bean definition registry
+		 */
+		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 				BeanDefinitionRegistry registry) {
 			if (this.beanFactory == null) {
@@ -152,14 +153,15 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 		}
 
 		/**
-         * Registers a synthetic bean if it is missing in the given bean definition registry.
-         * 
-         * @param registry the bean definition registry to register the synthetic bean with
-         * @param name the name of the synthetic bean
-         * @param beanClass the class of the synthetic bean
-         * @param <T> the type of the synthetic bean
-         */
-        private <T> void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name,
+		 * Registers a synthetic bean if it is missing in the given bean definition
+		 * registry.
+		 * @param registry the bean definition registry to register the synthetic bean
+		 * with
+		 * @param name the name of the synthetic bean
+		 * @param beanClass the class of the synthetic bean
+		 * @param <T> the type of the synthetic bean
+		 */
+		private <T> void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name,
 				Class<T> beanClass) {
 			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
 				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);

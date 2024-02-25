@@ -98,17 +98,16 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	private static final TurboFilter FILTER = new TurboFilter() {
 
 		/**
-     * This method is used to decide whether to log a specific log event or not.
-     * 
-     * @param marker The marker associated with the log event.
-     * @param logger The logger instance associated with the log event.
-     * @param level The log level of the log event.
-     * @param format The log message format.
-     * @param params The parameters to be used in the log message format.
-     * @param t The throwable associated with the log event.
-     * @return The decision on whether to log the event or not.
-     */
-    @Override
+		 * This method is used to decide whether to log a specific log event or not.
+		 * @param marker The marker associated with the log event.
+		 * @param logger The logger instance associated with the log event.
+		 * @param level The log level of the log event.
+		 * @param format The log message format.
+		 * @param params The parameters to be used in the log message format.
+		 * @param t The throwable associated with the log event.
+		 * @return The decision on whether to log the event or not.
+		 */
+		@Override
 		public FilterReply decide(Marker marker, ch.qos.logback.classic.Logger logger, Level level, String format,
 				Object[] params, Throwable t) {
 			return FilterReply.DENY;
@@ -117,42 +116,41 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	};
 
 	/**
-     * Constructs a new LogbackLoggingSystem with the specified class loader.
-     *
-     * @param classLoader the class loader to be used by the logging system
-     */
-    public LogbackLoggingSystem(ClassLoader classLoader) {
+	 * Constructs a new LogbackLoggingSystem with the specified class loader.
+	 * @param classLoader the class loader to be used by the logging system
+	 */
+	public LogbackLoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
 	}
 
 	/**
-     * Returns the system properties for the logging system.
-     * 
-     * @param environment the configurable environment
-     * @return the logging system properties
-     */
-    @Override
+	 * Returns the system properties for the logging system.
+	 * @param environment the configurable environment
+	 * @return the logging system properties
+	 */
+	@Override
 	public LoggingSystemProperties getSystemProperties(ConfigurableEnvironment environment) {
 		return new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment), null);
 	}
 
 	/**
-     * Returns an array of standard configuration locations for LogbackLoggingSystem.
-     * The standard configuration locations are "logback-test.groovy", "logback-test.xml", "logback.groovy", and "logback.xml".
-     *
-     * @return an array of standard configuration locations
-     */
-    @Override
+	 * Returns an array of standard configuration locations for LogbackLoggingSystem. The
+	 * standard configuration locations are "logback-test.groovy", "logback-test.xml",
+	 * "logback.groovy", and "logback.xml".
+	 * @return an array of standard configuration locations
+	 */
+	@Override
 	protected String[] getStandardConfigLocations() {
 		return new String[] { "logback-test.groovy", "logback-test.xml", "logback.groovy", "logback.xml" };
 	}
 
 	/**
-     * This method is called before the initialization of the LogbackLoggingSystem.
-     * It checks if the logger context is already initialized and if not, it performs the necessary configurations.
-     * It adds a JDK logging bridge handler and a turbo filter to the logger context.
-     */
-    @Override
+	 * This method is called before the initialization of the LogbackLoggingSystem. It
+	 * checks if the logger context is already initialized and if not, it performs the
+	 * necessary configurations. It adds a JDK logging bridge handler and a turbo filter
+	 * to the logger context.
+	 */
+	@Override
 	public void beforeInitialize() {
 		LoggerContext loggerContext = getLoggerContext();
 		if (isAlreadyInitialized(loggerContext)) {
@@ -164,16 +162,17 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Configures the JDK logging bridge handler.
-     * This method checks if the bridge between JUL (Java Util Logging) and SLF4J (Simple Logging Facade for Java) is enabled.
-     * If enabled, it removes any existing JDK logging bridge handler and installs the SLF4J bridge handler.
-     * 
-     * @throws Throwable if an error occurs while configuring the JDK logging bridge handler.
-     * @see SLF4JBridgeHandler
-     * @see #isBridgeJulIntoSlf4j()
-     * @see #removeJdkLoggingBridgeHandler()
-     */
-    private void configureJdkLoggingBridgeHandler() {
+	 * Configures the JDK logging bridge handler. This method checks if the bridge between
+	 * JUL (Java Util Logging) and SLF4J (Simple Logging Facade for Java) is enabled. If
+	 * enabled, it removes any existing JDK logging bridge handler and installs the SLF4J
+	 * bridge handler.
+	 * @throws Throwable if an error occurs while configuring the JDK logging bridge
+	 * handler.
+	 * @see SLF4JBridgeHandler
+	 * @see #isBridgeJulIntoSlf4j()
+	 * @see #removeJdkLoggingBridgeHandler()
+	 */
+	private void configureJdkLoggingBridgeHandler() {
 		try {
 			if (isBridgeJulIntoSlf4j()) {
 				removeJdkLoggingBridgeHandler();
@@ -186,40 +185,40 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Checks if the bridge between JUL (Java Util Logging) and SLF4J (Simple Logging Facade for Java) is enabled.
-     * 
-     * @return {@code true} if the bridge is enabled and JUL is using a single console handler at most, {@code false} otherwise.
-     */
-    private boolean isBridgeJulIntoSlf4j() {
+	 * Checks if the bridge between JUL (Java Util Logging) and SLF4J (Simple Logging
+	 * Facade for Java) is enabled.
+	 * @return {@code true} if the bridge is enabled and JUL is using a single console
+	 * handler at most, {@code false} otherwise.
+	 */
+	private boolean isBridgeJulIntoSlf4j() {
 		return isBridgeHandlerAvailable() && isJulUsingASingleConsoleHandlerAtMost();
 	}
 
 	/**
-     * Checks if the bridge handler is available.
-     * 
-     * @return {@code true} if the bridge handler is available, {@code false} otherwise.
-     */
-    private boolean isBridgeHandlerAvailable() {
+	 * Checks if the bridge handler is available.
+	 * @return {@code true} if the bridge handler is available, {@code false} otherwise.
+	 */
+	private boolean isBridgeHandlerAvailable() {
 		return ClassUtils.isPresent(BRIDGE_HANDLER, getClassLoader());
 	}
 
 	/**
-     * Checks if the JUL (Java Util Logging) is using a single ConsoleHandler at most.
-     * 
-     * @return true if JUL is using a single ConsoleHandler at most, false otherwise
-     */
-    private boolean isJulUsingASingleConsoleHandlerAtMost() {
+	 * Checks if the JUL (Java Util Logging) is using a single ConsoleHandler at most.
+	 * @return true if JUL is using a single ConsoleHandler at most, false otherwise
+	 */
+	private boolean isJulUsingASingleConsoleHandlerAtMost() {
 		java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();
 		return handlers.length == 0 || (handlers.length == 1 && handlers[0] instanceof ConsoleHandler);
 	}
 
 	/**
-     * Removes the JDK logging bridge handler and uninstalls the SLF4J bridge handler.
-     * This method attempts to remove the default root handler and then uninstalls the SLF4J bridge handler.
-     * If any exception occurs during the process, it is ignored and the execution continues.
-     */
-    private void removeJdkLoggingBridgeHandler() {
+	 * Removes the JDK logging bridge handler and uninstalls the SLF4J bridge handler.
+	 * This method attempts to remove the default root handler and then uninstalls the
+	 * SLF4J bridge handler. If any exception occurs during the process, it is ignored and
+	 * the execution continues.
+	 */
+	private void removeJdkLoggingBridgeHandler() {
 		try {
 			removeDefaultRootHandler();
 			SLF4JBridgeHandler.uninstall();
@@ -230,15 +229,14 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Removes the default root handler from the LogManager.
-     * This method checks if the root logger has only one handler, which is an instance of ConsoleHandler,
-     * and removes it if true.
-     * 
-     * @throws Throwable if an error occurs while removing the default root handler
-     * 
-     * @since 1.0.0
-     */
-    private void removeDefaultRootHandler() {
+	 * Removes the default root handler from the LogManager. This method checks if the
+	 * root logger has only one handler, which is an instance of ConsoleHandler, and
+	 * removes it if true.
+	 * @throws Throwable if an error occurs while removing the default root handler
+	 *
+	 * @since 1.0.0
+	 */
+	private void removeDefaultRootHandler() {
 		try {
 			java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
 			Handler[] handlers = rootLogger.getHandlers();
@@ -252,13 +250,12 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Initializes the logging system.
-     * 
-     * @param initializationContext The logging initialization context.
-     * @param configLocation The location of the logging configuration file.
-     * @param logFile The log file to be used.
-     */
-    @Override
+	 * Initializes the logging system.
+	 * @param initializationContext The logging initialization context.
+	 * @param configLocation The location of the logging configuration file.
+	 * @param logFile The log file to be used.
+	 */
+	@Override
 	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
 		if (isAlreadyInitialized(loggerContext)) {
@@ -277,13 +274,13 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Initializes the logging system using the AOT generated artifacts if possible.
-     * 
-     * @param initializationContext the logging initialization context
-     * @param logFile the log file
-     * @return {@code true} if the logging system is successfully initialized using the AOT generated artifacts, {@code false} otherwise
-     */
-    private boolean initializeFromAotGeneratedArtifactsIfPossible(LoggingInitializationContext initializationContext,
+	 * Initializes the logging system using the AOT generated artifacts if possible.
+	 * @param initializationContext the logging initialization context
+	 * @param logFile the log file
+	 * @return {@code true} if the logging system is successfully initialized using the
+	 * AOT generated artifacts, {@code false} otherwise
+	 */
+	private boolean initializeFromAotGeneratedArtifactsIfPossible(LoggingInitializationContext initializationContext,
 			LogFile logFile) {
 		if (!AotDetector.useGeneratedArtifacts()) {
 			return false;
@@ -303,12 +300,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Loads the default logging configuration for Logback.
-     * 
-     * @param initializationContext the logging initialization context
-     * @param logFile the log file to be used
-     */
-    @Override
+	 * Loads the default logging configuration for Logback.
+	 * @param initializationContext the logging initialization context
+	 * @param logFile the log file to be used
+	 */
+	@Override
 	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
 		LoggerContext context = getLoggerContext();
 		stopAndReset(context);
@@ -329,13 +325,12 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Loads the configuration for Logback logging.
-     * 
-     * @param initializationContext The logging initialization context.
-     * @param location The location of the configuration file.
-     * @param logFile The log file to be used.
-     */
-    @Override
+	 * Loads the configuration for Logback logging.
+	 * @param initializationContext The logging initialization context.
+	 * @param location The location of the configuration file.
+	 * @param logFile The log file to be used.
+	 */
+	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
 			LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
@@ -355,12 +350,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Reports any configuration errors in the logger context, if necessary.
-     * 
-     * @param loggerContext the logger context to check for configuration errors
-     * @throws IllegalStateException if any configuration errors are detected
-     */
-    private void reportConfigurationErrorsIfNecessary(LoggerContext loggerContext) {
+	 * Reports any configuration errors in the logger context, if necessary.
+	 * @param loggerContext the logger context to check for configuration errors
+	 * @throws IllegalStateException if any configuration errors are detected
+	 */
+	private void reportConfigurationErrorsIfNecessary(LoggerContext loggerContext) {
 		StringBuilder errors = new StringBuilder();
 		List<Throwable> suppressedExceptions = new ArrayList<>();
 		for (Status status : loggerContext.getStatusManager().getCopyOfStatusList()) {
@@ -385,15 +379,14 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Configures the logging system using a resource URL.
-     * 
-     * @param initializationContext the logging initialization context
-     * @param loggerContext the logger context
-     * @param url the resource URL to configure the logging system
-     * @throws JoranException if an error occurs during configuration
-     * @throws IllegalArgumentException if the file extension of the URL is not supported
-     */
-    private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
+	 * Configures the logging system using a resource URL.
+	 * @param initializationContext the logging initialization context
+	 * @param loggerContext the logger context
+	 * @param url the resource URL to configure the logging system
+	 * @throws JoranException if an error occurs during configuration
+	 * @throws IllegalArgumentException if the file extension of the URL is not supported
+	 */
+	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
 		if (url.getPath().endsWith(".xml")) {
 			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
@@ -406,11 +399,10 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Stops and resets the given logger context.
-     * 
-     * @param loggerContext the logger context to stop and reset
-     */
-    private void stopAndReset(LoggerContext loggerContext) {
+	 * Stops and resets the given logger context.
+	 * @param loggerContext the logger context to stop and reset
+	 */
+	private void stopAndReset(LoggerContext loggerContext) {
 		loggerContext.stop();
 		loggerContext.reset();
 		if (isBridgeHandlerInstalled()) {
@@ -419,11 +411,12 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Checks if the SLF4JBridgeHandler is installed as the only handler in the root logger.
-     * 
-     * @return true if the SLF4JBridgeHandler is installed as the only handler in the root logger, false otherwise
-     */
-    private boolean isBridgeHandlerInstalled() {
+	 * Checks if the SLF4JBridgeHandler is installed as the only handler in the root
+	 * logger.
+	 * @return true if the SLF4JBridgeHandler is installed as the only handler in the root
+	 * logger, false otherwise
+	 */
+	private boolean isBridgeHandlerInstalled() {
 		if (!isBridgeHandlerAvailable()) {
 			return false;
 		}
@@ -433,12 +426,13 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Adds a LevelChangePropagator to the specified LoggerContext.
-     * This propagator is responsible for propagating log level changes from Logback to JUL (Java Util Logging).
-     * 
-     * @param loggerContext the LoggerContext to which the LevelChangePropagator will be added
-     */
-    private void addLevelChangePropagator(LoggerContext loggerContext) {
+	 * Adds a LevelChangePropagator to the specified LoggerContext. This propagator is
+	 * responsible for propagating log level changes from Logback to JUL (Java Util
+	 * Logging).
+	 * @param loggerContext the LoggerContext to which the LevelChangePropagator will be
+	 * added
+	 */
+	private void addLevelChangePropagator(LoggerContext loggerContext) {
 		LevelChangePropagator levelChangePropagator = new LevelChangePropagator();
 		levelChangePropagator.setResetJUL(true);
 		levelChangePropagator.setContext(loggerContext);
@@ -446,22 +440,22 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Cleans up the Logback logging system.
-     * This method is called to perform necessary clean-up tasks before shutting down the logging system.
-     * It clears the status manager and removes the turbo filter from the logger context.
-     * Additionally, if the bridge handler is available, it removes the JDK logging bridge handler.
-     * 
-     * @see LoggerContext
-     * @see LoggerContext#markAsUninitialized(LoggerContext)
-     * @see LoggerContext#getStatusManager()
-     * @see LoggerContext#getTurboFilterList()
-     * @see LoggerContext#getTurboFilterList().remove(TurboFilter)
-     * @see LogbackLoggingSystem#isBridgeHandlerAvailable()
-     * @see LogbackLoggingSystem#removeJdkLoggingBridgeHandler()
-     * @see StatusManager#clear()
-     * @see TurboFilter
-     */
-    @Override
+	 * Cleans up the Logback logging system. This method is called to perform necessary
+	 * clean-up tasks before shutting down the logging system. It clears the status
+	 * manager and removes the turbo filter from the logger context. Additionally, if the
+	 * bridge handler is available, it removes the JDK logging bridge handler.
+	 *
+	 * @see LoggerContext
+	 * @see LoggerContext#markAsUninitialized(LoggerContext)
+	 * @see LoggerContext#getStatusManager()
+	 * @see LoggerContext#getTurboFilterList()
+	 * @see LoggerContext#getTurboFilterList().remove(TurboFilter)
+	 * @see LogbackLoggingSystem#isBridgeHandlerAvailable()
+	 * @see LogbackLoggingSystem#removeJdkLoggingBridgeHandler()
+	 * @see StatusManager#clear()
+	 * @see TurboFilter
+	 */
+	@Override
 	public void cleanUp() {
 		LoggerContext context = getLoggerContext();
 		markAsUninitialized(context);
@@ -474,12 +468,12 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Reinitializes the logging system with the provided initialization context.
-     * This method resets the logger context, clears the status manager, and loads the configuration.
-     *
-     * @param initializationContext the logging initialization context
-     */
-    @Override
+	 * Reinitializes the logging system with the provided initialization context. This
+	 * method resets the logger context, clears the status manager, and loads the
+	 * configuration.
+	 * @param initializationContext the logging initialization context
+	 */
+	@Override
 	protected void reinitialize(LoggingInitializationContext initializationContext) {
 		getLoggerContext().reset();
 		getLoggerContext().getStatusManager().clear();
@@ -487,11 +481,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Retrieves a list of logger configurations.
-     * 
-     * @return A list of LoggerConfiguration objects representing the logger configurations.
-     */
-    @Override
+	 * Retrieves a list of logger configurations.
+	 * @return A list of LoggerConfiguration objects representing the logger
+	 * configurations.
+	 */
+	@Override
 	public List<LoggerConfiguration> getLoggerConfigurations() {
 		List<LoggerConfiguration> result = new ArrayList<>();
 		for (ch.qos.logback.classic.Logger logger : getLoggerContext().getLoggerList()) {
@@ -502,12 +496,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Retrieves the configuration for a specific logger.
-     * 
-     * @param loggerName the name of the logger
-     * @return the configuration for the specified logger
-     */
-    @Override
+	 * Retrieves the configuration for a specific logger.
+	 * @param loggerName the name of the logger
+	 * @return the configuration for the specified logger
+	 */
+	@Override
 	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
 		String name = getLoggerName(loggerName);
 		LoggerContext loggerContext = getLoggerContext();
@@ -515,14 +508,12 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Returns the logger name based on the provided name.
-     * If the provided name is null or empty, or if it is equal to the root logger name,
-     * the root logger name is returned.
-     * 
-     * @param name the name of the logger
-     * @return the logger name
-     */
-    private String getLoggerName(String name) {
+	 * Returns the logger name based on the provided name. If the provided name is null or
+	 * empty, or if it is equal to the root logger name, the root logger name is returned.
+	 * @param name the name of the logger
+	 * @return the logger name
+	 */
+	private String getLoggerName(String name) {
 		if (!StringUtils.hasLength(name) || Logger.ROOT_LOGGER_NAME.equals(name)) {
 			return ROOT_LOGGER_NAME;
 		}
@@ -530,12 +521,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Retrieves the configuration of a logger.
-     * 
-     * @param logger the logger to retrieve the configuration for
-     * @return the configuration of the logger, or null if the logger is null
-     */
-    private LoggerConfiguration getLoggerConfiguration(ch.qos.logback.classic.Logger logger) {
+	 * Retrieves the configuration of a logger.
+	 * @param logger the logger to retrieve the configuration for
+	 * @return the configuration of the logger, or null if the logger is null
+	 */
+	private LoggerConfiguration getLoggerConfiguration(ch.qos.logback.classic.Logger logger) {
 		if (logger == null) {
 			return null;
 		}
@@ -546,22 +536,20 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Returns a set of supported log levels.
-     *
-     * @return a set of supported log levels
-     */
-    @Override
+	 * Returns a set of supported log levels.
+	 * @return a set of supported log levels
+	 */
+	@Override
 	public Set<LogLevel> getSupportedLogLevels() {
 		return LEVELS.getSupported();
 	}
 
 	/**
-     * Sets the log level for the specified logger.
-     * 
-     * @param loggerName the name of the logger
-     * @param level the log level to be set
-     */
-    @Override
+	 * Sets the log level for the specified logger.
+	 * @param loggerName the name of the logger
+	 * @param level the log level to be set
+	 */
+	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
 		ch.qos.logback.classic.Logger logger = getLogger(loggerName);
 		if (logger != null) {
@@ -570,36 +558,36 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Returns a Runnable object that can be used as a shutdown handler.
-     * The shutdown handler stops the logger context.
-     *
-     * @return a Runnable object representing the shutdown handler
-     */
-    @Override
+	 * Returns a Runnable object that can be used as a shutdown handler. The shutdown
+	 * handler stops the logger context.
+	 * @return a Runnable object representing the shutdown handler
+	 */
+	@Override
 	public Runnable getShutdownHandler() {
 		return () -> getLoggerContext().stop();
 	}
 
 	/**
-     * Retrieves a logger with the specified name.
-     * 
-     * @param name the name of the logger to retrieve
-     * @return the logger with the specified name
-     */
-    private ch.qos.logback.classic.Logger getLogger(String name) {
+	 * Retrieves a logger with the specified name.
+	 * @param name the name of the logger to retrieve
+	 * @return the logger with the specified name
+	 */
+	private ch.qos.logback.classic.Logger getLogger(String name) {
 		LoggerContext factory = getLoggerContext();
 		return factory.getLogger(getLoggerName(name));
 	}
 
 	/**
-     * Retrieves the LoggerContext from the LoggerFactory.
-     * 
-     * @return The LoggerContext instance.
-     * @throws IllegalStateException if the LoggerFactory is not an instance of LoggerContext.
-     * @throws IllegalStateException if Logback is on the classpath but there is a competing implementation.
-     * @throws IllegalStateException if using WebLogic and 'org.slf4j' is not added to prefer-application-packages in WEB-INF/weblogic.xml.
-     */
-    private LoggerContext getLoggerContext() {
+	 * Retrieves the LoggerContext from the LoggerFactory.
+	 * @return The LoggerContext instance.
+	 * @throws IllegalStateException if the LoggerFactory is not an instance of
+	 * LoggerContext.
+	 * @throws IllegalStateException if Logback is on the classpath but there is a
+	 * competing implementation.
+	 * @throws IllegalStateException if using WebLogic and 'org.slf4j' is not added to
+	 * prefer-application-packages in WEB-INF/weblogic.xml.
+	 */
+	private LoggerContext getLoggerContext() {
 		ILoggerFactory factory = getLoggerFactory();
 		Assert.isInstanceOf(LoggerContext.class, factory,
 				() -> String.format(
@@ -613,12 +601,12 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Retrieves the logger factory used by the LogbackLoggingSystem.
-     * 
-     * @return The logger factory used by the LogbackLoggingSystem.
-     * @throws IllegalStateException If interrupted while waiting for a non-substitute logger factory.
-     */
-    private ILoggerFactory getLoggerFactory() {
+	 * Retrieves the logger factory used by the LogbackLoggingSystem.
+	 * @return The logger factory used by the LogbackLoggingSystem.
+	 * @throws IllegalStateException If interrupted while waiting for a non-substitute
+	 * logger factory.
+	 */
+	private ILoggerFactory getLoggerFactory() {
 		ILoggerFactory factory = LoggerFactory.getILoggerFactory();
 		while (factory instanceof SubstituteLoggerFactory) {
 			try {
@@ -634,13 +622,14 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Retrieves the location of the given ILoggerFactory.
-     * 
-     * @param factory the ILoggerFactory to retrieve the location for
-     * @return the location of the given ILoggerFactory, or "unknown location" if unable to determine
-     * @throws SecurityException if a security exception occurs while retrieving the location
-     */
-    private Object getLocation(ILoggerFactory factory) {
+	 * Retrieves the location of the given ILoggerFactory.
+	 * @param factory the ILoggerFactory to retrieve the location for
+	 * @return the location of the given ILoggerFactory, or "unknown location" if unable
+	 * to determine
+	 * @throws SecurityException if a security exception occurs while retrieving the
+	 * location
+	 */
+	private Object getLocation(ILoggerFactory factory) {
 		try {
 			ProtectionDomain protectionDomain = factory.getClass().getProtectionDomain();
 			CodeSource codeSource = protectionDomain.getCodeSource();
@@ -655,53 +644,51 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Checks if the given LoggerContext has already been initialized.
-     * 
-     * @param loggerContext the LoggerContext to check
-     * @return true if the LoggerContext has already been initialized, false otherwise
-     */
-    private boolean isAlreadyInitialized(LoggerContext loggerContext) {
+	 * Checks if the given LoggerContext has already been initialized.
+	 * @param loggerContext the LoggerContext to check
+	 * @return true if the LoggerContext has already been initialized, false otherwise
+	 */
+	private boolean isAlreadyInitialized(LoggerContext loggerContext) {
 		return loggerContext.getObject(LoggingSystem.class.getName()) != null;
 	}
 
 	/**
-     * Marks the logger context as initialized.
-     * 
-     * @param loggerContext the logger context to mark as initialized
-     */
-    private void markAsInitialized(LoggerContext loggerContext) {
+	 * Marks the logger context as initialized.
+	 * @param loggerContext the logger context to mark as initialized
+	 */
+	private void markAsInitialized(LoggerContext loggerContext) {
 		loggerContext.putObject(LoggingSystem.class.getName(), new Object());
 	}
 
 	/**
-     * Marks the specified logger context as uninitialized by removing the LoggingSystem object from it.
-     * 
-     * @param loggerContext the logger context to mark as uninitialized
-     */
-    private void markAsUninitialized(LoggerContext loggerContext) {
+	 * Marks the specified logger context as uninitialized by removing the LoggingSystem
+	 * object from it.
+	 * @param loggerContext the logger context to mark as uninitialized
+	 */
+	private void markAsUninitialized(LoggerContext loggerContext) {
 		loggerContext.removeObject(LoggingSystem.class.getName());
 	}
 
 	/**
-     * Returns the default log correlation pattern.
-     *
-     * @return the default log correlation pattern ("%correlationId")
-     */
-    @Override
+	 * Returns the default log correlation pattern.
+	 * @return the default log correlation pattern ("%correlationId")
+	 */
+	@Override
 	protected String getDefaultLogCorrelationPattern() {
 		return "%correlationId";
 	}
 
 	/**
-     * This method processes the BeanFactoryInitializationAotContribution ahead of time.
-     * It retrieves the contribution object from the LoggerContext using the specified key.
-     * After retrieving the object, it removes it from the LoggerContext.
-     * Finally, it returns the retrieved contribution object.
-     *
-     * @param beanFactory The ConfigurableListableBeanFactory used for processing the contribution.
-     * @return The BeanFactoryInitializationAotContribution object retrieved from the LoggerContext.
-     */
-    @Override
+	 * This method processes the BeanFactoryInitializationAotContribution ahead of time.
+	 * It retrieves the contribution object from the LoggerContext using the specified
+	 * key. After retrieving the object, it removes it from the LoggerContext. Finally, it
+	 * returns the retrieved contribution object.
+	 * @param beanFactory The ConfigurableListableBeanFactory used for processing the
+	 * contribution.
+	 * @return The BeanFactoryInitializationAotContribution object retrieved from the
+	 * LoggerContext.
+	 */
+	@Override
 	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
 		String key = BeanFactoryInitializationAotContribution.class.getName();
 		LoggerContext context = getLoggerContext();
@@ -712,11 +699,10 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	/**
-     * Executes the specified action with logging suppressed.
-     * 
-     * @param action the action to be executed
-     */
-    private void withLoggingSuppressed(Runnable action) {
+	 * Executes the specified action with logging suppressed.
+	 * @param action the action to be executed
+	 */
+	private void withLoggingSuppressed(Runnable action) {
 		TurboFilterList turboFilters = getLoggerContext().getTurboFilterList();
 		turboFilters.add(FILTER);
 		try {
@@ -737,12 +723,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 				Factory.class.getClassLoader());
 
 		/**
-         * Returns the logging system based on the specified class loader.
-         * 
-         * @param classLoader the class loader to be used for loading the logging system
-         * @return the logging system if it is present, otherwise null
-         */
-        @Override
+		 * Returns the logging system based on the specified class loader.
+		 * @param classLoader the class loader to be used for loading the logging system
+		 * @return the logging system if it is present, otherwise null
+		 */
+		@Override
 		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
 			if (PRESENT) {
 				return new LogbackLoggingSystem(classLoader);

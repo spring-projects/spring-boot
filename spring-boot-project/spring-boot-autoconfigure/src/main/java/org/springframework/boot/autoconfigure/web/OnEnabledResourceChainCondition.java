@@ -39,13 +39,13 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 	private static final String WEBJAR_ASSET_LOCATOR = "org.webjars.WebJarAssetLocator";
 
 	/**
-     * Determines the outcome of the condition for the @ConditionalOnEnabledResourceChain annotation.
-     * 
-     * @param context the condition context
-     * @param metadata the annotated type metadata
-     * @return the condition outcome
-     */
-    @Override
+	 * Determines the outcome of the condition for the @ConditionalOnEnabledResourceChain
+	 * annotation.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @return the condition outcome
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConfigurableEnvironment environment = (ConfigurableEnvironment) context.getEnvironment();
 		boolean fixed = getEnabledProperty(environment, "strategy.fixed.", false);
@@ -66,15 +66,15 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Retrieves the value of the enabled property for the specified key from the given environment.
-     * If the property is not found, the defaultValue is returned.
-     *
-     * @param environment the configurable environment to retrieve the property from
-     * @param key the key to retrieve the property for
-     * @param defaultValue the default value to return if the property is not found
-     * @return the value of the enabled property for the specified key, or the defaultValue if not found
-     */
-    private Boolean getEnabledProperty(ConfigurableEnvironment environment, String key, Boolean defaultValue) {
+	 * Retrieves the value of the enabled property for the specified key from the given
+	 * environment. If the property is not found, the defaultValue is returned.
+	 * @param environment the configurable environment to retrieve the property from
+	 * @param key the key to retrieve the property for
+	 * @param defaultValue the default value to return if the property is not found
+	 * @return the value of the enabled property for the specified key, or the
+	 * defaultValue if not found
+	 */
+	private Boolean getEnabledProperty(ConfigurableEnvironment environment, String key, Boolean defaultValue) {
 		String name = "spring.web.resources.chain." + key + "enabled";
 		return environment.getProperty(name, Boolean.class, defaultValue);
 	}

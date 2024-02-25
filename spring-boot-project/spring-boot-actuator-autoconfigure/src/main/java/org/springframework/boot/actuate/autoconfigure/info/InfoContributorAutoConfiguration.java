@@ -55,14 +55,15 @@ public class InfoContributorAutoConfiguration {
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 	/**
-     * Creates an instance of {@link EnvironmentInfoContributor} if the "env" info contributor is enabled.
-     * The order of the info contributor is set to the default order.
-     * 
-     * @param environment the {@link ConfigurableEnvironment} to be used by the info contributor
-     * @return an instance of {@link EnvironmentInfoContributor} if the "env" info contributor is enabled,
-     *         otherwise returns null
-     */
-    @Bean
+	 * Creates an instance of {@link EnvironmentInfoContributor} if the "env" info
+	 * contributor is enabled. The order of the info contributor is set to the default
+	 * order.
+	 * @param environment the {@link ConfigurableEnvironment} to be used by the info
+	 * contributor
+	 * @return an instance of {@link EnvironmentInfoContributor} if the "env" info
+	 * contributor is enabled, otherwise returns null
+	 */
+	@Bean
 	@ConditionalOnEnabledInfoContributor(value = "env", fallback = InfoContributorFallback.DISABLE)
 	@Order(DEFAULT_ORDER)
 	public EnvironmentInfoContributor envInfoContributor(ConfigurableEnvironment environment) {
@@ -70,15 +71,18 @@ public class InfoContributorAutoConfiguration {
 	}
 
 	/**
-     * Creates a GitInfoContributor bean if the "git" info contributor is enabled and there is a single candidate for GitProperties.
-     * If there is no existing bean of type GitInfoContributor, it creates a new one with the provided GitProperties and the mode specified in the InfoContributorProperties.
-     * The order of the GitInfoContributor is set to the default order.
-     * 
-     * @param gitProperties The GitProperties bean used to configure the GitInfoContributor.
-     * @param infoContributorProperties The InfoContributorProperties bean used to configure the GitInfoContributor's mode.
-     * @return The GitInfoContributor bean.
-     */
-    @Bean
+	 * Creates a GitInfoContributor bean if the "git" info contributor is enabled and
+	 * there is a single candidate for GitProperties. If there is no existing bean of type
+	 * GitInfoContributor, it creates a new one with the provided GitProperties and the
+	 * mode specified in the InfoContributorProperties. The order of the
+	 * GitInfoContributor is set to the default order.
+	 * @param gitProperties The GitProperties bean used to configure the
+	 * GitInfoContributor.
+	 * @param infoContributorProperties The InfoContributorProperties bean used to
+	 * configure the GitInfoContributor's mode.
+	 * @return The GitInfoContributor bean.
+	 */
+	@Bean
 	@ConditionalOnEnabledInfoContributor("git")
 	@ConditionalOnSingleCandidate(GitProperties.class)
 	@ConditionalOnMissingBean
@@ -89,15 +93,15 @@ public class InfoContributorAutoConfiguration {
 	}
 
 	/**
-     * Creates an instance of {@link InfoContributor} for providing build information.
-     * This method is conditionally enabled based on the presence of the "build" info contributor
-     * and a single candidate of type {@link BuildProperties}.
-     * The order of this info contributor is set to the default order.
-     *
-     * @param buildProperties the {@link BuildProperties} instance used to retrieve build information
-     * @return an instance of {@link InfoContributor} for providing build information
-     */
-    @Bean
+	 * Creates an instance of {@link InfoContributor} for providing build information.
+	 * This method is conditionally enabled based on the presence of the "build" info
+	 * contributor and a single candidate of type {@link BuildProperties}. The order of
+	 * this info contributor is set to the default order.
+	 * @param buildProperties the {@link BuildProperties} instance used to retrieve build
+	 * information
+	 * @return an instance of {@link InfoContributor} for providing build information
+	 */
+	@Bean
 	@ConditionalOnEnabledInfoContributor("build")
 	@ConditionalOnSingleCandidate(BuildProperties.class)
 	@Order(DEFAULT_ORDER)
@@ -106,23 +110,28 @@ public class InfoContributorAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link JavaInfoContributor}.
-     * 
-     * This method is annotated with {@link Bean} to indicate that it is a bean definition method.
-     * 
-     * It is conditionally enabled based on the value of the "java" property in the application's configuration.
-     * If the property is not present or is set to false, the {@link JavaInfoContributor} bean will not be created.
-     * 
-     * The {@link ConditionalOnEnabledInfoContributor} annotation is used to conditionally enable the bean based on the value of the "java" property.
-     * The fallback attribute is set to {@link InfoContributorFallback.DISABLE}, which means that if the "java" property is not present or is set to false,
-     * the {@link JavaInfoContributor} bean will be disabled.
-     * 
-     * The {@link Order} annotation is used to specify the order in which the {@link JavaInfoContributor} bean should be executed relative to other beans.
-     * The {@link Order#DEFAULT_ORDER} value is used, which means that the bean will have the default order.
-     * 
-     * @return a new instance of {@link JavaInfoContributor}
-     */
-    @Bean
+	 * Creates a new instance of {@link JavaInfoContributor}.
+	 *
+	 * This method is annotated with {@link Bean} to indicate that it is a bean definition
+	 * method.
+	 *
+	 * It is conditionally enabled based on the value of the "java" property in the
+	 * application's configuration. If the property is not present or is set to false, the
+	 * {@link JavaInfoContributor} bean will not be created.
+	 *
+	 * The {@link ConditionalOnEnabledInfoContributor} annotation is used to conditionally
+	 * enable the bean based on the value of the "java" property. The fallback attribute
+	 * is set to {@link InfoContributorFallback.DISABLE}, which means that if the "java"
+	 * property is not present or is set to false, the {@link JavaInfoContributor} bean
+	 * will be disabled.
+	 *
+	 * The {@link Order} annotation is used to specify the order in which the
+	 * {@link JavaInfoContributor} bean should be executed relative to other beans. The
+	 * {@link Order#DEFAULT_ORDER} value is used, which means that the bean will have the
+	 * default order.
+	 * @return a new instance of {@link JavaInfoContributor}
+	 */
+	@Bean
 	@ConditionalOnEnabledInfoContributor(value = "java", fallback = InfoContributorFallback.DISABLE)
 	@Order(DEFAULT_ORDER)
 	public JavaInfoContributor javaInfoContributor() {
@@ -130,13 +139,13 @@ public class InfoContributorAutoConfiguration {
 	}
 
 	/**
-     * Creates an instance of {@link OsInfoContributor} if the "os" info contributor is enabled.
-     * The order of the info contributor is set to the default order.
-     * If the "os" info contributor is not enabled, it falls back to the {@link InfoContributorFallback#DISABLE} fallback.
-     *
-     * @return the {@link OsInfoContributor} instance
-     */
-    @Bean
+	 * Creates an instance of {@link OsInfoContributor} if the "os" info contributor is
+	 * enabled. The order of the info contributor is set to the default order. If the "os"
+	 * info contributor is not enabled, it falls back to the
+	 * {@link InfoContributorFallback#DISABLE} fallback.
+	 * @return the {@link OsInfoContributor} instance
+	 */
+	@Bean
 	@ConditionalOnEnabledInfoContributor(value = "os", fallback = InfoContributorFallback.DISABLE)
 	@Order(DEFAULT_ORDER)
 	public OsInfoContributor osInfoContributor() {
@@ -144,14 +153,14 @@ public class InfoContributorAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link ProcessInfoContributor} and registers it as an info contributor.
-     * This method is conditionally enabled based on the value of the "process" property in the application's configuration.
-     * If the property is not present or set to false, the info contributor will be disabled.
-     * The order of the info contributor is set to the default order.
-     * 
-     * @return the created {@link ProcessInfoContributor} instance
-     */
-    @Bean
+	 * Creates a new instance of {@link ProcessInfoContributor} and registers it as an
+	 * info contributor. This method is conditionally enabled based on the value of the
+	 * "process" property in the application's configuration. If the property is not
+	 * present or set to false, the info contributor will be disabled. The order of the
+	 * info contributor is set to the default order.
+	 * @return the created {@link ProcessInfoContributor} instance
+	 */
+	@Bean
 	@ConditionalOnEnabledInfoContributor(value = "process", fallback = InfoContributorFallback.DISABLE)
 	@Order(DEFAULT_ORDER)
 	public ProcessInfoContributor processInfoContributor() {

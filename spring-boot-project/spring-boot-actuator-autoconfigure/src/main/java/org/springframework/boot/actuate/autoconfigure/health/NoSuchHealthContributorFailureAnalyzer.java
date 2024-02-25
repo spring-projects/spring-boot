@@ -29,13 +29,12 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 class NoSuchHealthContributorFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchHealthContributorException> {
 
 	/**
-     * Analyzes the failure caused by a NoSuchHealthContributorException.
-     * 
-     * @param rootFailure the root cause of the failure
-     * @param cause the NoSuchHealthContributorException that caused the failure
-     * @return a FailureAnalysis object containing information about the failure
-     */
-    @Override
+	 * Analyzes the failure caused by a NoSuchHealthContributorException.
+	 * @param rootFailure the root cause of the failure
+	 * @param cause the NoSuchHealthContributorException that caused the failure
+	 * @return a FailureAnalysis object containing information about the failure
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchHealthContributorException cause) {
 		return new FailureAnalysis(cause.getMessage(), "Update your application to correct the invalid configuration.\n"
 				+ "You can also set 'management.endpoint.health.validate-group-membership' to false to disable the validation.",

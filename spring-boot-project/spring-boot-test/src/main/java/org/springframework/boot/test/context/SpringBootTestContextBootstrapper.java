@@ -99,27 +99,28 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	private final AotTestAttributes aotTestAttributes;
 
 	/**
-     * Constructs a new SpringBootTestContextBootstrapper with the default AotTestAttributes instance.
-     */
-    public SpringBootTestContextBootstrapper() {
+	 * Constructs a new SpringBootTestContextBootstrapper with the default
+	 * AotTestAttributes instance.
+	 */
+	public SpringBootTestContextBootstrapper() {
 		this(AotTestAttributes.getInstance());
 	}
 
 	/**
-     * Constructs a new instance of SpringBootTestContextBootstrapper with the specified AotTestAttributes.
-     *
-     * @param aotTestAttributes the AotTestAttributes to be used for initializing the SpringBootTestContextBootstrapper
-     */
-    SpringBootTestContextBootstrapper(AotTestAttributes aotTestAttributes) {
+	 * Constructs a new instance of SpringBootTestContextBootstrapper with the specified
+	 * AotTestAttributes.
+	 * @param aotTestAttributes the AotTestAttributes to be used for initializing the
+	 * SpringBootTestContextBootstrapper
+	 */
+	SpringBootTestContextBootstrapper(AotTestAttributes aotTestAttributes) {
 		this.aotTestAttributes = aotTestAttributes;
 	}
 
 	/**
-     * Builds the test context for the SpringBootTestContextBootstrapper class.
-     * 
-     * @return The test context.
-     */
-    @Override
+	 * Builds the test context for the SpringBootTestContextBootstrapper class.
+	 * @return The test context.
+	 */
+	@Override
 	public TestContext buildTestContext() {
 		TestContext context = super.buildTestContext();
 		verifyConfiguration(context.getTestClass());
@@ -134,13 +135,13 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Resolves the context loader for the given test class and configuration attributes list.
-     * 
-     * @param testClass the test class
-     * @param configAttributesList the list of configuration attributes
-     * @return the resolved context loader
-     */
-    @Override
+	 * Resolves the context loader for the given test class and configuration attributes
+	 * list.
+	 * @param testClass the test class
+	 * @param configAttributesList the list of configuration attributes
+	 * @return the resolved context loader
+	 */
+	@Override
 	protected ContextLoader resolveContextLoader(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributesList) {
 		Class<?>[] classes = getClasses(testClass);
@@ -153,12 +154,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Adds the given classes to the configuration attributes of the context configuration.
-     * 
-     * @param configAttributes the context configuration attributes to modify
-     * @param classes the classes to add to the configuration attributes
-     */
-    private void addConfigAttributesClasses(ContextConfigurationAttributes configAttributes, Class<?>[] classes) {
+	 * Adds the given classes to the configuration attributes of the context
+	 * configuration.
+	 * @param configAttributes the context configuration attributes to modify
+	 * @param classes the classes to add to the configuration attributes
+	 */
+	private void addConfigAttributesClasses(ContextConfigurationAttributes configAttributes, Class<?>[] classes) {
 		Set<Class<?>> combined = new LinkedHashSet<>(Arrays.asList(classes));
 		if (configAttributes.getClasses() != null) {
 			combined.addAll(Arrays.asList(configAttributes.getClasses()));
@@ -167,24 +168,24 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Returns the default context loader class for the given test class.
-     * This method overrides the default implementation in the parent class.
-     * 
-     * @param testClass the test class for which the default context loader class is needed
-     * @return the default context loader class for the given test class
-     */
-    @Override
+	 * Returns the default context loader class for the given test class. This method
+	 * overrides the default implementation in the parent class.
+	 * @param testClass the test class for which the default context loader class is
+	 * needed
+	 * @return the default context loader class for the given test class
+	 */
+	@Override
 	protected Class<? extends ContextLoader> getDefaultContextLoaderClass(Class<?> testClass) {
 		return SpringBootContextLoader.class;
 	}
 
 	/**
-     * Processes the merged context configuration by modifying it based on the web environment and property source properties.
-     * 
-     * @param mergedConfig the merged context configuration to be processed
-     * @return the modified merged context configuration
-     */
-    @Override
+	 * Processes the merged context configuration by modifying it based on the web
+	 * environment and property source properties.
+	 * @param mergedConfig the merged context configuration to be processed
+	 * @return the modified merged context configuration
+	 */
+	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(MergedContextConfiguration mergedConfig) {
 		Class<?>[] classes = getOrFindConfigurationClasses(mergedConfig);
 		List<String> propertySourceProperties = getAndProcessPropertySourceProperties(mergedConfig);
@@ -205,12 +206,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Retrieves the web application type based on the provided merged context configuration.
-     * 
-     * @param configuration the merged context configuration
-     * @return the web application type
-     */
-    private WebApplicationType getWebApplicationType(MergedContextConfiguration configuration) {
+	 * Retrieves the web application type based on the provided merged context
+	 * configuration.
+	 * @param configuration the merged context configuration
+	 * @return the web application type
+	 */
+	private WebApplicationType getWebApplicationType(MergedContextConfiguration configuration) {
 		ConfigurationPropertySource source = new MapConfigurationPropertySource(
 				TestPropertySourceUtils.convertInlinedPropertiesToMap(configuration.getPropertySourceProperties()));
 		Binder binder = new Binder(source);
@@ -219,11 +220,10 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Deduces the type of web application based on the presence of certain classes.
-     * 
-     * @return The type of web application (REACTIVE, NONE, or SERVLET)
-     */
-    private WebApplicationType deduceWebApplicationType() {
+	 * Deduces the type of web application based on the presence of certain classes.
+	 * @return The type of web application (REACTIVE, NONE, or SERVLET)
+	 */
+	private WebApplicationType deduceWebApplicationType() {
 		if (ClassUtils.isPresent(REACTIVE_WEB_ENVIRONMENT_CLASS, null)
 				&& !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)
 				&& !ClassUtils.isPresent(JERSEY_WEB_ENVIRONMENT_CLASS, null)) {
@@ -253,12 +253,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Checks if the web environment is supported for the given merged context configuration.
-     * 
-     * @param mergedConfig the merged context configuration
-     * @return true if the web environment is supported, false otherwise
-     */
-    private boolean isWebEnvironmentSupported(MergedContextConfiguration mergedConfig) {
+	 * Checks if the web environment is supported for the given merged context
+	 * configuration.
+	 * @param mergedConfig the merged context configuration
+	 * @return true if the web environment is supported, false otherwise
+	 */
+	private boolean isWebEnvironmentSupported(MergedContextConfiguration mergedConfig) {
 		Class<?> testClass = mergedConfig.getTestClass();
 		ContextHierarchy hierarchy = AnnotationUtils.getAnnotation(testClass, ContextHierarchy.class);
 		if (hierarchy == null || hierarchy.value().length == 0) {
@@ -269,13 +269,14 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Checks if the given {@link MergedContextConfiguration} is from the specified {@link ContextConfiguration}.
-     * 
-     * @param candidateConfig the candidate {@link MergedContextConfiguration} to check
-     * @param configuration the {@link ContextConfiguration} to compare against
-     * @return {@code true} if the candidate configuration is from the specified configuration, {@code false} otherwise
-     */
-    private boolean isFromConfiguration(MergedContextConfiguration candidateConfig,
+	 * Checks if the given {@link MergedContextConfiguration} is from the specified
+	 * {@link ContextConfiguration}.
+	 * @param candidateConfig the candidate {@link MergedContextConfiguration} to check
+	 * @param configuration the {@link ContextConfiguration} to compare against
+	 * @return {@code true} if the candidate configuration is from the specified
+	 * configuration, {@code false} otherwise
+	 */
+	private boolean isFromConfiguration(MergedContextConfiguration candidateConfig,
 			ContextConfiguration configuration) {
 		ContextConfigurationAttributes attributes = new ContextConfigurationAttributes(candidateConfig.getTestClass(),
 				configuration);
@@ -289,12 +290,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Retrieves or finds the configuration classes for the given merged context configuration.
-     * 
-     * @param mergedConfig the merged context configuration
-     * @return an array of configuration classes
-     */
-    protected Class<?>[] getOrFindConfigurationClasses(MergedContextConfiguration mergedConfig) {
+	 * Retrieves or finds the configuration classes for the given merged context
+	 * configuration.
+	 * @param mergedConfig the merged context configuration
+	 * @return an array of configuration classes
+	 */
+	protected Class<?>[] getOrFindConfigurationClasses(MergedContextConfiguration mergedConfig) {
 		Class<?>[] classes = mergedConfig.getClasses();
 		if (containsNonTestComponent(classes) || mergedConfig.hasLocations()) {
 			return classes;
@@ -305,13 +306,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Finds the configuration class for the given test class.
-     * 
-     * @param testClass the test class for which to find the configuration class
-     * @return the configuration class found
-     * @throws IllegalStateException if a configuration class cannot be found
-     */
-    private Class<?> findConfigurationClass(Class<?> testClass) {
+	 * Finds the configuration class for the given test class.
+	 * @param testClass the test class for which to find the configuration class
+	 * @return the configuration class found
+	 * @throws IllegalStateException if a configuration class cannot be found
+	 */
+	private Class<?> findConfigurationClass(Class<?> testClass) {
 		String propertyName = "%s.SpringBootConfiguration.%s"
 			.formatted(SpringBootTestContextBootstrapper.class.getName(), testClass.getName());
 		String foundClassName = this.aotTestAttributes.getString(propertyName);
@@ -326,12 +326,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Checks if the given array of classes contains any non-test component.
-     * 
-     * @param classes the array of classes to check
-     * @return {@code true} if the array contains a non-test component, {@code false} otherwise
-     */
-    private boolean containsNonTestComponent(Class<?>[] classes) {
+	 * Checks if the given array of classes contains any non-test component.
+	 * @param classes the array of classes to check
+	 * @return {@code true} if the array contains a non-test component, {@code false}
+	 * otherwise
+	 */
+	private boolean containsNonTestComponent(Class<?>[] classes) {
 		for (Class<?> candidate : classes) {
 			if (!MergedAnnotations.from(candidate, SearchStrategy.INHERITED_ANNOTATIONS)
 				.isPresent(TestConfiguration.class)) {
@@ -342,13 +342,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Merges the given head class with the existing array of classes.
-     * 
-     * @param head the class to be added at the beginning of the merged array
-     * @param existing the existing array of classes to be merged
-     * @return the merged array of classes with the head class added at the beginning
-     */
-    private Class<?>[] merge(Class<?> head, Class<?>[] existing) {
+	 * Merges the given head class with the existing array of classes.
+	 * @param head the class to be added at the beginning of the merged array
+	 * @param existing the existing array of classes to be merged
+	 * @return the merged array of classes with the head class added at the beginning
+	 */
+	private Class<?>[] merge(Class<?> head, Class<?>[] existing) {
 		Class<?>[] result = new Class<?>[existing.length + 1];
 		result[0] = head;
 		System.arraycopy(existing, 0, result, 1, existing.length);
@@ -356,12 +355,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Retrieves and processes the property source properties from the given merged context configuration.
-     * 
-     * @param mergedConfig the merged context configuration
-     * @return the list of property source properties
-     */
-    private List<String> getAndProcessPropertySourceProperties(MergedContextConfiguration mergedConfig) {
+	 * Retrieves and processes the property source properties from the given merged
+	 * context configuration.
+	 * @param mergedConfig the merged context configuration
+	 * @return the list of property source properties
+	 */
+	private List<String> getAndProcessPropertySourceProperties(MergedContextConfiguration mergedConfig) {
 		List<String> propertySourceProperties = new ArrayList<>(
 				Arrays.asList(mergedConfig.getPropertySourceProperties()));
 		String differentiator = getDifferentiatorPropertySourceProperty();
@@ -418,44 +417,44 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Retrieves the classes specified in the {@link SpringBootTest} annotation of the given test class.
-     * 
-     * @param testClass the test class to retrieve the classes from
-     * @return an array of classes specified in the {@link SpringBootTest} annotation, or null if the annotation is not present
-     */
-    protected Class<?>[] getClasses(Class<?> testClass) {
+	 * Retrieves the classes specified in the {@link SpringBootTest} annotation of the
+	 * given test class.
+	 * @param testClass the test class to retrieve the classes from
+	 * @return an array of classes specified in the {@link SpringBootTest} annotation, or
+	 * null if the annotation is not present
+	 */
+	protected Class<?>[] getClasses(Class<?> testClass) {
 		SpringBootTest annotation = getAnnotation(testClass);
 		return (annotation != null) ? annotation.classes() : null;
 	}
 
 	/**
-     * Retrieves the properties from the given test class.
-     * 
-     * @param testClass the test class to retrieve properties from
-     * @return an array of properties if the SpringBootTest annotation is present on the test class, otherwise null
-     */
-    protected String[] getProperties(Class<?> testClass) {
+	 * Retrieves the properties from the given test class.
+	 * @param testClass the test class to retrieve properties from
+	 * @return an array of properties if the SpringBootTest annotation is present on the
+	 * test class, otherwise null
+	 */
+	protected String[] getProperties(Class<?> testClass) {
 		SpringBootTest annotation = getAnnotation(testClass);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 
 	/**
-     * Retrieves the {@link SpringBootTest} annotation from the given test class.
-     * 
-     * @param testClass the test class to retrieve the annotation from
-     * @return the {@link SpringBootTest} annotation found in the test class, or null if not found
-     */
-    protected SpringBootTest getAnnotation(Class<?> testClass) {
+	 * Retrieves the {@link SpringBootTest} annotation from the given test class.
+	 * @param testClass the test class to retrieve the annotation from
+	 * @return the {@link SpringBootTest} annotation found in the test class, or null if
+	 * not found
+	 */
+	protected SpringBootTest getAnnotation(Class<?> testClass) {
 		return TestContextAnnotationUtils.findMergedAnnotation(testClass, SpringBootTest.class);
 	}
 
 	/**
-     * Verifies the configuration of the given test class.
-     * 
-     * @param testClass the test class to verify the configuration for
-     * @throws IllegalStateException if the configuration is invalid
-     */
-    protected void verifyConfiguration(Class<?> testClass) {
+	 * Verifies the configuration of the given test class.
+	 * @param testClass the test class to verify the configuration for
+	 * @throws IllegalStateException if the configuration is invalid
+	 */
+	protected void verifyConfiguration(Class<?> testClass) {
 		SpringBootTest springBootTest = getAnnotation(testClass);
 		if (springBootTest != null && isListeningOnPort(springBootTest.webEnvironment())
 				&& MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
@@ -467,12 +466,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	/**
-     * Checks if the web environment is listening on a specific port.
-     * 
-     * @param webEnvironment the web environment to check
-     * @return true if the web environment is listening on a specific port, false otherwise
-     */
-    private boolean isListeningOnPort(WebEnvironment webEnvironment) {
+	 * Checks if the web environment is listening on a specific port.
+	 * @param webEnvironment the web environment to check
+	 * @return true if the web environment is listening on a specific port, false
+	 * otherwise
+	 */
+	private boolean isListeningOnPort(WebEnvironment webEnvironment) {
 		return webEnvironment == WebEnvironment.DEFINED_PORT || webEnvironment == WebEnvironment.RANDOM_PORT;
 	}
 

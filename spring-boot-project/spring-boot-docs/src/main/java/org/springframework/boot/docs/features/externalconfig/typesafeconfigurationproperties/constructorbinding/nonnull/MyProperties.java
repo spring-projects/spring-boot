@@ -47,27 +47,25 @@ public class MyProperties {
 	}
 
 	/**
-     * Returns the remote address of the current instance.
-     *
-     * @return the remote address of the current instance
-     */
-    public InetAddress getRemoteAddress() {
+	 * Returns the remote address of the current instance.
+	 * @return the remote address of the current instance
+	 */
+	public InetAddress getRemoteAddress() {
 		return this.remoteAddress;
 	}
 
 	/**
-     * Returns the security object associated with this MyProperties instance.
-     *
-     * @return the security object
-     */
-    public Security getSecurity() {
+	 * Returns the security object associated with this MyProperties instance.
+	 * @return the security object
+	 */
+	public Security getSecurity() {
 		return this.security;
 	}
 
 	/**
-     * Security class.
-     */
-    public static class Security {
+	 * Security class.
+	 */
+	public static class Security {
 
 		private final String username;
 
@@ -76,42 +74,40 @@ public class MyProperties {
 		private final List<String> roles;
 
 		/**
-         * Constructs a new Security object with the specified username, password, and roles.
-         * 
-         * @param username the username for the security object
-         * @param password the password for the security object
-         * @param roles the roles for the security object (default value is "USER" if not specified)
-         */
-        public Security(String username, String password, @DefaultValue("USER") List<String> roles) {
+		 * Constructs a new Security object with the specified username, password, and
+		 * roles.
+		 * @param username the username for the security object
+		 * @param password the password for the security object
+		 * @param roles the roles for the security object (default value is "USER" if not
+		 * specified)
+		 */
+		public Security(String username, String password, @DefaultValue("USER") List<String> roles) {
 			this.username = username;
 			this.password = password;
 			this.roles = roles;
 		}
 
 		/**
-         * Returns the username associated with the Security object.
-         *
-         * @return the username
-         */
-        public String getUsername() {
+		 * Returns the username associated with the Security object.
+		 * @return the username
+		 */
+		public String getUsername() {
 			return this.username;
 		}
 
 		/**
-         * Returns the password of the Security object.
-         *
-         * @return the password of the Security object
-         */
-        public String getPassword() {
+		 * Returns the password of the Security object.
+		 * @return the password of the Security object
+		 */
+		public String getPassword() {
 			return this.password;
 		}
 
 		/**
-         * Returns the list of roles.
-         *
-         * @return the list of roles
-         */
-        public List<String> getRoles() {
+		 * Returns the list of roles.
+		 * @return the list of roles
+		 */
+		public List<String> getRoles() {
 			return this.roles;
 		}
 

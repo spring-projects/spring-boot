@@ -39,24 +39,24 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 	private final LibraryUpdateResolver libraryUpdateResolver;
 
 	/**
-     * Constructs a new InteractiveUpgradeResolver with the specified UserInputHandler and LibraryUpdateResolver.
-     * 
-     * @param userInputHandler the UserInputHandler to handle user input
-     * @param libraryUpdateResolver the LibraryUpdateResolver to resolve library updates
-     */
-    InteractiveUpgradeResolver(UserInputHandler userInputHandler, LibraryUpdateResolver libraryUpdateResolver) {
+	 * Constructs a new InteractiveUpgradeResolver with the specified UserInputHandler and
+	 * LibraryUpdateResolver.
+	 * @param userInputHandler the UserInputHandler to handle user input
+	 * @param libraryUpdateResolver the LibraryUpdateResolver to resolve library updates
+	 */
+	InteractiveUpgradeResolver(UserInputHandler userInputHandler, LibraryUpdateResolver libraryUpdateResolver) {
 		this.userInputHandler = userInputHandler;
 		this.libraryUpdateResolver = libraryUpdateResolver;
 	}
 
 	/**
-     * Resolves the upgrades for a collection of libraries to be upgraded, based on the available libraries.
-     * 
-     * @param librariesToUpgrade the collection of libraries to be upgraded
-     * @param libraries the collection of available libraries
-     * @return a list of Upgrade objects representing the resolved upgrades
-     */
-    @Override
+	 * Resolves the upgrades for a collection of libraries to be upgraded, based on the
+	 * available libraries.
+	 * @param librariesToUpgrade the collection of libraries to be upgraded
+	 * @param libraries the collection of available libraries
+	 * @return a list of Upgrade objects representing the resolved upgrades
+	 */
+	@Override
 	public List<Upgrade> resolveUpgrades(Collection<Library> librariesToUpgrade, Collection<Library> libraries) {
 		Map<String, Library> librariesByName = new HashMap<>();
 		for (Library library : libraries) {
@@ -68,12 +68,11 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 	}
 
 	/**
-     * Resolves the upgrade for a library with version options.
-     * 
-     * @param libraryWithVersionOptions the library with version options
-     * @return the upgrade object if a new version is selected, null otherwise
-     */
-    private Upgrade resolveUpgrade(LibraryWithVersionOptions libraryWithVersionOptions) {
+	 * Resolves the upgrade for a library with version options.
+	 * @param libraryWithVersionOptions the library with version options
+	 * @return the upgrade object if a new version is selected, null otherwise
+	 */
+	private Upgrade resolveUpgrade(LibraryWithVersionOptions libraryWithVersionOptions) {
 		if (libraryWithVersionOptions.getVersionOptions().isEmpty()) {
 			return null;
 		}

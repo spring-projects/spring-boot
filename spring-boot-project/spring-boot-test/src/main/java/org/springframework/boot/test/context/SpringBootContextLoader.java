@@ -104,53 +104,52 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	};
 
 	/**
-     * Load the application context for the given merged context configuration.
-     * 
-     * @param mergedConfig the merged context configuration
-     * @return the loaded application context
-     * @throws Exception if an error occurs during context loading
-     */
-    @Override
+	 * Load the application context for the given merged context configuration.
+	 * @param mergedConfig the merged context configuration
+	 * @return the loaded application context
+	 * @throws Exception if an error occurs during context loading
+	 */
+	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
 		return loadContext(mergedConfig, Mode.STANDARD, null);
 	}
 
 	/**
-     * Loads the application context for ahead-of-time (AOT) processing.
-     * 
-     * @param mergedConfig the merged context configuration
-     * @return the loaded application context
-     * @throws Exception if an error occurs during context loading
-     */
-    @Override
+	 * Loads the application context for ahead-of-time (AOT) processing.
+	 * @param mergedConfig the merged context configuration
+	 * @return the loaded application context
+	 * @throws Exception if an error occurs during context loading
+	 */
+	@Override
 	public ApplicationContext loadContextForAotProcessing(MergedContextConfiguration mergedConfig) throws Exception {
 		return loadContext(mergedConfig, Mode.AOT_PROCESSING, null);
 	}
 
 	/**
-     * Loads the application context for the Ahead-of-Time (AOT) runtime.
-     * 
-     * @param mergedConfig the merged context configuration
-     * @param initializer the application context initializer
-     * @return the loaded application context
-     * @throws Exception if an error occurs during context loading
-     */
-    @Override
+	 * Loads the application context for the Ahead-of-Time (AOT) runtime.
+	 * @param mergedConfig the merged context configuration
+	 * @param initializer the application context initializer
+	 * @return the loaded application context
+	 * @throws Exception if an error occurs during context loading
+	 */
+	@Override
 	public ApplicationContext loadContextForAotRuntime(MergedContextConfiguration mergedConfig,
 			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) throws Exception {
 		return loadContext(mergedConfig, Mode.AOT_RUNTIME, initializer);
 	}
 
 	/**
-     * Loads the application context based on the provided merged configuration, mode, and initializer.
-     * 
-     * @param mergedConfig The merged configuration containing classes or locations for the application context.
-     * @param mode The mode in which the application context should be loaded.
-     * @param initializer The initializer to be used for configuring the application context.
-     * @return The loaded application context.
-     * @throws Exception If an error occurs while loading the application context.
-     */
-    private ApplicationContext loadContext(MergedContextConfiguration mergedConfig, Mode mode,
+	 * Loads the application context based on the provided merged configuration, mode, and
+	 * initializer.
+	 * @param mergedConfig The merged configuration containing classes or locations for
+	 * the application context.
+	 * @param mode The mode in which the application context should be loaded.
+	 * @param initializer The initializer to be used for configuring the application
+	 * context.
+	 * @return The loaded application context.
+	 * @throws Exception If an error occurs while loading the application context.
+	 */
+	private ApplicationContext loadContext(MergedContextConfiguration mergedConfig, Mode mode,
 			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) throws Exception {
 		assertHasClassesOrLocations(mergedConfig);
 		SpringBootTestAnnotation annotation = SpringBootTestAnnotation.get(mergedConfig);
@@ -169,13 +168,14 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	/**
-     * Asserts that the given MergedContextConfiguration has either classes or locations specified.
-     * 
-     * @param mergedConfig the MergedContextConfiguration to check
-     * @throws IllegalStateException if neither classes nor locations are found in the merged configuration
-     * @since Spring 4.0.3
-     */
-    private void assertHasClassesOrLocations(MergedContextConfiguration mergedConfig) {
+	 * Asserts that the given MergedContextConfiguration has either classes or locations
+	 * specified.
+	 * @param mergedConfig the MergedContextConfiguration to check
+	 * @throws IllegalStateException if neither classes nor locations are found in the
+	 * merged configuration
+	 * @since Spring 4.0.3
+	 */
+	private void assertHasClassesOrLocations(MergedContextConfiguration mergedConfig) {
 		boolean hasClasses = !ObjectUtils.isEmpty(mergedConfig.getClasses());
 		boolean hasLocations = !ObjectUtils.isEmpty(mergedConfig.getLocations());
 		Assert.state(hasClasses || hasLocations,
@@ -185,16 +185,20 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	/**
-     * Retrieves the main method of the given merged configuration based on the specified useMainMethod flag.
-     * 
-     * @param mergedConfig The merged context configuration.
-     * @param useMainMethod The flag indicating whether to use the main method or not.
-     * @return The main method if found, otherwise null.
-     * @throws IllegalStateException if the useMainMethod flag is not compatible with @ContextHierarchy tests.
-     * @throws IllegalStateException if no @SpringBootConfiguration-annotated class is available and the useMainMethod flag is not WHEN_AVAILABLE.
-     * @throws IllegalStateException if the main method is not found on the @SpringBootConfiguration-annotated class and the useMainMethod flag is not WHEN_AVAILABLE.
-     */
-    private Method getMainMethod(MergedContextConfiguration mergedConfig, UseMainMethod useMainMethod) {
+	 * Retrieves the main method of the given merged configuration based on the specified
+	 * useMainMethod flag.
+	 * @param mergedConfig The merged context configuration.
+	 * @param useMainMethod The flag indicating whether to use the main method or not.
+	 * @return The main method if found, otherwise null.
+	 * @throws IllegalStateException if the useMainMethod flag is not compatible
+	 * with @ContextHierarchy tests.
+	 * @throws IllegalStateException if no @SpringBootConfiguration-annotated class is
+	 * available and the useMainMethod flag is not WHEN_AVAILABLE.
+	 * @throws IllegalStateException if the main method is not found on
+	 * the @SpringBootConfiguration-annotated class and the useMainMethod flag is not
+	 * WHEN_AVAILABLE.
+	 */
+	private Method getMainMethod(MergedContextConfiguration mergedConfig, UseMainMethod useMainMethod) {
 		if (useMainMethod == UseMainMethod.NEVER) {
 			return null;
 		}
@@ -224,23 +228,23 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	/**
-     * Checks if the given class is annotated with the {@link SpringBootConfiguration} annotation.
-     * 
-     * @param candidate the class to check
-     * @return {@code true} if the class is annotated with {@link SpringBootConfiguration}, {@code false} otherwise
-     */
-    private boolean isSpringBootConfiguration(Class<?> candidate) {
+	 * Checks if the given class is annotated with the {@link SpringBootConfiguration}
+	 * annotation.
+	 * @param candidate the class to check
+	 * @return {@code true} if the class is annotated with
+	 * {@link SpringBootConfiguration}, {@code false} otherwise
+	 */
+	private boolean isSpringBootConfiguration(Class<?> candidate) {
 		return MergedAnnotations.from(candidate, SearchStrategy.TYPE_HIERARCHY)
 			.isPresent(SpringBootConfiguration.class);
 	}
 
 	/**
-     * Configures the Spring application based on the merged context configuration.
-     * 
-     * @param mergedConfig the merged context configuration
-     * @param application the Spring application
-     */
-    private void configure(MergedContextConfiguration mergedConfig, SpringApplication application) {
+	 * Configures the Spring application based on the merged context configuration.
+	 * @param mergedConfig the merged context configuration
+	 * @param application the Spring application
+	 */
+	private void configure(MergedContextConfiguration mergedConfig, SpringApplication application) {
 		application.setMainApplicationClass(mergedConfig.getTestClass());
 		application.addPrimarySources(Arrays.asList(mergedConfig.getClasses()));
 		application.getSources().addAll(Arrays.asList(mergedConfig.getLocations()));
@@ -295,14 +299,13 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	/**
-     * Prepares the environment for the Spring Boot application.
-     * 
-     * @param mergedConfig The merged context configuration.
-     * @param application The Spring application.
-     * @param environment The configurable environment.
-     * @param applicationEnvironment Flag indicating if it is the application environment.
-     */
-    private void prepareEnvironment(MergedContextConfiguration mergedConfig, SpringApplication application,
+	 * Prepares the environment for the Spring Boot application.
+	 * @param mergedConfig The merged context configuration.
+	 * @param application The Spring application.
+	 * @param environment The configurable environment.
+	 * @param applicationEnvironment Flag indicating if it is the application environment.
+	 */
+	private void prepareEnvironment(MergedContextConfiguration mergedConfig, SpringApplication application,
 			ConfigurableEnvironment environment, boolean applicationEnvironment) {
 		setActiveProfiles(environment, mergedConfig.getActiveProfiles(), applicationEnvironment);
 		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
@@ -313,13 +316,13 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	/**
-     * Sets the active profiles for the given environment.
-     * 
-     * @param environment the configurable environment
-     * @param profiles the array of profiles to set as active
-     * @param applicationEnvironment flag indicating if the profiles are for the application environment
-     */
-    private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles,
+	 * Sets the active profiles for the given environment.
+	 * @param environment the configurable environment
+	 * @param profiles the array of profiles to set as active
+	 * @param applicationEnvironment flag indicating if the profiles are for the
+	 * application environment
+	 */
+	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles,
 			boolean applicationEnvironment) {
 		if (ObjectUtils.isEmpty(profiles)) {
 			return;
@@ -355,12 +358,11 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	/**
-     * Retrieves the inlined properties from the given merged context configuration.
-     * 
-     * @param mergedConfig the merged context configuration
-     * @return an array of inlined properties
-     */
-    protected String[] getInlinedProperties(MergedContextConfiguration mergedConfig) {
+	 * Retrieves the inlined properties from the given merged context configuration.
+	 * @param mergedConfig the merged context configuration
+	 * @return an array of inlined properties
+	 */
+	protected String[] getInlinedProperties(MergedContextConfiguration mergedConfig) {
 		ArrayList<String> properties = new ArrayList<>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		properties.add("spring.jmx.enabled=false");
@@ -399,21 +401,21 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	/**
-     * Determines if the given merged context configuration is for an embedded web environment.
-     * 
-     * @param mergedConfig the merged context configuration to check
-     * @return {@code true} if the web environment is embedded, {@code false} otherwise
-     */
-    private boolean isEmbeddedWebEnvironment(MergedContextConfiguration mergedConfig) {
+	 * Determines if the given merged context configuration is for an embedded web
+	 * environment.
+	 * @param mergedConfig the merged context configuration to check
+	 * @return {@code true} if the web environment is embedded, {@code false} otherwise
+	 */
+	private boolean isEmbeddedWebEnvironment(MergedContextConfiguration mergedConfig) {
 		return SpringBootTestAnnotation.get(mergedConfig).getWebEnvironment().isEmbedded();
 	}
 
 	/**
-     * Overrides the processContextConfiguration method from the superclass.
-     * 
-     * @param configAttributes the ContextConfigurationAttributes object containing the configuration attributes
-     */
-    @Override
+	 * Overrides the processContextConfiguration method from the superclass.
+	 * @param configAttributes the ContextConfigurationAttributes object containing the
+	 * configuration attributes
+	 */
+	@Override
 	public void processContextConfiguration(ContextConfigurationAttributes configAttributes) {
 		super.processContextConfiguration(configAttributes);
 		if (!configAttributes.hasResources()) {
@@ -436,27 +438,24 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	/**
-     * Returns an array of resource suffixes used by the SpringBootContextLoader.
-     * The resource suffixes are used to identify the different types of resource files
-     * that can be loaded by the SpringBootContextLoader.
-     * 
-     * The default resource suffixes are "-context.xml" and "Context.groovy".
-     * 
-     * @return an array of resource suffixes
-     */
-    @Override
+	 * Returns an array of resource suffixes used by the SpringBootContextLoader. The
+	 * resource suffixes are used to identify the different types of resource files that
+	 * can be loaded by the SpringBootContextLoader.
+	 *
+	 * The default resource suffixes are "-context.xml" and "Context.groovy".
+	 * @return an array of resource suffixes
+	 */
+	@Override
 	protected String[] getResourceSuffixes() {
 		return new String[] { "-context.xml", "Context.groovy" };
 	}
 
 	/**
-     * Returns the resource suffix.
-     * 
-     * @throws IllegalStateException if the resource suffix is not available
-     * 
-     * @return the resource suffix
-     */
-    @Override
+	 * Returns the resource suffix.
+	 * @throws IllegalStateException if the resource suffix is not available
+	 * @return the resource suffix
+	 */
+	@Override
 	protected String getResourceSuffix() {
 		throw new IllegalStateException();
 	}
@@ -492,23 +491,22 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	private static final class WebConfigurer {
 
 		/**
-         * Configures the merged context configuration and initializes the application context.
-         * 
-         * @param mergedConfig the merged context configuration
-         * @param initializers the list of application context initializers
-         */
-        void configure(MergedContextConfiguration mergedConfig, List<ApplicationContextInitializer<?>> initializers) {
+		 * Configures the merged context configuration and initializes the application
+		 * context.
+		 * @param mergedConfig the merged context configuration
+		 * @param initializers the list of application context initializers
+		 */
+		void configure(MergedContextConfiguration mergedConfig, List<ApplicationContextInitializer<?>> initializers) {
 			WebMergedContextConfiguration webMergedConfig = (WebMergedContextConfiguration) mergedConfig;
 			addMockServletContext(initializers, webMergedConfig);
 		}
 
 		/**
-         * Adds a mock ServletContext to the list of ApplicationContextInitializers.
-         * 
-         * @param initializers the list of ApplicationContextInitializers
-         * @param webMergedConfig the WebMergedContextConfiguration
-         */
-        private void addMockServletContext(List<ApplicationContextInitializer<?>> initializers,
+		 * Adds a mock ServletContext to the list of ApplicationContextInitializers.
+		 * @param initializers the list of ApplicationContextInitializers
+		 * @param webMergedConfig the WebMergedContextConfiguration
+		 */
+		private void addMockServletContext(List<ApplicationContextInitializer<?>> initializers,
 				WebMergedContextConfiguration webMergedConfig) {
 			SpringBootMockServletContext servletContext = new SpringBootMockServletContext(
 					webMergedConfig.getResourceBasePath());
@@ -528,20 +526,21 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 			private final ServletContextApplicationContextInitializer delegate;
 
 			/**
-             * Constructs a new DefensiveWebApplicationContextInitializer with the specified delegate.
-             *
-             * @param delegate the ServletContextApplicationContextInitializer delegate to be used
-             */
-            private DefensiveWebApplicationContextInitializer(ServletContextApplicationContextInitializer delegate) {
+			 * Constructs a new DefensiveWebApplicationContextInitializer with the
+			 * specified delegate.
+			 * @param delegate the ServletContextApplicationContextInitializer delegate to
+			 * be used
+			 */
+			private DefensiveWebApplicationContextInitializer(ServletContextApplicationContextInitializer delegate) {
 				this.delegate = delegate;
 			}
 
 			/**
-             * Initializes the application context.
-             * 
-             * @param applicationContext The configurable application context to be initialized.
-             */
-            @Override
+			 * Initializes the application context.
+			 * @param applicationContext The configurable application context to be
+			 * initialized.
+			 */
+			@Override
 			public void initialize(ConfigurableApplicationContext applicationContext) {
 				if (applicationContext instanceof ConfigurableWebApplicationContext webApplicationContext) {
 					this.delegate.initialize(webApplicationContext);
@@ -564,22 +563,22 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		private final MergedContextConfiguration mergedConfig;
 
 		/**
-         * Constructs a new instance of the ContextCustomizerAdapter class.
-         * 
-         * @param contextCustomizer the context customizer to be used
-         * @param mergedConfig the merged context configuration to be used
-         */
-        ContextCustomizerAdapter(ContextCustomizer contextCustomizer, MergedContextConfiguration mergedConfig) {
+		 * Constructs a new instance of the ContextCustomizerAdapter class.
+		 * @param contextCustomizer the context customizer to be used
+		 * @param mergedConfig the merged context configuration to be used
+		 */
+		ContextCustomizerAdapter(ContextCustomizer contextCustomizer, MergedContextConfiguration mergedConfig) {
 			this.contextCustomizer = contextCustomizer;
 			this.mergedConfig = mergedConfig;
 		}
 
 		/**
-         * Initializes the application context by customizing it with the provided context customizer and merged configuration.
-         * 
-         * @param applicationContext the configurable application context to be initialized
-         */
-        @Override
+		 * Initializes the application context by customizing it with the provided context
+		 * customizer and merged configuration.
+		 * @param applicationContext the configurable application context to be
+		 * initialized
+		 */
+		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			this.contextCustomizer.customizeContext(applicationContext, this.mergedConfig);
 		}
@@ -596,20 +595,20 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		private final ApplicationContext parent;
 
 		/**
-         * Constructs a new ParentContextApplicationContextInitializer with the specified parent ApplicationContext.
-         *
-         * @param parent the parent ApplicationContext
-         */
-        ParentContextApplicationContextInitializer(ApplicationContext parent) {
+		 * Constructs a new ParentContextApplicationContextInitializer with the specified
+		 * parent ApplicationContext.
+		 * @param parent the parent ApplicationContext
+		 */
+		ParentContextApplicationContextInitializer(ApplicationContext parent) {
 			this.parent = parent;
 		}
 
 		/**
-         * Initializes the configurable application context.
-         * 
-         * @param applicationContext the configurable application context to be initialized
-         */
-        @Override
+		 * Initializes the configurable application context.
+		 * @param applicationContext the configurable application context to be
+		 * initialized
+		 */
+		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			applicationContext.setParent(this.parent);
 		}
@@ -625,32 +624,30 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		private final MergedContextConfiguration mergedConfig;
 
 		/**
-         * Sets the merged configuration for the PrepareEnvironmentListener.
-         * 
-         * @param mergedConfig the merged context configuration to be set
-         */
-        PrepareEnvironmentListener(MergedContextConfiguration mergedConfig) {
+		 * Sets the merged configuration for the PrepareEnvironmentListener.
+		 * @param mergedConfig the merged context configuration to be set
+		 */
+		PrepareEnvironmentListener(MergedContextConfiguration mergedConfig) {
 			this.mergedConfig = mergedConfig;
 		}
 
 		/**
-         * Returns the order of this listener.
-         * 
-         * @return the order of this listener
-         */
-        @Override
+		 * Returns the order of this listener.
+		 * @return the order of this listener
+		 */
+		@Override
 		public int getOrder() {
 			return Ordered.HIGHEST_PRECEDENCE;
 		}
 
 		/**
-         * This method is called when the application environment is being prepared.
-         * It prepares the environment by merging the configuration, initializing the Spring application,
-         * and setting the environment.
-         * 
-         * @param event The ApplicationEnvironmentPreparedEvent object representing the event being triggered.
-         */
-        @Override
+		 * This method is called when the application environment is being prepared. It
+		 * prepares the environment by merging the configuration, initializing the Spring
+		 * application, and setting the environment.
+		 * @param event The ApplicationEnvironmentPreparedEvent object representing the
+		 * event being triggered.
+		 */
+		@Override
 		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 			prepareEnvironment(this.mergedConfig, event.getSpringApplication(), event.getEnvironment(), true);
 		}
@@ -674,13 +671,14 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		private final List<ApplicationContext> failedContexts = Collections.synchronizedList(new ArrayList<>());
 
 		/**
-         * Constructs a new ContextLoaderHook with the specified mode, initializer, and configurer.
-         * 
-         * @param mode the mode of the ContextLoaderHook
-         * @param initializer the ApplicationContextInitializer used to initialize the ConfigurableApplicationContext
-         * @param configurer the Consumer used to configure the SpringApplication
-         */
-        ContextLoaderHook(Mode mode, ApplicationContextInitializer<ConfigurableApplicationContext> initializer,
+		 * Constructs a new ContextLoaderHook with the specified mode, initializer, and
+		 * configurer.
+		 * @param mode the mode of the ContextLoaderHook
+		 * @param initializer the ApplicationContextInitializer used to initialize the
+		 * ConfigurableApplicationContext
+		 * @param configurer the Consumer used to configure the SpringApplication
+		 */
+		ContextLoaderHook(Mode mode, ApplicationContextInitializer<ConfigurableApplicationContext> initializer,
 				Consumer<SpringApplication> configurer) {
 			this.mode = mode;
 			this.initializer = initializer;
@@ -688,12 +686,11 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		}
 
 		/**
-         * Returns the SpringApplicationRunListener for the given SpringApplication.
-         * 
-         * @param application the SpringApplication instance
-         * @return the SpringApplicationRunListener instance
-         */
-        @Override
+		 * Returns the SpringApplicationRunListener for the given SpringApplication.
+		 * @param application the SpringApplication instance
+		 * @return the SpringApplicationRunListener instance
+		 */
+		@Override
 		public SpringApplicationRunListener getRunListener(SpringApplication application) {
 			return new SpringApplicationRunListener() {
 
@@ -723,13 +720,12 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		}
 
 		/**
-         * Runs the main action in the application context.
-         * 
-         * @param action the action to be executed
-         * @return the application context
-         * @throws Exception if an error occurs during execution
-         */
-        private <T> ApplicationContext runMain(Runnable action) throws Exception {
+		 * Runs the main action in the application context.
+		 * @param action the action to be executed
+		 * @return the application context
+		 * @throws Exception if an error occurs during execution
+		 */
+		private <T> ApplicationContext runMain(Runnable action) throws Exception {
 			return run(() -> {
 				action.run();
 				return null;
@@ -737,15 +733,14 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		}
 
 		/**
-         * Runs the specified action within a configurable application context.
-         * 
-         * @param action the action to be executed within the application context
-         * @return the root application context
-         * @throws Exception if an error occurs during the execution of the action
-         * @throws ContextLoadException if there is more than one failed context
-         * @throws IllegalStateException if no root application context is found
-         */
-        private ApplicationContext run(ThrowingSupplier<ConfigurableApplicationContext> action) throws Exception {
+		 * Runs the specified action within a configurable application context.
+		 * @param action the action to be executed within the application context
+		 * @return the root application context
+		 * @throws Exception if an error occurs during the execution of the action
+		 * @throws ContextLoadException if there is more than one failed context
+		 * @throws IllegalStateException if no root application context is found
+		 */
+		private ApplicationContext run(ThrowingSupplier<ConfigurableApplicationContext> action) throws Exception {
 			try {
 				ConfigurableApplicationContext context = SpringApplication.withHook(this, action);
 				if (context != null) {

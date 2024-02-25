@@ -215,11 +215,10 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	/**
-     * Returns the loader implementation used by this BuildImageMojo.
-     *
-     * @return the loader implementation used by this BuildImageMojo
-     */
-    @Override
+	 * Returns the loader implementation used by this BuildImageMojo.
+	 * @return the loader implementation used by this BuildImageMojo
+	 */
+	@Override
 	protected LoaderImplementation getLoaderImplementation() {
 		return this.loaderImplementation;
 	}
@@ -236,11 +235,10 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	/**
-     * Executes the build-image goal.
-     * 
-     * @throws MojoExecutionException if an error occurs during execution
-     */
-    @Override
+	 * Executes the build-image goal.
+	 * @throws MojoExecutionException if an error occurs during execution
+	 */
+	@Override
 	public void execute() throws MojoExecutionException {
 		if (this.project.getPackaging().equals("pom")) {
 			getLog().debug("build-image goal could not be applied to pom project.");
@@ -254,11 +252,10 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	/**
-     * Builds the image using the specified libraries and Docker configuration.
-     * 
-     * @throws MojoExecutionException if an error occurs during the build process
-     */
-    private void buildImage() throws MojoExecutionException {
+	 * Builds the image using the specified libraries and Docker configuration.
+	 * @throws MojoExecutionException if an error occurs during the build process
+	 */
+	private void buildImage() throws MojoExecutionException {
 		Libraries libraries = getLibraries(Collections.emptySet());
 		try {
 			DockerConfiguration dockerConfiguration = (this.docker != null) ? this.docker.asDockerConfiguration()
@@ -273,12 +270,11 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	/**
-     * Retrieves the build request for creating an image.
-     * 
-     * @param libraries The libraries required for the image.
-     * @return The build request for creating the image.
-     */
-    private BuildRequest getBuildRequest(Libraries libraries) {
+	 * Retrieves the build request for creating an image.
+	 * @param libraries The libraries required for the image.
+	 * @return The build request for creating the image.
+	 */
+	private BuildRequest getBuildRequest(Libraries libraries) {
 		ImagePackager imagePackager = new ImagePackager(getArchiveFile(), getBackupFile());
 		Function<Owner, TarArchive> content = (owner) -> getApplicationContent(owner, libraries, imagePackager);
 		Image image = (this.image != null) ? this.image : new Image();
@@ -313,25 +309,24 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	/**
-     * Retrieves the application content as a TarArchive.
-     * 
-     * @param owner         the owner of the application
-     * @param libraries     the libraries required by the application
-     * @param imagePackager the image packager used to package the application
-     * @return              the packaged TarArchive containing the application content
-     */
-    private TarArchive getApplicationContent(Owner owner, Libraries libraries, ImagePackager imagePackager) {
+	 * Retrieves the application content as a TarArchive.
+	 * @param owner the owner of the application
+	 * @param libraries the libraries required by the application
+	 * @param imagePackager the image packager used to package the application
+	 * @return the packaged TarArchive containing the application content
+	 */
+	private TarArchive getApplicationContent(Owner owner, Libraries libraries, ImagePackager imagePackager) {
 		ImagePackager packager = getConfiguredPackager(() -> imagePackager);
 		return new PackagedTarArchive(owner, libraries, packager);
 	}
 
 	/**
-     * Retrieves the archive file for building the image.
-     * 
-     * @return The archive file.
-     * @throws IllegalStateException if a jar or war file is required for building the image and cannot be found.
-     */
-    private File getArchiveFile() {
+	 * Retrieves the archive file for building the image.
+	 * @return The archive file.
+	 * @throws IllegalStateException if a jar or war file is required for building the
+	 * image and cannot be found.
+	 */
+	private File getArchiveFile() {
 		// We can use 'project.getArtifact().getFile()' because that was done in a
 		// forked lifecycle and is now null
 		File archiveFile = getTargetFile(this.finalName, this.classifier, this.sourceDirectory);
@@ -357,23 +352,22 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	/**
-     * Customizes the given BuildRequest by calling the customizeCreator method.
-     * 
-     * @param request the BuildRequest to be customized
-     * @return the customized BuildRequest
-     */
-    private BuildRequest customize(BuildRequest request) {
+	 * Customizes the given BuildRequest by calling the customizeCreator method.
+	 * @param request the BuildRequest to be customized
+	 * @return the customized BuildRequest
+	 */
+	private BuildRequest customize(BuildRequest request) {
 		request = customizeCreator(request);
 		return request;
 	}
 
 	/**
-     * Customizes the creator of the build request based on the Spring Boot version.
-     * 
-     * @param request the original build request
-     * @return the build request with the creator customized based on the Spring Boot version
-     */
-    private BuildRequest customizeCreator(BuildRequest request) {
+	 * Customizes the creator of the build request based on the Spring Boot version.
+	 * @param request the original build request
+	 * @return the build request with the creator customized based on the Spring Boot
+	 * version
+	 */
+	private BuildRequest customizeCreator(BuildRequest request) {
 		String springBootVersion = VersionExtractor.forClass(BuildImageMojo.class);
 		if (StringUtils.hasText(springBootVersion)) {
 			request = request.withCreator(Creator.withVersion(springBootVersion));
@@ -391,70 +385,66 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		private final Supplier<Log> log;
 
 		/**
-         * Constructs a new MojoBuildLog with the specified log supplier.
-         * 
-         * @param log the supplier of the log to be used by the MojoBuildLog
-         */
-        MojoBuildLog(Supplier<Log> log) {
+		 * Constructs a new MojoBuildLog with the specified log supplier.
+		 * @param log the supplier of the log to be used by the MojoBuildLog
+		 */
+		MojoBuildLog(Supplier<Log> log) {
 			this.log = log;
 		}
 
 		/**
-         * Logs a message to the build log.
-         * 
-         * @param message the message to be logged
-         */
-        @Override
+		 * Logs a message to the build log.
+		 * @param message the message to be logged
+		 */
+		@Override
 		protected void log(String message) {
 			this.log.get().info(message);
 		}
 
 		/**
-         * Returns a Consumer object that logs the progress of a TotalProgressEvent.
-         * 
-         * @param message the message to be logged along with the progress
-         * @return a Consumer object that logs the progress of a TotalProgressEvent
-         */
-        @Override
+		 * Returns a Consumer object that logs the progress of a TotalProgressEvent.
+		 * @param message the message to be logged along with the progress
+		 * @return a Consumer object that logs the progress of a TotalProgressEvent
+		 */
+		@Override
 		protected Consumer<TotalProgressEvent> getProgressConsumer(String message) {
 			return new ProgressLog(message);
 		}
 
 		/**
-         * ProgressLog class.
-         */
-        private class ProgressLog implements Consumer<TotalProgressEvent> {
+		 * ProgressLog class.
+		 */
+		private class ProgressLog implements Consumer<TotalProgressEvent> {
 
 			private final String message;
 
 			private long last;
 
 			/**
-             * Creates a new instance of ProgressLog with the given message and sets the current time as the last logged time.
-             * 
-             * @param message the message to be logged
-             */
-            ProgressLog(String message) {
+			 * Creates a new instance of ProgressLog with the given message and sets the
+			 * current time as the last logged time.
+			 * @param message the message to be logged
+			 */
+			ProgressLog(String message) {
 				this.message = message;
 				this.last = System.currentTimeMillis();
 			}
 
 			/**
-             * Accepts a TotalProgressEvent and logs the progress percentage.
-             * 
-             * @param progress the TotalProgressEvent object containing the progress information
-             */
-            @Override
+			 * Accepts a TotalProgressEvent and logs the progress percentage.
+			 * @param progress the TotalProgressEvent object containing the progress
+			 * information
+			 */
+			@Override
 			public void accept(TotalProgressEvent progress) {
 				log(progress.getPercent());
 			}
 
 			/**
-             * Logs the progress percentage.
-             * 
-             * @param percent the progress percentage
-             */
-            private void log(int percent) {
+			 * Logs the progress percentage.
+			 * @param percent the progress percentage
+			 */
+			private void log(int percent) {
 				if (percent == 100 || (System.currentTimeMillis() - this.last) > THRESHOLD) {
 					MojoBuildLog.this.log.get().info(this.message + " " + percent + "%");
 					this.last = System.currentTimeMillis();
@@ -479,26 +469,26 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		private final ImagePackager packager;
 
 		/**
-         * Constructs a new PackagedTarArchive object with the specified owner, libraries, and packager.
-         * 
-         * @param owner the owner of the tar archive
-         * @param libraries the libraries to be included in the tar archive
-         * @param packager the image packager to be used for packaging the tar archive
-         */
-        PackagedTarArchive(Owner owner, Libraries libraries, ImagePackager packager) {
+		 * Constructs a new PackagedTarArchive object with the specified owner, libraries,
+		 * and packager.
+		 * @param owner the owner of the tar archive
+		 * @param libraries the libraries to be included in the tar archive
+		 * @param packager the image packager to be used for packaging the tar archive
+		 */
+		PackagedTarArchive(Owner owner, Libraries libraries, ImagePackager packager) {
 			this.owner = owner;
 			this.libraries = libraries;
 			this.packager = packager;
 		}
 
 		/**
-         * Writes the packaged tar archive to the specified output stream.
-         * 
-         * @param outputStream the output stream to write the tar archive to
-         * @throws IOException if an I/O error occurs while writing the tar archive
-         * @throws RuntimeException if an error occurs while packaging the archive for the image
-         */
-        @Override
+		 * Writes the packaged tar archive to the specified output stream.
+		 * @param outputStream the output stream to write the tar archive to
+		 * @throws IOException if an I/O error occurs while writing the tar archive
+		 * @throws RuntimeException if an error occurs while packaging the archive for the
+		 * image
+		 */
+		@Override
 		public void writeTo(OutputStream outputStream) throws IOException {
 			TarArchiveOutputStream tar = new TarArchiveOutputStream(outputStream);
 			tar.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
@@ -512,14 +502,15 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		}
 
 		/**
-         * Writes a ZipEntry to a TarArchiveOutputStream.
-         * 
-         * @param jarEntry The ZipEntry to be written.
-         * @param entryWriter The EntryWriter used to write the contents of the ZipEntry to the TarArchiveOutputStream.
-         * @param tar The TarArchiveOutputStream to write the ZipEntry to.
-         * @throws IllegalStateException If an IOException occurs during the writing process.
-         */
-        private void write(ZipEntry jarEntry, EntryWriter entryWriter, TarArchiveOutputStream tar) {
+		 * Writes a ZipEntry to a TarArchiveOutputStream.
+		 * @param jarEntry The ZipEntry to be written.
+		 * @param entryWriter The EntryWriter used to write the contents of the ZipEntry
+		 * to the TarArchiveOutputStream.
+		 * @param tar The TarArchiveOutputStream to write the ZipEntry to.
+		 * @throws IllegalStateException If an IOException occurs during the writing
+		 * process.
+		 */
+		private void write(ZipEntry jarEntry, EntryWriter entryWriter, TarArchiveOutputStream tar) {
 			try {
 				TarArchiveEntry tarEntry = convert(jarEntry);
 				tar.putArchiveEntry(tarEntry);
@@ -534,12 +525,11 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		}
 
 		/**
-         * Converts a ZipEntry to a TarArchiveEntry.
-         * 
-         * @param entry the ZipEntry to convert
-         * @return the converted TarArchiveEntry
-         */
-        private TarArchiveEntry convert(ZipEntry entry) {
+		 * Converts a ZipEntry to a TarArchiveEntry.
+		 * @param entry the ZipEntry to convert
+		 * @return the converted TarArchiveEntry
+		 */
+		private TarArchiveEntry convert(ZipEntry entry) {
 			byte linkFlag = (entry.isDirectory()) ? TarConstants.LF_DIR : TarConstants.LF_NORMAL;
 			TarArchiveEntry tarEntry = new TarArchiveEntry(entry.getName(), linkFlag, true);
 			tarEntry.setUserId(this.owner.getUid());

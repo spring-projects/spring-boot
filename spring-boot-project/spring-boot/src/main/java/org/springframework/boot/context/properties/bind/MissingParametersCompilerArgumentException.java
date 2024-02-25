@@ -27,22 +27,22 @@ import java.util.Set;
 class MissingParametersCompilerArgumentException extends RuntimeException {
 
 	/**
-     * Constructs a new MissingParametersCompilerArgumentException with the specified faulty classes.
-     *
-     * @param faultyClasses the set of faulty classes causing the exception
-     */
-    MissingParametersCompilerArgumentException(Set<Class<?>> faultyClasses) {
+	 * Constructs a new MissingParametersCompilerArgumentException with the specified
+	 * faulty classes.
+	 * @param faultyClasses the set of faulty classes causing the exception
+	 */
+	MissingParametersCompilerArgumentException(Set<Class<?>> faultyClasses) {
 		super(message(faultyClasses));
 	}
 
 	/**
-     * Generates a message indicating the classes that were compiled without the -parameters flag,
-     * which is required for constructor binding in a native image.
-     *
-     * @param faultyClasses a set of classes that were compiled without the -parameters flag
-     * @return a formatted message listing the faulty classes
-     */
-    private static String message(Set<Class<?>> faultyClasses) {
+	 * Generates a message indicating the classes that were compiled without the
+	 * -parameters flag, which is required for constructor binding in a native image.
+	 * @param faultyClasses a set of classes that were compiled without the -parameters
+	 * flag
+	 * @return a formatted message listing the faulty classes
+	 */
+	private static String message(Set<Class<?>> faultyClasses) {
 		StringBuilder message = new StringBuilder(String.format(
 				"Constructor binding in a native image requires compilation with -parameters but the following classes were compiled without it:%n"));
 		for (Class<?> faultyClass : faultyClasses) {

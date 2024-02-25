@@ -94,13 +94,12 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Retrieves the configuration names from the given binder.
-     * 
-     * @param binder the binder to retrieve the configuration names from
-     * @return an array of configuration names
-     * @throws IllegalArgumentException if any of the configuration names are invalid
-     */
-    private String[] getConfigNames(Binder binder) {
+	 * Retrieves the configuration names from the given binder.
+	 * @param binder the binder to retrieve the configuration names from
+	 * @return an array of configuration names
+	 * @throws IllegalArgumentException if any of the configuration names are invalid
+	 */
+	private String[] getConfigNames(Binder binder) {
 		String[] configNames = binder.bind(CONFIG_NAME_PROPERTY, String[].class).orElse(DEFAULT_CONFIG_NAMES);
 		for (String configName : configNames) {
 			validateConfigName(configName);
@@ -109,62 +108,58 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Validates the configuration name to ensure it does not contain the '*' character.
-     * 
-     * @param name the configuration name to be validated
-     * @throws IllegalStateException if the configuration name contains the '*' character
-     */
-    private void validateConfigName(String name) {
+	 * Validates the configuration name to ensure it does not contain the '*' character.
+	 * @param name the configuration name to be validated
+	 * @throws IllegalStateException if the configuration name contains the '*' character
+	 */
+	private void validateConfigName(String name) {
 		Assert.state(!name.contains("*"), () -> "Config name '" + name + "' cannot contain '*'");
 	}
 
 	/**
-     * Returns the order value for this object.
-     * 
-     * The order value indicates the position of this object in the execution order.
-     * A lower value means a higher priority.
-     * 
-     * @return the order value for this object
-     */
-    @Override
+	 * Returns the order value for this object.
+	 *
+	 * The order value indicates the position of this object in the execution order. A
+	 * lower value means a higher priority.
+	 * @return the order value for this object
+	 */
+	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE;
 	}
 
 	/**
-     * Determines if the given ConfigDataLocation is resolvable.
-     *
-     * @param context  the ConfigDataLocationResolverContext
-     * @param location the ConfigDataLocation to check
-     * @return true if the location is resolvable, false otherwise
-     */
-    @Override
+	 * Determines if the given ConfigDataLocation is resolvable.
+	 * @param context the ConfigDataLocationResolverContext
+	 * @param location the ConfigDataLocation to check
+	 * @return true if the location is resolvable, false otherwise
+	 */
+	@Override
 	public boolean isResolvable(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
 		return true;
 	}
 
 	/**
-     * Resolves the given ConfigDataLocation by splitting it into individual references and resolving each reference.
-     * 
-     * @param context the ConfigDataLocationResolverContext
-     * @param location the ConfigDataLocation to resolve
-     * @return a list of resolved StandardConfigDataResource objects
-     * @throws ConfigDataNotFoundException if the ConfigDataLocation cannot be resolved
-     */
-    @Override
+	 * Resolves the given ConfigDataLocation by splitting it into individual references
+	 * and resolving each reference.
+	 * @param context the ConfigDataLocationResolverContext
+	 * @param location the ConfigDataLocation to resolve
+	 * @return a list of resolved StandardConfigDataResource objects
+	 * @throws ConfigDataNotFoundException if the ConfigDataLocation cannot be resolved
+	 */
+	@Override
 	public List<StandardConfigDataResource> resolve(ConfigDataLocationResolverContext context,
 			ConfigDataLocation location) throws ConfigDataNotFoundException {
 		return resolve(getReferences(context, location.split()));
 	}
 
 	/**
-     * Retrieves the set of references for the given array of config data locations.
-     * 
-     * @param context The context for resolving config data locations.
-     * @param configDataLocations The array of config data locations.
-     * @return The set of references for the given config data locations.
-     */
-    private Set<StandardConfigDataReference> getReferences(ConfigDataLocationResolverContext context,
+	 * Retrieves the set of references for the given array of config data locations.
+	 * @param context The context for resolving config data locations.
+	 * @param configDataLocations The array of config data locations.
+	 * @return The set of references for the given config data locations.
+	 */
+	private Set<StandardConfigDataReference> getReferences(ConfigDataLocationResolverContext context,
 			ConfigDataLocation[] configDataLocations) {
 		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
 		for (ConfigDataLocation configDataLocation : configDataLocations) {
@@ -174,14 +169,14 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Retrieves the set of references for a given config data location.
-     * 
-     * @param context The context for resolving the config data location.
-     * @param configDataLocation The config data location to retrieve references for.
-     * @return The set of references for the config data location.
-     * @throws IllegalStateException if unable to load config data from the specified location.
-     */
-    private Set<StandardConfigDataReference> getReferences(ConfigDataLocationResolverContext context,
+	 * Retrieves the set of references for a given config data location.
+	 * @param context The context for resolving the config data location.
+	 * @param configDataLocation The config data location to retrieve references for.
+	 * @return The set of references for the config data location.
+	 * @throws IllegalStateException if unable to load config data from the specified
+	 * location.
+	 */
+	private Set<StandardConfigDataReference> getReferences(ConfigDataLocationResolverContext context,
 			ConfigDataLocation configDataLocation) {
 		String resourceLocation = getResourceLocation(context, configDataLocation);
 		try {
@@ -196,28 +191,28 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Resolves the profile-specific configuration data resources for the given location and profiles.
-     * 
-     * @param context The context for resolving the configuration data location.
-     * @param location The configuration data location to resolve.
-     * @param profiles The profiles for which to resolve the configuration data.
-     * @return The list of resolved profile-specific configuration data resources.
-     */
-    @Override
+	 * Resolves the profile-specific configuration data resources for the given location
+	 * and profiles.
+	 * @param context The context for resolving the configuration data location.
+	 * @param location The configuration data location to resolve.
+	 * @param profiles The profiles for which to resolve the configuration data.
+	 * @return The list of resolved profile-specific configuration data resources.
+	 */
+	@Override
 	public List<StandardConfigDataResource> resolveProfileSpecific(ConfigDataLocationResolverContext context,
 			ConfigDataLocation location, Profiles profiles) {
 		return resolve(getProfileSpecificReferences(context, location.split(), profiles));
 	}
 
 	/**
-     * Retrieves the profile-specific references for the given config data locations and profiles.
-     * 
-     * @param context The context for resolving config data locations.
-     * @param configDataLocations The array of config data locations.
-     * @param profiles The profiles for which to retrieve the references.
-     * @return The set of profile-specific references.
-     */
-    private Set<StandardConfigDataReference> getProfileSpecificReferences(ConfigDataLocationResolverContext context,
+	 * Retrieves the profile-specific references for the given config data locations and
+	 * profiles.
+	 * @param context The context for resolving config data locations.
+	 * @param configDataLocations The array of config data locations.
+	 * @param profiles The profiles for which to retrieve the references.
+	 * @return The set of profile-specific references.
+	 */
+	private Set<StandardConfigDataReference> getProfileSpecificReferences(ConfigDataLocationResolverContext context,
 			ConfigDataLocation[] configDataLocations, Profiles profiles) {
 		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
 		for (String profile : profiles) {
@@ -230,13 +225,12 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Returns the resource location for the given {@link ConfigDataLocation}.
-     * 
-     * @param context The {@link ConfigDataLocationResolverContext} object.
-     * @param configDataLocation The {@link ConfigDataLocation} object.
-     * @return The resource location.
-     */
-    private String getResourceLocation(ConfigDataLocationResolverContext context,
+	 * Returns the resource location for the given {@link ConfigDataLocation}.
+	 * @param context The {@link ConfigDataLocationResolverContext} object.
+	 * @param configDataLocation The {@link ConfigDataLocation} object.
+	 * @return The resource location.
+	 */
+	private String getResourceLocation(ConfigDataLocationResolverContext context,
 			ConfigDataLocation configDataLocation) {
 		String resourceLocation = configDataLocation.getNonPrefixedValue(PREFIX);
 		boolean isAbsolute = resourceLocation.startsWith("/") || URL_PREFIX.matcher(resourceLocation).matches();
@@ -253,16 +247,17 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Retrieves the set of references for the given config data location, resource location, and profile.
-     * If the resource location is a directory, it calls the getReferencesForDirectory method to retrieve the references.
-     * Otherwise, it calls the getReferencesForFile method.
-     * 
-     * @param configDataLocation The config data location to retrieve references for.
-     * @param resourceLocation The resource location to retrieve references for.
-     * @param profile The profile to retrieve references for.
-     * @return The set of references for the given config data location, resource location, and profile.
-     */
-    private Set<StandardConfigDataReference> getReferences(ConfigDataLocation configDataLocation,
+	 * Retrieves the set of references for the given config data location, resource
+	 * location, and profile. If the resource location is a directory, it calls the
+	 * getReferencesForDirectory method to retrieve the references. Otherwise, it calls
+	 * the getReferencesForFile method.
+	 * @param configDataLocation The config data location to retrieve references for.
+	 * @param resourceLocation The resource location to retrieve references for.
+	 * @param profile The profile to retrieve references for.
+	 * @return The set of references for the given config data location, resource
+	 * location, and profile.
+	 */
+	private Set<StandardConfigDataReference> getReferences(ConfigDataLocation configDataLocation,
 			String resourceLocation, String profile) {
 		if (isDirectory(resourceLocation)) {
 			return getReferencesForDirectory(configDataLocation, resourceLocation, profile);
@@ -271,14 +266,17 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Retrieves the set of references for a given directory in a specific configuration data location and profile.
-     * 
-     * @param configDataLocation The configuration data location to retrieve references from.
-     * @param directory The directory within the configuration data location to retrieve references for.
-     * @param profile The profile to filter the references by.
-     * @return The set of references for the specified directory, configuration data location, and profile.
-     */
-    private Set<StandardConfigDataReference> getReferencesForDirectory(ConfigDataLocation configDataLocation,
+	 * Retrieves the set of references for a given directory in a specific configuration
+	 * data location and profile.
+	 * @param configDataLocation The configuration data location to retrieve references
+	 * from.
+	 * @param directory The directory within the configuration data location to retrieve
+	 * references for.
+	 * @param profile The profile to filter the references by.
+	 * @return The set of references for the specified directory, configuration data
+	 * location, and profile.
+	 */
+	private Set<StandardConfigDataReference> getReferencesForDirectory(ConfigDataLocation configDataLocation,
 			String directory, String profile) {
 		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
 		for (String name : this.configNames) {
@@ -290,15 +288,15 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Retrieves a deque of StandardConfigDataReference objects for a given config name, config data location, directory, and profile.
-     * 
-     * @param name the name of the config
-     * @param configDataLocation the config data location
-     * @param directory the directory of the config
-     * @param profile the profile of the config
-     * @return a deque of StandardConfigDataReference objects
-     */
-    private Deque<StandardConfigDataReference> getReferencesForConfigName(String name,
+	 * Retrieves a deque of StandardConfigDataReference objects for a given config name,
+	 * config data location, directory, and profile.
+	 * @param name the name of the config
+	 * @param configDataLocation the config data location
+	 * @param directory the directory of the config
+	 * @param profile the profile of the config
+	 * @return a deque of StandardConfigDataReference objects
+	 */
+	private Deque<StandardConfigDataReference> getReferencesForConfigName(String name,
 			ConfigDataLocation configDataLocation, String directory, String profile) {
 		Deque<StandardConfigDataReference> references = new ArrayDeque<>();
 		for (PropertySourceLoader propertySourceLoader : this.propertySourceLoaders) {
@@ -314,16 +312,18 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Retrieves the set of references for a given file in a specific configuration data location and profile.
-     * 
-     * @param configDataLocation The configuration data location to search for the file.
-     * @param file The file to retrieve references for.
-     * @param profile The profile to filter the references by.
-     * @return The set of references for the given file.
-     * @throws IllegalStateException If the file extension is not known to any PropertySourceLoader.
-     * @throws IllegalArgumentException If the location is meant to reference a directory but does not end in '/' or File.separator.
-     */
-    private Set<StandardConfigDataReference> getReferencesForFile(ConfigDataLocation configDataLocation, String file,
+	 * Retrieves the set of references for a given file in a specific configuration data
+	 * location and profile.
+	 * @param configDataLocation The configuration data location to search for the file.
+	 * @param file The file to retrieve references for.
+	 * @param profile The profile to filter the references by.
+	 * @return The set of references for the given file.
+	 * @throws IllegalStateException If the file extension is not known to any
+	 * PropertySourceLoader.
+	 * @throws IllegalArgumentException If the location is meant to reference a directory
+	 * but does not end in '/' or File.separator.
+	 */
+	private Set<StandardConfigDataReference> getReferencesForFile(ConfigDataLocation configDataLocation, String file,
 			String profile) {
 		Matcher extensionHintMatcher = EXTENSION_HINT_PATTERN.matcher(file);
 		boolean extensionHintLocation = extensionHintMatcher.matches();
@@ -347,13 +347,12 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Returns the loadable file extension for the given loader and file.
-     * 
-     * @param loader the property source loader
-     * @param file the file name
-     * @return the loadable file extension, or null if not found
-     */
-    private String getLoadableFileExtension(PropertySourceLoader loader, String file) {
+	 * Returns the loadable file extension for the given loader and file.
+	 * @param loader the property source loader
+	 * @param file the file name
+	 * @return the loadable file extension, or null if not found
+	 */
+	private String getLoadableFileExtension(PropertySourceLoader loader, String file) {
 		for (String fileExtension : loader.getFileExtensions()) {
 			if (StringUtils.endsWithIgnoreCase(file, fileExtension)) {
 				return fileExtension;
@@ -363,22 +362,21 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Checks if the given resource location is a directory.
-     * 
-     * @param resourceLocation the resource location to check
-     * @return true if the resource location is a directory, false otherwise
-     */
-    private boolean isDirectory(String resourceLocation) {
+	 * Checks if the given resource location is a directory.
+	 * @param resourceLocation the resource location to check
+	 * @return true if the resource location is a directory, false otherwise
+	 */
+	private boolean isDirectory(String resourceLocation) {
 		return resourceLocation.endsWith("/") || resourceLocation.endsWith(File.separator);
 	}
 
 	/**
-     * Resolves a set of StandardConfigDataReferences to a list of StandardConfigDataResources.
-     * 
-     * @param references the set of StandardConfigDataReferences to resolve
-     * @return a list of resolved StandardConfigDataResources
-     */
-    private List<StandardConfigDataResource> resolve(Set<StandardConfigDataReference> references) {
+	 * Resolves a set of StandardConfigDataReferences to a list of
+	 * StandardConfigDataResources.
+	 * @param references the set of StandardConfigDataReferences to resolve
+	 * @return a list of resolved StandardConfigDataResources
+	 */
+	private List<StandardConfigDataResource> resolve(Set<StandardConfigDataReference> references) {
 		List<StandardConfigDataResource> resolved = new ArrayList<>();
 		for (StandardConfigDataReference reference : references) {
 			resolved.addAll(resolve(reference));
@@ -390,12 +388,13 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Resolves empty directories from a set of StandardConfigDataReferences.
-     * 
-     * @param references the set of StandardConfigDataReferences to resolve empty directories from
-     * @return a collection of StandardConfigDataResources representing the resolved empty directories
-     */
-    private Collection<StandardConfigDataResource> resolveEmptyDirectories(
+	 * Resolves empty directories from a set of StandardConfigDataReferences.
+	 * @param references the set of StandardConfigDataReferences to resolve empty
+	 * directories from
+	 * @return a collection of StandardConfigDataResources representing the resolved empty
+	 * directories
+	 */
+	private Collection<StandardConfigDataResource> resolveEmptyDirectories(
 			Set<StandardConfigDataReference> references) {
 		Set<StandardConfigDataResource> empty = new LinkedHashSet<>();
 		for (StandardConfigDataReference reference : references) {
@@ -407,14 +406,16 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Resolves empty directories based on the given StandardConfigDataReference.
-     * If the resource location is not a pattern, it calls resolveNonPatternEmptyDirectories method.
-     * If the resource location is a pattern, it calls resolvePatternEmptyDirectories method.
-     * 
-     * @param reference the StandardConfigDataReference object containing the resource location
-     * @return a Set of StandardConfigDataResource objects representing the resolved empty directories
-     */
-    private Set<StandardConfigDataResource> resolveEmptyDirectories(StandardConfigDataReference reference) {
+	 * Resolves empty directories based on the given StandardConfigDataReference. If the
+	 * resource location is not a pattern, it calls resolveNonPatternEmptyDirectories
+	 * method. If the resource location is a pattern, it calls
+	 * resolvePatternEmptyDirectories method.
+	 * @param reference the StandardConfigDataReference object containing the resource
+	 * location
+	 * @return a Set of StandardConfigDataResource objects representing the resolved empty
+	 * directories
+	 */
+	private Set<StandardConfigDataResource> resolveEmptyDirectories(StandardConfigDataReference reference) {
 		if (!this.resourceLoader.isPattern(reference.getResourceLocation())) {
 			return resolveNonPatternEmptyDirectories(reference);
 		}
@@ -422,25 +423,28 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Resolves non-pattern empty directories based on the given reference.
-     * 
-     * @param reference the reference to the standard config data
-     * @return a set of StandardConfigDataResource objects representing the resolved non-pattern empty directories
-     */
-    private Set<StandardConfigDataResource> resolveNonPatternEmptyDirectories(StandardConfigDataReference reference) {
+	 * Resolves non-pattern empty directories based on the given reference.
+	 * @param reference the reference to the standard config data
+	 * @return a set of StandardConfigDataResource objects representing the resolved
+	 * non-pattern empty directories
+	 */
+	private Set<StandardConfigDataResource> resolveNonPatternEmptyDirectories(StandardConfigDataReference reference) {
 		Resource resource = this.resourceLoader.getResource(reference.getDirectory());
 		return (resource instanceof ClassPathResource || !resource.exists()) ? Collections.emptySet()
 				: Collections.singleton(new StandardConfigDataResource(reference, resource, true));
 	}
 
 	/**
-     * Resolves the pattern for empty directories in the given {@link StandardConfigDataReference}.
-     * 
-     * @param reference the {@link StandardConfigDataReference} containing the directory pattern
-     * @return a {@link Set} of {@link StandardConfigDataResource} representing the empty directories
-     * @throws ConfigDataLocationNotFoundException if the location is not optional and no subdirectories are found
-     */
-    private Set<StandardConfigDataResource> resolvePatternEmptyDirectories(StandardConfigDataReference reference) {
+	 * Resolves the pattern for empty directories in the given
+	 * {@link StandardConfigDataReference}.
+	 * @param reference the {@link StandardConfigDataReference} containing the directory
+	 * pattern
+	 * @return a {@link Set} of {@link StandardConfigDataResource} representing the empty
+	 * directories
+	 * @throws ConfigDataLocationNotFoundException if the location is not optional and no
+	 * subdirectories are found
+	 */
+	private Set<StandardConfigDataResource> resolvePatternEmptyDirectories(StandardConfigDataReference reference) {
 		Resource[] subdirectories = this.resourceLoader.getResources(reference.getDirectory(), ResourceType.DIRECTORY);
 		ConfigDataLocation location = reference.getConfigDataLocation();
 		if (!location.isOptional() && ObjectUtils.isEmpty(subdirectories)) {
@@ -454,14 +458,15 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Resolves the given StandardConfigDataReference to a list of StandardConfigDataResource objects.
-     * If the resource location is not a pattern, it calls the resolveNonPattern method.
-     * If the resource location is a pattern, it calls the resolvePattern method.
-     * 
-     * @param reference The StandardConfigDataReference to be resolved.
-     * @return A list of StandardConfigDataResource objects resolved from the given reference.
-     */
-    private List<StandardConfigDataResource> resolve(StandardConfigDataReference reference) {
+	 * Resolves the given StandardConfigDataReference to a list of
+	 * StandardConfigDataResource objects. If the resource location is not a pattern, it
+	 * calls the resolveNonPattern method. If the resource location is a pattern, it calls
+	 * the resolvePattern method.
+	 * @param reference The StandardConfigDataReference to be resolved.
+	 * @return A list of StandardConfigDataResource objects resolved from the given
+	 * reference.
+	 */
+	private List<StandardConfigDataResource> resolve(StandardConfigDataReference reference) {
 		if (!this.resourceLoader.isPattern(reference.getResourceLocation())) {
 			return resolveNonPattern(reference);
 		}
@@ -469,12 +474,13 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Resolves a non-pattern StandardConfigDataReference to a list of StandardConfigDataResource objects.
-     * 
-     * @param reference The StandardConfigDataReference to resolve.
-     * @return A list of StandardConfigDataResource objects representing the resolved resources.
-     */
-    private List<StandardConfigDataResource> resolveNonPattern(StandardConfigDataReference reference) {
+	 * Resolves a non-pattern StandardConfigDataReference to a list of
+	 * StandardConfigDataResource objects.
+	 * @param reference The StandardConfigDataReference to resolve.
+	 * @return A list of StandardConfigDataResource objects representing the resolved
+	 * resources.
+	 */
+	private List<StandardConfigDataResource> resolveNonPattern(StandardConfigDataReference reference) {
 		Resource resource = this.resourceLoader.getResource(reference.getResourceLocation());
 		if (!resource.exists() && reference.isSkippable()) {
 			logSkippingResource(reference);
@@ -484,12 +490,13 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Resolves the pattern specified in the given StandardConfigDataReference and returns a list of resolved StandardConfigDataResource objects.
-     * 
-     * @param reference The StandardConfigDataReference object containing the pattern to be resolved.
-     * @return A list of resolved StandardConfigDataResource objects.
-     */
-    private List<StandardConfigDataResource> resolvePattern(StandardConfigDataReference reference) {
+	 * Resolves the pattern specified in the given StandardConfigDataReference and returns
+	 * a list of resolved StandardConfigDataResource objects.
+	 * @param reference The StandardConfigDataReference object containing the pattern to
+	 * be resolved.
+	 * @return A list of resolved StandardConfigDataResource objects.
+	 */
+	private List<StandardConfigDataResource> resolvePattern(StandardConfigDataReference reference) {
 		List<StandardConfigDataResource> resolved = new ArrayList<>();
 		for (Resource resource : this.resourceLoader.getResources(reference.getResourceLocation(), ResourceType.FILE)) {
 			if (!resource.exists() && reference.isSkippable()) {
@@ -503,22 +510,21 @@ public class StandardConfigDataLocationResolver
 	}
 
 	/**
-     * Logs the skipping of a missing resource.
-     * 
-     * @param reference the reference to the missing resource
-     */
-    private void logSkippingResource(StandardConfigDataReference reference) {
+	 * Logs the skipping of a missing resource.
+	 * @param reference the reference to the missing resource
+	 */
+	private void logSkippingResource(StandardConfigDataReference reference) {
 		this.logger.trace(LogMessage.format("Skipping missing resource %s", reference));
 	}
 
 	/**
-     * Creates a new StandardConfigDataResource object with the given reference and resource.
-     * 
-     * @param reference the reference to the config data
-     * @param resource the resource containing the config data
-     * @return a new StandardConfigDataResource object
-     */
-    private StandardConfigDataResource createConfigResourceLocation(StandardConfigDataReference reference,
+	 * Creates a new StandardConfigDataResource object with the given reference and
+	 * resource.
+	 * @param reference the reference to the config data
+	 * @param resource the resource containing the config data
+	 * @return a new StandardConfigDataResource object
+	 */
+	private StandardConfigDataResource createConfigResourceLocation(StandardConfigDataReference reference,
 			Resource resource) {
 		return new StandardConfigDataResource(reference, resource);
 	}

@@ -34,11 +34,11 @@ public final class ServiceLevelObjectiveBoundary {
 	private final MeterValue value;
 
 	/**
-     * Creates a new instance of ServiceLevelObjectiveBoundary with the specified MeterValue.
-     * 
-     * @param value the MeterValue to set for the ServiceLevelObjectiveBoundary
-     */
-    ServiceLevelObjectiveBoundary(MeterValue value) {
+	 * Creates a new instance of ServiceLevelObjectiveBoundary with the specified
+	 * MeterValue.
+	 * @param value the MeterValue to set for the ServiceLevelObjectiveBoundary
+	 */
+	ServiceLevelObjectiveBoundary(MeterValue value) {
 		this.value = value;
 	}
 

@@ -30,11 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MyRuntimeHintsTests {
 
 	/**
-     * Test method to verify the registration of hints in the runtime.
-     * 
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
+	 * Test method to verify the registration of hints in the runtime.
+	 * @throws Exception if an error occurs during the test
+	 */
+	@Test
 	void shouldRegisterHints() {
 		RuntimeHints hints = new RuntimeHints();
 		new MyRuntimeHints().registerHints(hints, getClass().getClassLoader());

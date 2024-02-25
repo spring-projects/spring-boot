@@ -50,69 +50,65 @@ public class DocumentPluginGoals extends DefaultTask {
 	private Map<String, String> goalSections;
 
 	/**
-     * Returns the output directory.
-     *
-     * @return the output directory
-     */
-    @OutputDirectory
+	 * Returns the output directory.
+	 * @return the output directory
+	 */
+	@OutputDirectory
 	public File getOutputDir() {
 		return this.outputDir;
 	}
 
 	/**
-     * Sets the output directory for the DocumentPluginGoals class.
-     * 
-     * @param outputDir the output directory to be set
-     */
-    public void setOutputDir(File outputDir) {
+	 * Sets the output directory for the DocumentPluginGoals class.
+	 * @param outputDir the output directory to be set
+	 */
+	public void setOutputDir(File outputDir) {
 		this.outputDir = outputDir;
 	}
 
 	/**
-     * Retrieves the goal sections of the DocumentPluginGoals class.
-     * 
-     * @return A map containing the goal sections, where the key is the section name and the value is the section content.
-     */
-    @Input
+	 * Retrieves the goal sections of the DocumentPluginGoals class.
+	 * @return A map containing the goal sections, where the key is the section name and
+	 * the value is the section content.
+	 */
+	@Input
 	public Map<String, String> getGoalSections() {
 		return this.goalSections;
 	}
 
 	/**
-     * Sets the goal sections for the DocumentPluginGoals class.
-     * 
-     * @param goalSections a map containing the goal sections to be set
-     */
-    public void setGoalSections(Map<String, String> goalSections) {
+	 * Sets the goal sections for the DocumentPluginGoals class.
+	 * @param goalSections a map containing the goal sections to be set
+	 */
+	public void setGoalSections(Map<String, String> goalSections) {
 		this.goalSections = goalSections;
 	}
 
 	/**
-     * Returns the pluginXml file.
-     *
-     * @return the pluginXml file
-     */
-    @InputFile
+	 * Returns the pluginXml file.
+	 * @return the pluginXml file
+	 */
+	@InputFile
 	public File getPluginXml() {
 		return this.pluginXml;
 	}
 
 	/**
-     * Sets the pluginXml file for the DocumentPluginGoals class.
-     * 
-     * @param pluginXml the pluginXml file to be set
-     */
-    public void setPluginXml(File pluginXml) {
+	 * Sets the pluginXml file for the DocumentPluginGoals class.
+	 * @param pluginXml the pluginXml file to be set
+	 */
+	public void setPluginXml(File pluginXml) {
 		this.pluginXml = pluginXml;
 	}
 
 	/**
-     * Generates Javadoc style documentation for the method "documentPluginGoals" in the "DocumentPluginGoals" class.
-     * This method is responsible for parsing the plugin XML file, writing an overview of the plugin, and documenting each mojo in the plugin.
-     *
-     * @throws IOException if an I/O error occurs while parsing the plugin XML file or writing the documentation.
-     */
-    @TaskAction
+	 * Generates Javadoc style documentation for the method "documentPluginGoals" in the
+	 * "DocumentPluginGoals" class. This method is responsible for parsing the plugin XML
+	 * file, writing an overview of the plugin, and documenting each mojo in the plugin.
+	 * @throws IOException if an I/O error occurs while parsing the plugin XML file or
+	 * writing the documentation.
+	 */
+	@TaskAction
 	public void documentPluginGoals() throws IOException {
 		Plugin plugin = this.parser.parse(this.pluginXml);
 		writeOverview(plugin);
@@ -122,12 +118,11 @@ public class DocumentPluginGoals extends DefaultTask {
 	}
 
 	/**
-     * Writes the overview of the plugin.
-     * 
-     * @param plugin the plugin for which the overview is to be written
-     * @throws IOException if an I/O error occurs while writing the overview
-     */
-    private void writeOverview(Plugin plugin) throws IOException {
+	 * Writes the overview of the plugin.
+	 * @param plugin the plugin for which the overview is to be written
+	 * @throws IOException if an I/O error occurs while writing the overview
+	 */
+	private void writeOverview(Plugin plugin) throws IOException {
 		try (PrintWriter writer = new PrintWriter(new FileWriter(new File(this.outputDir, "overview.adoc")))) {
 			writer.println("[cols=\"1,3\"]");
 			writer.println("|===");
@@ -143,13 +138,12 @@ public class DocumentPluginGoals extends DefaultTask {
 	}
 
 	/**
-     * Generates a documentation file for a Mojo of a Plugin.
-     * 
-     * @param plugin The Plugin to which the Mojo belongs.
-     * @param mojo The Mojo for which the documentation is generated.
-     * @throws IOException If an I/O error occurs while writing the documentation file.
-     */
-    private void documentMojo(Plugin plugin, Mojo mojo) throws IOException {
+	 * Generates a documentation file for a Mojo of a Plugin.
+	 * @param plugin The Plugin to which the Mojo belongs.
+	 * @param mojo The Mojo for which the documentation is generated.
+	 * @throws IOException If an I/O error occurs while writing the documentation file.
+	 */
+	private void documentMojo(Plugin plugin, Mojo mojo) throws IOException {
 		try (PrintWriter writer = new PrintWriter(new FileWriter(new File(this.outputDir, mojo.getGoal() + ".adoc")))) {
 			String sectionId = goalSectionId(mojo);
 			writer.println();
@@ -188,13 +182,12 @@ public class DocumentPluginGoals extends DefaultTask {
 	}
 
 	/**
-     * Returns the section ID for the given Mojo goal.
-     * 
-     * @param mojo The Mojo object representing the goal.
-     * @return The section ID for the goal.
-     * @throws IllegalStateException If the goal has not been assigned to a section.
-     */
-    private String goalSectionId(Mojo mojo) {
+	 * Returns the section ID for the given Mojo goal.
+	 * @param mojo The Mojo object representing the goal.
+	 * @return The section ID for the goal.
+	 * @throws IllegalStateException If the goal has not been assigned to a section.
+	 */
+	private String goalSectionId(Mojo mojo) {
 		String goalSection = this.goalSections.get(mojo.getGoal());
 		if (goalSection == null) {
 			throw new IllegalStateException("Goal '" + mojo.getGoal() + "' has not be assigned to a section");
@@ -204,13 +197,12 @@ public class DocumentPluginGoals extends DefaultTask {
 	}
 
 	/**
-     * Writes a parameters table to the given PrintWriter.
-     * 
-     * @param writer           the PrintWriter to write the table to
-     * @param detailsSectionId the ID of the details section
-     * @param parameters       the list of parameters to include in the table
-     */
-    private void writeParametersTable(PrintWriter writer, String detailsSectionId, List<Parameter> parameters) {
+	 * Writes a parameters table to the given PrintWriter.
+	 * @param writer the PrintWriter to write the table to
+	 * @param detailsSectionId the ID of the details section
+	 * @param parameters the list of parameters to include in the table
+	 */
+	private void writeParametersTable(PrintWriter writer, String detailsSectionId, List<Parameter> parameters) {
 		writer.println("[cols=\"3,2,3\"]");
 		writer.println("|===");
 		writer.println("| Name | Type | Default");
@@ -232,13 +224,12 @@ public class DocumentPluginGoals extends DefaultTask {
 	}
 
 	/**
-     * Writes the parameter details to the given PrintWriter.
-     *
-     * @param writer     the PrintWriter to write the details to
-     * @param parameters the list of parameters to write
-     * @param sectionId  the section ID to use for the parameter details
-     */
-    private void writeParameterDetails(PrintWriter writer, List<Parameter> parameters, String sectionId) {
+	 * Writes the parameter details to the given PrintWriter.
+	 * @param writer the PrintWriter to write the details to
+	 * @param parameters the list of parameters to write
+	 * @param sectionId the section ID to use for the parameter details
+	 */
+	private void writeParameterDetails(PrintWriter writer, List<Parameter> parameters, String sectionId) {
 		for (Parameter parameter : parameters) {
 			String name = parameter.getName();
 			writer.println();
@@ -260,12 +251,11 @@ public class DocumentPluginGoals extends DefaultTask {
 	}
 
 	/**
-     * Generates a parameter ID based on the given name.
-     * 
-     * @param name the name of the parameter
-     * @return the generated parameter ID
-     */
-    private String parameterId(String name) {
+	 * Generates a parameter ID based on the given name.
+	 * @param name the name of the parameter
+	 * @return the generated parameter ID
+	 */
+	private String parameterId(String name) {
 		StringBuilder id = new StringBuilder(name.length() + 4);
 		for (char c : name.toCharArray()) {
 			if (Character.isLowerCase(c)) {
@@ -280,26 +270,24 @@ public class DocumentPluginGoals extends DefaultTask {
 	}
 
 	/**
-     * Writes the detail information to the given PrintWriter.
-     * 
-     * @param writer the PrintWriter to write the detail information to
-     * @param name the name of the detail
-     * @param value the value of the detail
-     */
-    private void writeDetail(PrintWriter writer, String name, String value) {
+	 * Writes the detail information to the given PrintWriter.
+	 * @param writer the PrintWriter to write the detail information to
+	 * @param name the name of the detail
+	 * @param value the value of the detail
+	 */
+	private void writeDetail(PrintWriter writer, String name, String value) {
 		writer.printf("| %s%n", name);
 		writer.printf("| `%s`%n", value);
 		writer.println();
 	}
 
 	/**
-     * Writes an optional detail to the given PrintWriter.
-     * 
-     * @param writer the PrintWriter to write to
-     * @param name the name of the detail
-     * @param value the value of the detail (can be null)
-     */
-    private void writeOptionalDetail(PrintWriter writer, String name, String value) {
+	 * Writes an optional detail to the given PrintWriter.
+	 * @param writer the PrintWriter to write to
+	 * @param name the name of the detail
+	 * @param value the value of the detail (can be null)
+	 */
+	private void writeOptionalDetail(PrintWriter writer, String name, String value) {
 		writer.printf("| %s%n", name);
 		if (value != null) {
 			writer.printf("| `%s`%n", value);
@@ -311,12 +299,11 @@ public class DocumentPluginGoals extends DefaultTask {
 	}
 
 	/**
-     * Returns the short type name of a given name.
-     * 
-     * @param name the name to get the short type name from
-     * @return the short type name
-     */
-    private String shortTypeName(String name) {
+	 * Returns the short type name of a given name.
+	 * @param name the name to get the short type name from
+	 * @return the short type name
+	 */
+	private String shortTypeName(String name) {
 		if (name.lastIndexOf('.') >= 0) {
 			name = name.substring(name.lastIndexOf('.') + 1);
 		}
@@ -327,23 +314,22 @@ public class DocumentPluginGoals extends DefaultTask {
 	}
 
 	/**
-     * Generates a Javadoc link for the given type name.
-     * 
-     * @param name the name of the type
-     * @return the Javadoc link for the type
-     */
-    private String typeNameToJavadocLink(String name) {
+	 * Generates a Javadoc link for the given type name.
+	 * @param name the name of the type
+	 * @return the Javadoc link for the type
+	 */
+	private String typeNameToJavadocLink(String name) {
 		return typeNameToJavadocLink(name, name);
 	}
 
 	/**
-     * Generates a Javadoc link for the given type name.
-     * 
-     * @param shortName the short name of the type
-     * @param name the fully qualified name of the type
-     * @return the Javadoc link for the type name, or the short name if no link is available
-     */
-    private String typeNameToJavadocLink(String shortName, String name) {
+	 * Generates a Javadoc link for the given type name.
+	 * @param shortName the short name of the type
+	 * @param name the fully qualified name of the type
+	 * @return the Javadoc link for the type name, or the short name if no link is
+	 * available
+	 */
+	private String typeNameToJavadocLink(String shortName, String name) {
 		if (name.startsWith("org.springframework.boot.maven")) {
 			return "{spring-boot-docs}/maven-plugin/api/" + typeNameToJavadocPath(name) + ".html[" + shortName + "]";
 		}
@@ -354,12 +340,11 @@ public class DocumentPluginGoals extends DefaultTask {
 	}
 
 	/**
-     * Converts a type name to a Javadoc path.
-     * 
-     * @param name the type name to convert
-     * @return the Javadoc path
-     */
-    private String typeNameToJavadocPath(String name) {
+	 * Converts a type name to a Javadoc path.
+	 * @param name the type name to convert
+	 * @return the Javadoc path
+	 */
+	private String typeNameToJavadocPath(String name) {
 		return name.replace(".", "/").replace("$", ".");
 	}
 

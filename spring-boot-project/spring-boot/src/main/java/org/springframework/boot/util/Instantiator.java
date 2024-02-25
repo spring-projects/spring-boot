@@ -84,12 +84,11 @@ public class Instantiator<T> {
 	}
 
 	/**
-     * Returns a map of available parameters for instantiation.
-     * 
-     * @param availableParameters the consumer to add available parameters
-     * @return an unmodifiable map of available parameters
-     */
-    private Map<Class<?>, Function<Class<?>, Object>> getAvailableParameters(
+	 * Returns a map of available parameters for instantiation.
+	 * @param availableParameters the consumer to add available parameters
+	 * @return an unmodifiable map of available parameters
+	 */
+	private Map<Class<?>, Function<Class<?>, Object>> getAvailableParameters(
 			Consumer<AvailableParameters> availableParameters) {
 		Map<Class<?>, Function<Class<?>, Object>> result = new LinkedHashMap<>();
 		availableParameters.accept(new AvailableParameters() {
@@ -143,24 +142,24 @@ public class Instantiator<T> {
 	}
 
 	/**
-     * Instantiates a list of objects using the given stream of type suppliers.
-     * 
-     * @param typeSuppliers the stream of type suppliers
-     * @return a list of instantiated objects
-     */
-    private List<T> instantiate(Stream<TypeSupplier> typeSuppliers) {
+	 * Instantiates a list of objects using the given stream of type suppliers.
+	 * @param typeSuppliers the stream of type suppliers
+	 * @return a list of instantiated objects
+	 */
+	private List<T> instantiate(Stream<TypeSupplier> typeSuppliers) {
 		return typeSuppliers.map(this::instantiate).sorted(AnnotationAwareOrderComparator.INSTANCE).toList();
 	}
 
 	/**
-     * Instantiates an object of type T using the provided TypeSupplier.
-     * 
-     * @param typeSupplier the TypeSupplier used to retrieve the type to be instantiated
-     * @return an object of type T instantiated using the provided TypeSupplier, or null if an exception occurred
-     * @throws IllegalArgumentException if the retrieved type is not assignable to the declared type T
-     * @throws Exception if an exception occurs during the instantiation process
-     */
-    private T instantiate(TypeSupplier typeSupplier) {
+	 * Instantiates an object of type T using the provided TypeSupplier.
+	 * @param typeSupplier the TypeSupplier used to retrieve the type to be instantiated
+	 * @return an object of type T instantiated using the provided TypeSupplier, or null
+	 * if an exception occurred
+	 * @throws IllegalArgumentException if the retrieved type is not assignable to the
+	 * declared type T
+	 * @throws Exception if an exception occurs during the instantiation process
+	 */
+	private T instantiate(TypeSupplier typeSupplier) {
 		try {
 			Class<?> type = typeSupplier.get();
 			Assert.isAssignable(this.type, type);
@@ -173,14 +172,13 @@ public class Instantiator<T> {
 	}
 
 	/**
-     * Instantiates an object of the specified type using reflection.
-     * 
-     * @param type the class of the object to be instantiated
-     * @return the instantiated object
-     * @throws Exception if an error occurs during instantiation
-     * @throws IllegalAccessException if the class has no suitable constructor
-     */
-    @SuppressWarnings("unchecked")
+	 * Instantiates an object of the specified type using reflection.
+	 * @param type the class of the object to be instantiated
+	 * @return the instantiated object
+	 * @throws Exception if an error occurs during instantiation
+	 * @throws IllegalAccessException if the class has no suitable constructor
+	 */
+	@SuppressWarnings("unchecked")
 	private T instantiate(Class<?> type) throws Exception {
 		Constructor<?>[] constructors = type.getDeclaredConstructors();
 		Arrays.sort(constructors, CONSTRUCTOR_COMPARATOR);
@@ -195,12 +193,12 @@ public class Instantiator<T> {
 	}
 
 	/**
-     * Retrieves the arguments for a given array of parameter types.
-     * 
-     * @param parameterTypes the array of parameter types
-     * @return an array of arguments corresponding to the parameter types, or null if any parameter type is not available
-     */
-    private Object[] getArgs(Class<?>[] parameterTypes) {
+	 * Retrieves the arguments for a given array of parameter types.
+	 * @param parameterTypes the array of parameter types
+	 * @return an array of arguments corresponding to the parameter types, or null if any
+	 * parameter type is not available
+	 */
+	private Object[] getArgs(Class<?>[] parameterTypes) {
 		Object[] args = new Object[parameterTypes.length];
 		for (int i = 0; i < parameterTypes.length; i++) {
 			Function<Class<?>, Object> parameter = getAvailableParameter(parameterTypes[i]);
@@ -213,12 +211,12 @@ public class Instantiator<T> {
 	}
 
 	/**
-     * Returns the available parameter for the given parameter type.
-     * 
-     * @param parameterType the type of the parameter
-     * @return the available parameter as a Function<Class<?>, Object> or null if not found
-     */
-    private Function<Class<?>, Object> getAvailableParameter(Class<?> parameterType) {
+	 * Returns the available parameter for the given parameter type.
+	 * @param parameterType the type of the parameter
+	 * @return the available parameter as a Function<Class<?>, Object> or null if not
+	 * found
+	 */
+	private Function<Class<?>, Object> getAvailableParameter(Class<?> parameterType) {
 		for (Map.Entry<Class<?>, Function<Class<?>, Object>> entry : this.availableParameters.entrySet()) {
 			if (entry.getKey().isAssignableFrom(parameterType)) {
 				return entry.getValue();
@@ -261,22 +259,21 @@ public class Instantiator<T> {
 			return new TypeSupplier() {
 
 				/**
-     * Returns the name of the Instantiator.
-     *
-     * @return the name of the Instantiator
-     */
-    @Override
+				 * Returns the name of the Instantiator.
+				 * @return the name of the Instantiator
+				 */
+				@Override
 				public String getName() {
 					return name;
 				}
 
 				/**
-     * Retrieves the class object for the specified class name using the provided class loader.
-     * 
-     * @return the class object for the specified class name
-     * @throws ClassNotFoundException if the class cannot be found
-     */
-    @Override
+				 * Retrieves the class object for the specified class name using the
+				 * provided class loader.
+				 * @return the class object for the specified class name
+				 * @throws ClassNotFoundException if the class cannot be found
+				 */
+				@Override
 				public Class<?> get() throws ClassNotFoundException {
 					return ClassUtils.forName(name, classLoader);
 				}
@@ -288,22 +285,20 @@ public class Instantiator<T> {
 			return new TypeSupplier() {
 
 				/**
-     * Returns the name of the type.
-     * 
-     * @return the name of the type
-     */
-    @Override
+				 * Returns the name of the type.
+				 * @return the name of the type
+				 */
+				@Override
 				public String getName() {
 					return type.getName();
 				}
 
 				/**
-     * Returns the class object of the type specified.
-     * 
-     * @return the class object of the type specified
-     * @throws ClassNotFoundException if the class cannot be found
-     */
-    @Override
+				 * Returns the class object of the type specified.
+				 * @return the class object of the type specified
+				 * @throws ClassNotFoundException if the class cannot be found
+				 */
+				@Override
 				public Class<?> get() throws ClassNotFoundException {
 					return type;
 				}

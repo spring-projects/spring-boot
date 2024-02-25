@@ -61,14 +61,14 @@ public enum ManagementPortType {
 	}
 
 	/**
-     * Retrieves the port property value from the given environment object.
-     * The property key is constructed by concatenating the provided prefix with the string "port".
-     * 
-     * @param environment the environment object containing the properties
-     * @param prefix the prefix to be concatenated with "port" to form the property key
-     * @return the port property value as an Integer, or null if the property is not found or is not of type Integer
-     */
-    private static Integer getPortProperty(Environment environment, String prefix) {
+	 * Retrieves the port property value from the given environment object. The property
+	 * key is constructed by concatenating the provided prefix with the string "port".
+	 * @param environment the environment object containing the properties
+	 * @param prefix the prefix to be concatenated with "port" to form the property key
+	 * @return the port property value as an Integer, or null if the property is not found
+	 * or is not of type Integer
+	 */
+	private static Integer getPortProperty(Environment environment, String prefix) {
 		return environment.getProperty(prefix + "port", Integer.class);
 	}
 

@@ -28,20 +28,18 @@ public class UserNameNotFoundException extends RuntimeException {
 	private final String username;
 
 	/**
-     * Constructs a new UserNameNotFoundException with the specified username.
-     * 
-     * @param username the username that caused the exception
-     */
-    public UserNameNotFoundException(String username) {
+	 * Constructs a new UserNameNotFoundException with the specified username.
+	 * @param username the username that caused the exception
+	 */
+	public UserNameNotFoundException(String username) {
 		this.username = username;
 	}
 
 	/**
-     * Returns the username associated with the exception.
-     *
-     * @return the username associated with the exception
-     */
-    public String getUsername() {
+	 * Returns the username associated with the exception.
+	 * @return the username associated with the exception
+	 */
+	public String getUsername() {
 		return this.username;
 	}
 

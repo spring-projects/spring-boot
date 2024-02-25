@@ -50,18 +50,18 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 	private ResourceLoader resourceLoader = new DefaultResourceLoader(null);
 
 	/**
-     * Constructs a new MustacheResourceTemplateLoader.
-     */
-    public MustacheResourceTemplateLoader() {
+	 * Constructs a new MustacheResourceTemplateLoader.
+	 */
+	public MustacheResourceTemplateLoader() {
 	}
 
 	/**
-     * Constructs a new MustacheResourceTemplateLoader with the specified prefix and suffix.
-     * 
-     * @param prefix the prefix used to locate the template resources
-     * @param suffix the suffix used to locate the template resources
-     */
-    public MustacheResourceTemplateLoader(String prefix, String suffix) {
+	 * Constructs a new MustacheResourceTemplateLoader with the specified prefix and
+	 * suffix.
+	 * @param prefix the prefix used to locate the template resources
+	 * @param suffix the suffix used to locate the template resources
+	 */
+	public MustacheResourceTemplateLoader(String prefix, String suffix) {
 		this.prefix = prefix;
 		this.suffix = suffix;
 	}
@@ -84,13 +84,12 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 	}
 
 	/**
-     * Retrieves a template file as a Reader object.
-     * 
-     * @param name the name of the template file
-     * @return a Reader object representing the template file
-     * @throws Exception if an error occurs while retrieving the template file
-     */
-    @Override
+	 * Retrieves a template file as a Reader object.
+	 * @param name the name of the template file
+	 * @return a Reader object representing the template file
+	 * @throws Exception if an error occurs while retrieving the template file
+	 */
+	@Override
 	public Reader getTemplate(String name) throws Exception {
 		return new InputStreamReader(this.resourceLoader.getResource(this.prefix + name + this.suffix).getInputStream(),
 				this.charSet);

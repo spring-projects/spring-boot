@@ -39,22 +39,23 @@ public class MappingsEndpoint {
 	private final ApplicationContext context;
 
 	/**
-     * Constructs a new MappingsEndpoint with the specified collection of MappingDescriptionProviders and ApplicationContext.
-     * 
-     * @param descriptionProviders the collection of MappingDescriptionProviders to be used by this MappingsEndpoint
-     * @param context the ApplicationContext to be used by this MappingsEndpoint
-     */
-    public MappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders, ApplicationContext context) {
+	 * Constructs a new MappingsEndpoint with the specified collection of
+	 * MappingDescriptionProviders and ApplicationContext.
+	 * @param descriptionProviders the collection of MappingDescriptionProviders to be
+	 * used by this MappingsEndpoint
+	 * @param context the ApplicationContext to be used by this MappingsEndpoint
+	 */
+	public MappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders, ApplicationContext context) {
 		this.descriptionProviders = descriptionProviders;
 		this.context = context;
 	}
 
 	/**
-     * Retrieves the mappings for the application.
-     * 
-     * @return The application mappings descriptor containing the mappings for each context.
-     */
-    @ReadOperation
+	 * Retrieves the mappings for the application.
+	 * @return The application mappings descriptor containing the mappings for each
+	 * context.
+	 */
+	@ReadOperation
 	public ApplicationMappingsDescriptor mappings() {
 		ApplicationContext target = this.context;
 		Map<String, ContextMappingsDescriptor> contextMappings = new HashMap<>();
@@ -66,12 +67,13 @@ public class MappingsEndpoint {
 	}
 
 	/**
-     * Returns the mappings for the given application context.
-     * 
-     * @param applicationContext the application context for which to retrieve the mappings
-     * @return the context mappings descriptor containing the mappings and the parent context ID if applicable
-     */
-    private ContextMappingsDescriptor mappingsForContext(ApplicationContext applicationContext) {
+	 * Returns the mappings for the given application context.
+	 * @param applicationContext the application context for which to retrieve the
+	 * mappings
+	 * @return the context mappings descriptor containing the mappings and the parent
+	 * context ID if applicable
+	 */
+	private ContextMappingsDescriptor mappingsForContext(ApplicationContext applicationContext) {
 		Map<String, Object> mappings = new HashMap<>();
 		this.descriptionProviders.forEach(
 				(provider) -> mappings.put(provider.getMappingName(), provider.describeMappings(applicationContext)));
@@ -87,20 +89,21 @@ public class MappingsEndpoint {
 		private final Map<String, ContextMappingsDescriptor> contextMappings;
 
 		/**
-         * Constructs a new ApplicationMappingsDescriptor with the specified context mappings.
-         *
-         * @param contextMappings the map of context mappings
-         */
-        private ApplicationMappingsDescriptor(Map<String, ContextMappingsDescriptor> contextMappings) {
+		 * Constructs a new ApplicationMappingsDescriptor with the specified context
+		 * mappings.
+		 * @param contextMappings the map of context mappings
+		 */
+		private ApplicationMappingsDescriptor(Map<String, ContextMappingsDescriptor> contextMappings) {
 			this.contextMappings = contextMappings;
 		}
 
 		/**
-         * Returns the map of contexts and their corresponding ContextMappingsDescriptor objects.
-         * 
-         * @return the map of contexts and their corresponding ContextMappingsDescriptor objects
-         */
-        public Map<String, ContextMappingsDescriptor> getContexts() {
+		 * Returns the map of contexts and their corresponding ContextMappingsDescriptor
+		 * objects.
+		 * @return the map of contexts and their corresponding ContextMappingsDescriptor
+		 * objects
+		 */
+		public Map<String, ContextMappingsDescriptor> getContexts() {
 			return this.contextMappings;
 		}
 
@@ -116,31 +119,30 @@ public class MappingsEndpoint {
 		private final String parentId;
 
 		/**
-         * Constructs a new ContextMappingsDescriptor with the specified mappings and parentId.
-         * 
-         * @param mappings the mappings to be set for the descriptor
-         * @param parentId the parentId to be set for the descriptor
-         */
-        private ContextMappingsDescriptor(Map<String, Object> mappings, String parentId) {
+		 * Constructs a new ContextMappingsDescriptor with the specified mappings and
+		 * parentId.
+		 * @param mappings the mappings to be set for the descriptor
+		 * @param parentId the parentId to be set for the descriptor
+		 */
+		private ContextMappingsDescriptor(Map<String, Object> mappings, String parentId) {
 			this.mappings = mappings;
 			this.parentId = parentId;
 		}
 
 		/**
-         * Returns the parent ID of the ContextMappingsDescriptor.
-         * 
-         * @return the parent ID of the ContextMappingsDescriptor
-         */
-        public String getParentId() {
+		 * Returns the parent ID of the ContextMappingsDescriptor.
+		 * @return the parent ID of the ContextMappingsDescriptor
+		 */
+		public String getParentId() {
 			return this.parentId;
 		}
 
 		/**
-         * Returns the mappings stored in the ContextMappingsDescriptor object.
-         *
-         * @return a Map containing the mappings, where the keys are of type String and the values are of type Object.
-         */
-        public Map<String, Object> getMappings() {
+		 * Returns the mappings stored in the ContextMappingsDescriptor object.
+		 * @return a Map containing the mappings, where the keys are of type String and
+		 * the values are of type Object.
+		 */
+		public Map<String, Object> getMappings() {
 			return this.mappings;
 		}
 

@@ -27,9 +27,9 @@ import org.springframework.stereotype.Component;
 public class MyJerseyConfig extends ResourceConfig {
 
 	/**
-     * This method is used to register the MyEndpoint class in the Jersey configuration.
-     */
-    public MyJerseyConfig() {
+	 * This method is used to register the MyEndpoint class in the Jersey configuration.
+	 */
+	public MyJerseyConfig() {
 		register(MyEndpoint.class);
 	}
 

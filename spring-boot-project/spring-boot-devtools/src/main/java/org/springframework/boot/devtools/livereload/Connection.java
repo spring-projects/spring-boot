@@ -91,11 +91,10 @@ class Connection {
 	}
 
 	/**
-     * Runs the WebSocket connection.
-     * 
-     * @throws Exception if an error occurs during the WebSocket connection.
-     */
-    private void runWebSocket() throws Exception {
+	 * Runs the WebSocket connection.
+	 * @throws Exception if an error occurs during the WebSocket connection.
+	 */
+	private void runWebSocket() throws Exception {
 		this.webSocket = true;
 		String accept = getWebsocketAcceptResponse();
 		this.outputStream.writeHeaders("HTTP/1.1 101 Switching Protocols", "Upgrade: websocket", "Connection: Upgrade",
@@ -109,20 +108,20 @@ class Connection {
 	}
 
 	/**
-     * Reads a WebSocket frame from the input stream and handles it accordingly.
-     * If the frame type is PING, a PONG frame is written back to the output stream.
-     * If the frame type is CLOSE, a ConnectionClosedException is thrown.
-     * If the frame type is TEXT, a debug log message is generated.
-     * If the frame type is unexpected, an IOException is thrown.
-     * If a SocketTimeoutException occurs, a PING frame is written back to the output stream,
-     * followed by reading a PONG frame from the input stream. If no PONG frame is received,
-     * an IllegalStateException is thrown.
-     *
-     * @throws IOException if an I/O error occurs while reading or writing the WebSocket frame
-     * @throws ConnectionClosedException if the WebSocket connection is closed
-     * @throws IllegalStateException if no PONG frame is received after sending a PING frame
-     */
-    private void readWebSocketFrame() throws IOException {
+	 * Reads a WebSocket frame from the input stream and handles it accordingly. If the
+	 * frame type is PING, a PONG frame is written back to the output stream. If the frame
+	 * type is CLOSE, a ConnectionClosedException is thrown. If the frame type is TEXT, a
+	 * debug log message is generated. If the frame type is unexpected, an IOException is
+	 * thrown. If a SocketTimeoutException occurs, a PING frame is written back to the
+	 * output stream, followed by reading a PONG frame from the input stream. If no PONG
+	 * frame is received, an IllegalStateException is thrown.
+	 * @throws IOException if an I/O error occurs while reading or writing the WebSocket
+	 * frame
+	 * @throws ConnectionClosedException if the WebSocket connection is closed
+	 * @throws IllegalStateException if no PONG frame is received after sending a PING
+	 * frame
+	 */
+	private void readWebSocketFrame() throws IOException {
 		try {
 			Frame frame = Frame.read(this.inputStream);
 			if (frame.getType() == Frame.Type.PING) {
@@ -159,22 +158,20 @@ class Connection {
 	}
 
 	/**
-     * Writes a WebSocket frame to the output stream.
-     * 
-     * @param frame the WebSocket frame to be written
-     * @throws IOException if an I/O error occurs while writing the frame
-     */
-    private void writeWebSocketFrame(Frame frame) throws IOException {
+	 * Writes a WebSocket frame to the output stream.
+	 * @param frame the WebSocket frame to be written
+	 * @throws IOException if an I/O error occurs while writing the frame
+	 */
+	private void writeWebSocketFrame(Frame frame) throws IOException {
 		frame.write(this.outputStream);
 	}
 
 	/**
-     * Generates the WebSocket accept response for the connection.
-     * 
-     * @return the WebSocket accept response as a string
-     * @throws NoSuchAlgorithmException if the SHA-1 algorithm is not available
-     */
-    private String getWebsocketAcceptResponse() throws NoSuchAlgorithmException {
+	 * Generates the WebSocket accept response for the connection.
+	 * @return the WebSocket accept response as a string
+	 * @throws NoSuchAlgorithmException if the SHA-1 algorithm is not available
+	 */
+	private String getWebsocketAcceptResponse() throws NoSuchAlgorithmException {
 		Matcher matcher = WEBSOCKET_KEY_PATTERN.matcher(this.header);
 		Assert.state(matcher.find(), "No Sec-WebSocket-Key");
 		String response = matcher.group(1).trim() + WEBSOCKET_GUID;

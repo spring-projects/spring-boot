@@ -46,11 +46,11 @@ public class RequestMappingConditionsDescription {
 	private final List<MediaTypeExpressionDescription> produces;
 
 	/**
-     * Constructs a new RequestMappingConditionsDescription object based on the given RequestMappingInfo.
-     * 
-     * @param requestMapping the RequestMappingInfo object to extract conditions from
-     */
-    RequestMappingConditionsDescription(RequestMappingInfo requestMapping) {
+	 * Constructs a new RequestMappingConditionsDescription object based on the given
+	 * RequestMappingInfo.
+	 * @param requestMapping the RequestMappingInfo object to extract conditions from
+	 */
+	RequestMappingConditionsDescription(RequestMappingInfo requestMapping) {
 		this.consumes = requestMapping.getConsumesCondition()
 			.getExpressions()
 			.stream()
@@ -76,68 +76,67 @@ public class RequestMappingConditionsDescription {
 	}
 
 	/**
-     * Extracts the path patterns from the given RequestMappingInfo object.
-     * 
-     * @param requestMapping the RequestMappingInfo object to extract path patterns from
-     * @return a Set of String containing the extracted path patterns
-     */
-    private Set<String> extractPathPatterns(RequestMappingInfo requestMapping) {
+	 * Extracts the path patterns from the given RequestMappingInfo object.
+	 * @param requestMapping the RequestMappingInfo object to extract path patterns from
+	 * @return a Set of String containing the extracted path patterns
+	 */
+	private Set<String> extractPathPatterns(RequestMappingInfo requestMapping) {
 		PatternsRequestCondition patternsCondition = requestMapping.getPatternsCondition();
 		return (patternsCondition != null) ? patternsCondition.getPatterns()
 				: requestMapping.getPathPatternsCondition().getPatternValues();
 	}
 
 	/**
-     * Returns the list of media type expressions that specify the media types that can be consumed by the request.
-     *
-     * @return the list of media type expressions that specify the media types that can be consumed by the request
-     */
-    public List<MediaTypeExpressionDescription> getConsumes() {
+	 * Returns the list of media type expressions that specify the media types that can be
+	 * consumed by the request.
+	 * @return the list of media type expressions that specify the media types that can be
+	 * consumed by the request
+	 */
+	public List<MediaTypeExpressionDescription> getConsumes() {
 		return this.consumes;
 	}
 
 	/**
-     * Returns the list of headers associated with this RequestMappingConditionsDescription object.
-     *
-     * @return the list of headers
-     */
-    public List<NameValueExpressionDescription> getHeaders() {
+	 * Returns the list of headers associated with this
+	 * RequestMappingConditionsDescription object.
+	 * @return the list of headers
+	 */
+	public List<NameValueExpressionDescription> getHeaders() {
 		return this.headers;
 	}
 
 	/**
-     * Returns the set of request methods associated with this RequestMappingConditionsDescription.
-     *
-     * @return the set of request methods
-     */
-    public Set<RequestMethod> getMethods() {
+	 * Returns the set of request methods associated with this
+	 * RequestMappingConditionsDescription.
+	 * @return the set of request methods
+	 */
+	public Set<RequestMethod> getMethods() {
 		return this.methods;
 	}
 
 	/**
-     * Returns the list of NameValueExpressionDescription objects representing the parameters.
-     *
-     * @return the list of parameters
-     */
-    public List<NameValueExpressionDescription> getParams() {
+	 * Returns the list of NameValueExpressionDescription objects representing the
+	 * parameters.
+	 * @return the list of parameters
+	 */
+	public List<NameValueExpressionDescription> getParams() {
 		return this.params;
 	}
 
 	/**
-     * Returns the set of patterns associated with this RequestMappingConditionsDescription.
-     *
-     * @return the set of patterns
-     */
-    public Set<String> getPatterns() {
+	 * Returns the set of patterns associated with this
+	 * RequestMappingConditionsDescription.
+	 * @return the set of patterns
+	 */
+	public Set<String> getPatterns() {
 		return this.patterns;
 	}
 
 	/**
-     * Returns the list of media type expression descriptions for the produces condition.
-     *
-     * @return the list of media type expression descriptions for the produces condition
-     */
-    public List<MediaTypeExpressionDescription> getProduces() {
+	 * Returns the list of media type expression descriptions for the produces condition.
+	 * @return the list of media type expression descriptions for the produces condition
+	 */
+	public List<MediaTypeExpressionDescription> getProduces() {
 		return this.produces;
 	}
 
@@ -151,30 +150,30 @@ public class RequestMappingConditionsDescription {
 		private final boolean negated;
 
 		/**
-         * Constructs a new MediaTypeExpressionDescription object based on the provided MediaTypeExpression.
-         * 
-         * @param expression the MediaTypeExpression to be used for constructing the object
-         */
-        MediaTypeExpressionDescription(MediaTypeExpression expression) {
+		 * Constructs a new MediaTypeExpressionDescription object based on the provided
+		 * MediaTypeExpression.
+		 * @param expression the MediaTypeExpression to be used for constructing the
+		 * object
+		 */
+		MediaTypeExpressionDescription(MediaTypeExpression expression) {
 			this.mediaType = expression.getMediaType().toString();
 			this.negated = expression.isNegated();
 		}
 
 		/**
-         * Returns the media type of the MediaTypeExpressionDescription.
-         *
-         * @return the media type of the MediaTypeExpressionDescription
-         */
-        public String getMediaType() {
+		 * Returns the media type of the MediaTypeExpressionDescription.
+		 * @return the media type of the MediaTypeExpressionDescription
+		 */
+		public String getMediaType() {
 			return this.mediaType;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the MediaTypeExpressionDescription is negated.
-         *
-         * @return true if the MediaTypeExpressionDescription is negated, false otherwise
-         */
-        public boolean isNegated() {
+		 * Returns a boolean value indicating whether the MediaTypeExpressionDescription
+		 * is negated.
+		 * @return true if the MediaTypeExpressionDescription is negated, false otherwise
+		 */
+		public boolean isNegated() {
 			return this.negated;
 		}
 
@@ -192,40 +191,38 @@ public class RequestMappingConditionsDescription {
 		private final boolean negated;
 
 		/**
-         * Constructs a new NameValueExpressionDescription object based on the provided NameValueExpression.
-         * 
-         * @param expression the NameValueExpression to be used for constructing the NameValueExpressionDescription
-         */
-        NameValueExpressionDescription(NameValueExpression<?> expression) {
+		 * Constructs a new NameValueExpressionDescription object based on the provided
+		 * NameValueExpression.
+		 * @param expression the NameValueExpression to be used for constructing the
+		 * NameValueExpressionDescription
+		 */
+		NameValueExpressionDescription(NameValueExpression<?> expression) {
 			this.name = expression.getName();
 			this.value = expression.getValue();
 			this.negated = expression.isNegated();
 		}
 
 		/**
-         * Returns the name of the NameValueExpressionDescription object.
-         *
-         * @return the name of the NameValueExpressionDescription object
-         */
-        public String getName() {
+		 * Returns the name of the NameValueExpressionDescription object.
+		 * @return the name of the NameValueExpressionDescription object
+		 */
+		public String getName() {
 			return this.name;
 		}
 
 		/**
-         * Returns the value of the NameValueExpressionDescription object.
-         *
-         * @return the value of the NameValueExpressionDescription object
-         */
-        public Object getValue() {
+		 * Returns the value of the NameValueExpressionDescription object.
+		 * @return the value of the NameValueExpressionDescription object
+		 */
+		public Object getValue() {
 			return this.value;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the expression is negated.
-         *
-         * @return true if the expression is negated, false otherwise
-         */
-        public boolean isNegated() {
+		 * Returns a boolean value indicating whether the expression is negated.
+		 * @return true if the expression is negated, false otherwise
+		 */
+		public boolean isNegated() {
 			return this.negated;
 		}
 

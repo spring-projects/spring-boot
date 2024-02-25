@@ -32,21 +32,21 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 class WebListenerHandler extends ServletComponentHandler {
 
 	/**
-     * Constructs a new WebListenerHandler object.
-     * This constructor calls the constructor of the superclass, WebListener, passing it the WebListenerHandler class.
-     */
-    WebListenerHandler() {
+	 * Constructs a new WebListenerHandler object. This constructor calls the constructor
+	 * of the superclass, WebListener, passing it the WebListenerHandler class.
+	 */
+	WebListenerHandler() {
 		super(WebListener.class);
 	}
 
 	/**
-     * Handles the registration of a ServletComponentWebListenerRegistrar bean definition in the bean definition registry.
-     * 
-     * @param attributes the attributes associated with the bean definition
-     * @param beanDefinition the annotated bean definition
-     * @param registry the bean definition registry
-     */
-    @Override
+	 * Handles the registration of a ServletComponentWebListenerRegistrar bean definition
+	 * in the bean definition registry.
+	 * @param attributes the attributes associated with the bean definition
+	 * @param beanDefinition the annotated bean definition
+	 * @param registry the bean definition registry
+	 */
+	@Override
 	protected void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry) {
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder
@@ -56,27 +56,27 @@ class WebListenerHandler extends ServletComponentHandler {
 	}
 
 	/**
-     * ServletComponentWebListenerRegistrar class.
-     */
-    static class ServletComponentWebListenerRegistrar implements WebListenerRegistrar {
+	 * ServletComponentWebListenerRegistrar class.
+	 */
+	static class ServletComponentWebListenerRegistrar implements WebListenerRegistrar {
 
 		private final String listenerClassName;
 
 		/**
-         * Constructs a new ServletComponentWebListenerRegistrar with the specified listener class name.
-         * 
-         * @param listenerClassName the fully qualified class name of the listener to be registered
-         */
-        ServletComponentWebListenerRegistrar(String listenerClassName) {
+		 * Constructs a new ServletComponentWebListenerRegistrar with the specified
+		 * listener class name.
+		 * @param listenerClassName the fully qualified class name of the listener to be
+		 * registered
+		 */
+		ServletComponentWebListenerRegistrar(String listenerClassName) {
 			this.listenerClassName = listenerClassName;
 		}
 
 		/**
-         * Registers a web listener with the given web listener registry.
-         * 
-         * @param registry the web listener registry to register with
-         */
-        @Override
+		 * Registers a web listener with the given web listener registry.
+		 * @param registry the web listener registry to register with
+		 */
+		@Override
 		public void register(WebListenerRegistry registry) {
 			registry.addWebListeners(this.listenerClassName);
 		}

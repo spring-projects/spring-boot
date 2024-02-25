@@ -27,11 +27,11 @@ import org.springframework.context.annotation.Configuration;
 public class MyDataSourceConfiguration {
 
 	/**
-     * Creates a new instance of SomeDataSource using the configuration properties with the prefix "app.datasource".
-     * 
-     * @return a new instance of SomeDataSource
-     */
-    @Bean
+	 * Creates a new instance of SomeDataSource using the configuration properties with
+	 * the prefix "app.datasource".
+	 * @return a new instance of SomeDataSource
+	 */
+	@Bean
 	@ConfigurationProperties(prefix = "app.datasource")
 	public SomeDataSource dataSource() {
 		return new SomeDataSource();

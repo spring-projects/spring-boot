@@ -28,41 +28,38 @@ import org.apache.activemq.artemis.spi.core.naming.BindingRegistry;
 public class ArtemisNoOpBindingRegistry implements BindingRegistry {
 
 	/**
-     * Looks up a value based on the given string.
-     * 
-     * @param s the string to lookup
-     * @return the value associated with the given string, or null if not found
-     */
-    @Override
+	 * Looks up a value based on the given string.
+	 * @param s the string to lookup
+	 * @return the value associated with the given string, or null if not found
+	 */
+	@Override
 	public Object lookup(String s) {
 		return null;
 	}
 
 	/**
-     * Binds the specified object to the specified string key.
-     *
-     * @param s the string key to bind the object to
-     * @param o the object to be bound
-     * @return true if the object was successfully bound, false otherwise
-     */
-    @Override
+	 * Binds the specified object to the specified string key.
+	 * @param s the string key to bind the object to
+	 * @param o the object to be bound
+	 * @return true if the object was successfully bound, false otherwise
+	 */
+	@Override
 	public boolean bind(String s, Object o) {
 		return false;
 	}
 
 	/**
-     * Unbinds the specified string from the ArtemisNoOpBindingRegistry.
-     * 
-     * @param s the string to unbind
-     */
-    @Override
+	 * Unbinds the specified string from the ArtemisNoOpBindingRegistry.
+	 * @param s the string to unbind
+	 */
+	@Override
 	public void unbind(String s) {
 	}
 
 	/**
-     * Closes the ArtemisNoOpBindingRegistry.
-     */
-    @Override
+	 * Closes the ArtemisNoOpBindingRegistry.
+	 */
+	@Override
 	public void close() {
 	}
 

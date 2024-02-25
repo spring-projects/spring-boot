@@ -36,14 +36,14 @@ class BasicAuthentication {
 	private final Charset charset;
 
 	/**
-     * Constructs a new BasicAuthentication object with the specified username, password, and charset.
-     * 
-     * @param username the username to be used for authentication
-     * @param password the password to be used for authentication
-     * @param charset the character set to be used for encoding the username and password
-     * @throws IllegalArgumentException if either the username or password is null
-     */
-    BasicAuthentication(String username, String password, Charset charset) {
+	 * Constructs a new BasicAuthentication object with the specified username, password,
+	 * and charset.
+	 * @param username the username to be used for authentication
+	 * @param password the password to be used for authentication
+	 * @param charset the character set to be used for encoding the username and password
+	 * @throws IllegalArgumentException if either the username or password is null
+	 */
+	BasicAuthentication(String username, String password, Charset charset) {
 		Assert.notNull(username, "Username must not be null");
 		Assert.notNull(password, "Password must not be null");
 		this.username = username;
@@ -52,14 +52,12 @@ class BasicAuthentication {
 	}
 
 	/**
-     * Applies basic authentication to the given HttpHeaders object.
-     * If the HttpHeaders object does not contain an Authorization header,
-     * this method sets the Basic Authentication header using the provided
-     * username, password, and charset.
-     *
-     * @param headers the HttpHeaders object to apply authentication to
-     */
-    void applyTo(HttpHeaders headers) {
+	 * Applies basic authentication to the given HttpHeaders object. If the HttpHeaders
+	 * object does not contain an Authorization header, this method sets the Basic
+	 * Authentication header using the provided username, password, and charset.
+	 * @param headers the HttpHeaders object to apply authentication to
+	 */
+	void applyTo(HttpHeaders headers) {
 		if (!headers.containsKey(HttpHeaders.AUTHORIZATION)) {
 			headers.setBasicAuth(this.username, this.password, this.charset);
 		}

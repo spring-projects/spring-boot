@@ -27,12 +27,11 @@ import org.springframework.context.annotation.Configuration;
 public class MyFilterConfiguration {
 
 	/**
-     * Registers a filter with the given filter instance.
-     * 
-     * @param filter the filter instance to be registered
-     * @return the filter registration bean
-     */
-    @Bean
+	 * Registers a filter with the given filter instance.
+	 * @param filter the filter instance to be registered
+	 * @return the filter registration bean
+	 */
+	@Bean
 	public FilterRegistrationBean<MyFilter> registration(MyFilter filter) {
 		FilterRegistrationBean<MyFilter> registration = new FilterRegistrationBean<>(filter);
 		registration.setEnabled(false);

@@ -104,11 +104,10 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 	}
 
 	/**
-     * Post-processes the bean factory by adding dependencies to the bean definitions.
-     * 
-     * @param beanFactory the configurable listable bean factory to process
-     */
-    @Override
+	 * Post-processes the bean factory by adding dependencies to the bean definitions.
+	 * @param beanFactory the configurable listable bean factory to process
+	 */
+	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		for (String beanName : getBeanNames(beanFactory)) {
 			BeanDefinition definition = getBeanDefinition(beanName, beanFactory);
@@ -121,25 +120,24 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 	}
 
 	/**
-     * Returns the order value of this bean factory post-processor.
-     * 
-     * The order value indicates the order in which the post-processors will be executed.
-     * A lower value means higher priority.
-     * 
-     * @return the order value of this bean factory post-processor
-     */
-    @Override
+	 * Returns the order value of this bean factory post-processor.
+	 *
+	 * The order value indicates the order in which the post-processors will be executed.
+	 * A lower value means higher priority.
+	 * @return the order value of this bean factory post-processor
+	 */
+	@Override
 	public int getOrder() {
 		return 0;
 	}
 
 	/**
-     * Retrieves the names of beans that this post-processor depends on from the given bean factory.
-     * 
-     * @param beanFactory the bean factory to retrieve the bean names from
-     * @return a set of bean names that this post-processor depends on
-     */
-    private Set<String> getBeanNames(ListableBeanFactory beanFactory) {
+	 * Retrieves the names of beans that this post-processor depends on from the given
+	 * bean factory.
+	 * @param beanFactory the bean factory to retrieve the bean names from
+	 * @return a set of bean names that this post-processor depends on
+	 */
+	private Set<String> getBeanNames(ListableBeanFactory beanFactory) {
 		Set<String> names = getBeanNames(beanFactory, this.beanClass);
 		if (this.factoryBeanClass != null) {
 			names.addAll(getBeanNames(beanFactory, this.factoryBeanClass));
@@ -148,26 +146,26 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 	}
 
 	/**
-     * Retrieves the names of beans of a specific class from the given bean factory.
-     * 
-     * @param beanFactory the bean factory to retrieve the bean names from
-     * @param beanClass the class of beans to retrieve
-     * @return a set of bean names of the specified class
-     */
-    private static Set<String> getBeanNames(ListableBeanFactory beanFactory, Class<?> beanClass) {
+	 * Retrieves the names of beans of a specific class from the given bean factory.
+	 * @param beanFactory the bean factory to retrieve the bean names from
+	 * @param beanClass the class of beans to retrieve
+	 * @return a set of bean names of the specified class
+	 */
+	private static Set<String> getBeanNames(ListableBeanFactory beanFactory, Class<?> beanClass) {
 		String[] names = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, beanClass, true, false);
 		return Arrays.stream(names).map(BeanFactoryUtils::transformedBeanName).collect(Collectors.toSet());
 	}
 
 	/**
-     * Retrieves the bean definition for the specified bean name from the given bean factory.
-     * 
-     * @param beanName the name of the bean to retrieve the definition for
-     * @param beanFactory the bean factory to retrieve the definition from
-     * @return the bean definition for the specified bean name
-     * @throws NoSuchBeanDefinitionException if the bean definition cannot be found in the bean factory
-     */
-    private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
+	 * Retrieves the bean definition for the specified bean name from the given bean
+	 * factory.
+	 * @param beanName the name of the bean to retrieve the definition for
+	 * @param beanFactory the bean factory to retrieve the definition from
+	 * @return the bean definition for the specified bean name
+	 * @throws NoSuchBeanDefinitionException if the bean definition cannot be found in the
+	 * bean factory
+	 */
+	private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
 		try {
 			return beanFactory.getBeanDefinition(beanName);
 		}

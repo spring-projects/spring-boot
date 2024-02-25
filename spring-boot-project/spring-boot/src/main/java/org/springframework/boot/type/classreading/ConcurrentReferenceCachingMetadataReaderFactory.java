@@ -67,13 +67,12 @@ public class ConcurrentReferenceCachingMetadataReaderFactory extends SimpleMetad
 	}
 
 	/**
-     * Retrieves the metadata reader for the given resource.
-     * 
-     * @param resource The resource for which to retrieve the metadata reader.
-     * @return The metadata reader for the given resource.
-     * @throws IOException If an I/O error occurs while retrieving the metadata reader.
-     */
-    @Override
+	 * Retrieves the metadata reader for the given resource.
+	 * @param resource The resource for which to retrieve the metadata reader.
+	 * @return The metadata reader for the given resource.
+	 * @throws IOException If an I/O error occurs while retrieving the metadata reader.
+	 */
+	@Override
 	public MetadataReader getMetadataReader(Resource resource) throws IOException {
 		MetadataReader metadataReader = this.cache.get(resource);
 		if (metadataReader == null) {

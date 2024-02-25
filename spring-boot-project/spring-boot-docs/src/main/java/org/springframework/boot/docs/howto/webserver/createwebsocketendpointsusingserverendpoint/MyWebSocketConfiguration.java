@@ -27,11 +27,10 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 public class MyWebSocketConfiguration {
 
 	/**
-     * Initializes and configures the ServerEndpointExporter.
-     * 
-     * @return the ServerEndpointExporter instance
-     */
-    @Bean
+	 * Initializes and configures the ServerEndpointExporter.
+	 * @return the ServerEndpointExporter instance
+	 */
+	@Bean
 	public ServerEndpointExporter serverEndpointExporter() {
 		return new ServerEndpointExporter();
 	}

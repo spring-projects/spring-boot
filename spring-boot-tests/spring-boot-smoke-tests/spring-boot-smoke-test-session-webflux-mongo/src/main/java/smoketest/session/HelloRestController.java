@@ -27,12 +27,11 @@ import org.springframework.web.server.WebSession;
 public class HelloRestController {
 
 	/**
-     * Retrieves the session ID for the current user's session.
-     * 
-     * @param session the current user's session
-     * @return the session ID as a String
-     */
-    @GetMapping("/")
+	 * Retrieves the session ID for the current user's session.
+	 * @param session the current user's session
+	 * @return the session ID as a String
+	 */
+	@GetMapping("/")
 	String sessionId(WebSession session) {
 		return session.getId();
 	}

@@ -45,9 +45,10 @@ public class ProcessTestAot extends AbstractAot {
 	private FileCollection classpathRoots;
 
 	/**
-     * This method sets the main class to "org.springframework.boot.test.context.SpringBootTestAotProcessor".
-     */
-    public ProcessTestAot() {
+	 * This method sets the main class to
+	 * "org.springframework.boot.test.context.SpringBootTestAotProcessor".
+	 */
+	public ProcessTestAot() {
 		getMainClass().set("org.springframework.boot.test.context.SpringBootTestAotProcessor");
 	}
 
@@ -70,12 +71,11 @@ public class ProcessTestAot extends AbstractAot {
 	}
 
 	/**
-     * Returns the input classes as a file tree.
-     * 
-     * @return the input classes as a file tree
-     * @throws IOException if an I/O error occurs
-     */
-    @InputFiles
+	 * Returns the input classes as a file tree.
+	 * @return the input classes as a file tree
+	 * @throws IOException if an I/O error occurs
+	 */
+	@InputFiles
 	@SkipWhenEmpty
 	@IgnoreEmptyDirectories
 	@PathSensitive(PathSensitivity.RELATIVE)
@@ -84,15 +84,16 @@ public class ProcessTestAot extends AbstractAot {
 	}
 
 	/**
-     * Executes the task.
-     * 
-     * This method is annotated with @TaskAction to indicate that it is the action to be performed when the task is executed.
-     * It collects the classpath roots, filters out non-existing files, and maps them to their absolute paths.
-     * The absolute paths are then joined using the file separator and added to the arguments list.
-     * The processor arguments are also added to the arguments list.
-     * Finally, the arguments are set and the super class's exec() method is called.
-     */
-    @Override
+	 * Executes the task.
+	 *
+	 * This method is annotated with @TaskAction to indicate that it is the action to be
+	 * performed when the task is executed. It collects the classpath roots, filters out
+	 * non-existing files, and maps them to their absolute paths. The absolute paths are
+	 * then joined using the file separator and added to the arguments list. The processor
+	 * arguments are also added to the arguments list. Finally, the arguments are set and
+	 * the super class's exec() method is called.
+	 */
+	@Override
 	@TaskAction
 	public void exec() {
 		List<String> args = new ArrayList<>();

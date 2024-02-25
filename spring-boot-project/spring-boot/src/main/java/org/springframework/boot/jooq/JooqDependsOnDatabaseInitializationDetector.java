@@ -32,11 +32,10 @@ import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializat
 class JooqDependsOnDatabaseInitializationDetector extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector {
 
 	/**
-     * Returns a set of classes that this bean depends on for database initialization.
-     * 
-     * @return the set of classes that this bean depends on for database initialization
-     */
-    @Override
+	 * Returns a set of classes that this bean depends on for database initialization.
+	 * @return the set of classes that this bean depends on for database initialization
+	 */
+	@Override
 	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
 		return Collections.singleton(DSLContext.class);
 	}

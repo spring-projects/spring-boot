@@ -76,139 +76,126 @@ public class ActiveMQProperties {
 	private final Packages packages = new Packages();
 
 	/**
-     * Returns the broker URL.
-     *
-     * @return the broker URL
-     */
-    public String getBrokerUrl() {
+	 * Returns the broker URL.
+	 * @return the broker URL
+	 */
+	public String getBrokerUrl() {
 		return this.brokerUrl;
 	}
 
 	/**
-     * Sets the broker URL for connecting to the ActiveMQ broker.
-     * 
-     * @param brokerUrl the broker URL to set
-     */
-    public void setBrokerUrl(String brokerUrl) {
+	 * Sets the broker URL for connecting to the ActiveMQ broker.
+	 * @param brokerUrl the broker URL to set
+	 */
+	public void setBrokerUrl(String brokerUrl) {
 		this.brokerUrl = brokerUrl;
 	}
 
 	/**
-     * Returns the user associated with the ActiveMQProperties object.
-     *
-     * @return the user associated with the ActiveMQProperties object
-     */
-    public String getUser() {
+	 * Returns the user associated with the ActiveMQProperties object.
+	 * @return the user associated with the ActiveMQProperties object
+	 */
+	public String getUser() {
 		return this.user;
 	}
 
 	/**
-     * Sets the user for the ActiveMQ connection.
-     * 
-     * @param user the user to set
-     */
-    public void setUser(String user) {
+	 * Sets the user for the ActiveMQ connection.
+	 * @param user the user to set
+	 */
+	public void setUser(String user) {
 		this.user = user;
 	}
 
 	/**
-     * Returns the password associated with the ActiveMQProperties object.
-     *
-     * @return the password
-     */
-    public String getPassword() {
+	 * Returns the password associated with the ActiveMQProperties object.
+	 * @return the password
+	 */
+	public String getPassword() {
 		return this.password;
 	}
 
 	/**
-     * Sets the password for the ActiveMQ connection.
-     * 
-     * @param password the password to be set
-     */
-    public void setPassword(String password) {
+	 * Sets the password for the ActiveMQ connection.
+	 * @param password the password to be set
+	 */
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	/**
-     * Returns the close timeout duration.
-     *
-     * @return the close timeout duration
-     */
-    public Duration getCloseTimeout() {
+	 * Returns the close timeout duration.
+	 * @return the close timeout duration
+	 */
+	public Duration getCloseTimeout() {
 		return this.closeTimeout;
 	}
 
 	/**
-     * Sets the close timeout for the ActiveMQProperties.
-     * 
-     * @param closeTimeout the close timeout duration to be set
-     */
-    public void setCloseTimeout(Duration closeTimeout) {
+	 * Sets the close timeout for the ActiveMQProperties.
+	 * @param closeTimeout the close timeout duration to be set
+	 */
+	public void setCloseTimeout(Duration closeTimeout) {
 		this.closeTimeout = closeTimeout;
 	}
 
 	/**
-     * Returns a boolean value indicating whether non-blocking redelivery is enabled.
-     *
-     * @return true if non-blocking redelivery is enabled, false otherwise
-     */
-    public boolean isNonBlockingRedelivery() {
+	 * Returns a boolean value indicating whether non-blocking redelivery is enabled.
+	 * @return true if non-blocking redelivery is enabled, false otherwise
+	 */
+	public boolean isNonBlockingRedelivery() {
 		return this.nonBlockingRedelivery;
 	}
 
 	/**
-     * Sets the flag indicating whether non-blocking redelivery is enabled or not.
-     * 
-     * @param nonBlockingRedelivery the flag indicating whether non-blocking redelivery is enabled or not
-     */
-    public void setNonBlockingRedelivery(boolean nonBlockingRedelivery) {
+	 * Sets the flag indicating whether non-blocking redelivery is enabled or not.
+	 * @param nonBlockingRedelivery the flag indicating whether non-blocking redelivery is
+	 * enabled or not
+	 */
+	public void setNonBlockingRedelivery(boolean nonBlockingRedelivery) {
 		this.nonBlockingRedelivery = nonBlockingRedelivery;
 	}
 
 	/**
-     * Returns the send timeout duration.
-     *
-     * @return the send timeout duration
-     */
-    public Duration getSendTimeout() {
+	 * Returns the send timeout duration.
+	 * @return the send timeout duration
+	 */
+	public Duration getSendTimeout() {
 		return this.sendTimeout;
 	}
 
 	/**
-     * Sets the send timeout for the ActiveMQProperties.
-     * 
-     * @param sendTimeout the send timeout duration to be set
-     */
-    public void setSendTimeout(Duration sendTimeout) {
+	 * Sets the send timeout for the ActiveMQProperties.
+	 * @param sendTimeout the send timeout duration to be set
+	 */
+	public void setSendTimeout(Duration sendTimeout) {
 		this.sendTimeout = sendTimeout;
 	}
 
 	/**
-     * Returns the JmsPoolConnectionFactoryProperties object representing the connection pool configuration.
-     *
-     * @return the JmsPoolConnectionFactoryProperties object representing the connection pool configuration
-     */
-    public JmsPoolConnectionFactoryProperties getPool() {
+	 * Returns the JmsPoolConnectionFactoryProperties object representing the connection
+	 * pool configuration.
+	 * @return the JmsPoolConnectionFactoryProperties object representing the connection
+	 * pool configuration
+	 */
+	public JmsPoolConnectionFactoryProperties getPool() {
 		return this.pool;
 	}
 
 	/**
-     * Returns the packages associated with the ActiveMQProperties.
-     * 
-     * @return the packages associated with the ActiveMQProperties
-     */
-    public Packages getPackages() {
+	 * Returns the packages associated with the ActiveMQProperties.
+	 * @return the packages associated with the ActiveMQProperties
+	 */
+	public Packages getPackages() {
 		return this.packages;
 	}
 
 	/**
-     * Returns the broker URL for the ActiveMQ connection.
-     * If the broker URL is not null, it is returned.
-     * Otherwise, the default network broker URL is returned.
-     *
-     * @return the broker URL for the ActiveMQ connection
-     */
-    String determineBrokerUrl() {
+	 * Returns the broker URL for the ActiveMQ connection. If the broker URL is not null,
+	 * it is returned. Otherwise, the default network broker URL is returned.
+	 * @return the broker URL for the ActiveMQ connection
+	 */
+	String determineBrokerUrl() {
 		if (this.brokerUrl != null) {
 			return this.brokerUrl;
 		}
@@ -216,9 +203,9 @@ public class ActiveMQProperties {
 	}
 
 	/**
-     * Packages class.
-     */
-    public static class Packages {
+	 * Packages class.
+	 */
+	public static class Packages {
 
 		/**
 		 * Whether to trust all packages.
@@ -232,38 +219,34 @@ public class ActiveMQProperties {
 		private List<String> trusted = new ArrayList<>();
 
 		/**
-         * Returns the value of the trustAll property.
-         * 
-         * @return true if trustAll is enabled, false otherwise
-         */
-        public Boolean getTrustAll() {
+		 * Returns the value of the trustAll property.
+		 * @return true if trustAll is enabled, false otherwise
+		 */
+		public Boolean getTrustAll() {
 			return this.trustAll;
 		}
 
 		/**
-         * Sets the trustAll flag.
-         * 
-         * @param trustAll the trustAll flag to be set
-         */
-        public void setTrustAll(Boolean trustAll) {
+		 * Sets the trustAll flag.
+		 * @param trustAll the trustAll flag to be set
+		 */
+		public void setTrustAll(Boolean trustAll) {
 			this.trustAll = trustAll;
 		}
 
 		/**
-         * Returns the list of trusted entities.
-         *
-         * @return the list of trusted entities
-         */
-        public List<String> getTrusted() {
+		 * Returns the list of trusted entities.
+		 * @return the list of trusted entities
+		 */
+		public List<String> getTrusted() {
 			return this.trusted;
 		}
 
 		/**
-         * Sets the list of trusted packages.
-         * 
-         * @param trusted the list of trusted packages
-         */
-        public void setTrusted(List<String> trusted) {
+		 * Sets the list of trusted packages.
+		 * @param trusted the list of trusted packages
+		 */
+		public void setTrusted(List<String> trusted) {
 			this.trusted = trusted;
 		}
 

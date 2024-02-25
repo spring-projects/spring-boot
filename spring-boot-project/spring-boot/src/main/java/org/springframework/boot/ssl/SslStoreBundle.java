@@ -63,41 +63,37 @@ public interface SslStoreBundle {
 		return new SslStoreBundle() {
 
 			/**
-     * Returns the KeyStore object associated with this SslStoreBundle.
-     *
-     * @return the KeyStore object
-     */
-    @Override
+			 * Returns the KeyStore object associated with this SslStoreBundle.
+			 * @return the KeyStore object
+			 */
+			@Override
 			public KeyStore getKeyStore() {
 				return keyStore;
 			}
 
 			/**
-     * Returns the trust store used for SSL/TLS connections.
-     *
-     * @return the trust store
-     */
-    @Override
+			 * Returns the trust store used for SSL/TLS connections.
+			 * @return the trust store
+			 */
+			@Override
 			public KeyStore getTrustStore() {
 				return trustStore;
 			}
 
 			/**
-     * Returns the password for the keystore.
-     *
-     * @return the password for the keystore
-     */
-    @Override
+			 * Returns the password for the keystore.
+			 * @return the password for the keystore
+			 */
+			@Override
 			public String getKeyStorePassword() {
 				return keyStorePassword;
 			}
 
 			/**
-     * Returns a string representation of the SslStoreBundle object.
-     * 
-     * @return a string representation of the SslStoreBundle object
-     */
-    @Override
+			 * Returns a string representation of the SslStoreBundle object.
+			 * @return a string representation of the SslStoreBundle object
+			 */
+			@Override
 			public String toString() {
 				ToStringCreator creator = new ToStringCreator(this);
 				creator.append("keyStore.type", (keyStore != null) ? keyStore.getType() : "none");

@@ -46,63 +46,57 @@ class Frame {
 	}
 
 	/**
-     * Constructs a new Frame object with the specified type.
-     * 
-     * @param type the type of the frame (must not be null)
-     * @throws IllegalArgumentException if the type is null
-     */
-    Frame(Type type) {
+	 * Constructs a new Frame object with the specified type.
+	 * @param type the type of the frame (must not be null)
+	 * @throws IllegalArgumentException if the type is null
+	 */
+	Frame(Type type) {
 		Assert.notNull(type, "Type must not be null");
 		this.type = type;
 		this.payload = NO_BYTES;
 	}
 
 	/**
-     * Constructs a new Frame object with the specified type and payload.
-     * 
-     * @param type the type of the frame
-     * @param payload the payload data of the frame
-     */
-    Frame(Type type, byte[] payload) {
+	 * Constructs a new Frame object with the specified type and payload.
+	 * @param type the type of the frame
+	 * @param payload the payload data of the frame
+	 */
+	Frame(Type type, byte[] payload) {
 		this.type = type;
 		this.payload = payload;
 	}
 
 	/**
-     * Returns the type of the Frame.
-     *
-     * @return the type of the Frame
-     */
-    Type getType() {
+	 * Returns the type of the Frame.
+	 * @return the type of the Frame
+	 */
+	Type getType() {
 		return this.type;
 	}
 
 	/**
-     * Returns the payload of the Frame as a byte array.
-     *
-     * @return the payload of the Frame as a byte array
-     */
-    byte[] getPayload() {
+	 * Returns the payload of the Frame as a byte array.
+	 * @return the payload of the Frame as a byte array
+	 */
+	byte[] getPayload() {
 		return this.payload;
 	}
 
 	/**
-     * Returns a string representation of the Frame object.
-     * 
-     * @return a string representation of the Frame object
-     */
-    @Override
+	 * Returns a string representation of the Frame object.
+	 * @return a string representation of the Frame object
+	 */
+	@Override
 	public String toString() {
 		return new String(this.payload);
 	}
 
 	/**
-     * Writes the frame to the specified output stream.
-     * 
-     * @param outputStream the output stream to write the frame to
-     * @throws IOException if an I/O error occurs while writing the frame
-     */
-    void write(OutputStream outputStream) throws IOException {
+	 * Writes the frame to the specified output stream.
+	 * @param outputStream the output stream to write the frame to
+	 * @throws IOException if an I/O error occurs while writing the frame
+	 */
+	void write(OutputStream outputStream) throws IOException {
 		outputStream.write(0x80 | this.type.code);
 		if (this.payload.length < 126) {
 			outputStream.write(this.payload.length & 0x7F);
@@ -117,14 +111,14 @@ class Frame {
 	}
 
 	/**
-     * Reads a frame from the given input stream.
-     *
-     * @param inputStream the input stream to read from
-     * @return the frame read from the input stream
-     * @throws IOException if an I/O error occurs while reading from the input stream
-     * @throws IllegalStateException if fragmented frames are encountered or if large frames are encountered
-     */
-    static Frame read(ConnectionInputStream inputStream) throws IOException {
+	 * Reads a frame from the given input stream.
+	 * @param inputStream the input stream to read from
+	 * @return the frame read from the input stream
+	 * @throws IOException if an I/O error occurs while reading from the input stream
+	 * @throws IllegalStateException if fragmented frames are encountered or if large
+	 * frames are encountered
+	 */
+	static Frame read(ConnectionInputStream inputStream) throws IOException {
 		int firstByte = inputStream.checkedRead();
 		Assert.state((firstByte & 0x80) != 0, "Fragmented frames are not supported");
 		int maskAndLength = inputStream.checkedRead();
@@ -186,22 +180,20 @@ class Frame {
 		private final int code;
 
 		/**
-     * Sets the code of the Frame.
-     * 
-     * @param code the code to set
-     */
-    Type(int code) {
+		 * Sets the code of the Frame.
+		 * @param code the code to set
+		 */
+		Type(int code) {
 			this.code = code;
 		}
 
 		/**
-     * Returns the Type associated with the given code.
-     *
-     * @param code the code to find the Type for
-     * @return the Type associated with the given code
-     * @throws IllegalStateException if the code does not match any Type
-     */
-    static Type forCode(int code) {
+		 * Returns the Type associated with the given code.
+		 * @param code the code to find the Type for
+		 * @return the Type associated with the given code
+		 * @throws IllegalStateException if the code does not match any Type
+		 */
+		static Type forCode(int code) {
 			for (Type type : values()) {
 				if (type.code == code) {
 					return type;

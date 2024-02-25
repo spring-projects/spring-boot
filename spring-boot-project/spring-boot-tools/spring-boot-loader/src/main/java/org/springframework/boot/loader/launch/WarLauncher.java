@@ -29,53 +29,49 @@ package org.springframework.boot.loader.launch;
 public class WarLauncher extends ExecutableArchiveLauncher {
 
 	/**
-     * Constructs a new WarLauncher object.
-     * 
-     * @throws Exception if an error occurs during the construction of the WarLauncher object.
-     */
-    public WarLauncher() throws Exception {
+	 * Constructs a new WarLauncher object.
+	 * @throws Exception if an error occurs during the construction of the WarLauncher
+	 * object.
+	 */
+	public WarLauncher() throws Exception {
 	}
 
 	/**
-     * Constructs a new WarLauncher object with the specified Archive.
-     * 
-     * @param archive the Archive object to be used by the WarLauncher
-     * @throws Exception if an error occurs during the construction of the WarLauncher
-     */
-    protected WarLauncher(Archive archive) throws Exception {
+	 * Constructs a new WarLauncher object with the specified Archive.
+	 * @param archive the Archive object to be used by the WarLauncher
+	 * @throws Exception if an error occurs during the construction of the WarLauncher
+	 */
+	protected WarLauncher(Archive archive) throws Exception {
 		super(archive);
 	}
 
 	/**
-     * Determines if the given entry is included on the classpath.
-     * 
-     * @param entry the entry to check
-     * @return true if the entry is included on the classpath, false otherwise
-     */
-    @Override
+	 * Determines if the given entry is included on the classpath.
+	 * @param entry the entry to check
+	 * @return true if the entry is included on the classpath, false otherwise
+	 */
+	@Override
 	public boolean isIncludedOnClassPath(Archive.Entry entry) {
 		return isLibraryFileOrClassesDirectory(entry);
 	}
 
 	/**
-     * Returns the entry path prefix for the web application.
-     * The entry path prefix is used to specify the location of the web application's resources.
-     * By default, the entry path prefix is set to "WEB-INF/".
-     *
-     * @return the entry path prefix for the web application
-     */
-    @Override
+	 * Returns the entry path prefix for the web application. The entry path prefix is
+	 * used to specify the location of the web application's resources. By default, the
+	 * entry path prefix is set to "WEB-INF/".
+	 * @return the entry path prefix for the web application
+	 */
+	@Override
 	protected String getEntryPathPrefix() {
 		return "WEB-INF/";
 	}
 
 	/**
-     * Determines if the given Archive.Entry is a library file or classes directory.
-     * 
-     * @param entry the Archive.Entry to check
-     * @return true if the entry is a library file or classes directory, false otherwise
-     */
-    static boolean isLibraryFileOrClassesDirectory(Archive.Entry entry) {
+	 * Determines if the given Archive.Entry is a library file or classes directory.
+	 * @param entry the Archive.Entry to check
+	 * @return true if the entry is a library file or classes directory, false otherwise
+	 */
+	static boolean isLibraryFileOrClassesDirectory(Archive.Entry entry) {
 		String name = entry.name();
 		if (entry.isDirectory()) {
 			return name.equals("WEB-INF/classes/");
@@ -84,13 +80,12 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	/**
-     * The main method is the entry point of the program.
-     * It launches the WarLauncher class and passes the command line arguments.
-     *
-     * @param args the command line arguments
-     * @throws Exception if an error occurs during program execution
-     */
-    public static void main(String[] args) throws Exception {
+	 * The main method is the entry point of the program. It launches the WarLauncher
+	 * class and passes the command line arguments.
+	 * @param args the command line arguments
+	 * @throws Exception if an error occurs during program execution
+	 */
+	public static void main(String[] args) throws Exception {
 		new WarLauncher().launch(args);
 	}
 

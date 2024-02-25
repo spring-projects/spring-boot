@@ -42,13 +42,12 @@ import org.springframework.util.ReflectionUtils;
 public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvider<HazelcastCache> {
 
 	/**
-     * Returns a MeterBinder for the given HazelcastCache and tags.
-     * 
-     * @param cache the HazelcastCache to bind metrics for
-     * @param tags the tags to associate with the metrics
-     * @return a MeterBinder for the HazelcastCache and tags
-     */
-    @Override
+	 * Returns a MeterBinder for the given HazelcastCache and tags.
+	 * @param cache the HazelcastCache to bind metrics for
+	 * @param tags the tags to associate with the metrics
+	 * @return a MeterBinder for the HazelcastCache and tags
+	 */
+	@Override
 	public MeterBinder getMeterBinder(HazelcastCache cache, Iterable<Tag> tags) {
 		try {
 			return new HazelcastCacheMetrics(cache.getNativeCache(), tags);
@@ -60,14 +59,13 @@ public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvid
 	}
 
 	/**
-     * Creates a MeterBinder for Hazelcast 4 cache metrics.
-     * 
-     * @param cache The HazelcastCache instance for which metrics are to be created.
-     * @param tags The tags to be associated with the metrics.
-     * @return The MeterBinder instance for Hazelcast 4 cache metrics.
-     * @throws IllegalStateException if failed to create the MeterBinder for Hazelcast.
-     */
-    private MeterBinder createHazelcast4CacheMetrics(HazelcastCache cache, Iterable<Tag> tags) {
+	 * Creates a MeterBinder for Hazelcast 4 cache metrics.
+	 * @param cache The HazelcastCache instance for which metrics are to be created.
+	 * @param tags The tags to be associated with the metrics.
+	 * @return The MeterBinder instance for Hazelcast 4 cache metrics.
+	 * @throws IllegalStateException if failed to create the MeterBinder for Hazelcast.
+	 */
+	private MeterBinder createHazelcast4CacheMetrics(HazelcastCache cache, Iterable<Tag> tags) {
 		try {
 			Method nativeCacheAccessor = ReflectionUtils.findMethod(HazelcastCache.class, "getNativeCache");
 			Object nativeCache = ReflectionUtils.invokeMethod(nativeCacheAccessor, cache);
@@ -80,28 +78,35 @@ public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvid
 	}
 
 	/**
-     * HazelcastCacheMeterBinderProviderRuntimeHints class.
-     */
-    static class HazelcastCacheMeterBinderProviderRuntimeHints implements RuntimeHintsRegistrar {
+	 * HazelcastCacheMeterBinderProviderRuntimeHints class.
+	 */
+	static class HazelcastCacheMeterBinderProviderRuntimeHints implements RuntimeHintsRegistrar {
 
 		/**
-         * Registers hints for the {@link HazelcastCacheMeterBinderProviderRuntimeHints#registerHints(RuntimeHints, ClassLoader)} method.
-         * 
-         * This method is responsible for registering hints for the HazelcastCacheMeterBinderProviderRuntimeHints class.
-         * It takes two parameters: hints of type RuntimeHints and classLoader of type ClassLoader.
-         * 
-         * The method first tries to find the 'getNativeCache' method using reflection and asserts that it is not null.
-         * If the method is found, it then tries to find the constructor of the HazelcastCacheMetrics class.
-         * 
-         * The method then registers the 'getNativeCache' method and the constructor using the hints object.
-         * 
-         * If the 'getNativeCache' method or the constructor is not found, an IllegalStateException is thrown.
-         * 
-         * @param hints The RuntimeHints object used for registering hints.
-         * @param classLoader The ClassLoader object used for finding the 'getNativeCache' method.
-         * @throws IllegalStateException if the 'getNativeCache' method or the constructor is not found.
-         */
-        @Override
+		 * Registers hints for the
+		 * {@link HazelcastCacheMeterBinderProviderRuntimeHints#registerHints(RuntimeHints, ClassLoader)}
+		 * method.
+		 *
+		 * This method is responsible for registering hints for the
+		 * HazelcastCacheMeterBinderProviderRuntimeHints class. It takes two parameters:
+		 * hints of type RuntimeHints and classLoader of type ClassLoader.
+		 *
+		 * The method first tries to find the 'getNativeCache' method using reflection and
+		 * asserts that it is not null. If the method is found, it then tries to find the
+		 * constructor of the HazelcastCacheMetrics class.
+		 *
+		 * The method then registers the 'getNativeCache' method and the constructor using
+		 * the hints object.
+		 *
+		 * If the 'getNativeCache' method or the constructor is not found, an
+		 * IllegalStateException is thrown.
+		 * @param hints The RuntimeHints object used for registering hints.
+		 * @param classLoader The ClassLoader object used for finding the 'getNativeCache'
+		 * method.
+		 * @throws IllegalStateException if the 'getNativeCache' method or the constructor
+		 * is not found.
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			try {
 				Method getNativeCacheMethod = ReflectionUtils.findMethod(HazelcastCache.class, "getNativeCache");

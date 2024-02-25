@@ -27,11 +27,10 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
 public class MyApplication {
 
 	/**
-     * The main method of the MyApplication class.
-     * 
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+	 * The main method of the MyApplication class.
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
 		SpringApplication application = new SpringApplication(MyApplication.class);
 		application.setApplicationStartup(new BufferingApplicationStartup(2048));
 		application.run(args);

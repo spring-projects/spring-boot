@@ -32,12 +32,12 @@ import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
 public class DefaultRestartInitializer implements RestartInitializer {
 
 	/**
-     * Returns an array of initial URLs for the given thread.
-     * 
-     * @param thread the thread for which to retrieve the initial URLs
-     * @return an array of initial URLs, or null if the thread is not the main thread or if DevTools is not enabled for the thread
-     */
-    @Override
+	 * Returns an array of initial URLs for the given thread.
+	 * @param thread the thread for which to retrieve the initial URLs
+	 * @return an array of initial URLs, or null if the thread is not the main thread or
+	 * if DevTools is not enabled for the thread
+	 */
+	@Override
 	public URL[] getInitialUrls(Thread thread) {
 		if (!isMain(thread)) {
 			return null;

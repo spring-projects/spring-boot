@@ -44,13 +44,13 @@ class SpringApplicationRunListeners {
 	private final ApplicationStartup applicationStartup;
 
 	/**
-     * Constructs a new instance of SpringApplicationRunListeners with the specified parameters.
-     *
-     * @param log the log to be used for logging
-     * @param listeners the list of SpringApplicationRunListeners to be used
-     * @param applicationStartup the ApplicationStartup instance to be used
-     */
-    SpringApplicationRunListeners(Log log, List<SpringApplicationRunListener> listeners,
+	 * Constructs a new instance of SpringApplicationRunListeners with the specified
+	 * parameters.
+	 * @param log the log to be used for logging
+	 * @param listeners the list of SpringApplicationRunListeners to be used
+	 * @param applicationStartup the ApplicationStartup instance to be used
+	 */
+	SpringApplicationRunListeners(Log log, List<SpringApplicationRunListener> listeners,
 			ApplicationStartup applicationStartup) {
 		this.log = log;
 		this.listeners = List.copyOf(listeners);
@@ -58,12 +58,11 @@ class SpringApplicationRunListeners {
 	}
 
 	/**
-     * Notifies the listeners that the application is starting.
-     * 
-     * @param bootstrapContext the bootstrap context
-     * @param mainApplicationClass the main application class
-     */
-    void starting(ConfigurableBootstrapContext bootstrapContext, Class<?> mainApplicationClass) {
+	 * Notifies the listeners that the application is starting.
+	 * @param bootstrapContext the bootstrap context
+	 * @param mainApplicationClass the main application class
+	 */
+	void starting(ConfigurableBootstrapContext bootstrapContext, Class<?> mainApplicationClass) {
 		doWithListeners("spring.boot.application.starting", (listener) -> listener.starting(bootstrapContext),
 				(step) -> {
 					if (mainApplicationClass != null) {
@@ -73,62 +72,57 @@ class SpringApplicationRunListeners {
 	}
 
 	/**
-     * Notifies all registered listeners that the environment has been prepared for the application.
-     * 
-     * @param bootstrapContext the bootstrap context
-     * @param environment the configurable environment
-     */
-    void environmentPrepared(ConfigurableBootstrapContext bootstrapContext, ConfigurableEnvironment environment) {
+	 * Notifies all registered listeners that the environment has been prepared for the
+	 * application.
+	 * @param bootstrapContext the bootstrap context
+	 * @param environment the configurable environment
+	 */
+	void environmentPrepared(ConfigurableBootstrapContext bootstrapContext, ConfigurableEnvironment environment) {
 		doWithListeners("spring.boot.application.environment-prepared",
 				(listener) -> listener.environmentPrepared(bootstrapContext, environment));
 	}
 
 	/**
-     * Notifies all registered listeners that the application context has been prepared.
-     * 
-     * @param context the prepared application context
-     */
-    void contextPrepared(ConfigurableApplicationContext context) {
+	 * Notifies all registered listeners that the application context has been prepared.
+	 * @param context the prepared application context
+	 */
+	void contextPrepared(ConfigurableApplicationContext context) {
 		doWithListeners("spring.boot.application.context-prepared", (listener) -> listener.contextPrepared(context));
 	}
 
 	/**
-     * Notifies all registered listeners that the application context has been loaded.
-     * 
-     * @param context the loaded application context
-     */
-    void contextLoaded(ConfigurableApplicationContext context) {
+	 * Notifies all registered listeners that the application context has been loaded.
+	 * @param context the loaded application context
+	 */
+	void contextLoaded(ConfigurableApplicationContext context) {
 		doWithListeners("spring.boot.application.context-loaded", (listener) -> listener.contextLoaded(context));
 	}
 
 	/**
-     * Notifies the listeners that the application has started.
-     * 
-     * @param context the configurable application context
-     * @param timeTaken the duration of time taken for the application to start
-     */
-    void started(ConfigurableApplicationContext context, Duration timeTaken) {
+	 * Notifies the listeners that the application has started.
+	 * @param context the configurable application context
+	 * @param timeTaken the duration of time taken for the application to start
+	 */
+	void started(ConfigurableApplicationContext context, Duration timeTaken) {
 		doWithListeners("spring.boot.application.started", (listener) -> listener.started(context, timeTaken));
 	}
 
 	/**
-     * Notifies all registered listeners that the application is ready.
-     * 
-     * @param context the configurable application context
-     * @param timeTaken the duration of time taken for the application to be ready
-     */
-    void ready(ConfigurableApplicationContext context, Duration timeTaken) {
+	 * Notifies all registered listeners that the application is ready.
+	 * @param context the configurable application context
+	 * @param timeTaken the duration of time taken for the application to be ready
+	 */
+	void ready(ConfigurableApplicationContext context, Duration timeTaken) {
 		doWithListeners("spring.boot.application.ready", (listener) -> listener.ready(context, timeTaken));
 	}
 
 	/**
-     * This method is called when the application fails to start.
-     * It notifies the registered listeners about the failure.
-     * 
-     * @param context   the application context
-     * @param exception the exception that caused the failure
-     */
-    void failed(ConfigurableApplicationContext context, Throwable exception) {
+	 * This method is called when the application fails to start. It notifies the
+	 * registered listeners about the failure.
+	 * @param context the application context
+	 * @param exception the exception that caused the failure
+	 */
+	void failed(ConfigurableApplicationContext context, Throwable exception) {
 		doWithListeners("spring.boot.application.failed",
 				(listener) -> callFailedListener(listener, context, exception), (step) -> {
 					step.tag("exception", exception.getClass().toString());
@@ -137,14 +131,14 @@ class SpringApplicationRunListeners {
 	}
 
 	/**
-     * Calls the failed method of the given SpringApplicationRunListener with the provided ConfigurableApplicationContext
-     * and Throwable. If an exception occurs during the call, it is caught and handled accordingly.
-     *
-     * @param listener  the SpringApplicationRunListener to call the failed method on
-     * @param context   the ConfigurableApplicationContext to pass to the failed method
-     * @param exception the Throwable to pass to the failed method
-     */
-    private void callFailedListener(SpringApplicationRunListener listener, ConfigurableApplicationContext context,
+	 * Calls the failed method of the given SpringApplicationRunListener with the provided
+	 * ConfigurableApplicationContext and Throwable. If an exception occurs during the
+	 * call, it is caught and handled accordingly.
+	 * @param listener the SpringApplicationRunListener to call the failed method on
+	 * @param context the ConfigurableApplicationContext to pass to the failed method
+	 * @param exception the Throwable to pass to the failed method
+	 */
+	private void callFailedListener(SpringApplicationRunListener listener, ConfigurableApplicationContext context,
 			Throwable exception) {
 		try {
 			listener.failed(context, exception);
@@ -165,23 +159,22 @@ class SpringApplicationRunListeners {
 	}
 
 	/**
-     * Executes the specified action on all listeners registered for the given step name.
-     * 
-     * @param stepName the name of the step
-     * @param listenerAction the action to be executed on each listener
-     */
-    private void doWithListeners(String stepName, Consumer<SpringApplicationRunListener> listenerAction) {
+	 * Executes the specified action on all listeners registered for the given step name.
+	 * @param stepName the name of the step
+	 * @param listenerAction the action to be executed on each listener
+	 */
+	private void doWithListeners(String stepName, Consumer<SpringApplicationRunListener> listenerAction) {
 		doWithListeners(stepName, listenerAction, null);
 	}
 
 	/**
-     * Executes the specified actions on the listeners and startup step.
-     * 
-     * @param stepName the name of the startup step
-     * @param listenerAction the action to be performed on each SpringApplicationRunListener
-     * @param stepAction the action to be performed on the StartupStep (optional)
-     */
-    private void doWithListeners(String stepName, Consumer<SpringApplicationRunListener> listenerAction,
+	 * Executes the specified actions on the listeners and startup step.
+	 * @param stepName the name of the startup step
+	 * @param listenerAction the action to be performed on each
+	 * SpringApplicationRunListener
+	 * @param stepAction the action to be performed on the StartupStep (optional)
+	 */
+	private void doWithListeners(String stepName, Consumer<SpringApplicationRunListener> listenerAction,
 			Consumer<StartupStep> stepAction) {
 		StartupStep step = this.applicationStartup.start(stepName);
 		this.listeners.forEach(listenerAction);

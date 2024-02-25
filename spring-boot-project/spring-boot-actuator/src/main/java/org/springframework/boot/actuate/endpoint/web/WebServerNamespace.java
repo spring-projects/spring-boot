@@ -40,30 +40,27 @@ public final class WebServerNamespace {
 	private final String value;
 
 	/**
-     * Constructs a new WebServerNamespace with the specified value.
-     *
-     * @param value the value of the WebServerNamespace
-     */
-    private WebServerNamespace(String value) {
+	 * Constructs a new WebServerNamespace with the specified value.
+	 * @param value the value of the WebServerNamespace
+	 */
+	private WebServerNamespace(String value) {
 		this.value = value;
 	}
 
 	/**
-     * Returns the value of the WebServerNamespace.
-     *
-     * @return the value of the WebServerNamespace
-     */
-    public String getValue() {
+	 * Returns the value of the WebServerNamespace.
+	 * @return the value of the WebServerNamespace
+	 */
+	public String getValue() {
 		return this.value;
 	}
 
 	/**
-     * Creates a WebServerNamespace object from the given value.
-     * 
-     * @param value the value to create the WebServerNamespace object from
-     * @return a WebServerNamespace object created from the given value
-     */
-    public static WebServerNamespace from(String value) {
+	 * Creates a WebServerNamespace object from the given value.
+	 * @param value the value to create the WebServerNamespace object from
+	 * @return a WebServerNamespace object created from the given value
+	 */
+	public static WebServerNamespace from(String value) {
 		if (StringUtils.hasText(value)) {
 			return new WebServerNamespace(value);
 		}
@@ -71,12 +68,12 @@ public final class WebServerNamespace {
 	}
 
 	/**
-     * Compares this WebServerNamespace object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the specified object is equal to this WebServerNamespace object, false otherwise
-     */
-    @Override
+	 * Compares this WebServerNamespace object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the specified object is equal to this WebServerNamespace object,
+	 * false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -89,11 +86,10 @@ public final class WebServerNamespace {
 	}
 
 	/**
-     * Returns the hash code value for this WebServerNamespace object.
-     * 
-     * @return the hash code value for this object
-     */
-    @Override
+	 * Returns the hash code value for this WebServerNamespace object.
+	 * @return the hash code value for this object
+	 */
+	@Override
 	public int hashCode() {
 		return this.value.hashCode();
 	}

@@ -41,12 +41,13 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 public class WebServiceTemplateAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link WebServiceTemplateBuilder} if no bean of this type is already present.
-     * 
-     * @param webServiceTemplateCustomizers the customizers for the {@link WebServiceTemplate}
-     * @return the {@link WebServiceTemplateBuilder} instance
-     */
-    @Bean
+	 * Creates a new instance of {@link WebServiceTemplateBuilder} if no bean of this type
+	 * is already present.
+	 * @param webServiceTemplateCustomizers the customizers for the
+	 * {@link WebServiceTemplate}
+	 * @return the {@link WebServiceTemplateBuilder} instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public WebServiceTemplateBuilder webServiceTemplateBuilder(
 			ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers) {

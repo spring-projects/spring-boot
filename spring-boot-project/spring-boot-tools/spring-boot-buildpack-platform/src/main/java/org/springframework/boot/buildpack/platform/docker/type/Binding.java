@@ -31,21 +31,19 @@ public final class Binding {
 	private final String value;
 
 	/**
-     * Constructs a new Binding object with the specified value.
-     *
-     * @param value the value to be assigned to the Binding object
-     */
-    private Binding(String value) {
+	 * Constructs a new Binding object with the specified value.
+	 * @param value the value to be assigned to the Binding object
+	 */
+	private Binding(String value) {
 		this.value = value;
 	}
 
 	/**
-     * Compares this Binding object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this Binding object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -57,21 +55,20 @@ public final class Binding {
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the default implementation of the hashCode() method.
-     *
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the default
+	 * implementation of the hashCode() method.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		return Objects.hash(this.value);
 	}
 
 	/**
-     * Returns a string representation of the object.
-     *
-     * @return the string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return the string representation of the object
+	 */
+	@Override
 	public String toString() {
 		return this.value;
 	}

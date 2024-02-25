@@ -35,20 +35,20 @@ public class DataSourceHealthIndicatorProperties {
 	private boolean ignoreRoutingDataSources = false;
 
 	/**
-     * Returns a boolean value indicating whether to ignore routing data sources.
-     * 
-     * @return {@code true} if routing data sources should be ignored, {@code false} otherwise
-     */
-    public boolean isIgnoreRoutingDataSources() {
+	 * Returns a boolean value indicating whether to ignore routing data sources.
+	 * @return {@code true} if routing data sources should be ignored, {@code false}
+	 * otherwise
+	 */
+	public boolean isIgnoreRoutingDataSources() {
 		return this.ignoreRoutingDataSources;
 	}
 
 	/**
-     * Sets the flag to ignore routing data sources.
-     * 
-     * @param ignoreRoutingDataSources the flag indicating whether to ignore routing data sources
-     */
-    public void setIgnoreRoutingDataSources(boolean ignoreRoutingDataSources) {
+	 * Sets the flag to ignore routing data sources.
+	 * @param ignoreRoutingDataSources the flag indicating whether to ignore routing data
+	 * sources
+	 */
+	public void setIgnoreRoutingDataSources(boolean ignoreRoutingDataSources) {
 		this.ignoreRoutingDataSources = ignoreRoutingDataSources;
 	}
 

@@ -29,13 +29,12 @@ import jakarta.websocket.server.ServerEndpoint;
 public class ReverseWebSocketEndpoint {
 
 	/**
-     * Handles incoming messages from the WebSocket session.
-     * 
-     * @param session the WebSocket session
-     * @param message the incoming message
-     * @throws IOException if an I/O error occurs while sending the reversed message
-     */
-    @OnMessage
+	 * Handles incoming messages from the WebSocket session.
+	 * @param session the WebSocket session
+	 * @param message the incoming message
+	 * @throws IOException if an I/O error occurs while sending the reversed message
+	 */
+	@OnMessage
 	public void handleMessage(Session session, String message) throws IOException {
 		session.getBasicRemote().sendText("Reversed: " + new StringBuilder(message).reverse());
 	}

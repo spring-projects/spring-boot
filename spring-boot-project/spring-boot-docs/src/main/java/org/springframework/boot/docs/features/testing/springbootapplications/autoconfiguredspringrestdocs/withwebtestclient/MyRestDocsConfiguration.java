@@ -27,11 +27,10 @@ import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
 public class MyRestDocsConfiguration implements RestDocsWebTestClientConfigurationCustomizer {
 
 	/**
-     * Customize the WebTestClientRestDocumentationConfigurer.
-     * 
-     * @param configurer the WebTestClientRestDocumentationConfigurer to customize
-     */
-    @Override
+	 * Customize the WebTestClientRestDocumentationConfigurer.
+	 * @param configurer the WebTestClientRestDocumentationConfigurer to customize
+	 */
+	@Override
 	public void customize(WebTestClientRestDocumentationConfigurer configurer) {
 		configurer.snippets().withEncoding("UTF-8");
 	}

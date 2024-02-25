@@ -27,11 +27,12 @@ import org.springframework.boot.actuate.endpoint.annotation.DiscovererEndpointFi
 class JmxEndpointFilter extends DiscovererEndpointFilter {
 
 	/**
-     * Constructs a new JmxEndpointFilter.
-     * 
-     * This constructor initializes the JmxEndpointFilter by calling the constructor of its superclass, passing the JmxEndpointDiscoverer class as an argument.
-     */
-    JmxEndpointFilter() {
+	 * Constructs a new JmxEndpointFilter.
+	 *
+	 * This constructor initializes the JmxEndpointFilter by calling the constructor of
+	 * its superclass, passing the JmxEndpointDiscoverer class as an argument.
+	 */
+	JmxEndpointFilter() {
 		super(JmxEndpointDiscoverer.class);
 	}
 

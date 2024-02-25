@@ -41,13 +41,13 @@ import org.springframework.util.ReflectionUtils;
 class ImportsContextCustomizerFactory implements ContextCustomizerFactory {
 
 	/**
-     * Creates a context customizer for the given test class and configuration attributes.
-     * 
-     * @param testClass the test class
-     * @param configAttributes the configuration attributes
-     * @return the context customizer, or null if AOT detection is enabled or no @Import annotation is found
-     */
-    @Override
+	 * Creates a context customizer for the given test class and configuration attributes.
+	 * @param testClass the test class
+	 * @param configAttributes the configuration attributes
+	 * @return the context customizer, or null if AOT detection is enabled or no @Import
+	 * annotation is found
+	 */
+	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		if (AotDetector.useGeneratedArtifacts()) {
@@ -63,21 +63,19 @@ class ImportsContextCustomizerFactory implements ContextCustomizerFactory {
 	}
 
 	/**
-     * Asserts that the given test class has no bean methods.
-     * 
-     * @param testClass the test class to check
-     */
-    private void assertHasNoBeanMethods(Class<?> testClass) {
+	 * Asserts that the given test class has no bean methods.
+	 * @param testClass the test class to check
+	 */
+	private void assertHasNoBeanMethods(Class<?> testClass) {
 		ReflectionUtils.doWithMethods(testClass, this::assertHasNoBeanMethods);
 	}
 
 	/**
-     * Asserts that the given method does not have any bean methods.
-     * 
-     * @param method the method to be checked
-     * @throws IllegalStateException if the method includes @Bean methods
-     */
-    private void assertHasNoBeanMethods(Method method) {
+	 * Asserts that the given method does not have any bean methods.
+	 * @param method the method to be checked
+	 * @throws IllegalStateException if the method includes @Bean methods
+	 */
+	private void assertHasNoBeanMethods(Method method) {
 		Assert.state(!MergedAnnotations.from(method).isPresent(Bean.class),
 				"Test classes cannot include @Bean methods");
 	}

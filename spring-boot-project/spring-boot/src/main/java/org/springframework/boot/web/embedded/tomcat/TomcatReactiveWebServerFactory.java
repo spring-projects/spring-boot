@@ -115,23 +115,22 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	/**
-     * Returns the default server lifecycle listeners for the Tomcat Reactive Web Server Factory.
-     * 
-     * @return the list of default server lifecycle listeners
-     */
-    private static List<LifecycleListener> getDefaultServerLifecycleListeners() {
+	 * Returns the default server lifecycle listeners for the Tomcat Reactive Web Server
+	 * Factory.
+	 * @return the list of default server lifecycle listeners
+	 */
+	private static List<LifecycleListener> getDefaultServerLifecycleListeners() {
 		AprLifecycleListener aprLifecycleListener = new AprLifecycleListener();
 		return AprLifecycleListener.isAprAvailable() ? new ArrayList<>(Arrays.asList(aprLifecycleListener))
 				: new ArrayList<>();
 	}
 
 	/**
-     * Returns a WebServer instance configured with Tomcat.
-     *
-     * @param httpHandler the HttpHandler to be used by the WebServer
-     * @return a WebServer instance configured with Tomcat
-     */
-    @Override
+	 * Returns a WebServer instance configured with Tomcat.
+	 * @param httpHandler the HttpHandler to be used by the WebServer
+	 * @return a WebServer instance configured with Tomcat
+	 */
+	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		if (this.disableMBeanRegistry) {
 			Registry.disableRegistry();
@@ -160,23 +159,21 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	/**
-     * Registers the given Connector's Executor with the provided Tomcat instance.
-     * 
-     * @param tomcat the Tomcat instance to register the Executor with
-     * @param connector the Connector whose Executor needs to be registered
-     */
-    private void registerConnectorExecutor(Tomcat tomcat, Connector connector) {
+	 * Registers the given Connector's Executor with the provided Tomcat instance.
+	 * @param tomcat the Tomcat instance to register the Executor with
+	 * @param connector the Connector whose Executor needs to be registered
+	 */
+	private void registerConnectorExecutor(Tomcat tomcat, Connector connector) {
 		if (connector.getProtocolHandler().getExecutor() instanceof Executor executor) {
 			tomcat.getService().addExecutor(executor);
 		}
 	}
 
 	/**
-     * Configures the engine of the Tomcat Reactive Web Server.
-     * 
-     * @param engine the engine to be configured
-     */
-    private void configureEngine(Engine engine) {
+	 * Configures the engine of the Tomcat Reactive Web Server.
+	 * @param engine the engine to be configured
+	 */
+	private void configureEngine(Engine engine) {
 		engine.setBackgroundProcessorDelay(this.backgroundProcessorDelay);
 		for (Valve valve : this.engineValves) {
 			engine.getPipeline().addValve(valve);
@@ -184,12 +181,11 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	/**
-     * Prepares the context for the given host and servlet.
-     * 
-     * @param host the host to which the context will be added
-     * @param servlet the servlet to be added to the context
-     */
-    protected void prepareContext(Host host, TomcatHttpHandlerAdapter servlet) {
+	 * Prepares the context for the given host and servlet.
+	 * @param host the host to which the context will be added
+	 * @param servlet the servlet to be added to the context
+	 */
+	protected void prepareContext(Host host, TomcatHttpHandlerAdapter servlet) {
 		File docBase = createTempDir("tomcat-docbase");
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		context.setPath("");
@@ -209,11 +205,10 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	/**
-     * Skips scanning of all TLD files in the given TomcatEmbeddedContext.
-     * 
-     * @param context the TomcatEmbeddedContext to skip TLD scanning for
-     */
-    private void skipAllTldScanning(TomcatEmbeddedContext context) {
+	 * Skips scanning of all TLD files in the given TomcatEmbeddedContext.
+	 * @param context the TomcatEmbeddedContext to skip TLD scanning for
+	 */
+	private void skipAllTldScanning(TomcatEmbeddedContext context) {
 		StandardJarScanFilter filter = new StandardJarScanFilter();
 		filter.setTldSkip("*.jar");
 		context.getJarScanner().setJarScanFilter(filter);
@@ -230,11 +225,10 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	/**
-     * Customizes the given Connector object.
-     * 
-     * @param connector the Connector object to be customized
-     */
-    protected void customizeConnector(Connector connector) {
+	 * Customizes the given Connector object.
+	 * @param connector the Connector object to be customized
+	 */
+	protected void customizeConnector(Connector connector) {
 		int port = Math.max(getPort(), 0);
 		connector.setPort(port);
 		if (StringUtils.hasText(getServerHeader())) {
@@ -261,11 +255,10 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	/**
-     * Invokes the protocol handler customizers for the given protocol handler.
-     * 
-     * @param protocolHandler the protocol handler to customize
-     */
-    @SuppressWarnings("unchecked")
+	 * Invokes the protocol handler customizers for the given protocol handler.
+	 * @param protocolHandler the protocol handler to customize
+	 */
+	@SuppressWarnings("unchecked")
 	private void invokeProtocolHandlerCustomizers(ProtocolHandler protocolHandler) {
 		LambdaSafe
 			.callbacks(TomcatProtocolHandlerCustomizer.class, this.tomcatProtocolHandlerCustomizers, protocolHandler)
@@ -273,22 +266,20 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	/**
-     * Customizes the protocol of the given AbstractProtocol object.
-     * 
-     * @param protocol the AbstractProtocol object to be customized
-     */
-    private void customizeProtocol(AbstractProtocol<?> protocol) {
+	 * Customizes the protocol of the given AbstractProtocol object.
+	 * @param protocol the AbstractProtocol object to be customized
+	 */
+	private void customizeProtocol(AbstractProtocol<?> protocol) {
 		if (getAddress() != null) {
 			protocol.setAddress(getAddress());
 		}
 	}
 
 	/**
-     * Customizes the SSL configuration for the given connector.
-     * 
-     * @param connector the connector to customize
-     */
-    private void customizeSsl(Connector connector) {
+	 * Customizes the SSL configuration for the given connector.
+	 * @param connector the connector to customize
+	 */
+	private void customizeSsl(Connector connector) {
 		SslConnectorCustomizer customizer = new SslConnectorCustomizer(logger, connector, getSsl().getClientAuth());
 		customizer.customize(getSslBundle());
 		String sslBundleName = getSsl().getBundle();
@@ -298,21 +289,19 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	/**
-     * Sets the base directory for the web server.
-     * 
-     * @param baseDirectory the base directory to set
-     */
-    @Override
+	 * Sets the base directory for the web server.
+	 * @param baseDirectory the base directory to set
+	 */
+	@Override
 	public void setBaseDirectory(File baseDirectory) {
 		this.baseDirectory = baseDirectory;
 	}
 
 	/**
-     * Sets the delay for the background processor in milliseconds.
-     * 
-     * @param delay the delay in milliseconds
-     */
-    @Override
+	 * Sets the delay for the background processor in milliseconds.
+	 * @param delay the delay in milliseconds
+	 */
+	@Override
 	public void setBackgroundProcessorDelay(int delay) {
 		this.backgroundProcessorDelay = delay;
 	}
@@ -436,11 +425,10 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	/**
-     * Adds engine valves to the Tomcat reactive web server factory.
-     * 
-     * @param engineValves the engine valves to be added (must not be null)
-     */
-    @Override
+	 * Adds engine valves to the Tomcat reactive web server factory.
+	 * @param engineValves the engine valves to be added (must not be null)
+	 */
+	@Override
 	public void addEngineValves(Valve... engineValves) {
 		Assert.notNull(engineValves, "Valves must not be null");
 		this.engineValves.addAll(Arrays.asList(engineValves));

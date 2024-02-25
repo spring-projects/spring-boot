@@ -44,12 +44,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 public class GraphQlWebMvcSecurityAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link SecurityDataFetcherExceptionResolver} if no other bean of the same type is present.
-     * This resolver is responsible for handling security-related exceptions that occur during data fetching in GraphQL.
-     * 
-     * @return the {@link SecurityDataFetcherExceptionResolver} instance
-     */
-    @Bean
+	 * Creates a new instance of {@link SecurityDataFetcherExceptionResolver} if no other
+	 * bean of the same type is present. This resolver is responsible for handling
+	 * security-related exceptions that occur during data fetching in GraphQL.
+	 * @return the {@link SecurityDataFetcherExceptionResolver} instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public SecurityDataFetcherExceptionResolver securityDataFetcherExceptionResolver() {
 		return new SecurityDataFetcherExceptionResolver();

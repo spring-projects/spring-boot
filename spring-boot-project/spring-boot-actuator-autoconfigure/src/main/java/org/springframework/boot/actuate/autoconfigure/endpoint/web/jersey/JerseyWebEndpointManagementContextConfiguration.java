@@ -84,16 +84,15 @@ class JerseyWebEndpointManagementContextConfiguration {
 	private static final EndpointId HEALTH_ENDPOINT_ID = EndpointId.of("health");
 
 	/**
-     * Creates and returns a JerseyWebEndpointsResourcesRegistrar bean.
-     * 
-     * @param environment The environment object.
-     * @param webEndpointsSupplier The supplier for web endpoints.
-     * @param servletEndpointsSupplier The supplier for servlet endpoints.
-     * @param endpointMediaTypes The media types for the endpoints.
-     * @param webEndpointProperties The properties for web endpoints.
-     * @return The created JerseyWebEndpointsResourcesRegistrar bean.
-     */
-    @Bean
+	 * Creates and returns a JerseyWebEndpointsResourcesRegistrar bean.
+	 * @param environment The environment object.
+	 * @param webEndpointsSupplier The supplier for web endpoints.
+	 * @param servletEndpointsSupplier The supplier for servlet endpoints.
+	 * @param endpointMediaTypes The media types for the endpoints.
+	 * @param webEndpointProperties The properties for web endpoints.
+	 * @return The created JerseyWebEndpointsResourcesRegistrar bean.
+	 */
+	@Bean
 	JerseyWebEndpointsResourcesRegistrar jerseyWebEndpointsResourcesRegistrar(Environment environment,
 			WebEndpointsSupplier webEndpointsSupplier, ServletEndpointsSupplier servletEndpointsSupplier,
 			EndpointMediaTypes endpointMediaTypes, WebEndpointProperties webEndpointProperties) {
@@ -104,16 +103,16 @@ class JerseyWebEndpointManagementContextConfiguration {
 	}
 
 	/**
-     * Registers additional management resources for the health endpoint on a different port using Jersey.
-     * This method is conditionally executed based on the presence of a management port of type DIFFERENT,
-     * the presence of a HealthEndpoint bean, and the availability of the HealthEndpoint as a web endpoint.
-     * 
-     * @param webEndpointsSupplier The supplier for web endpoints.
-     * @param healthEndpointGroups The groups of health endpoints.
-     * @return The registrar for additional health endpoint paths management resources.
-     * @throws IllegalStateException if no endpoint with the specified id is found.
-     */
-    @Bean
+	 * Registers additional management resources for the health endpoint on a different
+	 * port using Jersey. This method is conditionally executed based on the presence of a
+	 * management port of type DIFFERENT, the presence of a HealthEndpoint bean, and the
+	 * availability of the HealthEndpoint as a web endpoint.
+	 * @param webEndpointsSupplier The supplier for web endpoints.
+	 * @param healthEndpointGroups The groups of health endpoints.
+	 * @return The registrar for additional health endpoint paths management resources.
+	 * @throws IllegalStateException if no endpoint with the specified id is found.
+	 */
+	@Bean
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	@ConditionalOnBean(HealthEndpoint.class)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
@@ -129,13 +128,15 @@ class JerseyWebEndpointManagementContextConfiguration {
 	}
 
 	/**
-     * Returns a ResourceConfigCustomizer that registers an EndpointObjectMapperContextResolver
-     * with the provided EndpointObjectMapper as a ContextResolver.
-     * 
-     * @param endpointObjectMapper the EndpointObjectMapper to be used by the EndpointObjectMapperContextResolver
-     * @return the ResourceConfigCustomizer that registers the EndpointObjectMapperContextResolver
-     */
-    @Bean
+	 * Returns a ResourceConfigCustomizer that registers an
+	 * EndpointObjectMapperContextResolver with the provided EndpointObjectMapper as a
+	 * ContextResolver.
+	 * @param endpointObjectMapper the EndpointObjectMapper to be used by the
+	 * EndpointObjectMapperContextResolver
+	 * @return the ResourceConfigCustomizer that registers the
+	 * EndpointObjectMapperContextResolver
+	 */
+	@Bean
 	@ConditionalOnBean(EndpointObjectMapper.class)
 	ResourceConfigCustomizer endpointObjectMapperResourceConfigCustomizer(EndpointObjectMapper endpointObjectMapper) {
 		return (config) -> config.register(new EndpointObjectMapperContextResolver(endpointObjectMapper),
@@ -143,14 +144,14 @@ class JerseyWebEndpointManagementContextConfiguration {
 	}
 
 	/**
-     * Determines whether links mapping should be registered based on the provided properties, environment, and base path.
-     * 
-     * @param properties the web endpoint properties
-     * @param environment the environment
-     * @param basePath the base path
-     * @return {@code true} if links mapping should be registered, {@code false} otherwise
-     */
-    private boolean shouldRegisterLinksMapping(WebEndpointProperties properties, Environment environment,
+	 * Determines whether links mapping should be registered based on the provided
+	 * properties, environment, and base path.
+	 * @param properties the web endpoint properties
+	 * @param environment the environment
+	 * @param basePath the base path
+	 * @return {@code true} if links mapping should be registered, {@code false} otherwise
+	 */
+	private boolean shouldRegisterLinksMapping(WebEndpointProperties properties, Environment environment,
 			String basePath) {
 		return properties.getDiscovery().isEnabled() && (StringUtils.hasText(basePath)
 				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT));
@@ -172,15 +173,15 @@ class JerseyWebEndpointManagementContextConfiguration {
 		private final boolean shouldRegisterLinks;
 
 		/**
-         * Constructs a new instance of JerseyWebEndpointsResourcesRegistrar with the specified parameters.
-         *
-         * @param webEndpointsSupplier the supplier for web endpoints
-         * @param servletEndpointsSupplier the supplier for servlet endpoints
-         * @param endpointMediaTypes the media types for the endpoints
-         * @param basePath the base path for the endpoints
-         * @param shouldRegisterLinks true if links should be registered, false otherwise
-         */
-        JerseyWebEndpointsResourcesRegistrar(WebEndpointsSupplier webEndpointsSupplier,
+		 * Constructs a new instance of JerseyWebEndpointsResourcesRegistrar with the
+		 * specified parameters.
+		 * @param webEndpointsSupplier the supplier for web endpoints
+		 * @param servletEndpointsSupplier the supplier for servlet endpoints
+		 * @param endpointMediaTypes the media types for the endpoints
+		 * @param basePath the base path for the endpoints
+		 * @param shouldRegisterLinks true if links should be registered, false otherwise
+		 */
+		JerseyWebEndpointsResourcesRegistrar(WebEndpointsSupplier webEndpointsSupplier,
 				ServletEndpointsSupplier servletEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
 				String basePath, boolean shouldRegisterLinks) {
 			this.webEndpointsSupplier = webEndpointsSupplier;
@@ -191,22 +192,21 @@ class JerseyWebEndpointManagementContextConfiguration {
 		}
 
 		/**
-         * This method is used to customize the ResourceConfig object.
-         * It registers the configuration with the provided ResourceConfig object.
-         *
-         * @param config the ResourceConfig object to be customized
-         */
-        @Override
+		 * This method is used to customize the ResourceConfig object. It registers the
+		 * configuration with the provided ResourceConfig object.
+		 * @param config the ResourceConfig object to be customized
+		 */
+		@Override
 		public void customize(ResourceConfig config) {
 			register(config);
 		}
 
 		/**
-         * Registers the Jersey endpoint resources with the given configuration.
-         * 
-         * @param config the resource configuration to register the endpoint resources with
-         */
-        private void register(ResourceConfig config) {
+		 * Registers the Jersey endpoint resources with the given configuration.
+		 * @param config the resource configuration to register the endpoint resources
+		 * with
+		 */
+		private void register(ResourceConfig config) {
 			Collection<ExposableWebEndpoint> webEndpoints = this.webEndpointsSupplier.getEndpoints();
 			Collection<ExposableServletEndpoint> servletEndpoints = this.servletEndpointsSupplier.getEndpoints();
 			EndpointLinksResolver linksResolver = getLinksResolver(webEndpoints, servletEndpoints);
@@ -217,13 +217,13 @@ class JerseyWebEndpointManagementContextConfiguration {
 		}
 
 		/**
-         * Returns an instance of EndpointLinksResolver that resolves links for the given web endpoints and servlet endpoints.
-         * 
-         * @param webEndpoints the collection of web endpoints
-         * @param servletEndpoints the collection of servlet endpoints
-         * @return an instance of EndpointLinksResolver
-         */
-        private EndpointLinksResolver getLinksResolver(Collection<ExposableWebEndpoint> webEndpoints,
+		 * Returns an instance of EndpointLinksResolver that resolves links for the given
+		 * web endpoints and servlet endpoints.
+		 * @param webEndpoints the collection of web endpoints
+		 * @param servletEndpoints the collection of servlet endpoints
+		 * @return an instance of EndpointLinksResolver
+		 */
+		private EndpointLinksResolver getLinksResolver(Collection<ExposableWebEndpoint> webEndpoints,
 				Collection<ExposableServletEndpoint> servletEndpoints) {
 			List<ExposableEndpoint<?>> endpoints = new ArrayList<>(webEndpoints.size() + servletEndpoints.size());
 			endpoints.addAll(webEndpoints);
@@ -232,21 +232,20 @@ class JerseyWebEndpointManagementContextConfiguration {
 		}
 
 		/**
-         * Registers a collection of resources with the given configuration.
-         * 
-         * @param resources the collection of resources to be registered
-         * @param config the resource configuration to be used for registration
-         */
-        private void register(Collection<Resource> resources, ResourceConfig config) {
+		 * Registers a collection of resources with the given configuration.
+		 * @param resources the collection of resources to be registered
+		 * @param config the resource configuration to be used for registration
+		 */
+		private void register(Collection<Resource> resources, ResourceConfig config) {
 			config.registerResources(new HashSet<>(resources));
 		}
 
 	}
 
 	/**
-     * JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar class.
-     */
-    class JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar
+	 * JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar class.
+	 */
+	class JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar
 			implements ManagementContextResourceConfigCustomizer {
 
 		private final ExposableWebEndpoint endpoint;
@@ -254,34 +253,32 @@ class JerseyWebEndpointManagementContextConfiguration {
 		private final HealthEndpointGroups groups;
 
 		/**
-         * Constructs a new JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar with the specified
-         * ExposableWebEndpoint and HealthEndpointGroups.
-         *
-         * @param endpoint the ExposableWebEndpoint to be used
-         * @param groups the HealthEndpointGroups to be used
-         */
-        JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(ExposableWebEndpoint endpoint,
+		 * Constructs a new
+		 * JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar with the
+		 * specified ExposableWebEndpoint and HealthEndpointGroups.
+		 * @param endpoint the ExposableWebEndpoint to be used
+		 * @param groups the HealthEndpointGroups to be used
+		 */
+		JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(ExposableWebEndpoint endpoint,
 				HealthEndpointGroups groups) {
 			this.endpoint = endpoint;
 			this.groups = groups;
 		}
 
 		/**
-         * Customizes the given ResourceConfig object.
-         * 
-         * @param config the ResourceConfig object to be customized
-         */
-        @Override
+		 * Customizes the given ResourceConfig object.
+		 * @param config the ResourceConfig object to be customized
+		 */
+		@Override
 		public void customize(ResourceConfig config) {
 			register(config);
 		}
 
 		/**
-         * Registers the additional health endpoint paths management resources.
-         * 
-         * @param config the resource configuration
-         */
-        private void register(ResourceConfig config) {
+		 * Registers the additional health endpoint paths management resources.
+		 * @param config the resource configuration
+		 */
+		private void register(ResourceConfig config) {
 			EndpointMapping mapping = new EndpointMapping("");
 			JerseyHealthEndpointAdditionalPathResourceFactory resourceFactory = new JerseyHealthEndpointAdditionalPathResourceFactory(
 					WebServerNamespace.MANAGEMENT, this.groups);
@@ -294,12 +291,11 @@ class JerseyWebEndpointManagementContextConfiguration {
 		}
 
 		/**
-         * Registers a collection of resources with the given configuration.
-         *
-         * @param resources the collection of resources to register
-         * @param config the resource configuration to use for registration
-         */
-        private void register(Collection<Resource> resources, ResourceConfig config) {
+		 * Registers a collection of resources with the given configuration.
+		 * @param resources the collection of resources to register
+		 * @param config the resource configuration to use for registration
+		 */
+		private void register(Collection<Resource> resources, ResourceConfig config) {
 			config.registerResources(new HashSet<>(resources));
 		}
 
@@ -315,21 +311,22 @@ class JerseyWebEndpointManagementContextConfiguration {
 		private final EndpointObjectMapper endpointObjectMapper;
 
 		/**
-         * Constructs a new EndpointObjectMapperContextResolver with the specified EndpointObjectMapper.
-         * 
-         * @param endpointObjectMapper the EndpointObjectMapper to be used by this context resolver
-         */
-        private EndpointObjectMapperContextResolver(EndpointObjectMapper endpointObjectMapper) {
+		 * Constructs a new EndpointObjectMapperContextResolver with the specified
+		 * EndpointObjectMapper.
+		 * @param endpointObjectMapper the EndpointObjectMapper to be used by this context
+		 * resolver
+		 */
+		private EndpointObjectMapperContextResolver(EndpointObjectMapper endpointObjectMapper) {
 			this.endpointObjectMapper = endpointObjectMapper;
 		}
 
 		/**
-         * Returns the ObjectMapper instance based on the given class type.
-         * 
-         * @param type the class type for which the ObjectMapper instance is requested
-         * @return the ObjectMapper instance if the given class type is assignable from OperationResponseBody class, otherwise null
-         */
-        @Override
+		 * Returns the ObjectMapper instance based on the given class type.
+		 * @param type the class type for which the ObjectMapper instance is requested
+		 * @return the ObjectMapper instance if the given class type is assignable from
+		 * OperationResponseBody class, otherwise null
+		 */
+		@Override
 		public ObjectMapper getContext(Class<?> type) {
 			return OperationResponseBody.class.isAssignableFrom(type) ? this.endpointObjectMapper.get() : null;
 		}

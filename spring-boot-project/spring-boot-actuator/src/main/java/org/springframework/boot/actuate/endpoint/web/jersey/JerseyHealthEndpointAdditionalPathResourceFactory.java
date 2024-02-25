@@ -49,25 +49,27 @@ public final class JerseyHealthEndpointAdditionalPathResourceFactory {
 	private final WebServerNamespace serverNamespace;
 
 	/**
-     * Constructs a new JerseyHealthEndpointAdditionalPathResourceFactory with the specified serverNamespace and groups.
-     * 
-     * @param serverNamespace the WebServerNamespace to be used
-     * @param groups the HealthEndpointGroups containing additional paths for the serverNamespace
-     */
-    public JerseyHealthEndpointAdditionalPathResourceFactory(WebServerNamespace serverNamespace,
+	 * Constructs a new JerseyHealthEndpointAdditionalPathResourceFactory with the
+	 * specified serverNamespace and groups.
+	 * @param serverNamespace the WebServerNamespace to be used
+	 * @param groups the HealthEndpointGroups containing additional paths for the
+	 * serverNamespace
+	 */
+	public JerseyHealthEndpointAdditionalPathResourceFactory(WebServerNamespace serverNamespace,
 			HealthEndpointGroups groups) {
 		this.serverNamespace = serverNamespace;
 		this.groups = groups.getAllWithAdditionalPath(serverNamespace);
 	}
 
 	/**
-     * Creates a collection of resources for the given endpoint mapping and list of exposable web endpoints.
-     * 
-     * @param endpointMapping the endpoint mapping to use for creating the resources
-     * @param endpoints the list of exposable web endpoints
-     * @return a collection of resources created for the given endpoint mapping and list of exposable web endpoints
-     */
-    public Collection<Resource> createEndpointResources(EndpointMapping endpointMapping,
+	 * Creates a collection of resources for the given endpoint mapping and list of
+	 * exposable web endpoints.
+	 * @param endpointMapping the endpoint mapping to use for creating the resources
+	 * @param endpoints the list of exposable web endpoints
+	 * @return a collection of resources created for the given endpoint mapping and list
+	 * of exposable web endpoints
+	 */
+	public Collection<Resource> createEndpointResources(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints) {
 		return endpoints.stream()
 			.flatMap((endpoint) -> endpoint.getOperations().stream())
@@ -76,13 +78,13 @@ public final class JerseyHealthEndpointAdditionalPathResourceFactory {
 	}
 
 	/**
-     * Creates a stream of resources based on the given endpoint mapping and web operation.
-     * 
-     * @param endpointMapping the endpoint mapping to create resources for
-     * @param operation the web operation to create resources for
-     * @return a stream of resources
-     */
-    private Stream<Resource> createResources(EndpointMapping endpointMapping, WebOperation operation) {
+	 * Creates a stream of resources based on the given endpoint mapping and web
+	 * operation.
+	 * @param endpointMapping the endpoint mapping to create resources for
+	 * @param operation the web operation to create resources for
+	 * @return a stream of resources
+	 */
+	private Stream<Resource> createResources(EndpointMapping endpointMapping, WebOperation operation) {
 		WebOperationRequestPredicate requestPredicate = operation.getRequestPredicate();
 		String matchAllRemainingPathSegmentsVariable = requestPredicate.getMatchAllRemainingPathSegmentsVariable();
 		if (matchAllRemainingPathSegmentsVariable != null) {

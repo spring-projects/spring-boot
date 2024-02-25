@@ -33,20 +33,18 @@ public class MongoSessionProperties {
 	private String collectionName = "sessions";
 
 	/**
-     * Returns the name of the collection.
-     *
-     * @return the name of the collection
-     */
-    public String getCollectionName() {
+	 * Returns the name of the collection.
+	 * @return the name of the collection
+	 */
+	public String getCollectionName() {
 		return this.collectionName;
 	}
 
 	/**
-     * Sets the name of the collection.
-     * 
-     * @param collectionName the name of the collection
-     */
-    public void setCollectionName(String collectionName) {
+	 * Sets the name of the collection.
+	 * @param collectionName the name of the collection
+	 */
+	public void setCollectionName(String collectionName) {
 		this.collectionName = collectionName;
 	}
 

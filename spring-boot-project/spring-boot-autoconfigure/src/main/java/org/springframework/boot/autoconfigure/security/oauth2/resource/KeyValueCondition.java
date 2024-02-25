@@ -33,13 +33,12 @@ import org.springframework.util.StringUtils;
 public class KeyValueCondition extends SpringBootCondition {
 
 	/**
-     * Determines the match outcome for the KeyValueCondition.
-     * 
-     * @param context the ConditionContext
-     * @param metadata the AnnotatedTypeMetadata
-     * @return the ConditionOutcome indicating the match outcome
-     */
-    @Override
+	 * Determines the match outcome for the KeyValueCondition.
+	 * @param context the ConditionContext
+	 * @param metadata the AnnotatedTypeMetadata
+	 * @return the ConditionOutcome indicating the match outcome
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("Public Key Value Condition");
 		Environment environment = context.getEnvironment();

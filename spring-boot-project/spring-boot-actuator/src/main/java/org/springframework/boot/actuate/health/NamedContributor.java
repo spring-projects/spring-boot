@@ -47,21 +47,19 @@ public interface NamedContributor<C> {
 		return new NamedContributor<>() {
 
 			/**
-     * Returns the name of the NamedContributor.
-     *
-     * @return the name of the NamedContributor
-     */
-    @Override
+			 * Returns the name of the NamedContributor.
+			 * @return the name of the NamedContributor
+			 */
+			@Override
 			public String getName() {
 				return name;
 			}
 
 			/**
-     * Returns the contributor of this NamedContributor object.
-     *
-     * @return the contributor of this NamedContributor object
-     */
-    @Override
+			 * Returns the contributor of this NamedContributor object.
+			 * @return the contributor of this NamedContributor object
+			 */
+			@Override
 			public C getContributor() {
 				return contributor;
 			}

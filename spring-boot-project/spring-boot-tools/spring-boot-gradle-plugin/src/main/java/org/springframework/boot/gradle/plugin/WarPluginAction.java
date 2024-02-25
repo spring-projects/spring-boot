@@ -47,30 +47,28 @@ class WarPluginAction implements PluginApplicationAction {
 	private final SinglePublishedArtifact singlePublishedArtifact;
 
 	/**
-     * Executes the WarPluginAction with the given SinglePublishedArtifact.
-     * 
-     * @param singlePublishedArtifact The SinglePublishedArtifact to be used in the action.
-     */
-    WarPluginAction(SinglePublishedArtifact singlePublishedArtifact) {
+	 * Executes the WarPluginAction with the given SinglePublishedArtifact.
+	 * @param singlePublishedArtifact The SinglePublishedArtifact to be used in the
+	 * action.
+	 */
+	WarPluginAction(SinglePublishedArtifact singlePublishedArtifact) {
 		this.singlePublishedArtifact = singlePublishedArtifact;
 	}
 
 	/**
-     * Returns the class of the plugin associated with this action.
-     *
-     * @return the class of the plugin
-     */
-    @Override
+	 * Returns the class of the plugin associated with this action.
+	 * @return the class of the plugin
+	 */
+	@Override
 	public Class<? extends Plugin<? extends Project>> getPluginClass() {
 		return WarPlugin.class;
 	}
 
 	/**
-     * Executes the WarPluginAction for the given project.
-     * 
-     * @param project the project to execute the action on
-     */
-    @Override
+	 * Executes the WarPluginAction for the given project.
+	 * @param project the project to execute the action on
+	 */
+	@Override
 	public void execute(Project project) {
 		classifyWarTask(project);
 		TaskProvider<BootWar> bootWar = configureBootWarTask(project);
@@ -79,24 +77,22 @@ class WarPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Classifies the war task of the given project.
-     * The war task is configured to have the archive classifier set to "plain".
-     *
-     * @param project the project to classify the war task for
-     */
-    private void classifyWarTask(Project project) {
+	 * Classifies the war task of the given project. The war task is configured to have
+	 * the archive classifier set to "plain".
+	 * @param project the project to classify the war task for
+	 */
+	private void classifyWarTask(Project project) {
 		project.getTasks()
 			.named(WarPlugin.WAR_TASK_NAME, War.class)
 			.configure((war) -> war.getArchiveClassifier().convention("plain"));
 	}
 
 	/**
-     * Configures the BootWar task for the project.
-     * 
-     * @param project The project to configure the task for.
-     * @return The TaskProvider for the configured BootWar task.
-     */
-    private TaskProvider<BootWar> configureBootWarTask(Project project) {
+	 * Configures the BootWar task for the project.
+	 * @param project The project to configure the task for.
+	 * @return The TaskProvider for the configured BootWar task.
+	 */
+	private TaskProvider<BootWar> configureBootWarTask(Project project) {
 		Configuration developmentOnly = project.getConfigurations()
 			.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration testAndDevelopmentOnly = project.getConfigurations()
@@ -136,44 +132,40 @@ class WarPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Returns the provided runtime configuration for the given project.
-     * 
-     * @param project the project for which the configuration is required
-     * @return the provided runtime configuration
-     */
-    private FileCollection providedRuntimeConfiguration(Project project) {
+	 * Returns the provided runtime configuration for the given project.
+	 * @param project the project for which the configuration is required
+	 * @return the provided runtime configuration
+	 */
+	private FileCollection providedRuntimeConfiguration(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
 		return configurations.getByName(WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME);
 	}
 
 	/**
-     * Configures the boot build image task for the given project and boot war task.
-     * 
-     * @param project the project to configure the task for
-     * @param bootWar the boot war task provider
-     */
-    private void configureBootBuildImageTask(Project project, TaskProvider<BootWar> bootWar) {
+	 * Configures the boot build image task for the given project and boot war task.
+	 * @param project the project to configure the task for
+	 * @param bootWar the boot war task provider
+	 */
+	private void configureBootBuildImageTask(Project project, TaskProvider<BootWar> bootWar) {
 		project.getTasks()
 			.named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
 			.configure((buildImage) -> buildImage.getArchiveFile().set(bootWar.get().getArchiveFile()));
 	}
 
 	/**
-     * Configures the publication of the artifact.
-     * 
-     * @param bootWar The task provider for the BootWar task.
-     */
-    private void configureArtifactPublication(TaskProvider<BootWar> bootWar) {
+	 * Configures the publication of the artifact.
+	 * @param bootWar The task provider for the BootWar task.
+	 */
+	private void configureArtifactPublication(TaskProvider<BootWar> bootWar) {
 		this.singlePublishedArtifact.addWarCandidate(bootWar);
 	}
 
 	/**
-     * Returns the JavaPluginExtension associated with the given project.
-     *
-     * @param project the project to retrieve the JavaPluginExtension from
-     * @return the JavaPluginExtension associated with the project
-     */
-    private JavaPluginExtension javaPluginExtension(Project project) {
+	 * Returns the JavaPluginExtension associated with the given project.
+	 * @param project the project to retrieve the JavaPluginExtension from
+	 * @return the JavaPluginExtension associated with the project
+	 */
+	private JavaPluginExtension javaPluginExtension(Project project) {
 		return project.getExtensions().getByType(JavaPluginExtension.class);
 	}
 

@@ -57,23 +57,21 @@ public class WebServiceServerTypeExcludeFilter
 	private final Class<?>[] endpoints;
 
 	/**
-     * Constructs a new WebServiceServerTypeExcludeFilter with the specified test class.
-     * 
-     * @param testClass the test class to be used for constructing the filter
-     */
-    WebServiceServerTypeExcludeFilter(Class<?> testClass) {
+	 * Constructs a new WebServiceServerTypeExcludeFilter with the specified test class.
+	 * @param testClass the test class to be used for constructing the filter
+	 */
+	WebServiceServerTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 		this.endpoints = getAnnotation().getValue("endpoints", Class[].class).orElse(NO_ENDPOINTS);
 	}
 
 	/**
-     * Returns the default set of classes to include in the filtering process.
-     * If the endpoints are empty, the method returns the default includes and endpoints.
-     * Otherwise, it returns the default includes.
-     *
-     * @return the default set of classes to include
-     */
-    @Override
+	 * Returns the default set of classes to include in the filtering process. If the
+	 * endpoints are empty, the method returns the default includes and endpoints.
+	 * Otherwise, it returns the default includes.
+	 * @return the default set of classes to include
+	 */
+	@Override
 	protected Set<Class<?>> getDefaultIncludes() {
 		if (ObjectUtils.isEmpty(this.endpoints)) {
 			return DEFAULT_INCLUDES_AND_ENDPOINT;
@@ -82,11 +80,10 @@ public class WebServiceServerTypeExcludeFilter
 	}
 
 	/**
-     * Returns the set of component classes to be included.
-     * 
-     * @return the set of component classes to be included
-     */
-    @Override
+	 * Returns the set of component classes to be included.
+	 * @return the set of component classes to be included
+	 */
+	@Override
 	protected Set<Class<?>> getComponentIncludes() {
 		return new LinkedHashSet<>(Arrays.asList(this.endpoints));
 	}

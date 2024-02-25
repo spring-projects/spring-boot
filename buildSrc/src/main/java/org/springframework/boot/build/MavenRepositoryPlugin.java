@@ -53,11 +53,11 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 	public static final String PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME = "publishMavenPublicationToProjectRepository";
 
 	/**
-     * Applies the MavenPublishPlugin to the given project and sets up the project repository for publishing.
-     * 
-     * @param project the project to apply the MavenPublishPlugin to
-     */
-    @Override
+	 * Applies the MavenPublishPlugin to the given project and sets up the project
+	 * repository for publishing.
+	 * @param project the project to apply the MavenPublishPlugin to
+	 */
+	@Override
 	public void apply(Project project) {
 		project.getPlugins().apply(MavenPublishPlugin.class);
 		PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
@@ -75,17 +75,16 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * Sets up the project repository by performing the following tasks:
-     * 1. Cleans the repository location before publishing the project.
-     * 2. Creates a configuration for the project repository.
-     * 3. Adds the repository location as an artifact to the project.
-     * 4. Adds Maven repository dependencies to the project based on the plugin type.
-     * 
-     * @param project The project for which the repository is being set up.
-     * @param publishTask The task responsible for publishing the project.
-     * @param repositoryLocation The location of the repository.
-     */
-    private void setUpProjectRepository(Project project, Task publishTask, File repositoryLocation) {
+	 * Sets up the project repository by performing the following tasks: 1. Cleans the
+	 * repository location before publishing the project. 2. Creates a configuration for
+	 * the project repository. 3. Adds the repository location as an artifact to the
+	 * project. 4. Adds Maven repository dependencies to the project based on the plugin
+	 * type.
+	 * @param project The project for which the repository is being set up.
+	 * @param publishTask The task responsible for publishing the project.
+	 * @param repositoryLocation The location of the repository.
+	 */
+	private void setUpProjectRepository(Project project, Task publishTask, File repositoryLocation) {
 		publishTask.doFirst(new CleanAction(repositoryLocation));
 		Configuration projectRepository = project.getConfigurations().create(MAVEN_REPOSITORY_CONFIGURATION_NAME);
 		project.getArtifacts()
@@ -106,13 +105,13 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * Adds Maven repository dependencies to the target dependency set.
-     * 
-     * @param project The project to which the dependencies will be added.
-     * @param sourceConfigurationName The name of the source configuration from which the dependencies will be retrieved.
-     * @param target The target dependency set to which the dependencies will be added.
-     */
-    private void addMavenRepositoryDependencies(Project project, String sourceConfigurationName, DependencySet target) {
+	 * Adds Maven repository dependencies to the target dependency set.
+	 * @param project The project to which the dependencies will be added.
+	 * @param sourceConfigurationName The name of the source configuration from which the
+	 * dependencies will be retrieved.
+	 * @param target The target dependency set to which the dependencies will be added.
+	 */
+	private void addMavenRepositoryDependencies(Project project, String sourceConfigurationName, DependencySet target) {
 		project.getConfigurations()
 			.getByName(sourceConfigurationName)
 			.getDependencies()
@@ -126,27 +125,25 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * CleanAction class.
-     */
-    private static final class CleanAction implements Action<Task> {
+	 * CleanAction class.
+	 */
+	private static final class CleanAction implements Action<Task> {
 
 		private final File location;
 
 		/**
-         * Constructs a new CleanAction object with the specified file location.
-         * 
-         * @param location the file location to be cleaned
-         */
-        private CleanAction(File location) {
+		 * Constructs a new CleanAction object with the specified file location.
+		 * @param location the file location to be cleaned
+		 */
+		private CleanAction(File location) {
 			this.location = location;
 		}
 
 		/**
-         * Executes the CleanAction by deleting the project at the specified location.
-         * 
-         * @param task the task to be executed
-         */
-        @Override
+		 * Executes the CleanAction by deleting the project at the specified location.
+		 * @param task the task to be executed
+		 */
+		@Override
 		public void execute(Task task) {
 			task.getProject().delete(this.location);
 		}

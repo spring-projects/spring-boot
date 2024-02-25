@@ -52,13 +52,13 @@ public enum EmbeddedDatabaseConnection {
 	private final Predicate<ConnectionFactoryOptions> embedded;
 
 	/**
-     * Constructs a new EmbeddedDatabaseConnection with the specified driver class name, URL, and embedded connection options.
-     * 
-     * @param driverClassName the fully qualified class name of the JDBC driver
-     * @param url the URL of the database connection
-     * @param embedded the predicate function to determine the embedded connection options
-     */
-    EmbeddedDatabaseConnection(String driverClassName, String url, Predicate<ConnectionFactoryOptions> embedded) {
+	 * Constructs a new EmbeddedDatabaseConnection with the specified driver class name,
+	 * URL, and embedded connection options.
+	 * @param driverClassName the fully qualified class name of the JDBC driver
+	 * @param url the URL of the database connection
+	 * @param embedded the predicate function to determine the embedded connection options
+	 */
+	EmbeddedDatabaseConnection(String driverClassName, String url, Predicate<ConnectionFactoryOptions> embedded) {
 		this.driverClassName = driverClassName;
 		this.url = url;
 		this.embedded = embedded;

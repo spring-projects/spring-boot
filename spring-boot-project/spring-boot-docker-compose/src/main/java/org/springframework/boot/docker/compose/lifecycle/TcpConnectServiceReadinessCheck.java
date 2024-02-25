@@ -37,20 +37,18 @@ class TcpConnectServiceReadinessCheck {
 	private final DockerComposeProperties.Readiness.Tcp properties;
 
 	/**
-     * Checks the readiness of a TCP service connection.
-     * 
-     * @param properties the properties for the Docker Compose readiness check
-     */
-    TcpConnectServiceReadinessCheck(DockerComposeProperties.Readiness.Tcp properties) {
+	 * Checks the readiness of a TCP service connection.
+	 * @param properties the properties for the Docker Compose readiness check
+	 */
+	TcpConnectServiceReadinessCheck(DockerComposeProperties.Readiness.Tcp properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Checks the readiness of a running service.
-     * 
-     * @param service the running service to be checked
-     */
-    void check(RunningService service) {
+	 * Checks the readiness of a running service.
+	 * @param service the running service to be checked
+	 */
+	void check(RunningService service) {
 		if (service.labels().containsKey(DISABLE_LABEL)) {
 			return;
 		}
@@ -60,13 +58,13 @@ class TcpConnectServiceReadinessCheck {
 	}
 
 	/**
-     * Checks the readiness of a running service by connecting to a specified port.
-     * 
-     * @param service the running service to check
-     * @param port the port to connect to
-     * @throws ServiceNotReadyException if the service is not ready or an IOException occurs while connecting to the port
-     */
-    private void check(RunningService service, int port) {
+	 * Checks the readiness of a running service by connecting to a specified port.
+	 * @param service the running service to check
+	 * @param port the port to connect to
+	 * @throws ServiceNotReadyException if the service is not ready or an IOException
+	 * occurs while connecting to the port
+	 */
+	private void check(RunningService service, int port) {
 		int connectTimeout = (int) this.properties.getConnectTimeout().toMillis();
 		int readTimeout = (int) this.properties.getReadTimeout().toMillis();
 		try (Socket socket = new Socket()) {
@@ -80,15 +78,16 @@ class TcpConnectServiceReadinessCheck {
 	}
 
 	/**
-     * Checks the readiness of a running service by connecting to a specified port using a socket.
-     * 
-     * @param service the running service to check
-     * @param port the port to connect to
-     * @param socket the socket to use for the connection
-     * @throws IOException if an I/O error occurs while reading from the socket
-     * @throws ServiceNotReadyException if the socket is closed immediately after connecting to the port
-     */
-    private void check(RunningService service, int port, Socket socket) throws IOException {
+	 * Checks the readiness of a running service by connecting to a specified port using a
+	 * socket.
+	 * @param service the running service to check
+	 * @param port the port to connect to
+	 * @param socket the socket to use for the connection
+	 * @throws IOException if an I/O error occurs while reading from the socket
+	 * @throws ServiceNotReadyException if the socket is closed immediately after
+	 * connecting to the port
+	 */
+	private void check(RunningService service, int port, Socket socket) throws IOException {
 		try {
 			// -1 indicates the socket has been closed immediately
 			// Other responses or a timeout are considered as success

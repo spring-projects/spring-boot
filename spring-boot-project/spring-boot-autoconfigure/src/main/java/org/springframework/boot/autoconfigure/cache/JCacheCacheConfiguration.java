@@ -64,39 +64,36 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	private ClassLoader beanClassLoader;
 
 	/**
-     * Set the class loader to be used for loading beans.
-     * 
-     * @param classLoader the class loader to be used
-     */
-    @Override
+	 * Set the class loader to be used for loading beans.
+	 * @param classLoader the class loader to be used
+	 */
+	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.beanClassLoader = classLoader;
 	}
 
 	/**
-     * Creates a JCacheCacheManager bean.
-     * 
-     * @param customizers the CacheManagerCustomizers to apply
-     * @param jCacheCacheManager the JCache CacheManager to use
-     * @return the JCacheCacheManager bean
-     */
-    @Bean
+	 * Creates a JCacheCacheManager bean.
+	 * @param customizers the CacheManagerCustomizers to apply
+	 * @param jCacheCacheManager the JCache CacheManager to use
+	 * @return the JCacheCacheManager bean
+	 */
+	@Bean
 	JCacheCacheManager cacheManager(CacheManagerCustomizers customizers, CacheManager jCacheCacheManager) {
 		JCacheCacheManager cacheManager = new JCacheCacheManager(jCacheCacheManager);
 		return customizers.customize(cacheManager);
 	}
 
 	/**
-     * Create a JCache CacheManager bean if no other bean of the same type is present.
-     * 
-     * @param cacheProperties the cache properties
-     * @param defaultCacheConfiguration the default cache configuration
-     * @param cacheManagerCustomizers the cache manager customizers
-     * @param cachePropertiesCustomizers the cache properties customizers
-     * @return the JCache CacheManager bean
-     * @throws IOException if an I/O error occurs
-     */
-    @Bean
+	 * Create a JCache CacheManager bean if no other bean of the same type is present.
+	 * @param cacheProperties the cache properties
+	 * @param defaultCacheConfiguration the default cache configuration
+	 * @param cacheManagerCustomizers the cache manager customizers
+	 * @param cachePropertiesCustomizers the cache properties customizers
+	 * @return the JCache CacheManager bean
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	CacheManager jCacheCacheManager(CacheProperties cacheProperties,
 			ObjectProvider<javax.cache.configuration.Configuration<?, ?>> defaultCacheConfiguration,
@@ -115,14 +112,16 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	}
 
 	/**
-     * Creates a cache manager based on the provided cache properties and cache properties customizers.
-     * 
-     * @param cacheProperties The cache properties to be used for creating the cache manager.
-     * @param cachePropertiesCustomizers The customizers for cache properties.
-     * @return The created cache manager.
-     * @throws IOException If an I/O error occurs while resolving the cache configuration location.
-     */
-    private CacheManager createCacheManager(CacheProperties cacheProperties,
+	 * Creates a cache manager based on the provided cache properties and cache properties
+	 * customizers.
+	 * @param cacheProperties The cache properties to be used for creating the cache
+	 * manager.
+	 * @param cachePropertiesCustomizers The customizers for cache properties.
+	 * @return The created cache manager.
+	 * @throws IOException If an I/O error occurs while resolving the cache configuration
+	 * location.
+	 */
+	private CacheManager createCacheManager(CacheProperties cacheProperties,
 			ObjectProvider<JCachePropertiesCustomizer> cachePropertiesCustomizers) throws IOException {
 		CachingProvider cachingProvider = getCachingProvider(cacheProperties.getJcache().getProvider());
 		Properties properties = createCacheManagerProperties(cachePropertiesCustomizers, cacheProperties);
@@ -134,14 +133,15 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	}
 
 	/**
-     * Retrieves the caching provider based on the fully qualified name.
-     * If the caching provider fully qualified name is provided, it returns the caching provider with the specified name.
-     * If the caching provider fully qualified name is not provided, it returns the default caching provider.
-     *
-     * @param cachingProviderFqn the fully qualified name of the caching provider (optional)
-     * @return the caching provider
-     */
-    private CachingProvider getCachingProvider(String cachingProviderFqn) {
+	 * Retrieves the caching provider based on the fully qualified name. If the caching
+	 * provider fully qualified name is provided, it returns the caching provider with the
+	 * specified name. If the caching provider fully qualified name is not provided, it
+	 * returns the default caching provider.
+	 * @param cachingProviderFqn the fully qualified name of the caching provider
+	 * (optional)
+	 * @return the caching provider
+	 */
+	private CachingProvider getCachingProvider(String cachingProviderFqn) {
 		if (StringUtils.hasText(cachingProviderFqn)) {
 			return Caching.getCachingProvider(cachingProviderFqn);
 		}
@@ -149,13 +149,12 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	}
 
 	/**
-     * Creates a Properties object for configuring the cache manager.
-     * 
-     * @param cachePropertiesCustomizers the customizers for cache properties
-     * @param cacheProperties the cache properties
-     * @return the properties object for configuring the cache manager
-     */
-    private Properties createCacheManagerProperties(
+	 * Creates a Properties object for configuring the cache manager.
+	 * @param cachePropertiesCustomizers the customizers for cache properties
+	 * @param cacheProperties the cache properties
+	 * @return the properties object for configuring the cache manager
+	 */
+	private Properties createCacheManagerProperties(
 			ObjectProvider<JCachePropertiesCustomizer> cachePropertiesCustomizers, CacheProperties cacheProperties) {
 		Properties properties = new Properties();
 		cachePropertiesCustomizers.orderedStream()
@@ -172,28 +171,27 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	static class JCacheAvailableCondition extends AnyNestedCondition {
 
 		/**
-         * Constructs a new JCacheAvailableCondition.
-         * 
-         * This condition is used to check if JCache is available.
-         * 
-         * @param phase the configuration phase in which this condition is registered
-         */
-        JCacheAvailableCondition() {
+		 * Constructs a new JCacheAvailableCondition.
+		 *
+		 * This condition is used to check if JCache is available.
+		 * @param phase the configuration phase in which this condition is registered
+		 */
+		JCacheAvailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
 		/**
-         * JCacheProvider class.
-         */
-        @Conditional(JCacheProviderAvailableCondition.class)
+		 * JCacheProvider class.
+		 */
+		@Conditional(JCacheProviderAvailableCondition.class)
 		static class JCacheProvider {
 
 		}
 
 		/**
-         * CustomJCacheCacheManager class.
-         */
-        @ConditionalOnSingleCandidate(CacheManager.class)
+		 * CustomJCacheCacheManager class.
+		 */
+		@ConditionalOnSingleCandidate(CacheManager.class)
 		static class CustomJCacheCacheManager {
 
 		}
@@ -209,13 +207,13 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	static class JCacheProviderAvailableCondition extends SpringBootCondition {
 
 		/**
-         * Determines the outcome of the condition for the JCacheProviderAvailableCondition class.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the condition outcome
-         */
-        @Override
+		 * Determines the outcome of the condition for the
+		 * JCacheProviderAvailableCondition class.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the condition outcome
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("JCache");
 			String providerProperty = "spring.cache.jcache.provider";

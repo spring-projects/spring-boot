@@ -31,13 +31,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class MySecurityConfiguration {
 
 	/**
-     * Configures the security filter chain for the HTTP requests.
-     * 
-     * @param http the HttpSecurity object to configure
-     * @return the configured SecurityFilterChain object
-     * @throws Exception if an error occurs during configuration
-     */
-    @Bean
+	 * Configures the security filter chain for the HTTP requests.
+	 * @param http the HttpSecurity object to configure
+	 * @return the configured SecurityFilterChain object
+	 * @throws Exception if an error occurs during configuration
+	 */
+	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.securityMatcher(EndpointRequest.toAnyEndpoint());
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().hasRole("ENDPOINT_ADMIN"));

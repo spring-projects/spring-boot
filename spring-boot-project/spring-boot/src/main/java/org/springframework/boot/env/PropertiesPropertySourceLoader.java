@@ -40,24 +40,24 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	private static final String XML_FILE_EXTENSION = ".xml";
 
 	/**
-     * Returns an array of file extensions supported by the PropertiesPropertySourceLoader.
-     * 
-     * @return an array of file extensions (e.g. "properties", "xml")
-     */
-    @Override
+	 * Returns an array of file extensions supported by the
+	 * PropertiesPropertySourceLoader.
+	 * @return an array of file extensions (e.g. "properties", "xml")
+	 */
+	@Override
 	public String[] getFileExtensions() {
 		return new String[] { "properties", "xml" };
 	}
 
 	/**
-     * Loads the properties from the given resource and creates a list of property sources.
-     * 
-     * @param name the name of the property source
-     * @param resource the resource containing the properties
-     * @return a list of property sources
-     * @throws IOException if an I/O error occurs while loading the properties
-     */
-    @Override
+	 * Loads the properties from the given resource and creates a list of property
+	 * sources.
+	 * @param name the name of the property source
+	 * @param resource the resource containing the properties
+	 * @return a list of property sources
+	 * @throws IOException if an I/O error occurs while loading the properties
+	 */
+	@Override
 	public List<PropertySource<?>> load(String name, Resource resource) throws IOException {
 		List<Map<String, ?>> properties = loadProperties(resource);
 		if (properties.isEmpty()) {
@@ -73,13 +73,12 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	}
 
 	/**
-     * Loads properties from a given resource.
-     * 
-     * @param resource the resource to load properties from
-     * @return a list of maps containing the loaded properties
-     * @throws IOException if an I/O error occurs while loading the properties
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+	 * Loads properties from a given resource.
+	 * @param resource the resource to load properties from
+	 * @return a list of maps containing the loaded properties
+	 * @throws IOException if an I/O error occurs while loading the properties
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private List<Map<String, ?>> loadProperties(Resource resource) throws IOException {
 		String filename = resource.getFilename();
 		List<Map<String, ?>> result = new ArrayList<>();

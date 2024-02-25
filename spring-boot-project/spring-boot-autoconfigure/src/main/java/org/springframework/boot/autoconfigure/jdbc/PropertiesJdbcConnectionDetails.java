@@ -26,60 +26,56 @@ final class PropertiesJdbcConnectionDetails implements JdbcConnectionDetails {
 	private final DataSourceProperties properties;
 
 	/**
-     * Constructs a new PropertiesJdbcConnectionDetails object with the given DataSourceProperties.
-     * 
-     * @param properties the DataSourceProperties object containing the JDBC connection details
-     */
-    PropertiesJdbcConnectionDetails(DataSourceProperties properties) {
+	 * Constructs a new PropertiesJdbcConnectionDetails object with the given
+	 * DataSourceProperties.
+	 * @param properties the DataSourceProperties object containing the JDBC connection
+	 * details
+	 */
+	PropertiesJdbcConnectionDetails(DataSourceProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Returns the username for the JDBC connection details.
-     * 
-     * @return the username determined by the properties
-     */
-    @Override
+	 * Returns the username for the JDBC connection details.
+	 * @return the username determined by the properties
+	 */
+	@Override
 	public String getUsername() {
 		return this.properties.determineUsername();
 	}
 
 	/**
-     * Returns the password for the JDBC connection details.
-     * 
-     * @return the password for the JDBC connection details
-     */
-    @Override
+	 * Returns the password for the JDBC connection details.
+	 * @return the password for the JDBC connection details
+	 */
+	@Override
 	public String getPassword() {
 		return this.properties.determinePassword();
 	}
 
 	/**
-     * Returns the JDBC URL determined by the properties.
-     *
-     * @return the JDBC URL determined by the properties
-     */
-    @Override
+	 * Returns the JDBC URL determined by the properties.
+	 * @return the JDBC URL determined by the properties
+	 */
+	@Override
 	public String getJdbcUrl() {
 		return this.properties.determineUrl();
 	}
 
 	/**
-     * Returns the driver class name for the JDBC connection.
-     * 
-     * @return the driver class name
-     */
-    @Override
+	 * Returns the driver class name for the JDBC connection.
+	 * @return the driver class name
+	 */
+	@Override
 	public String getDriverClassName() {
 		return this.properties.determineDriverClassName();
 	}
 
 	/**
-     * Returns the XA data source class name.
-     * 
-     * @return the XA data source class name
-     */
-    @Override
+	 * Returns the XA data source class name.
+	 * @return the XA data source class name
+	 */
+	@Override
 	public String getXaDataSourceClassName() {
 		return (this.properties.getXa().getDataSourceClassName() != null)
 				? this.properties.getXa().getDataSourceClassName()

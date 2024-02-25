@@ -76,11 +76,11 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the enabled status of the Ssl object.
-     * 
-     * @param enabled the boolean value indicating whether the Ssl object is enabled or not
-     */
-    public void setEnabled(boolean enabled) {
+	 * Sets the enabled status of the Ssl object.
+	 * @param enabled the boolean value indicating whether the Ssl object is enabled or
+	 * not
+	 */
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
@@ -112,11 +112,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the client authentication mode for SSL.
-     * 
-     * @param clientAuth the client authentication mode to be set
-     */
-    public void setClientAuth(ClientAuth clientAuth) {
+	 * Sets the client authentication mode for SSL.
+	 * @param clientAuth the client authentication mode to be set
+	 */
+	public void setClientAuth(ClientAuth clientAuth) {
 		this.clientAuth = clientAuth;
 	}
 
@@ -129,11 +128,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the list of ciphers to be used for SSL/TLS connections.
-     * 
-     * @param ciphers an array of strings representing the ciphers to be set
-     */
-    public void setCiphers(String[] ciphers) {
+	 * Sets the list of ciphers to be used for SSL/TLS connections.
+	 * @param ciphers an array of strings representing the ciphers to be set
+	 */
+	public void setCiphers(String[] ciphers) {
 		this.ciphers = ciphers;
 	}
 
@@ -146,11 +144,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the enabled protocols for the SSL connection.
-     * 
-     * @param enabledProtocols an array of strings representing the enabled protocols
-     */
-    public void setEnabledProtocols(String[] enabledProtocols) {
+	 * Sets the enabled protocols for the SSL connection.
+	 * @param enabledProtocols an array of strings representing the enabled protocols
+	 */
+	public void setEnabledProtocols(String[] enabledProtocols) {
 		this.enabledProtocols = enabledProtocols;
 	}
 
@@ -163,11 +160,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the key alias for the SSL connection.
-     * 
-     * @param keyAlias the key alias to be set
-     */
-    public void setKeyAlias(String keyAlias) {
+	 * Sets the key alias for the SSL connection.
+	 * @param keyAlias the key alias to be set
+	 */
+	public void setKeyAlias(String keyAlias) {
 		this.keyAlias = keyAlias;
 	}
 
@@ -180,11 +176,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the password for the key used in SSL communication.
-     * 
-     * @param keyPassword the password for the key
-     */
-    public void setKeyPassword(String keyPassword) {
+	 * Sets the password for the key used in SSL communication.
+	 * @param keyPassword the password for the key
+	 */
+	public void setKeyPassword(String keyPassword) {
 		this.keyPassword = keyPassword;
 	}
 
@@ -198,11 +193,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the path to the key store file.
-     * 
-     * @param keyStore the path to the key store file
-     */
-    public void setKeyStore(String keyStore) {
+	 * Sets the path to the key store file.
+	 * @param keyStore the path to the key store file
+	 */
+	public void setKeyStore(String keyStore) {
 		this.keyStore = keyStore;
 	}
 
@@ -215,11 +209,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the password for the key store.
-     * 
-     * @param keyStorePassword the password for the key store
-     */
-    public void setKeyStorePassword(String keyStorePassword) {
+	 * Sets the password for the key store.
+	 * @param keyStorePassword the password for the key store
+	 */
+	public void setKeyStorePassword(String keyStorePassword) {
 		this.keyStorePassword = keyStorePassword;
 	}
 
@@ -232,11 +225,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the type of the keystore.
-     * 
-     * @param keyStoreType the type of the keystore
-     */
-    public void setKeyStoreType(String keyStoreType) {
+	 * Sets the type of the keystore.
+	 * @param keyStoreType the type of the keystore
+	 */
+	public void setKeyStoreType(String keyStoreType) {
 		this.keyStoreType = keyStoreType;
 	}
 
@@ -249,11 +241,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the provider for the key store.
-     * 
-     * @param keyStoreProvider the provider for the key store
-     */
-    public void setKeyStoreProvider(String keyStoreProvider) {
+	 * Sets the provider for the key store.
+	 * @param keyStoreProvider the provider for the key store
+	 */
+	public void setKeyStoreProvider(String keyStoreProvider) {
 		this.keyStoreProvider = keyStoreProvider;
 	}
 
@@ -266,11 +257,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the trust store file path for SSL/TLS connections.
-     * 
-     * @param trustStore the file path of the trust store
-     */
-    public void setTrustStore(String trustStore) {
+	 * Sets the trust store file path for SSL/TLS connections.
+	 * @param trustStore the file path of the trust store
+	 */
+	public void setTrustStore(String trustStore) {
 		this.trustStore = trustStore;
 	}
 
@@ -283,11 +273,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the password for the trust store.
-     * 
-     * @param trustStorePassword the password for the trust store
-     */
-    public void setTrustStorePassword(String trustStorePassword) {
+	 * Sets the password for the trust store.
+	 * @param trustStorePassword the password for the trust store
+	 */
+	public void setTrustStorePassword(String trustStorePassword) {
 		this.trustStorePassword = trustStorePassword;
 	}
 
@@ -300,11 +289,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the type of the trust store.
-     * 
-     * @param trustStoreType the type of the trust store
-     */
-    public void setTrustStoreType(String trustStoreType) {
+	 * Sets the type of the trust store.
+	 * @param trustStoreType the type of the trust store
+	 */
+	public void setTrustStoreType(String trustStoreType) {
 		this.trustStoreType = trustStoreType;
 	}
 
@@ -317,11 +305,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the trust store provider for SSL connections.
-     * 
-     * @param trustStoreProvider the trust store provider to be set
-     */
-    public void setTrustStoreProvider(String trustStoreProvider) {
+	 * Sets the trust store provider for SSL connections.
+	 * @param trustStoreProvider the trust store provider to be set
+	 */
+	public void setTrustStoreProvider(String trustStoreProvider) {
 		this.trustStoreProvider = trustStoreProvider;
 	}
 
@@ -334,11 +321,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the certificate for the SSL connection.
-     * 
-     * @param certificate the certificate to be set
-     */
-    public void setCertificate(String certificate) {
+	 * Sets the certificate for the SSL connection.
+	 * @param certificate the certificate to be set
+	 */
+	public void setCertificate(String certificate) {
 		this.certificate = certificate;
 	}
 
@@ -351,11 +337,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the private key for the SSL certificate.
-     * 
-     * @param certificatePrivateKey the private key for the SSL certificate
-     */
-    public void setCertificatePrivateKey(String certificatePrivateKey) {
+	 * Sets the private key for the SSL certificate.
+	 * @param certificatePrivateKey the private key for the SSL certificate
+	 */
+	public void setCertificatePrivateKey(String certificatePrivateKey) {
 		this.certificatePrivateKey = certificatePrivateKey;
 	}
 
@@ -368,11 +353,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the trust certificate for SSL connection.
-     * 
-     * @param trustCertificate the trust certificate to be set
-     */
-    public void setTrustCertificate(String trustCertificate) {
+	 * Sets the trust certificate for SSL connection.
+	 * @param trustCertificate the trust certificate to be set
+	 */
+	public void setTrustCertificate(String trustCertificate) {
 		this.trustCertificate = trustCertificate;
 	}
 
@@ -385,11 +369,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the trust certificate private key.
-     * 
-     * @param trustCertificatePrivateKey the trust certificate private key to be set
-     */
-    public void setTrustCertificatePrivateKey(String trustCertificatePrivateKey) {
+	 * Sets the trust certificate private key.
+	 * @param trustCertificatePrivateKey the trust certificate private key to be set
+	 */
+	public void setTrustCertificatePrivateKey(String trustCertificatePrivateKey) {
 		this.trustCertificatePrivateKey = trustCertificatePrivateKey;
 	}
 
@@ -402,11 +385,10 @@ public class Ssl {
 	}
 
 	/**
-     * Sets the protocol for the SSL connection.
-     * 
-     * @param protocol the protocol to be set
-     */
-    public void setProtocol(String protocol) {
+	 * Sets the protocol for the SSL connection.
+	 * @param protocol the protocol to be set
+	 */
+	public void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
 

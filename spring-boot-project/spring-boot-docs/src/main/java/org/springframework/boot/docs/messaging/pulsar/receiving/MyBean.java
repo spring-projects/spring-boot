@@ -26,12 +26,11 @@ import org.springframework.stereotype.Component;
 public class MyBean {
 
 	/**
-     * This method is a listener for the "someTopic" topic.
-     * It processes the received message content.
-     *
-     * @param content the content of the message to be processed
-     */
-    @PulsarListener(topics = "someTopic")
+	 * This method is a listener for the "someTopic" topic. It processes the received
+	 * message content.
+	 * @param content the content of the message to be processed
+	 */
+	@PulsarListener(topics = "someTopic")
 	public void processMessage(String content) {
 		// ...
 	}

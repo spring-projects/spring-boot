@@ -78,11 +78,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	private final DockerSpec docker;
 
 	/**
-     * Constructor for the BootBuildImage class.
-     * Initializes the projectName, projectVersion, imageName, cleanCache, verboseLogging, and publish properties.
-     * Sets the buildWorkspace, buildCache, launchCache, docker, and pullPolicy objects.
-     */
-    public BootBuildImage() {
+	 * Constructor for the BootBuildImage class. Initializes the projectName,
+	 * projectVersion, imageName, cleanCache, verboseLogging, and publish properties. Sets
+	 * the buildWorkspace, buildCache, launchCache, docker, and pullPolicy objects.
+	 */
+	public BootBuildImage() {
 		this.projectName = getProject().getName();
 		Project project = getProject();
 		Property<String> projectVersion = project.getObjects()
@@ -338,12 +338,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Builds a Docker image using the Docker engine.
-     * 
-     * @throws DockerEngineException if there is an error with the Docker engine
-     * @throws IOException if there is an I/O error
-     */
-    @TaskAction
+	 * Builds a Docker image using the Docker engine.
+	 * @throws DockerEngineException if there is an error with the Docker engine
+	 * @throws IOException if there is an I/O error
+	 */
+	@TaskAction
 	void buildImage() throws DockerEngineException, IOException {
 		Builder builder = new Builder(this.docker.asDockerConfiguration());
 		BuildRequest request = createRequest();
@@ -351,22 +350,20 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Creates a build request for building a boot image.
-     * 
-     * @return the build request
-     */
-    BuildRequest createRequest() {
+	 * Creates a build request for building a boot image.
+	 * @return the build request
+	 */
+	BuildRequest createRequest() {
 		return customize(BuildRequest.of(getImageName().map(ImageReference::of).get(),
 				(owner) -> new ZipFileTarArchive(getArchiveFile().get().getAsFile(), owner)));
 	}
 
 	/**
-     * Customizes the given BuildRequest by applying various customizations.
-     * 
-     * @param request the original BuildRequest to be customized
-     * @return the customized BuildRequest
-     */
-    private BuildRequest customize(BuildRequest request) {
+	 * Customizes the given BuildRequest by applying various customizations.
+	 * @param request the original BuildRequest to be customized
+	 * @return the customized BuildRequest
+	 */
+	private BuildRequest customize(BuildRequest request) {
 		request = customizeBuilder(request);
 		request = customizeRunImage(request);
 		request = customizeEnvironment(request);
@@ -387,12 +384,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the builder of the given build request.
-     * 
-     * @param request the build request to be customized
-     * @return the customized build request
-     */
-    private BuildRequest customizeBuilder(BuildRequest request) {
+	 * Customizes the builder of the given build request.
+	 * @param request the build request to be customized
+	 * @return the customized build request
+	 */
+	private BuildRequest customizeBuilder(BuildRequest request) {
 		String builder = getBuilder().getOrNull();
 		if (StringUtils.hasText(builder)) {
 			return request.withBuilder(ImageReference.of(builder));
@@ -401,12 +397,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the run image of the build request.
-     * 
-     * @param request the build request to be customized
-     * @return the customized build request with the specified run image
-     */
-    private BuildRequest customizeRunImage(BuildRequest request) {
+	 * Customizes the run image of the build request.
+	 * @param request the build request to be customized
+	 * @return the customized build request with the specified run image
+	 */
+	private BuildRequest customizeRunImage(BuildRequest request) {
 		String runImage = getRunImage().getOrNull();
 		if (StringUtils.hasText(runImage)) {
 			return request.withRunImage(ImageReference.of(runImage));
@@ -415,12 +410,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the environment of the build request.
-     * 
-     * @param request the build request to be customized
-     * @return the customized build request
-     */
-    private BuildRequest customizeEnvironment(BuildRequest request) {
+	 * Customizes the environment of the build request.
+	 * @param request the build request to be customized
+	 * @return the customized build request
+	 */
+	private BuildRequest customizeEnvironment(BuildRequest request) {
 		Map<String, String> environment = getEnvironment().getOrNull();
 		if (environment != null && !environment.isEmpty()) {
 			request = request.withEnv(environment);
@@ -429,12 +423,12 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the creator of the build request with the Spring Boot version extracted from the {@link BootBuildImage} class.
-     * 
-     * @param request the build request to be customized
-     * @return the customized build request with the creator version set
-     */
-    private BuildRequest customizeCreator(BuildRequest request) {
+	 * Customizes the creator of the build request with the Spring Boot version extracted
+	 * from the {@link BootBuildImage} class.
+	 * @param request the build request to be customized
+	 * @return the customized build request with the creator version set
+	 */
+	private BuildRequest customizeCreator(BuildRequest request) {
 		String springBootVersion = VersionExtractor.forClass(BootBuildImage.class);
 		if (StringUtils.hasText(springBootVersion)) {
 			return request.withCreator(Creator.withVersion(springBootVersion));
@@ -443,12 +437,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the pull policy of the build request.
-     * 
-     * @param request the original build request
-     * @return the build request with the customized pull policy
-     */
-    private BuildRequest customizePullPolicy(BuildRequest request) {
+	 * Customizes the pull policy of the build request.
+	 * @param request the original build request
+	 * @return the build request with the customized pull policy
+	 */
+	private BuildRequest customizePullPolicy(BuildRequest request) {
 		PullPolicy pullPolicy = getPullPolicy().getOrNull();
 		if (pullPolicy != null) {
 			request = request.withPullPolicy(pullPolicy);
@@ -457,23 +450,21 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the publish configuration of the given build request.
-     * 
-     * @param request the original build request
-     * @return the modified build request with the publish configuration set
-     */
-    private BuildRequest customizePublish(BuildRequest request) {
+	 * Customizes the publish configuration of the given build request.
+	 * @param request the original build request
+	 * @return the modified build request with the publish configuration set
+	 */
+	private BuildRequest customizePublish(BuildRequest request) {
 		request = request.withPublish(getPublish().get());
 		return request;
 	}
 
 	/**
-     * Customizes the buildpacks for the given build request.
-     * 
-     * @param request the build request to customize
-     * @return the customized build request
-     */
-    private BuildRequest customizeBuildpacks(BuildRequest request) {
+	 * Customizes the buildpacks for the given build request.
+	 * @param request the build request to customize
+	 * @return the customized build request
+	 */
+	private BuildRequest customizeBuildpacks(BuildRequest request) {
 		List<String> buildpacks = getBuildpacks().getOrNull();
 		if (buildpacks != null && !buildpacks.isEmpty()) {
 			return request.withBuildpacks(buildpacks.stream().map(BuildpackReference::of).toList());
@@ -482,12 +473,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the bindings of a build request.
-     * 
-     * @param request the build request to customize
-     * @return the customized build request
-     */
-    private BuildRequest customizeBindings(BuildRequest request) {
+	 * Customizes the bindings of a build request.
+	 * @param request the build request to customize
+	 * @return the customized build request
+	 */
+	private BuildRequest customizeBindings(BuildRequest request) {
 		List<String> bindings = getBindings().getOrNull();
 		if (bindings != null && !bindings.isEmpty()) {
 			return request.withBindings(bindings.stream().map(Binding::of).toList());
@@ -496,12 +486,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the tags of the build request.
-     * 
-     * @param request the build request to customize
-     * @return the customized build request
-     */
-    private BuildRequest customizeTags(BuildRequest request) {
+	 * Customizes the tags of the build request.
+	 * @param request the build request to customize
+	 * @return the customized build request
+	 */
+	private BuildRequest customizeTags(BuildRequest request) {
 		List<String> tags = getTags().getOrNull();
 		if (tags != null && !tags.isEmpty()) {
 			return request.withTags(tags.stream().map(ImageReference::of).toList());
@@ -510,12 +499,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the caches in the given build request.
-     * 
-     * @param request the build request to customize
-     * @return the customized build request
-     */
-    private BuildRequest customizeCaches(BuildRequest request) {
+	 * Customizes the caches in the given build request.
+	 * @param request the build request to customize
+	 * @return the customized build request
+	 */
+	private BuildRequest customizeCaches(BuildRequest request) {
 		if (this.buildWorkspace.asCache() != null) {
 			request = request.withBuildWorkspace((this.buildWorkspace.asCache()));
 		}
@@ -529,12 +517,12 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the created date of a BuildRequest object.
-     * 
-     * @param request the BuildRequest object to be customized
-     * @return the customized BuildRequest object with the updated created date, or the original BuildRequest object if the created date is null
-     */
-    private BuildRequest customizeCreatedDate(BuildRequest request) {
+	 * Customizes the created date of a BuildRequest object.
+	 * @param request the BuildRequest object to be customized
+	 * @return the customized BuildRequest object with the updated created date, or the
+	 * original BuildRequest object if the created date is null
+	 */
+	private BuildRequest customizeCreatedDate(BuildRequest request) {
 		String createdDate = getCreatedDate().getOrNull();
 		if (createdDate != null) {
 			return request.withCreatedDate(createdDate);
@@ -543,12 +531,12 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the application directory in the given build request.
-     * 
-     * @param request the build request to be customized
-     * @return the customized build request with the application directory set, or the original build request if the application directory is null
-     */
-    private BuildRequest customizeApplicationDirectory(BuildRequest request) {
+	 * Customizes the application directory in the given build request.
+	 * @param request the build request to be customized
+	 * @return the customized build request with the application directory set, or the
+	 * original build request if the application directory is null
+	 */
+	private BuildRequest customizeApplicationDirectory(BuildRequest request) {
 		String applicationDirectory = getApplicationDirectory().getOrNull();
 		if (applicationDirectory != null) {
 			return request.withApplicationDirectory(applicationDirectory);
@@ -557,12 +545,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-     * Customizes the security options of the build request.
-     * 
-     * @param request the build request to customize
-     * @return the customized build request with security options
-     */
-    private BuildRequest customizeSecurityOptions(BuildRequest request) {
+	 * Customizes the security options of the build request.
+	 * @param request the build request to customize
+	 * @return the customized build request with security options
+	 */
+	private BuildRequest customizeSecurityOptions(BuildRequest request) {
 		List<String> securityOptions = getSecurityOptions().getOrNull();
 		if (securityOptions != null) {
 			return request.withSecurityOptions(securityOptions);

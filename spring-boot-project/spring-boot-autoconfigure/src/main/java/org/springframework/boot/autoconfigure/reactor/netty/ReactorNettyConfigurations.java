@@ -32,25 +32,25 @@ import org.springframework.http.client.ReactorResourceFactory;
 public final class ReactorNettyConfigurations {
 
 	/**
-     * Private constructor for the ReactorNettyConfigurations class.
-     */
-    private ReactorNettyConfigurations() {
+	 * Private constructor for the ReactorNettyConfigurations class.
+	 */
+	private ReactorNettyConfigurations() {
 	}
 
 	/**
-     * ReactorResourceFactoryConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ReactorResourceFactoryConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(ReactorNettyProperties.class)
 	public static class ReactorResourceFactoryConfiguration {
 
 		/**
-         * Creates a ReactorResourceFactory bean if it is missing.
-         * 
-         * @param configurationProperties The ReactorNettyProperties object containing the configuration properties.
-         * @return The ReactorResourceFactory bean.
-         */
-        @Bean
+		 * Creates a ReactorResourceFactory bean if it is missing.
+		 * @param configurationProperties The ReactorNettyProperties object containing the
+		 * configuration properties.
+		 * @return The ReactorResourceFactory bean.
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		ReactorResourceFactory reactorResourceFactory(ReactorNettyProperties configurationProperties) {
 			ReactorResourceFactory reactorResourceFactory = new ReactorResourceFactory();

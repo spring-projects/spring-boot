@@ -29,43 +29,39 @@ class DefaultOwner implements Owner {
 	private final long gid;
 
 	/**
-     * Sets the default owner of the object.
-     * 
-     * @param uid the user ID of the default owner
-     * @param gid the group ID of the default owner
-     */
-    DefaultOwner(long uid, long gid) {
+	 * Sets the default owner of the object.
+	 * @param uid the user ID of the default owner
+	 * @param gid the group ID of the default owner
+	 */
+	DefaultOwner(long uid, long gid) {
 		this.uid = uid;
 		this.gid = gid;
 	}
 
 	/**
-     * Returns the unique identifier of the DefaultOwner.
-     *
-     * @return the unique identifier of the DefaultOwner
-     */
-    @Override
+	 * Returns the unique identifier of the DefaultOwner.
+	 * @return the unique identifier of the DefaultOwner
+	 */
+	@Override
 	public long getUid() {
 		return this.uid;
 	}
 
 	/**
-     * Returns the GID (Group ID) of the DefaultOwner.
-     *
-     * @return the GID (Group ID) of the DefaultOwner
-     */
-    @Override
+	 * Returns the GID (Group ID) of the DefaultOwner.
+	 * @return the GID (Group ID) of the DefaultOwner
+	 */
+	@Override
 	public long getGid() {
 		return this.gid;
 	}
 
 	/**
-     * Returns a string representation of the DefaultOwner object.
-     * The string representation consists of the uid and gid separated by a forward slash.
-     *
-     * @return a string representation of the DefaultOwner object
-     */
-    @Override
+	 * Returns a string representation of the DefaultOwner object. The string
+	 * representation consists of the uid and gid separated by a forward slash.
+	 * @return a string representation of the DefaultOwner object
+	 */
+	@Override
 	public String toString() {
 		return this.uid + "/" + this.gid;
 	}

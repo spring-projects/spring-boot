@@ -38,32 +38,31 @@ final class RecordableServletHttpResponse implements RecordableHttpResponse {
 	private final int status;
 
 	/**
-     * Constructs a new RecordableServletHttpResponse with the specified HttpServletResponse and status code.
-     * 
-     * @param response the HttpServletResponse object to delegate to
-     * @param status the HTTP status code to set
-     */
-    RecordableServletHttpResponse(HttpServletResponse response, int status) {
+	 * Constructs a new RecordableServletHttpResponse with the specified
+	 * HttpServletResponse and status code.
+	 * @param response the HttpServletResponse object to delegate to
+	 * @param status the HTTP status code to set
+	 */
+	RecordableServletHttpResponse(HttpServletResponse response, int status) {
 		this.delegate = response;
 		this.status = status;
 	}
 
 	/**
-     * Returns the status code of the HTTP response.
-     *
-     * @return the status code of the HTTP response
-     */
-    @Override
+	 * Returns the status code of the HTTP response.
+	 * @return the status code of the HTTP response
+	 */
+	@Override
 	public int getStatus() {
 		return this.status;
 	}
 
 	/**
-     * Returns the headers of the HTTP response.
-     * 
-     * @return a map containing the headers of the HTTP response, where the key is the header name and the value is a list of header values
-     */
-    @Override
+	 * Returns the headers of the HTTP response.
+	 * @return a map containing the headers of the HTTP response, where the key is the
+	 * header name and the value is a list of header values
+	 */
+	@Override
 	public Map<String, List<String>> getHeaders() {
 		Map<String, List<String>> headers = new LinkedHashMap<>();
 		for (String name : this.delegate.getHeaderNames()) {

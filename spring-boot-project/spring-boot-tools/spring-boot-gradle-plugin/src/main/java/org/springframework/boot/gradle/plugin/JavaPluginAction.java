@@ -64,30 +64,28 @@ final class JavaPluginAction implements PluginApplicationAction {
 	private final SinglePublishedArtifact singlePublishedArtifact;
 
 	/**
-     * Constructs a new JavaPluginAction with the specified SinglePublishedArtifact.
-     * 
-     * @param singlePublishedArtifact the SinglePublishedArtifact to be associated with this JavaPluginAction
-     */
-    JavaPluginAction(SinglePublishedArtifact singlePublishedArtifact) {
+	 * Constructs a new JavaPluginAction with the specified SinglePublishedArtifact.
+	 * @param singlePublishedArtifact the SinglePublishedArtifact to be associated with
+	 * this JavaPluginAction
+	 */
+	JavaPluginAction(SinglePublishedArtifact singlePublishedArtifact) {
 		this.singlePublishedArtifact = singlePublishedArtifact;
 	}
 
 	/**
-     * Returns the class of the plugin associated with this action.
-     * 
-     * @return the class of the plugin associated with this action
-     */
-    @Override
+	 * Returns the class of the plugin associated with this action.
+	 * @return the class of the plugin associated with this action
+	 */
+	@Override
 	public Class<? extends Plugin<? extends Project>> getPluginClass() {
 		return JavaPlugin.class;
 	}
 
 	/**
-     * Executes the given project by performing various configuration tasks.
-     * 
-     * @param project the project to be executed
-     */
-    @Override
+	 * Executes the given project by performing various configuration tasks.
+	 * @param project the project to be executed
+	 */
+	@Override
 	public void execute(Project project) {
 		classifyJarTask(project);
 		configureBuildTask(project);
@@ -107,34 +105,31 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Classifies the JAR task in the given project.
-     * 
-     * @param project the project to classify the JAR task in
-     */
-    private void classifyJarTask(Project project) {
+	 * Classifies the JAR task in the given project.
+	 * @param project the project to classify the JAR task in
+	 */
+	private void classifyJarTask(Project project) {
 		project.getTasks()
 			.named(JavaPlugin.JAR_TASK_NAME, Jar.class)
 			.configure((task) -> task.getArchiveClassifier().convention("plain"));
 	}
 
 	/**
-     * Configures the build task for the given project.
-     * 
-     * @param project the project to configure the build task for
-     */
-    private void configureBuildTask(Project project) {
+	 * Configures the build task for the given project.
+	 * @param project the project to configure the build task for
+	 */
+	private void configureBuildTask(Project project) {
 		project.getTasks()
 			.named(BasePlugin.ASSEMBLE_TASK_NAME)
 			.configure((task) -> task.dependsOn(this.singlePublishedArtifact));
 	}
 
 	/**
-     * Configures the task for resolving the main class name of the application.
-     * 
-     * @param project the project to configure the task for
-     * @return the configured task provider for resolving the main class name
-     */
-    private TaskProvider<ResolveMainClassName> configureResolveMainClassNameTask(Project project) {
+	 * Configures the task for resolving the main class name of the application.
+	 * @param project the project to configure the task for
+	 * @return the configured task provider for resolving the main class name
+	 */
+	private TaskProvider<ResolveMainClassName> configureResolveMainClassNameTask(Project project) {
 		return project.getTasks()
 			.register(SpringBootPlugin.RESOLVE_MAIN_CLASS_NAME_TASK_NAME, ResolveMainClassName.class,
 					(resolveMainClassName) -> {
@@ -161,12 +156,11 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures the task for resolving the main test class name.
-     * 
-     * @param project the project to configure the task for
-     * @return the configured task provider for resolving the main test class name
-     */
-    private TaskProvider<ResolveMainClassName> configureResolveMainTestClassNameTask(Project project) {
+	 * Configures the task for resolving the main test class name.
+	 * @param project the project to configure the task for
+	 * @return the configured task provider for resolving the main test class name
+	 */
+	private TaskProvider<ResolveMainClassName> configureResolveMainTestClassNameTask(Project project) {
 		return project.getTasks()
 			.register(SpringBootPlugin.RESOLVE_TEST_MAIN_CLASS_NAME_TASK_NAME, ResolveMainClassName.class,
 					(resolveMainClassName) -> {
@@ -184,12 +178,12 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Retrieves the main class of a Java application from the given extension container.
-     * 
-     * @param extensions the extension container to search for a JavaApplication extension
-     * @return the fully qualified name of the main class, or null if no JavaApplication extension is found
-     */
-    private static String getJavaApplicationMainClass(ExtensionContainer extensions) {
+	 * Retrieves the main class of a Java application from the given extension container.
+	 * @param extensions the extension container to search for a JavaApplication extension
+	 * @return the fully qualified name of the main class, or null if no JavaApplication
+	 * extension is found
+	 */
+	private static String getJavaApplicationMainClass(ExtensionContainer extensions) {
 		JavaApplication javaApplication = extensions.findByType(JavaApplication.class);
 		if (javaApplication == null) {
 			return null;
@@ -198,13 +192,12 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures the BootJar task for the project.
-     * 
-     * @param project The project to configure the task for.
-     * @param resolveMainClassName The task provider for resolving the main class name.
-     * @return The configured BootJar task provider.
-     */
-    private TaskProvider<BootJar> configureBootJarTask(Project project,
+	 * Configures the BootJar task for the project.
+	 * @param project The project to configure the task for.
+	 * @param resolveMainClassName The task provider for resolving the main class name.
+	 * @return The configured BootJar task provider.
+	 */
+	private TaskProvider<BootJar> configureBootJarTask(Project project,
 			TaskProvider<ResolveMainClassName> resolveMainClassName) {
 		SourceSet mainSourceSet = javaPluginExtension(project).getSourceSets()
 			.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
@@ -237,12 +230,11 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures the boot build image task for the project.
-     * 
-     * @param project the project to configure the task for
-     * @param bootJar the task provider for the bootJar task
-     */
-    private void configureBootBuildImageTask(Project project, TaskProvider<BootJar> bootJar) {
+	 * Configures the boot build image task for the project.
+	 * @param project the project to configure the task for
+	 * @param bootJar the task provider for the bootJar task
+	 */
+	private void configureBootBuildImageTask(Project project, TaskProvider<BootJar> bootJar) {
 		project.getTasks().register(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class, (buildImage) -> {
 			buildImage.setDescription("Builds an OCI image of the application using the output of the bootJar task");
 			buildImage.setGroup(BasePlugin.BUILD_GROUP);
@@ -251,21 +243,20 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures the publication of the artifact generated by the specified {@link BootJar} task.
-     * 
-     * @param bootJar The {@link TaskProvider} for the {@link BootJar} task.
-     */
-    private void configureArtifactPublication(TaskProvider<BootJar> bootJar) {
+	 * Configures the publication of the artifact generated by the specified
+	 * {@link BootJar} task.
+	 * @param bootJar The {@link TaskProvider} for the {@link BootJar} task.
+	 */
+	private void configureArtifactPublication(TaskProvider<BootJar> bootJar) {
 		this.singlePublishedArtifact.addJarCandidate(bootJar);
 	}
 
 	/**
-     * Configures the boot run task for the project.
-     * 
-     * @param project The project to configure the task for.
-     * @param resolveMainClassName The task provider for resolving the main class name.
-     */
-    private void configureBootRunTask(Project project, TaskProvider<ResolveMainClassName> resolveMainClassName) {
+	 * Configures the boot run task for the project.
+	 * @param project The project to configure the task for.
+	 * @param resolveMainClassName The task provider for resolving the main class name.
+	 */
+	private void configureBootRunTask(Project project, TaskProvider<ResolveMainClassName> resolveMainClassName) {
 		Callable<FileCollection> classpath = () -> javaPluginExtension(project).getSourceSets()
 			.findByName(SourceSet.MAIN_SOURCE_SET_NAME)
 			.getRuntimeClasspath()
@@ -280,12 +271,12 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures the bootTestRun task for the given project and resolveMainClassName task.
-     * 
-     * @param project The project to configure the task for.
-     * @param resolveMainClassName The task provider for the resolveMainClassName task.
-     */
-    private void configureBootTestRunTask(Project project, TaskProvider<ResolveMainClassName> resolveMainClassName) {
+	 * Configures the bootTestRun task for the given project and resolveMainClassName
+	 * task.
+	 * @param project The project to configure the task for.
+	 * @param resolveMainClassName The task provider for the resolveMainClassName task.
+	 */
+	private void configureBootTestRunTask(Project project, TaskProvider<ResolveMainClassName> resolveMainClassName) {
 		Callable<FileCollection> classpath = () -> javaPluginExtension(project).getSourceSets()
 			.findByName(SourceSet.TEST_SOURCE_SET_NAME)
 			.getRuntimeClasspath()
@@ -300,57 +291,52 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures the toolchain convention for the given project and boot run.
-     * 
-     * @param project the project to configure the toolchain for
-     * @param run the boot run to configure the toolchain for
-     */
-    private void configureToolchainConvention(Project project, BootRun run) {
+	 * Configures the toolchain convention for the given project and boot run.
+	 * @param project the project to configure the toolchain for
+	 * @param run the boot run to configure the toolchain for
+	 */
+	private void configureToolchainConvention(Project project, BootRun run) {
 		JavaToolchainSpec toolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
 		JavaToolchainService toolchainService = project.getExtensions().getByType(JavaToolchainService.class);
 		run.getJavaLauncher().convention(toolchainService.launcherFor(toolchain));
 	}
 
 	/**
-     * Returns the JavaPluginExtension associated with the given project.
-     * 
-     * @param project the project to retrieve the JavaPluginExtension from
-     * @return the JavaPluginExtension associated with the project
-     */
-    private JavaPluginExtension javaPluginExtension(Project project) {
+	 * Returns the JavaPluginExtension associated with the given project.
+	 * @param project the project to retrieve the JavaPluginExtension from
+	 * @return the JavaPluginExtension associated with the project
+	 */
+	private JavaPluginExtension javaPluginExtension(Project project) {
 		return project.getExtensions().getByType(JavaPluginExtension.class);
 	}
 
 	/**
-     * Configures the UTF-8 encoding for the given project.
-     * This method sets the UTF-8 encoding for all JavaCompile tasks in the project.
-     * 
-     * @param evaluatedProject The project to configure the UTF-8 encoding for.
-     */
-    private void configureUtf8Encoding(Project evaluatedProject) {
+	 * Configures the UTF-8 encoding for the given project. This method sets the UTF-8
+	 * encoding for all JavaCompile tasks in the project.
+	 * @param evaluatedProject The project to configure the UTF-8 encoding for.
+	 */
+	private void configureUtf8Encoding(Project evaluatedProject) {
 		evaluatedProject.getTasks().withType(JavaCompile.class).configureEach(this::configureUtf8Encoding);
 	}
 
 	/**
-     * Configures the UTF-8 encoding for the given JavaCompile object.
-     * If the encoding is not already set, it will be set to UTF-8.
-     *
-     * @param compile the JavaCompile object to configure the encoding for
-     */
-    private void configureUtf8Encoding(JavaCompile compile) {
+	 * Configures the UTF-8 encoding for the given JavaCompile object. If the encoding is
+	 * not already set, it will be set to UTF-8.
+	 * @param compile the JavaCompile object to configure the encoding for
+	 */
+	private void configureUtf8Encoding(JavaCompile compile) {
 		if (compile.getOptions().getEncoding() == null) {
 			compile.getOptions().setEncoding("UTF-8");
 		}
 	}
 
 	/**
-     * Configures the parameters compiler argument for the given project.
-     * This method is used to add the parameters compiler argument to the compiler options
-     * for all JavaCompile tasks in the project.
-     *
-     * @param project The project to configure the parameters compiler argument for.
-     */
-    private void configureParametersCompilerArg(Project project) {
+	 * Configures the parameters compiler argument for the given project. This method is
+	 * used to add the parameters compiler argument to the compiler options for all
+	 * JavaCompile tasks in the project.
+	 * @param project The project to configure the parameters compiler argument for.
+	 */
+	private void configureParametersCompilerArg(Project project) {
 		project.getTasks().withType(JavaCompile.class).configureEach((compile) -> {
 			List<String> compilerArgs = compile.getOptions().getCompilerArgs();
 			if (!compilerArgs.contains(PARAMETERS_COMPILER_ARG)) {
@@ -360,22 +346,20 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures additional metadata locations for the given project.
-     * 
-     * @param project the project to configure
-     */
-    private void configureAdditionalMetadataLocations(Project project) {
+	 * Configures additional metadata locations for the given project.
+	 * @param project the project to configure
+	 */
+	private void configureAdditionalMetadataLocations(Project project) {
 		project.afterEvaluate((evaluated) -> evaluated.getTasks()
 			.withType(JavaCompile.class)
 			.configureEach(this::configureAdditionalMetadataLocations));
 	}
 
 	/**
-     * Configures additional metadata locations for the given JavaCompile task.
-     * 
-     * @param compile The JavaCompile task to configure.
-     */
-    private void configureAdditionalMetadataLocations(JavaCompile compile) {
+	 * Configures additional metadata locations for the given JavaCompile task.
+	 * @param compile The JavaCompile task to configure.
+	 */
+	private void configureAdditionalMetadataLocations(JavaCompile compile) {
 		SourceSetContainer sourceSets = compile.getProject()
 			.getExtensions()
 			.getByType(JavaPluginExtension.class)
@@ -388,11 +372,10 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures the production runtime classpath configuration for the project.
-     * 
-     * @param project the project to configure
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+	 * Configures the production runtime classpath configuration for the project.
+	 * @param project the project to configure
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void configureProductionRuntimeClasspathConfiguration(Project project) {
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 			.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
@@ -413,13 +396,12 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures the development-only configuration for the project.
-     * This configuration is used for development-only dependencies such as Spring Boot's DevTools.
-     * The development-only configuration is added to the runtime classpath configuration.
-     * 
-     * @param project the project to configure
-     */
-    private void configureDevelopmentOnlyConfiguration(Project project) {
+	 * Configures the development-only configuration for the project. This configuration
+	 * is used for development-only dependencies such as Spring Boot's DevTools. The
+	 * development-only configuration is added to the runtime classpath configuration.
+	 * @param project the project to configure
+	 */
+	private void configureDevelopmentOnlyConfiguration(Project project) {
 		Configuration developmentOnly = project.getConfigurations()
 			.create(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		developmentOnly
@@ -431,13 +413,12 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures the test and development-only configuration for the project.
-     * This configuration is used for dependencies that are only required during testing and development,
-     * such as Spring Boot's DevTools.
-     * 
-     * @param project the project to configure
-     */
-    private void configureTestAndDevelopmentOnlyConfiguration(Project project) {
+	 * Configures the test and development-only configuration for the project. This
+	 * configuration is used for dependencies that are only required during testing and
+	 * development, such as Spring Boot's DevTools.
+	 * @param project the project to configure
+	 */
+	private void configureTestAndDevelopmentOnlyConfiguration(Project project) {
 		Configuration testAndDevelopmentOnly = project.getConfigurations()
 			.create(SpringBootPlugin.TEST_AND_DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		testAndDevelopmentOnly
@@ -460,20 +441,19 @@ final class JavaPluginAction implements PluginApplicationAction {
 		private final Set<File> locations;
 
 		/**
-         * Constructs a new AdditionalMetadataLocationsConfigurer with the specified set of locations.
-         *
-         * @param locations the set of locations to be used for additional metadata
-         */
-        private AdditionalMetadataLocationsConfigurer(Set<File> locations) {
+		 * Constructs a new AdditionalMetadataLocationsConfigurer with the specified set
+		 * of locations.
+		 * @param locations the set of locations to be used for additional metadata
+		 */
+		private AdditionalMetadataLocationsConfigurer(Set<File> locations) {
 			this.locations = locations;
 		}
 
 		/**
-         * Executes the given task.
-         * 
-         * @param task the task to be executed
-         */
-        @Override
+		 * Executes the given task.
+		 * @param task the task to be executed
+		 */
+		@Override
 		public void execute(Task task) {
 			if (!(task instanceof JavaCompile compile)) {
 				return;
@@ -484,12 +464,11 @@ final class JavaPluginAction implements PluginApplicationAction {
 		}
 
 		/**
-         * Checks if the configuration processor is present on the classpath.
-         * 
-         * @param compile the JavaCompile object containing the options and classpath
-         * @return true if the configuration processor is found, false otherwise
-         */
-        private boolean hasConfigurationProcessorOnClasspath(JavaCompile compile) {
+		 * Checks if the configuration processor is present on the classpath.
+		 * @param compile the JavaCompile object containing the options and classpath
+		 * @return true if the configuration processor is found, false otherwise
+		 */
+		private boolean hasConfigurationProcessorOnClasspath(JavaCompile compile) {
 			Set<File> files = (compile.getOptions().getAnnotationProcessorPath() != null)
 					? compile.getOptions().getAnnotationProcessorPath().getFiles() : compile.getClasspath().getFiles();
 			return files.stream()
@@ -498,11 +477,10 @@ final class JavaPluginAction implements PluginApplicationAction {
 		}
 
 		/**
-         * Configures additional metadata locations for the JavaCompile object.
-         * 
-         * @param compile the JavaCompile object to configure
-         */
-        private void configureAdditionalMetadataLocations(JavaCompile compile) {
+		 * Configures additional metadata locations for the JavaCompile object.
+		 * @param compile the JavaCompile object to configure
+		 */
+		private void configureAdditionalMetadataLocations(JavaCompile compile) {
 			compile.getOptions()
 				.getCompilerArgs()
 				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="

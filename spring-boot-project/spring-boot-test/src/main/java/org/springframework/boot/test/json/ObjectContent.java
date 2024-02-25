@@ -48,11 +48,10 @@ public final class ObjectContent<T> implements AssertProvider<ObjectContentAsser
 	}
 
 	/**
-     * Returns an {@code ObjectContentAssert} object to assert the content of an object.
-     *
-     * @return an {@code ObjectContentAssert} object to assert the content of an object
-     */
-    @Override
+	 * Returns an {@code ObjectContentAssert} object to assert the content of an object.
+	 * @return an {@code ObjectContentAssert} object to assert the content of an object
+	 */
+	@Override
 	public ObjectContentAssert<T> assertThat() {
 		return new ObjectContentAssert<>(this.object);
 	}
@@ -66,11 +65,10 @@ public final class ObjectContent<T> implements AssertProvider<ObjectContentAsser
 	}
 
 	/**
-     * Returns a string representation of the ObjectContent object.
-     * 
-     * @return a string representation of the ObjectContent object
-     */
-    @Override
+	 * Returns a string representation of the ObjectContent object.
+	 * @return a string representation of the ObjectContent object
+	 */
+	@Override
 	public String toString() {
 		String createdFrom = (this.type != null) ? " created from " + this.type : "";
 		return "ObjectContent " + this.object + createdFrom;

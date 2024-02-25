@@ -37,20 +37,18 @@ public enum AnsiStyle implements AnsiElement {
 	private final String code;
 
 	/**
-     * Constructs a new AnsiStyle object with the specified code.
-     * 
-     * @param code the ANSI code to be applied to the text
-     */
-    AnsiStyle(String code) {
+	 * Constructs a new AnsiStyle object with the specified code.
+	 * @param code the ANSI code to be applied to the text
+	 */
+	AnsiStyle(String code) {
 		this.code = code;
 	}
 
 	/**
-     * Returns the string representation of the AnsiStyle object.
-     *
-     * @return the code of the AnsiStyle object
-     */
-    @Override
+	 * Returns the string representation of the AnsiStyle object.
+	 * @return the code of the AnsiStyle object
+	 */
+	@Override
 	public String toString() {
 		return this.code;
 	}

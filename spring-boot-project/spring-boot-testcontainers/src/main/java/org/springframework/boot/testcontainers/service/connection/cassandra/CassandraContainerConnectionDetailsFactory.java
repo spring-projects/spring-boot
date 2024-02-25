@@ -39,12 +39,11 @@ class CassandraContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<CassandraContainer<?>, CassandraConnectionDetails> {
 
 	/**
-     * Returns the connection details for the Cassandra container.
-     * 
-     * @param source the source of the container connection
-     * @return the connection details for the Cassandra container
-     */
-    @Override
+	 * Returns the connection details for the Cassandra container.
+	 * @param source the source of the container connection
+	 * @return the connection details for the Cassandra container
+	 */
+	@Override
 	protected CassandraConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<CassandraContainer<?>> source) {
 		return new CassandraContainerConnectionDetails(source);
@@ -57,51 +56,47 @@ class CassandraContainerConnectionDetailsFactory
 			extends ContainerConnectionDetails<CassandraContainer<?>> implements CassandraConnectionDetails {
 
 		/**
-         * Constructs a new instance of the CassandraContainerConnectionDetails class with the specified source.
-         *
-         * @param source the source of the container connection
-         */
-        private CassandraContainerConnectionDetails(ContainerConnectionSource<CassandraContainer<?>> source) {
+		 * Constructs a new instance of the CassandraContainerConnectionDetails class with
+		 * the specified source.
+		 * @param source the source of the container connection
+		 */
+		private CassandraContainerConnectionDetails(ContainerConnectionSource<CassandraContainer<?>> source) {
 			super(source);
 		}
 
 		/**
-         * Returns a list of contact points for the Cassandra container connection.
-         * 
-         * @return a list of contact points
-         */
-        @Override
+		 * Returns a list of contact points for the Cassandra container connection.
+		 * @return a list of contact points
+		 */
+		@Override
 		public List<Node> getContactPoints() {
 			InetSocketAddress contactPoint = getContainer().getContactPoint();
 			return List.of(new Node(contactPoint.getHostString(), contactPoint.getPort()));
 		}
 
 		/**
-         * Returns the username associated with the container.
-         * 
-         * @return the username associated with the container
-         */
-        @Override
+		 * Returns the username associated with the container.
+		 * @return the username associated with the container
+		 */
+		@Override
 		public String getUsername() {
 			return getContainer().getUsername();
 		}
 
 		/**
-         * Returns the password for the Cassandra container connection.
-         * 
-         * @return the password for the Cassandra container connection
-         */
-        @Override
+		 * Returns the password for the Cassandra container connection.
+		 * @return the password for the Cassandra container connection
+		 */
+		@Override
 		public String getPassword() {
 			return getContainer().getPassword();
 		}
 
 		/**
-         * Returns the local datacenter of the container.
-         * 
-         * @return the local datacenter of the container
-         */
-        @Override
+		 * Returns the local datacenter of the container.
+		 * @return the local datacenter of the container
+		 */
+		@Override
 		public String getLocalDatacenter() {
 			return getContainer().getLocalDatacenter();
 		}

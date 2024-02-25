@@ -93,25 +93,26 @@ public class GraphQlWebMvcAutoConfiguration {
 			MediaType.APPLICATION_JSON, MediaType.APPLICATION_GRAPHQL };
 
 	/**
-     * Creates a new instance of {@link GraphQlHttpHandler} if no other bean of the same type is present.
-     * 
-     * @param webGraphQlHandler the {@link WebGraphQlHandler} to be used by the {@link GraphQlHttpHandler}
-     * @return the created {@link GraphQlHttpHandler}
-     */
-    @Bean
+	 * Creates a new instance of {@link GraphQlHttpHandler} if no other bean of the same
+	 * type is present.
+	 * @param webGraphQlHandler the {@link WebGraphQlHandler} to be used by the
+	 * {@link GraphQlHttpHandler}
+	 * @return the created {@link GraphQlHttpHandler}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public GraphQlHttpHandler graphQlHttpHandler(WebGraphQlHandler webGraphQlHandler) {
 		return new GraphQlHttpHandler(webGraphQlHandler);
 	}
 
 	/**
-     * Creates a new instance of {@link WebGraphQlHandler} if no other bean of the same type is present.
-     * 
-     * @param service the {@link ExecutionGraphQlService} to be used by the handler
-     * @param interceptors the {@link WebGraphQlInterceptor}s to be applied to the handler
-     * @return a new instance of {@link WebGraphQlHandler}
-     */
-    @Bean
+	 * Creates a new instance of {@link WebGraphQlHandler} if no other bean of the same
+	 * type is present.
+	 * @param service the {@link ExecutionGraphQlService} to be used by the handler
+	 * @param interceptors the {@link WebGraphQlInterceptor}s to be applied to the handler
+	 * @return a new instance of {@link WebGraphQlHandler}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
 			ObjectProvider<WebGraphQlInterceptor> interceptors) {
@@ -119,14 +120,13 @@ public class GraphQlWebMvcAutoConfiguration {
 	}
 
 	/**
-     * Creates a RouterFunction for handling GraphQL requests.
-     * 
-     * @param httpHandler the GraphQlHttpHandler to handle the GraphQL requests
-     * @param graphQlSource the GraphQlSource containing the GraphQL schema and resolvers
-     * @param properties the GraphQlProperties containing the configuration properties
-     * @return the RouterFunction for handling GraphQL requests
-     */
-    @Bean
+	 * Creates a RouterFunction for handling GraphQL requests.
+	 * @param httpHandler the GraphQlHttpHandler to handle the GraphQL requests
+	 * @param graphQlSource the GraphQlSource containing the GraphQL schema and resolvers
+	 * @param properties the GraphQlProperties containing the configuration properties
+	 * @return the RouterFunction for handling GraphQL requests
+	 */
+	@Bean
 	@Order(0)
 	public RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler httpHandler,
 			GraphQlSource graphQlSource, GraphQlProperties properties) {
@@ -148,28 +148,28 @@ public class GraphQlWebMvcAutoConfiguration {
 	}
 
 	/**
-     * Generates a ServerResponse with status code 405 (METHOD_NOT_ALLOWED) and sets the headers to only allow POST requests.
-     * 
-     * @param request the ServerRequest object representing the incoming request
-     * @return a ServerResponse object with status code 405 and headers set to only allow POST requests
-     */
-    private ServerResponse onlyAllowPost(ServerRequest request) {
+	 * Generates a ServerResponse with status code 405 (METHOD_NOT_ALLOWED) and sets the
+	 * headers to only allow POST requests.
+	 * @param request the ServerRequest object representing the incoming request
+	 * @return a ServerResponse object with status code 405 and headers set to only allow
+	 * POST requests
+	 */
+	private ServerResponse onlyAllowPost(ServerRequest request) {
 		return ServerResponse.status(HttpStatus.METHOD_NOT_ALLOWED).headers(this::onlyAllowPost).build();
 	}
 
 	/**
-     * Sets the allowed HTTP methods to only include POST.
-     * 
-     * @param headers the HttpHeaders object to modify
-     */
-    private void onlyAllowPost(HttpHeaders headers) {
+	 * Sets the allowed HTTP methods to only include POST.
+	 * @param headers the HttpHeaders object to modify
+	 */
+	private void onlyAllowPost(HttpHeaders headers) {
 		headers.setAllow(Collections.singleton(HttpMethod.POST));
 	}
 
 	/**
-     * GraphQlEndpointCorsConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * GraphQlEndpointCorsConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	public static class GraphQlEndpointCorsConfiguration implements WebMvcConfigurer {
 
 		final GraphQlProperties graphQlProperties;
@@ -177,22 +177,23 @@ public class GraphQlWebMvcAutoConfiguration {
 		final GraphQlCorsProperties corsProperties;
 
 		/**
-         * Constructs a new GraphQlEndpointCorsConfiguration with the specified GraphQlProperties and GraphQlCorsProperties.
-         * 
-         * @param graphQlProps the GraphQlProperties to be used for configuring the GraphQL endpoint
-         * @param corsProps the GraphQlCorsProperties to be used for configuring the CORS settings of the GraphQL endpoint
-         */
-        public GraphQlEndpointCorsConfiguration(GraphQlProperties graphQlProps, GraphQlCorsProperties corsProps) {
+		 * Constructs a new GraphQlEndpointCorsConfiguration with the specified
+		 * GraphQlProperties and GraphQlCorsProperties.
+		 * @param graphQlProps the GraphQlProperties to be used for configuring the
+		 * GraphQL endpoint
+		 * @param corsProps the GraphQlCorsProperties to be used for configuring the CORS
+		 * settings of the GraphQL endpoint
+		 */
+		public GraphQlEndpointCorsConfiguration(GraphQlProperties graphQlProps, GraphQlCorsProperties corsProps) {
 			this.graphQlProperties = graphQlProps;
 			this.corsProperties = corsProps;
 		}
 
 		/**
-         * Adds CORS mappings to the provided CorsRegistry.
-         * 
-         * @param registry the CorsRegistry to add the CORS mappings to
-         */
-        @Override
+		 * Adds CORS mappings to the provided CorsRegistry.
+		 * @param registry the CorsRegistry to add the CORS mappings to
+		 */
+		@Override
 		public void addCorsMappings(CorsRegistry registry) {
 			CorsConfiguration configuration = this.corsProperties.toCorsConfiguration();
 			if (configuration != null) {
@@ -203,22 +204,25 @@ public class GraphQlWebMvcAutoConfiguration {
 	}
 
 	/**
-     * WebSocketConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * WebSocketConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ ServerContainer.class, WebSocketHandler.class })
 	@ConditionalOnProperty(prefix = "spring.graphql.websocket", name = "path")
 	public static class WebSocketConfiguration {
 
 		/**
-         * Creates a new instance of GraphQlWebSocketHandler if no other bean of the same type is present.
-         * 
-         * @param webGraphQlHandler The WebGraphQlHandler instance to be used by the WebSocketHandler.
-         * @param properties The GraphQlProperties instance containing configuration properties.
-         * @param converters The HttpMessageConverters instance containing the converters to be used for message conversion.
-         * @return The newly created GraphQlWebSocketHandler instance.
-         */
-        @Bean
+		 * Creates a new instance of GraphQlWebSocketHandler if no other bean of the same
+		 * type is present.
+		 * @param webGraphQlHandler The WebGraphQlHandler instance to be used by the
+		 * WebSocketHandler.
+		 * @param properties The GraphQlProperties instance containing configuration
+		 * properties.
+		 * @param converters The HttpMessageConverters instance containing the converters
+		 * to be used for message conversion.
+		 * @return The newly created GraphQlWebSocketHandler instance.
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		public GraphQlWebSocketHandler graphQlWebSocketHandler(WebGraphQlHandler webGraphQlHandler,
 				GraphQlProperties properties, HttpMessageConverters converters) {
@@ -227,13 +231,12 @@ public class GraphQlWebMvcAutoConfiguration {
 		}
 
 		/**
-         * Returns the JSON converter from the given list of HttpMessageConverters.
-         * 
-         * @param converters the list of HttpMessageConverters
-         * @return the JSON converter
-         * @throws IllegalStateException if no JSON converter is found
-         */
-        private GenericHttpMessageConverter<Object> getJsonConverter(HttpMessageConverters converters) {
+		 * Returns the JSON converter from the given list of HttpMessageConverters.
+		 * @param converters the list of HttpMessageConverters
+		 * @return the JSON converter
+		 * @throws IllegalStateException if no JSON converter is found
+		 */
+		private GenericHttpMessageConverter<Object> getJsonConverter(HttpMessageConverters converters) {
 			return converters.getConverters()
 				.stream()
 				.filter(this::canReadJsonMap)
@@ -243,34 +246,32 @@ public class GraphQlWebMvcAutoConfiguration {
 		}
 
 		/**
-         * Determines if the given HttpMessageConverter can read a JSON map.
-         * 
-         * @param candidate the HttpMessageConverter to check
-         * @return true if the HttpMessageConverter can read a JSON map, false otherwise
-         */
-        private boolean canReadJsonMap(HttpMessageConverter<?> candidate) {
+		 * Determines if the given HttpMessageConverter can read a JSON map.
+		 * @param candidate the HttpMessageConverter to check
+		 * @return true if the HttpMessageConverter can read a JSON map, false otherwise
+		 */
+		private boolean canReadJsonMap(HttpMessageConverter<?> candidate) {
 			return candidate.canRead(Map.class, MediaType.APPLICATION_JSON);
 		}
 
 		/**
-         * Casts the given HttpMessageConverter to a GenericHttpMessageConverter<Object>.
-         * 
-         * @param converter the HttpMessageConverter to cast
-         * @return the casted GenericHttpMessageConverter<Object>
-         */
-        @SuppressWarnings("unchecked")
+		 * Casts the given HttpMessageConverter to a GenericHttpMessageConverter<Object>.
+		 * @param converter the HttpMessageConverter to cast
+		 * @return the casted GenericHttpMessageConverter<Object>
+		 */
+		@SuppressWarnings("unchecked")
 		private GenericHttpMessageConverter<Object> asGenericHttpMessageConverter(HttpMessageConverter<?> converter) {
 			return (GenericHttpMessageConverter<Object>) converter;
 		}
 
 		/**
-         * Creates a WebSocketHandlerMapping bean for handling GraphQL WebSocket requests.
-         * 
-         * @param handler the GraphQlWebSocketHandler to handle the WebSocket requests
-         * @param properties the GraphQlProperties containing the WebSocket path configuration
-         * @return the created WebSocketHandlerMapping bean
-         */
-        @Bean
+		 * Creates a WebSocketHandlerMapping bean for handling GraphQL WebSocket requests.
+		 * @param handler the GraphQlWebSocketHandler to handle the WebSocket requests
+		 * @param properties the GraphQlProperties containing the WebSocket path
+		 * configuration
+		 * @return the created WebSocketHandlerMapping bean
+		 */
+		@Bean
 		public HandlerMapping graphQlWebSocketMapping(GraphQlWebSocketHandler handler, GraphQlProperties properties) {
 			String path = properties.getWebsocket().getPath();
 			logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));
@@ -285,17 +286,16 @@ public class GraphQlWebMvcAutoConfiguration {
 	}
 
 	/**
-     * GraphiQlResourceHints class.
-     */
-    static class GraphiQlResourceHints implements RuntimeHintsRegistrar {
+	 * GraphiQlResourceHints class.
+	 */
+	static class GraphiQlResourceHints implements RuntimeHintsRegistrar {
 
 		/**
-         * Registers the hints for GraphiQL resources.
-         * 
-         * @param hints the runtime hints for GraphiQL resources
-         * @param classLoader the class loader to use for loading resources
-         */
-        @Override
+		 * Registers the hints for GraphiQL resources.
+		 * @param hints the runtime hints for GraphiQL resources
+		 * @param classLoader the class loader to use for loading resources
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources().registerPattern("graphiql/index.html");
 		}

@@ -49,9 +49,9 @@ class DataSourceJmxConfiguration {
 	private static final Log logger = LogFactory.getLog(DataSourceJmxConfiguration.class);
 
 	/**
-     * Hikari class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * Hikari class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HikariDataSource.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	static class Hikari {
@@ -61,26 +61,26 @@ class DataSourceJmxConfiguration {
 		private final ObjectProvider<MBeanExporter> mBeanExporter;
 
 		/**
-         * Constructs a new instance of the Hikari class with the specified data source and MBean exporter.
-         * 
-         * @param dataSource the data source to be used by the Hikari instance
-         * @param mBeanExporter the MBean exporter to be used by the Hikari instance
-         */
-        Hikari(DataSource dataSource, ObjectProvider<MBeanExporter> mBeanExporter) {
+		 * Constructs a new instance of the Hikari class with the specified data source
+		 * and MBean exporter.
+		 * @param dataSource the data source to be used by the Hikari instance
+		 * @param mBeanExporter the MBean exporter to be used by the Hikari instance
+		 */
+		Hikari(DataSource dataSource, ObjectProvider<MBeanExporter> mBeanExporter) {
 			this.dataSource = dataSource;
 			this.mBeanExporter = mBeanExporter;
 			validateMBeans();
 		}
 
 		/**
-         * Validates the MBeans for the HikariDataSource.
-         * 
-         * This method checks if the HikariDataSource is registered as an MBean and if it is, it adds an exclusion for the "dataSource" bean
-         * to the MBeanExporter.
-         * 
-         * @throws IllegalArgumentException if the HikariDataSource cannot be unwrapped or if it is not registered as an MBean.
-         */
-        private void validateMBeans() {
+		 * Validates the MBeans for the HikariDataSource.
+		 *
+		 * This method checks if the HikariDataSource is registered as an MBean and if it
+		 * is, it adds an exclusion for the "dataSource" bean to the MBeanExporter.
+		 * @throws IllegalArgumentException if the HikariDataSource cannot be unwrapped or
+		 * if it is not registered as an MBean.
+		 */
+		private void validateMBeans() {
 			HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(this.dataSource, HikariConfigMXBean.class,
 					HikariDataSource.class);
 			if (hikariDataSource != null && hikariDataSource.isRegisterMbeans()) {
@@ -91,21 +91,20 @@ class DataSourceJmxConfiguration {
 	}
 
 	/**
-     * TomcatDataSourceJmxConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * TomcatDataSourceJmxConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.datasource.tomcat", name = "jmx-enabled")
 	@ConditionalOnClass(DataSourceProxy.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	static class TomcatDataSourceJmxConfiguration {
 
 		/**
-         * Creates a DataSource MBean if it is missing.
-         * 
-         * @param dataSource The DataSource object.
-         * @return The DataSource MBean object.
-         */
-        @Bean
+		 * Creates a DataSource MBean if it is missing.
+		 * @param dataSource The DataSource object.
+		 * @return The DataSource MBean object.
+		 */
+		@Bean
 		@ConditionalOnMissingBean(name = "dataSourceMBean")
 		Object dataSourceMBean(DataSource dataSource) {
 			DataSourceProxy dataSourceProxy = DataSourceUnwrapper.unwrap(dataSource, PoolConfiguration.class,

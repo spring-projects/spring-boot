@@ -43,12 +43,11 @@ class DockerEnv {
 	}
 
 	/**
-     * Parses a list of environment variables and returns a map of key-value pairs.
-     * 
-     * @param env the list of environment variables to parse
-     * @return a map containing the parsed key-value pairs
-     */
-    private Map<String, String> parse(List<String> env) {
+	 * Parses a list of environment variables and returns a map of key-value pairs.
+	 * @param env the list of environment variables to parse
+	 * @return a map containing the parsed key-value pairs
+	 */
+	private Map<String, String> parse(List<String> env) {
 		if (CollectionUtils.isEmpty(env)) {
 			return Collections.emptyMap();
 		}
@@ -58,12 +57,11 @@ class DockerEnv {
 	}
 
 	/**
-     * Parses a given entry string and returns an Entry object.
-     * 
-     * @param entry the entry string to be parsed
-     * @return an Entry object representing the parsed entry string
-     */
-    private Entry parseEntry(String entry) {
+	 * Parses a given entry string and returns an Entry object.
+	 * @param entry the entry string to be parsed
+	 * @return an Entry object representing the parsed entry string
+	 */
+	private Entry parseEntry(String entry) {
 		int index = entry.indexOf('=');
 		if (index != -1) {
 			String key = entry.substring(0, index);

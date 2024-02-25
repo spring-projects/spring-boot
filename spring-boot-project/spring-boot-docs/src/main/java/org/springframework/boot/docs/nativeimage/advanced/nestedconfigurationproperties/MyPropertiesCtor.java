@@ -31,12 +31,12 @@ public class MyPropertiesCtor {
 	private final Nested nested;
 
 	/**
-     * Constructs a new instance of the MyPropertiesCtor class with the specified name and nested object.
-     * 
-     * @param name the name of the MyPropertiesCtor object
-     * @param nested the nested object of the MyPropertiesCtor object
-     */
-    public MyPropertiesCtor(String name, Nested nested) {
+	 * Constructs a new instance of the MyPropertiesCtor class with the specified name and
+	 * nested object.
+	 * @param name the name of the MyPropertiesCtor object
+	 * @param nested the nested object of the MyPropertiesCtor object
+	 */
+	public MyPropertiesCtor(String name, Nested nested) {
 		this.name = name;
 		this.nested = nested;
 	}
@@ -47,11 +47,10 @@ public class MyPropertiesCtor {
 	}
 
 	/**
-     * Returns the nested object.
-     *
-     * @return the nested object
-     */
-    public Nested getNested() {
+	 * Returns the nested object.
+	 * @return the nested object
+	 */
+	public Nested getNested() {
 		return this.nested;
 	}
 	// @fold:off

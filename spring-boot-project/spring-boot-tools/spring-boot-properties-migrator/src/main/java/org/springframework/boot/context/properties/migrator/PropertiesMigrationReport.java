@@ -76,12 +76,14 @@ class PropertiesMigrationReport {
 	}
 
 	/**
-     * Retrieves the content of the PropertiesMigrationReport by applying the given extractor function to each entry in the content map.
-     * 
-     * @param extractor the function used to extract the property migrations from a LegacyProperties object
-     * @return a map containing the extracted property migrations for each entry in the content map
-     */
-    private Map<String, List<PropertyMigration>> getContent(
+	 * Retrieves the content of the PropertiesMigrationReport by applying the given
+	 * extractor function to each entry in the content map.
+	 * @param extractor the function used to extract the property migrations from a
+	 * LegacyProperties object
+	 * @return a map containing the extracted property migrations for each entry in the
+	 * content map
+	 */
+	private Map<String, List<PropertyMigration>> getContent(
 			Function<LegacyProperties, List<PropertyMigration>> extractor) {
 		return this.content.entrySet()
 			.stream()
@@ -91,12 +93,12 @@ class PropertiesMigrationReport {
 	}
 
 	/**
-     * Appends the content of a map of property migrations to a StringBuilder report.
-     * 
-     * @param report the StringBuilder report to append the content to
-     * @param content the map containing the property migrations, where the key is the property source name and the value is a list of PropertyMigration objects
-     */
-    private void append(StringBuilder report, Map<String, List<PropertyMigration>> content) {
+	 * Appends the content of a map of property migrations to a StringBuilder report.
+	 * @param report the StringBuilder report to append the content to
+	 * @param content the map containing the property migrations, where the key is the
+	 * property source name and the value is a list of PropertyMigration objects
+	 */
+	private void append(StringBuilder report, Map<String, List<PropertyMigration>> content) {
 		content.forEach((name, properties) -> {
 			report.append(String.format("Property source '%s':%n", name));
 			properties.sort(PropertyMigration.COMPARATOR);
@@ -121,37 +123,39 @@ class PropertiesMigrationReport {
 	}
 
 	/**
-     * LegacyProperties class.
-     */
-    private static class LegacyProperties {
+	 * LegacyProperties class.
+	 */
+	private static class LegacyProperties {
 
 		private final List<PropertyMigration> properties;
 
 		/**
-         * Constructs a new LegacyProperties object with the given list of PropertyMigration objects.
-         * 
-         * @param properties the list of PropertyMigration objects to be used for initializing the LegacyProperties object
-         */
-        LegacyProperties(List<PropertyMigration> properties) {
+		 * Constructs a new LegacyProperties object with the given list of
+		 * PropertyMigration objects.
+		 * @param properties the list of PropertyMigration objects to be used for
+		 * initializing the LegacyProperties object
+		 */
+		LegacyProperties(List<PropertyMigration> properties) {
 			this.properties = new ArrayList<>(properties);
 		}
 
 		/**
-         * Returns a list of PropertyMigration objects representing properties that have been renamed.
-         * 
-         * @return a list of PropertyMigration objects representing properties that have been renamed
-         */
-        List<PropertyMigration> getRenamed() {
+		 * Returns a list of PropertyMigration objects representing properties that have
+		 * been renamed.
+		 * @return a list of PropertyMigration objects representing properties that have
+		 * been renamed
+		 */
+		List<PropertyMigration> getRenamed() {
 			return this.properties.stream().filter(PropertyMigration::isCompatibleType).toList();
 		}
 
 		/**
-         * Returns a list of PropertyMigration objects that represent the properties in the LegacyProperties class
-         * that have unsupported types.
-         *
-         * @return a List of PropertyMigration objects representing the unsupported properties
-         */
-        List<PropertyMigration> getUnsupported() {
+		 * Returns a list of PropertyMigration objects that represent the properties in
+		 * the LegacyProperties class that have unsupported types.
+		 * @return a List of PropertyMigration objects representing the unsupported
+		 * properties
+		 */
+		List<PropertyMigration> getUnsupported() {
 			return this.properties.stream().filter((property) -> !property.isCompatibleType()).toList();
 		}
 

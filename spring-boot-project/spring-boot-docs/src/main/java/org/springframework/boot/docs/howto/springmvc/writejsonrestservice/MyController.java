@@ -26,11 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyController {
 
 	/**
-     * Retrieves a new instance of MyThing.
-     * 
-     * @return MyThing - a new instance of MyThing
-     */
-    @RequestMapping("/thing")
+	 * Retrieves a new instance of MyThing.
+	 * @return MyThing - a new instance of MyThing
+	 */
+	@RequestMapping("/thing")
 	public MyThing thing() {
 		return new MyThing();
 	}

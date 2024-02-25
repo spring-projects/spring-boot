@@ -46,16 +46,19 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
 public class RSocketRequesterAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link RSocketRequester.Builder} with the provided {@link RSocketStrategies}.
-     * This method is annotated with {@link Bean} to indicate that it is a Spring bean.
-     * The scope of the bean is set to "prototype" using the {@link Scope} annotation.
-     * The {@link ConditionalOnMissingBean} annotation ensures that this bean is only created if there is no existing bean of the same type.
-     * 
-     * @param strategies the {@link RSocketStrategies} to be used by the {@link RSocketRequester.Builder}
-     * @param connectorConfigurers the {@link RSocketConnectorConfigurer} instances to be applied to the {@link RSocketRequester.Builder}
-     * @return a new instance of {@link RSocketRequester.Builder} with the provided {@link RSocketStrategies}
-     */
-    @Bean
+	 * Creates a new instance of {@link RSocketRequester.Builder} with the provided
+	 * {@link RSocketStrategies}. This method is annotated with {@link Bean} to indicate
+	 * that it is a Spring bean. The scope of the bean is set to "prototype" using the
+	 * {@link Scope} annotation. The {@link ConditionalOnMissingBean} annotation ensures
+	 * that this bean is only created if there is no existing bean of the same type.
+	 * @param strategies the {@link RSocketStrategies} to be used by the
+	 * {@link RSocketRequester.Builder}
+	 * @param connectorConfigurers the {@link RSocketConnectorConfigurer} instances to be
+	 * applied to the {@link RSocketRequester.Builder}
+	 * @return a new instance of {@link RSocketRequester.Builder} with the provided
+	 * {@link RSocketStrategies}
+	 */
+	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
 	public RSocketRequester.Builder rSocketRequesterBuilder(RSocketStrategies strategies,

@@ -39,13 +39,13 @@ public class OptionalDependenciesPlugin implements Plugin<Project> {
 	public static final String OPTIONAL_CONFIGURATION_NAME = "optional";
 
 	/**
-     * Applies the OptionalDependenciesPlugin to the given project.
-     * This plugin creates a new configuration called "optional" that cannot be consumed or resolved.
-     * It also extends the compile and runtime classpath configurations of all source sets with the "optional" configuration.
-     *
-     * @param project the project to apply the plugin to
-     */
-    @Override
+	 * Applies the OptionalDependenciesPlugin to the given project. This plugin creates a
+	 * new configuration called "optional" that cannot be consumed or resolved. It also
+	 * extends the compile and runtime classpath configurations of all source sets with
+	 * the "optional" configuration.
+	 * @param project the project to apply the plugin to
+	 */
+	@Override
 	public void apply(Project project) {
 		Configuration optional = project.getConfigurations().create("optional");
 		optional.setCanBeConsumed(false);

@@ -34,12 +34,11 @@ public class TemplateLocation {
 	private final String path;
 
 	/**
-     * Constructs a new TemplateLocation object with the specified path.
-     * 
-     * @param path the path of the template location
-     * @throws IllegalArgumentException if the path is null
-     */
-    public TemplateLocation(String path) {
+	 * Constructs a new TemplateLocation object with the specified path.
+	 * @param path the path of the template location
+	 * @throws IllegalArgumentException if the path is null
+	 */
+	public TemplateLocation(String path) {
 		Assert.notNull(path, "Path must not be null");
 		this.path = path;
 	}
@@ -64,13 +63,12 @@ public class TemplateLocation {
 	}
 
 	/**
-     * Checks if any resource exists in the given search path.
-     * 
-     * @param resolver the ResourcePatternResolver used to resolve the resources
-     * @return true if any resource exists, false otherwise
-     * @throws IOException if an I/O error occurs while resolving the resources
-     */
-    private boolean anyExists(ResourcePatternResolver resolver) throws IOException {
+	 * Checks if any resource exists in the given search path.
+	 * @param resolver the ResourcePatternResolver used to resolve the resources
+	 * @return true if any resource exists, false otherwise
+	 * @throws IOException if an I/O error occurs while resolving the resources
+	 */
+	private boolean anyExists(ResourcePatternResolver resolver) throws IOException {
 		String searchPath = this.path;
 		if (searchPath.startsWith(ResourceLoader.CLASSPATH_URL_PREFIX)) {
 			searchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
@@ -88,11 +86,10 @@ public class TemplateLocation {
 	}
 
 	/**
-     * Returns the string representation of the TemplateLocation object.
-     *
-     * @return the path of the TemplateLocation object
-     */
-    @Override
+	 * Returns the string representation of the TemplateLocation object.
+	 * @return the path of the TemplateLocation object
+	 */
+	@Override
 	public String toString() {
 		return this.path;
 	}

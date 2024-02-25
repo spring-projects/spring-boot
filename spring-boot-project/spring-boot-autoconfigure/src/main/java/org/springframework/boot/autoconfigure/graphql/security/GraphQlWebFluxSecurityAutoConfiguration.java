@@ -44,12 +44,13 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 public class GraphQlWebFluxSecurityAutoConfiguration {
 
 	/**
-     * Creates a new instance of ReactiveSecurityDataFetcherExceptionResolver if no other bean of the same type is present.
-     * This resolver is responsible for handling security-related exceptions that occur during data fetching in a reactive GraphQL application.
-     * 
-     * @return the ReactiveSecurityDataFetcherExceptionResolver instance
-     */
-    @Bean
+	 * Creates a new instance of ReactiveSecurityDataFetcherExceptionResolver if no other
+	 * bean of the same type is present. This resolver is responsible for handling
+	 * security-related exceptions that occur during data fetching in a reactive GraphQL
+	 * application.
+	 * @return the ReactiveSecurityDataFetcherExceptionResolver instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public ReactiveSecurityDataFetcherExceptionResolver reactiveSecurityDataFetcherExceptionResolver() {
 		return new ReactiveSecurityDataFetcherExceptionResolver();

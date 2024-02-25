@@ -27,9 +27,9 @@ import org.springframework.stereotype.Component;
 public class JerseyConfig extends ResourceConfig {
 
 	/**
-     * Registers the Endpoint and ReverseEndpoint classes in the JerseyConfig class.
-     */
-    public JerseyConfig() {
+	 * Registers the Endpoint and ReverseEndpoint classes in the JerseyConfig class.
+	 */
+	public JerseyConfig() {
 		register(Endpoint.class);
 		register(ReverseEndpoint.class);
 	}

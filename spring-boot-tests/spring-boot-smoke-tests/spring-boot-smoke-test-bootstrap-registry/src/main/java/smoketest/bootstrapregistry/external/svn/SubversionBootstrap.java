@@ -30,9 +30,9 @@ import org.springframework.boot.BootstrapRegistryInitializer;
 public final class SubversionBootstrap {
 
 	/**
-     * This method is used to bootstrap the Subversion repository.
-     */
-    private SubversionBootstrap() {
+	 * This method is used to bootstrap the Subversion repository.
+	 */
+	private SubversionBootstrap() {
 	}
 
 	/**
@@ -47,13 +47,14 @@ public final class SubversionBootstrap {
 	}
 
 	/**
-     * Creates a Subversion client using the provided bootstrap context and client factory.
-     * 
-     * @param bootstrapContext The bootstrap context containing the necessary information for creating the client.
-     * @param clientFactory The factory function used to create the Subversion client.
-     * @return The created Subversion client.
-     */
-    private static SubversionClient createSubversionClient(BootstrapContext bootstrapContext,
+	 * Creates a Subversion client using the provided bootstrap context and client
+	 * factory.
+	 * @param bootstrapContext The bootstrap context containing the necessary information
+	 * for creating the client.
+	 * @param clientFactory The factory function used to create the Subversion client.
+	 * @return The created Subversion client.
+	 */
+	private static SubversionClient createSubversionClient(BootstrapContext bootstrapContext,
 			Function<SubversionServerCertificate, SubversionClient> clientFactory) {
 		return clientFactory.apply(bootstrapContext.get(SubversionServerCertificate.class));
 	}

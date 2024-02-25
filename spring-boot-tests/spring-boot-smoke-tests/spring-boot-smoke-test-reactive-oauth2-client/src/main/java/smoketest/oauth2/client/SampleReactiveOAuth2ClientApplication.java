@@ -26,12 +26,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SampleReactiveOAuth2ClientApplication {
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring application by running the SampleReactiveOAuth2ClientApplication class.
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring
+	 * application by running the SampleReactiveOAuth2ClientApplication class.
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleReactiveOAuth2ClientApplication.class);
 	}
 

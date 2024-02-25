@@ -36,22 +36,22 @@ abstract class OracleJdbcDockerComposeConnectionDetailsFactory
 	private final String defaultDatabase;
 
 	/**
-     * Constructs a new OracleJdbcDockerComposeConnectionDetailsFactory with the specified OracleContainer.
-     * 
-     * @param container the OracleContainer to use for creating the connection details factory
-     */
-    protected OracleJdbcDockerComposeConnectionDetailsFactory(OracleContainer container) {
+	 * Constructs a new OracleJdbcDockerComposeConnectionDetailsFactory with the specified
+	 * OracleContainer.
+	 * @param container the OracleContainer to use for creating the connection details
+	 * factory
+	 */
+	protected OracleJdbcDockerComposeConnectionDetailsFactory(OracleContainer container) {
 		super(container.getImageName());
 		this.defaultDatabase = container.getDefaultDatabase();
 	}
 
 	/**
-     * Returns the JDBC connection details for connecting to a Docker Compose service.
-     * 
-     * @param source the Docker Compose connection source
-     * @return the JDBC connection details
-     */
-    @Override
+	 * Returns the JDBC connection details for connecting to a Docker Compose service.
+	 * @param source the Docker Compose connection source
+	 * @return the JDBC connection details
+	 */
+	@Override
 	protected JdbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new OracleJdbcDockerComposeConnectionDetails(source.getRunningService(), this.defaultDatabase);
 	}
@@ -70,12 +70,13 @@ abstract class OracleJdbcDockerComposeConnectionDetailsFactory
 		private final String jdbcUrl;
 
 		/**
-         * Constructs a new OracleJdbcDockerComposeConnectionDetails object with the specified RunningService and defaultDatabase.
-         * 
-         * @param service the RunningService object representing the Oracle database service
-         * @param defaultDatabase the default database name to connect to
-         */
-        OracleJdbcDockerComposeConnectionDetails(RunningService service, String defaultDatabase) {
+		 * Constructs a new OracleJdbcDockerComposeConnectionDetails object with the
+		 * specified RunningService and defaultDatabase.
+		 * @param service the RunningService object representing the Oracle database
+		 * service
+		 * @param defaultDatabase the default database name to connect to
+		 */
+		OracleJdbcDockerComposeConnectionDetails(RunningService service, String defaultDatabase) {
 			super(service);
 			this.environment = new OracleEnvironment(service.env(), defaultDatabase);
 			this.jdbcUrl = "jdbc:oracle:thin:@" + service.host() + ":" + service.ports().get(1521) + "/"
@@ -83,42 +84,39 @@ abstract class OracleJdbcDockerComposeConnectionDetailsFactory
 		}
 
 		/**
-         * Returns the parameters of the given RunningService.
-         * 
-         * @param service the RunningService object to retrieve parameters from
-         * @return a String representing the parameters, or an empty string if no parameters are found
-         */
-        private String getParameters(RunningService service) {
+		 * Returns the parameters of the given RunningService.
+		 * @param service the RunningService object to retrieve parameters from
+		 * @return a String representing the parameters, or an empty string if no
+		 * parameters are found
+		 */
+		private String getParameters(RunningService service) {
 			String parameters = service.labels().get(PARAMETERS_LABEL);
 			return (StringUtils.hasLength(parameters)) ? "?" + parameters : "";
 		}
 
 		/**
-         * Returns the username associated with the current environment.
-         * 
-         * @return the username
-         */
-        @Override
+		 * Returns the username associated with the current environment.
+		 * @return the username
+		 */
+		@Override
 		public String getUsername() {
 			return this.environment.getUsername();
 		}
 
 		/**
-         * Returns the password for the Oracle JDBC connection.
-         * 
-         * @return the password for the Oracle JDBC connection
-         */
-        @Override
+		 * Returns the password for the Oracle JDBC connection.
+		 * @return the password for the Oracle JDBC connection
+		 */
+		@Override
 		public String getPassword() {
 			return this.environment.getPassword();
 		}
 
 		/**
-         * Returns the JDBC URL for the OracleJdbcDockerComposeConnectionDetails.
-         *
-         * @return the JDBC URL
-         */
-        @Override
+		 * Returns the JDBC URL for the OracleJdbcDockerComposeConnectionDetails.
+		 * @return the JDBC URL
+		 */
+		@Override
 		public String getJdbcUrl() {
 			return this.jdbcUrl;
 		}

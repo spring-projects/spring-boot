@@ -22,11 +22,10 @@ package smoketest.xml.service;
 public class OtherService {
 
 	/**
-     * Returns the message "Hello Other World".
-     * 
-     * @return the message "Hello Other World"
-     */
-    public String getMessage() {
+	 * Returns the message "Hello Other World".
+	 * @return the message "Hello Other World"
+	 */
+	public String getMessage() {
 		return "Hello Other World";
 	}
 

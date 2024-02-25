@@ -66,23 +66,24 @@ public class MessageSourceAutoConfiguration {
 	private static final Resource[] NO_RESOURCES = {};
 
 	/**
-     * Creates a new instance of {@link MessageSourceProperties} by reading the properties with the specified prefix from the Spring configuration.
-     * 
-     * @return a new instance of {@link MessageSourceProperties} populated with the properties from the Spring configuration
-     */
-    @Bean
+	 * Creates a new instance of {@link MessageSourceProperties} by reading the properties
+	 * with the specified prefix from the Spring configuration.
+	 * @return a new instance of {@link MessageSourceProperties} populated with the
+	 * properties from the Spring configuration
+	 */
+	@Bean
 	@ConfigurationProperties(prefix = "spring.messages")
 	public MessageSourceProperties messageSourceProperties() {
 		return new MessageSourceProperties();
 	}
 
 	/**
-     * Create a {@link MessageSource} bean.
-     *
-     * @param properties the {@link MessageSourceProperties} to configure the message source
-     * @return the created {@link MessageSource} bean
-     */
-    @Bean
+	 * Create a {@link MessageSource} bean.
+	 * @param properties the {@link MessageSourceProperties} to configure the message
+	 * source
+	 * @return the created {@link MessageSource} bean
+	 */
+	@Bean
 	public MessageSource messageSource(MessageSourceProperties properties) {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (StringUtils.hasText(properties.getBasename())) {
@@ -103,22 +104,22 @@ public class MessageSourceAutoConfiguration {
 	}
 
 	/**
-     * ResourceBundleCondition class.
-     */
-    protected static class ResourceBundleCondition extends SpringBootCondition {
+	 * ResourceBundleCondition class.
+	 */
+	protected static class ResourceBundleCondition extends SpringBootCondition {
 
 		private static final ConcurrentReferenceHashMap<String, ConditionOutcome> cache = new ConcurrentReferenceHashMap<>();
 
 		/**
-         * Retrieves the match outcome for the specified basename from the cache, if available.
-         * If the outcome is not found in the cache, it retrieves the match outcome for the basename
-         * from the context and stores it in the cache for future use.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the match outcome for the specified basename
-         */
-        @Override
+		 * Retrieves the match outcome for the specified basename from the cache, if
+		 * available. If the outcome is not found in the cache, it retrieves the match
+		 * outcome for the basename from the context and stores it in the cache for future
+		 * use.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the match outcome for the specified basename
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			String basename = context.getEnvironment().getProperty("spring.messages.basename", "messages");
 			ConditionOutcome outcome = cache.get(basename);
@@ -130,13 +131,13 @@ public class MessageSourceAutoConfiguration {
 		}
 
 		/**
-         * Retrieves the match outcome for a given basename in the ResourceBundleCondition class.
-         * 
-         * @param context The ConditionContext object.
-         * @param basename The basename to match against.
-         * @return The ConditionOutcome object representing the match outcome.
-         */
-        private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context, String basename) {
+		 * Retrieves the match outcome for a given basename in the ResourceBundleCondition
+		 * class.
+		 * @param context The ConditionContext object.
+		 * @param basename The basename to match against.
+		 * @return The ConditionOutcome object representing the match outcome.
+		 */
+		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context, String basename) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ResourceBundle");
 			for (String name : StringUtils.commaDelimitedListToStringArray(StringUtils.trimAllWhitespace(basename))) {
 				for (Resource resource : getResources(context.getClassLoader(), name)) {
@@ -149,13 +150,14 @@ public class MessageSourceAutoConfiguration {
 		}
 
 		/**
-         * Retrieves an array of resources with the given name from the specified class loader.
-         * 
-         * @param classLoader the class loader to use for resource retrieval
-         * @param name the name of the resources to retrieve
-         * @return an array of resources matching the given name, or an empty array if no resources are found
-         */
-        private Resource[] getResources(ClassLoader classLoader, String name) {
+		 * Retrieves an array of resources with the given name from the specified class
+		 * loader.
+		 * @param classLoader the class loader to use for resource retrieval
+		 * @param name the name of the resources to retrieve
+		 * @return an array of resources matching the given name, or an empty array if no
+		 * resources are found
+		 */
+		private Resource[] getResources(ClassLoader classLoader, String name) {
 			String target = name.replace('.', '/');
 			try {
 				return new PathMatchingResourcePatternResolver(classLoader)
@@ -169,17 +171,16 @@ public class MessageSourceAutoConfiguration {
 	}
 
 	/**
-     * MessageSourceRuntimeHints class.
-     */
-    static class MessageSourceRuntimeHints implements RuntimeHintsRegistrar {
+	 * MessageSourceRuntimeHints class.
+	 */
+	static class MessageSourceRuntimeHints implements RuntimeHintsRegistrar {
 
 		/**
-         * Registers the hints for runtime message sources.
-         * 
-         * @param hints the runtime hints to register
-         * @param classLoader the class loader to use for loading resources
-         */
-        @Override
+		 * Registers the hints for runtime message sources.
+		 * @param hints the runtime hints to register
+		 * @param classLoader the class loader to use for loading resources
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources().registerPattern("messages.properties").registerPattern("messages_*.properties");
 		}

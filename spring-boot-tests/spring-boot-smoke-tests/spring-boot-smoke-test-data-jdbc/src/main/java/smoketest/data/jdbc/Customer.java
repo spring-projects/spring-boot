@@ -33,56 +33,50 @@ public class Customer {
 	private LocalDate dateOfBirth;
 
 	/**
-     * Returns the ID of the customer.
-     *
-     * @return the ID of the customer
-     */
-    public Long getId() {
+	 * Returns the ID of the customer.
+	 * @return the ID of the customer
+	 */
+	public Long getId() {
 		return this.id;
 	}
 
 	/**
-     * Sets the ID of the customer.
-     * 
-     * @param id the ID to set
-     */
-    public void setId(Long id) {
+	 * Sets the ID of the customer.
+	 * @param id the ID to set
+	 */
+	public void setId(Long id) {
 		this.id = id;
 	}
 
 	/**
-     * Returns the first name of the customer.
-     *
-     * @return the first name of the customer
-     */
-    public String getFirstName() {
+	 * Returns the first name of the customer.
+	 * @return the first name of the customer
+	 */
+	public String getFirstName() {
 		return this.firstName;
 	}
 
 	/**
-     * Sets the first name of the customer.
-     * 
-     * @param firstName the first name to be set
-     */
-    public void setFirstName(String firstName) {
+	 * Sets the first name of the customer.
+	 * @param firstName the first name to be set
+	 */
+	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 
 	/**
-     * Returns the date of birth of the customer.
-     *
-     * @return the date of birth of the customer
-     */
-    public LocalDate getDateOfBirth() {
+	 * Returns the date of birth of the customer.
+	 * @return the date of birth of the customer
+	 */
+	public LocalDate getDateOfBirth() {
 		return this.dateOfBirth;
 	}
 
 	/**
-     * Sets the date of birth for the customer.
-     * 
-     * @param dateOfBirth the date of birth to be set
-     */
-    public void setDateOfBirth(LocalDate dateOfBirth) {
+	 * Sets the date of birth for the customer.
+	 * @param dateOfBirth the date of birth to be set
+	 */
+	public void setDateOfBirth(LocalDate dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 

@@ -30,13 +30,12 @@ import org.springframework.boot.origin.Origin;
 class ConfigDataNotFoundFailureAnalyzer extends AbstractFailureAnalyzer<ConfigDataNotFoundException> {
 
 	/**
-     * Analyzes the failure caused by a ConfigDataNotFoundException.
-     * 
-     * @param rootFailure the root cause of the failure
-     * @param cause the ConfigDataNotFoundException that caused the failure
-     * @return a FailureAnalysis object containing the analysis result
-     */
-    @Override
+	 * Analyzes the failure caused by a ConfigDataNotFoundException.
+	 * @param rootFailure the root cause of the failure
+	 * @param cause the ConfigDataNotFoundException that caused the failure
+	 * @return a FailureAnalysis object containing the analysis result
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, ConfigDataNotFoundException cause) {
 		ConfigDataLocation location = getLocation(cause);
 		Origin origin = Origin.from(location);
@@ -56,12 +55,11 @@ class ConfigDataNotFoundFailureAnalyzer extends AbstractFailureAnalyzer<ConfigDa
 	}
 
 	/**
-     * Returns the location of the config data that caused the exception.
-     * 
-     * @param cause the ConfigDataNotFoundException that was thrown
-     * @return the location of the config data, or null if not found
-     */
-    private ConfigDataLocation getLocation(ConfigDataNotFoundException cause) {
+	 * Returns the location of the config data that caused the exception.
+	 * @param cause the ConfigDataNotFoundException that was thrown
+	 * @return the location of the config data, or null if not found
+	 */
+	private ConfigDataLocation getLocation(ConfigDataNotFoundException cause) {
 		if (cause instanceof ConfigDataLocationNotFoundException locationNotFoundException) {
 			return locationNotFoundException.getLocation();
 		}

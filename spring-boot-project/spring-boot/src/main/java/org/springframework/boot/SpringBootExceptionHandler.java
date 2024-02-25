@@ -49,39 +49,36 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 	private int exitCode = 0;
 
 	/**
-     * Constructs a new SpringBootExceptionHandler with the specified parent UncaughtExceptionHandler.
-     *
-     * @param parent the parent UncaughtExceptionHandler to set
-     */
-    SpringBootExceptionHandler(UncaughtExceptionHandler parent) {
+	 * Constructs a new SpringBootExceptionHandler with the specified parent
+	 * UncaughtExceptionHandler.
+	 * @param parent the parent UncaughtExceptionHandler to set
+	 */
+	SpringBootExceptionHandler(UncaughtExceptionHandler parent) {
 		this.parent = parent;
 	}
 
 	/**
-     * Registers a logged exception.
-     * 
-     * @param exception the exception to be logged
-     */
-    void registerLoggedException(Throwable exception) {
+	 * Registers a logged exception.
+	 * @param exception the exception to be logged
+	 */
+	void registerLoggedException(Throwable exception) {
 		this.loggedExceptions.add(exception);
 	}
 
 	/**
-     * Registers the exit code for the application.
-     * 
-     * @param exitCode the exit code to be registered
-     */
-    void registerExitCode(int exitCode) {
+	 * Registers the exit code for the application.
+	 * @param exitCode the exit code to be registered
+	 */
+	void registerExitCode(int exitCode) {
 		this.exitCode = exitCode;
 	}
 
 	/**
-     * Handles uncaught exceptions in a Spring Boot application.
-     * 
-     * @param thread The thread in which the exception occurred.
-     * @param ex The throwable object representing the uncaught exception.
-     */
-    @Override
+	 * Handles uncaught exceptions in a Spring Boot application.
+	 * @param thread The thread in which the exception occurred.
+	 * @param ex The throwable object representing the uncaught exception.
+	 */
+	@Override
 	public void uncaughtException(Thread thread, Throwable ex) {
 		try {
 			if (isPassedToParent(ex) && this.parent != null) {
@@ -97,12 +94,12 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 	}
 
 	/**
-     * Checks if the given exception is passed to the parent handler.
-     * 
-     * @param ex the exception to be checked
-     * @return true if the exception is a log configuration message or not registered, false otherwise
-     */
-    private boolean isPassedToParent(Throwable ex) {
+	 * Checks if the given exception is passed to the parent handler.
+	 * @param ex the exception to be checked
+	 * @return true if the exception is a log configuration message or not registered,
+	 * false otherwise
+	 */
+	private boolean isPassedToParent(Throwable ex) {
 		return isLogConfigurationMessage(ex) || !isRegistered(ex);
 	}
 
@@ -128,12 +125,11 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 	}
 
 	/**
-     * Checks if the given exception is registered in the loggedExceptions list.
-     * 
-     * @param ex the exception to check
-     * @return true if the exception is registered, false otherwise
-     */
-    private boolean isRegistered(Throwable ex) {
+	 * Checks if the given exception is registered in the loggedExceptions list.
+	 * @param ex the exception to check
+	 * @return true if the exception is registered, false otherwise
+	 */
+	private boolean isRegistered(Throwable ex) {
 		if (this.loggedExceptions.contains(ex)) {
 			return true;
 		}
@@ -144,11 +140,10 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 	}
 
 	/**
-     * Returns the SpringBootExceptionHandler instance associated with the current thread.
-     *
-     * @return the SpringBootExceptionHandler instance associated with the current thread
-     */
-    static SpringBootExceptionHandler forCurrentThread() {
+	 * Returns the SpringBootExceptionHandler instance associated with the current thread.
+	 * @return the SpringBootExceptionHandler instance associated with the current thread
+	 */
+	static SpringBootExceptionHandler forCurrentThread() {
 		return handler.get();
 	}
 
@@ -158,13 +153,13 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 	private static final class LoggedExceptionHandlerThreadLocal extends ThreadLocal<SpringBootExceptionHandler> {
 
 		/**
-         * Returns the initial value for the LoggedExceptionHandlerThreadLocal.
-         * 
-         * This method creates a new instance of SpringBootExceptionHandler and sets it as the uncaught exception handler for the current thread.
-         * 
-         * @return the initial value for the LoggedExceptionHandlerThreadLocal
-         */
-        @Override
+		 * Returns the initial value for the LoggedExceptionHandlerThreadLocal.
+		 *
+		 * This method creates a new instance of SpringBootExceptionHandler and sets it as
+		 * the uncaught exception handler for the current thread.
+		 * @return the initial value for the LoggedExceptionHandlerThreadLocal
+		 */
+		@Override
 		protected SpringBootExceptionHandler initialValue() {
 			SpringBootExceptionHandler handler = new SpringBootExceptionHandler(
 					Thread.currentThread().getUncaughtExceptionHandler());

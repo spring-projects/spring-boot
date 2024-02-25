@@ -73,12 +73,11 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 	}
 
 	/**
-     * Retrieves the value of the specified property.
-     * 
-     * @param name the name of the property to retrieve
-     * @return the value of the property, or null if the property does not exist
-     */
-    @Override
+	 * Retrieves the value of the specified property.
+	 * @param name the name of the property to retrieve
+	 * @return the value of the property, or null if the property does not exist
+	 */
+	@Override
 	public Object getProperty(String name) {
 		if (StringUtils.hasLength(name)) {
 			for (Mapping mapping : MAPPINGS) {
@@ -103,30 +102,27 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 		private final String prefix;
 
 		/**
-         * Constructs a new Mapping object with the specified prefix.
-         * 
-         * @param prefix the prefix to be used for mapping
-         */
-        Mapping(String prefix) {
+		 * Constructs a new Mapping object with the specified prefix.
+		 * @param prefix the prefix to be used for mapping
+		 */
+		Mapping(String prefix) {
 			this.prefix = prefix;
 		}
 
 		/**
-         * Returns the prefix used in the Mapping.
-         *
-         * @return the prefix used in the Mapping
-         */
-        String getPrefix() {
+		 * Returns the prefix used in the Mapping.
+		 * @return the prefix used in the Mapping
+		 */
+		String getPrefix() {
 			return this.prefix;
 		}
 
 		/**
-         * Retrieves the ANSI element corresponding to the given postfix.
-         *
-         * @param postfix the postfix used to identify the ANSI element
-         * @return the ANSI element corresponding to the given postfix
-         */
-        abstract AnsiElement getElement(String postfix);
+		 * Retrieves the ANSI element corresponding to the given postfix.
+		 * @param postfix the postfix used to identify the ANSI element
+		 * @return the ANSI element corresponding to the given postfix
+		 */
+		abstract AnsiElement getElement(String postfix);
 
 	}
 
@@ -138,23 +134,22 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 		private final Set<E> enums;
 
 		/**
-         * Constructs a new EnumMapping with the specified prefix and enum type.
-         * 
-         * @param prefix the prefix to be used for mapping
-         * @param enumType the class representing the enum type
-         */
-        EnumMapping(String prefix, Class<E> enumType) {
+		 * Constructs a new EnumMapping with the specified prefix and enum type.
+		 * @param prefix the prefix to be used for mapping
+		 * @param enumType the class representing the enum type
+		 */
+		EnumMapping(String prefix, Class<E> enumType) {
 			super(prefix);
 			this.enums = EnumSet.allOf(enumType);
 		}
 
 		/**
-         * Retrieves the AnsiElement associated with the given postfix.
-         * 
-         * @param postfix the postfix used to identify the AnsiElement
-         * @return the AnsiElement associated with the given postfix, or null if no match is found
-         */
-        @Override
+		 * Retrieves the AnsiElement associated with the given postfix.
+		 * @param postfix the postfix used to identify the AnsiElement
+		 * @return the AnsiElement associated with the given postfix, or null if no match
+		 * is found
+		 */
+		@Override
 		AnsiElement getElement(String postfix) {
 			for (Enum<?> candidate : this.enums) {
 				if (candidate.name().equals(postfix)) {
@@ -174,23 +169,22 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 		private final IntFunction<Ansi8BitColor> factory;
 
 		/**
-         * Constructs a new Ansi8BitColorMapping with the specified prefix and factory.
-         * 
-         * @param prefix the prefix to be used for the mapping
-         * @param factory the factory function used to create Ansi8BitColor objects
-         */
-        Ansi8BitColorMapping(String prefix, IntFunction<Ansi8BitColor> factory) {
+		 * Constructs a new Ansi8BitColorMapping with the specified prefix and factory.
+		 * @param prefix the prefix to be used for the mapping
+		 * @param factory the factory function used to create Ansi8BitColor objects
+		 */
+		Ansi8BitColorMapping(String prefix, IntFunction<Ansi8BitColor> factory) {
 			super(prefix);
 			this.factory = factory;
 		}
 
 		/**
-         * Retrieves an AnsiElement based on the given postfix.
-         * 
-         * @param postfix the postfix used to determine the AnsiElement
-         * @return the AnsiElement corresponding to the postfix, or null if no matching AnsiElement is found
-         */
-        @Override
+		 * Retrieves an AnsiElement based on the given postfix.
+		 * @param postfix the postfix used to determine the AnsiElement
+		 * @return the AnsiElement corresponding to the postfix, or null if no matching
+		 * AnsiElement is found
+		 */
+		@Override
 		AnsiElement getElement(String postfix) {
 			if (containsOnlyDigits(postfix)) {
 				try {
@@ -204,12 +198,11 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 		}
 
 		/**
-         * Checks if the given postfix string contains only digits.
-         * 
-         * @param postfix the postfix string to be checked
-         * @return true if the postfix string contains only digits, false otherwise
-         */
-        private boolean containsOnlyDigits(String postfix) {
+		 * Checks if the given postfix string contains only digits.
+		 * @param postfix the postfix string to be checked
+		 * @return true if the postfix string contains only digits, false otherwise
+		 */
+		private boolean containsOnlyDigits(String postfix) {
 			for (int i = 0; i < postfix.length(); i++) {
 				if (!Character.isDigit(postfix.charAt(i))) {
 					return false;

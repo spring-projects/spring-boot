@@ -70,21 +70,21 @@ public enum EmbeddedDatabaseConnection {
 	private final String url;
 
 	/**
-     * Constructs a new EmbeddedDatabaseConnection object with the specified URL.
-     * 
-     * @param url the URL of the embedded database connection
-     */
-    EmbeddedDatabaseConnection(String url) {
+	 * Constructs a new EmbeddedDatabaseConnection object with the specified URL.
+	 * @param url the URL of the embedded database connection
+	 */
+	EmbeddedDatabaseConnection(String url) {
 		this(null, url);
 	}
 
 	/**
-     * Constructs a new EmbeddedDatabaseConnection with the specified fallback driver class and URL.
-     * 
-     * @param fallbackDriverClass the fallback driver class to be used if the primary driver class is not available
-     * @param url the URL of the embedded database connection
-     */
-    EmbeddedDatabaseConnection(String fallbackDriverClass, String url) {
+	 * Constructs a new EmbeddedDatabaseConnection with the specified fallback driver
+	 * class and URL.
+	 * @param fallbackDriverClass the fallback driver class to be used if the primary
+	 * driver class is not available
+	 * @param url the URL of the embedded database connection
+	 */
+	EmbeddedDatabaseConnection(String fallbackDriverClass, String url) {
 		this.alternativeDriverClass = fallbackDriverClass;
 		this.url = url;
 	}
@@ -128,14 +128,14 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
-     * Checks if the given URL is an embedded database URL.
-     * 
-     * @param url the URL to check
-     * @return true if the URL is an embedded database URL, false otherwise
-     * 
-     * @see <a href="https://github.com/spring-projects/spring-boot/issues/32865">Issue #32865</a>
-     */
-    boolean isEmbeddedUrl(String url) {
+	 * Checks if the given URL is an embedded database URL.
+	 * @param url the URL to check
+	 * @return true if the URL is an embedded database URL, false otherwise
+	 *
+	 * @see <a href="https://github.com/spring-projects/spring-boot/issues/32865">Issue
+	 * #32865</a>
+	 */
+	boolean isEmbeddedUrl(String url) {
 		// See https://github.com/spring-projects/spring-boot/issues/32865
 		return switch (this) {
 			case NONE -> false;
@@ -146,12 +146,12 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
-     * Checks if the given driver class is compatible with the current database connection.
-     * 
-     * @param driverClass the driver class to check compatibility for
-     * @return true if the driver class is compatible, false otherwise
-     */
-    boolean isDriverCompatible(String driverClass) {
+	 * Checks if the given driver class is compatible with the current database
+	 * connection.
+	 * @param driverClass the driver class to check compatibility for
+	 * @return true if the driver class is compatible, false otherwise
+	 */
+	boolean isDriverCompatible(String driverClass) {
 		return (driverClass != null
 				&& (driverClass.equals(getDriverClassName()) || driverClass.equals(this.alternativeDriverClass)));
 	}
@@ -176,12 +176,13 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
-     * Returns the embedded database connection based on the provided driver class.
-     * 
-     * @param driverClass the driver class to check compatibility with the embedded database connections
-     * @return the embedded database connection that is compatible with the provided driver class, or NONE if no compatible connection is found
-     */
-    private static EmbeddedDatabaseConnection getEmbeddedDatabaseConnection(String driverClass) {
+	 * Returns the embedded database connection based on the provided driver class.
+	 * @param driverClass the driver class to check compatibility with the embedded
+	 * database connections
+	 * @return the embedded database connection that is compatible with the provided
+	 * driver class, or NONE if no compatible connection is found
+	 */
+	private static EmbeddedDatabaseConnection getEmbeddedDatabaseConnection(String driverClass) {
 		return Stream.of(H2, HSQLDB, DERBY)
 			.filter((connection) -> connection.isDriverCompatible(driverClass))
 			.findFirst()
@@ -225,14 +226,15 @@ public enum EmbeddedDatabaseConnection {
 	private static final class IsEmbedded implements ConnectionCallback<Boolean> {
 
 		/**
-         * Checks if the given connection is an embedded database connection.
-         * 
-         * @param connection the connection to check
-         * @return true if the connection is an embedded database connection, false otherwise
-         * @throws SQLException if an error occurs while accessing the database metadata
-         * @throws DataAccessException if an error occurs while accessing the database metadata
-         */
-        @Override
+		 * Checks if the given connection is an embedded database connection.
+		 * @param connection the connection to check
+		 * @return true if the connection is an embedded database connection, false
+		 * otherwise
+		 * @throws SQLException if an error occurs while accessing the database metadata
+		 * @throws DataAccessException if an error occurs while accessing the database
+		 * metadata
+		 */
+		@Override
 		public Boolean doInConnection(Connection connection) throws SQLException, DataAccessException {
 			DatabaseMetaData metaData = connection.getMetaData();
 			String productName = metaData.getDatabaseProductName();

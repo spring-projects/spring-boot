@@ -59,57 +59,54 @@ public class JmxEndpointDiscoverer extends EndpointDiscoverer<ExposableJmxEndpoi
 	}
 
 	/**
-     * Creates a new ExposableJmxEndpoint instance based on the provided parameters.
-     * 
-     * @param endpointBean the bean representing the endpoint
-     * @param id the unique identifier for the endpoint
-     * @param enabledByDefault indicates if the endpoint is enabled by default
-     * @param operations the collection of JmxOperations supported by the endpoint
-     * @return the newly created ExposableJmxEndpoint instance
-     */
-    @Override
+	 * Creates a new ExposableJmxEndpoint instance based on the provided parameters.
+	 * @param endpointBean the bean representing the endpoint
+	 * @param id the unique identifier for the endpoint
+	 * @param enabledByDefault indicates if the endpoint is enabled by default
+	 * @param operations the collection of JmxOperations supported by the endpoint
+	 * @return the newly created ExposableJmxEndpoint instance
+	 */
+	@Override
 	protected ExposableJmxEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
 			Collection<JmxOperation> operations) {
 		return new DiscoveredJmxEndpoint(this, endpointBean, id, enabledByDefault, operations);
 	}
 
 	/**
-     * Creates a new JmxOperation object based on the provided endpointId, operationMethod, and invoker.
-     * 
-     * @param endpointId The ID of the endpoint.
-     * @param operationMethod The discovered operation method.
-     * @param invoker The operation invoker.
-     * @return The created JmxOperation object.
-     */
-    @Override
+	 * Creates a new JmxOperation object based on the provided endpointId,
+	 * operationMethod, and invoker.
+	 * @param endpointId The ID of the endpoint.
+	 * @param operationMethod The discovered operation method.
+	 * @param invoker The operation invoker.
+	 * @return The created JmxOperation object.
+	 */
+	@Override
 	protected JmxOperation createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
 			OperationInvoker invoker) {
 		return new DiscoveredJmxOperation(endpointId, operationMethod, invoker);
 	}
 
 	/**
-     * Creates an operation key for the given JmxOperation.
-     * 
-     * @param operation the JmxOperation for which to create the operation key
-     * @return the created OperationKey
-     */
-    @Override
+	 * Creates an operation key for the given JmxOperation.
+	 * @param operation the JmxOperation for which to create the operation key
+	 * @return the created OperationKey
+	 */
+	@Override
 	protected OperationKey createOperationKey(JmxOperation operation) {
 		return new OperationKey(operation.getName(), () -> "MBean call '" + operation.getName() + "'");
 	}
 
 	/**
-     * JmxEndpointDiscovererRuntimeHints class.
-     */
-    static class JmxEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
+	 * JmxEndpointDiscovererRuntimeHints class.
+	 */
+	static class JmxEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
 
 		/**
-         * Registers the runtime hints for JmxEndpointDiscoverer.
-         * 
-         * @param hints the runtime hints to register
-         * @param classLoader the class loader to use for reflection
-         */
-        @Override
+		 * Registers the runtime hints for JmxEndpointDiscoverer.
+		 * @param hints the runtime hints to register
+		 * @param classLoader the class loader to use for reflection
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.reflection().registerType(JmxEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 		}

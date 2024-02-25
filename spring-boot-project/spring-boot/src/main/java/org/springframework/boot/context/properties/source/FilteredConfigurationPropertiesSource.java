@@ -33,13 +33,14 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 	private final Predicate<ConfigurationPropertyName> filter;
 
 	/**
-     * Constructs a new FilteredConfigurationPropertiesSource with the specified source and filter.
-     * 
-     * @param source the ConfigurationPropertySource to be filtered (must not be null)
-     * @param filter the Predicate used to filter the ConfigurationPropertyNames (must not be null)
-     * @throws IllegalArgumentException if either source or filter is null
-     */
-    FilteredConfigurationPropertiesSource(ConfigurationPropertySource source,
+	 * Constructs a new FilteredConfigurationPropertiesSource with the specified source
+	 * and filter.
+	 * @param source the ConfigurationPropertySource to be filtered (must not be null)
+	 * @param filter the Predicate used to filter the ConfigurationPropertyNames (must not
+	 * be null)
+	 * @throws IllegalArgumentException if either source or filter is null
+	 */
+	FilteredConfigurationPropertiesSource(ConfigurationPropertySource source,
 			Predicate<ConfigurationPropertyName> filter) {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(filter, "Filter must not be null");
@@ -48,27 +49,29 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 	}
 
 	/**
-     * Retrieves the configuration property with the specified name from the filtered configuration properties source.
-     * 
-     * @param name the name of the configuration property to retrieve
-     * @return the configuration property with the specified name, or null if it does not exist
-     */
-    @Override
+	 * Retrieves the configuration property with the specified name from the filtered
+	 * configuration properties source.
+	 * @param name the name of the configuration property to retrieve
+	 * @return the configuration property with the specified name, or null if it does not
+	 * exist
+	 */
+	@Override
 	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		boolean filtered = getFilter().test(name);
 		return filtered ? getSource().getConfigurationProperty(name) : null;
 	}
 
 	/**
-     * Determines if the configuration property source contains a descendant of the specified property name.
-     * 
-     * @param name the name of the property to check for descendants
-     * @return the state of the property:
-     *         - {@code ConfigurationPropertyState.PRESENT} if the property or a descendant is present
-     *         - {@code ConfigurationPropertyState.UNKNOWN} if a contained descendant may be filtered
-     *         - {@code ConfigurationPropertyState.ABSENT} if the property or a descendant is absent
-     */
-    @Override
+	 * Determines if the configuration property source contains a descendant of the
+	 * specified property name.
+	 * @param name the name of the property to check for descendants
+	 * @return the state of the property: - {@code ConfigurationPropertyState.PRESENT} if
+	 * the property or a descendant is present -
+	 * {@code ConfigurationPropertyState.UNKNOWN} if a contained descendant may be
+	 * filtered - {@code ConfigurationPropertyState.ABSENT} if the property or a
+	 * descendant is absent
+	 */
+	@Override
 	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		ConfigurationPropertyState result = this.source.containsDescendantOf(name);
 		if (result == ConfigurationPropertyState.PRESENT) {
@@ -79,41 +82,38 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 	}
 
 	/**
-     * Returns the underlying source of the FilteredConfigurationPropertiesSource.
-     * 
-     * @return the underlying source of the FilteredConfigurationPropertiesSource
-     */
-    @Override
+	 * Returns the underlying source of the FilteredConfigurationPropertiesSource.
+	 * @return the underlying source of the FilteredConfigurationPropertiesSource
+	 */
+	@Override
 	public Object getUnderlyingSource() {
 		return this.source.getUnderlyingSource();
 	}
 
 	/**
-     * Returns the source of the configuration property.
-     *
-     * @return the source of the configuration property
-     */
-    protected ConfigurationPropertySource getSource() {
+	 * Returns the source of the configuration property.
+	 * @return the source of the configuration property
+	 */
+	protected ConfigurationPropertySource getSource() {
 		return this.source;
 	}
 
 	/**
-     * Returns the filter used to determine which configuration property names should be included in the filtered configuration properties source.
-     *
-     * @return the filter used to determine which configuration property names should be included
-     */
-    protected Predicate<ConfigurationPropertyName> getFilter() {
+	 * Returns the filter used to determine which configuration property names should be
+	 * included in the filtered configuration properties source.
+	 * @return the filter used to determine which configuration property names should be
+	 * included
+	 */
+	protected Predicate<ConfigurationPropertyName> getFilter() {
 		return this.filter;
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * The string representation consists of the source object's string representation
-     * followed by the text " (filtered)".
-     *
-     * @return a string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object. The string representation consists
+	 * of the source object's string representation followed by the text " (filtered)".
+	 * @return a string representation of the object
+	 */
+	@Override
 	public String toString() {
 		return this.source.toString() + " (filtered)";
 	}

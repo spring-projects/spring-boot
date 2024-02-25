@@ -67,22 +67,20 @@ public abstract class MainClassFinder {
 	private static final FileFilter PACKAGE_DIRECTORY_FILTER = MainClassFinder::isPackageDirectory;
 
 	/**
-     * Checks if the given file is a class file.
-     * 
-     * @param file the file to be checked
-     * @return true if the file is a class file, false otherwise
-     */
-    private static boolean isClassFile(File file) {
+	 * Checks if the given file is a class file.
+	 * @param file the file to be checked
+	 * @return true if the file is a class file, false otherwise
+	 */
+	private static boolean isClassFile(File file) {
 		return file.isFile() && file.getName().endsWith(DOT_CLASS);
 	}
 
 	/**
-     * Checks if the given file is a package directory.
-     * 
-     * @param file the file to be checked
-     * @return true if the file is a package directory, false otherwise
-     */
-    private static boolean isPackageDirectory(File file) {
+	 * Checks if the given file is a package directory.
+	 * @param file the file to be checked
+	 * @return true if the file is a package directory, false otherwise
+	 */
+	private static boolean isPackageDirectory(File file) {
 		return file.isDirectory() && !file.getName().startsWith(".");
 	}
 
@@ -164,12 +162,12 @@ public abstract class MainClassFinder {
 	}
 
 	/**
-     * Pushes all the files in the given array onto the stack in sorted order based on their names.
-     * 
-     * @param stack the stack to which the files will be pushed
-     * @param files the array of files to be pushed onto the stack
-     */
-    private static void pushAllSorted(Deque<File> stack, File[] files) {
+	 * Pushes all the files in the given array onto the stack in sorted order based on
+	 * their names.
+	 * @param stack the stack to which the files will be pushed
+	 * @param files the array of files to be pushed onto the stack
+	 */
+	private static void pushAllSorted(Deque<File> stack, File[] files) {
 		Arrays.sort(files, Comparator.comparing(File::getName));
 		for (File file : files) {
 			stack.push(file);
@@ -245,14 +243,13 @@ public abstract class MainClassFinder {
 	}
 
 	/**
-     * Converts a given name to a class name by replacing forward slashes and backslashes with dots,
-     * removing the ".class" suffix, and optionally removing a given prefix.
-     * 
-     * @param name   the name to be converted
-     * @param prefix the prefix to be removed (optional)
-     * @return the converted class name
-     */
-    private static String convertToClassName(String name, String prefix) {
+	 * Converts a given name to a class name by replacing forward slashes and backslashes
+	 * with dots, removing the ".class" suffix, and optionally removing a given prefix.
+	 * @param name the name to be converted
+	 * @param prefix the prefix to be removed (optional)
+	 * @return the converted class name
+	 */
+	private static String convertToClassName(String name, String prefix) {
 		name = name.replace('/', '.');
 		name = name.replace('\\', '.');
 		name = name.substring(0, name.length() - DOT_CLASS.length());
@@ -263,13 +260,15 @@ public abstract class MainClassFinder {
 	}
 
 	/**
-     * Retrieves a list of JarEntry objects representing class entries from a given JarFile.
-     * 
-     * @param source The JarFile from which to retrieve the class entries.
-     * @param classesLocation The location of the classes within the JarFile. If null, the root location is assumed.
-     * @return A list of JarEntry objects representing the class entries found in the JarFile.
-     */
-    private static List<JarEntry> getClassEntries(JarFile source, String classesLocation) {
+	 * Retrieves a list of JarEntry objects representing class entries from a given
+	 * JarFile.
+	 * @param source The JarFile from which to retrieve the class entries.
+	 * @param classesLocation The location of the classes within the JarFile. If null, the
+	 * root location is assumed.
+	 * @return A list of JarEntry objects representing the class entries found in the
+	 * JarFile.
+	 */
+	private static List<JarEntry> getClassEntries(JarFile source, String classesLocation) {
 		classesLocation = (classesLocation != null) ? classesLocation : "";
 		Enumeration<JarEntry> sourceEntries = source.entries();
 		List<JarEntry> classEntries = new ArrayList<>();
@@ -283,12 +282,12 @@ public abstract class MainClassFinder {
 	}
 
 	/**
-     * Creates a ClassDescriptor object by reading the input stream of a class file.
-     * 
-     * @param inputStream the input stream of the class file
-     * @return the ClassDescriptor object representing the class file, or null if an IOException occurs
-     */
-    private static ClassDescriptor createClassDescriptor(InputStream inputStream) {
+	 * Creates a ClassDescriptor object by reading the input stream of a class file.
+	 * @param inputStream the input stream of the class file
+	 * @return the ClassDescriptor object representing the class file, or null if an
+	 * IOException occurs
+	 */
+	private static ClassDescriptor createClassDescriptor(InputStream inputStream) {
 		try {
 			ClassReader classReader = new ClassReader(inputStream);
 			ClassDescriptor classDescriptor = new ClassDescriptor();
@@ -301,18 +300,19 @@ public abstract class MainClassFinder {
 	}
 
 	/**
-     * ClassEntryComparator class.
-     */
-    private static final class ClassEntryComparator implements Comparator<JarEntry> {
+	 * ClassEntryComparator class.
+	 */
+	private static final class ClassEntryComparator implements Comparator<JarEntry> {
 
 		/**
-         * Compares two JarEntry objects based on their depth in the jar file and their names.
-         * 
-         * @param o1 the first JarEntry object to be compared
-         * @param o2 the second JarEntry object to be compared
-         * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second argument
-         */
-        @Override
+		 * Compares two JarEntry objects based on their depth in the jar file and their
+		 * names.
+		 * @param o1 the first JarEntry object to be compared
+		 * @param o2 the second JarEntry object to be compared
+		 * @return a negative integer, zero, or a positive integer as the first argument
+		 * is less than, equal to, or greater than the second argument
+		 */
+		@Override
 		public int compare(JarEntry o1, JarEntry o2) {
 			Integer d1 = getDepth(o1);
 			Integer d2 = getDepth(o2);
@@ -324,59 +324,55 @@ public abstract class MainClassFinder {
 		}
 
 		/**
-         * Returns the depth of the given JarEntry.
-         * 
-         * @param entry the JarEntry to get the depth of
-         * @return the depth of the JarEntry
-         */
-        private int getDepth(JarEntry entry) {
+		 * Returns the depth of the given JarEntry.
+		 * @param entry the JarEntry to get the depth of
+		 * @return the depth of the JarEntry
+		 */
+		private int getDepth(JarEntry entry) {
 			return entry.getName().split("/").length;
 		}
 
 	}
 
 	/**
-     * ClassDescriptor class.
-     */
-    private static class ClassDescriptor extends ClassVisitor {
+	 * ClassDescriptor class.
+	 */
+	private static class ClassDescriptor extends ClassVisitor {
 
 		private final Set<String> annotationNames = new LinkedHashSet<>();
 
 		private boolean mainMethodFound;
 
 		/**
-         * Constructs a new ClassDescriptor object.
-         * 
-         * @param asmVersion the version of ASM library to use
-         */
-        ClassDescriptor() {
+		 * Constructs a new ClassDescriptor object.
+		 * @param asmVersion the version of ASM library to use
+		 */
+		ClassDescriptor() {
 			super(SpringAsmInfo.ASM_VERSION);
 		}
 
 		/**
-         * Visits an annotation and adds its class name to the list of annotation names.
-         * 
-         * @param desc    the descriptor of the annotation
-         * @param visible indicates whether the annotation is visible at runtime
-         * @return        null, as no further annotation visitor is needed
-         */
-        @Override
+		 * Visits an annotation and adds its class name to the list of annotation names.
+		 * @param desc the descriptor of the annotation
+		 * @param visible indicates whether the annotation is visible at runtime
+		 * @return null, as no further annotation visitor is needed
+		 */
+		@Override
 		public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
 			this.annotationNames.add(Type.getType(desc).getClassName());
 			return null;
 		}
 
 		/**
-         * Visits a method in the class.
-         * 
-         * @param access the access flags of the method
-         * @param name the name of the method
-         * @param desc the descriptor of the method
-         * @param signature the signature of the method
-         * @param exceptions the exceptions thrown by the method
-         * @return the method visitor for the visited method, or null if not applicable
-         */
-        @Override
+		 * Visits a method in the class.
+		 * @param access the access flags of the method
+		 * @param name the name of the method
+		 * @param desc the descriptor of the method
+		 * @param signature the signature of the method
+		 * @param exceptions the exceptions thrown by the method
+		 * @return the method visitor for the visited method, or null if not applicable
+		 */
+		@Override
 		public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 			if (isAccess(access, Opcodes.ACC_PUBLIC, Opcodes.ACC_STATIC) && MAIN_METHOD_NAME.equals(name)
 					&& MAIN_METHOD_TYPE.getDescriptor().equals(desc)) {
@@ -386,13 +382,13 @@ public abstract class MainClassFinder {
 		}
 
 		/**
-         * Checks if the given access level has the required operation codes.
-         * 
-         * @param access           the access level to check
-         * @param requiredOpsCodes the required operation codes
-         * @return true if the access level has all the required operation codes, false otherwise
-         */
-        private boolean isAccess(int access, int... requiredOpsCodes) {
+		 * Checks if the given access level has the required operation codes.
+		 * @param access the access level to check
+		 * @param requiredOpsCodes the required operation codes
+		 * @return true if the access level has all the required operation codes, false
+		 * otherwise
+		 */
+		private boolean isAccess(int access, int... requiredOpsCodes) {
 			for (int requiredOpsCode : requiredOpsCodes) {
 				if ((access & requiredOpsCode) == 0) {
 					return false;
@@ -402,20 +398,18 @@ public abstract class MainClassFinder {
 		}
 
 		/**
-         * Returns a boolean value indicating whether the main method is found.
-         *
-         * @return true if the main method is found, false otherwise.
-         */
-        boolean isMainMethodFound() {
+		 * Returns a boolean value indicating whether the main method is found.
+		 * @return true if the main method is found, false otherwise.
+		 */
+		boolean isMainMethodFound() {
 			return this.mainMethodFound;
 		}
 
 		/**
-         * Returns a set of annotation names.
-         * 
-         * @return the set of annotation names
-         */
-        Set<String> getAnnotationNames() {
+		 * Returns a set of annotation names.
+		 * @return the set of annotation names
+		 */
+		Set<String> getAnnotationNames() {
 			return this.annotationNames;
 		}
 
@@ -459,30 +453,28 @@ public abstract class MainClassFinder {
 		}
 
 		/**
-         * Returns the name of the MainClass object.
-         *
-         * @return the name of the MainClass object
-         */
-        String getName() {
+		 * Returns the name of the MainClass object.
+		 * @return the name of the MainClass object
+		 */
+		String getName() {
 			return this.name;
 		}
 
 		/**
-         * Returns a set of annotation names.
-         * 
-         * @return a set of annotation names
-         */
-        Set<String> getAnnotationNames() {
+		 * Returns a set of annotation names.
+		 * @return a set of annotation names
+		 */
+		Set<String> getAnnotationNames() {
 			return this.annotationNames;
 		}
 
 		/**
-         * Compares this MainClass object to the specified object for equality.
-         * 
-         * @param obj the object to compare to
-         * @return true if the specified object is equal to this MainClass object, false otherwise
-         */
-        @Override
+		 * Compares this MainClass object to the specified object for equality.
+		 * @param obj the object to compare to
+		 * @return true if the specified object is equal to this MainClass object, false
+		 * otherwise
+		 */
+		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -498,22 +490,20 @@ public abstract class MainClassFinder {
 		}
 
 		/**
-         * Returns the hash code value for the object. This method overrides the hashCode() method
-         * in the Object class.
-         *
-         * @return the hash code value for the object
-         */
-        @Override
+		 * Returns the hash code value for the object. This method overrides the
+		 * hashCode() method in the Object class.
+		 * @return the hash code value for the object
+		 */
+		@Override
 		public int hashCode() {
 			return this.name.hashCode();
 		}
 
 		/**
-         * Returns a string representation of the object.
-         * 
-         * @return the name of the object
-         */
-        @Override
+		 * Returns a string representation of the object.
+		 * @return the name of the object
+		 */
+		@Override
 		public String toString() {
 			return this.name;
 		}
@@ -531,35 +521,34 @@ public abstract class MainClassFinder {
 		private final String annotationName;
 
 		/**
-         * Constructs a new SingleMainClassCallback with the specified annotation name.
-         * 
-         * @param annotationName the name of the annotation
-         */
-        private SingleMainClassCallback(String annotationName) {
+		 * Constructs a new SingleMainClassCallback with the specified annotation name.
+		 * @param annotationName the name of the annotation
+		 */
+		private SingleMainClassCallback(String annotationName) {
 			this.annotationName = annotationName;
 		}
 
 		/**
-         * Adds a MainClass object to the list of main classes.
-         * 
-         * @param mainClass the MainClass object to be added
-         * @return null
-         */
-        @Override
+		 * Adds a MainClass object to the list of main classes.
+		 * @param mainClass the MainClass object to be added
+		 * @return null
+		 */
+		@Override
 		public Object doWith(MainClass mainClass) {
 			this.mainClasses.add(mainClass);
 			return null;
 		}
 
 		/**
-         * Returns the name of the main class based on the provided annotation name.
-         * If the annotation name is not provided, it returns the name of the first main class found.
-         * If multiple main classes are found with the provided annotation name, it throws an IllegalStateException.
-         * 
-         * @return the name of the main class
-         * @throws IllegalStateException if multiple main classes are found with the provided annotation name
-         */
-        private String getMainClassName() {
+		 * Returns the name of the main class based on the provided annotation name. If
+		 * the annotation name is not provided, it returns the name of the first main
+		 * class found. If multiple main classes are found with the provided annotation
+		 * name, it throws an IllegalStateException.
+		 * @return the name of the main class
+		 * @throws IllegalStateException if multiple main classes are found with the
+		 * provided annotation name
+		 */
+		private String getMainClassName() {
 			Set<MainClass> matchingMainClasses = new LinkedHashSet<>();
 			if (this.annotationName != null) {
 				for (MainClass mainClass : this.mainClasses) {

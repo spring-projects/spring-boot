@@ -88,18 +88,18 @@ import org.springframework.web.reactive.DispatcherHandler;
 public class WebFluxEndpointManagementContextConfiguration {
 
 	/**
-     * Creates a {@link WebFluxEndpointHandlerMapping} bean for mapping web endpoints in a reactive environment.
-     * This bean is conditional on the absence of any existing bean of the same type.
-     * 
-     * @param webEndpointsSupplier the supplier for web endpoints
-     * @param controllerEndpointsSupplier the supplier for controller endpoints
-     * @param endpointMediaTypes the media types for the endpoints
-     * @param corsProperties the CORS properties for the endpoints
-     * @param webEndpointProperties the properties for web endpoints
-     * @param environment the environment for the application
-     * @return the created {@link WebFluxEndpointHandlerMapping} bean
-     */
-    @Bean
+	 * Creates a {@link WebFluxEndpointHandlerMapping} bean for mapping web endpoints in a
+	 * reactive environment. This bean is conditional on the absence of any existing bean
+	 * of the same type.
+	 * @param webEndpointsSupplier the supplier for web endpoints
+	 * @param controllerEndpointsSupplier the supplier for controller endpoints
+	 * @param endpointMediaTypes the media types for the endpoints
+	 * @param corsProperties the CORS properties for the endpoints
+	 * @param webEndpointProperties the properties for web endpoints
+	 * @param environment the environment for the application
+	 * @return the created {@link WebFluxEndpointHandlerMapping} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,
 			ControllerEndpointsSupplier controllerEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
@@ -117,34 +117,34 @@ public class WebFluxEndpointManagementContextConfiguration {
 	}
 
 	/**
-     * Determines whether links mapping should be registered based on the provided properties, environment, and base path.
-     * 
-     * @param properties the WebEndpointProperties containing the configuration properties
-     * @param environment the Environment containing the application environment
-     * @param basePath the base path of the application
-     * @return true if links mapping should be registered, false otherwise
-     */
-    private boolean shouldRegisterLinksMapping(WebEndpointProperties properties, Environment environment,
+	 * Determines whether links mapping should be registered based on the provided
+	 * properties, environment, and base path.
+	 * @param properties the WebEndpointProperties containing the configuration properties
+	 * @param environment the Environment containing the application environment
+	 * @param basePath the base path of the application
+	 * @return true if links mapping should be registered, false otherwise
+	 */
+	private boolean shouldRegisterLinksMapping(WebEndpointProperties properties, Environment environment,
 			String basePath) {
 		return properties.getDiscovery().isEnabled() && (StringUtils.hasText(basePath)
 				|| ManagementPortType.get(environment) == ManagementPortType.DIFFERENT);
 	}
 
 	/**
-     * Creates a WebFluxHandlerMapping for the management health endpoint.
-     * This mapping is conditional on the management port being different from the main port,
-     * the health endpoint being available and exposed via the web, and the HealthEndpoint bean being present.
-     * It retrieves the available web endpoints and filters for the health endpoint.
-     * If the health endpoint is not found, it throws an IllegalStateException.
-     * Finally, it creates and returns an AdditionalHealthEndpointPathsWebFluxHandlerMapping
-     * with an empty endpoint mapping, the health endpoint, and the additional paths for the management group.
-     *
-     * @param webEndpointsSupplier The supplier for the available web endpoints.
-     * @param groups The health endpoint groups.
-     * @return The WebFluxHandlerMapping for the management health endpoint.
-     * @throws IllegalStateException If the health endpoint is not found.
-     */
-    @Bean
+	 * Creates a WebFluxHandlerMapping for the management health endpoint. This mapping is
+	 * conditional on the management port being different from the main port, the health
+	 * endpoint being available and exposed via the web, and the HealthEndpoint bean being
+	 * present. It retrieves the available web endpoints and filters for the health
+	 * endpoint. If the health endpoint is not found, it throws an IllegalStateException.
+	 * Finally, it creates and returns an
+	 * AdditionalHealthEndpointPathsWebFluxHandlerMapping with an empty endpoint mapping,
+	 * the health endpoint, and the additional paths for the management group.
+	 * @param webEndpointsSupplier The supplier for the available web endpoints.
+	 * @param groups The health endpoint groups.
+	 * @return The WebFluxHandlerMapping for the management health endpoint.
+	 * @throws IllegalStateException If the health endpoint is not found.
+	 */
+	@Bean
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 	@ConditionalOnBean(HealthEndpoint.class)
@@ -161,15 +161,17 @@ public class WebFluxEndpointManagementContextConfiguration {
 	}
 
 	/**
-     * Creates a {@link ControllerEndpointHandlerMapping} bean if there is no existing bean of the same type.
-     * This bean is responsible for mapping controller endpoints to their respective handlers.
-     * 
-     * @param controllerEndpointsSupplier The supplier for obtaining the controller endpoints.
-     * @param corsProperties The CORS properties for configuring CORS support.
-     * @param webEndpointProperties The web endpoint properties for configuring the base path.
-     * @return The created {@link ControllerEndpointHandlerMapping} bean.
-     */
-    @Bean
+	 * Creates a {@link ControllerEndpointHandlerMapping} bean if there is no existing
+	 * bean of the same type. This bean is responsible for mapping controller endpoints to
+	 * their respective handlers.
+	 * @param controllerEndpointsSupplier The supplier for obtaining the controller
+	 * endpoints.
+	 * @param corsProperties The CORS properties for configuring CORS support.
+	 * @param webEndpointProperties The web endpoint properties for configuring the base
+	 * path.
+	 * @return The created {@link ControllerEndpointHandlerMapping} bean.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
 			ControllerEndpointsSupplier controllerEndpointsSupplier, CorsEndpointProperties corsProperties,
@@ -180,14 +182,13 @@ public class WebFluxEndpointManagementContextConfiguration {
 	}
 
 	/**
-     * Creates a bean post processor for configuring the ServerCodecConfigurer with the EndpointObjectMapper.
-     * This bean post processor is conditional on the presence of the EndpointObjectMapper bean.
-     * It is marked as infrastructure bean.
-     *
-     * @param endpointObjectMapper the provider for the EndpointObjectMapper bean
-     * @return the ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor bean
-     */
-    @Bean
+	 * Creates a bean post processor for configuring the ServerCodecConfigurer with the
+	 * EndpointObjectMapper. This bean post processor is conditional on the presence of
+	 * the EndpointObjectMapper bean. It is marked as infrastructure bean.
+	 * @param endpointObjectMapper the provider for the EndpointObjectMapper bean
+	 * @return the ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor bean
+	 */
+	@Bean
 	@ConditionalOnBean(EndpointObjectMapper.class)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	static ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor serverCodecConfigurerEndpointObjectMapperBeanPostProcessor(
@@ -208,24 +209,25 @@ public class WebFluxEndpointManagementContextConfiguration {
 		private final Supplier<EndpointObjectMapper> endpointObjectMapper;
 
 		/**
-         * Constructs a new ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor with the specified endpointObjectMapper supplier.
-         *
-         * @param endpointObjectMapper the supplier of the EndpointObjectMapper to be used by this bean post processor
-         */
-        ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(
+		 * Constructs a new ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor
+		 * with the specified endpointObjectMapper supplier.
+		 * @param endpointObjectMapper the supplier of the EndpointObjectMapper to be used
+		 * by this bean post processor
+		 */
+		ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(
 				Supplier<EndpointObjectMapper> endpointObjectMapper) {
 			this.endpointObjectMapper = endpointObjectMapper;
 		}
 
 		/**
-         * This method is called after the initialization of a bean. It checks if the bean is an instance of ServerCodecConfigurer and if so, it processes it.
-         * 
-         * @param bean the initialized bean
-         * @param beanName the name of the bean
-         * @return the processed bean
-         * @throws BeansException if an error occurs during the bean processing
-         */
-        @Override
+		 * This method is called after the initialization of a bean. It checks if the bean
+		 * is an instance of ServerCodecConfigurer and if so, it processes it.
+		 * @param bean the initialized bean
+		 * @param beanName the name of the bean
+		 * @return the processed bean
+		 * @throws BeansException if an error occurs during the bean processing
+		 */
+		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof ServerCodecConfigurer serverCodecConfigurer) {
 				process(serverCodecConfigurer);
@@ -234,12 +236,12 @@ public class WebFluxEndpointManagementContextConfiguration {
 		}
 
 		/**
-         * Processes the ServerCodecConfigurer by iterating through the list of HttpMessageWriters and
-         * invoking the process method on the EncoderHttpMessageWriter if it is an instance of it.
-         * 
-         * @param configurer the ServerCodecConfigurer to be processed
-         */
-        private void process(ServerCodecConfigurer configurer) {
+		 * Processes the ServerCodecConfigurer by iterating through the list of
+		 * HttpMessageWriters and invoking the process method on the
+		 * EncoderHttpMessageWriter if it is an instance of it.
+		 * @param configurer the ServerCodecConfigurer to be processed
+		 */
+		private void process(ServerCodecConfigurer configurer) {
 			for (HttpMessageWriter<?> writer : configurer.getWriters()) {
 				if (writer instanceof EncoderHttpMessageWriter<?> encoderHttpMessageWriter) {
 					process((encoderHttpMessageWriter).getEncoder());
@@ -248,11 +250,10 @@ public class WebFluxEndpointManagementContextConfiguration {
 		}
 
 		/**
-         * Processes the given encoder.
-         * 
-         * @param encoder the encoder to process
-         */
-        private void process(Encoder<?> encoder) {
+		 * Processes the given encoder.
+		 * @param encoder the encoder to process
+		 */
+		private void process(Encoder<?> encoder) {
 			if (encoder instanceof Jackson2JsonEncoder jackson2JsonEncoder) {
 				jackson2JsonEncoder.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
 					ObjectMapper objectMapper = this.endpointObjectMapper.get().get();

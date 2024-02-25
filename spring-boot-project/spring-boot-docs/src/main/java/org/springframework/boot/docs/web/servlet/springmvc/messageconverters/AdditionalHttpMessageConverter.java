@@ -30,40 +30,39 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 class AdditionalHttpMessageConverter extends AbstractHttpMessageConverter<Object> {
 
 	/**
-     * Determines whether this HttpMessageConverter can convert the given class type.
-     * 
-     * @param clazz the class type to check
-     * @return true if this HttpMessageConverter supports the given class type, false otherwise
-     */
-    @Override
+	 * Determines whether this HttpMessageConverter can convert the given class type.
+	 * @param clazz the class type to check
+	 * @return true if this HttpMessageConverter supports the given class type, false
+	 * otherwise
+	 */
+	@Override
 	protected boolean supports(Class<?> clazz) {
 		return false;
 	}
 
 	/**
-     * Reads the HTTP input message and converts it into an object of the specified class.
-     * 
-     * @param clazz the class to convert the input message to
-     * @param inputMessage the HTTP input message to read from
-     * @return the converted object, or null if the conversion fails
-     * @throws IOException if an I/O error occurs while reading the input message
-     * @throws HttpMessageNotReadableException if the input message cannot be read
-     */
-    @Override
+	 * Reads the HTTP input message and converts it into an object of the specified class.
+	 * @param clazz the class to convert the input message to
+	 * @param inputMessage the HTTP input message to read from
+	 * @return the converted object, or null if the conversion fails
+	 * @throws IOException if an I/O error occurs while reading the input message
+	 * @throws HttpMessageNotReadableException if the input message cannot be read
+	 */
+	@Override
 	protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage)
 			throws IOException, HttpMessageNotReadableException {
 		return null;
 	}
 
 	/**
-     * Writes the given object to the HTTP output message.
-     * 
-     * @param t the object to be written
-     * @param outputMessage the HTTP output message to write to
-     * @throws IOException if an I/O error occurs
-     * @throws HttpMessageNotWritableException if the object cannot be written to the output message
-     */
-    @Override
+	 * Writes the given object to the HTTP output message.
+	 * @param t the object to be written
+	 * @param outputMessage the HTTP output message to write to
+	 * @throws IOException if an I/O error occurs
+	 * @throws HttpMessageNotWritableException if the object cannot be written to the
+	 * output message
+	 */
+	@Override
 	protected void writeInternal(Object t, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
 	}

@@ -29,11 +29,10 @@ import org.springframework.stereotype.Component;
 public class MyEndpoint {
 
 	/**
-     * Returns a greeting message.
-     *
-     * @return the greeting message "Hello"
-     */
-    @GET
+	 * Returns a greeting message.
+	 * @return the greeting message "Hello"
+	 */
+	@GET
 	public String message() {
 		return "Hello";
 	}

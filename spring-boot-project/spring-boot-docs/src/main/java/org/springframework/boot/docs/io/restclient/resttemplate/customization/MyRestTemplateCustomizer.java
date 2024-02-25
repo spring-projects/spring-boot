@@ -34,11 +34,10 @@ import org.springframework.web.client.RestTemplate;
 public class MyRestTemplateCustomizer implements RestTemplateCustomizer {
 
 	/**
-     * Customizes the RestTemplate by setting a custom route planner and request factory.
-     * 
-     * @param restTemplate the RestTemplate to be customized
-     */
-    @Override
+	 * Customizes the RestTemplate by setting a custom route planner and request factory.
+	 * @param restTemplate the RestTemplate to be customized
+	 */
+	@Override
 	public void customize(RestTemplate restTemplate) {
 		HttpRoutePlanner routePlanner = new CustomRoutePlanner(new HttpHost("proxy.example.com"));
 		HttpClient httpClient = HttpClientBuilder.create().setRoutePlanner(routePlanner).build();
@@ -46,28 +45,26 @@ public class MyRestTemplateCustomizer implements RestTemplateCustomizer {
 	}
 
 	/**
-     * CustomRoutePlanner class.
-     */
-    static class CustomRoutePlanner extends DefaultProxyRoutePlanner {
+	 * CustomRoutePlanner class.
+	 */
+	static class CustomRoutePlanner extends DefaultProxyRoutePlanner {
 
 		/**
-         * Constructs a new CustomRoutePlanner with the specified proxy.
-         *
-         * @param proxy the HTTP proxy to be used by the route planner
-         */
-        CustomRoutePlanner(HttpHost proxy) {
+		 * Constructs a new CustomRoutePlanner with the specified proxy.
+		 * @param proxy the HTTP proxy to be used by the route planner
+		 */
+		CustomRoutePlanner(HttpHost proxy) {
 			super(proxy);
 		}
 
 		/**
-         * Determines the proxy to be used for the given target host.
-         * 
-         * @param target the target host
-         * @param context the HTTP context
-         * @return the proxy to be used, or null if no proxy should be used
-         * @throws HttpException if an HTTP exception occurs
-         */
-        @Override
+		 * Determines the proxy to be used for the given target host.
+		 * @param target the target host
+		 * @param context the HTTP context
+		 * @return the proxy to be used, or null if no proxy should be used
+		 * @throws HttpException if an HTTP exception occurs
+		 */
+		@Override
 		protected HttpHost determineProxy(HttpHost target, HttpContext context) throws HttpException {
 			if (target.getHostName().equals("192.168.0.5")) {
 				return null;

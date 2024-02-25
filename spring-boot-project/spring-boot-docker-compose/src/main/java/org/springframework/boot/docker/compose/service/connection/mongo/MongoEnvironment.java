@@ -37,12 +37,12 @@ class MongoEnvironment {
 	private final String database;
 
 	/**
-     * Constructs a new MongoEnvironment object with the given environment variables.
-     * 
-     * @param env a Map containing the environment variables
-     * @throws IllegalStateException if MONGO_INITDB_ROOT_USERNAME_FILE or MONGO_INITDB_ROOT_PASSWORD_FILE is present in the environment variables
-     */
-    MongoEnvironment(Map<String, String> env) {
+	 * Constructs a new MongoEnvironment object with the given environment variables.
+	 * @param env a Map containing the environment variables
+	 * @throws IllegalStateException if MONGO_INITDB_ROOT_USERNAME_FILE or
+	 * MONGO_INITDB_ROOT_PASSWORD_FILE is present in the environment variables
+	 */
+	MongoEnvironment(Map<String, String> env) {
 		Assert.state(!env.containsKey("MONGO_INITDB_ROOT_USERNAME_FILE"),
 				"MONGO_INITDB_ROOT_USERNAME_FILE is not supported");
 		Assert.state(!env.containsKey("MONGO_INITDB_ROOT_PASSWORD_FILE"),
@@ -53,29 +53,26 @@ class MongoEnvironment {
 	}
 
 	/**
-     * Returns the username associated with the MongoEnvironment object.
-     *
-     * @return the username
-     */
-    String getUsername() {
+	 * Returns the username associated with the MongoEnvironment object.
+	 * @return the username
+	 */
+	String getUsername() {
 		return this.username;
 	}
 
 	/**
-     * Retrieves the password associated with the MongoEnvironment object.
-     *
-     * @return the password as a String
-     */
-    String getPassword() {
+	 * Retrieves the password associated with the MongoEnvironment object.
+	 * @return the password as a String
+	 */
+	String getPassword() {
 		return this.password;
 	}
 
 	/**
-     * Returns the name of the database.
-     *
-     * @return the name of the database
-     */
-    String getDatabase() {
+	 * Returns the name of the database.
+	 * @return the name of the database
+	 */
+	String getDatabase() {
 		return this.database;
 	}
 

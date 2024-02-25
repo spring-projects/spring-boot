@@ -48,26 +48,28 @@ import org.springframework.context.annotation.Bean;
 public class StatsdMetricsExportAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link StatsdConfig} using the provided {@link StatsdProperties}.
-     * If a bean of type {@link StatsdConfig} is already present in the application context, this method will not be executed.
-     * 
-     * @param statsdProperties the {@link StatsdProperties} object containing the configuration properties for StatsD
-     * @return a new instance of {@link StatsdConfig} created using the provided {@link StatsdProperties}
-     */
-    @Bean
+	 * Creates a new instance of {@link StatsdConfig} using the provided
+	 * {@link StatsdProperties}. If a bean of type {@link StatsdConfig} is already present
+	 * in the application context, this method will not be executed.
+	 * @param statsdProperties the {@link StatsdProperties} object containing the
+	 * configuration properties for StatsD
+	 * @return a new instance of {@link StatsdConfig} created using the provided
+	 * {@link StatsdProperties}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public StatsdConfig statsdConfig(StatsdProperties statsdProperties) {
 		return new StatsdPropertiesConfigAdapter(statsdProperties);
 	}
 
 	/**
-     * Creates a new instance of {@link StatsdMeterRegistry} if no other bean of the same type is present.
-     * 
-     * @param statsdConfig the configuration for StatsD
-     * @param clock the clock used for measuring time
-     * @return a new instance of {@link StatsdMeterRegistry}
-     */
-    @Bean
+	 * Creates a new instance of {@link StatsdMeterRegistry} if no other bean of the same
+	 * type is present.
+	 * @param statsdConfig the configuration for StatsD
+	 * @param clock the clock used for measuring time
+	 * @return a new instance of {@link StatsdMeterRegistry}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public StatsdMeterRegistry statsdMeterRegistry(StatsdConfig statsdConfig, Clock clock) {
 		return new StatsdMeterRegistry(statsdConfig, clock);

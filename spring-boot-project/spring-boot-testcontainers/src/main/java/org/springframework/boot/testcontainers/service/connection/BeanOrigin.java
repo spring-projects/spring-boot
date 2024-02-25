@@ -33,23 +33,23 @@ class BeanOrigin implements Origin {
 	private final String resourceDescription;
 
 	/**
-     * Constructs a new BeanOrigin object with the specified bean name and bean definition.
-     * 
-     * @param beanName the name of the bean
-     * @param beanDefinition the definition of the bean
-     */
-    BeanOrigin(String beanName, BeanDefinition beanDefinition) {
+	 * Constructs a new BeanOrigin object with the specified bean name and bean
+	 * definition.
+	 * @param beanName the name of the bean
+	 * @param beanDefinition the definition of the bean
+	 */
+	BeanOrigin(String beanName, BeanDefinition beanDefinition) {
 		this.beanName = beanName;
 		this.resourceDescription = (beanDefinition != null) ? beanDefinition.getResourceDescription() : null;
 	}
 
 	/**
-     * Compares this BeanOrigin object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the specified object is equal to this BeanOrigin object, false otherwise
-     */
-    @Override
+	 * Compares this BeanOrigin object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the specified object is equal to this BeanOrigin object, false
+	 * otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -62,21 +62,19 @@ class BeanOrigin implements Origin {
 	}
 
 	/**
-     * Returns the hash code value for this BeanOrigin object.
-     * 
-     * @return the hash code value for this object
-     */
-    @Override
+	 * Returns the hash code value for this BeanOrigin object.
+	 * @return the hash code value for this object
+	 */
+	@Override
 	public int hashCode() {
 		return this.beanName.hashCode();
 	}
 
 	/**
-     * Returns a string representation of the BeanOrigin object.
-     * 
-     * @return a string representation of the BeanOrigin object
-     */
-    @Override
+	 * Returns a string representation of the BeanOrigin object.
+	 * @return a string representation of the BeanOrigin object
+	 */
+	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append("Bean '");

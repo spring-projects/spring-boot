@@ -37,24 +37,24 @@ import org.springframework.util.ObjectUtils;
 final class StringToDurationConverter implements GenericConverter {
 
 	/**
-     * Returns a set of convertible types for the StringToDurationConverter class.
-     * 
-     * @return a set containing a single ConvertiblePair object representing the conversion from String to Duration.
-     */
-    @Override
+	 * Returns a set of convertible types for the StringToDurationConverter class.
+	 * @return a set containing a single ConvertiblePair object representing the
+	 * conversion from String to Duration.
+	 */
+	@Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(String.class, Duration.class));
 	}
 
 	/**
-     * Converts the given source object to the specified target type.
-     * 
-     * @param source the source object to be converted
-     * @param sourceType the TypeDescriptor of the source object
-     * @param targetType the TypeDescriptor of the target type
-     * @return the converted object of the target type, or null if the source object is empty
-     */
-    @Override
+	 * Converts the given source object to the specified target type.
+	 * @param source the source object to be converted
+	 * @param sourceType the TypeDescriptor of the source object
+	 * @param targetType the TypeDescriptor of the target type
+	 * @return the converted object of the target type, or null if the source object is
+	 * empty
+	 */
+	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;
@@ -63,37 +63,37 @@ final class StringToDurationConverter implements GenericConverter {
 	}
 
 	/**
-     * Returns the DurationStyle based on the provided TypeDescriptor.
-     * 
-     * @param targetType the TypeDescriptor to determine the DurationStyle for
-     * @return the DurationStyle based on the provided TypeDescriptor, or null if no DurationFormat annotation is present
-     */
-    private DurationStyle getStyle(TypeDescriptor targetType) {
+	 * Returns the DurationStyle based on the provided TypeDescriptor.
+	 * @param targetType the TypeDescriptor to determine the DurationStyle for
+	 * @return the DurationStyle based on the provided TypeDescriptor, or null if no
+	 * DurationFormat annotation is present
+	 */
+	private DurationStyle getStyle(TypeDescriptor targetType) {
 		DurationFormat annotation = targetType.getAnnotation(DurationFormat.class);
 		return (annotation != null) ? annotation.value() : null;
 	}
 
 	/**
-     * Returns the duration unit specified by the {@link DurationUnit} annotation
-     * associated with the given target type.
-     * 
-     * @param targetType the target type descriptor
-     * @return the duration unit specified by the annotation, or null if the annotation is not present
-     */
-    private ChronoUnit getDurationUnit(TypeDescriptor targetType) {
+	 * Returns the duration unit specified by the {@link DurationUnit} annotation
+	 * associated with the given target type.
+	 * @param targetType the target type descriptor
+	 * @return the duration unit specified by the annotation, or null if the annotation is
+	 * not present
+	 */
+	private ChronoUnit getDurationUnit(TypeDescriptor targetType) {
 		DurationUnit annotation = targetType.getAnnotation(DurationUnit.class);
 		return (annotation != null) ? annotation.value() : null;
 	}
 
 	/**
-     * Converts a string representation of a duration to a Duration object.
-     * 
-     * @param source the string representation of the duration
-     * @param style the style of the duration string (optional, default is detected automatically)
-     * @param unit the unit of the resulting Duration object
-     * @return the Duration object representing the given string
-     */
-    private Duration convert(String source, DurationStyle style, ChronoUnit unit) {
+	 * Converts a string representation of a duration to a Duration object.
+	 * @param source the string representation of the duration
+	 * @param style the style of the duration string (optional, default is detected
+	 * automatically)
+	 * @param unit the unit of the resulting Duration object
+	 * @return the Duration object representing the given string
+	 */
+	private Duration convert(String source, DurationStyle style, ChronoUnit unit) {
 		style = (style != null) ? style : DurationStyle.detect(source);
 		return style.parse(source, unit);
 	}

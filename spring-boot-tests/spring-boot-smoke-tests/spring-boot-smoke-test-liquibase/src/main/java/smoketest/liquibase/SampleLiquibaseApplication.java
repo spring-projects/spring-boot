@@ -26,11 +26,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SampleLiquibaseApplication {
 
 	/**
-     * The main method of the SampleLiquibaseApplication class.
-     * 
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+	 * The main method of the SampleLiquibaseApplication class.
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleLiquibaseApplication.class, args);
 	}
 

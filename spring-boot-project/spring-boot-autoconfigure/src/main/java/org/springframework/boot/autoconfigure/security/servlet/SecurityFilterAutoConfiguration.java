@@ -55,14 +55,16 @@ public class SecurityFilterAutoConfiguration {
 	private static final String DEFAULT_FILTER_NAME = AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME;
 
 	/**
-     * Creates a DelegatingFilterProxyRegistrationBean for the security filter chain registration.
-     * This method is conditional on the presence of a bean with the name DEFAULT_FILTER_NAME.
-     * The order and dispatcher types are set based on the provided SecurityProperties.
-     *
-     * @param securityProperties the SecurityProperties object used to configure the filter registration
-     * @return the DelegatingFilterProxyRegistrationBean for the security filter chain registration
-     */
-    @Bean
+	 * Creates a DelegatingFilterProxyRegistrationBean for the security filter chain
+	 * registration. This method is conditional on the presence of a bean with the name
+	 * DEFAULT_FILTER_NAME. The order and dispatcher types are set based on the provided
+	 * SecurityProperties.
+	 * @param securityProperties the SecurityProperties object used to configure the
+	 * filter registration
+	 * @return the DelegatingFilterProxyRegistrationBean for the security filter chain
+	 * registration
+	 */
+	@Bean
 	@ConditionalOnBean(name = DEFAULT_FILTER_NAME)
 	public DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(
 			SecurityProperties securityProperties) {
@@ -74,12 +76,14 @@ public class SecurityFilterAutoConfiguration {
 	}
 
 	/**
-     * Returns the set of dispatcher types for the security filter based on the provided security properties.
-     * 
-     * @param securityProperties the security properties containing the filter configuration
-     * @return the set of dispatcher types for the security filter, or null if not specified
-     */
-    private EnumSet<DispatcherType> getDispatcherTypes(SecurityProperties securityProperties) {
+	 * Returns the set of dispatcher types for the security filter based on the provided
+	 * security properties.
+	 * @param securityProperties the security properties containing the filter
+	 * configuration
+	 * @return the set of dispatcher types for the security filter, or null if not
+	 * specified
+	 */
+	private EnumSet<DispatcherType> getDispatcherTypes(SecurityProperties securityProperties) {
 		if (securityProperties.getFilter().getDispatcherTypes() == null) {
 			return null;
 		}

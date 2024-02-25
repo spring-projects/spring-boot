@@ -102,11 +102,10 @@ public class PrometheusPushGatewayManager {
 	}
 
 	/**
-     * Posts the metrics to the Prometheus Pushgateway.
-     * 
-     * @throws Throwable if an unexpected exception occurs during the POST operation
-     */
-    private void post() {
+	 * Posts the metrics to the Prometheus Pushgateway.
+	 * @throws Throwable if an unexpected exception occurs during the POST operation
+	 */
+	private void post() {
 		try {
 			this.pushGateway.pushAdd(this.registry, this.job, this.groupingKey);
 		}
@@ -116,11 +115,10 @@ public class PrometheusPushGatewayManager {
 	}
 
 	/**
-     * Pushes the metrics to the Prometheus Pushgateway.
-     * 
-     * @throws Throwable if an unexpected exception occurs during the push operation
-     */
-    private void put() {
+	 * Pushes the metrics to the Prometheus Pushgateway.
+	 * @throws Throwable if an unexpected exception occurs during the push operation
+	 */
+	private void put() {
 		try {
 			this.pushGateway.push(this.registry, this.job, this.groupingKey);
 		}
@@ -130,11 +128,10 @@ public class PrometheusPushGatewayManager {
 	}
 
 	/**
-     * Deletes metrics from the Prometheus Pushgateway.
-     * 
-     * @throws Throwable if an unexpected exception occurs during the deletion process
-     */
-    private void delete() {
+	 * Deletes metrics from the Prometheus Pushgateway.
+	 * @throws Throwable if an unexpected exception occurs during the deletion process
+	 */
+	private void delete() {
 		try {
 			this.pushGateway.delete(this.job, this.groupingKey);
 		}
@@ -151,11 +148,11 @@ public class PrometheusPushGatewayManager {
 	}
 
 	/**
-     * Shuts down the PrometheusPushGatewayManager.
-     * 
-     * @param shutdownOperation the operation to perform during shutdown (POST, PUT, or DELETE)
-     */
-    private void shutdown(ShutdownOperation shutdownOperation) {
+	 * Shuts down the PrometheusPushGatewayManager.
+	 * @param shutdownOperation the operation to perform during shutdown (POST, PUT, or
+	 * DELETE)
+	 */
+	private void shutdown(ShutdownOperation shutdownOperation) {
 		if (this.scheduler instanceof PushGatewayTaskScheduler pushGatewayTaskScheduler) {
 			pushGatewayTaskScheduler.shutdown();
 		}
@@ -200,23 +197,22 @@ public class PrometheusPushGatewayManager {
 	static class PushGatewayTaskScheduler extends ThreadPoolTaskScheduler {
 
 		/**
-         * Constructor for the PushGatewayTaskScheduler class.
-         * Initializes the task scheduler with a pool size of 1 and sets it as a daemon thread.
-         * Sets the thread group name as "prometheus-push-gateway".
-         */
-        PushGatewayTaskScheduler() {
+		 * Constructor for the PushGatewayTaskScheduler class. Initializes the task
+		 * scheduler with a pool size of 1 and sets it as a daemon thread. Sets the thread
+		 * group name as "prometheus-push-gateway".
+		 */
+		PushGatewayTaskScheduler() {
 			setPoolSize(1);
 			setDaemon(true);
 			setThreadGroupName("prometheus-push-gateway");
 		}
 
 		/**
-         * Returns the scheduled executor service for this PushGatewayTaskScheduler.
-         * 
-         * @return the scheduled executor service
-         * @throws IllegalStateException if the executor service is not available
-         */
-        @Override
+		 * Returns the scheduled executor service for this PushGatewayTaskScheduler.
+		 * @return the scheduled executor service
+		 * @throws IllegalStateException if the executor service is not available
+		 */
+		@Override
 		public ScheduledExecutorService getScheduledExecutor() throws IllegalStateException {
 			return Executors.newSingleThreadScheduledExecutor(this::newThread);
 		}

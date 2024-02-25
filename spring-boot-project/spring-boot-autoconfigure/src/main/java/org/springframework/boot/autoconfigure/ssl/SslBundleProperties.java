@@ -51,63 +51,58 @@ public abstract class SslBundleProperties {
 	private boolean reloadOnUpdate;
 
 	/**
-     * Returns the key associated with this SslBundleProperties object.
-     *
-     * @return the key associated with this SslBundleProperties object
-     */
-    public Key getKey() {
+	 * Returns the key associated with this SslBundleProperties object.
+	 * @return the key associated with this SslBundleProperties object
+	 */
+	public Key getKey() {
 		return this.key;
 	}
 
 	/**
-     * Returns the options associated with the SslBundleProperties.
-     *
-     * @return the options associated with the SslBundleProperties
-     */
-    public Options getOptions() {
+	 * Returns the options associated with the SslBundleProperties.
+	 * @return the options associated with the SslBundleProperties
+	 */
+	public Options getOptions() {
 		return this.options;
 	}
 
 	/**
-     * Returns the protocol used by the SSL bundle.
-     *
-     * @return the protocol used by the SSL bundle
-     */
-    public String getProtocol() {
+	 * Returns the protocol used by the SSL bundle.
+	 * @return the protocol used by the SSL bundle
+	 */
+	public String getProtocol() {
 		return this.protocol;
 	}
 
 	/**
-     * Sets the protocol for the SSL bundle properties.
-     * 
-     * @param protocol the protocol to be set
-     */
-    public void setProtocol(String protocol) {
+	 * Sets the protocol for the SSL bundle properties.
+	 * @param protocol the protocol to be set
+	 */
+	public void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the bundle should be reloaded on update.
-     *
-     * @return true if the bundle should be reloaded on update, false otherwise
-     */
-    public boolean isReloadOnUpdate() {
+	 * Returns a boolean value indicating whether the bundle should be reloaded on update.
+	 * @return true if the bundle should be reloaded on update, false otherwise
+	 */
+	public boolean isReloadOnUpdate() {
 		return this.reloadOnUpdate;
 	}
 
 	/**
-     * Sets the flag indicating whether the bundle should be reloaded on update.
-     * 
-     * @param reloadOnUpdate true if the bundle should be reloaded on update, false otherwise
-     */
-    public void setReloadOnUpdate(boolean reloadOnUpdate) {
+	 * Sets the flag indicating whether the bundle should be reloaded on update.
+	 * @param reloadOnUpdate true if the bundle should be reloaded on update, false
+	 * otherwise
+	 */
+	public void setReloadOnUpdate(boolean reloadOnUpdate) {
 		this.reloadOnUpdate = reloadOnUpdate;
 	}
 
 	/**
-     * Options class.
-     */
-    public static class Options {
+	 * Options class.
+	 */
+	public static class Options {
 
 		/**
 		 * Supported SSL ciphers.
@@ -120,47 +115,43 @@ public abstract class SslBundleProperties {
 		private Set<String> enabledProtocols;
 
 		/**
-         * Returns the set of available ciphers.
-         *
-         * @return the set of available ciphers
-         */
-        public Set<String> getCiphers() {
+		 * Returns the set of available ciphers.
+		 * @return the set of available ciphers
+		 */
+		public Set<String> getCiphers() {
 			return this.ciphers;
 		}
 
 		/**
-         * Sets the ciphers for the Options class.
-         * 
-         * @param ciphers the set of ciphers to be set
-         */
-        public void setCiphers(Set<String> ciphers) {
+		 * Sets the ciphers for the Options class.
+		 * @param ciphers the set of ciphers to be set
+		 */
+		public void setCiphers(Set<String> ciphers) {
 			this.ciphers = ciphers;
 		}
 
 		/**
-         * Returns the set of enabled protocols.
-         *
-         * @return the set of enabled protocols
-         */
-        public Set<String> getEnabledProtocols() {
+		 * Returns the set of enabled protocols.
+		 * @return the set of enabled protocols
+		 */
+		public Set<String> getEnabledProtocols() {
 			return this.enabledProtocols;
 		}
 
 		/**
-         * Sets the enabled protocols for the Options class.
-         * 
-         * @param enabledProtocols the set of enabled protocols to be set
-         */
-        public void setEnabledProtocols(Set<String> enabledProtocols) {
+		 * Sets the enabled protocols for the Options class.
+		 * @param enabledProtocols the set of enabled protocols to be set
+		 */
+		public void setEnabledProtocols(Set<String> enabledProtocols) {
 			this.enabledProtocols = enabledProtocols;
 		}
 
 	}
 
 	/**
-     * Key class.
-     */
-    public static class Key {
+	 * Key class.
+	 */
+	public static class Key {
 
 		/**
 		 * The password used to access the key in the key store.
@@ -173,38 +164,34 @@ public abstract class SslBundleProperties {
 		private String alias;
 
 		/**
-         * Returns the password associated with the Key object.
-         *
-         * @return the password as a String
-         */
-        public String getPassword() {
+		 * Returns the password associated with the Key object.
+		 * @return the password as a String
+		 */
+		public String getPassword() {
 			return this.password;
 		}
 
 		/**
-         * Sets the password for the Key.
-         * 
-         * @param password the password to be set
-         */
-        public void setPassword(String password) {
+		 * Sets the password for the Key.
+		 * @param password the password to be set
+		 */
+		public void setPassword(String password) {
 			this.password = password;
 		}
 
 		/**
-         * Returns the alias of the Key.
-         *
-         * @return the alias of the Key
-         */
-        public String getAlias() {
+		 * Returns the alias of the Key.
+		 * @return the alias of the Key
+		 */
+		public String getAlias() {
 			return this.alias;
 		}
 
 		/**
-         * Sets the alias for the Key.
-         * 
-         * @param alias the alias to be set for the Key
-         */
-        public void setAlias(String alias) {
+		 * Sets the alias for the Key.
+		 * @param alias the alias to be set for the Key
+		 */
+		public void setAlias(String alias) {
 			this.alias = alias;
 		}
 

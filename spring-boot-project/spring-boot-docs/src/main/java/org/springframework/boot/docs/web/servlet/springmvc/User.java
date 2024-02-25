@@ -24,11 +24,10 @@ import java.util.List;
 class User {
 
 	/**
-     * Retrieves a list of customers.
-     *
-     * @return the list of customers, or null if no customers are found
-     */
-    List<Customer> getCustomers() {
+	 * Retrieves a list of customers.
+	 * @return the list of customers, or null if no customers are found
+	 */
+	List<Customer> getCustomers() {
 		return null;
 	}
 

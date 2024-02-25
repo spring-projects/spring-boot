@@ -54,12 +54,12 @@ public class MutuallyExclusiveConfigurationPropertiesException extends RuntimeEx
 	}
 
 	/**
-     * Constructs a new MutuallyExclusiveConfigurationPropertiesException with the specified configured names and mutually exclusive names.
-     * 
-     * @param configuredNames the set of configured property names
-     * @param mutuallyExclusiveNames the set of mutually exclusive property names
-     */
-    private MutuallyExclusiveConfigurationPropertiesException(Set<String> configuredNames,
+	 * Constructs a new MutuallyExclusiveConfigurationPropertiesException with the
+	 * specified configured names and mutually exclusive names.
+	 * @param configuredNames the set of configured property names
+	 * @param mutuallyExclusiveNames the set of mutually exclusive property names
+	 */
+	private MutuallyExclusiveConfigurationPropertiesException(Set<String> configuredNames,
 			Set<String> mutuallyExclusiveNames) {
 		super(buildMessage(mutuallyExclusiveNames, configuredNames));
 		this.configuredNames = configuredNames;
@@ -83,24 +83,24 @@ public class MutuallyExclusiveConfigurationPropertiesException extends RuntimeEx
 	}
 
 	/**
-     * Converts a collection of strings into a set of strings.
-     * 
-     * @param collection the collection of strings to be converted
-     * @return a set of strings containing the elements from the collection, or null if the collection is null
-     */
-    private static Set<String> asSet(Collection<String> collection) {
+	 * Converts a collection of strings into a set of strings.
+	 * @param collection the collection of strings to be converted
+	 * @return a set of strings containing the elements from the collection, or null if
+	 * the collection is null
+	 */
+	private static Set<String> asSet(Collection<String> collection) {
 		return (collection != null) ? new LinkedHashSet<>(collection) : null;
 	}
 
 	/**
-     * Builds a message for the MutuallyExclusiveConfigurationPropertiesException.
-     * 
-     * @param mutuallyExclusiveNames the set of mutually exclusive names
-     * @param configuredNames the set of configured names
-     * @return the message indicating the mutually exclusive and configured names
-     * @throws IllegalArgumentException if configuredNames or mutuallyExclusiveNames is null or contains less than 2 names
-     */
-    private static String buildMessage(Set<String> mutuallyExclusiveNames, Set<String> configuredNames) {
+	 * Builds a message for the MutuallyExclusiveConfigurationPropertiesException.
+	 * @param mutuallyExclusiveNames the set of mutually exclusive names
+	 * @param configuredNames the set of configured names
+	 * @return the message indicating the mutually exclusive and configured names
+	 * @throws IllegalArgumentException if configuredNames or mutuallyExclusiveNames is
+	 * null or contains less than 2 names
+	 */
+	private static String buildMessage(Set<String> mutuallyExclusiveNames, Set<String> configuredNames) {
 		Assert.isTrue(configuredNames != null && configuredNames.size() > 1,
 				"ConfiguredNames must contain 2 or more names");
 		Assert.isTrue(mutuallyExclusiveNames != null && mutuallyExclusiveNames.size() > 1,

@@ -35,12 +35,11 @@ class RedpandaContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<RedpandaContainer, KafkaConnectionDetails> {
 
 	/**
-     * Returns the connection details for the Redpanda container.
-     * 
-     * @param source the source of the container connection
-     * @return the connection details for the Redpanda container
-     */
-    @Override
+	 * Returns the connection details for the Redpanda container.
+	 * @param source the source of the container connection
+	 * @return the connection details for the Redpanda container
+	 */
+	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<RedpandaContainer> source) {
 		return new RedpandaContainerConnectionDetails(source);
@@ -53,20 +52,21 @@ class RedpandaContainerConnectionDetailsFactory
 			implements KafkaConnectionDetails {
 
 		/**
-         * Constructs a new RedpandaContainerConnectionDetails object with the specified ContainerConnectionSource.
-         * 
-         * @param source the ContainerConnectionSource used to create the RedpandaContainerConnectionDetails object
-         */
-        private RedpandaContainerConnectionDetails(ContainerConnectionSource<RedpandaContainer> source) {
+		 * Constructs a new RedpandaContainerConnectionDetails object with the specified
+		 * ContainerConnectionSource.
+		 * @param source the ContainerConnectionSource used to create the
+		 * RedpandaContainerConnectionDetails object
+		 */
+		private RedpandaContainerConnectionDetails(ContainerConnectionSource<RedpandaContainer> source) {
 			super(source);
 		}
 
 		/**
-         * Returns a list of bootstrap servers for the Redpanda container connection details.
-         *
-         * @return a list of bootstrap servers
-         */
-        @Override
+		 * Returns a list of bootstrap servers for the Redpanda container connection
+		 * details.
+		 * @return a list of bootstrap servers
+		 */
+		@Override
 		public List<String> getBootstrapServers() {
 			return List.of(getContainer().getBootstrapServers());
 		}

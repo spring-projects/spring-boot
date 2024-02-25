@@ -29,11 +29,11 @@ import org.springframework.context.annotation.Configuration;
 public class MyMeterRegistryConfiguration {
 
 	/**
-     * Configures common tags for the MeterRegistry.
-     * 
-     * @return The MeterRegistryCustomizer that sets the common tags for the MeterRegistry.
-     */
-    @Bean
+	 * Configures common tags for the MeterRegistry.
+	 * @return The MeterRegistryCustomizer that sets the common tags for the
+	 * MeterRegistry.
+	 */
+	@Bean
 	public MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
 		return (registry) -> registry.config().commonTags("region", "us-east-1");
 	}

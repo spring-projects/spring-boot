@@ -34,39 +34,36 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 class ElasticsearchRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	/**
-     * Returns the annotation class that is used to enable Elasticsearch repositories.
-     *
-     * @return the annotation class {@code EnableElasticsearchRepositories}
-     */
-    @Override
+	 * Returns the annotation class that is used to enable Elasticsearch repositories.
+	 * @return the annotation class {@code EnableElasticsearchRepositories}
+	 */
+	@Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableElasticsearchRepositories.class;
 	}
 
 	/**
-     * Returns the configuration class for enabling Elasticsearch repositories.
-     * 
-     * @return the configuration class for enabling Elasticsearch repositories
-     */
-    @Override
+	 * Returns the configuration class for enabling Elasticsearch repositories.
+	 * @return the configuration class for enabling Elasticsearch repositories
+	 */
+	@Override
 	protected Class<?> getConfiguration() {
 		return EnableElasticsearchRepositoriesConfiguration.class;
 	}
 
 	/**
-     * Returns the repository configuration extension for Elasticsearch repositories.
-     * 
-     * @return the ElasticsearchRepositoryConfigExtension instance
-     */
-    @Override
+	 * Returns the repository configuration extension for Elasticsearch repositories.
+	 * @return the ElasticsearchRepositoryConfigExtension instance
+	 */
+	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new ElasticsearchRepositoryConfigExtension();
 	}
 
 	/**
-     * EnableElasticsearchRepositoriesConfiguration class.
-     */
-    @EnableElasticsearchRepositories
+	 * EnableElasticsearchRepositoriesConfiguration class.
+	 */
+	@EnableElasticsearchRepositories
 	private static final class EnableElasticsearchRepositoriesConfiguration {
 
 	}

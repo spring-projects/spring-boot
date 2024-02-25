@@ -36,12 +36,12 @@ class TestcontainerFieldBeanDefinition extends RootBeanDefinition implements Tes
 	private final MergedAnnotations annotations;
 
 	/**
-     * Constructs a new TestcontainerFieldBeanDefinition with the specified field and container.
-     * 
-     * @param field the field to be associated with the bean definition
-     * @param container the container to be associated with the bean definition
-     */
-    TestcontainerFieldBeanDefinition(Field field, Container<?> container) {
+	 * Constructs a new TestcontainerFieldBeanDefinition with the specified field and
+	 * container.
+	 * @param field the field to be associated with the bean definition
+	 * @param container the container to be associated with the bean definition
+	 */
+	TestcontainerFieldBeanDefinition(Field field, Container<?> container) {
 		this.container = container;
 		this.annotations = MergedAnnotations.from(field);
 		this.setBeanClass(container.getClass());
@@ -50,21 +50,19 @@ class TestcontainerFieldBeanDefinition extends RootBeanDefinition implements Tes
 	}
 
 	/**
-     * Returns the name of the container image.
-     * 
-     * @return the name of the container image
-     */
-    @Override
+	 * Returns the name of the container image.
+	 * @return the name of the container image
+	 */
+	@Override
 	public String getContainerImageName() {
 		return this.container.getDockerImageName();
 	}
 
 	/**
-     * Returns the merged annotations of the TestcontainerFieldBeanDefinition.
-     * 
-     * @return the merged annotations of the TestcontainerFieldBeanDefinition
-     */
-    @Override
+	 * Returns the merged annotations of the TestcontainerFieldBeanDefinition.
+	 * @return the merged annotations of the TestcontainerFieldBeanDefinition
+	 */
+	@Override
 	public MergedAnnotations getAnnotations() {
 		return this.annotations;
 	}

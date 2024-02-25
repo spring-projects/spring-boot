@@ -54,12 +54,12 @@ public final class EndpointId {
 	private final String lowerCaseAlphaNumeric;
 
 	/**
-     * Constructs a new EndpointId with the given value.
-     * 
-     * @param value the value of the EndpointId
-     * @throws IllegalArgumentException if the value is empty, contains invalid characters, starts with a number, or starts with an uppercase letter
-     */
-    private EndpointId(String value) {
+	 * Constructs a new EndpointId with the given value.
+	 * @param value the value of the EndpointId
+	 * @throws IllegalArgumentException if the value is empty, contains invalid
+	 * characters, starts with a number, or starts with an uppercase letter
+	 */
+	private EndpointId(String value) {
 		Assert.hasText(value, "Value must not be empty");
 		Assert.isTrue(VALID_PATTERN.matcher(value).matches(), "Value must only contain valid chars");
 		Assert.isTrue(!Character.isDigit(value.charAt(0)), "Value must not start with a number");
@@ -73,12 +73,11 @@ public final class EndpointId {
 	}
 
 	/**
-     * Returns a string containing only alphanumeric characters from the given value.
-     * 
-     * @param value the input string
-     * @return a string containing only alphanumeric characters
-     */
-    private String getAlphaNumerics(String value) {
+	 * Returns a string containing only alphanumeric characters from the given value.
+	 * @param value the input string
+	 * @return a string containing only alphanumeric characters
+	 */
+	private String getAlphaNumerics(String value) {
 		StringBuilder result = new StringBuilder(value.length());
 		for (int i = 0; i < value.length(); i++) {
 			char ch = value.charAt(i);
@@ -90,12 +89,14 @@ public final class EndpointId {
 	}
 
 	/**
-     * Compares this EndpointId object to the specified object. The result is true if and only if the argument is not null and is an EndpointId object that represents the same lower case alphanumeric value as this object.
-     *
-     * @param obj the object to compare this EndpointId against
-     * @return true if the given object represents an EndpointId equivalent to this EndpointId, false otherwise
-     */
-    @Override
+	 * Compares this EndpointId object to the specified object. The result is true if and
+	 * only if the argument is not null and is an EndpointId object that represents the
+	 * same lower case alphanumeric value as this object.
+	 * @param obj the object to compare this EndpointId against
+	 * @return true if the given object represents an EndpointId equivalent to this
+	 * EndpointId, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -107,11 +108,10 @@ public final class EndpointId {
 	}
 
 	/**
-     * Returns the hash code value for the EndpointId object.
-     * 
-     * @return the hash code value for the EndpointId object
-     */
-    @Override
+	 * Returns the hash code value for the EndpointId object.
+	 * @return the hash code value for the EndpointId object
+	 */
+	@Override
 	public int hashCode() {
 		return this.lowerCaseAlphaNumeric.hashCode();
 	}
@@ -125,11 +125,10 @@ public final class EndpointId {
 	}
 
 	/**
-     * Returns a string representation of the EndpointId object.
-     *
-     * @return the string representation of the EndpointId object
-     */
-    @Override
+	 * Returns a string representation of the EndpointId object.
+	 * @return the string representation of the EndpointId object
+	 */
+	@Override
 	public String toString() {
 		return this.value;
 	}
@@ -158,13 +157,14 @@ public final class EndpointId {
 	}
 
 	/**
-     * Migrates the legacy ID by removing any occurrences of hyphens or dots in the given value.
-     * 
-     * @param environment the environment object containing the property for legacy ID migration
-     * @param value the legacy ID value to be migrated
-     * @return the migrated legacy ID value
-     */
-    private static String migrateLegacyId(Environment environment, String value) {
+	 * Migrates the legacy ID by removing any occurrences of hyphens or dots in the given
+	 * value.
+	 * @param environment the environment object containing the property for legacy ID
+	 * migration
+	 * @param value the legacy ID value to be migrated
+	 * @return the migrated legacy ID value
+	 */
+	private static String migrateLegacyId(Environment environment, String value) {
 		if (environment.getProperty(MIGRATE_LEGACY_NAMES_PROPERTY, Boolean.class, false)) {
 			return value.replaceAll("[-.]+", "");
 		}
@@ -182,18 +182,17 @@ public final class EndpointId {
 	}
 
 	/**
-     * Resets the list of logged warnings.
-     */
-    static void resetLoggedWarnings() {
+	 * Resets the list of logged warnings.
+	 */
+	static void resetLoggedWarnings() {
 		loggedWarnings.clear();
 	}
 
 	/**
-     * Logs a warning message if the provided value contains invalid characters.
-     * 
-     * @param value the endpoint ID value to check
-     */
-    private static void logWarning(String value) {
+	 * Logs a warning message if the provided value contains invalid characters.
+	 * @param value the endpoint ID value to check
+	 */
+	private static void logWarning(String value) {
 		if (logger.isWarnEnabled() && loggedWarnings.add(value)) {
 			logger.warn("Endpoint ID '" + value + "' contains invalid characters, please migrate to a valid format.");
 		}

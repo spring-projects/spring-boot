@@ -47,20 +47,20 @@ public class FlywayEndpoint {
 	private final ApplicationContext context;
 
 	/**
-     * Creates a new instance of FlywayEndpoint with the specified ApplicationContext.
-     * 
-     * @param context the ApplicationContext to be used by the FlywayEndpoint
-     */
-    public FlywayEndpoint(ApplicationContext context) {
+	 * Creates a new instance of FlywayEndpoint with the specified ApplicationContext.
+	 * @param context the ApplicationContext to be used by the FlywayEndpoint
+	 */
+	public FlywayEndpoint(ApplicationContext context) {
 		this.context = context;
 	}
 
 	/**
-     * Retrieves the Flyway beans descriptor for the current application context and its parent contexts.
-     * 
-     * @return The Flyway beans descriptor containing information about Flyway beans in the application context hierarchy.
-     */
-    @ReadOperation
+	 * Retrieves the Flyway beans descriptor for the current application context and its
+	 * parent contexts.
+	 * @return The Flyway beans descriptor containing information about Flyway beans in
+	 * the application context hierarchy.
+	 */
+	@ReadOperation
 	public FlywayBeansDescriptor flywayBeans() {
 		ApplicationContext target = this.context;
 		Map<String, ContextFlywayBeansDescriptor> contextFlywayBeans = new HashMap<>();
@@ -84,20 +84,21 @@ public class FlywayEndpoint {
 		private final Map<String, ContextFlywayBeansDescriptor> contexts;
 
 		/**
-         * Constructs a new FlywayBeansDescriptor with the specified contexts.
-         *
-         * @param contexts a map of contexts and their corresponding ContextFlywayBeansDescriptor objects
-         */
-        private FlywayBeansDescriptor(Map<String, ContextFlywayBeansDescriptor> contexts) {
+		 * Constructs a new FlywayBeansDescriptor with the specified contexts.
+		 * @param contexts a map of contexts and their corresponding
+		 * ContextFlywayBeansDescriptor objects
+		 */
+		private FlywayBeansDescriptor(Map<String, ContextFlywayBeansDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
 		/**
-         * Returns the map of contexts and their corresponding FlywayBeansDescriptor objects.
-         * 
-         * @return the map of contexts and their corresponding FlywayBeansDescriptor objects
-         */
-        public Map<String, ContextFlywayBeansDescriptor> getContexts() {
+		 * Returns the map of contexts and their corresponding FlywayBeansDescriptor
+		 * objects.
+		 * @return the map of contexts and their corresponding FlywayBeansDescriptor
+		 * objects
+		 */
+		public Map<String, ContextFlywayBeansDescriptor> getContexts() {
 			return this.contexts;
 		}
 
@@ -113,31 +114,29 @@ public class FlywayEndpoint {
 		private final String parentId;
 
 		/**
-         * Constructs a new ContextFlywayBeansDescriptor with the specified flywayBeans and parentId.
-         * 
-         * @param flywayBeans the map of flyway beans
-         * @param parentId the parent ID
-         */
-        private ContextFlywayBeansDescriptor(Map<String, FlywayDescriptor> flywayBeans, String parentId) {
+		 * Constructs a new ContextFlywayBeansDescriptor with the specified flywayBeans
+		 * and parentId.
+		 * @param flywayBeans the map of flyway beans
+		 * @param parentId the parent ID
+		 */
+		private ContextFlywayBeansDescriptor(Map<String, FlywayDescriptor> flywayBeans, String parentId) {
 			this.flywayBeans = flywayBeans;
 			this.parentId = parentId;
 		}
 
 		/**
-         * Returns the map of Flyway beans.
-         * 
-         * @return the map of Flyway beans
-         */
-        public Map<String, FlywayDescriptor> getFlywayBeans() {
+		 * Returns the map of Flyway beans.
+		 * @return the map of Flyway beans
+		 */
+		public Map<String, FlywayDescriptor> getFlywayBeans() {
 			return this.flywayBeans;
 		}
 
 		/**
-         * Returns the parent ID of the ContextFlywayBeansDescriptor.
-         * 
-         * @return the parent ID of the ContextFlywayBeansDescriptor
-         */
-        public String getParentId() {
+		 * Returns the parent ID of the ContextFlywayBeansDescriptor.
+		 * @return the parent ID of the ContextFlywayBeansDescriptor
+		 */
+		public String getParentId() {
 			return this.parentId;
 		}
 
@@ -151,29 +150,28 @@ public class FlywayEndpoint {
 		private final List<FlywayMigrationDescriptor> migrations;
 
 		/**
-         * Constructs a new FlywayDescriptor object with the given array of MigrationInfo objects.
-         * 
-         * @param migrations an array of MigrationInfo objects representing the migrations
-         */
-        private FlywayDescriptor(MigrationInfo[] migrations) {
+		 * Constructs a new FlywayDescriptor object with the given array of MigrationInfo
+		 * objects.
+		 * @param migrations an array of MigrationInfo objects representing the migrations
+		 */
+		private FlywayDescriptor(MigrationInfo[] migrations) {
 			this.migrations = Stream.of(migrations).map(FlywayMigrationDescriptor::new).toList();
 		}
 
 		/**
-         * Constructs a new FlywayDescriptor object with the specified list of migrations.
-         * 
-         * @param migrations the list of FlywayMigrationDescriptor objects representing the migrations
-         */
-        public FlywayDescriptor(List<FlywayMigrationDescriptor> migrations) {
+		 * Constructs a new FlywayDescriptor object with the specified list of migrations.
+		 * @param migrations the list of FlywayMigrationDescriptor objects representing
+		 * the migrations
+		 */
+		public FlywayDescriptor(List<FlywayMigrationDescriptor> migrations) {
 			this.migrations = migrations;
 		}
 
 		/**
-         * Returns the list of FlywayMigrationDescriptor objects.
-         * 
-         * @return the list of FlywayMigrationDescriptor objects
-         */
-        public List<FlywayMigrationDescriptor> getMigrations() {
+		 * Returns the list of FlywayMigrationDescriptor objects.
+		 * @return the list of FlywayMigrationDescriptor objects
+		 */
+		public List<FlywayMigrationDescriptor> getMigrations() {
 			return this.migrations;
 		}
 
@@ -205,11 +203,11 @@ public class FlywayEndpoint {
 		private final Integer executionTime;
 
 		/**
-         * Constructs a new FlywayMigrationDescriptor object based on the provided MigrationInfo.
-         * 
-         * @param info the MigrationInfo object to create the descriptor from
-         */
-        private FlywayMigrationDescriptor(MigrationInfo info) {
+		 * Constructs a new FlywayMigrationDescriptor object based on the provided
+		 * MigrationInfo.
+		 * @param info the MigrationInfo object to create the descriptor from
+		 */
+		private FlywayMigrationDescriptor(MigrationInfo info) {
 			this.type = info.getType().name();
 			this.checksum = info.getChecksum();
 			this.version = nullSafeToString(info.getVersion());
@@ -223,112 +221,101 @@ public class FlywayEndpoint {
 		}
 
 		/**
-         * Returns a string representation of the given object, handling null values.
-         *
-         * @param obj the object to convert to a string
-         * @return the string representation of the object, or null if the object is null
-         */
-        private String nullSafeToString(Object obj) {
+		 * Returns a string representation of the given object, handling null values.
+		 * @param obj the object to convert to a string
+		 * @return the string representation of the object, or null if the object is null
+		 */
+		private String nullSafeToString(Object obj) {
 			return (obj != null) ? obj.toString() : null;
 		}
 
 		/**
-         * Converts a {@link Date} object to an {@link Instant} object, handling null values.
-         *
-         * @param date the {@link Date} object to convert
-         * @return the converted {@link Instant} object, or null if the input is null
-         */
-        private Instant nullSafeToInstant(Date date) {
+		 * Converts a {@link Date} object to an {@link Instant} object, handling null
+		 * values.
+		 * @param date the {@link Date} object to convert
+		 * @return the converted {@link Instant} object, or null if the input is null
+		 */
+		private Instant nullSafeToInstant(Date date) {
 			return (date != null) ? Instant.ofEpochMilli(date.getTime()) : null;
 		}
 
 		/**
-         * Returns the type of the Flyway migration descriptor.
-         * 
-         * @return the type of the Flyway migration descriptor
-         */
-        public String getType() {
+		 * Returns the type of the Flyway migration descriptor.
+		 * @return the type of the Flyway migration descriptor
+		 */
+		public String getType() {
 			return this.type;
 		}
 
 		/**
-         * Returns the checksum of the Flyway migration descriptor.
-         *
-         * @return the checksum of the Flyway migration descriptor
-         */
-        public Integer getChecksum() {
+		 * Returns the checksum of the Flyway migration descriptor.
+		 * @return the checksum of the Flyway migration descriptor
+		 */
+		public Integer getChecksum() {
 			return this.checksum;
 		}
 
 		/**
-         * Returns the version of the FlywayMigrationDescriptor.
-         *
-         * @return the version of the FlywayMigrationDescriptor
-         */
-        public String getVersion() {
+		 * Returns the version of the FlywayMigrationDescriptor.
+		 * @return the version of the FlywayMigrationDescriptor
+		 */
+		public String getVersion() {
 			return this.version;
 		}
 
 		/**
-         * Returns the description of the FlywayMigrationDescriptor.
-         *
-         * @return the description of the FlywayMigrationDescriptor
-         */
-        public String getDescription() {
+		 * Returns the description of the FlywayMigrationDescriptor.
+		 * @return the description of the FlywayMigrationDescriptor
+		 */
+		public String getDescription() {
 			return this.description;
 		}
 
 		/**
-         * Returns the script associated with this FlywayMigrationDescriptor.
-         *
-         * @return the script associated with this FlywayMigrationDescriptor
-         */
-        public String getScript() {
+		 * Returns the script associated with this FlywayMigrationDescriptor.
+		 * @return the script associated with this FlywayMigrationDescriptor
+		 */
+		public String getScript() {
 			return this.script;
 		}
 
 		/**
-         * Returns the current state of the migration.
-         *
-         * @return the current state of the migration
-         */
-        public MigrationState getState() {
+		 * Returns the current state of the migration.
+		 * @return the current state of the migration
+		 */
+		public MigrationState getState() {
 			return this.state;
 		}
 
 		/**
-         * Returns the name of the user who installed the Flyway migration.
-         *
-         * @return the name of the user who installed the Flyway migration
-         */
-        public String getInstalledBy() {
+		 * Returns the name of the user who installed the Flyway migration.
+		 * @return the name of the user who installed the Flyway migration
+		 */
+		public String getInstalledBy() {
 			return this.installedBy;
 		}
 
 		/**
-         * Returns the date and time when the Flyway migration was installed.
-         *
-         * @return the date and time when the Flyway migration was installed
-         */
-        public Instant getInstalledOn() {
+		 * Returns the date and time when the Flyway migration was installed.
+		 * @return the date and time when the Flyway migration was installed
+		 */
+		public Instant getInstalledOn() {
 			return this.installedOn;
 		}
 
 		/**
-         * Returns the installed rank of the Flyway migration descriptor.
-         *
-         * @return the installed rank of the Flyway migration descriptor
-         */
-        public Integer getInstalledRank() {
+		 * Returns the installed rank of the Flyway migration descriptor.
+		 * @return the installed rank of the Flyway migration descriptor
+		 */
+		public Integer getInstalledRank() {
 			return this.installedRank;
 		}
 
 		/**
-         * Returns the execution time of the Flyway migration.
-         *
-         * @return the execution time of the Flyway migration
-         */
-        public Integer getExecutionTime() {
+		 * Returns the execution time of the Flyway migration.
+		 * @return the execution time of the Flyway migration
+		 */
+		public Integer getExecutionTime() {
 			return this.executionTime;
 		}
 

@@ -35,11 +35,10 @@ public class OrderedHiddenHttpMethodFilter extends HiddenHttpMethodFilter implem
 	private int order = DEFAULT_ORDER;
 
 	/**
-     * Returns the order value of this filter.
-     * 
-     * @return the order value of this filter
-     */
-    @Override
+	 * Returns the order value of this filter.
+	 * @return the order value of this filter
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}

@@ -51,18 +51,17 @@ class MockDefinition extends Definition {
 	private final boolean serializable;
 
 	/**
-     * Creates a new instance of MockDefinition.
-     * 
-     * @param name the name of the mock
-     * @param typeToMock the type to mock
-     * @param extraInterfaces additional interfaces to be implemented by the mock
-     * @param answer the answer to be used for method invocations on the mock
-     * @param serializable whether the mock should be serializable
-     * @param reset the reset behavior for the mock
-     * @param qualifier the qualifier definition for the mock
-     * @throws IllegalArgumentException if typeToMock is null
-     */
-    MockDefinition(String name, ResolvableType typeToMock, Class<?>[] extraInterfaces, Answers answer,
+	 * Creates a new instance of MockDefinition.
+	 * @param name the name of the mock
+	 * @param typeToMock the type to mock
+	 * @param extraInterfaces additional interfaces to be implemented by the mock
+	 * @param answer the answer to be used for method invocations on the mock
+	 * @param serializable whether the mock should be serializable
+	 * @param reset the reset behavior for the mock
+	 * @param qualifier the qualifier definition for the mock
+	 * @throws IllegalArgumentException if typeToMock is null
+	 */
+	MockDefinition(String name, ResolvableType typeToMock, Class<?>[] extraInterfaces, Answers answer,
 			boolean serializable, MockReset reset, QualifierDefinition qualifier) {
 		super(name, reset, false, qualifier);
 		Assert.notNull(typeToMock, "TypeToMock must not be null");
@@ -73,12 +72,11 @@ class MockDefinition extends Definition {
 	}
 
 	/**
-     * Converts an array of Class objects into a Set of Class objects.
-     * 
-     * @param classes the array of Class objects to be converted
-     * @return an unmodifiable Set of Class objects
-     */
-    private Set<Class<?>> asClassSet(Class<?>[] classes) {
+	 * Converts an array of Class objects into a Set of Class objects.
+	 * @param classes the array of Class objects to be converted
+	 * @return an unmodifiable Set of Class objects
+	 */
+	private Set<Class<?>> asClassSet(Class<?>[] classes) {
 		Set<Class<?>> classSet = new LinkedHashSet<>();
 		if (classes != null) {
 			classSet.addAll(Arrays.asList(classes));
@@ -119,14 +117,13 @@ class MockDefinition extends Definition {
 	}
 
 	/**
-     * Compares this MockDefinition object to the specified object for equality.
-     * Returns true if the specified object is also a MockDefinition object and
-     * all the fields of both objects are equal.
-     * 
-     * @param obj the object to compare with
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this MockDefinition object to the specified object for equality. Returns
+	 * true if the specified object is also a MockDefinition object and all the fields of
+	 * both objects are equal.
+	 * @param obj the object to compare with
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -144,12 +141,12 @@ class MockDefinition extends Definition {
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the hashCode() method in the superclass.
-     * The hash code is calculated based on the typeToMock, extraInterfaces, answer, and serializable properties of the MockDefinition object.
-     * 
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the hashCode()
+	 * method in the superclass. The hash code is calculated based on the typeToMock,
+	 * extraInterfaces, answer, and serializable properties of the MockDefinition object.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		int result = super.hashCode();
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.typeToMock);
@@ -160,11 +157,10 @@ class MockDefinition extends Definition {
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * 
-     * @return the string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return the string representation of the object
+	 */
+	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("name", getName())
 			.append("typeToMock", this.typeToMock)
@@ -176,22 +172,20 @@ class MockDefinition extends Definition {
 	}
 
 	/**
-     * Creates a mock object of type T.
-     * 
-     * @return a mock object of type T
-     */
-    <T> T createMock() {
+	 * Creates a mock object of type T.
+	 * @return a mock object of type T
+	 */
+	<T> T createMock() {
 		return createMock(getName());
 	}
 
 	/**
-     * Creates a mock object with the given name.
-     * 
-     * @param name the name of the mock object
-     * @return the created mock object
-     * @param <T> the type of the mock object
-     */
-    @SuppressWarnings("unchecked")
+	 * Creates a mock object with the given name.
+	 * @param name the name of the mock object
+	 * @return the created mock object
+	 * @param <T> the type of the mock object
+	 */
+	@SuppressWarnings("unchecked")
 	<T> T createMock(String name) {
 		MockSettings settings = MockReset.withSettings(getReset());
 		if (StringUtils.hasLength(name)) {

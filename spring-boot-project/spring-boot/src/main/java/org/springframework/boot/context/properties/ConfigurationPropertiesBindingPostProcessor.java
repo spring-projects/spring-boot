@@ -56,23 +56,21 @@ public class ConfigurationPropertiesBindingPostProcessor
 	private ConfigurationPropertiesBinder binder;
 
 	/**
-     * Set the application context that this object runs in.
-     * 
-     * @param applicationContext the application context to be set
-     * @throws BeansException if an error occurs while setting the application context
-     */
-    @Override
+	 * Set the application context that this object runs in.
+	 * @param applicationContext the application context to be set
+	 * @throws BeansException if an error occurs while setting the application context
+	 */
+	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
 	/**
-     * Callback method invoked by the container after all bean properties have been set.
-     * Initializes the registry and binder properties.
-     *
-     * @throws Exception if an error occurs during initialization
-     */
-    @Override
+	 * Callback method invoked by the container after all bean properties have been set.
+	 * Initializes the registry and binder properties.
+	 * @throws Exception if an error occurs during initialization
+	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		// We can't use constructor injection of the application context because
 		// it causes eager factory bean initialization
@@ -81,26 +79,25 @@ public class ConfigurationPropertiesBindingPostProcessor
 	}
 
 	/**
-     * Returns the order of this ConfigurationPropertiesBindingPostProcessor.
-     * The order is determined by adding 1 to the highest precedence value.
-     * 
-     * @return the order of this ConfigurationPropertiesBindingPostProcessor
-     */
-    @Override
+	 * Returns the order of this ConfigurationPropertiesBindingPostProcessor. The order is
+	 * determined by adding 1 to the highest precedence value.
+	 * @return the order of this ConfigurationPropertiesBindingPostProcessor
+	 */
+	@Override
 	public int getOrder() {
 		return Ordered.HIGHEST_PRECEDENCE + 1;
 	}
 
 	/**
-     * This method is called before the initialization of a bean. It checks if the bean has a bound value object associated with it.
-     * If not, it binds the bean with the corresponding ConfigurationPropertiesBean using the ApplicationContext.
-     * 
-     * @param bean The bean object being processed.
-     * @param beanName The name of the bean being processed.
-     * @return The processed bean object.
-     * @throws BeansException If an error occurs during the bean processing.
-     */
-    @Override
+	 * This method is called before the initialization of a bean. It checks if the bean
+	 * has a bound value object associated with it. If not, it binds the bean with the
+	 * corresponding ConfigurationPropertiesBean using the ApplicationContext.
+	 * @param bean The bean object being processed.
+	 * @param beanName The name of the bean being processed.
+	 * @return The processed bean object.
+	 * @throws BeansException If an error occurs during the bean processing.
+	 */
+	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (!hasBoundValueObject(beanName)) {
 			bind(ConfigurationPropertiesBean.get(this.applicationContext, bean, beanName));
@@ -109,23 +106,24 @@ public class ConfigurationPropertiesBindingPostProcessor
 	}
 
 	/**
-     * Checks if the specified bean has a bound value object.
-     * 
-     * @param beanName the name of the bean to check
-     * @return true if the bean has a bound value object, false otherwise
-     */
-    private boolean hasBoundValueObject(String beanName) {
+	 * Checks if the specified bean has a bound value object.
+	 * @param beanName the name of the bean to check
+	 * @return true if the bean has a bound value object, false otherwise
+	 */
+	private boolean hasBoundValueObject(String beanName) {
 		return BindMethod.VALUE_OBJECT.equals(BindMethodAttribute.get(this.registry, beanName));
 	}
 
 	/**
-     * Binds the given ConfigurationPropertiesBean to its corresponding configuration properties.
-     * 
-     * @param bean the ConfigurationPropertiesBean to bind
-     * @throws ConfigurationPropertiesBindException if an error occurs during the binding process
-     * @throws IllegalStateException if @ConstructorBinding has been applied to a regular bean
-     */
-    private void bind(ConfigurationPropertiesBean bean) {
+	 * Binds the given ConfigurationPropertiesBean to its corresponding configuration
+	 * properties.
+	 * @param bean the ConfigurationPropertiesBean to bind
+	 * @throws ConfigurationPropertiesBindException if an error occurs during the binding
+	 * process
+	 * @throws IllegalStateException if @ConstructorBinding has been applied to a regular
+	 * bean
+	 */
+	private void bind(ConfigurationPropertiesBean bean) {
 		if (bean == null) {
 			return;
 		}

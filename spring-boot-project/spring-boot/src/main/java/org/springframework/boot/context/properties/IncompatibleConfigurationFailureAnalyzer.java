@@ -28,13 +28,13 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 class IncompatibleConfigurationFailureAnalyzer extends AbstractFailureAnalyzer<IncompatibleConfigurationException> {
 
 	/**
-     * Analyzes the failure caused by an incompatible configuration and generates a failure analysis.
-     * 
-     * @param rootFailure the root cause of the failure
-     * @param cause the specific exception that represents the incompatible configuration
-     * @return a FailureAnalysis object containing the analysis of the failure
-     */
-    @Override
+	 * Analyzes the failure caused by an incompatible configuration and generates a
+	 * failure analysis.
+	 * @param rootFailure the root cause of the failure
+	 * @param cause the specific exception that represents the incompatible configuration
+	 * @return a FailureAnalysis object containing the analysis of the failure
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, IncompatibleConfigurationException cause) {
 		String action = String.format("Review the docs for %s and change the configured values.",
 				String.join(", ", cause.getIncompatibleKeys()));

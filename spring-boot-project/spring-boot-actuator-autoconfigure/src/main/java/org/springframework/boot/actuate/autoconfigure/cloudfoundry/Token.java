@@ -42,12 +42,12 @@ public class Token {
 	private final Map<String, Object> claims;
 
 	/**
-     * Constructs a new Token object from the given encoded string.
-     * 
-     * @param encoded the encoded string representing the token
-     * @throws CloudFoundryAuthorizationException if the encoded string is invalid or missing required components
-     */
-    public Token(String encoded) {
+	 * Constructs a new Token object from the given encoded string.
+	 * @param encoded the encoded string representing the token
+	 * @throws CloudFoundryAuthorizationException if the encoded string is invalid or
+	 * missing required components
+	 */
+	public Token(String encoded) {
 		this.encoded = encoded;
 		int firstPeriod = encoded.indexOf('.');
 		int lastPeriod = encoded.lastIndexOf('.');
@@ -65,13 +65,12 @@ public class Token {
 	}
 
 	/**
-     * Parses a JSON string encoded in base64 format and returns a map of key-value pairs.
-     * 
-     * @param base64 the base64 encoded JSON string to be parsed
-     * @return a map containing the parsed JSON data
-     * @throws CloudFoundryAuthorizationException if the token could not be parsed
-     */
-    private Map<String, Object> parseJson(String base64) {
+	 * Parses a JSON string encoded in base64 format and returns a map of key-value pairs.
+	 * @param base64 the base64 encoded JSON string to be parsed
+	 * @return a map containing the parsed JSON data
+	 * @throws CloudFoundryAuthorizationException if the token could not be parsed
+	 */
+	private Map<String, Object> parseJson(String base64) {
 		try {
 			byte[] bytes = Base64.getUrlDecoder().decode(base64);
 			return JsonParserFactory.getJsonParser().parseMap(new String(bytes, StandardCharsets.UTF_8));
@@ -82,79 +81,72 @@ public class Token {
 	}
 
 	/**
-     * Returns the content of the Token as a byte array.
-     * 
-     * @return the content of the Token as a byte array
-     */
-    public byte[] getContent() {
+	 * Returns the content of the Token as a byte array.
+	 * @return the content of the Token as a byte array
+	 */
+	public byte[] getContent() {
 		return this.encoded.substring(0, this.encoded.lastIndexOf('.')).getBytes();
 	}
 
 	/**
-     * Returns the signature as a byte array.
-     *
-     * @return the signature as a byte array
-     */
-    public byte[] getSignature() {
+	 * Returns the signature as a byte array.
+	 * @return the signature as a byte array
+	 */
+	public byte[] getSignature() {
 		return Base64.getUrlDecoder().decode(this.signature);
 	}
 
 	/**
-     * Returns the signature algorithm used in the token.
-     * 
-     * @return the signature algorithm
-     */
-    public String getSignatureAlgorithm() {
+	 * Returns the signature algorithm used in the token.
+	 * @return the signature algorithm
+	 */
+	public String getSignatureAlgorithm() {
 		return getRequired(this.header, "alg", String.class);
 	}
 
 	/**
-     * Returns the issuer of the token.
-     * 
-     * @return the issuer of the token
-     */
-    public String getIssuer() {
+	 * Returns the issuer of the token.
+	 * @return the issuer of the token
+	 */
+	public String getIssuer() {
 		return getRequired(this.claims, "iss", String.class);
 	}
 
 	/**
-     * Returns the expiry time of the token.
-     * 
-     * @return the expiry time of the token
-     */
-    public long getExpiry() {
+	 * Returns the expiry time of the token.
+	 * @return the expiry time of the token
+	 */
+	public long getExpiry() {
 		return getRequired(this.claims, "exp", Integer.class).longValue();
 	}
 
 	/**
-     * Retrieves the scope from the claims of the token.
-     * 
-     * @return The scope as a List of Strings.
-     */
-    @SuppressWarnings("unchecked")
+	 * Retrieves the scope from the claims of the token.
+	 * @return The scope as a List of Strings.
+	 */
+	@SuppressWarnings("unchecked")
 	public List<String> getScope() {
 		return getRequired(this.claims, "scope", List.class);
 	}
 
 	/**
-     * Returns the key ID from the header of the token.
-     * 
-     * @return the key ID as a String
-     */
-    public String getKeyId() {
+	 * Returns the key ID from the header of the token.
+	 * @return the key ID as a String
+	 */
+	public String getKeyId() {
 		return getRequired(this.header, "kid", String.class);
 	}
 
 	/**
-     * Retrieves the value associated with the specified key from the given map.
-     * 
-     * @param map  the map from which to retrieve the value
-     * @param key  the key associated with the value to be retrieved
-     * @param type the expected type of the value
-     * @return the value associated with the specified key
-     * @throws CloudFoundryAuthorizationException if the value is not found or if the value type is unexpected
-     */
-    @SuppressWarnings("unchecked")
+	 * Retrieves the value associated with the specified key from the given map.
+	 * @param map the map from which to retrieve the value
+	 * @param key the key associated with the value to be retrieved
+	 * @param type the expected type of the value
+	 * @return the value associated with the specified key
+	 * @throws CloudFoundryAuthorizationException if the value is not found or if the
+	 * value type is unexpected
+	 */
+	@SuppressWarnings("unchecked")
 	private <T> T getRequired(Map<String, Object> map, String key, Class<T> type) {
 		Object value = map.get(key);
 		if (value == null) {
@@ -168,11 +160,10 @@ public class Token {
 	}
 
 	/**
-     * Returns the encoded string representation of the Token object.
-     *
-     * @return the encoded string representation of the Token object
-     */
-    @Override
+	 * Returns the encoded string representation of the Token object.
+	 * @return the encoded string representation of the Token object
+	 */
+	@Override
 	public String toString() {
 		return this.encoded;
 	}

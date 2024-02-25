@@ -24,11 +24,10 @@ import org.springframework.boot.ExitCodeGenerator;
 public class ExitException extends RuntimeException implements ExitCodeGenerator {
 
 	/**
-     * Returns the exit code associated with this exception.
-     *
-     * @return the exit code
-     */
-    @Override
+	 * Returns the exit code associated with this exception.
+	 * @return the exit code
+	 */
+	@Override
 	public int getExitCode() {
 		return 10;
 	}

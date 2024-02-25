@@ -38,13 +38,13 @@ import org.springframework.core.Ordered;
 public class PropertyPlaceholderAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link PropertySourcesPlaceholderConfigurer} if no bean of type {@link PropertySourcesPlaceholderConfigurer}
-     * is already present in the application context. This bean is conditionally created based on the absence of a bean with the specified
-     * search strategy.
-     *
-     * @return the created {@link PropertySourcesPlaceholderConfigurer} bean
-     */
-    @Bean
+	 * Creates a new instance of {@link PropertySourcesPlaceholderConfigurer} if no bean
+	 * of type {@link PropertySourcesPlaceholderConfigurer} is already present in the
+	 * application context. This bean is conditionally created based on the absence of a
+	 * bean with the specified search strategy.
+	 * @return the created {@link PropertySourcesPlaceholderConfigurer} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();

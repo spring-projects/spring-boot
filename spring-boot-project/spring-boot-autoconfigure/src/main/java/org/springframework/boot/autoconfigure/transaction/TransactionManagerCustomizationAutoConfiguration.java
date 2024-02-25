@@ -38,13 +38,15 @@ import org.springframework.transaction.TransactionManager;
 public class TransactionManagerCustomizationAutoConfiguration {
 
 	/**
-     * Returns a bean of type {@link TransactionManagerCustomizers} that contains a list of {@link TransactionManagerCustomizer}s.
-     * This bean is conditional on the absence of any other bean of the same type.
-     * 
-     * @param customizers an {@link ObjectProvider} of {@link TransactionManagerCustomizer}s
-     * @return a {@link TransactionManagerCustomizers} bean containing the ordered stream of {@link TransactionManagerCustomizer}s
-     */
-    @Bean
+	 * Returns a bean of type {@link TransactionManagerCustomizers} that contains a list
+	 * of {@link TransactionManagerCustomizer}s. This bean is conditional on the absence
+	 * of any other bean of the same type.
+	 * @param customizers an {@link ObjectProvider} of
+	 * {@link TransactionManagerCustomizer}s
+	 * @return a {@link TransactionManagerCustomizers} bean containing the ordered stream
+	 * of {@link TransactionManagerCustomizer}s
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	TransactionManagerCustomizers platformTransactionManagerCustomizers(
 			ObjectProvider<TransactionManagerCustomizer<?>> customizers) {
@@ -52,12 +54,12 @@ public class TransactionManagerCustomizationAutoConfiguration {
 	}
 
 	/**
-     * Returns a customizer for the transaction manager that adds the provided transaction execution listeners.
-     *
-     * @param listeners the transaction execution listeners to be added
-     * @return the customizer for the transaction manager
-     */
-    @Bean
+	 * Returns a customizer for the transaction manager that adds the provided transaction
+	 * execution listeners.
+	 * @param listeners the transaction execution listeners to be added
+	 * @return the customizer for the transaction manager
+	 */
+	@Bean
 	ExecutionListenersTransactionManagerCustomizer transactionExecutionListeners(
 			ObjectProvider<TransactionExecutionListener> listeners) {
 		return new ExecutionListenersTransactionManagerCustomizer(listeners.orderedStream().toList());

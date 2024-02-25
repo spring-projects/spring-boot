@@ -34,11 +34,10 @@ public class HelloWorldService {
 	private Duration duration;
 
 	/**
-     * Returns a hello message with the name and duration.
-     * 
-     * @return the hello message with the name and duration
-     */
-    public String getHelloMessage() {
+	 * Returns a hello message with the name and duration.
+	 * @return the hello message with the name and duration
+	 */
+	public String getHelloMessage() {
 		return "Hello " + this.name + " for " + this.duration.getSeconds() + " seconds";
 	}
 

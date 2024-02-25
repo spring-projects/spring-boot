@@ -28,11 +28,10 @@ public class MyBean {
 	private final CouchbaseTemplate template;
 
 	/**
-     * Constructs a new instance of MyBean with the specified CouchbaseTemplate.
-     * 
-     * @param template the CouchbaseTemplate to be used by this MyBean instance
-     */
-    public MyBean(CouchbaseTemplate template) {
+	 * Constructs a new instance of MyBean with the specified CouchbaseTemplate.
+	 * @param template the CouchbaseTemplate to be used by this MyBean instance
+	 */
+	public MyBean(CouchbaseTemplate template) {
 		this.template = template;
 	}
 

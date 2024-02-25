@@ -57,40 +57,39 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	private final Set<MeterRegistry> deferredBindings = new LinkedHashSet<>();
 
 	/**
-     * Constructs a new MeterRegistryPostProcessor with the specified parameters.
-     *
-     * @param applicationContext the application context
-     * @param metricsProperties the metrics properties
-     * @param customizers the meter registry customizers
-     * @param filters the meter filters
-     * @param binders the meter binders
-     */
-    MeterRegistryPostProcessor(ApplicationContext applicationContext,
+	 * Constructs a new MeterRegistryPostProcessor with the specified parameters.
+	 * @param applicationContext the application context
+	 * @param metricsProperties the metrics properties
+	 * @param customizers the meter registry customizers
+	 * @param filters the meter filters
+	 * @param binders the meter binders
+	 */
+	MeterRegistryPostProcessor(ApplicationContext applicationContext,
 			ObjectProvider<MetricsProperties> metricsProperties, ObjectProvider<MeterRegistryCustomizer<?>> customizers,
 			ObjectProvider<MeterFilter> filters, ObjectProvider<MeterBinder> binders) {
 		this(hasNoCompositeMeterRegistryBeans(applicationContext), metricsProperties, customizers, filters, binders);
 	}
 
 	/**
-     * Checks if there are no CompositeMeterRegistry beans present in the ApplicationContext.
-     * 
-     * @param applicationContext the ApplicationContext to check
-     * @return true if there are no CompositeMeterRegistry beans, false otherwise
-     */
-    private static boolean hasNoCompositeMeterRegistryBeans(ApplicationContext applicationContext) {
+	 * Checks if there are no CompositeMeterRegistry beans present in the
+	 * ApplicationContext.
+	 * @param applicationContext the ApplicationContext to check
+	 * @return true if there are no CompositeMeterRegistry beans, false otherwise
+	 */
+	private static boolean hasNoCompositeMeterRegistryBeans(ApplicationContext applicationContext) {
 		return applicationContext.getBeanNamesForType(CompositeMeterRegistry.class, false, false).length == 0;
 	}
 
 	/**
-     * Constructs a new MeterRegistryPostProcessor with the specified parameters.
-     *
-     * @param hasNoCompositeMeterRegistryBeans a boolean indicating whether there are no composite MeterRegistry beans
-     * @param properties a provider for MetricsProperties objects
-     * @param customizers a provider for MeterRegistryCustomizer objects
-     * @param filters a provider for MeterFilter objects
-     * @param binders a provider for MeterBinder objects
-     */
-    MeterRegistryPostProcessor(boolean hasNoCompositeMeterRegistryBeans, ObjectProvider<MetricsProperties> properties,
+	 * Constructs a new MeterRegistryPostProcessor with the specified parameters.
+	 * @param hasNoCompositeMeterRegistryBeans a boolean indicating whether there are no
+	 * composite MeterRegistry beans
+	 * @param properties a provider for MetricsProperties objects
+	 * @param customizers a provider for MeterRegistryCustomizer objects
+	 * @param filters a provider for MeterFilter objects
+	 * @param binders a provider for MeterBinder objects
+	 */
+	MeterRegistryPostProcessor(boolean hasNoCompositeMeterRegistryBeans, ObjectProvider<MetricsProperties> properties,
 			ObjectProvider<MeterRegistryCustomizer<?>> customizers, ObjectProvider<MeterFilter> filters,
 			ObjectProvider<MeterBinder> binders) {
 		this.hasNoCompositeMeterRegistryBeans = hasNoCompositeMeterRegistryBeans;
@@ -102,14 +101,13 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	}
 
 	/**
-     * Post-processes the bean after initialization.
-     * 
-     * @param bean the initialized bean
-     * @param beanName the name of the bean
-     * @return the processed bean
-     * @throws BeansException if an error occurs during post-processing
-     */
-    @Override
+	 * Post-processes the bean after initialization.
+	 * @param bean the initialized bean
+	 * @param beanName the name of the bean
+	 * @return the processed bean
+	 * @throws BeansException if an error occurs during post-processing
+	 */
+	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof MeterRegistry meterRegistry) {
 			postProcessMeterRegistry(meterRegistry);
@@ -118,12 +116,12 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	}
 
 	/**
-     * Callback method invoked after all singleton beans have been instantiated.
-     * This method applies the deferred bindings to the MeterRegistryPostProcessor instance.
-     * 
-     * @since 1.0
-     */
-    @Override
+	 * Callback method invoked after all singleton beans have been instantiated. This
+	 * method applies the deferred bindings to the MeterRegistryPostProcessor instance.
+	 *
+	 * @since 1.0
+	 */
+	@Override
 	public void afterSingletonsInstantiated() {
 		synchronized (this.deferredBindings) {
 			this.deferBinding = false;
@@ -132,13 +130,13 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	}
 
 	/**
-     * Post-processes the given MeterRegistry.
-     * 
-     * Customizers must be applied before binders, as they may add custom tags or alter timer or summary configuration.
-     * 
-     * @param meterRegistry the MeterRegistry to be post-processed
-     */
-    private void postProcessMeterRegistry(MeterRegistry meterRegistry) {
+	 * Post-processes the given MeterRegistry.
+	 *
+	 * Customizers must be applied before binders, as they may add custom tags or alter
+	 * timer or summary configuration.
+	 * @param meterRegistry the MeterRegistry to be post-processed
+	 */
+	private void postProcessMeterRegistry(MeterRegistry meterRegistry) {
 		// Customizers must be applied before binders, as they may add custom tags or
 		// alter timer or summary configuration.
 		applyCustomizers(meterRegistry);
@@ -150,11 +148,10 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	}
 
 	/**
-     * Applies customizers to the given MeterRegistry.
-     * 
-     * @param meterRegistry the MeterRegistry to apply customizers to
-     */
-    @SuppressWarnings("unchecked")
+	 * Applies customizers to the given MeterRegistry.
+	 * @param meterRegistry the MeterRegistry to apply customizers to
+	 */
+	@SuppressWarnings("unchecked")
 	private void applyCustomizers(MeterRegistry meterRegistry) {
 		List<MeterRegistryCustomizer<?>> customizers = this.customizers.orderedStream().toList();
 		LambdaSafe.callbacks(MeterRegistryCustomizer.class, customizers, meterRegistry)
@@ -163,11 +160,10 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	}
 
 	/**
-     * Applies filters to the given MeterRegistry.
-     * 
-     * @param meterRegistry the MeterRegistry to apply filters to
-     */
-    private void applyFilters(MeterRegistry meterRegistry) {
+	 * Applies filters to the given MeterRegistry.
+	 * @param meterRegistry the MeterRegistry to apply filters to
+	 */
+	private void applyFilters(MeterRegistry meterRegistry) {
 		if (meterRegistry instanceof AutoConfiguredCompositeMeterRegistry) {
 			return;
 		}
@@ -175,54 +171,49 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	}
 
 	/**
-     * Adds the given MeterRegistry to the global registry if necessary.
-     * 
-     * @param meterRegistry the MeterRegistry to be added
-     */
-    private void addToGlobalRegistryIfNecessary(MeterRegistry meterRegistry) {
+	 * Adds the given MeterRegistry to the global registry if necessary.
+	 * @param meterRegistry the MeterRegistry to be added
+	 */
+	private void addToGlobalRegistryIfNecessary(MeterRegistry meterRegistry) {
 		if (this.properties.getObject().isUseGlobalRegistry() && !isGlobalRegistry(meterRegistry)) {
 			Metrics.addRegistry(meterRegistry);
 		}
 	}
 
 	/**
-     * Checks if the given MeterRegistry is the global registry.
-     * 
-     * @param meterRegistry the MeterRegistry to check
-     * @return true if the MeterRegistry is the global registry, false otherwise
-     */
-    private boolean isGlobalRegistry(MeterRegistry meterRegistry) {
+	 * Checks if the given MeterRegistry is the global registry.
+	 * @param meterRegistry the MeterRegistry to check
+	 * @return true if the MeterRegistry is the global registry, false otherwise
+	 */
+	private boolean isGlobalRegistry(MeterRegistry meterRegistry) {
 		return meterRegistry == Metrics.globalRegistry;
 	}
 
 	/**
-     * Checks if the given MeterRegistry is bindable.
-     * 
-     * @param meterRegistry the MeterRegistry to check
-     * @return true if the MeterRegistry is bindable, false otherwise
-     */
-    private boolean isBindable(MeterRegistry meterRegistry) {
+	 * Checks if the given MeterRegistry is bindable.
+	 * @param meterRegistry the MeterRegistry to check
+	 * @return true if the MeterRegistry is bindable, false otherwise
+	 */
+	private boolean isBindable(MeterRegistry meterRegistry) {
 		return this.hasNoCompositeMeterRegistryBeans || isCompositeMeterRegistry(meterRegistry);
 	}
 
 	/**
-     * Checks if the given MeterRegistry is an instance of CompositeMeterRegistry.
-     * 
-     * @param meterRegistry the MeterRegistry to check
-     * @return true if the MeterRegistry is a CompositeMeterRegistry, false otherwise
-     */
-    private boolean isCompositeMeterRegistry(MeterRegistry meterRegistry) {
+	 * Checks if the given MeterRegistry is an instance of CompositeMeterRegistry.
+	 * @param meterRegistry the MeterRegistry to check
+	 * @return true if the MeterRegistry is a CompositeMeterRegistry, false otherwise
+	 */
+	private boolean isCompositeMeterRegistry(MeterRegistry meterRegistry) {
 		return meterRegistry instanceof CompositeMeterRegistry;
 	}
 
 	/**
-     * Applies binders to the given MeterRegistry.
-     * If deferBinding is enabled, the binders are added to the deferredBindings list and will be applied later.
-     * Otherwise, the binders are applied immediately.
-     *
-     * @param meterRegistry the MeterRegistry to apply the binders to
-     */
-    void applyBinders(MeterRegistry meterRegistry) {
+	 * Applies binders to the given MeterRegistry. If deferBinding is enabled, the binders
+	 * are added to the deferredBindings list and will be applied later. Otherwise, the
+	 * binders are applied immediately.
+	 * @param meterRegistry the MeterRegistry to apply the binders to
+	 */
+	void applyBinders(MeterRegistry meterRegistry) {
 		if (this.deferBinding) {
 			synchronized (this.deferredBindings) {
 				if (this.deferBinding) {

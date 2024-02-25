@@ -52,36 +52,38 @@ public class KairosMetricsExportAutoConfiguration {
 	private final KairosProperties properties;
 
 	/**
-     * Constructs a new instance of KairosMetricsExportAutoConfiguration with the specified KairosProperties.
-     * 
-     * @param properties the KairosProperties to be used for configuration
-     */
-    public KairosMetricsExportAutoConfiguration(KairosProperties properties) {
+	 * Constructs a new instance of KairosMetricsExportAutoConfiguration with the
+	 * specified KairosProperties.
+	 * @param properties the KairosProperties to be used for configuration
+	 */
+	public KairosMetricsExportAutoConfiguration(KairosProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Creates a new instance of KairosConfig if no other bean of the same type is present in the application context.
-     * This method is annotated with @ConditionalOnMissingBean, which means it will only be executed if no other bean of the same type is already defined.
-     * It returns a KairosPropertiesConfigAdapter object, which is a configuration adapter for KairosDB properties.
-     * The properties parameter is used to initialize the KairosPropertiesConfigAdapter.
-     * 
-     * @return a new instance of KairosConfig
-     */
-    @Bean
+	 * Creates a new instance of KairosConfig if no other bean of the same type is present
+	 * in the application context. This method is annotated
+	 * with @ConditionalOnMissingBean, which means it will only be executed if no other
+	 * bean of the same type is already defined. It returns a
+	 * KairosPropertiesConfigAdapter object, which is a configuration adapter for KairosDB
+	 * properties. The properties parameter is used to initialize the
+	 * KairosPropertiesConfigAdapter.
+	 * @return a new instance of KairosConfig
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public KairosConfig kairosConfig() {
 		return new KairosPropertiesConfigAdapter(this.properties);
 	}
 
 	/**
-     * Creates a KairosMeterRegistry bean if there is no existing bean of the same type.
-     * 
-     * @param kairosConfig The KairosConfig object used for configuring the KairosMeterRegistry.
-     * @param clock The Clock object used for measuring time.
-     * @return The created KairosMeterRegistry bean.
-     */
-    @Bean
+	 * Creates a KairosMeterRegistry bean if there is no existing bean of the same type.
+	 * @param kairosConfig The KairosConfig object used for configuring the
+	 * KairosMeterRegistry.
+	 * @param clock The Clock object used for measuring time.
+	 * @return The created KairosMeterRegistry bean.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public KairosMeterRegistry kairosMeterRegistry(KairosConfig kairosConfig, Clock clock) {
 		return KairosMeterRegistry.builder(kairosConfig)

@@ -43,12 +43,12 @@ import org.springframework.core.Ordered;
 public class GsonAutoConfiguration {
 
 	/**
-     * Creates a GsonBuilder bean if no other bean of the same type is present.
-     * 
-     * @param customizers a list of GsonBuilderCustomizer beans to customize the GsonBuilder
-     * @return the created GsonBuilder bean
-     */
-    @Bean
+	 * Creates a GsonBuilder bean if no other bean of the same type is present.
+	 * @param customizers a list of GsonBuilderCustomizer beans to customize the
+	 * GsonBuilder
+	 * @return the created GsonBuilder bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public GsonBuilder gsonBuilder(List<GsonBuilderCustomizer> customizers) {
 		GsonBuilder builder = new GsonBuilder();
@@ -57,60 +57,57 @@ public class GsonAutoConfiguration {
 	}
 
 	/**
-     * Creates a Gson instance using the provided GsonBuilder.
-     * 
-     * @param gsonBuilder the GsonBuilder used to configure the Gson instance
-     * @return the created Gson instance
-     */
-    @Bean
+	 * Creates a Gson instance using the provided GsonBuilder.
+	 * @param gsonBuilder the GsonBuilder used to configure the Gson instance
+	 * @return the created Gson instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public Gson gson(GsonBuilder gsonBuilder) {
 		return gsonBuilder.create();
 	}
 
 	/**
-     * Creates a new instance of StandardGsonBuilderCustomizer with the provided GsonProperties.
-     * 
-     * @param gsonProperties the GsonProperties to be used for customization
-     * @return a new instance of StandardGsonBuilderCustomizer
-     */
-    @Bean
+	 * Creates a new instance of StandardGsonBuilderCustomizer with the provided
+	 * GsonProperties.
+	 * @param gsonProperties the GsonProperties to be used for customization
+	 * @return a new instance of StandardGsonBuilderCustomizer
+	 */
+	@Bean
 	public StandardGsonBuilderCustomizer standardGsonBuilderCustomizer(GsonProperties gsonProperties) {
 		return new StandardGsonBuilderCustomizer(gsonProperties);
 	}
 
 	/**
-     * StandardGsonBuilderCustomizer class.
-     */
-    static final class StandardGsonBuilderCustomizer implements GsonBuilderCustomizer, Ordered {
+	 * StandardGsonBuilderCustomizer class.
+	 */
+	static final class StandardGsonBuilderCustomizer implements GsonBuilderCustomizer, Ordered {
 
 		private final GsonProperties properties;
 
 		/**
-         * Constructs a new StandardGsonBuilderCustomizer with the specified GsonProperties.
-         * 
-         * @param properties the GsonProperties to be used for customization
-         */
-        StandardGsonBuilderCustomizer(GsonProperties properties) {
+		 * Constructs a new StandardGsonBuilderCustomizer with the specified
+		 * GsonProperties.
+		 * @param properties the GsonProperties to be used for customization
+		 */
+		StandardGsonBuilderCustomizer(GsonProperties properties) {
 			this.properties = properties;
 		}
 
 		/**
-         * Returns the order in which this customizer should be applied.
-         * 
-         * @return the order value, with lower values indicating higher priority
-         */
-        @Override
+		 * Returns the order in which this customizer should be applied.
+		 * @return the order value, with lower values indicating higher priority
+		 */
+		@Override
 		public int getOrder() {
 			return 0;
 		}
 
 		/**
-         * Customize the GsonBuilder with the provided properties.
-         *
-         * @param builder the GsonBuilder to customize
-         */
-        @Override
+		 * Customize the GsonBuilder with the provided properties.
+		 * @param builder the GsonBuilder to customize
+		 */
+		@Override
 		public void customize(GsonBuilder builder) {
 			GsonProperties properties = this.properties;
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();

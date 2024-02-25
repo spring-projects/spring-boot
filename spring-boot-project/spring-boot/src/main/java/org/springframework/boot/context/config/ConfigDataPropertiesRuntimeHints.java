@@ -30,12 +30,11 @@ import org.springframework.util.ReflectionUtils;
 class ConfigDataPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
 	/**
-     * Registers the runtime hints for the {@link ConfigDataProperties} class.
-     * 
-     * @param hints the runtime hints to be registered
-     * @param classLoader the class loader to be used for registering the hints
-     */
-    @Override
+	 * Registers the runtime hints for the {@link ConfigDataProperties} class.
+	 * @param hints the runtime hints to be registered
+	 * @param classLoader the class loader to be used for registering the hints
+	 */
+	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		BindableRuntimeHintsRegistrar.forTypes(ConfigDataProperties.class).registerHints(hints);
 		hints.reflection()

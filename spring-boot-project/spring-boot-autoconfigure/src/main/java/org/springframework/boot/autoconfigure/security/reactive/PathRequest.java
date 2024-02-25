@@ -29,9 +29,9 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 public final class PathRequest {
 
 	/**
-     * Private constructor for the PathRequest class.
-     */
-    private PathRequest() {
+	 * Private constructor for the PathRequest class.
+	 */
+	private PathRequest() {
 	}
 
 	/**

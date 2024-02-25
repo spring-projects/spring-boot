@@ -35,21 +35,19 @@ import org.gradle.jvm.toolchain.JavaToolchainSpec;
 public class ToolchainPlugin implements Plugin<Project> {
 
 	/**
-     * Applies the toolchain configuration to the specified project.
-     * 
-     * @param project the project to apply the toolchain configuration to
-     */
-    @Override
+	 * Applies the toolchain configuration to the specified project.
+	 * @param project the project to apply the toolchain configuration to
+	 */
+	@Override
 	public void apply(Project project) {
 		configureToolchain(project);
 	}
 
 	/**
-     * Configures the toolchain for the given project.
-     * 
-     * @param project the project to configure the toolchain for
-     */
-    private void configureToolchain(Project project) {
+	 * Configures the toolchain for the given project.
+	 * @param project the project to configure the toolchain for
+	 */
+	private void configureToolchain(Project project) {
 		ToolchainExtension toolchain = project.getExtensions().create("toolchain", ToolchainExtension.class, project);
 		JavaLanguageVersion toolchainVersion = toolchain.getJavaVersion();
 		if (toolchainVersion != null) {
@@ -58,15 +56,14 @@ public class ToolchainPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * Configures the project with the given toolchain.
-     * If the Java version specified in the toolchain is not supported, disables the toolchain tasks.
-     * Otherwise, sets the language version of the Java toolchain to the specified Java version,
-     * and configures the test toolchain for the project.
-     *
-     * @param project   the project to be configured
-     * @param toolchain the toolchain to be used for configuration
-     */
-    private void configure(Project project, ToolchainExtension toolchain) {
+	 * Configures the project with the given toolchain. If the Java version specified in
+	 * the toolchain is not supported, disables the toolchain tasks. Otherwise, sets the
+	 * language version of the Java toolchain to the specified Java version, and
+	 * configures the test toolchain for the project.
+	 * @param project the project to be configured
+	 * @param toolchain the toolchain to be used for configuration
+	 */
+	private void configure(Project project, ToolchainExtension toolchain) {
 		if (!isJavaVersionSupported(toolchain, toolchain.getJavaVersion())) {
 			disableToolchainTasks(project);
 		}
@@ -80,34 +77,31 @@ public class ToolchainPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * Checks if the given Java version is supported by the toolchain.
-     * 
-     * @param toolchain The toolchain extension.
-     * @param toolchainVersion The Java language version of the toolchain.
-     * @return {@code true} if the Java version is supported, {@code false} otherwise.
-     */
-    private boolean isJavaVersionSupported(ToolchainExtension toolchain, JavaLanguageVersion toolchainVersion) {
+	 * Checks if the given Java version is supported by the toolchain.
+	 * @param toolchain The toolchain extension.
+	 * @param toolchainVersion The Java language version of the toolchain.
+	 * @return {@code true} if the Java version is supported, {@code false} otherwise.
+	 */
+	private boolean isJavaVersionSupported(ToolchainExtension toolchain, JavaLanguageVersion toolchainVersion) {
 		return toolchain.getMaximumCompatibleJavaVersion()
 			.map((version) -> version.canCompileOrRun(toolchainVersion))
 			.getOrElse(true);
 	}
 
 	/**
-     * Disables all toolchain tasks in the given project.
-     * 
-     * @param project the project in which to disable the toolchain tasks
-     */
-    private void disableToolchainTasks(Project project) {
+	 * Disables all toolchain tasks in the given project.
+	 * @param project the project in which to disable the toolchain tasks
+	 */
+	private void disableToolchainTasks(Project project) {
 		project.getTasks().withType(Test.class, (task) -> task.setEnabled(false));
 	}
 
 	/**
-     * Configures the test toolchain for the given project.
-     * 
-     * @param project the project to configure the toolchain for
-     * @param toolchain the toolchain extension to use for configuration
-     */
-    private void configureTestToolchain(Project project, ToolchainExtension toolchain) {
+	 * Configures the test toolchain for the given project.
+	 * @param project the project to configure the toolchain for
+	 * @param toolchain the toolchain extension to use for configuration
+	 */
+	private void configureTestToolchain(Project project, ToolchainExtension toolchain) {
 		List<String> jvmArgs = new ArrayList<>();
 		jvmArgs.addAll(toolchain.getTestJvmArgs().getOrElse(Collections.emptyList()));
 		project.getTasks().withType(Test.class, (test) -> test.jvmArgs(jvmArgs));

@@ -83,12 +83,11 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	}
 
 	/**
-     * Registers the runtime hints with the specified class loader.
-     * 
-     * @param hints the runtime hints to register
-     * @param classLoader the class loader to use for registration
-     */
-    @Override
+	 * Registers the runtime hints with the specified class loader.
+	 * @param hints the runtime hints to register
+	 * @param classLoader the class loader to use for registration
+	 */
+	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		registerHints(hints);
 	}
@@ -174,24 +173,25 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		private final Set<Class<?>> compiledWithoutParameters;
 
 		/**
-         * Constructs a new Processor object with the specified bindable, compiledWithoutParameters, and default values.
-         * 
-         * @param bindable The bindable object to be used.
-         * @param compiledWithoutParameters The set of classes compiled without parameters.
-         */
-        Processor(Bindable<?> bindable, Set<Class<?>> compiledWithoutParameters) {
+		 * Constructs a new Processor object with the specified bindable,
+		 * compiledWithoutParameters, and default values.
+		 * @param bindable The bindable object to be used.
+		 * @param compiledWithoutParameters The set of classes compiled without
+		 * parameters.
+		 */
+		Processor(Bindable<?> bindable, Set<Class<?>> compiledWithoutParameters) {
 			this(bindable, false, new HashSet<>(), compiledWithoutParameters);
 		}
 
 		/**
-         * Constructs a new Processor object.
-         * 
-         * @param bindable the bindable object to be processed
-         * @param nestedType true if the bindable object is a nested type, false otherwise
-         * @param seen a set of classes that have already been processed
-         * @param compiledWithoutParameters a set of classes that have been compiled without parameters
-         */
-        private Processor(Bindable<?> bindable, boolean nestedType, Set<Class<?>> seen,
+		 * Constructs a new Processor object.
+		 * @param bindable the bindable object to be processed
+		 * @param nestedType true if the bindable object is a nested type, false otherwise
+		 * @param seen a set of classes that have already been processed
+		 * @param compiledWithoutParameters a set of classes that have been compiled
+		 * without parameters
+		 */
+		private Processor(Bindable<?> bindable, boolean nestedType, Set<Class<?>> seen,
 				Set<Class<?>> compiledWithoutParameters) {
 			this.type = bindable.getType().getRawClass();
 			this.bindConstructor = (bindable.getBindMethod() != BindMethod.JAVA_BEAN)
@@ -203,11 +203,10 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		/**
-         * Processes the given reflection hints.
-         * 
-         * @param hints the reflection hints to be processed
-         */
-        void process(ReflectionHints hints) {
+		 * Processes the given reflection hints.
+		 * @param hints the reflection hints to be processed
+		 */
+		void process(ReflectionHints hints) {
 			if (this.seen.contains(this.type)) {
 				return;
 			}
@@ -222,11 +221,10 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		/**
-         * Handles the constructor of the Processor class.
-         * 
-         * @param hints the ReflectionHints object containing hints for reflection
-         */
-        private void handleConstructor(ReflectionHints hints) {
+		 * Handles the constructor of the Processor class.
+		 * @param hints the ReflectionHints object containing hints for reflection
+		 */
+		private void handleConstructor(ReflectionHints hints) {
 			if (this.bindConstructor != null) {
 				verifyParameterNamesAreAvailable();
 				if (KotlinDetector.isKotlinType(this.bindConstructor.getDeclaringClass())) {
@@ -244,10 +242,11 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		/**
-         * Verifies if parameter names are available for the bindConstructor.
-         * If parameter names are not available, the bindConstructor is added to the compiledWithoutParameters list.
-         */
-        private void verifyParameterNamesAreAvailable() {
+		 * Verifies if parameter names are available for the bindConstructor. If parameter
+		 * names are not available, the bindConstructor is added to the
+		 * compiledWithoutParameters list.
+		 */
+		private void verifyParameterNamesAreAvailable() {
 			String[] parameterNames = parameterNameDiscoverer.getParameterNames(this.bindConstructor);
 			if (parameterNames == null) {
 				this.compiledWithoutParameters.add(this.bindConstructor.getDeclaringClass());
@@ -255,21 +254,19 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		/**
-         * Checks if the given constructor has no parameters.
-         * 
-         * @param candidate the constructor to be checked
-         * @return true if the constructor has no parameters, false otherwise
-         */
-        private boolean hasNoParameters(Constructor<?> candidate) {
+		 * Checks if the given constructor has no parameters.
+		 * @param candidate the constructor to be checked
+		 * @return true if the constructor has no parameters, false otherwise
+		 */
+		private boolean hasNoParameters(Constructor<?> candidate) {
 			return candidate.getParameterCount() == 0;
 		}
 
 		/**
-         * Handles the properties of a value object based on the given reflection hints.
-         * 
-         * @param hints the reflection hints to be used for handling the properties
-         */
-        private void handleValueObjectProperties(ReflectionHints hints) {
+		 * Handles the properties of a value object based on the given reflection hints.
+		 * @param hints the reflection hints to be used for handling the properties
+		 */
+		private void handleValueObjectProperties(ReflectionHints hints) {
 			for (int i = 0; i < this.bindConstructor.getParameterCount(); i++) {
 				String propertyName = this.bindConstructor.getParameters()[i].getName();
 				ResolvableType propertyType = ResolvableType.forConstructorParameter(this.bindConstructor, i);
@@ -278,11 +275,10 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		/**
-         * Handles the JavaBean properties of the Processor class.
-         * 
-         * @param hints the reflection hints to be used
-         */
-        private void handleJavaBeanProperties(ReflectionHints hints) {
+		 * Handles the JavaBean properties of the Processor class.
+		 * @param hints the reflection hints to be used
+		 */
+		private void handleJavaBeanProperties(ReflectionHints hints) {
 			Map<String, BeanProperty> properties = this.bean.getProperties();
 			properties.forEach((name, property) -> {
 				Method getter = property.getGetter();
@@ -298,13 +294,12 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		/**
-         * Handles a property with the given hints, property name, and property type.
-         * 
-         * @param hints The reflection hints for the property.
-         * @param propertyName The name of the property.
-         * @param propertyType The type of the property.
-         */
-        private void handleProperty(ReflectionHints hints, String propertyName, ResolvableType propertyType) {
+		 * Handles a property with the given hints, property name, and property type.
+		 * @param hints The reflection hints for the property.
+		 * @param propertyName The name of the property.
+		 * @param propertyType The type of the property.
+		 */
+		private void handleProperty(ReflectionHints hints, String propertyName, ResolvableType propertyType) {
 			Class<?> propertyClass = propertyType.resolve();
 			if (propertyClass == null) {
 				return;
@@ -325,22 +320,20 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		/**
-         * Processes the nested class with the given type and reflection hints.
-         * 
-         * @param type the nested class to be processed
-         * @param hints the reflection hints to be used during processing
-         */
-        private void processNested(Class<?> type, ReflectionHints hints) {
+		 * Processes the nested class with the given type and reflection hints.
+		 * @param type the nested class to be processed
+		 * @param hints the reflection hints to be used during processing
+		 */
+		private void processNested(Class<?> type, ReflectionHints hints) {
 			new Processor(Bindable.of(type), true, this.seen, this.compiledWithoutParameters).process(hints);
 		}
 
 		/**
-         * Returns the component class for the given ResolvableType.
-         * 
-         * @param type the ResolvableType to get the component class for
-         * @return the component class, or null if not found
-         */
-        private Class<?> getComponentClass(ResolvableType type) {
+		 * Returns the component class for the given ResolvableType.
+		 * @param type the ResolvableType to get the component class for
+		 * @return the component class, or null if not found
+		 */
+		private Class<?> getComponentClass(ResolvableType type) {
 			ResolvableType componentType = getComponentType(type);
 			if (componentType == null) {
 				return null;
@@ -353,12 +346,12 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		/**
-         * Returns the component type of the given ResolvableType.
-         * 
-         * @param type the ResolvableType to get the component type from
-         * @return the component type of the given ResolvableType, or null if the type is not an array, collection, or map
-         */
-        private ResolvableType getComponentType(ResolvableType type) {
+		 * Returns the component type of the given ResolvableType.
+		 * @param type the ResolvableType to get the component type from
+		 * @return the component type of the given ResolvableType, or null if the type is
+		 * not an array, collection, or map
+		 */
+		private ResolvableType getComponentType(ResolvableType type) {
 			if (type.isArray()) {
 				return type.getComponentType();
 			}
@@ -372,33 +365,32 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		/**
-         * Checks if the given ResolvableType is a container type.
-         * A container type can be an array, a collection, or a map.
-         *
-         * @param type the ResolvableType to check
-         * @return true if the ResolvableType is a container type, false otherwise
-         */
-        private boolean isContainer(ResolvableType type) {
+		 * Checks if the given ResolvableType is a container type. A container type can be
+		 * an array, a collection, or a map.
+		 * @param type the ResolvableType to check
+		 * @return true if the ResolvableType is a container type, false otherwise
+		 */
+		private boolean isContainer(ResolvableType type) {
 			return type.isArray() || isCollection(type) || isMap(type);
 		}
 
 		/**
-         * Checks if the given ResolvableType is a Collection or a subtype of Collection.
-         * 
-         * @param type the ResolvableType to be checked
-         * @return true if the ResolvableType is a Collection or a subtype of Collection, false otherwise
-         */
-        private boolean isCollection(ResolvableType type) {
+		 * Checks if the given ResolvableType is a Collection or a subtype of Collection.
+		 * @param type the ResolvableType to be checked
+		 * @return true if the ResolvableType is a Collection or a subtype of Collection,
+		 * false otherwise
+		 */
+		private boolean isCollection(ResolvableType type) {
 			return Collection.class.isAssignableFrom(type.toClass());
 		}
 
 		/**
-         * Checks if the given ResolvableType is a Map or a subtype of Map.
-         * 
-         * @param type the ResolvableType to be checked
-         * @return true if the ResolvableType is a Map or a subtype of Map, false otherwise
-         */
-        private boolean isMap(ResolvableType type) {
+		 * Checks if the given ResolvableType is a Map or a subtype of Map.
+		 * @param type the ResolvableType to be checked
+		 * @return true if the ResolvableType is a Map or a subtype of Map, false
+		 * otherwise
+		 */
+		private boolean isMap(ResolvableType type) {
 			return Map.class.isAssignableFrom(type.toClass());
 		}
 
@@ -420,13 +412,13 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		/**
-         * Checks if a given class is nested within another class.
-         * 
-         * @param type the class to check if it is nested within another class
-         * @param candidate the class to check if it is the declaring class of the nested class
-         * @return true if the given class is nested within another class, false otherwise
-         */
-        private static boolean isNested(Class<?> type, Class<?> candidate) {
+		 * Checks if a given class is nested within another class.
+		 * @param type the class to check if it is nested within another class
+		 * @param candidate the class to check if it is the declaring class of the nested
+		 * class
+		 * @return true if the given class is nested within another class, false otherwise
+		 */
+		private static boolean isNested(Class<?> type, Class<?> candidate) {
 			if (type.isAssignableFrom(candidate)) {
 				return true;
 			}
@@ -434,12 +426,11 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		/**
-         * Checks if the given class is a Java type.
-         * 
-         * @param candidate the class to be checked
-         * @return true if the class is a Java type, false otherwise
-         */
-        private boolean isJavaType(Class<?> candidate) {
+		 * Checks if the given class is a Java type.
+		 * @param candidate the class to be checked
+		 * @return true if the class is a Java type, false otherwise
+		 */
+		private boolean isJavaType(Class<?> candidate) {
 			return candidate.getPackageName().startsWith("java.");
 		}
 
@@ -451,12 +442,12 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	private static final class KotlinDelegate {
 
 		/**
-         * Handles the constructor of a class by registering it with the given reflection hints.
-         * 
-         * @param hints the reflection hints to register the constructor with
-         * @param constructor the constructor to handle
-         */
-        static void handleConstructor(ReflectionHints hints, Constructor<?> constructor) {
+		 * Handles the constructor of a class by registering it with the given reflection
+		 * hints.
+		 * @param hints the reflection hints to register the constructor with
+		 * @param constructor the constructor to handle
+		 */
+		static void handleConstructor(ReflectionHints hints, Constructor<?> constructor) {
 			KClass<?> kClass = JvmClassMappingKt.getKotlinClass(constructor.getDeclaringClass());
 			if (kClass.isData()) {
 				hints.registerType(constructor.getDeclaringClass(), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);

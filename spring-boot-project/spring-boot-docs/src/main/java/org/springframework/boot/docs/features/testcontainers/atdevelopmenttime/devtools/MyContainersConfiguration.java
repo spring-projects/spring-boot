@@ -30,11 +30,10 @@ import org.springframework.context.annotation.Bean;
 public class MyContainersConfiguration {
 
 	/**
-     * Creates a MongoDBContainer bean with the specified Docker image.
-     * 
-     * @return the MongoDBContainer bean
-     */
-    @Bean
+	 * Creates a MongoDBContainer bean with the specified Docker image.
+	 * @return the MongoDBContainer bean
+	 */
+	@Bean
 	@RestartScope
 	@ServiceConnection
 	public MongoDBContainer mongoDbContainer() {

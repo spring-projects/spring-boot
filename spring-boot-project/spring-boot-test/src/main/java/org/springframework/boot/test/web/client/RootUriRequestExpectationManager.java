@@ -61,13 +61,13 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	private final RequestExpectationManager expectationManager;
 
 	/**
-     * Constructs a new RootUriRequestExpectationManager with the specified root URI and expectation manager.
-     * 
-     * @param rootUri the root URI for the request expectation manager (must not be null)
-     * @param expectationManager the expectation manager to be used (must not be null)
-     * @throws IllegalArgumentException if either rootUri or expectationManager is null
-     */
-    public RootUriRequestExpectationManager(String rootUri, RequestExpectationManager expectationManager) {
+	 * Constructs a new RootUriRequestExpectationManager with the specified root URI and
+	 * expectation manager.
+	 * @param rootUri the root URI for the request expectation manager (must not be null)
+	 * @param expectationManager the expectation manager to be used (must not be null)
+	 * @throws IllegalArgumentException if either rootUri or expectationManager is null
+	 */
+	public RootUriRequestExpectationManager(String rootUri, RequestExpectationManager expectationManager) {
 		Assert.notNull(rootUri, "RootUri must not be null");
 		Assert.notNull(expectationManager, "ExpectationManager must not be null");
 		this.rootUri = rootUri;
@@ -75,29 +75,29 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	}
 
 	/**
-     * Sets the expectation for the specified number of requests that match the given request matcher.
-     * 
-     * @param count The expected count of requests.
-     * @param requestMatcher The request matcher to be used for matching requests.
-     * @return The response actions for the expected request.
-     */
-    @Override
+	 * Sets the expectation for the specified number of requests that match the given
+	 * request matcher.
+	 * @param count The expected count of requests.
+	 * @param requestMatcher The request matcher to be used for matching requests.
+	 * @return The response actions for the expected request.
+	 */
+	@Override
 	public ResponseActions expectRequest(ExpectedCount count, RequestMatcher requestMatcher) {
 		return this.expectationManager.expectRequest(count, requestMatcher);
 	}
 
 	/**
-     * Validates the request by checking if the URI starts with the root URI. If it does, the URI is replaced with the
-     * substring after the root URI. Then, the request is passed to the expectation manager for further validation.
-     * If an AssertionError occurs during validation, it is checked if the error message starts with "Request URI expected:</".
-     * If it does, the root URI is appended to the error message and a new AssertionError is thrown.
-     * Otherwise, the original AssertionError is re-thrown.
-     *
-     * @param request the client HTTP request to be validated
-     * @return the client HTTP response after validation
-     * @throws IOException if an I/O error occurs during the validation process
-     */
-    @Override
+	 * Validates the request by checking if the URI starts with the root URI. If it does,
+	 * the URI is replaced with the substring after the root URI. Then, the request is
+	 * passed to the expectation manager for further validation. If an AssertionError
+	 * occurs during validation, it is checked if the error message starts with "Request
+	 * URI expected:</". If it does, the root URI is appended to the error message and a
+	 * new AssertionError is thrown. Otherwise, the original AssertionError is re-thrown.
+	 * @param request the client HTTP request to be validated
+	 * @return the client HTTP response after validation
+	 * @throws IOException if an I/O error occurs during the validation process
+	 */
+	@Override
 	public ClientHttpResponse validateRequest(ClientHttpRequest request) throws IOException {
 		String uri = request.getURI().toString();
 		if (uri.startsWith(this.rootUri)) {
@@ -118,14 +118,13 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	}
 
 	/**
-     * Replaces the URI of the given request with the specified replacement URI.
-     * 
-     * @param request The original request to be modified.
-     * @param replacementUri The replacement URI to be set.
-     * @return The modified request with the replaced URI.
-     * @throws IllegalStateException if the replacement URI is not a valid URI.
-     */
-    private ClientHttpRequest replaceURI(ClientHttpRequest request, String replacementUri) {
+	 * Replaces the URI of the given request with the specified replacement URI.
+	 * @param request The original request to be modified.
+	 * @param replacementUri The replacement URI to be set.
+	 * @return The modified request with the replaced URI.
+	 * @throws IllegalStateException if the replacement URI is not a valid URI.
+	 */
+	private ClientHttpRequest replaceURI(ClientHttpRequest request, String replacementUri) {
 		URI uri;
 		try {
 			uri = new URI(replacementUri);
@@ -141,28 +140,28 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	}
 
 	/**
-     * Verifies the expectations of the RootUriRequestExpectationManager.
-     * This method calls the verify() method of the expectationManager object.
-     */
-    @Override
+	 * Verifies the expectations of the RootUriRequestExpectationManager. This method
+	 * calls the verify() method of the expectationManager object.
+	 */
+	@Override
 	public void verify() {
 		this.expectationManager.verify();
 	}
 
 	/**
-     * Verifies the expectations of the RootUriRequestExpectationManager within the specified timeout duration.
-     *
-     * @param timeout the duration within which the expectations should be verified
-     */
-    @Override
+	 * Verifies the expectations of the RootUriRequestExpectationManager within the
+	 * specified timeout duration.
+	 * @param timeout the duration within which the expectations should be verified
+	 */
+	@Override
 	public void verify(Duration timeout) {
 		this.expectationManager.verify(timeout);
 	}
 
 	/**
-     * Resets the RootUriRequestExpectationManager by resetting the expectation manager.
-     */
-    @Override
+	 * Resets the RootUriRequestExpectationManager by resetting the expectation manager.
+	 */
+	@Override
 	public void reset() {
 		this.expectationManager.reset();
 	}
@@ -217,54 +216,50 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 		private final URI uri;
 
 		/**
-         * Constructs a new ReplaceUriClientHttpRequest with the specified URI and ClientHttpRequest.
-         * 
-         * @param uri the URI to be replaced
-         * @param request the ClientHttpRequest to be used
-         */
-        ReplaceUriClientHttpRequest(URI uri, ClientHttpRequest request) {
+		 * Constructs a new ReplaceUriClientHttpRequest with the specified URI and
+		 * ClientHttpRequest.
+		 * @param uri the URI to be replaced
+		 * @param request the ClientHttpRequest to be used
+		 */
+		ReplaceUriClientHttpRequest(URI uri, ClientHttpRequest request) {
 			super(request);
 			this.uri = uri;
 		}
 
 		/**
-         * Returns the URI of the client HTTP request.
-         *
-         * @return the URI of the client HTTP request
-         */
-        @Override
+		 * Returns the URI of the client HTTP request.
+		 * @return the URI of the client HTTP request
+		 */
+		@Override
 		public URI getURI() {
 			return this.uri;
 		}
 
 		/**
-         * Returns the output stream of the request body.
-         *
-         * @return the output stream of the request body
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Returns the output stream of the request body.
+		 * @return the output stream of the request body
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public OutputStream getBody() throws IOException {
 			return getRequest().getBody();
 		}
 
 		/**
-         * Executes the HTTP request and returns the response.
-         *
-         * @return the response of the HTTP request
-         * @throws IOException if an I/O error occurs while executing the request
-         */
-        @Override
+		 * Executes the HTTP request and returns the response.
+		 * @return the response of the HTTP request
+		 * @throws IOException if an I/O error occurs while executing the request
+		 */
+		@Override
 		public ClientHttpResponse execute() throws IOException {
 			return getRequest().execute();
 		}
 
 		/**
-         * Returns the underlying ClientHttpRequest object.
-         *
-         * @return the underlying ClientHttpRequest object
-         */
-        @Override
+		 * Returns the underlying ClientHttpRequest object.
+		 * @return the underlying ClientHttpRequest object
+		 */
+		@Override
 		public ClientHttpRequest getRequest() {
 			return (ClientHttpRequest) super.getRequest();
 		}

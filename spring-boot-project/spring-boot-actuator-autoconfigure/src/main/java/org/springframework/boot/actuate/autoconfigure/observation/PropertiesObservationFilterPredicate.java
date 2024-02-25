@@ -39,47 +39,46 @@ class PropertiesObservationFilterPredicate implements ObservationFilter, Observa
 	private final ObservationProperties properties;
 
 	/**
-     * Constructs a new PropertiesObservationFilterPredicate with the specified ObservationProperties.
-     * 
-     * @param properties the ObservationProperties to be used for filtering observations
-     */
-    PropertiesObservationFilterPredicate(ObservationProperties properties) {
+	 * Constructs a new PropertiesObservationFilterPredicate with the specified
+	 * ObservationProperties.
+	 * @param properties the ObservationProperties to be used for filtering observations
+	 */
+	PropertiesObservationFilterPredicate(ObservationProperties properties) {
 		this.properties = properties;
 		this.commonKeyValuesFilter = createCommonKeyValuesFilter(properties);
 	}
 
 	/**
-     * Maps the given context using the commonKeyValuesFilter.
-     * 
-     * @param context the context to be mapped
-     * @return the mapped context
-     */
-    @Override
+	 * Maps the given context using the commonKeyValuesFilter.
+	 * @param context the context to be mapped
+	 * @return the mapped context
+	 */
+	@Override
 	public Context map(Context context) {
 		return this.commonKeyValuesFilter.map(context);
 	}
 
 	/**
-     * Tests the given name with the provided context.
-     * 
-     * @param name the name to be tested
-     * @param context the context in which the name is tested
-     * @return true if the name passes the test, false otherwise
-     */
-    @Override
+	 * Tests the given name with the provided context.
+	 * @param name the name to be tested
+	 * @param context the context in which the name is tested
+	 * @return true if the name passes the test, false otherwise
+	 */
+	@Override
 	public boolean test(String name, Context context) {
 		return lookupWithFallbackToAll(this.properties.getEnable(), name, true);
 	}
 
 	/**
-     * Looks up a value in a map with a fallback to a default value if the map is empty.
-     * 
-     * @param values the map containing the values to be looked up
-     * @param name the name of the value to be looked up
-     * @param defaultValue the default value to be returned if the map is empty or the value is not found
-     * @return the value associated with the given name, or the default value if the map is empty or the value is not found
-     */
-    private static <T> T lookupWithFallbackToAll(Map<String, T> values, String name, T defaultValue) {
+	 * Looks up a value in a map with a fallback to a default value if the map is empty.
+	 * @param values the map containing the values to be looked up
+	 * @param name the name of the value to be looked up
+	 * @param defaultValue the default value to be returned if the map is empty or the
+	 * value is not found
+	 * @return the value associated with the given name, or the default value if the map
+	 * is empty or the value is not found
+	 */
+	private static <T> T lookupWithFallbackToAll(Map<String, T> values, String name, T defaultValue) {
 		if (values.isEmpty()) {
 			return defaultValue;
 		}
@@ -87,19 +86,19 @@ class PropertiesObservationFilterPredicate implements ObservationFilter, Observa
 	}
 
 	/**
-     * Performs a lookup in the given map of values using the specified name.
-     * If a value is found, it is returned. If not, the lookup is performed recursively
-     * by removing the last dot-separated segment of the name until a value is found
-     * or the name becomes empty. If no value is found, the default value provided
-     * by the supplier is returned.
-     *
-     * @param <T>          the type of the values in the map
-     * @param values       the map of values to perform the lookup on
-     * @param name         the name to lookup in the map
-     * @param defaultValue the supplier that provides the default value if no value is found
-     * @return the value found in the map, or the default value if no value is found
-     */
-    private static <T> T doLookup(Map<String, T> values, String name, Supplier<T> defaultValue) {
+	 * Performs a lookup in the given map of values using the specified name. If a value
+	 * is found, it is returned. If not, the lookup is performed recursively by removing
+	 * the last dot-separated segment of the name until a value is found or the name
+	 * becomes empty. If no value is found, the default value provided by the supplier is
+	 * returned.
+	 * @param <T> the type of the values in the map
+	 * @param values the map of values to perform the lookup on
+	 * @param name the name to lookup in the map
+	 * @param defaultValue the supplier that provides the default value if no value is
+	 * found
+	 * @return the value found in the map, or the default value if no value is found
+	 */
+	private static <T> T doLookup(Map<String, T> values, String name, Supplier<T> defaultValue) {
 		while (StringUtils.hasLength(name)) {
 			T result = values.get(name);
 			if (result != null) {
@@ -112,12 +111,11 @@ class PropertiesObservationFilterPredicate implements ObservationFilter, Observa
 	}
 
 	/**
-     * Creates a filter based on common key values.
-     * 
-     * @param properties the observation properties
-     * @return the observation filter
-     */
-    private static ObservationFilter createCommonKeyValuesFilter(ObservationProperties properties) {
+	 * Creates a filter based on common key values.
+	 * @param properties the observation properties
+	 * @return the observation filter
+	 */
+	private static ObservationFilter createCommonKeyValuesFilter(ObservationProperties properties) {
 		if (properties.getKeyValues().isEmpty()) {
 			return (context) -> context;
 		}

@@ -56,12 +56,11 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 	}
 
 	/**
-     * Prepares the application context for the given application class.
-     * 
-     * @param application the application class
-     * @return the prepared application context
-     */
-    @Override
+	 * Prepares the application context for the given application class.
+	 * @param application the application class
+	 * @return the prepared application context
+	 */
+	@Override
 	protected GenericApplicationContext prepareApplicationContext(Class<?> application) {
 		return new AotProcessorHook(application).run(() -> {
 			Method mainMethod = application.getMethod("main", String[].class);
@@ -70,12 +69,11 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 	}
 
 	/**
-     * The main method of the SpringApplicationAotProcessor class.
-     * 
-     * @param args an array of command line arguments
-     * @throws Exception if an error occurs during the execution
-     */
-    public static void main(String[] args) throws Exception {
+	 * The main method of the SpringApplicationAotProcessor class.
+	 * @param args an array of command line arguments
+	 * @throws Exception if an error occurs during the execution
+	 */
+	public static void main(String[] args) throws Exception {
 		int requiredArgs = 6;
 		Assert.isTrue(args.length >= requiredArgs, () -> "Usage: " + SpringApplicationAotProcessor.class.getName()
 				+ " <applicationName> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
@@ -101,21 +99,19 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 		private final Class<?> application;
 
 		/**
-         * Constructs a new AotProcessorHook with the specified application class.
-         * 
-         * @param application the application class to be used by the AotProcessorHook
-         */
-        private AotProcessorHook(Class<?> application) {
+		 * Constructs a new AotProcessorHook with the specified application class.
+		 * @param application the application class to be used by the AotProcessorHook
+		 */
+		private AotProcessorHook(Class<?> application) {
 			this.application = application;
 		}
 
 		/**
-         * Returns the SpringApplicationRunListener for the given SpringApplication.
-         * 
-         * @param application the SpringApplication instance
-         * @return the SpringApplicationRunListener instance
-         */
-        @Override
+		 * Returns the SpringApplicationRunListener for the given SpringApplication.
+		 * @param application the SpringApplication instance
+		 * @return the SpringApplicationRunListener instance
+		 */
+		@Override
 		public SpringApplicationRunListener getRunListener(SpringApplication application) {
 			return new SpringApplicationRunListener() {
 
@@ -128,15 +124,16 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 		}
 
 		/**
-         * Runs the specified action within a Spring application context.
-         * 
-         * @param action the action to be executed within the application context
-         * @param <T> the type of the result returned by the action
-         * @return the generic application context
-         * @throws IllegalStateException if no application context is available after calling the main method of the Spring application
-         * @throws AbandonedRunException if the action throws an exception and the application context is abandoned
-         */
-        private <T> GenericApplicationContext run(ThrowingSupplier<T> action) {
+		 * Runs the specified action within a Spring application context.
+		 * @param action the action to be executed within the application context
+		 * @param <T> the type of the result returned by the action
+		 * @return the generic application context
+		 * @throws IllegalStateException if no application context is available after
+		 * calling the main method of the Spring application
+		 * @throws AbandonedRunException if the action throws an exception and the
+		 * application context is abandoned
+		 */
+		private <T> GenericApplicationContext run(ThrowingSupplier<T> action) {
 			try {
 				SpringApplication.withHook(this, action);
 			}

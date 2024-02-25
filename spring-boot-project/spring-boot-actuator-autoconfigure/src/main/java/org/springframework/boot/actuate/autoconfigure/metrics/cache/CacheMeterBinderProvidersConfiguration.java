@@ -46,18 +46,17 @@ import org.springframework.data.redis.cache.RedisCache;
 class CacheMeterBinderProvidersConfiguration {
 
 	/**
-     * Cache2kCacheMeterBinderProviderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * Cache2kCacheMeterBinderProviderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Cache2kBuilder.class, SpringCache2kCache.class, Cache2kCacheMetrics.class })
 	static class Cache2kCacheMeterBinderProviderConfiguration {
 
 		/**
-         * Returns a new instance of Cache2kCacheMeterBinderProvider.
-         * 
-         * @return a new instance of Cache2kCacheMeterBinderProvider
-         */
-        @Bean
+		 * Returns a new instance of Cache2kCacheMeterBinderProvider.
+		 * @return a new instance of Cache2kCacheMeterBinderProvider
+		 */
+		@Bean
 		Cache2kCacheMeterBinderProvider cache2kCacheMeterBinderProvider() {
 			return new Cache2kCacheMeterBinderProvider();
 		}
@@ -65,18 +64,17 @@ class CacheMeterBinderProvidersConfiguration {
 	}
 
 	/**
-     * CaffeineCacheMeterBinderProviderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * CaffeineCacheMeterBinderProviderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ CaffeineCache.class, com.github.benmanes.caffeine.cache.Cache.class })
 	static class CaffeineCacheMeterBinderProviderConfiguration {
 
 		/**
-         * Returns a new instance of CaffeineCacheMeterBinderProvider.
-         * 
-         * @return the CaffeineCacheMeterBinderProvider instance
-         */
-        @Bean
+		 * Returns a new instance of CaffeineCacheMeterBinderProvider.
+		 * @return the CaffeineCacheMeterBinderProvider instance
+		 */
+		@Bean
 		CaffeineCacheMeterBinderProvider caffeineCacheMeterBinderProvider() {
 			return new CaffeineCacheMeterBinderProvider();
 		}
@@ -84,18 +82,17 @@ class CacheMeterBinderProvidersConfiguration {
 	}
 
 	/**
-     * HazelcastCacheMeterBinderProviderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * HazelcastCacheMeterBinderProviderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ HazelcastCache.class, Hazelcast.class })
 	static class HazelcastCacheMeterBinderProviderConfiguration {
 
 		/**
-         * Returns a new instance of HazelcastCacheMeterBinderProvider.
-         *
-         * @return a new instance of HazelcastCacheMeterBinderProvider
-         */
-        @Bean
+		 * Returns a new instance of HazelcastCacheMeterBinderProvider.
+		 * @return a new instance of HazelcastCacheMeterBinderProvider
+		 */
+		@Bean
 		HazelcastCacheMeterBinderProvider hazelcastCacheMeterBinderProvider() {
 			return new HazelcastCacheMeterBinderProvider();
 		}
@@ -103,18 +100,17 @@ class CacheMeterBinderProvidersConfiguration {
 	}
 
 	/**
-     * JCacheCacheMeterBinderProviderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JCacheCacheMeterBinderProviderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ JCacheCache.class, javax.cache.CacheManager.class })
 	static class JCacheCacheMeterBinderProviderConfiguration {
 
 		/**
-         * Returns a new instance of JCacheCacheMeterBinderProvider.
-         * 
-         * @return a new instance of JCacheCacheMeterBinderProvider
-         */
-        @Bean
+		 * Returns a new instance of JCacheCacheMeterBinderProvider.
+		 * @return a new instance of JCacheCacheMeterBinderProvider
+		 */
+		@Bean
 		JCacheCacheMeterBinderProvider jCacheCacheMeterBinderProvider() {
 			return new JCacheCacheMeterBinderProvider();
 		}
@@ -122,18 +118,17 @@ class CacheMeterBinderProvidersConfiguration {
 	}
 
 	/**
-     * RedisCacheMeterBinderProviderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * RedisCacheMeterBinderProviderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(RedisCache.class)
 	static class RedisCacheMeterBinderProviderConfiguration {
 
 		/**
-         * Returns a RedisCacheMeterBinderProvider instance.
-         *
-         * @return a RedisCacheMeterBinderProvider instance
-         */
-        @Bean
+		 * Returns a RedisCacheMeterBinderProvider instance.
+		 * @return a RedisCacheMeterBinderProvider instance
+		 */
+		@Bean
 		RedisCacheMeterBinderProvider redisCacheMeterBinderProvider() {
 			return new RedisCacheMeterBinderProvider();
 		}

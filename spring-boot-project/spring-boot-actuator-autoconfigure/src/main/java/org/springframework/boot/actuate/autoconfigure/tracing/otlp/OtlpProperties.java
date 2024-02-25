@@ -55,74 +55,66 @@ public class OtlpProperties {
 	private Map<String, String> headers = new HashMap<>();
 
 	/**
-     * Returns the endpoint of the OtlpProperties.
-     *
-     * @return the endpoint of the OtlpProperties
-     */
-    public String getEndpoint() {
+	 * Returns the endpoint of the OtlpProperties.
+	 * @return the endpoint of the OtlpProperties
+	 */
+	public String getEndpoint() {
 		return this.endpoint;
 	}
 
 	/**
-     * Sets the endpoint for the OTLP exporter.
-     * 
-     * @param endpoint the endpoint to set
-     */
-    public void setEndpoint(String endpoint) {
+	 * Sets the endpoint for the OTLP exporter.
+	 * @param endpoint the endpoint to set
+	 */
+	public void setEndpoint(String endpoint) {
 		this.endpoint = endpoint;
 	}
 
 	/**
-     * Returns the timeout duration for the OtlpProperties.
-     *
-     * @return the timeout duration
-     */
-    public Duration getTimeout() {
+	 * Returns the timeout duration for the OtlpProperties.
+	 * @return the timeout duration
+	 */
+	public Duration getTimeout() {
 		return this.timeout;
 	}
 
 	/**
-     * Sets the timeout for the connection.
-     * 
-     * @param timeout the duration of the timeout
-     */
-    public void setTimeout(Duration timeout) {
+	 * Sets the timeout for the connection.
+	 * @param timeout the duration of the timeout
+	 */
+	public void setTimeout(Duration timeout) {
 		this.timeout = timeout;
 	}
 
 	/**
-     * Returns the compression method used by the OtlpProperties.
-     *
-     * @return the compression method
-     */
-    public Compression getCompression() {
+	 * Returns the compression method used by the OtlpProperties.
+	 * @return the compression method
+	 */
+	public Compression getCompression() {
 		return this.compression;
 	}
 
 	/**
-     * Sets the compression method for the OtlpProperties.
-     * 
-     * @param compression the compression method to be set
-     */
-    public void setCompression(Compression compression) {
+	 * Sets the compression method for the OtlpProperties.
+	 * @param compression the compression method to be set
+	 */
+	public void setCompression(Compression compression) {
 		this.compression = compression;
 	}
 
 	/**
-     * Returns the headers of the OtlpProperties.
-     *
-     * @return the headers of the OtlpProperties as a Map with key-value pairs
-     */
-    public Map<String, String> getHeaders() {
+	 * Returns the headers of the OtlpProperties.
+	 * @return the headers of the OtlpProperties as a Map with key-value pairs
+	 */
+	public Map<String, String> getHeaders() {
 		return this.headers;
 	}
 
 	/**
-     * Sets the headers for the OtlpProperties.
-     * 
-     * @param headers a Map containing the headers to be set
-     */
-    public void setHeaders(Map<String, String> headers) {
+	 * Sets the headers for the OtlpProperties.
+	 * @param headers a Map containing the headers to be set
+	 */
+	public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
 	}
 

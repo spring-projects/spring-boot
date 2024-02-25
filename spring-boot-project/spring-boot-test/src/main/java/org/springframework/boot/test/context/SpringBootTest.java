@@ -170,11 +170,11 @@ public @interface SpringBootTest {
 		private final boolean embedded;
 
 		/**
-     * Constructs a new WebEnvironment object with the specified embedded flag.
-     * 
-     * @param embedded the flag indicating whether the web environment is embedded or not
-     */
-    WebEnvironment(boolean embedded) {
+		 * Constructs a new WebEnvironment object with the specified embedded flag.
+		 * @param embedded the flag indicating whether the web environment is embedded or
+		 * not
+		 */
+		WebEnvironment(boolean embedded) {
 			this.embedded = embedded;
 		}
 

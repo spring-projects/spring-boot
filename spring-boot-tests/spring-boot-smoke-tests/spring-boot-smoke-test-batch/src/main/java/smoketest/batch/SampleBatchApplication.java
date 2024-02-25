@@ -35,47 +35,45 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class SampleBatchApplication {
 
 	/**
-     * Returns a Tasklet that will always return RepeatStatus.FINISHED.
-     *
-     * @return the Tasklet object
-     */
-    @Bean
+	 * Returns a Tasklet that will always return RepeatStatus.FINISHED.
+	 * @return the Tasklet object
+	 */
+	@Bean
 	Tasklet tasklet() {
 		return (contribution, context) -> RepeatStatus.FINISHED;
 	}
 
 	/**
-     * Creates a new job with the given job repository and step.
-     * 
-     * @param jobRepository the job repository to be used for the job
-     * @param step the step to be executed in the job
-     * @return the created job
-     */
-    @Bean
+	 * Creates a new job with the given job repository and step.
+	 * @param jobRepository the job repository to be used for the job
+	 * @param step the step to be executed in the job
+	 * @return the created job
+	 */
+	@Bean
 	Job job(JobRepository jobRepository, Step step) {
 		return new JobBuilder("job", jobRepository).start(step).build();
 	}
 
 	/**
-     * Creates a Step object with the given parameters.
-     *
-     * @param jobRepository The JobRepository to be used by the Step.
-     * @param tasklet The Tasklet to be executed by the Step.
-     * @param transactionManager The PlatformTransactionManager to be used for transaction management.
-     * @return The created Step object.
-     */
-    @Bean
+	 * Creates a Step object with the given parameters.
+	 * @param jobRepository The JobRepository to be used by the Step.
+	 * @param tasklet The Tasklet to be executed by the Step.
+	 * @param transactionManager The PlatformTransactionManager to be used for transaction
+	 * management.
+	 * @return The created Step object.
+	 */
+	@Bean
 	Step step1(JobRepository jobRepository, Tasklet tasklet, PlatformTransactionManager transactionManager) {
 		return new StepBuilder("step1", jobRepository).tasklet(tasklet, transactionManager).build();
 	}
 
 	/**
-     * The main method is the entry point of the SampleBatchApplication class.
-     * It is responsible for starting the Spring application and exiting with the appropriate exit code.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the SampleBatchApplication class. It is
+	 * responsible for starting the Spring application and exiting with the appropriate
+	 * exit code.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		// System.exit is common for Batch applications since the exit code can be used to
 		// drive a workflow
 		System.exit(SpringApplication.exit(SpringApplication.run(SampleBatchApplication.class, args)));

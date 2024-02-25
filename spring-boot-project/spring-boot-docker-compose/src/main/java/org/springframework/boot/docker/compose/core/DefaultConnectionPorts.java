@@ -44,11 +44,10 @@ class DefaultConnectionPorts implements ConnectionPorts {
 	private final Map<Integer, Integer> portMappings;
 
 	/**
-     * Builds the default connection ports based on the Docker CLI inspect response.
-     * 
-     * @param inspectResponse the Docker CLI inspect response
-     */
-    DefaultConnectionPorts(DockerCliInspectResponse inspectResponse) {
+	 * Builds the default connection ports based on the Docker CLI inspect response.
+	 * @param inspectResponse the Docker CLI inspect response
+	 */
+	DefaultConnectionPorts(DockerCliInspectResponse inspectResponse) {
 		this.mappings = !isHostNetworkMode(inspectResponse)
 				? buildMappingsForNetworkSettings(inspectResponse.networkSettings())
 				: buildMappingsForHostNetworking(inspectResponse.config());
@@ -58,23 +57,21 @@ class DefaultConnectionPorts implements ConnectionPorts {
 	}
 
 	/**
-     * Checks if the network mode of the Docker container is set to "host".
-     * 
-     * @param inspectResponse the Docker CLI inspect response object
-     * @return true if the network mode is set to "host", false otherwise
-     */
-    private static boolean isHostNetworkMode(DockerCliInspectResponse inspectResponse) {
+	 * Checks if the network mode of the Docker container is set to "host".
+	 * @param inspectResponse the Docker CLI inspect response object
+	 * @return true if the network mode is set to "host", false otherwise
+	 */
+	private static boolean isHostNetworkMode(DockerCliInspectResponse inspectResponse) {
 		HostConfig config = inspectResponse.hostConfig();
 		return (config != null) && "host".equals(config.networkMode());
 	}
 
 	/**
-     * Builds mappings for network settings.
-     * 
-     * @param networkSettings the network settings to build mappings for
-     * @return a map of container ports to host ports
-     */
-    private Map<ContainerPort, Integer> buildMappingsForNetworkSettings(NetworkSettings networkSettings) {
+	 * Builds mappings for network settings.
+	 * @param networkSettings the network settings to build mappings for
+	 * @return a map of container ports to host ports
+	 */
+	private Map<ContainerPort, Integer> buildMappingsForNetworkSettings(NetworkSettings networkSettings) {
 		if (networkSettings == null || CollectionUtils.isEmpty(networkSettings.ports())) {
 			return Collections.emptyMap();
 		}
@@ -91,34 +88,31 @@ class DefaultConnectionPorts implements ConnectionPorts {
 	}
 
 	/**
-     * Checks if the given HostPort object represents an IPv4 address.
-     * 
-     * @param hostPort the HostPort object to check
-     * @return true if the HostPort object represents an IPv4 address, false otherwise
-     */
-    private boolean isIpV4(HostPort hostPort) {
+	 * Checks if the given HostPort object represents an IPv4 address.
+	 * @param hostPort the HostPort object to check
+	 * @return true if the HostPort object represents an IPv4 address, false otherwise
+	 */
+	private boolean isIpV4(HostPort hostPort) {
 		String ip = (hostPort != null) ? hostPort.hostIp() : null;
 		return !StringUtils.hasLength(ip) || ip.contains(".");
 	}
 
 	/**
-     * Returns the port number from the given HostPort object.
-     * 
-     * @param hostPort the HostPort object containing the host and port information
-     * @return the port number extracted from the HostPort object
-     * @throws NumberFormatException if the port number cannot be parsed as an integer
-     */
-    private static int getPortNumber(HostPort hostPort) {
+	 * Returns the port number from the given HostPort object.
+	 * @param hostPort the HostPort object containing the host and port information
+	 * @return the port number extracted from the HostPort object
+	 * @throws NumberFormatException if the port number cannot be parsed as an integer
+	 */
+	private static int getPortNumber(HostPort hostPort) {
 		return Integer.parseInt(hostPort.hostPort());
 	}
 
 	/**
-     * Builds mappings for host networking based on the provided configuration.
-     * 
-     * @param config the configuration object containing the exposed ports
-     * @return a map of container ports to their corresponding host ports
-     */
-    private Map<ContainerPort, Integer> buildMappingsForHostNetworking(Config config) {
+	 * Builds mappings for host networking based on the provided configuration.
+	 * @param config the configuration object containing the exposed ports
+	 * @return a map of container ports to their corresponding host ports
+	 */
+	private Map<ContainerPort, Integer> buildMappingsForHostNetworking(Config config) {
 		if (CollectionUtils.isEmpty(config.exposedPorts())) {
 			return Collections.emptyMap();
 		}
@@ -131,13 +125,13 @@ class DefaultConnectionPorts implements ConnectionPorts {
 	}
 
 	/**
-     * Retrieves the host port corresponding to the given container port.
-     * 
-     * @param containerPort the container port for which the host port is to be retrieved
-     * @return the host port corresponding to the container port
-     * @throws IllegalStateException if no host port mapping is found for the container port
-     */
-    @Override
+	 * Retrieves the host port corresponding to the given container port.
+	 * @param containerPort the container port for which the host port is to be retrieved
+	 * @return the host port corresponding to the container port
+	 * @throws IllegalStateException if no host port mapping is found for the container
+	 * port
+	 */
+	@Override
 	public int get(int containerPort) {
 		Integer hostPort = this.portMappings.get(containerPort);
 		Assert.state(hostPort != null, "No host port mapping found for container port %s".formatted(containerPort));
@@ -145,22 +139,20 @@ class DefaultConnectionPorts implements ConnectionPorts {
 	}
 
 	/**
-     * Retrieves a list of all connection ports.
-     * 
-     * @return a list of integers representing the connection ports
-     */
-    @Override
+	 * Retrieves a list of all connection ports.
+	 * @return a list of integers representing the connection ports
+	 */
+	@Override
 	public List<Integer> getAll() {
 		return getAll(null);
 	}
 
 	/**
-     * Retrieves a list of all host ports based on the specified protocol.
-     * 
-     * @param protocol the protocol to filter the host ports by (optional)
-     * @return a list of host ports that match the specified protocol
-     */
-    @Override
+	 * Retrieves a list of all host ports based on the specified protocol.
+	 * @param protocol the protocol to filter the host ports by (optional)
+	 * @return a list of host ports that match the specified protocol
+	 */
+	@Override
 	public List<Integer> getAll(String protocol) {
 		List<Integer> hostPorts = new ArrayList<>();
 		this.mappings.forEach((containerPort, hostPort) -> {
@@ -172,11 +164,10 @@ class DefaultConnectionPorts implements ConnectionPorts {
 	}
 
 	/**
-     * Returns the mappings of container ports to integers.
-     *
-     * @return the mappings of container ports to integers
-     */
-    Map<ContainerPort, Integer> getMappings() {
+	 * Returns the mappings of container ports to integers.
+	 * @return the mappings of container ports to integers
+	 */
+	Map<ContainerPort, Integer> getMappings() {
 		return this.mappings;
 	}
 
@@ -189,26 +180,24 @@ class DefaultConnectionPorts implements ConnectionPorts {
 	record ContainerPort(int number, String protocol) {
 
 		/**
-     * Returns a string representation of the DefaultConnectionPorts object.
-     * The string representation is in the format of "%d/%s", where %d represents the number
-     * and %s represents the protocol.
-     *
-     * @return a string representation of the DefaultConnectionPorts object
-     */
-    @Override
+		 * Returns a string representation of the DefaultConnectionPorts object. The
+		 * string representation is in the format of "%d/%s", where %d represents the
+		 * number and %s represents the protocol.
+		 * @return a string representation of the DefaultConnectionPorts object
+		 */
+		@Override
 		public String toString() {
 			return "%d/%s".formatted(this.number, this.protocol);
 		}
 
 		/**
-     * Parses a string representation of a container port into a ContainerPort object.
-     * The string should be in the format "port/protocol".
-     * 
-     * @param value the string representation of the container port
-     * @return the parsed ContainerPort object
-     * @throws IllegalStateException if the string cannot be parsed
-     */
-    static ContainerPort parse(String value) {
+		 * Parses a string representation of a container port into a ContainerPort object.
+		 * The string should be in the format "port/protocol".
+		 * @param value the string representation of the container port
+		 * @return the parsed ContainerPort object
+		 * @throws IllegalStateException if the string cannot be parsed
+		 */
+		static ContainerPort parse(String value) {
 			try {
 				String[] parts = value.split("/");
 				Assert.state(parts.length == 2, "Unable to split string");

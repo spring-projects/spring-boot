@@ -125,24 +125,23 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	}
 
 	/**
-     * Sets the context path for the web server.
-     * 
-     * @param contextPath the context path to be set
-     * @throws IllegalArgumentException if the context path is invalid
-     */
-    @Override
+	 * Sets the context path for the web server.
+	 * @param contextPath the context path to be set
+	 * @throws IllegalArgumentException if the context path is invalid
+	 */
+	@Override
 	public void setContextPath(String contextPath) {
 		checkContextPath(contextPath);
 		this.contextPath = contextPath;
 	}
 
 	/**
-     * Checks if the given context path is valid.
-     * 
-     * @param contextPath the context path to be checked
-     * @throws IllegalArgumentException if the context path is null, empty, or does not meet the required format
-     */
-    private void checkContextPath(String contextPath) {
+	 * Checks if the given context path is valid.
+	 * @param contextPath the context path to be checked
+	 * @throws IllegalArgumentException if the context path is null, empty, or does not
+	 * meet the required format
+	 */
+	private void checkContextPath(String contextPath) {
 		Assert.notNull(contextPath, "ContextPath must not be null");
 		if (!contextPath.isEmpty()) {
 			if ("/".equals(contextPath)) {
@@ -155,20 +154,18 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	}
 
 	/**
-     * Returns the display name of the AbstractServletWebServerFactory.
-     *
-     * @return the display name of the AbstractServletWebServerFactory
-     */
-    public String getDisplayName() {
+	 * Returns the display name of the AbstractServletWebServerFactory.
+	 * @return the display name of the AbstractServletWebServerFactory
+	 */
+	public String getDisplayName() {
 		return this.displayName;
 	}
 
 	/**
-     * Sets the display name of the web server.
-     * 
-     * @param displayName the display name to be set
-     */
-    @Override
+	 * Sets the display name of the web server.
+	 * @param displayName the display name to be set
+	 */
+	@Override
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
@@ -182,11 +179,10 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	}
 
 	/**
-     * Sets whether to register the default servlet.
-     * 
-     * @param registerDefaultServlet true to register the default servlet, false otherwise
-     */
-    @Override
+	 * Sets whether to register the default servlet.
+	 * @param registerDefaultServlet true to register the default servlet, false otherwise
+	 */
+	@Override
 	public void setRegisterDefaultServlet(boolean registerDefaultServlet) {
 		this.registerDefaultServlet = registerDefaultServlet;
 	}
@@ -200,12 +196,11 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	}
 
 	/**
-     * Set the MIME mappings for the servlet web server factory.
-     * 
-     * @param mimeMappings the MIME mappings to be set (must not be null)
-     * @throws IllegalArgumentException if the mimeMappings parameter is null
-     */
-    @Override
+	 * Set the MIME mappings for the servlet web server factory.
+	 * @param mimeMappings the MIME mappings to be set (must not be null)
+	 * @throws IllegalArgumentException if the mimeMappings parameter is null
+	 */
+	@Override
 	public void setMimeMappings(MimeMappings mimeMappings) {
 		Assert.notNull(mimeMappings, "MimeMappings must not be null");
 		this.mimeMappings = new MimeMappings(mimeMappings);
@@ -221,73 +216,67 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	}
 
 	/**
-     * Sets the document root directory for the web server.
-     * 
-     * @param documentRoot the file representing the document root directory
-     */
-    @Override
+	 * Sets the document root directory for the web server.
+	 * @param documentRoot the file representing the document root directory
+	 */
+	@Override
 	public void setDocumentRoot(File documentRoot) {
 		this.documentRoot.setDirectory(documentRoot);
 	}
 
 	/**
-     * Set the initializers for the servlet context.
-     * 
-     * @param initializers the list of initializers to set
-     * @throws IllegalArgumentException if the initializers are null
-     */
-    @Override
+	 * Set the initializers for the servlet context.
+	 * @param initializers the list of initializers to set
+	 * @throws IllegalArgumentException if the initializers are null
+	 */
+	@Override
 	public void setInitializers(List<? extends ServletContextInitializer> initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
 		this.initializers = new ArrayList<>(initializers);
 	}
 
 	/**
-     * Adds the specified initializers to the list of initializers for the servlet context.
-     * 
-     * @param initializers the initializers to be added (must not be null)
-     * @throws IllegalArgumentException if the initializers parameter is null
-     */
-    @Override
+	 * Adds the specified initializers to the list of initializers for the servlet
+	 * context.
+	 * @param initializers the initializers to be added (must not be null)
+	 * @throws IllegalArgumentException if the initializers parameter is null
+	 */
+	@Override
 	public void addInitializers(ServletContextInitializer... initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
 		this.initializers.addAll(Arrays.asList(initializers));
 	}
 
 	/**
-     * Returns the Jsp object associated with this AbstractServletWebServerFactory.
-     *
-     * @return the Jsp object associated with this AbstractServletWebServerFactory
-     */
-    public Jsp getJsp() {
+	 * Returns the Jsp object associated with this AbstractServletWebServerFactory.
+	 * @return the Jsp object associated with this AbstractServletWebServerFactory
+	 */
+	public Jsp getJsp() {
 		return this.jsp;
 	}
 
 	/**
-     * Sets the JSP configuration for the web server factory.
-     * 
-     * @param jsp the JSP configuration to set
-     */
-    @Override
+	 * Sets the JSP configuration for the web server factory.
+	 * @param jsp the JSP configuration to set
+	 */
+	@Override
 	public void setJsp(Jsp jsp) {
 		this.jsp = jsp;
 	}
 
 	/**
-     * Returns the current session associated with this servlet web server factory.
-     *
-     * @return the current session associated with this servlet web server factory
-     */
-    public Session getSession() {
+	 * Returns the current session associated with this servlet web server factory.
+	 * @return the current session associated with this servlet web server factory
+	 */
+	public Session getSession() {
 		return this.session;
 	}
 
 	/**
-     * Sets the session for this AbstractServletWebServerFactory.
-     * 
-     * @param session the session to be set
-     */
-    @Override
+	 * Sets the session for this AbstractServletWebServerFactory.
+	 * @param session the session to be set
+	 */
+	@Override
 	public void setSession(Session session) {
 		this.session = session;
 	}
@@ -301,66 +290,62 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	}
 
 	/**
-     * Set the locale to charset mappings for this web server factory.
-     * 
-     * @param localeCharsetMappings the locale to charset mappings
-     * @throws IllegalArgumentException if localeCharsetMappings is null
-     */
-    @Override
+	 * Set the locale to charset mappings for this web server factory.
+	 * @param localeCharsetMappings the locale to charset mappings
+	 * @throws IllegalArgumentException if localeCharsetMappings is null
+	 */
+	@Override
 	public void setLocaleCharsetMappings(Map<Locale, Charset> localeCharsetMappings) {
 		Assert.notNull(localeCharsetMappings, "localeCharsetMappings must not be null");
 		this.localeCharsetMappings = localeCharsetMappings;
 	}
 
 	/**
-     * Sets the initial parameters for the servlet web server factory.
-     * 
-     * @param initParameters a map containing the initial parameters
-     */
-    @Override
+	 * Sets the initial parameters for the servlet web server factory.
+	 * @param initParameters a map containing the initial parameters
+	 */
+	@Override
 	public void setInitParameters(Map<String, String> initParameters) {
 		this.initParameters = initParameters;
 	}
 
 	/**
-     * Returns the initialization parameters of the servlet web server factory.
-     *
-     * @return a map containing the initialization parameters as key-value pairs
-     */
-    public Map<String, String> getInitParameters() {
+	 * Returns the initialization parameters of the servlet web server factory.
+	 * @return a map containing the initialization parameters as key-value pairs
+	 */
+	public Map<String, String> getInitParameters() {
 		return this.initParameters;
 	}
 
 	/**
-     * Sets the list of {@link CookieSameSiteSupplier} instances to be used for determining the SameSite attribute of cookies.
-     * 
-     * @param cookieSameSiteSuppliers the list of {@link CookieSameSiteSupplier} instances
-     * @throws IllegalArgumentException if the cookieSameSiteSuppliers is null
-     */
-    @Override
+	 * Sets the list of {@link CookieSameSiteSupplier} instances to be used for
+	 * determining the SameSite attribute of cookies.
+	 * @param cookieSameSiteSuppliers the list of {@link CookieSameSiteSupplier} instances
+	 * @throws IllegalArgumentException if the cookieSameSiteSuppliers is null
+	 */
+	@Override
 	public void setCookieSameSiteSuppliers(List<? extends CookieSameSiteSupplier> cookieSameSiteSuppliers) {
 		Assert.notNull(cookieSameSiteSuppliers, "CookieSameSiteSuppliers must not be null");
 		this.cookieSameSiteSuppliers = new ArrayList<>(cookieSameSiteSuppliers);
 	}
 
 	/**
-     * Adds the given CookieSameSiteSuppliers to the list of suppliers.
-     * 
-     * @param cookieSameSiteSuppliers the CookieSameSiteSuppliers to be added (must not be null)
-     * @throws IllegalArgumentException if cookieSameSiteSuppliers is null
-     */
-    @Override
+	 * Adds the given CookieSameSiteSuppliers to the list of suppliers.
+	 * @param cookieSameSiteSuppliers the CookieSameSiteSuppliers to be added (must not be
+	 * null)
+	 * @throws IllegalArgumentException if cookieSameSiteSuppliers is null
+	 */
+	@Override
 	public void addCookieSameSiteSuppliers(CookieSameSiteSupplier... cookieSameSiteSuppliers) {
 		Assert.notNull(cookieSameSiteSuppliers, "CookieSameSiteSuppliers must not be null");
 		this.cookieSameSiteSuppliers.addAll(Arrays.asList(cookieSameSiteSuppliers));
 	}
 
 	/**
-     * Returns the list of CookieSameSiteSupplier objects.
-     * 
-     * @return the list of CookieSameSiteSupplier objects
-     */
-    public List<CookieSameSiteSupplier> getCookieSameSiteSuppliers() {
+	 * Returns the list of CookieSameSiteSupplier objects.
+	 * @return the list of CookieSameSiteSupplier objects
+	 */
+	public List<CookieSameSiteSupplier> getCookieSameSiteSuppliers() {
 		return this.cookieSameSiteSuppliers;
 	}
 
@@ -399,49 +384,46 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	}
 
 	/**
-     * Returns the URLs of the JAR files that contain META-INF resources.
-     * 
-     * @return the list of URLs of JAR files with META-INF resources
-     */
-    protected final List<URL> getUrlsOfJarsWithMetaInfResources() {
+	 * Returns the URLs of the JAR files that contain META-INF resources.
+	 * @return the list of URLs of JAR files with META-INF resources
+	 */
+	protected final List<URL> getUrlsOfJarsWithMetaInfResources() {
 		return this.staticResourceJars.getUrls();
 	}
 
 	/**
-     * Returns the valid session store directory.
-     * 
-     * @return the valid session store directory
-     */
-    protected final File getValidSessionStoreDir() {
+	 * Returns the valid session store directory.
+	 * @return the valid session store directory
+	 */
+	protected final File getValidSessionStoreDir() {
 		return getValidSessionStoreDir(true);
 	}
 
 	/**
-     * Returns the valid session store directory.
-     * 
-     * @param mkdirs a boolean value indicating whether to create the directory if it doesn't exist
-     * @return the valid session store directory
-     */
-    protected final File getValidSessionStoreDir(boolean mkdirs) {
+	 * Returns the valid session store directory.
+	 * @param mkdirs a boolean value indicating whether to create the directory if it
+	 * doesn't exist
+	 * @return the valid session store directory
+	 */
+	protected final File getValidSessionStoreDir(boolean mkdirs) {
 		return this.session.getSessionStoreDirectory().getValidDirectory(mkdirs);
 	}
 
 	/**
-     * Adds the specified web listener classes to the list of web listeners for this servlet web server factory.
-     * 
-     * @param webListenerClassNames the names of the web listener classes to be added
-     */
-    @Override
+	 * Adds the specified web listener classes to the list of web listeners for this
+	 * servlet web server factory.
+	 * @param webListenerClassNames the names of the web listener classes to be added
+	 */
+	@Override
 	public void addWebListeners(String... webListenerClassNames) {
 		this.webListenerClassNames.addAll(Arrays.asList(webListenerClassNames));
 	}
 
 	/**
-     * Returns the set of web listener class names.
-     *
-     * @return the set of web listener class names
-     */
-    protected final Set<String> getWebListenerClassNames() {
+	 * Returns the set of web listener class names.
+	 * @return the set of web listener class names
+	 */
+	protected final Set<String> getWebListenerClassNames() {
 		return this.webListenerClassNames;
 	}
 
@@ -454,22 +436,21 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 		private final Session session;
 
 		/**
-         * Initializes a new instance of the SessionConfiguringInitializer class with the specified session.
-         * 
-         * @param session The session to be configured.
-         */
-        SessionConfiguringInitializer(Session session) {
+		 * Initializes a new instance of the SessionConfiguringInitializer class with the
+		 * specified session.
+		 * @param session The session to be configured.
+		 */
+		SessionConfiguringInitializer(Session session) {
 			this.session = session;
 		}
 
 		/**
-         * This method is called during the startup of the application.
-         * It configures the session tracking modes and session cookie for the servlet context.
-         *
-         * @param servletContext the servlet context
-         * @throws ServletException if an error occurs during the initialization
-         */
-        @Override
+		 * This method is called during the startup of the application. It configures the
+		 * session tracking modes and session cookie for the servlet context.
+		 * @param servletContext the servlet context
+		 * @throws ServletException if an error occurs during the initialization
+		 */
+		@Override
 		public void onStartup(ServletContext servletContext) throws ServletException {
 			if (this.session.getTrackingModes() != null) {
 				servletContext.setSessionTrackingModes(unwrap(this.session.getTrackingModes()));
@@ -478,11 +459,10 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 		}
 
 		/**
-         * Configures the session cookie with the provided SessionCookieConfig.
-         * 
-         * @param config the SessionCookieConfig to configure the session cookie
-         */
-        private void configureSessionCookie(SessionCookieConfig config) {
+		 * Configures the session cookie with the provided SessionCookieConfig.
+		 * @param config the SessionCookieConfig to configure the session cookie
+		 */
+		private void configureSessionCookie(SessionCookieConfig config) {
 			Cookie cookie = this.session.getCookie();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(cookie::getName).to(config::setName);
@@ -494,12 +474,13 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 		}
 
 		/**
-         * Unwraps a set of SessionTrackingMode objects from the Servlet API to a set of SessionTrackingMode objects from the Jakarta Servlet API.
-         * 
-         * @param modes the set of SessionTrackingMode objects from the Servlet API to be unwrapped
-         * @return the set of SessionTrackingMode objects from the Jakarta Servlet API
-         */
-        private Set<jakarta.servlet.SessionTrackingMode> unwrap(Set<Session.SessionTrackingMode> modes) {
+		 * Unwraps a set of SessionTrackingMode objects from the Servlet API to a set of
+		 * SessionTrackingMode objects from the Jakarta Servlet API.
+		 * @param modes the set of SessionTrackingMode objects from the Servlet API to be
+		 * unwrapped
+		 * @return the set of SessionTrackingMode objects from the Jakarta Servlet API
+		 */
+		private Set<jakarta.servlet.SessionTrackingMode> unwrap(Set<Session.SessionTrackingMode> modes) {
 			if (modes == null) {
 				return null;
 			}

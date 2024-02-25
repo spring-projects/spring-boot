@@ -30,11 +30,10 @@ public class MyProperties {
 	private final List<MyPojo> list = new ArrayList<>();
 
 	/**
-     * Returns the list of MyPojo objects.
-     *
-     * @return the list of MyPojo objects
-     */
-    public List<MyPojo> getList() {
+	 * Returns the list of MyPojo objects.
+	 * @return the list of MyPojo objects
+	 */
+	public List<MyPojo> getList() {
 		return this.list;
 	}
 

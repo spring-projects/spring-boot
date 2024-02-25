@@ -39,38 +39,34 @@ public class Country implements Serializable {
 	private String name;
 
 	/**
-     * Returns the ID of the country.
-     *
-     * @return the ID of the country
-     */
-    public Long getId() {
+	 * Returns the ID of the country.
+	 * @return the ID of the country
+	 */
+	public Long getId() {
 		return this.id;
 	}
 
 	/**
-     * Sets the ID of the country.
-     * 
-     * @param id the ID to set
-     */
-    public void setId(Long id) {
+	 * Sets the ID of the country.
+	 * @param id the ID to set
+	 */
+	public void setId(Long id) {
 		this.id = id;
 	}
 
 	/**
-     * Returns the name of the country.
-     *
-     * @return the name of the country
-     */
-    public String getName() {
+	 * Returns the name of the country.
+	 * @return the name of the country
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Sets the name of the country.
-     * 
-     * @param name the name of the country
-     */
-    public void setName(String name) {
+	 * Sets the name of the country.
+	 * @param name the name of the country
+	 */
+	public void setName(String name) {
 		this.name = name;
 	}
 

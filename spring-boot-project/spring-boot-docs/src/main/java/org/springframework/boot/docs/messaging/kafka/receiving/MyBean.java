@@ -26,11 +26,10 @@ import org.springframework.stereotype.Component;
 public class MyBean {
 
 	/**
-     * This method is a Kafka listener that processes messages from the "someTopic" topic.
-     * 
-     * @param content the content of the message to be processed
-     */
-    @KafkaListener(topics = "someTopic")
+	 * This method is a Kafka listener that processes messages from the "someTopic" topic.
+	 * @param content the content of the message to be processed
+	 */
+	@KafkaListener(topics = "someTopic")
 	public void processMessage(String content) {
 		// ...
 	}

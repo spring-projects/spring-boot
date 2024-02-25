@@ -49,45 +49,47 @@ import org.springframework.context.annotation.Import;
 public class JerseySameManagementContextConfiguration {
 
 	/**
-     * Returns a customizer for the management resource configuration.
-     * 
-     * @param customizers the customizers for the management resource configuration
-     * @return the customizer for the management resource configuration
-     */
-    @Bean
+	 * Returns a customizer for the management resource configuration.
+	 * @param customizers the customizers for the management resource configuration
+	 * @return the customizer for the management resource configuration
+	 */
+	@Bean
 	ResourceConfigCustomizer managementResourceConfigCustomizerAdapter(
 			ObjectProvider<ManagementContextResourceConfigCustomizer> customizers) {
 		return (config) -> customizers.orderedStream().forEach((customizer) -> customizer.customize(config));
 	}
 
 	/**
-     * JerseyInfrastructureConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JerseyInfrastructureConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@Import(JerseyManagementContextConfiguration.class)
 	@ConditionalOnMissingBean(ResourceConfig.class)
 	static class JerseyInfrastructureConfiguration {
 
 		/**
-         * Creates a new instance of {@link JerseyApplicationPath} if no bean of type {@link JerseyApplicationPath} is already present.
-         * 
-         * @param properties the {@link JerseyProperties} instance containing the application path
-         * @param config the {@link ResourceConfig} instance containing the Jersey configuration
-         * @return a new instance of {@link JerseyApplicationPath} with the specified application path and configuration
-         */
-        @Bean
+		 * Creates a new instance of {@link JerseyApplicationPath} if no bean of type
+		 * {@link JerseyApplicationPath} is already present.
+		 * @param properties the {@link JerseyProperties} instance containing the
+		 * application path
+		 * @param config the {@link ResourceConfig} instance containing the Jersey
+		 * configuration
+		 * @return a new instance of {@link JerseyApplicationPath} with the specified
+		 * application path and configuration
+		 */
+		@Bean
 		@ConditionalOnMissingBean(JerseyApplicationPath.class)
 		JerseyApplicationPath jerseyApplicationPath(JerseyProperties properties, ResourceConfig config) {
 			return new DefaultJerseyApplicationPath(properties.getApplicationPath(), config);
 		}
 
 		/**
-         * Creates and configures a ResourceConfig object for the Jersey infrastructure.
-         * 
-         * @param resourceConfigCustomizers the object provider for ResourceConfigCustomizer instances
-         * @return the configured ResourceConfig object
-         */
-        @Bean
+		 * Creates and configures a ResourceConfig object for the Jersey infrastructure.
+		 * @param resourceConfigCustomizers the object provider for
+		 * ResourceConfigCustomizer instances
+		 * @return the configured ResourceConfig object
+		 */
+		@Bean
 		ResourceConfig resourceConfig(ObjectProvider<ResourceConfigCustomizer> resourceConfigCustomizers) {
 			ResourceConfig resourceConfig = new ResourceConfig();
 			resourceConfigCustomizers.orderedStream().forEach((customizer) -> customizer.customize(resourceConfig));

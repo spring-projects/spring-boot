@@ -38,13 +38,12 @@ class MyTests {
 	private RemoteService remoteService;
 
 	/**
-     * This is an example test method.
-     * It tests the functionality of the reverseValue method in the MyTests class.
-     * It uses the given method from the remoteService to set the value to "spring".
-     * Then it calls the getReverseValue method to get the reverse of the value.
-     * Finally, it asserts that the reverse value is equal to "gnirps".
-     */
-    @Test
+	 * This is an example test method. It tests the functionality of the reverseValue
+	 * method in the MyTests class. It uses the given method from the remoteService to set
+	 * the value to "spring". Then it calls the getReverseValue method to get the reverse
+	 * of the value. Finally, it asserts that the reverse value is equal to "gnirps".
+	 */
+	@Test
 	void exampleTest() {
 		given(this.remoteService.getValue()).willReturn("spring");
 		String reverse = this.reverser.getReverseValue(); // Calls injected RemoteService

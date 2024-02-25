@@ -66,27 +66,29 @@ public class RunProcess {
 	}
 
 	/**
-     * Runs a process with the given arguments.
-     * 
-     * @param waitForProcess a boolean indicating whether to wait for the process to complete
-     * @param args the arguments to be passed to the process
-     * @return the exit value of the process
-     * @throws IOException if an I/O error occurs while running the process
-     */
-    public int run(boolean waitForProcess, String... args) throws IOException {
+	 * Runs a process with the given arguments.
+	 * @param waitForProcess a boolean indicating whether to wait for the process to
+	 * complete
+	 * @param args the arguments to be passed to the process
+	 * @return the exit value of the process
+	 * @throws IOException if an I/O error occurs while running the process
+	 */
+	public int run(boolean waitForProcess, String... args) throws IOException {
 		return run(waitForProcess, Arrays.asList(args), Collections.emptyMap());
 	}
 
 	/**
-     * Runs a process with the given arguments and environment variables.
-     * 
-     * @param waitForProcess         true if the method should wait for the process to complete, false otherwise
-     * @param args                   a collection of strings representing the command line arguments for the process
-     * @param environmentVariables   a map of environment variables to be set for the process
-     * @return                       the exit value of the process if waitForProcess is true, otherwise 5
-     * @throws IOException           if an I/O error occurs while starting the process
-     */
-    public int run(boolean waitForProcess, Collection<String> args, Map<String, String> environmentVariables)
+	 * Runs a process with the given arguments and environment variables.
+	 * @param waitForProcess true if the method should wait for the process to complete,
+	 * false otherwise
+	 * @param args a collection of strings representing the command line arguments for the
+	 * process
+	 * @param environmentVariables a map of environment variables to be set for the
+	 * process
+	 * @return the exit value of the process if waitForProcess is true, otherwise 5
+	 * @throws IOException if an I/O error occurs while starting the process
+	 */
+	public int run(boolean waitForProcess, Collection<String> args, Map<String, String> environmentVariables)
 			throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(this.command);
 		builder.directory(this.workingDirectory);
@@ -137,11 +139,10 @@ public class RunProcess {
 	}
 
 	/**
-     * Checks if the child process is allowed to handle the SIGINT signal.
-     * 
-     * @return true if the child process is allowed to handle SIGINT, false otherwise
-     */
-    private boolean allowChildToHandleSigInt() {
+	 * Checks if the child process is allowed to handle the SIGINT signal.
+	 * @return true if the child process is allowed to handle SIGINT, false otherwise
+	 */
+	private boolean allowChildToHandleSigInt() {
 		Process process = this.process;
 		if (process == null) {
 			return true;
@@ -170,11 +171,10 @@ public class RunProcess {
 	}
 
 	/**
-     * Kills the running process.
-     * 
-     * @return true if the process was successfully killed, false otherwise
-     */
-    private boolean doKill() {
+	 * Kills the running process.
+	 * @return true if the process was successfully killed, false otherwise
+	 */
+	private boolean doKill() {
 		// destroy the running process
 		Process process = this.process;
 		if (process != null) {
@@ -192,11 +192,10 @@ public class RunProcess {
 	}
 
 	/**
-     * Checks if the process has just ended.
-     * 
-     * @return true if the process has just ended, false otherwise
-     */
-    public boolean hasJustEnded() {
+	 * Checks if the process has just ended.
+	 * @return true if the process has just ended, false otherwise
+	 */
+	public boolean hasJustEnded() {
 		return System.currentTimeMillis() < (this.endTime + JUST_ENDED_LIMIT);
 	}
 

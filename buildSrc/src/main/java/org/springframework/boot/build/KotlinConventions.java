@@ -44,22 +44,20 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
 class KotlinConventions {
 
 	/**
-     * Applies the given project to the specified project.
-     *
-     * @param project the project to apply
-     */
-    void apply(Project project) {
+	 * Applies the given project to the specified project.
+	 * @param project the project to apply
+	 */
+	void apply(Project project) {
 		project.getPlugins()
 			.withId("org.jetbrains.kotlin.jvm",
 					(plugin) -> project.getTasks().withType(KotlinCompile.class, this::configure));
 	}
 
 	/**
-     * Configures the Kotlin compilation options for the given [compile] task.
-     *
-     * @param compile the [KotlinCompile] task to configure
-     */
-    private void configure(KotlinCompile compile) {
+	 * Configures the Kotlin compilation options for the given [compile] task.
+	 * @param compile the [KotlinCompile] task to configure
+	 */
+	private void configure(KotlinCompile compile) {
 		KotlinJvmOptions kotlinOptions = compile.getKotlinOptions();
 		kotlinOptions.setApiVersion("1.7");
 		kotlinOptions.setLanguageVersion("1.7");

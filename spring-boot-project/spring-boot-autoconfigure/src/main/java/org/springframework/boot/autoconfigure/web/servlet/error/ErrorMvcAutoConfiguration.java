@@ -92,34 +92,35 @@ public class ErrorMvcAutoConfiguration {
 	private final ServerProperties serverProperties;
 
 	/**
-     * Constructs a new ErrorMvcAutoConfiguration object with the specified ServerProperties.
-     * 
-     * @param serverProperties the ServerProperties object to be used for configuration
-     */
-    public ErrorMvcAutoConfiguration(ServerProperties serverProperties) {
+	 * Constructs a new ErrorMvcAutoConfiguration object with the specified
+	 * ServerProperties.
+	 * @param serverProperties the ServerProperties object to be used for configuration
+	 */
+	public ErrorMvcAutoConfiguration(ServerProperties serverProperties) {
 		this.serverProperties = serverProperties;
 	}
 
 	/**
-     * Creates a new instance of DefaultErrorAttributes if no other bean of type ErrorAttributes is present in the application context.
-     * 
-     * @return the DefaultErrorAttributes instance
-     */
-    @Bean
+	 * Creates a new instance of DefaultErrorAttributes if no other bean of type
+	 * ErrorAttributes is present in the application context.
+	 * @return the DefaultErrorAttributes instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
 	public DefaultErrorAttributes errorAttributes() {
 		return new DefaultErrorAttributes();
 	}
 
 	/**
-     * Create a bean for BasicErrorController if no bean of type ErrorController is already present in the application context.
-     * This controller handles basic error handling and provides error attributes and error view resolvers.
-     * 
-     * @param errorAttributes the error attributes to be used by the BasicErrorController
-     * @param errorViewResolvers the error view resolvers to be used by the BasicErrorController
-     * @return the BasicErrorController bean
-     */
-    @Bean
+	 * Create a bean for BasicErrorController if no bean of type ErrorController is
+	 * already present in the application context. This controller handles basic error
+	 * handling and provides error attributes and error view resolvers.
+	 * @param errorAttributes the error attributes to be used by the BasicErrorController
+	 * @param errorViewResolvers the error view resolvers to be used by the
+	 * BasicErrorController
+	 * @return the BasicErrorController bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
 	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes,
 			ObjectProvider<ErrorViewResolver> errorViewResolvers) {
@@ -128,32 +129,33 @@ public class ErrorMvcAutoConfiguration {
 	}
 
 	/**
-     * Creates an instance of ErrorPageCustomizer with the specified serverProperties and dispatcherServletPath.
-     * 
-     * @param serverProperties the server properties
-     * @param dispatcherServletPath the dispatcher servlet path
-     * @return the ErrorPageCustomizer instance
-     */
-    @Bean
+	 * Creates an instance of ErrorPageCustomizer with the specified serverProperties and
+	 * dispatcherServletPath.
+	 * @param serverProperties the server properties
+	 * @param dispatcherServletPath the dispatcher servlet path
+	 * @return the ErrorPageCustomizer instance
+	 */
+	@Bean
 	public ErrorPageCustomizer errorPageCustomizer(DispatcherServletPath dispatcherServletPath) {
 		return new ErrorPageCustomizer(this.serverProperties, dispatcherServletPath);
 	}
 
 	/**
-     * Creates a new instance of {@link PreserveErrorControllerTargetClassPostProcessor}.
-     * This method is used to configure the {@link PreserveErrorControllerTargetClassPostProcessor} bean.
-     * 
-     * @return The configured {@link PreserveErrorControllerTargetClassPostProcessor} bean.
-     */
-    @Bean
+	 * Creates a new instance of {@link PreserveErrorControllerTargetClassPostProcessor}.
+	 * This method is used to configure the
+	 * {@link PreserveErrorControllerTargetClassPostProcessor} bean.
+	 * @return The configured {@link PreserveErrorControllerTargetClassPostProcessor}
+	 * bean.
+	 */
+	@Bean
 	public static PreserveErrorControllerTargetClassPostProcessor preserveErrorControllerTargetClassPostProcessor() {
 		return new PreserveErrorControllerTargetClassPostProcessor();
 	}
 
 	/**
-     * DefaultErrorViewResolverConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * DefaultErrorViewResolverConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties({ WebProperties.class, WebMvcProperties.class })
 	static class DefaultErrorViewResolverConfiguration {
 
@@ -162,23 +164,23 @@ public class ErrorMvcAutoConfiguration {
 		private final Resources resources;
 
 		/**
-         * Constructs a new DefaultErrorViewResolverConfiguration with the specified ApplicationContext and WebProperties.
-         * 
-         * @param applicationContext the ApplicationContext used for resolving resources
-         * @param webProperties the WebProperties used for configuring resources
-         */
-        DefaultErrorViewResolverConfiguration(ApplicationContext applicationContext, WebProperties webProperties) {
+		 * Constructs a new DefaultErrorViewResolverConfiguration with the specified
+		 * ApplicationContext and WebProperties.
+		 * @param applicationContext the ApplicationContext used for resolving resources
+		 * @param webProperties the WebProperties used for configuring resources
+		 */
+		DefaultErrorViewResolverConfiguration(ApplicationContext applicationContext, WebProperties webProperties) {
 			this.applicationContext = applicationContext;
 			this.resources = webProperties.getResources();
 		}
 
 		/**
-         * Creates a new instance of DefaultErrorViewResolver if a DispatcherServlet bean is present and an ErrorViewResolver bean is missing.
-         * This resolver is responsible for resolving error views based on convention.
-         * 
-         * @return the created DefaultErrorViewResolver instance
-         */
-        @Bean
+		 * Creates a new instance of DefaultErrorViewResolver if a DispatcherServlet bean
+		 * is present and an ErrorViewResolver bean is missing. This resolver is
+		 * responsible for resolving error views based on convention.
+		 * @return the created DefaultErrorViewResolver instance
+		 */
+		@Bean
 		@ConditionalOnBean(DispatcherServlet.class)
 		@ConditionalOnMissingBean(ErrorViewResolver.class)
 		DefaultErrorViewResolver conventionErrorViewResolver() {
@@ -188,9 +190,9 @@ public class ErrorMvcAutoConfiguration {
 	}
 
 	/**
-     * WhitelabelErrorViewConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * WhitelabelErrorViewConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "server.error.whitelabel", name = "enabled", matchIfMissing = true)
 	@Conditional(ErrorTemplateMissingCondition.class)
 	protected static class WhitelabelErrorViewConfiguration {
@@ -198,13 +200,13 @@ public class ErrorMvcAutoConfiguration {
 		private final StaticView defaultErrorView = new StaticView();
 
 		/**
-         * Returns the default error view.
-         * 
-         * This method is annotated with @Bean and @ConditionalOnMissingBean to ensure that it is only created if no other bean with the name "error" is present.
-         * 
-         * @return the default error view
-         */
-        @Bean(name = "error")
+		 * Returns the default error view.
+		 *
+		 * This method is annotated with @Bean and @ConditionalOnMissingBean to ensure
+		 * that it is only created if no other bean with the name "error" is present.
+		 * @return the default error view
+		 */
+		@Bean(name = "error")
 		@ConditionalOnMissingBean(name = "error")
 		public View defaultErrorView() {
 			return this.defaultErrorView;
@@ -228,13 +230,12 @@ public class ErrorMvcAutoConfiguration {
 	private static final class ErrorTemplateMissingCondition extends SpringBootCondition {
 
 		/**
-         * Determines the match outcome for the ErrorTemplateMissingCondition.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the condition outcome
-         */
-        @Override
+		 * Determines the match outcome for the ErrorTemplateMissingCondition.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the condition outcome
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ErrorTemplate Missing");
 			TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(context.getClassLoader());
@@ -258,14 +259,13 @@ public class ErrorMvcAutoConfiguration {
 		private static final Log logger = LogFactory.getLog(StaticView.class);
 
 		/**
-         * Renders the error page with the given model, request, and response.
-         * 
-         * @param model     the model containing the error information
-         * @param request   the HttpServletRequest object
-         * @param response  the HttpServletResponse object
-         * @throws Exception if an error occurs during rendering
-         */
-        @Override
+		 * Renders the error page with the given model, request, and response.
+		 * @param model the model containing the error information
+		 * @param request the HttpServletRequest object
+		 * @param response the HttpServletResponse object
+		 * @throws Exception if an error occurs during rendering
+		 */
+		@Override
 		public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
 				throws Exception {
 			if (response.isCommitted()) {
@@ -302,22 +302,22 @@ public class ErrorMvcAutoConfiguration {
 		}
 
 		/**
-         * Escapes special characters in the given input string to prevent HTML injection attacks.
-         * 
-         * @param input the input object to be escaped
-         * @return the escaped string, or null if the input is null
-         */
-        private String htmlEscape(Object input) {
+		 * Escapes special characters in the given input string to prevent HTML injection
+		 * attacks.
+		 * @param input the input object to be escaped
+		 * @return the escaped string, or null if the input is null
+		 */
+		private String htmlEscape(Object input) {
 			return (input != null) ? HtmlUtils.htmlEscape(input.toString()) : null;
 		}
 
 		/**
-         * Returns a message indicating that the error page cannot be rendered for the given request and exception.
-         * 
-         * @param model the model containing the request path and exception message
-         * @return the error message
-         */
-        private String getMessage(Map<String, ?> model) {
+		 * Returns a message indicating that the error page cannot be rendered for the
+		 * given request and exception.
+		 * @param model the model containing the request path and exception message
+		 * @return the error message
+		 */
+		private String getMessage(Map<String, ?> model) {
 			Object path = model.get("path");
 			String message = "Cannot render error page for request [" + path + "]";
 			if (model.get("message") != null) {
@@ -329,11 +329,10 @@ public class ErrorMvcAutoConfiguration {
 		}
 
 		/**
-         * Returns the content type of the static view.
-         * 
-         * @return the content type as a string, which is "text/html"
-         */
-        @Override
+		 * Returns the content type of the static view.
+		 * @return the content type as a string, which is "text/html"
+		 */
+		@Override
 		public String getContentType() {
 			return "text/html";
 		}
@@ -350,22 +349,23 @@ public class ErrorMvcAutoConfiguration {
 		private final DispatcherServletPath dispatcherServletPath;
 
 		/**
-         * Constructs a new ErrorPageCustomizer with the specified ServerProperties and DispatcherServletPath.
-         * 
-         * @param properties the ServerProperties to be used by the ErrorPageCustomizer
-         * @param dispatcherServletPath the DispatcherServletPath to be used by the ErrorPageCustomizer
-         */
-        protected ErrorPageCustomizer(ServerProperties properties, DispatcherServletPath dispatcherServletPath) {
+		 * Constructs a new ErrorPageCustomizer with the specified ServerProperties and
+		 * DispatcherServletPath.
+		 * @param properties the ServerProperties to be used by the ErrorPageCustomizer
+		 * @param dispatcherServletPath the DispatcherServletPath to be used by the
+		 * ErrorPageCustomizer
+		 */
+		protected ErrorPageCustomizer(ServerProperties properties, DispatcherServletPath dispatcherServletPath) {
 			this.properties = properties;
 			this.dispatcherServletPath = dispatcherServletPath;
 		}
 
 		/**
-         * Registers error pages for the application.
-         * 
-         * @param errorPageRegistry the error page registry to register the error pages with
-         */
-        @Override
+		 * Registers error pages for the application.
+		 * @param errorPageRegistry the error page registry to register the error pages
+		 * with
+		 */
+		@Override
 		public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
 			ErrorPage errorPage = new ErrorPage(
 					this.dispatcherServletPath.getRelativePath(this.properties.getError().getPath()));
@@ -373,13 +373,13 @@ public class ErrorMvcAutoConfiguration {
 		}
 
 		/**
-         * Returns the order value for this ErrorPageCustomizer.
-         * 
-         * The order value determines the order in which multiple ErrorPageCustomizer beans are applied.
-         * 
-         * @return the order value for this ErrorPageCustomizer
-         */
-        @Override
+		 * Returns the order value for this ErrorPageCustomizer.
+		 *
+		 * The order value determines the order in which multiple ErrorPageCustomizer
+		 * beans are applied.
+		 * @return the order value for this ErrorPageCustomizer
+		 */
+		@Override
 		public int getOrder() {
 			return 0;
 		}
@@ -393,13 +393,13 @@ public class ErrorMvcAutoConfiguration {
 	static class PreserveErrorControllerTargetClassPostProcessor implements BeanFactoryPostProcessor {
 
 		/**
-         * Post-processes the bean factory to preserve the target class attribute for ErrorController beans.
-         * This ensures that the target class is preserved when creating proxies for ErrorController beans.
-         *
-         * @param beanFactory the bean factory to post-process
-         * @throws BeansException if an error occurs during post-processing
-         */
-        @Override
+		 * Post-processes the bean factory to preserve the target class attribute for
+		 * ErrorController beans. This ensures that the target class is preserved when
+		 * creating proxies for ErrorController beans.
+		 * @param beanFactory the bean factory to post-process
+		 * @throws BeansException if an error occurs during post-processing
+		 */
+		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 			String[] errorControllerBeans = beanFactory.getBeanNamesForType(ErrorController.class, false, false);
 			for (String errorControllerBean : errorControllerBeans) {

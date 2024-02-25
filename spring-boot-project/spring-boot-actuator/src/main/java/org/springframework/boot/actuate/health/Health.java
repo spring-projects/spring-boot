@@ -66,12 +66,11 @@ public final class Health extends HealthComponent {
 	}
 
 	/**
-     * Constructs a new Health object with the given status and details.
-     * 
-     * @param status the status of the health
-     * @param details additional details about the health
-     */
-    Health(Status status, Map<String, Object> details) {
+	 * Constructs a new Health object with the given status and details.
+	 * @param status the status of the health
+	 * @param details additional details about the health
+	 */
+	Health(Status status, Map<String, Object> details) {
 		this.status = status;
 		this.details = details;
 	}
@@ -108,12 +107,12 @@ public final class Health extends HealthComponent {
 	}
 
 	/**
-     * Compares this Health object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the specified object is equal to this Health object, false otherwise
-     */
-    @Override
+	 * Compares this Health object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the specified object is equal to this Health object, false
+	 * otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -125,23 +124,21 @@ public final class Health extends HealthComponent {
 	}
 
 	/**
-     * Returns the hash code value for this Health object.
-     * 
-     * @return the hash code value for this Health object
-     */
-    @Override
+	 * Returns the hash code value for this Health object.
+	 * @return the hash code value for this Health object
+	 */
+	@Override
 	public int hashCode() {
 		int hashCode = this.status.hashCode();
 		return 13 * hashCode + this.details.hashCode();
 	}
 
 	/**
-     * Returns a string representation of the Health object.
-     * The string includes the status and details of the Health object.
-     *
-     * @return a string representation of the Health object
-     */
-    @Override
+	 * Returns a string representation of the Health object. The string includes the
+	 * status and details of the Health object.
+	 * @return a string representation of the Health object
+	 */
+	@Override
 	public String toString() {
 		return getStatus() + " " + getDetails();
 	}

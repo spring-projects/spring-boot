@@ -33,20 +33,18 @@ public class ReactorProperties {
 	private ContextPropagationMode contextPropagation = ContextPropagationMode.LIMITED;
 
 	/**
-     * Returns the context propagation mode.
-     *
-     * @return the context propagation mode
-     */
-    public ContextPropagationMode getContextPropagation() {
+	 * Returns the context propagation mode.
+	 * @return the context propagation mode
+	 */
+	public ContextPropagationMode getContextPropagation() {
 		return this.contextPropagation;
 	}
 
 	/**
-     * Sets the context propagation mode for ReactorProperties.
-     * 
-     * @param contextPropagation the context propagation mode to be set
-     */
-    public void setContextPropagation(ContextPropagationMode contextPropagation) {
+	 * Sets the context propagation mode for ReactorProperties.
+	 * @param contextPropagation the context propagation mode to be set
+	 */
+	public void setContextPropagation(ContextPropagationMode contextPropagation) {
 		this.contextPropagation = contextPropagation;
 	}
 

@@ -62,62 +62,62 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 	}
 
 	/**
-     * Retrieves the health component.
-     * 
-     * @return the health component
-     */
-    @ReadOperation
+	 * Retrieves the health component.
+	 * @return the health component
+	 */
+	@ReadOperation
 	public HealthComponent health() {
 		HealthComponent health = health(ApiVersion.V3, EMPTY_PATH);
 		return (health != null) ? health : DEFAULT_HEALTH;
 	}
 
 	/**
-     * Retrieves the health component for the specified path.
-     *
-     * @param path The path to retrieve the health component for.
-     * @return The health component for the specified path.
-     */
-    @ReadOperation
+	 * Retrieves the health component for the specified path.
+	 * @param path The path to retrieve the health component for.
+	 * @return The health component for the specified path.
+	 */
+	@ReadOperation
 	public HealthComponent healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(ApiVersion.V3, path);
 	}
 
 	/**
-     * Retrieves the health component for the specified API version and path.
-     * 
-     * @param apiVersion The API version to retrieve the health component for.
-     * @param path The path to retrieve the health component for.
-     * @return The health component for the specified API version and path, or null if not found.
-     */
-    private HealthComponent health(ApiVersion apiVersion, String... path) {
+	 * Retrieves the health component for the specified API version and path.
+	 * @param apiVersion The API version to retrieve the health component for.
+	 * @param path The path to retrieve the health component for.
+	 * @return The health component for the specified API version and path, or null if not
+	 * found.
+	 */
+	private HealthComponent health(ApiVersion apiVersion, String... path) {
 		HealthResult<HealthComponent> result = getHealth(apiVersion, null, SecurityContext.NONE, true, path);
 		return (result != null) ? result.getHealth() : null;
 	}
 
 	/**
-     * Retrieves the health component of a given health contributor.
-     * 
-     * @param contributor the health contributor to retrieve the health component from
-     * @param includeDetails a boolean indicating whether to include detailed information in the health component
-     * @return the health component of the given health contributor
-     */
-    @Override
+	 * Retrieves the health component of a given health contributor.
+	 * @param contributor the health contributor to retrieve the health component from
+	 * @param includeDetails a boolean indicating whether to include detailed information
+	 * in the health component
+	 * @return the health component of the given health contributor
+	 */
+	@Override
 	protected HealthComponent getHealth(HealthContributor contributor, boolean includeDetails) {
 		return ((HealthIndicator) contributor).getHealth(includeDetails);
 	}
 
 	/**
-     * Aggregates the contributions from different health components and returns the composite health status.
-     * 
-     * @param apiVersion The version of the API.
-     * @param contributions A map containing the contributions from different health components.
-     * @param statusAggregator The aggregator used to determine the overall health status.
-     * @param showComponents A flag indicating whether to include individual health components in the response.
-     * @param groupNames A set of group names to filter the health components.
-     * @return The composite health status.
-     */
-    @Override
+	 * Aggregates the contributions from different health components and returns the
+	 * composite health status.
+	 * @param apiVersion The version of the API.
+	 * @param contributions A map containing the contributions from different health
+	 * components.
+	 * @param statusAggregator The aggregator used to determine the overall health status.
+	 * @param showComponents A flag indicating whether to include individual health
+	 * components in the response.
+	 * @param groupNames A set of group names to filter the health components.
+	 * @return The composite health status.
+	 */
+	@Override
 	protected HealthComponent aggregateContributions(ApiVersion apiVersion, Map<String, HealthComponent> contributions,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
 		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);

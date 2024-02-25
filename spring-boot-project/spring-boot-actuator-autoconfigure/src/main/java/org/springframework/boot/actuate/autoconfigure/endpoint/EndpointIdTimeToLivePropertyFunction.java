@@ -49,12 +49,11 @@ class EndpointIdTimeToLivePropertyFunction implements Function<EndpointId, Long>
 	}
 
 	/**
-     * Retrieves the time to live value for the specified endpoint ID.
-     * 
-     * @param endpointId the ID of the endpoint
-     * @return the time to live value in milliseconds, or null if not found
-     */
-    @Override
+	 * Retrieves the time to live value for the specified endpoint ID.
+	 * @param endpointId the ID of the endpoint
+	 * @return the time to live value in milliseconds, or null if not found
+	 */
+	@Override
 	public Long apply(EndpointId endpointId) {
 		String name = String.format("management.endpoint.%s.cache.time-to-live", endpointId.toLowerCaseString());
 		BindResult<Duration> duration = Binder.get(this.environment).bind(name, DURATION);

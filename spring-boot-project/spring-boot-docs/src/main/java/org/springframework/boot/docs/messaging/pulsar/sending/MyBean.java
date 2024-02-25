@@ -30,20 +30,18 @@ public class MyBean {
 	private final PulsarTemplate<String> pulsarTemplate;
 
 	/**
-     * Constructs a new instance of MyBean with the specified PulsarTemplate.
-     * 
-     * @param pulsarTemplate the PulsarTemplate to be used by this MyBean instance
-     */
-    public MyBean(PulsarTemplate<String> pulsarTemplate) {
+	 * Constructs a new instance of MyBean with the specified PulsarTemplate.
+	 * @param pulsarTemplate the PulsarTemplate to be used by this MyBean instance
+	 */
+	public MyBean(PulsarTemplate<String> pulsarTemplate) {
 		this.pulsarTemplate = pulsarTemplate;
 	}
 
 	/**
-     * Sends a message to the "someTopic" topic using the PulsarTemplate.
-     *
-     * @throws PulsarClientException if there is an error while sending the message
-     */
-    public void someMethod() throws PulsarClientException {
+	 * Sends a message to the "someTopic" topic using the PulsarTemplate.
+	 * @throws PulsarClientException if there is an error while sending the message
+	 */
+	public void someMethod() throws PulsarClientException {
 		this.pulsarTemplate.send("someTopic", "Hello");
 	}
 

@@ -56,11 +56,10 @@ class BuilderMetadata extends MappedObject {
 	private final List<BuildpackMetadata> buildpacks;
 
 	/**
-     * Constructs a new BuilderMetadata object with the given JSON node.
-     * 
-     * @param node the JSON node containing the builder metadata information
-     */
-    BuilderMetadata(JsonNode node) {
+	 * Constructs a new BuilderMetadata object with the given JSON node.
+	 * @param node the JSON node containing the builder metadata information
+	 */
+	BuilderMetadata(JsonNode node) {
 		super(node, MethodHandles.lookup());
 		this.stack = valueAt("/stack", Stack.class);
 		this.lifecycle = valueAt("/lifecycle", Lifecycle.class);
@@ -69,12 +68,12 @@ class BuilderMetadata extends MappedObject {
 	}
 
 	/**
-     * Extracts a list of BuildpackMetadata objects from a JsonNode.
-     * 
-     * @param node the JsonNode to extract the BuildpackMetadata objects from
-     * @return a list of BuildpackMetadata objects extracted from the JsonNode, or an empty list if the JsonNode is empty
-     */
-    private List<BuildpackMetadata> extractBuildpacks(JsonNode node) {
+	 * Extracts a list of BuildpackMetadata objects from a JsonNode.
+	 * @param node the JsonNode to extract the BuildpackMetadata objects from
+	 * @return a list of BuildpackMetadata objects extracted from the JsonNode, or an
+	 * empty list if the JsonNode is empty
+	 */
+	private List<BuildpackMetadata> extractBuildpacks(JsonNode node) {
 		if (node.isEmpty()) {
 			return Collections.emptyList();
 		}

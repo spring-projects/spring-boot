@@ -58,35 +58,40 @@ class ConnectionDetailsRegistrar {
 	private final ConnectionDetailsFactories connectionDetailsFactories;
 
 	/**
-     * Constructs a new ConnectionDetailsRegistrar with the specified ListableBeanFactory and ConnectionDetailsFactories.
-     * 
-     * @param beanFactory the ListableBeanFactory used to register connection details
-     * @param connectionDetailsFactories the ConnectionDetailsFactories used to create connection details
-     */
-    ConnectionDetailsRegistrar(ListableBeanFactory beanFactory, ConnectionDetailsFactories connectionDetailsFactories) {
+	 * Constructs a new ConnectionDetailsRegistrar with the specified ListableBeanFactory
+	 * and ConnectionDetailsFactories.
+	 * @param beanFactory the ListableBeanFactory used to register connection details
+	 * @param connectionDetailsFactories the ConnectionDetailsFactories used to create
+	 * connection details
+	 */
+	ConnectionDetailsRegistrar(ListableBeanFactory beanFactory, ConnectionDetailsFactories connectionDetailsFactories) {
 		this.beanFactory = beanFactory;
 		this.connectionDetailsFactories = connectionDetailsFactories;
 	}
 
 	/**
-     * Registers the bean definitions for the given collection of container connection sources in the specified bean definition registry.
-     * 
-     * @param registry the bean definition registry to register the bean definitions with
-     * @param sources the collection of container connection sources to register the bean definitions from
-     */
-    void registerBeanDefinitions(BeanDefinitionRegistry registry, Collection<ContainerConnectionSource<?>> sources) {
+	 * Registers the bean definitions for the given collection of container connection
+	 * sources in the specified bean definition registry.
+	 * @param registry the bean definition registry to register the bean definitions with
+	 * @param sources the collection of container connection sources to register the bean
+	 * definitions from
+	 */
+	void registerBeanDefinitions(BeanDefinitionRegistry registry, Collection<ContainerConnectionSource<?>> sources) {
 		sources.forEach((source) -> registerBeanDefinitions(registry, source));
 	}
 
 	/**
-     * Registers bean definitions based on the provided {@link ContainerConnectionSource} and {@link BeanDefinitionRegistry}.
-     * 
-     * @param registry the {@link BeanDefinitionRegistry} to register the bean definitions with
-     * @param source the {@link ContainerConnectionSource} to retrieve the connection details from
-     * @throws ConnectionDetailsFactoryNotFoundException if the connection details factory is not found
-     * @throws ConnectionDetailsNotFoundException if the connection details are not found
-     */
-    void registerBeanDefinitions(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source) {
+	 * Registers bean definitions based on the provided {@link ContainerConnectionSource}
+	 * and {@link BeanDefinitionRegistry}.
+	 * @param registry the {@link BeanDefinitionRegistry} to register the bean definitions
+	 * with
+	 * @param source the {@link ContainerConnectionSource} to retrieve the connection
+	 * details from
+	 * @throws ConnectionDetailsFactoryNotFoundException if the connection details factory
+	 * is not found
+	 * @throws ConnectionDetailsNotFoundException if the connection details are not found
+	 */
+	void registerBeanDefinitions(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source) {
 		try {
 			this.connectionDetailsFactories.getConnectionDetails(source, true)
 				.forEach((connectionDetailsType, connectionDetails) -> registerBeanDefinition(registry, source,
@@ -101,15 +106,14 @@ class ConnectionDetailsRegistrar {
 	}
 
 	/**
-     * Rethrows the connection details with an optional custom exception factory.
-     * 
-     * @param source the container connection source
-     * @param ex the runtime exception
-     * @param exceptionFactory the exception factory function
-     * @throws RuntimeException if the connection name is not specified
-     * @throws RuntimeException if any other exception occurs
-     */
-    private void rethrowConnectionDetails(ContainerConnectionSource<?> source, RuntimeException ex,
+	 * Rethrows the connection details with an optional custom exception factory.
+	 * @param source the container connection source
+	 * @param ex the runtime exception
+	 * @param exceptionFactory the exception factory function
+	 * @throws RuntimeException if the connection name is not specified
+	 * @throws RuntimeException if any other exception occurs
+	 */
+	private void rethrowConnectionDetails(ContainerConnectionSource<?> source, RuntimeException ex,
 			BiFunction<String, Throwable, RuntimeException> exceptionFactory) {
 		if (!StringUtils.hasText(source.getConnectionName())) {
 			StringBuilder message = new StringBuilder(ex.getMessage());
@@ -121,15 +125,14 @@ class ConnectionDetailsRegistrar {
 	}
 
 	/**
-     * Registers a bean definition for the given connection details.
-     * 
-     * @param registry the bean definition registry
-     * @param source the container connection source
-     * @param connectionDetailsType the type of the connection details
-     * @param connectionDetails the connection details object
-     * @param <T> the type of the connection details
-     */
-    @SuppressWarnings("unchecked")
+	 * Registers a bean definition for the given connection details.
+	 * @param registry the bean definition registry
+	 * @param source the container connection source
+	 * @param connectionDetailsType the type of the connection details
+	 * @param connectionDetails the connection details object
+	 * @param <T> the type of the connection details
+	 */
+	@SuppressWarnings("unchecked")
 	private <T> void registerBeanDefinition(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source,
 			Class<?> connectionDetailsType, ConnectionDetails connectionDetails) {
 		String[] existingBeans = this.beanFactory.getBeanNamesForType(connectionDetailsType);
@@ -148,13 +151,12 @@ class ConnectionDetailsRegistrar {
 	}
 
 	/**
-     * Returns the bean name for the given source and connection details.
-     * 
-     * @param source the container connection source
-     * @param connectionDetails the connection details
-     * @return the bean name
-     */
-    private String getBeanName(ContainerConnectionSource<?> source, ConnectionDetails connectionDetails) {
+	 * Returns the bean name for the given source and connection details.
+	 * @param source the container connection source
+	 * @param connectionDetails the connection details
+	 * @return the bean name
+	 */
+	private String getBeanName(ContainerConnectionSource<?> source, ConnectionDetails connectionDetails) {
 		List<String> parts = new ArrayList<>();
 		parts.add(ClassUtils.getShortNameAsProperty(connectionDetails.getClass()));
 		parts.add("for");
@@ -163,17 +165,18 @@ class ConnectionDetailsRegistrar {
 	}
 
 	/**
-     * ServiceConnectionBeanRegistrationExcludeFilter class.
-     */
-    class ServiceConnectionBeanRegistrationExcludeFilter implements BeanRegistrationExcludeFilter {
+	 * ServiceConnectionBeanRegistrationExcludeFilter class.
+	 */
+	class ServiceConnectionBeanRegistrationExcludeFilter implements BeanRegistrationExcludeFilter {
 
 		/**
-         * Determines if a registered bean should be excluded from Ahead-of-Time (AOT) processing.
-         * 
-         * @param registeredBean the registered bean to check
-         * @return true if the registered bean should be excluded from AOT processing, false otherwise
-         */
-        @Override
+		 * Determines if a registered bean should be excluded from Ahead-of-Time (AOT)
+		 * processing.
+		 * @param registeredBean the registered bean to check
+		 * @return true if the registered bean should be excluded from AOT processing,
+		 * false otherwise
+		 */
+		@Override
 		public boolean isExcludedFromAotProcessing(RegisteredBean registeredBean) {
 			return registeredBean.getMergedBeanDefinition().getAttribute(ServiceConnection.class.getName()) != null;
 		}

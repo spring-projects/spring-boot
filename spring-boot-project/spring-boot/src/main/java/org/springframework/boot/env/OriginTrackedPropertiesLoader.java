@@ -109,15 +109,14 @@ class OriginTrackedPropertiesLoader {
 	}
 
 	/**
-     * Loads a key-value pair from the input, and adds it to the document.
-     * 
-     * @param expandLists   a boolean indicating whether to expand lists
-     * @param document      the document to add the key-value pair to
-     * @param reader        the character reader for reading the input
-     * @param buffer        the string builder for storing the key
-     * @throws IOException  if an I/O error occurs while reading the input
-     */
-    private void loadKeyAndValue(boolean expandLists, Document document, CharacterReader reader, StringBuilder buffer)
+	 * Loads a key-value pair from the input, and adds it to the document.
+	 * @param expandLists a boolean indicating whether to expand lists
+	 * @param document the document to add the key-value pair to
+	 * @param reader the character reader for reading the input
+	 * @param buffer the string builder for storing the key
+	 * @throws IOException if an I/O error occurs while reading the input
+	 */
+	private void loadKeyAndValue(boolean expandLists, Document document, CharacterReader reader, StringBuilder buffer)
 			throws IOException {
 		String key = loadKey(buffer, reader).trim();
 		if (expandLists && key.endsWith("[]")) {
@@ -139,14 +138,13 @@ class OriginTrackedPropertiesLoader {
 	}
 
 	/**
-     * Loads a key from the given StringBuilder buffer and CharacterReader.
-     * 
-     * @param buffer The StringBuilder buffer to load the key into.
-     * @param reader The CharacterReader to read characters from.
-     * @return The loaded key as a String.
-     * @throws IOException if an I/O error occurs while reading characters.
-     */
-    private String loadKey(StringBuilder buffer, CharacterReader reader) throws IOException {
+	 * Loads a key from the given StringBuilder buffer and CharacterReader.
+	 * @param buffer The StringBuilder buffer to load the key into.
+	 * @param reader The CharacterReader to read characters from.
+	 * @return The loaded key as a String.
+	 * @throws IOException if an I/O error occurs while reading characters.
+	 */
+	private String loadKey(StringBuilder buffer, CharacterReader reader) throws IOException {
 		buffer.setLength(0);
 		boolean previousWhitespace = false;
 		while (!reader.isEndOfLine()) {
@@ -165,15 +163,15 @@ class OriginTrackedPropertiesLoader {
 	}
 
 	/**
-     * Loads a value from the given StringBuilder and CharacterReader, while tracking its origin.
-     * 
-     * @param buffer the StringBuilder to load the value into
-     * @param reader the CharacterReader to read the value from
-     * @param splitLists true if lists should be split, false otherwise
-     * @return the loaded value with its origin tracked
-     * @throws IOException if an I/O error occurs while reading the value
-     */
-    private OriginTrackedValue loadValue(StringBuilder buffer, CharacterReader reader, boolean splitLists)
+	 * Loads a value from the given StringBuilder and CharacterReader, while tracking its
+	 * origin.
+	 * @param buffer the StringBuilder to load the value into
+	 * @param reader the CharacterReader to read the value from
+	 * @param splitLists true if lists should be split, false otherwise
+	 * @return the loaded value with its origin tracked
+	 * @throws IOException if an I/O error occurs while reading the value
+	 */
+	private OriginTrackedValue loadValue(StringBuilder buffer, CharacterReader reader, boolean splitLists)
 			throws IOException {
 		buffer.setLength(0);
 		while (reader.isWhiteSpace() && !reader.isEndOfLine()) {
@@ -189,13 +187,12 @@ class OriginTrackedPropertiesLoader {
 	}
 
 	/**
-     * Checks if the document is new.
-     * 
-     * @param reader the CharacterReader object used to read the document
-     * @return true if the document is new, false otherwise
-     * @throws IOException if an I/O error occurs while reading the document
-     */
-    private boolean isNewDocument(CharacterReader reader) throws IOException {
+	 * Checks if the document is new.
+	 * @param reader the CharacterReader object used to read the document
+	 * @return true if the document is new, false otherwise
+	 * @throws IOException if an I/O error occurs while reading the document
+	 */
+	private boolean isNewDocument(CharacterReader reader) throws IOException {
 		if (reader.isSameLastLineCommentPrefix()) {
 			return false;
 		}
@@ -211,14 +208,14 @@ class OriginTrackedPropertiesLoader {
 	}
 
 	/**
-     * Reads a character from the given reader and expects a boolean value based on the provided check.
-     * 
-     * @param reader The CharacterReader to read from.
-     * @param check The BooleanSupplier to check the expected boolean value.
-     * @return true if the expected boolean value is true, false otherwise.
-     * @throws IOException if an I/O error occurs while reading from the reader.
-     */
-    private boolean readAndExpect(CharacterReader reader, BooleanSupplier check) throws IOException {
+	 * Reads a character from the given reader and expects a boolean value based on the
+	 * provided check.
+	 * @param reader The CharacterReader to read from.
+	 * @param check The BooleanSupplier to check the expected boolean value.
+	 * @return true if the expected boolean value is true, false otherwise.
+	 * @throws IOException if an I/O error occurs while reading from the reader.
+	 */
+	private boolean readAndExpect(CharacterReader reader, BooleanSupplier check) throws IOException {
 		reader.read();
 		return check.getAsBoolean();
 	}
@@ -242,33 +239,31 @@ class OriginTrackedPropertiesLoader {
 		private int lastLineCommentPrefixCharacter;
 
 		/**
-         * Constructs a new CharacterReader object with the given resource.
-         * 
-         * @param resource the resource to read characters from
-         * @throws IOException if an I/O error occurs while reading the resource
-         */
-        CharacterReader(Resource resource) throws IOException {
+		 * Constructs a new CharacterReader object with the given resource.
+		 * @param resource the resource to read characters from
+		 * @throws IOException if an I/O error occurs while reading the resource
+		 */
+		CharacterReader(Resource resource) throws IOException {
 			this.reader = new LineNumberReader(
 					new InputStreamReader(resource.getInputStream(), StandardCharsets.ISO_8859_1));
 		}
 
 		/**
-         * Closes the CharacterReader by closing the underlying reader.
-         * 
-         * @throws IOException if an I/O error occurs while closing the reader
-         */
-        @Override
+		 * Closes the CharacterReader by closing the underlying reader.
+		 * @throws IOException if an I/O error occurs while closing the reader
+		 */
+		@Override
 		public void close() throws IOException {
 			this.reader.close();
 		}
 
 		/**
-         * Reads a character from the input stream and updates the state of the CharacterReader object.
-         * 
-         * @return true if the end of the file has not been reached, false otherwise
-         * @throws IOException if an I/O error occurs while reading the character
-         */
-        boolean read() throws IOException {
+		 * Reads a character from the input stream and updates the state of the
+		 * CharacterReader object.
+		 * @return true if the end of the file has not been reached, false otherwise
+		 * @throws IOException if an I/O error occurs while reading the character
+		 */
+		boolean read() throws IOException {
 			this.escaped = false;
 			this.character = this.reader.read();
 			this.columnNumber++;
@@ -286,11 +281,10 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		/**
-         * Skips any whitespace characters in the input stream.
-         * 
-         * @throws IOException if an I/O error occurs while reading the input stream
-         */
-        private void skipWhitespace() throws IOException {
+		 * Skips any whitespace characters in the input stream.
+		 * @throws IOException if an I/O error occurs while reading the input stream
+		 */
+		private void skipWhitespace() throws IOException {
 			while (isWhiteSpace()) {
 				this.character = this.reader.read();
 				this.columnNumber++;
@@ -298,20 +292,19 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		/**
-         * Sets the last line comment prefix character.
-         * 
-         * @param lastLineCommentPrefixCharacter the character to set as the last line comment prefix
-         */
-        private void setLastLineCommentPrefixCharacter(int lastLineCommentPrefixCharacter) {
+		 * Sets the last line comment prefix character.
+		 * @param lastLineCommentPrefixCharacter the character to set as the last line
+		 * comment prefix
+		 */
+		private void setLastLineCommentPrefixCharacter(int lastLineCommentPrefixCharacter) {
 			this.lastLineCommentPrefixCharacter = lastLineCommentPrefixCharacter;
 		}
 
 		/**
-         * Skips the current line comment in the input stream.
-         * 
-         * @throws IOException if an I/O error occurs while reading the input stream
-         */
-        private void skipComment() throws IOException {
+		 * Skips the current line comment in the input stream.
+		 * @throws IOException if an I/O error occurs while reading the input stream
+		 */
+		private void skipComment() throws IOException {
 			while (this.character != '\n' && this.character != -1) {
 				this.character = this.reader.read();
 			}
@@ -319,11 +312,11 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		/**
-         * Reads the next character from the input stream, taking into account any escaped characters.
-         * 
-         * @throws IOException if an I/O error occurs while reading the character
-         */
-        private void readEscaped() throws IOException {
+		 * Reads the next character from the input stream, taking into account any escaped
+		 * characters.
+		 * @throws IOException if an I/O error occurs while reading the character
+		 */
+		private void readEscaped() throws IOException {
 			this.character = this.reader.read();
 			int escapeIndex = ESCAPES[0].indexOf(this.character);
 			if (escapeIndex != -1) {
@@ -339,12 +332,11 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		/**
-         * Reads a Unicode character from the input stream.
-         * 
-         * @throws IOException if an I/O error occurs while reading the character
-         * @throws IllegalStateException if the \\uxxxx encoding is malformed
-         */
-        private void readUnicode() throws IOException {
+		 * Reads a Unicode character from the input stream.
+		 * @throws IOException if an I/O error occurs while reading the character
+		 * @throws IllegalStateException if the \\uxxxx encoding is malformed
+		 */
+		private void readUnicode() throws IOException {
 			this.character = 0;
 			for (int i = 0; i < 4; i++) {
 				int digit = this.reader.read();
@@ -364,93 +356,87 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		/**
-         * Checks if the current character is a white space character.
-         * 
-         * @return true if the current character is a white space character, false otherwise.
-         */
-        boolean isWhiteSpace() {
+		 * Checks if the current character is a white space character.
+		 * @return true if the current character is a white space character, false
+		 * otherwise.
+		 */
+		boolean isWhiteSpace() {
 			return !this.escaped && (this.character == ' ' || this.character == '\t' || this.character == '\f');
 		}
 
 		/**
-         * Checks if the current character is the end of the file.
-         * 
-         * @return true if the current character is the end of the file, false otherwise.
-         */
-        boolean isEndOfFile() {
+		 * Checks if the current character is the end of the file.
+		 * @return true if the current character is the end of the file, false otherwise.
+		 */
+		boolean isEndOfFile() {
 			return this.character == -1;
 		}
 
 		/**
-         * Checks if the current character is the end of a line.
-         * 
-         * @return true if the current character is the end of a line, false otherwise.
-         */
-        boolean isEndOfLine() {
+		 * Checks if the current character is the end of a line.
+		 * @return true if the current character is the end of a line, false otherwise.
+		 */
+		boolean isEndOfLine() {
 			return this.character == -1 || (!this.escaped && this.character == '\n');
 		}
 
 		/**
-         * Checks if the current character is a list delimiter.
-         * 
-         * @return true if the current character is a list delimiter, false otherwise
-         */
-        boolean isListDelimiter() {
+		 * Checks if the current character is a list delimiter.
+		 * @return true if the current character is a list delimiter, false otherwise
+		 */
+		boolean isListDelimiter() {
 			return !this.escaped && this.character == ',';
 		}
 
 		/**
-         * Checks if the current character is a property delimiter.
-         * 
-         * @return true if the current character is '=' or ':', false otherwise
-         */
-        boolean isPropertyDelimiter() {
+		 * Checks if the current character is a property delimiter.
+		 * @return true if the current character is '=' or ':', false otherwise
+		 */
+		boolean isPropertyDelimiter() {
 			return !this.escaped && (this.character == '=' || this.character == ':');
 		}
 
 		/**
-         * Returns the character value of the CharacterReader object.
-         *
-         * @return the character value of the CharacterReader object.
-         */
-        char getCharacter() {
+		 * Returns the character value of the CharacterReader object.
+		 * @return the character value of the CharacterReader object.
+		 */
+		char getCharacter() {
 			return (char) this.character;
 		}
 
 		/**
-         * Returns the current location of the character reader.
-         * 
-         * @return the current location as a Location object
-         */
-        Location getLocation() {
+		 * Returns the current location of the character reader.
+		 * @return the current location as a Location object
+		 */
+		Location getLocation() {
 			return new Location(this.reader.getLineNumber(), this.columnNumber);
 		}
 
 		/**
-         * Checks if the last line comment prefix character is the same as the specified character.
-         * 
-         * @return true if the last line comment prefix character is the same as the specified character, false otherwise.
-         */
-        boolean isSameLastLineCommentPrefix() {
+		 * Checks if the last line comment prefix character is the same as the specified
+		 * character.
+		 * @return true if the last line comment prefix character is the same as the
+		 * specified character, false otherwise.
+		 */
+		boolean isSameLastLineCommentPrefix() {
 			return this.lastLineCommentPrefixCharacter == this.character;
 		}
 
 		/**
-         * Checks if the current character is a comment prefix character.
-         * A comment prefix character can be either '#' or '!'.
-         * 
-         * @return true if the current character is a comment prefix character, false otherwise.
-         */
-        boolean isCommentPrefixCharacter() {
+		 * Checks if the current character is a comment prefix character. A comment prefix
+		 * character can be either '#' or '!'.
+		 * @return true if the current character is a comment prefix character, false
+		 * otherwise.
+		 */
+		boolean isCommentPrefixCharacter() {
 			return this.character == '#' || this.character == '!';
 		}
 
 		/**
-         * Checks if the character is a hyphen character.
-         * 
-         * @return true if the character is a hyphen character, false otherwise.
-         */
-        boolean isHyphenCharacter() {
+		 * Checks if the character is a hyphen character.
+		 * @return true if the character is a hyphen character, false otherwise.
+		 */
+		boolean isHyphenCharacter() {
 			return this.character == '-';
 		}
 
@@ -464,32 +450,29 @@ class OriginTrackedPropertiesLoader {
 		private final Map<String, OriginTrackedValue> values = new LinkedHashMap<>();
 
 		/**
-         * Puts a key-value pair into the document.
-         * 
-         * @param key   the key to be associated with the value
-         * @param value the value to be stored
-         */
-        void put(String key, OriginTrackedValue value) {
+		 * Puts a key-value pair into the document.
+		 * @param key the key to be associated with the value
+		 * @param value the value to be stored
+		 */
+		void put(String key, OriginTrackedValue value) {
 			if (!key.isEmpty()) {
 				this.values.put(key, value);
 			}
 		}
 
 		/**
-         * Returns true if the document is empty, false otherwise.
-         * 
-         * @return true if the document is empty, false otherwise
-         */
-        boolean isEmpty() {
+		 * Returns true if the document is empty, false otherwise.
+		 * @return true if the document is empty, false otherwise
+		 */
+		boolean isEmpty() {
 			return this.values.isEmpty();
 		}
 
 		/**
-         * Returns a map representation of the values in the Document.
-         *
-         * @return a map containing the values in the Document
-         */
-        Map<String, OriginTrackedValue> asMap() {
+		 * Returns a map representation of the values in the Document.
+		 * @return a map containing the values in the Document
+		 */
+		Map<String, OriginTrackedValue> asMap() {
 			return this.values;
 		}
 

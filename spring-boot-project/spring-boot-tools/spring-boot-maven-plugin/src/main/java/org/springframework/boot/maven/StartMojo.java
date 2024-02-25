@@ -92,16 +92,15 @@ public class StartMojo extends AbstractRunMojo {
 	private Boolean useTestClasspath;
 
 	/**
-     * Runs the Java process asynchronously using the provided process executor.
-     * 
-     * @param processExecutor         The JavaProcessExecutor used to run the process.
-     * @param workingDirectory        The working directory for the process.
-     * @param args                    The list of arguments for the process.
-     * @param environmentVariables   The map of environment variables for the process.
-     * @throws MojoExecutionException If an error occurs during the execution of the Mojo.
-     * @throws MojoFailureException   If the Mojo fails to execute.
-     */
-    @Override
+	 * Runs the Java process asynchronously using the provided process executor.
+	 * @param processExecutor The JavaProcessExecutor used to run the process.
+	 * @param workingDirectory The working directory for the process.
+	 * @param args The list of arguments for the process.
+	 * @param environmentVariables The map of environment variables for the process.
+	 * @throws MojoExecutionException If an error occurs during the execution of the Mojo.
+	 * @throws MojoFailureException If the Mojo fails to execute.
+	 */
+	@Override
 	protected void run(JavaProcessExecutor processExecutor, File workingDirectory, List<String> args,
 			Map<String, String> environmentVariables) throws MojoExecutionException, MojoFailureException {
 		RunProcess runProcess = processExecutor.runAsync(workingDirectory, args, environmentVariables);
@@ -115,11 +114,10 @@ public class StartMojo extends AbstractRunMojo {
 	}
 
 	/**
-     * Resolves the application arguments for the StartMojo class.
-     * 
-     * @return the resolved RunArguments object containing the application arguments
-     */
-    @Override
+	 * Resolves the application arguments for the StartMojo class.
+	 * @return the resolved RunArguments object containing the application arguments
+	 */
+	@Override
 	protected RunArguments resolveApplicationArguments() {
 		RunArguments applicationArguments = super.resolveApplicationArguments();
 		applicationArguments.getArgs().addLast(ENABLE_MBEAN_PROPERTY);
@@ -128,12 +126,11 @@ public class StartMojo extends AbstractRunMojo {
 	}
 
 	/**
-     * Resolves the JVM arguments for starting the application.
-     * Adds the necessary arguments for enabling JMX remote management.
-     * 
-     * @return The resolved JVM arguments.
-     */
-    @Override
+	 * Resolves the JVM arguments for starting the application. Adds the necessary
+	 * arguments for enabling JMX remote management.
+	 * @return The resolved JVM arguments.
+	 */
+	@Override
 	protected RunArguments resolveJvmArguments() {
 		RunArguments jvmArguments = super.resolveJvmArguments();
 		List<String> remoteJmxArguments = new ArrayList<>();
@@ -147,12 +144,14 @@ public class StartMojo extends AbstractRunMojo {
 	}
 
 	/**
-     * Waits for the Spring Boot application to start by connecting to the local MBeanServer at the specified port.
-     * 
-     * @throws MojoFailureException if the JMX MBean server was not reachable before the configured timeout
-     * @throws MojoExecutionException if there was an error connecting to the MBean server or if the connection failed
-     */
-    private void waitForSpringApplication() throws MojoFailureException, MojoExecutionException {
+	 * Waits for the Spring Boot application to start by connecting to the local
+	 * MBeanServer at the specified port.
+	 * @throws MojoFailureException if the JMX MBean server was not reachable before the
+	 * configured timeout
+	 * @throws MojoExecutionException if there was an error connecting to the MBean server
+	 * or if the connection failed
+	 */
+	private void waitForSpringApplication() throws MojoFailureException, MojoExecutionException {
 		try {
 			getLog().debug("Connecting to local MBeanServer at port " + this.jmxPort);
 			try (JMXConnector connector = execute(this.wait, this.maxAttempts, new CreateJmxConnector(this.jmxPort))) {
@@ -175,13 +174,16 @@ public class StartMojo extends AbstractRunMojo {
 	}
 
 	/**
-     * Waits for the Spring application to be ready using the provided MBeanServerConnection.
-     * 
-     * @param connection the MBeanServerConnection to use for communication with the Spring application
-     * @throws MojoExecutionException if an error occurs while waiting for the Spring application to be ready
-     * @throws MojoFailureException if an error occurs while invoking the shutdown operation
-     */
-    private void doWaitForSpringApplication(MBeanServerConnection connection)
+	 * Waits for the Spring application to be ready using the provided
+	 * MBeanServerConnection.
+	 * @param connection the MBeanServerConnection to use for communication with the
+	 * Spring application
+	 * @throws MojoExecutionException if an error occurs while waiting for the Spring
+	 * application to be ready
+	 * @throws MojoFailureException if an error occurs while invoking the shutdown
+	 * operation
+	 */
+	private void doWaitForSpringApplication(MBeanServerConnection connection)
 			throws MojoExecutionException, MojoFailureException {
 		final SpringApplicationAdminClient client = new SpringApplicationAdminClient(connection, this.jmxName);
 		try {
@@ -229,38 +231,35 @@ public class StartMojo extends AbstractRunMojo {
 	}
 
 	/**
-     * Returns the value of the flag indicating whether to use the test classpath.
-     *
-     * @return {@code true} if the test classpath should be used, {@code false} otherwise.
-     */
-    @Override
+	 * Returns the value of the flag indicating whether to use the test classpath.
+	 * @return {@code true} if the test classpath should be used, {@code false} otherwise.
+	 */
+	@Override
 	protected boolean isUseTestClasspath() {
 		return this.useTestClasspath;
 	}
 
 	/**
-     * CreateJmxConnector class.
-     */
-    private class CreateJmxConnector implements Callable<JMXConnector> {
+	 * CreateJmxConnector class.
+	 */
+	private class CreateJmxConnector implements Callable<JMXConnector> {
 
 		private final int port;
 
 		/**
-         * Creates a JMX connector with the specified port.
-         * 
-         * @param port the port number to use for the JMX connector
-         */
-        CreateJmxConnector(int port) {
+		 * Creates a JMX connector with the specified port.
+		 * @param port the port number to use for the JMX connector
+		 */
+		CreateJmxConnector(int port) {
 			this.port = port;
 		}
 
 		/**
-         * Calls the method to establish a JMX connection.
-         * 
-         * @return the JMXConnector object representing the connection
-         * @throws Exception if an error occurs during the connection establishment
-         */
-        @Override
+		 * Calls the method to establish a JMX connection.
+		 * @return the JMXConnector object representing the connection
+		 * @throws Exception if an error occurs during the connection establishment
+		 */
+		@Override
 		public JMXConnector call() throws Exception {
 			try {
 				return SpringApplicationAdminClient.connect(this.port);
@@ -276,13 +275,14 @@ public class StartMojo extends AbstractRunMojo {
 		}
 
 		/**
-         * Checks if the given Throwable or any of its causes is an instance of the specified Exception type.
-         * 
-         * @param t    the Throwable to check
-         * @param type the Class representing the Exception type to check against
-         * @return true if the Throwable or any of its causes is an instance of the specified Exception type, false otherwise
-         */
-        private boolean hasCauseWithType(Throwable t, Class<? extends Exception> type) {
+		 * Checks if the given Throwable or any of its causes is an instance of the
+		 * specified Exception type.
+		 * @param t the Throwable to check
+		 * @param type the Class representing the Exception type to check against
+		 * @return true if the Throwable or any of its causes is an instance of the
+		 * specified Exception type, false otherwise
+		 */
+		private boolean hasCauseWithType(Throwable t, Class<? extends Exception> type) {
 			return type.isAssignableFrom(t.getClass()) || t.getCause() != null && hasCauseWithType(t.getCause(), type);
 		}
 

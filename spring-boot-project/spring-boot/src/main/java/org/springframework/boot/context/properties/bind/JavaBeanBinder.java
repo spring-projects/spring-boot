@@ -52,15 +52,15 @@ class JavaBeanBinder implements DataObjectBinder {
 	static final JavaBeanBinder INSTANCE = new JavaBeanBinder();
 
 	/**
-     * Binds the given configuration property name to the target bindable object using the provided property binder.
-     * 
-     * @param name The configuration property name to bind.
-     * @param target The bindable object to bind the configuration property to.
-     * @param context The context for the binding operation.
-     * @param propertyBinder The property binder to use for binding.
-     * @return The bound object if the binding was successful, otherwise null.
-     */
-    @Override
+	 * Binds the given configuration property name to the target bindable object using the
+	 * provided property binder.
+	 * @param name The configuration property name to bind.
+	 * @param target The bindable object to bind the configuration property to.
+	 * @param context The context for the binding operation.
+	 * @param propertyBinder The property binder to use for binding.
+	 * @return The bound object if the binding was successful, otherwise null.
+	 */
+	@Override
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
 			DataObjectPropertyBinder propertyBinder) {
 		boolean hasKnownBindableProperties = target.getValue() != null && hasKnownBindableProperties(name, context);
@@ -74,15 +74,16 @@ class JavaBeanBinder implements DataObjectBinder {
 	}
 
 	/**
-     * Creates an instance of the specified target type using the provided context.
-     * 
-     * @param target the target type to create an instance of
-     * @param context the context used for creating the instance
-     * @return an instance of the target type, or null if the target type cannot be resolved
-     * @throws IllegalArgumentException if the target type is not a valid bindable type
-     * @throws BeanInstantiationException if an error occurs while instantiating the target type
-     */
-    @Override
+	 * Creates an instance of the specified target type using the provided context.
+	 * @param target the target type to create an instance of
+	 * @param context the context used for creating the instance
+	 * @return an instance of the target type, or null if the target type cannot be
+	 * resolved
+	 * @throws IllegalArgumentException if the target type is not a valid bindable type
+	 * @throws BeanInstantiationException if an error occurs while instantiating the
+	 * target type
+	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T create(Bindable<T> target, Context context) {
 		Class<T> type = (Class<T>) target.getType().resolve();
@@ -90,13 +91,14 @@ class JavaBeanBinder implements DataObjectBinder {
 	}
 
 	/**
-     * Checks if the given ConfigurationPropertyName has any known bindable properties in the provided Context.
-     * 
-     * @param name the ConfigurationPropertyName to check
-     * @param context the Context containing the ConfigurationPropertySources to search in
-     * @return true if the ConfigurationPropertyName has known bindable properties, false otherwise
-     */
-    private boolean hasKnownBindableProperties(ConfigurationPropertyName name, Context context) {
+	 * Checks if the given ConfigurationPropertyName has any known bindable properties in
+	 * the provided Context.
+	 * @param name the ConfigurationPropertyName to check
+	 * @param context the Context containing the ConfigurationPropertySources to search in
+	 * @return true if the ConfigurationPropertyName has known bindable properties, false
+	 * otherwise
+	 */
+	private boolean hasKnownBindableProperties(ConfigurationPropertyName name, Context context) {
 		for (ConfigurationPropertySource source : context.getSources()) {
 			if (source.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT) {
 				return true;
@@ -106,15 +108,15 @@ class JavaBeanBinder implements DataObjectBinder {
 	}
 
 	/**
-     * Binds the properties of a bean using the provided property binder and bean supplier.
-     * 
-     * @param propertyBinder the data object property binder
-     * @param bean the bean to bind
-     * @param beanSupplier the bean supplier
-     * @param context the context
-     * @return true if any properties were bound, false otherwise
-     */
-    private <T> boolean bind(DataObjectPropertyBinder propertyBinder, Bean<T> bean, BeanSupplier<T> beanSupplier,
+	 * Binds the properties of a bean using the provided property binder and bean
+	 * supplier.
+	 * @param propertyBinder the data object property binder
+	 * @param bean the bean to bind
+	 * @param beanSupplier the bean supplier
+	 * @param context the context
+	 * @return true if any properties were bound, false otherwise
+	 */
+	private <T> boolean bind(DataObjectPropertyBinder propertyBinder, Bean<T> bean, BeanSupplier<T> beanSupplier,
 			Context context) {
 		boolean bound = false;
 		for (BeanProperty beanProperty : bean.getProperties().values()) {
@@ -125,16 +127,17 @@ class JavaBeanBinder implements DataObjectBinder {
 	}
 
 	/**
-     * Binds a property of a JavaBean using the provided bean supplier, property binder, and bean property.
-     * 
-     * @param <T> the type of the bean
-     * @param beanSupplier the supplier for the bean
-     * @param propertyBinder the property binder to use for binding the property
-     * @param property the bean property to bind
-     * @return true if the property was successfully bound, false otherwise
-     * @throws IllegalStateException if no setter is found for the property and the value is not null or does not match the current value
-     */
-    private <T> boolean bind(BeanSupplier<T> beanSupplier, DataObjectPropertyBinder propertyBinder,
+	 * Binds a property of a JavaBean using the provided bean supplier, property binder,
+	 * and bean property.
+	 * @param <T> the type of the bean
+	 * @param beanSupplier the supplier for the bean
+	 * @param propertyBinder the property binder to use for binding the property
+	 * @param property the bean property to bind
+	 * @return true if the property was successfully bound, false otherwise
+	 * @throws IllegalStateException if no setter is found for the property and the value
+	 * is not null or does not match the current value
+	 */
+	private <T> boolean bind(BeanSupplier<T> beanSupplier, DataObjectPropertyBinder propertyBinder,
 			BeanProperty property) {
 		String propertyName = property.getName();
 		ResolvableType type = property.getType();
@@ -166,23 +169,22 @@ class JavaBeanBinder implements DataObjectBinder {
 		private final Class<?> resolvedType;
 
 		/**
-         * Constructs a new instance of BeanProperties with the specified ResolvableType and resolvedType.
-         * 
-         * @param type the ResolvableType representing the type of the bean
-         * @param resolvedType the Class representing the resolved type of the bean
-         */
-        BeanProperties(ResolvableType type, Class<?> resolvedType) {
+		 * Constructs a new instance of BeanProperties with the specified ResolvableType
+		 * and resolvedType.
+		 * @param type the ResolvableType representing the type of the bean
+		 * @param resolvedType the Class representing the resolved type of the bean
+		 */
+		BeanProperties(ResolvableType type, Class<?> resolvedType) {
 			this.type = type;
 			this.resolvedType = resolvedType;
 			addProperties(resolvedType);
 		}
 
 		/**
-         * Adds properties to the given class and its superclasses.
-         * 
-         * @param type the class to add properties to
-         */
-        private void addProperties(Class<?> type) {
+		 * Adds properties to the given class and its superclasses.
+		 * @param type the class to add properties to
+		 */
+		private void addProperties(Class<?> type) {
 			while (type != null && !Object.class.equals(type)) {
 				Method[] declaredMethods = getSorted(type, this::getDeclaredMethods, Method::getName);
 				Field[] declaredFields = getSorted(type, Class::getDeclaredFields, Field::getName);
@@ -192,12 +194,11 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Retrieves an array of all declared methods of the specified class.
-         * 
-         * @param type the class for which to retrieve the declared methods
-         * @return an array of all declared methods of the specified class
-         */
-        private Method[] getDeclaredMethods(Class<?> type) {
+		 * Retrieves an array of all declared methods of the specified class.
+		 * @param type the class for which to retrieve the declared methods
+		 * @return an array of all declared methods of the specified class
+		 */
+		private Method[] getDeclaredMethods(Class<?> type) {
 			Method[] methods = type.getDeclaredMethods();
 			Set<Method> result = new LinkedHashSet<>(methods.length);
 			for (Method method : methods) {
@@ -207,28 +208,31 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Returns an array of elements sorted in ascending order based on the provided name function.
-         * 
-         * @param <S> the type of the source object
-         * @param <E> the type of the elements in the array
-         * @param source the source object from which to retrieve the elements
-         * @param elements a function that retrieves an array of elements from the source object
-         * @param name a function that maps an element to its name
-         * @return an array of elements sorted in ascending order based on the provided name function
-         */
-        private <S, E> E[] getSorted(S source, Function<S, E[]> elements, Function<E, String> name) {
+		 * Returns an array of elements sorted in ascending order based on the provided
+		 * name function.
+		 * @param <S> the type of the source object
+		 * @param <E> the type of the elements in the array
+		 * @param source the source object from which to retrieve the elements
+		 * @param elements a function that retrieves an array of elements from the source
+		 * object
+		 * @param name a function that maps an element to its name
+		 * @return an array of elements sorted in ascending order based on the provided
+		 * name function
+		 */
+		private <S, E> E[] getSorted(S source, Function<S, E[]> elements, Function<E, String> name) {
 			E[] result = elements.apply(source);
 			Arrays.sort(result, Comparator.comparing(name));
 			return result;
 		}
 
 		/**
-         * Adds properties to the BeanProperties class.
-         * 
-         * @param declaredMethods an array of Method objects representing the declared methods
-         * @param declaredFields an array of Field objects representing the declared fields
-         */
-        protected void addProperties(Method[] declaredMethods, Field[] declaredFields) {
+		 * Adds properties to the BeanProperties class.
+		 * @param declaredMethods an array of Method objects representing the declared
+		 * methods
+		 * @param declaredFields an array of Field objects representing the declared
+		 * fields
+		 */
+		protected void addProperties(Method[] declaredMethods, Field[] declaredFields) {
 			for (int i = 0; i < declaredMethods.length; i++) {
 				if (!isCandidate(declaredMethods[i])) {
 					declaredMethods[i] = null;
@@ -249,12 +253,11 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Checks if the given method is a valid candidate for processing.
-         * 
-         * @param method the method to be checked
-         * @return true if the method is a valid candidate, false otherwise
-         */
-        private boolean isCandidate(Method method) {
+		 * Checks if the given method is a valid candidate for processing.
+		 * @param method the method to be checked
+		 * @return true if the method is a valid candidate, false otherwise
+		 */
+		private boolean isCandidate(Method method) {
 			int modifiers = method.getModifiers();
 			return !Modifier.isPrivate(modifiers) && !Modifier.isProtected(modifiers) && !Modifier.isAbstract(modifiers)
 					&& !Modifier.isStatic(modifiers) && !method.isBridge()
@@ -263,14 +266,13 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Adds a method to the BeanProperties if it meets the specified conditions.
-         * 
-         * @param method          the method to be added
-         * @param prefix          the prefix that the method name should start with
-         * @param parameterCount  the number of parameters the method should have
-         * @param consumer        the consumer function to be applied if the method is added
-         */
-        private void addMethodIfPossible(Method method, String prefix, int parameterCount,
+		 * Adds a method to the BeanProperties if it meets the specified conditions.
+		 * @param method the method to be added
+		 * @param prefix the prefix that the method name should start with
+		 * @param parameterCount the number of parameters the method should have
+		 * @param consumer the consumer function to be applied if the method is added
+		 */
+		private void addMethodIfPossible(Method method, String prefix, int parameterCount,
 				BiConsumer<BeanProperty, Method> consumer) {
 			if (method != null && method.getParameterCount() == parameterCount && method.getName().startsWith(prefix)
 					&& method.getName().length() > prefix.length()) {
@@ -280,21 +282,19 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Returns a BeanProperty object with the specified name and type.
-         *
-         * @param name the name of the bean property
-         * @return a BeanProperty object
-         */
-        private BeanProperty getBeanProperty(String name) {
+		 * Returns a BeanProperty object with the specified name and type.
+		 * @param name the name of the bean property
+		 * @return a BeanProperty object
+		 */
+		private BeanProperty getBeanProperty(String name) {
 			return new BeanProperty(name, this.type);
 		}
 
 		/**
-         * Adds a field to the BeanProperties object.
-         * 
-         * @param field the Field object to be added
-         */
-        private void addField(Field field) {
+		 * Adds a field to the BeanProperties object.
+		 * @param field the Field object to be added
+		 */
+		private void addField(Field field) {
 			BeanProperty property = this.properties.get(field.getName());
 			if (property != null) {
 				property.addField(field);
@@ -302,39 +302,35 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Returns the ResolvableType of the current instance.
-         *
-         * @return the ResolvableType of the current instance
-         */
-        protected final ResolvableType getType() {
+		 * Returns the ResolvableType of the current instance.
+		 * @return the ResolvableType of the current instance
+		 */
+		protected final ResolvableType getType() {
 			return this.type;
 		}
 
 		/**
-         * Returns the resolved type of the bean property.
-         *
-         * @return the resolved type of the bean property
-         */
-        protected final Class<?> getResolvedType() {
+		 * Returns the resolved type of the bean property.
+		 * @return the resolved type of the bean property
+		 */
+		protected final Class<?> getResolvedType() {
 			return this.resolvedType;
 		}
 
 		/**
-         * Returns the properties of the BeanProperties object.
-         *
-         * @return a Map containing the properties of the BeanProperties object
-         */
-        final Map<String, BeanProperty> getProperties() {
+		 * Returns the properties of the BeanProperties object.
+		 * @return a Map containing the properties of the BeanProperties object
+		 */
+		final Map<String, BeanProperty> getProperties() {
 			return this.properties;
 		}
 
 		/**
-         * Returns the BeanProperties object for the given Bindable.
-         * 
-         * @param bindable the Bindable object for which to retrieve the BeanProperties
-         * @return the BeanProperties object
-         */
-        static BeanProperties of(Bindable<?> bindable) {
+		 * Returns the BeanProperties object for the given Bindable.
+		 * @param bindable the Bindable object for which to retrieve the BeanProperties
+		 * @return the BeanProperties object
+		 */
+		static BeanProperties of(Bindable<?> bindable) {
 			ResolvableType type = bindable.getType();
 			Class<?> resolvedType = type.resolve(Object.class);
 			return new BeanProperties(type, resolvedType);
@@ -352,22 +348,20 @@ class JavaBeanBinder implements DataObjectBinder {
 		private static Bean<?> cached;
 
 		/**
-         * Constructs a new Bean instance with the specified type and resolved type.
-         * 
-         * @param type the ResolvableType of the bean
-         * @param resolvedType the Class representing the resolved type of the bean
-         */
-        Bean(ResolvableType type, Class<?> resolvedType) {
+		 * Constructs a new Bean instance with the specified type and resolved type.
+		 * @param type the ResolvableType of the bean
+		 * @param resolvedType the Class representing the resolved type of the bean
+		 */
+		Bean(ResolvableType type, Class<?> resolvedType) {
 			super(type, resolvedType);
 		}
 
 		/**
-         * Returns a BeanSupplier for the given Bindable target.
-         * 
-         * @param target the Bindable target
-         * @return a BeanSupplier for the given Bindable target
-         */
-        @SuppressWarnings("unchecked")
+		 * Returns a BeanSupplier for the given Bindable target.
+		 * @param target the Bindable target
+		 * @return a BeanSupplier for the given Bindable target
+		 */
+		@SuppressWarnings("unchecked")
 		BeanSupplier<T> getSupplier(Bindable<T> target) {
 			return new BeanSupplier<>(() -> {
 				T instance = null;
@@ -382,14 +376,15 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Retrieves a Bean instance based on the provided Bindable and canCallGetValue parameters.
-         * 
-         * @param bindable The Bindable object representing the type of the Bean.
-         * @param canCallGetValue A boolean indicating whether the getValue method can be called on the Bindable object.
-         * @param <T> The type of the Bean.
-         * @return The Bean instance.
-         */
-        @SuppressWarnings("unchecked")
+		 * Retrieves a Bean instance based on the provided Bindable and canCallGetValue
+		 * parameters.
+		 * @param bindable The Bindable object representing the type of the Bean.
+		 * @param canCallGetValue A boolean indicating whether the getValue method can be
+		 * called on the Bindable object.
+		 * @param <T> The type of the Bean.
+		 * @return The Bean instance.
+		 */
+		@SuppressWarnings("unchecked")
 		static <T> Bean<T> get(Bindable<T> bindable, boolean canCallGetValue) {
 			ResolvableType type = bindable.getType();
 			Class<?> resolvedType = type.resolve(Object.class);
@@ -411,12 +406,11 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Checks if a given class is instantiable.
-         * 
-         * @param type the class to check
-         * @return true if the class is instantiable, false otherwise
-         */
-        private static boolean isInstantiable(Class<?> type) {
+		 * Checks if a given class is instantiable.
+		 * @param type the class to check
+		 * @return true if the class is instantiable, false otherwise
+		 */
+		private static boolean isInstantiable(Class<?> type) {
 			if (type.isInterface()) {
 				return false;
 			}
@@ -430,13 +424,13 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Checks if the given ResolvableType is of the specified resolved type.
-         * 
-         * @param type the ResolvableType to check
-         * @param resolvedType the resolved type to compare against
-         * @return true if the ResolvableType is of the specified resolved type, false otherwise
-         */
-        private boolean isOfType(ResolvableType type, Class<?> resolvedType) {
+		 * Checks if the given ResolvableType is of the specified resolved type.
+		 * @param type the ResolvableType to check
+		 * @param resolvedType the resolved type to compare against
+		 * @return true if the ResolvableType is of the specified resolved type, false
+		 * otherwise
+		 */
+		private boolean isOfType(ResolvableType type, Class<?> resolvedType) {
 			if (getType().hasGenerics() || type.hasGenerics()) {
 				return getType().equals(type);
 			}
@@ -446,30 +440,28 @@ class JavaBeanBinder implements DataObjectBinder {
 	}
 
 	/**
-     * BeanSupplier class.
-     */
-    private static class BeanSupplier<T> implements Supplier<T> {
+	 * BeanSupplier class.
+	 */
+	private static class BeanSupplier<T> implements Supplier<T> {
 
 		private final Supplier<T> factory;
 
 		private T instance;
 
 		/**
-         * Constructs a new BeanSupplier with the specified factory.
-         * 
-         * @param factory the supplier function used to create new instances of type T
-         */
-        BeanSupplier(Supplier<T> factory) {
+		 * Constructs a new BeanSupplier with the specified factory.
+		 * @param factory the supplier function used to create new instances of type T
+		 */
+		BeanSupplier(Supplier<T> factory) {
 			this.factory = factory;
 		}
 
 		/**
-         * Returns the instance of the bean.
-         * If the instance is null, it creates a new instance using the factory and returns it.
-         * 
-         * @return the instance of the bean
-         */
-        @Override
+		 * Returns the instance of the bean. If the instance is null, it creates a new
+		 * instance using the factory and returns it.
+		 * @return the instance of the bean
+		 */
+		@Override
 		public T get() {
 			if (this.instance == null) {
 				this.instance = this.factory.get();
@@ -495,77 +487,73 @@ class JavaBeanBinder implements DataObjectBinder {
 		private Field field;
 
 		/**
-         * Constructs a new BeanProperty with the specified name and declaring class type.
-         * 
-         * @param name the name of the property
-         * @param declaringClassType the ResolvableType representing the declaring class of the property
-         */
-        BeanProperty(String name, ResolvableType declaringClassType) {
+		 * Constructs a new BeanProperty with the specified name and declaring class type.
+		 * @param name the name of the property
+		 * @param declaringClassType the ResolvableType representing the declaring class
+		 * of the property
+		 */
+		BeanProperty(String name, ResolvableType declaringClassType) {
 			this.name = DataObjectPropertyName.toDashedForm(name);
 			this.declaringClassType = declaringClassType;
 		}
 
 		/**
-         * Adds a getter method to the BeanProperty.
-         * 
-         * @param getter the getter method to be added
-         */
-        void addGetter(Method getter) {
+		 * Adds a getter method to the BeanProperty.
+		 * @param getter the getter method to be added
+		 */
+		void addGetter(Method getter) {
 			if (this.getter == null || this.getter.getName().startsWith("is")) {
 				this.getter = getter;
 			}
 		}
 
 		/**
-         * Adds a setter method to the BeanProperty.
-         * 
-         * @param setter the setter method to be added
-         */
-        void addSetter(Method setter) {
+		 * Adds a setter method to the BeanProperty.
+		 * @param setter the setter method to be added
+		 */
+		void addSetter(Method setter) {
 			if (this.setter == null || isBetterSetter(setter)) {
 				this.setter = setter;
 			}
 		}
 
 		/**
-         * Checks if the given setter method is a better setter than the existing getter method.
-         * 
-         * @param setter the setter method to be checked
-         * @return true if the setter method is a better setter, false otherwise
-         */
-        private boolean isBetterSetter(Method setter) {
+		 * Checks if the given setter method is a better setter than the existing getter
+		 * method.
+		 * @param setter the setter method to be checked
+		 * @return true if the setter method is a better setter, false otherwise
+		 */
+		private boolean isBetterSetter(Method setter) {
 			return this.getter != null && this.getter.getReturnType().equals(setter.getParameterTypes()[0]);
 		}
 
 		/**
-         * Adds a field to the BeanProperty.
-         * 
-         * @param field the field to be added
-         */
-        void addField(Field field) {
+		 * Adds a field to the BeanProperty.
+		 * @param field the field to be added
+		 */
+		void addField(Field field) {
 			if (this.field == null) {
 				this.field = field;
 			}
 		}
 
 		/**
-         * Returns the name of the BeanProperty.
-         *
-         * @return the name of the BeanProperty
-         */
-        String getName() {
+		 * Returns the name of the BeanProperty.
+		 * @return the name of the BeanProperty
+		 */
+		String getName() {
 			return this.name;
 		}
 
 		/**
-         * Returns the ResolvableType of the property.
-         * 
-         * If a setter method is present, the ResolvableType is determined using the first parameter of the setter method.
-         * Otherwise, the ResolvableType is determined using the getter method with a parameter index of -1.
-         * 
-         * @return the ResolvableType of the property
-         */
-        ResolvableType getType() {
+		 * Returns the ResolvableType of the property.
+		 *
+		 * If a setter method is present, the ResolvableType is determined using the first
+		 * parameter of the setter method. Otherwise, the ResolvableType is determined
+		 * using the getter method with a parameter index of -1.
+		 * @return the ResolvableType of the property
+		 */
+		ResolvableType getType() {
 			if (this.setter != null) {
 				MethodParameter methodParameter = new MethodParameter(this.setter, 0);
 				return ResolvableType.forMethodParameter(methodParameter, this.declaringClassType);
@@ -575,11 +563,12 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Returns an array of annotations declared on the field associated with this BeanProperty.
-         * 
-         * @return an array of annotations declared on the field, or null if the field is null or an exception occurs
-         */
-        Annotation[] getAnnotations() {
+		 * Returns an array of annotations declared on the field associated with this
+		 * BeanProperty.
+		 * @return an array of annotations declared on the field, or null if the field is
+		 * null or an exception occurs
+		 */
+		Annotation[] getAnnotations() {
 			try {
 				return (this.field != null) ? this.field.getDeclaredAnnotations() : null;
 			}
@@ -589,13 +578,13 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Returns a Supplier that retrieves the value of a property using reflection.
-         * 
-         * @param instance the Supplier instance that provides the object containing the property
-         * @return a Supplier that retrieves the value of the property
-         * @throws IllegalStateException if unable to get the value for the property
-         */
-        Supplier<Object> getValue(Supplier<?> instance) {
+		 * Returns a Supplier that retrieves the value of a property using reflection.
+		 * @param instance the Supplier instance that provides the object containing the
+		 * property
+		 * @return a Supplier that retrieves the value of the property
+		 * @throws IllegalStateException if unable to get the value for the property
+		 */
+		Supplier<Object> getValue(Supplier<?> instance) {
 			if (this.getter == null) {
 				return null;
 			}
@@ -614,34 +603,32 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Checks if the given exception is an uninitialized Kotlin property exception.
-         * 
-         * @param ex the exception to check
-         * @return true if the exception is an uninitialized Kotlin property exception, false otherwise
-         */
-        private boolean isUninitializedKotlinProperty(Exception ex) {
+		 * Checks if the given exception is an uninitialized Kotlin property exception.
+		 * @param ex the exception to check
+		 * @return true if the exception is an uninitialized Kotlin property exception,
+		 * false otherwise
+		 */
+		private boolean isUninitializedKotlinProperty(Exception ex) {
 			return (ex instanceof InvocationTargetException invocationTargetException)
 					&& "kotlin.UninitializedPropertyAccessException"
 						.equals(invocationTargetException.getTargetException().getClass().getName());
 		}
 
 		/**
-         * Returns a boolean value indicating whether the property is settable.
-         * 
-         * @return true if the property is settable, false otherwise
-         */
-        boolean isSettable() {
+		 * Returns a boolean value indicating whether the property is settable.
+		 * @return true if the property is settable, false otherwise
+		 */
+		boolean isSettable() {
 			return this.setter != null;
 		}
 
 		/**
-         * Sets the value of the property using the provided instance and value.
-         *
-         * @param instance the supplier that provides the instance of the object
-         * @param value the value to be set for the property
-         * @throws IllegalStateException if unable to set the value for the property
-         */
-        void setValue(Supplier<?> instance, Object value) {
+		 * Sets the value of the property using the provided instance and value.
+		 * @param instance the supplier that provides the instance of the object
+		 * @param value the value to be set for the property
+		 * @throws IllegalStateException if unable to set the value for the property
+		 */
+		void setValue(Supplier<?> instance, Object value) {
 			try {
 				this.setter.setAccessible(true);
 				this.setter.invoke(instance.get(), value);
@@ -652,20 +639,18 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		/**
-         * Returns the getter method of the BeanProperty.
-         *
-         * @return the getter method of the BeanProperty
-         */
-        Method getGetter() {
+		 * Returns the getter method of the BeanProperty.
+		 * @return the getter method of the BeanProperty
+		 */
+		Method getGetter() {
 			return this.getter;
 		}
 
 		/**
-         * Returns the setter method associated with this BeanProperty.
-         *
-         * @return the setter method associated with this BeanProperty
-         */
-        Method getSetter() {
+		 * Returns the setter method associated with this BeanProperty.
+		 * @return the setter method associated with this BeanProperty
+		 */
+		Method getSetter() {
 			return this.setter;
 		}
 

@@ -30,22 +30,21 @@ import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
 class FlywayMigrationInitializerDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
 
 	/**
-     * Returns the set of bean types for the database initializer.
-     * 
-     * @return the set of bean types for the database initializer
-     */
-    @Override
+	 * Returns the set of bean types for the database initializer.
+	 * @return the set of bean types for the database initializer
+	 */
+	@Override
 	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		return Collections.singleton(FlywayMigrationInitializer.class);
 	}
 
 	/**
-     * Returns the order of this FlywayMigrationInitializerDatabaseInitializerDetector.
-     * The order determines the priority of this detector when multiple detectors are present.
-     * 
-     * @return the order of this detector
-     */
-    @Override
+	 * Returns the order of this FlywayMigrationInitializerDatabaseInitializerDetector.
+	 * The order determines the priority of this detector when multiple detectors are
+	 * present.
+	 * @return the order of this detector
+	 */
+	@Override
 	public int getOrder() {
 		return 1;
 	}

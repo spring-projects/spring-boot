@@ -29,55 +29,50 @@ class KairosPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<
 		implements KairosConfig {
 
 	/**
-     * Constructs a new KairosPropertiesConfigAdapter with the specified KairosProperties.
-     * 
-     * @param properties the KairosProperties to be used for configuring the adapter
-     */
-    KairosPropertiesConfigAdapter(KairosProperties properties) {
+	 * Constructs a new KairosPropertiesConfigAdapter with the specified KairosProperties.
+	 * @param properties the KairosProperties to be used for configuring the adapter
+	 */
+	KairosPropertiesConfigAdapter(KairosProperties properties) {
 		super(properties);
 	}
 
 	/**
-     * Returns the prefix for Kairos metrics export configuration properties.
-     *
-     * @return the prefix for Kairos metrics export configuration properties
-     */
-    @Override
+	 * Returns the prefix for Kairos metrics export configuration properties.
+	 * @return the prefix for Kairos metrics export configuration properties
+	 */
+	@Override
 	public String prefix() {
 		return "management.kairos.metrics.export";
 	}
 
 	/**
-     * Returns the URI value from the KairosPropertiesConfigAdapter class.
-     * If the URI value is not present in the KairosPropertiesConfigAdapter class,
-     * it falls back to the default URI value provided by the KairosConfig interface.
-     *
-     * @return the URI value from the KairosPropertiesConfigAdapter class,
-     *         or the default URI value from the KairosConfig interface if not present
-     */
-    @Override
+	 * Returns the URI value from the KairosPropertiesConfigAdapter class. If the URI
+	 * value is not present in the KairosPropertiesConfigAdapter class, it falls back to
+	 * the default URI value provided by the KairosConfig interface.
+	 * @return the URI value from the KairosPropertiesConfigAdapter class, or the default
+	 * URI value from the KairosConfig interface if not present
+	 */
+	@Override
 	public String uri() {
 		return get(KairosProperties::getUri, KairosConfig.super::uri);
 	}
 
 	/**
-     * Returns the username for the Kairos configuration.
-     * 
-     * @return the username for the Kairos configuration
-     */
-    @Override
+	 * Returns the username for the Kairos configuration.
+	 * @return the username for the Kairos configuration
+	 */
+	@Override
 	public String userName() {
 		return get(KairosProperties::getUserName, KairosConfig.super::userName);
 	}
 
 	/**
-     * Returns the password value from the KairosPropertiesConfigAdapter class.
-     * If the password value is not present in the KairosPropertiesConfigAdapter class,
-     * it falls back to the password value from the KairosConfig interface.
-     *
-     * @return the password value
-     */
-    @Override
+	 * Returns the password value from the KairosPropertiesConfigAdapter class. If the
+	 * password value is not present in the KairosPropertiesConfigAdapter class, it falls
+	 * back to the password value from the KairosConfig interface.
+	 * @return the password value
+	 */
+	@Override
 	public String password() {
 		return get(KairosProperties::getPassword, KairosConfig.super::password);
 	}

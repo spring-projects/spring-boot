@@ -29,26 +29,24 @@ import org.springframework.format.Formatter;
 final class CharArrayFormatter implements Formatter<char[]> {
 
 	/**
-     * Converts a character array to a string representation.
-     * 
-     * @param object the character array to be converted
-     * @param locale the locale to be used for the conversion
-     * @return the string representation of the character array
-     */
-    @Override
+	 * Converts a character array to a string representation.
+	 * @param object the character array to be converted
+	 * @param locale the locale to be used for the conversion
+	 * @return the string representation of the character array
+	 */
+	@Override
 	public String print(char[] object, Locale locale) {
 		return new String(object);
 	}
 
 	/**
-     * Parses the given text into a character array.
-     * 
-     * @param text the text to be parsed
-     * @param locale the locale to be used for parsing
-     * @return the character array representation of the parsed text
-     * @throws ParseException if an error occurs during parsing
-     */
-    @Override
+	 * Parses the given text into a character array.
+	 * @param text the text to be parsed
+	 * @param locale the locale to be used for parsing
+	 * @return the character array representation of the parsed text
+	 * @throws ParseException if an error occurs during parsing
+	 */
+	@Override
 	public char[] parse(String text, Locale locale) throws ParseException {
 		return text.toCharArray();
 	}

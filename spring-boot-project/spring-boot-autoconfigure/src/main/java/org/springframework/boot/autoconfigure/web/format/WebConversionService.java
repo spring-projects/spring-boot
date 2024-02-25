@@ -65,11 +65,10 @@ public class WebConversionService extends DefaultFormattingConversionService {
 	}
 
 	/**
-     * Adds formatters to the given DateTimeFormatters object.
-     * 
-     * @param dateTimeFormatters the DateTimeFormatters object to add formatters to
-     */
-    private void addFormatters(DateTimeFormatters dateTimeFormatters) {
+	 * Adds formatters to the given DateTimeFormatters object.
+	 * @param dateTimeFormatters the DateTimeFormatters object to add formatters to
+	 */
+	private void addFormatters(DateTimeFormatters dateTimeFormatters) {
 		addFormatterForFieldAnnotation(new NumberFormatAnnotationFormatterFactory());
 		if (JSR_354_PRESENT) {
 			addFormatter(new CurrencyUnitFormatter());
@@ -81,11 +80,11 @@ public class WebConversionService extends DefaultFormattingConversionService {
 	}
 
 	/**
-     * Registers JSR-310 DateTimeFormatters with the given DateTimeFormatters object.
-     * 
-     * @param dateTimeFormatters the DateTimeFormatters object to register the formatters with
-     */
-    private void registerJsr310(DateTimeFormatters dateTimeFormatters) {
+	 * Registers JSR-310 DateTimeFormatters with the given DateTimeFormatters object.
+	 * @param dateTimeFormatters the DateTimeFormatters object to register the formatters
+	 * with
+	 */
+	private void registerJsr310(DateTimeFormatters dateTimeFormatters) {
 		DateTimeFormatterRegistrar dateTime = new DateTimeFormatterRegistrar();
 		configure(dateTimeFormatters::getDateFormatter, dateTime::setDateFormatter);
 		configure(dateTimeFormatters::getTimeFormatter, dateTime::setTimeFormatter);
@@ -94,12 +93,11 @@ public class WebConversionService extends DefaultFormattingConversionService {
 	}
 
 	/**
-     * Configures the DateTimeFormatter using the provided supplier and consumer.
-     * 
-     * @param supplier the supplier used to get the DateTimeFormatter
-     * @param consumer the consumer used to accept the DateTimeFormatter
-     */
-    private void configure(Supplier<DateTimeFormatter> supplier, Consumer<DateTimeFormatter> consumer) {
+	 * Configures the DateTimeFormatter using the provided supplier and consumer.
+	 * @param supplier the supplier used to get the DateTimeFormatter
+	 * @param consumer the consumer used to accept the DateTimeFormatter
+	 */
+	private void configure(Supplier<DateTimeFormatter> supplier, Consumer<DateTimeFormatter> consumer) {
 		DateTimeFormatter formatter = supplier.get();
 		if (formatter != null) {
 			consumer.accept(formatter);
@@ -107,11 +105,11 @@ public class WebConversionService extends DefaultFormattingConversionService {
 	}
 
 	/**
-     * Registers a Java Date formatter with the given DateTimeFormatters object.
-     * 
-     * @param dateTimeFormatters the DateTimeFormatters object to register the formatter with
-     */
-    private void registerJavaDate(DateTimeFormatters dateTimeFormatters) {
+	 * Registers a Java Date formatter with the given DateTimeFormatters object.
+	 * @param dateTimeFormatters the DateTimeFormatters object to register the formatter
+	 * with
+	 */
+	private void registerJavaDate(DateTimeFormatters dateTimeFormatters) {
 		DateFormatterRegistrar dateFormatterRegistrar = new DateFormatterRegistrar();
 		String datePattern = dateTimeFormatters.getDatePattern();
 		if (datePattern != null) {

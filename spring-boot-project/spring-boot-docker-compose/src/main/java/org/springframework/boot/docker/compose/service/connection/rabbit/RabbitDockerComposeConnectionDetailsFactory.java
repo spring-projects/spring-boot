@@ -40,21 +40,22 @@ class RabbitDockerComposeConnectionDetailsFactory
 	private static final int RABBITMQ_PORT = 5672;
 
 	/**
-     * Constructs a new RabbitDockerComposeConnectionDetailsFactory.
-     * 
-     * @param rabbitmqContainerNames the names of the RabbitMQ containers
-     */
-    protected RabbitDockerComposeConnectionDetailsFactory() {
+	 * Constructs a new RabbitDockerComposeConnectionDetailsFactory.
+	 * @param rabbitmqContainerNames the names of the RabbitMQ containers
+	 */
+	protected RabbitDockerComposeConnectionDetailsFactory() {
 		super(RABBITMQ_CONTAINER_NAMES);
 	}
 
 	/**
-     * Returns the RabbitConnectionDetails object for the given DockerComposeConnectionSource.
-     * 
-     * @param source the DockerComposeConnectionSource object containing the running service information
-     * @return the RabbitConnectionDetails object for the given DockerComposeConnectionSource
-     */
-    @Override
+	 * Returns the RabbitConnectionDetails object for the given
+	 * DockerComposeConnectionSource.
+	 * @param source the DockerComposeConnectionSource object containing the running
+	 * service information
+	 * @return the RabbitConnectionDetails object for the given
+	 * DockerComposeConnectionSource
+	 */
+	@Override
 	protected RabbitConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new RabbitDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -71,52 +72,51 @@ class RabbitDockerComposeConnectionDetailsFactory
 		private final List<Address> addresses;
 
 		/**
-         * Constructs a new RabbitDockerComposeConnectionDetails object with the provided RunningService.
-         * 
-         * @param service the RunningService object representing the running RabbitMQ service
-         */
-        protected RabbitDockerComposeConnectionDetails(RunningService service) {
+		 * Constructs a new RabbitDockerComposeConnectionDetails object with the provided
+		 * RunningService.
+		 * @param service the RunningService object representing the running RabbitMQ
+		 * service
+		 */
+		protected RabbitDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new RabbitEnvironment(service.env());
 			this.addresses = List.of(new Address(service.host(), service.ports().get(RABBITMQ_PORT)));
 		}
 
 		/**
-         * Returns the username associated with the RabbitMQ Docker Compose connection details.
-         *
-         * @return the username
-         */
-        @Override
+		 * Returns the username associated with the RabbitMQ Docker Compose connection
+		 * details.
+		 * @return the username
+		 */
+		@Override
 		public String getUsername() {
 			return this.environment.getUsername();
 		}
 
 		/**
-         * Returns the password for the RabbitMQ connection.
-         * 
-         * @return the password for the RabbitMQ connection
-         */
-        @Override
+		 * Returns the password for the RabbitMQ connection.
+		 * @return the password for the RabbitMQ connection
+		 */
+		@Override
 		public String getPassword() {
 			return this.environment.getPassword();
 		}
 
 		/**
-         * Returns the virtual host for the RabbitMQ connection.
-         * 
-         * @return the virtual host as a String
-         */
-        @Override
+		 * Returns the virtual host for the RabbitMQ connection.
+		 * @return the virtual host as a String
+		 */
+		@Override
 		public String getVirtualHost() {
 			return "/";
 		}
 
 		/**
-         * Returns the list of addresses associated with the RabbitDockerComposeConnectionDetails.
-         *
-         * @return the list of addresses
-         */
-        @Override
+		 * Returns the list of addresses associated with the
+		 * RabbitDockerComposeConnectionDetails.
+		 * @return the list of addresses
+		 */
+		@Override
 		public List<Address> getAddresses() {
 			return this.addresses;
 		}

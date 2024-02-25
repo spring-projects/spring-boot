@@ -28,21 +28,20 @@ import org.springframework.core.convert.converter.Converter;
 public class SampleGroovyTemplateApplication {
 
 	/**
-     * Creates a new instance of InMemoryMessageRepository and returns it as a MessageRepository.
-     * 
-     * @return the newly created InMemoryMessageRepository instance
-     */
-    @Bean
+	 * Creates a new instance of InMemoryMessageRepository and returns it as a
+	 * MessageRepository.
+	 * @return the newly created InMemoryMessageRepository instance
+	 */
+	@Bean
 	public MessageRepository messageRepository() {
 		return new InMemoryMessageRepository();
 	}
 
 	/**
-     * Returns a message converter that converts a string ID to a Message object.
-     * 
-     * @return the message converter
-     */
-    @Bean
+	 * Returns a message converter that converts a string ID to a Message object.
+	 * @return the message converter
+	 */
+	@Bean
 	public Converter<String, Message> messageConverter() {
 		return new Converter<>() {
 			@Override
@@ -53,12 +52,11 @@ public class SampleGroovyTemplateApplication {
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring Boot application by running the SpringApplication.run() method.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring Boot
+	 * application by running the SpringApplication.run() method.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleGroovyTemplateApplication.class, args);
 	}
 

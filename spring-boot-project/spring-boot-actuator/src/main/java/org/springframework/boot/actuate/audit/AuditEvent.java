@@ -92,12 +92,11 @@ public class AuditEvent implements Serializable {
 	}
 
 	/**
-     * Converts an array of strings into a map of key-value pairs.
-     * 
-     * @param data the array of strings to be converted
-     * @return a map containing the converted key-value pairs
-     */
-    private static Map<String, Object> convert(String[] data) {
+	 * Converts an array of strings into a map of key-value pairs.
+	 * @param data the array of strings to be converted
+	 * @return a map containing the converted key-value pairs
+	 */
+	private static Map<String, Object> convert(String[] data) {
 		Map<String, Object> result = new HashMap<>();
 		for (String entry : data) {
 			int index = entry.indexOf('=');
@@ -145,11 +144,10 @@ public class AuditEvent implements Serializable {
 	}
 
 	/**
-     * Returns a string representation of the AuditEvent object.
-     * 
-     * @return a string representation of the AuditEvent object
-     */
-    @Override
+	 * Returns a string representation of the AuditEvent object.
+	 * @return a string representation of the AuditEvent object
+	 */
+	@Override
 	public String toString() {
 		return "AuditEvent [timestamp=" + this.timestamp + ", principal=" + this.principal + ", type=" + this.type
 				+ ", data=" + this.data + "]";

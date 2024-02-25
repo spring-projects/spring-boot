@@ -47,9 +47,9 @@ final class ZipString {
 	private static final int EMPTY_SLASH_HASH = "/".hashCode();
 
 	/**
-     * Private constructor for the ZipString class.
-     */
-    private ZipString() {
+	 * Private constructor for the ZipString class.
+	 */
+	private ZipString() {
 	}
 
 	/**
@@ -192,18 +192,19 @@ final class ZipString {
 	}
 
 	/**
-     * Compares a sequence of bytes in a ByteBuffer with a CharSequence using a specified compare type.
-     * 
-     * @param buffer         the ByteBuffer containing the bytes to compare
-     * @param dataBlock      the DataBlock containing the data to read from
-     * @param pos            the starting position in the dataBlock
-     * @param len            the length of the data to read from the dataBlock
-     * @param charSequence   the CharSequence to compare with
-     * @param compareType    the type of comparison to perform
-     * @return               0 if the charSequence is empty, -1 if the comparison fails, or the number of bytes read if the comparison succeeds
-     * @throws IOException   if an I/O error occurs while reading the dataBlock
-     */
-    private static int compare(ByteBuffer buffer, DataBlock dataBlock, long pos, int len, CharSequence charSequence,
+	 * Compares a sequence of bytes in a ByteBuffer with a CharSequence using a specified
+	 * compare type.
+	 * @param buffer the ByteBuffer containing the bytes to compare
+	 * @param dataBlock the DataBlock containing the data to read from
+	 * @param pos the starting position in the dataBlock
+	 * @param len the length of the data to read from the dataBlock
+	 * @param charSequence the CharSequence to compare with
+	 * @param compareType the type of comparison to perform
+	 * @return 0 if the charSequence is empty, -1 if the comparison fails, or the number
+	 * of bytes read if the comparison succeeds
+	 * @throws IOException if an I/O error occurs while reading the dataBlock
+	 */
+	private static int compare(ByteBuffer buffer, DataBlock dataBlock, long pos, int len, CharSequence charSequence,
 			CompareType compareType) throws IOException {
 		if (charSequence.isEmpty()) {
 			return 0;
@@ -255,37 +256,35 @@ final class ZipString {
 	}
 
 	/**
-     * Checks if there are enough bytes in a given range.
-     * 
-     * @param byteIndex the starting index of the range
-     * @param codePointSize the size of the range
-     * @param count the total number of bytes
-     * @return true if there are enough bytes in the range, false otherwise
-     */
-    private static boolean hasEnoughBytes(int byteIndex, int codePointSize, int count) {
+	 * Checks if there are enough bytes in a given range.
+	 * @param byteIndex the starting index of the range
+	 * @param codePointSize the size of the range
+	 * @param count the total number of bytes
+	 * @return true if there are enough bytes in the range, false otherwise
+	 */
+	private static boolean hasEnoughBytes(int byteIndex, int codePointSize, int count) {
 		return (byteIndex + codePointSize - 1) < count;
 	}
 
 	/**
-     * Checks if the given character sequence ends with the specified character.
-     *
-     * @param charSequence the character sequence to check
-     * @param ch the character to compare with the last character of the sequence
-     * @return {@code true} if the sequence ends with the specified character, {@code false} otherwise
-     */
-    private static boolean endsWith(CharSequence charSequence, char ch) {
+	 * Checks if the given character sequence ends with the specified character.
+	 * @param charSequence the character sequence to check
+	 * @param ch the character to compare with the last character of the sequence
+	 * @return {@code true} if the sequence ends with the specified character,
+	 * {@code false} otherwise
+	 */
+	private static boolean endsWith(CharSequence charSequence, char ch) {
 		return !charSequence.isEmpty() && charSequence.charAt(charSequence.length() - 1) == ch;
 	}
 
 	/**
-     * Returns the character at the specified index in the given character sequence.
-     * If the index is equal to the length of the character sequence, returns '/'.
-     *
-     * @param charSequence the character sequence to retrieve the character from
-     * @param index the index of the character to be retrieved
-     * @return the character at the specified index, or '/' if the index is out of bounds
-     */
-    private static char getChar(CharSequence charSequence, int index) {
+	 * Returns the character at the specified index in the given character sequence. If
+	 * the index is equal to the length of the character sequence, returns '/'.
+	 * @param charSequence the character sequence to retrieve the character from
+	 * @param index the index of the character to be retrieved
+	 * @return the character at the specified index, or '/' if the index is out of bounds
+	 */
+	private static char getChar(CharSequence charSequence, int index) {
 		return (index != charSequence.length()) ? charSequence.charAt(index) : '/';
 	}
 
@@ -312,18 +311,18 @@ final class ZipString {
 	}
 
 	/**
-     * Reads data from a DataBlock into a ByteBuffer.
-     * 
-     * @param dataBlock the DataBlock to read from
-     * @param pos the starting position in the DataBlock
-     * @param buffer the ByteBuffer to read into
-     * @param maxLen the maximum number of bytes to read
-     * @param minLen the minimum number of bytes to read
-     * @return the total number of bytes read
-     * @throws IOException if an I/O error occurs
-     * @throws EOFException if the end of the DataBlock is reached before reading the minimum number of bytes
-     */
-    private static int readInBuffer(DataBlock dataBlock, long pos, ByteBuffer buffer, int maxLen, int minLen)
+	 * Reads data from a DataBlock into a ByteBuffer.
+	 * @param dataBlock the DataBlock to read from
+	 * @param pos the starting position in the DataBlock
+	 * @param buffer the ByteBuffer to read into
+	 * @param maxLen the maximum number of bytes to read
+	 * @param minLen the minimum number of bytes to read
+	 * @return the total number of bytes read
+	 * @throws IOException if an I/O error occurs
+	 * @throws EOFException if the end of the DataBlock is reached before reading the
+	 * minimum number of bytes
+	 */
+	private static int readInBuffer(DataBlock dataBlock, long pos, ByteBuffer buffer, int maxLen, int minLen)
 			throws IOException {
 		buffer.clear();
 		if (buffer.remaining() > maxLen) {
@@ -342,13 +341,12 @@ final class ZipString {
 	}
 
 	/**
-     * Returns the size of the code point at the specified index in the given byte array.
-     *
-     * @param bytes the byte array containing the code points
-     * @param i the index of the code point in the byte array
-     * @return the size of the code point at the specified index
-     */
-    private static int getCodePointSize(byte[] bytes, int i) {
+	 * Returns the size of the code point at the specified index in the given byte array.
+	 * @param bytes the byte array containing the code points
+	 * @param i the index of the code point in the byte array
+	 * @return the size of the code point at the specified index
+	 */
+	private static int getCodePointSize(byte[] bytes, int i) {
 		int b = Byte.toUnsignedInt(bytes[i]);
 		if ((b & 0b1_0000000) == 0b0_0000000) {
 			return 1;
@@ -363,14 +361,13 @@ final class ZipString {
 	}
 
 	/**
-     * Retrieves the code point from the given byte array at the specified index.
-     * 
-     * @param bytes         the byte array containing the code point
-     * @param i             the index of the code point in the byte array
-     * @param codePointSize the size of the code point in bytes
-     * @return              the code point value
-     */
-    private static int getCodePoint(byte[] bytes, int i, int codePointSize) {
+	 * Retrieves the code point from the given byte array at the specified index.
+	 * @param bytes the byte array containing the code point
+	 * @param i the index of the code point in the byte array
+	 * @param codePointSize the size of the code point in bytes
+	 * @return the code point value
+	 */
+	private static int getCodePoint(byte[] bytes, int i, int codePointSize) {
 		int codePoint = Byte.toUnsignedInt(bytes[i]);
 		codePoint &= INITIAL_BYTE_BITMASK[codePointSize - 1];
 		for (int j = 1; j < codePointSize; j++) {

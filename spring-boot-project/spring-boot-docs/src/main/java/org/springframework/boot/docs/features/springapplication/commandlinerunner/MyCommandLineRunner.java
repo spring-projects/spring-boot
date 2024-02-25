@@ -26,11 +26,10 @@ import org.springframework.stereotype.Component;
 public class MyCommandLineRunner implements CommandLineRunner {
 
 	/**
-     * Executes the run method with the specified arguments.
-     *
-     * @param args the command line arguments
-     */
-    @Override
+	 * Executes the run method with the specified arguments.
+	 * @param args the command line arguments
+	 */
+	@Override
 	public void run(String... args) {
 		// Do something...
 	}

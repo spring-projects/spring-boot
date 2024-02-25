@@ -28,11 +28,12 @@ import org.springframework.context.annotation.Configuration;
 public class MyMetricsFilterConfiguration {
 
 	/**
-     * Returns a MeterFilter that renames the "mytag.region" tag to "mytag.area" for the "com.example" metric.
-     *
-     * @return the MeterFilter that renames the "mytag.region" tag to "mytag.area" for the "com.example" metric
-     */
-    @Bean
+	 * Returns a MeterFilter that renames the "mytag.region" tag to "mytag.area" for the
+	 * "com.example" metric.
+	 * @return the MeterFilter that renames the "mytag.region" tag to "mytag.area" for the
+	 * "com.example" metric
+	 */
+	@Bean
 	public MeterFilter renameRegionTagMeterFilter() {
 		return MeterFilter.renameTag("com.example", "mytag.region", "mytag.area");
 	}

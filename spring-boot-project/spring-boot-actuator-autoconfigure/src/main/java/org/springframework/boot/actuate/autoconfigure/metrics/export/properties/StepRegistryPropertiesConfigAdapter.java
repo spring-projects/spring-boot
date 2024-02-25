@@ -31,11 +31,10 @@ public abstract class StepRegistryPropertiesConfigAdapter<T extends StepRegistry
 		extends PushRegistryPropertiesConfigAdapter<T> {
 
 	/**
-     * Constructs a new StepRegistryPropertiesConfigAdapter with the specified properties.
-     * 
-     * @param properties the properties to be used for configuring the adapter
-     */
-    public StepRegistryPropertiesConfigAdapter(T properties) {
+	 * Constructs a new StepRegistryPropertiesConfigAdapter with the specified properties.
+	 * @param properties the properties to be used for configuring the adapter
+	 */
+	public StepRegistryPropertiesConfigAdapter(T properties) {
 		super(properties);
 	}
 

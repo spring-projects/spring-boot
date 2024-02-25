@@ -44,21 +44,19 @@ class FileSessionPersistence implements SessionPersistenceManager {
 	private final File dir;
 
 	/**
-     * Constructs a new FileSessionPersistence object with the specified directory.
-     * 
-     * @param dir the directory where the session persistence files will be stored
-     */
-    FileSessionPersistence(File dir) {
+	 * Constructs a new FileSessionPersistence object with the specified directory.
+	 * @param dir the directory where the session persistence files will be stored
+	 */
+	FileSessionPersistence(File dir) {
 		this.dir = dir;
 	}
 
 	/**
-     * Persists the sessions for a given deployment.
-     * 
-     * @param deploymentName the name of the deployment
-     * @param sessionData a map containing the session data to be persisted
-     */
-    @Override
+	 * Persists the sessions for a given deployment.
+	 * @param deploymentName the name of the deployment
+	 * @param sessionData a map containing the session data to be persisted
+	 */
+	@Override
 	public void persistSessions(String deploymentName, Map<String, PersistentSession> sessionData) {
 		try {
 			save(sessionData, getSessionFile(deploymentName));
@@ -69,39 +67,38 @@ class FileSessionPersistence implements SessionPersistenceManager {
 	}
 
 	/**
-     * Saves the session data to a file.
-     * 
-     * @param sessionData the map containing the session data to be saved
-     * @param file the file to save the session data to
-     * @throws IOException if an I/O error occurs while saving the session data
-     */
-    private void save(Map<String, PersistentSession> sessionData, File file) throws IOException {
+	 * Saves the session data to a file.
+	 * @param sessionData the map containing the session data to be saved
+	 * @param file the file to save the session data to
+	 * @throws IOException if an I/O error occurs while saving the session data
+	 */
+	private void save(Map<String, PersistentSession> sessionData, File file) throws IOException {
 		try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file))) {
 			save(sessionData, stream);
 		}
 	}
 
 	/**
-     * Saves the session data to an ObjectOutputStream.
-     * 
-     * @param sessionData the map containing the session data
-     * @param stream the ObjectOutputStream to save the session data to
-     * @throws IOException if an I/O error occurs while saving the session data
-     */
-    private void save(Map<String, PersistentSession> sessionData, ObjectOutputStream stream) throws IOException {
+	 * Saves the session data to an ObjectOutputStream.
+	 * @param sessionData the map containing the session data
+	 * @param stream the ObjectOutputStream to save the session data to
+	 * @throws IOException if an I/O error occurs while saving the session data
+	 */
+	private void save(Map<String, PersistentSession> sessionData, ObjectOutputStream stream) throws IOException {
 		Map<String, Serializable> session = new LinkedHashMap<>();
 		sessionData.forEach((key, value) -> session.put(key, new SerializablePersistentSession(value)));
 		stream.writeObject(session);
 	}
 
 	/**
-     * Loads the session attributes from a file for a given deployment name and class loader.
-     * 
-     * @param deploymentName the name of the deployment
-     * @param classLoader the class loader to use for loading the session attributes
-     * @return a map of session attributes loaded from the file, or null if the file does not exist or an error occurs
-     */
-    @Override
+	 * Loads the session attributes from a file for a given deployment name and class
+	 * loader.
+	 * @param deploymentName the name of the deployment
+	 * @param classLoader the class loader to use for loading the session attributes
+	 * @return a map of session attributes loaded from the file, or null if the file does
+	 * not exist or an error occurs
+	 */
+	@Override
 	public Map<String, PersistentSession> loadSessionAttributes(String deploymentName, final ClassLoader classLoader) {
 		try {
 			File file = getSessionFile(deploymentName);
@@ -116,15 +113,14 @@ class FileSessionPersistence implements SessionPersistenceManager {
 	}
 
 	/**
-     * Loads a map of persistent sessions from a file using the specified class loader.
-     * 
-     * @param file the file to load the sessions from
-     * @param classLoader the class loader to use for deserialization
-     * @return a map of persistent sessions loaded from the file
-     * @throws IOException if an I/O error occurs while reading the file
-     * @throws ClassNotFoundException if the class of a serialized object cannot be found
-     */
-    private Map<String, PersistentSession> load(File file, ClassLoader classLoader)
+	 * Loads a map of persistent sessions from a file using the specified class loader.
+	 * @param file the file to load the sessions from
+	 * @param classLoader the class loader to use for deserialization
+	 * @return a map of persistent sessions loaded from the file
+	 * @throws IOException if an I/O error occurs while reading the file
+	 * @throws ClassNotFoundException if the class of a serialized object cannot be found
+	 */
+	private Map<String, PersistentSession> load(File file, ClassLoader classLoader)
 			throws IOException, ClassNotFoundException {
 		try (ObjectInputStream stream = new ConfigurableObjectInputStream(new FileInputStream(file), classLoader)) {
 			return load(stream);
@@ -132,14 +128,13 @@ class FileSessionPersistence implements SessionPersistenceManager {
 	}
 
 	/**
-     * Loads a map of persistent sessions from an ObjectInputStream.
-     * 
-     * @param stream the ObjectInputStream to read the sessions from
-     * @return a map of persistent sessions, filtered by expiration time
-     * @throws ClassNotFoundException if the class of a serialized object cannot be found
-     * @throws IOException if an I/O error occurs while reading the sessions
-     */
-    private Map<String, PersistentSession> load(ObjectInputStream stream) throws ClassNotFoundException, IOException {
+	 * Loads a map of persistent sessions from an ObjectInputStream.
+	 * @param stream the ObjectInputStream to read the sessions from
+	 * @return a map of persistent sessions, filtered by expiration time
+	 * @throws ClassNotFoundException if the class of a serialized object cannot be found
+	 * @throws IOException if an I/O error occurs while reading the sessions
+	 */
+	private Map<String, PersistentSession> load(ObjectInputStream stream) throws ClassNotFoundException, IOException {
 		Map<String, SerializablePersistentSession> session = readSession(stream);
 		long time = System.currentTimeMillis();
 		Map<String, PersistentSession> result = new LinkedHashMap<>();
@@ -153,27 +148,28 @@ class FileSessionPersistence implements SessionPersistenceManager {
 	}
 
 	/**
-     * Reads a session from an ObjectInputStream and returns it as a Map of String keys to SerializablePersistentSession values.
-     * 
-     * @param stream the ObjectInputStream to read the session from
-     * @return a Map of String keys to SerializablePersistentSession values representing the session
-     * @throws ClassNotFoundException if the class of a serialized object could not be found
-     * @throws IOException if an I/O error occurs while reading the session
-     */
-    @SuppressWarnings("unchecked")
+	 * Reads a session from an ObjectInputStream and returns it as a Map of String keys to
+	 * SerializablePersistentSession values.
+	 * @param stream the ObjectInputStream to read the session from
+	 * @return a Map of String keys to SerializablePersistentSession values representing
+	 * the session
+	 * @throws ClassNotFoundException if the class of a serialized object could not be
+	 * found
+	 * @throws IOException if an I/O error occurs while reading the session
+	 */
+	@SuppressWarnings("unchecked")
 	private Map<String, SerializablePersistentSession> readSession(ObjectInputStream stream)
 			throws ClassNotFoundException, IOException {
 		return ((Map<String, SerializablePersistentSession>) stream.readObject());
 	}
 
 	/**
-     * Returns the session file for the specified deployment name.
-     * If the directory does not exist, it creates the directory.
-     * 
-     * @param deploymentName the name of the deployment
-     * @return the session file for the specified deployment name
-     */
-    private File getSessionFile(String deploymentName) {
+	 * Returns the session file for the specified deployment name. If the directory does
+	 * not exist, it creates the directory.
+	 * @param deploymentName the name of the deployment
+	 * @return the session file for the specified deployment name
+	 */
+	private File getSessionFile(String deploymentName) {
 		if (!this.dir.exists()) {
 			this.dir.mkdirs();
 		}
@@ -181,11 +177,10 @@ class FileSessionPersistence implements SessionPersistenceManager {
 	}
 
 	/**
-     * Clears the session file for the specified deployment.
-     * 
-     * @param deploymentName the name of the deployment
-     */
-    @Override
+	 * Clears the session file for the specified deployment.
+	 * @param deploymentName the name of the deployment
+	 */
+	@Override
 	public void clear(String deploymentName) {
 		getSessionFile(deploymentName).delete();
 	}
@@ -202,21 +197,21 @@ class FileSessionPersistence implements SessionPersistenceManager {
 		private final Map<String, Object> sessionData;
 
 		/**
-         * Creates a new instance of SerializablePersistentSession by copying the properties of the given PersistentSession.
-         * 
-         * @param session the PersistentSession to be serialized
-         */
-        SerializablePersistentSession(PersistentSession session) {
+		 * Creates a new instance of SerializablePersistentSession by copying the
+		 * properties of the given PersistentSession.
+		 * @param session the PersistentSession to be serialized
+		 */
+		SerializablePersistentSession(PersistentSession session) {
 			this.expiration = session.getExpiration();
 			this.sessionData = new LinkedHashMap<>(session.getSessionData());
 		}
 
 		/**
-         * Returns a new instance of PersistentSession with the specified expiration and session data.
-         *
-         * @return a new instance of PersistentSession
-         */
-        PersistentSession getPersistentSession() {
+		 * Returns a new instance of PersistentSession with the specified expiration and
+		 * session data.
+		 * @return a new instance of PersistentSession
+		 */
+		PersistentSession getPersistentSession() {
 			return new PersistentSession(this.expiration, this.sessionData);
 		}
 

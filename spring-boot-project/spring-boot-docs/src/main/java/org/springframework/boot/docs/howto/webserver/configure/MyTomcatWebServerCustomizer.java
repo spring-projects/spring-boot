@@ -27,11 +27,10 @@ import org.springframework.stereotype.Component;
 public class MyTomcatWebServerCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
 	/**
-     * Customizes the TomcatServletWebServerFactory.
-     * 
-     * @param factory the TomcatServletWebServerFactory to be customized
-     */
-    @Override
+	 * Customizes the TomcatServletWebServerFactory.
+	 * @param factory the TomcatServletWebServerFactory to be customized
+	 */
+	@Override
 	public void customize(TomcatServletWebServerFactory factory) {
 		// customize the factory here
 	}

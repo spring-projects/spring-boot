@@ -74,16 +74,18 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
 public class ServletWebServerFactoryAutoConfiguration {
 
 	/**
-     * Customizes the ServletWebServerFactory based on the provided server properties, web listener registrars,
-     * cookie same site suppliers, and SSL bundles.
-     *
-     * @param serverProperties         the server properties to customize the ServletWebServerFactory
-     * @param webListenerRegistrars   the ordered list of web listener registrars to be applied
-     * @param cookieSameSiteSuppliers the ordered list of cookie same site suppliers to be applied
-     * @param sslBundles              the SSL bundles to be used for SSL configuration (if available)
-     * @return the customized ServletWebServerFactoryCustomizer
-     */
-    @Bean
+	 * Customizes the ServletWebServerFactory based on the provided server properties, web
+	 * listener registrars, cookie same site suppliers, and SSL bundles.
+	 * @param serverProperties the server properties to customize the
+	 * ServletWebServerFactory
+	 * @param webListenerRegistrars the ordered list of web listener registrars to be
+	 * applied
+	 * @param cookieSameSiteSuppliers the ordered list of cookie same site suppliers to be
+	 * applied
+	 * @param sslBundles the SSL bundles to be used for SSL configuration (if available)
+	 * @return the customized ServletWebServerFactoryCustomizer
+	 */
+	@Bean
 	public ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(ServerProperties serverProperties,
 			ObjectProvider<WebListenerRegistrar> webListenerRegistrars,
 			ObjectProvider<CookieSameSiteSupplier> cookieSameSiteSuppliers, ObjectProvider<SslBundles> sslBundles) {
@@ -92,14 +94,15 @@ public class ServletWebServerFactoryAutoConfiguration {
 	}
 
 	/**
-     * Creates a customizer for the TomcatServletWebServerFactory based on the presence of the Tomcat class.
-     * This customizer is conditionally applied only if the Tomcat class is present in the classpath.
-     * It takes the server properties as a parameter and returns a new instance of TomcatServletWebServerFactoryCustomizer.
-     *
-     * @param serverProperties the server properties to be used for customizing the TomcatServletWebServerFactory
-     * @return a new instance of TomcatServletWebServerFactoryCustomizer
-     */
-    @Bean
+	 * Creates a customizer for the TomcatServletWebServerFactory based on the presence of
+	 * the Tomcat class. This customizer is conditionally applied only if the Tomcat class
+	 * is present in the classpath. It takes the server properties as a parameter and
+	 * returns a new instance of TomcatServletWebServerFactoryCustomizer.
+	 * @param serverProperties the server properties to be used for customizing the
+	 * TomcatServletWebServerFactory
+	 * @return a new instance of TomcatServletWebServerFactoryCustomizer
+	 */
+	@Bean
 	@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
 	public TomcatServletWebServerFactoryCustomizer tomcatServletWebServerFactoryCustomizer(
 			ServerProperties serverProperties) {
@@ -107,32 +110,32 @@ public class ServletWebServerFactoryAutoConfiguration {
 	}
 
 	/**
-     * ForwardedHeaderFilterConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ForwardedHeaderFilterConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(value = "server.forward-headers-strategy", havingValue = "framework")
 	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
 	static class ForwardedHeaderFilterConfiguration {
 
 		/**
-         * Creates a customizer for the ForwardedHeaderFilter that sets the relative redirects property based on the server properties.
-         * 
-         * @param serverProperties the server properties used to determine the value of the relative redirects property
-         * @return the customizer for the ForwardedHeaderFilter
-         */
-        @Bean
+		 * Creates a customizer for the ForwardedHeaderFilter that sets the relative
+		 * redirects property based on the server properties.
+		 * @param serverProperties the server properties used to determine the value of
+		 * the relative redirects property
+		 * @return the customizer for the ForwardedHeaderFilter
+		 */
+		@Bean
 		@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
 		ForwardedHeaderFilterCustomizer tomcatForwardedHeaderFilterCustomizer(ServerProperties serverProperties) {
 			return (filter) -> filter.setRelativeRedirects(serverProperties.getTomcat().isUseRelativeRedirects());
 		}
 
 		/**
-         * Registers the ForwardedHeaderFilter with the specified customizer.
-         * 
-         * @param customizerProvider the provider for the ForwardedHeaderFilterCustomizer
-         * @return the FilterRegistrationBean for the ForwardedHeaderFilter
-         */
-        @Bean
+		 * Registers the ForwardedHeaderFilter with the specified customizer.
+		 * @param customizerProvider the provider for the ForwardedHeaderFilterCustomizer
+		 * @return the FilterRegistrationBean for the ForwardedHeaderFilter
+		 */
+		@Bean
 		FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter(
 				ObjectProvider<ForwardedHeaderFilterCustomizer> customizerProvider) {
 			ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
@@ -160,25 +163,25 @@ public class ServletWebServerFactoryAutoConfiguration {
 		private ConfigurableListableBeanFactory beanFactory;
 
 		/**
-         * Set the BeanFactory that this object runs in.
-         * <p>
-         * Invoked after population of normal bean properties but before an init callback such as InitializingBean's
-         * {@code afterPropertiesSet} or a custom init-method. Invoked after ResourceLoaderAware's {@code setResourceLoader},
-         * ApplicationEventPublisherAware's {@code setApplicationEventPublisher} and MessageSourceAware's
-         * {@code setMessageSource}.
-         * <p>
-         * This method will be invoked after any bean properties have been set and before any custom init-method or
-         * afterPropertiesSet callbacks are invoked.
-         * <p>
-         * This implementation saves the reference to the BeanFactory in a field for later use, mainly for
-         * resolving bean names specified in annotations.
-         * <p>
-         * Can be overridden in subclasses for further initialization purposes.
-         *
-         * @param beanFactory the BeanFactory object to be used by this object
-         * @throws BeansException if initialization failed
-         */
-        @Override
+		 * Set the BeanFactory that this object runs in.
+		 * <p>
+		 * Invoked after population of normal bean properties but before an init callback
+		 * such as InitializingBean's {@code afterPropertiesSet} or a custom init-method.
+		 * Invoked after ResourceLoaderAware's {@code setResourceLoader},
+		 * ApplicationEventPublisherAware's {@code setApplicationEventPublisher} and
+		 * MessageSourceAware's {@code setMessageSource}.
+		 * <p>
+		 * This method will be invoked after any bean properties have been set and before
+		 * any custom init-method or afterPropertiesSet callbacks are invoked.
+		 * <p>
+		 * This implementation saves the reference to the BeanFactory in a field for later
+		 * use, mainly for resolving bean names specified in annotations.
+		 * <p>
+		 * Can be overridden in subclasses for further initialization purposes.
+		 * @param beanFactory the BeanFactory object to be used by this object
+		 * @throws BeansException if initialization failed
+		 */
+		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 			if (beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
 				this.beanFactory = listableBeanFactory;
@@ -186,12 +189,11 @@ public class ServletWebServerFactoryAutoConfiguration {
 		}
 
 		/**
-         * Registers the bean definitions for the BeanPostProcessorsRegistrar class.
-         * 
-         * @param importingClassMetadata the metadata of the importing class
-         * @param registry the bean definition registry
-         */
-        @Override
+		 * Registers the bean definitions for the BeanPostProcessorsRegistrar class.
+		 * @param importingClassMetadata the metadata of the importing class
+		 * @param registry the bean definition registry
+		 */
+		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 				BeanDefinitionRegistry registry) {
 			if (this.beanFactory == null) {
@@ -204,14 +206,15 @@ public class ServletWebServerFactoryAutoConfiguration {
 		}
 
 		/**
-         * Registers a synthetic bean if it is missing in the given bean definition registry.
-         * 
-         * @param registry the bean definition registry to register the synthetic bean with
-         * @param name the name of the synthetic bean
-         * @param beanClass the class of the synthetic bean
-         * @param <T> the type of the synthetic bean
-         */
-        private <T> void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name,
+		 * Registers a synthetic bean if it is missing in the given bean definition
+		 * registry.
+		 * @param registry the bean definition registry to register the synthetic bean
+		 * with
+		 * @param name the name of the synthetic bean
+		 * @param beanClass the class of the synthetic bean
+		 * @param <T> the type of the synthetic bean
+		 */
+		private <T> void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name,
 				Class<T> beanClass) {
 			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
 				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);

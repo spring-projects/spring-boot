@@ -31,11 +31,10 @@ public class HelloWorldService implements MessageService {
 	private String name;
 
 	/**
-     * Returns a greeting message with the name of the person.
-     *
-     * @return the greeting message
-     */
-    @Override
+	 * Returns a greeting message with the name of the person.
+	 * @return the greeting message
+	 */
+	@Override
 	public String getMessage() {
 		return "Hello " + this.name;
 	}

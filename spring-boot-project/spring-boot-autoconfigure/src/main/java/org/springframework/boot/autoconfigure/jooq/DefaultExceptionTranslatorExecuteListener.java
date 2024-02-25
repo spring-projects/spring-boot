@@ -50,41 +50,42 @@ final class DefaultExceptionTranslatorExecuteListener implements ExceptionTransl
 	private Function<ExecuteContext, SQLExceptionTranslator> translatorFactory;
 
 	/**
-     * Constructs a new DefaultExceptionTranslatorExecuteListener with the specified default logger and translator factory.
-     * 
-     * @param defaultLogger the default logger to be used by the listener
-     * @param translatorFactory the translator factory to be used by the listener
-     */
-    DefaultExceptionTranslatorExecuteListener() {
+	 * Constructs a new DefaultExceptionTranslatorExecuteListener with the specified
+	 * default logger and translator factory.
+	 * @param defaultLogger the default logger to be used by the listener
+	 * @param translatorFactory the translator factory to be used by the listener
+	 */
+	DefaultExceptionTranslatorExecuteListener() {
 		this(defaultLogger, new DefaultTranslatorFactory());
 	}
 
 	/**
-     * Constructs a new DefaultExceptionTranslatorExecuteListener with the specified translatorFactory.
-     *
-     * @param translatorFactory the factory used to create the SQLExceptionTranslator
-     */
-    DefaultExceptionTranslatorExecuteListener(Function<ExecuteContext, SQLExceptionTranslator> translatorFactory) {
+	 * Constructs a new DefaultExceptionTranslatorExecuteListener with the specified
+	 * translatorFactory.
+	 * @param translatorFactory the factory used to create the SQLExceptionTranslator
+	 */
+	DefaultExceptionTranslatorExecuteListener(Function<ExecuteContext, SQLExceptionTranslator> translatorFactory) {
 		this(defaultLogger, translatorFactory);
 	}
 
 	/**
-     * Constructs a new DefaultExceptionTranslatorExecuteListener with the specified logger and a default translator factory.
-     * 
-     * @param logger the logger to be used for logging
-     */
-    DefaultExceptionTranslatorExecuteListener(Log logger) {
+	 * Constructs a new DefaultExceptionTranslatorExecuteListener with the specified
+	 * logger and a default translator factory.
+	 * @param logger the logger to be used for logging
+	 */
+	DefaultExceptionTranslatorExecuteListener(Log logger) {
 		this(logger, new DefaultTranslatorFactory());
 	}
 
 	/**
-     * Constructs a new DefaultExceptionTranslatorExecuteListener with the specified logger and translator factory.
-     * 
-     * @param logger the logger to be used for logging exceptions
-     * @param translatorFactory the factory function used to create SQLExceptionTranslators
-     * @throws IllegalArgumentException if the translatorFactory is null
-     */
-    private DefaultExceptionTranslatorExecuteListener(Log logger,
+	 * Constructs a new DefaultExceptionTranslatorExecuteListener with the specified
+	 * logger and translator factory.
+	 * @param logger the logger to be used for logging exceptions
+	 * @param translatorFactory the factory function used to create
+	 * SQLExceptionTranslators
+	 * @throws IllegalArgumentException if the translatorFactory is null
+	 */
+	private DefaultExceptionTranslatorExecuteListener(Log logger,
 			Function<ExecuteContext, SQLExceptionTranslator> translatorFactory) {
 		Assert.notNull(translatorFactory, "TranslatorFactory must not be null");
 		this.logger = logger;
@@ -92,13 +93,12 @@ final class DefaultExceptionTranslatorExecuteListener implements ExceptionTransl
 	}
 
 	/**
-     * This method is called when an exception occurs during the execution of a SQL statement.
-     * It handles the exception by translating it using the provided translator and then
-     * recursively handles any chained exceptions.
-     * 
-     * @param context The execution context containing information about the exception.
-     */
-    @Override
+	 * This method is called when an exception occurs during the execution of a SQL
+	 * statement. It handles the exception by translating it using the provided translator
+	 * and then recursively handles any chained exceptions.
+	 * @param context The execution context containing information about the exception.
+	 */
+	@Override
 	public void exception(ExecuteContext context) {
 		SQLExceptionTranslator translator = this.translatorFactory.apply(context);
 		// The exception() callback is not only triggered for SQL exceptions but also for
@@ -137,35 +137,34 @@ final class DefaultExceptionTranslatorExecuteListener implements ExceptionTransl
 	private static final class DefaultTranslatorFactory implements Function<ExecuteContext, SQLExceptionTranslator> {
 
 		/**
-         * Applies the SQL exception translator to the given execute context.
-         * 
-         * @param context the execute context
-         * @return the SQL exception translator
-         */
-        @Override
+		 * Applies the SQL exception translator to the given execute context.
+		 * @param context the execute context
+		 * @return the SQL exception translator
+		 */
+		@Override
 		public SQLExceptionTranslator apply(ExecuteContext context) {
 			return apply(context.configuration().dialect());
 		}
 
 		/**
-         * Applies the appropriate SQLExceptionTranslator based on the given SQLDialect.
-         * 
-         * @param dialect the SQLDialect to determine the appropriate SQLExceptionTranslator
-         * @return the SQLExceptionTranslator to be used
-         */
-        private SQLExceptionTranslator apply(SQLDialect dialect) {
+		 * Applies the appropriate SQLExceptionTranslator based on the given SQLDialect.
+		 * @param dialect the SQLDialect to determine the appropriate
+		 * SQLExceptionTranslator
+		 * @return the SQLExceptionTranslator to be used
+		 */
+		private SQLExceptionTranslator apply(SQLDialect dialect) {
 			String dbName = getSpringDbName(dialect);
 			return (dbName != null) ? new SQLErrorCodeSQLExceptionTranslator(dbName)
 					: new SQLStateSQLExceptionTranslator();
 		}
 
 		/**
-         * Returns the Spring database name for the given SQL dialect.
-         * 
-         * @param dialect the SQL dialect
-         * @return the Spring database name, or null if the dialect is null or does not have a third party implementation
-         */
-        private String getSpringDbName(SQLDialect dialect) {
+		 * Returns the Spring database name for the given SQL dialect.
+		 * @param dialect the SQL dialect
+		 * @return the Spring database name, or null if the dialect is null or does not
+		 * have a third party implementation
+		 */
+		private String getSpringDbName(SQLDialect dialect) {
 			return (dialect != null && dialect.thirdParty() != null) ? dialect.thirdParty().springDbName() : null;
 		}
 

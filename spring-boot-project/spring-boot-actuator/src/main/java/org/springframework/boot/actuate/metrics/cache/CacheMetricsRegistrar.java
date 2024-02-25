@@ -69,13 +69,13 @@ public class CacheMetricsRegistrar {
 	}
 
 	/**
-     * Retrieves the MeterBinder for the given Cache and Tags.
-     * 
-     * @param cache The Cache object for which the MeterBinder is to be retrieved.
-     * @param tags The Tags object containing additional tags to be applied to the MeterBinder.
-     * @return The MeterBinder for the Cache and Tags, or null if no MeterBinder is found.
-     */
-    @SuppressWarnings({ "unchecked" })
+	 * Retrieves the MeterBinder for the given Cache and Tags.
+	 * @param cache The Cache object for which the MeterBinder is to be retrieved.
+	 * @param tags The Tags object containing additional tags to be applied to the
+	 * MeterBinder.
+	 * @return The MeterBinder for the Cache and Tags, or null if no MeterBinder is found.
+	 */
+	@SuppressWarnings({ "unchecked" })
 	private MeterBinder getMeterBinder(Cache cache, Tags tags) {
 		Tags cacheTags = tags.and(getAdditionalTags(cache));
 		return LambdaSafe.callbacks(CacheMeterBinderProvider.class, this.binderProviders, cache)
@@ -96,17 +96,17 @@ public class CacheMetricsRegistrar {
 	}
 
 	/**
-     * Unwraps the given cache if necessary.
-     * 
-     * This method checks if the class "org.springframework.cache.transaction.TransactionAwareCacheDecorator"
-     * is present in the class loader of the current class. If it is present, it calls the 
-     * TransactionAwareCacheDecoratorHandler.unwrapIfNecessary() method to unwrap the cache. 
-     * Otherwise, it returns the cache as is.
-     * 
-     * @param cache the cache to be unwrapped if necessary
-     * @return the unwrapped cache if necessary, otherwise the cache itself
-     */
-    private Cache unwrapIfNecessary(Cache cache) {
+	 * Unwraps the given cache if necessary.
+	 *
+	 * This method checks if the class
+	 * "org.springframework.cache.transaction.TransactionAwareCacheDecorator" is present
+	 * in the class loader of the current class. If it is present, it calls the
+	 * TransactionAwareCacheDecoratorHandler.unwrapIfNecessary() method to unwrap the
+	 * cache. Otherwise, it returns the cache as is.
+	 * @param cache the cache to be unwrapped if necessary
+	 * @return the unwrapped cache if necessary, otherwise the cache itself
+	 */
+	private Cache unwrapIfNecessary(Cache cache) {
 		if (ClassUtils.isPresent("org.springframework.cache.transaction.TransactionAwareCacheDecorator",
 				getClass().getClassLoader())) {
 			return TransactionAwareCacheDecoratorHandler.unwrapIfNecessary(cache);
@@ -115,17 +115,16 @@ public class CacheMetricsRegistrar {
 	}
 
 	/**
-     * TransactionAwareCacheDecoratorHandler class.
-     */
-    private static final class TransactionAwareCacheDecoratorHandler {
+	 * TransactionAwareCacheDecoratorHandler class.
+	 */
+	private static final class TransactionAwareCacheDecoratorHandler {
 
 		/**
-         * Unwraps the cache if necessary.
-         * 
-         * @param cache the cache to unwrap
-         * @return the unwrapped cache
-         */
-        private static Cache unwrapIfNecessary(Cache cache) {
+		 * Unwraps the cache if necessary.
+		 * @param cache the cache to unwrap
+		 * @return the unwrapped cache
+		 */
+		private static Cache unwrapIfNecessary(Cache cache) {
 			try {
 				if (cache instanceof TransactionAwareCacheDecorator decorator) {
 					return decorator.getTargetCache();

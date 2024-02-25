@@ -44,14 +44,15 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 	private final ConfigDataEnvironmentContributor activeContributor;
 
 	/**
-     * Constructs a new ConfigDataEnvironmentContributorPlaceholdersResolver with the specified parameters.
-     *
-     * @param contributors                      the contributors to resolve placeholders from
-     * @param activationContext                 the activation context for resolving placeholders
-     * @param activeContributor                 the active contributor for resolving placeholders
-     * @param failOnResolveFromInactiveContributor   whether to fail if resolving placeholders from an inactive contributor
-     */
-    ConfigDataEnvironmentContributorPlaceholdersResolver(Iterable<ConfigDataEnvironmentContributor> contributors,
+	 * Constructs a new ConfigDataEnvironmentContributorPlaceholdersResolver with the
+	 * specified parameters.
+	 * @param contributors the contributors to resolve placeholders from
+	 * @param activationContext the activation context for resolving placeholders
+	 * @param activeContributor the active contributor for resolving placeholders
+	 * @param failOnResolveFromInactiveContributor whether to fail if resolving
+	 * placeholders from an inactive contributor
+	 */
+	ConfigDataEnvironmentContributorPlaceholdersResolver(Iterable<ConfigDataEnvironmentContributor> contributors,
 			ConfigDataActivationContext activationContext, ConfigDataEnvironmentContributor activeContributor,
 			boolean failOnResolveFromInactiveContributor) {
 		this.contributors = contributors;
@@ -63,12 +64,11 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 	}
 
 	/**
-     * Resolves placeholders in the given value.
-     * 
-     * @param value the value to resolve placeholders in
-     * @return the value with resolved placeholders
-     */
-    @Override
+	 * Resolves placeholders in the given value.
+	 * @param value the value to resolve placeholders in
+	 * @return the value with resolved placeholders
+	 */
+	@Override
 	public Object resolvePlaceholders(Object value) {
 		if (value instanceof String string) {
 			return this.helper.replacePlaceholders(string, this::resolvePlaceholder);
@@ -77,13 +77,14 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 	}
 
 	/**
-     * Resolves the placeholder value for the given placeholder string.
-     * 
-     * @param placeholder the placeholder string to resolve
-     * @return the resolved placeholder value as a string, or null if the placeholder could not be resolved
-     * @throws InactiveConfigDataAccessException if the placeholder is resolved from an inactive contributor and failOnResolveFromInactiveContributor is set to true
-     */
-    private String resolvePlaceholder(String placeholder) {
+	 * Resolves the placeholder value for the given placeholder string.
+	 * @param placeholder the placeholder string to resolve
+	 * @return the resolved placeholder value as a string, or null if the placeholder
+	 * could not be resolved
+	 * @throws InactiveConfigDataAccessException if the placeholder is resolved from an
+	 * inactive contributor and failOnResolveFromInactiveContributor is set to true
+	 */
+	private String resolvePlaceholder(String placeholder) {
 		Object result = null;
 		for (ConfigDataEnvironmentContributor contributor : this.contributors) {
 			PropertySource<?> propertySource = contributor.getPropertySource();
@@ -102,12 +103,11 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 	}
 
 	/**
-     * Checks if the given ConfigDataEnvironmentContributor is active.
-     * 
-     * @param contributor the ConfigDataEnvironmentContributor to check
-     * @return true if the contributor is active, false otherwise
-     */
-    private boolean isActive(ConfigDataEnvironmentContributor contributor) {
+	 * Checks if the given ConfigDataEnvironmentContributor is active.
+	 * @param contributor the ConfigDataEnvironmentContributor to check
+	 * @return true if the contributor is active, false otherwise
+	 */
+	private boolean isActive(ConfigDataEnvironmentContributor contributor) {
 		if (contributor == this.activeContributor) {
 			return true;
 		}

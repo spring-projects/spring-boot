@@ -81,19 +81,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcEndpointManagementContextConfiguration {
 
 	/**
-     * Creates a {@link WebMvcEndpointHandlerMapping} bean for mapping web endpoints.
-     * This bean is conditional on the absence of any existing bean of the same type.
-     * 
-     * @param webEndpointsSupplier the supplier for web endpoints
-     * @param servletEndpointsSupplier the supplier for servlet endpoints
-     * @param controllerEndpointsSupplier the supplier for controller endpoints
-     * @param endpointMediaTypes the media types for the endpoints
-     * @param corsProperties the CORS properties for the endpoints
-     * @param webEndpointProperties the properties for web endpoints
-     * @param environment the environment for the application
-     * @return the created {@link WebMvcEndpointHandlerMapping} bean
-     */
-    @Bean
+	 * Creates a {@link WebMvcEndpointHandlerMapping} bean for mapping web endpoints. This
+	 * bean is conditional on the absence of any existing bean of the same type.
+	 * @param webEndpointsSupplier the supplier for web endpoints
+	 * @param servletEndpointsSupplier the supplier for servlet endpoints
+	 * @param controllerEndpointsSupplier the supplier for controller endpoints
+	 * @param endpointMediaTypes the media types for the endpoints
+	 * @param corsProperties the CORS properties for the endpoints
+	 * @param webEndpointProperties the properties for web endpoints
+	 * @param environment the environment for the application
+	 * @return the created {@link WebMvcEndpointHandlerMapping} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,
 			ServletEndpointsSupplier servletEndpointsSupplier, ControllerEndpointsSupplier controllerEndpointsSupplier,
@@ -113,42 +112,46 @@ public class WebMvcEndpointManagementContextConfiguration {
 	}
 
 	/**
-     * Determines whether links mapping should be registered based on the provided parameters.
-     * 
-     * @param webEndpointProperties the properties for web endpoints
-     * @param environment the environment
-     * @param basePath the base path for the endpoints
-     * @return true if links mapping should be registered, false otherwise
-     */
-    private boolean shouldRegisterLinksMapping(WebEndpointProperties webEndpointProperties, Environment environment,
+	 * Determines whether links mapping should be registered based on the provided
+	 * parameters.
+	 * @param webEndpointProperties the properties for web endpoints
+	 * @param environment the environment
+	 * @param basePath the base path for the endpoints
+	 * @return true if links mapping should be registered, false otherwise
+	 */
+	private boolean shouldRegisterLinksMapping(WebEndpointProperties webEndpointProperties, Environment environment,
 			String basePath) {
 		return webEndpointProperties.getDiscovery().isEnabled() && (StringUtils.hasText(basePath)
 				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT));
 	}
 
 	/**
-     * Creates a {@link AdditionalHealthEndpointPathsWebMvcHandlerMapping} bean for mapping the management health endpoint
-     * to additional paths in a web MVC environment.
-     *
-     * This bean is conditionally created based on the following conditions:
-     * - The management port type is set to {@link ManagementPortType#DIFFERENT}.
-     * - A bean of type {@link HealthEndpoint} is available in the application context.
-     * - The {@link HealthEndpoint} is exposed as a web endpoint.
-     *
-     * The {@link AdditionalHealthEndpointPathsWebMvcHandlerMapping} bean is created by retrieving the collection of
-     * {@link ExposableWebEndpoint} beans from the {@link WebEndpointsSupplier}. The health endpoint is then filtered
-     * from the collection based on its endpoint ID. If the health endpoint is not found, an {@link IllegalStateException}
-     * is thrown. Finally, the {@link AdditionalHealthEndpointPathsWebMvcHandlerMapping} bean is created using the
-     * filtered health endpoint and the additional paths from the {@link HealthEndpointGroups} for the management
-     * web server namespace.
-     *
-     * @param webEndpointsSupplier the supplier for the collection of {@link ExposableWebEndpoint} beans
-     * @param groups the {@link HealthEndpointGroups} for the management web server namespace
-     * @return the {@link AdditionalHealthEndpointPathsWebMvcHandlerMapping} bean for mapping the management health endpoint
-     * to additional paths
-     * @throws IllegalStateException if no health endpoint with the specified ID is found
-     */
-    @Bean
+	 * Creates a {@link AdditionalHealthEndpointPathsWebMvcHandlerMapping} bean for
+	 * mapping the management health endpoint to additional paths in a web MVC
+	 * environment.
+	 *
+	 * This bean is conditionally created based on the following conditions: - The
+	 * management port type is set to {@link ManagementPortType#DIFFERENT}. - A bean of
+	 * type {@link HealthEndpoint} is available in the application context. - The
+	 * {@link HealthEndpoint} is exposed as a web endpoint.
+	 *
+	 * The {@link AdditionalHealthEndpointPathsWebMvcHandlerMapping} bean is created by
+	 * retrieving the collection of {@link ExposableWebEndpoint} beans from the
+	 * {@link WebEndpointsSupplier}. The health endpoint is then filtered from the
+	 * collection based on its endpoint ID. If the health endpoint is not found, an
+	 * {@link IllegalStateException} is thrown. Finally, the
+	 * {@link AdditionalHealthEndpointPathsWebMvcHandlerMapping} bean is created using the
+	 * filtered health endpoint and the additional paths from the
+	 * {@link HealthEndpointGroups} for the management web server namespace.
+	 * @param webEndpointsSupplier the supplier for the collection of
+	 * {@link ExposableWebEndpoint} beans
+	 * @param groups the {@link HealthEndpointGroups} for the management web server
+	 * namespace
+	 * @return the {@link AdditionalHealthEndpointPathsWebMvcHandlerMapping} bean for
+	 * mapping the management health endpoint to additional paths
+	 * @throws IllegalStateException if no health endpoint with the specified ID is found
+	 */
+	@Bean
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	@ConditionalOnBean(HealthEndpoint.class)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
@@ -165,15 +168,17 @@ public class WebMvcEndpointManagementContextConfiguration {
 	}
 
 	/**
-     * Creates a {@link ControllerEndpointHandlerMapping} bean if there is no existing bean of the same type.
-     * This bean is responsible for mapping controller endpoints to their respective handlers.
-     * 
-     * @param controllerEndpointsSupplier The supplier for obtaining the controller endpoints.
-     * @param corsProperties The CORS properties for configuring CORS support.
-     * @param webEndpointProperties The web endpoint properties for configuring the base path.
-     * @return The created {@link ControllerEndpointHandlerMapping} bean.
-     */
-    @Bean
+	 * Creates a {@link ControllerEndpointHandlerMapping} bean if there is no existing
+	 * bean of the same type. This bean is responsible for mapping controller endpoints to
+	 * their respective handlers.
+	 * @param controllerEndpointsSupplier The supplier for obtaining the controller
+	 * endpoints.
+	 * @param corsProperties The CORS properties for configuring CORS support.
+	 * @param webEndpointProperties The web endpoint properties for configuring the base
+	 * path.
+	 * @return The created {@link ControllerEndpointHandlerMapping} bean.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
 			ControllerEndpointsSupplier controllerEndpointsSupplier, CorsEndpointProperties corsProperties,
@@ -184,14 +189,18 @@ public class WebMvcEndpointManagementContextConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link EndpointObjectMapperWebMvcConfigurer} if an instance of {@link EndpointObjectMapper} is present in the application context.
-     * This method is annotated with {@link ConditionalOnBean} to ensure that it is only executed if an instance of {@link EndpointObjectMapper} is available.
-     * The created instance is then returned as a {@link Bean} and assigned the role of {@link BeanDefinition.ROLE_INFRASTRUCTURE}.
-     *
-     * @param endpointObjectMapper the {@link EndpointObjectMapper} instance to be used by the {@link EndpointObjectMapperWebMvcConfigurer}
-     * @return a new instance of {@link EndpointObjectMapperWebMvcConfigurer} if an instance of {@link EndpointObjectMapper} is present, otherwise null
-     */
-    @Bean
+	 * Creates a new instance of {@link EndpointObjectMapperWebMvcConfigurer} if an
+	 * instance of {@link EndpointObjectMapper} is present in the application context.
+	 * This method is annotated with {@link ConditionalOnBean} to ensure that it is only
+	 * executed if an instance of {@link EndpointObjectMapper} is available. The created
+	 * instance is then returned as a {@link Bean} and assigned the role of
+	 * {@link BeanDefinition.ROLE_INFRASTRUCTURE}.
+	 * @param endpointObjectMapper the {@link EndpointObjectMapper} instance to be used by
+	 * the {@link EndpointObjectMapperWebMvcConfigurer}
+	 * @return a new instance of {@link EndpointObjectMapperWebMvcConfigurer} if an
+	 * instance of {@link EndpointObjectMapper} is present, otherwise null
+	 */
+	@Bean
 	@ConditionalOnBean(EndpointObjectMapper.class)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	static EndpointObjectMapperWebMvcConfigurer endpointObjectMapperWebMvcConfigurer(
@@ -212,20 +221,21 @@ public class WebMvcEndpointManagementContextConfiguration {
 		private final EndpointObjectMapper endpointObjectMapper;
 
 		/**
-         * Constructs a new EndpointObjectMapperWebMvcConfigurer with the specified EndpointObjectMapper.
-         * 
-         * @param endpointObjectMapper the EndpointObjectMapper to be used by this EndpointObjectMapperWebMvcConfigurer
-         */
-        EndpointObjectMapperWebMvcConfigurer(EndpointObjectMapper endpointObjectMapper) {
+		 * Constructs a new EndpointObjectMapperWebMvcConfigurer with the specified
+		 * EndpointObjectMapper.
+		 * @param endpointObjectMapper the EndpointObjectMapper to be used by this
+		 * EndpointObjectMapperWebMvcConfigurer
+		 */
+		EndpointObjectMapperWebMvcConfigurer(EndpointObjectMapper endpointObjectMapper) {
 			this.endpointObjectMapper = endpointObjectMapper;
 		}
 
 		/**
-         * Configures the message converters for the EndpointObjectMapperWebMvcConfigurer class.
-         * 
-         * @param converters the list of HttpMessageConverters to be configured
-         */
-        @Override
+		 * Configures the message converters for the EndpointObjectMapperWebMvcConfigurer
+		 * class.
+		 * @param converters the list of HttpMessageConverters to be configured
+		 */
+		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			for (HttpMessageConverter<?> converter : converters) {
 				if (converter instanceof MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter) {
@@ -235,11 +245,11 @@ public class WebMvcEndpointManagementContextConfiguration {
 		}
 
 		/**
-         * Configures the MappingJackson2HttpMessageConverter by registering object mappers for the specified type.
-         * 
-         * @param converter the MappingJackson2HttpMessageConverter to be configured
-         */
-        private void configure(MappingJackson2HttpMessageConverter converter) {
+		 * Configures the MappingJackson2HttpMessageConverter by registering object
+		 * mappers for the specified type.
+		 * @param converter the MappingJackson2HttpMessageConverter to be configured
+		 */
+		private void configure(MappingJackson2HttpMessageConverter converter) {
 			converter.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
 				ObjectMapper objectMapper = this.endpointObjectMapper.get();
 				MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, objectMapper));

@@ -40,11 +40,11 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 	private final List<SimpleConfigurationMetadataRepository> repositories = new ArrayList<>();
 
 	/**
-     * Constructs a new ConfigurationMetadataRepositoryJsonBuilder with the specified default charset.
-     *
-     * @param defaultCharset the default charset to be used
-     */
-    private ConfigurationMetadataRepositoryJsonBuilder(Charset defaultCharset) {
+	 * Constructs a new ConfigurationMetadataRepositoryJsonBuilder with the specified
+	 * default charset.
+	 * @param defaultCharset the default charset to be used
+	 */
+	private ConfigurationMetadataRepositoryJsonBuilder(Charset defaultCharset) {
 		this.defaultCharset = defaultCharset;
 	}
 
@@ -97,14 +97,14 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 	}
 
 	/**
-     * Adds a new configuration metadata repository by reading the metadata from the provided input stream.
-     * 
-     * @param in the input stream containing the configuration metadata
-     * @param charset the character set used to read the input stream
-     * @return the newly created SimpleConfigurationMetadataRepository
-     * @throws IllegalStateException if failed to read the configuration metadata
-     */
-    private SimpleConfigurationMetadataRepository add(InputStream in, Charset charset) {
+	 * Adds a new configuration metadata repository by reading the metadata from the
+	 * provided input stream.
+	 * @param in the input stream containing the configuration metadata
+	 * @param charset the character set used to read the input stream
+	 * @return the newly created SimpleConfigurationMetadataRepository
+	 * @throws IllegalStateException if failed to read the configuration metadata
+	 */
+	private SimpleConfigurationMetadataRepository add(InputStream in, Charset charset) {
 		try {
 			RawConfigurationMetadata metadata = this.reader.read(in, charset);
 			return create(metadata);
@@ -115,12 +115,13 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 	}
 
 	/**
-     * Creates a new SimpleConfigurationMetadataRepository object based on the provided RawConfigurationMetadata.
-     * 
-     * @param metadata The RawConfigurationMetadata object containing the metadata information.
-     * @return A new SimpleConfigurationMetadataRepository object.
-     */
-    private SimpleConfigurationMetadataRepository create(RawConfigurationMetadata metadata) {
+	 * Creates a new SimpleConfigurationMetadataRepository object based on the provided
+	 * RawConfigurationMetadata.
+	 * @param metadata The RawConfigurationMetadata object containing the metadata
+	 * information.
+	 * @return A new SimpleConfigurationMetadataRepository object.
+	 */
+	private SimpleConfigurationMetadataRepository create(RawConfigurationMetadata metadata) {
 		SimpleConfigurationMetadataRepository repository = new SimpleConfigurationMetadataRepository();
 		repository.add(metadata.getSources());
 		for (ConfigurationMetadataItem item : metadata.getItems()) {
@@ -150,23 +151,23 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 	}
 
 	/**
-     * Adds value hints to the given property based on the provided hint.
-     * 
-     * @param property the ConfigurationMetadataProperty to add value hints to
-     * @param hint the ConfigurationMetadataHint containing the value hints to be added
-     */
-    private void addValueHints(ConfigurationMetadataProperty property, ConfigurationMetadataHint hint) {
+	 * Adds value hints to the given property based on the provided hint.
+	 * @param property the ConfigurationMetadataProperty to add value hints to
+	 * @param hint the ConfigurationMetadataHint containing the value hints to be added
+	 */
+	private void addValueHints(ConfigurationMetadataProperty property, ConfigurationMetadataHint hint) {
 		property.getHints().getValueHints().addAll(hint.getValueHints());
 		property.getHints().getValueProviders().addAll(hint.getValueProviders());
 	}
 
 	/**
-     * Adds the value hints and providers from the given hint to the key hints and providers of the specified property.
-     * 
-     * @param property the ConfigurationMetadataProperty to add the hints to
-     * @param hint the ConfigurationMetadataHint containing the value hints and providers to be added
-     */
-    private void addMapHints(ConfigurationMetadataProperty property, ConfigurationMetadataHint hint) {
+	 * Adds the value hints and providers from the given hint to the key hints and
+	 * providers of the specified property.
+	 * @param property the ConfigurationMetadataProperty to add the hints to
+	 * @param hint the ConfigurationMetadataHint containing the value hints and providers
+	 * to be added
+	 */
+	private void addMapHints(ConfigurationMetadataProperty property, ConfigurationMetadataHint hint) {
 		property.getHints().getKeyHints().addAll(hint.getValueHints());
 		property.getHints().getKeyProviders().addAll(hint.getValueProviders());
 	}

@@ -50,20 +50,18 @@ public class Session {
 	private final SessionStoreDirectory sessionStoreDirectory = new SessionStoreDirectory();
 
 	/**
-     * Returns the timeout duration for the session.
-     *
-     * @return the timeout duration as a Duration object
-     */
-    public Duration getTimeout() {
+	 * Returns the timeout duration for the session.
+	 * @return the timeout duration as a Duration object
+	 */
+	public Duration getTimeout() {
 		return this.timeout;
 	}
 
 	/**
-     * Sets the timeout for the session.
-     * 
-     * @param timeout the duration of the timeout
-     */
-    public void setTimeout(Duration timeout) {
+	 * Sets the timeout for the session.
+	 * @param timeout the duration of the timeout
+	 */
+	public void setTimeout(Duration timeout) {
 		this.timeout = timeout;
 	}
 
@@ -76,11 +74,10 @@ public class Session {
 	}
 
 	/**
-     * Sets the tracking modes for the session.
-     * 
-     * @param trackingModes the set of session tracking modes to be set
-     */
-    public void setTrackingModes(Set<Session.SessionTrackingMode> trackingModes) {
+	 * Sets the tracking modes for the session.
+	 * @param trackingModes the set of session tracking modes to be set
+	 */
+	public void setTrackingModes(Set<Session.SessionTrackingMode> trackingModes) {
 		this.trackingModes = trackingModes;
 	}
 
@@ -93,11 +90,10 @@ public class Session {
 	}
 
 	/**
-     * Sets the persistence flag for the session.
-     * 
-     * @param persistent the persistence flag to be set
-     */
-    public void setPersistent(boolean persistent) {
+	 * Sets the persistence flag for the session.
+	 * @param persistent the persistence flag to be set
+	 */
+	public void setPersistent(boolean persistent) {
 		this.persistent = persistent;
 	}
 
@@ -110,30 +106,27 @@ public class Session {
 	}
 
 	/**
-     * Sets the directory for storing session data.
-     * 
-     * @param storeDir the directory to set as the session store directory
-     */
-    public void setStoreDir(File storeDir) {
+	 * Sets the directory for storing session data.
+	 * @param storeDir the directory to set as the session store directory
+	 */
+	public void setStoreDir(File storeDir) {
 		this.sessionStoreDirectory.setDirectory(storeDir);
 		this.storeDir = storeDir;
 	}
 
 	/**
-     * Returns the cookie associated with this session.
-     *
-     * @return the cookie associated with this session
-     */
-    public Cookie getCookie() {
+	 * Returns the cookie associated with this session.
+	 * @return the cookie associated with this session
+	 */
+	public Cookie getCookie() {
 		return this.cookie;
 	}
 
 	/**
-     * Returns the session store directory.
-     *
-     * @return the session store directory
-     */
-    SessionStoreDirectory getSessionStoreDirectory() {
+	 * Returns the session store directory.
+	 * @return the session store directory
+	 */
+	SessionStoreDirectory getSessionStoreDirectory() {
 		return this.sessionStoreDirectory;
 	}
 

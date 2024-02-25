@@ -32,15 +32,14 @@ import org.springframework.util.ClassUtils;
 public class ThymeleafTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
 	/**
-     * Checks if a template is available for the given view.
-     * 
-     * @param view the name of the view template
-     * @param environment the environment in which the template is being checked
-     * @param classLoader the class loader to use for loading classes
-     * @param resourceLoader the resource loader to use for loading resources
-     * @return true if the template is available, false otherwise
-     */
-    @Override
+	 * Checks if a template is available for the given view.
+	 * @param view the name of the view template
+	 * @param environment the environment in which the template is being checked
+	 * @param classLoader the class loader to use for loading classes
+	 * @param resourceLoader the resource loader to use for loading resources
+	 * @return true if the template is available, false otherwise
+	 */
+	@Override
 	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
 			ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.thymeleaf.spring6.SpringTemplateEngine", classLoader)) {

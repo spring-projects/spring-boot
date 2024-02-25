@@ -39,34 +39,32 @@ import org.springframework.test.context.MergedContextConfiguration;
 class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFactory {
 
 	/**
-     * {@inheritDoc}
-     * 
-     * Creates a {@link ContextCustomizer} for customizing the test context.
-     * 
-     * @param testClass the test class being executed
-     * @param configAttributes the configuration attributes for the test context
-     * @return a {@link ContextCustomizer} instance
-     */
-    @Override
+	 * {@inheritDoc}
+	 *
+	 * Creates a {@link ContextCustomizer} for customizing the test context.
+	 * @param testClass the test class being executed
+	 * @param configAttributes the configuration attributes for the test context
+	 * @return a {@link ContextCustomizer} instance
+	 */
+	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		return new DuplicateJsonObjectContextCustomizer();
 	}
 
 	/**
-     * DuplicateJsonObjectContextCustomizer class.
-     */
-    private static final class DuplicateJsonObjectContextCustomizer implements ContextCustomizer {
+	 * DuplicateJsonObjectContextCustomizer class.
+	 */
+	private static final class DuplicateJsonObjectContextCustomizer implements ContextCustomizer {
 
 		private final Log logger = LogFactory.getLog(DuplicateJsonObjectContextCustomizer.class);
 
 		/**
-         * Customizes the application context by checking for duplicate JSON objects.
-         * 
-         * @param context the configurable application context
-         * @param mergedConfig the merged context configuration
-         */
-        @Override
+		 * Customizes the application context by checking for duplicate JSON objects.
+		 * @param context the configurable application context
+		 * @param mergedConfig the merged context configuration
+		 */
+		@Override
 		public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 			List<URL> jsonObjects = findJsonObjects();
 			if (jsonObjects.size() > 1) {
@@ -75,11 +73,10 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 		}
 
 		/**
-         * Finds all the JSON objects in the classpath.
-         * 
-         * @return a list of URLs pointing to the JSON objects found
-         */
-        private List<URL> findJsonObjects() {
+		 * Finds all the JSON objects in the classpath.
+		 * @return a list of URLs pointing to the JSON objects found
+		 */
+		private List<URL> findJsonObjects() {
 			try {
 				Enumeration<URL> resources = getClass().getClassLoader().getResources("org/json/JSONObject.class");
 				return Collections.list(resources);
@@ -91,11 +88,11 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 		}
 
 		/**
-         * Logs a warning message for duplicate occurrences of org.json.JSONObject on the class path.
-         * 
-         * @param jsonObjects the list of URLs representing the duplicate JSON objects
-         */
-        private void logDuplicateJsonObjectsWarning(List<URL> jsonObjects) {
+		 * Logs a warning message for duplicate occurrences of org.json.JSONObject on the
+		 * class path.
+		 * @param jsonObjects the list of URLs representing the duplicate JSON objects
+		 */
+		private void logDuplicateJsonObjectsWarning(List<URL> jsonObjects) {
 			StringBuilder message = new StringBuilder(
 					String.format("%n%nFound multiple occurrences of org.json.JSONObject on the class path:%n%n"));
 			for (URL jsonObject : jsonObjects) {
@@ -107,22 +104,22 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 		}
 
 		/**
-         * Compares this object with the specified object for equality.
-         * 
-         * @param obj the object to compare with
-         * @return {@code true} if the specified object is of the same class as this object, {@code false} otherwise
-         */
-        @Override
+		 * Compares this object with the specified object for equality.
+		 * @param obj the object to compare with
+		 * @return {@code true} if the specified object is of the same class as this
+		 * object, {@code false} otherwise
+		 */
+		@Override
 		public boolean equals(Object obj) {
 			return (obj != null) && (getClass() == obj.getClass());
 		}
 
 		/**
-         * Returns a hash code value for the object. This method overrides the default implementation of the {@code hashCode()} method.
-         * 
-         * @return the hash code value for the object
-         */
-        @Override
+		 * Returns a hash code value for the object. This method overrides the default
+		 * implementation of the {@code hashCode()} method.
+		 * @return the hash code value for the object
+		 */
+		@Override
 		public int hashCode() {
 			return getClass().hashCode();
 		}

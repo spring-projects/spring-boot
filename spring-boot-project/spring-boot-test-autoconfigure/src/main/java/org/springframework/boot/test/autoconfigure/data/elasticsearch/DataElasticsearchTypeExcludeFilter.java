@@ -28,11 +28,10 @@ class DataElasticsearchTypeExcludeFilter
 		extends StandardAnnotationCustomizableTypeExcludeFilter<DataElasticsearchTest> {
 
 	/**
-     * Constructs a new DataElasticsearchTypeExcludeFilter with the specified test class.
-     * 
-     * @param testClass the test class to be used for constructing the filter
-     */
-    DataElasticsearchTypeExcludeFilter(Class<?> testClass) {
+	 * Constructs a new DataElasticsearchTypeExcludeFilter with the specified test class.
+	 * @param testClass the test class to be used for constructing the filter
+	 */
+	DataElasticsearchTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 

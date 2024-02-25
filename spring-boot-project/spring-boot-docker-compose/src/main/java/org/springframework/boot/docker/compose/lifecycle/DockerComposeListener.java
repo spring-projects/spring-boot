@@ -37,31 +37,31 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 	private final SpringApplicationShutdownHandlers shutdownHandlers;
 
 	/**
-     * Constructs a new DockerComposeListener with the specified shutdown handlers.
-     * 
-     * @param shutdownHandlers the shutdown handlers to be used by the listener
-     */
-    DockerComposeListener() {
+	 * Constructs a new DockerComposeListener with the specified shutdown handlers.
+	 * @param shutdownHandlers the shutdown handlers to be used by the listener
+	 */
+	DockerComposeListener() {
 		this(SpringApplication.getShutdownHandlers());
 	}
 
 	/**
-     * Constructs a new DockerComposeListener with the specified SpringApplicationShutdownHandlers.
-     *
-     * @param shutdownHandlers the SpringApplicationShutdownHandlers to be set for this DockerComposeListener
-     */
-    DockerComposeListener(SpringApplicationShutdownHandlers shutdownHandlers) {
+	 * Constructs a new DockerComposeListener with the specified
+	 * SpringApplicationShutdownHandlers.
+	 * @param shutdownHandlers the SpringApplicationShutdownHandlers to be set for this
+	 * DockerComposeListener
+	 */
+	DockerComposeListener(SpringApplicationShutdownHandlers shutdownHandlers) {
 		this.shutdownHandlers = shutdownHandlers;
 	}
 
 	/**
-     * This method is called when the application is prepared and ready to start.
-     * It retrieves the application context and environment, and uses them to create a DockerComposeLifecycleManager.
-     * The DockerComposeLifecycleManager is then started, which will handle the lifecycle of the Docker Compose containers.
-     * 
-     * @param event The ApplicationPreparedEvent that triggered this method.
-     */
-    @Override
+	 * This method is called when the application is prepared and ready to start. It
+	 * retrieves the application context and environment, and uses them to create a
+	 * DockerComposeLifecycleManager. The DockerComposeLifecycleManager is then started,
+	 * which will handle the lifecycle of the Docker Compose containers.
+	 * @param event The ApplicationPreparedEvent that triggered this method.
+	 */
+	@Override
 	public void onApplicationEvent(ApplicationPreparedEvent event) {
 		ConfigurableApplicationContext applicationContext = event.getApplicationContext();
 		Binder binder = Binder.get(applicationContext.getEnvironment());
@@ -71,15 +71,14 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 	}
 
 	/**
-     * Creates a new instance of DockerComposeLifecycleManager.
-     * 
-     * @param applicationContext the configurable application context
-     * @param binder the binder
-     * @param properties the Docker Compose properties
-     * @param eventListeners the set of application listeners
-     * @return a new instance of DockerComposeLifecycleManager
-     */
-    protected DockerComposeLifecycleManager createDockerComposeLifecycleManager(
+	 * Creates a new instance of DockerComposeLifecycleManager.
+	 * @param applicationContext the configurable application context
+	 * @param binder the binder
+	 * @param properties the Docker Compose properties
+	 * @param eventListeners the set of application listeners
+	 * @return a new instance of DockerComposeLifecycleManager
+	 */
+	protected DockerComposeLifecycleManager createDockerComposeLifecycleManager(
 			ConfigurableApplicationContext applicationContext, Binder binder, DockerComposeProperties properties,
 			Set<ApplicationListener<?>> eventListeners) {
 		return new DockerComposeLifecycleManager(applicationContext, binder, this.shutdownHandlers, properties,

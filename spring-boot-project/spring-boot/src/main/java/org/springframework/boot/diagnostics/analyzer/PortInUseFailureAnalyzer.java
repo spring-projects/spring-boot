@@ -29,13 +29,13 @@ import org.springframework.boot.web.server.PortInUseException;
 class PortInUseFailureAnalyzer extends AbstractFailureAnalyzer<PortInUseException> {
 
 	/**
-     * Analyzes the failure caused by a PortInUseException and generates a FailureAnalysis object.
-     * 
-     * @param rootFailure the root cause of the failure
-     * @param cause the PortInUseException that caused the failure
-     * @return a FailureAnalysis object containing information about the failure
-     */
-    @Override
+	 * Analyzes the failure caused by a PortInUseException and generates a FailureAnalysis
+	 * object.
+	 * @param rootFailure the root cause of the failure
+	 * @param cause the PortInUseException that caused the failure
+	 * @return a FailureAnalysis object containing information about the failure
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, PortInUseException cause) {
 		return new FailureAnalysis("Web server failed to start. Port " + cause.getPort() + " was already in use.",
 				"Identify and stop the process that's listening on port " + cause.getPort() + " or configure this "

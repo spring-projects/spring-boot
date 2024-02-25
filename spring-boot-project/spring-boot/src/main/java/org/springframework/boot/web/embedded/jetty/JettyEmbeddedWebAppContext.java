@@ -29,58 +29,53 @@ import org.eclipse.jetty.ee10.webapp.WebAppContext;
 class JettyEmbeddedWebAppContext extends WebAppContext {
 
 	/**
-     * Constructor for JettyEmbeddedWebAppContext.
-     * Initializes the server class matcher with the specified class matcher.
-     * 
-     * @param serverClassMatcher the server class matcher to be set
-     */
-    JettyEmbeddedWebAppContext() {
+	 * Constructor for JettyEmbeddedWebAppContext. Initializes the server class matcher
+	 * with the specified class matcher.
+	 * @param serverClassMatcher the server class matcher to be set
+	 */
+	JettyEmbeddedWebAppContext() {
 		setServerClassMatcher(new ClassMatcher("org.springframework.boot.loader."));
 		// setTempDirectory(WebInfConfiguration.getCanonicalNameForWebAppTmpDir(this));
 	}
 
 	/**
-     * Creates a new instance of ServletHandler for this JettyEmbeddedWebAppContext.
-     * 
-     * @return the newly created ServletHandler
-     */
-    @Override
+	 * Creates a new instance of ServletHandler for this JettyEmbeddedWebAppContext.
+	 * @return the newly created ServletHandler
+	 */
+	@Override
 	protected ServletHandler newServletHandler() {
 		return new JettyEmbeddedServletHandler();
 	}
 
 	/**
-     * Performs deferred initialization of the JettyEmbeddedWebAppContext.
-     * This method calls the deferredInitialize() method of the JettyEmbeddedServletHandler
-     * to perform any necessary initialization tasks.
-     *
-     * @throws Exception if an error occurs during deferred initialization.
-     */
-    void deferredInitialize() throws Exception {
+	 * Performs deferred initialization of the JettyEmbeddedWebAppContext. This method
+	 * calls the deferredInitialize() method of the JettyEmbeddedServletHandler to perform
+	 * any necessary initialization tasks.
+	 * @throws Exception if an error occurs during deferred initialization.
+	 */
+	void deferredInitialize() throws Exception {
 		((JettyEmbeddedServletHandler) getServletHandler()).deferredInitialize();
 	}
 
 	/**
-     * JettyEmbeddedServletHandler class.
-     */
-    private static final class JettyEmbeddedServletHandler extends ServletHandler {
+	 * JettyEmbeddedServletHandler class.
+	 */
+	private static final class JettyEmbeddedServletHandler extends ServletHandler {
 
 		/**
-         * Initializes the JettyEmbeddedServletHandler.
-         *
-         * @throws Exception if an error occurs during initialization
-         */
-        @Override
+		 * Initializes the JettyEmbeddedServletHandler.
+		 * @throws Exception if an error occurs during initialization
+		 */
+		@Override
 		public void initialize() throws Exception {
 		}
 
 		/**
-         * Performs deferred initialization of the JettyEmbeddedServletHandler.
-         * This method calls the superclass's initialize method.
-         *
-         * @throws Exception if an error occurs during initialization
-         */
-        void deferredInitialize() throws Exception {
+		 * Performs deferred initialization of the JettyEmbeddedServletHandler. This
+		 * method calls the superclass's initialize method.
+		 * @throws Exception if an error occurs during initialization
+		 */
+		void deferredInitialize() throws Exception {
 			super.initialize();
 		}
 

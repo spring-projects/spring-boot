@@ -39,16 +39,15 @@ import org.springframework.boot.origin.Origin;
 class ConfigDataLocationBindHandler extends AbstractBindHandler {
 
 	/**
-     * This method is called when the binding process is successful.
-     * It handles the result object based on its type and returns the processed result.
-     * 
-     * @param name     the name of the configuration property being bound
-     * @param target   the bindable target object
-     * @param context  the bind context
-     * @param result   the result object from the binding process
-     * @return         the processed result object
-     */
-    @Override
+	 * This method is called when the binding process is successful. It handles the result
+	 * object based on its type and returns the processed result.
+	 * @param name the name of the configuration property being bound
+	 * @param target the bindable target object
+	 * @param context the bind context
+	 * @param result the result object from the binding process
+	 * @return the processed result object
+	 */
+	@Override
 	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		if (result instanceof ConfigDataLocation location) {
 			return withOrigin(context, location);
@@ -70,13 +69,13 @@ class ConfigDataLocationBindHandler extends AbstractBindHandler {
 	}
 
 	/**
-     * Adds the origin information to the given ConfigDataLocation if it is not already present.
-     * 
-     * @param context the BindContext object
-     * @param result the ConfigDataLocation object to add the origin information to
-     * @return the ConfigDataLocation object with the origin information added
-     */
-    private ConfigDataLocation withOrigin(BindContext context, ConfigDataLocation result) {
+	 * Adds the origin information to the given ConfigDataLocation if it is not already
+	 * present.
+	 * @param context the BindContext object
+	 * @param result the ConfigDataLocation object to add the origin information to
+	 * @return the ConfigDataLocation object with the origin information added
+	 */
+	private ConfigDataLocation withOrigin(BindContext context, ConfigDataLocation result) {
 		if (result.getOrigin() != null) {
 			return result;
 		}

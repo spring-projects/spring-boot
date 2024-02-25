@@ -46,11 +46,10 @@ public class MyProperties {
 	}
 
 	/**
-     * Returns the size threshold for the data.
-     *
-     * @return the size threshold for the data
-     */
-    public DataSize getSizeThreshold() {
+	 * Returns the size threshold for the data.
+	 * @return the size threshold for the data
+	 */
+	public DataSize getSizeThreshold() {
 		return this.sizeThreshold;
 	}
 	// @fold:off

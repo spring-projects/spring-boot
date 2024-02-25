@@ -59,11 +59,10 @@ public enum Outcome {
 	private final Tag tag;
 
 	/**
-     * Sets the tag of the outcome to the specified name.
-     * 
-     * @param name the name of the outcome
-     */
-    Outcome() {
+	 * Sets the tag of the outcome to the specified name.
+	 * @param name the name of the outcome
+	 */
+	Outcome() {
 		this.tag = Tag.of("outcome", name());
 	}
 

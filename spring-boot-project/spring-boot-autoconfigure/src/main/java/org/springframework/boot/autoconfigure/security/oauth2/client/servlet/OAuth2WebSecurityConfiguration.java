@@ -42,44 +42,46 @@ import static org.springframework.security.config.Customizer.withDefaults;
 class OAuth2WebSecurityConfiguration {
 
 	/**
-     * Creates an instance of {@link OAuth2AuthorizedClientService} if no other bean of the same type is present.
-     * 
-     * @param clientRegistrationRepository the {@link ClientRegistrationRepository} used to retrieve client registrations
-     * @return an instance of {@link InMemoryOAuth2AuthorizedClientService} if no other bean of the same type is present
-     */
-    @Bean
+	 * Creates an instance of {@link OAuth2AuthorizedClientService} if no other bean of
+	 * the same type is present.
+	 * @param clientRegistrationRepository the {@link ClientRegistrationRepository} used
+	 * to retrieve client registrations
+	 * @return an instance of {@link InMemoryOAuth2AuthorizedClientService} if no other
+	 * bean of the same type is present
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	OAuth2AuthorizedClientService authorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
 		return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
 	}
 
 	/**
-     * Creates an instance of {@link OAuth2AuthorizedClientRepository} if no other bean of the same type is present.
-     * 
-     * @param authorizedClientService the {@link OAuth2AuthorizedClientService} used to manage authorized clients
-     * @return the {@link OAuth2AuthorizedClientRepository} instance
-     */
-    @Bean
+	 * Creates an instance of {@link OAuth2AuthorizedClientRepository} if no other bean of
+	 * the same type is present.
+	 * @param authorizedClientService the {@link OAuth2AuthorizedClientService} used to
+	 * manage authorized clients
+	 * @return the {@link OAuth2AuthorizedClientRepository} instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	OAuth2AuthorizedClientRepository authorizedClientRepository(OAuth2AuthorizedClientService authorizedClientService) {
 		return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
 	}
 
 	/**
-     * OAuth2SecurityFilterChainConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * OAuth2SecurityFilterChainConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnDefaultWebSecurity
 	static class OAuth2SecurityFilterChainConfiguration {
 
 		/**
-         * Configures the OAuth2 security filter chain for the application.
-         * 
-         * @param http the HttpSecurity object to configure
-         * @return the configured SecurityFilterChain object
-         * @throws Exception if an error occurs during configuration
-         */
-        @Bean
+		 * Configures the OAuth2 security filter chain for the application.
+		 * @param http the HttpSecurity object to configure
+		 * @return the configured SecurityFilterChain object
+		 * @throws Exception if an error occurs during configuration
+		 */
+		@Bean
 		SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 			http.oauth2Login(withDefaults());

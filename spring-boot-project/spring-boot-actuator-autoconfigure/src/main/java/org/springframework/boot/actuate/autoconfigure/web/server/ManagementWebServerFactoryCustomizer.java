@@ -47,12 +47,13 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	private final Class<? extends WebServerFactoryCustomizer<?>>[] customizerClasses;
 
 	/**
-     * Constructs a new {@code ManagementWebServerFactoryCustomizer} with the specified parameters.
-     *
-     * @param beanFactory the {@code ListableBeanFactory} used for retrieving beans
-     * @param customizerClasses the classes of {@code WebServerFactoryCustomizer} to be applied
-     */
-    @SafeVarargs
+	 * Constructs a new {@code ManagementWebServerFactoryCustomizer} with the specified
+	 * parameters.
+	 * @param beanFactory the {@code ListableBeanFactory} used for retrieving beans
+	 * @param customizerClasses the classes of {@code WebServerFactoryCustomizer} to be
+	 * applied
+	 */
+	@SafeVarargs
 	@SuppressWarnings("varargs")
 	protected ManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory,
 			Class<? extends WebServerFactoryCustomizer<?>>... customizerClasses) {
@@ -61,24 +62,22 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	}
 
 	/**
-     * Returns the order value for this customizer.
-     * 
-     * The order determines the order in which the customizers are applied. 
-     * A lower value means higher priority.
-     * 
-     * @return the order value for this customizer
-     */
-    @Override
+	 * Returns the order value for this customizer.
+	 *
+	 * The order determines the order in which the customizers are applied. A lower value
+	 * means higher priority.
+	 * @return the order value for this customizer
+	 */
+	@Override
 	public int getOrder() {
 		return 0;
 	}
 
 	/**
-     * Customize the given factory with management-specific configurations.
-     * 
-     * @param factory the management web server factory to customize
-     */
-    @Override
+	 * Customize the given factory with management-specific configurations.
+	 * @param factory the management web server factory to customize
+	 */
+	@Override
 	public final void customize(T factory) {
 		ManagementServerProperties managementServerProperties = BeanFactoryUtils
 			.beanOfTypeIncludingAncestors(this.beanFactory, ManagementServerProperties.class);
@@ -94,11 +93,10 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	}
 
 	/**
-     * Customizes the given factory with the same customizers as the parent context.
-     * 
-     * @param factory the factory to customize
-     */
-    private void customizeSameAsParentContext(T factory) {
+	 * Customizes the given factory with the same customizers as the parent context.
+	 * @param factory the factory to customize
+	 */
+	private void customizeSameAsParentContext(T factory) {
 		List<WebServerFactoryCustomizer<?>> customizers = new ArrayList<>();
 		for (Class<? extends WebServerFactoryCustomizer<?>> customizerClass : this.customizerClasses) {
 			try {
@@ -112,25 +110,23 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	}
 
 	/**
-     * Invokes the customizers on the given factory.
-     * 
-     * @param factory the web server factory to customize
-     * @param customizers the list of customizers to invoke
-     */
-    @SuppressWarnings("unchecked")
+	 * Invokes the customizers on the given factory.
+	 * @param factory the web server factory to customize
+	 * @param customizers the list of customizers to invoke
+	 */
+	@SuppressWarnings("unchecked")
 	private void invokeCustomizers(T factory, List<WebServerFactoryCustomizer<?>> customizers) {
 		LambdaSafe.callbacks(WebServerFactoryCustomizer.class, customizers, factory)
 			.invoke((customizer) -> customizer.customize(factory));
 	}
 
 	/**
-     * Customizes the management web server factory with the provided properties.
-     * 
-     * @param factory the management web server factory to customize
-     * @param managementServerProperties the properties for the management server
-     * @param serverProperties the properties for the server
-     */
-    protected void customize(T factory, ManagementServerProperties managementServerProperties,
+	 * Customizes the management web server factory with the provided properties.
+	 * @param factory the management web server factory to customize
+	 * @param managementServerProperties the properties for the management server
+	 * @param serverProperties the properties for the server
+	 */
+	protected void customize(T factory, ManagementServerProperties managementServerProperties,
 			ServerProperties serverProperties) {
 		factory.setPort(managementServerProperties.getPort());
 		Ssl ssl = managementServerProperties.getSsl();

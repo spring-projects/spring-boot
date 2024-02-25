@@ -28,12 +28,13 @@ public class OpenLdapContainer extends GenericContainer<OpenLdapContainer> {
 	private static final int DEFAULT_LDAP_PORT = 389;
 
 	/**
-     * Constructs a new OpenLdapContainer object.
-     * 
-     * This constructor initializes the OpenLdapContainer with the default Docker image name for OpenLDAP.
-     * It also adds the default LDAP port to the list of exposed ports for the container.
-     */
-    public OpenLdapContainer() {
+	 * Constructs a new OpenLdapContainer object.
+	 *
+	 * This constructor initializes the OpenLdapContainer with the default Docker image
+	 * name for OpenLDAP. It also adds the default LDAP port to the list of exposed ports
+	 * for the container.
+	 */
+	public OpenLdapContainer() {
 		super(DockerImageNames.openLdap());
 		addExposedPorts(DEFAULT_LDAP_PORT);
 	}

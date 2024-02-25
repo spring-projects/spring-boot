@@ -40,11 +40,10 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 	private Snake snake;
 
 	/**
-     * Generates a random hexadecimal color code.
-     * 
-     * @return A string representing a random hexadecimal color code.
-     */
-    public static String getRandomHexColor() {
+	 * Generates a random hexadecimal color code.
+	 * @return A string representing a random hexadecimal color code.
+	 */
+	public static String getRandomHexColor() {
 		float hue = random.nextFloat();
 		// sat between 0.1 and 0.3
 		float saturation = (random.nextInt(2000) + 1000) / 10000f;
@@ -54,23 +53,21 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 	}
 
 	/**
-     * Generates a random location within the playfield.
-     * 
-     * @return a Location object representing the random location
-     */
-    public static Location getRandomLocation() {
+	 * Generates a random location within the playfield.
+	 * @return a Location object representing the random location
+	 */
+	public static Location getRandomLocation() {
 		int x = roundByGridSize(random.nextInt(SnakeUtils.PLAYFIELD_WIDTH));
 		int y = roundByGridSize(random.nextInt(SnakeUtils.PLAYFIELD_HEIGHT));
 		return new Location(x, y);
 	}
 
 	/**
-     * Rounds the given value to the nearest multiple of the grid size.
-     * 
-     * @param value the value to be rounded
-     * @return the rounded value
-     */
-    private static int roundByGridSize(int value) {
+	 * Rounds the given value to the nearest multiple of the grid size.
+	 * @param value the value to be rounded
+	 * @return the rounded value
+	 */
+	private static int roundByGridSize(int value) {
 		value = value + (SnakeUtils.GRID_SIZE / 2);
 		value = value / SnakeUtils.GRID_SIZE;
 		value = value * SnakeUtils.GRID_SIZE;
@@ -78,26 +75,26 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 	}
 
 	/**
-     * Constructs a new SnakeWebSocketHandler object.
-     * 
-     * This constructor initializes the id of the SnakeWebSocketHandler object by incrementing the snakeIds counter.
-     * The id is used to uniquely identify each SnakeWebSocketHandler object.
-     */
-    public SnakeWebSocketHandler() {
+	 * Constructs a new SnakeWebSocketHandler object.
+	 *
+	 * This constructor initializes the id of the SnakeWebSocketHandler object by
+	 * incrementing the snakeIds counter. The id is used to uniquely identify each
+	 * SnakeWebSocketHandler object.
+	 */
+	public SnakeWebSocketHandler() {
 		this.id = snakeIds.getAndIncrement();
 	}
 
 	/**
-     * Called after a WebSocket connection is established.
-     * Initializes a new Snake object with the given id and session.
-     * Adds the Snake to the SnakeTimer.
-     * Builds a JSON string containing the id and color of each Snake in the SnakeTimer.
-     * Broadcasts a "join" message with the JSON string to all connected clients.
-     *
-     * @param session the WebSocketSession object representing the newly established connection
-     * @throws Exception if an error occurs during the execution of the method
-     */
-    @Override
+	 * Called after a WebSocket connection is established. Initializes a new Snake object
+	 * with the given id and session. Adds the Snake to the SnakeTimer. Builds a JSON
+	 * string containing the id and color of each Snake in the SnakeTimer. Broadcasts a
+	 * "join" message with the JSON string to all connected clients.
+	 * @param session the WebSocketSession object representing the newly established
+	 * connection
+	 * @throws Exception if an error occurs during the execution of the method
+	 */
+	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		this.snake = new Snake(this.id, session);
 		SnakeTimer.addSnake(this.snake);
@@ -113,13 +110,12 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 	}
 
 	/**
-     * Handles a text message received from a WebSocket session.
-     * 
-     * @param session the WebSocket session
-     * @param message the text message received
-     * @throws Exception if an error occurs while handling the message
-     */
-    @Override
+	 * Handles a text message received from a WebSocket session.
+	 * @param session the WebSocket session
+	 * @param message the text message received
+	 * @throws Exception if an error occurs while handling the message
+	 */
+	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		String payload = message.getPayload();
 		switch (payload) {
@@ -131,14 +127,15 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 	}
 
 	/**
-     * This method is called after a WebSocket connection is closed.
-     * It removes the snake from the SnakeTimer and broadcasts a leave message to all connected clients.
-     *
-     * @param session The WebSocketSession object representing the closed connection.
-     * @param status The CloseStatus object representing the reason for the connection closure.
-     * @throws Exception if an error occurs while removing the snake or broadcasting the leave message.
-     */
-    @Override
+	 * This method is called after a WebSocket connection is closed. It removes the snake
+	 * from the SnakeTimer and broadcasts a leave message to all connected clients.
+	 * @param session The WebSocketSession object representing the closed connection.
+	 * @param status The CloseStatus object representing the reason for the connection
+	 * closure.
+	 * @throws Exception if an error occurs while removing the snake or broadcasting the
+	 * leave message.
+	 */
+	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		SnakeTimer.removeSnake(this.snake);
 		SnakeTimer.broadcast(String.format("{'type': 'leave', 'id': %d}", this.id));

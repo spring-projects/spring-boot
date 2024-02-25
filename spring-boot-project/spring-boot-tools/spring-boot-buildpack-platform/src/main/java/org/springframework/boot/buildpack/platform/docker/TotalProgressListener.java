@@ -56,18 +56,17 @@ public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> 
 	}
 
 	/**
-     * Called when the progress listener is started.
-     */
-    @Override
+	 * Called when the progress listener is started.
+	 */
+	@Override
 	public void onStart() {
 	}
 
 	/**
-     * This method is called when an event is updated.
-     * 
-     * @param event the event to be updated
-     */
-    @Override
+	 * This method is called when an event is updated.
+	 * @param event the event to be updated
+	 */
+	@Override
 	public void onUpdate(E event) {
 		if (event.getId() != null) {
 			this.layers.computeIfAbsent(event.getId(), (value) -> new Layer(this.trackedStatusKeys)).update(event);
@@ -79,22 +78,21 @@ public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> 
 	}
 
 	/**
-     * Called when the progress has reached its maximum value and is finished.
-     * This method iterates through all the layers and calls the finish method on each layer.
-     * It then publishes the progress value as 100.
-     */
-    @Override
+	 * Called when the progress has reached its maximum value and is finished. This method
+	 * iterates through all the layers and calls the finish method on each layer. It then
+	 * publishes the progress value as 100.
+	 */
+	@Override
 	public void onFinish() {
 		this.layers.values().forEach(Layer::finish);
 		publish(100);
 	}
 
 	/**
-     * Publishes the total progress of all layers.
-     * 
-     * @param fallback the fallback value to use if there are no layers
-     */
-    private void publish(int fallback) {
+	 * Publishes the total progress of all layers.
+	 * @param fallback the fallback value to use if there are no layers
+	 */
+	private void publish(int fallback) {
 		int count = 0;
 		int total = 0;
 		for (Layer layer : this.layers.values()) {
@@ -107,12 +105,11 @@ public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> 
 	}
 
 	/**
-     * Returns the value within the percentage bounds of 0 and 100.
-     *
-     * @param value the value to be checked
-     * @return the value within the percentage bounds
-     */
-    private static int withinPercentageBounds(int value) {
+	 * Returns the value within the percentage bounds of 0 and 100.
+	 * @param value the value to be checked
+	 * @return the value within the percentage bounds
+	 */
+	private static int withinPercentageBounds(int value) {
 		if (value < 0) {
 			return 0;
 		}
@@ -127,20 +124,21 @@ public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> 
 		private final Map<String, Integer> progressByStatus = new HashMap<>();
 
 		/**
-         * Initializes a new instance of the Layer class with the specified tracked status keys.
-         * 
-         * @param trackedStatusKeys an array of strings representing the tracked status keys
-         */
-        Layer(String[] trackedStatusKeys) {
+		 * Initializes a new instance of the Layer class with the specified tracked status
+		 * keys.
+		 * @param trackedStatusKeys an array of strings representing the tracked status
+		 * keys
+		 */
+		Layer(String[] trackedStatusKeys) {
 			Arrays.stream(trackedStatusKeys).forEach((status) -> this.progressByStatus.put(status, 0));
 		}
 
 		/**
-         * Updates the progress of an image based on the given event.
-         * 
-         * @param event the ImageProgressUpdateEvent containing the progress update information
-         */
-        void update(ImageProgressUpdateEvent event) {
+		 * Updates the progress of an image based on the given event.
+		 * @param event the ImageProgressUpdateEvent containing the progress update
+		 * information
+		 */
+		void update(ImageProgressUpdateEvent event) {
 			String status = event.getStatus();
 			if (event.getProgressDetail() != null && this.progressByStatus.containsKey(status)) {
 				int current = this.progressByStatus.get(status);
@@ -149,30 +147,30 @@ public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> 
 		}
 
 		/**
-         * Updates the progress based on the current progress detail.
-         * 
-         * @param current the current progress value
-         * @param detail the progress detail object containing the current and total progress values
-         * @return the updated progress value
-         */
-        private int updateProgress(int current, ProgressDetail detail) {
+		 * Updates the progress based on the current progress detail.
+		 * @param current the current progress value
+		 * @param detail the progress detail object containing the current and total
+		 * progress values
+		 * @return the updated progress value
+		 */
+		private int updateProgress(int current, ProgressDetail detail) {
 			int result = withinPercentageBounds((int) ((100.0 / detail.getTotal()) * detail.getCurrent()));
 			return Math.max(result, current);
 		}
 
 		/**
-         * Sets the progress of all statuses to 100, indicating that the layer has been finished.
-         */
-        void finish() {
+		 * Sets the progress of all statuses to 100, indicating that the layer has been
+		 * finished.
+		 */
+		void finish() {
 			this.progressByStatus.keySet().forEach((key) -> this.progressByStatus.put(key, 100));
 		}
 
 		/**
-         * Returns the average progress of all statuses in the layer.
-         * 
-         * @return the average progress as an integer value within the percentage bounds
-         */
-        int getProgress() {
+		 * Returns the average progress of all statuses in the layer.
+		 * @return the average progress as an integer value within the percentage bounds
+		 */
+		int getProgress() {
 			return withinPercentageBounds((this.progressByStatus.values().stream().mapToInt(Integer::valueOf).sum())
 					/ this.progressByStatus.size());
 		}

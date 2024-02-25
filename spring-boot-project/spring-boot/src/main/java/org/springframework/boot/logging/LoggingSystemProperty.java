@@ -100,21 +100,22 @@ public enum LoggingSystemProperty {
 	private final String applicationPropertyName;
 
 	/**
-     * Constructs a new LoggingSystemProperty object with the specified environment variable name and default value.
-     * 
-     * @param environmentVariableName the name of the environment variable to retrieve the system property from
-     */
-    LoggingSystemProperty(String environmentVariableName) {
+	 * Constructs a new LoggingSystemProperty object with the specified environment
+	 * variable name and default value.
+	 * @param environmentVariableName the name of the environment variable to retrieve the
+	 * system property from
+	 */
+	LoggingSystemProperty(String environmentVariableName) {
 		this(environmentVariableName, null);
 	}
 
 	/**
-     * Initializes a new instance of the LoggingSystemProperty class with the specified environment variable name and application property name.
-     * 
-     * @param environmentVariableName The name of the environment variable.
-     * @param applicationPropertyName The name of the application property.
-     */
-    LoggingSystemProperty(String environmentVariableName, String applicationPropertyName) {
+	 * Initializes a new instance of the LoggingSystemProperty class with the specified
+	 * environment variable name and application property name.
+	 * @param environmentVariableName The name of the environment variable.
+	 * @param applicationPropertyName The name of the application property.
+	 */
+	LoggingSystemProperty(String environmentVariableName, String applicationPropertyName) {
 		this.environmentVariableName = environmentVariableName;
 		this.applicationPropertyName = applicationPropertyName;
 	}
@@ -128,11 +129,10 @@ public enum LoggingSystemProperty {
 	}
 
 	/**
-     * Returns the application property name.
-     *
-     * @return the application property name
-     */
-    String getApplicationPropertyName() {
+	 * Returns the application property name.
+	 * @return the application property name
+	 */
+	String getApplicationPropertyName() {
 		return this.applicationPropertyName;
 	}
 

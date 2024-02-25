@@ -33,13 +33,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class MyControllerAdvice extends ResponseEntityExceptionHandler {
 
 	/**
-     * Handles the exception thrown by the controller.
-     * 
-     * @param request the HttpServletRequest object
-     * @param ex the Throwable object representing the exception
-     * @return a ResponseEntity object containing the error body and status
-     */
-    @ResponseBody
+	 * Handles the exception thrown by the controller.
+	 * @param request the HttpServletRequest object
+	 * @param ex the Throwable object representing the exception
+	 * @return a ResponseEntity object containing the error body and status
+	 */
+	@ResponseBody
 	@ExceptionHandler(MyException.class)
 	public ResponseEntity<?> handleControllerException(HttpServletRequest request, Throwable ex) {
 		HttpStatus status = getStatus(request);
@@ -47,12 +46,11 @@ public class MyControllerAdvice extends ResponseEntityExceptionHandler {
 	}
 
 	/**
-     * Returns the HTTP status code of the given HttpServletRequest.
-     * 
-     * @param request the HttpServletRequest object
-     * @return the HttpStatus object representing the status code of the request
-     */
-    private HttpStatus getStatus(HttpServletRequest request) {
+	 * Returns the HTTP status code of the given HttpServletRequest.
+	 * @param request the HttpServletRequest object
+	 * @return the HttpStatus object representing the status code of the request
+	 */
+	private HttpStatus getStatus(HttpServletRequest request) {
 		Integer code = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 		HttpStatus status = HttpStatus.resolve(code);
 		return (status != null) ? status : HttpStatus.INTERNAL_SERVER_ERROR;

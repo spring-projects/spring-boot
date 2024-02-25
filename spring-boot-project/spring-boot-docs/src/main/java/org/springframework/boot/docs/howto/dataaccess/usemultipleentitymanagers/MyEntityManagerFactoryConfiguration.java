@@ -34,24 +34,22 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 public class MyEntityManagerFactoryConfiguration {
 
 	/**
-     * Returns the JpaProperties object for the first JPA configuration.
-     * 
-     * @return the JpaProperties object for the first JPA configuration
-     */
-    @Bean
+	 * Returns the JpaProperties object for the first JPA configuration.
+	 * @return the JpaProperties object for the first JPA configuration
+	 */
+	@Bean
 	@ConfigurationProperties("app.jpa.first")
 	public JpaProperties firstJpaProperties() {
 		return new JpaProperties();
 	}
 
 	/**
-     * Creates and configures the first entity manager factory bean.
-     * 
-     * @param firstDataSource the data source for the first entity manager factory
-     * @param firstJpaProperties the JPA properties for the first entity manager factory
-     * @return the first entity manager factory bean
-     */
-    @Bean
+	 * Creates and configures the first entity manager factory bean.
+	 * @param firstDataSource the data source for the first entity manager factory
+	 * @param firstJpaProperties the JPA properties for the first entity manager factory
+	 * @return the first entity manager factory bean
+	 */
+	@Bean
 	public LocalContainerEntityManagerFactoryBean firstEntityManagerFactory(DataSource firstDataSource,
 			JpaProperties firstJpaProperties) {
 		EntityManagerFactoryBuilder builder = createEntityManagerFactoryBuilder(firstJpaProperties);
@@ -59,23 +57,23 @@ public class MyEntityManagerFactoryConfiguration {
 	}
 
 	/**
-     * Creates an instance of EntityManagerFactoryBuilder using the provided JpaProperties.
-     * 
-     * @param jpaProperties the JpaProperties to be used for creating the EntityManagerFactoryBuilder
-     * @return the created EntityManagerFactoryBuilder
-     */
-    private EntityManagerFactoryBuilder createEntityManagerFactoryBuilder(JpaProperties jpaProperties) {
+	 * Creates an instance of EntityManagerFactoryBuilder using the provided
+	 * JpaProperties.
+	 * @param jpaProperties the JpaProperties to be used for creating the
+	 * EntityManagerFactoryBuilder
+	 * @return the created EntityManagerFactoryBuilder
+	 */
+	private EntityManagerFactoryBuilder createEntityManagerFactoryBuilder(JpaProperties jpaProperties) {
 		JpaVendorAdapter jpaVendorAdapter = createJpaVendorAdapter(jpaProperties);
 		return new EntityManagerFactoryBuilder(jpaVendorAdapter, jpaProperties.getProperties(), null);
 	}
 
 	/**
-     * Creates a JpaVendorAdapter based on the provided JpaProperties.
-     * 
-     * @param jpaProperties the JpaProperties to be used for creating the JpaVendorAdapter
-     * @return the created JpaVendorAdapter
-     */
-    private JpaVendorAdapter createJpaVendorAdapter(JpaProperties jpaProperties) {
+	 * Creates a JpaVendorAdapter based on the provided JpaProperties.
+	 * @param jpaProperties the JpaProperties to be used for creating the JpaVendorAdapter
+	 * @return the created JpaVendorAdapter
+	 */
+	private JpaVendorAdapter createJpaVendorAdapter(JpaProperties jpaProperties) {
 		// ... map JPA properties as needed
 		return new HibernateJpaVendorAdapter();
 	}

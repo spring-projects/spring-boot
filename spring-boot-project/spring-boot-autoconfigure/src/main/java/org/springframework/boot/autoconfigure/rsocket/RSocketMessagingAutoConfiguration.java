@@ -40,13 +40,15 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 public class RSocketMessagingAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link RSocketMessageHandler} if no other bean of the same type is present.
-     * 
-     * @param rSocketStrategies The {@link RSocketStrategies} to be used by the message handler.
-     * @param customizers The {@link ObjectProvider} of {@link RSocketMessageHandlerCustomizer} to customize the message handler.
-     * @return The created {@link RSocketMessageHandler} instance.
-     */
-    @Bean
+	 * Creates a new instance of {@link RSocketMessageHandler} if no other bean of the
+	 * same type is present.
+	 * @param rSocketStrategies The {@link RSocketStrategies} to be used by the message
+	 * handler.
+	 * @param customizers The {@link ObjectProvider} of
+	 * {@link RSocketMessageHandlerCustomizer} to customize the message handler.
+	 * @return The created {@link RSocketMessageHandler} instance.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public RSocketMessageHandler messageHandler(RSocketStrategies rSocketStrategies,
 			ObjectProvider<RSocketMessageHandlerCustomizer> customizers) {

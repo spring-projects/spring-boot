@@ -25,21 +25,21 @@ import smoketest.bootstrapregistry.external.svn.SubversionServerCertificate;
 public class MySubversionClient extends SubversionClient {
 
 	/**
-     * Constructs a new instance of MySubversionClient with the specified server certificate.
-     * 
-     * @param serverCertificate the Subversion server certificate to be used for authentication
-     */
-    public MySubversionClient(SubversionServerCertificate serverCertificate) {
+	 * Constructs a new instance of MySubversionClient with the specified server
+	 * certificate.
+	 * @param serverCertificate the Subversion server certificate to be used for
+	 * authentication
+	 */
+	public MySubversionClient(SubversionServerCertificate serverCertificate) {
 		super(serverCertificate);
 	}
 
 	/**
-     * Loads a file from the specified location.
-     * 
-     * @param location the location of the file to be loaded
-     * @return the loaded file with a prefix "my-"
-     */
-    @Override
+	 * Loads a file from the specified location.
+	 * @param location the location of the file to be loaded
+	 * @return the loaded file with a prefix "my-"
+	 */
+	@Override
 	public String load(String location) {
 		return "my-" + super.load(location);
 	}

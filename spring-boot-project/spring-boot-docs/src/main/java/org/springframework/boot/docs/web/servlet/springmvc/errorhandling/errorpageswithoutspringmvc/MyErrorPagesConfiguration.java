@@ -30,21 +30,19 @@ import org.springframework.http.HttpStatus;
 public class MyErrorPagesConfiguration {
 
 	/**
-     * Registers error pages for the application.
-     * 
-     * @return the error page registrar
-     */
-    @Bean
+	 * Registers error pages for the application.
+	 * @return the error page registrar
+	 */
+	@Bean
 	public ErrorPageRegistrar errorPageRegistrar() {
 		return this::registerErrorPages;
 	}
 
 	/**
-     * Registers error pages for the given error codes.
-     * 
-     * @param registry the ErrorPageRegistry to register the error pages with
-     */
-    private void registerErrorPages(ErrorPageRegistry registry) {
+	 * Registers error pages for the given error codes.
+	 * @param registry the ErrorPageRegistry to register the error pages with
+	 */
+	private void registerErrorPages(ErrorPageRegistry registry) {
 		registry.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
 	}
 

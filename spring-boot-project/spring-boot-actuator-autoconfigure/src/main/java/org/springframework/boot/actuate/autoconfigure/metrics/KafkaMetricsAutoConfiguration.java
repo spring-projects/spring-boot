@@ -52,65 +52,67 @@ import org.springframework.kafka.streams.KafkaStreamsMicrometerListener;
 public class KafkaMetricsAutoConfiguration {
 
 	/**
-     * Customizes the DefaultKafkaProducerFactory by adding a listener for Kafka producer metrics.
-     * 
-     * @param meterRegistry the MeterRegistry used for collecting metrics
-     * @return the DefaultKafkaProducerFactoryCustomizer that adds the listener
-     */
-    @Bean
+	 * Customizes the DefaultKafkaProducerFactory by adding a listener for Kafka producer
+	 * metrics.
+	 * @param meterRegistry the MeterRegistry used for collecting metrics
+	 * @return the DefaultKafkaProducerFactoryCustomizer that adds the listener
+	 */
+	@Bean
 	public DefaultKafkaProducerFactoryCustomizer kafkaProducerMetrics(MeterRegistry meterRegistry) {
 		return (producerFactory) -> addListener(producerFactory, meterRegistry);
 	}
 
 	/**
-     * Customizes the DefaultKafkaConsumerFactory by adding a listener to collect metrics using the provided MeterRegistry.
-     *
-     * @param meterRegistry the MeterRegistry used to collect metrics
-     * @return the DefaultKafkaConsumerFactoryCustomizer that adds the listener to the consumer factory
-     */
-    @Bean
+	 * Customizes the DefaultKafkaConsumerFactory by adding a listener to collect metrics
+	 * using the provided MeterRegistry.
+	 * @param meterRegistry the MeterRegistry used to collect metrics
+	 * @return the DefaultKafkaConsumerFactoryCustomizer that adds the listener to the
+	 * consumer factory
+	 */
+	@Bean
 	public DefaultKafkaConsumerFactoryCustomizer kafkaConsumerMetrics(MeterRegistry meterRegistry) {
 		return (consumerFactory) -> addListener(consumerFactory, meterRegistry);
 	}
 
 	/**
-     * Adds a listener to the given Kafka consumer factory to track metrics using Micrometer.
-     * 
-     * @param factory the Kafka consumer factory to add the listener to
-     * @param meterRegistry the Micrometer meter registry to use for tracking metrics
-     * @param <K> the key type for the Kafka consumer
-     * @param <V> the value type for the Kafka consumer
-     */
-    private <K, V> void addListener(DefaultKafkaConsumerFactory<K, V> factory, MeterRegistry meterRegistry) {
+	 * Adds a listener to the given Kafka consumer factory to track metrics using
+	 * Micrometer.
+	 * @param factory the Kafka consumer factory to add the listener to
+	 * @param meterRegistry the Micrometer meter registry to use for tracking metrics
+	 * @param <K> the key type for the Kafka consumer
+	 * @param <V> the value type for the Kafka consumer
+	 */
+	private <K, V> void addListener(DefaultKafkaConsumerFactory<K, V> factory, MeterRegistry meterRegistry) {
 		factory.addListener(new MicrometerConsumerListener<>(meterRegistry));
 	}
 
 	/**
-     * Adds a listener to the given Kafka producer factory to track metrics using Micrometer.
-     *
-     * @param factory the Kafka producer factory to add the listener to
-     * @param meterRegistry the Micrometer meter registry to track metrics
-     * @param <K> the key type of the Kafka producer
-     * @param <V> the value type of the Kafka producer
-     */
-    private <K, V> void addListener(DefaultKafkaProducerFactory<K, V> factory, MeterRegistry meterRegistry) {
+	 * Adds a listener to the given Kafka producer factory to track metrics using
+	 * Micrometer.
+	 * @param factory the Kafka producer factory to add the listener to
+	 * @param meterRegistry the Micrometer meter registry to track metrics
+	 * @param <K> the key type of the Kafka producer
+	 * @param <V> the value type of the Kafka producer
+	 */
+	private <K, V> void addListener(DefaultKafkaProducerFactory<K, V> factory, MeterRegistry meterRegistry) {
 		factory.addListener(new MicrometerProducerListener<>(meterRegistry));
 	}
 
 	/**
-     * KafkaStreamsMetricsConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * KafkaStreamsMetricsConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ KafkaStreamsMetrics.class, StreamsBuilderFactoryBean.class })
 	static class KafkaStreamsMetricsConfiguration {
 
 		/**
-         * Customizes the Kafka Streams StreamsBuilderFactoryBean by adding a listener for Kafka Streams metrics.
-         * 
-         * @param meterRegistry the MeterRegistry used for collecting metrics
-         * @return the StreamsBuilderFactoryBeanCustomizer that adds the KafkaStreamsMicrometerListener to the factory bean
-         */
-        @Bean
+		 * Customizes the Kafka Streams StreamsBuilderFactoryBean by adding a listener for
+		 * Kafka Streams metrics.
+		 * @param meterRegistry the MeterRegistry used for collecting metrics
+		 * @return the StreamsBuilderFactoryBeanCustomizer that adds the
+		 * KafkaStreamsMicrometerListener to the factory bean
+		 */
+		@Bean
 		StreamsBuilderFactoryBeanCustomizer kafkaStreamsMetrics(MeterRegistry meterRegistry) {
 			return (factoryBean) -> factoryBean.addListener(new KafkaStreamsMicrometerListener(meterRegistry));
 		}

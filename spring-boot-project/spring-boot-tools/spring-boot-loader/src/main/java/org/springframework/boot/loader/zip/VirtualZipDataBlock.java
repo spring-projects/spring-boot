@@ -71,17 +71,17 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 	}
 
 	/**
-     * Adds a new entry to the central directory of a virtual zip file.
-     * 
-     * @param parts                the list of data blocks to add the new entry to
-     * @param originalRecord       the original central directory file header record
-     * @param originalRecordPos    the position of the original record in the virtual zip file
-     * @param name                 the data block containing the file name
-     * @param offsetToLocalHeader  the offset to the local header of the file
-     * @return                     the size of the new central directory file header record
-     * @throws IOException         if an I/O error occurs while adding the new entry
-     */
-    private long addToCentral(List<DataBlock> parts, ZipCentralDirectoryFileHeaderRecord originalRecord,
+	 * Adds a new entry to the central directory of a virtual zip file.
+	 * @param parts the list of data blocks to add the new entry to
+	 * @param originalRecord the original central directory file header record
+	 * @param originalRecordPos the position of the original record in the virtual zip
+	 * file
+	 * @param name the data block containing the file name
+	 * @param offsetToLocalHeader the offset to the local header of the file
+	 * @return the size of the new central directory file header record
+	 * @throws IOException if an I/O error occurs while adding the new entry
+	 */
+	private long addToCentral(List<DataBlock> parts, ZipCentralDirectoryFileHeaderRecord originalRecord,
 			long originalRecordPos, DataBlock name, int offsetToLocalHeader) throws IOException {
 		ZipCentralDirectoryFileHeaderRecord record = originalRecord.withFileNameLength((short) (name.size() & 0xFFFF))
 			.withOffsetToLocalHeader(offsetToLocalHeader);
@@ -97,18 +97,18 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 	}
 
 	/**
-     * Adds the given data blocks to the local file header and central directory file header records.
-     * 
-     * @param parts                  the list of data blocks to add
-     * @param centralRecord          the central directory file header record
-     * @param originalRecord         the original local file header record
-     * @param dataDescriptorRecord   the data descriptor record
-     * @param name                   the data block containing the file name
-     * @param content                the data block containing the file content
-     * @return                       the total size of the added data blocks
-     * @throws IOException           if an I/O error occurs
-     */
-    private long addToLocal(List<DataBlock> parts, ZipCentralDirectoryFileHeaderRecord centralRecord,
+	 * Adds the given data blocks to the local file header and central directory file
+	 * header records.
+	 * @param parts the list of data blocks to add
+	 * @param centralRecord the central directory file header record
+	 * @param originalRecord the original local file header record
+	 * @param dataDescriptorRecord the data descriptor record
+	 * @param name the data block containing the file name
+	 * @param content the data block containing the file content
+	 * @return the total size of the added data blocks
+	 * @throws IOException if an I/O error occurs
+	 */
+	private long addToLocal(List<DataBlock> parts, ZipCentralDirectoryFileHeaderRecord centralRecord,
 			ZipLocalFileHeaderRecord originalRecord, ZipDataDescriptorRecord dataDescriptorRecord, DataBlock name,
 			DataBlock content) throws IOException {
 		ZipLocalFileHeaderRecord record = originalRecord.withFileNameLength((short) (name.size() & 0xFFFF));
@@ -125,11 +125,10 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 	}
 
 	/**
-     * Closes the data stream associated with this VirtualZipDataBlock.
-     * 
-     * @throws IOException if an I/O error occurs while closing the data stream
-     */
-    @Override
+	 * Closes the data stream associated with this VirtualZipDataBlock.
+	 * @throws IOException if an I/O error occurs while closing the data stream
+	 */
+	@Override
 	public void close() throws IOException {
 		this.data.close();
 	}
@@ -144,36 +143,35 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 		private final long size;
 
 		/**
-         * Constructs a new DataPart object with the specified offset and size.
-         * 
-         * @param offset the offset value of the data part
-         * @param size the size value of the data part
-         */
-        DataPart(long offset, long size) {
+		 * Constructs a new DataPart object with the specified offset and size.
+		 * @param offset the offset value of the data part
+		 * @param size the size value of the data part
+		 */
+		DataPart(long offset, long size) {
 			this.offset = offset;
 			this.size = size;
 		}
 
 		/**
-         * Returns the size of the DataPart.
-         *
-         * @return the size of the DataPart
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Returns the size of the DataPart.
+		 * @return the size of the DataPart
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public long size() throws IOException {
 			return this.size;
 		}
 
 		/**
-         * Reads bytes from the data block into the specified byte buffer at the given position.
-         * 
-         * @param dst the byte buffer to read the bytes into
-         * @param pos the position in the data block to start reading from
-         * @return the number of bytes read, or -1 if the end of the data block has been reached
-         * @throws IOException if an I/O error occurs while reading the data block
-         */
-        @Override
+		 * Reads bytes from the data block into the specified byte buffer at the given
+		 * position.
+		 * @param dst the byte buffer to read the bytes into
+		 * @param pos the position in the data block to start reading from
+		 * @return the number of bytes read, or -1 if the end of the data block has been
+		 * reached
+		 * @throws IOException if an I/O error occurs while reading the data block
+		 */
+		@Override
 		public int read(ByteBuffer dst, long pos) throws IOException {
 			int remaining = (int) (this.size - pos);
 			if (remaining <= 0) {

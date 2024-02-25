@@ -42,29 +42,31 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 	private volatile Map<String, C> contributors;
 
 	/**
-     * Constructs a new DefaultContributorRegistry with an empty map of contributors.
-     */
-    DefaultContributorRegistry() {
+	 * Constructs a new DefaultContributorRegistry with an empty map of contributors.
+	 */
+	DefaultContributorRegistry() {
 		this(Collections.emptyMap());
 	}
 
 	/**
-     * Constructs a new DefaultContributorRegistry with the specified contributors and the default HealthContributorNameFactory.
-     * 
-     * @param contributors a map of contributors where the key is a string representing the contributor name and the value is the contributor object
-     */
-    DefaultContributorRegistry(Map<String, C> contributors) {
+	 * Constructs a new DefaultContributorRegistry with the specified contributors and the
+	 * default HealthContributorNameFactory.
+	 * @param contributors a map of contributors where the key is a string representing
+	 * the contributor name and the value is the contributor object
+	 */
+	DefaultContributorRegistry(Map<String, C> contributors) {
 		this(contributors, HealthContributorNameFactory.INSTANCE);
 	}
 
 	/**
-     * Constructs a new DefaultContributorRegistry with the given contributors and nameFactory.
-     * 
-     * @param contributors the map of contributors, where the key is the contributor's name and the value is the contributor object
-     * @param nameFactory the function used to generate the name for each contributor
-     * @throws IllegalArgumentException if either contributors or nameFactory is null
-     */
-    DefaultContributorRegistry(Map<String, C> contributors, Function<String, String> nameFactory) {
+	 * Constructs a new DefaultContributorRegistry with the given contributors and
+	 * nameFactory.
+	 * @param contributors the map of contributors, where the key is the contributor's
+	 * name and the value is the contributor object
+	 * @param nameFactory the function used to generate the name for each contributor
+	 * @throws IllegalArgumentException if either contributors or nameFactory is null
+	 */
+	DefaultContributorRegistry(Map<String, C> contributors, Function<String, String> nameFactory) {
 		Assert.notNull(contributors, "Contributors must not be null");
 		Assert.notNull(nameFactory, "NameFactory must not be null");
 		this.nameFactory = nameFactory;
@@ -74,14 +76,14 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 	}
 
 	/**
-     * Registers a contributor with the given name.
-     * 
-     * @param name the name of the contributor
-     * @param contributor the contributor to be registered
-     * @throws IllegalArgumentException if the name or contributor is null
-     * @throws IllegalStateException if a contributor with the same name has already been registered
-     */
-    @Override
+	 * Registers a contributor with the given name.
+	 * @param name the name of the contributor
+	 * @param contributor the contributor to be registered
+	 * @throws IllegalArgumentException if the name or contributor is null
+	 * @throws IllegalStateException if a contributor with the same name has already been
+	 * registered
+	 */
+	@Override
 	public void registerContributor(String name, C contributor) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(contributor, "Contributor must not be null");
@@ -96,13 +98,13 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 	}
 
 	/**
-     * Unregisters a contributor with the given name from the registry.
-     * 
-     * @param name the name of the contributor to unregister (must not be null)
-     * @return the unregistered contributor, or null if no contributor with the given name was found
-     * @throws IllegalArgumentException if the name is null
-     */
-    @Override
+	 * Unregisters a contributor with the given name from the registry.
+	 * @param name the name of the contributor to unregister (must not be null)
+	 * @return the unregistered contributor, or null if no contributor with the given name
+	 * was found
+	 * @throws IllegalArgumentException if the name is null
+	 */
+	@Override
 	public C unregisterContributor(String name) {
 		Assert.notNull(name, "Name must not be null");
 		String adaptedName = this.nameFactory.apply(name);
@@ -118,22 +120,20 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 	}
 
 	/**
-     * Retrieves the contributor with the specified name from the registry.
-     * 
-     * @param name the name of the contributor to retrieve
-     * @return the contributor with the specified name, or null if not found
-     */
-    @Override
+	 * Retrieves the contributor with the specified name from the registry.
+	 * @param name the name of the contributor to retrieve
+	 * @return the contributor with the specified name, or null if not found
+	 */
+	@Override
 	public C getContributor(String name) {
 		return this.contributors.get(name);
 	}
 
 	/**
-     * Returns an iterator over the named contributors in this registry.
-     * 
-     * @return an iterator over the named contributors in this registry
-     */
-    @Override
+	 * Returns an iterator over the named contributors in this registry.
+	 * @return an iterator over the named contributors in this registry
+	 */
+	@Override
 	public Iterator<NamedContributor<C>> iterator() {
 		Iterator<Map.Entry<String, C>> iterator = this.contributors.entrySet().iterator();
 		return new Iterator<>() {

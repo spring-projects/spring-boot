@@ -46,13 +46,14 @@ record ZipEndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCen
 		int sizeOfCentralDirectory, int offsetToStartOfCentralDirectory, short commentLength) {
 
 	/**
-     * Constructs a new ZipEndOfCentralDirectoryRecord with the specified parameters.
-     *
-     * @param totalNumberOfCentralDirectoryEntries the total number of central directory entries in the zip file
-     * @param sizeOfCentralDirectory the size of the central directory in bytes
-     * @param offsetToStartOfCentralDirectory the offset to the start of the central directory in the zip file
-     */
-    ZipEndOfCentralDirectoryRecord(short totalNumberOfCentralDirectoryEntries, int sizeOfCentralDirectory,
+	 * Constructs a new ZipEndOfCentralDirectoryRecord with the specified parameters.
+	 * @param totalNumberOfCentralDirectoryEntries the total number of central directory
+	 * entries in the zip file
+	 * @param sizeOfCentralDirectory the size of the central directory in bytes
+	 * @param offsetToStartOfCentralDirectory the offset to the start of the central
+	 * directory in the zip file
+	 */
+	ZipEndOfCentralDirectoryRecord(short totalNumberOfCentralDirectoryEntries, int sizeOfCentralDirectory,
 			int offsetToStartOfCentralDirectory) {
 		this((short) 0, (short) 0, totalNumberOfCentralDirectoryEntries, totalNumberOfCentralDirectoryEntries,
 				sizeOfCentralDirectory, offsetToStartOfCentralDirectory, (short) 0);
@@ -118,14 +119,14 @@ record ZipEndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCen
 	}
 
 	/**
-     * Locates the 'End Of Central Directory Record' in the given data block.
-     * 
-     * @param dataBlock the data block containing the 'End Of Central Directory Record'
-     * @param buffer the byte buffer used for reading the data block
-     * @return the position of the 'End Of Central Directory Record' in the data block
-     * @throws IOException if the 'End Of Central Directory Record' is not found after reading the entire data block
-     */
-    private static long locate(DataBlock dataBlock, ByteBuffer buffer) throws IOException {
+	 * Locates the 'End Of Central Directory Record' in the given data block.
+	 * @param dataBlock the data block containing the 'End Of Central Directory Record'
+	 * @param buffer the byte buffer used for reading the data block
+	 * @return the position of the 'End Of Central Directory Record' in the data block
+	 * @throws IOException if the 'End Of Central Directory Record' is not found after
+	 * reading the entire data block
+	 */
+	private static long locate(DataBlock dataBlock, ByteBuffer buffer) throws IOException {
 		long endPos = dataBlock.size();
 		debug.log("Finding EndOfCentralDirectoryRecord starting at end position %s", endPos);
 		while (endPos > 0) {
@@ -153,12 +154,11 @@ record ZipEndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCen
 	}
 
 	/**
-     * Finds the position of the signature in the given ByteBuffer.
-     * 
-     * @param buffer the ByteBuffer to search in
-     * @return the position of the signature if found, -1 otherwise
-     */
-    private static int findInBuffer(ByteBuffer buffer) {
+	 * Finds the position of the signature in the given ByteBuffer.
+	 * @param buffer the ByteBuffer to search in
+	 * @return the position of the signature if found, -1 otherwise
+	 */
+	private static int findInBuffer(ByteBuffer buffer) {
 		for (int pos = buffer.limit() - 4; pos >= 0; pos--) {
 			buffer.position(pos);
 			if (buffer.getInt() == SIGNATURE) {

@@ -57,22 +57,22 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	private static final HttpHost LOCAL_DOCKER_HOST = new HttpHost(DOCKER_SCHEME, "localhost", DEFAULT_DOCKER_PORT);
 
 	/**
-     * Constructs a new LocalHttpClientTransport with the specified HttpClient and HttpHost.
-     *
-     * @param client the HttpClient to be used for the transport
-     * @param host the HttpHost representing the target host
-     */
-    private LocalHttpClientTransport(HttpClient client, HttpHost host) {
+	 * Constructs a new LocalHttpClientTransport with the specified HttpClient and
+	 * HttpHost.
+	 * @param client the HttpClient to be used for the transport
+	 * @param host the HttpHost representing the target host
+	 */
+	private LocalHttpClientTransport(HttpClient client, HttpHost host) {
 		super(client, host);
 	}
 
 	/**
-     * Creates a new instance of LocalHttpClientTransport with the given ResolvedDockerHost.
-     * 
-     * @param dockerHost the ResolvedDockerHost representing the Docker host to connect to
-     * @return a new instance of LocalHttpClientTransport
-     */
-    static LocalHttpClientTransport create(ResolvedDockerHost dockerHost) {
+	 * Creates a new instance of LocalHttpClientTransport with the given
+	 * ResolvedDockerHost.
+	 * @param dockerHost the ResolvedDockerHost representing the Docker host to connect to
+	 * @return a new instance of LocalHttpClientTransport
+	 */
+	static LocalHttpClientTransport create(ResolvedDockerHost dockerHost) {
 		HttpClientBuilder builder = HttpClients.custom();
 		builder.setConnectionManager(new LocalConnectionManager(dockerHost.getAddress()));
 		builder.setRoutePlanner(new LocalRoutePlanner());
@@ -86,21 +86,19 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	private static class LocalConnectionManager extends BasicHttpClientConnectionManager {
 
 		/**
-         * Constructs a new LocalConnectionManager with the specified host.
-         * 
-         * @param host the host to connect to
-         */
-        LocalConnectionManager(String host) {
+		 * Constructs a new LocalConnectionManager with the specified host.
+		 * @param host the host to connect to
+		 */
+		LocalConnectionManager(String host) {
 			super(getRegistry(host), null, null, new LocalDnsResolver());
 		}
 
 		/**
-         * Returns the registry of connection socket factories for the specified host.
-         * 
-         * @param host the host for which the registry is to be retrieved
-         * @return the registry of connection socket factories
-         */
-        private static Registry<ConnectionSocketFactory> getRegistry(String host) {
+		 * Returns the registry of connection socket factories for the specified host.
+		 * @param host the host for which the registry is to be retrieved
+		 * @return the registry of connection socket factories
+		 */
+		private static Registry<ConnectionSocketFactory> getRegistry(String host) {
 			RegistryBuilder<ConnectionSocketFactory> builder = RegistryBuilder.create();
 			builder.register(DOCKER_SCHEME, new LocalConnectionSocketFactory(host));
 			return builder.build();
@@ -116,25 +114,24 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 		private static final InetAddress LOOPBACK = InetAddress.getLoopbackAddress();
 
 		/**
-         * Resolves the given host name to an array of InetAddress objects.
-         * 
-         * @param host the host name to be resolved
-         * @return an array of InetAddress objects representing the IP addresses of the host
-         * @throws UnknownHostException if no IP address for the host could be found
-         */
-        @Override
+		 * Resolves the given host name to an array of InetAddress objects.
+		 * @param host the host name to be resolved
+		 * @return an array of InetAddress objects representing the IP addresses of the
+		 * host
+		 * @throws UnknownHostException if no IP address for the host could be found
+		 */
+		@Override
 		public InetAddress[] resolve(String host) throws UnknownHostException {
 			return new InetAddress[] { LOOPBACK };
 		}
 
 		/**
-         * Resolves the canonical hostname for the given host.
-         * 
-         * @param host the host for which to resolve the canonical hostname
-         * @return the canonical hostname for the given host
-         * @throws UnknownHostException if the hostname cannot be resolved
-         */
-        @Override
+		 * Resolves the canonical hostname for the given host.
+		 * @param host the host for which to resolve the canonical hostname
+		 * @return the canonical hostname for the given host
+		 * @throws UnknownHostException if the hostname cannot be resolved
+		 */
+		@Override
 		public String resolveCanonicalHostname(String host) throws UnknownHostException {
 			return LOOPBACK.getCanonicalHostName();
 		}
@@ -150,22 +147,20 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 		private final String host;
 
 		/**
-         * Constructs a new LocalConnectionSocketFactory with the specified host.
-         *
-         * @param host the host to connect to
-         */
-        LocalConnectionSocketFactory(String host) {
+		 * Constructs a new LocalConnectionSocketFactory with the specified host.
+		 * @param host the host to connect to
+		 */
+		LocalConnectionSocketFactory(String host) {
 			this.host = host;
 		}
 
 		/**
-         * Creates a socket for the given HttpContext.
-         * 
-         * @param context the HttpContext for which the socket is created
-         * @return the created socket
-         * @throws IOException if an I/O error occurs while creating the socket
-         */
-        @Override
+		 * Creates a socket for the given HttpContext.
+		 * @param context the HttpContext for which the socket is created
+		 * @return the created socket
+		 * @throws IOException if an I/O error occurs while creating the socket
+		 */
+		@Override
 		public Socket createSocket(HttpContext context) throws IOException {
 			if (Platform.isWindows()) {
 				return NamedPipeSocket.get(this.host);
@@ -174,18 +169,17 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 		}
 
 		/**
-         * Connects a socket to the specified remote address with the given timeout.
-         *
-         * @param connectTimeout The timeout for establishing the connection.
-         * @param socket The socket to be connected.
-         * @param host The HTTP host to which the socket is being connected.
-         * @param remoteAddress The remote address to connect to.
-         * @param localAddress The local address to bind the socket to.
-         * @param context The context for the connection.
-         * @return The connected socket.
-         * @throws IOException If an I/O error occurs while connecting the socket.
-         */
-        @Override
+		 * Connects a socket to the specified remote address with the given timeout.
+		 * @param connectTimeout The timeout for establishing the connection.
+		 * @param socket The socket to be connected.
+		 * @param host The HTTP host to which the socket is being connected.
+		 * @param remoteAddress The remote address to connect to.
+		 * @param localAddress The local address to bind the socket to.
+		 * @param context The context for the connection.
+		 * @return The connected socket.
+		 * @throws IOException If an I/O error occurs while connecting the socket.
+		 */
+		@Override
 		public Socket connectSocket(TimeValue connectTimeout, Socket socket, HttpHost host,
 				InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context)
 				throws IOException {
@@ -200,13 +194,12 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	private static final class LocalRoutePlanner implements HttpRoutePlanner {
 
 		/**
-         * Determines the route for the given target and context.
-         * 
-         * @param target the target HTTP host
-         * @param context the HTTP context
-         * @return the determined HTTP route
-         */
-        @Override
+		 * Determines the route for the given target and context.
+		 * @param target the target HTTP host
+		 * @param context the HTTP context
+		 * @return the determined HTTP route
+		 */
+		@Override
 		public HttpRoute determineRoute(HttpHost target, HttpContext context) {
 			return new HttpRoute(LOCAL_DOCKER_HOST);
 		}

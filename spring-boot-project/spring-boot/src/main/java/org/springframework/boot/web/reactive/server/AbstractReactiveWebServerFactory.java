@@ -28,17 +28,16 @@ public abstract class AbstractReactiveWebServerFactory extends AbstractConfigura
 		implements ConfigurableReactiveWebServerFactory {
 
 	/**
-     * Constructs a new AbstractReactiveWebServerFactory.
-     */
-    public AbstractReactiveWebServerFactory() {
+	 * Constructs a new AbstractReactiveWebServerFactory.
+	 */
+	public AbstractReactiveWebServerFactory() {
 	}
 
 	/**
-     * Constructs a new AbstractReactiveWebServerFactory with the specified port.
-     *
-     * @param port the port number to bind the server to
-     */
-    public AbstractReactiveWebServerFactory(int port) {
+	 * Constructs a new AbstractReactiveWebServerFactory with the specified port.
+	 * @param port the port number to bind the server to
+	 */
+	public AbstractReactiveWebServerFactory(int port) {
 		super(port);
 	}
 

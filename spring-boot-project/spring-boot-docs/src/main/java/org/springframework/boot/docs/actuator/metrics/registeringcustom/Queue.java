@@ -22,11 +22,10 @@ package org.springframework.boot.docs.actuator.metrics.registeringcustom;
 class Queue {
 
 	/**
-     * Returns the size of the queue.
-     *
-     * @return the size of the queue
-     */
-    int size() {
+	 * Returns the size of the queue.
+	 * @return the size of the queue
+	 */
+	int size() {
 		return 5;
 	}
 

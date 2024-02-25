@@ -47,21 +47,21 @@ public class ElasticsearchRestHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<ElasticsearchRestClientHealthIndicator, RestClient> {
 
 	/**
-     * Constructs a new ElasticsearchRestHealthContributorAutoConfiguration.
-     * 
-     * @param ElasticsearchRestClientHealthIndicator the ElasticsearchRestClientHealthIndicator to be used
-     */
-    public ElasticsearchRestHealthContributorAutoConfiguration() {
+	 * Constructs a new ElasticsearchRestHealthContributorAutoConfiguration.
+	 * @param ElasticsearchRestClientHealthIndicator the
+	 * ElasticsearchRestClientHealthIndicator to be used
+	 */
+	public ElasticsearchRestHealthContributorAutoConfiguration() {
 		super(ElasticsearchRestClientHealthIndicator::new);
 	}
 
 	/**
-     * Creates an Elasticsearch health contributor if no existing Elasticsearch health indicator or contributor is found.
-     * 
-     * @param clients a map of Elasticsearch RestClient instances
-     * @return the Elasticsearch health contributor
-     */
-    @Bean
+	 * Creates an Elasticsearch health contributor if no existing Elasticsearch health
+	 * indicator or contributor is found.
+	 * @param clients a map of Elasticsearch RestClient instances
+	 * @return the Elasticsearch health contributor
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })
 	public HealthContributor elasticsearchHealthContributor(Map<String, RestClient> clients) {
 		return createContributor(clients);

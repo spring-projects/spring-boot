@@ -54,31 +54,32 @@ public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 	private Collection<TypeExcludeFilter> delegates;
 
 	/**
-     * Set the BeanFactory that this filter runs in.
-     * <p>
-     * Invoked after population of normal bean properties but before an init callback such as InitializingBean's
-     * {@code afterPropertiesSet} or a custom init-method. Invoked after the setting of any {@link ResourceLoaderAware},
-     * {@link ApplicationEventPublisherAware} or {@link MessageSourceAware} bean properties.
-     * <p>
-     * This method allows the filter to perform any initialization work necessary before filtering beans.
-     *
-     * @param beanFactory the BeanFactory that this filter runs in
-     * @throws BeansException if initialization failed
-     */
-    @Override
+	 * Set the BeanFactory that this filter runs in.
+	 * <p>
+	 * Invoked after population of normal bean properties but before an init callback such
+	 * as InitializingBean's {@code afterPropertiesSet} or a custom init-method. Invoked
+	 * after the setting of any {@link ResourceLoaderAware},
+	 * {@link ApplicationEventPublisherAware} or {@link MessageSourceAware} bean
+	 * properties.
+	 * <p>
+	 * This method allows the filter to perform any initialization work necessary before
+	 * filtering beans.
+	 * @param beanFactory the BeanFactory that this filter runs in
+	 * @throws BeansException if initialization failed
+	 */
+	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
 
 	/**
-     * Determines if the given metadata reader matches the filter criteria.
-     * 
-     * @param metadataReader the metadata reader to be matched
-     * @param metadataReaderFactory the factory for creating metadata readers
-     * @return true if the metadata reader matches the filter criteria, false otherwise
-     * @throws IOException if an I/O error occurs while reading the metadata
-     */
-    @Override
+	 * Determines if the given metadata reader matches the filter criteria.
+	 * @param metadataReader the metadata reader to be matched
+	 * @param metadataReaderFactory the factory for creating metadata readers
+	 * @return true if the metadata reader matches the filter criteria, false otherwise
+	 * @throws IOException if an I/O error occurs while reading the metadata
+	 */
+	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		if (this.beanFactory instanceof ListableBeanFactory && getClass() == TypeExcludeFilter.class) {
@@ -92,11 +93,10 @@ public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 	}
 
 	/**
-     * Returns the collection of delegates for type exclusion filtering.
-     * 
-     * @return the collection of delegates for type exclusion filtering
-     */
-    private Collection<TypeExcludeFilter> getDelegates() {
+	 * Returns the collection of delegates for type exclusion filtering.
+	 * @return the collection of delegates for type exclusion filtering
+	 */
+	private Collection<TypeExcludeFilter> getDelegates() {
 		Collection<TypeExcludeFilter> delegates = this.delegates;
 		if (delegates == null) {
 			delegates = ((ListableBeanFactory) this.beanFactory).getBeansOfType(TypeExcludeFilter.class).values();
@@ -106,24 +106,25 @@ public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 	}
 
 	/**
-     * Compares this TypeExcludeFilter object with the specified object for equality.
-     * 
-     * @param obj the object to compare with
-     * @return true if the specified object is equal to this TypeExcludeFilter object, false otherwise
-     * @throws IllegalStateException if the equals method is not implemented in the TypeExcludeFilter class
-     */
-    @Override
+	 * Compares this TypeExcludeFilter object with the specified object for equality.
+	 * @param obj the object to compare with
+	 * @return true if the specified object is equal to this TypeExcludeFilter object,
+	 * false otherwise
+	 * @throws IllegalStateException if the equals method is not implemented in the
+	 * TypeExcludeFilter class
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		throw new IllegalStateException("TypeExcludeFilter " + getClass() + " has not implemented equals");
 	}
 
 	/**
-     * Returns the hash code value for this TypeExcludeFilter object.
-     * 
-     * @return the hash code value for this object
-     * @throws IllegalStateException if the TypeExcludeFilter class has not implemented hashCode
-     */
-    @Override
+	 * Returns the hash code value for this TypeExcludeFilter object.
+	 * @return the hash code value for this object
+	 * @throws IllegalStateException if the TypeExcludeFilter class has not implemented
+	 * hashCode
+	 */
+	@Override
 	public int hashCode() {
 		throw new IllegalStateException("TypeExcludeFilter " + getClass() + " has not implemented hashCode");
 	}

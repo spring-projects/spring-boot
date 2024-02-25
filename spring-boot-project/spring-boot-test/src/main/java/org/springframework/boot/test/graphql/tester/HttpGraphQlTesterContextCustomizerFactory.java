@@ -39,13 +39,13 @@ class HttpGraphQlTesterContextCustomizerFactory implements ContextCustomizerFact
 	private static final String WEBTESTCLIENT_CLASS = "org.springframework.test.web.reactive.server.WebTestClient";
 
 	/**
-     * Creates a context customizer for the given test class and configuration attributes.
-     * 
-     * @param testClass the test class
-     * @param configAttributes the configuration attributes
-     * @return the context customizer if the test class is annotated with @SpringBootTest and the GraphQlTester is present, otherwise null
-     */
-    @Override
+	 * Creates a context customizer for the given test class and configuration attributes.
+	 * @param testClass the test class
+	 * @param configAttributes the configuration attributes
+	 * @return the context customizer if the test class is annotated with @SpringBootTest
+	 * and the GraphQlTester is present, otherwise null
+	 */
+	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
@@ -54,11 +54,10 @@ class HttpGraphQlTesterContextCustomizerFactory implements ContextCustomizerFact
 	}
 
 	/**
-     * Checks if the GraphQL tester is present in the classpath.
-     * 
-     * @return true if the GraphQL tester is present, false otherwise
-     */
-    private boolean isGraphQlTesterPresent() {
+	 * Checks if the GraphQL tester is present in the classpath.
+	 * @return true if the GraphQL tester is present, false otherwise
+	 */
+	private boolean isGraphQlTesterPresent() {
 		return ClassUtils.isPresent(WEBTESTCLIENT_CLASS, getClass().getClassLoader())
 				&& ClassUtils.isPresent(HTTPGRAPHQLTESTER_CLASS, getClass().getClassLoader());
 	}

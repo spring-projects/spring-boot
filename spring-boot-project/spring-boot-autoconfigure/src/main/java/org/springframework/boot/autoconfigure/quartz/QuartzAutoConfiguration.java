@@ -64,21 +64,21 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class QuartzAutoConfiguration {
 
 	/**
-     * Creates and configures a Quartz scheduler using the provided properties, job details, calendars, triggers, and application context.
-     * If a custom scheduler name is specified in the properties, it will be set on the scheduler.
-     * The scheduler can be set to auto-start on application startup and can have a startup delay.
-     * It can also be configured to wait for jobs to complete on shutdown and overwrite existing jobs.
-     * Customizers can be applied to further customize the scheduler.
-     * 
-     * @param properties the Quartz properties
-     * @param customizers the customizers for the scheduler factory bean
-     * @param jobDetails the job details to be scheduled
-     * @param calendars the calendars to be used by the scheduler
-     * @param triggers the triggers for the scheduled jobs
-     * @param applicationContext the application context
-     * @return the configured scheduler factory bean
-     */
-    @Bean
+	 * Creates and configures a Quartz scheduler using the provided properties, job
+	 * details, calendars, triggers, and application context. If a custom scheduler name
+	 * is specified in the properties, it will be set on the scheduler. The scheduler can
+	 * be set to auto-start on application startup and can have a startup delay. It can
+	 * also be configured to wait for jobs to complete on shutdown and overwrite existing
+	 * jobs. Customizers can be applied to further customize the scheduler.
+	 * @param properties the Quartz properties
+	 * @param customizers the customizers for the scheduler factory bean
+	 * @param jobDetails the job details to be scheduled
+	 * @param calendars the calendars to be used by the scheduler
+	 * @param triggers the triggers for the scheduled jobs
+	 * @param applicationContext the application context
+	 * @return the configured scheduler factory bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public SchedulerFactoryBean quartzScheduler(QuartzProperties properties,
 			ObjectProvider<SchedulerFactoryBeanCustomizer> customizers, ObjectProvider<JobDetail> jobDetails,
@@ -105,37 +105,38 @@ public class QuartzAutoConfiguration {
 	}
 
 	/**
-     * Converts a map of string key-value pairs to a Properties object.
-     * 
-     * @param source the map containing the key-value pairs to be converted
-     * @return the converted Properties object
-     */
-    private Properties asProperties(Map<String, String> source) {
+	 * Converts a map of string key-value pairs to a Properties object.
+	 * @param source the map containing the key-value pairs to be converted
+	 * @return the converted Properties object
+	 */
+	private Properties asProperties(Map<String, String> source) {
 		Properties properties = new Properties();
 		properties.putAll(source);
 		return properties;
 	}
 
 	/**
-     * JdbcStoreTypeConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JdbcStoreTypeConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	@ConditionalOnProperty(prefix = "spring.quartz", name = "job-store-type", havingValue = "jdbc")
 	@Import(DatabaseInitializationDependencyConfigurer.class)
 	protected static class JdbcStoreTypeConfiguration {
 
 		/**
-         * Customizes the SchedulerFactoryBean with the provided data source and transaction manager.
-         * 
-         * @param properties the QuartzProperties object containing the configuration properties
-         * @param dataSource the primary data source
-         * @param quartzDataSource the Quartz-specific data source
-         * @param transactionManager the primary transaction manager
-         * @param quartzTransactionManager the Quartz-specific transaction manager
-         * @return the SchedulerFactoryBeanCustomizer to customize the SchedulerFactoryBean
-         */
-        @Bean
+		 * Customizes the SchedulerFactoryBean with the provided data source and
+		 * transaction manager.
+		 * @param properties the QuartzProperties object containing the configuration
+		 * properties
+		 * @param dataSource the primary data source
+		 * @param quartzDataSource the Quartz-specific data source
+		 * @param transactionManager the primary transaction manager
+		 * @param quartzTransactionManager the Quartz-specific transaction manager
+		 * @return the SchedulerFactoryBeanCustomizer to customize the
+		 * SchedulerFactoryBean
+		 */
+		@Bean
 		@Order(0)
 		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(QuartzProperties properties, DataSource dataSource,
 				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
@@ -153,27 +154,27 @@ public class QuartzAutoConfiguration {
 		}
 
 		/**
-         * Returns the appropriate DataSource for the JdbcStoreTypeConfiguration.
-         * If a quartzDataSource is available, it will be returned. Otherwise, the provided dataSource will be returned.
-         *
-         * @param dataSource The primary DataSource to be used.
-         * @param quartzDataSource An optional DataSource specifically for Quartz.
-         * @return The appropriate DataSource for the JdbcStoreTypeConfiguration.
-         */
-        private DataSource getDataSource(DataSource dataSource, ObjectProvider<DataSource> quartzDataSource) {
+		 * Returns the appropriate DataSource for the JdbcStoreTypeConfiguration. If a
+		 * quartzDataSource is available, it will be returned. Otherwise, the provided
+		 * dataSource will be returned.
+		 * @param dataSource The primary DataSource to be used.
+		 * @param quartzDataSource An optional DataSource specifically for Quartz.
+		 * @return The appropriate DataSource for the JdbcStoreTypeConfiguration.
+		 */
+		private DataSource getDataSource(DataSource dataSource, ObjectProvider<DataSource> quartzDataSource) {
 			DataSource dataSourceIfAvailable = quartzDataSource.getIfAvailable();
 			return (dataSourceIfAvailable != null) ? dataSourceIfAvailable : dataSource;
 		}
 
 		/**
-         * Retrieves the appropriate transaction manager based on the availability of the Quartz transaction manager.
-         * If the Quartz transaction manager is available, it is returned. Otherwise, the default transaction manager is returned.
-         *
-         * @param transactionManager         the default transaction manager
-         * @param quartzTransactionManager   the Quartz transaction manager
-         * @return                          the appropriate transaction manager
-         */
-        private PlatformTransactionManager getTransactionManager(
+		 * Retrieves the appropriate transaction manager based on the availability of the
+		 * Quartz transaction manager. If the Quartz transaction manager is available, it
+		 * is returned. Otherwise, the default transaction manager is returned.
+		 * @param transactionManager the default transaction manager
+		 * @param quartzTransactionManager the Quartz transaction manager
+		 * @return the appropriate transaction manager
+		 */
+		private PlatformTransactionManager getTransactionManager(
 				ObjectProvider<PlatformTransactionManager> transactionManager,
 				ObjectProvider<PlatformTransactionManager> quartzTransactionManager) {
 			PlatformTransactionManager transactionManagerIfAvailable = quartzTransactionManager.getIfAvailable();
@@ -182,19 +183,23 @@ public class QuartzAutoConfiguration {
 		}
 
 		/**
-         * Creates a QuartzDataSourceScriptDatabaseInitializer bean if a bean of type QuartzDataSourceScriptDatabaseInitializer
-         * is not already present in the application context and if the OnQuartzDatasourceInitializationCondition is met.
-         * The QuartzDataSourceScriptDatabaseInitializer bean is responsible for initializing the Quartz database schema
-         * using the provided dataSource and QuartzProperties.
-         *
-         * @param dataSource the primary dataSource bean defined in the application context
-         * @param quartzDataSource an ObjectProvider for the Quartz dataSource bean, which may or may not be present in the context
-         * @param properties the QuartzProperties bean defined in the application context
-         * @return a QuartzDataSourceScriptDatabaseInitializer bean responsible for initializing the Quartz database schema
-         * @see QuartzDataSourceScriptDatabaseInitializer
-         * @see OnQuartzDatasourceInitializationCondition
-         */
-        @Bean
+		 * Creates a QuartzDataSourceScriptDatabaseInitializer bean if a bean of type
+		 * QuartzDataSourceScriptDatabaseInitializer is not already present in the
+		 * application context and if the OnQuartzDatasourceInitializationCondition is
+		 * met. The QuartzDataSourceScriptDatabaseInitializer bean is responsible for
+		 * initializing the Quartz database schema using the provided dataSource and
+		 * QuartzProperties.
+		 * @param dataSource the primary dataSource bean defined in the application
+		 * context
+		 * @param quartzDataSource an ObjectProvider for the Quartz dataSource bean, which
+		 * may or may not be present in the context
+		 * @param properties the QuartzProperties bean defined in the application context
+		 * @return a QuartzDataSourceScriptDatabaseInitializer bean responsible for
+		 * initializing the Quartz database schema
+		 * @see QuartzDataSourceScriptDatabaseInitializer
+		 * @see OnQuartzDatasourceInitializationCondition
+		 */
+		@Bean
 		@ConditionalOnMissingBean(QuartzDataSourceScriptDatabaseInitializer.class)
 		@Conditional(OnQuartzDatasourceInitializationCondition.class)
 		public QuartzDataSourceScriptDatabaseInitializer quartzDataSourceScriptDatabaseInitializer(
@@ -205,17 +210,16 @@ public class QuartzAutoConfiguration {
 		}
 
 		/**
-         * OnQuartzDatasourceInitializationCondition class.
-         */
-        static class OnQuartzDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
+		 * OnQuartzDatasourceInitializationCondition class.
+		 */
+		static class OnQuartzDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
 
 			/**
-             * Constructor for OnQuartzDatasourceInitializationCondition.
-             * 
-             * @param name the name of the condition
-             * @param property the property to check for initialization
-             */
-            OnQuartzDatasourceInitializationCondition() {
+			 * Constructor for OnQuartzDatasourceInitializationCondition.
+			 * @param name the name of the condition
+			 * @param property the property to check for initialization
+			 */
+			OnQuartzDatasourceInitializationCondition() {
 				super("Quartz", "spring.quartz.jdbc.initialize-schema");
 			}
 

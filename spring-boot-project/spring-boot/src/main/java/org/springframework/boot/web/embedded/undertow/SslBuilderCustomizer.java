@@ -48,14 +48,15 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 	private final SslBundle sslBundle;
 
 	/**
-     * Constructs a new SslBuilderCustomizer with the specified port, address, client authentication mode, and SSL bundle.
-     * 
-     * @param port the port number to bind the SSL server to
-     * @param address the IP address to bind the SSL server to
-     * @param clientAuth the client authentication mode to use for the SSL server
-     * @param sslBundle the SSL bundle containing the SSL certificate, private key, and truststore
-     */
-    SslBuilderCustomizer(int port, InetAddress address, ClientAuth clientAuth, SslBundle sslBundle) {
+	 * Constructs a new SslBuilderCustomizer with the specified port, address, client
+	 * authentication mode, and SSL bundle.
+	 * @param port the port number to bind the SSL server to
+	 * @param address the IP address to bind the SSL server to
+	 * @param clientAuth the client authentication mode to use for the SSL server
+	 * @param sslBundle the SSL bundle containing the SSL certificate, private key, and
+	 * truststore
+	 */
+	SslBuilderCustomizer(int port, InetAddress address, ClientAuth clientAuth, SslBundle sslBundle) {
 		this.port = port;
 		this.address = address;
 		this.clientAuth = clientAuth;
@@ -63,11 +64,10 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 	}
 
 	/**
-     * Customizes the Undertow builder with SSL configuration.
-     * 
-     * @param builder the Undertow builder to customize
-     */
-    @Override
+	 * Customizes the Undertow builder with SSL configuration.
+	 * @param builder the Undertow builder to customize
+	 */
+	@Override
 	public void customize(Undertow.Builder builder) {
 		SslOptions options = this.sslBundle.getOptions();
 		SSLContext sslContext = this.sslBundle.createSslContext();
@@ -83,11 +83,10 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 	}
 
 	/**
-     * Returns the listen address.
-     * 
-     * @return the listen address as a String
-     */
-    private String getListenAddress() {
+	 * Returns the listen address.
+	 * @return the listen address as a String
+	 */
+	private String getListenAddress() {
 		if (this.address == null) {
 			return "0.0.0.0";
 		}

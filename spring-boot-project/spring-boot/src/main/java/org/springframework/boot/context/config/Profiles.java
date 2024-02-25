@@ -84,38 +84,37 @@ public class Profiles implements Iterable<String> {
 	}
 
 	/**
-     * Returns a list of activated profiles based on the given environment, binder, and additional profiles.
-     * 
-     * @param environment the environment object used to retrieve the active profiles
-     * @param binder the binder object used to retrieve the active profiles
-     * @param additionalProfiles a collection of additional profiles to include in the result
-     * @return a list of activated profiles
-     */
-    private List<String> getActivatedProfiles(Environment environment, Binder binder,
+	 * Returns a list of activated profiles based on the given environment, binder, and
+	 * additional profiles.
+	 * @param environment the environment object used to retrieve the active profiles
+	 * @param binder the binder object used to retrieve the active profiles
+	 * @param additionalProfiles a collection of additional profiles to include in the
+	 * result
+	 * @return a list of activated profiles
+	 */
+	private List<String> getActivatedProfiles(Environment environment, Binder binder,
 			Collection<String> additionalProfiles) {
 		return asUniqueItemList(getProfiles(environment, binder, Type.ACTIVE), additionalProfiles);
 	}
 
 	/**
-     * Returns a list of default profiles based on the given environment and binder.
-     * 
-     * @param environment the environment object used to determine the profiles
-     * @param binder the binder object used to bind the profiles
-     * @return a list of default profiles
-     */
-    private List<String> getDefaultProfiles(Environment environment, Binder binder) {
+	 * Returns a list of default profiles based on the given environment and binder.
+	 * @param environment the environment object used to determine the profiles
+	 * @param binder the binder object used to bind the profiles
+	 * @return a list of default profiles
+	 */
+	private List<String> getDefaultProfiles(Environment environment, Binder binder) {
 		return asUniqueItemList(getProfiles(environment, binder, Type.DEFAULT));
 	}
 
 	/**
-     * Retrieves the profiles based on the given environment, binder, and type.
-     * 
-     * @param environment The environment object containing the profiles.
-     * @param binder The binder object used for binding profiles.
-     * @param type The type of profiles to retrieve.
-     * @return A collection of profiles.
-     */
-    private Collection<String> getProfiles(Environment environment, Binder binder, Type type) {
+	 * Retrieves the profiles based on the given environment, binder, and type.
+	 * @param environment The environment object containing the profiles.
+	 * @param binder The binder object used for binding profiles.
+	 * @param type The type of profiles to retrieve.
+	 * @return A collection of profiles.
+	 */
+	private Collection<String> getProfiles(Environment environment, Binder binder, Type type) {
 		String environmentPropertyValue = environment.getProperty(type.getName());
 		Set<String> environmentPropertyProfiles = (!StringUtils.hasLength(environmentPropertyValue))
 				? Collections.emptySet()
@@ -133,15 +132,15 @@ public class Profiles implements Iterable<String> {
 	}
 
 	/**
-     * Checks if the profiles have been programmatically set.
-     * 
-     * @param type                        the type of the profiles
-     * @param environmentPropertyValue    the value of the environment property
-     * @param environmentPropertyProfiles the set of profiles from the environment property
-     * @param environmentProfiles         the set of profiles from the environment
-     * @return                            true if the profiles have been programmatically set, false otherwise
-     */
-    private boolean hasProgrammaticallySetProfiles(Type type, String environmentPropertyValue,
+	 * Checks if the profiles have been programmatically set.
+	 * @param type the type of the profiles
+	 * @param environmentPropertyValue the value of the environment property
+	 * @param environmentPropertyProfiles the set of profiles from the environment
+	 * property
+	 * @param environmentProfiles the set of profiles from the environment
+	 * @return true if the profiles have been programmatically set, false otherwise
+	 */
+	private boolean hasProgrammaticallySetProfiles(Type type, String environmentPropertyValue,
 			Set<String> environmentPropertyProfiles, Set<String> environmentProfiles) {
 		if (!StringUtils.hasLength(environmentPropertyValue)) {
 			return !type.getDefaultValue().equals(environmentProfiles);
@@ -153,25 +152,24 @@ public class Profiles implements Iterable<String> {
 	}
 
 	/**
-     * Merges the given environment profiles with the bound profiles.
-     * 
-     * @param environmentProfiles the set of environment profiles to merge
-     * @param bound the set of bound profiles to merge
-     * @return a set containing the merged profiles
-     */
-    private Set<String> merge(Set<String> environmentProfiles, Set<String> bound) {
+	 * Merges the given environment profiles with the bound profiles.
+	 * @param environmentProfiles the set of environment profiles to merge
+	 * @param bound the set of bound profiles to merge
+	 * @return a set containing the merged profiles
+	 */
+	private Set<String> merge(Set<String> environmentProfiles, Set<String> bound) {
 		Set<String> result = new LinkedHashSet<>(environmentProfiles);
 		result.addAll(bound);
 		return result;
 	}
 
 	/**
-     * Expands the given list of profiles by recursively adding all the profiles that are included in the groups of the given profiles.
-     * 
-     * @param profiles the list of profiles to expand
-     * @return a list of expanded profiles, where each profile is unique
-     */
-    private List<String> expandProfiles(List<String> profiles) {
+	 * Expands the given list of profiles by recursively adding all the profiles that are
+	 * included in the groups of the given profiles.
+	 * @param profiles the list of profiles to expand
+	 * @return a list of expanded profiles, where each profile is unique
+	 */
+	private List<String> expandProfiles(List<String> profiles) {
 		Deque<String> stack = new ArrayDeque<>();
 		asReversedList(profiles).forEach(stack::push);
 		Set<String> expandedProfiles = new LinkedHashSet<>();
@@ -185,13 +183,13 @@ public class Profiles implements Iterable<String> {
 	}
 
 	/**
-     * Returns a new list containing the elements of the input list in reverse order.
-     * If the input list is empty or null, an empty list is returned.
-     *
-     * @param list the input list to be reversed
-     * @return a new list with elements in reverse order, or an empty list if the input list is empty or null
-     */
-    private List<String> asReversedList(List<String> list) {
+	 * Returns a new list containing the elements of the input list in reverse order. If
+	 * the input list is empty or null, an empty list is returned.
+	 * @param list the input list to be reversed
+	 * @return a new list with elements in reverse order, or an empty list if the input
+	 * list is empty or null
+	 */
+	private List<String> asReversedList(List<String> list) {
 		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
 		}
@@ -201,23 +199,22 @@ public class Profiles implements Iterable<String> {
 	}
 
 	/**
-     * Returns a list of unique items from the given collection of profiles.
-     * 
-     * @param profiles the collection of profiles
-     * @return a list of unique items
-     */
-    private List<String> asUniqueItemList(Collection<String> profiles) {
+	 * Returns a list of unique items from the given collection of profiles.
+	 * @param profiles the collection of profiles
+	 * @return a list of unique items
+	 */
+	private List<String> asUniqueItemList(Collection<String> profiles) {
 		return asUniqueItemList(profiles, null);
 	}
 
 	/**
-     * Returns a list of unique items from the given profiles collection and additional collection.
-     * 
-     * @param profiles the collection of profiles
-     * @param additional the additional collection of items
-     * @return a list of unique items from the profiles and additional collections
-     */
-    private List<String> asUniqueItemList(Collection<String> profiles, Collection<String> additional) {
+	 * Returns a list of unique items from the given profiles collection and additional
+	 * collection.
+	 * @param profiles the collection of profiles
+	 * @param additional the additional collection of items
+	 * @return a list of unique items from the profiles and additional collections
+	 */
+	private List<String> asUniqueItemList(Collection<String> profiles, Collection<String> additional) {
 		LinkedHashSet<String> uniqueItems = new LinkedHashSet<>();
 		if (!CollectionUtils.isEmpty(additional)) {
 			uniqueItems.addAll(additional);
@@ -268,11 +265,10 @@ public class Profiles implements Iterable<String> {
 	}
 
 	/**
-     * Returns a string representation of the Profiles object.
-     * 
-     * @return a string representation of the Profiles object
-     */
-    @Override
+	 * Returns a string representation of the Profiles object.
+	 * @return a string representation of the Profiles object
+	 */
+	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this);
 		creator.append("active", getActive().toString());
@@ -301,14 +297,15 @@ public class Profiles implements Iterable<String> {
 		private final Set<String> defaultValue;
 
 		/**
-     * Creates a new instance of the Profiles class with the specified parameters.
-     *
-     * @param name the name of the profile
-     * @param getter the function used to retrieve the profile values from the environment
-     * @param mergeWithEnvironmentProfiles true if the profile should be merged with environment profiles, false otherwise
-     * @param defaultValue the default value for the profile
-     */
-    Type(String name, Function<Environment, String[]> getter, boolean mergeWithEnvironmentProfiles,
+		 * Creates a new instance of the Profiles class with the specified parameters.
+		 * @param name the name of the profile
+		 * @param getter the function used to retrieve the profile values from the
+		 * environment
+		 * @param mergeWithEnvironmentProfiles true if the profile should be merged with
+		 * environment profiles, false otherwise
+		 * @param defaultValue the default value for the profile
+		 */
+		Type(String name, Function<Environment, String[]> getter, boolean mergeWithEnvironmentProfiles,
 				Set<String> defaultValue) {
 			this.name = name;
 			this.getter = getter;
@@ -317,39 +314,37 @@ public class Profiles implements Iterable<String> {
 		}
 
 		/**
-     * Returns the name of the profile.
-     *
-     * @return the name of the profile
-     */
-    String getName() {
+		 * Returns the name of the profile.
+		 * @return the name of the profile
+		 */
+		String getName() {
 			return this.name;
 		}
 
 		/**
-     * Retrieves the values from the given environment based on the getter function.
-     * 
-     * @param environment the environment from which to retrieve the values
-     * @return an array of strings containing the retrieved values
-     */
-    String[] get(Environment environment) {
+		 * Retrieves the values from the given environment based on the getter function.
+		 * @param environment the environment from which to retrieve the values
+		 * @return an array of strings containing the retrieved values
+		 */
+		String[] get(Environment environment) {
 			return this.getter.apply(environment);
 		}
 
 		/**
-     * Returns the default value of the Profiles class.
-     *
-     * @return the default value as a Set of Strings
-     */
-    Set<String> getDefaultValue() {
+		 * Returns the default value of the Profiles class.
+		 * @return the default value as a Set of Strings
+		 */
+		Set<String> getDefaultValue() {
 			return this.defaultValue;
 		}
 
 		/**
-     * Returns a boolean value indicating whether the profiles should be merged with environment profiles.
-     *
-     * @return {@code true} if the profiles should be merged with environment profiles, {@code false} otherwise.
-     */
-    boolean isMergeWithEnvironmentProfiles() {
+		 * Returns a boolean value indicating whether the profiles should be merged with
+		 * environment profiles.
+		 * @return {@code true} if the profiles should be merged with environment
+		 * profiles, {@code false} otherwise.
+		 */
+		boolean isMergeWithEnvironmentProfiles() {
 			return this.mergeWithEnvironmentProfiles;
 		}
 

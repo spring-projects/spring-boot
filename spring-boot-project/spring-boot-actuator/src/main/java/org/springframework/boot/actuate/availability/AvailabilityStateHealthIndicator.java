@@ -65,13 +65,14 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	/**
-     * Asserts that all enums of the given state type are mapped in the statusMappings map.
-     * 
-     * @param stateType the class representing the state type
-     * @param <S> the type of the state
-     * @throws IllegalArgumentException if the statusMappings map does not include any of the enums
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+	 * Asserts that all enums of the given state type are mapped in the statusMappings
+	 * map.
+	 * @param stateType the class representing the state type
+	 * @param <S> the type of the state
+	 * @throws IllegalArgumentException if the statusMappings map does not include any of
+	 * the enums
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <S extends AvailabilityState> void assertAllEnumsMapped(Class<S> stateType) {
 		if (!this.statusMappings.containsKey(null) && Enum.class.isAssignableFrom(stateType)) {
 			EnumSet elements = EnumSet.allOf((Class) stateType);
@@ -83,12 +84,11 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	/**
-     * Performs a health check based on the availability state of the application.
-     * 
-     * @param builder the builder used to construct the health status
-     * @throws Exception if an error occurs during the health check
-     */
-    @Override
+	 * Performs a health check based on the availability state of the application.
+	 * @param builder the builder used to construct the health status
+	 * @throws Exception if an error occurs during the health check
+	 */
+	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
 		AvailabilityState state = getState(this.applicationAvailability);
 		Status status = this.statusMappings.get(state);

@@ -51,25 +51,26 @@ import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
 public class RestDocsAutoConfiguration {
 
 	/**
-     * RestDocsMockMvcConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * RestDocsMockMvcConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(MockMvcRestDocumentation.class)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@EnableConfigurationProperties(RestDocsProperties.class)
 	static class RestDocsMockMvcConfiguration {
 
 		/**
-         * Creates and configures a {@link MockMvcRestDocumentationConfigurer} bean if one is not already present.
-         * This bean is responsible for configuring the MockMvc instance used for generating REST documentation.
-         * 
-         * @param configurationCustomizers An {@link ObjectProvider} of {@link RestDocsMockMvcConfigurationCustomizer} instances
-         *                                 that can be used to customize the configuration of the MockMvc instance.
-         * @param contextProvider          The {@link RestDocumentationContextProvider} used for creating the documentation context.
-         * 
-         * @return The configured {@link MockMvcRestDocumentationConfigurer} bean.
-         */
-        @Bean
+		 * Creates and configures a {@link MockMvcRestDocumentationConfigurer} bean if one
+		 * is not already present. This bean is responsible for configuring the MockMvc
+		 * instance used for generating REST documentation.
+		 * @param configurationCustomizers An {@link ObjectProvider} of
+		 * {@link RestDocsMockMvcConfigurationCustomizer} instances that can be used to
+		 * customize the configuration of the MockMvc instance.
+		 * @param contextProvider The {@link RestDocumentationContextProvider} used for
+		 * creating the documentation context.
+		 * @return The configured {@link MockMvcRestDocumentationConfigurer} bean.
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		MockMvcRestDocumentationConfigurer restDocsMockMvcConfigurer(
 				ObjectProvider<RestDocsMockMvcConfigurationCustomizer> configurationCustomizers,
@@ -82,15 +83,19 @@ public class RestDocsAutoConfiguration {
 		}
 
 		/**
-         * Returns a RestDocsMockMvcBuilderCustomizer bean that configures the RestDocsProperties, MockMvcRestDocumentationConfigurer,
-         * and RestDocumentationResultHandler for generating REST documentation.
-         * 
-         * @param properties The RestDocsProperties object containing the configuration properties for REST documentation.
-         * @param configurer The MockMvcRestDocumentationConfigurer object used for configuring REST documentation.
-         * @param resultHandler The RestDocumentationResultHandler object used for handling REST documentation results.
-         * @return A RestDocsMockMvcBuilderCustomizer bean that configures the REST documentation.
-         */
-        @Bean
+		 * Returns a RestDocsMockMvcBuilderCustomizer bean that configures the
+		 * RestDocsProperties, MockMvcRestDocumentationConfigurer, and
+		 * RestDocumentationResultHandler for generating REST documentation.
+		 * @param properties The RestDocsProperties object containing the configuration
+		 * properties for REST documentation.
+		 * @param configurer The MockMvcRestDocumentationConfigurer object used for
+		 * configuring REST documentation.
+		 * @param resultHandler The RestDocumentationResultHandler object used for
+		 * handling REST documentation results.
+		 * @return A RestDocsMockMvcBuilderCustomizer bean that configures the REST
+		 * documentation.
+		 */
+		@Bean
 		RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(RestDocsProperties properties,
 				MockMvcRestDocumentationConfigurer configurer,
 				ObjectProvider<RestDocumentationResultHandler> resultHandler) {
@@ -100,21 +105,21 @@ public class RestDocsAutoConfiguration {
 	}
 
 	/**
-     * RestDocsRestAssuredConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * RestDocsRestAssuredConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ RequestSpecification.class, RestAssuredRestDocumentation.class })
 	@EnableConfigurationProperties(RestDocsProperties.class)
 	static class RestDocsRestAssuredConfiguration {
 
 		/**
-         * Creates a RequestSpecification for RestDocsRestAssuredConfigurer.
-         * 
-         * @param configurationCustomizers ObjectProvider of RestDocsRestAssuredConfigurationCustomizer
-         * @param contextProvider RestDocumentationContextProvider
-         * @return RequestSpecification for RestDocsRestAssuredConfigurer
-         */
-        @Bean
+		 * Creates a RequestSpecification for RestDocsRestAssuredConfigurer.
+		 * @param configurationCustomizers ObjectProvider of
+		 * RestDocsRestAssuredConfigurationCustomizer
+		 * @param contextProvider RestDocumentationContextProvider
+		 * @return RequestSpecification for RestDocsRestAssuredConfigurer
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		RequestSpecification restDocsRestAssuredConfigurer(
 				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizers,
@@ -127,13 +132,14 @@ public class RestDocsAutoConfiguration {
 		}
 
 		/**
-         * Creates a customizer for the RestDocsRestAssuredBuilder.
-         * 
-         * @param properties The RestDocsProperties object containing the configuration properties.
-         * @param configurer The RequestSpecification object used for configuring RestAssured.
-         * @return The RestDocsRestAssuredBuilderCustomizer object.
-         */
-        @Bean
+		 * Creates a customizer for the RestDocsRestAssuredBuilder.
+		 * @param properties The RestDocsProperties object containing the configuration
+		 * properties.
+		 * @param configurer The RequestSpecification object used for configuring
+		 * RestAssured.
+		 * @return The RestDocsRestAssuredBuilderCustomizer object.
+		 */
+		@Bean
 		RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(RestDocsProperties properties,
 				RequestSpecification configurer) {
 			return new RestDocsRestAssuredBuilderCustomizer(properties, configurer);
@@ -142,25 +148,30 @@ public class RestDocsAutoConfiguration {
 	}
 
 	/**
-     * RestDocsWebTestClientConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * RestDocsWebTestClientConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(WebTestClientRestDocumentation.class)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@EnableConfigurationProperties(RestDocsProperties.class)
 	static class RestDocsWebTestClientConfiguration {
 
 		/**
-         * Creates a WebTestClientRestDocumentationConfigurer bean if no other bean of the same type is present.
-         * This configurer is responsible for configuring the WebTestClientRestDocumentation.
-         * It takes a list of RestDocsWebTestClientConfigurationCustomizer beans and a RestDocumentationContextProvider bean as dependencies.
-         * The configuration customizers are applied to the configurer in the order specified by their priority.
-         * 
-         * @param configurationCustomizers The list of RestDocsWebTestClientConfigurationCustomizer beans that customize the configurer.
-         * @param contextProvider The RestDocumentationContextProvider bean that provides the context for the configurer.
-         * @return The WebTestClientRestDocumentationConfigurer bean.
-         */
-        @Bean
+		 * Creates a WebTestClientRestDocumentationConfigurer bean if no other bean of the
+		 * same type is present. This configurer is responsible for configuring the
+		 * WebTestClientRestDocumentation. It takes a list of
+		 * RestDocsWebTestClientConfigurationCustomizer beans and a
+		 * RestDocumentationContextProvider bean as dependencies. The configuration
+		 * customizers are applied to the configurer in the order specified by their
+		 * priority.
+		 * @param configurationCustomizers The list of
+		 * RestDocsWebTestClientConfigurationCustomizer beans that customize the
+		 * configurer.
+		 * @param contextProvider The RestDocumentationContextProvider bean that provides
+		 * the context for the configurer.
+		 * @return The WebTestClientRestDocumentationConfigurer bean.
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		WebTestClientRestDocumentationConfigurer restDocsWebTestClientConfigurer(
 				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizers,
@@ -173,13 +184,16 @@ public class RestDocsAutoConfiguration {
 		}
 
 		/**
-         * Returns a RestDocsWebTestClientBuilderCustomizer bean that configures the RestDocsProperties and WebTestClientRestDocumentationConfigurer.
-         * 
-         * @param properties The RestDocsProperties object containing the configuration properties for RestDocs.
-         * @param configurer The WebTestClientRestDocumentationConfigurer object used to configure the WebTestClient for RestDocs.
-         * @return A RestDocsWebTestClientBuilderCustomizer bean that configures the RestDocsProperties and WebTestClientRestDocumentationConfigurer.
-         */
-        @Bean
+		 * Returns a RestDocsWebTestClientBuilderCustomizer bean that configures the
+		 * RestDocsProperties and WebTestClientRestDocumentationConfigurer.
+		 * @param properties The RestDocsProperties object containing the configuration
+		 * properties for RestDocs.
+		 * @param configurer The WebTestClientRestDocumentationConfigurer object used to
+		 * configure the WebTestClient for RestDocs.
+		 * @return A RestDocsWebTestClientBuilderCustomizer bean that configures the
+		 * RestDocsProperties and WebTestClientRestDocumentationConfigurer.
+		 */
+		@Bean
 		RestDocsWebTestClientBuilderCustomizer restDocumentationConfigurer(RestDocsProperties properties,
 				WebTestClientRestDocumentationConfigurer configurer) {
 			return new RestDocsWebTestClientBuilderCustomizer(properties, configurer);

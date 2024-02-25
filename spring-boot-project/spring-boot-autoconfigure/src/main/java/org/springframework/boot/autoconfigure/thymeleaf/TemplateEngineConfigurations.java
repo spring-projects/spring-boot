@@ -41,20 +41,21 @@ import org.springframework.context.annotation.Configuration;
 class TemplateEngineConfigurations {
 
 	/**
-     * DefaultTemplateEngineConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * DefaultTemplateEngineConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	static class DefaultTemplateEngineConfiguration {
 
 		/**
-         * Creates a SpringTemplateEngine bean if no other bean of type ISpringTemplateEngine is present.
-         * 
-         * @param properties the ThymeleafProperties object containing the Thymeleaf configuration properties
-         * @param templateResolvers the object provider for ITemplateResolver beans
-         * @param dialects the object provider for IDialect beans
-         * @return the created SpringTemplateEngine bean
-         */
-        @Bean
+		 * Creates a SpringTemplateEngine bean if no other bean of type
+		 * ISpringTemplateEngine is present.
+		 * @param properties the ThymeleafProperties object containing the Thymeleaf
+		 * configuration properties
+		 * @param templateResolvers the object provider for ITemplateResolver beans
+		 * @param dialects the object provider for IDialect beans
+		 * @return the created SpringTemplateEngine bean
+		 */
+		@Bean
 		@ConditionalOnMissingBean(ISpringTemplateEngine.class)
 		SpringTemplateEngine templateEngine(ThymeleafProperties properties,
 				ObjectProvider<ITemplateResolver> templateResolvers, ObjectProvider<IDialect> dialects) {
@@ -69,22 +70,23 @@ class TemplateEngineConfigurations {
 	}
 
 	/**
-     * ReactiveTemplateEngineConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ReactiveTemplateEngineConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ReactiveTemplateEngineConfiguration {
 
 		/**
-         * Creates a SpringWebFluxTemplateEngine bean if no bean of type ISpringWebFluxTemplateEngine is present.
-         * 
-         * @param properties the ThymeleafProperties object containing the Thymeleaf configuration properties
-         * @param templateResolvers the object provider for ITemplateResolver beans
-         * @param dialects the object provider for IDialect beans
-         * @return the created SpringWebFluxTemplateEngine bean
-         */
-        @Bean
+		 * Creates a SpringWebFluxTemplateEngine bean if no bean of type
+		 * ISpringWebFluxTemplateEngine is present.
+		 * @param properties the ThymeleafProperties object containing the Thymeleaf
+		 * configuration properties
+		 * @param templateResolvers the object provider for ITemplateResolver beans
+		 * @param dialects the object provider for IDialect beans
+		 * @return the created SpringWebFluxTemplateEngine bean
+		 */
+		@Bean
 		@ConditionalOnMissingBean(ISpringWebFluxTemplateEngine.class)
 		SpringWebFluxTemplateEngine templateEngine(ThymeleafProperties properties,
 				ObjectProvider<ITemplateResolver> templateResolvers, ObjectProvider<IDialect> dialects) {

@@ -63,11 +63,10 @@ public class ApplicationHome {
 	}
 
 	/**
-     * Retrieves the start class from the application's manifest file.
-     * 
-     * @return The start class if found, null otherwise.
-     */
-    private Class<?> getStartClass() {
+	 * Retrieves the start class from the application's manifest file.
+	 * @return The start class if found, null otherwise.
+	 */
+	private Class<?> getStartClass() {
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();
 			return getStartClass(classLoader.getResources("META-INF/MANIFEST.MF"));
@@ -78,12 +77,11 @@ public class ApplicationHome {
 	}
 
 	/**
-     * Retrieves the start class from the given enumeration of manifest resources.
-     * 
-     * @param manifestResources the enumeration of manifest resources
-     * @return the start class as a Class object, or null if not found
-     */
-    private Class<?> getStartClass(Enumeration<URL> manifestResources) {
+	 * Retrieves the start class from the given enumeration of manifest resources.
+	 * @param manifestResources the enumeration of manifest resources
+	 * @return the start class as a Class object, or null if not found
+	 */
+	private Class<?> getStartClass(Enumeration<URL> manifestResources) {
 		while (manifestResources.hasMoreElements()) {
 			try (InputStream inputStream = manifestResources.nextElement().openStream()) {
 				Manifest manifest = new Manifest(inputStream);
@@ -100,12 +98,11 @@ public class ApplicationHome {
 	}
 
 	/**
-     * Finds the source file for the given source class.
-     * 
-     * @param sourceClass the source class for which to find the source file
-     * @return the source file if found, null otherwise
-     */
-    private File findSource(Class<?> sourceClass) {
+	 * Finds the source file for the given source class.
+	 * @param sourceClass the source class for which to find the source file
+	 * @return the source file if found, null otherwise
+	 */
+	private File findSource(Class<?> sourceClass) {
 		try {
 			ProtectionDomain domain = (sourceClass != null) ? sourceClass.getProtectionDomain() : null;
 			CodeSource codeSource = (domain != null) ? domain.getCodeSource() : null;
@@ -122,11 +119,10 @@ public class ApplicationHome {
 	}
 
 	/**
-     * Checks if the current execution is within a unit test.
-     * 
-     * @return true if the current execution is within a unit test, false otherwise.
-     */
-    private boolean isUnitTest() {
+	 * Checks if the current execution is within a unit test.
+	 * @return true if the current execution is within a unit test, false otherwise.
+	 */
+	private boolean isUnitTest() {
 		try {
 			StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 			for (int i = stackTrace.length - 1; i >= 0; i--) {
@@ -142,14 +138,13 @@ public class ApplicationHome {
 	}
 
 	/**
-     * Finds the source file for the given URL location.
-     * 
-     * @param location the URL location to find the source file for
-     * @return the source file for the given URL location
-     * @throws IOException if an I/O error occurs while opening the connection
-     * @throws URISyntaxException if the URL location is not a valid URI
-     */
-    private File findSource(URL location) throws IOException, URISyntaxException {
+	 * Finds the source file for the given URL location.
+	 * @param location the URL location to find the source file for
+	 * @return the source file for the given URL location
+	 * @throws IOException if an I/O error occurs while opening the connection
+	 * @throws URISyntaxException if the URL location is not a valid URI
+	 */
+	private File findSource(URL location) throws IOException, URISyntaxException {
 		URLConnection connection = location.openConnection();
 		if (connection instanceof JarURLConnection jarURLConnection) {
 			return getRootJarFile(jarURLConnection.getJarFile());
@@ -158,12 +153,12 @@ public class ApplicationHome {
 	}
 
 	/**
-     * Returns the root JAR file for the given {@link JarFile}.
-     * 
-     * @param jarFile the {@link JarFile} for which the root JAR file needs to be determined
-     * @return the root JAR file
-     */
-    private File getRootJarFile(JarFile jarFile) {
+	 * Returns the root JAR file for the given {@link JarFile}.
+	 * @param jarFile the {@link JarFile} for which the root JAR file needs to be
+	 * determined
+	 * @return the root JAR file
+	 */
+	private File getRootJarFile(JarFile jarFile) {
 		String name = jarFile.getName();
 		int separator = name.indexOf("!/");
 		if (separator > 0) {
@@ -173,15 +168,14 @@ public class ApplicationHome {
 	}
 
 	/**
-     * Finds the home directory based on the given source file.
-     * If the source file is not provided, it tries to find the default home directory.
-     * If the home directory is a file, it sets the home directory to its parent directory.
-     * If the home directory does not exist, it sets the home directory to the current directory.
-     * 
-     * @param source the source file to find the home directory from
-     * @return the absolute path of the home directory
-     */
-    private File findHomeDir(File source) {
+	 * Finds the home directory based on the given source file. If the source file is not
+	 * provided, it tries to find the default home directory. If the home directory is a
+	 * file, it sets the home directory to its parent directory. If the home directory
+	 * does not exist, it sets the home directory to the current directory.
+	 * @param source the source file to find the home directory from
+	 * @return the absolute path of the home directory
+	 */
+	private File findHomeDir(File source) {
 		File homeDir = source;
 		homeDir = (homeDir != null) ? homeDir : findDefaultHomeDir();
 		if (homeDir.isFile()) {
@@ -192,15 +186,15 @@ public class ApplicationHome {
 	}
 
 	/**
-     * Finds the default home directory.
-     * 
-     * This method retrieves the current user directory using the "user.dir" system property. If the user directory is not
-     * empty, it creates a new File object with the user directory path. Otherwise, it creates a new File object with the
-     * current directory path.
-     * 
-     * @return the default home directory as a File object
-     */
-    private File findDefaultHomeDir() {
+	 * Finds the default home directory.
+	 *
+	 * This method retrieves the current user directory using the "user.dir" system
+	 * property. If the user directory is not empty, it creates a new File object with the
+	 * user directory path. Otherwise, it creates a new File object with the current
+	 * directory path.
+	 * @return the default home directory as a File object
+	 */
+	private File findDefaultHomeDir() {
 		String userDir = System.getProperty("user.dir");
 		return new File(StringUtils.hasLength(userDir) ? userDir : ".");
 	}
@@ -224,11 +218,10 @@ public class ApplicationHome {
 	}
 
 	/**
-     * Returns a string representation of the directory.
-     * 
-     * @return a string representation of the directory
-     */
-    @Override
+	 * Returns a string representation of the directory.
+	 * @return a string representation of the directory
+	 */
+	@Override
 	public String toString() {
 		return getDir().toString();
 	}

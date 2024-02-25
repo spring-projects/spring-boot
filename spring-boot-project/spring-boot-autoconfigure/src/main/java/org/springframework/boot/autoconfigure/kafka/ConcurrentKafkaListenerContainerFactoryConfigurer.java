@@ -195,11 +195,10 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
-     * Configures the listener factory with the provided properties.
-     *
-     * @param factory the ConcurrentKafkaListenerContainerFactory to be configured
-     */
-    private void configureListenerFactory(ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
+	 * Configures the listener factory with the provided properties.
+	 * @param factory the ConcurrentKafkaListenerContainerFactory to be configured
+	 */
+	private void configureListenerFactory(ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Listener properties = this.properties.getListener();
 		map.from(properties::getConcurrency).to(factory::setConcurrency);
@@ -220,11 +219,11 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
-     * Configures the container properties for the {@link ConcurrentKafkaListenerContainerFactory}.
-     * 
-     * @param container the container properties to be configured
-     */
-    private void configureContainer(ContainerProperties container) {
+	 * Configures the container properties for the
+	 * {@link ConcurrentKafkaListenerContainerFactory}.
+	 * @param container the container properties to be configured
+	 */
+	private void configureContainer(ContainerProperties container) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Listener properties = this.properties.getListener();
 		map.from(properties::getAckMode).to(container::setAckMode);

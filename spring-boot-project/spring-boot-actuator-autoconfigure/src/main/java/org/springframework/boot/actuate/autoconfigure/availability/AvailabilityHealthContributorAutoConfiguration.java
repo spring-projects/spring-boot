@@ -38,13 +38,16 @@ import org.springframework.context.annotation.Bean;
 public class AvailabilityHealthContributorAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link LivenessStateHealthIndicator} if no bean with the name "livenessStateHealthIndicator" is already present in the application context.
-     * This bean is conditionally created based on the property "management.health.livenessstate.enabled" being set to "true".
-     * 
-     * @param applicationAvailability the {@link ApplicationAvailability} instance to be used by the {@link LivenessStateHealthIndicator}
-     * @return a new instance of {@link LivenessStateHealthIndicator} if the conditions are met, otherwise null
-     */
-    @Bean
+	 * Creates a new instance of {@link LivenessStateHealthIndicator} if no bean with the
+	 * name "livenessStateHealthIndicator" is already present in the application context.
+	 * This bean is conditionally created based on the property
+	 * "management.health.livenessstate.enabled" being set to "true".
+	 * @param applicationAvailability the {@link ApplicationAvailability} instance to be
+	 * used by the {@link LivenessStateHealthIndicator}
+	 * @return a new instance of {@link LivenessStateHealthIndicator} if the conditions
+	 * are met, otherwise null
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = "livenessStateHealthIndicator")
 	@ConditionalOnProperty(prefix = "management.health.livenessstate", name = "enabled", havingValue = "true")
 	public LivenessStateHealthIndicator livenessStateHealthIndicator(ApplicationAvailability applicationAvailability) {
@@ -52,12 +55,13 @@ public class AvailabilityHealthContributorAutoConfiguration {
 	}
 
 	/**
-     * Creates a ReadinessStateHealthIndicator bean if it is missing and the readiness state management health property is enabled.
-     * 
-     * @param applicationAvailability the ApplicationAvailability bean used to determine the readiness state
-     * @return the ReadinessStateHealthIndicator bean
-     */
-    @Bean
+	 * Creates a ReadinessStateHealthIndicator bean if it is missing and the readiness
+	 * state management health property is enabled.
+	 * @param applicationAvailability the ApplicationAvailability bean used to determine
+	 * the readiness state
+	 * @return the ReadinessStateHealthIndicator bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = "readinessStateHealthIndicator")
 	@ConditionalOnProperty(prefix = "management.health.readinessstate", name = "enabled", havingValue = "true")
 	public ReadinessStateHealthIndicator readinessStateHealthIndicator(

@@ -27,12 +27,13 @@ import org.testcontainers.containers.GenericContainer;
 public class RedisContainer extends GenericContainer<RedisContainer> {
 
 	/**
-     * Constructs a new RedisContainer object.
-     * 
-     * This constructor initializes the RedisContainer object with the default Docker image name for Redis.
-     * It also adds the port 6379 to the list of exposed ports for the container.
-     */
-    public RedisContainer() {
+	 * Constructs a new RedisContainer object.
+	 *
+	 * This constructor initializes the RedisContainer object with the default Docker
+	 * image name for Redis. It also adds the port 6379 to the list of exposed ports for
+	 * the container.
+	 */
+	public RedisContainer() {
 		super(DockerImageNames.redis());
 		addExposedPorts(6379);
 	}

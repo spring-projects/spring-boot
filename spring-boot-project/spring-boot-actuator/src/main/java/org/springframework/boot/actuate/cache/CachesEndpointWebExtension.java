@@ -36,23 +36,21 @@ public class CachesEndpointWebExtension {
 	private final CachesEndpoint delegate;
 
 	/**
-     * Constructs a new CachesEndpointWebExtension with the specified delegate.
-     *
-     * @param delegate the delegate CachesEndpoint to be used
-     */
-    public CachesEndpointWebExtension(CachesEndpoint delegate) {
+	 * Constructs a new CachesEndpointWebExtension with the specified delegate.
+	 * @param delegate the delegate CachesEndpoint to be used
+	 */
+	public CachesEndpointWebExtension(CachesEndpoint delegate) {
 		this.delegate = delegate;
 	}
 
 	/**
-     * Caches the specified cache entry using the given cache and cache manager.
-     *
-     * @param cache         the name of the cache
-     * @param cacheManager  the name of the cache manager (optional)
-     * @return              a WebEndpointResponse containing the cache entry descriptor
-     * @throws NonUniqueCacheException if there is more than one cache with the same name
-     */
-    @ReadOperation
+	 * Caches the specified cache entry using the given cache and cache manager.
+	 * @param cache the name of the cache
+	 * @param cacheManager the name of the cache manager (optional)
+	 * @return a WebEndpointResponse containing the cache entry descriptor
+	 * @throws NonUniqueCacheException if there is more than one cache with the same name
+	 */
+	@ReadOperation
 	public WebEndpointResponse<CacheEntryDescriptor> cache(@Selector String cache, @Nullable String cacheManager) {
 		try {
 			CacheEntryDescriptor entry = this.delegate.cache(cache, cacheManager);
@@ -65,13 +63,12 @@ public class CachesEndpointWebExtension {
 	}
 
 	/**
-     * Clears the cache with the specified name and cache manager.
-     *
-     * @param cache         the name of the cache to be cleared
-     * @param cacheManager  the name of the cache manager (optional)
-     * @return              a WebEndpointResponse indicating the status of the operation
-     */
-    @DeleteOperation
+	 * Clears the cache with the specified name and cache manager.
+	 * @param cache the name of the cache to be cleared
+	 * @param cacheManager the name of the cache manager (optional)
+	 * @return a WebEndpointResponse indicating the status of the operation
+	 */
+	@DeleteOperation
 	public WebEndpointResponse<Void> clearCache(@Selector String cache, @Nullable String cacheManager) {
 		try {
 			boolean cleared = this.delegate.clearCache(cache, cacheManager);

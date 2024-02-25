@@ -42,33 +42,32 @@ public class ClassPathDirectories implements Iterable<File> {
 	private final List<File> directories = new ArrayList<>();
 
 	/**
-     * Constructs a new ClassPathDirectories object with the specified array of URLs.
-     * 
-     * @param urls the array of URLs representing the directories to be added to the classpath
-     */
-    public ClassPathDirectories(URL[] urls) {
+	 * Constructs a new ClassPathDirectories object with the specified array of URLs.
+	 * @param urls the array of URLs representing the directories to be added to the
+	 * classpath
+	 */
+	public ClassPathDirectories(URL[] urls) {
 		if (urls != null) {
 			addUrls(urls);
 		}
 	}
 
 	/**
-     * Adds an array of URLs to the class path directories.
-     * 
-     * @param urls the array of URLs to be added
-     */
-    private void addUrls(URL[] urls) {
+	 * Adds an array of URLs to the class path directories.
+	 * @param urls the array of URLs to be added
+	 */
+	private void addUrls(URL[] urls) {
 		for (URL url : urls) {
 			addUrl(url);
 		}
 	}
 
 	/**
-     * Adds a URL to the list of directories if it is a file URL and ends with a forward slash.
-     * 
-     * @param url the URL to be added
-     */
-    private void addUrl(URL url) {
+	 * Adds a URL to the list of directories if it is a file URL and ends with a forward
+	 * slash.
+	 * @param url the URL to be added
+	 */
+	private void addUrl(URL url) {
 		if (url.getProtocol().equals("file") && url.getPath().endsWith("/")) {
 			try {
 				this.directories.add(ResourceUtils.getFile(url));
@@ -81,11 +80,10 @@ public class ClassPathDirectories implements Iterable<File> {
 	}
 
 	/**
-     * Returns an iterator over the directories in the ClassPathDirectories object.
-     *
-     * @return an iterator over the directories in the ClassPathDirectories object
-     */
-    @Override
+	 * Returns an iterator over the directories in the ClassPathDirectories object.
+	 * @return an iterator over the directories in the ClassPathDirectories object
+	 */
+	@Override
 	public Iterator<File> iterator() {
 		return Collections.unmodifiableList(this.directories).iterator();
 	}

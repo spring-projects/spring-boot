@@ -47,52 +47,50 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	private final long size;
 
 	/**
-     * Constructs a new FileChannelDataBlock object with the specified file path.
-     * 
-     * @param path the path of the file to create a FileChannelDataBlock for
-     * @throws IOException if an I/O error occurs while accessing the file
-     */
-    FileChannelDataBlock(Path path) throws IOException {
+	 * Constructs a new FileChannelDataBlock object with the specified file path.
+	 * @param path the path of the file to create a FileChannelDataBlock for
+	 * @throws IOException if an I/O error occurs while accessing the file
+	 */
+	FileChannelDataBlock(Path path) throws IOException {
 		this.channel = new ManagedFileChannel(path);
 		this.offset = 0;
 		this.size = Files.size(path);
 	}
 
 	/**
-     * Constructs a new FileChannelDataBlock with the specified channel, offset, and size.
-     * 
-     * @param channel the ManagedFileChannel to associate with the data block
-     * @param offset the starting position of the data block within the channel
-     * @param size the size of the data block in bytes
-     */
-    FileChannelDataBlock(ManagedFileChannel channel, long offset, long size) {
+	 * Constructs a new FileChannelDataBlock with the specified channel, offset, and size.
+	 * @param channel the ManagedFileChannel to associate with the data block
+	 * @param offset the starting position of the data block within the channel
+	 * @param size the size of the data block in bytes
+	 */
+	FileChannelDataBlock(ManagedFileChannel channel, long offset, long size) {
 		this.channel = channel;
 		this.offset = offset;
 		this.size = size;
 	}
 
 	/**
-     * Returns the size of the data block.
-     *
-     * @return the size of the data block
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Returns the size of the data block.
+	 * @return the size of the data block
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public long size() throws IOException {
 		return this.size;
 	}
 
 	/**
-     * Reads bytes from this FileChannelDataBlock into the specified ByteBuffer at the given position.
-     * 
-     * @param dst The ByteBuffer to read the bytes into.
-     * @param pos The position in this FileChannelDataBlock from where to start reading.
-     * @return The number of bytes read, or -1 if the end of the FileChannelDataBlock is reached.
-     * @throws IOException If an I/O error occurs.
-     * @throws IllegalArgumentException If the position is negative.
-     * @throws ClosedChannelException If the FileChannelDataBlock is closed.
-     */
-    @Override
+	 * Reads bytes from this FileChannelDataBlock into the specified ByteBuffer at the
+	 * given position.
+	 * @param dst The ByteBuffer to read the bytes into.
+	 * @param pos The position in this FileChannelDataBlock from where to start reading.
+	 * @return The number of bytes read, or -1 if the end of the FileChannelDataBlock is
+	 * reached.
+	 * @throws IOException If an I/O error occurs.
+	 * @throws IllegalArgumentException If the position is negative.
+	 * @throws ClosedChannelException If the FileChannelDataBlock is closed.
+	 */
+	@Override
 	public int read(ByteBuffer dst, long pos) throws IOException {
 		if (pos < 0) {
 			throw new IllegalArgumentException("Position must not be negative");
@@ -199,12 +197,11 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		private final Object lock = new Object();
 
 		/**
-         * Constructs a new ManagedFileChannel object with the specified path.
-         * 
-         * @param path the path to the file
-         * @throws IllegalArgumentException if the specified path is not a regular file
-         */
-        ManagedFileChannel(Path path) {
+		 * Constructs a new ManagedFileChannel object with the specified path.
+		 * @param path the path to the file
+		 * @throws IllegalArgumentException if the specified path is not a regular file
+		 */
+		ManagedFileChannel(Path path) {
 			if (!Files.isRegularFile(path)) {
 				throw new IllegalArgumentException(path + " must be a regular file");
 			}
@@ -212,14 +209,15 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		}
 
 		/**
-         * Reads bytes from the file channel into the specified byte buffer at the given position.
-         * 
-         * @param dst the byte buffer to read the bytes into
-         * @param position the position in the file channel to start reading from
-         * @return the number of bytes read, or -1 if the end of the file channel has been reached
-         * @throws IOException if an I/O error occurs while reading from the file channel
-         */
-        int read(ByteBuffer dst, long position) throws IOException {
+		 * Reads bytes from the file channel into the specified byte buffer at the given
+		 * position.
+		 * @param dst the byte buffer to read the bytes into
+		 * @param position the position in the file channel to start reading from
+		 * @return the number of bytes read, or -1 if the end of the file channel has been
+		 * reached
+		 * @throws IOException if an I/O error occurs while reading from the file channel
+		 */
+		int read(ByteBuffer dst, long position) throws IOException {
 			synchronized (this.lock) {
 				if (position < this.bufferPosition || position >= this.bufferPosition + this.bufferSize) {
 					fillBuffer(position);
@@ -236,12 +234,11 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		}
 
 		/**
-         * Fills the buffer with data from the file channel at the specified position.
-         * 
-         * @param position the position in the file channel to read from
-         * @throws IOException if an I/O error occurs while reading from the file channel
-         */
-        private void fillBuffer(long position) throws IOException {
+		 * Fills the buffer with data from the file channel at the specified position.
+		 * @param position the position in the file channel to read from
+		 * @throws IOException if an I/O error occurs while reading from the file channel
+		 */
+		private void fillBuffer(long position) throws IOException {
 			for (int i = 0; i < 10; i++) {
 				boolean interrupted = (i != 0) ? Thread.interrupted() : false;
 				try {
@@ -263,11 +260,10 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		}
 
 		/**
-         * Repairs the FileChannel by closing and reopening it.
-         * 
-         * @throws IOException if an I/O error occurs while opening the FileChannel
-         */
-        private void repairFileChannel() throws IOException {
+		 * Repairs the FileChannel by closing and reopening it.
+		 * @throws IOException if an I/O error occurs while opening the FileChannel
+		 */
+		private void repairFileChannel() throws IOException {
 			if (tracker != null) {
 				tracker.closedFileChannel(this.path, this.fileChannel);
 			}
@@ -278,11 +274,10 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		}
 
 		/**
-         * Opens the file channel for reading.
-         * 
-         * @throws IOException if an I/O error occurs while opening the file channel
-         */
-        void open() throws IOException {
+		 * Opens the file channel for reading.
+		 * @throws IOException if an I/O error occurs while opening the file channel
+		 */
+		void open() throws IOException {
 			synchronized (this.lock) {
 				if (this.referenceCount == 0) {
 					debug.log("Opening '%s'", this.path);
@@ -298,11 +293,10 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		}
 
 		/**
-         * Closes the ManagedFileChannel.
-         * 
-         * @throws IOException if an I/O error occurs
-         */
-        void close() throws IOException {
+		 * Closes the ManagedFileChannel.
+		 * @throws IOException if an I/O error occurs
+		 */
+		void close() throws IOException {
 			synchronized (this.lock) {
 				if (this.referenceCount == 0) {
 					return;
@@ -324,12 +318,13 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		}
 
 		/**
-         * Ensures that the ManagedFileChannel is open and ready for use.
-         * 
-         * @param exceptionSupplier a Supplier that provides the exception to be thrown if the channel is not open
-         * @throws E the exception provided by the exceptionSupplier if the channel is not open
-         */
-        <E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
+		 * Ensures that the ManagedFileChannel is open and ready for use.
+		 * @param exceptionSupplier a Supplier that provides the exception to be thrown if
+		 * the channel is not open
+		 * @throws E the exception provided by the exceptionSupplier if the channel is not
+		 * open
+		 */
+		<E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
 			synchronized (this.lock) {
 				if (this.referenceCount == 0 || !this.fileChannel.isOpen()) {
 					throw exceptionSupplier.get();
@@ -338,11 +333,10 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		}
 
 		/**
-         * Returns a string representation of the path of this ManagedFileChannel.
-         *
-         * @return a string representation of the path of this ManagedFileChannel
-         */
-        @Override
+		 * Returns a string representation of the path of this ManagedFileChannel.
+		 * @return a string representation of the path of this ManagedFileChannel
+		 */
+		@Override
 		public String toString() {
 			return this.path.toString();
 		}

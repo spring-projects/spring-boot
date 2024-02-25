@@ -30,11 +30,11 @@ import org.springframework.data.couchbase.cache.CouchbaseCacheConfiguration;
 public class MyCouchbaseCacheManagerConfiguration {
 
 	/**
-     * Customizes the CouchbaseCacheManagerBuilder by adding cache configurations for cache1 and cache2.
-     * 
-     * @return the CouchbaseCacheManagerBuilderCustomizer
-     */
-    @Bean
+	 * Customizes the CouchbaseCacheManagerBuilder by adding cache configurations for
+	 * cache1 and cache2.
+	 * @return the CouchbaseCacheManagerBuilderCustomizer
+	 */
+	@Bean
 	public CouchbaseCacheManagerBuilderCustomizer myCouchbaseCacheManagerBuilderCustomizer() {
 		// @formatter:off
 		return (builder) -> builder

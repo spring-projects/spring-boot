@@ -30,20 +30,19 @@ class CustomObservation {
 	private final ObservationRegistry observationRegistry;
 
 	/**
-     * Constructs a new CustomObservation object with the specified ObservationRegistry.
-     * 
-     * @param observationRegistry the ObservationRegistry to be associated with this CustomObservation
-     */
-    CustomObservation(ObservationRegistry observationRegistry) {
+	 * Constructs a new CustomObservation object with the specified ObservationRegistry.
+	 * @param observationRegistry the ObservationRegistry to be associated with this
+	 * CustomObservation
+	 */
+	CustomObservation(ObservationRegistry observationRegistry) {
 		this.observationRegistry = observationRegistry;
 	}
 
 	/**
-     * Performs some operation and records an observation.
-     * 
-     * @throws IllegalStateException if the observation registry is not set
-     */
-    void someOperation() {
+	 * Performs some operation and records an observation.
+	 * @throws IllegalStateException if the observation registry is not set
+	 */
+	void someOperation() {
 		Observation observation = Observation.createNotStarted("some-operation", this.observationRegistry);
 		observation.lowCardinalityKeyValue("some-tag", "some-value");
 		observation.observe(() -> {

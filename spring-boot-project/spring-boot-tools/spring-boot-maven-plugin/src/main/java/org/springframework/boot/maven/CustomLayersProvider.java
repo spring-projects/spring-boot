@@ -53,13 +53,14 @@ import org.springframework.boot.loader.tools.layer.LibraryContentFilter;
 class CustomLayersProvider {
 
 	/**
-     * Retrieves the layers, application selectors, and library selectors from the given document.
-     * 
-     * @param document the document to retrieve the layers from
-     * @return a CustomLayers object containing the layers, application selectors, and library selectors
-     * @throws IllegalArgumentException if the document is invalid
-     */
-    CustomLayers getLayers(Document document) {
+	 * Retrieves the layers, application selectors, and library selectors from the given
+	 * document.
+	 * @param document the document to retrieve the layers from
+	 * @return a CustomLayers object containing the layers, application selectors, and
+	 * library selectors
+	 * @throws IllegalArgumentException if the document is invalid
+	 */
+	CustomLayers getLayers(Document document) {
 		validate(document);
 		Element root = document.getDocumentElement();
 		List<ContentSelector<String>> applicationSelectors = getApplicationSelectors(root);
@@ -69,12 +70,11 @@ class CustomLayersProvider {
 	}
 
 	/**
-     * Validates the given XML document against a loaded schema.
-     * 
-     * @param document the XML document to be validated
-     * @throws IllegalStateException if the document is invalid
-     */
-    private void validate(Document document) {
+	 * Validates the given XML document against a loaded schema.
+	 * @param document the XML document to be validated
+	 * @throws IllegalStateException if the document is invalid
+	 */
+	private void validate(Document document) {
 		Schema schema = loadSchema();
 		try {
 			Validator validator = schema.newValidator();
@@ -86,12 +86,11 @@ class CustomLayersProvider {
 	}
 
 	/**
-     * Loads the schema for the custom layers.
-     * 
-     * @return The loaded schema.
-     * @throws IllegalStateException If unable to load the layers XSD.
-     */
-    private Schema loadSchema() {
+	 * Loads the schema for the custom layers.
+	 * @return The loaded schema.
+	 * @throws IllegalStateException If unable to load the layers XSD.
+	 */
+	private Schema loadSchema() {
 		try {
 			SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			return factory.newSchema(getClass().getResource("layers.xsd"));
@@ -102,32 +101,30 @@ class CustomLayersProvider {
 	}
 
 	/**
-     * Retrieves a list of application selectors based on the given root element.
-     * 
-     * @param root the root element to search for application selectors
-     * @return a list of application selectors
-     */
-    private List<ContentSelector<String>> getApplicationSelectors(Element root) {
+	 * Retrieves a list of application selectors based on the given root element.
+	 * @param root the root element to search for application selectors
+	 * @return a list of application selectors
+	 */
+	private List<ContentSelector<String>> getApplicationSelectors(Element root) {
 		return getSelectors(root, "application", (element) -> getSelector(element, ApplicationContentFilter::new));
 	}
 
 	/**
-     * Retrieves a list of content selectors for libraries based on the given root element.
-     * 
-     * @param root the root element to search for library selectors
-     * @return a list of content selectors for libraries
-     */
-    private List<ContentSelector<Library>> getLibrarySelectors(Element root) {
+	 * Retrieves a list of content selectors for libraries based on the given root
+	 * element.
+	 * @param root the root element to search for library selectors
+	 * @return a list of content selectors for libraries
+	 */
+	private List<ContentSelector<Library>> getLibrarySelectors(Element root) {
 		return getSelectors(root, "dependencies", (element) -> getLibrarySelector(element, LibraryContentFilter::new));
 	}
 
 	/**
-     * Retrieves the layers from the given root element.
-     * 
-     * @param root The root element to retrieve the layers from.
-     * @return The list of layers retrieved from the root element.
-     */
-    private List<Layer> getLayers(Element root) {
+	 * Retrieves the layers from the given root element.
+	 * @param root The root element to retrieve the layers from.
+	 * @return The list of layers retrieved from the root element.
+	 */
+	private List<Layer> getLayers(Element root) {
 		Element layerOrder = getChildElement(root, "layerOrder");
 		if (layerOrder == null) {
 			return Collections.emptyList();
@@ -136,14 +133,16 @@ class CustomLayersProvider {
 	}
 
 	/**
-     * Retrieves a list of content selectors based on the given root element, element name, and selector factory.
-     * 
-     * @param root The root element to search for the specified element name.
-     * @param elementName The name of the element to search for within the root element.
-     * @param selectorFactory The factory function used to create content selectors based on child elements.
-     * @return A list of content selectors created from the child elements found within the specified root element and element name.
-     */
-    private <T> List<ContentSelector<T>> getSelectors(Element root, String elementName,
+	 * Retrieves a list of content selectors based on the given root element, element
+	 * name, and selector factory.
+	 * @param root The root element to search for the specified element name.
+	 * @param elementName The name of the element to search for within the root element.
+	 * @param selectorFactory The factory function used to create content selectors based
+	 * on child elements.
+	 * @return A list of content selectors created from the child elements found within
+	 * the specified root element and element name.
+	 */
+	private <T> List<ContentSelector<T>> getSelectors(Element root, String elementName,
 			Function<Element, ContentSelector<T>> selectorFactory) {
 		Element element = getChildElement(root, elementName);
 		if (element == null) {
@@ -162,14 +161,13 @@ class CustomLayersProvider {
 	}
 
 	/**
-     * Returns a ContentSelector object based on the provided element and filterFactory.
-     * 
-     * @param element the element containing the layer information
-     * @param filterFactory the function used to create ContentFilter objects
-     * @return a ContentSelector object
-     * @param <T> the type of content to be selected
-     */
-    private <T> ContentSelector<T> getSelector(Element element, Function<String, ContentFilter<T>> filterFactory) {
+	 * Returns a ContentSelector object based on the provided element and filterFactory.
+	 * @param element the element containing the layer information
+	 * @param filterFactory the function used to create ContentFilter objects
+	 * @return a ContentSelector object
+	 * @param <T> the type of content to be selected
+	 */
+	private <T> ContentSelector<T> getSelector(Element element, Function<String, ContentFilter<T>> filterFactory) {
 		Layer layer = new Layer(element.getAttribute("layer"));
 		List<String> includes = getChildNodeTextContent(element, "include");
 		List<String> excludes = getChildNodeTextContent(element, "exclude");
@@ -177,13 +175,14 @@ class CustomLayersProvider {
 	}
 
 	/**
-     * Returns a ContentSelector for selecting libraries based on the provided element and filter factory.
-     * 
-     * @param element The element containing the configuration for the ContentSelector.
-     * @param filterFactory The factory function for creating ContentFilters based on string inputs.
-     * @return The ContentSelector for selecting libraries.
-     */
-    private ContentSelector<Library> getLibrarySelector(Element element,
+	 * Returns a ContentSelector for selecting libraries based on the provided element and
+	 * filter factory.
+	 * @param element The element containing the configuration for the ContentSelector.
+	 * @param filterFactory The factory function for creating ContentFilters based on
+	 * string inputs.
+	 * @return The ContentSelector for selecting libraries.
+	 */
+	private ContentSelector<Library> getLibrarySelector(Element element,
 			Function<String, ContentFilter<Library>> filterFactory) {
 		Layer layer = new Layer(element.getAttribute("layer"));
 		List<String> includes = getChildNodeTextContent(element, "include");
@@ -206,13 +205,13 @@ class CustomLayersProvider {
 	}
 
 	/**
-     * Retrieves the text content of child nodes with the specified tag name from the given element.
-     * 
-     * @param element the element from which to retrieve child nodes
-     * @param tagName the tag name of the child nodes to retrieve
-     * @return a list of text content of the child nodes with the specified tag name
-     */
-    private List<String> getChildNodeTextContent(Element element, String tagName) {
+	 * Retrieves the text content of child nodes with the specified tag name from the
+	 * given element.
+	 * @param element the element from which to retrieve child nodes
+	 * @param tagName the tag name of the child nodes to retrieve
+	 * @return a list of text content of the child nodes with the specified tag name
+	 */
+	private List<String> getChildNodeTextContent(Element element, String tagName) {
 		List<String> patterns = new ArrayList<>();
 		NodeList nodes = element.getElementsByTagName(tagName);
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -225,14 +224,15 @@ class CustomLayersProvider {
 	}
 
 	/**
-     * Returns the child element with the specified tag name from the given parent element.
-     * 
-     * @param element the parent element from which to retrieve the child element
-     * @param tagName the tag name of the child element to retrieve
-     * @return the child element with the specified tag name, or null if not found
-     * @throws IllegalStateException if multiple child elements with the specified tag name are found
-     */
-    private Element getChildElement(Element element, String tagName) {
+	 * Returns the child element with the specified tag name from the given parent
+	 * element.
+	 * @param element the parent element from which to retrieve the child element
+	 * @param tagName the tag name of the child element to retrieve
+	 * @return the child element with the specified tag name, or null if not found
+	 * @throws IllegalStateException if multiple child elements with the specified tag
+	 * name are found
+	 */
+	private Element getChildElement(Element element, String tagName) {
 		NodeList nodes = element.getElementsByTagName(tagName);
 		if (nodes.getLength() == 0) {
 			return null;

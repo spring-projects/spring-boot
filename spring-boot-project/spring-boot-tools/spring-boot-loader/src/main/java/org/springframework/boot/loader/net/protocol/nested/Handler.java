@@ -36,13 +36,12 @@ public class Handler extends URLStreamHandler {
 	private static final String PREFIX = "nested:";
 
 	/**
-     * Opens a connection to the specified URL.
-     * 
-     * @param url the URL to open a connection to
-     * @return a URLConnection object representing the connection to the specified URL
-     * @throws IOException if an I/O error occurs while opening the connection
-     */
-    @Override
+	 * Opens a connection to the specified URL.
+	 * @param url the URL to open a connection to
+	 * @return a URLConnection object representing the connection to the specified URL
+	 * @throws IOException if an I/O error occurs while opening the connection
+	 */
+	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
 		return new NestedUrlConnection(url);
 	}

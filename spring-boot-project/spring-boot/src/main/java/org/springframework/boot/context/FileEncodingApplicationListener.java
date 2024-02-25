@@ -51,26 +51,25 @@ public class FileEncodingApplicationListener
 	private static final Log logger = LogFactory.getLog(FileEncodingApplicationListener.class);
 
 	/**
-     * Returns the order value for this application listener.
-     * 
-     * The order value is set to Ordered.LOWEST_PRECEDENCE, indicating that this listener
-     * has the lowest priority and will be executed last.
-     * 
-     * @return the order value for this application listener
-     */
-    @Override
+	 * Returns the order value for this application listener.
+	 *
+	 * The order value is set to Ordered.LOWEST_PRECEDENCE, indicating that this listener
+	 * has the lowest priority and will be executed last.
+	 * @return the order value for this application listener
+	 */
+	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE;
 	}
 
 	/**
-     * This method is called when the application environment is prepared.
-     * It checks if the desired file encoding specified in the 'spring.mandatory-file-encoding' property
-     * matches the system's file encoding. If not, it throws an IllegalStateException.
-     * 
-     * @param event The ApplicationEnvironmentPreparedEvent object representing the event.
-     */
-    @Override
+	 * This method is called when the application environment is prepared. It checks if
+	 * the desired file encoding specified in the 'spring.mandatory-file-encoding'
+	 * property matches the system's file encoding. If not, it throws an
+	 * IllegalStateException.
+	 * @param event The ApplicationEnvironmentPreparedEvent object representing the event.
+	 */
+	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
 		String desired = environment.getProperty("spring.mandatory-file-encoding");

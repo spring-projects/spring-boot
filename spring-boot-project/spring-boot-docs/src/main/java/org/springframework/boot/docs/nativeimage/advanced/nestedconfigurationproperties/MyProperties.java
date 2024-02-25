@@ -36,20 +36,18 @@ public class MyProperties {
 	}
 
 	/**
-     * Sets the name of the property.
-     * 
-     * @param name the name to be set
-     */
-    public void setName(String name) {
+	 * Sets the name of the property.
+	 * @param name the name to be set
+	 */
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-     * Returns the nested object.
-     *
-     * @return the nested object
-     */
-    public Nested getNested() {
+	 * Returns the nested object.
+	 * @return the nested object
+	 */
+	public Nested getNested() {
 		return this.nested;
 	}
 	// @fold:off

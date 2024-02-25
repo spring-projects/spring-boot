@@ -26,14 +26,13 @@ import org.springframework.stereotype.Component;
 public class GreetingService {
 
 	/**
-     * Greets a person by their name.
-     * 
-     * @param name the name of the person to greet
-     * @return a greeting message with the person's name
-     * 
-     * @precondition The user must have the 'ADMIN' role.
-     */
-    @PreAuthorize("hasRole('ADMIN')")
+	 * Greets a person by their name.
+	 * @param name the name of the person to greet
+	 * @return a greeting message with the person's name
+	 *
+	 * @precondition The user must have the 'ADMIN' role.
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	public String greet(String name) {
 		return "Hello, " + name + "!";
 	}

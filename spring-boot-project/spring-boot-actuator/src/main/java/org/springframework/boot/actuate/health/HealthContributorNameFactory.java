@@ -36,12 +36,12 @@ public class HealthContributorNameFactory implements Function<String, String> {
 	public static final HealthContributorNameFactory INSTANCE = new HealthContributorNameFactory();
 
 	/**
-     * Removes the suffix from the given name if it matches any of the predefined suffixes.
-     * 
-     * @param name the name to apply the suffix removal to
-     * @return the name with the suffix removed, or the original name if no suffix matches
-     */
-    @Override
+	 * Removes the suffix from the given name if it matches any of the predefined
+	 * suffixes.
+	 * @param name the name to apply the suffix removal to
+	 * @return the name with the suffix removed, or the original name if no suffix matches
+	 */
+	@Override
 	public String apply(String name) {
 		for (String suffix : SUFFIXES) {
 			if (name != null && name.toLowerCase(Locale.ENGLISH).endsWith(suffix)) {

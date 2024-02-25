@@ -61,21 +61,19 @@ public interface ContainerContent {
 		return new ContainerContent() {
 
 			/**
-     * Returns the TarArchive object associated with this ContainerContent.
-     *
-     * @return the TarArchive object associated with this ContainerContent
-     */
-    @Override
+			 * Returns the TarArchive object associated with this ContainerContent.
+			 * @return the TarArchive object associated with this ContainerContent
+			 */
+			@Override
 			public TarArchive getArchive() {
 				return archive;
 			}
 
 			/**
-     * Returns the destination path of the container content.
-     *
-     * @return the destination path of the container content
-     */
-    @Override
+			 * Returns the destination path of the container content.
+			 * @return the destination path of the container content
+			 */
+			@Override
 			public String getDestinationPath() {
 				return destinationPath;
 			}

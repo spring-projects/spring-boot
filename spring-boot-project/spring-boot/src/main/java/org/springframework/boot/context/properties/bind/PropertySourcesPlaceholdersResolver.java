@@ -38,42 +38,40 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 	private final PropertyPlaceholderHelper helper;
 
 	/**
-     * Constructs a new PropertySourcesPlaceholdersResolver with the specified environment.
-     * 
-     * @param environment the environment to use for resolving property sources
-     */
-    public PropertySourcesPlaceholdersResolver(Environment environment) {
+	 * Constructs a new PropertySourcesPlaceholdersResolver with the specified
+	 * environment.
+	 * @param environment the environment to use for resolving property sources
+	 */
+	public PropertySourcesPlaceholdersResolver(Environment environment) {
 		this(getSources(environment), null);
 	}
 
 	/**
-     * Constructs a new PropertySourcesPlaceholdersResolver with the specified sources.
-     *
-     * @param sources the sources to be used for resolving placeholders
-     */
-    public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources) {
+	 * Constructs a new PropertySourcesPlaceholdersResolver with the specified sources.
+	 * @param sources the sources to be used for resolving placeholders
+	 */
+	public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources) {
 		this(sources, null);
 	}
 
 	/**
-     * Constructs a new PropertySourcesPlaceholdersResolver with the specified sources and helper.
-     * 
-     * @param sources the sources of property values
-     * @param helper the property placeholder helper to use for resolving placeholders
-     */
-    public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources, PropertyPlaceholderHelper helper) {
+	 * Constructs a new PropertySourcesPlaceholdersResolver with the specified sources and
+	 * helper.
+	 * @param sources the sources of property values
+	 * @param helper the property placeholder helper to use for resolving placeholders
+	 */
+	public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources, PropertyPlaceholderHelper helper) {
 		this.sources = sources;
 		this.helper = (helper != null) ? helper : new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
 				SystemPropertyUtils.PLACEHOLDER_SUFFIX, SystemPropertyUtils.VALUE_SEPARATOR, true);
 	}
 
 	/**
-     * Resolves placeholders in the given value.
-     * 
-     * @param value the value to resolve placeholders in
-     * @return the resolved value
-     */
-    @Override
+	 * Resolves placeholders in the given value.
+	 * @param value the value to resolve placeholders in
+	 * @return the resolved value
+	 */
+	@Override
 	public Object resolvePlaceholders(Object value) {
 		if (value instanceof String string) {
 			return this.helper.replacePlaceholders(string, this::resolvePlaceholder);
@@ -82,12 +80,11 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 	}
 
 	/**
-     * Resolves the value of the given placeholder.
-     * 
-     * @param placeholder the placeholder to resolve
-     * @return the resolved value of the placeholder, or null if not found
-     */
-    protected String resolvePlaceholder(String placeholder) {
+	 * Resolves the value of the given placeholder.
+	 * @param placeholder the placeholder to resolve
+	 * @return the resolved value of the placeholder, or null if not found
+	 */
+	protected String resolvePlaceholder(String placeholder) {
 		if (this.sources != null) {
 			for (PropertySource<?> source : this.sources) {
 				Object value = source.getProperty(placeholder);
@@ -100,13 +97,14 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 	}
 
 	/**
-     * Retrieves the property sources from the given environment.
-     * 
-     * @param environment the environment from which to retrieve the property sources (must not be null)
-     * @return the property sources of the environment
-     * @throws IllegalArgumentException if the environment is null or not an instance of ConfigurableEnvironment
-     */
-    private static PropertySources getSources(Environment environment) {
+	 * Retrieves the property sources from the given environment.
+	 * @param environment the environment from which to retrieve the property sources
+	 * (must not be null)
+	 * @return the property sources of the environment
+	 * @throws IllegalArgumentException if the environment is null or not an instance of
+	 * ConfigurableEnvironment
+	 */
+	private static PropertySources getSources(Environment environment) {
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.isInstanceOf(ConfigurableEnvironment.class, environment,
 				"Environment must be a ConfigurableEnvironment");

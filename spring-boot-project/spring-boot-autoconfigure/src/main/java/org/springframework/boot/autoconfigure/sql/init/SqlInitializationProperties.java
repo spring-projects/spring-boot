@@ -81,166 +81,148 @@ public class SqlInitializationProperties {
 	private DatabaseInitializationMode mode = DatabaseInitializationMode.EMBEDDED;
 
 	/**
-     * Returns the list of schema locations.
-     * 
-     * @return the list of schema locations
-     */
-    public List<String> getSchemaLocations() {
+	 * Returns the list of schema locations.
+	 * @return the list of schema locations
+	 */
+	public List<String> getSchemaLocations() {
 		return this.schemaLocations;
 	}
 
 	/**
-     * Sets the list of schema locations.
-     * 
-     * @param schemaLocations the list of schema locations to be set
-     */
-    public void setSchemaLocations(List<String> schemaLocations) {
+	 * Sets the list of schema locations.
+	 * @param schemaLocations the list of schema locations to be set
+	 */
+	public void setSchemaLocations(List<String> schemaLocations) {
 		this.schemaLocations = schemaLocations;
 	}
 
 	/**
-     * Returns the list of data locations.
-     *
-     * @return the list of data locations
-     */
-    public List<String> getDataLocations() {
+	 * Returns the list of data locations.
+	 * @return the list of data locations
+	 */
+	public List<String> getDataLocations() {
 		return this.dataLocations;
 	}
 
 	/**
-     * Sets the data locations for the SqlInitializationProperties.
-     * 
-     * @param dataLocations the list of data locations to be set
-     */
-    public void setDataLocations(List<String> dataLocations) {
+	 * Sets the data locations for the SqlInitializationProperties.
+	 * @param dataLocations the list of data locations to be set
+	 */
+	public void setDataLocations(List<String> dataLocations) {
 		this.dataLocations = dataLocations;
 	}
 
 	/**
-     * Returns the platform of the SqlInitializationProperties.
-     *
-     * @return the platform of the SqlInitializationProperties
-     */
-    public String getPlatform() {
+	 * Returns the platform of the SqlInitializationProperties.
+	 * @return the platform of the SqlInitializationProperties
+	 */
+	public String getPlatform() {
 		return this.platform;
 	}
 
 	/**
-     * Sets the platform for SQL initialization.
-     * 
-     * @param platform the platform to set
-     */
-    public void setPlatform(String platform) {
+	 * Sets the platform for SQL initialization.
+	 * @param platform the platform to set
+	 */
+	public void setPlatform(String platform) {
 		this.platform = platform;
 	}
 
 	/**
-     * Returns the username associated with the SqlInitializationProperties object.
-     *
-     * @return the username
-     */
-    public String getUsername() {
+	 * Returns the username associated with the SqlInitializationProperties object.
+	 * @return the username
+	 */
+	public String getUsername() {
 		return this.username;
 	}
 
 	/**
-     * Sets the username for the SQL initialization properties.
-     * 
-     * @param username the username to be set
-     */
-    public void setUsername(String username) {
+	 * Sets the username for the SQL initialization properties.
+	 * @param username the username to be set
+	 */
+	public void setUsername(String username) {
 		this.username = username;
 	}
 
 	/**
-     * Returns the password used for SQL initialization.
-     *
-     * @return the password used for SQL initialization
-     */
-    public String getPassword() {
+	 * Returns the password used for SQL initialization.
+	 * @return the password used for SQL initialization
+	 */
+	public String getPassword() {
 		return this.password;
 	}
 
 	/**
-     * Sets the password for the SQL initialization properties.
-     * 
-     * @param password the password to be set
-     */
-    public void setPassword(String password) {
+	 * Sets the password for the SQL initialization properties.
+	 * @param password the password to be set
+	 */
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the program should continue executing
-     * even if an error occurs during SQL initialization.
-     *
-     * @return true if the program should continue executing on error, false otherwise
-     */
-    public boolean isContinueOnError() {
+	 * Returns a boolean value indicating whether the program should continue executing
+	 * even if an error occurs during SQL initialization.
+	 * @return true if the program should continue executing on error, false otherwise
+	 */
+	public boolean isContinueOnError() {
 		return this.continueOnError;
 	}
 
 	/**
-     * Sets the flag indicating whether to continue executing SQL statements
-     * even if an error occurs.
-     * 
-     * @param continueOnError the flag indicating whether to continue on error
-     */
-    public void setContinueOnError(boolean continueOnError) {
+	 * Sets the flag indicating whether to continue executing SQL statements even if an
+	 * error occurs.
+	 * @param continueOnError the flag indicating whether to continue on error
+	 */
+	public void setContinueOnError(boolean continueOnError) {
 		this.continueOnError = continueOnError;
 	}
 
 	/**
-     * Returns the separator used in the SqlInitializationProperties class.
-     *
-     * @return the separator used in the SqlInitializationProperties class
-     */
-    public String getSeparator() {
+	 * Returns the separator used in the SqlInitializationProperties class.
+	 * @return the separator used in the SqlInitializationProperties class
+	 */
+	public String getSeparator() {
 		return this.separator;
 	}
 
 	/**
-     * Sets the separator used in SQL initialization properties.
-     * 
-     * @param separator the separator to be set
-     */
-    public void setSeparator(String separator) {
+	 * Sets the separator used in SQL initialization properties.
+	 * @param separator the separator to be set
+	 */
+	public void setSeparator(String separator) {
 		this.separator = separator;
 	}
 
 	/**
-     * Returns the encoding used by the SqlInitializationProperties.
-     * 
-     * @return the encoding used by the SqlInitializationProperties
-     */
-    public Charset getEncoding() {
+	 * Returns the encoding used by the SqlInitializationProperties.
+	 * @return the encoding used by the SqlInitializationProperties
+	 */
+	public Charset getEncoding() {
 		return this.encoding;
 	}
 
 	/**
-     * Sets the encoding for the SQL initialization properties.
-     * 
-     * @param encoding the encoding to be set
-     */
-    public void setEncoding(Charset encoding) {
+	 * Sets the encoding for the SQL initialization properties.
+	 * @param encoding the encoding to be set
+	 */
+	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
 	}
 
 	/**
-     * Returns the mode of database initialization.
-     * 
-     * @return the mode of database initialization
-     */
-    public DatabaseInitializationMode getMode() {
+	 * Returns the mode of database initialization.
+	 * @return the mode of database initialization
+	 */
+	public DatabaseInitializationMode getMode() {
 		return this.mode;
 	}
 
 	/**
-     * Sets the mode for database initialization.
-     * 
-     * @param mode the mode to set for database initialization
-     */
-    public void setMode(DatabaseInitializationMode mode) {
+	 * Sets the mode for database initialization.
+	 * @param mode the mode to set for database initialization
+	 */
+	public void setMode(DatabaseInitializationMode mode) {
 		this.mode = mode;
 	}
 

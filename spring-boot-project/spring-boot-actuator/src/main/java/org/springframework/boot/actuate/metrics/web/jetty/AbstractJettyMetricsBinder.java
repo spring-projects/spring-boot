@@ -34,12 +34,11 @@ import org.springframework.context.ApplicationListener;
 public abstract class AbstractJettyMetricsBinder implements ApplicationListener<ApplicationStartedEvent> {
 
 	/**
-     * This method is called when the application has started.
-     * It finds the server instance from the application context and binds the metrics to it.
-     * 
-     * @param event The ApplicationStartedEvent that triggered this method.
-     */
-    @Override
+	 * This method is called when the application has started. It finds the server
+	 * instance from the application context and binds the metrics to it.
+	 * @param event The ApplicationStartedEvent that triggered this method.
+	 */
+	@Override
 	public void onApplicationEvent(ApplicationStartedEvent event) {
 		Server server = findServer(event.getApplicationContext());
 		if (server != null) {
@@ -48,12 +47,11 @@ public abstract class AbstractJettyMetricsBinder implements ApplicationListener<
 	}
 
 	/**
-     * Finds the Jetty server instance from the given ApplicationContext.
-     * 
-     * @param applicationContext the ApplicationContext to search for the server
-     * @return the Jetty server instance if found, otherwise null
-     */
-    private Server findServer(ApplicationContext applicationContext) {
+	 * Finds the Jetty server instance from the given ApplicationContext.
+	 * @param applicationContext the ApplicationContext to search for the server
+	 * @return the Jetty server instance if found, otherwise null
+	 */
+	private Server findServer(ApplicationContext applicationContext) {
 		if (applicationContext instanceof WebServerApplicationContext webServerApplicationContext) {
 			WebServer webServer = webServerApplicationContext.getWebServer();
 			if (webServer instanceof JettyWebServer jettyWebServer) {
@@ -64,10 +62,9 @@ public abstract class AbstractJettyMetricsBinder implements ApplicationListener<
 	}
 
 	/**
-     * Binds the metrics to the specified server.
-     *
-     * @param server the server to bind the metrics to
-     */
-    protected abstract void bindMetrics(Server server);
+	 * Binds the metrics to the specified server.
+	 * @param server the server to bind the metrics to
+	 */
+	protected abstract void bindMetrics(Server server);
 
 }

@@ -34,12 +34,13 @@ public class MyService {
 	private final RestClient restClient;
 
 	/**
-     * Constructs a new instance of MyService with the given RestClient.Builder and SslBundles.
-     * 
-     * @param restClientBuilder the RestClient.Builder used to build the RestClient
-     * @param sslBundles the SslBundles used to retrieve the SSL bundle for the request factory
-     */
-    public MyService(RestClient.Builder restClientBuilder, SslBundles sslBundles) {
+	 * Constructs a new instance of MyService with the given RestClient.Builder and
+	 * SslBundles.
+	 * @param restClientBuilder the RestClient.Builder used to build the RestClient
+	 * @param sslBundles the SslBundles used to retrieve the SSL bundle for the request
+	 * factory
+	 */
+	public MyService(RestClient.Builder restClientBuilder, SslBundles sslBundles) {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
 			.withReadTimeout(Duration.ofMinutes(2))
 			.withSslBundle(sslBundles.getBundle("mybundle"));
@@ -48,12 +49,11 @@ public class MyService {
 	}
 
 	/**
-     * Makes a REST call to retrieve the details for a given name.
-     * 
-     * @param name the name for which details are to be retrieved
-     * @return the details of the given name
-     */
-    public Details someRestCall(String name) {
+	 * Makes a REST call to retrieve the details for a given name.
+	 * @param name the name for which details are to be retrieved
+	 * @return the details of the given name
+	 */
+	public Details someRestCall(String name) {
 		return this.restClient.get().uri("/{name}/details", name).retrieve().body(Details.class);
 	}
 

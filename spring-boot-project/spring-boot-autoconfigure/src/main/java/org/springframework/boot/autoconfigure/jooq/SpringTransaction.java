@@ -34,20 +34,18 @@ class SpringTransaction implements Transaction {
 	private final TransactionStatus transactionStatus;
 
 	/**
-     * Sets the transaction status for the SpringTransaction object.
-     * 
-     * @param transactionStatus the transaction status to be set
-     */
-    SpringTransaction(TransactionStatus transactionStatus) {
+	 * Sets the transaction status for the SpringTransaction object.
+	 * @param transactionStatus the transaction status to be set
+	 */
+	SpringTransaction(TransactionStatus transactionStatus) {
 		this.transactionStatus = transactionStatus;
 	}
 
 	/**
-     * Returns the transaction status of the SpringTransaction object.
-     * 
-     * @return the transaction status of the SpringTransaction object
-     */
-    TransactionStatus getTxStatus() {
+	 * Returns the transaction status of the SpringTransaction object.
+	 * @return the transaction status of the SpringTransaction object
+	 */
+	TransactionStatus getTxStatus() {
 		return this.transactionStatus;
 	}
 

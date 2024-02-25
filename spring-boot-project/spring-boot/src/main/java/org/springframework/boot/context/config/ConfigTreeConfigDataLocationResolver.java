@@ -40,35 +40,36 @@ public class ConfigTreeConfigDataLocationResolver implements ConfigDataLocationR
 	private final LocationResourceLoader resourceLoader;
 
 	/**
-     * Constructs a new ConfigTreeConfigDataLocationResolver with the specified resource loader.
-     * 
-     * @param resourceLoader the resource loader to be used for loading the location resources
-     */
-    public ConfigTreeConfigDataLocationResolver(ResourceLoader resourceLoader) {
+	 * Constructs a new ConfigTreeConfigDataLocationResolver with the specified resource
+	 * loader.
+	 * @param resourceLoader the resource loader to be used for loading the location
+	 * resources
+	 */
+	public ConfigTreeConfigDataLocationResolver(ResourceLoader resourceLoader) {
 		this.resourceLoader = new LocationResourceLoader(resourceLoader);
 	}
 
 	/**
-     * Determines if the given ConfigDataLocation is resolvable by this resolver.
-     * 
-     * @param context the ConfigDataLocationResolverContext
-     * @param location the ConfigDataLocation to be resolved
-     * @return true if the location has the specified prefix, false otherwise
-     */
-    @Override
+	 * Determines if the given ConfigDataLocation is resolvable by this resolver.
+	 * @param context the ConfigDataLocationResolverContext
+	 * @param location the ConfigDataLocation to be resolved
+	 * @return true if the location has the specified prefix, false otherwise
+	 */
+	@Override
 	public boolean isResolvable(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
 		return location.hasPrefix(PREFIX);
 	}
 
 	/**
-     * Resolves the given ConfigDataLocation by retrieving the ConfigTreeConfigDataResource.
-     * 
-     * @param context The ConfigDataLocationResolverContext.
-     * @param location The ConfigDataLocation to be resolved.
-     * @return A list of ConfigTreeConfigDataResource objects.
-     * @throws ConfigDataLocationNotFoundException if the ConfigDataLocation cannot be resolved.
-     */
-    @Override
+	 * Resolves the given ConfigDataLocation by retrieving the
+	 * ConfigTreeConfigDataResource.
+	 * @param context The ConfigDataLocationResolverContext.
+	 * @param location The ConfigDataLocation to be resolved.
+	 * @return A list of ConfigTreeConfigDataResource objects.
+	 * @throws ConfigDataLocationNotFoundException if the ConfigDataLocation cannot be
+	 * resolved.
+	 */
+	@Override
 	public List<ConfigTreeConfigDataResource> resolve(ConfigDataLocationResolverContext context,
 			ConfigDataLocation location) {
 		try {
@@ -80,14 +81,14 @@ public class ConfigTreeConfigDataLocationResolver implements ConfigDataLocationR
 	}
 
 	/**
-     * Resolves the given location to a list of ConfigTreeConfigDataResource objects.
-     * 
-     * @param location the location to resolve
-     * @return a list of ConfigTreeConfigDataResource objects representing the resolved resources
-     * @throws IOException if an I/O error occurs while resolving the location
-     * @throws IllegalArgumentException if the location does not end with '/'
-     */
-    private List<ConfigTreeConfigDataResource> resolve(String location) throws IOException {
+	 * Resolves the given location to a list of ConfigTreeConfigDataResource objects.
+	 * @param location the location to resolve
+	 * @return a list of ConfigTreeConfigDataResource objects representing the resolved
+	 * resources
+	 * @throws IOException if an I/O error occurs while resolving the location
+	 * @throws IllegalArgumentException if the location does not end with '/'
+	 */
+	private List<ConfigTreeConfigDataResource> resolve(String location) throws IOException {
 		Assert.isTrue(location.endsWith("/"),
 				() -> String.format("Config tree location '%s' must end with '/'", location));
 		if (!this.resourceLoader.isPattern(location)) {

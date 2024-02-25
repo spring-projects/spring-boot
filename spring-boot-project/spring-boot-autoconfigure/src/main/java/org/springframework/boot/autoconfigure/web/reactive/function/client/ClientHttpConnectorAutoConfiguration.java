@@ -51,13 +51,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class ClientHttpConnectorAutoConfiguration {
 
 	/**
-     * Creates a ClientHttpConnector bean if no other bean of type ClientHttpConnector is present.
-     * Uses the provided ClientHttpConnectorFactory to create the ClientHttpConnector.
-     * 
-     * @param clientHttpConnectorFactory the factory used to create the ClientHttpConnector
-     * @return the created ClientHttpConnector bean
-     */
-    @Bean
+	 * Creates a ClientHttpConnector bean if no other bean of type ClientHttpConnector is
+	 * present. Uses the provided ClientHttpConnectorFactory to create the
+	 * ClientHttpConnector.
+	 * @param clientHttpConnectorFactory the factory used to create the
+	 * ClientHttpConnector
+	 * @return the created ClientHttpConnector bean
+	 */
+	@Bean
 	@Lazy
 	@ConditionalOnMissingBean(ClientHttpConnector.class)
 	ClientHttpConnector webClientHttpConnector(ClientHttpConnectorFactory<?> clientHttpConnectorFactory) {
@@ -65,14 +66,15 @@ public class ClientHttpConnectorAutoConfiguration {
 	}
 
 	/**
-     * Returns a WebClientCustomizer bean that customizes the WebClient builder by setting the client connector to the provided ClientHttpConnector.
-     * This bean is lazily initialized and has an order of 0.
-     * It is conditionally created only if a bean of type ClientHttpConnector is present in the application context.
-     *
-     * @param clientHttpConnector the ClientHttpConnector to be set as the client connector for the WebClient builder
-     * @return the WebClientCustomizer bean that customizes the WebClient builder
-     */
-    @Bean
+	 * Returns a WebClientCustomizer bean that customizes the WebClient builder by setting
+	 * the client connector to the provided ClientHttpConnector. This bean is lazily
+	 * initialized and has an order of 0. It is conditionally created only if a bean of
+	 * type ClientHttpConnector is present in the application context.
+	 * @param clientHttpConnector the ClientHttpConnector to be set as the client
+	 * connector for the WebClient builder
+	 * @return the WebClientCustomizer bean that customizes the WebClient builder
+	 */
+	@Bean
 	@Lazy
 	@Order(0)
 	@ConditionalOnBean(ClientHttpConnector.class)

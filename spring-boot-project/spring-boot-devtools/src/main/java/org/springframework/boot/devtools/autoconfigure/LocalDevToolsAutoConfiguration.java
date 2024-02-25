@@ -72,12 +72,13 @@ public class LocalDevToolsAutoConfiguration {
 	static class LiveReloadConfiguration {
 
 		/**
-         * Creates a new instance of LiveReloadServer with the specified port and thread factory.
-         * 
-         * @param properties the DevToolsProperties object containing the livereload configuration
-         * @return a new instance of LiveReloadServer
-         */
-        @Bean
+		 * Creates a new instance of LiveReloadServer with the specified port and thread
+		 * factory.
+		 * @param properties the DevToolsProperties object containing the livereload
+		 * configuration
+		 * @return a new instance of LiveReloadServer
+		 */
+		@Bean
 		@RestartScope
 		@ConditionalOnMissingBean
 		LiveReloadServer liveReloadServer(DevToolsProperties properties) {
@@ -86,23 +87,25 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		/**
-         * Creates an OptionalLiveReloadServer object with the provided LiveReloadServer.
-         * 
-         * @param liveReloadServer the LiveReloadServer to be wrapped in an OptionalLiveReloadServer
-         * @return an OptionalLiveReloadServer object containing the provided LiveReloadServer
-         */
-        @Bean
+		 * Creates an OptionalLiveReloadServer object with the provided LiveReloadServer.
+		 * @param liveReloadServer the LiveReloadServer to be wrapped in an
+		 * OptionalLiveReloadServer
+		 * @return an OptionalLiveReloadServer object containing the provided
+		 * LiveReloadServer
+		 */
+		@Bean
 		OptionalLiveReloadServer optionalLiveReloadServer(LiveReloadServer liveReloadServer) {
 			return new OptionalLiveReloadServer(liveReloadServer);
 		}
 
 		/**
-         * Creates a new instance of LiveReloadServerEventListener with the provided optional LiveReloadServer.
-         * 
-         * @param liveReloadServer the optional LiveReloadServer to be used by the event listener
-         * @return a new instance of LiveReloadServerEventListener
-         */
-        @Bean
+		 * Creates a new instance of LiveReloadServerEventListener with the provided
+		 * optional LiveReloadServer.
+		 * @param liveReloadServer the optional LiveReloadServer to be used by the event
+		 * listener
+		 * @return a new instance of LiveReloadServerEventListener
+		 */
+		@Bean
 		LiveReloadServerEventListener liveReloadServerEventListener(OptionalLiveReloadServer liveReloadServer) {
 			return new LiveReloadServerEventListener(liveReloadServer);
 		}
@@ -120,34 +123,37 @@ public class LocalDevToolsAutoConfiguration {
 		private final DevToolsProperties properties;
 
 		/**
-         * Initializes a new instance of the RestartConfiguration class with the specified DevToolsProperties.
-         * 
-         * @param properties The DevToolsProperties to be used for the restart configuration.
-         */
-        RestartConfiguration(DevToolsProperties properties) {
+		 * Initializes a new instance of the RestartConfiguration class with the specified
+		 * DevToolsProperties.
+		 * @param properties The DevToolsProperties to be used for the restart
+		 * configuration.
+		 */
+		RestartConfiguration(DevToolsProperties properties) {
 			this.properties = properties;
 		}
 
 		/**
-         * Creates a new instance of the RestartingClassPathChangeChangedEventListener class.
-         * 
-         * @param fileSystemWatcherFactory the factory used to create a file system watcher
-         * @return the created RestartingClassPathChangeChangedEventListener instance
-         */
-        @Bean
+		 * Creates a new instance of the RestartingClassPathChangeChangedEventListener
+		 * class.
+		 * @param fileSystemWatcherFactory the factory used to create a file system
+		 * watcher
+		 * @return the created RestartingClassPathChangeChangedEventListener instance
+		 */
+		@Bean
 		RestartingClassPathChangeChangedEventListener restartingClassPathChangedEventListener(
 				FileSystemWatcherFactory fileSystemWatcherFactory) {
 			return new RestartingClassPathChangeChangedEventListener(fileSystemWatcherFactory);
 		}
 
 		/**
-         * Creates a ClassPathFileSystemWatcher bean if no other bean of the same type is present.
-         * 
-         * @param fileSystemWatcherFactory The factory used to create the FileSystemWatcher.
-         * @param classPathRestartStrategy The strategy used for restarting the classpath.
-         * @return The created ClassPathFileSystemWatcher bean.
-         */
-        @Bean
+		 * Creates a ClassPathFileSystemWatcher bean if no other bean of the same type is
+		 * present.
+		 * @param fileSystemWatcherFactory The factory used to create the
+		 * FileSystemWatcher.
+		 * @param classPathRestartStrategy The strategy used for restarting the classpath.
+		 * @return The created ClassPathFileSystemWatcher bean.
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		ClassPathFileSystemWatcher classPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
 				ClassPathRestartStrategy classPathRestartStrategy) {
@@ -159,38 +165,38 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		/**
-         * Creates a new instance of ClassPathRestartStrategy if no other bean of this type is present in the application context.
-         * This strategy is used for restarting the application by monitoring changes in the classpath.
-         * The strategy excludes all the classes specified in the restart configuration properties.
-         *
-         * @return the ClassPathRestartStrategy instance
-         */
-        @Bean
+		 * Creates a new instance of ClassPathRestartStrategy if no other bean of this
+		 * type is present in the application context. This strategy is used for
+		 * restarting the application by monitoring changes in the classpath. The strategy
+		 * excludes all the classes specified in the restart configuration properties.
+		 * @return the ClassPathRestartStrategy instance
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		ClassPathRestartStrategy classPathRestartStrategy() {
 			return new PatternClassPathRestartStrategy(this.properties.getRestart().getAllExclude());
 		}
 
 		/**
-         * Creates a factory for FileSystemWatcher objects.
-         *
-         * @return the factory for FileSystemWatcher objects
-         */
-        @Bean
+		 * Creates a factory for FileSystemWatcher objects.
+		 * @return the factory for FileSystemWatcher objects
+		 */
+		@Bean
 		FileSystemWatcherFactory fileSystemWatcherFactory() {
 			return this::newFileSystemWatcher;
 		}
 
 		/**
-         * Creates a new instance of {@link ConditionEvaluationDeltaLoggingListener} if the property
-         * "spring.devtools.restart.log-condition-evaluation-delta" is present in the application's
-         * configuration. If the property is missing, the method will still be executed due to the
-         * "matchIfMissing" attribute being set to true.
-         *
-         * @return a new instance of {@link ConditionEvaluationDeltaLoggingListener} if the property
-         * "spring.devtools.restart.log-condition-evaluation-delta" is present, otherwise null.
-         */
-        @Bean
+		 * Creates a new instance of {@link ConditionEvaluationDeltaLoggingListener} if
+		 * the property "spring.devtools.restart.log-condition-evaluation-delta" is
+		 * present in the application's configuration. If the property is missing, the
+		 * method will still be executed due to the "matchIfMissing" attribute being set
+		 * to true.
+		 * @return a new instance of {@link ConditionEvaluationDeltaLoggingListener} if
+		 * the property "spring.devtools.restart.log-condition-evaluation-delta" is
+		 * present, otherwise null.
+		 */
+		@Bean
 		@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "log-condition-evaluation-delta",
 				matchIfMissing = true)
 		ConditionEvaluationDeltaLoggingListener conditionEvaluationDeltaLoggingListener() {
@@ -198,11 +204,11 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		/**
-         * Creates a new instance of FileSystemWatcher with the specified restart properties.
-         * 
-         * @return a new instance of FileSystemWatcher
-         */
-        private FileSystemWatcher newFileSystemWatcher() {
+		 * Creates a new instance of FileSystemWatcher with the specified restart
+		 * properties.
+		 * @return a new instance of FileSystemWatcher
+		 */
+		private FileSystemWatcher newFileSystemWatcher() {
 			Restart restartProperties = this.properties.getRestart();
 			FileSystemWatcher watcher = new FileSystemWatcher(true, restartProperties.getPollInterval(),
 					restartProperties.getQuietPeriod(), SnapshotStateRepository.STATIC);
@@ -220,28 +226,28 @@ public class LocalDevToolsAutoConfiguration {
 	}
 
 	/**
-     * LiveReloadServerEventListener class.
-     */
-    static class LiveReloadServerEventListener implements GenericApplicationListener {
+	 * LiveReloadServerEventListener class.
+	 */
+	static class LiveReloadServerEventListener implements GenericApplicationListener {
 
 		private final OptionalLiveReloadServer liveReloadServer;
 
 		/**
-         * Constructs a new LiveReloadServerEventListener with an optional LiveReloadServer.
-         * 
-         * @param liveReloadServer the optional LiveReloadServer to be associated with the event listener
-         */
-        LiveReloadServerEventListener(OptionalLiveReloadServer liveReloadServer) {
+		 * Constructs a new LiveReloadServerEventListener with an optional
+		 * LiveReloadServer.
+		 * @param liveReloadServer the optional LiveReloadServer to be associated with the
+		 * event listener
+		 */
+		LiveReloadServerEventListener(OptionalLiveReloadServer liveReloadServer) {
 			this.liveReloadServer = liveReloadServer;
 		}
 
 		/**
-         * Determines whether the specified event type is supported by this listener.
-         * 
-         * @param eventType the event type to check
-         * @return true if the event type is supported, false otherwise
-         */
-        @Override
+		 * Determines whether the specified event type is supported by this listener.
+		 * @param eventType the event type to check
+		 * @return true if the event type is supported, false otherwise
+		 */
+		@Override
 		public boolean supportsEventType(ResolvableType eventType) {
 			Class<?> type = eventType.getRawClass();
 			if (type == null) {
@@ -252,24 +258,22 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		/**
-         * Returns true if the specified source type is supported by this listener.
-         * 
-         * @param sourceType the source type to check
-         * @return true if the source type is supported, false otherwise
-         */
-        @Override
+		 * Returns true if the specified source type is supported by this listener.
+		 * @param sourceType the source type to check
+		 * @return true if the source type is supported, false otherwise
+		 */
+		@Override
 		public boolean supportsSourceType(Class<?> sourceType) {
 			return true;
 		}
 
 		/**
-         * This method is called when an application event is triggered.
-         * It checks if the event is either a ContextRefreshedEvent or a ClassPathChangedEvent
-         * that does not require a restart. If so, it triggers a reload of the LiveReload server.
-         * 
-         * @param event The application event that was triggered
-         */
-        @Override
+		 * This method is called when an application event is triggered. It checks if the
+		 * event is either a ContextRefreshedEvent or a ClassPathChangedEvent that does
+		 * not require a restart. If so, it triggers a reload of the LiveReload server.
+		 * @param event The application event that was triggered
+		 */
+		@Override
 		public void onApplicationEvent(ApplicationEvent event) {
 			if (event instanceof ContextRefreshedEvent || (event instanceof ClassPathChangedEvent classPathChangedEvent
 					&& !classPathChangedEvent.isRestartRequired())) {
@@ -278,11 +282,10 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		/**
-         * Returns the order in which this event listener should be executed.
-         * 
-         * @return the order of execution for this event listener
-         */
-        @Override
+		 * Returns the order in which this event listener should be executed.
+		 * @return the order of execution for this event listener
+		 */
+		@Override
 		public int getOrder() {
 			return 0;
 		}
@@ -290,31 +293,31 @@ public class LocalDevToolsAutoConfiguration {
 	}
 
 	/**
-     * RestartingClassPathChangeChangedEventListener class.
-     */
-    static class RestartingClassPathChangeChangedEventListener implements ApplicationListener<ClassPathChangedEvent> {
+	 * RestartingClassPathChangeChangedEventListener class.
+	 */
+	static class RestartingClassPathChangeChangedEventListener implements ApplicationListener<ClassPathChangedEvent> {
 
 		private static final Log logger = LogFactory.getLog(RestartingClassPathChangeChangedEventListener.class);
 
 		private final FileSystemWatcherFactory fileSystemWatcherFactory;
 
 		/**
-         * Constructs a new RestartingClassPathChangeChangedEventListener with the specified FileSystemWatcherFactory.
-         * 
-         * @param fileSystemWatcherFactory the factory used to create FileSystemWatcher instances
-         */
-        RestartingClassPathChangeChangedEventListener(FileSystemWatcherFactory fileSystemWatcherFactory) {
+		 * Constructs a new RestartingClassPathChangeChangedEventListener with the
+		 * specified FileSystemWatcherFactory.
+		 * @param fileSystemWatcherFactory the factory used to create FileSystemWatcher
+		 * instances
+		 */
+		RestartingClassPathChangeChangedEventListener(FileSystemWatcherFactory fileSystemWatcherFactory) {
 			this.fileSystemWatcherFactory = fileSystemWatcherFactory;
 		}
 
 		/**
-         * This method is called when a ClassPathChangedEvent is triggered.
-         * If a restart is required, it logs the reason for the restart and the change set.
-         * It then restarts the application using the Restarter class.
-         * 
-         * @param event The ClassPathChangedEvent that triggered this method.
-         */
-        @Override
+		 * This method is called when a ClassPathChangedEvent is triggered. If a restart
+		 * is required, it logs the reason for the restart and the change set. It then
+		 * restarts the application using the Restarter class.
+		 * @param event The ClassPathChangedEvent that triggered this method.
+		 */
+		@Override
 		public void onApplicationEvent(ClassPathChangedEvent event) {
 			if (event.isRestartRequired()) {
 				logger.info(LogMessage.format("Restarting due to %s", event.overview()));

@@ -60,13 +60,12 @@ class AnsiString {
 	}
 
 	/**
-     * Applies the given code to the provided Ansi object.
-     * 
-     * @param ansi the Ansi object to apply the code to
-     * @param code the Code object representing the code to apply
-     * @return the modified Ansi object with the code applied
-     */
-    private Ansi applyCode(Ansi ansi, Code code) {
+	 * Applies the given code to the provided Ansi object.
+	 * @param ansi the Ansi object to apply the code to
+	 * @param code the Code object representing the code to apply
+	 * @return the modified Ansi object with the code applied
+	 */
+	private Ansi applyCode(Ansi ansi, Code code) {
 		if (code.isColor()) {
 			if (code.isBackground()) {
 				return ansi.bg(code.getColor());
@@ -77,20 +76,18 @@ class AnsiString {
 	}
 
 	/**
-     * Checks if ANSI is supported by the terminal.
-     * 
-     * @return true if ANSI is supported, false otherwise
-     */
-    private boolean isAnsiSupported() {
+	 * Checks if ANSI is supported by the terminal.
+	 * @return true if ANSI is supported, false otherwise
+	 */
+	private boolean isAnsiSupported() {
 		return this.terminal.isAnsiSupported();
 	}
 
 	/**
-     * Returns a string representation of the AnsiString object.
-     *
-     * @return the string representation of the AnsiString object
-     */
-    @Override
+	 * Returns a string representation of the AnsiString object.
+	 * @return the string representation of the AnsiString object
+	 */
+	@Override
 	public String toString() {
 		return this.value.toString();
 	}

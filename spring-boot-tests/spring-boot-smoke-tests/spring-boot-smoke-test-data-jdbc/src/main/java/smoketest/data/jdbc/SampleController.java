@@ -33,21 +33,19 @@ public class SampleController {
 	private final CustomerRepository customerRepository;
 
 	/**
-     * Constructs a new SampleController object with the specified CustomerRepository.
-     * 
-     * @param customerRepository the CustomerRepository to be used by the SampleController
-     */
-    public SampleController(CustomerRepository customerRepository) {
+	 * Constructs a new SampleController object with the specified CustomerRepository.
+	 * @param customerRepository the CustomerRepository to be used by the SampleController
+	 */
+	public SampleController(CustomerRepository customerRepository) {
 		this.customerRepository = customerRepository;
 	}
 
 	/**
-     * Retrieves a list of customers based on the provided name.
-     * 
-     * @param name the name of the customers to retrieve
-     * @return a list of customers matching the provided name
-     */
-    @GetMapping("/")
+	 * Retrieves a list of customers based on the provided name.
+	 * @param name the name of the customers to retrieve
+	 * @return a list of customers matching the provided name
+	 */
+	@GetMapping("/")
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public List<Customer> customers(@RequestParam String name) {

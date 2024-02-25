@@ -72,39 +72,39 @@ class TestcontainersLifecycleBeanPostProcessor
 	private final AtomicBoolean containersInitialized = new AtomicBoolean();
 
 	/**
-     * Constructs a new TestcontainersLifecycleBeanPostProcessor with the specified bean factory and startup object.
-     *
-     * @param beanFactory the bean factory to be used
-     * @param startup the startup object to be used
-     */
-    TestcontainersLifecycleBeanPostProcessor(ConfigurableListableBeanFactory beanFactory,
+	 * Constructs a new TestcontainersLifecycleBeanPostProcessor with the specified bean
+	 * factory and startup object.
+	 * @param beanFactory the bean factory to be used
+	 * @param startup the startup object to be used
+	 */
+	TestcontainersLifecycleBeanPostProcessor(ConfigurableListableBeanFactory beanFactory,
 			TestcontainersStartup startup) {
 		this.beanFactory = beanFactory;
 		this.startup = startup;
 	}
 
 	/**
-     * This method is called when a BeforeTestcontainersPropertySuppliedEvent is triggered.
-     * It initializes the containers for the test environment.
-     */
-    @Override
+	 * This method is called when a BeforeTestcontainersPropertySuppliedEvent is
+	 * triggered. It initializes the containers for the test environment.
+	 */
+	@Override
 	public void onApplicationEvent(BeforeTestcontainersPropertySuppliedEvent event) {
 		initializeContainers();
 	}
 
 	/**
-     * This method is called after the initialization of a bean.
-     * If the bean factory's configuration is frozen, it initializes the containers.
-     * If the bean is an instance of Startable, it checks the state of the startables and performs the necessary actions.
-     * If the startables are in the UNSTARTED state, it initializes the startables.
-     * If the startables are in the STARTED state, it starts the container associated with the bean.
-     * 
-     * @param bean the initialized bean
-     * @param beanName the name of the bean
-     * @return the initialized bean
-     * @throws BeansException if an error occurs during the initialization process
-     */
-    @Override
+	 * This method is called after the initialization of a bean. If the bean factory's
+	 * configuration is frozen, it initializes the containers. If the bean is an instance
+	 * of Startable, it checks the state of the startables and performs the necessary
+	 * actions. If the startables are in the UNSTARTED state, it initializes the
+	 * startables. If the startables are in the STARTED state, it starts the container
+	 * associated with the bean.
+	 * @param bean the initialized bean
+	 * @param beanName the name of the bean
+	 * @return the initialized bean
+	 * @throws BeansException if an error occurs during the initialization process
+	 */
+	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (this.beanFactory.isConfigurationFrozen()) {
 			initializeContainers();
@@ -122,12 +122,12 @@ class TestcontainersLifecycleBeanPostProcessor
 	}
 
 	/**
-     * Initializes the startables by adding the given startable bean and starting all other startable beans.
-     * 
-     * @param startableBean the startable bean to be added and started
-     * @param startableBeanName the name of the startable bean
-     */
-    private void initializeStartables(Startable startableBean, String startableBeanName) {
+	 * Initializes the startables by adding the given startable bean and starting all
+	 * other startable beans.
+	 * @param startableBean the startable bean to be added and started
+	 * @param startableBeanName the name of the startable bean
+	 */
+	private void initializeStartables(Startable startableBean, String startableBeanName) {
 		logger.trace(LogMessage.format("Initializing startables"));
 		List<String> beanNames = new ArrayList<>(
 				List.of(this.beanFactory.getBeanNamesForType(Startable.class, false, false)));
@@ -149,11 +149,10 @@ class TestcontainersLifecycleBeanPostProcessor
 	}
 
 	/**
-     * Starts the given list of beans that implement the Startable interface.
-     * 
-     * @param beans the list of beans to start
-     */
-    private void start(List<Object> beans) {
+	 * Starts the given list of beans that implement the Startable interface.
+	 * @param beans the list of beans to start
+	 */
+	private void start(List<Object> beans) {
 		Set<Startable> startables = beans.stream()
 			.filter(Startable.class::isInstance)
 			.map(Startable.class::cast)
@@ -162,20 +161,24 @@ class TestcontainersLifecycleBeanPostProcessor
 	}
 
 	/**
-     * Initializes the containers.
-     * 
-     * This method is responsible for initializing the containers if they have not been initialized already.
-     * It checks if the containers have been initialized by using the compareAndSet method on the containersInitialized variable.
-     * If the containers have not been initialized, it logs a trace message and proceeds with the initialization process.
-     * 
-     * The initialization process involves retrieving the bean names of the ContainerState class from the bean factory,
-     * and then retrieving the corresponding beans using the getBeans method.
-     * If the beans are successfully retrieved, a trace message is logged indicating the successful initialization of the containers.
-     * Otherwise, a trace message is logged indicating the failure to initialize the containers, and the containersInitialized variable is set to false again.
-     * 
-     * @see TestcontainersLifecycleBeanPostProcessor
-     */
-    private void initializeContainers() {
+	 * Initializes the containers.
+	 *
+	 * This method is responsible for initializing the containers if they have not been
+	 * initialized already. It checks if the containers have been initialized by using the
+	 * compareAndSet method on the containersInitialized variable. If the containers have
+	 * not been initialized, it logs a trace message and proceeds with the initialization
+	 * process.
+	 *
+	 * The initialization process involves retrieving the bean names of the ContainerState
+	 * class from the bean factory, and then retrieving the corresponding beans using the
+	 * getBeans method. If the beans are successfully retrieved, a trace message is logged
+	 * indicating the successful initialization of the containers. Otherwise, a trace
+	 * message is logged indicating the failure to initialize the containers, and the
+	 * containersInitialized variable is set to false again.
+	 *
+	 * @see TestcontainersLifecycleBeanPostProcessor
+	 */
+	private void initializeContainers() {
 		if (this.containersInitialized.compareAndSet(false, true)) {
 			logger.trace("Initializing containers");
 			List<String> beanNames = List.of(this.beanFactory.getBeanNamesForType(ContainerState.class, false, false));
@@ -191,13 +194,13 @@ class TestcontainersLifecycleBeanPostProcessor
 	}
 
 	/**
-     * Retrieves a list of beans based on the given list of bean names.
-     * 
-     * @param beanNames the list of bean names to retrieve beans for
-     * @return a list of beans corresponding to the given bean names, or null if a bean is currently being created
-     * @throws BeanCreationException if an error occurs while creating a bean
-     */
-    private List<Object> getBeans(List<String> beanNames) {
+	 * Retrieves a list of beans based on the given list of bean names.
+	 * @param beanNames the list of bean names to retrieve beans for
+	 * @return a list of beans corresponding to the given bean names, or null if a bean is
+	 * currently being created
+	 * @throws BeanCreationException if an error occurs while creating a bean
+	 */
+	private List<Object> getBeans(List<String> beanNames) {
 		List<Object> beans = new ArrayList<>(beanNames.size());
 		for (String beanName : beanNames) {
 			try {
@@ -214,24 +217,25 @@ class TestcontainersLifecycleBeanPostProcessor
 	}
 
 	/**
-     * Determines if the given bean requires destruction.
-     * 
-     * @param bean the bean to check
-     * @return true if the bean requires destruction, false otherwise
-     */
-    @Override
+	 * Determines if the given bean requires destruction.
+	 * @param bean the bean to check
+	 * @return true if the bean requires destruction, false otherwise
+	 */
+	@Override
 	public boolean requiresDestruction(Object bean) {
 		return bean instanceof Startable;
 	}
 
 	/**
-     * This method is called before the destruction of a bean. It checks if the bean is an instance of Startable and if it has not been destroyed by the framework or reused by the container. If these conditions are met, it calls the close() method on the Startable bean to perform any necessary cleanup or shutdown operations.
-     * 
-     * @param bean The bean object being processed.
-     * @param beanName The name of the bean being processed.
-     * @throws BeansException If an error occurs during the bean processing.
-     */
-    @Override
+	 * This method is called before the destruction of a bean. It checks if the bean is an
+	 * instance of Startable and if it has not been destroyed by the framework or reused
+	 * by the container. If these conditions are met, it calls the close() method on the
+	 * Startable bean to perform any necessary cleanup or shutdown operations.
+	 * @param bean The bean object being processed.
+	 * @param beanName The name of the bean being processed.
+	 * @throws BeansException If an error occurs during the bean processing.
+	 */
+	@Override
 	public void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException {
 		if (bean instanceof Startable startable && !isDestroyedByFramework(beanName) && !isReusedContainer(bean)) {
 			startable.close();
@@ -239,12 +243,11 @@ class TestcontainersLifecycleBeanPostProcessor
 	}
 
 	/**
-     * Checks if a bean is destroyed by the framework.
-     * 
-     * @param beanName the name of the bean to check
-     * @return true if the bean is destroyed by the framework, false otherwise
-     */
-    private boolean isDestroyedByFramework(String beanName) {
+	 * Checks if a bean is destroyed by the framework.
+	 * @param beanName the name of the bean to check
+	 * @return true if the bean is destroyed by the framework, false otherwise
+	 */
+	private boolean isDestroyedByFramework(String beanName) {
 		try {
 			BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(beanName);
 			String destroyMethodName = beanDefinition.getDestroyMethodName();
@@ -256,12 +259,11 @@ class TestcontainersLifecycleBeanPostProcessor
 	}
 
 	/**
-     * Checks if the given bean is a reusable container.
-     * 
-     * @param bean the object to be checked
-     * @return true if the bean is a reusable container, false otherwise
-     */
-    private boolean isReusedContainer(Object bean) {
+	 * Checks if the given bean is a reusable container.
+	 * @param bean the object to be checked
+	 * @return true if the bean is a reusable container, false otherwise
+	 */
+	private boolean isReusedContainer(Object bean) {
 		return (bean instanceof GenericContainer<?> container) && container.isShouldBeReused();
 	}
 

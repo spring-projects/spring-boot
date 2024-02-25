@@ -33,20 +33,18 @@ public class Neo4jDataProperties {
 	private String database;
 
 	/**
-     * Returns the name of the database.
-     *
-     * @return the name of the database
-     */
-    public String getDatabase() {
+	 * Returns the name of the database.
+	 * @return the name of the database
+	 */
+	public String getDatabase() {
 		return this.database;
 	}
 
 	/**
-     * Sets the database for Neo4jDataProperties.
-     * 
-     * @param database the name of the database to be set
-     */
-    public void setDatabase(String database) {
+	 * Sets the database for Neo4jDataProperties.
+	 * @param database the name of the database to be set
+	 */
+	public void setDatabase(String database) {
 		this.database = database;
 	}
 

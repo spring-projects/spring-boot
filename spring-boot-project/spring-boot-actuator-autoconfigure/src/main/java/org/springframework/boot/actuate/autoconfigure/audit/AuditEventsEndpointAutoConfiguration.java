@@ -38,12 +38,13 @@ import org.springframework.context.annotation.Bean;
 public class AuditEventsEndpointAutoConfiguration {
 
 	/**
-     * Creates an instance of the {@link AuditEventsEndpoint} if there is no existing bean of the same type and if a bean of type {@link AuditEventRepository} is present.
-     * 
-     * @param auditEventRepository the {@link AuditEventRepository} bean to be used by the {@link AuditEventsEndpoint}
-     * @return the created {@link AuditEventsEndpoint} instance
-     */
-    @Bean
+	 * Creates an instance of the {@link AuditEventsEndpoint} if there is no existing bean
+	 * of the same type and if a bean of type {@link AuditEventRepository} is present.
+	 * @param auditEventRepository the {@link AuditEventRepository} bean to be used by the
+	 * {@link AuditEventsEndpoint}
+	 * @return the created {@link AuditEventsEndpoint} instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(AuditEventRepository.class)
 	public AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository auditEventRepository) {

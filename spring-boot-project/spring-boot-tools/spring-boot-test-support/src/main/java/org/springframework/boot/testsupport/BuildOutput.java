@@ -29,11 +29,10 @@ public class BuildOutput {
 	private final Class<?> testClass;
 
 	/**
-     * Constructs a new BuildOutput object with the specified test class.
-     * 
-     * @param testClass the test class to be associated with the BuildOutput object
-     */
-    public BuildOutput(Class<?> testClass) {
+	 * Constructs a new BuildOutput object with the specified test class.
+	 * @param testClass the test class to be associated with the BuildOutput object
+	 */
+	public BuildOutput(Class<?> testClass) {
 		this.testClass = testClass;
 	}
 
@@ -85,12 +84,12 @@ public class BuildOutput {
 	}
 
 	/**
-     * Constructs a file path by concatenating the given components using the file separator.
-     * 
-     * @param components the components to be concatenated
-     * @return the constructed file path
-     */
-    private String path(String... components) {
+	 * Constructs a file path by concatenating the given components using the file
+	 * separator.
+	 * @param components the components to be concatenated
+	 * @return the constructed file path
+	 */
+	private String path(String... components) {
 		return File.separator + String.join(File.separator, components);
 	}
 

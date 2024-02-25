@@ -96,11 +96,10 @@ public class EntityScanner {
 	}
 
 	/**
-     * Retrieves the list of packages to be scanned for entities.
-     * 
-     * @return the list of package names to be scanned
-     */
-    private List<String> getPackages() {
+	 * Retrieves the list of packages to be scanned for entities.
+	 * @return the list of package names to be scanned
+	 */
+	private List<String> getPackages() {
 		List<String> packages = EntityScanPackages.get(this.context).getPackageNames();
 		if (packages.isEmpty() && AutoConfigurationPackages.has(this.context)) {
 			packages = AutoConfigurationPackages.get(this.context);

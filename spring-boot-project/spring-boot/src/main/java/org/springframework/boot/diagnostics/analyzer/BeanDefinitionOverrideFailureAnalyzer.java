@@ -35,24 +35,22 @@ class BeanDefinitionOverrideFailureAnalyzer extends AbstractFailureAnalyzer<Bean
 			+ "overriding by setting spring.main.allow-bean-definition-overriding=true";
 
 	/**
-     * Analyzes the failure caused by a BeanDefinitionOverrideException.
-     * 
-     * @param rootFailure the root cause of the failure
-     * @param cause the BeanDefinitionOverrideException that caused the failure
-     * @return a FailureAnalysis object containing the analysis result
-     */
-    @Override
+	 * Analyzes the failure caused by a BeanDefinitionOverrideException.
+	 * @param rootFailure the root cause of the failure
+	 * @param cause the BeanDefinitionOverrideException that caused the failure
+	 * @return a FailureAnalysis object containing the analysis result
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BeanDefinitionOverrideException cause) {
 		return new FailureAnalysis(getDescription(cause), ACTION, cause);
 	}
 
 	/**
-     * Generates a description for the given BeanDefinitionOverrideException.
-     * 
-     * @param ex the BeanDefinitionOverrideException to generate the description for
-     * @return the generated description as a String
-     */
-    private String getDescription(BeanDefinitionOverrideException ex) {
+	 * Generates a description for the given BeanDefinitionOverrideException.
+	 * @param ex the BeanDefinitionOverrideException to generate the description for
+	 * @return the generated description as a String
+	 */
+	private String getDescription(BeanDefinitionOverrideException ex) {
 		StringWriter description = new StringWriter();
 		PrintWriter printer = new PrintWriter(description);
 		printer.printf("The bean '%s'", ex.getBeanName());

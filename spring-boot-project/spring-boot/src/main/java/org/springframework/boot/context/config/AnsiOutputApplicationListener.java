@@ -38,12 +38,11 @@ public class AnsiOutputApplicationListener
 		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	/**
-     * This method is called when the application environment is prepared.
-     * It sets up the ANSI output configuration based on the environment properties.
-     * 
-     * @param event The ApplicationEnvironmentPreparedEvent object representing the event.
-     */
-    @Override
+	 * This method is called when the application environment is prepared. It sets up the
+	 * ANSI output configuration based on the environment properties.
+	 * @param event The ApplicationEnvironmentPreparedEvent object representing the event.
+	 */
+	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
 		Binder.get(environment)
@@ -53,13 +52,12 @@ public class AnsiOutputApplicationListener
 	}
 
 	/**
-     * Returns the order in which this method should be applied.
-     * This method is overridden from the parent class.
-     * The order is determined by adding 1 to the default order of the EnvironmentPostProcessorApplicationListener.
-     *
-     * @return the order in which this method should be applied
-     */
-    @Override
+	 * Returns the order in which this method should be applied. This method is overridden
+	 * from the parent class. The order is determined by adding 1 to the default order of
+	 * the EnvironmentPostProcessorApplicationListener.
+	 * @return the order in which this method should be applied
+	 */
+	@Override
 	public int getOrder() {
 		// Apply after EnvironmentPostProcessorApplicationListener
 		return EnvironmentPostProcessorApplicationListener.DEFAULT_ORDER + 1;

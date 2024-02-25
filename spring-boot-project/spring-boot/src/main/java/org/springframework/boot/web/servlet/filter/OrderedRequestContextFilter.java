@@ -31,11 +31,10 @@ public class OrderedRequestContextFilter extends RequestContextFilter implements
 	private int order = REQUEST_WRAPPER_FILTER_MAX_ORDER - 105;
 
 	/**
-     * Returns the order value of this filter.
-     *
-     * @return the order value of this filter
-     */
-    @Override
+	 * Returns the order value of this filter.
+	 * @return the order value of this filter
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}

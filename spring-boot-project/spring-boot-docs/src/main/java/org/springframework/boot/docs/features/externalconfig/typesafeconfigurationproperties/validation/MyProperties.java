@@ -39,11 +39,10 @@ public class MyProperties {
 	}
 
 	/**
-     * Sets the remote address for the MyProperties class.
-     * 
-     * @param remoteAddress the InetAddress representing the remote address
-     */
-    public void setRemoteAddress(InetAddress remoteAddress) {
+	 * Sets the remote address for the MyProperties class.
+	 * @param remoteAddress the InetAddress representing the remote address
+	 */
+	public void setRemoteAddress(InetAddress remoteAddress) {
 		this.remoteAddress = remoteAddress;
 	}
 	// @fold:off

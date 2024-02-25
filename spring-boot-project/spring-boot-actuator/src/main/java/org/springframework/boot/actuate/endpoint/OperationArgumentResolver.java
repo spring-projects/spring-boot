@@ -58,29 +58,26 @@ public interface OperationArgumentResolver {
 		return new OperationArgumentResolver() {
 
 			/**
-     * Determines if the given actual type can be resolved by this argument resolver.
-     * 
-     * @param actualType the actual type to check
-     * @return true if the actual type can be resolved, false otherwise
-     */
-    @Override
+			 * Determines if the given actual type can be resolved by this argument
+			 * resolver.
+			 * @param actualType the actual type to check
+			 * @return true if the actual type can be resolved, false otherwise
+			 */
+			@Override
 			public boolean canResolve(Class<?> actualType) {
 				return actualType.equals(type);
 			}
 
 			/**
-     * Resolves the argument of the specified type.
-     * 
-     * @param argumentType the type of the argument to resolve
-     * @return the resolved argument of the specified type
-     * 
-     * @param <R> the type of the resolved argument
-     * 
-     * @throws IllegalArgumentException if the argument type is null
-     * 
-     * @since 1.0
-     */
-    @Override
+			 * Resolves the argument of the specified type.
+			 * @param argumentType the type of the argument to resolve
+			 * @return the resolved argument of the specified type
+			 * @param <R> the type of the resolved argument
+			 * @throws IllegalArgumentException if the argument type is null
+			 *
+			 * @since 1.0
+			 */
+			@Override
 			@SuppressWarnings("unchecked")
 			public <R> R resolve(Class<R> argumentType) {
 				return (R) supplier.get();

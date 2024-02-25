@@ -49,21 +49,21 @@ public final class ImportCandidates implements Iterable<String> {
 	private final List<String> candidates;
 
 	/**
-     * Imports a list of candidates.
-     * 
-     * @param candidates the list of candidates to import (must not be null)
-     */
-    private ImportCandidates(List<String> candidates) {
+	 * Imports a list of candidates.
+	 * @param candidates the list of candidates to import (must not be null)
+	 */
+	private ImportCandidates(List<String> candidates) {
 		Assert.notNull(candidates, "'candidates' must not be null");
 		this.candidates = Collections.unmodifiableList(candidates);
 	}
 
 	/**
-     * Returns an iterator over the elements in this ImportCandidates object in proper sequence.
-     *
-     * @return an iterator over the elements in this ImportCandidates object in proper sequence
-     */
-    @Override
+	 * Returns an iterator over the elements in this ImportCandidates object in proper
+	 * sequence.
+	 * @return an iterator over the elements in this ImportCandidates object in proper
+	 * sequence
+	 */
+	@Override
 	public Iterator<String> iterator() {
 		return this.candidates.iterator();
 	}
@@ -101,14 +101,13 @@ public final class ImportCandidates implements Iterable<String> {
 	}
 
 	/**
-     * This method is used to decide the class loader to be used.
-     * If the provided class loader is null, it returns the class loader of the ImportCandidates class.
-     * Otherwise, it returns the provided class loader.
-     *
-     * @param classLoader the class loader to be decided
-     * @return the decided class loader
-     */
-    private static ClassLoader decideClassloader(ClassLoader classLoader) {
+	 * This method is used to decide the class loader to be used. If the provided class
+	 * loader is null, it returns the class loader of the ImportCandidates class.
+	 * Otherwise, it returns the provided class loader.
+	 * @param classLoader the class loader to be decided
+	 * @return the decided class loader
+	 */
+	private static ClassLoader decideClassloader(ClassLoader classLoader) {
 		if (classLoader == null) {
 			return ImportCandidates.class.getClassLoader();
 		}
@@ -116,14 +115,14 @@ public final class ImportCandidates implements Iterable<String> {
 	}
 
 	/**
-     * Finds URLs in the classpath for a given location.
-     * 
-     * @param classLoader the class loader to use for finding resources
-     * @param location the location to search for resources
-     * @return an enumeration of URLs representing the resources found in the classpath
-     * @throws IllegalArgumentException if failed to load configurations from the specified location
-     */
-    private static Enumeration<URL> findUrlsInClasspath(ClassLoader classLoader, String location) {
+	 * Finds URLs in the classpath for a given location.
+	 * @param classLoader the class loader to use for finding resources
+	 * @param location the location to search for resources
+	 * @return an enumeration of URLs representing the resources found in the classpath
+	 * @throws IllegalArgumentException if failed to load configurations from the
+	 * specified location
+	 */
+	private static Enumeration<URL> findUrlsInClasspath(ClassLoader classLoader, String location) {
 		try {
 			return classLoader.getResources(location);
 		}
@@ -133,13 +132,13 @@ public final class ImportCandidates implements Iterable<String> {
 	}
 
 	/**
-     * Reads candidate configurations from the specified URL.
-     * 
-     * @param url the URL from which to read the configurations
-     * @return a list of candidate configurations
-     * @throws IllegalArgumentException if unable to load configurations from the specified location
-     */
-    private static List<String> readCandidateConfigurations(URL url) {
+	 * Reads candidate configurations from the specified URL.
+	 * @param url the URL from which to read the configurations
+	 * @return a list of candidate configurations
+	 * @throws IllegalArgumentException if unable to load configurations from the
+	 * specified location
+	 */
+	private static List<String> readCandidateConfigurations(URL url) {
 		try (BufferedReader reader = new BufferedReader(
 				new InputStreamReader(new UrlResource(url).getInputStream(), StandardCharsets.UTF_8))) {
 			List<String> candidates = new ArrayList<>();
@@ -160,13 +159,12 @@ public final class ImportCandidates implements Iterable<String> {
 	}
 
 	/**
-     * This method takes a line of code as input and removes any comments present in the line.
-     * If no comment is found, the line is returned as is.
-     *
-     * @param line the line of code to strip comments from
-     * @return the line of code without any comments
-     */
-    private static String stripComment(String line) {
+	 * This method takes a line of code as input and removes any comments present in the
+	 * line. If no comment is found, the line is returned as is.
+	 * @param line the line of code to strip comments from
+	 * @return the line of code without any comments
+	 */
+	private static String stripComment(String line) {
 		int commentStart = line.indexOf(COMMENT_START);
 		if (commentStart == -1) {
 			return line;

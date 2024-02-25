@@ -62,22 +62,22 @@ import org.springframework.core.annotation.Order;
 public class HttpClientObservationsAutoConfiguration {
 
 	/**
-     * MeterFilterConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * MeterFilterConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(MeterRegistry.class)
 	@ConditionalOnBean(MeterRegistry.class)
 	static class MeterFilterConfiguration {
 
 		/**
-         * Generates a MeterFilter for filtering metrics based on the maximum number of URI tags for a specific client.
-         * The filter denies metrics if the maximum number of URI tags is reached and logs a warning message.
-         * 
-         * @param observationProperties The properties related to observation.
-         * @param metricsProperties The properties related to metrics.
-         * @return The generated MeterFilter.
-         */
-        @Bean
+		 * Generates a MeterFilter for filtering metrics based on the maximum number of
+		 * URI tags for a specific client. The filter denies metrics if the maximum number
+		 * of URI tags is reached and logs a warning message.
+		 * @param observationProperties The properties related to observation.
+		 * @param metricsProperties The properties related to metrics.
+		 * @return The generated MeterFilter.
+		 */
+		@Bean
 		@Order(0)
 		MeterFilter metricsHttpClientUriTagFilter(ObservationProperties observationProperties,
 				MetricsProperties metricsProperties) {

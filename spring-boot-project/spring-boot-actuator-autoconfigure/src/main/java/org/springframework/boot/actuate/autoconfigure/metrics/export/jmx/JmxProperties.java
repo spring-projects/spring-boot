@@ -47,56 +47,50 @@ public class JmxProperties {
 	private Duration step = Duration.ofMinutes(1);
 
 	/**
-     * Returns the domain of the JmxProperties.
-     *
-     * @return the domain of the JmxProperties
-     */
-    public String getDomain() {
+	 * Returns the domain of the JmxProperties.
+	 * @return the domain of the JmxProperties
+	 */
+	public String getDomain() {
 		return this.domain;
 	}
 
 	/**
-     * Sets the domain for the JmxProperties.
-     * 
-     * @param domain the domain to set
-     */
-    public void setDomain(String domain) {
+	 * Sets the domain for the JmxProperties.
+	 * @param domain the domain to set
+	 */
+	public void setDomain(String domain) {
 		this.domain = domain;
 	}
 
 	/**
-     * Returns the step duration.
-     *
-     * @return the step duration
-     */
-    public Duration getStep() {
+	 * Returns the step duration.
+	 * @return the step duration
+	 */
+	public Duration getStep() {
 		return this.step;
 	}
 
 	/**
-     * Sets the step duration for the JmxProperties.
-     * 
-     * @param step the step duration to be set
-     */
-    public void setStep(Duration step) {
+	 * Sets the step duration for the JmxProperties.
+	 * @param step the step duration to be set
+	 */
+	public void setStep(Duration step) {
 		this.step = step;
 	}
 
 	/**
-     * Returns the current status of the enabled flag.
-     *
-     * @return true if the enabled flag is set to true, false otherwise.
-     */
-    public boolean isEnabled() {
+	 * Returns the current status of the enabled flag.
+	 * @return true if the enabled flag is set to true, false otherwise.
+	 */
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
 	/**
-     * Sets the enabled status of the JmxProperties.
-     * 
-     * @param enabled the enabled status to be set
-     */
-    public void setEnabled(boolean enabled) {
+	 * Sets the enabled status of the JmxProperties.
+	 * @param enabled the enabled status to be set
+	 */
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 

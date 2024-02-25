@@ -30,11 +30,10 @@ public class MyBean {
 	private final LdapTemplate template;
 
 	/**
-     * Constructs a new instance of MyBean with the specified LdapTemplate.
-     * 
-     * @param template the LdapTemplate to be used by the MyBean instance
-     */
-    public MyBean(LdapTemplate template) {
+	 * Constructs a new instance of MyBean with the specified LdapTemplate.
+	 * @param template the LdapTemplate to be used by the MyBean instance
+	 */
+	public MyBean(LdapTemplate template) {
 		this.template = template;
 	}
 

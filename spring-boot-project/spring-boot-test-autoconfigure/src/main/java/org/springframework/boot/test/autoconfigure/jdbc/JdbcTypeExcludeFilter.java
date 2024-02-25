@@ -28,11 +28,10 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
 public final class JdbcTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<JdbcTest> {
 
 	/**
-     * Constructs a new JdbcTypeExcludeFilter with the specified test class.
-     *
-     * @param testClass the test class to be used for filtering JDBC types
-     */
-    JdbcTypeExcludeFilter(Class<?> testClass) {
+	 * Constructs a new JdbcTypeExcludeFilter with the specified test class.
+	 * @param testClass the test class to be used for filtering JDBC types
+	 */
+	JdbcTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 

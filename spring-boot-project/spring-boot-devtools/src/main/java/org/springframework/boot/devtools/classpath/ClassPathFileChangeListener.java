@@ -58,24 +58,24 @@ class ClassPathFileChangeListener implements FileChangeListener {
 	}
 
 	/**
-     * This method is called when there is a change in the set of files being monitored by the ClassPathFileChangeListener.
-     * It checks if a restart is required based on the changes in the file set and publishes a ClassPathChangedEvent with the
-     * change set and restart flag.
-     *
-     * @param changeSet the set of changed files
-     */
-    @Override
+	 * This method is called when there is a change in the set of files being monitored by
+	 * the ClassPathFileChangeListener. It checks if a restart is required based on the
+	 * changes in the file set and publishes a ClassPathChangedEvent with the change set
+	 * and restart flag.
+	 * @param changeSet the set of changed files
+	 */
+	@Override
 	public void onChange(Set<ChangedFiles> changeSet) {
 		boolean restart = isRestartRequired(changeSet);
 		publishEvent(new ClassPathChangedEvent(this, changeSet, restart));
 	}
 
 	/**
-     * Publishes the ClassPathChangedEvent and stops the file system watcher if restart is required.
-     * 
-     * @param event the ClassPathChangedEvent to be published
-     */
-    private void publishEvent(ClassPathChangedEvent event) {
+	 * Publishes the ClassPathChangedEvent and stops the file system watcher if restart is
+	 * required.
+	 * @param event the ClassPathChangedEvent to be published
+	 */
+	private void publishEvent(ClassPathChangedEvent event) {
 		this.eventPublisher.publishEvent(event);
 		if (event.isRestartRequired() && this.fileSystemWatcherToStop != null) {
 			this.fileSystemWatcherToStop.stop();
@@ -83,12 +83,11 @@ class ClassPathFileChangeListener implements FileChangeListener {
 	}
 
 	/**
-     * Checks if a restart is required based on the given set of changed files.
-     * 
-     * @param changeSet the set of changed files
-     * @return true if a restart is required, false otherwise
-     */
-    private boolean isRestartRequired(Set<ChangedFiles> changeSet) {
+	 * Checks if a restart is required based on the given set of changed files.
+	 * @param changeSet the set of changed files
+	 * @return true if a restart is required, false otherwise
+	 */
+	private boolean isRestartRequired(Set<ChangedFiles> changeSet) {
 		if (AgentReloader.isActive()) {
 			return false;
 		}

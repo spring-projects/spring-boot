@@ -37,20 +37,20 @@ public class EnvironmentInfoContributor implements InfoContributor {
 	private final ConfigurableEnvironment environment;
 
 	/**
-     * Constructs a new EnvironmentInfoContributor with the specified ConfigurableEnvironment.
-     * 
-     * @param environment the ConfigurableEnvironment to be used by the EnvironmentInfoContributor
-     */
-    public EnvironmentInfoContributor(ConfigurableEnvironment environment) {
+	 * Constructs a new EnvironmentInfoContributor with the specified
+	 * ConfigurableEnvironment.
+	 * @param environment the ConfigurableEnvironment to be used by the
+	 * EnvironmentInfoContributor
+	 */
+	public EnvironmentInfoContributor(ConfigurableEnvironment environment) {
 		this.environment = environment;
 	}
 
 	/**
-     * Contributes additional information to the provided Info.Builder object.
-     * 
-     * @param builder the Info.Builder object to contribute to
-     */
-    @Override
+	 * Contributes additional information to the provided Info.Builder object.
+	 * @param builder the Info.Builder object to contribute to
+	 */
+	@Override
 	public void contribute(Info.Builder builder) {
 		Binder binder = Binder.get(this.environment);
 		binder.bind("info", STRING_OBJECT_MAP).ifBound(builder::withDetails);

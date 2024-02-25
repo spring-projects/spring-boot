@@ -30,11 +30,10 @@ import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
 class R2dbcScriptDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
 
 	/**
-     * Returns the set of bean types for the database initializer.
-     * 
-     * @return the set of bean types for the database initializer
-     */
-    @Override
+	 * Returns the set of bean types for the database initializer.
+	 * @return the set of bean types for the database initializer
+	 */
+	@Override
 	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		return Collections.singleton(R2dbcScriptDatabaseInitializer.class);
 	}

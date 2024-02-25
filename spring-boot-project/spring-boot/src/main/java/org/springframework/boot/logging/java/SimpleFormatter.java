@@ -39,12 +39,11 @@ public class SimpleFormatter extends Formatter {
 	private final String pid = getOrUseDefault(LoggingSystemProperty.PID.getEnvironmentVariableName(), "????");
 
 	/**
-     * Formats the given log record into a string representation.
-     * 
-     * @param record the log record to be formatted
-     * @return the formatted log record as a string
-     */
-    @Override
+	 * Formats the given log record into a string representation.
+	 * @param record the log record to be formatted
+	 * @return the formatted log record as a string
+	 */
+	@Override
 	public String format(LogRecord record) {
 		Date date = new Date(record.getMillis());
 		String source = record.getLoggerName();
@@ -56,12 +55,12 @@ public class SimpleFormatter extends Formatter {
 	}
 
 	/**
-     * Returns the stack trace of the throwable associated with the given log record.
-     * 
-     * @param record the log record containing the throwable
-     * @return the stack trace of the throwable as a string, or an empty string if the throwable is null
-     */
-    private String getThrowable(LogRecord record) {
+	 * Returns the stack trace of the throwable associated with the given log record.
+	 * @param record the log record containing the throwable
+	 * @return the stack trace of the throwable as a string, or an empty string if the
+	 * throwable is null
+	 */
+	private String getThrowable(LogRecord record) {
 		if (record.getThrown() == null) {
 			return "";
 		}
@@ -74,23 +73,22 @@ public class SimpleFormatter extends Formatter {
 	}
 
 	/**
-     * Returns the name of the current thread.
-     * 
-     * @return the name of the current thread, or an empty string if the name is null
-     */
-    private String getThreadName() {
+	 * Returns the name of the current thread.
+	 * @return the name of the current thread, or an empty string if the name is null
+	 */
+	private String getThreadName() {
 		String name = Thread.currentThread().getName();
 		return (name != null) ? name : "";
 	}
 
 	/**
-     * Retrieves the value of the specified environment variable or uses the provided default value if the variable is not set.
-     * 
-     * @param key the name of the environment variable to retrieve
-     * @param defaultValue the default value to use if the environment variable is not set
-     * @return the value of the environment variable if set, otherwise the default value
-     */
-    private static String getOrUseDefault(String key, String defaultValue) {
+	 * Retrieves the value of the specified environment variable or uses the provided
+	 * default value if the variable is not set.
+	 * @param key the name of the environment variable to retrieve
+	 * @param defaultValue the default value to use if the environment variable is not set
+	 * @return the value of the environment variable if set, otherwise the default value
+	 */
+	private static String getOrUseDefault(String key, String defaultValue) {
 		String value = null;
 		try {
 			value = System.getenv(key);

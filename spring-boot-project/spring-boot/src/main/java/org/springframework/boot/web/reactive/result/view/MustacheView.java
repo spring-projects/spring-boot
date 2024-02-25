@@ -71,28 +71,26 @@ public class MustacheView extends AbstractUrlBasedView {
 	}
 
 	/**
-     * Checks if the resource exists for the specified locale.
-     * 
-     * @param locale the locale for which to check the resource
-     * @return true if the resource exists, false otherwise
-     * @throws Exception if an error occurs while checking the resource
-     */
-    @Override
+	 * Checks if the resource exists for the specified locale.
+	 * @param locale the locale for which to check the resource
+	 * @return true if the resource exists, false otherwise
+	 * @throws Exception if an error occurs while checking the resource
+	 */
+	@Override
 	public boolean checkResourceExists(Locale locale) throws Exception {
 		return resolveResource() != null;
 	}
 
 	/**
-     * Renders the Mustache template with the given model and content type.
-     * 
-     * @param model     the model containing the data to be rendered
-     * @param contentType the media type of the response content
-     * @param exchange  the server web exchange object
-     * @return a Mono representing the completion of the rendering process
-     * @throws IllegalStateException if the Mustache template cannot be found
-     * @throws Exception if an error occurs during the rendering process
-     */
-    @Override
+	 * Renders the Mustache template with the given model and content type.
+	 * @param model the model containing the data to be rendered
+	 * @param contentType the media type of the response content
+	 * @param exchange the server web exchange object
+	 * @return a Mono representing the completion of the rendering process
+	 * @throws IllegalStateException if the Mustache template cannot be found
+	 * @throws Exception if an error occurs during the rendering process
+	 */
+	@Override
 	protected Mono<Void> renderInternal(Map<String, Object> model, MediaType contentType, ServerWebExchange exchange) {
 		Resource resource = resolveResource();
 		if (resource == null) {
@@ -118,11 +116,10 @@ public class MustacheView extends AbstractUrlBasedView {
 	}
 
 	/**
-     * Resolves the resource based on the URL.
-     * 
-     * @return The resolved resource, or null if it does not exist.
-     */
-    private Resource resolveResource() {
+	 * Resolves the resource based on the URL.
+	 * @return The resolved resource, or null if it does not exist.
+	 */
+	private Resource resolveResource() {
 		Resource resource = getApplicationContext().getResource(getUrl());
 		if (resource == null || !resource.exists()) {
 			return null;
@@ -131,13 +128,12 @@ public class MustacheView extends AbstractUrlBasedView {
 	}
 
 	/**
-     * Returns a Reader for the given Resource.
-     * 
-     * @param resource the Resource to get the Reader for
-     * @return a Reader for the given Resource
-     * @throws IOException if an I/O error occurs while getting the Reader
-     */
-    private Reader getReader(Resource resource) throws IOException {
+	 * Returns a Reader for the given Resource.
+	 * @param resource the Resource to get the Reader for
+	 * @return a Reader for the given Resource
+	 * @throws IOException if an I/O error occurs while getting the Reader
+	 */
+	private Reader getReader(Resource resource) throws IOException {
 		if (this.charset != null) {
 			return new InputStreamReader(resource.getInputStream(), this.charset);
 		}
@@ -145,12 +141,12 @@ public class MustacheView extends AbstractUrlBasedView {
 	}
 
 	/**
-     * Returns the charset of the given media type.
-     *
-     * @param mediaType the media type to retrieve the charset from
-     * @return an Optional containing the charset of the media type, or an empty Optional if the media type is null or does not have a charset
-     */
-    private Optional<Charset> getCharset(MediaType mediaType) {
+	 * Returns the charset of the given media type.
+	 * @param mediaType the media type to retrieve the charset from
+	 * @return an Optional containing the charset of the media type, or an empty Optional
+	 * if the media type is null or does not have a charset
+	 */
+	private Optional<Charset> getCharset(MediaType mediaType) {
 		return Optional.ofNullable((mediaType != null) ? mediaType.getCharset() : null);
 	}
 

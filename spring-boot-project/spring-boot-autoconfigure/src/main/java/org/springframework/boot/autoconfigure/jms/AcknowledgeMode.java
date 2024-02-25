@@ -67,20 +67,18 @@ public final class AcknowledgeMode {
 	private final int mode;
 
 	/**
-     * Sets the acknowledge mode for the AcknowledgeMode class.
-     * 
-     * @param mode the acknowledge mode to be set
-     */
-    private AcknowledgeMode(int mode) {
+	 * Sets the acknowledge mode for the AcknowledgeMode class.
+	 * @param mode the acknowledge mode to be set
+	 */
+	private AcknowledgeMode(int mode) {
 		this.mode = mode;
 	}
 
 	/**
-     * Returns the mode of acknowledgment.
-     *
-     * @return the mode of acknowledgment
-     */
-    public int getMode() {
+	 * Returns the mode of acknowledgment.
+	 * @return the mode of acknowledgment
+	 */
+	public int getMode() {
 		return this.mode;
 	}
 
@@ -104,12 +102,12 @@ public final class AcknowledgeMode {
 	}
 
 	/**
-     * Canonicalizes the given input by removing any non-alphanumeric characters and converting all characters to lowercase.
-     * 
-     * @param input the input string to be canonicalized
-     * @return the canonicalized string
-     */
-    private static String canonicalize(String input) {
+	 * Canonicalizes the given input by removing any non-alphanumeric characters and
+	 * converting all characters to lowercase.
+	 * @param input the input string to be canonicalized
+	 * @return the canonicalized string
+	 */
+	private static String canonicalize(String input) {
 		StringBuilder canonicalName = new StringBuilder(input.length());
 		input.chars()
 			.filter(Character::isLetterOrDigit)

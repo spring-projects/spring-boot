@@ -31,24 +31,25 @@ import org.springframework.test.context.TestContextBootstrapper;
 class WebFluxTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	/**
-     * Processes the merged context configuration by creating a new ReactiveWebMergedContextConfiguration
-     * based on the super class's processed merged context configuration.
-     * 
-     * @param mergedConfig the merged context configuration to be processed
-     * @return the processed merged context configuration
-     */
-    @Override
+	 * Processes the merged context configuration by creating a new
+	 * ReactiveWebMergedContextConfiguration based on the super class's processed merged
+	 * context configuration.
+	 * @param mergedConfig the merged context configuration to be processed
+	 * @return the processed merged context configuration
+	 */
+	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(MergedContextConfiguration mergedConfig) {
 		return new ReactiveWebMergedContextConfiguration(super.processMergedContextConfiguration(mergedConfig));
 	}
 
 	/**
-     * Retrieves the properties specified in the {@link WebFluxTest} annotation for the given test class.
-     * 
-     * @param testClass the test class to retrieve the properties for
-     * @return an array of properties specified in the {@link WebFluxTest} annotation, or null if the annotation is not present
-     */
-    @Override
+	 * Retrieves the properties specified in the {@link WebFluxTest} annotation for the
+	 * given test class.
+	 * @param testClass the test class to retrieve the properties for
+	 * @return an array of properties specified in the {@link WebFluxTest} annotation, or
+	 * null if the annotation is not present
+	 */
+	@Override
 	protected String[] getProperties(Class<?> testClass) {
 		WebFluxTest webFluxTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, WebFluxTest.class);
 		return (webFluxTest != null) ? webFluxTest.properties() : null;

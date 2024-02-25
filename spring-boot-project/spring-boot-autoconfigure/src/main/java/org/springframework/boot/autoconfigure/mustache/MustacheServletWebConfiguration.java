@@ -37,13 +37,13 @@ import org.springframework.core.Ordered;
 class MustacheServletWebConfiguration {
 
 	/**
-     * Creates a MustacheViewResolver bean if it is missing and the property "spring.mustache.enabled" is not set or is set to true.
-     * 
-     * @param mustacheCompiler the Mustache compiler to use
-     * @param mustache the Mustache properties
-     * @return the MustacheViewResolver bean
-     */
-    @Bean
+	 * Creates a MustacheViewResolver bean if it is missing and the property
+	 * "spring.mustache.enabled" is not set or is set to true.
+	 * @param mustacheCompiler the Mustache compiler to use
+	 * @param mustache the Mustache properties
+	 * @return the MustacheViewResolver bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "spring.mustache", name = "enabled", matchIfMissing = true)
 	MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler, MustacheProperties mustache) {

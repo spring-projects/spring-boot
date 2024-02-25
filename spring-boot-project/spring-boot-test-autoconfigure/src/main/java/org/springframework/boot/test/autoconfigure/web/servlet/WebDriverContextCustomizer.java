@@ -30,23 +30,21 @@ import org.springframework.test.context.MergedContextConfiguration;
 class WebDriverContextCustomizer implements ContextCustomizer {
 
 	/**
-     * Customizes the application context by registering the WebDriverScope.
-     * 
-     * @param context the configurable application context
-     * @param mergedConfig the merged context configuration
-     */
-    @Override
+	 * Customizes the application context by registering the WebDriverScope.
+	 * @param context the configurable application context
+	 * @param mergedConfig the merged context configuration
+	 */
+	@Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 		WebDriverScope.registerWith(context);
 	}
 
 	/**
-     * Compares this object with the specified object for equality.
-     * 
-     * @param obj the object to compare with
-     * @return true if the specified object is equal to this object, false otherwise
-     */
-    @Override
+	 * Compares this object with the specified object for equality.
+	 * @param obj the object to compare with
+	 * @return true if the specified object is equal to this object, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -55,11 +53,11 @@ class WebDriverContextCustomizer implements ContextCustomizer {
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the default implementation of the {@code hashCode()} method.
-     *
-     * @return the hash code value for this object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the default
+	 * implementation of the {@code hashCode()} method.
+	 * @return the hash code value for this object
+	 */
+	@Override
 	public int hashCode() {
 		return getClass().hashCode();
 	}

@@ -48,11 +48,11 @@ public class ObservationWebClientCustomizer implements WebClientCustomizer {
 	}
 
 	/**
-     * Customizes the WebClient.Builder by adding the observation registry and observation convention.
-     * 
-     * @param webClientBuilder the WebClient.Builder to be customized
-     */
-    @Override
+	 * Customizes the WebClient.Builder by adding the observation registry and observation
+	 * convention.
+	 * @param webClientBuilder the WebClient.Builder to be customized
+	 */
+	@Override
 	public void customize(WebClient.Builder webClientBuilder) {
 		webClientBuilder.observationRegistry(this.observationRegistry)
 			.observationConvention(this.observationConvention);

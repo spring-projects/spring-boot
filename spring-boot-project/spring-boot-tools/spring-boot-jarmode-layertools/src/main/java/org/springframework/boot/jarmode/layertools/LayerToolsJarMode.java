@@ -35,24 +35,23 @@ import org.springframework.boot.loader.jarmode.JarMode;
 public class LayerToolsJarMode implements JarMode {
 
 	/**
-     * Determines if the given mode is accepted by the LayerToolsJarMode class.
-     * 
-     * @param mode the mode to be checked
-     * @return true if the mode is accepted, false otherwise
-     */
-    @Override
+	 * Determines if the given mode is accepted by the LayerToolsJarMode class.
+	 * @param mode the mode to be checked
+	 * @return true if the mode is accepted, false otherwise
+	 */
+	@Override
 	public boolean accepts(String mode) {
 		return "layertools".equalsIgnoreCase(mode);
 	}
 
 	/**
-     * Runs the specified mode with the given arguments.
-     *
-     * @param mode the mode to run
-     * @param args the arguments for the mode
-     * @throws IllegalStateException if an exception occurs during the execution of the mode
-     */
-    @Override
+	 * Runs the specified mode with the given arguments.
+	 * @param mode the mode to run
+	 * @param args the arguments for the mode
+	 * @throws IllegalStateException if an exception occurs during the execution of the
+	 * mode
+	 */
+	@Override
 	public void run(String mode, String[] args) {
 		try {
 			new Runner().run(args);
@@ -63,9 +62,9 @@ public class LayerToolsJarMode implements JarMode {
 	}
 
 	/**
-     * Runner class.
-     */
-    static class Runner {
+	 * Runner class.
+	 */
+	static class Runner {
 
 		static Context contextOverride;
 
@@ -74,31 +73,29 @@ public class LayerToolsJarMode implements JarMode {
 		private final HelpCommand help;
 
 		/**
-         * Initializes a new instance of the Runner class.
-         * 
-         * @param contextOverride The optional context to be used. If null, a new Context will be created.
-         */
-        Runner() {
+		 * Initializes a new instance of the Runner class.
+		 * @param contextOverride The optional context to be used. If null, a new Context
+		 * will be created.
+		 */
+		Runner() {
 			Context context = (contextOverride != null) ? contextOverride : new Context();
 			this.commands = getCommands(context);
 			this.help = new HelpCommand(context, this.commands);
 		}
 
 		/**
-         * Runs the program with the given command line arguments.
-         * 
-         * @param args the command line arguments as an array of strings
-         */
-        private void run(String[] args) {
+		 * Runs the program with the given command line arguments.
+		 * @param args the command line arguments as an array of strings
+		 */
+		private void run(String[] args) {
 			run(dequeOf(args));
 		}
 
 		/**
-         * Runs the specified command with the given arguments.
-         * 
-         * @param args the arguments for the command
-         */
-        private void run(Deque<String> args) {
+		 * Runs the specified command with the given arguments.
+		 * @param args the arguments for the command
+		 */
+		private void run(Deque<String> args) {
 			if (!args.isEmpty()) {
 				String commandName = args.removeFirst();
 				Command command = Command.find(this.commands, commandName);
@@ -112,12 +109,11 @@ public class LayerToolsJarMode implements JarMode {
 		}
 
 		/**
-         * Runs the given command with the provided arguments.
-         * 
-         * @param command the command to be executed
-         * @param args the arguments for the command
-         */
-        private void runCommand(Command command, Deque<String> args) {
+		 * Runs the given command with the provided arguments.
+		 * @param command the command to be executed
+		 * @param args the arguments for the command
+		 */
+		private void runCommand(Command command, Deque<String> args) {
 			try {
 				command.run(args);
 			}
@@ -133,32 +129,29 @@ public class LayerToolsJarMode implements JarMode {
 		}
 
 		/**
-         * Prints an error message to the console.
-         * 
-         * @param errorMessage the error message to be printed
-         */
-        private void printError(String errorMessage) {
+		 * Prints an error message to the console.
+		 * @param errorMessage the error message to be printed
+		 */
+		private void printError(String errorMessage) {
 			System.out.println("Error: " + errorMessage);
 			System.out.println();
 		}
 
 		/**
-         * Creates a new Deque of Strings using the provided arguments.
-         * 
-         * @param args the Strings to be added to the Deque
-         * @return a Deque of Strings containing the provided arguments
-         */
-        private Deque<String> dequeOf(String... args) {
+		 * Creates a new Deque of Strings using the provided arguments.
+		 * @param args the Strings to be added to the Deque
+		 * @return a Deque of Strings containing the provided arguments
+		 */
+		private Deque<String> dequeOf(String... args) {
 			return new ArrayDeque<>(Arrays.asList(args));
 		}
 
 		/**
-         * Returns a list of commands available in the given context.
-         * 
-         * @param context the context in which the commands are available
-         * @return a list of commands
-         */
-        static List<Command> getCommands(Context context) {
+		 * Returns a list of commands available in the given context.
+		 * @param context the context in which the commands are available
+		 * @return a list of commands
+		 */
+		static List<Command> getCommands(Context context) {
 			List<Command> commands = new ArrayList<>();
 			commands.add(new ListCommand(context));
 			commands.add(new ExtractCommand(context));

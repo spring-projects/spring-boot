@@ -30,12 +30,12 @@ import org.eclipse.jetty.server.Server;
 class ForwardHeadersCustomizer implements JettyServerCustomizer {
 
 	/**
-     * Customizes the server by adding a ForwardedRequestCustomizer to the HttpConfiguration of each connector.
-     * This customizer is responsible for handling forwarded headers in HTTP requests.
-     * 
-     * @param server the server to be customized
-     */
-    @Override
+	 * Customizes the server by adding a ForwardedRequestCustomizer to the
+	 * HttpConfiguration of each connector. This customizer is responsible for handling
+	 * forwarded headers in HTTP requests.
+	 * @param server the server to be customized
+	 */
+	@Override
 	public void customize(Server server) {
 		ForwardedRequestCustomizer customizer = new ForwardedRequestCustomizer();
 		for (Connector connector : server.getConnectors()) {

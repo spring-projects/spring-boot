@@ -40,14 +40,13 @@ public enum DurationStyle {
 	SIMPLE("^([+-]?\\d+)([a-zA-Z]{0,2})$") {
 
 		/**
-     * Parses a string value into a Duration object using the specified ChronoUnit.
-     * 
-     * @param value the string value to be parsed
-     * @param unit the ChronoUnit to be used for parsing
-     * @return the parsed Duration object
-     * @throws IllegalArgumentException if the value is not a valid simple duration
-     */
-    @Override
+		 * Parses a string value into a Duration object using the specified ChronoUnit.
+		 * @param value the string value to be parsed
+		 * @param unit the ChronoUnit to be used for parsing
+		 * @return the parsed Duration object
+		 * @throws IllegalArgumentException if the value is not a valid simple duration
+		 */
+		@Override
 		public Duration parse(String value, ChronoUnit unit) {
 			try {
 				Matcher matcher = matcher(value);
@@ -62,13 +61,12 @@ public enum DurationStyle {
 		}
 
 		/**
-     * Prints the given duration value in the specified unit.
-     *
-     * @param value the duration value to be printed
-     * @param unit the unit in which the duration value should be printed
-     * @return the string representation of the duration value in the specified unit
-     */
-    @Override
+		 * Prints the given duration value in the specified unit.
+		 * @param value the duration value to be printed
+		 * @param unit the unit in which the duration value should be printed
+		 * @return the string representation of the duration value in the specified unit
+		 */
+		@Override
 		public String print(Duration value, ChronoUnit unit) {
 			return Unit.fromChronoUnit(unit).print(value);
 		}
@@ -81,14 +79,16 @@ public enum DurationStyle {
 	ISO8601("^[+-]?[pP].*$") {
 
 		/**
-     * Parses a string representation of a duration in ISO-8601 format and returns a Duration object.
-     * 
-     * @param value the string representation of the duration
-     * @param unit the unit of the duration (e.g. ChronoUnit.SECONDS, ChronoUnit.MINUTES, etc.)
-     * @return the parsed Duration object
-     * @throws IllegalArgumentException if the input string is not a valid ISO-8601 duration
-     */
-    @Override
+		 * Parses a string representation of a duration in ISO-8601 format and returns a
+		 * Duration object.
+		 * @param value the string representation of the duration
+		 * @param unit the unit of the duration (e.g. ChronoUnit.SECONDS,
+		 * ChronoUnit.MINUTES, etc.)
+		 * @return the parsed Duration object
+		 * @throws IllegalArgumentException if the input string is not a valid ISO-8601
+		 * duration
+		 */
+		@Override
 		public Duration parse(String value, ChronoUnit unit) {
 			try {
 				return Duration.parse(value);
@@ -99,13 +99,13 @@ public enum DurationStyle {
 		}
 
 		/**
-     * Returns a string representation of the given duration value in the specified unit.
-     *
-     * @param value the duration value to be printed
-     * @param unit the unit in which the duration value is to be printed
-     * @return a string representation of the duration value in the specified unit
-     */
-    @Override
+		 * Returns a string representation of the given duration value in the specified
+		 * unit.
+		 * @param value the duration value to be printed
+		 * @param unit the unit in which the duration value is to be printed
+		 * @return a string representation of the duration value in the specified unit
+		 */
+		@Override
 		public String print(Duration value, ChronoUnit unit) {
 			return value.toString();
 		}
@@ -115,31 +115,30 @@ public enum DurationStyle {
 	private final Pattern pattern;
 
 	/**
-     * Constructs a new DurationStyle object with the specified pattern.
-     * 
-     * @param pattern the pattern used to create the DurationStyle object
-     */
-    DurationStyle(String pattern) {
+	 * Constructs a new DurationStyle object with the specified pattern.
+	 * @param pattern the pattern used to create the DurationStyle object
+	 */
+	DurationStyle(String pattern) {
 		this.pattern = Pattern.compile(pattern);
 	}
 
 	/**
-     * Checks if the given value matches the pattern of this DurationStyle.
-     * 
-     * @param value the value to be checked
-     * @return true if the value matches the pattern, false otherwise
-     */
-    protected final boolean matches(String value) {
+	 * Checks if the given value matches the pattern of this DurationStyle.
+	 * @param value the value to be checked
+	 * @return true if the value matches the pattern, false otherwise
+	 */
+	protected final boolean matches(String value) {
 		return this.pattern.matcher(value).matches();
 	}
 
 	/**
-     * Returns a Matcher object that matches the given value against the pattern of this DurationStyle object.
-     *
-     * @param value the value to be matched against the pattern
-     * @return a Matcher object that matches the given value against the pattern of this DurationStyle object
-     */
-    protected final Matcher matcher(String value) {
+	 * Returns a Matcher object that matches the given value against the pattern of this
+	 * DurationStyle object.
+	 * @param value the value to be matched against the pattern
+	 * @return a Matcher object that matches the given value against the pattern of this
+	 * DurationStyle object
+	 */
+	protected final Matcher matcher(String value) {
 		return this.pattern.matcher(value);
 	}
 
@@ -265,57 +264,53 @@ public enum DurationStyle {
 		private final Function<Duration, Long> longValue;
 
 		/**
-     * Constructs a new DurationStyle unit with the specified ChronoUnit, suffix, and conversion function.
-     *
-     * @param chronoUnit the ChronoUnit representing the duration unit
-     * @param suffix the suffix to be appended to the duration value
-     * @param toUnit the conversion function to convert the duration to a long value
-     */
-    Unit(ChronoUnit chronoUnit, String suffix, Function<Duration, Long> toUnit) {
+		 * Constructs a new DurationStyle unit with the specified ChronoUnit, suffix, and
+		 * conversion function.
+		 * @param chronoUnit the ChronoUnit representing the duration unit
+		 * @param suffix the suffix to be appended to the duration value
+		 * @param toUnit the conversion function to convert the duration to a long value
+		 */
+		Unit(ChronoUnit chronoUnit, String suffix, Function<Duration, Long> toUnit) {
 			this.chronoUnit = chronoUnit;
 			this.suffix = suffix;
 			this.longValue = toUnit;
 		}
 
 		/**
-     * Parses the given value and returns a Duration object.
-     * 
-     * @param value the value to be parsed
-     * @return the parsed Duration object
-     * @throws NumberFormatException if the value cannot be parsed as a long
-     */
-    public Duration parse(String value) {
+		 * Parses the given value and returns a Duration object.
+		 * @param value the value to be parsed
+		 * @return the parsed Duration object
+		 * @throws NumberFormatException if the value cannot be parsed as a long
+		 */
+		public Duration parse(String value) {
 			return Duration.of(Long.parseLong(value), this.chronoUnit);
 		}
 
 		/**
-     * Prints the value of the given duration with the suffix.
-     * 
-     * @param value the duration value to be printed
-     * @return the string representation of the duration value with the suffix
-     */
-    public String print(Duration value) {
+		 * Prints the value of the given duration with the suffix.
+		 * @param value the duration value to be printed
+		 * @return the string representation of the duration value with the suffix
+		 */
+		public String print(Duration value) {
 			return longValue(value) + this.suffix;
 		}
 
 		/**
-     * Converts a Duration value to a long value.
-     * 
-     * @param value the Duration value to be converted
-     * @return the long value representation of the Duration value
-     */
-    public long longValue(Duration value) {
+		 * Converts a Duration value to a long value.
+		 * @param value the Duration value to be converted
+		 * @return the long value representation of the Duration value
+		 */
+		public long longValue(Duration value) {
 			return this.longValue.apply(value);
 		}
 
 		/**
-     * Converts a ChronoUnit to a Unit.
-     * 
-     * @param chronoUnit the ChronoUnit to convert
-     * @return the corresponding Unit
-     * @throws IllegalArgumentException if the ChronoUnit is unknown
-     */
-    public static Unit fromChronoUnit(ChronoUnit chronoUnit) {
+		 * Converts a ChronoUnit to a Unit.
+		 * @param chronoUnit the ChronoUnit to convert
+		 * @return the corresponding Unit
+		 * @throws IllegalArgumentException if the ChronoUnit is unknown
+		 */
+		public static Unit fromChronoUnit(ChronoUnit chronoUnit) {
 			if (chronoUnit == null) {
 				return Unit.MILLIS;
 			}
@@ -328,13 +323,13 @@ public enum DurationStyle {
 		}
 
 		/**
-     * Returns the Unit enum constant that corresponds to the given suffix.
-     * 
-     * @param suffix the suffix to match with a Unit enum constant
-     * @return the Unit enum constant that matches the given suffix
-     * @throws IllegalArgumentException if no Unit enum constant matches the given suffix
-     */
-    public static Unit fromSuffix(String suffix) {
+		 * Returns the Unit enum constant that corresponds to the given suffix.
+		 * @param suffix the suffix to match with a Unit enum constant
+		 * @return the Unit enum constant that matches the given suffix
+		 * @throws IllegalArgumentException if no Unit enum constant matches the given
+		 * suffix
+		 */
+		public static Unit fromSuffix(String suffix) {
 			for (Unit candidate : values()) {
 				if (candidate.suffix.equalsIgnoreCase(suffix)) {
 					return candidate;

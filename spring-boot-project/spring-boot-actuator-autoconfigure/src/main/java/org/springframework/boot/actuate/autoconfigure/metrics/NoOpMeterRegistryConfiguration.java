@@ -37,12 +37,11 @@ import org.springframework.context.annotation.Configuration;
 class NoOpMeterRegistryConfiguration {
 
 	/**
-     * Creates a new instance of CompositeMeterRegistry with the provided clock.
-     * 
-     * @param clock the clock to be used by the meter registry
-     * @return a new instance of CompositeMeterRegistry
-     */
-    @Bean
+	 * Creates a new instance of CompositeMeterRegistry with the provided clock.
+	 * @param clock the clock to be used by the meter registry
+	 * @return a new instance of CompositeMeterRegistry
+	 */
+	@Bean
 	CompositeMeterRegistry noOpMeterRegistry(Clock clock) {
 		return new CompositeMeterRegistry(clock);
 	}

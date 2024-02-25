@@ -40,20 +40,19 @@ class JpaDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitiali
 	private final Environment environment;
 
 	/**
-     * Constructs a new JpaDatabaseInitializerDetector with the specified environment.
-     * 
-     * @param environment the environment to be used for detecting JPA database initializer
-     */
-    JpaDatabaseInitializerDetector(Environment environment) {
+	 * Constructs a new JpaDatabaseInitializerDetector with the specified environment.
+	 * @param environment the environment to be used for detecting JPA database
+	 * initializer
+	 */
+	JpaDatabaseInitializerDetector(Environment environment) {
 		this.environment = environment;
 	}
 
 	/**
-     * Returns the types of beans that should be considered as database initializers.
-     * 
-     * @return the types of beans that should be considered as database initializers
-     */
-    @Override
+	 * Returns the types of beans that should be considered as database initializers.
+	 * @return the types of beans that should be considered as database initializers
+	 */
+	@Override
 	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		boolean deferred = this.environment.getProperty("spring.jpa.defer-datasource-initialization", boolean.class,
 				false);
@@ -61,24 +60,22 @@ class JpaDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitiali
 	}
 
 	/**
-     * This method is called when the detection of JPA database initializers is complete.
-     * It configures other initializers to depend on JPA initializers.
-     * 
-     * @param beanFactory The bean factory used for configuring the initializers.
-     * @param dataSourceInitializerNames The names of the data source initializers.
-     */
-    @Override
+	 * This method is called when the detection of JPA database initializers is complete.
+	 * It configures other initializers to depend on JPA initializers.
+	 * @param beanFactory The bean factory used for configuring the initializers.
+	 * @param dataSourceInitializerNames The names of the data source initializers.
+	 */
+	@Override
 	public void detectionComplete(ConfigurableListableBeanFactory beanFactory, Set<String> dataSourceInitializerNames) {
 		configureOtherInitializersToDependOnJpaInitializers(beanFactory, dataSourceInitializerNames);
 	}
 
 	/**
-     * Configures other initializers to depend on JPA initializers.
-     * 
-     * @param beanFactory              the bean factory
-     * @param dataSourceInitializerNames the set of data source initializer names
-     */
-    private void configureOtherInitializersToDependOnJpaInitializers(ConfigurableListableBeanFactory beanFactory,
+	 * Configures other initializers to depend on JPA initializers.
+	 * @param beanFactory the bean factory
+	 * @param dataSourceInitializerNames the set of data source initializer names
+	 */
+	private void configureOtherInitializersToDependOnJpaInitializers(ConfigurableListableBeanFactory beanFactory,
 			Set<String> dataSourceInitializerNames) {
 		Set<String> jpaInitializers = new HashSet<>();
 		Set<String> otherInitializers = new HashSet<>(dataSourceInitializerNames);

@@ -47,21 +47,19 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 	private final Compression compression;
 
 	/**
-     * Constructs a new CompressionCustomizer object with the specified Compression.
-     * 
-     * @param compression the Compression object to be used for customization
-     */
-    CompressionCustomizer(Compression compression) {
+	 * Constructs a new CompressionCustomizer object with the specified Compression.
+	 * @param compression the Compression object to be used for customization
+	 */
+	CompressionCustomizer(Compression compression) {
 		this.compression = compression;
 	}
 
 	/**
-     * Applies compression settings to the given HttpServer.
-     * 
-     * @param server the HttpServer to apply compression settings to
-     * @return the HttpServer with compression settings applied
-     */
-    @Override
+	 * Applies compression settings to the given HttpServer.
+	 * @param server the HttpServer to apply compression settings to
+	 * @return the HttpServer with compression settings applied
+	 */
+	@Override
 	public HttpServer apply(HttpServer server) {
 		if (!this.compression.getMinResponseSize().isNegative()) {
 			server = server.compress((int) this.compression.getMinResponseSize().toBytes());
@@ -74,14 +72,14 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 	}
 
 	/**
-     * Returns a CompressionPredicate based on the provided array of MIME type values.
-     * If the array is empty or null, the predicate will always return true.
-     * Otherwise, the predicate will check if the response's content type is compatible with any of the provided MIME types.
-     * 
-     * @param mimeTypeValues an array of MIME type values
-     * @return a CompressionPredicate based on the provided MIME type values
-     */
-    private CompressionPredicate getMimeTypesPredicate(String[] mimeTypeValues) {
+	 * Returns a CompressionPredicate based on the provided array of MIME type values. If
+	 * the array is empty or null, the predicate will always return true. Otherwise, the
+	 * predicate will check if the response's content type is compatible with any of the
+	 * provided MIME types.
+	 * @param mimeTypeValues an array of MIME type values
+	 * @return a CompressionPredicate based on the provided MIME type values
+	 */
+	private CompressionPredicate getMimeTypesPredicate(String[] mimeTypeValues) {
 		if (ObjectUtils.isEmpty(mimeTypeValues)) {
 			return ALWAYS_COMPRESS;
 		}
@@ -102,13 +100,14 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 	}
 
 	/**
-     * Returns a CompressionPredicate that checks if the user agent in the request headers matches any of the excluded user agents.
-     * If the excludedUserAgents array is empty or null, the predicate will always return true.
-     * 
-     * @param excludedUserAgents an array of user agents to be excluded from compression
-     * @return a CompressionPredicate that checks if the user agent in the request headers matches any of the excluded user agents
-     */
-    private CompressionPredicate getExcludedUserAgentsPredicate(String[] excludedUserAgents) {
+	 * Returns a CompressionPredicate that checks if the user agent in the request headers
+	 * matches any of the excluded user agents. If the excludedUserAgents array is empty
+	 * or null, the predicate will always return true.
+	 * @param excludedUserAgents an array of user agents to be excluded from compression
+	 * @return a CompressionPredicate that checks if the user agent in the request headers
+	 * matches any of the excluded user agents
+	 */
+	private CompressionPredicate getExcludedUserAgentsPredicate(String[] excludedUserAgents) {
 		if (ObjectUtils.isEmpty(excludedUserAgents)) {
 			return ALWAYS_COMPRESS;
 		}

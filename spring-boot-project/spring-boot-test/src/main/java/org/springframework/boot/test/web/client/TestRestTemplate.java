@@ -948,24 +948,22 @@ public class TestRestTemplate {
 	}
 
 	/**
-     * Creates a new RequestEntity with the root applied URI.
-     * 
-     * @param requestEntity the original RequestEntity
-     * @return a new RequestEntity with the root applied URI
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+	 * Creates a new RequestEntity with the root applied URI.
+	 * @param requestEntity the original RequestEntity
+	 * @return a new RequestEntity with the root applied URI
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private RequestEntity<?> createRequestEntityWithRootAppliedUri(RequestEntity<?> requestEntity) {
 		return new RequestEntity(requestEntity.getBody(), requestEntity.getHeaders(), requestEntity.getMethod(),
 				applyRootUriIfNecessary(resolveUri(requestEntity)), requestEntity.getType());
 	}
 
 	/**
-     * Applies the root URI if necessary to the given URI.
-     * 
-     * @param uri the URI to apply the root URI to
-     * @return the modified URI with the root URI applied if necessary
-     */
-    private URI applyRootUriIfNecessary(URI uri) {
+	 * Applies the root URI if necessary to the given URI.
+	 * @param uri the URI to apply the root URI to
+	 * @return the modified URI with the root URI applied if necessary
+	 */
+	private URI applyRootUriIfNecessary(URI uri) {
 		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
 		if ((uriTemplateHandler instanceof RootUriTemplateHandler rootHandler) && uri.toString().startsWith("/")) {
 			return URI.create(rootHandler.getRootUri() + uri);
@@ -974,13 +972,12 @@ public class TestRestTemplate {
 	}
 
 	/**
-     * Resolves the URI for the given RequestEntity.
-     * 
-     * @param entity the RequestEntity to resolve the URI for
-     * @return the resolved URI
-     * @throws IllegalStateException if no variables are specified for a URI template
-     */
-    private URI resolveUri(RequestEntity<?> entity) {
+	 * Resolves the URI for the given RequestEntity.
+	 * @param entity the RequestEntity to resolve the URI for
+	 * @return the resolved URI
+	 * @throws IllegalStateException if no variables are specified for a URI template
+	 */
+	private URI resolveUri(RequestEntity<?> entity) {
 		if (entity instanceof UriTemplateRequestEntity<?> templatedUriEntity) {
 			if (templatedUriEntity.getVars() != null) {
 				return this.restTemplate.getUriTemplateHandler()
@@ -1028,12 +1025,14 @@ public class TestRestTemplate {
 		private final boolean enableRedirects;
 
 		/**
-         * Constructs a new CustomHttpComponentsClientHttpRequestFactory with the specified HttpClientOptions and settings.
-         * 
-         * @param httpClientOptions an array of HttpClientOptions to configure the HttpClient
-         * @param settings the ClientHttpRequestFactorySettings to configure the request factory
-         */
-        public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
+		 * Constructs a new CustomHttpComponentsClientHttpRequestFactory with the
+		 * specified HttpClientOptions and settings.
+		 * @param httpClientOptions an array of HttpClientOptions to configure the
+		 * HttpClient
+		 * @param settings the ClientHttpRequestFactorySettings to configure the request
+		 * factory
+		 */
+		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
 				ClientHttpRequestFactorySettings settings) {
 			Set<HttpClientOption> options = new HashSet<>(Arrays.asList(httpClientOptions));
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? StandardCookieSpec.STRICT
@@ -1049,14 +1048,15 @@ public class TestRestTemplate {
 		}
 
 		/**
-         * Creates a customized HttpClient with the specified read timeout and SSL configuration.
-         * 
-         * @param readTimeout the read timeout duration for the HttpClient
-         * @param ssl         a boolean indicating whether SSL should be enabled for the HttpClient
-         * @return the customized HttpClient
-         * @throws IllegalStateException if unable to create the customized HttpClient
-         */
-        private HttpClient createHttpClient(Duration readTimeout, boolean ssl) {
+		 * Creates a customized HttpClient with the specified read timeout and SSL
+		 * configuration.
+		 * @param readTimeout the read timeout duration for the HttpClient
+		 * @param ssl a boolean indicating whether SSL should be enabled for the
+		 * HttpClient
+		 * @return the customized HttpClient
+		 * @throws IllegalStateException if unable to create the customized HttpClient
+		 */
+		private HttpClient createHttpClient(Duration readTimeout, boolean ssl) {
 			try {
 				HttpClientBuilder builder = HttpClients.custom();
 				builder.setConnectionManager(createConnectionManager(readTimeout, ssl));
@@ -1069,16 +1069,17 @@ public class TestRestTemplate {
 		}
 
 		/**
-         * Creates a connection manager with the specified read timeout and SSL configuration.
-         * 
-         * @param readTimeout The read timeout duration for the connections.
-         * @param ssl         Flag indicating whether SSL should be enabled for the connections.
-         * @return The created PoolingHttpClientConnectionManager.
-         * @throws NoSuchAlgorithmException If the SSL algorithm is not available.
-         * @throws KeyManagementException   If there is an issue with the SSL key management.
-         * @throws KeyStoreException        If there is an issue with the SSL keystore.
-         */
-        private PoolingHttpClientConnectionManager createConnectionManager(Duration readTimeout, boolean ssl)
+		 * Creates a connection manager with the specified read timeout and SSL
+		 * configuration.
+		 * @param readTimeout The read timeout duration for the connections.
+		 * @param ssl Flag indicating whether SSL should be enabled for the connections.
+		 * @return The created PoolingHttpClientConnectionManager.
+		 * @throws NoSuchAlgorithmException If the SSL algorithm is not available.
+		 * @throws KeyManagementException If there is an issue with the SSL key
+		 * management.
+		 * @throws KeyStoreException If there is an issue with the SSL keystore.
+		 */
+		private PoolingHttpClientConnectionManager createConnectionManager(Duration readTimeout, boolean ssl)
 				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
 			PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create();
 			if (ssl) {
@@ -1094,14 +1095,13 @@ public class TestRestTemplate {
 		}
 
 		/**
-         * Creates a custom SSLConnectionSocketFactory.
-         * 
-         * @return the SSLConnectionSocketFactory object
-         * @throws NoSuchAlgorithmException if the SSL algorithm is not available
-         * @throws KeyManagementException if there is an issue with the SSL key management
-         * @throws KeyStoreException if there is an issue with the SSL key store
-         */
-        private SSLConnectionSocketFactory createSocketFactory()
+		 * Creates a custom SSLConnectionSocketFactory.
+		 * @return the SSLConnectionSocketFactory object
+		 * @throws NoSuchAlgorithmException if the SSL algorithm is not available
+		 * @throws KeyManagementException if there is an issue with the SSL key management
+		 * @throws KeyStoreException if there is an issue with the SSL key store
+		 */
+		private SSLConnectionSocketFactory createSocketFactory()
 				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
 			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
 				.build();
@@ -1112,13 +1112,12 @@ public class TestRestTemplate {
 		}
 
 		/**
-         * Creates a new HttpContext for the given HttpMethod and URI.
-         * 
-         * @param httpMethod the HttpMethod to be used
-         * @param uri the URI to be used
-         * @return the created HttpContext
-         */
-        @Override
+		 * Creates a new HttpContext for the given HttpMethod and URI.
+		 * @param httpMethod the HttpMethod to be used
+		 * @param uri the URI to be used
+		 * @return the created HttpContext
+		 */
+		@Override
 		protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
 			HttpClientContext context = HttpClientContext.create();
 			context.setRequestConfig(createRequestConfig());
@@ -1126,11 +1125,10 @@ public class TestRestTemplate {
 		}
 
 		/**
-         * Creates a RequestConfig object with the specified settings.
-         * 
-         * @return the created RequestConfig object
-         */
-        protected RequestConfig createRequestConfig() {
+		 * Creates a RequestConfig object with the specified settings.
+		 * @return the created RequestConfig object
+		 */
+		protected RequestConfig createRequestConfig() {
 			RequestConfig.Builder builder = RequestConfig.custom();
 			builder.setCookieSpec(this.cookieSpec);
 			builder.setAuthenticationEnabled(false);
@@ -1141,17 +1139,16 @@ public class TestRestTemplate {
 	}
 
 	/**
-     * NoOpResponseErrorHandler class.
-     */
-    private static final class NoOpResponseErrorHandler extends DefaultResponseErrorHandler {
+	 * NoOpResponseErrorHandler class.
+	 */
+	private static final class NoOpResponseErrorHandler extends DefaultResponseErrorHandler {
 
 		/**
-         * Handles any error response from the client.
-         * 
-         * @param response the client HTTP response
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Handles any error response from the client.
+		 * @param response the client HTTP response
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public void handleError(ClientHttpResponse response) throws IOException {
 		}
 

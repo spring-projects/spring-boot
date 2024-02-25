@@ -34,11 +34,10 @@ import org.springframework.boot.build.bom.BomExtension;
 public abstract class UpgradeBom extends UpgradeDependencies {
 
 	/**
-     * Constructs a new UpgradeBom object with the specified BomExtension.
-     * 
-     * @param bom the BomExtension to be used for the upgrade
-     */
-    @Inject
+	 * Constructs a new UpgradeBom object with the specified BomExtension.
+	 * @param bom the BomExtension to be used for the upgrade
+	 */
+	@Inject
 	public UpgradeBom(BomExtension bom) {
 		super(bom);
 		getProject().getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
@@ -50,24 +49,22 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 	}
 
 	/**
-     * Generates the issue title for an upgrade.
-     * 
-     * @param upgrade the upgrade object containing the library and version information
-     * @return the issue title in the format "Upgrade to [library name] [version]"
-     */
-    @Override
+	 * Generates the issue title for an upgrade.
+	 * @param upgrade the upgrade object containing the library and version information
+	 * @return the issue title in the format "Upgrade to [library name] [version]"
+	 */
+	@Override
 	protected String issueTitle(Upgrade upgrade) {
 		return "Upgrade to " + upgrade.getLibrary().getName() + " " + upgrade.getVersion();
 	}
 
 	/**
-     * Generates the commit message for a given upgrade and issue number.
-     * 
-     * @param upgrade The upgrade object.
-     * @param issueNumber The issue number.
-     * @return The commit message.
-     */
-    @Override
+	 * Generates the commit message for a given upgrade and issue number.
+	 * @param upgrade The upgrade object.
+	 * @param issueNumber The issue number.
+	 * @return The commit message.
+	 */
+	@Override
 	protected String commitMessage(Upgrade upgrade, int issueNumber) {
 		return issueTitle(upgrade) + "\n\nCloses gh-" + issueNumber;
 	}

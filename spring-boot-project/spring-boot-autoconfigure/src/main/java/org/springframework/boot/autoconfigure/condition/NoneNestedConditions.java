@@ -55,21 +55,21 @@ import org.springframework.context.annotation.Condition;
 public abstract class NoneNestedConditions extends AbstractNestedCondition {
 
 	/**
-     * Constructs a new NoneNestedConditions object with the specified configuration phase.
-     * 
-     * @param configurationPhase the configuration phase to be set for the NoneNestedConditions object
-     */
-    public NoneNestedConditions(ConfigurationPhase configurationPhase) {
+	 * Constructs a new NoneNestedConditions object with the specified configuration
+	 * phase.
+	 * @param configurationPhase the configuration phase to be set for the
+	 * NoneNestedConditions object
+	 */
+	public NoneNestedConditions(ConfigurationPhase configurationPhase) {
 		super(configurationPhase);
 	}
 
 	/**
-     * Returns the final match outcome based on the member outcomes.
-     * 
-     * @param memberOutcomes the member match outcomes
-     * @return the final match outcome
-     */
-    @Override
+	 * Returns the final match outcome based on the member outcomes.
+	 * @param memberOutcomes the member match outcomes
+	 * @return the final match outcome
+	 */
+	@Override
 	protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 		boolean match = memberOutcomes.getMatches().isEmpty();
 		List<ConditionMessage> messages = new ArrayList<>();

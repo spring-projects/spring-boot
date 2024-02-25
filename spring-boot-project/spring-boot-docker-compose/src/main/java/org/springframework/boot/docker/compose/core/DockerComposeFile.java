@@ -43,12 +43,12 @@ public final class DockerComposeFile {
 	private final File file;
 
 	/**
-     * Constructs a new DockerComposeFile object with the specified file.
-     * 
-     * @param file the file representing the Docker Compose file
-     * @throws UncheckedIOException if an I/O error occurs while getting the canonical file
-     */
-    private DockerComposeFile(File file) {
+	 * Constructs a new DockerComposeFile object with the specified file.
+	 * @param file the file representing the Docker Compose file
+	 * @throws UncheckedIOException if an I/O error occurs while getting the canonical
+	 * file
+	 */
+	private DockerComposeFile(File file) {
 		try {
 			this.file = file.getCanonicalFile();
 		}
@@ -58,14 +58,14 @@ public final class DockerComposeFile {
 	}
 
 	/**
-     * Compares this DockerComposeFile object to the specified object for equality.
-     * Returns true if the specified object is also a DockerComposeFile and has the same file path,
-     * otherwise returns false.
-     *
-     * @param obj the object to compare this DockerComposeFile against
-     * @return true if the given object represents a DockerComposeFile with the same file path, false otherwise
-     */
-    @Override
+	 * Compares this DockerComposeFile object to the specified object for equality.
+	 * Returns true if the specified object is also a DockerComposeFile and has the same
+	 * file path, otherwise returns false.
+	 * @param obj the object to compare this DockerComposeFile against
+	 * @return true if the given object represents a DockerComposeFile with the same file
+	 * path, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -78,21 +78,19 @@ public final class DockerComposeFile {
 	}
 
 	/**
-     * Returns the hash code value for the DockerComposeFile object.
-     * 
-     * @return the hash code value for the DockerComposeFile object
-     */
-    @Override
+	 * Returns the hash code value for the DockerComposeFile object.
+	 * @return the hash code value for the DockerComposeFile object
+	 */
+	@Override
 	public int hashCode() {
 		return this.file.hashCode();
 	}
 
 	/**
-     * Returns a string representation of the DockerComposeFile object.
-     * 
-     * @return a string representation of the DockerComposeFile object
-     */
-    @Override
+	 * Returns a string representation of the DockerComposeFile object.
+	 * @return a string representation of the DockerComposeFile object
+	 */
+	@Override
 	public String toString() {
 		return this.file.toString();
 	}

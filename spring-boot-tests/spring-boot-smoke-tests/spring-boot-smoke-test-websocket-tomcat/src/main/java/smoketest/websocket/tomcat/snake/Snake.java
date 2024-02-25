@@ -47,12 +47,11 @@ public class Snake {
 	private Location head;
 
 	/**
-     * Constructs a new Snake object with the specified id and WebSocketSession.
-     * 
-     * @param id the id of the snake
-     * @param session the WebSocketSession associated with the snake
-     */
-    public Snake(int id, WebSocketSession session) {
+	 * Constructs a new Snake object with the specified id and WebSocketSession.
+	 * @param id the id of the snake
+	 * @param session the WebSocketSession associated with the snake
+	 */
+	public Snake(int id, WebSocketSession session) {
 		this.id = id;
 		this.session = session;
 		this.hexColor = SnakeUtils.getRandomHexColor();
@@ -60,13 +59,11 @@ public class Snake {
 	}
 
 	/**
-     * Resets the state of the snake.
-     * This method sets the direction of the snake to NONE,
-     * generates a random location for the snake's head,
-     * clears the tail of the snake,
-     * and sets the length of the snake to the default length.
-     */
-    private void resetState() {
+	 * Resets the state of the snake. This method sets the direction of the snake to NONE,
+	 * generates a random location for the snake's head, clears the tail of the snake, and
+	 * sets the length of the snake to the default length.
+	 */
+	private void resetState() {
 		this.direction = Direction.NONE;
 		this.head = SnakeUtils.getRandomLocation();
 		this.tail.clear();
@@ -74,11 +71,10 @@ public class Snake {
 	}
 
 	/**
-     * Kills the snake and updates its state.
-     * 
-     * @throws Exception if an error occurs during the process
-     */
-    private void kill() throws Exception {
+	 * Kills the snake and updates its state.
+	 * @throws Exception if an error occurs during the process
+	 */
+	private void kill() throws Exception {
 		synchronized (this.monitor) {
 			resetState();
 			sendMessage("{'type': 'dead'}");
@@ -86,11 +82,10 @@ public class Snake {
 	}
 
 	/**
-     * Increases the length of the snake and sends a message to kill it.
-     *
-     * @throws Exception if an error occurs during the execution of the method.
-     */
-    private void reward() throws Exception {
+	 * Increases the length of the snake and sends a message to kill it.
+	 * @throws Exception if an error occurs during the execution of the method.
+	 */
+	private void reward() throws Exception {
 		synchronized (this.monitor) {
 			this.length++;
 			sendMessage("{'type': 'kill'}");
@@ -98,24 +93,22 @@ public class Snake {
 	}
 
 	/**
-     * Sends a message using the current session.
-     * 
-     * @param msg the message to be sent
-     * @throws Exception if an error occurs while sending the message
-     */
-    protected void sendMessage(String msg) throws Exception {
+	 * Sends a message using the current session.
+	 * @param msg the message to be sent
+	 * @throws Exception if an error occurs while sending the message
+	 */
+	protected void sendMessage(String msg) throws Exception {
 		this.session.sendMessage(new TextMessage(msg));
 	}
 
 	/**
-     * Updates the snake's position based on its current direction.
-     * If the snake reaches the edge of the playfield, it wraps around to the opposite side.
-     * The snake's tail is updated accordingly, removing the last segment if necessary.
-     * 
-     * @param snakes the collection of other snakes in the game
-     * @throws Exception if an error occurs during the update process
-     */
-    public void update(Collection<Snake> snakes) throws Exception {
+	 * Updates the snake's position based on its current direction. If the snake reaches
+	 * the edge of the playfield, it wraps around to the opposite side. The snake's tail
+	 * is updated accordingly, removing the last segment if necessary.
+	 * @param snakes the collection of other snakes in the game
+	 * @throws Exception if an error occurs during the update process
+	 */
+	public void update(Collection<Snake> snakes) throws Exception {
 		synchronized (this.monitor) {
 			Location nextLocation = this.head.getAdjacentLocation(this.direction);
 			if (nextLocation.x >= SnakeUtils.PLAYFIELD_WIDTH) {
@@ -143,13 +136,12 @@ public class Snake {
 	}
 
 	/**
-     * Handles collisions between the current snake and a collection of other snakes.
-     * If a collision occurs, the current snake is killed and the other snake is rewarded.
-     * 
-     * @param snakes the collection of other snakes to check for collisions with
-     * @throws Exception if an error occurs during collision handling
-     */
-    private void handleCollisions(Collection<Snake> snakes) throws Exception {
+	 * Handles collisions between the current snake and a collection of other snakes. If a
+	 * collision occurs, the current snake is killed and the other snake is rewarded.
+	 * @param snakes the collection of other snakes to check for collisions with
+	 * @throws Exception if an error occurs during collision handling
+	 */
+	private void handleCollisions(Collection<Snake> snakes) throws Exception {
 		for (Snake snake : snakes) {
 			boolean headCollision = this.id != snake.id && snake.getHead().equals(this.head);
 			boolean tailCollision = snake.getTail().contains(this.head);
@@ -163,44 +155,40 @@ public class Snake {
 	}
 
 	/**
-     * Returns the current location of the head of the snake.
-     *
-     * @return the location of the head of the snake
-     */
-    public Location getHead() {
+	 * Returns the current location of the head of the snake.
+	 * @return the location of the head of the snake
+	 */
+	public Location getHead() {
 		synchronized (this.monitor) {
 			return this.head;
 		}
 	}
 
 	/**
-     * Returns the tail of the snake.
-     *
-     * @return the tail of the snake as a Collection of Location objects.
-     */
-    public Collection<Location> getTail() {
+	 * Returns the tail of the snake.
+	 * @return the tail of the snake as a Collection of Location objects.
+	 */
+	public Collection<Location> getTail() {
 		synchronized (this.monitor) {
 			return this.tail;
 		}
 	}
 
 	/**
-     * Sets the direction of the snake.
-     * 
-     * @param direction the new direction of the snake
-     */
-    public void setDirection(Direction direction) {
+	 * Sets the direction of the snake.
+	 * @param direction the new direction of the snake
+	 */
+	public void setDirection(Direction direction) {
 		synchronized (this.monitor) {
 			this.direction = direction;
 		}
 	}
 
 	/**
-     * Returns the JSON representation of the locations of the snake.
-     *
-     * @return the JSON string representing the locations of the snake
-     */
-    public String getLocationsJson() {
+	 * Returns the JSON representation of the locations of the snake.
+	 * @return the JSON string representing the locations of the snake
+	 */
+	public String getLocationsJson() {
 		synchronized (this.monitor) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(String.format("{x: %d, y: %d}", this.head.x, this.head.y));
@@ -213,20 +201,18 @@ public class Snake {
 	}
 
 	/**
-     * Returns the ID of the snake.
-     *
-     * @return the ID of the snake
-     */
-    public int getId() {
+	 * Returns the ID of the snake.
+	 * @return the ID of the snake
+	 */
+	public int getId() {
 		return this.id;
 	}
 
 	/**
-     * Returns the hexadecimal color code of the snake.
-     *
-     * @return the hexadecimal color code of the snake
-     */
-    public String getHexColor() {
+	 * Returns the hexadecimal color code of the snake.
+	 * @return the hexadecimal color code of the snake
+	 */
+	public String getHexColor() {
 		return this.hexColor;
 	}
 

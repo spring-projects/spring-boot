@@ -32,21 +32,23 @@ public class ConnectionDetailsNotFoundException extends RuntimeException {
 	}
 
 	/**
-     * Constructs a new ConnectionDetailsNotFoundException with the specified detail message.
-     *
-     * @param message the detail message
-     */
-    public ConnectionDetailsNotFoundException(String message) {
+	 * Constructs a new ConnectionDetailsNotFoundException with the specified detail
+	 * message.
+	 * @param message the detail message
+	 */
+	public ConnectionDetailsNotFoundException(String message) {
 		super(message);
 	}
 
 	/**
-     * Constructs a new ConnectionDetailsNotFoundException with the specified detail message and cause.
-     *
-     * @param message the detail message (which is saved for later retrieval by the getMessage() method).
-     * @param cause the cause (which is saved for later retrieval by the getCause() method).
-     */
-    public ConnectionDetailsNotFoundException(String message, Throwable cause) {
+	 * Constructs a new ConnectionDetailsNotFoundException with the specified detail
+	 * message and cause.
+	 * @param message the detail message (which is saved for later retrieval by the
+	 * getMessage() method).
+	 * @param cause the cause (which is saved for later retrieval by the getCause()
+	 * method).
+	 */
+	public ConnectionDetailsNotFoundException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

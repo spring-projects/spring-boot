@@ -82,11 +82,11 @@ public class OpenTelemetryAutoConfiguration {
 	private final TracingProperties tracingProperties;
 
 	/**
-     * Initializes the OpenTelemetry auto-configuration with the provided tracing properties.
-     * 
-     * @param tracingProperties the tracing properties to configure OpenTelemetry
-     */
-    OpenTelemetryAutoConfiguration(TracingProperties tracingProperties) {
+	 * Initializes the OpenTelemetry auto-configuration with the provided tracing
+	 * properties.
+	 * @param tracingProperties the tracing properties to configure OpenTelemetry
+	 */
+	OpenTelemetryAutoConfiguration(TracingProperties tracingProperties) {
 		this.tracingProperties = tracingProperties;
 		if (!CollectionUtils.isEmpty(this.tracingProperties.getBaggage().getLocalFields())) {
 			logger.warn("Local fields are not supported when using OpenTelemetry!");
@@ -94,15 +94,18 @@ public class OpenTelemetryAutoConfiguration {
 	}
 
 	/**
-     * Creates an instance of {@link SdkTracerProvider} if no other bean of the same type is present.
-     * 
-     * @param resource The {@link Resource} to be used by the {@link SdkTracerProvider}.
-     * @param spanProcessors The {@link SpanProcessors} to be added to the {@link SdkTracerProvider}.
-     * @param sampler The {@link Sampler} to be set for the {@link SdkTracerProvider}.
-     * @param customizers The {@link SdkTracerProviderBuilderCustomizer}s to customize the {@link SdkTracerProviderBuilder}.
-     * @return An instance of {@link SdkTracerProvider} configured with the provided parameters.
-     */
-    @Bean
+	 * Creates an instance of {@link SdkTracerProvider} if no other bean of the same type
+	 * is present.
+	 * @param resource The {@link Resource} to be used by the {@link SdkTracerProvider}.
+	 * @param spanProcessors The {@link SpanProcessors} to be added to the
+	 * {@link SdkTracerProvider}.
+	 * @param sampler The {@link Sampler} to be set for the {@link SdkTracerProvider}.
+	 * @param customizers The {@link SdkTracerProviderBuilderCustomizer}s to customize the
+	 * {@link SdkTracerProviderBuilder}.
+	 * @return An instance of {@link SdkTracerProvider} configured with the provided
+	 * parameters.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	SdkTracerProvider otelSdkTracerProvider(Resource resource, SpanProcessors spanProcessors, Sampler sampler,
 			ObjectProvider<SdkTracerProviderBuilderCustomizer> customizers) {
@@ -113,34 +116,39 @@ public class OpenTelemetryAutoConfiguration {
 	}
 
 	/**
-     * Creates an instance of ContextPropagators with the provided TextMapPropagator objects.
-     * If no TextMapPropagator objects are provided, a default instance will be created.
-     * 
-     * @param textMapPropagators The TextMapPropagator objects to be used for context propagation.
-     * @return The created instance of ContextPropagators.
-     */
-    @Bean
+	 * Creates an instance of ContextPropagators with the provided TextMapPropagator
+	 * objects. If no TextMapPropagator objects are provided, a default instance will be
+	 * created.
+	 * @param textMapPropagators The TextMapPropagator objects to be used for context
+	 * propagation.
+	 * @return The created instance of ContextPropagators.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	ContextPropagators otelContextPropagators(ObjectProvider<TextMapPropagator> textMapPropagators) {
 		return ContextPropagators.create(TextMapPropagator.composite(textMapPropagators.orderedStream().toList()));
 	}
 
 	/**
-     * Returns a Sampler bean for OpenTelemetry tracing.
-     * 
-     * This method is annotated with @Bean to indicate that it is a bean definition method.
-     * 
-     * This method is annotated with @ConditionalOnMissingBean to ensure that the bean is only created if there is no existing bean of the same type.
-     * 
-     * The method creates a Sampler bean based on the configured sampling probability from the tracing properties.
-     * 
-     * The Sampler bean is created using the traceIdRatioBased method of the Sampler class, passing in the sampling probability from the tracing properties.
-     * 
-     * The created Sampler bean is then wrapped in a parentBased Sampler using the parentBased method of the Sampler class.
-     * 
-     * @return the created Sampler bean for OpenTelemetry tracing
-     */
-    @Bean
+	 * Returns a Sampler bean for OpenTelemetry tracing.
+	 *
+	 * This method is annotated with @Bean to indicate that it is a bean definition
+	 * method.
+	 *
+	 * This method is annotated with @ConditionalOnMissingBean to ensure that the bean is
+	 * only created if there is no existing bean of the same type.
+	 *
+	 * The method creates a Sampler bean based on the configured sampling probability from
+	 * the tracing properties.
+	 *
+	 * The Sampler bean is created using the traceIdRatioBased method of the Sampler
+	 * class, passing in the sampling probability from the tracing properties.
+	 *
+	 * The created Sampler bean is then wrapped in a parentBased Sampler using the
+	 * parentBased method of the Sampler class.
+	 * @return the created Sampler bean for OpenTelemetry tracing
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	Sampler otelSampler() {
 		Sampler rootSampler = Sampler.traceIdRatioBased(this.tracingProperties.getSampling().getProbability());
@@ -148,28 +156,28 @@ public class OpenTelemetryAutoConfiguration {
 	}
 
 	/**
-     * Creates a {@link SpanProcessors} bean if no other bean of type {@link SpanProcessor} is present.
-     * 
-     * @param spanProcessors the object provider for {@link SpanProcessor} beans
-     * @return the {@link SpanProcessors} bean
-     */
-    @Bean
+	 * Creates a {@link SpanProcessors} bean if no other bean of type
+	 * {@link SpanProcessor} is present.
+	 * @param spanProcessors the object provider for {@link SpanProcessor} beans
+	 * @return the {@link SpanProcessors} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	SpanProcessors spanProcessors(ObjectProvider<SpanProcessor> spanProcessors) {
 		return SpanProcessors.of(spanProcessors.orderedStream().toList());
 	}
 
 	/**
-     * Creates a BatchSpanProcessor bean for exporting spans.
-     *
-     * @param spanExporters           the span exporters to be used for exporting spans
-     * @param spanExportingPredicates the span exporting predicates to be used for filtering spans to be exported
-     * @param spanReporters           the span reporters to be used for reporting spans
-     * @param spanFilters             the span filters to be used for filtering spans
-     * @param meterProvider           the meter provider to be used for providing meters
-     * @return the created BatchSpanProcessor bean
-     */
-    @Bean
+	 * Creates a BatchSpanProcessor bean for exporting spans.
+	 * @param spanExporters the span exporters to be used for exporting spans
+	 * @param spanExportingPredicates the span exporting predicates to be used for
+	 * filtering spans to be exported
+	 * @param spanReporters the span reporters to be used for reporting spans
+	 * @param spanFilters the span filters to be used for filtering spans
+	 * @param meterProvider the meter provider to be used for providing meters
+	 * @return the created BatchSpanProcessor bean
+	 */
+	@Bean
 	BatchSpanProcessor otelSpanProcessor(SpanExporters spanExporters,
 			ObjectProvider<SpanExportingPredicate> spanExportingPredicates, ObjectProvider<SpanReporter> spanReporters,
 			ObjectProvider<SpanFilter> spanFilters, ObjectProvider<MeterProvider> meterProvider) {
@@ -181,38 +189,36 @@ public class OpenTelemetryAutoConfiguration {
 	}
 
 	/**
-     * Creates a {@link SpanExporters} bean if no other bean of type {@link SpanExporter} is present.
-     * 
-     * @param spanExporters the object provider for {@link SpanExporter} beans
-     * @return the {@link SpanExporters} bean
-     */
-    @Bean
+	 * Creates a {@link SpanExporters} bean if no other bean of type {@link SpanExporter}
+	 * is present.
+	 * @param spanExporters the object provider for {@link SpanExporter} beans
+	 * @return the {@link SpanExporters} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	SpanExporters spanExporters(ObjectProvider<SpanExporter> spanExporters) {
 		return SpanExporters.of(spanExporters.orderedStream().toList());
 	}
 
 	/**
-     * Creates a Tracer bean if no other bean of type Tracer is present.
-     * 
-     * @param openTelemetry the OpenTelemetry instance to use
-     * @return the Tracer bean
-     */
-    @Bean
+	 * Creates a Tracer bean if no other bean of type Tracer is present.
+	 * @param openTelemetry the OpenTelemetry instance to use
+	 * @return the Tracer bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	Tracer otelTracer(OpenTelemetry openTelemetry) {
 		return openTelemetry.getTracer("org.springframework.boot", SpringBootVersion.getVersion());
 	}
 
 	/**
-     * Creates an instance of OtelTracer if no bean of type Tracer is present.
-     * 
-     * @param tracer The Tracer instance to be used.
-     * @param eventPublisher The EventPublisher instance to be used.
-     * @param otelCurrentTraceContext The OtelCurrentTraceContext instance to be used.
-     * @return An instance of OtelTracer.
-     */
-    @Bean
+	 * Creates an instance of OtelTracer if no bean of type Tracer is present.
+	 * @param tracer The Tracer instance to be used.
+	 * @param eventPublisher The EventPublisher instance to be used.
+	 * @param otelCurrentTraceContext The OtelCurrentTraceContext instance to be used.
+	 * @return An instance of OtelTracer.
+	 */
+	@Bean
 	@ConditionalOnMissingBean(io.micrometer.tracing.Tracer.class)
 	OtelTracer micrometerOtelTracer(Tracer tracer, EventPublisher eventPublisher,
 			OtelCurrentTraceContext otelCurrentTraceContext) {
@@ -223,38 +229,39 @@ public class OpenTelemetryAutoConfiguration {
 	}
 
 	/**
-     * Creates an instance of OtelPropagator if no other bean of the same type is present.
-     * 
-     * @param contextPropagators The ContextPropagators instance to be used by the OtelPropagator.
-     * @param tracer The Tracer instance to be used by the OtelPropagator.
-     * @return An instance of OtelPropagator.
-     */
-    @Bean
+	 * Creates an instance of OtelPropagator if no other bean of the same type is present.
+	 * @param contextPropagators The ContextPropagators instance to be used by the
+	 * OtelPropagator.
+	 * @param tracer The Tracer instance to be used by the OtelPropagator.
+	 * @return An instance of OtelPropagator.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	OtelPropagator otelPropagator(ContextPropagators contextPropagators, Tracer tracer) {
 		return new OtelPropagator(contextPropagators, tracer);
 	}
 
 	/**
-     * Creates an instance of {@link EventPublisher} if no other bean of type {@link EventPublisher} is present.
-     * 
-     * @param eventListeners the list of {@link EventListener} beans to be used by the {@link OTelEventPublisher}
-     * @return an instance of {@link EventPublisher} implemented by {@link OTelEventPublisher}
-     */
-    @Bean
+	 * Creates an instance of {@link EventPublisher} if no other bean of type
+	 * {@link EventPublisher} is present.
+	 * @param eventListeners the list of {@link EventListener} beans to be used by the
+	 * {@link OTelEventPublisher}
+	 * @return an instance of {@link EventPublisher} implemented by
+	 * {@link OTelEventPublisher}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	EventPublisher otelTracerEventPublisher(List<EventListener> eventListeners) {
 		return new OTelEventPublisher(eventListeners);
 	}
 
 	/**
-     * Creates an instance of OtelCurrentTraceContext if no other bean of the same type is present.
-     * Adds an EventPublishingContextWrapper to the ContextStorage.
-     * 
-     * @param publisher the EventPublisher used by the EventPublishingContextWrapper
-     * @return an instance of OtelCurrentTraceContext
-     */
-    @Bean
+	 * Creates an instance of OtelCurrentTraceContext if no other bean of the same type is
+	 * present. Adds an EventPublishingContextWrapper to the ContextStorage.
+	 * @param publisher the EventPublisher used by the EventPublishingContextWrapper
+	 * @return an instance of OtelCurrentTraceContext
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	OtelCurrentTraceContext otelCurrentTraceContext(EventPublisher publisher) {
 		ContextStorage.addWrapper(new EventPublishingContextWrapper(publisher));
@@ -262,50 +269,48 @@ public class OpenTelemetryAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of Slf4JEventListener if no other bean of the same type is present in the application context.
-     * This bean is conditionally created only if there is no other bean of the same type already defined.
-     * 
-     * @return a new instance of Slf4JEventListener
-     */
-    @Bean
+	 * Creates a new instance of Slf4JEventListener if no other bean of the same type is
+	 * present in the application context. This bean is conditionally created only if
+	 * there is no other bean of the same type already defined.
+	 * @return a new instance of Slf4JEventListener
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	Slf4JEventListener otelSlf4JEventListener() {
 		return new Slf4JEventListener();
 	}
 
 	/**
-     * Creates a new instance of {@link OtelSpanCustomizer} if no other bean of type {@link SpanCustomizer} is present.
-     * 
-     * @return the created instance of {@link OtelSpanCustomizer}
-     */
-    @Bean
+	 * Creates a new instance of {@link OtelSpanCustomizer} if no other bean of type
+	 * {@link SpanCustomizer} is present.
+	 * @return the created instance of {@link OtelSpanCustomizer}
+	 */
+	@Bean
 	@ConditionalOnMissingBean(SpanCustomizer.class)
 	OtelSpanCustomizer otelSpanCustomizer() {
 		return new OtelSpanCustomizer();
 	}
 
 	/**
-     * OTelEventPublisher class.
-     */
-    static class OTelEventPublisher implements EventPublisher {
+	 * OTelEventPublisher class.
+	 */
+	static class OTelEventPublisher implements EventPublisher {
 
 		private final List<EventListener> listeners;
 
 		/**
-         * Constructs a new OTelEventPublisher with the specified list of EventListeners.
-         * 
-         * @param listeners the list of EventListeners to be registered with the publisher
-         */
-        OTelEventPublisher(List<EventListener> listeners) {
+		 * Constructs a new OTelEventPublisher with the specified list of EventListeners.
+		 * @param listeners the list of EventListeners to be registered with the publisher
+		 */
+		OTelEventPublisher(List<EventListener> listeners) {
 			this.listeners = listeners;
 		}
 
 		/**
-         * Publishes an event to all registered listeners.
-         * 
-         * @param event the event to be published
-         */
-        @Override
+		 * Publishes an event to all registered listeners.
+		 * @param event the event to be published
+		 */
+		@Override
 		public void publishEvent(Object event) {
 			for (EventListener listener : this.listeners) {
 				listener.onEvent(event);

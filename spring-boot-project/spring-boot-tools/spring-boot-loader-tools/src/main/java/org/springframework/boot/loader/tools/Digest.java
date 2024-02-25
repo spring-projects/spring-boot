@@ -30,9 +30,9 @@ import java.util.HexFormat;
 final class Digest {
 
 	/**
-     * Constructs a new instance of the Digest class.
-     */
-    private Digest() {
+	 * Constructs a new instance of the Digest class.
+	 */
+	private Digest() {
 	}
 
 	/**

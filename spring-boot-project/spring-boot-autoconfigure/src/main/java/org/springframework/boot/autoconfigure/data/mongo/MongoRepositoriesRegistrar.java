@@ -33,39 +33,36 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 class MongoRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	/**
-     * Returns the annotation class that is used to enable Mongo repositories.
-     *
-     * @return the annotation class {@code EnableMongoRepositories}
-     */
-    @Override
+	 * Returns the annotation class that is used to enable Mongo repositories.
+	 * @return the annotation class {@code EnableMongoRepositories}
+	 */
+	@Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableMongoRepositories.class;
 	}
 
 	/**
-     * Returns the configuration class for enabling Mongo repositories.
-     * 
-     * @return the configuration class for enabling Mongo repositories
-     */
-    @Override
+	 * Returns the configuration class for enabling Mongo repositories.
+	 * @return the configuration class for enabling Mongo repositories
+	 */
+	@Override
 	protected Class<?> getConfiguration() {
 		return EnableMongoRepositoriesConfiguration.class;
 	}
 
 	/**
-     * Returns the repository configuration extension for MongoRepositoriesRegistrar.
-     * 
-     * @return the repository configuration extension for MongoRepositoriesRegistrar
-     */
-    @Override
+	 * Returns the repository configuration extension for MongoRepositoriesRegistrar.
+	 * @return the repository configuration extension for MongoRepositoriesRegistrar
+	 */
+	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new MongoRepositoryConfigurationExtension();
 	}
 
 	/**
-     * EnableMongoRepositoriesConfiguration class.
-     */
-    @EnableMongoRepositories
+	 * EnableMongoRepositoriesConfiguration class.
+	 */
+	@EnableMongoRepositories
 	private static final class EnableMongoRepositoriesConfiguration {
 
 	}

@@ -46,14 +46,13 @@ public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends Abstract
 	private final Set<HealthEndpointGroup> groups;
 
 	/**
-     * Constructs a new AdditionalHealthEndpointPathsWebFluxHandlerMapping with the specified endpoint mapping,
-     * endpoint, and groups.
-     *
-     * @param endpointMapping the endpoint mapping to be used
-     * @param endpoint the exposable web endpoint to be used
-     * @param groups the set of health endpoint groups to be used
-     */
-    public AdditionalHealthEndpointPathsWebFluxHandlerMapping(EndpointMapping endpointMapping,
+	 * Constructs a new AdditionalHealthEndpointPathsWebFluxHandlerMapping with the
+	 * specified endpoint mapping, endpoint, and groups.
+	 * @param endpointMapping the endpoint mapping to be used
+	 * @param endpoint the exposable web endpoint to be used
+	 * @param groups the set of health endpoint groups to be used
+	 */
+	public AdditionalHealthEndpointPathsWebFluxHandlerMapping(EndpointMapping endpointMapping,
 			ExposableWebEndpoint endpoint, Set<HealthEndpointGroup> groups) {
 		super(endpointMapping, Collections.singletonList(endpoint), null, null, false);
 		this.endpointMapping = endpointMapping;
@@ -62,13 +61,14 @@ public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends Abstract
 	}
 
 	/**
-     * Initializes the handler methods for AdditionalHealthEndpointPathsWebFluxHandlerMapping.
-     * Iterates through the WebOperations of the endpoint and registers the appropriate mappings
-     * based on the request predicates and additional paths of the HealthEndpointGroups.
-     * 
-     * @since 1.0
-     */
-    @Override
+	 * Initializes the handler methods for
+	 * AdditionalHealthEndpointPathsWebFluxHandlerMapping. Iterates through the
+	 * WebOperations of the endpoint and registers the appropriate mappings based on the
+	 * request predicates and additional paths of the HealthEndpointGroups.
+	 *
+	 * @since 1.0
+	 */
+	@Override
 	protected void initHandlerMethods() {
 		for (WebOperation operation : this.endpoint.getOperations()) {
 			WebOperationRequestPredicate predicate = operation.getRequestPredicate();
@@ -87,13 +87,12 @@ public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends Abstract
 	}
 
 	/**
-     * Returns the RequestMappingInfo for the given WebOperation and additional path.
-     * 
-     * @param operation the WebOperation to create the RequestMappingInfo for
-     * @param additionalPath the additional path to append to the endpoint mapping
-     * @return the RequestMappingInfo for the given WebOperation and additional path
-     */
-    private RequestMappingInfo getRequestMappingInfo(WebOperation operation, String additionalPath) {
+	 * Returns the RequestMappingInfo for the given WebOperation and additional path.
+	 * @param operation the WebOperation to create the RequestMappingInfo for
+	 * @param additionalPath the additional path to append to the endpoint mapping
+	 * @return the RequestMappingInfo for the given WebOperation and additional path
+	 */
+	private RequestMappingInfo getRequestMappingInfo(WebOperation operation, String additionalPath) {
 		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 		String path = this.endpointMapping.createSubPath(additionalPath);
 		RequestMethod method = RequestMethod.valueOf(predicate.getHttpMethod().name());
@@ -103,11 +102,11 @@ public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends Abstract
 	}
 
 	/**
-     * Returns the LinksHandler for handling links in the AdditionalHealthEndpointPathsWebFluxHandlerMapping.
-     *
-     * @return the LinksHandler for handling links, or null if not available.
-     */
-    @Override
+	 * Returns the LinksHandler for handling links in the
+	 * AdditionalHealthEndpointPathsWebFluxHandlerMapping.
+	 * @return the LinksHandler for handling links, or null if not available.
+	 */
+	@Override
 	protected LinksHandler getLinksHandler() {
 		return null;
 	}

@@ -39,20 +39,19 @@ import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewRes
 class FreeMarkerReactiveWebConfiguration extends AbstractFreeMarkerConfiguration {
 
 	/**
-     * Constructs a new FreeMarkerReactiveWebConfiguration with the specified properties.
-     *
-     * @param properties the properties to be used for configuring FreeMarker.
-     */
-    FreeMarkerReactiveWebConfiguration(FreeMarkerProperties properties) {
+	 * Constructs a new FreeMarkerReactiveWebConfiguration with the specified properties.
+	 * @param properties the properties to be used for configuring FreeMarker.
+	 */
+	FreeMarkerReactiveWebConfiguration(FreeMarkerProperties properties) {
 		super(properties);
 	}
 
 	/**
-     * Creates and configures a FreeMarkerConfigurer bean if no bean of type FreeMarkerConfig is present.
-     * 
-     * @return The configured FreeMarkerConfigurer bean.
-     */
-    @Bean
+	 * Creates and configures a FreeMarkerConfigurer bean if no bean of type
+	 * FreeMarkerConfig is present.
+	 * @return The configured FreeMarkerConfigurer bean.
+	 */
+	@Bean
 	@ConditionalOnMissingBean(FreeMarkerConfig.class)
 	FreeMarkerConfigurer freeMarkerConfigurer() {
 		FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
@@ -61,22 +60,22 @@ class FreeMarkerReactiveWebConfiguration extends AbstractFreeMarkerConfiguration
 	}
 
 	/**
-     * Returns the FreeMarker configuration based on the provided FreeMarkerConfig.
-     * 
-     * @param configurer the FreeMarkerConfig used to configure the FreeMarker template engine
-     * @return the FreeMarker configuration
-     */
-    @Bean
+	 * Returns the FreeMarker configuration based on the provided FreeMarkerConfig.
+	 * @param configurer the FreeMarkerConfig used to configure the FreeMarker template
+	 * engine
+	 * @return the FreeMarker configuration
+	 */
+	@Bean
 	freemarker.template.Configuration freeMarkerConfiguration(FreeMarkerConfig configurer) {
 		return configurer.getConfiguration();
 	}
 
 	/**
-     * Creates a FreeMarkerViewResolver bean if it is missing and the property "spring.freemarker.enabled" is either not present or set to true.
-     * 
-     * @return the FreeMarkerViewResolver bean
-     */
-    @Bean
+	 * Creates a FreeMarkerViewResolver bean if it is missing and the property
+	 * "spring.freemarker.enabled" is either not present or set to true.
+	 * @return the FreeMarkerViewResolver bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
 	@ConditionalOnProperty(name = "spring.freemarker.enabled", matchIfMissing = true)
 	FreeMarkerViewResolver freeMarkerViewResolver() {

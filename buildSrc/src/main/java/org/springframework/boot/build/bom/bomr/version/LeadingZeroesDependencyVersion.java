@@ -34,33 +34,33 @@ final class LeadingZeroesDependencyVersion extends ArtifactVersionDependencyVers
 	private final String original;
 
 	/**
-     * Constructs a new LeadingZeroesDependencyVersion object with the specified artifact version and original string.
-     * 
-     * @param artifactVersion the artifact version for the LeadingZeroesDependencyVersion object
-     * @param original the original string for the LeadingZeroesDependencyVersion object
-     */
-    private LeadingZeroesDependencyVersion(ArtifactVersion artifactVersion, String original) {
+	 * Constructs a new LeadingZeroesDependencyVersion object with the specified artifact
+	 * version and original string.
+	 * @param artifactVersion the artifact version for the LeadingZeroesDependencyVersion
+	 * object
+	 * @param original the original string for the LeadingZeroesDependencyVersion object
+	 */
+	private LeadingZeroesDependencyVersion(ArtifactVersion artifactVersion, String original) {
 		super(artifactVersion);
 		this.original = original;
 	}
 
 	/**
-     * Returns the string representation of the LeadingZeroesDependencyVersion object.
-     *
-     * @return the original string value of the LeadingZeroesDependencyVersion object
-     */
-    @Override
+	 * Returns the string representation of the LeadingZeroesDependencyVersion object.
+	 * @return the original string value of the LeadingZeroesDependencyVersion object
+	 */
+	@Override
 	public String toString() {
 		return this.original;
 	}
 
 	/**
-     * Parses the given input string and returns a LeadingZeroesDependencyVersion object.
-     * 
-     * @param input the input string to be parsed
-     * @return a LeadingZeroesDependencyVersion object if the input string is valid, otherwise null
-     */
-    static LeadingZeroesDependencyVersion parse(String input) {
+	 * Parses the given input string and returns a LeadingZeroesDependencyVersion object.
+	 * @param input the input string to be parsed
+	 * @return a LeadingZeroesDependencyVersion object if the input string is valid,
+	 * otherwise null
+	 */
+	static LeadingZeroesDependencyVersion parse(String input) {
 		Matcher matcher = PATTERN.matcher(input);
 		if (!matcher.matches()) {
 			return null;

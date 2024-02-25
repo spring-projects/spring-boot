@@ -33,42 +33,39 @@ public class DispatcherServletMappingDescription {
 	private final DispatcherServletMappingDetails details;
 
 	/**
-     * Constructs a new DispatcherServletMappingDescription with the specified predicate, handler, and details.
-     * 
-     * @param predicate the predicate used to match the request URL
-     * @param handler the handler responsible for processing the request
-     * @param details the additional details of the mapping
-     */
-    DispatcherServletMappingDescription(String predicate, String handler, DispatcherServletMappingDetails details) {
+	 * Constructs a new DispatcherServletMappingDescription with the specified predicate,
+	 * handler, and details.
+	 * @param predicate the predicate used to match the request URL
+	 * @param handler the handler responsible for processing the request
+	 * @param details the additional details of the mapping
+	 */
+	DispatcherServletMappingDescription(String predicate, String handler, DispatcherServletMappingDetails details) {
 		this.handler = handler;
 		this.predicate = predicate;
 		this.details = details;
 	}
 
 	/**
-     * Returns the handler for this DispatcherServletMappingDescription.
-     *
-     * @return the handler for this DispatcherServletMappingDescription
-     */
-    public String getHandler() {
+	 * Returns the handler for this DispatcherServletMappingDescription.
+	 * @return the handler for this DispatcherServletMappingDescription
+	 */
+	public String getHandler() {
 		return this.handler;
 	}
 
 	/**
-     * Returns the predicate of the DispatcherServletMappingDescription.
-     *
-     * @return the predicate of the DispatcherServletMappingDescription
-     */
-    public String getPredicate() {
+	 * Returns the predicate of the DispatcherServletMappingDescription.
+	 * @return the predicate of the DispatcherServletMappingDescription
+	 */
+	public String getPredicate() {
 		return this.predicate;
 	}
 
 	/**
-     * Returns the details of the DispatcherServletMappingDescription.
-     *
-     * @return the details of the DispatcherServletMappingDescription
-     */
-    public DispatcherServletMappingDetails getDetails() {
+	 * Returns the details of the DispatcherServletMappingDescription.
+	 * @return the details of the DispatcherServletMappingDescription
+	 */
+	public DispatcherServletMappingDetails getDetails() {
 		return this.details;
 	}
 

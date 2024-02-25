@@ -80,22 +80,24 @@ public class MongoReactiveDataAutoConfiguration {
 	private final MongoConnectionDetails connectionDetails;
 
 	/**
-     * Constructs a new MongoReactiveDataAutoConfiguration with the specified connection details.
-     * 
-     * @param connectionDetails the connection details for the MongoDB database
-     */
-    MongoReactiveDataAutoConfiguration(MongoConnectionDetails connectionDetails) {
+	 * Constructs a new MongoReactiveDataAutoConfiguration with the specified connection
+	 * details.
+	 * @param connectionDetails the connection details for the MongoDB database
+	 */
+	MongoReactiveDataAutoConfiguration(MongoConnectionDetails connectionDetails) {
 		this.connectionDetails = connectionDetails;
 	}
 
 	/**
-     * Creates a {@link SimpleReactiveMongoDatabaseFactory} bean if no other bean of type {@link ReactiveMongoDatabaseFactory} is present.
-     * 
-     * @param mongo the {@link MongoClient} instance to use for creating the database factory
-     * @param properties the {@link MongoProperties} instance containing the MongoDB connection details
-     * @return the created {@link SimpleReactiveMongoDatabaseFactory} bean
-     */
-    @Bean
+	 * Creates a {@link SimpleReactiveMongoDatabaseFactory} bean if no other bean of type
+	 * {@link ReactiveMongoDatabaseFactory} is present.
+	 * @param mongo the {@link MongoClient} instance to use for creating the database
+	 * factory
+	 * @param properties the {@link MongoProperties} instance containing the MongoDB
+	 * connection details
+	 * @return the created {@link SimpleReactiveMongoDatabaseFactory} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(ReactiveMongoDatabaseFactory.class)
 	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoClient mongo,
 			MongoProperties properties) {
@@ -107,13 +109,16 @@ public class MongoReactiveDataAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of ReactiveMongoTemplate if no other bean of type ReactiveMongoOperations is present.
-     * 
-     * @param reactiveMongoDatabaseFactory the ReactiveMongoDatabaseFactory used to create the ReactiveMongoTemplate
-     * @param converter the MongoConverter used to convert between Java objects and MongoDB documents
-     * @return a new instance of ReactiveMongoTemplate if no other bean of type ReactiveMongoOperations is present
-     */
-    @Bean
+	 * Creates a new instance of ReactiveMongoTemplate if no other bean of type
+	 * ReactiveMongoOperations is present.
+	 * @param reactiveMongoDatabaseFactory the ReactiveMongoDatabaseFactory used to create
+	 * the ReactiveMongoTemplate
+	 * @param converter the MongoConverter used to convert between Java objects and
+	 * MongoDB documents
+	 * @return a new instance of ReactiveMongoTemplate if no other bean of type
+	 * ReactiveMongoOperations is present
+	 */
+	@Bean
 	@ConditionalOnMissingBean(ReactiveMongoOperations.class)
 	public ReactiveMongoTemplate reactiveMongoTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MongoConverter converter) {
@@ -121,13 +126,13 @@ public class MongoReactiveDataAutoConfiguration {
 	}
 
 	/**
-     * Creates a {@link MappingMongoConverter} bean if no other bean of type {@link MongoConverter} is present.
-     * 
-     * @param context the {@link MongoMappingContext} to use for the converter
-     * @param conversions the {@link MongoCustomConversions} to use for the converter
-     * @return the created {@link MappingMongoConverter} bean
-     */
-    @Bean
+	 * Creates a {@link MappingMongoConverter} bean if no other bean of type
+	 * {@link MongoConverter} is present.
+	 * @param context the {@link MongoMappingContext} to use for the converter
+	 * @param conversions the {@link MongoCustomConversions} to use for the converter
+	 * @return the created {@link MappingMongoConverter} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(MongoConverter.class)
 	public MappingMongoConverter mappingMongoConverter(MongoMappingContext context,
 			MongoCustomConversions conversions) {
@@ -137,25 +142,26 @@ public class MongoReactiveDataAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link DefaultDataBufferFactory} if no other bean of type {@link DataBufferFactory} is present.
-     * 
-     * @return the {@link DefaultDataBufferFactory} instance
-     */
-    @Bean
+	 * Creates a new instance of {@link DefaultDataBufferFactory} if no other bean of type
+	 * {@link DataBufferFactory} is present.
+	 * @return the {@link DefaultDataBufferFactory} instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean(DataBufferFactory.class)
 	public DefaultDataBufferFactory dataBufferFactory() {
 		return new DefaultDataBufferFactory();
 	}
 
 	/**
-     * Creates a new {@link ReactiveGridFsTemplate} bean if there is no existing bean of type {@link ReactiveGridFsOperations}.
-     * 
-     * @param reactiveMongoDatabaseFactory the {@link ReactiveMongoDatabaseFactory} used to create the {@link ReactiveGridFsTemplate}
-     * @param mappingMongoConverter the {@link MappingMongoConverter} used to convert data
-     * @param dataBufferFactory the {@link DataBufferFactory} used to create data buffers
-     * @return the created {@link ReactiveGridFsTemplate} bean
-     */
-    @Bean
+	 * Creates a new {@link ReactiveGridFsTemplate} bean if there is no existing bean of
+	 * type {@link ReactiveGridFsOperations}.
+	 * @param reactiveMongoDatabaseFactory the {@link ReactiveMongoDatabaseFactory} used
+	 * to create the {@link ReactiveGridFsTemplate}
+	 * @param mappingMongoConverter the {@link MappingMongoConverter} used to convert data
+	 * @param dataBufferFactory the {@link DataBufferFactory} used to create data buffers
+	 * @return the created {@link ReactiveGridFsTemplate} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(ReactiveGridFsOperations.class)
 	public ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory) {
@@ -176,35 +182,36 @@ public class MongoReactiveDataAutoConfiguration {
 		private final MongoConnectionDetails connectionDetails;
 
 		/**
-         * Constructs a new GridFsReactiveMongoDatabaseFactory with the specified delegate and connection details.
-         * 
-         * @param delegate the ReactiveMongoDatabaseFactory delegate to be used
-         * @param connectionDetails the MongoConnectionDetails containing the connection details
-         */
-        GridFsReactiveMongoDatabaseFactory(ReactiveMongoDatabaseFactory delegate,
+		 * Constructs a new GridFsReactiveMongoDatabaseFactory with the specified delegate
+		 * and connection details.
+		 * @param delegate the ReactiveMongoDatabaseFactory delegate to be used
+		 * @param connectionDetails the MongoConnectionDetails containing the connection
+		 * details
+		 */
+		GridFsReactiveMongoDatabaseFactory(ReactiveMongoDatabaseFactory delegate,
 				MongoConnectionDetails connectionDetails) {
 			this.delegate = delegate;
 			this.connectionDetails = connectionDetails;
 		}
 
 		/**
-         * Checks if the factory has a codec for the specified type.
-         *
-         * @param type the type to check for a codec
-         * @return {@code true} if the factory has a codec for the specified type, {@code false} otherwise
-         */
-        @Override
+		 * Checks if the factory has a codec for the specified type.
+		 * @param type the type to check for a codec
+		 * @return {@code true} if the factory has a codec for the specified type,
+		 * {@code false} otherwise
+		 */
+		@Override
 		public boolean hasCodecFor(Class<?> type) {
 			return this.delegate.hasCodecFor(type);
 		}
 
 		/**
-         * Retrieves the MongoDatabase instance for the GridFS database.
-         * 
-         * @return a Mono containing the MongoDatabase instance
-         * @throws DataAccessException if an error occurs while retrieving the MongoDatabase
-         */
-        @Override
+		 * Retrieves the MongoDatabase instance for the GridFS database.
+		 * @return a Mono containing the MongoDatabase instance
+		 * @throws DataAccessException if an error occurs while retrieving the
+		 * MongoDatabase
+		 */
+		@Override
 		public Mono<MongoDatabase> getMongoDatabase() throws DataAccessException {
 			String gridFsDatabase = getGridFsDatabase(this.connectionDetails);
 			if (StringUtils.hasText(gridFsDatabase)) {
@@ -214,87 +221,88 @@ public class MongoReactiveDataAutoConfiguration {
 		}
 
 		/**
-         * Returns the database name for GridFS based on the provided MongoConnectionDetails.
-         * 
-         * @param connectionDetails the MongoConnectionDetails object containing the GridFS details
-         * @return the database name for GridFS, or null if GridFS is not configured
-         */
-        private String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
+		 * Returns the database name for GridFS based on the provided
+		 * MongoConnectionDetails.
+		 * @param connectionDetails the MongoConnectionDetails object containing the
+		 * GridFS details
+		 * @return the database name for GridFS, or null if GridFS is not configured
+		 */
+		private String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
 			return (connectionDetails.getGridFs() != null) ? connectionDetails.getGridFs().getDatabase() : null;
 		}
 
 		/**
-         * Retrieves the specified MongoDB database.
-         *
-         * @param dbName the name of the database to retrieve
-         * @return a Mono emitting the requested MongoDatabase
-         * @throws DataAccessException if an error occurs while retrieving the database
-         */
-        @Override
+		 * Retrieves the specified MongoDB database.
+		 * @param dbName the name of the database to retrieve
+		 * @return a Mono emitting the requested MongoDatabase
+		 * @throws DataAccessException if an error occurs while retrieving the database
+		 */
+		@Override
 		public Mono<MongoDatabase> getMongoDatabase(String dbName) throws DataAccessException {
 			return this.delegate.getMongoDatabase(dbName);
 		}
 
 		/**
-         * Retrieves the codec for the specified type from the delegate GridFS database factory.
-         *
-         * @param type the class representing the type for which the codec is requested
-         * @param <T> the type of the codec
-         * @return an Optional containing the codec for the specified type, or an empty Optional if no codec is found
-         */
-        @Override
+		 * Retrieves the codec for the specified type from the delegate GridFS database
+		 * factory.
+		 * @param type the class representing the type for which the codec is requested
+		 * @param <T> the type of the codec
+		 * @return an Optional containing the codec for the specified type, or an empty
+		 * Optional if no codec is found
+		 */
+		@Override
 		public <T> Optional<Codec<T>> getCodecFor(Class<T> type) {
 			return this.delegate.getCodecFor(type);
 		}
 
 		/**
-         * Returns the PersistenceExceptionTranslator used by this GridFsReactiveMongoDatabaseFactory.
-         * 
-         * @return the PersistenceExceptionTranslator used by this GridFsReactiveMongoDatabaseFactory
-         */
-        @Override
+		 * Returns the PersistenceExceptionTranslator used by this
+		 * GridFsReactiveMongoDatabaseFactory.
+		 * @return the PersistenceExceptionTranslator used by this
+		 * GridFsReactiveMongoDatabaseFactory
+		 */
+		@Override
 		public PersistenceExceptionTranslator getExceptionTranslator() {
 			return this.delegate.getExceptionTranslator();
 		}
 
 		/**
-         * Returns the codec registry used by this GridFsReactiveMongoDatabaseFactory.
-         *
-         * @return the codec registry used by this GridFsReactiveMongoDatabaseFactory
-         */
-        @Override
+		 * Returns the codec registry used by this GridFsReactiveMongoDatabaseFactory.
+		 * @return the codec registry used by this GridFsReactiveMongoDatabaseFactory
+		 */
+		@Override
 		public CodecRegistry getCodecRegistry() {
 			return this.delegate.getCodecRegistry();
 		}
 
 		/**
-         * Retrieves a reactive MongoDB session with the given options.
-         *
-         * @param options the options for the session
-         * @return a Mono emitting the reactive MongoDB session
-         */
-        @Override
+		 * Retrieves a reactive MongoDB session with the given options.
+		 * @param options the options for the session
+		 * @return a Mono emitting the reactive MongoDB session
+		 */
+		@Override
 		public Mono<ClientSession> getSession(ClientSessionOptions options) {
 			return this.delegate.getSession(options);
 		}
 
 		/**
-         * Returns a new ReactiveMongoDatabaseFactory instance with the specified ClientSession.
-         *
-         * @param session the ClientSession to be associated with the ReactiveMongoDatabaseFactory
-         * @return a new ReactiveMongoDatabaseFactory instance with the specified ClientSession
-         */
-        @Override
+		 * Returns a new ReactiveMongoDatabaseFactory instance with the specified
+		 * ClientSession.
+		 * @param session the ClientSession to be associated with the
+		 * ReactiveMongoDatabaseFactory
+		 * @return a new ReactiveMongoDatabaseFactory instance with the specified
+		 * ClientSession
+		 */
+		@Override
 		public ReactiveMongoDatabaseFactory withSession(ClientSession session) {
 			return this.delegate.withSession(session);
 		}
 
 		/**
-         * Returns a boolean value indicating whether a transaction is currently active.
-         *
-         * @return {@code true} if a transaction is active, {@code false} otherwise
-         */
-        @Override
+		 * Returns a boolean value indicating whether a transaction is currently active.
+		 * @return {@code true} if a transaction is active, {@code false} otherwise
+		 */
+		@Override
 		public boolean isTransactionActive() {
 			return this.delegate.isTransactionActive();
 		}

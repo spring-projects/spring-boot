@@ -30,17 +30,16 @@ import org.gradle.util.GradleVersion;
 public final class GradleVersions {
 
 	/**
-     * Private constructor for the GradleVersions class.
-     */
-    private GradleVersions() {
+	 * Private constructor for the GradleVersions class.
+	 */
+	private GradleVersions() {
 	}
 
 	/**
-     * Returns a list of all compatible versions.
-     * 
-     * @return a list of all compatible versions
-     */
-    @SuppressWarnings("UnstableApiUsage")
+	 * Returns a list of all compatible versions.
+	 * @return a list of all compatible versions
+	 */
+	@SuppressWarnings("UnstableApiUsage")
 	public static List<String> allCompatible() {
 		if (isJavaVersion(JavaVersion.VERSION_20)) {
 			return Arrays.asList("8.1.1", "8.5");
@@ -49,31 +48,29 @@ public final class GradleVersions {
 	}
 
 	/**
-     * Returns the minimum compatible Gradle version.
-     * 
-     * @return the minimum compatible Gradle version as a String
-     */
-    public static String minimumCompatible() {
+	 * Returns the minimum compatible Gradle version.
+	 * @return the minimum compatible Gradle version as a String
+	 */
+	public static String minimumCompatible() {
 		return allCompatible().get(0);
 	}
 
 	/**
-     * Returns the maximum compatible version of Gradle.
-     * 
-     * @return The maximum compatible version of Gradle as a String.
-     */
-    public static String maximumCompatible() {
+	 * Returns the maximum compatible version of Gradle.
+	 * @return The maximum compatible version of Gradle as a String.
+	 */
+	public static String maximumCompatible() {
 		List<String> versions = allCompatible();
 		return versions.get(versions.size() - 1);
 	}
 
 	/**
-     * Checks if the current Java version is compatible with the specified Java version.
-     *
-     * @param version the Java version to check compatibility with
-     * @return true if the current Java version is compatible with the specified version, false otherwise
-     */
-    private static boolean isJavaVersion(JavaVersion version) {
+	 * Checks if the current Java version is compatible with the specified Java version.
+	 * @param version the Java version to check compatibility with
+	 * @return true if the current Java version is compatible with the specified version,
+	 * false otherwise
+	 */
+	private static boolean isJavaVersion(JavaVersion version) {
 		return JavaVersion.current().isCompatibleWith(version);
 	}
 

@@ -22,11 +22,11 @@ package smoketest.tomcat.jsp;
 public class MyException extends RuntimeException {
 
 	/**
-     * Constructs a new MyException with the specified detail message.
-     *
-     * @param message the detail message (which is saved for later retrieval by the getMessage() method)
-     */
-    public MyException(String message) {
+	 * Constructs a new MyException with the specified detail message.
+	 * @param message the detail message (which is saved for later retrieval by the
+	 * getMessage() method)
+	 */
+	public MyException(String message) {
 		super(message);
 	}
 

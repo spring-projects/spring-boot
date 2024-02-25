@@ -57,12 +57,11 @@ public abstract class DomainSocket extends AbstractSocket {
 	}
 
 	/**
-     * Constructs a new DomainSocket object with the specified path.
-     * 
-     * @param path the path to the domain socket
-     * @throws IOException if an I/O error occurs while opening the domain socket
-     */
-    DomainSocket(String path) throws IOException {
+	 * Constructs a new DomainSocket object with the specified path.
+	 * @param path the path to the domain socket
+	 * @throws IOException if an I/O error occurs while opening the domain socket
+	 */
+	DomainSocket(String path) throws IOException {
 		try {
 			this.fileDescriptor = open(path);
 			this.inputStream = new DomainSocketInputStream();
@@ -74,13 +73,13 @@ public abstract class DomainSocket extends AbstractSocket {
 	}
 
 	/**
-     * Opens a domain socket connection to the specified path.
-     * 
-     * @param path the path of the domain socket
-     * @return a FileDescriptor representing the opened domain socket connection
-     * @throws RuntimeException if an error occurs while opening the domain socket connection
-     */
-    private FileDescriptor open(String path) {
+	 * Opens a domain socket connection to the specified path.
+	 * @param path the path of the domain socket
+	 * @return a FileDescriptor representing the opened domain socket connection
+	 * @throws RuntimeException if an error occurs while opening the domain socket
+	 * connection
+	 */
+	private FileDescriptor open(String path) {
 		int handle = socket(PF_LOCAL, SOCK_STREAM, 0);
 		try {
 			connect(path, handle);
@@ -93,13 +92,12 @@ public abstract class DomainSocket extends AbstractSocket {
 	}
 
 	/**
-     * Reads data from the specified ByteBuffer.
-     * 
-     * @param buffer the ByteBuffer to read data into
-     * @return the number of bytes read, or -1 if the handle is closed
-     * @throws IOException if an I/O error occurs
-     */
-    private int read(ByteBuffer buffer) throws IOException {
+	 * Reads data from the specified ByteBuffer.
+	 * @param buffer the ByteBuffer to read data into
+	 * @return the number of bytes read, or -1 if the handle is closed
+	 * @throws IOException if an I/O error occurs
+	 */
+	private int read(ByteBuffer buffer) throws IOException {
 		try (Handle handle = this.fileDescriptor.acquire()) {
 			if (handle.isClosed()) {
 				return -1;
@@ -114,12 +112,11 @@ public abstract class DomainSocket extends AbstractSocket {
 	}
 
 	/**
-     * Writes the contents of the given ByteBuffer to the domain socket.
-     * 
-     * @param buffer the ByteBuffer containing the data to be written
-     * @throws IOException if an I/O error occurs while writing to the domain socket
-     */
-    public void write(ByteBuffer buffer) throws IOException {
+	 * Writes the contents of the given ByteBuffer to the domain socket.
+	 * @param buffer the ByteBuffer containing the data to be written
+	 * @throws IOException if an I/O error occurs while writing to the domain socket
+	 */
+	public void write(ByteBuffer buffer) throws IOException {
 		try (Handle handle = this.fileDescriptor.acquire()) {
 			if (!handle.isClosed()) {
 				try {
@@ -133,32 +130,29 @@ public abstract class DomainSocket extends AbstractSocket {
 	}
 
 	/**
-     * Returns the input stream associated with this DomainSocket.
-     *
-     * @return the input stream associated with this DomainSocket
-     */
-    @Override
+	 * Returns the input stream associated with this DomainSocket.
+	 * @return the input stream associated with this DomainSocket
+	 */
+	@Override
 	public InputStream getInputStream() {
 		return this.inputStream;
 	}
 
 	/**
-     * Returns the output stream associated with this DomainSocket.
-     *
-     * @return the output stream associated with this DomainSocket
-     */
-    @Override
+	 * Returns the output stream associated with this DomainSocket.
+	 * @return the output stream associated with this DomainSocket
+	 */
+	@Override
 	public OutputStream getOutputStream() {
 		return this.outputStream;
 	}
 
 	/**
-     * Closes the DomainSocket and releases any system resources associated with it.
-     * This method overrides the close() method in the superclass.
-     * 
-     * @throws IOException if an I/O error occurs while closing the DomainSocket
-     */
-    @Override
+	 * Closes the DomainSocket and releases any system resources associated with it. This
+	 * method overrides the close() method in the superclass.
+	 * @throws IOException if an I/O error occurs while closing the DomainSocket
+	 */
+	@Override
 	public void close() throws IOException {
 		super.close();
 		try {
@@ -170,54 +164,50 @@ public abstract class DomainSocket extends AbstractSocket {
 	}
 
 	/**
-     * Connects to a domain socket using the specified path and handle.
-     *
-     * @param path   the path of the domain socket to connect to
-     * @param handle the handle to use for the connection
-     */
-    protected abstract void connect(String path, int handle);
+	 * Connects to a domain socket using the specified path and handle.
+	 * @param path the path of the domain socket to connect to
+	 * @param handle the handle to use for the connection
+	 */
+	protected abstract void connect(String path, int handle);
 
 	/**
-     * Creates a new socket with the specified domain, type, and protocol.
-     *
-     * @param domain    the domain of the socket (e.g., AF_UNIX, AF_INET)
-     * @param type      the type of the socket (e.g., SOCK_STREAM, SOCK_DGRAM)
-     * @param protocol  the protocol to be used by the socket (e.g., IPPROTO_TCP, IPPROTO_UDP)
-     * @return          the file descriptor of the newly created socket
-     * @throws LastErrorException if an error occurs while creating the socket
-     */
-    private native int socket(int domain, int type, int protocol) throws LastErrorException;
+	 * Creates a new socket with the specified domain, type, and protocol.
+	 * @param domain the domain of the socket (e.g., AF_UNIX, AF_INET)
+	 * @param type the type of the socket (e.g., SOCK_STREAM, SOCK_DGRAM)
+	 * @param protocol the protocol to be used by the socket (e.g., IPPROTO_TCP,
+	 * IPPROTO_UDP)
+	 * @return the file descriptor of the newly created socket
+	 * @throws LastErrorException if an error occurs while creating the socket
+	 */
+	private native int socket(int domain, int type, int protocol) throws LastErrorException;
 
 	/**
-     * Reads data from the specified file descriptor into the provided ByteBuffer.
-     * 
-     * @param fd the file descriptor to read from
-     * @param buffer the ByteBuffer to store the read data
-     * @param count the maximum number of bytes to read
-     * @return the number of bytes read
-     * @throws LastErrorException if an error occurs during the read operation
-     */
-    private native int read(int fd, ByteBuffer buffer, int count) throws LastErrorException;
+	 * Reads data from the specified file descriptor into the provided ByteBuffer.
+	 * @param fd the file descriptor to read from
+	 * @param buffer the ByteBuffer to store the read data
+	 * @param count the maximum number of bytes to read
+	 * @return the number of bytes read
+	 * @throws LastErrorException if an error occurs during the read operation
+	 */
+	private native int read(int fd, ByteBuffer buffer, int count) throws LastErrorException;
 
 	/**
-     * Writes data from the specified ByteBuffer to the specified file descriptor.
-     *
-     * @param fd the file descriptor to write to
-     * @param buffer the ByteBuffer containing the data to be written
-     * @param count the number of bytes to write
-     * @return the number of bytes written
-     * @throws LastErrorException if an error occurs during the write operation
-     */
-    private native int write(int fd, ByteBuffer buffer, int count) throws LastErrorException;
+	 * Writes data from the specified ByteBuffer to the specified file descriptor.
+	 * @param fd the file descriptor to write to
+	 * @param buffer the ByteBuffer containing the data to be written
+	 * @param count the number of bytes to write
+	 * @return the number of bytes written
+	 * @throws LastErrorException if an error occurs during the write operation
+	 */
+	private native int write(int fd, ByteBuffer buffer, int count) throws LastErrorException;
 
 	/**
-     * Closes the specified file descriptor.
-     *
-     * @param fd the file descriptor to be closed
-     * @return the result of the close operation
-     * @throws LastErrorException if an error occurs while closing the file descriptor
-     */
-    private native int close(int fd) throws LastErrorException;
+	 * Closes the specified file descriptor.
+	 * @param fd the file descriptor to be closed
+	 * @return the result of the close operation
+	 * @throws LastErrorException if an error occurs while closing the file descriptor
+	 */
+	private native int close(int fd) throws LastErrorException;
 
 	/**
 	 * Return a new {@link DomainSocket} for the given path.
@@ -233,11 +223,11 @@ public abstract class DomainSocket extends AbstractSocket {
 	}
 
 	/**
-     * Checks if the current platform is a BSD platform.
-     * 
-     * @return true if the platform is FreeBSD, kFreeBSD, NetBSD, or OpenBSD; false otherwise.
-     */
-    private static boolean isBsdPlatform() {
+	 * Checks if the current platform is a BSD platform.
+	 * @return true if the platform is FreeBSD, kFreeBSD, NetBSD, or OpenBSD; false
+	 * otherwise.
+	 */
+	private static boolean isBsdPlatform() {
 		return Platform.isFreeBSD() || Platform.iskFreeBSD() || Platform.isNetBSD() || Platform.isOpenBSD();
 	}
 
@@ -247,12 +237,11 @@ public abstract class DomainSocket extends AbstractSocket {
 	private final class DomainSocketInputStream extends InputStream {
 
 		/**
-         * Reads a single byte of data from the underlying DomainSocket.
-         * 
-         * @return the byte read, or -1 if the end of the stream is reached
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Reads a single byte of data from the underlying DomainSocket.
+		 * @return the byte read, or -1 if the end of the stream is reached
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public int read() throws IOException {
 			ByteBuffer buffer = ByteBuffer.allocate(1);
 			int amountRead = DomainSocket.this.read(buffer);
@@ -260,15 +249,15 @@ public abstract class DomainSocket extends AbstractSocket {
 		}
 
 		/**
-         * Reads up to len bytes of data from the input stream into an array of bytes.
-         * 
-         * @param b   the buffer into which the data is read.
-         * @param off the start offset in the buffer at which the data is written.
-         * @param len the maximum number of bytes to read.
-         * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the stream has been reached.
-         * @throws IOException if an I/O error occurs.
-         */
-        @Override
+		 * Reads up to len bytes of data from the input stream into an array of bytes.
+		 * @param b the buffer into which the data is read.
+		 * @param off the start offset in the buffer at which the data is written.
+		 * @param len the maximum number of bytes to read.
+		 * @return the total number of bytes read into the buffer, or -1 if there is no
+		 * more data because the end of the stream has been reached.
+		 * @throws IOException if an I/O error occurs.
+		 */
+		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
 			if (len == 0) {
 				return 0;
@@ -285,12 +274,11 @@ public abstract class DomainSocket extends AbstractSocket {
 	private final class DomainSocketOutputStream extends OutputStream {
 
 		/**
-         * Writes a byte to the output stream.
-         * 
-         * @param b the byte to be written
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Writes a byte to the output stream.
+		 * @param b the byte to be written
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public void write(int b) throws IOException {
 			ByteBuffer buffer = ByteBuffer.allocate(1);
 			buffer.put(0, (byte) (b & 0xFF));
@@ -298,14 +286,13 @@ public abstract class DomainSocket extends AbstractSocket {
 		}
 
 		/**
-         * Writes a portion of an array of bytes to the output stream.
-         * 
-         * @param b the byte array from which the data is written
-         * @param off the starting offset in the byte array
-         * @param len the number of bytes to write
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Writes a portion of an array of bytes to the output stream.
+		 * @param b the byte array from which the data is written
+		 * @param off the starting offset in the byte array
+		 * @param len the number of bytes to write
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public void write(byte[] b, int off, int len) throws IOException {
 			if (len != 0) {
 				DomainSocket.this.write(ByteBuffer.wrap(b, off, len));

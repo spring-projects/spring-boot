@@ -40,20 +40,20 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 class JsonbHttpMessageConvertersConfiguration {
 
 	/**
-     * JsonbHttpMessageConverterConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JsonbHttpMessageConverterConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Jsonb.class)
 	@Conditional(PreferJsonbOrMissingJacksonAndGsonCondition.class)
 	static class JsonbHttpMessageConverterConfiguration {
 
 		/**
-         * Creates a new instance of {@link JsonbHttpMessageConverter} if no other bean of the same type is present.
-         * 
-         * @param jsonb the {@link Jsonb} instance to be used by the converter
-         * @return the created {@link JsonbHttpMessageConverter} instance
-         */
-        @Bean
+		 * Creates a new instance of {@link JsonbHttpMessageConverter} if no other bean of
+		 * the same type is present.
+		 * @param jsonb the {@link Jsonb} instance to be used by the converter
+		 * @return the created {@link JsonbHttpMessageConverter} instance
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		JsonbHttpMessageConverter jsonbHttpMessageConverter(Jsonb jsonb) {
 			JsonbHttpMessageConverter converter = new JsonbHttpMessageConverter();
@@ -64,32 +64,31 @@ class JsonbHttpMessageConvertersConfiguration {
 	}
 
 	/**
-     * PreferJsonbOrMissingJacksonAndGsonCondition class.
-     */
-    private static class PreferJsonbOrMissingJacksonAndGsonCondition extends AnyNestedCondition {
+	 * PreferJsonbOrMissingJacksonAndGsonCondition class.
+	 */
+	private static class PreferJsonbOrMissingJacksonAndGsonCondition extends AnyNestedCondition {
 
 		/**
-         * Constructor for the PreferJsonbOrMissingJacksonAndGsonCondition class.
-         * 
-         * @param phase The configuration phase for registering the bean.
-         */
-        PreferJsonbOrMissingJacksonAndGsonCondition() {
+		 * Constructor for the PreferJsonbOrMissingJacksonAndGsonCondition class.
+		 * @param phase The configuration phase for registering the bean.
+		 */
+		PreferJsonbOrMissingJacksonAndGsonCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
 		/**
-         * JsonbPreferred class.
-         */
-        @ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+		 * JsonbPreferred class.
+		 */
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
 				havingValue = "jsonb")
 		static class JsonbPreferred {
 
 		}
 
 		/**
-         * JacksonAndGsonMissing class.
-         */
-        @ConditionalOnMissingBean({ MappingJackson2HttpMessageConverter.class, GsonHttpMessageConverter.class })
+		 * JacksonAndGsonMissing class.
+		 */
+		@ConditionalOnMissingBean({ MappingJackson2HttpMessageConverter.class, GsonHttpMessageConverter.class })
 		static class JacksonAndGsonMissing {
 
 		}

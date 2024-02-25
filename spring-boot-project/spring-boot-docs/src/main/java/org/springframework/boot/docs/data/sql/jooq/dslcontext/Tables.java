@@ -32,16 +32,15 @@ abstract class Tables {
 	static final TAuthor AUTHOR = null;
 
 	/**
-     * TAuthor class.
-     */
-    abstract class TAuthor extends TableImpl<TAuthorRecord> {
+	 * TAuthor class.
+	 */
+	abstract class TAuthor extends TableImpl<TAuthorRecord> {
 
 		/**
-         * Constructs a new TAuthor object with the specified name.
-         * 
-         * @param name the name of the author
-         */
-        TAuthor(Name name) {
+		 * Constructs a new TAuthor object with the specified name.
+		 * @param name the name of the author
+		 */
+		TAuthor(Name name) {
 			super(name);
 		}
 
@@ -50,16 +49,15 @@ abstract class Tables {
 	}
 
 	/**
-     * TAuthorRecord class.
-     */
-    abstract class TAuthorRecord extends TableRecordImpl<TAuthorRecord> {
+	 * TAuthorRecord class.
+	 */
+	abstract class TAuthorRecord extends TableRecordImpl<TAuthorRecord> {
 
 		/**
-         * Constructs a new TAuthorRecord object with the specified table.
-         * 
-         * @param table the table to be used for constructing the TAuthorRecord object
-         */
-        TAuthorRecord(Table<TAuthorRecord> table) {
+		 * Constructs a new TAuthorRecord object with the specified table.
+		 * @param table the table to be used for constructing the TAuthorRecord object
+		 */
+		TAuthorRecord(Table<TAuthorRecord> table) {
 			super(table);
 		}
 

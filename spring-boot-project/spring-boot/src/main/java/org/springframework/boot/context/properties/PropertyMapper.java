@@ -67,12 +67,11 @@ public final class PropertyMapper {
 	private final SourceOperator sourceOperator;
 
 	/**
-     * Constructs a new PropertyMapper with the specified parent and source operator.
-     * 
-     * @param parent the parent PropertyMapper, can be null if there is no parent
-     * @param sourceOperator the SourceOperator used for mapping properties
-     */
-    private PropertyMapper(PropertyMapper parent, SourceOperator sourceOperator) {
+	 * Constructs a new PropertyMapper with the specified parent and source operator.
+	 * @param parent the parent PropertyMapper, can be null if there is no parent
+	 * @param sourceOperator the SourceOperator used for mapping properties
+	 */
+	private PropertyMapper(PropertyMapper parent, SourceOperator sourceOperator) {
 		this.parent = parent;
 		this.sourceOperator = sourceOperator;
 	}
@@ -87,13 +86,13 @@ public final class PropertyMapper {
 	}
 
 	/**
-     * Returns a new Source object that only emits non-null values from the given Source object.
-     * 
-     * @param source the Source object to filter non-null values from
-     * @param <T> the type of values emitted by the Source object
-     * @return a new Source object that only emits non-null values
-     */
-    private <T> Source<T> whenNonNull(Source<T> source) {
+	 * Returns a new Source object that only emits non-null values from the given Source
+	 * object.
+	 * @param source the Source object to filter non-null values from
+	 * @param <T> the type of values emitted by the Source object
+	 * @return a new Source object that only emits non-null values
+	 */
+	private <T> Source<T> whenNonNull(Source<T> source) {
 		return source.whenNonNull();
 	}
 
@@ -137,13 +136,12 @@ public final class PropertyMapper {
 	}
 
 	/**
-     * Returns a Source object that wraps the given supplier.
-     * 
-     * @param supplier the supplier to be wrapped by the Source object
-     * @param <T> the type of the elements produced by the supplier
-     * @return a Source object that wraps the given supplier
-     */
-    @SuppressWarnings("unchecked")
+	 * Returns a Source object that wraps the given supplier.
+	 * @param supplier the supplier to be wrapped by the Source object
+	 * @param <T> the type of the elements produced by the supplier
+	 * @return a Source object that wraps the given supplier
+	 */
+	@SuppressWarnings("unchecked")
 	private <T> Source<T> getSource(Supplier<T> supplier) {
 		if (this.parent != null) {
 			return this.parent.from(supplier);
@@ -187,13 +185,12 @@ public final class PropertyMapper {
 		private final Predicate<T> predicate;
 
 		/**
-         * Constructs a new Source object with the given supplier and predicate.
-         * 
-         * @param supplier the supplier used to provide the value for the source
-         * @param predicate the predicate used to determine if the value is valid
-         * @throws IllegalArgumentException if the predicate is null
-         */
-        private Source(Supplier<T> supplier, Predicate<T> predicate) {
+		 * Constructs a new Source object with the given supplier and predicate.
+		 * @param supplier the supplier used to provide the value for the source
+		 * @param predicate the predicate used to determine if the value is valid
+		 * @throws IllegalArgumentException if the predicate is null
+		 */
+		private Source(Supplier<T> supplier, Predicate<T> predicate) {
 			Assert.notNull(predicate, "Predicate must not be null");
 			this.supplier = supplier;
 			this.predicate = predicate;
@@ -379,20 +376,20 @@ public final class PropertyMapper {
 		private final Supplier<T> supplier;
 
 		/**
-         * Constructs a new NullPointerExceptionSafeSupplier with the specified supplier.
-         *
-         * @param supplier the supplier to be used by the NullPointerExceptionSafeSupplier
-         */
-        NullPointerExceptionSafeSupplier(Supplier<T> supplier) {
+		 * Constructs a new NullPointerExceptionSafeSupplier with the specified supplier.
+		 * @param supplier the supplier to be used by the NullPointerExceptionSafeSupplier
+		 */
+		NullPointerExceptionSafeSupplier(Supplier<T> supplier) {
 			this.supplier = supplier;
 		}
 
 		/**
-         * Retrieves the value supplied by the supplier, handling any NullPointerException that may occur.
-         * 
-         * @return the value supplied by the supplier, or null if a NullPointerException occurs
-         */
-        @Override
+		 * Retrieves the value supplied by the supplier, handling any NullPointerException
+		 * that may occur.
+		 * @return the value supplied by the supplier, or null if a NullPointerException
+		 * occurs
+		 */
+		@Override
 		public T get() {
 			try {
 				return this.supplier.get();

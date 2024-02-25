@@ -28,14 +28,14 @@ public class ImageProgressUpdateEvent extends ProgressUpdateEvent {
 	private final String id;
 
 	/**
-     * Constructs a new ImageProgressUpdateEvent with the specified id, status, progress detail, and progress.
-     * 
-     * @param id the id of the image progress update event
-     * @param status the status of the image progress update event
-     * @param progressDetail the progress detail of the image progress update event
-     * @param progress the progress of the image progress update event
-     */
-    protected ImageProgressUpdateEvent(String id, String status, ProgressDetail progressDetail, String progress) {
+	 * Constructs a new ImageProgressUpdateEvent with the specified id, status, progress
+	 * detail, and progress.
+	 * @param id the id of the image progress update event
+	 * @param status the status of the image progress update event
+	 * @param progressDetail the progress detail of the image progress update event
+	 * @param progress the progress of the image progress update event
+	 */
+	protected ImageProgressUpdateEvent(String id, String status, ProgressDetail progressDetail, String progress) {
 		super(status, progressDetail, progress);
 		this.id = id;
 	}

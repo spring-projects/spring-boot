@@ -49,14 +49,15 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	private final ClassPathIndexFile classPathIndex;
 
 	/**
-     * Constructs a new ExecutableArchiveLauncher.
-     * 
-     * This constructor creates an ExecutableArchiveLauncher object by initializing the archive and classPathIndex
-     * properties. It throws an IllegalStateException if any exception occurs during the process.
-     * 
-     * @throws IllegalStateException if an exception occurs during the creation of the archive or classPathIndex
-     */
-    public ExecutableArchiveLauncher() {
+	 * Constructs a new ExecutableArchiveLauncher.
+	 *
+	 * This constructor creates an ExecutableArchiveLauncher object by initializing the
+	 * archive and classPathIndex properties. It throws an IllegalStateException if any
+	 * exception occurs during the process.
+	 * @throws IllegalStateException if an exception occurs during the creation of the
+	 * archive or classPathIndex
+	 */
+	public ExecutableArchiveLauncher() {
 		try {
 			this.archive = createArchive();
 			this.classPathIndex = getClassPathIndex(this.archive);
@@ -67,12 +68,12 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-     * Constructs a new ExecutableArchiveLauncher with the specified Archive.
-     * 
-     * @param archive the Archive to be used by the launcher
-     * @throws IllegalStateException if an exception occurs while initializing the launcher
-     */
-    protected ExecutableArchiveLauncher(Archive archive) {
+	 * Constructs a new ExecutableArchiveLauncher with the specified Archive.
+	 * @param archive the Archive to be used by the launcher
+	 * @throws IllegalStateException if an exception occurs while initializing the
+	 * launcher
+	 */
+	protected ExecutableArchiveLauncher(Archive archive) {
 		try {
 			this.archive = archive;
 			this.classPathIndex = getClassPathIndex(this.archive);
@@ -83,13 +84,13 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-     * Retrieves the class path index file for the given archive.
-     * 
-     * @param archive the archive for which to retrieve the class path index file
-     * @return the class path index file if it exists, null otherwise
-     * @throws IOException if an I/O error occurs while retrieving the class path index file
-     */
-    protected ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
+	 * Retrieves the class path index file for the given archive.
+	 * @param archive the archive for which to retrieve the class path index file
+	 * @return the class path index file if it exists, null otherwise
+	 * @throws IOException if an I/O error occurs while retrieving the class path index
+	 * file
+	 */
+	protected ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
 		// Only needed for exploded archives, regular ones already have a defined order
 		if (archive instanceof ExplodedArchive) {
 			String location = getClassPathIndexFileLocation(archive);
@@ -99,13 +100,13 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-     * Returns the location of the classpath index file for the given archive.
-     * 
-     * @param archive the archive for which to retrieve the classpath index file location
-     * @return the location of the classpath index file
-     * @throws IOException if an I/O error occurs while retrieving the manifest or attributes
-     */
-    private String getClassPathIndexFileLocation(Archive archive) throws IOException {
+	 * Returns the location of the classpath index file for the given archive.
+	 * @param archive the archive for which to retrieve the classpath index file location
+	 * @return the location of the classpath index file
+	 * @throws IOException if an I/O error occurs while retrieving the manifest or
+	 * attributes
+	 */
+	private String getClassPathIndexFileLocation(Archive archive) throws IOException {
 		Manifest manifest = archive.getManifest();
 		Attributes attributes = (manifest != null) ? manifest.getMainAttributes() : null;
 		String location = (attributes != null) ? attributes.getValue(BOOT_CLASSPATH_INDEX_ATTRIBUTE) : null;
@@ -113,13 +114,13 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-     * Returns the main class specified in the manifest of the executable archive.
-     * 
-     * @return the main class name
-     * @throws Exception if an error occurs while retrieving the main class
-     * @throws IllegalStateException if no 'Start-Class' manifest entry is specified in the executable archive
-     */
-    @Override
+	 * Returns the main class specified in the manifest of the executable archive.
+	 * @return the main class name
+	 * @throws Exception if an error occurs while retrieving the main class
+	 * @throws IllegalStateException if no 'Start-Class' manifest entry is specified in
+	 * the executable archive
+	 */
+	@Override
 	protected String getMainClass() throws Exception {
 		Manifest manifest = this.archive.getManifest();
 		String mainClass = null;
@@ -133,13 +134,12 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-     * Creates a class loader for the given archives.
-     * 
-     * @param archives the iterator of archives
-     * @return the created class loader
-     * @throws Exception if an error occurs while creating the class loader
-     */
-    @Override
+	 * Creates a class loader for the given archives.
+	 * @param archives the iterator of archives
+	 * @return the created class loader
+	 * @throws Exception if an error occurs while creating the class loader
+	 */
+	@Override
 	protected ClassLoader createClassLoader(Iterator<Archive> archives) throws Exception {
 		List<URL> urls = new ArrayList<>(guessClassPathSize());
 		while (archives.hasNext()) {
@@ -152,11 +152,10 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-     * Returns the estimated size of the class path.
-     * 
-     * @return The estimated size of the class path.
-     */
-    private int guessClassPathSize() {
+	 * Returns the estimated size of the class path.
+	 * @return The estimated size of the class path.
+	 */
+	private int guessClassPathSize() {
 		if (this.classPathIndex != null) {
 			return this.classPathIndex.size() + 10;
 		}
@@ -164,12 +163,11 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-     * Returns an iterator over the class path archives.
-     * 
-     * @return an iterator over the class path archives
-     * @throws Exception if an error occurs while getting the class path archives
-     */
-    @Override
+	 * Returns an iterator over the class path archives.
+	 * @return an iterator over the class path archives
+	 * @throws Exception if an error occurs while getting the class path archives
+	 */
+	@Override
 	protected Iterator<Archive> getClassPathArchivesIterator() throws Exception {
 		Archive.EntryFilter searchFilter = this::isSearchCandidate;
 		Iterator<Archive> archives = this.archive.getNestedArchives(searchFilter,
@@ -181,12 +179,11 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-     * Checks if the given entry is indexed in the class path index.
-     *
-     * @param entry the entry to check
-     * @return true if the entry is indexed, false otherwise
-     */
-    private boolean isEntryIndexed(Archive.Entry entry) {
+	 * Checks if the given entry is indexed in the class path index.
+	 * @param entry the entry to check
+	 * @return true if the entry is indexed, false otherwise
+	 */
+	private boolean isEntryIndexed(Archive.Entry entry) {
 		if (this.classPathIndex != null) {
 			return this.classPathIndex.containsEntry(entry.getName());
 		}
@@ -194,13 +191,12 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-     * Applies post-processing to the classpath archives.
-     * 
-     * @param archives the iterator of archives to be processed
-     * @return the iterator of processed archives
-     * @throws Exception if an error occurs during post-processing
-     */
-    private Iterator<Archive> applyClassPathArchivePostProcessing(Iterator<Archive> archives) throws Exception {
+	 * Applies post-processing to the classpath archives.
+	 * @param archives the iterator of archives to be processed
+	 * @return the iterator of processed archives
+	 * @throws Exception if an error occurs during post-processing
+	 */
+	private Iterator<Archive> applyClassPathArchivePostProcessing(Iterator<Archive> archives) throws Exception {
 		List<Archive> list = new ArrayList<>();
 		while (archives.hasNext()) {
 			list.add(archives.next());
@@ -261,21 +257,19 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-     * Returns a boolean value indicating whether the archive is exploded.
-     * 
-     * @return {@code true} if the archive is exploded, {@code false} otherwise.
-     */
-    @Override
+	 * Returns a boolean value indicating whether the archive is exploded.
+	 * @return {@code true} if the archive is exploded, {@code false} otherwise.
+	 */
+	@Override
 	protected boolean isExploded() {
 		return this.archive.isExploded();
 	}
 
 	/**
-     * Returns the archive associated with this ExecutableArchiveLauncher.
-     *
-     * @return the archive associated with this ExecutableArchiveLauncher
-     */
-    @Override
+	 * Returns the archive associated with this ExecutableArchiveLauncher.
+	 * @return the archive associated with this ExecutableArchiveLauncher
+	 */
+	@Override
 	protected final Archive getArchive() {
 		return this.archive;
 	}

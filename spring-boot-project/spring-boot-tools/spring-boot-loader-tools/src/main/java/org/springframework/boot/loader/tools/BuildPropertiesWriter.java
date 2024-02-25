@@ -50,12 +50,11 @@ public final class BuildPropertiesWriter {
 	}
 
 	/**
-     * Writes the build properties to a file.
-     * 
-     * @param projectDetails the details of the project
-     * @throws IOException if an I/O error occurs
-     */
-    public void writeBuildProperties(ProjectDetails projectDetails) throws IOException {
+	 * Writes the build properties to a file.
+	 * @param projectDetails the details of the project
+	 * @throws IOException if an I/O error occurs
+	 */
+	public void writeBuildProperties(ProjectDetails projectDetails) throws IOException {
 		Properties properties = createBuildInfo(projectDetails);
 		createFileIfNecessary(this.outputFile);
 		try (FileOutputStream outputStream = new FileOutputStream(this.outputFile)) {
@@ -64,13 +63,13 @@ public final class BuildPropertiesWriter {
 	}
 
 	/**
-     * Creates a file if it does not already exist.
-     * 
-     * @param file the file to be created
-     * @throws IOException if an I/O error occurs while creating the file
-     * @throws IllegalStateException if the parent directory cannot be created or if the target file cannot be created
-     */
-    private void createFileIfNecessary(File file) throws IOException {
+	 * Creates a file if it does not already exist.
+	 * @param file the file to be created
+	 * @throws IOException if an I/O error occurs while creating the file
+	 * @throws IllegalStateException if the parent directory cannot be created or if the
+	 * target file cannot be created
+	 */
+	private void createFileIfNecessary(File file) throws IOException {
 		if (file.exists()) {
 			return;
 		}
@@ -85,12 +84,11 @@ public final class BuildPropertiesWriter {
 	}
 
 	/**
-     * Creates a Properties object containing build information for the given project.
-     * 
-     * @param project the ProjectDetails object representing the project
-     * @return a Properties object containing build information
-     */
-    protected Properties createBuildInfo(ProjectDetails project) {
+	 * Creates a Properties object containing build information for the given project.
+	 * @param project the ProjectDetails object representing the project
+	 * @return a Properties object containing build information
+	 */
+	protected Properties createBuildInfo(ProjectDetails project) {
 		Properties properties = CollectionFactory.createSortedProperties(true);
 		addIfHasValue(properties, "build.group", project.getGroup());
 		addIfHasValue(properties, "build.artifact", project.getArtifact());
@@ -106,13 +104,13 @@ public final class BuildPropertiesWriter {
 	}
 
 	/**
-     * Adds the specified name-value pair to the given properties object if the value is not empty or null.
-     * 
-     * @param properties the properties object to add the name-value pair to
-     * @param name the name of the property
-     * @param value the value of the property
-     */
-    private void addIfHasValue(Properties properties, String name, String value) {
+	 * Adds the specified name-value pair to the given properties object if the value is
+	 * not empty or null.
+	 * @param properties the properties object to add the name-value pair to
+	 * @param name the name of the property
+	 * @param value the value of the property
+	 */
+	private void addIfHasValue(Properties properties, String name, String value) {
 		if (StringUtils.hasText(value)) {
 			properties.put(name, value);
 		}
@@ -136,17 +134,17 @@ public final class BuildPropertiesWriter {
 		private final Map<String, String> additionalProperties;
 
 		/**
-         * Constructs a new ProjectDetails object with the specified group, artifact, version, name, time, and additional properties.
-         * 
-         * @param group the group of the project
-         * @param artifact the artifact of the project
-         * @param version the version of the project
-         * @param name the name of the project
-         * @param time the time of the project
-         * @param additionalProperties the additional properties of the project
-         * @throws IllegalArgumentException if the additional properties are invalid
-         */
-        public ProjectDetails(String group, String artifact, String version, String name, Instant time,
+		 * Constructs a new ProjectDetails object with the specified group, artifact,
+		 * version, name, time, and additional properties.
+		 * @param group the group of the project
+		 * @param artifact the artifact of the project
+		 * @param version the version of the project
+		 * @param name the name of the project
+		 * @param time the time of the project
+		 * @param additionalProperties the additional properties of the project
+		 * @throws IllegalArgumentException if the additional properties are invalid
+		 */
+		public ProjectDetails(String group, String artifact, String version, String name, Instant time,
 				Map<String, String> additionalProperties) {
 			this.group = group;
 			this.artifact = artifact;
@@ -158,12 +156,12 @@ public final class BuildPropertiesWriter {
 		}
 
 		/**
-         * Validates the additional properties of a project.
-         * 
-         * @param additionalProperties the map of additional properties to be validated
-         * @throws NullAdditionalPropertyValueException if any additional property value is null
-         */
-        private static void validateAdditionalProperties(Map<String, String> additionalProperties) {
+		 * Validates the additional properties of a project.
+		 * @param additionalProperties the map of additional properties to be validated
+		 * @throws NullAdditionalPropertyValueException if any additional property value
+		 * is null
+		 */
+		private static void validateAdditionalProperties(Map<String, String> additionalProperties) {
 			if (additionalProperties != null) {
 				additionalProperties.forEach((name, value) -> {
 					if (value == null) {
@@ -174,56 +172,50 @@ public final class BuildPropertiesWriter {
 		}
 
 		/**
-         * Returns the group of the project.
-         * 
-         * @return the group of the project
-         */
-        public String getGroup() {
+		 * Returns the group of the project.
+		 * @return the group of the project
+		 */
+		public String getGroup() {
 			return this.group;
 		}
 
 		/**
-         * Returns the artifact of the ProjectDetails.
-         *
-         * @return the artifact of the ProjectDetails
-         */
-        public String getArtifact() {
+		 * Returns the artifact of the ProjectDetails.
+		 * @return the artifact of the ProjectDetails
+		 */
+		public String getArtifact() {
 			return this.artifact;
 		}
 
 		/**
-         * Returns the name of the ProjectDetails object.
-         *
-         * @return the name of the ProjectDetails object
-         */
-        public String getName() {
+		 * Returns the name of the ProjectDetails object.
+		 * @return the name of the ProjectDetails object
+		 */
+		public String getName() {
 			return this.name;
 		}
 
 		/**
-         * Returns the version of the project.
-         *
-         * @return the version of the project
-         */
-        public String getVersion() {
+		 * Returns the version of the project.
+		 * @return the version of the project
+		 */
+		public String getVersion() {
 			return this.version;
 		}
 
 		/**
-         * Returns the current time.
-         *
-         * @return the current time as an Instant object
-         */
-        public Instant getTime() {
+		 * Returns the current time.
+		 * @return the current time as an Instant object
+		 */
+		public Instant getTime() {
 			return this.time;
 		}
 
 		/**
-         * Returns the additional properties of the ProjectDetails.
-         * 
-         * @return the additional properties as a Map<String, String>
-         */
-        public Map<String, String> getAdditionalProperties() {
+		 * Returns the additional properties of the ProjectDetails.
+		 * @return the additional properties as a Map<String, String>
+		 */
+		public Map<String, String> getAdditionalProperties() {
 			return this.additionalProperties;
 		}
 
@@ -235,11 +227,11 @@ public final class BuildPropertiesWriter {
 	public static class NullAdditionalPropertyValueException extends IllegalArgumentException {
 
 		/**
-         * Constructs a new NullAdditionalPropertyValueException with the specified property name.
-         * 
-         * @param name the name of the additional property
-         */
-        public NullAdditionalPropertyValueException(String name) {
+		 * Constructs a new NullAdditionalPropertyValueException with the specified
+		 * property name.
+		 * @param name the name of the additional property
+		 */
+		public NullAdditionalPropertyValueException(String name) {
 			super("Additional property '" + name + "' is illegal as its value is null");
 		}
 

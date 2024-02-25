@@ -31,52 +31,48 @@ public class PropertiesLdapConnectionDetails implements LdapConnectionDetails {
 	private final Environment environment;
 
 	/**
-     * Constructs a new instance of PropertiesLdapConnectionDetails with the specified LdapProperties and Environment.
-     * 
-     * @param properties the LdapProperties object containing the LDAP connection details
-     * @param environment the Environment object containing the environment details
-     */
-    PropertiesLdapConnectionDetails(LdapProperties properties, Environment environment) {
+	 * Constructs a new instance of PropertiesLdapConnectionDetails with the specified
+	 * LdapProperties and Environment.
+	 * @param properties the LdapProperties object containing the LDAP connection details
+	 * @param environment the Environment object containing the environment details
+	 */
+	PropertiesLdapConnectionDetails(LdapProperties properties, Environment environment) {
 		this.properties = properties;
 		this.environment = environment;
 	}
 
 	/**
-     * Returns an array of URLs determined by the properties and environment.
-     * 
-     * @return an array of URLs
-     */
-    @Override
+	 * Returns an array of URLs determined by the properties and environment.
+	 * @return an array of URLs
+	 */
+	@Override
 	public String[] getUrls() {
 		return this.properties.determineUrls(this.environment);
 	}
 
 	/**
-     * Returns the base of the LDAP connection details.
-     * 
-     * @return the base of the LDAP connection details
-     */
-    @Override
+	 * Returns the base of the LDAP connection details.
+	 * @return the base of the LDAP connection details
+	 */
+	@Override
 	public String getBase() {
 		return this.properties.getBase();
 	}
 
 	/**
-     * Returns the username associated with this PropertiesLdapConnectionDetails object.
-     *
-     * @return the username associated with this PropertiesLdapConnectionDetails object
-     */
-    @Override
+	 * Returns the username associated with this PropertiesLdapConnectionDetails object.
+	 * @return the username associated with this PropertiesLdapConnectionDetails object
+	 */
+	@Override
 	public String getUsername() {
 		return this.properties.getUsername();
 	}
 
 	/**
-     * Returns the password for the LDAP connection.
-     * 
-     * @return the password for the LDAP connection
-     */
-    @Override
+	 * Returns the password for the LDAP connection.
+	 * @return the password for the LDAP connection
+	 */
+	@Override
 	public String getPassword() {
 		return this.properties.getPassword();
 	}

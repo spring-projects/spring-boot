@@ -42,11 +42,10 @@ public class ConnectorStartFailedException extends WebServerException {
 	}
 
 	/**
-     * Returns the port number associated with the exception.
-     *
-     * @return the port number
-     */
-    public int getPort() {
+	 * Returns the port number associated with the exception.
+	 * @return the port number
+	 */
+	public int getPort() {
 		return this.port;
 	}
 

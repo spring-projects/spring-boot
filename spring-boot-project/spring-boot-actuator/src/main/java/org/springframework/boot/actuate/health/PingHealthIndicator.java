@@ -27,12 +27,11 @@ package org.springframework.boot.actuate.health;
 public class PingHealthIndicator extends AbstractHealthIndicator {
 
 	/**
-     * Performs a health check for the PingHealthIndicator.
-     * 
-     * @param builder the Health.Builder object used to build the health status
-     * @throws Exception if an error occurs during the health check
-     */
-    @Override
+	 * Performs a health check for the PingHealthIndicator.
+	 * @param builder the Health.Builder object used to build the health status
+	 * @throws Exception if an error occurs during the health check
+	 */
+	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		builder.up();
 	}

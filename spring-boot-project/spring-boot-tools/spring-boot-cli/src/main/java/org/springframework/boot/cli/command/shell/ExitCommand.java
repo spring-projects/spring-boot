@@ -28,24 +28,22 @@ import org.springframework.boot.cli.command.status.ExitStatus;
 class ExitCommand extends AbstractCommand {
 
 	/**
-     * Creates a new ExitCommand object with the specified command name and description.
-     * 
-     * @param commandName the name of the command
-     * @param description the description of the command
-     */
-    ExitCommand() {
+	 * Creates a new ExitCommand object with the specified command name and description.
+	 * @param commandName the name of the command
+	 * @param description the description of the command
+	 */
+	ExitCommand() {
 		super("exit", "Quit the embedded shell");
 	}
 
 	/**
-     * Executes the command and returns the exit status.
-     *
-     * @param args the command arguments
-     * @return the exit status
-     * @throws Exception if an error occurs during command execution
-     * @throws ShellExitException if the command execution results in a shell exit
-     */
-    @Override
+	 * Executes the command and returns the exit status.
+	 * @param args the command arguments
+	 * @return the exit status
+	 * @throws Exception if an error occurs during command execution
+	 * @throws ShellExitException if the command execution results in a shell exit
+	 */
+	@Override
 	public ExitStatus run(String... args) throws Exception {
 		throw new ShellExitException();
 	}

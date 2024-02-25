@@ -27,11 +27,10 @@ import org.springframework.stereotype.Component;
 public class ExampleHealthIndicator implements HealthIndicator {
 
 	/**
-     * Returns the health status of the application.
-     * 
-     * @return the health status of the application
-     */
-    @Override
+	 * Returns the health status of the application.
+	 * @return the health status of the application
+	 */
+	@Override
 	public Health health() {
 		return Health.up().withDetail("counter", 42).build();
 	}

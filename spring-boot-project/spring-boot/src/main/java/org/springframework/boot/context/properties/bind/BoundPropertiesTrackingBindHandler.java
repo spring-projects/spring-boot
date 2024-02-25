@@ -33,27 +33,25 @@ public class BoundPropertiesTrackingBindHandler extends AbstractBindHandler {
 	private final Consumer<ConfigurationProperty> consumer;
 
 	/**
-     * Constructs a new BoundPropertiesTrackingBindHandler with the specified consumer.
-     * 
-     * @param consumer the consumer to be invoked when a configuration property is bound
-     * @throws IllegalArgumentException if the consumer is null
-     */
-    public BoundPropertiesTrackingBindHandler(Consumer<ConfigurationProperty> consumer) {
+	 * Constructs a new BoundPropertiesTrackingBindHandler with the specified consumer.
+	 * @param consumer the consumer to be invoked when a configuration property is bound
+	 * @throws IllegalArgumentException if the consumer is null
+	 */
+	public BoundPropertiesTrackingBindHandler(Consumer<ConfigurationProperty> consumer) {
 		Assert.notNull(consumer, "Consumer must not be null");
 		this.consumer = consumer;
 	}
 
 	/**
-     * This method is called when the binding process is successful.
-     * It overrides the onSuccess method from the superclass.
-     * 
-     * @param name     the name of the configuration property
-     * @param target   the bindable target
-     * @param context  the bind context
-     * @param result   the result of the binding process
-     * @return         the result of the binding process
-     */
-    @Override
+	 * This method is called when the binding process is successful. It overrides the
+	 * onSuccess method from the superclass.
+	 * @param name the name of the configuration property
+	 * @param target the bindable target
+	 * @param context the bind context
+	 * @param result the result of the binding process
+	 * @return the result of the binding process
+	 */
+	@Override
 	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		if (context.getConfigurationProperty() != null && name.equals(context.getConfigurationProperty().getName())) {
 			this.consumer.accept(context.getConfigurationProperty());

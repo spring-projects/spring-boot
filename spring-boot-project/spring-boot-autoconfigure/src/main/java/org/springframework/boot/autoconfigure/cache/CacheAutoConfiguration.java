@@ -63,45 +63,46 @@ import org.springframework.util.Assert;
 public class CacheAutoConfiguration {
 
 	/**
-     * Returns a new instance of {@link CacheManagerCustomizers} by collecting and ordering the cache manager customizers
-     * provided by the {@link ObjectProvider}.
-     *
-     * @param customizers the object provider for cache manager customizers
-     * @return a new instance of {@link CacheManagerCustomizers} with ordered cache manager customizers
-     */
-    @Bean
+	 * Returns a new instance of {@link CacheManagerCustomizers} by collecting and
+	 * ordering the cache manager customizers provided by the {@link ObjectProvider}.
+	 * @param customizers the object provider for cache manager customizers
+	 * @return a new instance of {@link CacheManagerCustomizers} with ordered cache
+	 * manager customizers
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public CacheManagerCustomizers cacheManagerCustomizers(ObjectProvider<CacheManagerCustomizer<?>> customizers) {
 		return new CacheManagerCustomizers(customizers.orderedStream().toList());
 	}
 
 	/**
-     * Validates the cache auto-configuration by checking the cache properties and cache manager.
-     * 
-     * @param cacheProperties the cache properties to be validated
-     * @param cacheManager the cache manager to be validated
-     * @return the cache manager validator
-     */
-    @Bean
+	 * Validates the cache auto-configuration by checking the cache properties and cache
+	 * manager.
+	 * @param cacheProperties the cache properties to be validated
+	 * @param cacheManager the cache manager to be validated
+	 * @return the cache manager validator
+	 */
+	@Bean
 	public CacheManagerValidator cacheAutoConfigurationValidator(CacheProperties cacheProperties,
 			ObjectProvider<CacheManager> cacheManager) {
 		return new CacheManagerValidator(cacheProperties, cacheManager);
 	}
 
 	/**
-     * CacheManagerEntityManagerFactoryDependsOnPostProcessor class.
-     */
-    @ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
+	 * CacheManagerEntityManagerFactoryDependsOnPostProcessor class.
+	 */
+	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
 	static class CacheManagerEntityManagerFactoryDependsOnPostProcessor
 			extends EntityManagerFactoryDependsOnPostProcessor {
 
 		/**
-         * Constructs a new CacheManagerEntityManagerFactoryDependsOnPostProcessor with the specified cache manager bean name.
-         *
-         * @param cacheManagerBeanName the name of the cache manager bean that this post processor depends on
-         */
-        CacheManagerEntityManagerFactoryDependsOnPostProcessor() {
+		 * Constructs a new CacheManagerEntityManagerFactoryDependsOnPostProcessor with
+		 * the specified cache manager bean name.
+		 * @param cacheManagerBeanName the name of the cache manager bean that this post
+		 * processor depends on
+		 */
+		CacheManagerEntityManagerFactoryDependsOnPostProcessor() {
 			super("cacheManager");
 		}
 
@@ -118,25 +119,25 @@ public class CacheAutoConfiguration {
 		private final ObjectProvider<CacheManager> cacheManager;
 
 		/**
-         * Constructs a new CacheManagerValidator with the specified cache properties and cache manager.
-         * 
-         * @param cacheProperties the cache properties to be validated
-         * @param cacheManager the cache manager to be validated
-         */
-        CacheManagerValidator(CacheProperties cacheProperties, ObjectProvider<CacheManager> cacheManager) {
+		 * Constructs a new CacheManagerValidator with the specified cache properties and
+		 * cache manager.
+		 * @param cacheProperties the cache properties to be validated
+		 * @param cacheManager the cache manager to be validated
+		 */
+		CacheManagerValidator(CacheProperties cacheProperties, ObjectProvider<CacheManager> cacheManager) {
 			this.cacheProperties = cacheProperties;
 			this.cacheManager = cacheManager;
 		}
 
 		/**
-         * This method is called after all the properties have been set for the CacheManagerValidator class.
-         * It checks if a cache manager has been auto-configured and throws an exception if not.
-         * The caching type is also checked and included in the exception message.
-         * 
-         * @throws IllegalArgumentException if no cache manager has been auto-configured
-         * @see CacheManagerValidator
-         */
-        @Override
+		 * This method is called after all the properties have been set for the
+		 * CacheManagerValidator class. It checks if a cache manager has been
+		 * auto-configured and throws an exception if not. The caching type is also
+		 * checked and included in the exception message.
+		 * @throws IllegalArgumentException if no cache manager has been auto-configured
+		 * @see CacheManagerValidator
+		 */
+		@Override
 		public void afterPropertiesSet() {
 			Assert.notNull(this.cacheManager.getIfAvailable(),
 					() -> "No cache manager could be auto-configured, check your configuration (caching type is '"
@@ -151,12 +152,11 @@ public class CacheAutoConfiguration {
 	static class CacheConfigurationImportSelector implements ImportSelector {
 
 		/**
-         * Selects the imports for the CacheConfigurationImportSelector class.
-         * 
-         * @param importingClassMetadata the metadata of the importing class
-         * @return an array of strings representing the imports
-         */
-        @Override
+		 * Selects the imports for the CacheConfigurationImportSelector class.
+		 * @param importingClassMetadata the metadata of the importing class
+		 * @return an array of strings representing the imports
+		 */
+		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			CacheType[] types = CacheType.values();
 			String[] imports = new String[types.length];

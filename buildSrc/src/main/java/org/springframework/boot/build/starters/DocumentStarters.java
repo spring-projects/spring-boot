@@ -54,12 +54,14 @@ public class DocumentStarters extends DefaultTask {
 	private File outputDir;
 
 	/**
-     * Initializes the DocumentStarters object.
-     * 
-     * This method creates the "starters" configuration and adds dependencies to it based on the projects evaluated by Gradle.
-     * If a project has the StarterPlugin applied, its path and "starterMetadata" configuration are added as dependencies to the "starters" configuration.
-     */
-    public DocumentStarters() {
+	 * Initializes the DocumentStarters object.
+	 *
+	 * This method creates the "starters" configuration and adds dependencies to it based
+	 * on the projects evaluated by Gradle. If a project has the StarterPlugin applied,
+	 * its path and "starterMetadata" configuration are added as dependencies to the
+	 * "starters" configuration.
+	 */
+	public DocumentStarters() {
 		this.starters = getProject().getConfigurations().create("starters");
 		getProject().getGradle().projectsEvaluated((gradle) -> {
 			gradle.allprojects((project) -> {
@@ -74,42 +76,39 @@ public class DocumentStarters extends DefaultTask {
 	}
 
 	/**
-     * Returns the output directory.
-     *
-     * @return the output directory
-     */
-    @OutputDirectory
+	 * Returns the output directory.
+	 * @return the output directory
+	 */
+	@OutputDirectory
 	public File getOutputDir() {
 		return this.outputDir;
 	}
 
 	/**
-     * Sets the output directory for the DocumentStarters class.
-     * 
-     * @param outputDir the output directory to be set
-     */
-    public void setOutputDir(File outputDir) {
+	 * Sets the output directory for the DocumentStarters class.
+	 * @param outputDir the output directory to be set
+	 */
+	public void setOutputDir(File outputDir) {
 		this.outputDir = outputDir;
 	}
 
 	/**
-     * Returns the collection of starter files.
-     * 
-     * @return The collection of starter files.
-     */
-    @InputFiles
+	 * Returns the collection of starter files.
+	 * @return The collection of starter files.
+	 */
+	@InputFiles
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public FileCollection getStarters() {
 		return this.starters;
 	}
 
 	/**
-     * This method documents the starters in the application.
-     * It retrieves the list of starter files and loads them into a set.
-     * The starters are then categorized into application, production, and technical starters.
-     * Finally, the categorized starters are written into separate tables.
-     */
-    @TaskAction
+	 * This method documents the starters in the application. It retrieves the list of
+	 * starter files and loads them into a set. The starters are then categorized into
+	 * application, production, and technical starters. Finally, the categorized starters
+	 * are written into separate tables.
+	 */
+	@TaskAction
 	void documentStarters() {
 		Set<Starter> starters = this.starters.getFiles()
 			.stream()
@@ -121,13 +120,12 @@ public class DocumentStarters extends DefaultTask {
 	}
 
 	/**
-     * Loads a Starter object from a metadata file.
-     * 
-     * @param metadata the metadata file to load the Starter from
-     * @return the loaded Starter object
-     * @throws RuntimeException if an IOException occurs while reading the metadata file
-     */
-    private Starter loadStarter(File metadata) {
+	 * Loads a Starter object from a metadata file.
+	 * @param metadata the metadata file to load the Starter from
+	 * @return the loaded Starter object
+	 * @throws RuntimeException if an IOException occurs while reading the metadata file
+	 */
+	private Starter loadStarter(File metadata) {
 		Properties properties = new Properties();
 		try (FileReader reader = new FileReader(metadata)) {
 			properties.load(reader);
@@ -140,13 +138,12 @@ public class DocumentStarters extends DefaultTask {
 	}
 
 	/**
-     * Writes a table of starters to a file in AsciiDoc format.
-     * 
-     * @param name     the name of the table
-     * @param starters a stream of Starter objects
-     * @throws RuntimeException if an I/O error occurs
-     */
-    private void writeTable(String name, Stream<Starter> starters) {
+	 * Writes a table of starters to a file in AsciiDoc format.
+	 * @param name the name of the table
+	 * @param starters a stream of Starter objects
+	 * @throws RuntimeException if an I/O error occurs
+	 */
+	private void writeTable(String name, Stream<Starter> starters) {
 		File output = new File(this.outputDir, name + ".adoc");
 		output.getParentFile().mkdirs();
 		try (PrintWriter writer = new PrintWriter(new FileWriter(output))) {
@@ -165,29 +162,27 @@ public class DocumentStarters extends DefaultTask {
 	}
 
 	/**
-     * Post-processes the description by adding starter cross-links.
-     * 
-     * @param description the original description
-     * @return the description with starter cross-links added
-     */
-    private String postProcessDescription(String description) {
+	 * Post-processes the description by adding starter cross-links.
+	 * @param description the original description
+	 * @return the description with starter cross-links added
+	 */
+	private String postProcessDescription(String description) {
 		return addStarterCrossLinks(description);
 	}
 
 	/**
-     * Adds starter cross-links to the given input string.
-     * 
-     * @param input the input string to add starter cross-links to
-     * @return the modified input string with starter cross-links added
-     */
-    private String addStarterCrossLinks(String input) {
+	 * Adds starter cross-links to the given input string.
+	 * @param input the input string to add starter cross-links to
+	 * @return the modified input string with starter cross-links added
+	 */
+	private String addStarterCrossLinks(String input) {
 		return input.replaceAll("(spring-boot-starter[A-Za-z-]*)", "<<$1,`$1`>>");
 	}
 
 	/**
-     * Starter class.
-     */
-    private static final class Starter implements Comparable<Starter> {
+	 * Starter class.
+	 */
+	private static final class Starter implements Comparable<Starter> {
 
 		private final String name;
 
@@ -196,53 +191,53 @@ public class DocumentStarters extends DefaultTask {
 		private final Set<String> dependencies;
 
 		/**
-         * Constructs a new Starter object with the specified name, description, and dependencies.
-         * 
-         * @param name the name of the starter
-         * @param description the description of the starter
-         * @param dependencies the set of dependencies required by the starter
-         */
-        private Starter(String name, String description, Set<String> dependencies) {
+		 * Constructs a new Starter object with the specified name, description, and
+		 * dependencies.
+		 * @param name the name of the starter
+		 * @param description the description of the starter
+		 * @param dependencies the set of dependencies required by the starter
+		 */
+		private Starter(String name, String description, Set<String> dependencies) {
 			this.name = name;
 			this.description = description;
 			this.dependencies = dependencies;
 		}
 
 		/**
-         * Checks if the current instance is in production mode.
-         * 
-         * @return true if the current instance is in production mode, false otherwise.
-         */
-        private boolean isProduction() {
+		 * Checks if the current instance is in production mode.
+		 * @return true if the current instance is in production mode, false otherwise.
+		 */
+		private boolean isProduction() {
 			return this.name.equals("spring-boot-starter-actuator");
 		}
 
 		/**
-         * Checks if the starter is technical.
-         * 
-         * @return true if the starter is technical, false otherwise
-         */
-        private boolean isTechnical() {
+		 * Checks if the starter is technical.
+		 * @return true if the starter is technical, false otherwise
+		 */
+		private boolean isTechnical() {
 			return !Arrays.asList("spring-boot-starter", "spring-boot-starter-test").contains(this.name)
 					&& !isProduction() && !this.dependencies.contains("spring-boot-starter");
 		}
 
 		/**
-         * Checks if the application is running in a non-production and non-technical environment.
-         * 
-         * @return true if the application is running in a non-production and non-technical environment, false otherwise.
-         */
-        private boolean isApplication() {
+		 * Checks if the application is running in a non-production and non-technical
+		 * environment.
+		 * @return true if the application is running in a non-production and
+		 * non-technical environment, false otherwise.
+		 */
+		private boolean isApplication() {
 			return !isProduction() && !isTechnical();
 		}
 
 		/**
-         * Compares this Starter object with the specified Starter object for order based on their names.
-         * 
-         * @param other the other Starter object to be compared
-         * @return a negative integer, zero, or a positive integer as this Starter object is less than, equal to, or greater than the specified Starter object
-         */
-        @Override
+		 * Compares this Starter object with the specified Starter object for order based
+		 * on their names.
+		 * @param other the other Starter object to be compared
+		 * @return a negative integer, zero, or a positive integer as this Starter object
+		 * is less than, equal to, or greater than the specified Starter object
+		 */
+		@Override
 		public int compareTo(Starter other) {
 			return this.name.compareTo(other.name);
 		}

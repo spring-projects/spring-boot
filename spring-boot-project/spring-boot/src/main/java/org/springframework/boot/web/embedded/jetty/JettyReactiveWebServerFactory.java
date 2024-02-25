@@ -99,32 +99,29 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-     * Sets whether to use forward headers.
-     * 
-     * @param useForwardHeaders true to use forward headers, false otherwise
-     */
-    @Override
+	 * Sets whether to use forward headers.
+	 * @param useForwardHeaders true to use forward headers, false otherwise
+	 */
+	@Override
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
 	}
 
 	/**
-     * Sets the number of acceptors for the Jetty Reactive Web Server.
-     * 
-     * @param acceptors the number of acceptors to set
-     */
-    @Override
+	 * Sets the number of acceptors for the Jetty Reactive Web Server.
+	 * @param acceptors the number of acceptors to set
+	 */
+	@Override
 	public void setAcceptors(int acceptors) {
 		this.acceptors = acceptors;
 	}
 
 	/**
-     * Returns a {@link WebServer} instance configured with the given {@link HttpHandler}.
-     * 
-     * @param httpHandler the {@link HttpHandler} to be used by the web server
-     * @return a {@link WebServer} instance
-     */
-    @Override
+	 * Returns a {@link WebServer} instance configured with the given {@link HttpHandler}.
+	 * @param httpHandler the {@link HttpHandler} to be used by the web server
+	 * @return a {@link WebServer} instance
+	 */
+	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		JettyHttpHandlerAdapter servlet = new JettyHttpHandlerAdapter(httpHandler);
 		Server server = createJettyServer(servlet);
@@ -132,22 +129,20 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-     * Adds customizers to the Jetty server.
-     * 
-     * @param customizers the customizers to be added (must not be null)
-     */
-    @Override
+	 * Adds customizers to the Jetty server.
+	 * @param customizers the customizers to be added (must not be null)
+	 */
+	@Override
 	public void addServerCustomizers(JettyServerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
 	}
 
 	/**
-     * Sets the maximum number of connections allowed for this web server.
-     * 
-     * @param maxConnections the maximum number of connections
-     */
-    @Override
+	 * Sets the maximum number of connections allowed for this web server.
+	 * @param maxConnections the maximum number of connections
+	 */
+	@Override
 	public void setMaxConnections(int maxConnections) {
 		this.maxConnections = maxConnections;
 	}
@@ -180,21 +175,19 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-     * Sets the thread pool for this JettyReactiveWebServerFactory.
-     * 
-     * @param threadPool the thread pool to be set
-     */
-    @Override
+	 * Sets the thread pool for this JettyReactiveWebServerFactory.
+	 * @param threadPool the thread pool to be set
+	 */
+	@Override
 	public void setThreadPool(ThreadPool threadPool) {
 		this.threadPool = threadPool;
 	}
 
 	/**
-     * Sets the number of selectors to be used by the Jetty Reactive Web Server.
-     * 
-     * @param selectors the number of selectors to be used
-     */
-    @Override
+	 * Sets the number of selectors to be used by the Jetty Reactive Web Server.
+	 * @param selectors the number of selectors to be used
+	 */
+	@Override
 	public void setSelectors(int selectors) {
 		this.selectors = selectors;
 	}
@@ -209,21 +202,20 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-     * Returns the JettyResourceFactory associated with this JettyReactiveWebServerFactory.
-     *
-     * @return the JettyResourceFactory associated with this JettyReactiveWebServerFactory
-     */
-    protected JettyResourceFactory getResourceFactory() {
+	 * Returns the JettyResourceFactory associated with this
+	 * JettyReactiveWebServerFactory.
+	 * @return the JettyResourceFactory associated with this JettyReactiveWebServerFactory
+	 */
+	protected JettyResourceFactory getResourceFactory() {
 		return this.resourceFactory;
 	}
 
 	/**
-     * Creates a Jetty server with the specified JettyHttpHandlerAdapter servlet.
-     * 
-     * @param servlet The JettyHttpHandlerAdapter servlet to be used by the server.
-     * @return The created Jetty server.
-     */
-    protected Server createJettyServer(JettyHttpHandlerAdapter servlet) {
+	 * Creates a Jetty server with the specified JettyHttpHandlerAdapter servlet.
+	 * @param servlet The JettyHttpHandlerAdapter servlet to be used by the server.
+	 * @return The created Jetty server.
+	 */
+	protected Server createJettyServer(JettyHttpHandlerAdapter servlet) {
 		int port = Math.max(getPort(), 0);
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = new Server(getThreadPool());
@@ -257,13 +249,12 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-     * Creates a connector for the given address and server.
-     * 
-     * @param address the address to bind the connector to
-     * @param server the server instance
-     * @return the created connector
-     */
-    private AbstractConnector createConnector(InetSocketAddress address, Server server) {
+	 * Creates a connector for the given address and server.
+	 * @param address the address to bind the connector to
+	 * @param server the server instance
+	 * @return the created connector
+	 */
+	private AbstractConnector createConnector(InetSocketAddress address, Server server) {
 		HttpConfiguration httpConfiguration = new HttpConfiguration();
 		httpConfiguration.setSendServerVersion(false);
 		List<ConnectionFactory> connectionFactories = new ArrayList<>();
@@ -288,12 +279,11 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-     * Adds handler wrappers to the given handler based on the configuration settings.
-     * 
-     * @param handler the original handler to add wrappers to
-     * @return the modified handler with added wrappers
-     */
-    private Handler addHandlerWrappers(Handler handler) {
+	 * Adds handler wrappers to the given handler based on the configuration settings.
+	 * @param handler the original handler to add wrappers to
+	 * @return the modified handler with added wrappers
+	 */
+	private Handler addHandlerWrappers(Handler handler) {
 		if (getCompression() != null && getCompression().getEnabled()) {
 			handler = applyWrapper(handler, JettyHandlerWrappers.createGzipHandlerWrapper(getCompression()));
 		}
@@ -304,24 +294,22 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-     * Applies a wrapper to the given handler.
-     * 
-     * @param handler the original handler to be wrapped
-     * @param wrapper the wrapper to be applied
-     * @return the wrapped handler
-     */
-    private Handler applyWrapper(Handler handler, Handler.Wrapper wrapper) {
+	 * Applies a wrapper to the given handler.
+	 * @param handler the original handler to be wrapped
+	 * @param wrapper the wrapper to be applied
+	 * @return the wrapped handler
+	 */
+	private Handler applyWrapper(Handler handler, Handler.Wrapper wrapper) {
 		wrapper.setHandler(handler);
 		return wrapper;
 	}
 
 	/**
-     * Customizes the SSL configuration for the given server and address.
-     * 
-     * @param server the server to customize
-     * @param address the address to bind the server to
-     */
-    private void customizeSsl(Server server, InetSocketAddress address) {
+	 * Customizes the SSL configuration for the given server and address.
+	 * @param server the server to customize
+	 * @param address the address to bind the server to
+	 */
+	private void customizeSsl(Server server, InetSocketAddress address) {
 		new SslServerCustomizer(getHttp2(), address, getSsl().getClientAuth(), getSslBundle()).customize(server);
 	}
 

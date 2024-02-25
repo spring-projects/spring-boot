@@ -29,27 +29,27 @@ public class DefaultHealthContributorRegistry extends DefaultContributorRegistry
 		implements HealthContributorRegistry {
 
 	/**
-     * Constructs a new DefaultHealthContributorRegistry.
-     */
-    public DefaultHealthContributorRegistry() {
+	 * Constructs a new DefaultHealthContributorRegistry.
+	 */
+	public DefaultHealthContributorRegistry() {
 	}
 
 	/**
-     * Constructs a new DefaultHealthContributorRegistry with the specified contributors.
-     *
-     * @param contributors a map of contributors where the key is the contributor name and the value is the HealthContributor instance
-     */
-    public DefaultHealthContributorRegistry(Map<String, HealthContributor> contributors) {
+	 * Constructs a new DefaultHealthContributorRegistry with the specified contributors.
+	 * @param contributors a map of contributors where the key is the contributor name and
+	 * the value is the HealthContributor instance
+	 */
+	public DefaultHealthContributorRegistry(Map<String, HealthContributor> contributors) {
 		super(contributors);
 	}
 
 	/**
-     * Constructs a new DefaultHealthContributorRegistry with the specified contributors and name factory.
-     * 
-     * @param contributors the map of contributors to be registered in the registry
-     * @param nameFactory the function used to generate names for the contributors
-     */
-    public DefaultHealthContributorRegistry(Map<String, HealthContributor> contributors,
+	 * Constructs a new DefaultHealthContributorRegistry with the specified contributors
+	 * and name factory.
+	 * @param contributors the map of contributors to be registered in the registry
+	 * @param nameFactory the function used to generate names for the contributors
+	 */
+	public DefaultHealthContributorRegistry(Map<String, HealthContributor> contributors,
 			Function<String, String> nameFactory) {
 		super(contributors, nameFactory);
 	}

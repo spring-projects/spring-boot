@@ -26,14 +26,13 @@ import org.springframework.stereotype.Component;
 public class MyMathService {
 
 	/**
-     * Computes the decimal value of Pi up to a specified precision.
-     *
-     * @param precision the number of decimal places to compute Pi
-     * @return the decimal value of Pi up to the specified precision
-     *
-     * @cacheable("piDecimals")
-     */
-    @Cacheable("piDecimals")
+	 * Computes the decimal value of Pi up to a specified precision.
+	 * @param precision the number of decimal places to compute Pi
+	 * @return the decimal value of Pi up to the specified precision
+	 *
+	 * @cacheable("piDecimals")
+	 */
+	@Cacheable("piDecimals")
 	public int computePiDecimal(int precision) {
 		/**/ return 0;
 	}

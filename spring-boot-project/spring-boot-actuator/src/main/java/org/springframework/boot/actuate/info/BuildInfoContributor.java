@@ -38,30 +38,28 @@ import org.springframework.core.env.PropertySource;
 public class BuildInfoContributor extends InfoPropertiesInfoContributor<BuildProperties> {
 
 	/**
-     * Constructs a new BuildInfoContributor with the specified BuildProperties object.
-     * 
-     * @param properties the BuildProperties object containing build information
-     */
-    public BuildInfoContributor(BuildProperties properties) {
+	 * Constructs a new BuildInfoContributor with the specified BuildProperties object.
+	 * @param properties the BuildProperties object containing build information
+	 */
+	public BuildInfoContributor(BuildProperties properties) {
 		super(properties, Mode.FULL);
 	}
 
 	/**
-     * Contributes build information to the provided Info.Builder object.
-     * 
-     * @param builder the Info.Builder object to which the build information is contributed
-     */
-    @Override
+	 * Contributes build information to the provided Info.Builder object.
+	 * @param builder the Info.Builder object to which the build information is
+	 * contributed
+	 */
+	@Override
 	public void contribute(Info.Builder builder) {
 		builder.withDetail("build", generateContent());
 	}
 
 	/**
-     * Converts the build information to a simple property source.
-     * 
-     * @return the property source containing the build information
-     */
-    @Override
+	 * Converts the build information to a simple property source.
+	 * @return the property source containing the build information
+	 */
+	@Override
 	protected PropertySource<?> toSimplePropertySource() {
 		Properties props = new Properties();
 		copyIfSet(props, "group");
@@ -73,30 +71,29 @@ public class BuildInfoContributor extends InfoPropertiesInfoContributor<BuildPro
 	}
 
 	/**
-     * This method is used to post-process the content of the BuildInfoContributor.
-     * It replaces the value of the "time" key in the content map with the current time obtained from the properties.
-     * 
-     * @param content the content map to be post-processed
-     */
-    @Override
+	 * This method is used to post-process the content of the BuildInfoContributor. It
+	 * replaces the value of the "time" key in the content map with the current time
+	 * obtained from the properties.
+	 * @param content the content map to be post-processed
+	 */
+	@Override
 	protected void postProcessContent(Map<String, Object> content) {
 		replaceValue(content, "time", getProperties().getTime());
 	}
 
 	/**
-     * BuildInfoContributorRuntimeHints class.
-     */
-    static class BuildInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
+	 * BuildInfoContributorRuntimeHints class.
+	 */
+	static class BuildInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		/**
-         * Registers the runtime hints for the BuildInfoContributorRuntimeHints class.
-         * 
-         * @param hints The runtime hints to be registered.
-         * @param classLoader The class loader to be used for registering the hints.
-         */
-        @Override
+		 * Registers the runtime hints for the BuildInfoContributorRuntimeHints class.
+		 * @param hints The runtime hints to be registered.
+		 * @param classLoader The class loader to be used for registering the hints.
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), BuildProperties.class);
 		}

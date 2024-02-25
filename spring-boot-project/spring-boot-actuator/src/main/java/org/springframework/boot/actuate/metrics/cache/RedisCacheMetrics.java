@@ -37,72 +37,65 @@ public class RedisCacheMetrics extends CacheMeterBinder<RedisCache> {
 	private final RedisCache cache;
 
 	/**
-     * Constructs a new RedisCacheMetrics object with the specified RedisCache and tags.
-     * 
-     * @param cache the RedisCache object to monitor metrics for
-     * @param tags the tags to associate with the metrics
-     */
-    public RedisCacheMetrics(RedisCache cache, Iterable<Tag> tags) {
+	 * Constructs a new RedisCacheMetrics object with the specified RedisCache and tags.
+	 * @param cache the RedisCache object to monitor metrics for
+	 * @param tags the tags to associate with the metrics
+	 */
+	public RedisCacheMetrics(RedisCache cache, Iterable<Tag> tags) {
 		super(cache, cache.getName(), tags);
 		this.cache = cache;
 	}
 
 	/**
-     * Returns the size of the Redis cache.
-     *
-     * @return the size of the Redis cache, which is always null in this implementation.
-     */
-    @Override
+	 * Returns the size of the Redis cache.
+	 * @return the size of the Redis cache, which is always null in this implementation.
+	 */
+	@Override
 	protected Long size() {
 		return null;
 	}
 
 	/**
-     * Returns the number of cache hits.
-     *
-     * @return the number of cache hits
-     */
-    @Override
+	 * Returns the number of cache hits.
+	 * @return the number of cache hits
+	 */
+	@Override
 	protected long hitCount() {
 		return this.cache.getStatistics().getHits();
 	}
 
 	/**
-     * Returns the number of cache misses.
-     *
-     * @return the number of cache misses
-     */
-    @Override
+	 * Returns the number of cache misses.
+	 * @return the number of cache misses
+	 */
+	@Override
 	protected Long missCount() {
 		return this.cache.getStatistics().getMisses();
 	}
 
 	/**
-     * Returns the count of evictions from the Redis cache.
-     *
-     * @return the count of evictions, or null if not available
-     */
-    @Override
+	 * Returns the count of evictions from the Redis cache.
+	 * @return the count of evictions, or null if not available
+	 */
+	@Override
 	protected Long evictionCount() {
 		return null;
 	}
 
 	/**
-     * Returns the number of cache puts made by the RedisCacheMetrics instance.
-     *
-     * @return the number of cache puts made
-     */
-    @Override
+	 * Returns the number of cache puts made by the RedisCacheMetrics instance.
+	 * @return the number of cache puts made
+	 */
+	@Override
 	protected long putCount() {
 		return this.cache.getStatistics().getPuts();
 	}
 
 	/**
-     * Binds implementation-specific metrics for the RedisCacheMetrics class.
-     * 
-     * @param registry The MeterRegistry to bind the metrics to.
-     */
-    @Override
+	 * Binds implementation-specific metrics for the RedisCacheMetrics class.
+	 * @param registry The MeterRegistry to bind the metrics to.
+	 */
+	@Override
 	protected void bindImplementationSpecificMetrics(MeterRegistry registry) {
 		FunctionCounter.builder("cache.removals", this.cache, (cache) -> cache.getStatistics().getDeletes())
 			.tags(getTagsWithCacheName())

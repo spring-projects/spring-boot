@@ -73,28 +73,27 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	private static final Log logger = LogFactory.getLog(RandomValuePropertySource.class);
 
 	/**
-     * Constructs a new RandomValuePropertySource with the default name.
-     */
-    public RandomValuePropertySource() {
+	 * Constructs a new RandomValuePropertySource with the default name.
+	 */
+	public RandomValuePropertySource() {
 		this(RANDOM_PROPERTY_SOURCE_NAME);
 	}
 
 	/**
-     * Constructs a new RandomValuePropertySource with the specified name and a new instance of Random as the random number generator.
-     * 
-     * @param name the name of the property source
-     */
-    public RandomValuePropertySource(String name) {
+	 * Constructs a new RandomValuePropertySource with the specified name and a new
+	 * instance of Random as the random number generator.
+	 * @param name the name of the property source
+	 */
+	public RandomValuePropertySource(String name) {
 		super(name, new Random());
 	}
 
 	/**
-     * Retrieves the value of a property with the given name.
-     * 
-     * @param name the name of the property to retrieve
-     * @return the value of the property, or null if the property does not exist
-     */
-    @Override
+	 * Retrieves the value of a property with the given name.
+	 * @param name the name of the property to retrieve
+	 * @return the value of the property, or null if the property does not exist
+	 */
+	@Override
 	public Object getProperty(String name) {
 		if (!name.startsWith(PREFIX)) {
 			return null;
@@ -104,12 +103,12 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	}
 
 	/**
-     * Generates a random value based on the given type.
-     * 
-     * @param type the type of value to generate (int, long, uuid, or any other custom type)
-     * @return a random value of the specified type
-     */
-    private Object getRandomValue(String type) {
+	 * Generates a random value based on the given type.
+	 * @param type the type of value to generate (int, long, uuid, or any other custom
+	 * type)
+	 * @return a random value of the specified type
+	 */
+	private Object getRandomValue(String type) {
 		if (type.equals("int")) {
 			return getSource().nextInt();
 		}
@@ -131,13 +130,12 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	}
 
 	/**
-     * Returns the range of a given type based on a specified prefix.
-     * 
-     * @param type   the type to check for the prefix
-     * @param prefix the prefix to match with the type
-     * @return the range of the type if it starts with the prefix, null otherwise
-     */
-    private String getRange(String type, String prefix) {
+	 * Returns the range of a given type based on a specified prefix.
+	 * @param type the type to check for the prefix
+	 * @param prefix the prefix to match with the type
+	 * @return the range of the type if it starts with the prefix, null otherwise
+	 */
+	private String getRange(String type, String prefix) {
 		if (type.startsWith(prefix)) {
 			int startIndex = prefix.length() + 1;
 			if (type.length() > startIndex) {
@@ -148,70 +146,66 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	}
 
 	/**
-     * Generates a random integer within the specified range.
-     * 
-     * @param range the range within which the random integer should be generated
-     * @return the generated random integer
-     * @throws IllegalArgumentException if the range is invalid
-     */
-    private int getNextIntInRange(Range<Integer> range) {
+	 * Generates a random integer within the specified range.
+	 * @param range the range within which the random integer should be generated
+	 * @return the generated random integer
+	 * @throws IllegalArgumentException if the range is invalid
+	 */
+	private int getNextIntInRange(Range<Integer> range) {
 		OptionalInt first = getSource().ints(1, range.getMin(), range.getMax()).findFirst();
 		assertPresent(first.isPresent(), range);
 		return first.getAsInt();
 	}
 
 	/**
-     * Generates a random long value within the specified range.
-     * 
-     * @param range the range within which the random long value should be generated
-     * @return a random long value within the specified range
-     * @throws IllegalArgumentException if the range is invalid (i.e., min > max)
-     * @throws NoSuchElementException if no value is found within the range
-     */
-    private long getNextLongInRange(Range<Long> range) {
+	 * Generates a random long value within the specified range.
+	 * @param range the range within which the random long value should be generated
+	 * @return a random long value within the specified range
+	 * @throws IllegalArgumentException if the range is invalid (i.e., min > max)
+	 * @throws NoSuchElementException if no value is found within the range
+	 */
+	private long getNextLongInRange(Range<Long> range) {
 		OptionalLong first = getSource().longs(1, range.getMin(), range.getMax()).findFirst();
 		assertPresent(first.isPresent(), range);
 		return first.getAsLong();
 	}
 
 	/**
-     * Asserts that a random number is present for the given range.
-     * 
-     * @param present a boolean indicating if a random number is present
-     * @param range the range for which the random number is being checked
-     * @throws IllegalStateException if the random number is not present
-     */
-    private void assertPresent(boolean present, Range<?> range) {
+	 * Asserts that a random number is present for the given range.
+	 * @param present a boolean indicating if a random number is present
+	 * @param range the range for which the random number is being checked
+	 * @throws IllegalStateException if the random number is not present
+	 */
+	private void assertPresent(boolean present, Range<?> range) {
 		Assert.state(present, () -> "Could not get random number for range '" + range + "'");
 	}
 
 	/**
-     * Generates a random byte array of length 16.
-     * 
-     * @return the randomly generated byte array in hexadecimal format
-     */
-    private Object getRandomBytes() {
+	 * Generates a random byte array of length 16.
+	 * @return the randomly generated byte array in hexadecimal format
+	 */
+	private Object getRandomBytes() {
 		byte[] bytes = new byte[16];
 		getSource().nextBytes(bytes);
 		return HexFormat.of().withLowerCase().formatHex(bytes);
 	}
 
 	/**
-     * Adds the RandomValuePropertySource to the given ConfigurableEnvironment.
-     * 
-     * @param environment the ConfigurableEnvironment to add the RandomValuePropertySource to
-     */
-    public static void addToEnvironment(ConfigurableEnvironment environment) {
+	 * Adds the RandomValuePropertySource to the given ConfigurableEnvironment.
+	 * @param environment the ConfigurableEnvironment to add the RandomValuePropertySource
+	 * to
+	 */
+	public static void addToEnvironment(ConfigurableEnvironment environment) {
 		addToEnvironment(environment, logger);
 	}
 
 	/**
-     * Adds the RandomValuePropertySource to the given ConfigurableEnvironment.
-     * 
-     * @param environment the ConfigurableEnvironment to add the RandomValuePropertySource to
-     * @param logger the Log object used for logging
-     */
-    static void addToEnvironment(ConfigurableEnvironment environment, Log logger) {
+	 * Adds the RandomValuePropertySource to the given ConfigurableEnvironment.
+	 * @param environment the ConfigurableEnvironment to add the RandomValuePropertySource
+	 * to
+	 * @param logger the Log object used for logging
+	 */
+	static void addToEnvironment(ConfigurableEnvironment environment, Log logger) {
 		MutablePropertySources sources = environment.getPropertySources();
 		PropertySource<?> existing = sources.get(RANDOM_PROPERTY_SOURCE_NAME);
 		if (existing != null) {
@@ -229,9 +223,9 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	}
 
 	/**
-     * Range class.
-     */
-    static final class Range<T extends Number> {
+	 * Range class.
+	 */
+	static final class Range<T extends Number> {
 
 		private final String value;
 
@@ -240,55 +234,51 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		private final T max;
 
 		/**
-         * Constructs a new Range object with the specified value, minimum value, and maximum value.
-         * 
-         * @param value the value of the range
-         * @param min the minimum value of the range
-         * @param max the maximum value of the range
-         */
-        private Range(String value, T min, T max) {
+		 * Constructs a new Range object with the specified value, minimum value, and
+		 * maximum value.
+		 * @param value the value of the range
+		 * @param min the minimum value of the range
+		 * @param max the maximum value of the range
+		 */
+		private Range(String value, T min, T max) {
 			this.value = value;
 			this.min = min;
 			this.max = max;
 		}
 
 		/**
-         * Returns the minimum value of the range.
-         *
-         * @return the minimum value of the range
-         */
-        T getMin() {
+		 * Returns the minimum value of the range.
+		 * @return the minimum value of the range
+		 */
+		T getMin() {
 			return this.min;
 		}
 
 		/**
-         * Returns the maximum value of the range.
-         *
-         * @return the maximum value of the range
-         */
-        T getMax() {
+		 * Returns the maximum value of the range.
+		 * @return the maximum value of the range
+		 */
+		T getMax() {
 			return this.max;
 		}
 
 		/**
-         * Returns a string representation of the value of this Range object.
-         *
-         * @return the string representation of the value of this Range object
-         */
-        @Override
+		 * Returns a string representation of the value of this Range object.
+		 * @return the string representation of the value of this Range object
+		 */
+		@Override
 		public String toString() {
 			return this.value;
 		}
 
 		/**
-         * Creates a new Range object with the specified value and bounds.
-         * 
-         * @param value the string representation of the range
-         * @param parse the function used to parse the string representation into a number
-         * @return a new Range object with the specified value and bounds
-         * @throws IllegalArgumentException if the bounds are invalid
-         */
-        static <T extends Number & Comparable<T>> Range<T> of(String value, Function<String, T> parse) {
+		 * Creates a new Range object with the specified value and bounds.
+		 * @param value the string representation of the range
+		 * @param parse the function used to parse the string representation into a number
+		 * @return a new Range object with the specified value and bounds
+		 * @throws IllegalArgumentException if the bounds are invalid
+		 */
+		static <T extends Number & Comparable<T>> Range<T> of(String value, Function<String, T> parse) {
 			T zero = parse.apply("0");
 			String[] tokens = StringUtils.commaDelimitedListToStringArray(value);
 			T min = parse.apply(tokens[0]);

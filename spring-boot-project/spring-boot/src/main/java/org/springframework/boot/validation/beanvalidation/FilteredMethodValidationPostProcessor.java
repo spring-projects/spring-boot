@@ -58,15 +58,17 @@ public class FilteredMethodValidationPostProcessor extends MethodValidationPostP
 	}
 
 	/**
-     * This method is called after all bean properties have been set, and performs additional initialization tasks.
-     * It overrides the {@code afterPropertiesSet()} method from the superclass.
-     * 
-     * It creates a new {@code DefaultPointcutAdvisor} object and retrieves the class filter and method matcher from the existing advisor.
-     * Then, it sets a new pointcut for the advisor by creating a {@code ComposablePointcut} object that intersects the existing class filter and method matcher with the {@code isIncluded()} method.
-     * 
-     * @throws Exception if an error occurs during the initialization process
-     */
-    @Override
+	 * This method is called after all bean properties have been set, and performs
+	 * additional initialization tasks. It overrides the {@code afterPropertiesSet()}
+	 * method from the superclass.
+	 *
+	 * It creates a new {@code DefaultPointcutAdvisor} object and retrieves the class
+	 * filter and method matcher from the existing advisor. Then, it sets a new pointcut
+	 * for the advisor by creating a {@code ComposablePointcut} object that intersects the
+	 * existing class filter and method matcher with the {@code isIncluded()} method.
+	 * @throws Exception if an error occurs during the initialization process
+	 */
+	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 		DefaultPointcutAdvisor advisor = (DefaultPointcutAdvisor) this.advisor;
@@ -76,12 +78,11 @@ public class FilteredMethodValidationPostProcessor extends MethodValidationPostP
 	}
 
 	/**
-     * Checks if the given class is included for method validation.
-     * 
-     * @param candidate the class to be checked
-     * @return true if the class is included, false otherwise
-     */
-    private boolean isIncluded(Class<?> candidate) {
+	 * Checks if the given class is included for method validation.
+	 * @param candidate the class to be checked
+	 * @return true if the class is included, false otherwise
+	 */
+	private boolean isIncluded(Class<?> candidate) {
 		for (MethodValidationExcludeFilter exclusionFilter : this.excludeFilters) {
 			if (exclusionFilter.isExcluded(candidate)) {
 				return false;

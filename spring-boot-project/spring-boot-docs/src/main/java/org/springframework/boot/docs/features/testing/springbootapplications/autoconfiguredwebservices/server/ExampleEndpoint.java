@@ -30,11 +30,10 @@ import org.springframework.xml.transform.StringSource;
 public class ExampleEndpoint {
 
 	/**
-     * Handles the ExampleRequest and returns an ExampleResponse.
-     *
-     * @return The ExampleResponse containing the value 42.
-     */
-    @PayloadRoot(localPart = "ExampleRequest")
+	 * Handles the ExampleRequest and returns an ExampleResponse.
+	 * @return The ExampleResponse containing the value 42.
+	 */
+	@PayloadRoot(localPart = "ExampleRequest")
 	@ResponsePayload
 	public Source handleRequest() {
 		return new StringSource("<ExampleResponse>42</ExampleResponse>");

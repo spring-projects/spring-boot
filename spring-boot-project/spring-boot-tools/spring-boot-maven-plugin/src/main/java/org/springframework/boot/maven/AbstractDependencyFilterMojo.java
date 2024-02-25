@@ -96,40 +96,37 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	private String excludeGroupIds;
 
 	/**
-     * Sets the list of excludes for the dependency filter.
-     * 
-     * @param excludes the list of excludes to set
-     */
-    protected void setExcludes(List<Exclude> excludes) {
+	 * Sets the list of excludes for the dependency filter.
+	 * @param excludes the list of excludes to set
+	 */
+	protected void setExcludes(List<Exclude> excludes) {
 		this.excludes = excludes;
 	}
 
 	/**
-     * Sets the list of includes for the dependency filter.
-     * 
-     * @param includes the list of includes to be set
-     */
-    protected void setIncludes(List<Include> includes) {
+	 * Sets the list of includes for the dependency filter.
+	 * @param includes the list of includes to be set
+	 */
+	protected void setIncludes(List<Include> includes) {
 		this.includes = includes;
 	}
 
 	/**
-     * Sets the excludeGroupIds property.
-     * 
-     * @param excludeGroupIds the comma-separated list of groupIds to exclude
-     */
-    protected void setExcludeGroupIds(String excludeGroupIds) {
+	 * Sets the excludeGroupIds property.
+	 * @param excludeGroupIds the comma-separated list of groupIds to exclude
+	 */
+	protected void setExcludeGroupIds(String excludeGroupIds) {
 		this.excludeGroupIds = excludeGroupIds;
 	}
 
 	/**
-     * Retrieves the URLs of the dependencies based on the provided filters.
-     * 
-     * @param additionalFilters The additional filters to be applied on top of the default filters.
-     * @return The list of URLs representing the dependencies.
-     * @throws MojoExecutionException If an error occurs during the execution of the Mojo.
-     */
-    protected List<URL> getDependencyURLs(ArtifactsFilter... additionalFilters) throws MojoExecutionException {
+	 * Retrieves the URLs of the dependencies based on the provided filters.
+	 * @param additionalFilters The additional filters to be applied on top of the default
+	 * filters.
+	 * @return The list of URLs representing the dependencies.
+	 * @throws MojoExecutionException If an error occurs during the execution of the Mojo.
+	 */
+	protected List<URL> getDependencyURLs(ArtifactsFilter... additionalFilters) throws MojoExecutionException {
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), additionalFilters);
 		List<URL> urls = new ArrayList<>();
 		for (Artifact artifact : artifacts) {
@@ -141,14 +138,13 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	}
 
 	/**
-     * Filters the given set of dependencies based on the provided additional filters.
-     * 
-     * @param dependencies the set of dependencies to be filtered
-     * @param additionalFilters the additional filters to be applied
-     * @return the filtered set of dependencies
-     * @throws MojoExecutionException if an error occurs during the filtering process
-     */
-    protected final Set<Artifact> filterDependencies(Set<Artifact> dependencies, ArtifactsFilter... additionalFilters)
+	 * Filters the given set of dependencies based on the provided additional filters.
+	 * @param dependencies the set of dependencies to be filtered
+	 * @param additionalFilters the additional filters to be applied
+	 * @return the filtered set of dependencies
+	 * @throws MojoExecutionException if an error occurs during the filtering process
+	 */
+	protected final Set<Artifact> filterDependencies(Set<Artifact> dependencies, ArtifactsFilter... additionalFilters)
 			throws MojoExecutionException {
 		try {
 			Set<Artifact> filtered = new LinkedHashSet<>(dependencies);
@@ -161,13 +157,12 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	}
 
 	/**
-     * Converts a File object to a URL object.
-     *
-     * @param file the File object to be converted
-     * @return the URL object representing the file's location
-     * @throws IllegalStateException if the URL for the file is invalid
-     */
-    protected URL toURL(File file) {
+	 * Converts a File object to a URL object.
+	 * @param file the File object to be converted
+	 * @return the URL object representing the file's location
+	 * @throws IllegalStateException if the URL for the file is invalid
+	 */
+	protected URL toURL(File file) {
 		try {
 			return file.toURI().toURL();
 		}
@@ -198,12 +193,12 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	}
 
 	/**
-     * Cleans the filter configuration by removing any leading or trailing whitespace and empty elements.
-     * 
-     * @param content the filter configuration content to be cleaned
-     * @return the cleaned filter configuration content
-     */
-    private String cleanFilterConfig(String content) {
+	 * Cleans the filter configuration by removing any leading or trailing whitespace and
+	 * empty elements.
+	 * @param content the filter configuration content to be cleaned
+	 * @return the cleaned filter configuration content
+	 */
+	private String cleanFilterConfig(String content) {
 		if (content == null || content.trim().isEmpty()) {
 			return "";
 		}
@@ -224,20 +219,19 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	protected static class ExcludeTestScopeArtifactFilter extends AbstractArtifactFeatureFilter {
 
 		/**
-         * Creates a new instance of ExcludeTestScopeArtifactFilter.
-         * This filter excludes artifacts with the test scope.
-         */
-        ExcludeTestScopeArtifactFilter() {
+		 * Creates a new instance of ExcludeTestScopeArtifactFilter. This filter excludes
+		 * artifacts with the test scope.
+		 */
+		ExcludeTestScopeArtifactFilter() {
 			super("", Artifact.SCOPE_TEST);
 		}
 
 		/**
-         * Returns the scope of the given artifact.
-         *
-         * @param artifact the artifact to get the scope from
-         * @return the scope of the artifact
-         */
-        @Override
+		 * Returns the scope of the given artifact.
+		 * @param artifact the artifact to get the scope from
+		 * @return the scope of the artifact
+		 */
+		@Override
 		protected String getArtifactFeature(Artifact artifact) {
 			return artifact.getScope();
 		}
@@ -253,12 +247,11 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 				Artifact.SCOPE_COMPILE_PLUS_RUNTIME, Artifact.SCOPE_RUNTIME);
 
 		/**
-         * Determines whether or not to include the given artifact.
-         * 
-         * @param artifact the artifact to be checked
-         * @return true if the artifact should be included, false otherwise
-         */
-        @Override
+		 * Determines whether or not to include the given artifact.
+		 * @param artifact the artifact to be checked
+		 * @return true if the artifact should be included, false otherwise
+		 */
+		@Override
 		public boolean include(Artifact artifact) {
 			String scope = artifact.getScope();
 			return !artifact.isOptional() && (scope == null || SCOPES.contains(scope));

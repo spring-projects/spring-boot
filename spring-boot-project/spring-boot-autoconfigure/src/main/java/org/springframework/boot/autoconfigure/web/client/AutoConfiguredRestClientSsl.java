@@ -35,33 +35,34 @@ class AutoConfiguredRestClientSsl implements RestClientSsl {
 	private final SslBundles sslBundles;
 
 	/**
-     * Constructs a new AutoConfiguredRestClientSsl with the specified SslBundles.
-     * 
-     * @param sslBundles the SslBundles to be used for SSL configuration
-     */
-    AutoConfiguredRestClientSsl(SslBundles sslBundles) {
+	 * Constructs a new AutoConfiguredRestClientSsl with the specified SslBundles.
+	 * @param sslBundles the SslBundles to be used for SSL configuration
+	 */
+	AutoConfiguredRestClientSsl(SslBundles sslBundles) {
 		this.sslBundles = sslBundles;
 	}
 
 	/**
-     * Returns a Consumer that configures the RestClient.Builder with SSL settings from the specified bundle.
-     * 
-     * @param bundleName the name of the SSL bundle
-     * @return a Consumer that configures the RestClient.Builder with SSL settings from the specified bundle
-     */
-    @Override
+	 * Returns a Consumer that configures the RestClient.Builder with SSL settings from
+	 * the specified bundle.
+	 * @param bundleName the name of the SSL bundle
+	 * @return a Consumer that configures the RestClient.Builder with SSL settings from
+	 * the specified bundle
+	 */
+	@Override
 	public Consumer<RestClient.Builder> fromBundle(String bundleName) {
 		return fromBundle(this.sslBundles.getBundle(bundleName));
 	}
 
 	/**
-     * Creates a Consumer that configures the RestClient.Builder with the provided SslBundle.
-     * The SslBundle contains the necessary SSL/TLS configuration for the RestClient.
-     * 
-     * @param bundle the SslBundle containing the SSL/TLS configuration
-     * @return a Consumer that configures the RestClient.Builder with the provided SslBundle
-     */
-    @Override
+	 * Creates a Consumer that configures the RestClient.Builder with the provided
+	 * SslBundle. The SslBundle contains the necessary SSL/TLS configuration for the
+	 * RestClient.
+	 * @param bundle the SslBundle containing the SSL/TLS configuration
+	 * @return a Consumer that configures the RestClient.Builder with the provided
+	 * SslBundle
+	 */
+	@Override
 	public Consumer<RestClient.Builder> fromBundle(SslBundle bundle) {
 		return (builder) -> {
 			ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS.withSslBundle(bundle);

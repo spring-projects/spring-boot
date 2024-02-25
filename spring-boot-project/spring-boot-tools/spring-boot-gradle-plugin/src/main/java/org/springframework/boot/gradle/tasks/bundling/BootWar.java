@@ -90,50 +90,50 @@ public abstract class BootWar extends War implements BootArchive {
 	}
 
 	/**
-     * Returns the list of provided library files.
-     * 
-     * @return The list of provided library files. If the provided classpath is not set, an empty list is returned.
-     */
-    private Object getProvidedLibFiles() {
+	 * Returns the list of provided library files.
+	 * @return The list of provided library files. If the provided classpath is not set,
+	 * an empty list is returned.
+	 */
+	private Object getProvidedLibFiles() {
 		return (this.providedClasspath != null) ? this.providedClasspath : Collections.emptyList();
 	}
 
 	/**
-     * Sets the resolved artifacts for the BootWar class.
-     * 
-     * @param resolvedArtifacts the provider of the set of resolved artifact results
-     */
-    @Override
+	 * Sets the resolved artifacts for the BootWar class.
+	 * @param resolvedArtifacts the provider of the set of resolved artifact results
+	 */
+	@Override
 	public void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts) {
 		this.resolvedDependencies.resolvedArtifacts(resolvedArtifacts);
 	}
 
 	/**
-     * Returns the resolved dependencies.
-     *
-     * @return the resolved dependencies
-     */
-    @Nested
+	 * Returns the resolved dependencies.
+	 * @return the resolved dependencies
+	 */
+	@Nested
 	ResolvedDependencies getResolvedDependencies() {
 		return this.resolvedDependencies;
 	}
 
 	/**
-     * Copies the necessary files and directories for creating a bootable WAR file.
-     * This method configures the manifest file, sets the main class, sets the directories for classes and libraries,
-     * sets the classpath index, sets the layers index (if not disabled), sets the target Java version,
-     * sets the project name, and sets the project version.
-     * 
-     * @see BootWar#configureManifest(Manifest, String, String, String, String, String, int, String, String)
-     * @see BootWar#getManifest()
-     * @see BootWar#getMainClass()
-     * @see BootWar#isLayeredDisabled()
-     * @see BootWar#getTargetJavaVersion()
-     * @see BootWar#getProjectName()
-     * @see BootWar#getProjectVersion()
-     * @see super#copy()
-     */
-    @Override
+	 * Copies the necessary files and directories for creating a bootable WAR file. This
+	 * method configures the manifest file, sets the main class, sets the directories for
+	 * classes and libraries, sets the classpath index, sets the layers index (if not
+	 * disabled), sets the target Java version, sets the project name, and sets the
+	 * project version.
+	 *
+	 * @see BootWar#configureManifest(Manifest, String, String, String, String, String,
+	 * int, String, String)
+	 * @see BootWar#getManifest()
+	 * @see BootWar#getMainClass()
+	 * @see BootWar#isLayeredDisabled()
+	 * @see BootWar#getTargetJavaVersion()
+	 * @see BootWar#getProjectName()
+	 * @see BootWar#getProjectVersion()
+	 * @see super#copy()
+	 */
+	@Override
 	public void copy() {
 		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY,
 				CLASSPATH_INDEX, (isLayeredDisabled()) ? null : LAYERS_INDEX,
@@ -142,20 +142,18 @@ public abstract class BootWar extends War implements BootArchive {
 	}
 
 	/**
-     * Checks if the layered feature is disabled.
-     * 
-     * @return {@code true} if the layered feature is disabled, {@code false} otherwise.
-     */
-    private boolean isLayeredDisabled() {
+	 * Checks if the layered feature is disabled.
+	 * @return {@code true} if the layered feature is disabled, {@code false} otherwise.
+	 */
+	private boolean isLayeredDisabled() {
 		return !this.layered.getEnabled().get();
 	}
 
 	/**
-     * Creates a copy action for the BootWar class.
-     * 
-     * @return the created CopyAction object
-     */
-    @Override
+	 * Creates a copy action for the BootWar class.
+	 * @return the created CopyAction object
+	 */
+	@Override
 	protected CopyAction createCopyAction() {
 		LoaderImplementation loaderImplementation = getLoaderImplementation().getOrElse(LoaderImplementation.DEFAULT);
 		if (!isLayeredDisabled()) {
@@ -168,50 +166,47 @@ public abstract class BootWar extends War implements BootArchive {
 	}
 
 	/**
-     * Specifies that certain files or directories should be unpacked from the WAR file when it is run.
-     * The files or directories to be unpacked are specified by the given patterns.
-     *
-     * @param patterns the patterns specifying the files or directories to be unpacked
-     */
-    @Override
+	 * Specifies that certain files or directories should be unpacked from the WAR file
+	 * when it is run. The files or directories to be unpacked are specified by the given
+	 * patterns.
+	 * @param patterns the patterns specifying the files or directories to be unpacked
+	 */
+	@Override
 	public void requiresUnpack(String... patterns) {
 		this.support.requiresUnpack(patterns);
 	}
 
 	/**
-     * Sets the specification for unpacking the files in the WAR file.
-     * 
-     * @param spec the specification for unpacking the files
-     */
-    @Override
+	 * Sets the specification for unpacking the files in the WAR file.
+	 * @param spec the specification for unpacking the files
+	 */
+	@Override
 	public void requiresUnpack(Spec<FileTreeElement> spec) {
 		this.support.requiresUnpack(spec);
 	}
 
 	/**
-     * Returns the launch script configuration.
-     * 
-     * @return the launch script configuration
-     */
-    @Override
+	 * Returns the launch script configuration.
+	 * @return the launch script configuration
+	 */
+	@Override
 	public LaunchScriptConfiguration getLaunchScript() {
 		return this.support.getLaunchScript();
 	}
 
 	/**
-     * Launches the script by enabling the launch script if necessary.
-     */
-    @Override
+	 * Launches the script by enabling the launch script if necessary.
+	 */
+	@Override
 	public void launchScript() {
 		enableLaunchScriptIfNecessary();
 	}
 
 	/**
-     * Launches a script with the given configuration.
-     * 
-     * @param action the action to be executed for launching the script
-     */
-    @Override
+	 * Launches a script with the given configuration.
+	 * @param action the action to be executed for launching the script
+	 */
+	@Override
 	public void launchScript(Action<LaunchScriptConfiguration> action) {
 		action.execute(enableLaunchScriptIfNecessary());
 	}
@@ -303,11 +298,10 @@ public abstract class BootWar extends War implements BootArchive {
 	}
 
 	/**
-     * Enables the launch script if it is necessary.
-     * 
-     * @return The launch script configuration.
-     */
-    private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
+	 * Enables the launch script if it is necessary.
+	 * @return The launch script configuration.
+	 */
+	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
 		LaunchScriptConfiguration launchScript = this.support.getLaunchScript();
 		if (launchScript == null) {
 			launchScript = new LaunchScriptConfiguration(this);
@@ -337,17 +331,16 @@ public abstract class BootWar extends War implements BootArchive {
 	}
 
 	/**
-     * LibrarySpec class.
-     */
-    private final class LibrarySpec implements Spec<FileCopyDetails> {
+	 * LibrarySpec class.
+	 */
+	private final class LibrarySpec implements Spec<FileCopyDetails> {
 
 		/**
-         * Checks if the given file copy details satisfy the condition of being a library.
-         * 
-         * @param details the file copy details to be checked
-         * @return true if the file copy details represent a library, false otherwise
-         */
-        @Override
+		 * Checks if the given file copy details satisfy the condition of being a library.
+		 * @param details the file copy details to be checked
+		 * @return true if the file copy details represent a library, false otherwise
+		 */
+		@Override
 		public boolean isSatisfiedBy(FileCopyDetails details) {
 			return isLibrary(details);
 		}
@@ -355,17 +348,16 @@ public abstract class BootWar extends War implements BootArchive {
 	}
 
 	/**
-     * ZipCompressionResolver class.
-     */
-    private final class ZipCompressionResolver implements Function<FileCopyDetails, ZipCompression> {
+	 * ZipCompressionResolver class.
+	 */
+	private final class ZipCompressionResolver implements Function<FileCopyDetails, ZipCompression> {
 
 		/**
-         * Resolves the appropriate ZipCompression for the given FileCopyDetails.
-         * 
-         * @param details the FileCopyDetails to resolve the ZipCompression for
-         * @return the resolved ZipCompression
-         */
-        @Override
+		 * Resolves the appropriate ZipCompression for the given FileCopyDetails.
+		 * @param details the FileCopyDetails to resolve the ZipCompression for
+		 * @return the resolved ZipCompression
+		 */
+		@Override
 		public ZipCompression apply(FileCopyDetails details) {
 			return resolveZipCompression(details);
 		}

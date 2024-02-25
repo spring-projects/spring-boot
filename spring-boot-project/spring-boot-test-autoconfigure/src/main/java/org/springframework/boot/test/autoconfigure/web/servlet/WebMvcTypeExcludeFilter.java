@@ -94,23 +94,21 @@ public final class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizabl
 	private final Class<?>[] controllers;
 
 	/**
-     * Constructs a new WebMvcTypeExcludeFilter with the specified test class.
-     *
-     * @param testClass the test class to be used for constructing the filter
-     */
-    WebMvcTypeExcludeFilter(Class<?> testClass) {
+	 * Constructs a new WebMvcTypeExcludeFilter with the specified test class.
+	 * @param testClass the test class to be used for constructing the filter
+	 */
+	WebMvcTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 		this.controllers = getAnnotation().getValue("controllers", Class[].class).orElse(NO_CONTROLLERS);
 	}
 
 	/**
-     * Returns the default set of classes to include in the filtering process.
-     * If the controllers list is empty, the method returns the default includes
-     * and the controller classes. Otherwise, it returns only the default includes.
-     *
-     * @return the set of classes to include in the filtering process
-     */
-    @Override
+	 * Returns the default set of classes to include in the filtering process. If the
+	 * controllers list is empty, the method returns the default includes and the
+	 * controller classes. Otherwise, it returns only the default includes.
+	 * @return the set of classes to include in the filtering process
+	 */
+	@Override
 	protected Set<Class<?>> getDefaultIncludes() {
 		if (ObjectUtils.isEmpty(this.controllers)) {
 			return DEFAULT_INCLUDES_AND_CONTROLLER;
@@ -119,11 +117,10 @@ public final class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizabl
 	}
 
 	/**
-     * Returns the set of component classes to be included.
-     * 
-     * @return the set of component classes to be included
-     */
-    @Override
+	 * Returns the set of component classes to be included.
+	 * @return the set of component classes to be included
+	 */
+	@Override
 	protected Set<Class<?>> getComponentIncludes() {
 		return new LinkedHashSet<>(Arrays.asList(this.controllers));
 	}

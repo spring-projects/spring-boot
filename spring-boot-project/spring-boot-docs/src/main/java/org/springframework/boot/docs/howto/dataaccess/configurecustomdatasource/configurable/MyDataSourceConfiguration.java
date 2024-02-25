@@ -31,15 +31,15 @@ import org.springframework.context.annotation.Primary;
 public class MyDataSourceConfiguration {
 
 	/**
-     * Returns the DataSourceProperties object for the application's data source.
-     * This method is annotated with @Bean and @Primary to indicate that it is a bean
-     * and should be used as the primary data source configuration.
-     * The @ConfigurationProperties annotation is used to bind the properties from the
-     * "app.datasource" prefix in the application's configuration file to the DataSourceProperties object.
-     * 
-     * @return the DataSourceProperties object for the application's data source
-     */
-    @Bean
+	 * Returns the DataSourceProperties object for the application's data source. This
+	 * method is annotated with @Bean and @Primary to indicate that it is a bean and
+	 * should be used as the primary data source configuration.
+	 * The @ConfigurationProperties annotation is used to bind the properties from the
+	 * "app.datasource" prefix in the application's configuration file to the
+	 * DataSourceProperties object.
+	 * @return the DataSourceProperties object for the application's data source
+	 */
+	@Bean
 	@Primary
 	@ConfigurationProperties("app.datasource")
 	public DataSourceProperties dataSourceProperties() {
@@ -47,12 +47,11 @@ public class MyDataSourceConfiguration {
 	}
 
 	/**
-     * Creates a HikariDataSource using the provided DataSourceProperties.
-     * 
-     * @param properties the DataSourceProperties used to configure the data source
-     * @return a HikariDataSource configured with the provided properties
-     */
-    @Bean
+	 * Creates a HikariDataSource using the provided DataSourceProperties.
+	 * @param properties the DataSourceProperties used to configure the data source
+	 * @return a HikariDataSource configured with the provided properties
+	 */
+	@Bean
 	@ConfigurationProperties("app.datasource.configuration")
 	public HikariDataSource dataSource(DataSourceProperties properties) {
 		return properties.initializeDataSourceBuilder().type(HikariDataSource.class).build();

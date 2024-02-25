@@ -30,14 +30,14 @@ import org.springframework.web.servlet.ModelAndView;
 public class MyErrorViewResolver implements ErrorViewResolver {
 
 	/**
-     * Resolves the error view for the given request, status, and model.
-     * 
-     * @param request The HttpServletRequest object representing the current request.
-     * @param status The HttpStatus object representing the status of the error.
-     * @param model A Map containing the model values for the error view.
-     * @return A ModelAndView object representing the resolved error view, or null if no error view is found.
-     */
-    @Override
+	 * Resolves the error view for the given request, status, and model.
+	 * @param request The HttpServletRequest object representing the current request.
+	 * @param status The HttpStatus object representing the status of the error.
+	 * @param model A Map containing the model values for the error view.
+	 * @return A ModelAndView object representing the resolved error view, or null if no
+	 * error view is found.
+	 */
+	@Override
 	public ModelAndView resolveErrorView(HttpServletRequest request, HttpStatus status, Map<String, Object> model) {
 		// Use the request or status to optionally return a ModelAndView
 		if (status == HttpStatus.INSUFFICIENT_STORAGE) {

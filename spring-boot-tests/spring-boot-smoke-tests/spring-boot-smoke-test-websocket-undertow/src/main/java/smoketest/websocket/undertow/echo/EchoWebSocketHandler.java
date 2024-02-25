@@ -35,32 +35,30 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 	private final EchoService echoService;
 
 	/**
-     * Constructs a new EchoWebSocketHandler with the specified EchoService.
-     * 
-     * @param echoService the EchoService to be used by the WebSocket handler
-     */
-    public EchoWebSocketHandler(EchoService echoService) {
+	 * Constructs a new EchoWebSocketHandler with the specified EchoService.
+	 * @param echoService the EchoService to be used by the WebSocket handler
+	 */
+	public EchoWebSocketHandler(EchoService echoService) {
 		this.echoService = echoService;
 	}
 
 	/**
-     * Called after a WebSocket connection is established.
-     * 
-     * @param session the WebSocketSession object representing the newly established connection
-     */
-    @Override
+	 * Called after a WebSocket connection is established.
+	 * @param session the WebSocketSession object representing the newly established
+	 * connection
+	 */
+	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
 		logger.debug("Opened new session in instance " + this);
 	}
 
 	/**
-     * Handles a text message received from a WebSocket session.
-     * 
-     * @param session the WebSocket session
-     * @param message the text message received
-     * @throws Exception if an error occurs while handling the message
-     */
-    @Override
+	 * Handles a text message received from a WebSocket session.
+	 * @param session the WebSocket session
+	 * @param message the text message received
+	 * @throws Exception if an error occurs while handling the message
+	 */
+	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		String echoMessage = this.echoService.getMessage(message.getPayload());
 		logger.debug(echoMessage);
@@ -68,13 +66,12 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 	}
 
 	/**
-     * Handles a transport error in the WebSocket session.
-     * 
-     * @param session the WebSocket session in which the error occurred
-     * @param exception the exception that caused the error
-     * @throws Exception if an error occurs while handling the transport error
-     */
-    @Override
+	 * Handles a transport error in the WebSocket session.
+	 * @param session the WebSocket session in which the error occurred
+	 * @param exception the exception that caused the error
+	 * @throws Exception if an error occurs while handling the transport error
+	 */
+	@Override
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		session.close(CloseStatus.SERVER_ERROR);
 	}

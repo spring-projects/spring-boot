@@ -42,29 +42,26 @@ public class AcmeProperties {
 	}
 
 	/**
-     * Sets the flag to check the location.
-     * 
-     * @param checkLocation the flag indicating whether to check the location
-     */
-    public void setCheckLocation(boolean checkLocation) {
+	 * Sets the flag to check the location.
+	 * @param checkLocation the flag indicating whether to check the location
+	 */
+	public void setCheckLocation(boolean checkLocation) {
 		this.checkLocation = checkLocation;
 	}
 
 	/**
-     * Returns the login timeout duration.
-     *
-     * @return the login timeout duration
-     */
-    public Duration getLoginTimeout() {
+	 * Returns the login timeout duration.
+	 * @return the login timeout duration
+	 */
+	public Duration getLoginTimeout() {
 		return this.loginTimeout;
 	}
 
 	/**
-     * Sets the login timeout for the AcmeProperties class.
-     * 
-     * @param loginTimeout the duration of the login timeout
-     */
-    public void setLoginTimeout(Duration loginTimeout) {
+	 * Sets the login timeout for the AcmeProperties class.
+	 * @param loginTimeout the duration of the login timeout
+	 */
+	public void setLoginTimeout(Duration loginTimeout) {
 		this.loginTimeout = loginTimeout;
 	}
 	// @fold:off

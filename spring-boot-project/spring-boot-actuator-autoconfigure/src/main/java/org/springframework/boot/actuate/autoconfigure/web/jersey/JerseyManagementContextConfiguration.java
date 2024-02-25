@@ -33,13 +33,12 @@ import org.springframework.context.annotation.Configuration;
 class JerseyManagementContextConfiguration {
 
 	/**
-     * Registers the Jersey servlet with the specified URL mapping.
-     * 
-     * @param jerseyApplicationPath the Jersey application path
-     * @param resourceConfig the resource configuration
-     * @return the servlet registration bean for the Jersey servlet
-     */
-    @Bean
+	 * Registers the Jersey servlet with the specified URL mapping.
+	 * @param jerseyApplicationPath the Jersey application path
+	 * @param resourceConfig the resource configuration
+	 * @return the servlet registration bean for the Jersey servlet
+	 */
+	@Bean
 	ServletRegistrationBean<ServletContainer> jerseyServletRegistration(JerseyApplicationPath jerseyApplicationPath,
 			ResourceConfig resourceConfig) {
 		return new ServletRegistrationBean<>(new ServletContainer(resourceConfig),

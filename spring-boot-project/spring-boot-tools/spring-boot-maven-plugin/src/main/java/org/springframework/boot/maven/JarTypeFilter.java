@@ -38,19 +38,18 @@ class JarTypeFilter extends DependencyFilter {
 		.unmodifiableSet(new HashSet<>(Arrays.asList("annotation-processor", "dependencies-starter")));
 
 	/**
-     * Constructs a new JarTypeFilter with an empty list of jar types.
-     */
-    JarTypeFilter() {
+	 * Constructs a new JarTypeFilter with an empty list of jar types.
+	 */
+	JarTypeFilter() {
 		super(Collections.emptyList());
 	}
 
 	/**
-     * Filters out artifacts based on their jar type.
-     * 
-     * @param artifact the artifact to be filtered
-     * @return true if the artifact should be excluded, false otherwise
-     */
-    @Override
+	 * Filters out artifacts based on their jar type.
+	 * @param artifact the artifact to be filtered
+	 * @return true if the artifact should be excluded, false otherwise
+	 */
+	@Override
 	protected boolean filter(Artifact artifact) {
 		try (JarFile jarFile = new JarFile(artifact.getFile())) {
 			Manifest manifest = jarFile.getManifest();

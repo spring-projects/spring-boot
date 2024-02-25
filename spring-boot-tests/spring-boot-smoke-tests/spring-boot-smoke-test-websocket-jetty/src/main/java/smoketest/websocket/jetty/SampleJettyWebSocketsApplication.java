@@ -46,94 +46,87 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 public class SampleJettyWebSocketsApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
 
 	/**
-     * Registers WebSocket handlers for the application.
-     * 
-     * @param registry the WebSocketHandlerRegistry to register the handlers with
-     */
-    @Override
+	 * Registers WebSocket handlers for the application.
+	 * @param registry the WebSocketHandlerRegistry to register the handlers with
+	 */
+	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		registry.addHandler(echoWebSocketHandler(), "/echo").withSockJS();
 		registry.addHandler(snakeWebSocketHandler(), "/snake").withSockJS();
 	}
 
 	/**
-     * Configures the Spring application builder.
-     * 
-     * @param application the Spring application builder
-     * @return the sources of the Spring application
-     */
-    @Override
+	 * Configures the Spring application builder.
+	 * @param application the Spring application builder
+	 * @return the sources of the Spring application
+	 */
+	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(SampleJettyWebSocketsApplication.class);
 	}
 
 	/**
-     * Creates and returns an instance of the EchoService interface.
-     * 
-     * @return the EchoService instance
-     */
-    @Bean
+	 * Creates and returns an instance of the EchoService interface.
+	 * @return the EchoService instance
+	 */
+	@Bean
 	public EchoService echoService() {
 		return new DefaultEchoService("Did you say \"%s\"?");
 	}
 
 	/**
-     * Creates a new instance of the GreetingService interface using the SimpleGreetingService implementation.
-     * 
-     * @return the newly created GreetingService instance
-     */
-    @Bean
+	 * Creates a new instance of the GreetingService interface using the
+	 * SimpleGreetingService implementation.
+	 * @return the newly created GreetingService instance
+	 */
+	@Bean
 	public GreetingService greetingService() {
 		return new SimpleGreetingService();
 	}
 
 	/**
-     * Creates a WebSocketHandler that handles incoming WebSocket messages by echoing them back to the sender.
-     * 
-     * @return the created WebSocketHandler
-     */
-    @Bean
+	 * Creates a WebSocketHandler that handles incoming WebSocket messages by echoing them
+	 * back to the sender.
+	 * @return the created WebSocketHandler
+	 */
+	@Bean
 	public WebSocketHandler echoWebSocketHandler() {
 		return new EchoWebSocketHandler(echoService());
 	}
 
 	/**
-     * Creates a WebSocketHandler for handling snake game WebSocket connections.
-     * 
-     * @return the WebSocketHandler instance for snake game WebSocket connections
-     */
-    @Bean
+	 * Creates a WebSocketHandler for handling snake game WebSocket connections.
+	 * @return the WebSocketHandler instance for snake game WebSocket connections
+	 */
+	@Bean
 	public WebSocketHandler snakeWebSocketHandler() {
 		return new PerConnectionWebSocketHandler(SnakeWebSocketHandler.class);
 	}
 
 	/**
-     * Creates a new instance of ReverseWebSocketEndpoint.
-     * 
-     * @return the newly created ReverseWebSocketEndpoint instance
-     */
-    @Bean
+	 * Creates a new instance of ReverseWebSocketEndpoint.
+	 * @return the newly created ReverseWebSocketEndpoint instance
+	 */
+	@Bean
 	public ReverseWebSocketEndpoint reverseWebSocketEndpoint() {
 		return new ReverseWebSocketEndpoint();
 	}
 
 	/**
-     * Initializes and configures the ServerEndpointExporter.
-     * 
-     * @return the ServerEndpointExporter instance
-     */
-    @Bean
+	 * Initializes and configures the ServerEndpointExporter.
+	 * @return the ServerEndpointExporter instance
+	 */
+	@Bean
 	public ServerEndpointExporter serverEndpointExporter() {
 		return new ServerEndpointExporter();
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring application by running the SampleJettyWebSocketsApplication class.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring
+	 * application by running the SampleJettyWebSocketsApplication class.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleJettyWebSocketsApplication.class, args);
 	}
 

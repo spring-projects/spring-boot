@@ -32,11 +32,10 @@ public class MyBean {
 	private final MongoDatabaseFactory mongo;
 
 	/**
-     * Constructs a new instance of MyBean with the specified MongoDatabaseFactory.
-     * 
-     * @param mongo the MongoDatabaseFactory to be used by the MyBean instance
-     */
-    public MyBean(MongoDatabaseFactory mongo) {
+	 * Constructs a new instance of MyBean with the specified MongoDatabaseFactory.
+	 * @param mongo the MongoDatabaseFactory to be used by the MyBean instance
+	 */
+	public MyBean(MongoDatabaseFactory mongo) {
 		this.mongo = mongo;
 	}
 

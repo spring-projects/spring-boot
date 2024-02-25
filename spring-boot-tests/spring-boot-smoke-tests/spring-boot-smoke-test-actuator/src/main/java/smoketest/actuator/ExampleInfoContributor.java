@@ -29,11 +29,11 @@ import org.springframework.stereotype.Component;
 public class ExampleInfoContributor implements InfoContributor {
 
 	/**
-     * Contributes additional information to the provided Info.Builder object.
-     * 
-     * @param builder the Info.Builder object to which the additional information is contributed
-     */
-    @Override
+	 * Contributes additional information to the provided Info.Builder object.
+	 * @param builder the Info.Builder object to which the additional information is
+	 * contributed
+	 */
+	@Override
 	public void contribute(Info.Builder builder) {
 		builder.withDetail("example", Collections.singletonMap("someKey", "someValue"));
 	}

@@ -29,23 +29,23 @@ public class CloudFoundryAuthorizationException extends RuntimeException {
 	private final Reason reason;
 
 	/**
-     * Constructs a new CloudFoundryAuthorizationException with the specified reason, message, and cause.
-     *
-     * @param reason the reason for the exception
-     * @param message the detail message
-     */
-    public CloudFoundryAuthorizationException(Reason reason, String message) {
+	 * Constructs a new CloudFoundryAuthorizationException with the specified reason,
+	 * message, and cause.
+	 * @param reason the reason for the exception
+	 * @param message the detail message
+	 */
+	public CloudFoundryAuthorizationException(Reason reason, String message) {
 		this(reason, message, null);
 	}
 
 	/**
-     * Constructs a new CloudFoundryAuthorizationException with the specified reason, message, and cause.
-     * 
-     * @param reason the reason for the exception
-     * @param message the detail message
-     * @param cause the cause of the exception
-     */
-    public CloudFoundryAuthorizationException(Reason reason, String message, Throwable cause) {
+	 * Constructs a new CloudFoundryAuthorizationException with the specified reason,
+	 * message, and cause.
+	 * @param reason the reason for the exception
+	 * @param message the detail message
+	 * @param cause the cause of the exception
+	 */
+	public CloudFoundryAuthorizationException(Reason reason, String message, Throwable cause) {
 		super(message, cause);
 		this.reason = reason;
 	}
@@ -124,20 +124,19 @@ public class CloudFoundryAuthorizationException extends RuntimeException {
 		private final HttpStatus status;
 
 		/**
-     * Constructs a new CloudFoundryAuthorizationException with the specified HTTP status.
-     *
-     * @param status the HTTP status of the exception
-     */
-    Reason(HttpStatus status) {
+		 * Constructs a new CloudFoundryAuthorizationException with the specified HTTP
+		 * status.
+		 * @param status the HTTP status of the exception
+		 */
+		Reason(HttpStatus status) {
 			this.status = status;
 		}
 
 		/**
-     * Returns the HTTP status code associated with this exception.
-     *
-     * @return the HTTP status code
-     */
-    public HttpStatus getStatus() {
+		 * Returns the HTTP status code associated with this exception.
+		 * @return the HTTP status code
+		 */
+		public HttpStatus getStatus() {
 			return this.status;
 		}
 

@@ -57,24 +57,26 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	private final KafkaProperties properties;
 
 	/**
-     * Constructs a new KafkaStreamsAnnotationDrivenConfiguration with the specified KafkaProperties.
-     *
-     * @param properties the KafkaProperties to be used for configuring the KafkaStreamsAnnotationDrivenConfiguration
-     */
-    KafkaStreamsAnnotationDrivenConfiguration(KafkaProperties properties) {
+	 * Constructs a new KafkaStreamsAnnotationDrivenConfiguration with the specified
+	 * KafkaProperties.
+	 * @param properties the KafkaProperties to be used for configuring the
+	 * KafkaStreamsAnnotationDrivenConfiguration
+	 */
+	KafkaStreamsAnnotationDrivenConfiguration(KafkaProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Generates a default KafkaStreamsConfiguration bean if no other bean of the same type is present.
-     * 
-     * @param environment The environment object used to retrieve properties.
-     * @param connectionDetails The Kafka connection details.
-     * @param sslBundles The SSL bundles object provider.
-     * @return The default KafkaStreamsConfiguration bean.
-     * @throws InvalidConfigurationPropertyValueException If the 'spring.kafka.streams.application-id' property is not set.
-     */
-    @ConditionalOnMissingBean
+	 * Generates a default KafkaStreamsConfiguration bean if no other bean of the same
+	 * type is present.
+	 * @param environment The environment object used to retrieve properties.
+	 * @param connectionDetails The Kafka connection details.
+	 * @param sslBundles The SSL bundles object provider.
+	 * @return The default KafkaStreamsConfiguration bean.
+	 * @throws InvalidConfigurationPropertyValueException If the
+	 * 'spring.kafka.streams.application-id' property is not set.
+	 */
+	@ConditionalOnMissingBean
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment,
 			KafkaConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
@@ -92,13 +94,12 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Configures the KafkaStreamsFactoryBean with customizers.
-     * 
-     * @param factoryBean The StreamsBuilderFactoryBean instance.
-     * @param customizers The customizers for the StreamsBuilderFactoryBean.
-     * @return The KafkaStreamsFactoryBeanConfigurer instance.
-     */
-    @Bean
+	 * Configures the KafkaStreamsFactoryBean with customizers.
+	 * @param factoryBean The StreamsBuilderFactoryBean instance.
+	 * @param customizers The customizers for the StreamsBuilderFactoryBean.
+	 * @return The KafkaStreamsFactoryBeanConfigurer instance.
+	 */
+	@Bean
 	KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
 			@Qualifier(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME) StreamsBuilderFactoryBean factoryBean,
 			ObjectProvider<StreamsBuilderFactoryBeanCustomizer> customizers) {
@@ -107,12 +108,11 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Applies the Kafka connection details for streams to the given properties map.
-     * 
-     * @param properties the properties map to apply the connection details to
-     * @param connectionDetails the Kafka connection details to apply
-     */
-    private void applyKafkaConnectionDetailsForStreams(Map<String, Object> properties,
+	 * Applies the Kafka connection details for streams to the given properties map.
+	 * @param properties the properties map to apply the connection details to
+	 * @param connectionDetails the Kafka connection details to apply
+	 */
+	private void applyKafkaConnectionDetailsForStreams(Map<String, Object> properties,
 			KafkaConnectionDetails connectionDetails) {
 		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, connectionDetails.getStreamsBootstrapServers());
 		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {
@@ -128,23 +128,23 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		private final StreamsBuilderFactoryBean factoryBean;
 
 		/**
-         * Constructs a new KafkaStreamsFactoryBeanConfigurer with the specified KafkaProperties and StreamsBuilderFactoryBean.
-         * 
-         * @param properties the KafkaProperties to be used
-         * @param factoryBean the StreamsBuilderFactoryBean to be used
-         */
-        KafkaStreamsFactoryBeanConfigurer(KafkaProperties properties, StreamsBuilderFactoryBean factoryBean) {
+		 * Constructs a new KafkaStreamsFactoryBeanConfigurer with the specified
+		 * KafkaProperties and StreamsBuilderFactoryBean.
+		 * @param properties the KafkaProperties to be used
+		 * @param factoryBean the StreamsBuilderFactoryBean to be used
+		 */
+		KafkaStreamsFactoryBeanConfigurer(KafkaProperties properties, StreamsBuilderFactoryBean factoryBean) {
 			this.properties = properties;
 			this.factoryBean = factoryBean;
 		}
 
 		/**
-         * Sets the auto startup and cleanup configuration for the KafkaStreamsFactoryBean.
-         * This method is called after all properties have been set.
-         * 
-         * @throws Exception if an error occurs during the initialization
-         */
-        @Override
+		 * Sets the auto startup and cleanup configuration for the
+		 * KafkaStreamsFactoryBean. This method is called after all properties have been
+		 * set.
+		 * @throws Exception if an error occurs during the initialization
+		 */
+		@Override
 		public void afterPropertiesSet() {
 			this.factoryBean.setAutoStartup(this.properties.getStreams().isAutoStartup());
 			KafkaProperties.Cleanup cleanup = this.properties.getStreams().getCleanup();

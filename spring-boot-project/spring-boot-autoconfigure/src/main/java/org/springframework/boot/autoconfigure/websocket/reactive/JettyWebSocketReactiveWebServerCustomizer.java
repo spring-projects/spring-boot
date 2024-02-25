@@ -39,11 +39,10 @@ public class JettyWebSocketReactiveWebServerCustomizer
 		implements WebServerFactoryCustomizer<JettyReactiveWebServerFactory>, Ordered {
 
 	/**
-     * Customize the Jetty Reactive Web Server Factory.
-     * 
-     * @param factory the Jetty Reactive Web Server Factory to customize
-     */
-    @Override
+	 * Customize the Jetty Reactive Web Server Factory.
+	 * @param factory the Jetty Reactive Web Server Factory to customize
+	 */
+	@Override
 	public void customize(JettyReactiveWebServerFactory factory) {
 		factory.addServerCustomizers((server) -> {
 			ServletContextHandler servletContextHandler = findServletContextHandler(server);
@@ -64,12 +63,11 @@ public class JettyWebSocketReactiveWebServerCustomizer
 	}
 
 	/**
-     * Finds the ServletContextHandler from the given Handler.
-     * 
-     * @param handler the Handler to search for ServletContextHandler
-     * @return the found ServletContextHandler, or null if not found
-     */
-    private ServletContextHandler findServletContextHandler(Handler handler) {
+	 * Finds the ServletContextHandler from the given Handler.
+	 * @param handler the Handler to search for ServletContextHandler
+	 * @return the found ServletContextHandler, or null if not found
+	 */
+	private ServletContextHandler findServletContextHandler(Handler handler) {
 		if (handler instanceof ServletContextHandler servletContextHandler) {
 			return servletContextHandler;
 		}
@@ -88,14 +86,13 @@ public class JettyWebSocketReactiveWebServerCustomizer
 	}
 
 	/**
-     * Returns the order value for this customizer.
-     * 
-     * The order value determines the order in which the customizers are applied.
-     * A lower value means higher priority.
-     * 
-     * @return the order value for this customizer
-     */
-    @Override
+	 * Returns the order value for this customizer.
+	 *
+	 * The order value determines the order in which the customizers are applied. A lower
+	 * value means higher priority.
+	 * @return the order value for this customizer
+	 */
+	@Override
 	public int getOrder() {
 		return 0;
 	}

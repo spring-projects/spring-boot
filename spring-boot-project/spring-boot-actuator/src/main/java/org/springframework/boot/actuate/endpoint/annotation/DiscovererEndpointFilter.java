@@ -40,12 +40,11 @@ public abstract class DiscovererEndpointFilter implements EndpointFilter<Discove
 	}
 
 	/**
-     * Determines if the given endpoint matches the filter criteria.
-     * 
-     * @param endpoint the discovered endpoint to be checked
-     * @return true if the endpoint was discovered by the discoverer, false otherwise
-     */
-    @Override
+	 * Determines if the given endpoint matches the filter criteria.
+	 * @param endpoint the discovered endpoint to be checked
+	 * @return true if the endpoint was discovered by the discoverer, false otherwise
+	 */
+	@Override
 	public boolean match(DiscoveredEndpoint<?> endpoint) {
 		return endpoint.wasDiscoveredBy(this.discoverer);
 	}

@@ -44,17 +44,19 @@ import org.springframework.util.StringUtils;
 public class WavefrontAutoConfiguration {
 
 	/**
-     * Creates an instance of {@link ApplicationTags} if no bean of type {@link ApplicationTags} is already present.
-     * The {@link ApplicationTags} instance is created using the provided {@link Environment} and {@link WavefrontProperties}.
-     * If the service name is not specified in the {@link WavefrontProperties}, it is obtained from the "spring.application.name" property
-     * in the {@link Environment}. If the service name is still not available, it defaults to "unnamed_service".
-     * The {@link ApplicationTags} instance is built using the provided {@link Application} properties and custom tags.
-     *
-     * @param environment the {@link Environment} instance
-     * @param properties the {@link WavefrontProperties} instance
-     * @return an instance of {@link ApplicationTags}
-     */
-    @Bean
+	 * Creates an instance of {@link ApplicationTags} if no bean of type
+	 * {@link ApplicationTags} is already present. The {@link ApplicationTags} instance is
+	 * created using the provided {@link Environment} and {@link WavefrontProperties}. If
+	 * the service name is not specified in the {@link WavefrontProperties}, it is
+	 * obtained from the "spring.application.name" property in the {@link Environment}. If
+	 * the service name is still not available, it defaults to "unnamed_service". The
+	 * {@link ApplicationTags} instance is built using the provided {@link Application}
+	 * properties and custom tags.
+	 * @param environment the {@link Environment} instance
+	 * @param properties the {@link WavefrontProperties} instance
+	 * @return an instance of {@link ApplicationTags}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public ApplicationTags wavefrontApplicationTags(Environment environment, WavefrontProperties properties) {
 		Application application = properties.getApplication();

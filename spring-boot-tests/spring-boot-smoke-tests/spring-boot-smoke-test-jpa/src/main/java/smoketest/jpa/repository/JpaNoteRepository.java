@@ -34,11 +34,10 @@ class JpaNoteRepository implements NoteRepository {
 	private EntityManager entityManager;
 
 	/**
-     * Retrieves all notes from the database.
-     *
-     * @return a list of Note objects representing all the notes in the database.
-     */
-    @Override
+	 * Retrieves all notes from the database.
+	 * @return a list of Note objects representing all the notes in the database.
+	 */
+	@Override
 	public List<Note> findAll() {
 		return this.entityManager.createQuery("SELECT n FROM Note n", Note.class).getResultList();
 	}

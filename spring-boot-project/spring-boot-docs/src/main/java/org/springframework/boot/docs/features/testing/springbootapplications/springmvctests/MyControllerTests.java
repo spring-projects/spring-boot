@@ -42,11 +42,10 @@ class MyControllerTests {
 	private UserVehicleService userVehicleService;
 
 	/**
-     * Test case to verify the functionality of the example method.
-     *
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
+	 * Test case to verify the functionality of the example method.
+	 * @throws Exception if an error occurs during the test
+	 */
+	@Test
 	void testExample() throws Exception {
 		// @formatter:off
 		given(this.userVehicleService.getVehicleDetails("sboot"))

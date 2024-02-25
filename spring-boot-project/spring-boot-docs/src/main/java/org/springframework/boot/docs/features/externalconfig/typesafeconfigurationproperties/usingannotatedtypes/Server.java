@@ -22,17 +22,16 @@ package org.springframework.boot.docs.features.externalconfig.typesafeconfigurat
 class Server {
 
 	/**
-     * Constructs a new Server object with the specified remote address.
-     *
-     * @param remoteAddress the remote address to connect to
-     */
-    Server(Object remoteAddress) {
+	 * Constructs a new Server object with the specified remote address.
+	 * @param remoteAddress the remote address to connect to
+	 */
+	Server(Object remoteAddress) {
 	}
 
 	/**
-     * Starts the server.
-     */
-    void start() {
+	 * Starts the server.
+	 */
+	void start() {
 	}
 
 }

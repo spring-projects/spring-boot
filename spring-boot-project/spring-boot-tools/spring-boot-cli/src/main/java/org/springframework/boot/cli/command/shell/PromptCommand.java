@@ -31,25 +31,23 @@ public class PromptCommand extends AbstractCommand {
 	private final ShellPrompts prompts;
 
 	/**
-     * Constructs a new PromptCommand object with the specified ShellPrompts object.
-     * 
-     * @param shellPrompts the ShellPrompts object used to change the prompt
-     * @since 1.0
-     */
-    public PromptCommand(ShellPrompts shellPrompts) {
+	 * Constructs a new PromptCommand object with the specified ShellPrompts object.
+	 * @param shellPrompts the ShellPrompts object used to change the prompt
+	 * @since 1.0
+	 */
+	public PromptCommand(ShellPrompts shellPrompts) {
 		super("prompt", "Change the prompt used with the current 'shell' command. "
 				+ "Execute with no arguments to return to the previous value.");
 		this.prompts = shellPrompts;
 	}
 
 	/**
-     * Runs the PromptCommand with the given strings as arguments.
-     * 
-     * @param strings the strings to be used as arguments
-     * @return the exit status of the command
-     * @throws Exception if an error occurs during execution
-     */
-    @Override
+	 * Runs the PromptCommand with the given strings as arguments.
+	 * @param strings the strings to be used as arguments
+	 * @return the exit status of the command
+	 * @throws Exception if an error occurs during execution
+	 */
+	@Override
 	public ExitStatus run(String... strings) throws Exception {
 		if (strings.length > 0) {
 			for (String string : strings) {

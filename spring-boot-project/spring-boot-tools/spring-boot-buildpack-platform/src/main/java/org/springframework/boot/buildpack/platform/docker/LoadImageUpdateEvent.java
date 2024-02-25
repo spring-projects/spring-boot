@@ -29,14 +29,14 @@ public class LoadImageUpdateEvent extends ProgressUpdateEvent {
 	private final String stream;
 
 	/**
-     * Constructs a new LoadImageUpdateEvent with the specified stream, status, progress detail, and progress.
-     * 
-     * @param stream the stream associated with the event
-     * @param status the status of the event
-     * @param progressDetail the progress detail of the event
-     * @param progress the progress of the event
-     */
-    @JsonCreator
+	 * Constructs a new LoadImageUpdateEvent with the specified stream, status, progress
+	 * detail, and progress.
+	 * @param stream the stream associated with the event
+	 * @param status the status of the event
+	 * @param progressDetail the progress detail of the event
+	 * @param progress the progress of the event
+	 */
+	@JsonCreator
 	public LoadImageUpdateEvent(String stream, String status, ProgressDetail progressDetail, String progress) {
 		super(status, progressDetail, progress);
 		this.stream = stream;

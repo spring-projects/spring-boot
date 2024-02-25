@@ -47,31 +47,28 @@ public class City implements Serializable {
 	}
 
 	/**
-     * Constructs a new City object with the specified name and state.
-     * 
-     * @param name the name of the city
-     * @param state the state in which the city is located
-     */
-    public City(String name, String state) {
+	 * Constructs a new City object with the specified name and state.
+	 * @param name the name of the city
+	 * @param state the state in which the city is located
+	 */
+	public City(String name, String state) {
 		this.name = name;
 		this.state = state;
 	}
 
 	/**
-     * Returns the name of the city.
-     *
-     * @return the name of the city
-     */
-    public String getName() {
+	 * Returns the name of the city.
+	 * @return the name of the city
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Returns the state of the city.
-     * 
-     * @return the state of the city
-     */
-    public String getState() {
+	 * Returns the state of the city.
+	 * @return the state of the city
+	 */
+	public String getState() {
 		return this.state;
 	}
 

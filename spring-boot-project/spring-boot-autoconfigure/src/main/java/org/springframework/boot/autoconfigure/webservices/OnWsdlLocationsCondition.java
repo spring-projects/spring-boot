@@ -28,14 +28,14 @@ import org.springframework.boot.autoconfigure.condition.OnPropertyListCondition;
 class OnWsdlLocationsCondition extends OnPropertyListCondition {
 
 	/**
-     * Creates a new instance of OnWsdlLocationsCondition.
-     * 
-     * This constructor initializes the condition with the specified key and condition message.
-     * 
-     * @param key the key for the condition
-     * @param conditionMessageSupplier the supplier for the condition message
-     */
-    OnWsdlLocationsCondition() {
+	 * Creates a new instance of OnWsdlLocationsCondition.
+	 *
+	 * This constructor initializes the condition with the specified key and condition
+	 * message.
+	 * @param key the key for the condition
+	 * @param conditionMessageSupplier the supplier for the condition message
+	 */
+	OnWsdlLocationsCondition() {
 		super("spring.webservices.wsdl-locations", () -> ConditionMessage.forCondition("WSDL locations"));
 	}
 

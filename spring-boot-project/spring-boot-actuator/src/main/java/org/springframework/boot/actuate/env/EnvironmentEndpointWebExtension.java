@@ -45,39 +45,39 @@ public class EnvironmentEndpointWebExtension {
 	private final Set<String> roles;
 
 	/**
-     * Constructs a new EnvironmentEndpointWebExtension with the specified delegate, showValues, and roles.
-     * 
-     * @param delegate the delegate EnvironmentEndpoint object
-     * @param showValues the Show object representing the values to be shown
-     * @param roles the Set of roles associated with the web extension
-     */
-    public EnvironmentEndpointWebExtension(EnvironmentEndpoint delegate, Show showValues, Set<String> roles) {
+	 * Constructs a new EnvironmentEndpointWebExtension with the specified delegate,
+	 * showValues, and roles.
+	 * @param delegate the delegate EnvironmentEndpoint object
+	 * @param showValues the Show object representing the values to be shown
+	 * @param roles the Set of roles associated with the web extension
+	 */
+	public EnvironmentEndpointWebExtension(EnvironmentEndpoint delegate, Show showValues, Set<String> roles) {
 		this.delegate = delegate;
 		this.showValues = showValues;
 		this.roles = roles;
 	}
 
 	/**
-     * Retrieves the environment descriptor based on the provided security context and pattern.
-     * 
-     * @param securityContext The security context for authentication and authorization.
-     * @param pattern The pattern to filter the environment descriptor.
-     * @return The environment descriptor matching the provided pattern.
-     */
-    @ReadOperation
+	 * Retrieves the environment descriptor based on the provided security context and
+	 * pattern.
+	 * @param securityContext The security context for authentication and authorization.
+	 * @param pattern The pattern to filter the environment descriptor.
+	 * @return The environment descriptor matching the provided pattern.
+	 */
+	@ReadOperation
 	public EnvironmentDescriptor environment(SecurityContext securityContext, @Nullable String pattern) {
 		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
 		return this.delegate.getEnvironmentDescriptor(pattern, showUnsanitized);
 	}
 
 	/**
-     * Retrieves the environment entry descriptor for the specified entry name.
-     * 
-     * @param securityContext The security context for the request.
-     * @param toMatch The name of the environment entry to retrieve.
-     * @return The environment entry descriptor if found, or a not found response if not found.
-     */
-    @ReadOperation
+	 * Retrieves the environment entry descriptor for the specified entry name.
+	 * @param securityContext The security context for the request.
+	 * @param toMatch The name of the environment entry to retrieve.
+	 * @return The environment entry descriptor if found, or a not found response if not
+	 * found.
+	 */
+	@ReadOperation
 	public WebEndpointResponse<EnvironmentEntryDescriptor> environmentEntry(SecurityContext securityContext,
 			@Selector String toMatch) {
 		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);

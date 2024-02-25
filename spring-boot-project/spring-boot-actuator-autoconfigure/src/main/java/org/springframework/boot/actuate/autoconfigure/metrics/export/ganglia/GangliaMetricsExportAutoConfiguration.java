@@ -48,26 +48,26 @@ import org.springframework.context.annotation.Bean;
 public class GangliaMetricsExportAutoConfiguration {
 
 	/**
-     * Creates a GangliaConfig bean if no other bean of the same type is present.
-     * Uses the provided GangliaProperties to create a GangliaPropertiesConfigAdapter.
-     * 
-     * @param gangliaProperties the GangliaProperties object used to configure the GangliaConfig
-     * @return a GangliaConfig bean created using the GangliaProperties
-     */
-    @Bean
+	 * Creates a GangliaConfig bean if no other bean of the same type is present. Uses the
+	 * provided GangliaProperties to create a GangliaPropertiesConfigAdapter.
+	 * @param gangliaProperties the GangliaProperties object used to configure the
+	 * GangliaConfig
+	 * @return a GangliaConfig bean created using the GangliaProperties
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public GangliaConfig gangliaConfig(GangliaProperties gangliaProperties) {
 		return new GangliaPropertiesConfigAdapter(gangliaProperties);
 	}
 
 	/**
-     * Creates a new instance of GangliaMeterRegistry if no other bean of type GangliaMeterRegistry is present.
-     * 
-     * @param gangliaConfig the GangliaConfig object used for configuration
-     * @param clock the Clock object used for timekeeping
-     * @return a new instance of GangliaMeterRegistry
-     */
-    @Bean
+	 * Creates a new instance of GangliaMeterRegistry if no other bean of type
+	 * GangliaMeterRegistry is present.
+	 * @param gangliaConfig the GangliaConfig object used for configuration
+	 * @param clock the Clock object used for timekeeping
+	 * @return a new instance of GangliaMeterRegistry
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public GangliaMeterRegistry gangliaMeterRegistry(GangliaConfig gangliaConfig, Clock clock) {
 		return new GangliaMeterRegistry(gangliaConfig, clock);

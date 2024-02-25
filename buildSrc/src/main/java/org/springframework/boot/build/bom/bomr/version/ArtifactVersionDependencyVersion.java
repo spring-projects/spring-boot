@@ -35,22 +35,22 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	private final ArtifactVersion artifactVersion;
 
 	/**
-     * Constructs a new instance of the ArtifactVersionDependencyVersion class with the specified artifact version.
-     * 
-     * @param artifactVersion the artifact version to be used for constructing the dependency version
-     */
-    protected ArtifactVersionDependencyVersion(ArtifactVersion artifactVersion) {
+	 * Constructs a new instance of the ArtifactVersionDependencyVersion class with the
+	 * specified artifact version.
+	 * @param artifactVersion the artifact version to be used for constructing the
+	 * dependency version
+	 */
+	protected ArtifactVersionDependencyVersion(ArtifactVersion artifactVersion) {
 		super(new ComparableVersion(toNormalizedString(artifactVersion)));
 		this.artifactVersion = artifactVersion;
 	}
 
 	/**
-     * Converts the given ArtifactVersion to a normalized string representation.
-     * 
-     * @param artifactVersion the ArtifactVersion to be converted
-     * @return the normalized string representation of the ArtifactVersion
-     */
-    private static String toNormalizedString(ArtifactVersion artifactVersion) {
+	 * Converts the given ArtifactVersion to a normalized string representation.
+	 * @param artifactVersion the ArtifactVersion to be converted
+	 * @return the normalized string representation of the ArtifactVersion
+	 */
+	private static String toNormalizedString(ArtifactVersion artifactVersion) {
 		String versionString = artifactVersion.toString();
 		if (versionString.endsWith(".RELEASE")) {
 			return versionString.substring(0, versionString.length() - 8);
@@ -62,23 +62,24 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	}
 
 	/**
-     * Constructs a new instance of the ArtifactVersionDependencyVersion class with the specified artifact version and comparable version.
-     * 
-     * @param artifactVersion the artifact version associated with this dependency version
-     * @param comparableVersion the comparable version used for comparison and sorting
-     */
-    protected ArtifactVersionDependencyVersion(ArtifactVersion artifactVersion, ComparableVersion comparableVersion) {
+	 * Constructs a new instance of the ArtifactVersionDependencyVersion class with the
+	 * specified artifact version and comparable version.
+	 * @param artifactVersion the artifact version associated with this dependency version
+	 * @param comparableVersion the comparable version used for comparison and sorting
+	 */
+	protected ArtifactVersionDependencyVersion(ArtifactVersion artifactVersion, ComparableVersion comparableVersion) {
 		super(comparableVersion);
 		this.artifactVersion = artifactVersion;
 	}
 
 	/**
-     * Checks if the given DependencyVersion is of the same major version as this ArtifactVersionDependencyVersion.
-     * 
-     * @param other The DependencyVersion to compare with.
-     * @return true if the major version of the given DependencyVersion is the same as this ArtifactVersionDependencyVersion, false otherwise.
-     */
-    @Override
+	 * Checks if the given DependencyVersion is of the same major version as this
+	 * ArtifactVersionDependencyVersion.
+	 * @param other The DependencyVersion to compare with.
+	 * @return true if the major version of the given DependencyVersion is the same as
+	 * this ArtifactVersionDependencyVersion, false otherwise.
+	 */
+	@Override
 	public boolean isSameMajor(DependencyVersion other) {
 		if (other instanceof ReleaseTrainDependencyVersion) {
 			return false;
@@ -87,22 +88,23 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	}
 
 	/**
-     * Checks if the major version of this ArtifactVersionDependencyVersion object is the same as the major version of the specified object.
-     * 
-     * @param other the other ArtifactVersionDependencyVersion object to compare with
-     * @return true if the major versions are the same, false otherwise
-     */
-    private boolean isSameMajor(ArtifactVersionDependencyVersion other) {
+	 * Checks if the major version of this ArtifactVersionDependencyVersion object is the
+	 * same as the major version of the specified object.
+	 * @param other the other ArtifactVersionDependencyVersion object to compare with
+	 * @return true if the major versions are the same, false otherwise
+	 */
+	private boolean isSameMajor(ArtifactVersionDependencyVersion other) {
 		return this.artifactVersion.getMajorVersion() == other.artifactVersion.getMajorVersion();
 	}
 
 	/**
-     * Checks if the given DependencyVersion is of the same minor version as this ArtifactVersionDependencyVersion.
-     * 
-     * @param other The DependencyVersion to compare with.
-     * @return true if the given DependencyVersion is of the same minor version, false otherwise.
-     */
-    @Override
+	 * Checks if the given DependencyVersion is of the same minor version as this
+	 * ArtifactVersionDependencyVersion.
+	 * @param other The DependencyVersion to compare with.
+	 * @return true if the given DependencyVersion is of the same minor version, false
+	 * otherwise.
+	 */
+	@Override
 	public boolean isSameMinor(DependencyVersion other) {
 		if (other instanceof ReleaseTrainDependencyVersion) {
 			return false;
@@ -111,23 +113,22 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	}
 
 	/**
-     * Checks if the minor version of this ArtifactVersionDependencyVersion object is the same as the minor version of the specified object.
-     * 
-     * @param other the other ArtifactVersionDependencyVersion object to compare with
-     * @return true if the minor versions are the same, false otherwise
-     */
-    private boolean isSameMinor(ArtifactVersionDependencyVersion other) {
+	 * Checks if the minor version of this ArtifactVersionDependencyVersion object is the
+	 * same as the minor version of the specified object.
+	 * @param other the other ArtifactVersionDependencyVersion object to compare with
+	 * @return true if the minor versions are the same, false otherwise
+	 */
+	private boolean isSameMinor(ArtifactVersionDependencyVersion other) {
 		return isSameMajor(other) && this.artifactVersion.getMinorVersion() == other.artifactVersion.getMinorVersion();
 	}
 
 	/**
-     * Determines if the given dependency version is an upgrade from the current version.
-     * 
-     * @param candidate The dependency version to check.
-     * @param movingToSnapshots Indicates if the upgrade is moving to snapshots.
-     * @return True if the given version is an upgrade, false otherwise.
-     */
-    @Override
+	 * Determines if the given dependency version is an upgrade from the current version.
+	 * @param candidate The dependency version to check.
+	 * @param movingToSnapshots Indicates if the upgrade is moving to snapshots.
+	 * @return True if the given version is an upgrade, false otherwise.
+	 */
+	@Override
 	public boolean isUpgrade(DependencyVersion candidate, boolean movingToSnapshots) {
 		if (!(candidate instanceof ArtifactVersionDependencyVersion)) {
 			return false;
@@ -152,34 +153,36 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	}
 
 	/**
-     * Checks if the major, minor, and incremental versions of this ArtifactVersionDependencyVersion object are the same as the provided ArtifactVersion object.
-     * 
-     * @param other the ArtifactVersion object to compare with
-     * @return true if the major, minor, and incremental versions are the same, false otherwise
-     */
-    private boolean sameMajorMinorIncremental(ArtifactVersion other) {
+	 * Checks if the major, minor, and incremental versions of this
+	 * ArtifactVersionDependencyVersion object are the same as the provided
+	 * ArtifactVersion object.
+	 * @param other the ArtifactVersion object to compare with
+	 * @return true if the major, minor, and incremental versions are the same, false
+	 * otherwise
+	 */
+	private boolean sameMajorMinorIncremental(ArtifactVersion other) {
 		return this.artifactVersion.getMajorVersion() == other.getMajorVersion()
 				&& this.artifactVersion.getMinorVersion() == other.getMinorVersion()
 				&& this.artifactVersion.getIncrementalVersion() == other.getIncrementalVersion();
 	}
 
 	/**
-     * Checks if the artifact version is a snapshot version.
-     * 
-     * @return true if the artifact version is a snapshot version, false otherwise
-     */
-    private boolean isSnapshot() {
+	 * Checks if the artifact version is a snapshot version.
+	 * @return true if the artifact version is a snapshot version, false otherwise
+	 */
+	private boolean isSnapshot() {
 		return "SNAPSHOT".equals(this.artifactVersion.getQualifier())
 				|| "BUILD".equals(this.artifactVersion.getQualifier());
 	}
 
 	/**
-     * Checks if the given DependencyVersion is a snapshot version for this ArtifactVersionDependencyVersion.
-     * 
-     * @param candidate The DependencyVersion to check.
-     * @return True if the given DependencyVersion is a snapshot version for this ArtifactVersionDependencyVersion, false otherwise.
-     */
-    @Override
+	 * Checks if the given DependencyVersion is a snapshot version for this
+	 * ArtifactVersionDependencyVersion.
+	 * @param candidate The DependencyVersion to check.
+	 * @return True if the given DependencyVersion is a snapshot version for this
+	 * ArtifactVersionDependencyVersion, false otherwise.
+	 */
+	@Override
 	public boolean isSnapshotFor(DependencyVersion candidate) {
 		if (!isSnapshot() || !(candidate instanceof ArtifactVersionDependencyVersion)) {
 			return false;
@@ -188,12 +191,14 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	}
 
 	/**
-     * Compares this DependencyVersion object with the specified DependencyVersion object for order.
-     * 
-     * @param other the DependencyVersion object to be compared
-     * @return a negative integer, zero, or a positive integer as this DependencyVersion object is less than, equal to, or greater than the specified DependencyVersion object
-     */
-    @Override
+	 * Compares this DependencyVersion object with the specified DependencyVersion object
+	 * for order.
+	 * @param other the DependencyVersion object to be compared
+	 * @return a negative integer, zero, or a positive integer as this DependencyVersion
+	 * object is less than, equal to, or greater than the specified DependencyVersion
+	 * object
+	 */
+	@Override
 	public int compareTo(DependencyVersion other) {
 		if (other instanceof ArtifactVersionDependencyVersion otherArtifactDependencyVersion) {
 			ArtifactVersion otherArtifactVersion = otherArtifactDependencyVersion.artifactVersion;
@@ -209,22 +214,22 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	}
 
 	/**
-     * Returns a string representation of the ArtifactVersionDependencyVersion object.
-     * 
-     * @return the string representation of the ArtifactVersionDependencyVersion object
-     */
-    @Override
+	 * Returns a string representation of the ArtifactVersionDependencyVersion object.
+	 * @return the string representation of the ArtifactVersionDependencyVersion object
+	 */
+	@Override
 	public String toString() {
 		return this.artifactVersion.toString();
 	}
 
 	/**
-     * Extracts the ArtifactVersionDependencyVersion from the given DependencyVersion.
-     * 
-     * @param other the DependencyVersion to extract from
-     * @return an Optional containing the extracted ArtifactVersionDependencyVersion, or an empty Optional if the given DependencyVersion is not an instance of ArtifactVersionDependencyVersion
-     */
-    protected Optional<ArtifactVersionDependencyVersion> extractArtifactVersionDependencyVersion(
+	 * Extracts the ArtifactVersionDependencyVersion from the given DependencyVersion.
+	 * @param other the DependencyVersion to extract from
+	 * @return an Optional containing the extracted ArtifactVersionDependencyVersion, or
+	 * an empty Optional if the given DependencyVersion is not an instance of
+	 * ArtifactVersionDependencyVersion
+	 */
+	protected Optional<ArtifactVersionDependencyVersion> extractArtifactVersionDependencyVersion(
 			DependencyVersion other) {
 		ArtifactVersionDependencyVersion artifactVersion = null;
 		if (other instanceof ArtifactVersionDependencyVersion otherVersion) {
@@ -234,12 +239,13 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	}
 
 	/**
-     * Parses a given version string and returns an instance of ArtifactVersionDependencyVersion.
-     * 
-     * @param version the version string to be parsed
-     * @return an instance of ArtifactVersionDependencyVersion if the version string is valid, otherwise null
-     */
-    static ArtifactVersionDependencyVersion parse(String version) {
+	 * Parses a given version string and returns an instance of
+	 * ArtifactVersionDependencyVersion.
+	 * @param version the version string to be parsed
+	 * @return an instance of ArtifactVersionDependencyVersion if the version string is
+	 * valid, otherwise null
+	 */
+	static ArtifactVersionDependencyVersion parse(String version) {
 		ArtifactVersion artifactVersion = new DefaultArtifactVersion(version);
 		if (artifactVersion.getQualifier() != null && artifactVersion.getQualifier().equals(version)) {
 			return null;

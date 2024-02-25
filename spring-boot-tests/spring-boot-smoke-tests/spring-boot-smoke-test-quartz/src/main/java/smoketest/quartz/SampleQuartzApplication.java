@@ -40,21 +40,19 @@ import org.springframework.context.annotation.Bean;
 public class SampleQuartzApplication {
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring application by running the SampleQuartzApplication class.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring
+	 * application by running the SampleQuartzApplication class.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleQuartzApplication.class, args);
 	}
 
 	/**
-     * Creates a JobDetail object for the helloJob.
-     * 
-     * @return the JobDetail object for the helloJob
-     */
-    @Bean
+	 * Creates a JobDetail object for the helloJob.
+	 * @return the JobDetail object for the helloJob
+	 */
+	@Bean
 	public JobDetail helloJobDetail() {
 		return JobBuilder.newJob(SampleJob.class)
 			.withIdentity("helloJob", "samples")
@@ -64,11 +62,10 @@ public class SampleQuartzApplication {
 	}
 
 	/**
-     * Creates a new job detail for the "anotherJob" job in the "samples" group.
-     * 
-     * @return the created job detail
-     */
-    @Bean
+	 * Creates a new job detail for the "anotherJob" job in the "samples" group.
+	 * @return the created job detail
+	 */
+	@Bean
 	public JobDetail anotherJobDetail() {
 		return JobBuilder.newJob(SampleJob.class)
 			.withIdentity("anotherJob", "samples")
@@ -78,11 +75,10 @@ public class SampleQuartzApplication {
 	}
 
 	/**
-     * Returns a trigger that fires every two seconds.
-     *
-     * @return the trigger object
-     */
-    @Bean
+	 * Returns a trigger that fires every two seconds.
+	 * @return the trigger object
+	 */
+	@Bean
 	public Trigger everyTwoSecTrigger() {
 		return TriggerBuilder.newTrigger()
 			.forJob("helloJob", "samples")
@@ -92,11 +88,10 @@ public class SampleQuartzApplication {
 	}
 
 	/**
-     * Returns a trigger that fires every day for the specified job.
-     *
-     * @return the trigger that fires every day
-     */
-    @Bean
+	 * Returns a trigger that fires every day for the specified job.
+	 * @return the trigger that fires every day
+	 */
+	@Bean
 	public Trigger everyDayTrigger() {
 		return TriggerBuilder.newTrigger()
 			.forJob("helloJob", "samples")
@@ -106,11 +101,10 @@ public class SampleQuartzApplication {
 	}
 
 	/**
-     * Returns a trigger that fires at 3 AM on weekdays.
-     * 
-     * @return the trigger object
-     */
-    @Bean
+	 * Returns a trigger that fires at 3 AM on weekdays.
+	 * @return the trigger object
+	 */
+	@Bean
 	public Trigger threeAmWeekdaysTrigger() {
 		return TriggerBuilder.newTrigger()
 			.forJob("anotherJob", "samples")
@@ -120,11 +114,10 @@ public class SampleQuartzApplication {
 	}
 
 	/**
-     * Returns a trigger that fires once a week.
-     * 
-     * @return the trigger
-     */
-    @Bean
+	 * Returns a trigger that fires once a week.
+	 * @return the trigger
+	 */
+	@Bean
 	public Trigger onceAWeekTrigger() {
 		return TriggerBuilder.newTrigger()
 			.forJob("anotherJob", "samples")
@@ -134,11 +127,11 @@ public class SampleQuartzApplication {
 	}
 
 	/**
-     * Returns a trigger that fires every hour during working hours on Tuesday and Thursday.
-     * 
-     * @return the trigger
-     */
-    @Bean
+	 * Returns a trigger that fires every hour during working hours on Tuesday and
+	 * Thursday.
+	 * @return the trigger
+	 */
+	@Bean
 	public Trigger everyHourWorkingHourTuesdayAndThursdayTrigger() {
 		return TriggerBuilder.newTrigger()
 			.forJob("helloJob", "samples")

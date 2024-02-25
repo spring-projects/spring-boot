@@ -76,11 +76,10 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 	}
 
 	/**
-     * Returns the health status of the application.
-     * 
-     * @return the health status of the application
-     */
-    @Override
+	 * Returns the health status of the application.
+	 * @return the health status of the application
+	 */
+	@Override
 	public final Health health() {
 		Health.Builder builder = new Health.Builder();
 		try {
@@ -94,11 +93,10 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 	}
 
 	/**
-     * Logs the exception if present.
-     * 
-     * @param throwable the throwable to be logged
-     */
-    private void logExceptionIfPresent(Throwable throwable) {
+	 * Logs the exception if present.
+	 * @param throwable the throwable to be logged
+	 */
+	private void logExceptionIfPresent(Throwable throwable) {
 		if (throwable != null && this.logger.isWarnEnabled()) {
 			String message = (throwable instanceof Exception ex) ? this.healthCheckFailedMessage.apply(ex) : null;
 			this.logger.warn(StringUtils.hasText(message) ? message : DEFAULT_MESSAGE, throwable);

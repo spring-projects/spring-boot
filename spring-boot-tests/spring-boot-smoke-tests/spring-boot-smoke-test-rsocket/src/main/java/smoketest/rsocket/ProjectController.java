@@ -29,12 +29,11 @@ import org.springframework.stereotype.Controller;
 public class ProjectController {
 
 	/**
-     * Finds a project with the given name.
-     *
-     * @param name the name of the project to find
-     * @return a Mono representing the found project
-     */
-    @MessageMapping("find.project.{name}")
+	 * Finds a project with the given name.
+	 * @param name the name of the project to find
+	 * @return a Mono representing the found project
+	 */
+	@MessageMapping("find.project.{name}")
 	public Mono<Project> findProject(@DestinationVariable String name) {
 		return Mono.just(new Project(name));
 	}

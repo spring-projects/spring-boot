@@ -36,20 +36,18 @@ public class OpenTelemetryProperties {
 	private Map<String, String> resourceAttributes = new HashMap<>();
 
 	/**
-     * Returns the resource attributes of the OpenTelemetryProperties.
-     * 
-     * @return a Map containing the resource attributes
-     */
-    public Map<String, String> getResourceAttributes() {
+	 * Returns the resource attributes of the OpenTelemetryProperties.
+	 * @return a Map containing the resource attributes
+	 */
+	public Map<String, String> getResourceAttributes() {
 		return this.resourceAttributes;
 	}
 
 	/**
-     * Sets the resource attributes for the OpenTelemetryProperties.
-     * 
-     * @param resourceAttributes a map containing the resource attributes to be set
-     */
-    public void setResourceAttributes(Map<String, String> resourceAttributes) {
+	 * Sets the resource attributes for the OpenTelemetryProperties.
+	 * @param resourceAttributes a map containing the resource attributes to be set
+	 */
+	public void setResourceAttributes(Map<String, String> resourceAttributes) {
 		this.resourceAttributes = resourceAttributes;
 	}
 

@@ -119,33 +119,31 @@ public class LayersIndex {
 		private final List<Node> children = new ArrayList<>();
 
 		/**
-         * Constructs a new Node object with an empty name and an empty set of layers.
-         */
-        Node() {
+		 * Constructs a new Node object with an empty name and an empty set of layers.
+		 */
+		Node() {
 			this.name = "";
 			this.layers = new HashSet<>();
 		}
 
 		/**
-         * Constructs a new Node with the given name and layer.
-         * 
-         * @param name the name of the Node
-         * @param layer the layer of the Node
-         */
-        Node(String name, Layer layer) {
+		 * Constructs a new Node with the given name and layer.
+		 * @param name the name of the Node
+		 * @param layer the layer of the Node
+		 */
+		Node(String name, Layer layer) {
 			this.name = name;
 			this.layers = new HashSet<>(Collections.singleton(layer));
 		}
 
 		/**
-         * Updates or adds a node to the current node's children list.
-         * 
-         * @param segment     the segment of the node's name
-         * @param isDirectory indicates whether the node is a directory or not
-         * @param layer       the layer to be added to the node
-         * @return the updated or added node
-         */
-        Node updateOrAddNode(String segment, boolean isDirectory, Layer layer) {
+		 * Updates or adds a node to the current node's children list.
+		 * @param segment the segment of the node's name
+		 * @param isDirectory indicates whether the node is a directory or not
+		 * @param layer the layer to be added to the node
+		 * @return the updated or added node
+		 */
+		Node updateOrAddNode(String segment, boolean isDirectory, Layer layer) {
 			String name = segment + (isDirectory ? "/" : "");
 			for (Node child : this.children) {
 				if (name.equals(child.name)) {
@@ -159,12 +157,11 @@ public class LayersIndex {
 		}
 
 		/**
-         * Builds an index for the given path and adds it to the provided index map.
-         * 
-         * @param path The path to build the index for.
-         * @param index The index map to add the index to.
-         */
-        void buildIndex(String path, MultiValueMap<Layer, String> index) {
+		 * Builds an index for the given path and adds it to the provided index map.
+		 * @param path The path to build the index for.
+		 * @param index The index map to add the index to.
+		 */
+		void buildIndex(String path, MultiValueMap<Layer, String> index) {
 			String name = path + this.name;
 			if (this.layers.size() == 1) {
 				index.add(this.layers.iterator().next(), name);

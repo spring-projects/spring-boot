@@ -59,44 +59,40 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	}
 
 	/**
-     * Returns the KeyStore object associated with this JksSslStoreBundle.
-     *
-     * @return the KeyStore object
-     */
-    @Override
+	 * Returns the KeyStore object associated with this JksSslStoreBundle.
+	 * @return the KeyStore object
+	 */
+	@Override
 	public KeyStore getKeyStore() {
 		return this.keyStore;
 	}
 
 	/**
-     * Returns the password for the keystore.
-     * 
-     * @return the password for the keystore, or null if the keystore details are not set
-     */
-    @Override
+	 * Returns the password for the keystore.
+	 * @return the password for the keystore, or null if the keystore details are not set
+	 */
+	@Override
 	public String getKeyStorePassword() {
 		return (this.keyStoreDetails != null) ? this.keyStoreDetails.password() : null;
 	}
 
 	/**
-     * Returns the trust store used for SSL/TLS connections.
-     *
-     * @return the trust store
-     */
-    @Override
+	 * Returns the trust store used for SSL/TLS connections.
+	 * @return the trust store
+	 */
+	@Override
 	public KeyStore getTrustStore() {
 		return this.trustStore;
 	}
 
 	/**
-     * Creates a KeyStore with the given name and JksSslStoreDetails.
-     * 
-     * @param name     the name of the KeyStore
-     * @param details  the JksSslStoreDetails containing the details for the KeyStore
-     * @return         the created KeyStore
-     * @throws IllegalStateException if unable to create the KeyStore
-     */
-    private KeyStore createKeyStore(String name, JksSslStoreDetails details) {
+	 * Creates a KeyStore with the given name and JksSslStoreDetails.
+	 * @param name the name of the KeyStore
+	 * @param details the JksSslStoreDetails containing the details for the KeyStore
+	 * @return the created KeyStore
+	 * @throws IllegalStateException if unable to create the KeyStore
+	 */
+	private KeyStore createKeyStore(String name, JksSslStoreDetails details) {
 		if (details == null || details.isEmpty()) {
 			return null;
 		}
@@ -119,40 +115,39 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	}
 
 	/**
-     * Returns an instance of KeyStore based on the specified type and provider.
-     * 
-     * @param type the type of the KeyStore
-     * @param provider the provider of the KeyStore (optional)
-     * @return an instance of KeyStore
-     * @throws KeyStoreException if an error occurs while creating the KeyStore
-     * @throws NoSuchProviderException if the specified provider is not available
-     */
-    private KeyStore getKeyStoreInstance(String type, String provider)
+	 * Returns an instance of KeyStore based on the specified type and provider.
+	 * @param type the type of the KeyStore
+	 * @param provider the provider of the KeyStore (optional)
+	 * @return an instance of KeyStore
+	 * @throws KeyStoreException if an error occurs while creating the KeyStore
+	 * @throws NoSuchProviderException if the specified provider is not available
+	 */
+	private KeyStore getKeyStoreInstance(String type, String provider)
 			throws KeyStoreException, NoSuchProviderException {
 		return (!StringUtils.hasText(provider)) ? KeyStore.getInstance(type) : KeyStore.getInstance(type, provider);
 	}
 
 	/**
-     * Checks if the given keystore type is a hardware keystore type.
-     * 
-     * @param type the keystore type to check
-     * @return true if the keystore type is a hardware keystore type, false otherwise
-     */
-    private boolean isHardwareKeystoreType(String type) {
+	 * Checks if the given keystore type is a hardware keystore type.
+	 * @param type the keystore type to check
+	 * @return true if the keystore type is a hardware keystore type, false otherwise
+	 */
+	private boolean isHardwareKeystoreType(String type) {
 		return type.equalsIgnoreCase("PKCS11");
 	}
 
 	/**
-     * Loads a hardware key store.
-     * 
-     * @param store the key store to load
-     * @param location the location of the key store (must be empty or null for PKCS11 hardware key stores)
-     * @param password the password to access the key store
-     * @throws IOException if an I/O error occurs while loading the key store
-     * @throws NoSuchAlgorithmException if the specified algorithm is not available
-     * @throws CertificateException if any of the certificates in the key store could not be loaded
-     */
-    private void loadHardwareKeyStore(KeyStore store, String location, char[] password)
+	 * Loads a hardware key store.
+	 * @param store the key store to load
+	 * @param location the location of the key store (must be empty or null for PKCS11
+	 * hardware key stores)
+	 * @param password the password to access the key store
+	 * @throws IOException if an I/O error occurs while loading the key store
+	 * @throws NoSuchAlgorithmException if the specified algorithm is not available
+	 * @throws CertificateException if any of the certificates in the key store could not
+	 * be loaded
+	 */
+	private void loadHardwareKeyStore(KeyStore store, String location, char[] password)
 			throws IOException, NoSuchAlgorithmException, CertificateException {
 		Assert.state(!StringUtils.hasText(location),
 				() -> "Location is '%s', but must be empty or null for PKCS11 hardware key stores".formatted(location));
@@ -160,15 +155,15 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	}
 
 	/**
-     * Loads a KeyStore from the specified location using the provided password.
-     * 
-     * @param store the KeyStore object to load the data into
-     * @param location the location of the KeyStore file
-     * @param password the password to access the KeyStore
-     * @throws IllegalStateException if the KeyStore cannot be loaded from the specified location
-     * @throws IllegalArgumentException if the location is empty or null
-     */
-    private void loadKeyStore(KeyStore store, String location, char[] password) {
+	 * Loads a KeyStore from the specified location using the provided password.
+	 * @param store the KeyStore object to load the data into
+	 * @param location the location of the KeyStore file
+	 * @param password the password to access the KeyStore
+	 * @throws IllegalStateException if the KeyStore cannot be loaded from the specified
+	 * location
+	 * @throws IllegalArgumentException if the location is empty or null
+	 */
+	private void loadKeyStore(KeyStore store, String location, char[] password) {
 		Assert.state(StringUtils.hasText(location), () -> "Location must not be empty or null");
 		try {
 			URL url = ResourceUtils.getURL(location);
@@ -182,14 +177,13 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	}
 
 	/**
-     * Returns a string representation of the JksSslStoreBundle object.
-     * 
-     * The string representation includes the type of the key store, the masked password of the key store,
-     * and the type of the trust store.
-     * 
-     * @return a string representation of the JksSslStoreBundle object
-     */
-    @Override
+	 * Returns a string representation of the JksSslStoreBundle object.
+	 *
+	 * The string representation includes the type of the key store, the masked password
+	 * of the key store, and the type of the trust store.
+	 * @return a string representation of the JksSslStoreBundle object
+	 */
+	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this);
 		creator.append("keyStore.type", (this.keyStore != null) ? this.keyStore.getType() : "none");

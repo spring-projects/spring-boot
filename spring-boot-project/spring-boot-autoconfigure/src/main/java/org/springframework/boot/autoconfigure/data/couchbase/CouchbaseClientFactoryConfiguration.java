@@ -37,13 +37,15 @@ import org.springframework.data.couchbase.SimpleCouchbaseClientFactory;
 class CouchbaseClientFactoryConfiguration {
 
 	/**
-     * Creates a new instance of {@link CouchbaseClientFactory} if no other bean of the same type is present.
-     * 
-     * @param cluster the {@link Cluster} instance used for connecting to the Couchbase server
-     * @param properties the {@link CouchbaseDataProperties} instance containing the configuration properties
-     * @return a new instance of {@link CouchbaseClientFactory}
-     */
-    @Bean
+	 * Creates a new instance of {@link CouchbaseClientFactory} if no other bean of the
+	 * same type is present.
+	 * @param cluster the {@link Cluster} instance used for connecting to the Couchbase
+	 * server
+	 * @param properties the {@link CouchbaseDataProperties} instance containing the
+	 * configuration properties
+	 * @return a new instance of {@link CouchbaseClientFactory}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	CouchbaseClientFactory couchbaseClientFactory(Cluster cluster, CouchbaseDataProperties properties) {
 		return new SimpleCouchbaseClientFactory(cluster, properties.getBucketName(), properties.getScopeName());

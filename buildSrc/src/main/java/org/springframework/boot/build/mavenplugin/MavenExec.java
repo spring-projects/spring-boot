@@ -44,23 +44,21 @@ public class MavenExec extends JavaExec {
 	private File projectDir;
 
 	/**
-     * Constructor for MavenExec class.
-     * Sets the classpath using the Maven configuration of the project.
-     * Sets the command line arguments to "--batch-mode".
-     * Sets the main class to "org.apache.maven.cli.MavenCli".
-     */
-    public MavenExec() {
+	 * Constructor for MavenExec class. Sets the classpath using the Maven configuration
+	 * of the project. Sets the command line arguments to "--batch-mode". Sets the main
+	 * class to "org.apache.maven.cli.MavenCli".
+	 */
+	public MavenExec() {
 		setClasspath(mavenConfiguration(getProject()));
 		args("--batch-mode");
 		getMainClass().set("org.apache.maven.cli.MavenCli");
 	}
 
 	/**
-     * Sets the project directory for the MavenExec class.
-     * 
-     * @param projectDir the project directory to be set
-     */
-    public void setProjectDir(File projectDir) {
+	 * Sets the project directory for the MavenExec class.
+	 * @param projectDir the project directory to be set
+	 */
+	public void setProjectDir(File projectDir) {
 		this.projectDir = projectDir;
 		getInputs().file(new File(projectDir, "pom.xml"))
 			.withPathSensitivity(PathSensitivity.RELATIVE)
@@ -68,15 +66,14 @@ public class MavenExec extends JavaExec {
 	}
 
 	/**
-     * Executes the Maven command with the specified arguments.
-     * Sets the working directory and system property for the Maven command.
-     * Logs the output of the command to a temporary log file.
-     * If the log level is set to INFO, the log file contents are also printed to the console.
-     * 
-     * @throws ExecException if an exception occurs during command execution
-     * @throws TaskExecutionException if an exception occurs while creating the log file
-     */
-    @Override
+	 * Executes the Maven command with the specified arguments. Sets the working directory
+	 * and system property for the Maven command. Logs the output of the command to a
+	 * temporary log file. If the log level is set to INFO, the log file contents are also
+	 * printed to the console.
+	 * @throws ExecException if an exception occurs during command execution
+	 * @throws TaskExecutionException if an exception occurs while creating the log file
+	 */
+	@Override
 	public void exec() {
 		workingDir(this.projectDir);
 		systemProperty("maven.multiModuleProjectDirectory", this.projectDir.getAbsolutePath());
@@ -101,14 +98,13 @@ public class MavenExec extends JavaExec {
 	}
 
 	/**
-     * Returns the Maven configuration for the given project.
-     * If the configuration already exists, it is returned.
-     * Otherwise, a new configuration is created with the necessary dependencies.
-     * 
-     * @param project the project for which to retrieve the Maven configuration
-     * @return the Maven configuration for the project
-     */
-    private Configuration mavenConfiguration(Project project) {
+	 * Returns the Maven configuration for the given project. If the configuration already
+	 * exists, it is returned. Otherwise, a new configuration is created with the
+	 * necessary dependencies.
+	 * @param project the project for which to retrieve the Maven configuration
+	 * @return the Maven configuration for the project
+	 */
+	private Configuration mavenConfiguration(Project project) {
 		Configuration existing = project.getConfigurations().findByName("maven");
 		if (existing != null) {
 			return existing;
@@ -126,11 +122,10 @@ public class MavenExec extends JavaExec {
 	}
 
 	/**
-     * Returns the project directory.
-     *
-     * @return the project directory
-     */
-    @Internal
+	 * Returns the project directory.
+	 * @return the project directory
+	 */
+	@Internal
 	public File getProjectDir() {
 		return this.projectDir;
 	}

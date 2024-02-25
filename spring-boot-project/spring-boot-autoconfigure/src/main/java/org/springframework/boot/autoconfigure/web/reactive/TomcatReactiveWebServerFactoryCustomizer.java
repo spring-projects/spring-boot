@@ -33,20 +33,19 @@ public class TomcatReactiveWebServerFactoryCustomizer
 	private final ServerProperties serverProperties;
 
 	/**
-     * Constructs a new TomcatReactiveWebServerFactoryCustomizer with the specified ServerProperties.
-     *
-     * @param serverProperties the ServerProperties to be used by the customizer
-     */
-    public TomcatReactiveWebServerFactoryCustomizer(ServerProperties serverProperties) {
+	 * Constructs a new TomcatReactiveWebServerFactoryCustomizer with the specified
+	 * ServerProperties.
+	 * @param serverProperties the ServerProperties to be used by the customizer
+	 */
+	public TomcatReactiveWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		this.serverProperties = serverProperties;
 	}
 
 	/**
-     * Customize the Tomcat Reactive Web Server Factory.
-     * 
-     * @param factory the Tomcat Reactive Web Server Factory to customize
-     */
-    @Override
+	 * Customize the Tomcat Reactive Web Server Factory.
+	 * @param factory the Tomcat Reactive Web Server Factory to customize
+	 */
+	@Override
 	public void customize(TomcatReactiveWebServerFactory factory) {
 		factory.setDisableMBeanRegistry(!this.serverProperties.getTomcat().getMbeanregistry().isEnabled());
 	}

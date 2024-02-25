@@ -39,11 +39,11 @@ final class ConfigurationProperties {
 	private final Map<String, ConfigurationProperty> byName;
 
 	/**
-     * Constructs a new ConfigurationProperties object with the given list of properties.
-     * 
-     * @param properties the list of ConfigurationProperty objects to be included in the ConfigurationProperties object
-     */
-    private ConfigurationProperties(List<ConfigurationProperty> properties) {
+	 * Constructs a new ConfigurationProperties object with the given list of properties.
+	 * @param properties the list of ConfigurationProperty objects to be included in the
+	 * ConfigurationProperties object
+	 */
+	private ConfigurationProperties(List<ConfigurationProperty> properties) {
 		Map<String, ConfigurationProperty> byName = new LinkedHashMap<>();
 		for (ConfigurationProperty property : properties) {
 			byName.put(property.getName(), property);
@@ -52,32 +52,32 @@ final class ConfigurationProperties {
 	}
 
 	/**
-     * Retrieves the ConfigurationProperty object associated with the specified property name.
-     * 
-     * @param propertyName the name of the property to retrieve
-     * @return the ConfigurationProperty object associated with the specified property name, or null if not found
-     */
-    ConfigurationProperty get(String propertyName) {
+	 * Retrieves the ConfigurationProperty object associated with the specified property
+	 * name.
+	 * @param propertyName the name of the property to retrieve
+	 * @return the ConfigurationProperty object associated with the specified property
+	 * name, or null if not found
+	 */
+	ConfigurationProperty get(String propertyName) {
 		return this.byName.get(propertyName);
 	}
 
 	/**
-     * Returns a stream of ConfigurationProperty objects.
-     *
-     * @return a stream of ConfigurationProperty objects
-     */
-    Stream<ConfigurationProperty> stream() {
+	 * Returns a stream of ConfigurationProperty objects.
+	 * @return a stream of ConfigurationProperty objects
+	 */
+	Stream<ConfigurationProperty> stream() {
 		return this.byName.values().stream();
 	}
 
 	/**
-     * Reads configuration properties from a collection of files.
-     * 
-     * @param files The collection of files to read configuration properties from.
-     * @return A ConfigurationProperties object containing the loaded properties.
-     * @throws RuntimeException if there is an error while loading the configuration metadata.
-     */
-    @SuppressWarnings("unchecked")
+	 * Reads configuration properties from a collection of files.
+	 * @param files The collection of files to read configuration properties from.
+	 * @return A ConfigurationProperties object containing the loaded properties.
+	 * @throws RuntimeException if there is an error while loading the configuration
+	 * metadata.
+	 */
+	@SuppressWarnings("unchecked")
 	static ConfigurationProperties fromFiles(Iterable<File> files) {
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();

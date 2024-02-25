@@ -73,13 +73,13 @@ public class EnvironmentEndpoint {
 	private final Show showValues;
 
 	/**
-     * Constructs a new EnvironmentEndpoint with the specified environment, sanitizing functions, and show values.
-     * 
-     * @param environment the environment to be used by the endpoint
-     * @param sanitizingFunctions the sanitizing functions to be used by the endpoint
-     * @param showValues the show values to be used by the endpoint
-     */
-    public EnvironmentEndpoint(Environment environment, Iterable<SanitizingFunction> sanitizingFunctions,
+	 * Constructs a new EnvironmentEndpoint with the specified environment, sanitizing
+	 * functions, and show values.
+	 * @param environment the environment to be used by the endpoint
+	 * @param sanitizingFunctions the sanitizing functions to be used by the endpoint
+	 * @param showValues the show values to be used by the endpoint
+	 */
+	public EnvironmentEndpoint(Environment environment, Iterable<SanitizingFunction> sanitizingFunctions,
 			Show showValues) {
 		this.environment = environment;
 		this.sanitizer = new Sanitizer(sanitizingFunctions);
@@ -87,25 +87,26 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Retrieves the environment descriptor based on the specified pattern.
-     * 
-     * @param pattern the pattern to filter the environment properties (nullable)
-     * @return the environment descriptor
-     */
-    @ReadOperation
+	 * Retrieves the environment descriptor based on the specified pattern.
+	 * @param pattern the pattern to filter the environment properties (nullable)
+	 * @return the environment descriptor
+	 */
+	@ReadOperation
 	public EnvironmentDescriptor environment(@Nullable String pattern) {
 		boolean showUnsanitized = this.showValues.isShown(true);
 		return getEnvironmentDescriptor(pattern, showUnsanitized);
 	}
 
 	/**
-     * Retrieves the environment descriptor based on the given pattern and showUnsanitized flag.
-     * 
-     * @param pattern         the pattern to match against environment names
-     * @param showUnsanitized flag indicating whether to include unsanitized environment names
-     * @return the environment descriptor matching the given pattern and showUnsanitized flag
-     */
-    EnvironmentDescriptor getEnvironmentDescriptor(String pattern, boolean showUnsanitized) {
+	 * Retrieves the environment descriptor based on the given pattern and showUnsanitized
+	 * flag.
+	 * @param pattern the pattern to match against environment names
+	 * @param showUnsanitized flag indicating whether to include unsanitized environment
+	 * names
+	 * @return the environment descriptor matching the given pattern and showUnsanitized
+	 * flag
+	 */
+	EnvironmentDescriptor getEnvironmentDescriptor(String pattern, boolean showUnsanitized) {
 		if (StringUtils.hasText(pattern)) {
 			return getEnvironmentDescriptor(Pattern.compile(pattern).asPredicate(), showUnsanitized);
 		}
@@ -113,13 +114,13 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Retrieves the environment descriptor based on the given property name predicate and showUnsanitized flag.
-     * 
-     * @param propertyNamePredicate the predicate used to filter property names
-     * @param showUnsanitized the flag indicating whether to show unsanitized properties
-     * @return the environment descriptor
-     */
-    private EnvironmentDescriptor getEnvironmentDescriptor(Predicate<String> propertyNamePredicate,
+	 * Retrieves the environment descriptor based on the given property name predicate and
+	 * showUnsanitized flag.
+	 * @param propertyNamePredicate the predicate used to filter property names
+	 * @param showUnsanitized the flag indicating whether to show unsanitized properties
+	 * @return the environment descriptor
+	 */
+	private EnvironmentDescriptor getEnvironmentDescriptor(Predicate<String> propertyNamePredicate,
 			boolean showUnsanitized) {
 		List<PropertySourceDescriptor> propertySources = new ArrayList<>();
 		getPropertySourcesAsMap().forEach((sourceName, source) -> {
@@ -133,25 +134,24 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Retrieves the environment entry descriptor based on the provided selector.
-     * 
-     * @param toMatch the selector used to match the environment entry
-     * @return the environment entry descriptor matching the selector
-     */
-    @ReadOperation
+	 * Retrieves the environment entry descriptor based on the provided selector.
+	 * @param toMatch the selector used to match the environment entry
+	 * @return the environment entry descriptor matching the selector
+	 */
+	@ReadOperation
 	public EnvironmentEntryDescriptor environmentEntry(@Selector String toMatch) {
 		boolean showUnsanitized = this.showValues.isShown(true);
 		return getEnvironmentEntryDescriptor(toMatch, showUnsanitized);
 	}
 
 	/**
-     * Retrieves the descriptor for the environment entry with the specified property name.
-     * 
-     * @param propertyName   the name of the property
-     * @param showUnsanitized   flag indicating whether to show unsanitized values
-     * @return the descriptor for the environment entry
-     */
-    EnvironmentEntryDescriptor getEnvironmentEntryDescriptor(String propertyName, boolean showUnsanitized) {
+	 * Retrieves the descriptor for the environment entry with the specified property
+	 * name.
+	 * @param propertyName the name of the property
+	 * @param showUnsanitized flag indicating whether to show unsanitized values
+	 * @return the descriptor for the environment entry
+	 */
+	EnvironmentEntryDescriptor getEnvironmentEntryDescriptor(String propertyName, boolean showUnsanitized) {
 		Map<String, PropertyValueDescriptor> descriptors = getPropertySourceDescriptors(propertyName, showUnsanitized);
 		PropertySummaryDescriptor summary = getPropertySummaryDescriptor(descriptors);
 		return new EnvironmentEntryDescriptor(summary, Arrays.asList(this.environment.getActiveProfiles()),
@@ -159,12 +159,12 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Converts a map of property value descriptors to a list of property source entry descriptors.
-     * 
-     * @param descriptors the map of property value descriptors
-     * @return the list of property source entry descriptors
-     */
-    private List<PropertySourceEntryDescriptor> toPropertySourceDescriptors(
+	 * Converts a map of property value descriptors to a list of property source entry
+	 * descriptors.
+	 * @param descriptors the map of property value descriptors
+	 * @return the list of property source entry descriptors
+	 */
+	private List<PropertySourceEntryDescriptor> toPropertySourceDescriptors(
 			Map<String, PropertyValueDescriptor> descriptors) {
 		List<PropertySourceEntryDescriptor> result = new ArrayList<>();
 		descriptors.forEach((name, property) -> result.add(new PropertySourceEntryDescriptor(name, property)));
@@ -172,12 +172,11 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Retrieves the PropertySummaryDescriptor based on the provided descriptors.
-     * 
-     * @param descriptors a map containing the descriptors for the properties
-     * @return the PropertySummaryDescriptor if a non-null value is found, otherwise null
-     */
-    private PropertySummaryDescriptor getPropertySummaryDescriptor(Map<String, PropertyValueDescriptor> descriptors) {
+	 * Retrieves the PropertySummaryDescriptor based on the provided descriptors.
+	 * @param descriptors a map containing the descriptors for the properties
+	 * @return the PropertySummaryDescriptor if a non-null value is found, otherwise null
+	 */
+	private PropertySummaryDescriptor getPropertySummaryDescriptor(Map<String, PropertyValueDescriptor> descriptors) {
 		for (Map.Entry<String, PropertyValueDescriptor> entry : descriptors.entrySet()) {
 			if (entry.getValue() != null) {
 				return new PropertySummaryDescriptor(entry.getKey(), entry.getValue().getValue());
@@ -187,13 +186,13 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Retrieves the descriptors of property sources for a given property name.
-     * 
-     * @param propertyName   the name of the property to retrieve descriptors for
-     * @param showUnsanitized   a flag indicating whether to show unsanitized values
-     * @return   a map of property source descriptors, where the key is the source name and the value is the property value descriptor
-     */
-    private Map<String, PropertyValueDescriptor> getPropertySourceDescriptors(String propertyName,
+	 * Retrieves the descriptors of property sources for a given property name.
+	 * @param propertyName the name of the property to retrieve descriptors for
+	 * @param showUnsanitized a flag indicating whether to show unsanitized values
+	 * @return a map of property source descriptors, where the key is the source name and
+	 * the value is the property value descriptor
+	 */
+	private Map<String, PropertyValueDescriptor> getPropertySourceDescriptors(String propertyName,
 			boolean showUnsanitized) {
 		Map<String, PropertyValueDescriptor> propertySources = new LinkedHashMap<>();
 		getPropertySourcesAsMap().forEach((sourceName, source) -> propertySources.put(sourceName,
@@ -202,15 +201,14 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Describes the given property source.
-     * 
-     * @param sourceName      the name of the property source
-     * @param source          the property source to describe
-     * @param namePredicate   the predicate to filter property names
-     * @param showUnsanitized flag indicating whether to show unsanitized values
-     * @return the descriptor of the property source
-     */
-    private PropertySourceDescriptor describeSource(String sourceName, EnumerablePropertySource<?> source,
+	 * Describes the given property source.
+	 * @param sourceName the name of the property source
+	 * @param source the property source to describe
+	 * @param namePredicate the predicate to filter property names
+	 * @param showUnsanitized flag indicating whether to show unsanitized values
+	 * @return the descriptor of the property source
+	 */
+	private PropertySourceDescriptor describeSource(String sourceName, EnumerablePropertySource<?> source,
 			Predicate<String> namePredicate, boolean showUnsanitized) {
 		Map<String, PropertyValueDescriptor> properties = new LinkedHashMap<>();
 		Stream.of(source.getPropertyNames())
@@ -220,14 +218,13 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Describes the value of a property in a given property source.
-     * 
-     * @param name the name of the property
-     * @param source the property source
-     * @param showUnsanitized flag indicating whether to show unsanitized value
-     * @return the property value descriptor
-     */
-    @SuppressWarnings("unchecked")
+	 * Describes the value of a property in a given property source.
+	 * @param name the name of the property
+	 * @param source the property source
+	 * @param showUnsanitized flag indicating whether to show unsanitized value
+	 * @return the property value descriptor
+	 */
+	@SuppressWarnings("unchecked")
 	private PropertyValueDescriptor describeValueOf(String name, PropertySource<?> source, boolean showUnsanitized) {
 		PlaceholdersResolver resolver = new PropertySourcesPlaceholdersResolver(getPropertySources());
 		Object resolved = resolver.resolvePlaceholders(source.getProperty(name));
@@ -237,11 +234,10 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Returns the property sources as a map.
-     * 
-     * @return a map containing the property sources
-     */
-    private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
+	 * Returns the property sources as a map.
+	 * @return a map containing the property sources
+	 */
+	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
 		Map<String, PropertySource<?>> map = new LinkedHashMap<>();
 		for (PropertySource<?> source : getPropertySources()) {
 			if (!ConfigurationPropertySources.isAttachedConfigurationPropertySource(source)) {
@@ -252,11 +248,10 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Returns the property sources of the environment.
-     *
-     * @return the property sources of the environment
-     */
-    private MutablePropertySources getPropertySources() {
+	 * Returns the property sources of the environment.
+	 * @return the property sources of the environment
+	 */
+	private MutablePropertySources getPropertySources() {
 		if (this.environment instanceof ConfigurableEnvironment configurableEnvironment) {
 			return configurableEnvironment.getPropertySources();
 		}
@@ -264,13 +259,13 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Recursively extracts property sources from a given root property source and adds them to a map.
-     * 
-     * @param root The root name of the property source.
-     * @param map The map to store the extracted property sources.
-     * @param source The property source to extract from.
-     */
-    private void extract(String root, Map<String, PropertySource<?>> map, PropertySource<?> source) {
+	 * Recursively extracts property sources from a given root property source and adds
+	 * them to a map.
+	 * @param root The root name of the property source.
+	 * @param map The map to store the extracted property sources.
+	 * @param source The property source to extract from.
+	 */
+	private void extract(String root, Map<String, PropertySource<?>> map, PropertySource<?> source) {
 		if (source instanceof CompositePropertySource compositePropertySource) {
 			for (PropertySource<?> nest : compositePropertySource.getPropertySources()) {
 				extract(source.getName() + ":", map, nest);
@@ -282,26 +277,26 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-     * Sanitizes the given property value based on the provided property source, name, and showUnsanitized flag.
-     * 
-     * @param source the property source from which the value is retrieved
-     * @param name the name of the property
-     * @param value the value of the property
-     * @param showUnsanitized flag indicating whether to show unsanitized values
-     * @return the sanitized property value
-     */
-    private Object sanitize(PropertySource<?> source, String name, Object value, boolean showUnsanitized) {
+	 * Sanitizes the given property value based on the provided property source, name, and
+	 * showUnsanitized flag.
+	 * @param source the property source from which the value is retrieved
+	 * @param name the name of the property
+	 * @param value the value of the property
+	 * @param showUnsanitized flag indicating whether to show unsanitized values
+	 * @return the sanitized property value
+	 */
+	private Object sanitize(PropertySource<?> source, String name, Object value, boolean showUnsanitized) {
 		return this.sanitizer.sanitize(new SanitizableData(source, name, value), showUnsanitized);
 	}
 
 	/**
-     * Converts the given value to a string if necessary.
-     * 
-     * @param value the value to be converted
-     * @return the converted value as a string, or the original value if it is null, a primitive or wrapper type, or a number
-     * @throws NullPointerException if the value is null
-     */
-    protected Object stringifyIfNecessary(Object value) {
+	 * Converts the given value to a string if necessary.
+	 * @param value the value to be converted
+	 * @return the converted value as a string, or the original value if it is null, a
+	 * primitive or wrapper type, or a number
+	 * @throws NullPointerException if the value is null
+	 */
+	protected Object stringifyIfNecessary(Object value) {
 		if (value == null || ClassUtils.isPrimitiveOrWrapper(value.getClass())
 				|| Number.class.isAssignableFrom(value.getClass())) {
 			return value;
@@ -324,13 +319,13 @@ public class EnvironmentEndpoint {
 		private final List<PropertySourceDescriptor> propertySources;
 
 		/**
-         * Constructs a new EnvironmentDescriptor with the specified active profiles, default profiles, and property sources.
-         * 
-         * @param activeProfiles the list of active profiles
-         * @param defaultProfiles the list of default profiles
-         * @param propertySources the list of property sources
-         */
-        private EnvironmentDescriptor(List<String> activeProfiles, List<String> defaultProfiles,
+		 * Constructs a new EnvironmentDescriptor with the specified active profiles,
+		 * default profiles, and property sources.
+		 * @param activeProfiles the list of active profiles
+		 * @param defaultProfiles the list of default profiles
+		 * @param propertySources the list of property sources
+		 */
+		private EnvironmentDescriptor(List<String> activeProfiles, List<String> defaultProfiles,
 				List<PropertySourceDescriptor> propertySources) {
 			this.activeProfiles = activeProfiles;
 			this.defaultProfiles = defaultProfiles;
@@ -338,29 +333,26 @@ public class EnvironmentEndpoint {
 		}
 
 		/**
-         * Returns the list of active profiles.
-         *
-         * @return the list of active profiles
-         */
-        public List<String> getActiveProfiles() {
+		 * Returns the list of active profiles.
+		 * @return the list of active profiles
+		 */
+		public List<String> getActiveProfiles() {
 			return this.activeProfiles;
 		}
 
 		/**
-         * Returns the list of default profiles.
-         * 
-         * @return the list of default profiles
-         */
-        public List<String> getDefaultProfiles() {
+		 * Returns the list of default profiles.
+		 * @return the list of default profiles
+		 */
+		public List<String> getDefaultProfiles() {
 			return this.defaultProfiles;
 		}
 
 		/**
-         * Returns the list of property sources in this environment descriptor.
-         *
-         * @return the list of property sources
-         */
-        public List<PropertySourceDescriptor> getPropertySources() {
+		 * Returns the list of property sources in this environment descriptor.
+		 * @return the list of property sources
+		 */
+		public List<PropertySourceDescriptor> getPropertySources() {
 			return this.propertySources;
 		}
 
@@ -381,14 +373,15 @@ public class EnvironmentEndpoint {
 		private final List<PropertySourceEntryDescriptor> propertySources;
 
 		/**
-         * Constructs a new EnvironmentEntryDescriptor with the specified property, active profiles, default profiles, and property sources.
-         * 
-         * @param property the property summary descriptor for this environment entry
-         * @param activeProfiles the list of active profiles for this environment entry
-         * @param defaultProfiles the list of default profiles for this environment entry
-         * @param propertySources the list of property source entry descriptors for this environment entry
-         */
-        EnvironmentEntryDescriptor(PropertySummaryDescriptor property, List<String> activeProfiles,
+		 * Constructs a new EnvironmentEntryDescriptor with the specified property, active
+		 * profiles, default profiles, and property sources.
+		 * @param property the property summary descriptor for this environment entry
+		 * @param activeProfiles the list of active profiles for this environment entry
+		 * @param defaultProfiles the list of default profiles for this environment entry
+		 * @param propertySources the list of property source entry descriptors for this
+		 * environment entry
+		 */
+		EnvironmentEntryDescriptor(PropertySummaryDescriptor property, List<String> activeProfiles,
 				List<String> defaultProfiles, List<PropertySourceEntryDescriptor> propertySources) {
 			this.property = property;
 			this.activeProfiles = activeProfiles;
@@ -397,38 +390,36 @@ public class EnvironmentEndpoint {
 		}
 
 		/**
-         * Returns the PropertySummaryDescriptor object associated with this EnvironmentEntryDescriptor.
-         *
-         * @return the PropertySummaryDescriptor object associated with this EnvironmentEntryDescriptor
-         */
-        public PropertySummaryDescriptor getProperty() {
+		 * Returns the PropertySummaryDescriptor object associated with this
+		 * EnvironmentEntryDescriptor.
+		 * @return the PropertySummaryDescriptor object associated with this
+		 * EnvironmentEntryDescriptor
+		 */
+		public PropertySummaryDescriptor getProperty() {
 			return this.property;
 		}
 
 		/**
-         * Returns the list of active profiles.
-         *
-         * @return the list of active profiles
-         */
-        public List<String> getActiveProfiles() {
+		 * Returns the list of active profiles.
+		 * @return the list of active profiles
+		 */
+		public List<String> getActiveProfiles() {
 			return this.activeProfiles;
 		}
 
 		/**
-         * Returns the list of default profiles.
-         *
-         * @return the list of default profiles
-         */
-        public List<String> getDefaultProfiles() {
+		 * Returns the list of default profiles.
+		 * @return the list of default profiles
+		 */
+		public List<String> getDefaultProfiles() {
 			return this.defaultProfiles;
 		}
 
 		/**
-         * Returns the list of property sources.
-         *
-         * @return the list of property sources
-         */
-        public List<PropertySourceEntryDescriptor> getPropertySources() {
+		 * Returns the list of property sources.
+		 * @return the list of property sources
+		 */
+		public List<PropertySourceEntryDescriptor> getPropertySources() {
 			return this.propertySources;
 		}
 
@@ -445,31 +436,28 @@ public class EnvironmentEndpoint {
 		private final Object value;
 
 		/**
-         * Constructs a new PropertySummaryDescriptor with the specified source and value.
-         * 
-         * @param source the source of the property summary
-         * @param value the value of the property summary
-         */
-        public PropertySummaryDescriptor(String source, Object value) {
+		 * Constructs a new PropertySummaryDescriptor with the specified source and value.
+		 * @param source the source of the property summary
+		 * @param value the value of the property summary
+		 */
+		public PropertySummaryDescriptor(String source, Object value) {
 			this.source = source;
 			this.value = value;
 		}
 
 		/**
-         * Returns the source of the PropertySummaryDescriptor.
-         *
-         * @return the source of the PropertySummaryDescriptor
-         */
-        public String getSource() {
+		 * Returns the source of the PropertySummaryDescriptor.
+		 * @return the source of the PropertySummaryDescriptor
+		 */
+		public String getSource() {
 			return this.source;
 		}
 
 		/**
-         * Returns the value of the property.
-         *
-         * @return the value of the property
-         */
-        public Object getValue() {
+		 * Returns the value of the property.
+		 * @return the value of the property
+		 */
+		public Object getValue() {
 			return this.value;
 		}
 
@@ -485,31 +473,31 @@ public class EnvironmentEndpoint {
 		private final Map<String, PropertyValueDescriptor> properties;
 
 		/**
-         * Constructs a new PropertySourceDescriptor with the specified name and properties.
-         *
-         * @param name the name of the property source
-         * @param properties the map of properties associated with the property source
-         */
-        private PropertySourceDescriptor(String name, Map<String, PropertyValueDescriptor> properties) {
+		 * Constructs a new PropertySourceDescriptor with the specified name and
+		 * properties.
+		 * @param name the name of the property source
+		 * @param properties the map of properties associated with the property source
+		 */
+		private PropertySourceDescriptor(String name, Map<String, PropertyValueDescriptor> properties) {
 			this.name = name;
 			this.properties = properties;
 		}
 
 		/**
-         * Returns the name of the PropertySourceDescriptor.
-         *
-         * @return the name of the PropertySourceDescriptor
-         */
-        public String getName() {
+		 * Returns the name of the PropertySourceDescriptor.
+		 * @return the name of the PropertySourceDescriptor
+		 */
+		public String getName() {
 			return this.name;
 		}
 
 		/**
-         * Returns the map of properties associated with this PropertySourceDescriptor.
-         *
-         * @return the map of properties, where the key is a string representing the property name and the value is a PropertyValueDescriptor object representing the property value and its descriptor
-         */
-        public Map<String, PropertyValueDescriptor> getProperties() {
+		 * Returns the map of properties associated with this PropertySourceDescriptor.
+		 * @return the map of properties, where the key is a string representing the
+		 * property name and the value is a PropertyValueDescriptor object representing
+		 * the property value and its descriptor
+		 */
+		public Map<String, PropertyValueDescriptor> getProperties() {
 			return this.properties;
 		}
 
@@ -526,31 +514,29 @@ public class EnvironmentEndpoint {
 		private final PropertyValueDescriptor property;
 
 		/**
-         * Constructs a new PropertySourceEntryDescriptor with the specified name and property.
-         * 
-         * @param name the name of the property source entry
-         * @param property the property value descriptor
-         */
-        private PropertySourceEntryDescriptor(String name, PropertyValueDescriptor property) {
+		 * Constructs a new PropertySourceEntryDescriptor with the specified name and
+		 * property.
+		 * @param name the name of the property source entry
+		 * @param property the property value descriptor
+		 */
+		private PropertySourceEntryDescriptor(String name, PropertyValueDescriptor property) {
 			this.name = name;
 			this.property = property;
 		}
 
 		/**
-         * Returns the name of the PropertySourceEntryDescriptor.
-         *
-         * @return the name of the PropertySourceEntryDescriptor
-         */
-        public String getName() {
+		 * Returns the name of the PropertySourceEntryDescriptor.
+		 * @return the name of the PropertySourceEntryDescriptor
+		 */
+		public String getName() {
 			return this.name;
 		}
 
 		/**
-         * Returns the property value descriptor of this PropertySourceEntryDescriptor.
-         *
-         * @return the property value descriptor
-         */
-        public PropertyValueDescriptor getProperty() {
+		 * Returns the property value descriptor of this PropertySourceEntryDescriptor.
+		 * @return the property value descriptor
+		 */
+		public PropertyValueDescriptor getProperty() {
 			return this.property;
 		}
 
@@ -569,12 +555,11 @@ public class EnvironmentEndpoint {
 		private final String[] originParents;
 
 		/**
-         * Constructs a new PropertyValueDescriptor with the specified value and origin.
-         * 
-         * @param value the value of the property
-         * @param origin the origin of the property
-         */
-        private PropertyValueDescriptor(Object value, Origin origin) {
+		 * Constructs a new PropertyValueDescriptor with the specified value and origin.
+		 * @param value the value of the property
+		 * @param origin the origin of the property
+		 */
+		private PropertyValueDescriptor(Object value, Origin origin) {
 			this.value = value;
 			this.origin = (origin != null) ? origin.toString() : null;
 			List<Origin> originParents = Origin.parentsFrom(origin);
@@ -583,29 +568,26 @@ public class EnvironmentEndpoint {
 		}
 
 		/**
-         * Returns the value of the property.
-         *
-         * @return the value of the property
-         */
-        public Object getValue() {
+		 * Returns the value of the property.
+		 * @return the value of the property
+		 */
+		public Object getValue() {
 			return this.value;
 		}
 
 		/**
-         * Returns the origin of the property value.
-         *
-         * @return the origin of the property value
-         */
-        public String getOrigin() {
+		 * Returns the origin of the property value.
+		 * @return the origin of the property value
+		 */
+		public String getOrigin() {
 			return this.origin;
 		}
 
 		/**
-         * Returns an array of origin parents.
-         *
-         * @return an array of origin parents
-         */
-        public String[] getOriginParents() {
+		 * Returns an array of origin parents.
+		 * @return an array of origin parents
+		 */
+		public String[] getOriginParents() {
 			return this.originParents;
 		}
 

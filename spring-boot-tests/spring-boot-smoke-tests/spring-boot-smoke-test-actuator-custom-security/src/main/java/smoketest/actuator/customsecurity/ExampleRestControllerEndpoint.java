@@ -30,12 +30,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ExampleRestControllerEndpoint {
 
 	/**
-     * Retrieves the echoed text based on the provided input text.
-     * 
-     * @param text the input text to be echoed
-     * @return a ResponseEntity object containing the echoed text as the response body and the echoed text as a header
-     */
-    @GetMapping("/echo")
+	 * Retrieves the echoed text based on the provided input text.
+	 * @param text the input text to be echoed
+	 * @return a ResponseEntity object containing the echoed text as the response body and
+	 * the echoed text as a header
+	 */
+	@GetMapping("/echo")
 	public ResponseEntity<String> echo(@RequestParam("text") String text) {
 		return ResponseEntity.ok().header("echo", text).body(text);
 	}

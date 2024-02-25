@@ -47,12 +47,11 @@ public abstract class CompositeHealthContributorConfiguration<I extends HealthIn
 	}
 
 	/**
-     * Creates a composite health contributor from a map of beans.
-     * 
-     * @param beans the map of beans to create the composite from
-     * @return the created composite health contributor
-     */
-    @Override
+	 * Creates a composite health contributor from a map of beans.
+	 * @param beans the map of beans to create the composite from
+	 * @return the created composite health contributor
+	 */
+	@Override
 	protected final HealthContributor createComposite(Map<String, B> beans) {
 		return CompositeHealthContributor.fromMap(beans, this::createIndicator);
 	}

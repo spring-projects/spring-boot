@@ -73,9 +73,9 @@ import org.springframework.util.CollectionUtils;
 class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 	/**
-     * JwtConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JwtConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveJwtDecoder.class)
 	static class JwtConfiguration {
 
@@ -84,25 +84,28 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		private final List<OAuth2TokenValidator<Jwt>> additionalValidators;
 
 		/**
-         * Constructs a new JwtConfiguration object with the provided OAuth2ResourceServerProperties and additionalValidators.
-         * 
-         * @param properties the OAuth2ResourceServerProperties object containing JWT configuration properties
-         * @param additionalValidators the additional OAuth2TokenValidators to be used for validating JWT tokens
-         */
-        JwtConfiguration(OAuth2ResourceServerProperties properties,
+		 * Constructs a new JwtConfiguration object with the provided
+		 * OAuth2ResourceServerProperties and additionalValidators.
+		 * @param properties the OAuth2ResourceServerProperties object containing JWT
+		 * configuration properties
+		 * @param additionalValidators the additional OAuth2TokenValidators to be used for
+		 * validating JWT tokens
+		 */
+		JwtConfiguration(OAuth2ResourceServerProperties properties,
 				ObjectProvider<OAuth2TokenValidator<Jwt>> additionalValidators) {
 			this.properties = properties.getJwt();
 			this.additionalValidators = additionalValidators.orderedStream().toList();
 		}
 
 		/**
-         * Creates a ReactiveJwtDecoder bean based on the provided properties.
-         * This bean is conditionally created if the property "spring.security.oauth2.resourceserver.jwt.jwk-set-uri" is present.
-         * 
-         * @param customizers ObjectProvider of JwkSetUriReactiveJwtDecoderBuilderCustomizer to customize the builder
-         * @return ReactiveJwtDecoder bean
-         */
-        @Bean
+		 * Creates a ReactiveJwtDecoder bean based on the provided properties. This bean
+		 * is conditionally created if the property
+		 * "spring.security.oauth2.resourceserver.jwt.jwk-set-uri" is present.
+		 * @param customizers ObjectProvider of
+		 * JwkSetUriReactiveJwtDecoderBuilderCustomizer to customize the builder
+		 * @return ReactiveJwtDecoder bean
+		 */
+		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 		ReactiveJwtDecoder jwtDecoder(ObjectProvider<JwkSetUriReactiveJwtDecoderBuilderCustomizer> customizers) {
 			JwkSetUriReactiveJwtDecoderBuilder builder = NimbusReactiveJwtDecoder
@@ -118,23 +121,22 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		}
 
 		/**
-         * Sets the supported JWS algorithms for JWT configuration.
-         * 
-         * @param signatureAlgorithms a set of SignatureAlgorithm objects representing the supported JWS algorithms
-         */
-        private void jwsAlgorithms(Set<SignatureAlgorithm> signatureAlgorithms) {
+		 * Sets the supported JWS algorithms for JWT configuration.
+		 * @param signatureAlgorithms a set of SignatureAlgorithm objects representing the
+		 * supported JWS algorithms
+		 */
+		private void jwsAlgorithms(Set<SignatureAlgorithm> signatureAlgorithms) {
 			for (String algorithm : this.properties.getJwsAlgorithms()) {
 				signatureAlgorithms.add(SignatureAlgorithm.from(algorithm));
 			}
 		}
 
 		/**
-         * Returns the validators for the OAuth2 token.
-         * 
-         * @param defaultValidator The default validator to be used.
-         * @return The validators for the OAuth2 token.
-         */
-        private OAuth2TokenValidator<Jwt> getValidators(OAuth2TokenValidator<Jwt> defaultValidator) {
+		 * Returns the validators for the OAuth2 token.
+		 * @param defaultValidator The default validator to be used.
+		 * @return The validators for the OAuth2 token.
+		 */
+		private OAuth2TokenValidator<Jwt> getValidators(OAuth2TokenValidator<Jwt> defaultValidator) {
 			List<String> audiences = this.properties.getAudiences();
 			if (CollectionUtils.isEmpty(audiences) && this.additionalValidators.isEmpty()) {
 				return defaultValidator;
@@ -150,13 +152,12 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		}
 
 		/**
-         * Creates a NimbusReactiveJwtDecoder bean with a public key value.
-         * This bean is conditionally created based on the KeyValueCondition.
-         * 
-         * @return the created NimbusReactiveJwtDecoder bean
-         * @throws Exception if an error occurs during the creation of the public key
-         */
-        @Bean
+		 * Creates a NimbusReactiveJwtDecoder bean with a public key value. This bean is
+		 * conditionally created based on the KeyValueCondition.
+		 * @return the created NimbusReactiveJwtDecoder bean
+		 * @throws Exception if an error occurs during the creation of the public key
+		 */
+		@Bean
 		@Conditional(KeyValueCondition.class)
 		NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
@@ -169,23 +170,23 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		}
 
 		/**
-         * Returns the key specification as a byte array.
-         * 
-         * @param keyValue the key value in PEM format
-         * @return the key specification as a byte array
-         */
-        private byte[] getKeySpec(String keyValue) {
+		 * Returns the key specification as a byte array.
+		 * @param keyValue the key value in PEM format
+		 * @return the key specification as a byte array
+		 */
+		private byte[] getKeySpec(String keyValue) {
 			keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");
 			return Base64.getMimeDecoder().decode(keyValue);
 		}
 
 		/**
-         * Returns the exactly one JWS algorithm from the list of configured JWS algorithms.
-         * 
-         * @return the exactly one JWS algorithm
-         * @throws IllegalStateException if the number of configured JWS algorithms is not exactly one
-         */
-        private String exactlyOneAlgorithm() {
+		 * Returns the exactly one JWS algorithm from the list of configured JWS
+		 * algorithms.
+		 * @return the exactly one JWS algorithm
+		 * @throws IllegalStateException if the number of configured JWS algorithms is not
+		 * exactly one
+		 */
+		private String exactlyOneAlgorithm() {
 			List<String> algorithms = this.properties.getJwsAlgorithms();
 			int count = (algorithms != null) ? algorithms.size() : 0;
 			if (count != 1) {
@@ -197,19 +198,21 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		}
 
 		/**
-         * Creates a SupplierReactiveJwtDecoder bean with a conditional annotation based on the IssuerUriCondition class.
-         * This method is responsible for configuring the JWT decoder by issuer URI.
-         * It uses a JwkSetUriReactiveJwtDecoderBuilderCustomizer object provider to customize the builder.
-         * The builder is initialized with the issuer URI obtained from the properties.
-         * Customizers are applied to the builder in the order specified by their priority.
-         * Finally, a NimbusReactiveJwtDecoder is built using the builder and a JWT validator is set on the decoder.
-         * The JWT validator is created using the default validators with the issuer URI from the properties.
-         * The SupplierReactiveJwtDecoder is then returned as the result of this method.
-         *
-         * @param customizers the object provider for JwkSetUriReactiveJwtDecoderBuilderCustomizer
-         * @return the SupplierReactiveJwtDecoder bean
-         */
-        @Bean
+		 * Creates a SupplierReactiveJwtDecoder bean with a conditional annotation based
+		 * on the IssuerUriCondition class. This method is responsible for configuring the
+		 * JWT decoder by issuer URI. It uses a
+		 * JwkSetUriReactiveJwtDecoderBuilderCustomizer object provider to customize the
+		 * builder. The builder is initialized with the issuer URI obtained from the
+		 * properties. Customizers are applied to the builder in the order specified by
+		 * their priority. Finally, a NimbusReactiveJwtDecoder is built using the builder
+		 * and a JWT validator is set on the decoder. The JWT validator is created using
+		 * the default validators with the issuer URI from the properties. The
+		 * SupplierReactiveJwtDecoder is then returned as the result of this method.
+		 * @param customizers the object provider for
+		 * JwkSetUriReactiveJwtDecoderBuilderCustomizer
+		 * @return the SupplierReactiveJwtDecoder bean
+		 */
+		@Bean
 		@Conditional(IssuerUriCondition.class)
 		SupplierReactiveJwtDecoder jwtDecoderByIssuerUri(
 				ObjectProvider<JwkSetUriReactiveJwtDecoderBuilderCustomizer> customizers) {
@@ -227,9 +230,9 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 	}
 
 	/**
-     * JwtConverterConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JwtConverterConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveJwtAuthenticationConverter.class)
 	@Conditional(JwtConverterPropertiesCondition.class)
 	static class JwtConverterConfiguration {
@@ -237,22 +240,24 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		private final OAuth2ResourceServerProperties.Jwt properties;
 
 		/**
-         * Constructs a new JwtConverterConfiguration object with the specified OAuth2ResourceServerProperties.
-         * 
-         * @param properties the OAuth2ResourceServerProperties containing the JWT configuration
-         */
-        JwtConverterConfiguration(OAuth2ResourceServerProperties properties) {
+		 * Constructs a new JwtConverterConfiguration object with the specified
+		 * OAuth2ResourceServerProperties.
+		 * @param properties the OAuth2ResourceServerProperties containing the JWT
+		 * configuration
+		 */
+		JwtConverterConfiguration(OAuth2ResourceServerProperties properties) {
 			this.properties = properties.getJwt();
 		}
 
 		/**
-         * Creates a ReactiveJwtAuthenticationConverter bean.
-         * 
-         * This method initializes a ReactiveJwtAuthenticationConverter bean by configuring its properties based on the values provided in the JwtConverterConfiguration class.
-         * 
-         * @return The created ReactiveJwtAuthenticationConverter bean.
-         */
-        @Bean
+		 * Creates a ReactiveJwtAuthenticationConverter bean.
+		 *
+		 * This method initializes a ReactiveJwtAuthenticationConverter bean by
+		 * configuring its properties based on the values provided in the
+		 * JwtConverterConfiguration class.
+		 * @return The created ReactiveJwtAuthenticationConverter bean.
+		 */
+		@Bean
 		ReactiveJwtAuthenticationConverter reactiveJwtAuthenticationConverter() {
 			JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -271,20 +276,20 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 	}
 
 	/**
-     * WebSecurityConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * WebSecurityConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(SecurityWebFilterChain.class)
 	static class WebSecurityConfiguration {
 
 		/**
-         * Configures the security filter chain for the Spring WebFlux application.
-         * 
-         * @param http The ServerHttpSecurity object used to configure the security filter chain.
-         * @param jwtDecoder The ReactiveJwtDecoder object used for decoding JWT tokens.
-         * @return The configured SecurityWebFilterChain object.
-         */
-        @Bean
+		 * Configures the security filter chain for the Spring WebFlux application.
+		 * @param http The ServerHttpSecurity object used to configure the security filter
+		 * chain.
+		 * @param jwtDecoder The ReactiveJwtDecoder object used for decoding JWT tokens.
+		 * @return The configured SecurityWebFilterChain object.
+		 */
+		@Bean
 		@ConditionalOnBean(ReactiveJwtDecoder.class)
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, ReactiveJwtDecoder jwtDecoder) {
 			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());
@@ -293,51 +298,51 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		}
 
 		/**
-         * Configures a custom decoder for decoding JWT tokens in the OAuth2 resource server.
-         * 
-         * @param server the OAuth2 resource server specification
-         * @param decoder the custom JWT decoder
-         */
-        private void customDecoder(OAuth2ResourceServerSpec server, ReactiveJwtDecoder decoder) {
+		 * Configures a custom decoder for decoding JWT tokens in the OAuth2 resource
+		 * server.
+		 * @param server the OAuth2 resource server specification
+		 * @param decoder the custom JWT decoder
+		 */
+		private void customDecoder(OAuth2ResourceServerSpec server, ReactiveJwtDecoder decoder) {
 			server.jwt((jwt) -> jwt.jwtDecoder(decoder));
 		}
 
 	}
 
 	/**
-     * JwtConverterPropertiesCondition class.
-     */
-    private static class JwtConverterPropertiesCondition extends AnyNestedCondition {
+	 * JwtConverterPropertiesCondition class.
+	 */
+	private static class JwtConverterPropertiesCondition extends AnyNestedCondition {
 
 		/**
-         * Constructs a new JwtConverterPropertiesCondition with the specified configuration phase.
-         * 
-         * @param configurationPhase the configuration phase for the condition
-         */
-        JwtConverterPropertiesCondition() {
+		 * Constructs a new JwtConverterPropertiesCondition with the specified
+		 * configuration phase.
+		 * @param configurationPhase the configuration phase for the condition
+		 */
+		JwtConverterPropertiesCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
 		/**
-         * OnAuthorityPrefix class.
-         */
-        @ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authority-prefix")
+		 * OnAuthorityPrefix class.
+		 */
+		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authority-prefix")
 		static class OnAuthorityPrefix {
 
 		}
 
 		/**
-         * OnPrincipalClaimName class.
-         */
-        @ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "principal-claim-name")
+		 * OnPrincipalClaimName class.
+		 */
+		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "principal-claim-name")
 		static class OnPrincipalClaimName {
 
 		}
 
 		/**
-         * OnAuthoritiesClaimName class.
-         */
-        @ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authorities-claim-name")
+		 * OnAuthoritiesClaimName class.
+		 */
+		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authorities-claim-name")
 		static class OnAuthoritiesClaimName {
 
 		}

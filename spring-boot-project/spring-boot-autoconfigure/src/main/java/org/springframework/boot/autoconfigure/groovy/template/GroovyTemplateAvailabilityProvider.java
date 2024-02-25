@@ -38,83 +38,80 @@ public class GroovyTemplateAvailabilityProvider extends PathBasedTemplateAvailab
 	private static final String REQUIRED_CLASS_NAME = "groovy.text.TemplateEngine";
 
 	/**
-     * Constructs a new GroovyTemplateAvailabilityProvider.
-     * 
-     * @param requiredClassName the name of the required class
-     * @param propertiesClass the class representing the properties for GroovyTemplateAvailability
-     * @param prefix the prefix for the GroovyTemplateAvailability properties
-     */
-    public GroovyTemplateAvailabilityProvider() {
+	 * Constructs a new GroovyTemplateAvailabilityProvider.
+	 * @param requiredClassName the name of the required class
+	 * @param propertiesClass the class representing the properties for
+	 * GroovyTemplateAvailability
+	 * @param prefix the prefix for the GroovyTemplateAvailability properties
+	 */
+	public GroovyTemplateAvailabilityProvider() {
 		super(REQUIRED_CLASS_NAME, GroovyTemplateAvailabilityProperties.class, "spring.groovy.template");
 	}
 
 	/**
-     * GroovyTemplateAvailabilityProperties class.
-     */
-    protected static final class GroovyTemplateAvailabilityProperties extends TemplateAvailabilityProperties {
+	 * GroovyTemplateAvailabilityProperties class.
+	 */
+	protected static final class GroovyTemplateAvailabilityProperties extends TemplateAvailabilityProperties {
 
 		private List<String> resourceLoaderPath = new ArrayList<>(
 				Arrays.asList(GroovyTemplateProperties.DEFAULT_RESOURCE_LOADER_PATH));
 
 		/**
-         * Constructs a new instance of GroovyTemplateAvailabilityProperties with the default prefix and suffix.
-         */
-        GroovyTemplateAvailabilityProperties() {
+		 * Constructs a new instance of GroovyTemplateAvailabilityProperties with the
+		 * default prefix and suffix.
+		 */
+		GroovyTemplateAvailabilityProperties() {
 			super(GroovyTemplateProperties.DEFAULT_PREFIX, GroovyTemplateProperties.DEFAULT_SUFFIX);
 		}
 
 		/**
-         * Returns the loader path for the Groovy template availability.
-         * 
-         * @return the loader path for the Groovy template availability
-         */
-        @Override
+		 * Returns the loader path for the Groovy template availability.
+		 * @return the loader path for the Groovy template availability
+		 */
+		@Override
 		protected List<String> getLoaderPath() {
 			return this.resourceLoaderPath;
 		}
 
 		/**
-         * Returns the resource loader path.
-         * 
-         * @return the resource loader path as a List of Strings
-         */
-        public List<String> getResourceLoaderPath() {
+		 * Returns the resource loader path.
+		 * @return the resource loader path as a List of Strings
+		 */
+		public List<String> getResourceLoaderPath() {
 			return this.resourceLoaderPath;
 		}
 
 		/**
-         * Sets the resource loader path for the Groovy template availability properties.
-         * 
-         * @param resourceLoaderPath the list of resource loader paths to be set
-         */
-        public void setResourceLoaderPath(List<String> resourceLoaderPath) {
+		 * Sets the resource loader path for the Groovy template availability properties.
+		 * @param resourceLoaderPath the list of resource loader paths to be set
+		 */
+		public void setResourceLoaderPath(List<String> resourceLoaderPath) {
 			this.resourceLoaderPath = resourceLoaderPath;
 		}
 
 	}
 
 	/**
-     * GroovyTemplateAvailabilityRuntimeHints class.
-     */
-    static class GroovyTemplateAvailabilityRuntimeHints extends BindableRuntimeHintsRegistrar {
+	 * GroovyTemplateAvailabilityRuntimeHints class.
+	 */
+	static class GroovyTemplateAvailabilityRuntimeHints extends BindableRuntimeHintsRegistrar {
 
 		/**
-         * Constructs a new instance of GroovyTemplateAvailabilityRuntimeHints.
-         * 
-         * @param properties the GroovyTemplateAvailabilityProperties object to be used
-         * @see GroovyTemplateAvailabilityProperties
-         */
-        GroovyTemplateAvailabilityRuntimeHints() {
+		 * Constructs a new instance of GroovyTemplateAvailabilityRuntimeHints.
+		 * @param properties the GroovyTemplateAvailabilityProperties object to be used
+		 * @see GroovyTemplateAvailabilityProperties
+		 */
+		GroovyTemplateAvailabilityRuntimeHints() {
 			super(GroovyTemplateAvailabilityProperties.class);
 		}
 
 		/**
-         * Registers the runtime hints for the Groovy template availability.
-         * 
-         * @param hints the runtime hints to register
-         * @param classLoader the class loader to use for checking the presence of a required class
-         */
-        @Override
+		 * Registers the runtime hints for the Groovy template availability.
+		 * @param hints the runtime hints to register
+		 * @param classLoader the class loader to use for checking the presence of a
+		 * required class
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			if (ClassUtils.isPresent(REQUIRED_CLASS_NAME, classLoader)) {
 				super.registerHints(hints, classLoader);

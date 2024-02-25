@@ -33,39 +33,37 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 class CouchbaseReactiveRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	/**
-     * Returns the annotation class that is used to enable reactive Couchbase repositories.
-     *
-     * @return the annotation class {@code EnableReactiveCouchbaseRepositories}
-     */
-    @Override
+	 * Returns the annotation class that is used to enable reactive Couchbase
+	 * repositories.
+	 * @return the annotation class {@code EnableReactiveCouchbaseRepositories}
+	 */
+	@Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableReactiveCouchbaseRepositories.class;
 	}
 
 	/**
-     * Returns the configuration class for enabling reactive Couchbase repositories.
-     * 
-     * @return the configuration class for enabling reactive Couchbase repositories
-     */
-    @Override
+	 * Returns the configuration class for enabling reactive Couchbase repositories.
+	 * @return the configuration class for enabling reactive Couchbase repositories
+	 */
+	@Override
 	protected Class<?> getConfiguration() {
 		return EnableReactiveCouchbaseRepositoriesConfiguration.class;
 	}
 
 	/**
-     * Returns the repository configuration extension for Couchbase reactive repositories.
-     *
-     * @return The repository configuration extension.
-     */
-    @Override
+	 * Returns the repository configuration extension for Couchbase reactive repositories.
+	 * @return The repository configuration extension.
+	 */
+	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new ReactiveCouchbaseRepositoryConfigurationExtension();
 	}
 
 	/**
-     * EnableReactiveCouchbaseRepositoriesConfiguration class.
-     */
-    @EnableReactiveCouchbaseRepositories
+	 * EnableReactiveCouchbaseRepositoriesConfiguration class.
+	 */
+	@EnableReactiveCouchbaseRepositories
 	private static final class EnableReactiveCouchbaseRepositoriesConfiguration {
 
 	}

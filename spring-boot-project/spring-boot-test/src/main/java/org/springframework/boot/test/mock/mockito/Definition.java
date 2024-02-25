@@ -37,14 +37,15 @@ abstract class Definition {
 	private final QualifierDefinition qualifier;
 
 	/**
-     * Constructs a new Definition with the given parameters.
-     *
-     * @param name the name of the Definition
-     * @param reset the reset behavior for the Definition, defaults to MockReset.AFTER if null
-     * @param proxyTargetAware true if the Definition is proxy target aware, false otherwise
-     * @param qualifier the qualifier definition for the Definition
-     */
-    Definition(String name, MockReset reset, boolean proxyTargetAware, QualifierDefinition qualifier) {
+	 * Constructs a new Definition with the given parameters.
+	 * @param name the name of the Definition
+	 * @param reset the reset behavior for the Definition, defaults to MockReset.AFTER if
+	 * null
+	 * @param proxyTargetAware true if the Definition is proxy target aware, false
+	 * otherwise
+	 * @param qualifier the qualifier definition for the Definition
+	 */
+	Definition(String name, MockReset reset, boolean proxyTargetAware, QualifierDefinition qualifier) {
 		this.name = name;
 		this.reset = (reset != null) ? reset : MockReset.AFTER;
 		this.proxyTargetAware = proxyTargetAware;
@@ -84,14 +85,13 @@ abstract class Definition {
 	}
 
 	/**
-     * Compares this Definition object to the specified object for equality.
-     * Returns true if the specified object is also a Definition object and all
-     * the corresponding fields have the same values. Otherwise, returns false.
-     *
-     * @param obj the object to compare this Definition against
-     * @return true if the given object is equal to this Definition, false otherwise
-     */
-    @Override
+	 * Compares this Definition object to the specified object for equality. Returns true
+	 * if the specified object is also a Definition object and all the corresponding
+	 * fields have the same values. Otherwise, returns false.
+	 * @param obj the object to compare this Definition against
+	 * @return true if the given object is equal to this Definition, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -109,12 +109,12 @@ abstract class Definition {
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the default implementation of the hashCode() method.
-     * The hash code is calculated based on the values of the name, reset, proxyTargetAware, and qualifier properties.
-     * 
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the default
+	 * implementation of the hashCode() method. The hash code is calculated based on the
+	 * values of the name, reset, proxyTargetAware, and qualifier properties.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		int result = 1;
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.name);

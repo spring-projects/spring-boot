@@ -45,21 +45,21 @@ class MailSenderJndiConfiguration {
 	private final MailProperties properties;
 
 	/**
-     * Constructs a new MailSenderJndiConfiguration object with the specified MailProperties.
-     * 
-     * @param properties the MailProperties object containing the configuration properties for the mail sender
-     */
-    MailSenderJndiConfiguration(MailProperties properties) {
+	 * Constructs a new MailSenderJndiConfiguration object with the specified
+	 * MailProperties.
+	 * @param properties the MailProperties object containing the configuration properties
+	 * for the mail sender
+	 */
+	MailSenderJndiConfiguration(MailProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Creates and configures a JavaMailSenderImpl instance using the provided session.
-     * 
-     * @param session the session to be used by the mail sender
-     * @return the configured JavaMailSenderImpl instance
-     */
-    @Bean
+	 * Creates and configures a JavaMailSenderImpl instance using the provided session.
+	 * @param session the session to be used by the mail sender
+	 * @return the configured JavaMailSenderImpl instance
+	 */
+	@Bean
 	JavaMailSenderImpl mailSender(Session session) {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
 		sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
@@ -68,12 +68,12 @@ class MailSenderJndiConfiguration {
 	}
 
 	/**
-     * Creates a session using the JNDI lookup.
-     * 
-     * @return the session object
-     * @throws IllegalStateException if unable to find the session in the specified JNDI location
-     */
-    @Bean
+	 * Creates a session using the JNDI lookup.
+	 * @return the session object
+	 * @throws IllegalStateException if unable to find the session in the specified JNDI
+	 * location
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	Session session() {
 		String jndiName = this.properties.getJndiName();

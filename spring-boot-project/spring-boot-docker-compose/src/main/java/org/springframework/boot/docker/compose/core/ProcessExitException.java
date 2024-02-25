@@ -34,28 +34,28 @@ class ProcessExitException extends RuntimeException {
 	private final String stdErr;
 
 	/**
-     * Constructs a new ProcessExitException with the specified exit code, command, standard output, standard error, and cause.
-     * 
-     * @param exitCode the exit code of the process
-     * @param command the command that was executed
-     * @param stdOut the standard output of the process
-     * @param stdErr the standard error of the process
-     * @param cause the cause of the exception
-     */
-    ProcessExitException(int exitCode, String[] command, String stdOut, String stdErr) {
+	 * Constructs a new ProcessExitException with the specified exit code, command,
+	 * standard output, standard error, and cause.
+	 * @param exitCode the exit code of the process
+	 * @param command the command that was executed
+	 * @param stdOut the standard output of the process
+	 * @param stdErr the standard error of the process
+	 * @param cause the cause of the exception
+	 */
+	ProcessExitException(int exitCode, String[] command, String stdOut, String stdErr) {
 		this(exitCode, command, stdOut, stdErr, null);
 	}
 
 	/**
-     * Constructs a new ProcessExitException with the specified exit code, command, standard output, standard error, and cause.
-     * 
-     * @param exitCode the exit code of the process
-     * @param command the command that was executed
-     * @param stdOut the standard output of the process
-     * @param stdErr the standard error of the process
-     * @param cause the cause of the exception
-     */
-    ProcessExitException(int exitCode, String[] command, String stdOut, String stdErr, Throwable cause) {
+	 * Constructs a new ProcessExitException with the specified exit code, command,
+	 * standard output, standard error, and cause.
+	 * @param exitCode the exit code of the process
+	 * @param command the command that was executed
+	 * @param stdOut the standard output of the process
+	 * @param stdErr the standard error of the process
+	 * @param cause the cause of the exception
+	 */
+	ProcessExitException(int exitCode, String[] command, String stdOut, String stdErr, Throwable cause) {
 		super(buildMessage(exitCode, command, stdOut, stdErr), cause);
 		this.exitCode = exitCode;
 		this.command = command;
@@ -64,52 +64,47 @@ class ProcessExitException extends RuntimeException {
 	}
 
 	/**
-     * Builds a message for a ProcessExitException.
-     * 
-     * @param exitCode the exit code of the failed process
-     * @param command the command that was executed
-     * @param stdOut the standard output of the process
-     * @param strErr the standard error of the process
-     * @return the formatted message
-     */
-    private static String buildMessage(int exitCode, String[] command, String stdOut, String strErr) {
+	 * Builds a message for a ProcessExitException.
+	 * @param exitCode the exit code of the failed process
+	 * @param command the command that was executed
+	 * @param stdOut the standard output of the process
+	 * @param strErr the standard error of the process
+	 * @return the formatted message
+	 */
+	private static String buildMessage(int exitCode, String[] command, String stdOut, String strErr) {
 		return "'%s' failed with exit code %d.\n\nStdout:\n%s\n\nStderr:\n%s".formatted(String.join(" ", command),
 				exitCode, stdOut, strErr);
 	}
 
 	/**
-     * Returns the exit code associated with this ProcessExitException.
-     *
-     * @return the exit code
-     */
-    int getExitCode() {
+	 * Returns the exit code associated with this ProcessExitException.
+	 * @return the exit code
+	 */
+	int getExitCode() {
 		return this.exitCode;
 	}
 
 	/**
-     * Returns the command that caused the process exit.
-     *
-     * @return the command that caused the process exit
-     */
-    String[] getCommand() {
+	 * Returns the command that caused the process exit.
+	 * @return the command that caused the process exit
+	 */
+	String[] getCommand() {
 		return this.command;
 	}
 
 	/**
-     * Returns the standard output of the process.
-     *
-     * @return the standard output of the process
-     */
-    String getStdOut() {
+	 * Returns the standard output of the process.
+	 * @return the standard output of the process
+	 */
+	String getStdOut() {
 		return this.stdOut;
 	}
 
 	/**
-     * Returns the standard error output of the process.
-     *
-     * @return the standard error output of the process
-     */
-    String getStdErr() {
+	 * Returns the standard error output of the process.
+	 * @return the standard error output of the process
+	 */
+	String getStdErr() {
 		return this.stdErr;
 	}
 

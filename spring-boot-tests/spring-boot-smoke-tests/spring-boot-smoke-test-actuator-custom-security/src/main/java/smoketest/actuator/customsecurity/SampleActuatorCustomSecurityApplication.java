@@ -37,37 +37,34 @@ import org.springframework.context.annotation.Bean;
 public class SampleActuatorCustomSecurityApplication {
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring Boot application by running the SpringApplication.run() method.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring Boot
+	 * application by running the SpringApplication.run() method.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleActuatorCustomSecurityApplication.class, args);
 	}
 
 	/**
-     * Creates a new instance of the TestServletEndpoint class.
-     * 
-     * @return the TestServletEndpoint instance
-     */
-    @Bean
+	 * Creates a new instance of the TestServletEndpoint class.
+	 * @return the TestServletEndpoint instance
+	 */
+	@Bean
 	TestServletEndpoint servletEndpoint() {
 		return new TestServletEndpoint();
 	}
 
 	/**
-     * TestServletEndpoint class.
-     */
-    @ServletEndpoint(id = "se1")
+	 * TestServletEndpoint class.
+	 */
+	@ServletEndpoint(id = "se1")
 	static class TestServletEndpoint implements Supplier<EndpointServlet> {
 
 		/**
-         * Returns an instance of EndpointServlet for the TestServletEndpoint class.
-         * 
-         * @return an instance of EndpointServlet for the TestServletEndpoint class
-         */
-        @Override
+		 * Returns an instance of EndpointServlet for the TestServletEndpoint class.
+		 * @return an instance of EndpointServlet for the TestServletEndpoint class
+		 */
+		@Override
 		public EndpointServlet get() {
 			return new EndpointServlet(ExampleServlet.class);
 		}
@@ -75,19 +72,20 @@ public class SampleActuatorCustomSecurityApplication {
 	}
 
 	/**
-     * ExampleServlet class.
-     */
-    static class ExampleServlet extends HttpServlet {
+	 * ExampleServlet class.
+	 */
+	static class ExampleServlet extends HttpServlet {
 
 		/**
-         * This method is called when a GET request is made to the servlet.
-         * 
-         * @param req the HttpServletRequest object representing the request made to the servlet
-         * @param resp the HttpServletResponse object representing the response to be sent back to the client
-         * @throws ServletException if there is a servlet-related problem
-         * @throws IOException if there is an I/O problem
-         */
-        @Override
+		 * This method is called when a GET request is made to the servlet.
+		 * @param req the HttpServletRequest object representing the request made to the
+		 * servlet
+		 * @param resp the HttpServletResponse object representing the response to be sent
+		 * back to the client
+		 * @throws ServletException if there is a servlet-related problem
+		 * @throws IOException if there is an I/O problem
+		 */
+		@Override
 		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		}
 

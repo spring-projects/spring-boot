@@ -161,11 +161,13 @@ public class WebMvcAutoConfiguration {
 	private static final String SERVLET_LOCATION = "/";
 
 	/**
-     * Creates and configures an instance of {@link OrderedHiddenHttpMethodFilter} if a bean of type {@link HiddenHttpMethodFilter} is not already present in the application context and if the property "spring.mvc.hiddenmethod.filter.enabled" is set to true.
-     * 
-     * @return the configured instance of {@link OrderedHiddenHttpMethodFilter}
-     */
-    @Bean
+	 * Creates and configures an instance of {@link OrderedHiddenHttpMethodFilter} if a
+	 * bean of type {@link HiddenHttpMethodFilter} is not already present in the
+	 * application context and if the property "spring.mvc.hiddenmethod.filter.enabled" is
+	 * set to true.
+	 * @return the configured instance of {@link OrderedHiddenHttpMethodFilter}
+	 */
+	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
 	@ConditionalOnProperty(prefix = "spring.mvc.hiddenmethod.filter", name = "enabled")
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
@@ -173,12 +175,13 @@ public class WebMvcAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link OrderedFormContentFilter} if no bean of type {@link FormContentFilter} is present in the application context.
-     * The filter is enabled by default unless the property "spring.mvc.formcontent.filter.enabled" is set to false.
-     * 
-     * @return the created {@link OrderedFormContentFilter} instance
-     */
-    @Bean
+	 * Creates a new instance of {@link OrderedFormContentFilter} if no bean of type
+	 * {@link FormContentFilter} is present in the application context. The filter is
+	 * enabled by default unless the property "spring.mvc.formcontent.filter.enabled" is
+	 * set to false.
+	 * @return the created {@link OrderedFormContentFilter} instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean(FormContentFilter.class)
 	@ConditionalOnProperty(prefix = "spring.mvc.formcontent.filter", name = "enabled", matchIfMissing = true)
 	public OrderedFormContentFilter formContentFilter() {
@@ -212,17 +215,23 @@ public class WebMvcAutoConfiguration {
 		private ServletContext servletContext;
 
 		/**
-         * Constructs a new instance of the {@code WebMvcAutoConfigurationAdapter} class.
-         * 
-         * @param webProperties the {@code WebProperties} object containing web-related properties
-         * @param mvcProperties the {@code WebMvcProperties} object containing MVC-related properties
-         * @param beanFactory the {@code ListableBeanFactory} object used for accessing beans
-         * @param messageConvertersProvider the {@code ObjectProvider} for {@code HttpMessageConverters}
-         * @param resourceHandlerRegistrationCustomizerProvider the {@code ObjectProvider} for {@code ResourceHandlerRegistrationCustomizer}
-         * @param dispatcherServletPath the {@code ObjectProvider} for {@code DispatcherServletPath}
-         * @param servletRegistrations the {@code ObjectProvider} for {@code ServletRegistrationBean}
-         */
-        public WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
+		 * Constructs a new instance of the {@code WebMvcAutoConfigurationAdapter} class.
+		 * @param webProperties the {@code WebProperties} object containing web-related
+		 * properties
+		 * @param mvcProperties the {@code WebMvcProperties} object containing MVC-related
+		 * properties
+		 * @param beanFactory the {@code ListableBeanFactory} object used for accessing
+		 * beans
+		 * @param messageConvertersProvider the {@code ObjectProvider} for
+		 * {@code HttpMessageConverters}
+		 * @param resourceHandlerRegistrationCustomizerProvider the {@code ObjectProvider}
+		 * for {@code ResourceHandlerRegistrationCustomizer}
+		 * @param dispatcherServletPath the {@code ObjectProvider} for
+		 * {@code DispatcherServletPath}
+		 * @param servletRegistrations the {@code ObjectProvider} for
+		 * {@code ServletRegistrationBean}
+		 */
+		public WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ObjectProvider<DispatcherServletPath> dispatcherServletPath,
@@ -237,32 +246,29 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Sets the ServletContext for this instance.
-         * 
-         * @param servletContext the ServletContext to be set
-         */
-        @Override
+		 * Sets the ServletContext for this instance.
+		 * @param servletContext the ServletContext to be set
+		 */
+		@Override
 		public void setServletContext(ServletContext servletContext) {
 			this.servletContext = servletContext;
 		}
 
 		/**
-         * Configure the message converters for the application.
-         * 
-         * @param converters the list of HTTP message converters
-         */
-        @Override
+		 * Configure the message converters for the application.
+		 * @param converters the list of HTTP message converters
+		 */
+		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			this.messageConvertersProvider
 				.ifAvailable((customConverters) -> converters.addAll(customConverters.getConverters()));
 		}
 
 		/**
-         * Configure asynchronous support for the application.
-         * 
-         * @param configurer the AsyncSupportConfigurer to be configured
-         */
-        @Override
+		 * Configure asynchronous support for the application.
+		 * @param configurer the AsyncSupportConfigurer to be configured
+		 */
+		@Override
 		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
 			if (this.beanFactory.containsBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)) {
 				Object taskExecutor = this.beanFactory
@@ -278,13 +284,14 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Configure the path matching strategy for the DispatcherServlet.
-         * If the matching strategy is set to ANT_PATH_MATCHER, set the path matcher to AntPathMatcher.
-         * If the servlet URL mapping is "/", set the URL path helper to always use the full path.
-         * 
-         * @param configurer the PathMatchConfigurer to configure the path matching strategy
-         */
-        @Override
+		 * Configure the path matching strategy for the DispatcherServlet. If the matching
+		 * strategy is set to ANT_PATH_MATCHER, set the path matcher to AntPathMatcher. If
+		 * the servlet URL mapping is "/", set the URL path helper to always use the full
+		 * path.
+		 * @param configurer the PathMatchConfigurer to configure the path matching
+		 * strategy
+		 */
+		@Override
 		public void configurePathMatch(PathMatchConfigurer configurer) {
 			if (this.mvcProperties.getPathmatch()
 				.getMatchingStrategy() == WebMvcProperties.MatchingStrategy.ANT_PATH_MATCHER) {
@@ -301,11 +308,10 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Checks if there is only one DispatcherServlet registered.
-         * 
-         * @return true if there is only one DispatcherServlet registered, false otherwise
-         */
-        private boolean singleDispatcherServlet() {
+		 * Checks if there is only one DispatcherServlet registered.
+		 * @return true if there is only one DispatcherServlet registered, false otherwise
+		 */
+		private boolean singleDispatcherServlet() {
 			return this.servletRegistrations.stream()
 				.map(ServletRegistrationBean::getServlet)
 				.filter(DispatcherServlet.class::isInstance)
@@ -313,11 +319,10 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Configure content negotiation for the application.
-         * 
-         * @param configurer the ContentNegotiationConfigurer to be configured
-         */
-        @Override
+		 * Configure content negotiation for the application.
+		 * @param configurer the ContentNegotiationConfigurer to be configured
+		 */
+		@Override
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 			WebMvcProperties.Contentnegotiation contentnegotiation = this.mvcProperties.getContentnegotiation();
 			configurer.favorParameter(contentnegotiation.isFavorParameter());
@@ -329,12 +334,12 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Creates a default InternalResourceViewResolver bean if no other bean of the same type is present.
-         * The resolver is configured with the prefix and suffix specified in the mvcProperties.
-         *
-         * @return the default InternalResourceViewResolver bean
-         */
-        @Bean
+		 * Creates a default InternalResourceViewResolver bean if no other bean of the
+		 * same type is present. The resolver is configured with the prefix and suffix
+		 * specified in the mvcProperties.
+		 * @return the default InternalResourceViewResolver bean
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		public InternalResourceViewResolver defaultViewResolver() {
 			InternalResourceViewResolver resolver = new InternalResourceViewResolver();
@@ -344,12 +349,12 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Creates a {@link BeanNameViewResolver} bean if a {@link View} bean is present and no other {@link BeanNameViewResolver} bean is defined.
-         * The created resolver has an order of {@link Ordered#LOWEST_PRECEDENCE - 10}.
-         * 
-         * @return the created {@link BeanNameViewResolver} bean
-         */
-        @Bean
+		 * Creates a {@link BeanNameViewResolver} bean if a {@link View} bean is present
+		 * and no other {@link BeanNameViewResolver} bean is defined. The created resolver
+		 * has an order of {@link Ordered#LOWEST_PRECEDENCE - 10}.
+		 * @return the created {@link BeanNameViewResolver} bean
+		 */
+		@Bean
 		@ConditionalOnBean(View.class)
 		@ConditionalOnMissingBean
 		public BeanNameViewResolver beanNameViewResolver() {
@@ -359,12 +364,13 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Creates a ContentNegotiatingViewResolver bean if a ViewResolver bean is present and a ContentNegotiatingViewResolver bean is not already defined.
-         * 
-         * @param beanFactory the BeanFactory used to retrieve the ContentNegotiationManager bean
-         * @return the ContentNegotiatingViewResolver bean
-         */
-        @Bean
+		 * Creates a ContentNegotiatingViewResolver bean if a ViewResolver bean is present
+		 * and a ContentNegotiatingViewResolver bean is not already defined.
+		 * @param beanFactory the BeanFactory used to retrieve the
+		 * ContentNegotiationManager bean
+		 * @return the ContentNegotiatingViewResolver bean
+		 */
+		@Bean
 		@ConditionalOnBean(ViewResolver.class)
 		@ConditionalOnMissingBean(name = "viewResolver", value = ContentNegotiatingViewResolver.class)
 		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
@@ -377,11 +383,10 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Returns the message codes resolver for this configuration.
-         * 
-         * @return the message codes resolver, or null if not set
-         */
-        @Override
+		 * Returns the message codes resolver for this configuration.
+		 * @return the message codes resolver, or null if not set
+		 */
+		@Override
 		public MessageCodesResolver getMessageCodesResolver() {
 			if (this.mvcProperties.getMessageCodesResolverFormat() != null) {
 				DefaultMessageCodesResolver resolver = new DefaultMessageCodesResolver();
@@ -392,21 +397,19 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Add formatters to the given registry.
-         * 
-         * @param registry the formatter registry to add formatters to
-         */
-        @Override
+		 * Add formatters to the given registry.
+		 * @param registry the formatter registry to add formatters to
+		 */
+		@Override
 		public void addFormatters(FormatterRegistry registry) {
 			ApplicationConversionService.addBeans(registry, this.beanFactory);
 		}
 
 		/**
-         * Adds resource handlers for serving static resources.
-         * 
-         * @param registry the resource handler registry
-         */
-        @Override
+		 * Adds resource handlers for serving static resources.
+		 * @param registry the resource handler registry
+		 */
+		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
 			if (!this.resourceProperties.isAddMappings()) {
 				logger.debug("Default resource handling disabled");
@@ -424,28 +427,28 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Adds a resource handler to the specified registry with the given pattern and locations.
-         * 
-         * @param registry the resource handler registry
-         * @param pattern the URL pattern for the resource handler
-         * @param locations the resource locations to be served by the handler
-         */
-        private void addResourceHandler(ResourceHandlerRegistry registry, String pattern, String... locations) {
+		 * Adds a resource handler to the specified registry with the given pattern and
+		 * locations.
+		 * @param registry the resource handler registry
+		 * @param pattern the URL pattern for the resource handler
+		 * @param locations the resource locations to be served by the handler
+		 */
+		private void addResourceHandler(ResourceHandlerRegistry registry, String pattern, String... locations) {
 			addResourceHandler(registry, pattern, (registration) -> registration.addResourceLocations(locations));
 		}
 
 		/**
-         * Adds a resource handler to the given registry with the specified pattern and customizer.
-         * If the registry already has a mapping for the pattern, the method returns without adding the handler.
-         * The customizer is used to configure the resource handler registration.
-         * The cache period, cache control, and use last modified properties are set based on the resource properties.
-         * The resource handler registration is then customized further.
-         * 
-         * @param registry the resource handler registry to add the handler to
-         * @param pattern the pattern for the resource handler mapping
-         * @param customizer the customizer to configure the resource handler registration
-         */
-        private void addResourceHandler(ResourceHandlerRegistry registry, String pattern,
+		 * Adds a resource handler to the given registry with the specified pattern and
+		 * customizer. If the registry already has a mapping for the pattern, the method
+		 * returns without adding the handler. The customizer is used to configure the
+		 * resource handler registration. The cache period, cache control, and use last
+		 * modified properties are set based on the resource properties. The resource
+		 * handler registration is then customized further.
+		 * @param registry the resource handler registry to add the handler to
+		 * @param pattern the pattern for the resource handler mapping
+		 * @param customizer the customizer to configure the resource handler registration
+		 */
+		private void addResourceHandler(ResourceHandlerRegistry registry, String pattern,
 				Consumer<ResourceHandlerRegistration> customizer) {
 			if (registry.hasMappingForPattern(pattern)) {
 				return;
@@ -459,34 +462,35 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Returns the number of seconds in the given cache period.
-         * 
-         * @param cachePeriod the cache period to get the seconds from
-         * @return the number of seconds in the cache period, or null if the cache period is null
-         */
-        private Integer getSeconds(Duration cachePeriod) {
+		 * Returns the number of seconds in the given cache period.
+		 * @param cachePeriod the cache period to get the seconds from
+		 * @return the number of seconds in the cache period, or null if the cache period
+		 * is null
+		 */
+		private Integer getSeconds(Duration cachePeriod) {
 			return (cachePeriod != null) ? (int) cachePeriod.getSeconds() : null;
 		}
 
 		/**
-         * Customizes the registration of the resource handler.
-         * 
-         * @param registration the resource handler registration to be customized
-         */
-        private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
+		 * Customizes the registration of the resource handler.
+		 * @param registration the resource handler registration to be customized
+		 */
+		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
 			if (this.resourceHandlerRegistrationCustomizer != null) {
 				this.resourceHandlerRegistrationCustomizer.customize(registration);
 			}
 		}
 
 		/**
-         * Creates and returns a new instance of {@link RequestContextFilter} if no other beans of type {@link RequestContextListener} or {@link RequestContextFilter} are present in the application context.
-         * If a bean of type {@link RequestContextFilter} is present, it will not be created.
-         * The created {@link RequestContextFilter} is an instance of {@link OrderedRequestContextFilter}.
-         *
-         * @return the created {@link RequestContextFilter}
-         */
-        @Bean
+		 * Creates and returns a new instance of {@link RequestContextFilter} if no other
+		 * beans of type {@link RequestContextListener} or {@link RequestContextFilter}
+		 * are present in the application context. If a bean of type
+		 * {@link RequestContextFilter} is present, it will not be created. The created
+		 * {@link RequestContextFilter} is an instance of
+		 * {@link OrderedRequestContextFilter}.
+		 * @return the created {@link RequestContextFilter}
+		 */
+		@Bean
 		@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
 		@ConditionalOnMissingFilterBean(RequestContextFilter.class)
 		public static RequestContextFilter requestContextFilter() {
@@ -515,20 +519,20 @@ public class WebMvcAutoConfiguration {
 		private ResourceLoader resourceLoader;
 
 		/**
-         * Constructs a new instance of EnableWebMvcConfiguration.
-         * 
-         * @param mvcProperties
-         *            the WebMvcProperties object containing the properties for configuring WebMvc
-         * @param webProperties
-         *            the WebProperties object containing the properties for configuring web-related settings
-         * @param mvcRegistrationsProvider
-         *            the ObjectProvider for WebMvcRegistrations, used for registering custom WebMvcRegistrations
-         * @param resourceHandlerRegistrationCustomizerProvider
-         *            the ObjectProvider for ResourceHandlerRegistrationCustomizer, used for customizing resource handler registrations
-         * @param beanFactory
-         *            the ListableBeanFactory used for accessing beans in the application context
-         */
-        public EnableWebMvcConfiguration(WebMvcProperties mvcProperties, WebProperties webProperties,
+		 * Constructs a new instance of EnableWebMvcConfiguration.
+		 * @param mvcProperties the WebMvcProperties object containing the properties for
+		 * configuring WebMvc
+		 * @param webProperties the WebProperties object containing the properties for
+		 * configuring web-related settings
+		 * @param mvcRegistrationsProvider the ObjectProvider for WebMvcRegistrations,
+		 * used for registering custom WebMvcRegistrations
+		 * @param resourceHandlerRegistrationCustomizerProvider the ObjectProvider for
+		 * ResourceHandlerRegistrationCustomizer, used for customizing resource handler
+		 * registrations
+		 * @param beanFactory the ListableBeanFactory used for accessing beans in the
+		 * application context
+		 */
+		public EnableWebMvcConfiguration(WebMvcProperties mvcProperties, WebProperties webProperties,
 				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ListableBeanFactory beanFactory) {
@@ -540,13 +544,12 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Creates a RequestMappingHandlerAdapter for handling request mappings.
-         * If a custom RequestMappingHandlerAdapter is provided through mvcRegistrations,
-         * it will be used. Otherwise, the default RequestMappingHandlerAdapter will be used.
-         *
-         * @return the created RequestMappingHandlerAdapter
-         */
-        @Override
+		 * Creates a RequestMappingHandlerAdapter for handling request mappings. If a
+		 * custom RequestMappingHandlerAdapter is provided through mvcRegistrations, it
+		 * will be used. Otherwise, the default RequestMappingHandlerAdapter will be used.
+		 * @return the created RequestMappingHandlerAdapter
+		 */
+		@Override
 		protected RequestMappingHandlerAdapter createRequestMappingHandlerAdapter() {
 			if (this.mvcRegistrations != null) {
 				RequestMappingHandlerAdapter adapter = this.mvcRegistrations.getRequestMappingHandlerAdapter();
@@ -558,14 +561,14 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Creates a WelcomePageHandlerMapping bean for handling requests to the welcome page.
-         * 
-         * @param applicationContext The application context.
-         * @param mvcConversionService The conversion service for formatting.
-         * @param mvcResourceUrlProvider The resource URL provider for MVC.
-         * @return The created WelcomePageHandlerMapping bean.
-         */
-        @Bean
+		 * Creates a WelcomePageHandlerMapping bean for handling requests to the welcome
+		 * page.
+		 * @param applicationContext The application context.
+		 * @param mvcConversionService The conversion service for formatting.
+		 * @param mvcResourceUrlProvider The resource URL provider for MVC.
+		 * @return The created WelcomePageHandlerMapping bean.
+		 */
+		@Bean
 		public WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext,
 				FormattingConversionService mvcConversionService, ResourceUrlProvider mvcResourceUrlProvider) {
 			return createWelcomePageHandlerMapping(applicationContext, mvcConversionService, mvcResourceUrlProvider,
@@ -573,18 +576,20 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Creates a WelcomePageNotAcceptableHandlerMapping bean.
-         * 
-         * This method is used to create a WelcomePageNotAcceptableHandlerMapping bean, which is responsible for mapping
-         * requests to the welcome page when the requested media type is not acceptable. It takes the ApplicationContext,
-         * FormattingConversionService, and ResourceUrlProvider as parameters.
-         * 
-         * @param applicationContext The ApplicationContext used for creating the bean.
-         * @param mvcConversionService The FormattingConversionService used for converting request parameters.
-         * @param mvcResourceUrlProvider The ResourceUrlProvider used for resolving resource URLs.
-         * @return The created WelcomePageNotAcceptableHandlerMapping bean.
-         */
-        @Bean
+		 * Creates a WelcomePageNotAcceptableHandlerMapping bean.
+		 *
+		 * This method is used to create a WelcomePageNotAcceptableHandlerMapping bean,
+		 * which is responsible for mapping requests to the welcome page when the
+		 * requested media type is not acceptable. It takes the ApplicationContext,
+		 * FormattingConversionService, and ResourceUrlProvider as parameters.
+		 * @param applicationContext The ApplicationContext used for creating the bean.
+		 * @param mvcConversionService The FormattingConversionService used for converting
+		 * request parameters.
+		 * @param mvcResourceUrlProvider The ResourceUrlProvider used for resolving
+		 * resource URLs.
+		 * @return The created WelcomePageNotAcceptableHandlerMapping bean.
+		 */
+		@Bean
 		public WelcomePageNotAcceptableHandlerMapping welcomePageNotAcceptableHandlerMapping(
 				ApplicationContext applicationContext, FormattingConversionService mvcConversionService,
 				ResourceUrlProvider mvcResourceUrlProvider) {
@@ -593,17 +598,16 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Creates a welcome page handler mapping for the specified application context, conversion service,
-         * resource URL provider, and factory.
-         *
-         * @param applicationContext the application context
-         * @param mvcConversionService the formatting conversion service
-         * @param mvcResourceUrlProvider the resource URL provider
-         * @param factory the welcome page handler mapping factory
-         * @param <T> the type of the welcome page handler mapping
-         * @return the created welcome page handler mapping
-         */
-        private <T extends AbstractUrlHandlerMapping> T createWelcomePageHandlerMapping(
+		 * Creates a welcome page handler mapping for the specified application context,
+		 * conversion service, resource URL provider, and factory.
+		 * @param applicationContext the application context
+		 * @param mvcConversionService the formatting conversion service
+		 * @param mvcResourceUrlProvider the resource URL provider
+		 * @param factory the welcome page handler mapping factory
+		 * @param <T> the type of the welcome page handler mapping
+		 * @return the created welcome page handler mapping
+		 */
+		private <T extends AbstractUrlHandlerMapping> T createWelcomePageHandlerMapping(
 				ApplicationContext applicationContext, FormattingConversionService mvcConversionService,
 				ResourceUrlProvider mvcResourceUrlProvider, WelcomePageHandlerMappingFactory<T> factory) {
 			TemplateAvailabilityProviders templateAvailabilityProviders = new TemplateAvailabilityProviders(
@@ -617,14 +621,14 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Returns the locale resolver bean for the web application.
-         * If no locale resolver bean is found, a new one is created based on the configuration properties.
-         * If the locale resolver type is set to FIXED, a FixedLocaleResolver is created with the specified locale.
-         * Otherwise, an AcceptHeaderLocaleResolver is created with the default locale.
-         * 
-         * @return the locale resolver bean
-         */
-        @Override
+		 * Returns the locale resolver bean for the web application. If no locale resolver
+		 * bean is found, a new one is created based on the configuration properties. If
+		 * the locale resolver type is set to FIXED, a FixedLocaleResolver is created with
+		 * the specified locale. Otherwise, an AcceptHeaderLocaleResolver is created with
+		 * the default locale.
+		 * @return the locale resolver bean
+		 */
+		@Override
 		@Bean
 		@ConditionalOnMissingBean(name = DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME)
 		public LocaleResolver localeResolver() {
@@ -637,16 +641,14 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Returns the theme resolver bean for the DispatcherServlet.
-         * 
-         * @return the theme resolver bean
-         * 
-         * @deprecated since 3.0.0, for removal in future versions
-         * 
-         * @see org.springframework.web.servlet.ThemeResolver
-         * @see org.springframework.web.servlet.DispatcherServlet#THEME_RESOLVER_BEAN_NAME
-         */
-        @Override
+		 * Returns the theme resolver bean for the DispatcherServlet.
+		 * @return the theme resolver bean
+		 * @deprecated since 3.0.0, for removal in future versions
+		 *
+		 * @see org.springframework.web.servlet.ThemeResolver
+		 * @see org.springframework.web.servlet.DispatcherServlet#THEME_RESOLVER_BEAN_NAME
+		 */
+		@Override
 		@Bean
 		@ConditionalOnMissingBean(name = DispatcherServlet.THEME_RESOLVER_BEAN_NAME)
 		@Deprecated(since = "3.0.0", forRemoval = false)
@@ -656,11 +658,10 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Returns the FlashMapManager bean if it is not already defined.
-         * 
-         * @return the FlashMapManager bean
-         */
-        @Override
+		 * Returns the FlashMapManager bean if it is not already defined.
+		 * @return the FlashMapManager bean
+		 */
+		@Override
 		@Bean
 		@ConditionalOnMissingBean(name = DispatcherServlet.FLASH_MAP_MANAGER_BEAN_NAME)
 		public FlashMapManager flashMapManager() {
@@ -668,11 +669,11 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Retrieves the index.html resource from the specified static locations or servlet context.
-         * 
-         * @return The index.html resource, or null if not found.
-         */
-        private Resource getIndexHtmlResource() {
+		 * Retrieves the index.html resource from the specified static locations or
+		 * servlet context.
+		 * @return The index.html resource, or null if not found.
+		 */
+		private Resource getIndexHtmlResource() {
 			for (String location : this.resourceProperties.getStaticLocations()) {
 				Resource indexHtml = getIndexHtmlResource(location);
 				if (indexHtml != null) {
@@ -687,22 +688,21 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Retrieves the index.html resource from the specified location.
-         * 
-         * @param location the location of the index.html resource
-         * @return the index.html resource
-         */
-        private Resource getIndexHtmlResource(String location) {
+		 * Retrieves the index.html resource from the specified location.
+		 * @param location the location of the index.html resource
+		 * @return the index.html resource
+		 */
+		private Resource getIndexHtmlResource(String location) {
 			return getIndexHtmlResource(this.resourceLoader.getResource(location));
 		}
 
 		/**
-         * Retrieves the index.html resource from the specified location.
-         * 
-         * @param location the resource location
-         * @return the index.html resource if it exists and has a valid URL, null otherwise
-         */
-        private Resource getIndexHtmlResource(Resource location) {
+		 * Retrieves the index.html resource from the specified location.
+		 * @param location the resource location
+		 * @return the index.html resource if it exists and has a valid URL, null
+		 * otherwise
+		 */
+		private Resource getIndexHtmlResource(Resource location) {
 			try {
 				Resource resource = location.createRelative("index.html");
 				if (resource.exists() && (resource.getURL() != null)) {
@@ -716,13 +716,15 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Returns the formatting conversion service for MVC.
-         * 
-         * This method creates a new instance of the {@link WebConversionService} class and configures it with the specified date, time, and date-time formats obtained from the {@link Format} object. It then adds any additional formatters specified by the {@link #addFormatters(WebConversionService)} method.
-         * 
-         * @return the formatting conversion service for MVC
-         */
-        @Bean
+		 * Returns the formatting conversion service for MVC.
+		 *
+		 * This method creates a new instance of the {@link WebConversionService} class
+		 * and configures it with the specified date, time, and date-time formats obtained
+		 * from the {@link Format} object. It then adds any additional formatters
+		 * specified by the {@link #addFormatters(WebConversionService)} method.
+		 * @return the formatting conversion service for MVC
+		 */
+		@Bean
 		@Override
 		public FormattingConversionService mvcConversionService() {
 			Format format = this.mvcProperties.getFormat();
@@ -735,14 +737,14 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Returns the MVC validator.
-         * 
-         * If the Jakarta Validation API is present in the classpath, it returns a ValidatorAdapter
-         * that wraps the ApplicationContext's validator. Otherwise, it returns the default MVC validator.
-         * 
-         * @return the MVC validator
-         */
-        @Bean
+		 * Returns the MVC validator.
+		 *
+		 * If the Jakarta Validation API is present in the classpath, it returns a
+		 * ValidatorAdapter that wraps the ApplicationContext's validator. Otherwise, it
+		 * returns the default MVC validator.
+		 * @return the MVC validator
+		 */
+		@Bean
 		@Override
 		public Validator mvcValidator() {
 			if (!ClassUtils.isPresent("jakarta.validation.Validator", getClass().getClassLoader())) {
@@ -752,13 +754,12 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Creates a RequestMappingHandlerMapping for handling request mappings.
-         * If a custom RequestMappingHandlerMapping is provided through mvcRegistrations,
-         * it will be used. Otherwise, the default RequestMappingHandlerMapping will be used.
-         * 
-         * @return the RequestMappingHandlerMapping instance
-         */
-        @Override
+		 * Creates a RequestMappingHandlerMapping for handling request mappings. If a
+		 * custom RequestMappingHandlerMapping is provided through mvcRegistrations, it
+		 * will be used. Otherwise, the default RequestMappingHandlerMapping will be used.
+		 * @return the RequestMappingHandlerMapping instance
+		 */
+		@Override
 		protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
 			if (this.mvcRegistrations != null) {
 				RequestMappingHandlerMapping mapping = this.mvcRegistrations.getRequestMappingHandlerMapping();
@@ -770,14 +771,16 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Retrieves the ConfigurableWebBindingInitializer bean from the bean factory, if available.
-         * If the bean is not found, falls back to the super class implementation.
-         * 
-         * @param mvcConversionService The FormattingConversionService to be used for data type conversion during web binding.
-         * @param mvcValidator The Validator to be used for validating web binding data.
-         * @return The ConfigurableWebBindingInitializer bean, if available. Otherwise, the result of the super class implementation.
-         */
-        @Override
+		 * Retrieves the ConfigurableWebBindingInitializer bean from the bean factory, if
+		 * available. If the bean is not found, falls back to the super class
+		 * implementation.
+		 * @param mvcConversionService The FormattingConversionService to be used for data
+		 * type conversion during web binding.
+		 * @param mvcValidator The Validator to be used for validating web binding data.
+		 * @return The ConfigurableWebBindingInitializer bean, if available. Otherwise,
+		 * the result of the super class implementation.
+		 */
+		@Override
 		protected ConfigurableWebBindingInitializer getConfigurableWebBindingInitializer(
 				FormattingConversionService mvcConversionService, Validator mvcValidator) {
 			try {
@@ -789,15 +792,19 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Creates an instance of ExceptionHandlerExceptionResolver.
-         * 
-         * This method is responsible for creating an instance of ExceptionHandlerExceptionResolver, which is used to handle exceptions thrown during the processing of HTTP requests.
-         * 
-         * If the mvcRegistrations object is not null, it attempts to retrieve the ExceptionHandlerExceptionResolver instance from it. If found, it returns the resolver. Otherwise, it calls the super class's createExceptionHandlerExceptionResolver() method to create the resolver.
-         * 
-         * @return The ExceptionHandlerExceptionResolver instance.
-         */
-        @Override
+		 * Creates an instance of ExceptionHandlerExceptionResolver.
+		 *
+		 * This method is responsible for creating an instance of
+		 * ExceptionHandlerExceptionResolver, which is used to handle exceptions thrown
+		 * during the processing of HTTP requests.
+		 *
+		 * If the mvcRegistrations object is not null, it attempts to retrieve the
+		 * ExceptionHandlerExceptionResolver instance from it. If found, it returns the
+		 * resolver. Otherwise, it calls the super class's
+		 * createExceptionHandlerExceptionResolver() method to create the resolver.
+		 * @return The ExceptionHandlerExceptionResolver instance.
+		 */
+		@Override
 		protected ExceptionHandlerExceptionResolver createExceptionHandlerExceptionResolver() {
 			if (this.mvcRegistrations != null) {
 				ExceptionHandlerExceptionResolver resolver = this.mvcRegistrations
@@ -810,11 +817,10 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Extends the list of handler exception resolvers.
-         * 
-         * @param exceptionResolvers the list of handler exception resolvers
-         */
-        @Override
+		 * Extends the list of handler exception resolvers.
+		 * @param exceptionResolvers the list of handler exception resolvers
+		 */
+		@Override
 		protected void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
 			super.extendHandlerExceptionResolvers(exceptionResolvers);
 			if (this.mvcProperties.isLogResolvedException()) {
@@ -827,13 +833,14 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Overrides the mvcContentNegotiationManager method in the EnableWebMvcConfiguration class.
-         * This method creates a new ContentNegotiationManager and modifies the strategies list by replacing
-         * the PathExtensionContentNegotiationStrategy with an OptionalPathExtensionContentNegotiationStrategy.
-         * 
-         * @return the modified ContentNegotiationManager
-         */
-        @Bean
+		 * Overrides the mvcContentNegotiationManager method in the
+		 * EnableWebMvcConfiguration class. This method creates a new
+		 * ContentNegotiationManager and modifies the strategies list by replacing the
+		 * PathExtensionContentNegotiationStrategy with an
+		 * OptionalPathExtensionContentNegotiationStrategy.
+		 * @return the modified ContentNegotiationManager
+		 */
+		@Bean
 		@Override
 		@SuppressWarnings("deprecation")
 		public ContentNegotiationManager mvcContentNegotiationManager() {
@@ -850,11 +857,10 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Set the resource loader for this configuration.
-         * 
-         * @param resourceLoader the resource loader to be set
-         */
-        @Override
+		 * Set the resource loader for this configuration.
+		 * @param resourceLoader the resource loader to be set
+		 */
+		@Override
 		public void setResourceLoader(ResourceLoader resourceLoader) {
 			this.resourceLoader = resourceLoader;
 		}
@@ -862,19 +868,19 @@ public class WebMvcAutoConfiguration {
 	}
 
 	/**
-     * ResourceChainCustomizerConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ResourceChainCustomizerConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnEnabledResourceChain
 	static class ResourceChainCustomizerConfiguration {
 
 		/**
-         * Creates a customizer for the ResourceHandlerRegistration of the ResourceChain.
-         * 
-         * @param webProperties the WebProperties object containing the configuration for the web resources
-         * @return a ResourceChainResourceHandlerRegistrationCustomizer object
-         */
-        @Bean
+		 * Creates a customizer for the ResourceHandlerRegistration of the ResourceChain.
+		 * @param webProperties the WebProperties object containing the configuration for
+		 * the web resources
+		 * @return a ResourceChainResourceHandlerRegistrationCustomizer object
+		 */
+		@Bean
 		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(
 				WebProperties webProperties) {
 			return new ResourceChainResourceHandlerRegistrationCustomizer(webProperties.getResources());
@@ -898,39 +904,37 @@ public class WebMvcAutoConfiguration {
 	}
 
 	/**
-     * ResourceChainResourceHandlerRegistrationCustomizer class.
-     */
-    static class ResourceChainResourceHandlerRegistrationCustomizer implements ResourceHandlerRegistrationCustomizer {
+	 * ResourceChainResourceHandlerRegistrationCustomizer class.
+	 */
+	static class ResourceChainResourceHandlerRegistrationCustomizer implements ResourceHandlerRegistrationCustomizer {
 
 		private final Resources resourceProperties;
 
 		/**
-         * Constructs a new instance of ResourceChainResourceHandlerRegistrationCustomizer with the specified resourceProperties.
-         * 
-         * @param resourceProperties the resource properties to be used by the customizer
-         */
-        ResourceChainResourceHandlerRegistrationCustomizer(Resources resourceProperties) {
+		 * Constructs a new instance of ResourceChainResourceHandlerRegistrationCustomizer
+		 * with the specified resourceProperties.
+		 * @param resourceProperties the resource properties to be used by the customizer
+		 */
+		ResourceChainResourceHandlerRegistrationCustomizer(Resources resourceProperties) {
 			this.resourceProperties = resourceProperties;
 		}
 
 		/**
-         * Customize the resource handler registration by configuring the resource chain.
-         * 
-         * @param registration the resource handler registration to customize
-         */
-        @Override
+		 * Customize the resource handler registration by configuring the resource chain.
+		 * @param registration the resource handler registration to customize
+		 */
+		@Override
 		public void customize(ResourceHandlerRegistration registration) {
 			Resources.Chain properties = this.resourceProperties.getChain();
 			configureResourceChain(properties, registration.resourceChain(properties.isCache()));
 		}
 
 		/**
-         * Configures the resource chain for the given properties and chain registration.
-         * 
-         * @param properties the resource chain properties
-         * @param chain the resource chain registration
-         */
-        private void configureResourceChain(Resources.Chain properties, ResourceChainRegistration chain) {
+		 * Configures the resource chain for the given properties and chain registration.
+		 * @param properties the resource chain properties
+		 * @param chain the resource chain registration
+		 */
+		private void configureResourceChain(Resources.Chain properties, ResourceChainRegistration chain) {
 			Strategy strategy = properties.getStrategy();
 			if (properties.isCompressed()) {
 				chain.addResolver(new EncodedResourceResolver());
@@ -941,12 +945,12 @@ public class WebMvcAutoConfiguration {
 		}
 
 		/**
-         * Returns a ResourceResolver based on the provided Strategy properties.
-         * 
-         * @param properties the Strategy properties to be used for configuring the ResourceResolver
-         * @return a ResourceResolver object
-         */
-        private ResourceResolver getVersionResourceResolver(Strategy properties) {
+		 * Returns a ResourceResolver based on the provided Strategy properties.
+		 * @param properties the Strategy properties to be used for configuring the
+		 * ResourceResolver
+		 * @return a ResourceResolver object
+		 */
+		private ResourceResolver getVersionResourceResolver(Strategy properties) {
 			VersionResourceResolver resolver = new VersionResourceResolver();
 			if (properties.getFixed().isEnabled()) {
 				String version = properties.getFixed().getVersion();
@@ -963,20 +967,21 @@ public class WebMvcAutoConfiguration {
 	}
 
 	/**
-     * ProblemDetailsErrorHandlingConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ProblemDetailsErrorHandlingConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.mvc.problemdetails", name = "enabled", havingValue = "true")
 	static class ProblemDetailsErrorHandlingConfiguration {
 
 		/**
-         * Creates a new instance of ProblemDetailsExceptionHandler if there is no existing bean of type ResponseEntityExceptionHandler.
-         * This handler is responsible for handling exceptions and returning Problem Details as the response.
-         * The order of this handler is set to 0, indicating that it should be executed first if multiple exception handlers are present.
-         * 
-         * @return the ProblemDetailsExceptionHandler instance
-         */
-        @Bean
+		 * Creates a new instance of ProblemDetailsExceptionHandler if there is no
+		 * existing bean of type ResponseEntityExceptionHandler. This handler is
+		 * responsible for handling exceptions and returning Problem Details as the
+		 * response. The order of this handler is set to 0, indicating that it should be
+		 * executed first if multiple exception handlers are present.
+		 * @return the ProblemDetailsExceptionHandler instance
+		 */
+		@Bean
 		@ConditionalOnMissingBean(ResponseEntityExceptionHandler.class)
 		@Order(0)
 		ProblemDetailsExceptionHandler problemDetailsExceptionHandler() {
@@ -999,22 +1004,22 @@ public class WebMvcAutoConfiguration {
 		private final ContentNegotiationStrategy delegate;
 
 		/**
-         * Constructs a new OptionalPathExtensionContentNegotiationStrategy with the specified delegate.
-         *
-         * @param delegate the delegate ContentNegotiationStrategy to be used
-         */
-        OptionalPathExtensionContentNegotiationStrategy(ContentNegotiationStrategy delegate) {
+		 * Constructs a new OptionalPathExtensionContentNegotiationStrategy with the
+		 * specified delegate.
+		 * @param delegate the delegate ContentNegotiationStrategy to be used
+		 */
+		OptionalPathExtensionContentNegotiationStrategy(ContentNegotiationStrategy delegate) {
 			this.delegate = delegate;
 		}
 
 		/**
-         * Resolves the media types for the given web request.
-         * 
-         * @param webRequest the current web request
-         * @return the list of resolved media types
-         * @throws HttpMediaTypeNotAcceptableException if the media types cannot be resolved
-         */
-        @Override
+		 * Resolves the media types for the given web request.
+		 * @param webRequest the current web request
+		 * @return the list of resolved media types
+		 * @throws HttpMediaTypeNotAcceptableException if the media types cannot be
+		 * resolved
+		 */
+		@Override
 		public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
 				throws HttpMediaTypeNotAcceptableException {
 			Object skip = webRequest.getAttribute(SKIP_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);

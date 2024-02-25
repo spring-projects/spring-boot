@@ -43,14 +43,16 @@ class ActiveMQConnectionFactoryFactory {
 	private final ActiveMQConnectionDetails connectionDetails;
 
 	/**
-     * Constructs a new ActiveMQConnectionFactoryFactory with the specified properties, factory customizers, and connection details.
-     * 
-     * @param properties the ActiveMQProperties to be used for configuring the factory
-     * @param factoryCustomizers the list of ActiveMQConnectionFactoryCustomizer objects to customize the factory
-     * @param connectionDetails the ActiveMQConnectionDetails to be used for establishing the connection
-     * @throws IllegalArgumentException if the properties argument is null
-     */
-    ActiveMQConnectionFactoryFactory(ActiveMQProperties properties,
+	 * Constructs a new ActiveMQConnectionFactoryFactory with the specified properties,
+	 * factory customizers, and connection details.
+	 * @param properties the ActiveMQProperties to be used for configuring the factory
+	 * @param factoryCustomizers the list of ActiveMQConnectionFactoryCustomizer objects
+	 * to customize the factory
+	 * @param connectionDetails the ActiveMQConnectionDetails to be used for establishing
+	 * the connection
+	 * @throws IllegalArgumentException if the properties argument is null
+	 */
+	ActiveMQConnectionFactoryFactory(ActiveMQProperties properties,
 			List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers, ActiveMQConnectionDetails connectionDetails) {
 		Assert.notNull(properties, "Properties must not be null");
 		this.properties = properties;
@@ -59,13 +61,13 @@ class ActiveMQConnectionFactoryFactory {
 	}
 
 	/**
-     * Creates a new instance of ActiveMQConnectionFactory based on the provided factoryClass.
-     * 
-     * @param factoryClass the class of the factory to be created
-     * @return a new instance of ActiveMQConnectionFactory
-     * @throws IllegalStateException if unable to create ActiveMQConnectionFactory
-     */
-    <T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
+	 * Creates a new instance of ActiveMQConnectionFactory based on the provided
+	 * factoryClass.
+	 * @param factoryClass the class of the factory to be created
+	 * @return a new instance of ActiveMQConnectionFactory
+	 * @throws IllegalStateException if unable to create ActiveMQConnectionFactory
+	 */
+	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
 		try {
 			return doCreateConnectionFactory(factoryClass);
 		}
@@ -75,13 +77,12 @@ class ActiveMQConnectionFactoryFactory {
 	}
 
 	/**
-     * Creates a connection factory of the specified type.
-     * 
-     * @param factoryClass the class of the connection factory to create
-     * @return the created connection factory
-     * @throws Exception if an error occurs while creating the connection factory
-     */
-    private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(Class<T> factoryClass) throws Exception {
+	 * Creates a connection factory of the specified type.
+	 * @param factoryClass the class of the connection factory to create
+	 * @return the created connection factory
+	 * @throws Exception if an error occurs while creating the connection factory
+	 */
+	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(Class<T> factoryClass) throws Exception {
 		T factory = createConnectionFactoryInstance(factoryClass);
 		if (this.properties.getCloseTimeout() != null) {
 			factory.setCloseTimeout((int) this.properties.getCloseTimeout().toMillis());
@@ -102,16 +103,17 @@ class ActiveMQConnectionFactoryFactory {
 	}
 
 	/**
-     * Creates an instance of the ActiveMQConnectionFactory class based on the provided factoryClass.
-     * 
-     * @param factoryClass the class of the ActiveMQConnectionFactory to be instantiated
-     * @return an instance of the ActiveMQConnectionFactory class
-     * @throws InstantiationException if an error occurs during instantiation
-     * @throws IllegalAccessException if access to the constructor is denied
-     * @throws InvocationTargetException if an error occurs during invocation of the constructor
-     * @throws NoSuchMethodException if the constructor does not exist
-     */
-    private <T extends ActiveMQConnectionFactory> T createConnectionFactoryInstance(Class<T> factoryClass)
+	 * Creates an instance of the ActiveMQConnectionFactory class based on the provided
+	 * factoryClass.
+	 * @param factoryClass the class of the ActiveMQConnectionFactory to be instantiated
+	 * @return an instance of the ActiveMQConnectionFactory class
+	 * @throws InstantiationException if an error occurs during instantiation
+	 * @throws IllegalAccessException if access to the constructor is denied
+	 * @throws InvocationTargetException if an error occurs during invocation of the
+	 * constructor
+	 * @throws NoSuchMethodException if the constructor does not exist
+	 */
+	private <T extends ActiveMQConnectionFactory> T createConnectionFactoryInstance(Class<T> factoryClass)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		String brokerUrl = this.connectionDetails.getBrokerUrl();
 		String user = this.connectionDetails.getUser();
@@ -124,11 +126,11 @@ class ActiveMQConnectionFactoryFactory {
 	}
 
 	/**
-     * Customizes the given ActiveMQConnectionFactory by applying all registered factory customizers.
-     * 
-     * @param connectionFactory the ActiveMQConnectionFactory to be customized
-     */
-    private void customize(ActiveMQConnectionFactory connectionFactory) {
+	 * Customizes the given ActiveMQConnectionFactory by applying all registered factory
+	 * customizers.
+	 * @param connectionFactory the ActiveMQConnectionFactory to be customized
+	 */
+	private void customize(ActiveMQConnectionFactory connectionFactory) {
 		for (ActiveMQConnectionFactoryCustomizer factoryCustomizer : this.factoryCustomizers) {
 			factoryCustomizer.customize(connectionFactory);
 		}

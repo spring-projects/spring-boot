@@ -45,24 +45,25 @@ import org.springframework.context.annotation.Bean;
 public class LettuceMetricsAutoConfiguration {
 
 	/**
-     * Creates a new instance of MicrometerOptions if no other bean of the same type is present.
-     * 
-     * @return the MicrometerOptions instance
-     */
-    @Bean
+	 * Creates a new instance of MicrometerOptions if no other bean of the same type is
+	 * present.
+	 * @return the MicrometerOptions instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	MicrometerOptions micrometerOptions() {
 		return MicrometerOptions.create();
 	}
 
 	/**
-     * Customizes the Lettuce client resources builder to use Micrometer for command latency recording.
-     * 
-     * @param meterRegistry the Micrometer MeterRegistry to use for recording metrics
-     * @param options the MicrometerOptions to configure the MicrometerCommandLatencyRecorder
-     * @return the customized Lettuce client resources builder
-     */
-    @Bean
+	 * Customizes the Lettuce client resources builder to use Micrometer for command
+	 * latency recording.
+	 * @param meterRegistry the Micrometer MeterRegistry to use for recording metrics
+	 * @param options the MicrometerOptions to configure the
+	 * MicrometerCommandLatencyRecorder
+	 * @return the customized Lettuce client resources builder
+	 */
+	@Bean
 	ClientResourcesBuilderCustomizer lettuceMetrics(MeterRegistry meterRegistry, MicrometerOptions options) {
 		return (client) -> client.commandLatencyRecorder(new MicrometerCommandLatencyRecorder(meterRegistry, options));
 	}

@@ -64,16 +64,15 @@ public class MetricsRepositoryMethodInvocationListener implements RepositoryMeth
 	}
 
 	/**
-     * This method is called after the invocation of a repository method.
-     * It retrieves the Timed annotations associated with the method and repository interface,
-     * as well as the tags provided by the tagsProvider.
-     * The duration of the invocation is calculated in nanoseconds.
-     * The AutoTimer is then applied to record the duration metric with the specified metricName,
-     * annotations, tags, and registry.
-     * 
-     * @param invocation The RepositoryMethodInvocation object representing the repository method invocation.
-     */
-    @Override
+	 * This method is called after the invocation of a repository method. It retrieves the
+	 * Timed annotations associated with the method and repository interface, as well as
+	 * the tags provided by the tagsProvider. The duration of the invocation is calculated
+	 * in nanoseconds. The AutoTimer is then applied to record the duration metric with
+	 * the specified metricName, annotations, tags, and registry.
+	 * @param invocation The RepositoryMethodInvocation object representing the repository
+	 * method invocation.
+	 */
+	@Override
 	public void afterInvocation(RepositoryMethodInvocation invocation) {
 		Set<Timed> annotations = TimedAnnotations.get(invocation.getMethod(), invocation.getRepositoryInterface());
 		Iterable<Tag> tags = this.tagsProvider.repositoryTags(invocation);

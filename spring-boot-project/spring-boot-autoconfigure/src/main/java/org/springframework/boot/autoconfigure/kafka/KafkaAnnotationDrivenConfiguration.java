@@ -86,22 +86,31 @@ class KafkaAnnotationDrivenConfiguration {
 	private final Function<MessageListenerContainer, String> threadNameSupplier;
 
 	/**
-     * Constructs a new KafkaAnnotationDrivenConfiguration with the specified parameters.
-     *
-     * @param properties the KafkaProperties object containing the Kafka configuration properties
-     * @param recordMessageConverter the RecordMessageConverter used for converting Kafka records to messages
-     * @param recordFilterStrategy the RecordFilterStrategy used for filtering Kafka records
-     * @param batchMessageConverter the BatchMessageConverter used for converting Kafka batch records to messages
-     * @param kafkaTemplate the KafkaTemplate used for sending Kafka messages
-     * @param kafkaTransactionManager the KafkaAwareTransactionManager used for managing Kafka transactions
-     * @param rebalanceListener the ConsumerAwareRebalanceListener used for handling Kafka consumer rebalance events
-     * @param commonErrorHandler the CommonErrorHandler used for handling Kafka consumer and producer errors
-     * @param afterRollbackProcessor the AfterRollbackProcessor used for processing Kafka records after a transaction rollback
-     * @param recordInterceptor the RecordInterceptor used for intercepting Kafka records
-     * @param batchInterceptor the BatchInterceptor used for intercepting Kafka batch records
-     * @param threadNameSupplier the Function used for supplying thread names for Kafka message listeners
-     */
-    KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
+	 * Constructs a new KafkaAnnotationDrivenConfiguration with the specified parameters.
+	 * @param properties the KafkaProperties object containing the Kafka configuration
+	 * properties
+	 * @param recordMessageConverter the RecordMessageConverter used for converting Kafka
+	 * records to messages
+	 * @param recordFilterStrategy the RecordFilterStrategy used for filtering Kafka
+	 * records
+	 * @param batchMessageConverter the BatchMessageConverter used for converting Kafka
+	 * batch records to messages
+	 * @param kafkaTemplate the KafkaTemplate used for sending Kafka messages
+	 * @param kafkaTransactionManager the KafkaAwareTransactionManager used for managing
+	 * Kafka transactions
+	 * @param rebalanceListener the ConsumerAwareRebalanceListener used for handling Kafka
+	 * consumer rebalance events
+	 * @param commonErrorHandler the CommonErrorHandler used for handling Kafka consumer
+	 * and producer errors
+	 * @param afterRollbackProcessor the AfterRollbackProcessor used for processing Kafka
+	 * records after a transaction rollback
+	 * @param recordInterceptor the RecordInterceptor used for intercepting Kafka records
+	 * @param batchInterceptor the BatchInterceptor used for intercepting Kafka batch
+	 * records
+	 * @param threadNameSupplier the Function used for supplying thread names for Kafka
+	 * message listeners
+	 */
+	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
 			ObjectProvider<RecordMessageConverter> recordMessageConverter,
 			ObjectProvider<RecordFilterStrategy<Object, Object>> recordFilterStrategy,
 			ObjectProvider<BatchMessageConverter> batchMessageConverter,
@@ -129,12 +138,12 @@ class KafkaAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Configures the concurrent Kafka listener container factory if no bean of the same type is already present.
-     * This configuration is conditional on the threading being set to PLATFORM.
-     * 
-     * @return The concurrent Kafka listener container factory configurer.
-     */
-    @Bean
+	 * Configures the concurrent Kafka listener container factory if no bean of the same
+	 * type is already present. This configuration is conditional on the threading being
+	 * set to PLATFORM.
+	 * @return The concurrent Kafka listener container factory configurer.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
 	ConcurrentKafkaListenerContainerFactoryConfigurer kafkaListenerContainerFactoryConfigurer() {
@@ -142,11 +151,10 @@ class KafkaAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Configures the Kafka listener container factory for virtual threads.
-     * 
-     * @return The configured ConcurrentKafkaListenerContainerFactoryConfigurer object.
-     */
-    @Bean(name = "kafkaListenerContainerFactoryConfigurer")
+	 * Configures the Kafka listener container factory for virtual threads.
+	 * @return The configured ConcurrentKafkaListenerContainerFactoryConfigurer object.
+	 */
+	@Bean(name = "kafkaListenerContainerFactoryConfigurer")
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	ConcurrentKafkaListenerContainerFactoryConfigurer kafkaListenerContainerFactoryConfigurerVirtualThreads() {
@@ -158,11 +166,11 @@ class KafkaAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Configures the ConcurrentKafkaListenerContainerFactoryConfigurer with the necessary properties and dependencies.
-     * 
-     * @return The configured ConcurrentKafkaListenerContainerFactoryConfigurer.
-     */
-    private ConcurrentKafkaListenerContainerFactoryConfigurer configurer() {
+	 * Configures the ConcurrentKafkaListenerContainerFactoryConfigurer with the necessary
+	 * properties and dependencies.
+	 * @return The configured ConcurrentKafkaListenerContainerFactoryConfigurer.
+	 */
+	private ConcurrentKafkaListenerContainerFactoryConfigurer configurer() {
 		ConcurrentKafkaListenerContainerFactoryConfigurer configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer();
 		configurer.setKafkaProperties(this.properties);
 		configurer.setBatchMessageConverter(this.batchMessageConverter);
@@ -180,17 +188,19 @@ class KafkaAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Creates a Kafka listener container factory if one is not already defined.
-     * This factory is used to create concurrent Kafka listener containers for consuming messages from Kafka topics.
-     * The factory is configured with a Kafka consumer factory, container customizer, and SSL bundles (if available).
-     * 
-     * @param configurer The concurrent Kafka listener container factory configurer.
-     * @param kafkaConsumerFactory The Kafka consumer factory for creating Kafka consumers.
-     * @param kafkaContainerCustomizer The container customizer for customizing the Kafka listener container.
-     * @param sslBundles The SSL bundles for configuring SSL properties (if available).
-     * @return The created Kafka listener container factory.
-     */
-    @Bean
+	 * Creates a Kafka listener container factory if one is not already defined. This
+	 * factory is used to create concurrent Kafka listener containers for consuming
+	 * messages from Kafka topics. The factory is configured with a Kafka consumer
+	 * factory, container customizer, and SSL bundles (if available).
+	 * @param configurer The concurrent Kafka listener container factory configurer.
+	 * @param kafkaConsumerFactory The Kafka consumer factory for creating Kafka
+	 * consumers.
+	 * @param kafkaContainerCustomizer The container customizer for customizing the Kafka
+	 * listener container.
+	 * @param sslBundles The SSL bundles for configuring SSL properties (if available).
+	 * @return The created Kafka listener container factory.
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = "kafkaListenerContainerFactory")
 	ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory(
 			ConcurrentKafkaListenerContainerFactoryConfigurer configurer,
@@ -205,9 +215,9 @@ class KafkaAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * EnableKafkaConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * EnableKafkaConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@EnableKafka
 	@ConditionalOnMissingBean(name = KafkaListenerConfigUtils.KAFKA_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	static class EnableKafkaConfiguration {

@@ -58,12 +58,14 @@ public enum RollingPolicySystemProperty {
 	private final String deprecatedApplicationPropertyName;
 
 	/**
-     * Constructs a new RollingPolicySystemProperty with the specified application property name and deprecated application property name.
-     * 
-     * @param applicationPropertyName the name of the application property for the rolling policy
-     * @param deprecatedApplicationPropertyName the name of the deprecated application property for the rolling policy
-     */
-    RollingPolicySystemProperty(String applicationPropertyName, String deprecatedApplicationPropertyName) {
+	 * Constructs a new RollingPolicySystemProperty with the specified application
+	 * property name and deprecated application property name.
+	 * @param applicationPropertyName the name of the application property for the rolling
+	 * policy
+	 * @param deprecatedApplicationPropertyName the name of the deprecated application
+	 * property for the rolling policy
+	 */
+	RollingPolicySystemProperty(String applicationPropertyName, String deprecatedApplicationPropertyName) {
 		this.environmentVariableName = "LOGBACK_ROLLINGPOLICY_" + name();
 		this.applicationPropertyName = "logging.logback.rollingpolicy." + applicationPropertyName;
 		this.deprecatedApplicationPropertyName = deprecatedApplicationPropertyName;
@@ -78,20 +80,18 @@ public enum RollingPolicySystemProperty {
 	}
 
 	/**
-     * Returns the application property name.
-     *
-     * @return the application property name
-     */
-    String getApplicationPropertyName() {
+	 * Returns the application property name.
+	 * @return the application property name
+	 */
+	String getApplicationPropertyName() {
 		return this.applicationPropertyName;
 	}
 
 	/**
-     * Returns the name of the deprecated application property.
-     *
-     * @return the name of the deprecated application property
-     */
-    String getDeprecatedApplicationPropertyName() {
+	 * Returns the name of the deprecated application property.
+	 * @return the name of the deprecated application property
+	 */
+	String getDeprecatedApplicationPropertyName() {
 		return this.deprecatedApplicationPropertyName;
 	}
 

@@ -89,12 +89,13 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 	}
 
 	/**
-     * Starts the HikariCheckpointRestoreLifecycle.
-     * 
-     * This method checks if the dataSource is null or already running. If the dataSource is closed, an exception is thrown.
-     * If the dataSource allows pool suspension, the Hikari pool is resumed.
-     */
-    @Override
+	 * Starts the HikariCheckpointRestoreLifecycle.
+	 *
+	 * This method checks if the dataSource is null or already running. If the dataSource
+	 * is closed, an exception is thrown. If the dataSource allows pool suspension, the
+	 * Hikari pool is resumed.
+	 */
+	@Override
 	public void start() {
 		if (this.dataSource == null || this.dataSource.isRunning()) {
 			return;
@@ -107,12 +108,12 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 	}
 
 	/**
-     * Stops the Hikari pool if it is running.
-     * If the pool is not running or the dataSource is null, this method does nothing.
-     * If the pool allows suspension, it suspends the pool before closing connections.
-     * The connections are closed with a timeout of the connection timeout plus 250 milliseconds.
-     */
-    @Override
+	 * Stops the Hikari pool if it is running. If the pool is not running or the
+	 * dataSource is null, this method does nothing. If the pool allows suspension, it
+	 * suspends the pool before closing connections. The connections are closed with a
+	 * timeout of the connection timeout plus 250 milliseconds.
+	 */
+	@Override
 	public void stop() {
 		if (this.dataSource == null || !this.dataSource.isRunning()) {
 			return;
@@ -125,12 +126,11 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 	}
 
 	/**
-     * Closes all connections in the Hikari connection pool.
-     * 
-     * @param shutdownTimeout the maximum time to wait for connections to be closed
-     * @throws RuntimeException if there is an error while closing the connections
-     */
-    private void closeConnections(Duration shutdownTimeout) {
+	 * Closes all connections in the Hikari connection pool.
+	 * @param shutdownTimeout the maximum time to wait for connections to be closed
+	 * @throws RuntimeException if there is an error while closing the connections
+	 */
+	private void closeConnections(Duration shutdownTimeout) {
 		logger.info("Evicting Hikari connections");
 		this.dataSource.getHikariPoolMXBean().softEvictConnections();
 		logger.debug("Waiting for Hikari connections to be closed");
@@ -152,12 +152,13 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 	}
 
 	/**
-     * Waits for all connections to be closed in the HikariPool.
-     * This method continuously checks if there are any open connections in the HikariPool and waits until all connections are closed.
-     * It sleeps for 50 milliseconds between each check.
-     * If the thread is interrupted while waiting, an error message is logged and the interrupt flag is set again.
-     */
-    private void waitForConnectionsToClose() {
+	 * Waits for all connections to be closed in the HikariPool. This method continuously
+	 * checks if there are any open connections in the HikariPool and waits until all
+	 * connections are closed. It sleeps for 50 milliseconds between each check. If the
+	 * thread is interrupted while waiting, an error message is logged and the interrupt
+	 * flag is set again.
+	 */
+	private void waitForConnectionsToClose() {
 		while (this.hasOpenConnections.apply((HikariPool) this.dataSource.getHikariPoolMXBean())) {
 			try {
 				TimeUnit.MILLISECONDS.sleep(50);
@@ -170,11 +171,11 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 	}
 
 	/**
-     * Returns a boolean value indicating whether the HikariCheckpointRestoreLifecycle is running.
-     * 
-     * @return true if the HikariCheckpointRestoreLifecycle is running, false otherwise
-     */
-    @Override
+	 * Returns a boolean value indicating whether the HikariCheckpointRestoreLifecycle is
+	 * running.
+	 * @return true if the HikariCheckpointRestoreLifecycle is running, false otherwise
+	 */
+	@Override
 	public boolean isRunning() {
 		return this.dataSource != null && this.dataSource.isRunning();
 	}

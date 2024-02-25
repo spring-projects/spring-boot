@@ -29,18 +29,19 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 class NotReactiveWebApplicationCondition extends NoneNestedConditions {
 
 	/**
-     * Constructs a new instance of the NotReactiveWebApplicationCondition class.
-     * 
-     * This constructor calls the super constructor with the ConfigurationPhase.PARSE_CONFIGURATION argument.
-     */
-    NotReactiveWebApplicationCondition() {
+	 * Constructs a new instance of the NotReactiveWebApplicationCondition class.
+	 *
+	 * This constructor calls the super constructor with the
+	 * ConfigurationPhase.PARSE_CONFIGURATION argument.
+	 */
+	NotReactiveWebApplicationCondition() {
 		super(ConfigurationPhase.PARSE_CONFIGURATION);
 	}
 
 	/**
-     * ReactiveWebApplication class.
-     */
-    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	 * ReactiveWebApplication class.
+	 */
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	private static final class ReactiveWebApplication {
 
 	}

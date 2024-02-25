@@ -68,11 +68,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	private int hashCode;
 
 	/**
-     * Constructs a new ConfigurationPropertyName object with the given Elements.
-     * 
-     * @param elements the Elements object to be used for constructing the ConfigurationPropertyName
-     */
-    private ConfigurationPropertyName(Elements elements) {
+	 * Constructs a new ConfigurationPropertyName object with the given Elements.
+	 * @param elements the Elements object to be used for constructing the
+	 * ConfigurationPropertyName
+	 */
+	private ConfigurationPropertyName(Elements elements) {
 		this.elements = elements;
 		this.uniformElements = new CharSequence[elements.getSize()];
 	}
@@ -169,45 +169,43 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Converts the given element to its original form.
-     * 
-     * @param element the element to be converted
-     * @return the original form of the element
-     */
-    private CharSequence convertToOriginalForm(CharSequence element) {
+	 * Converts the given element to its original form.
+	 * @param element the element to be converted
+	 * @return the original form of the element
+	 */
+	private CharSequence convertToOriginalForm(CharSequence element) {
 		return convertElement(element, false,
 				(ch, i) -> ch == '_' || ElementsParser.isValidChar(Character.toLowerCase(ch), i));
 	}
 
 	/**
-     * Converts the given element to a dashed element.
-     * 
-     * @param element the element to be converted
-     * @return the converted dashed element
-     */
-    private CharSequence convertToDashedElement(CharSequence element) {
+	 * Converts the given element to a dashed element.
+	 * @param element the element to be converted
+	 * @return the converted dashed element
+	 */
+	private CharSequence convertToDashedElement(CharSequence element) {
 		return convertElement(element, true, ElementsParser::isValidChar);
 	}
 
 	/**
-     * Converts the given element to a uniform element.
-     * 
-     * @param element the element to be converted
-     * @return the converted uniform element
-     */
-    private CharSequence convertToUniformElement(CharSequence element) {
+	 * Converts the given element to a uniform element.
+	 * @param element the element to be converted
+	 * @return the converted uniform element
+	 */
+	private CharSequence convertToUniformElement(CharSequence element) {
 		return convertElement(element, true, (ch, i) -> ElementsParser.isAlphaNumeric(ch));
 	}
 
 	/**
-     * Converts the given element to a CharSequence, with optional lowercase conversion and filtering based on a predicate.
-     *
-     * @param element the element to be converted
-     * @param lowercase true if the element should be converted to lowercase, false otherwise
-     * @param filter the predicate used to filter the characters in the element
-     * @return the converted CharSequence
-     */
-    private CharSequence convertElement(CharSequence element, boolean lowercase, ElementCharPredicate filter) {
+	 * Converts the given element to a CharSequence, with optional lowercase conversion
+	 * and filtering based on a predicate.
+	 * @param element the element to be converted
+	 * @param lowercase true if the element should be converted to lowercase, false
+	 * otherwise
+	 * @param filter the predicate used to filter the characters in the element
+	 * @return the converted CharSequence
+	 */
+	private CharSequence convertElement(CharSequence element, boolean lowercase, ElementCharPredicate filter) {
 		StringBuilder result = new StringBuilder(element.length());
 		for (int i = 0; i < element.length(); i++) {
 			char ch = lowercase ? Character.toLowerCase(element.charAt(i)) : element.charAt(i);
@@ -326,27 +324,29 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Compares this ConfigurationPropertyName object with the specified object for order.
-     * Returns a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
-     * 
-     * @param other the ConfigurationPropertyName object to be compared
-     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object
-     */
-    @Override
+	 * Compares this ConfigurationPropertyName object with the specified object for order.
+	 * Returns a negative integer, zero, or a positive integer as this object is less
+	 * than, equal to, or greater than the specified object.
+	 * @param other the ConfigurationPropertyName object to be compared
+	 * @return a negative integer, zero, or a positive integer as this object is less
+	 * than, equal to, or greater than the specified object
+	 */
+	@Override
 	public int compareTo(ConfigurationPropertyName other) {
 		return compare(this, other);
 	}
 
 	/**
-     * Compares two ConfigurationPropertyName objects.
-     * 
-     * @param n1 the first ConfigurationPropertyName object to compare
-     * @param n2 the second ConfigurationPropertyName object to compare
-     * @return the value 0 if the two objects are equal; a value less than 0 if n1 is lexicographically less than n2; 
-     *         a value greater than 0 if n1 is lexicographically greater than n2
-     * @throws RuntimeException if an ArrayIndexOutOfBoundsException occurs during the comparison
-     */
-    private int compare(ConfigurationPropertyName n1, ConfigurationPropertyName n2) {
+	 * Compares two ConfigurationPropertyName objects.
+	 * @param n1 the first ConfigurationPropertyName object to compare
+	 * @param n2 the second ConfigurationPropertyName object to compare
+	 * @return the value 0 if the two objects are equal; a value less than 0 if n1 is
+	 * lexicographically less than n2; a value greater than 0 if n1 is lexicographically
+	 * greater than n2
+	 * @throws RuntimeException if an ArrayIndexOutOfBoundsException occurs during the
+	 * comparison
+	 */
+	private int compare(ConfigurationPropertyName n1, ConfigurationPropertyName n2) {
 		int l1 = n1.getNumberOfElements();
 		int l2 = n2.getNumberOfElements();
 		int i1 = 0;
@@ -370,15 +370,15 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Compares two elements based on their values and types.
-     * 
-     * @param e1 the first element value
-     * @param type1 the type of the first element
-     * @param e2 the second element value
-     * @param type2 the type of the second element
-     * @return a negative integer if e1 is less than e2, zero if e1 is equal to e2, or a positive integer if e1 is greater than e2
-     */
-    private int compare(String e1, ElementType type1, String e2, ElementType type2) {
+	 * Compares two elements based on their values and types.
+	 * @param e1 the first element value
+	 * @param type1 the type of the first element
+	 * @param e2 the second element value
+	 * @param type2 the type of the second element
+	 * @return a negative integer if e1 is less than e2, zero if e1 is equal to e2, or a
+	 * positive integer if e1 is greater than e2
+	 */
+	private int compare(String e1, ElementType type1, String e2, ElementType type2) {
 		if (e1 == null) {
 			return -1;
 		}
@@ -398,12 +398,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Compares this ConfigurationPropertyName object with the specified object for equality.
-     * 
-     * @param obj the object to compare with
-     * @return true if the specified object is equal to this ConfigurationPropertyName object, false otherwise
-     */
-    @Override
+	 * Compares this ConfigurationPropertyName object with the specified object for
+	 * equality.
+	 * @param obj the object to compare with
+	 * @return true if the specified object is equal to this ConfigurationPropertyName
+	 * object, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -423,12 +424,12 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Checks if the elements of the given ConfigurationPropertyName object are equal to the elements of this ConfigurationPropertyName object.
-     * 
-     * @param name the ConfigurationPropertyName object to compare with
-     * @return true if the elements are equal, false otherwise
-     */
-    private boolean elementsEqual(ConfigurationPropertyName name) {
+	 * Checks if the elements of the given ConfigurationPropertyName object are equal to
+	 * the elements of this ConfigurationPropertyName object.
+	 * @param name the ConfigurationPropertyName object to compare with
+	 * @return true if the elements are equal, false otherwise
+	 */
+	private boolean elementsEqual(ConfigurationPropertyName name) {
 		for (int i = this.elements.getSize() - 1; i >= 0; i--) {
 			if (elementDiffers(this.elements, name.elements, i)) {
 				return false;
@@ -438,14 +439,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Checks if the element at the specified index differs between two Elements objects.
-     * 
-     * @param e1 The first Elements object.
-     * @param e2 The second Elements object.
-     * @param i The index of the element to compare.
-     * @return true if the element differs, false otherwise.
-     */
-    private boolean elementDiffers(Elements e1, Elements e2, int i) {
+	 * Checks if the element at the specified index differs between two Elements objects.
+	 * @param e1 The first Elements object.
+	 * @param e2 The second Elements object.
+	 * @param i The index of the element to compare.
+	 * @return true if the element differs, false otherwise.
+	 */
+	private boolean elementDiffers(Elements e1, Elements e2, int i) {
 		ElementType type1 = e1.getType(i);
 		ElementType type2 = e2.getType(i);
 		if (type1.allowsFastEqualityCheck() && type2.allowsFastEqualityCheck()) {
@@ -458,14 +458,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Compares the elements at the specified index of two Elements objects for equality.
-     * 
-     * @param e1 the first Elements object
-     * @param e2 the second Elements object
-     * @param i the index of the elements to compare
-     * @return true if the elements at the specified index are equal, false otherwise
-     */
-    private boolean fastElementEquals(Elements e1, Elements e2, int i) {
+	 * Compares the elements at the specified index of two Elements objects for equality.
+	 * @param e1 the first Elements object
+	 * @param e2 the second Elements object
+	 * @param i the index of the elements to compare
+	 * @return true if the elements at the specified index are equal, false otherwise
+	 */
+	private boolean fastElementEquals(Elements e1, Elements e2, int i) {
 		int length1 = e1.getLength(i);
 		int length2 = e2.getLength(i);
 		if (length1 == length2) {
@@ -484,14 +483,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Compares two Elements objects at a specific index, ignoring dashes.
-     * 
-     * @param e1 the first Elements object to compare
-     * @param e2 the second Elements object to compare
-     * @param i the index at which to compare the Elements objects
-     * @return true if the Elements objects are equal ignoring dashes, false otherwise
-     */
-    private boolean dashIgnoringElementEquals(Elements e1, Elements e2, int i) {
+	 * Compares two Elements objects at a specific index, ignoring dashes.
+	 * @param e1 the first Elements object to compare
+	 * @param e2 the second Elements object to compare
+	 * @param i the index at which to compare the Elements objects
+	 * @return true if the Elements objects are equal ignoring dashes, false otherwise
+	 */
+	private boolean dashIgnoringElementEquals(Elements e1, Elements e2, int i) {
 		int l1 = e1.getLength(i);
 		int l2 = e2.getLength(i);
 		int i1 = 0;
@@ -532,14 +530,14 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Compares the elements at the specified index of two ConfigurationPropertyName objects for equality.
-     * 
-     * @param e1 the first ConfigurationPropertyName object
-     * @param e2 the second ConfigurationPropertyName object
-     * @param i the index of the elements to compare
-     * @return true if the elements at the specified index are equal, false otherwise
-     */
-    private boolean defaultElementEquals(Elements e1, Elements e2, int i) {
+	 * Compares the elements at the specified index of two ConfigurationPropertyName
+	 * objects for equality.
+	 * @param e1 the first ConfigurationPropertyName object
+	 * @param e2 the second ConfigurationPropertyName object
+	 * @param i the index of the elements to compare
+	 * @return true if the elements at the specified index are equal, false otherwise
+	 */
+	private boolean defaultElementEquals(Elements e1, Elements e2, int i) {
 		int l1 = e1.getLength(i);
 		int l2 = e2.getLength(i);
 		boolean indexed1 = e1.getType(i).isIndexed();
@@ -573,14 +571,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Checks if the remainder of a given element at a specific index is not alphanumeric.
-     * 
-     * @param elements the Elements object containing the elements to check
-     * @param element the index of the element to check
-     * @param index the index within the element to start checking from
-     * @return true if the remainder is not alphanumeric, false otherwise
-     */
-    private boolean remainderIsNotAlphanumeric(Elements elements, int element, int index) {
+	 * Checks if the remainder of a given element at a specific index is not alphanumeric.
+	 * @param elements the Elements object containing the elements to check
+	 * @param element the index of the element to check
+	 * @param index the index within the element to start checking from
+	 * @return true if the remainder is not alphanumeric, false otherwise
+	 */
+	private boolean remainderIsNotAlphanumeric(Elements elements, int element, int index) {
 		if (elements.getType(element).isIndexed()) {
 			return false;
 		}
@@ -596,14 +593,15 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Checks if the remainder of a given element in the provided Elements object consists only of dashes.
-     * 
-     * @param elements the Elements object to check
-     * @param element the index of the element to check
-     * @param index the starting index within the element to check
-     * @return true if the remainder of the element consists only of dashes, false otherwise
-     */
-    private boolean remainderIsDashes(Elements elements, int element, int index) {
+	 * Checks if the remainder of a given element in the provided Elements object consists
+	 * only of dashes.
+	 * @param elements the Elements object to check
+	 * @param element the index of the element to check
+	 * @param index the starting index within the element to check
+	 * @return true if the remainder of the element consists only of dashes, false
+	 * otherwise
+	 */
+	private boolean remainderIsDashes(Elements elements, int element, int index) {
 		if (elements.getType(element).isIndexed()) {
 			return false;
 		}
@@ -619,19 +617,20 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Returns the hash code value for this ConfigurationPropertyName object.
-     * 
-     * The hash code is calculated based on the elements of the ConfigurationPropertyName.
-     * Each element is iterated and its hash code is calculated by considering the indexed flag and the length of the element.
-     * For each character in the element, if it is alphanumeric, it is used to calculate the element's hash code.
-     * The hash code of each element is then combined using the formula: 31 * previousHashCode + currentElementHashCode.
-     * 
-     * If the hash code has not been calculated before and the ConfigurationPropertyName has elements,
-     * the hash code is calculated and stored for future use.
-     * 
-     * @return the hash code value for this ConfigurationPropertyName object
-     */
-    @Override
+	 * Returns the hash code value for this ConfigurationPropertyName object.
+	 *
+	 * The hash code is calculated based on the elements of the ConfigurationPropertyName.
+	 * Each element is iterated and its hash code is calculated by considering the indexed
+	 * flag and the length of the element. For each character in the element, if it is
+	 * alphanumeric, it is used to calculate the element's hash code. The hash code of
+	 * each element is then combined using the formula: 31 * previousHashCode +
+	 * currentElementHashCode.
+	 *
+	 * If the hash code has not been calculated before and the ConfigurationPropertyName
+	 * has elements, the hash code is calculated and stored for future use.
+	 * @return the hash code value for this ConfigurationPropertyName object
+	 */
+	@Override
 	public int hashCode() {
 		int hashCode = this.hashCode;
 		Elements elements = this.elements;
@@ -657,11 +656,10 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * 
-     * @return the string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return the string representation of the object
+	 */
+	@Override
 	public String toString() {
 		if (this.string == null) {
 			this.string = buildToString();
@@ -670,19 +668,23 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Builds a string representation of the ConfigurationPropertyName object.
-     * 
-     * If the elements can be shortcut with source of type UNIFORM or DASHED, the source is returned as a string.
-     * 
-     * If not, the number of elements is determined and a StringBuilder is created with an initial capacity of elements * 8.
-     * 
-     * The elements are then iterated over, and if the element is indexed, it is enclosed in square brackets and appended to the result.
-     * 
-     * If the element is not indexed, a dot is appended to the result before appending the element.
-     * 
-     * The resulting string is returned.
-     */
-    private String buildToString() {
+	 * Builds a string representation of the ConfigurationPropertyName object.
+	 *
+	 * If the elements can be shortcut with source of type UNIFORM or DASHED, the source
+	 * is returned as a string.
+	 *
+	 * If not, the number of elements is determined and a StringBuilder is created with an
+	 * initial capacity of elements * 8.
+	 *
+	 * The elements are then iterated over, and if the element is indexed, it is enclosed
+	 * in square brackets and appended to the result.
+	 *
+	 * If the element is not indexed, a dot is appended to the result before appending the
+	 * element.
+	 *
+	 * The resulting string is returned.
+	 */
+	private String buildToString() {
 		if (this.elements.canShortcutWithSource(ElementType.UNIFORM, ElementType.DASHED)) {
 			return this.elements.getSource().toString();
 		}
@@ -750,38 +752,39 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Returns a single element from the given {@code name}.
-     * 
-     * @param name the name to retrieve the element from
-     * @return the single element from the given name
-     * @throws IllegalArgumentException if the name does not contain exactly one element
-     */
-    private static Elements probablySingleElementOf(CharSequence name) {
+	 * Returns a single element from the given {@code name}.
+	 * @param name the name to retrieve the element from
+	 * @return the single element from the given name
+	 * @throws IllegalArgumentException if the name does not contain exactly one element
+	 */
+	private static Elements probablySingleElementOf(CharSequence name) {
 		return elementsOf(name, false, 1);
 	}
 
 	/**
-     * Returns the elements of the given name.
-     * 
-     * @param name the name to get the elements of
-     * @param returnNullIfInvalid flag indicating whether to return null if the name is invalid
-     * @return the elements of the given name
-     */
-    private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid) {
+	 * Returns the elements of the given name.
+	 * @param name the name to get the elements of
+	 * @param returnNullIfInvalid flag indicating whether to return null if the name is
+	 * invalid
+	 * @return the elements of the given name
+	 */
+	private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid) {
 		return elementsOf(name, returnNullIfInvalid, ElementsParser.DEFAULT_CAPACITY);
 	}
 
 	/**
-     * Parses the given name into a list of elements.
-     * 
-     * @param name                the name to parse
-     * @param returnNullIfInvalid flag indicating whether to return null if the name is invalid
-     * @param parserCapacity      the initial capacity of the parser
-     * @return the parsed elements
-     * @throws InvalidConfigurationPropertyNameException if the name is invalid and returnNullIfInvalid is false
-     * @throws IllegalArgumentException                if the name is null and returnNullIfInvalid is false
-     */
-    private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid, int parserCapacity) {
+	 * Parses the given name into a list of elements.
+	 * @param name the name to parse
+	 * @param returnNullIfInvalid flag indicating whether to return null if the name is
+	 * invalid
+	 * @param parserCapacity the initial capacity of the parser
+	 * @return the parsed elements
+	 * @throws InvalidConfigurationPropertyNameException if the name is invalid and
+	 * returnNullIfInvalid is false
+	 * @throws IllegalArgumentException if the name is null and returnNullIfInvalid is
+	 * false
+	 */
+	private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid, int parserCapacity) {
 		if (name == null) {
 			Assert.isTrue(returnNullIfInvalid, "Name must not be null");
 			return null;
@@ -808,13 +811,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-     * Returns a list of invalid characters found in the specified element at the given index.
-     * 
-     * @param elements the Elements object containing the elements to check
-     * @param index the index of the element to check
-     * @return a list of invalid characters found in the element
-     */
-    private static List<Character> getInvalidChars(Elements elements, int index) {
+	 * Returns a list of invalid characters found in the specified element at the given
+	 * index.
+	 * @param elements the Elements object containing the elements to check
+	 * @param index the index of the element to check
+	 * @return a list of invalid characters found in the element
+	 */
+	private static List<Character> getInvalidChars(Elements elements, int index) {
 		List<Character> invalidChars = new ArrayList<>();
 		for (int charIndex = 0; charIndex < elements.getLength(index); charIndex++) {
 			char ch = elements.charAt(index, charIndex);
@@ -938,16 +941,15 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		private final CharSequence[] resolved;
 
 		/**
-         * Constructs a new Elements object with the specified parameters.
-         * 
-         * @param source the source CharSequence
-         * @param size the size of the Elements object
-         * @param start an array of starting positions for each element
-         * @param end an array of ending positions for each element
-         * @param type an array of ElementType values for each element
-         * @param resolved an array of resolved CharSequence values for each element
-         */
-        Elements(CharSequence source, int size, int[] start, int[] end, ElementType[] type, CharSequence[] resolved) {
+		 * Constructs a new Elements object with the specified parameters.
+		 * @param source the source CharSequence
+		 * @param size the size of the Elements object
+		 * @param start an array of starting positions for each element
+		 * @param end an array of ending positions for each element
+		 * @param type an array of ElementType values for each element
+		 * @param resolved an array of resolved CharSequence values for each element
+		 */
+		Elements(CharSequence source, int size, int[] start, int[] end, ElementType[] type, CharSequence[] resolved) {
 			super();
 			this.source = source;
 			this.size = size;
@@ -958,12 +960,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Appends the elements from the specified additional Elements object to this Elements object.
-         * 
-         * @param additional the additional Elements object containing the elements to be appended
-         * @return a new Elements object with the appended elements
-         */
-        Elements append(Elements additional) {
+		 * Appends the elements from the specified additional Elements object to this
+		 * Elements object.
+		 * @param additional the additional Elements object containing the elements to be
+		 * appended
+		 * @return a new Elements object with the appended elements
+		 */
+		Elements append(Elements additional) {
 			int size = this.size + additional.size;
 			ElementType[] type = new ElementType[size];
 			System.arraycopy(this.type, 0, type, 0, this.size);
@@ -976,23 +979,23 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Returns a new Elements object with the specified size.
-         * 
-         * @param size the size of the new Elements object
-         * @return a new Elements object with the specified size
-         */
-        Elements chop(int size) {
+		 * Returns a new Elements object with the specified size.
+		 * @param size the size of the new Elements object
+		 * @return a new Elements object with the specified size
+		 */
+		Elements chop(int size) {
 			CharSequence[] resolved = newResolved(size);
 			return new Elements(this.source, size, this.start, this.end, this.type, resolved);
 		}
 
 		/**
-         * Returns a new Elements object with sub-elements starting from the specified offset.
-         * 
-         * @param offset the offset from which to start the sub-elements
-         * @return a new Elements object with sub-elements starting from the specified offset
-         */
-        Elements subElements(int offset) {
+		 * Returns a new Elements object with sub-elements starting from the specified
+		 * offset.
+		 * @param offset the offset from which to start the sub-elements
+		 * @return a new Elements object with sub-elements starting from the specified
+		 * offset
+		 */
+		Elements subElements(int offset) {
 			int size = this.size - offset;
 			CharSequence[] resolved = newResolved(size);
 			int[] start = new int[size];
@@ -1005,12 +1008,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Creates a new array of CharSequence objects with the specified size.
-         * 
-         * @param size the size of the new array
-         * @return the new array of CharSequence objects
-         */
-        private CharSequence[] newResolved(int size) {
+		 * Creates a new array of CharSequence objects with the specified size.
+		 * @param size the size of the new array
+		 * @return the new array of CharSequence objects
+		 */
+		private CharSequence[] newResolved(int size) {
 			CharSequence[] resolved = new CharSequence[size];
 			if (this.resolved != null) {
 				System.arraycopy(this.resolved, 0, resolved, 0, Math.min(size, this.size));
@@ -1019,21 +1021,19 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Returns the size of the element.
-         *
-         * @return the size of the element
-         */
-        int getSize() {
+		 * Returns the size of the element.
+		 * @return the size of the element
+		 */
+		int getSize() {
 			return this.size;
 		}
 
 		/**
-         * Returns the character sequence at the specified index.
-         * 
-         * @param index the index of the character sequence to retrieve
-         * @return the character sequence at the specified index
-         */
-        CharSequence get(int index) {
+		 * Returns the character sequence at the specified index.
+		 * @param index the index of the character sequence to retrieve
+		 * @return the character sequence at the specified index
+		 */
+		CharSequence get(int index) {
 			if (this.resolved != null && this.resolved[index] != null) {
 				return this.resolved[index];
 			}
@@ -1043,16 +1043,15 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Returns the length of the resolved string at the specified index.
-         * If the resolved string is not null and exists at the given index,
-         * the length of the resolved string is returned.
-         * Otherwise, the difference between the end and start indices is returned.
-         *
-         * @param index the index of the resolved string
-         * @return the length of the resolved string at the specified index,
-         *         or the difference between the end and start indices
-         */
-        int getLength(int index) {
+		 * Returns the length of the resolved string at the specified index. If the
+		 * resolved string is not null and exists at the given index, the length of the
+		 * resolved string is returned. Otherwise, the difference between the end and
+		 * start indices is returned.
+		 * @param index the index of the resolved string
+		 * @return the length of the resolved string at the specified index, or the
+		 * difference between the end and start indices
+		 */
+		int getLength(int index) {
 			if (this.resolved != null && this.resolved[index] != null) {
 				return this.resolved[index].length();
 			}
@@ -1062,13 +1061,14 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Returns the character at the specified index in the resolved string or source string.
-         * 
-         * @param index the index of the resolved or source string
-         * @param charIndex the index of the character within the resolved or source string
-         * @return the character at the specified index
-         */
-        char charAt(int index, int charIndex) {
+		 * Returns the character at the specified index in the resolved string or source
+		 * string.
+		 * @param index the index of the resolved or source string
+		 * @param charIndex the index of the character within the resolved or source
+		 * string
+		 * @return the character at the specified index
+		 */
+		char charAt(int index, int charIndex) {
 			if (this.resolved != null && this.resolved[index] != null) {
 				return this.resolved[index].charAt(charIndex);
 			}
@@ -1077,21 +1077,19 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Returns the ElementType at the specified index.
-         *
-         * @param index the index of the ElementType to retrieve
-         * @return the ElementType at the specified index
-         */
-        ElementType getType(int index) {
+		 * Returns the ElementType at the specified index.
+		 * @param index the index of the ElementType to retrieve
+		 * @return the ElementType at the specified index
+		 */
+		ElementType getType(int index) {
 			return this.type[index];
 		}
 
 		/**
-         * Returns the source of the element.
-         *
-         * @return the source of the element
-         */
-        CharSequence getSource() {
+		 * Returns the source of the element.
+		 * @return the source of the element
+		 */
+		CharSequence getSource() {
 			return this.source;
 		}
 
@@ -1152,23 +1150,22 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		private CharSequence[] resolved;
 
 		/**
-         * Constructs a new ElementsParser object with the specified source and separator.
-         * 
-         * @param source the character sequence to parse
-         * @param separator the character used to separate elements in the source
-         */
-        ElementsParser(CharSequence source, char separator) {
+		 * Constructs a new ElementsParser object with the specified source and separator.
+		 * @param source the character sequence to parse
+		 * @param separator the character used to separate elements in the source
+		 */
+		ElementsParser(CharSequence source, char separator) {
 			this(source, separator, DEFAULT_CAPACITY);
 		}
 
 		/**
-         * Constructs a new ElementsParser object with the specified source, separator, and capacity.
-         * 
-         * @param source the character sequence to parse
-         * @param separator the character used to separate elements in the source
-         * @param capacity the initial capacity of the parser
-         */
-        ElementsParser(CharSequence source, char separator, int capacity) {
+		 * Constructs a new ElementsParser object with the specified source, separator,
+		 * and capacity.
+		 * @param source the character sequence to parse
+		 * @param separator the character used to separate elements in the source
+		 * @param capacity the initial capacity of the parser
+		 */
+		ElementsParser(CharSequence source, char separator, int capacity) {
 			this.source = source;
 			this.separator = separator;
 			this.start = new int[capacity];
@@ -1177,21 +1174,19 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Parses the elements using the default configuration.
-         * 
-         * @return the parsed elements
-         */
-        Elements parse() {
+		 * Parses the elements using the default configuration.
+		 * @return the parsed elements
+		 */
+		Elements parse() {
 			return parse(null);
 		}
 
 		/**
-         * Parses the source string and returns an Elements object.
-         * 
-         * @param valueProcessor a function to process the values of the elements
-         * @return an Elements object representing the parsed elements
-         */
-        Elements parse(Function<CharSequence, CharSequence> valueProcessor) {
+		 * Parses the source string and returns an Elements object.
+		 * @param valueProcessor a function to process the values of the elements
+		 * @return an Elements object representing the parsed elements
+		 */
+		Elements parse(Function<CharSequence, CharSequence> valueProcessor) {
 			int length = this.source.length();
 			int openBracketCount = 0;
 			int start = 0;
@@ -1231,14 +1226,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Updates the type of an element based on the given character and index.
-         * 
-         * @param existingType the current type of the element
-         * @param ch the character to be checked
-         * @param index the index of the character in the element
-         * @return the updated type of the element
-         */
-        private ElementType updateType(ElementType existingType, char ch, int index) {
+		 * Updates the type of an element based on the given character and index.
+		 * @param existingType the current type of the element
+		 * @param ch the character to be checked
+		 * @param index the index of the character in the element
+		 * @return the updated type of the element
+		 */
+		private ElementType updateType(ElementType existingType, char ch, int index) {
 			if (existingType.isIndexed()) {
 				if (existingType == ElementType.NUMERICALLY_INDEXED && !isNumeric(ch)) {
 					return ElementType.INDEXED;
@@ -1261,14 +1255,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Adds a new element to the ElementsParser.
-         * 
-         * @param start the starting index of the element
-         * @param end the ending index of the element
-         * @param type the type of the element
-         * @param valueProcessor the function to process the value of the element
-         */
-        private void add(int start, int end, ElementType type, Function<CharSequence, CharSequence> valueProcessor) {
+		 * Adds a new element to the ElementsParser.
+		 * @param start the starting index of the element
+		 * @param end the ending index of the element
+		 * @param type the type of the element
+		 * @param valueProcessor the function to process the value of the element
+		 */
+		private void add(int start, int end, ElementType type, Function<CharSequence, CharSequence> valueProcessor) {
 			if ((end - start) < 1 || type == ElementType.EMPTY) {
 				return;
 			}
@@ -1295,36 +1288,33 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Expands the given array by adding a default capacity to it.
-         * 
-         * @param src the source array to be expanded
-         * @return the expanded array with the default capacity added
-         */
-        private int[] expand(int[] src) {
+		 * Expands the given array by adding a default capacity to it.
+		 * @param src the source array to be expanded
+		 * @return the expanded array with the default capacity added
+		 */
+		private int[] expand(int[] src) {
 			int[] dest = new int[src.length + DEFAULT_CAPACITY];
 			System.arraycopy(src, 0, dest, 0, src.length);
 			return dest;
 		}
 
 		/**
-         * Expands the given source array by adding the default capacity to it.
-         * 
-         * @param src the source array to be expanded
-         * @return the expanded array with the default capacity added
-         */
-        private ElementType[] expand(ElementType[] src) {
+		 * Expands the given source array by adding the default capacity to it.
+		 * @param src the source array to be expanded
+		 * @return the expanded array with the default capacity added
+		 */
+		private ElementType[] expand(ElementType[] src) {
 			ElementType[] dest = new ElementType[src.length + DEFAULT_CAPACITY];
 			System.arraycopy(src, 0, dest, 0, src.length);
 			return dest;
 		}
 
 		/**
-         * Expands the given array of CharSequence objects by adding a default capacity.
-         * 
-         * @param src the array of CharSequence objects to be expanded
-         * @return the expanded array of CharSequence objects
-         */
-        private CharSequence[] expand(CharSequence[] src) {
+		 * Expands the given array of CharSequence objects by adding a default capacity.
+		 * @param src the array of CharSequence objects to be expanded
+		 * @return the expanded array of CharSequence objects
+		 */
+		private CharSequence[] expand(CharSequence[] src) {
 			if (src == null) {
 				return null;
 			}
@@ -1334,43 +1324,39 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		/**
-         * Checks if a character is a valid character for an element.
-         * 
-         * @param ch the character to be checked
-         * @param index the index of the character in the element string
-         * @return true if the character is valid, false otherwise
-         */
-        static boolean isValidChar(char ch, int index) {
+		 * Checks if a character is a valid character for an element.
+		 * @param ch the character to be checked
+		 * @param index the index of the character in the element string
+		 * @return true if the character is valid, false otherwise
+		 */
+		static boolean isValidChar(char ch, int index) {
 			return isAlpha(ch) || isNumeric(ch) || (index != 0 && ch == '-');
 		}
 
 		/**
-         * Checks if a character is alphanumeric.
-         * 
-         * @param ch the character to be checked
-         * @return true if the character is alphanumeric, false otherwise
-         */
-        static boolean isAlphaNumeric(char ch) {
+		 * Checks if a character is alphanumeric.
+		 * @param ch the character to be checked
+		 * @return true if the character is alphanumeric, false otherwise
+		 */
+		static boolean isAlphaNumeric(char ch) {
 			return isAlpha(ch) || isNumeric(ch);
 		}
 
 		/**
-         * Checks if a character is an alphabetic character.
-         * 
-         * @param ch the character to be checked
-         * @return true if the character is an alphabetic character, false otherwise
-         */
-        private static boolean isAlpha(char ch) {
+		 * Checks if a character is an alphabetic character.
+		 * @param ch the character to be checked
+		 * @return true if the character is an alphabetic character, false otherwise
+		 */
+		private static boolean isAlpha(char ch) {
 			return ch >= 'a' && ch <= 'z';
 		}
 
 		/**
-         * Checks if a character is numeric.
-         * 
-         * @param ch the character to be checked
-         * @return true if the character is numeric, false otherwise
-         */
-        private static boolean isNumeric(char ch) {
+		 * Checks if a character is numeric.
+		 * @param ch the character to be checked
+		 * @return true if the character is numeric, false otherwise
+		 */
+		private static boolean isNumeric(char ch) {
 			return ch >= '0' && ch <= '9';
 		}
 
@@ -1415,38 +1401,40 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		private final boolean indexed;
 
 		/**
-     * Constructs a new ElementType object with the specified indexed value.
-     *
-     * @param indexed the indexed value indicating whether the element is indexed
-     */
-    ElementType(boolean indexed) {
+		 * Constructs a new ElementType object with the specified indexed value.
+		 * @param indexed the indexed value indicating whether the element is indexed
+		 */
+		ElementType(boolean indexed) {
 			this.indexed = indexed;
 		}
 
 		/**
-     * Returns a boolean value indicating whether the ConfigurationPropertyName is indexed.
-     *
-     * @return {@code true} if the ConfigurationPropertyName is indexed, {@code false} otherwise.
-     */
-    public boolean isIndexed() {
+		 * Returns a boolean value indicating whether the ConfigurationPropertyName is
+		 * indexed.
+		 * @return {@code true} if the ConfigurationPropertyName is indexed, {@code false}
+		 * otherwise.
+		 */
+		public boolean isIndexed() {
 			return this.indexed;
 		}
 
 		/**
-     * Returns a boolean value indicating whether the ConfigurationPropertyName allows for a fast equality check.
-     * 
-     * @return true if the ConfigurationPropertyName is either UNIFORM or NUMERICALLY_INDEXED, false otherwise.
-     */
-    public boolean allowsFastEqualityCheck() {
+		 * Returns a boolean value indicating whether the ConfigurationPropertyName allows
+		 * for a fast equality check.
+		 * @return true if the ConfigurationPropertyName is either UNIFORM or
+		 * NUMERICALLY_INDEXED, false otherwise.
+		 */
+		public boolean allowsFastEqualityCheck() {
 			return this == UNIFORM || this == NUMERICALLY_INDEXED;
 		}
 
 		/**
-     * Checks if the ConfigurationPropertyName allows ignoring the dash character when performing an equality check.
-     * 
-     * @return true if the ConfigurationPropertyName allows ignoring the dash character, false otherwise
-     */
-    public boolean allowsDashIgnoringEqualityCheck() {
+		 * Checks if the ConfigurationPropertyName allows ignoring the dash character when
+		 * performing an equality check.
+		 * @return true if the ConfigurationPropertyName allows ignoring the dash
+		 * character, false otherwise
+		 */
+		public boolean allowsDashIgnoringEqualityCheck() {
 			return allowsFastEqualityCheck() || this == DASHED;
 		}
 

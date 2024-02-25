@@ -155,11 +155,10 @@ public class RabbitProperties {
 	private List<Address> parsedAddresses;
 
 	/**
-     * Returns the host value of the RabbitProperties object.
-     *
-     * @return the host value of the RabbitProperties object
-     */
-    public String getHost() {
+	 * Returns the host value of the RabbitProperties object.
+	 * @return the host value of the RabbitProperties object
+	 */
+	public String getHost() {
 		return this.host;
 	}
 
@@ -178,20 +177,18 @@ public class RabbitProperties {
 	}
 
 	/**
-     * Sets the host for the RabbitProperties.
-     * 
-     * @param host the host to be set
-     */
-    public void setHost(String host) {
+	 * Sets the host for the RabbitProperties.
+	 * @param host the host to be set
+	 */
+	public void setHost(String host) {
 		this.host = host;
 	}
 
 	/**
-     * Returns the port number.
-     *
-     * @return the port number
-     */
-    public Integer getPort() {
+	 * Returns the port number.
+	 * @return the port number
+	 */
+	public Integer getPort() {
 		return this.port;
 	}
 
@@ -214,20 +211,18 @@ public class RabbitProperties {
 	}
 
 	/**
-     * Sets the port number for the RabbitProperties.
-     * 
-     * @param port the port number to be set
-     */
-    public void setPort(Integer port) {
+	 * Sets the port number for the RabbitProperties.
+	 * @param port the port number to be set
+	 */
+	public void setPort(Integer port) {
 		this.port = port;
 	}
 
 	/**
-     * Returns the addresses of the RabbitProperties.
-     *
-     * @return the addresses of the RabbitProperties
-     */
-    public String getAddresses() {
+	 * Returns the addresses of the RabbitProperties.
+	 * @return the addresses of the RabbitProperties
+	 */
+	public String getAddresses() {
 		return this.addresses;
 	}
 
@@ -252,24 +247,22 @@ public class RabbitProperties {
 	}
 
 	/**
-     * Sets the addresses for the RabbitProperties.
-     * 
-     * @param addresses the addresses to be set
-     * 
-     * @see RabbitProperties#parseAddresses(String)
-     */
-    public void setAddresses(String addresses) {
+	 * Sets the addresses for the RabbitProperties.
+	 * @param addresses the addresses to be set
+	 *
+	 * @see RabbitProperties#parseAddresses(String)
+	 */
+	public void setAddresses(String addresses) {
 		this.addresses = addresses;
 		this.parsedAddresses = parseAddresses(addresses);
 	}
 
 	/**
-     * Parses a string of addresses and returns a list of Address objects.
-     * 
-     * @param addresses the string of addresses to be parsed
-     * @return a list of Address objects representing the parsed addresses
-     */
-    private List<Address> parseAddresses(String addresses) {
+	 * Parses a string of addresses and returns a list of Address objects.
+	 * @param addresses the string of addresses to be parsed
+	 * @return a list of Address objects representing the parsed addresses
+	 */
+	private List<Address> parseAddresses(String addresses) {
 		List<Address> parsedAddresses = new ArrayList<>();
 		for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
 			parsedAddresses.add(new Address(address, Optional.ofNullable(getSsl().getEnabled()).orElse(false)));
@@ -278,11 +271,10 @@ public class RabbitProperties {
 	}
 
 	/**
-     * Returns the username associated with the RabbitProperties object.
-     *
-     * @return the username
-     */
-    public String getUsername() {
+	 * Returns the username associated with the RabbitProperties object.
+	 * @return the username
+	 */
+	public String getUsername() {
 		return this.username;
 	}
 
@@ -302,20 +294,18 @@ public class RabbitProperties {
 	}
 
 	/**
-     * Sets the username for RabbitProperties.
-     * 
-     * @param username the username to be set
-     */
-    public void setUsername(String username) {
+	 * Sets the username for RabbitProperties.
+	 * @param username the username to be set
+	 */
+	public void setUsername(String username) {
 		this.username = username;
 	}
 
 	/**
-     * Returns the password associated with the RabbitProperties object.
-     *
-     * @return the password
-     */
-    public String getPassword() {
+	 * Returns the password associated with the RabbitProperties object.
+	 * @return the password
+	 */
+	public String getPassword() {
 		return this.password;
 	}
 
@@ -335,29 +325,26 @@ public class RabbitProperties {
 	}
 
 	/**
-     * Sets the password for the RabbitProperties.
-     * 
-     * @param password the password to be set
-     */
-    public void setPassword(String password) {
+	 * Sets the password for the RabbitProperties.
+	 * @param password the password to be set
+	 */
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	/**
-     * Returns the SSL configuration for RabbitMQ.
-     *
-     * @return the SSL configuration for RabbitMQ
-     */
-    public Ssl getSsl() {
+	 * Returns the SSL configuration for RabbitMQ.
+	 * @return the SSL configuration for RabbitMQ
+	 */
+	public Ssl getSsl() {
 		return this.ssl;
 	}
 
 	/**
-     * Returns the virtual host associated with the RabbitMQ connection.
-     *
-     * @return the virtual host
-     */
-    public String getVirtualHost() {
+	 * Returns the virtual host associated with the RabbitMQ connection.
+	 * @return the virtual host
+	 */
+	public String getVirtualHost() {
 		return this.virtualHost;
 	}
 
@@ -377,198 +364,178 @@ public class RabbitProperties {
 	}
 
 	/**
-     * Sets the virtual host for the RabbitMQ connection.
-     * 
-     * @param virtualHost the virtual host to be set
-     */
-    public void setVirtualHost(String virtualHost) {
+	 * Sets the virtual host for the RabbitMQ connection.
+	 * @param virtualHost the virtual host to be set
+	 */
+	public void setVirtualHost(String virtualHost) {
 		this.virtualHost = StringUtils.hasText(virtualHost) ? virtualHost : "/";
 	}
 
 	/**
-     * Returns the address shuffle mode of the RabbitProperties.
-     *
-     * @return the address shuffle mode of the RabbitProperties
-     */
-    public AddressShuffleMode getAddressShuffleMode() {
+	 * Returns the address shuffle mode of the RabbitProperties.
+	 * @return the address shuffle mode of the RabbitProperties
+	 */
+	public AddressShuffleMode getAddressShuffleMode() {
 		return this.addressShuffleMode;
 	}
 
 	/**
-     * Sets the address shuffle mode for the RabbitProperties.
-     * 
-     * @param addressShuffleMode the address shuffle mode to be set
-     */
-    public void setAddressShuffleMode(AddressShuffleMode addressShuffleMode) {
+	 * Sets the address shuffle mode for the RabbitProperties.
+	 * @param addressShuffleMode the address shuffle mode to be set
+	 */
+	public void setAddressShuffleMode(AddressShuffleMode addressShuffleMode) {
 		this.addressShuffleMode = addressShuffleMode;
 	}
 
 	/**
-     * Returns the requested heartbeat duration.
-     *
-     * @return the requested heartbeat duration
-     */
-    public Duration getRequestedHeartbeat() {
+	 * Returns the requested heartbeat duration.
+	 * @return the requested heartbeat duration
+	 */
+	public Duration getRequestedHeartbeat() {
 		return this.requestedHeartbeat;
 	}
 
 	/**
-     * Sets the requested heartbeat duration for the RabbitMQ connection.
-     * 
-     * @param requestedHeartbeat the requested heartbeat duration to be set
-     */
-    public void setRequestedHeartbeat(Duration requestedHeartbeat) {
+	 * Sets the requested heartbeat duration for the RabbitMQ connection.
+	 * @param requestedHeartbeat the requested heartbeat duration to be set
+	 */
+	public void setRequestedHeartbeat(Duration requestedHeartbeat) {
 		this.requestedHeartbeat = requestedHeartbeat;
 	}
 
 	/**
-     * Returns the maximum number of requested channels.
-     *
-     * @return the maximum number of requested channels
-     */
-    public int getRequestedChannelMax() {
+	 * Returns the maximum number of requested channels.
+	 * @return the maximum number of requested channels
+	 */
+	public int getRequestedChannelMax() {
 		return this.requestedChannelMax;
 	}
 
 	/**
-     * Sets the maximum number of requested channels.
-     * 
-     * @param requestedChannelMax the maximum number of requested channels
-     */
-    public void setRequestedChannelMax(int requestedChannelMax) {
+	 * Sets the maximum number of requested channels.
+	 * @param requestedChannelMax the maximum number of requested channels
+	 */
+	public void setRequestedChannelMax(int requestedChannelMax) {
 		this.requestedChannelMax = requestedChannelMax;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the publisher returns are enabled.
-     * 
-     * @return true if publisher returns are enabled, false otherwise
-     */
-    public boolean isPublisherReturns() {
+	 * Returns a boolean value indicating whether the publisher returns are enabled.
+	 * @return true if publisher returns are enabled, false otherwise
+	 */
+	public boolean isPublisherReturns() {
 		return this.publisherReturns;
 	}
 
 	/**
-     * Sets the value indicating whether the publisher returns are enabled or not.
-     * 
-     * @param publisherReturns the value indicating whether the publisher returns are enabled or not
-     */
-    public void setPublisherReturns(boolean publisherReturns) {
+	 * Sets the value indicating whether the publisher returns are enabled or not.
+	 * @param publisherReturns the value indicating whether the publisher returns are
+	 * enabled or not
+	 */
+	public void setPublisherReturns(boolean publisherReturns) {
 		this.publisherReturns = publisherReturns;
 	}
 
 	/**
-     * Returns the connection timeout duration.
-     *
-     * @return the connection timeout duration
-     */
-    public Duration getConnectionTimeout() {
+	 * Returns the connection timeout duration.
+	 * @return the connection timeout duration
+	 */
+	public Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
 	/**
-     * Sets the publisher confirm type for the RabbitProperties.
-     * 
-     * @param publisherConfirmType the publisher confirm type to be set
-     */
-    public void setPublisherConfirmType(ConfirmType publisherConfirmType) {
+	 * Sets the publisher confirm type for the RabbitProperties.
+	 * @param publisherConfirmType the publisher confirm type to be set
+	 */
+	public void setPublisherConfirmType(ConfirmType publisherConfirmType) {
 		this.publisherConfirmType = publisherConfirmType;
 	}
 
 	/**
-     * Returns the confirm type for the publisher.
-     *
-     * @return the confirm type for the publisher
-     */
-    public ConfirmType getPublisherConfirmType() {
+	 * Returns the confirm type for the publisher.
+	 * @return the confirm type for the publisher
+	 */
+	public ConfirmType getPublisherConfirmType() {
 		return this.publisherConfirmType;
 	}
 
 	/**
-     * Sets the connection timeout for RabbitMQ.
-     * 
-     * @param connectionTimeout the connection timeout duration
-     */
-    public void setConnectionTimeout(Duration connectionTimeout) {
+	 * Sets the connection timeout for RabbitMQ.
+	 * @param connectionTimeout the connection timeout duration
+	 */
+	public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
 
 	/**
-     * Returns the channel RPC timeout.
-     *
-     * @return the channel RPC timeout
-     */
-    public Duration getChannelRpcTimeout() {
+	 * Returns the channel RPC timeout.
+	 * @return the channel RPC timeout
+	 */
+	public Duration getChannelRpcTimeout() {
 		return this.channelRpcTimeout;
 	}
 
 	/**
-     * Sets the timeout for channel RPC calls.
-     * 
-     * @param channelRpcTimeout the timeout for channel RPC calls
-     */
-    public void setChannelRpcTimeout(Duration channelRpcTimeout) {
+	 * Sets the timeout for channel RPC calls.
+	 * @param channelRpcTimeout the timeout for channel RPC calls
+	 */
+	public void setChannelRpcTimeout(Duration channelRpcTimeout) {
 		this.channelRpcTimeout = channelRpcTimeout;
 	}
 
 	/**
-     * Returns the maximum size of the inbound message body.
-     *
-     * @return the maximum size of the inbound message body
-     */
-    public DataSize getMaxInboundMessageBodySize() {
+	 * Returns the maximum size of the inbound message body.
+	 * @return the maximum size of the inbound message body
+	 */
+	public DataSize getMaxInboundMessageBodySize() {
 		return this.maxInboundMessageBodySize;
 	}
 
 	/**
-     * Sets the maximum size of the inbound message body.
-     * 
-     * @param maxInboundMessageBodySize the maximum size of the inbound message body
-     */
-    public void setMaxInboundMessageBodySize(DataSize maxInboundMessageBodySize) {
+	 * Sets the maximum size of the inbound message body.
+	 * @param maxInboundMessageBodySize the maximum size of the inbound message body
+	 */
+	public void setMaxInboundMessageBodySize(DataSize maxInboundMessageBodySize) {
 		this.maxInboundMessageBodySize = maxInboundMessageBodySize;
 	}
 
 	/**
-     * Returns the cache object associated with this RabbitProperties instance.
-     *
-     * @return the cache object
-     */
-    public Cache getCache() {
+	 * Returns the cache object associated with this RabbitProperties instance.
+	 * @return the cache object
+	 */
+	public Cache getCache() {
 		return this.cache;
 	}
 
 	/**
-     * Returns the listener associated with this RabbitProperties object.
-     *
-     * @return the listener associated with this RabbitProperties object
-     */
-    public Listener getListener() {
+	 * Returns the listener associated with this RabbitProperties object.
+	 * @return the listener associated with this RabbitProperties object
+	 */
+	public Listener getListener() {
 		return this.listener;
 	}
 
 	/**
-     * Returns the template associated with the RabbitProperties.
-     *
-     * @return the template associated with the RabbitProperties
-     */
-    public Template getTemplate() {
+	 * Returns the template associated with the RabbitProperties.
+	 * @return the template associated with the RabbitProperties
+	 */
+	public Template getTemplate() {
 		return this.template;
 	}
 
 	/**
-     * Returns the stream associated with this RabbitProperties object.
-     *
-     * @return the stream associated with this RabbitProperties object
-     */
-    public Stream getStream() {
+	 * Returns the stream associated with this RabbitProperties object.
+	 * @return the stream associated with this RabbitProperties object
+	 */
+	public Stream getStream() {
 		return this.stream;
 	}
 
 	/**
-     * Ssl class.
-     */
-    public class Ssl {
+	 * Ssl class.
+	 */
+	public class Ssl {
 
 		private static final String SUN_X509 = "SunX509";
 
@@ -639,11 +606,10 @@ public class RabbitProperties {
 		private boolean verifyHostname = true;
 
 		/**
-         * Returns the value of the enabled property.
-         *
-         * @return the value of the enabled property
-         */
-        public Boolean getEnabled() {
+		 * Returns the value of the enabled property.
+		 * @return the value of the enabled property
+		 */
+		public Boolean getEnabled() {
 			return this.enabled;
 		}
 
@@ -664,263 +630,239 @@ public class RabbitProperties {
 		}
 
 		/**
-         * Sets the enabled status of the SSL.
-         * 
-         * @param enabled the enabled status to be set
-         */
-        public void setEnabled(Boolean enabled) {
+		 * Sets the enabled status of the SSL.
+		 * @param enabled the enabled status to be set
+		 */
+		public void setEnabled(Boolean enabled) {
 			this.enabled = enabled;
 		}
 
 		/**
-         * Returns the bundle associated with this Ssl object.
-         * 
-         * @return the bundle associated with this Ssl object
-         */
-        public String getBundle() {
+		 * Returns the bundle associated with this Ssl object.
+		 * @return the bundle associated with this Ssl object
+		 */
+		public String getBundle() {
 			return this.bundle;
 		}
 
 		/**
-         * Sets the bundle for the Ssl class.
-         * 
-         * @param bundle the bundle to be set
-         */
-        public void setBundle(String bundle) {
+		 * Sets the bundle for the Ssl class.
+		 * @param bundle the bundle to be set
+		 */
+		public void setBundle(String bundle) {
 			this.bundle = bundle;
 		}
 
 		/**
-         * Returns the key store used by the SSL configuration.
-         *
-         * @return the key store used by the SSL configuration
-         */
-        public String getKeyStore() {
+		 * Returns the key store used by the SSL configuration.
+		 * @return the key store used by the SSL configuration
+		 */
+		public String getKeyStore() {
 			return this.keyStore;
 		}
 
 		/**
-         * Sets the path to the key store file.
-         * 
-         * @param keyStore the path to the key store file
-         */
-        public void setKeyStore(String keyStore) {
+		 * Sets the path to the key store file.
+		 * @param keyStore the path to the key store file
+		 */
+		public void setKeyStore(String keyStore) {
 			this.keyStore = keyStore;
 		}
 
 		/**
-         * Returns the type of the keystore used for SSL configuration.
-         * 
-         * @return the keystore type
-         */
-        public String getKeyStoreType() {
+		 * Returns the type of the keystore used for SSL configuration.
+		 * @return the keystore type
+		 */
+		public String getKeyStoreType() {
 			return this.keyStoreType;
 		}
 
 		/**
-         * Sets the type of the keystore.
-         * 
-         * @param keyStoreType the type of the keystore
-         */
-        public void setKeyStoreType(String keyStoreType) {
+		 * Sets the type of the keystore.
+		 * @param keyStoreType the type of the keystore
+		 */
+		public void setKeyStoreType(String keyStoreType) {
 			this.keyStoreType = keyStoreType;
 		}
 
 		/**
-         * Returns the password for the keystore.
-         *
-         * @return the password for the keystore
-         */
-        public String getKeyStorePassword() {
+		 * Returns the password for the keystore.
+		 * @return the password for the keystore
+		 */
+		public String getKeyStorePassword() {
 			return this.keyStorePassword;
 		}
 
 		/**
-         * Sets the password for the key store.
-         * 
-         * @param keyStorePassword the password for the key store
-         */
-        public void setKeyStorePassword(String keyStorePassword) {
+		 * Sets the password for the key store.
+		 * @param keyStorePassword the password for the key store
+		 */
+		public void setKeyStorePassword(String keyStorePassword) {
 			this.keyStorePassword = keyStorePassword;
 		}
 
 		/**
-         * Returns the algorithm used for the KeyStore.
-         * 
-         * @return the algorithm used for the KeyStore
-         */
-        public String getKeyStoreAlgorithm() {
+		 * Returns the algorithm used for the KeyStore.
+		 * @return the algorithm used for the KeyStore
+		 */
+		public String getKeyStoreAlgorithm() {
 			return this.keyStoreAlgorithm;
 		}
 
 		/**
-         * Sets the algorithm used for the key store.
-         * 
-         * @param keyStoreAlgorithm the algorithm used for the key store
-         */
-        public void setKeyStoreAlgorithm(String keyStoreAlgorithm) {
+		 * Sets the algorithm used for the key store.
+		 * @param keyStoreAlgorithm the algorithm used for the key store
+		 */
+		public void setKeyStoreAlgorithm(String keyStoreAlgorithm) {
 			this.keyStoreAlgorithm = keyStoreAlgorithm;
 		}
 
 		/**
-         * Returns the trust store path.
-         * 
-         * @return the trust store path
-         */
-        public String getTrustStore() {
+		 * Returns the trust store path.
+		 * @return the trust store path
+		 */
+		public String getTrustStore() {
 			return this.trustStore;
 		}
 
 		/**
-         * Sets the trust store file path for SSL/TLS connections.
-         * 
-         * @param trustStore the file path of the trust store
-         */
-        public void setTrustStore(String trustStore) {
+		 * Sets the trust store file path for SSL/TLS connections.
+		 * @param trustStore the file path of the trust store
+		 */
+		public void setTrustStore(String trustStore) {
 			this.trustStore = trustStore;
 		}
 
 		/**
-         * Returns the type of the trust store.
-         * 
-         * @return the trust store type
-         */
-        public String getTrustStoreType() {
+		 * Returns the type of the trust store.
+		 * @return the trust store type
+		 */
+		public String getTrustStoreType() {
 			return this.trustStoreType;
 		}
 
 		/**
-         * Sets the type of the trust store.
-         * 
-         * @param trustStoreType the type of the trust store
-         */
-        public void setTrustStoreType(String trustStoreType) {
+		 * Sets the type of the trust store.
+		 * @param trustStoreType the type of the trust store
+		 */
+		public void setTrustStoreType(String trustStoreType) {
 			this.trustStoreType = trustStoreType;
 		}
 
 		/**
-         * Returns the password for the trust store.
-         *
-         * @return the trust store password
-         */
-        public String getTrustStorePassword() {
+		 * Returns the password for the trust store.
+		 * @return the trust store password
+		 */
+		public String getTrustStorePassword() {
 			return this.trustStorePassword;
 		}
 
 		/**
-         * Sets the password for the trust store.
-         * 
-         * @param trustStorePassword the password for the trust store
-         */
-        public void setTrustStorePassword(String trustStorePassword) {
+		 * Sets the password for the trust store.
+		 * @param trustStorePassword the password for the trust store
+		 */
+		public void setTrustStorePassword(String trustStorePassword) {
 			this.trustStorePassword = trustStorePassword;
 		}
 
 		/**
-         * Returns the algorithm used by the trust store.
-         *
-         * @return the trust store algorithm
-         */
-        public String getTrustStoreAlgorithm() {
+		 * Returns the algorithm used by the trust store.
+		 * @return the trust store algorithm
+		 */
+		public String getTrustStoreAlgorithm() {
 			return this.trustStoreAlgorithm;
 		}
 
 		/**
-         * Sets the trust store algorithm for SSL connections.
-         * 
-         * @param trustStoreAlgorithm the trust store algorithm to be set
-         */
-        public void setTrustStoreAlgorithm(String trustStoreAlgorithm) {
+		 * Sets the trust store algorithm for SSL connections.
+		 * @param trustStoreAlgorithm the trust store algorithm to be set
+		 */
+		public void setTrustStoreAlgorithm(String trustStoreAlgorithm) {
 			this.trustStoreAlgorithm = trustStoreAlgorithm;
 		}
 
 		/**
-         * Returns the algorithm used by the SSL connection.
-         *
-         * @return the algorithm used by the SSL connection
-         */
-        public String getAlgorithm() {
+		 * Returns the algorithm used by the SSL connection.
+		 * @return the algorithm used by the SSL connection
+		 */
+		public String getAlgorithm() {
 			return this.algorithm;
 		}
 
 		/**
-         * Sets the SSL algorithm to be used.
-         * 
-         * @param sslAlgorithm the SSL algorithm to be set
-         */
-        public void setAlgorithm(String sslAlgorithm) {
+		 * Sets the SSL algorithm to be used.
+		 * @param sslAlgorithm the SSL algorithm to be set
+		 */
+		public void setAlgorithm(String sslAlgorithm) {
 			this.algorithm = sslAlgorithm;
 		}
 
 		/**
-         * Returns the value indicating whether the server certificate should be validated.
-         * 
-         * @return {@code true} if the server certificate should be validated, {@code false} otherwise.
-         */
-        public boolean isValidateServerCertificate() {
+		 * Returns the value indicating whether the server certificate should be
+		 * validated.
+		 * @return {@code true} if the server certificate should be validated,
+		 * {@code false} otherwise.
+		 */
+		public boolean isValidateServerCertificate() {
 			return this.validateServerCertificate;
 		}
 
 		/**
-         * Sets whether to validate the server certificate during SSL connection.
-         * 
-         * @param validateServerCertificate true to validate the server certificate, false otherwise
-         */
-        public void setValidateServerCertificate(boolean validateServerCertificate) {
+		 * Sets whether to validate the server certificate during SSL connection.
+		 * @param validateServerCertificate true to validate the server certificate, false
+		 * otherwise
+		 */
+		public void setValidateServerCertificate(boolean validateServerCertificate) {
 			this.validateServerCertificate = validateServerCertificate;
 		}
 
 		/**
-         * Returns the value of the verifyHostname property.
-         * 
-         * @return the value of the verifyHostname property
-         */
-        public boolean getVerifyHostname() {
+		 * Returns the value of the verifyHostname property.
+		 * @return the value of the verifyHostname property
+		 */
+		public boolean getVerifyHostname() {
 			return this.verifyHostname;
 		}
 
 		/**
-         * Sets whether to verify the hostname during SSL/TLS handshake.
-         * 
-         * @param verifyHostname true to verify the hostname, false otherwise
-         */
-        public void setVerifyHostname(boolean verifyHostname) {
+		 * Sets whether to verify the hostname during SSL/TLS handshake.
+		 * @param verifyHostname true to verify the hostname, false otherwise
+		 */
+		public void setVerifyHostname(boolean verifyHostname) {
 			this.verifyHostname = verifyHostname;
 		}
 
 	}
 
 	/**
-     * Cache class.
-     */
-    public static class Cache {
+	 * Cache class.
+	 */
+	public static class Cache {
 
 		private final Channel channel = new Channel();
 
 		private final Connection connection = new Connection();
 
 		/**
-         * Returns the channel associated with this cache.
-         * 
-         * @return the channel associated with this cache
-         */
-        public Channel getChannel() {
+		 * Returns the channel associated with this cache.
+		 * @return the channel associated with this cache
+		 */
+		public Channel getChannel() {
 			return this.channel;
 		}
 
 		/**
-         * Returns the connection object associated with this Cache instance.
-         *
-         * @return the connection object
-         */
-        public Connection getConnection() {
+		 * Returns the connection object associated with this Cache instance.
+		 * @return the connection object
+		 */
+		public Connection getConnection() {
 			return this.connection;
 		}
 
 		/**
-         * Channel class.
-         */
-        public static class Channel {
+		 * Channel class.
+		 */
+		public static class Channel {
 
 			/**
 			 * Number of channels to retain in the cache. When "check-timeout" > 0, max
@@ -935,47 +877,43 @@ public class RabbitProperties {
 			private Duration checkoutTimeout;
 
 			/**
-             * Returns the size of the Channel.
-             *
-             * @return the size of the Channel
-             */
-            public Integer getSize() {
+			 * Returns the size of the Channel.
+			 * @return the size of the Channel
+			 */
+			public Integer getSize() {
 				return this.size;
 			}
 
 			/**
-             * Sets the size of the channel.
-             * 
-             * @param size the size of the channel to be set
-             */
-            public void setSize(Integer size) {
+			 * Sets the size of the channel.
+			 * @param size the size of the channel to be set
+			 */
+			public void setSize(Integer size) {
 				this.size = size;
 			}
 
 			/**
-             * Returns the checkout timeout duration.
-             *
-             * @return the checkout timeout duration
-             */
-            public Duration getCheckoutTimeout() {
+			 * Returns the checkout timeout duration.
+			 * @return the checkout timeout duration
+			 */
+			public Duration getCheckoutTimeout() {
 				return this.checkoutTimeout;
 			}
 
 			/**
-             * Sets the checkout timeout for the channel.
-             * 
-             * @param checkoutTimeout the duration of the checkout timeout
-             */
-            public void setCheckoutTimeout(Duration checkoutTimeout) {
+			 * Sets the checkout timeout for the channel.
+			 * @param checkoutTimeout the duration of the checkout timeout
+			 */
+			public void setCheckoutTimeout(Duration checkoutTimeout) {
 				this.checkoutTimeout = checkoutTimeout;
 			}
 
 		}
 
 		/**
-         * Connection class.
-         */
-        public static class Connection {
+		 * Connection class.
+		 */
+		public static class Connection {
 
 			/**
 			 * Connection factory cache mode.
@@ -988,38 +926,34 @@ public class RabbitProperties {
 			private Integer size;
 
 			/**
-             * Returns the cache mode of the connection.
-             * 
-             * @return the cache mode of the connection
-             */
-            public CacheMode getMode() {
+			 * Returns the cache mode of the connection.
+			 * @return the cache mode of the connection
+			 */
+			public CacheMode getMode() {
 				return this.mode;
 			}
 
 			/**
-             * Sets the cache mode for the connection.
-             * 
-             * @param mode the cache mode to be set
-             */
-            public void setMode(CacheMode mode) {
+			 * Sets the cache mode for the connection.
+			 * @param mode the cache mode to be set
+			 */
+			public void setMode(CacheMode mode) {
 				this.mode = mode;
 			}
 
 			/**
-             * Returns the size of the Connection.
-             *
-             * @return the size of the Connection
-             */
-            public Integer getSize() {
+			 * Returns the size of the Connection.
+			 * @return the size of the Connection
+			 */
+			public Integer getSize() {
 				return this.size;
 			}
 
 			/**
-             * Sets the size of the connection.
-             * 
-             * @param size the size of the connection to be set
-             */
-            public void setSize(Integer size) {
+			 * Sets the size of the connection.
+			 * @param size the size of the connection to be set
+			 */
+			public void setSize(Integer size) {
 				this.size = size;
 			}
 
@@ -1048,9 +982,9 @@ public class RabbitProperties {
 	}
 
 	/**
-     * Listener class.
-     */
-    public static class Listener {
+	 * Listener class.
+	 */
+	public static class Listener {
 
 		/**
 		 * Listener container type.
@@ -1064,56 +998,51 @@ public class RabbitProperties {
 		private final StreamContainer stream = new StreamContainer();
 
 		/**
-         * Returns the type of the container.
-         * 
-         * @return the type of the container
-         */
-        public ContainerType getType() {
+		 * Returns the type of the container.
+		 * @return the type of the container
+		 */
+		public ContainerType getType() {
 			return this.type;
 		}
 
 		/**
-         * Sets the type of the container.
-         * 
-         * @param containerType the type of the container
-         */
-        public void setType(ContainerType containerType) {
+		 * Sets the type of the container.
+		 * @param containerType the type of the container
+		 */
+		public void setType(ContainerType containerType) {
 			this.type = containerType;
 		}
 
 		/**
-         * Returns the SimpleContainer object associated with this Listener.
-         *
-         * @return the SimpleContainer object associated with this Listener
-         */
-        public SimpleContainer getSimple() {
+		 * Returns the SimpleContainer object associated with this Listener.
+		 * @return the SimpleContainer object associated with this Listener
+		 */
+		public SimpleContainer getSimple() {
 			return this.simple;
 		}
 
 		/**
-         * Returns the DirectContainer object associated with this Listener.
-         *
-         * @return the DirectContainer object associated with this Listener
-         */
-        public DirectContainer getDirect() {
+		 * Returns the DirectContainer object associated with this Listener.
+		 * @return the DirectContainer object associated with this Listener
+		 */
+		public DirectContainer getDirect() {
 			return this.direct;
 		}
 
 		/**
-         * Returns the StreamContainer object associated with this Listener.
-         *
-         * @return the StreamContainer object associated with this Listener
-         */
-        public StreamContainer getStream() {
+		 * Returns the StreamContainer object associated with this Listener.
+		 * @return the StreamContainer object associated with this Listener
+		 */
+		public StreamContainer getStream() {
 			return this.stream;
 		}
 
 	}
 
 	/**
-     * BaseContainer class.
-     */
-    public abstract static class BaseContainer {
+	 * BaseContainer class.
+	 */
+	public abstract static class BaseContainer {
 
 		/**
 		 * Whether to enable observation.
@@ -1121,29 +1050,29 @@ public class RabbitProperties {
 		private boolean observationEnabled;
 
 		/**
-         * Returns a boolean value indicating whether observation is enabled for the BaseContainer.
-         *
-         * @return true if observation is enabled, false otherwise
-         */
-        public boolean isObservationEnabled() {
+		 * Returns a boolean value indicating whether observation is enabled for the
+		 * BaseContainer.
+		 * @return true if observation is enabled, false otherwise
+		 */
+		public boolean isObservationEnabled() {
 			return this.observationEnabled;
 		}
 
 		/**
-         * Sets the observation enabled flag.
-         * 
-         * @param observationEnabled the flag indicating whether observation is enabled or not
-         */
-        public void setObservationEnabled(boolean observationEnabled) {
+		 * Sets the observation enabled flag.
+		 * @param observationEnabled the flag indicating whether observation is enabled or
+		 * not
+		 */
+		public void setObservationEnabled(boolean observationEnabled) {
 			this.observationEnabled = observationEnabled;
 		}
 
 	}
 
 	/**
-     * AmqpContainer class.
-     */
-    public abstract static class AmqpContainer extends BaseContainer {
+	 * AmqpContainer class.
+	 */
+	public abstract static class AmqpContainer extends BaseContainer {
 
 		/**
 		 * Whether to start the container automatically on startup.
@@ -1189,146 +1118,137 @@ public class RabbitProperties {
 		private final ListenerRetry retry = new ListenerRetry();
 
 		/**
-         * Returns a boolean value indicating whether the container is set to automatically start up.
-         * 
-         * @return {@code true} if the container is set to automatically start up, {@code false} otherwise
-         */
-        public boolean isAutoStartup() {
+		 * Returns a boolean value indicating whether the container is set to
+		 * automatically start up.
+		 * @return {@code true} if the container is set to automatically start up,
+		 * {@code false} otherwise
+		 */
+		public boolean isAutoStartup() {
 			return this.autoStartup;
 		}
 
 		/**
-         * Sets the flag indicating whether the container should automatically start upon initialization.
-         * 
-         * @param autoStartup the flag indicating whether the container should automatically start
-         */
-        public void setAutoStartup(boolean autoStartup) {
+		 * Sets the flag indicating whether the container should automatically start upon
+		 * initialization.
+		 * @param autoStartup the flag indicating whether the container should
+		 * automatically start
+		 */
+		public void setAutoStartup(boolean autoStartup) {
 			this.autoStartup = autoStartup;
 		}
 
 		/**
-         * Returns the acknowledge mode of the AmqpContainer.
-         * 
-         * @return the acknowledge mode of the AmqpContainer
-         */
-        public AcknowledgeMode getAcknowledgeMode() {
+		 * Returns the acknowledge mode of the AmqpContainer.
+		 * @return the acknowledge mode of the AmqpContainer
+		 */
+		public AcknowledgeMode getAcknowledgeMode() {
 			return this.acknowledgeMode;
 		}
 
 		/**
-         * Sets the acknowledge mode for the AMQP container.
-         * 
-         * @param acknowledgeMode the acknowledge mode to be set
-         */
-        public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+		 * Sets the acknowledge mode for the AMQP container.
+		 * @param acknowledgeMode the acknowledge mode to be set
+		 */
+		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
 			this.acknowledgeMode = acknowledgeMode;
 		}
 
 		/**
-         * Returns the value of the prefetch property.
-         *
-         * @return the value of the prefetch property
-         */
-        public Integer getPrefetch() {
+		 * Returns the value of the prefetch property.
+		 * @return the value of the prefetch property
+		 */
+		public Integer getPrefetch() {
 			return this.prefetch;
 		}
 
 		/**
-         * Sets the prefetch value for the AmqpContainer.
-         * 
-         * @param prefetch the prefetch value to be set
-         */
-        public void setPrefetch(Integer prefetch) {
+		 * Sets the prefetch value for the AmqpContainer.
+		 * @param prefetch the prefetch value to be set
+		 */
+		public void setPrefetch(Integer prefetch) {
 			this.prefetch = prefetch;
 		}
 
 		/**
-         * Returns the value of the defaultRequeueRejected property.
-         * 
-         * @return the value of the defaultRequeueRejected property
-         */
-        public Boolean getDefaultRequeueRejected() {
+		 * Returns the value of the defaultRequeueRejected property.
+		 * @return the value of the defaultRequeueRejected property
+		 */
+		public Boolean getDefaultRequeueRejected() {
 			return this.defaultRequeueRejected;
 		}
 
 		/**
-         * Sets the flag indicating whether rejected messages should be requeued by default.
-         * 
-         * @param defaultRequeueRejected the flag indicating whether rejected messages should be requeued by default
-         */
-        public void setDefaultRequeueRejected(Boolean defaultRequeueRejected) {
+		 * Sets the flag indicating whether rejected messages should be requeued by
+		 * default.
+		 * @param defaultRequeueRejected the flag indicating whether rejected messages
+		 * should be requeued by default
+		 */
+		public void setDefaultRequeueRejected(Boolean defaultRequeueRejected) {
 			this.defaultRequeueRejected = defaultRequeueRejected;
 		}
 
 		/**
-         * Returns the idle event interval.
-         * 
-         * @return the idle event interval
-         */
-        public Duration getIdleEventInterval() {
+		 * Returns the idle event interval.
+		 * @return the idle event interval
+		 */
+		public Duration getIdleEventInterval() {
 			return this.idleEventInterval;
 		}
 
 		/**
-         * Sets the interval at which idle events are triggered.
-         * 
-         * @param idleEventInterval the duration between idle events
-         */
-        public void setIdleEventInterval(Duration idleEventInterval) {
+		 * Sets the interval at which idle events are triggered.
+		 * @param idleEventInterval the duration between idle events
+		 */
+		public void setIdleEventInterval(Duration idleEventInterval) {
 			this.idleEventInterval = idleEventInterval;
 		}
 
 		/**
-         * Returns a boolean value indicating whether missing queues are considered fatal errors.
-         * If this method returns true, the container will throw an exception if a message is sent to a non-existent queue.
-         * If this method returns false, the container will silently ignore the message and continue processing.
-         *
-         * @return true if missing queues are considered fatal errors, false otherwise
-         */
-        public abstract boolean isMissingQueuesFatal();
+		 * Returns a boolean value indicating whether missing queues are considered fatal
+		 * errors. If this method returns true, the container will throw an exception if a
+		 * message is sent to a non-existent queue. If this method returns false, the
+		 * container will silently ignore the message and continue processing.
+		 * @return true if missing queues are considered fatal errors, false otherwise
+		 */
+		public abstract boolean isMissingQueuesFatal();
 
 		/**
-         * Returns a boolean value indicating whether de-batching is enabled.
-         * 
-         * @return true if de-batching is enabled, false otherwise
-         */
-        public boolean isDeBatchingEnabled() {
+		 * Returns a boolean value indicating whether de-batching is enabled.
+		 * @return true if de-batching is enabled, false otherwise
+		 */
+		public boolean isDeBatchingEnabled() {
 			return this.deBatchingEnabled;
 		}
 
 		/**
-         * Sets the flag indicating whether de-batching is enabled.
-         * 
-         * @param deBatchingEnabled true if de-batching is enabled, false otherwise
-         */
-        public void setDeBatchingEnabled(boolean deBatchingEnabled) {
+		 * Sets the flag indicating whether de-batching is enabled.
+		 * @param deBatchingEnabled true if de-batching is enabled, false otherwise
+		 */
+		public void setDeBatchingEnabled(boolean deBatchingEnabled) {
 			this.deBatchingEnabled = deBatchingEnabled;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the container is set to force stop.
-         * 
-         * @return true if the container is set to force stop, false otherwise
-         */
-        public boolean isForceStop() {
+		 * Returns a boolean value indicating whether the container is set to force stop.
+		 * @return true if the container is set to force stop, false otherwise
+		 */
+		public boolean isForceStop() {
 			return this.forceStop;
 		}
 
 		/**
-         * Sets the flag indicating whether the container should force stop.
-         * 
-         * @param forceStop true if the container should force stop, false otherwise
-         */
-        public void setForceStop(boolean forceStop) {
+		 * Sets the flag indicating whether the container should force stop.
+		 * @param forceStop true if the container should force stop, false otherwise
+		 */
+		public void setForceStop(boolean forceStop) {
 			this.forceStop = forceStop;
 		}
 
 		/**
-         * Returns the retry listener associated with this AmqpContainer.
-         *
-         * @return the retry listener
-         */
-        public ListenerRetry getRetry() {
+		 * Returns the retry listener associated with this AmqpContainer.
+		 * @return the retry listener
+		 */
+		public ListenerRetry getRetry() {
 			return this.retry;
 		}
 
@@ -1371,93 +1291,85 @@ public class RabbitProperties {
 		private boolean consumerBatchEnabled;
 
 		/**
-         * Returns the concurrency level of the SimpleContainer.
-         *
-         * @return the concurrency level of the SimpleContainer
-         */
-        public Integer getConcurrency() {
+		 * Returns the concurrency level of the SimpleContainer.
+		 * @return the concurrency level of the SimpleContainer
+		 */
+		public Integer getConcurrency() {
 			return this.concurrency;
 		}
 
 		/**
-         * Sets the concurrency level for the SimpleContainer.
-         * 
-         * @param concurrency the concurrency level to be set
-         */
-        public void setConcurrency(Integer concurrency) {
+		 * Sets the concurrency level for the SimpleContainer.
+		 * @param concurrency the concurrency level to be set
+		 */
+		public void setConcurrency(Integer concurrency) {
 			this.concurrency = concurrency;
 		}
 
 		/**
-         * Returns the maximum concurrency level allowed for the container.
-         *
-         * @return the maximum concurrency level
-         */
-        public Integer getMaxConcurrency() {
+		 * Returns the maximum concurrency level allowed for the container.
+		 * @return the maximum concurrency level
+		 */
+		public Integer getMaxConcurrency() {
 			return this.maxConcurrency;
 		}
 
 		/**
-         * Sets the maximum concurrency level for the container.
-         * 
-         * @param maxConcurrency the maximum concurrency level to be set
-         */
-        public void setMaxConcurrency(Integer maxConcurrency) {
+		 * Sets the maximum concurrency level for the container.
+		 * @param maxConcurrency the maximum concurrency level to be set
+		 */
+		public void setMaxConcurrency(Integer maxConcurrency) {
 			this.maxConcurrency = maxConcurrency;
 		}
 
 		/**
-         * Returns the batch size of the SimpleContainer.
-         *
-         * @return the batch size of the SimpleContainer
-         */
-        public Integer getBatchSize() {
+		 * Returns the batch size of the SimpleContainer.
+		 * @return the batch size of the SimpleContainer
+		 */
+		public Integer getBatchSize() {
 			return this.batchSize;
 		}
 
 		/**
-         * Sets the batch size for processing elements in the container.
-         * 
-         * @param batchSize the batch size to be set
-         */
-        public void setBatchSize(Integer batchSize) {
+		 * Sets the batch size for processing elements in the container.
+		 * @param batchSize the batch size to be set
+		 */
+		public void setBatchSize(Integer batchSize) {
 			this.batchSize = batchSize;
 		}
 
 		/**
-         * Returns a boolean value indicating whether missing queues are considered fatal.
-         *
-         * @return true if missing queues are considered fatal, false otherwise
-         */
-        @Override
+		 * Returns a boolean value indicating whether missing queues are considered fatal.
+		 * @return true if missing queues are considered fatal, false otherwise
+		 */
+		@Override
 		public boolean isMissingQueuesFatal() {
 			return this.missingQueuesFatal;
 		}
 
 		/**
-         * Sets whether missing queues should be treated as fatal errors.
-         * 
-         * @param missingQueuesFatal true if missing queues should be treated as fatal errors, false otherwise
-         */
-        public void setMissingQueuesFatal(boolean missingQueuesFatal) {
+		 * Sets whether missing queues should be treated as fatal errors.
+		 * @param missingQueuesFatal true if missing queues should be treated as fatal
+		 * errors, false otherwise
+		 */
+		public void setMissingQueuesFatal(boolean missingQueuesFatal) {
 			this.missingQueuesFatal = missingQueuesFatal;
 		}
 
 		/**
-         * Returns the status of the consumer batch.
-         * 
-         * @return true if the consumer batch is enabled, false otherwise.
-         */
-        public boolean isConsumerBatchEnabled() {
+		 * Returns the status of the consumer batch.
+		 * @return true if the consumer batch is enabled, false otherwise.
+		 */
+		public boolean isConsumerBatchEnabled() {
 			return this.consumerBatchEnabled;
 		}
 
 		/**
-         * Sets the flag indicating whether consumer batch is enabled or not.
-         * 
-         * @param consumerBatchEnabled the flag indicating whether consumer batch is enabled or not
-         */
-        public void setConsumerBatchEnabled(boolean consumerBatchEnabled) {
+		 * Sets the flag indicating whether consumer batch is enabled or not.
+		 * @param consumerBatchEnabled the flag indicating whether consumer batch is
+		 * enabled or not
+		 */
+		public void setConsumerBatchEnabled(boolean consumerBatchEnabled) {
 			this.consumerBatchEnabled = consumerBatchEnabled;
 		}
 
@@ -1480,48 +1392,46 @@ public class RabbitProperties {
 		private boolean missingQueuesFatal = false;
 
 		/**
-         * Returns the number of consumers per queue.
-         *
-         * @return the number of consumers per queue
-         */
-        public Integer getConsumersPerQueue() {
+		 * Returns the number of consumers per queue.
+		 * @return the number of consumers per queue
+		 */
+		public Integer getConsumersPerQueue() {
 			return this.consumersPerQueue;
 		}
 
 		/**
-         * Sets the number of consumers per queue.
-         * 
-         * @param consumersPerQueue the number of consumers per queue
-         */
-        public void setConsumersPerQueue(Integer consumersPerQueue) {
+		 * Sets the number of consumers per queue.
+		 * @param consumersPerQueue the number of consumers per queue
+		 */
+		public void setConsumersPerQueue(Integer consumersPerQueue) {
 			this.consumersPerQueue = consumersPerQueue;
 		}
 
 		/**
-         * Returns a boolean value indicating whether missing queues are considered fatal.
-         * 
-         * @return true if missing queues are considered fatal, false otherwise
-         */
-        @Override
+		 * Returns a boolean value indicating whether missing queues are considered fatal.
+		 * @return true if missing queues are considered fatal, false otherwise
+		 */
+		@Override
 		public boolean isMissingQueuesFatal() {
 			return this.missingQueuesFatal;
 		}
 
 		/**
-         * Sets the flag indicating whether missing queues should be treated as fatal errors.
-         * 
-         * @param missingQueuesFatal the flag indicating whether missing queues should be treated as fatal errors
-         */
-        public void setMissingQueuesFatal(boolean missingQueuesFatal) {
+		 * Sets the flag indicating whether missing queues should be treated as fatal
+		 * errors.
+		 * @param missingQueuesFatal the flag indicating whether missing queues should be
+		 * treated as fatal errors
+		 */
+		public void setMissingQueuesFatal(boolean missingQueuesFatal) {
 			this.missingQueuesFatal = missingQueuesFatal;
 		}
 
 	}
 
 	/**
-     * StreamContainer class.
-     */
-    public static class StreamContainer extends BaseContainer {
+	 * StreamContainer class.
+	 */
+	public static class StreamContainer extends BaseContainer {
 
 		/**
 		 * Whether the container will support listeners that consume native stream
@@ -1530,29 +1440,27 @@ public class RabbitProperties {
 		private boolean nativeListener;
 
 		/**
-         * Returns a boolean value indicating whether the listener is native.
-         * 
-         * @return true if the listener is native, false otherwise
-         */
-        public boolean isNativeListener() {
+		 * Returns a boolean value indicating whether the listener is native.
+		 * @return true if the listener is native, false otherwise
+		 */
+		public boolean isNativeListener() {
 			return this.nativeListener;
 		}
 
 		/**
-         * Sets the flag indicating whether a native listener is used.
-         * 
-         * @param nativeListener the flag indicating whether a native listener is used
-         */
-        public void setNativeListener(boolean nativeListener) {
+		 * Sets the flag indicating whether a native listener is used.
+		 * @param nativeListener the flag indicating whether a native listener is used
+		 */
+		public void setNativeListener(boolean nativeListener) {
 			this.nativeListener = nativeListener;
 		}
 
 	}
 
 	/**
-     * Template class.
-     */
-    public static class Template {
+	 * Template class.
+	 */
+	public static class Template {
 
 		private final Retry retry = new Retry();
 
@@ -1593,146 +1501,132 @@ public class RabbitProperties {
 		private boolean observationEnabled;
 
 		/**
-         * Returns the Retry object associated with this Template.
-         *
-         * @return the Retry object associated with this Template
-         */
-        public Retry getRetry() {
+		 * Returns the Retry object associated with this Template.
+		 * @return the Retry object associated with this Template
+		 */
+		public Retry getRetry() {
 			return this.retry;
 		}
 
 		/**
-         * Returns the value indicating whether the field is mandatory or not.
-         * 
-         * @return true if the field is mandatory, false otherwise
-         */
-        public Boolean getMandatory() {
+		 * Returns the value indicating whether the field is mandatory or not.
+		 * @return true if the field is mandatory, false otherwise
+		 */
+		public Boolean getMandatory() {
 			return this.mandatory;
 		}
 
 		/**
-         * Sets the mandatory flag for the template.
-         * 
-         * @param mandatory the value to set for the mandatory flag
-         */
-        public void setMandatory(Boolean mandatory) {
+		 * Sets the mandatory flag for the template.
+		 * @param mandatory the value to set for the mandatory flag
+		 */
+		public void setMandatory(Boolean mandatory) {
 			this.mandatory = mandatory;
 		}
 
 		/**
-         * Returns the receive timeout duration.
-         *
-         * @return the receive timeout duration
-         */
-        public Duration getReceiveTimeout() {
+		 * Returns the receive timeout duration.
+		 * @return the receive timeout duration
+		 */
+		public Duration getReceiveTimeout() {
 			return this.receiveTimeout;
 		}
 
 		/**
-         * Sets the receive timeout for the Template.
-         * 
-         * @param receiveTimeout the receive timeout duration to be set
-         */
-        public void setReceiveTimeout(Duration receiveTimeout) {
+		 * Sets the receive timeout for the Template.
+		 * @param receiveTimeout the receive timeout duration to be set
+		 */
+		public void setReceiveTimeout(Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
 		}
 
 		/**
-         * Returns the reply timeout duration.
-         *
-         * @return the reply timeout duration
-         */
-        public Duration getReplyTimeout() {
+		 * Returns the reply timeout duration.
+		 * @return the reply timeout duration
+		 */
+		public Duration getReplyTimeout() {
 			return this.replyTimeout;
 		}
 
 		/**
-         * Sets the reply timeout for the Template.
-         * 
-         * @param replyTimeout the duration of the reply timeout
-         */
-        public void setReplyTimeout(Duration replyTimeout) {
+		 * Sets the reply timeout for the Template.
+		 * @param replyTimeout the duration of the reply timeout
+		 */
+		public void setReplyTimeout(Duration replyTimeout) {
 			this.replyTimeout = replyTimeout;
 		}
 
 		/**
-         * Returns the exchange value.
-         * 
-         * @return the exchange value
-         */
-        public String getExchange() {
+		 * Returns the exchange value.
+		 * @return the exchange value
+		 */
+		public String getExchange() {
 			return this.exchange;
 		}
 
 		/**
-         * Sets the exchange for the Template.
-         * 
-         * @param exchange the exchange to be set
-         */
-        public void setExchange(String exchange) {
+		 * Sets the exchange for the Template.
+		 * @param exchange the exchange to be set
+		 */
+		public void setExchange(String exchange) {
 			this.exchange = exchange;
 		}
 
 		/**
-         * Returns the routing key.
-         *
-         * @return the routing key
-         */
-        public String getRoutingKey() {
+		 * Returns the routing key.
+		 * @return the routing key
+		 */
+		public String getRoutingKey() {
 			return this.routingKey;
 		}
 
 		/**
-         * Sets the routing key for the Template.
-         * 
-         * @param routingKey the routing key to be set
-         */
-        public void setRoutingKey(String routingKey) {
+		 * Sets the routing key for the Template.
+		 * @param routingKey the routing key to be set
+		 */
+		public void setRoutingKey(String routingKey) {
 			this.routingKey = routingKey;
 		}
 
 		/**
-         * Returns the default receive queue.
-         * 
-         * @return the default receive queue
-         */
-        public String getDefaultReceiveQueue() {
+		 * Returns the default receive queue.
+		 * @return the default receive queue
+		 */
+		public String getDefaultReceiveQueue() {
 			return this.defaultReceiveQueue;
 		}
 
 		/**
-         * Sets the default receive queue for the Template class.
-         * 
-         * @param defaultReceiveQueue the name of the default receive queue
-         */
-        public void setDefaultReceiveQueue(String defaultReceiveQueue) {
+		 * Sets the default receive queue for the Template class.
+		 * @param defaultReceiveQueue the name of the default receive queue
+		 */
+		public void setDefaultReceiveQueue(String defaultReceiveQueue) {
 			this.defaultReceiveQueue = defaultReceiveQueue;
 		}
 
 		/**
-         * Returns a boolean value indicating whether observation is enabled.
-         * 
-         * @return true if observation is enabled, false otherwise
-         */
-        public boolean isObservationEnabled() {
+		 * Returns a boolean value indicating whether observation is enabled.
+		 * @return true if observation is enabled, false otherwise
+		 */
+		public boolean isObservationEnabled() {
 			return this.observationEnabled;
 		}
 
 		/**
-         * Sets the observation enabled flag.
-         * 
-         * @param observationEnabled the flag indicating whether observation is enabled or not
-         */
-        public void setObservationEnabled(boolean observationEnabled) {
+		 * Sets the observation enabled flag.
+		 * @param observationEnabled the flag indicating whether observation is enabled or
+		 * not
+		 */
+		public void setObservationEnabled(boolean observationEnabled) {
 			this.observationEnabled = observationEnabled;
 		}
 
 	}
 
 	/**
-     * Retry class.
-     */
-    public static class Retry {
+	 * Retry class.
+	 */
+	public static class Retry {
 
 		/**
 		 * Whether publishing retries are enabled.
@@ -1760,101 +1654,91 @@ public class RabbitProperties {
 		private Duration maxInterval = Duration.ofMillis(10000);
 
 		/**
-         * Returns the current status of the Retry feature.
-         * 
-         * @return true if the Retry feature is enabled, false otherwise.
-         */
-        public boolean isEnabled() {
+		 * Returns the current status of the Retry feature.
+		 * @return true if the Retry feature is enabled, false otherwise.
+		 */
+		public boolean isEnabled() {
 			return this.enabled;
 		}
 
 		/**
-         * Sets the enabled status of the Retry.
-         * 
-         * @param enabled the enabled status to be set
-         */
-        public void setEnabled(boolean enabled) {
+		 * Sets the enabled status of the Retry.
+		 * @param enabled the enabled status to be set
+		 */
+		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
 		/**
-         * Returns the maximum number of attempts allowed.
-         *
-         * @return the maximum number of attempts
-         */
-        public int getMaxAttempts() {
+		 * Returns the maximum number of attempts allowed.
+		 * @return the maximum number of attempts
+		 */
+		public int getMaxAttempts() {
 			return this.maxAttempts;
 		}
 
 		/**
-         * Sets the maximum number of attempts for retrying an operation.
-         * 
-         * @param maxAttempts the maximum number of attempts to be set
-         */
-        public void setMaxAttempts(int maxAttempts) {
+		 * Sets the maximum number of attempts for retrying an operation.
+		 * @param maxAttempts the maximum number of attempts to be set
+		 */
+		public void setMaxAttempts(int maxAttempts) {
 			this.maxAttempts = maxAttempts;
 		}
 
 		/**
-         * Returns the initial interval for retrying an operation.
-         *
-         * @return the initial interval for retrying an operation
-         */
-        public Duration getInitialInterval() {
+		 * Returns the initial interval for retrying an operation.
+		 * @return the initial interval for retrying an operation
+		 */
+		public Duration getInitialInterval() {
 			return this.initialInterval;
 		}
 
 		/**
-         * Sets the initial interval for retrying.
-         * 
-         * @param initialInterval the initial interval duration for retrying
-         */
-        public void setInitialInterval(Duration initialInterval) {
+		 * Sets the initial interval for retrying.
+		 * @param initialInterval the initial interval duration for retrying
+		 */
+		public void setInitialInterval(Duration initialInterval) {
 			this.initialInterval = initialInterval;
 		}
 
 		/**
-         * Returns the multiplier value.
-         * 
-         * @return the multiplier value
-         */
-        public double getMultiplier() {
+		 * Returns the multiplier value.
+		 * @return the multiplier value
+		 */
+		public double getMultiplier() {
 			return this.multiplier;
 		}
 
 		/**
-         * Sets the multiplier for retrying.
-         * 
-         * @param multiplier the multiplier value to set
-         */
-        public void setMultiplier(double multiplier) {
+		 * Sets the multiplier for retrying.
+		 * @param multiplier the multiplier value to set
+		 */
+		public void setMultiplier(double multiplier) {
 			this.multiplier = multiplier;
 		}
 
 		/**
-         * Returns the maximum interval between retries.
-         *
-         * @return the maximum interval between retries
-         */
-        public Duration getMaxInterval() {
+		 * Returns the maximum interval between retries.
+		 * @return the maximum interval between retries
+		 */
+		public Duration getMaxInterval() {
 			return this.maxInterval;
 		}
 
 		/**
-         * Sets the maximum interval between retries.
-         * 
-         * @param maxInterval the maximum interval between retries
-         */
-        public void setMaxInterval(Duration maxInterval) {
+		 * Sets the maximum interval between retries.
+		 * @param maxInterval the maximum interval between retries
+		 */
+		public void setMaxInterval(Duration maxInterval) {
 			this.maxInterval = maxInterval;
 		}
 
 	}
 
 	/**
-     * ListenerRetry class.
-     */
-    public static class ListenerRetry extends Retry {
+	 * ListenerRetry class.
+	 */
+	public static class ListenerRetry extends Retry {
 
 		/**
 		 * Whether retries are stateless or stateful.
@@ -1862,29 +1746,28 @@ public class RabbitProperties {
 		private boolean stateless = true;
 
 		/**
-         * Returns whether the listener is stateless.
-         * 
-         * @return true if the listener is stateless, false otherwise
-         */
-        public boolean isStateless() {
+		 * Returns whether the listener is stateless.
+		 * @return true if the listener is stateless, false otherwise
+		 */
+		public boolean isStateless() {
 			return this.stateless;
 		}
 
 		/**
-         * Sets the stateless flag for the ListenerRetry class.
-         * 
-         * @param stateless the boolean value indicating whether the ListenerRetry class is stateless or not
-         */
-        public void setStateless(boolean stateless) {
+		 * Sets the stateless flag for the ListenerRetry class.
+		 * @param stateless the boolean value indicating whether the ListenerRetry class
+		 * is stateless or not
+		 */
+		public void setStateless(boolean stateless) {
 			this.stateless = stateless;
 		}
 
 	}
 
 	/**
-     * Address class.
-     */
-    private static final class Address {
+	 * Address class.
+	 */
+	private static final class Address {
 
 		private static final String PREFIX_AMQP = "amqp://";
 
@@ -1903,12 +1786,11 @@ public class RabbitProperties {
 		private Boolean secureConnection;
 
 		/**
-         * Constructs a new Address object with the given input and SSL enabled flag.
-         * 
-         * @param input the input string representing the address
-         * @param sslEnabled true if SSL is enabled, false otherwise
-         */
-        private Address(String input, boolean sslEnabled) {
+		 * Constructs a new Address object with the given input and SSL enabled flag.
+		 * @param input the input string representing the address
+		 * @param sslEnabled true if SSL is enabled, false otherwise
+		 */
+		private Address(String input, boolean sslEnabled) {
 			input = input.trim();
 			input = trimPrefix(input);
 			input = parseUsernameAndPassword(input);
@@ -1917,12 +1799,12 @@ public class RabbitProperties {
 		}
 
 		/**
-         * Trims the prefix from the given input string and sets the secureConnection flag accordingly.
-         * 
-         * @param input the input string to be trimmed
-         * @return the trimmed input string
-         */
-        private String trimPrefix(String input) {
+		 * Trims the prefix from the given input string and sets the secureConnection flag
+		 * accordingly.
+		 * @param input the input string to be trimmed
+		 * @return the trimmed input string
+		 */
+		private String trimPrefix(String input) {
 			if (input.startsWith(PREFIX_AMQP_SECURE)) {
 				this.secureConnection = true;
 				return input.substring(PREFIX_AMQP_SECURE.length());
@@ -1935,12 +1817,12 @@ public class RabbitProperties {
 		}
 
 		/**
-         * Parses the input string to extract the username and password.
-         * 
-         * @param input the input string containing the username and password
-         * @return the remaining part of the input string after extracting the username and password
-         */
-        private String parseUsernameAndPassword(String input) {
+		 * Parses the input string to extract the username and password.
+		 * @param input the input string containing the username and password
+		 * @return the remaining part of the input string after extracting the username
+		 * and password
+		 */
+		private String parseUsernameAndPassword(String input) {
 			String[] splitInput = StringUtils.split(input, "@");
 			if (splitInput == null) {
 				return input;
@@ -1958,12 +1840,11 @@ public class RabbitProperties {
 		}
 
 		/**
-         * Parses the virtual host from the given input string.
-         * 
-         * @param input the input string containing the virtual host
-         * @return the input string without the virtual host
-         */
-        private String parseVirtualHost(String input) {
+		 * Parses the virtual host from the given input string.
+		 * @param input the input string containing the virtual host
+		 * @return the input string without the virtual host
+		 */
+		private String parseVirtualHost(String input) {
 			int hostIndex = input.indexOf('/');
 			if (hostIndex >= 0) {
 				this.virtualHost = input.substring(hostIndex + 1);
@@ -1976,12 +1857,11 @@ public class RabbitProperties {
 		}
 
 		/**
-         * Parses the host and port from the given input string.
-         * 
-         * @param input       the input string containing the host and port information
-         * @param sslEnabled  a boolean indicating whether SSL is enabled
-         */
-        private void parseHostAndPort(String input, boolean sslEnabled) {
+		 * Parses the host and port from the given input string.
+		 * @param input the input string containing the host and port information
+		 * @param sslEnabled a boolean indicating whether SSL is enabled
+		 */
+		private void parseHostAndPort(String input, boolean sslEnabled) {
 			int bracketIndex = input.lastIndexOf(']');
 			int colonIndex = input.lastIndexOf(':');
 			if (colonIndex == -1 || colonIndex < bracketIndex) {
@@ -1995,21 +1875,20 @@ public class RabbitProperties {
 		}
 
 		/**
-         * Determines if SSL is enabled for the address.
-         * 
-         * @param sslEnabled a boolean indicating if SSL is enabled
-         * @return true if SSL is enabled, false otherwise
-         */
-        private boolean determineSslEnabled(boolean sslEnabled) {
+		 * Determines if SSL is enabled for the address.
+		 * @param sslEnabled a boolean indicating if SSL is enabled
+		 * @return true if SSL is enabled, false otherwise
+		 */
+		private boolean determineSslEnabled(boolean sslEnabled) {
 			return (this.secureConnection != null) ? this.secureConnection : sslEnabled;
 		}
 
 	}
 
 	/**
-     * Stream class.
-     */
-    public static final class Stream {
+	 * Stream class.
+	 */
+	public static final class Stream {
 
 		/**
 		 * Host of a RabbitMQ instance with the Stream plugin enabled.
@@ -2045,110 +1924,98 @@ public class RabbitProperties {
 		private String name;
 
 		/**
-         * Returns the host of the Stream.
-         *
-         * @return the host of the Stream
-         */
-        public String getHost() {
+		 * Returns the host of the Stream.
+		 * @return the host of the Stream
+		 */
+		public String getHost() {
 			return this.host;
 		}
 
 		/**
-         * Sets the host for the Stream.
-         * 
-         * @param host the host to be set
-         */
-        public void setHost(String host) {
+		 * Sets the host for the Stream.
+		 * @param host the host to be set
+		 */
+		public void setHost(String host) {
 			this.host = host;
 		}
 
 		/**
-         * Returns the port number associated with this Stream.
-         *
-         * @return the port number
-         */
-        public int getPort() {
+		 * Returns the port number associated with this Stream.
+		 * @return the port number
+		 */
+		public int getPort() {
 			return this.port;
 		}
 
 		/**
-         * Sets the port number for the Stream.
-         * 
-         * @param port the port number to be set
-         */
-        public void setPort(int port) {
+		 * Sets the port number for the Stream.
+		 * @param port the port number to be set
+		 */
+		public void setPort(int port) {
 			this.port = port;
 		}
 
 		/**
-         * Returns the virtual host of the Stream.
-         *
-         * @return the virtual host of the Stream
-         */
-        public String getVirtualHost() {
+		 * Returns the virtual host of the Stream.
+		 * @return the virtual host of the Stream
+		 */
+		public String getVirtualHost() {
 			return this.virtualHost;
 		}
 
 		/**
-         * Sets the virtual host for the stream.
-         * 
-         * @param virtualHost the virtual host to be set
-         */
-        public void setVirtualHost(String virtualHost) {
+		 * Sets the virtual host for the stream.
+		 * @param virtualHost the virtual host to be set
+		 */
+		public void setVirtualHost(String virtualHost) {
 			this.virtualHost = virtualHost;
 		}
 
 		/**
-         * Returns the username associated with this Stream object.
-         *
-         * @return the username associated with this Stream object
-         */
-        public String getUsername() {
+		 * Returns the username associated with this Stream object.
+		 * @return the username associated with this Stream object
+		 */
+		public String getUsername() {
 			return this.username;
 		}
 
 		/**
-         * Sets the username for the Stream.
-         * 
-         * @param username the username to be set
-         */
-        public void setUsername(String username) {
+		 * Sets the username for the Stream.
+		 * @param username the username to be set
+		 */
+		public void setUsername(String username) {
 			this.username = username;
 		}
 
 		/**
-         * Returns the password of the Stream.
-         *
-         * @return the password of the Stream
-         */
-        public String getPassword() {
+		 * Returns the password of the Stream.
+		 * @return the password of the Stream
+		 */
+		public String getPassword() {
 			return this.password;
 		}
 
 		/**
-         * Sets the password for the Stream.
-         * 
-         * @param password the password to be set
-         */
-        public void setPassword(String password) {
+		 * Sets the password for the Stream.
+		 * @param password the password to be set
+		 */
+		public void setPassword(String password) {
 			this.password = password;
 		}
 
 		/**
-         * Returns the name of the Stream.
-         *
-         * @return the name of the Stream
-         */
-        public String getName() {
+		 * Returns the name of the Stream.
+		 * @return the name of the Stream
+		 */
+		public String getName() {
 			return this.name;
 		}
 
 		/**
-         * Sets the name of the Stream.
-         * 
-         * @param name the name to be set for the Stream
-         */
-        public void setName(String name) {
+		 * Sets the name of the Stream.
+		 * @param name the name to be set for the Stream
+		 */
+		public void setName(String name) {
 			this.name = name;
 		}
 

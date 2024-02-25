@@ -28,71 +28,67 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 public class TomcatDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<DataSource> {
 
 	/**
-     * Constructs a new TomcatDataSourcePoolMetadata object with the specified DataSource.
-     *
-     * @param dataSource the DataSource object to be used for creating the TomcatDataSourcePoolMetadata
-     */
-    public TomcatDataSourcePoolMetadata(DataSource dataSource) {
+	 * Constructs a new TomcatDataSourcePoolMetadata object with the specified DataSource.
+	 * @param dataSource the DataSource object to be used for creating the
+	 * TomcatDataSourcePoolMetadata
+	 */
+	public TomcatDataSourcePoolMetadata(DataSource dataSource) {
 		super(dataSource);
 	}
 
 	/**
-     * Returns the number of active connections in the connection pool.
-     * 
-     * @return the number of active connections
-     */
-    @Override
+	 * Returns the number of active connections in the connection pool.
+	 * @return the number of active connections
+	 */
+	@Override
 	public Integer getActive() {
 		ConnectionPool pool = getDataSource().getPool();
 		return (pool != null) ? pool.getActive() : 0;
 	}
 
 	/**
-     * Returns the number of idle connections in the data source pool.
-     * 
-     * @return the number of idle connections
-     */
-    @Override
+	 * Returns the number of idle connections in the data source pool.
+	 * @return the number of idle connections
+	 */
+	@Override
 	public Integer getIdle() {
 		return getDataSource().getNumIdle();
 	}
 
 	/**
-     * Returns the maximum number of active connections that can be allocated from this data source.
-     *
-     * @return the maximum number of active connections
-     */
-    @Override
+	 * Returns the maximum number of active connections that can be allocated from this
+	 * data source.
+	 * @return the maximum number of active connections
+	 */
+	@Override
 	public Integer getMax() {
 		return getDataSource().getMaxActive();
 	}
 
 	/**
-     * Returns the minimum number of idle connections that should be maintained in the connection pool.
-     *
-     * @return the minimum number of idle connections
-     */
-    @Override
+	 * Returns the minimum number of idle connections that should be maintained in the
+	 * connection pool.
+	 * @return the minimum number of idle connections
+	 */
+	@Override
 	public Integer getMin() {
 		return getDataSource().getMinIdle();
 	}
 
 	/**
-     * Returns the validation query used for testing the connection from the data source.
-     * 
-     * @return the validation query
-     */
-    @Override
+	 * Returns the validation query used for testing the connection from the data source.
+	 * @return the validation query
+	 */
+	@Override
 	public String getValidationQuery() {
 		return getDataSource().getValidationQuery();
 	}
 
 	/**
-     * Returns the default auto-commit state of the underlying data source.
-     * 
-     * @return the default auto-commit state of the underlying data source
-     */
-    @Override
+	 * Returns the default auto-commit state of the underlying data source.
+	 * @return the default auto-commit state of the underlying data source
+	 */
+	@Override
 	public Boolean getDefaultAutoCommit() {
 		return getDataSource().isDefaultAutoCommit();
 	}

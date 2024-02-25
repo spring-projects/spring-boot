@@ -77,11 +77,11 @@ public class Shell {
 	}
 
 	/**
-     * Creates a new instance of ShellCommandRunner and configures it with the necessary commands and aliases.
-     * 
-     * @return The created ShellCommandRunner instance.
-     */
-    private ShellCommandRunner createCommandRunner() {
+	 * Creates a new instance of ShellCommandRunner and configures it with the necessary
+	 * commands and aliases.
+	 * @return The created ShellCommandRunner instance.
+	 */
+	private ShellCommandRunner createCommandRunner() {
 		ShellCommandRunner runner = new ShellCommandRunner();
 		runner.addCommand(new HelpCommand(runner));
 		runner.addCommands(getCommands());
@@ -92,11 +92,10 @@ public class Shell {
 	}
 
 	/**
-     * Retrieves a collection of commands available in the shell.
-     * 
-     * @return An iterable collection of commands.
-     */
-    private Iterable<Command> getCommands() {
+	 * Retrieves a collection of commands available in the shell.
+	 * @return An iterable collection of commands.
+	 */
+	private Iterable<Command> getCommands() {
 		List<Command> commands = new ArrayList<>();
 		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class, getClass().getClassLoader());
 		for (CommandFactory factory : factories) {
@@ -111,12 +110,13 @@ public class Shell {
 	}
 
 	/**
-     * Converts the given command to a fork command if it is not already a non-forked command.
-     * 
-     * @param command the command to be converted
-     * @return the converted fork command if the given command is not a non-forked command, otherwise returns the original command
-     */
-    private Command convertToForkCommand(Command command) {
+	 * Converts the given command to a fork command if it is not already a non-forked
+	 * command.
+	 * @param command the command to be converted
+	 * @return the converted fork command if the given command is not a non-forked
+	 * command, otherwise returns the original command
+	 */
+	private Command convertToForkCommand(Command command) {
 		for (Class<?> nonForked : NON_FORKED_COMMANDS) {
 			if (nonForked.isInstance(command)) {
 				return command;
@@ -126,11 +126,11 @@ public class Shell {
 	}
 
 	/**
-     * Initializes the console reader for the Shell class.
-     * Enables history, disables bell sound, and disables event expansion.
-     * Adds a command completer and sets a completion handler.
-     */
-    private void initializeConsoleReader() {
+	 * Initializes the console reader for the Shell class. Enables history, disables bell
+	 * sound, and disables event expansion. Adds a command completer and sets a completion
+	 * handler.
+	 */
+	private void initializeConsoleReader() {
 		this.consoleReader.setHistoryEnabled(true);
 		this.consoleReader.setBellEnabled(false);
 		this.consoleReader.setExpandEvents(false);
@@ -140,12 +140,12 @@ public class Shell {
 	}
 
 	/**
-     * Attaches a signal handler to handle the SIGINT signal.
-     * 
-     * @see SignalUtils#attachSignalHandler(SignalHandler)
-     * @see #handleSigInt()
-     */
-    private void attachSignalHandler() {
+	 * Attaches a signal handler to handle the SIGINT signal.
+	 *
+	 * @see SignalUtils#attachSignalHandler(SignalHandler)
+	 * @see #handleSigInt()
+	 */
+	private void attachSignalHandler() {
 		SignalUtils.attachSignalHandler(this::handleSigInt);
 	}
 
@@ -166,14 +166,13 @@ public class Shell {
 	}
 
 	/**
-     * Prints the banner for the Shell class.
-     * The banner includes the version of the class if available.
-     * The banner also provides instructions for using the Shell class.
-     * 
-     * @see Shell
-     * @since 1.0.0
-     */
-    private void printBanner() {
+	 * Prints the banner for the Shell class. The banner includes the version of the class
+	 * if available. The banner also provides instructions for using the Shell class.
+	 *
+	 * @see Shell
+	 * @since 1.0.0
+	 */
+	private void printBanner() {
 		String version = getClass().getPackage().getImplementationVersion();
 		version = (version != null) ? " (v" + version + ")" : "";
 		System.out.println(ansi("Spring Boot", Code.BOLD).append(version, Code.FAINT));
@@ -181,11 +180,10 @@ public class Shell {
 	}
 
 	/**
-     * Runs the input loop for the shell.
-     * 
-     * @throws Exception if an error occurs during the input loop
-     */
-    private void runInputLoop() throws Exception {
+	 * Runs the input loop for the shell.
+	 * @throws Exception if an error occurs during the input loop
+	 */
+	private void runInputLoop() throws Exception {
 		String line;
 		while ((line = this.consoleReader.readLine(getPrompt())) != null) {
 			while (line.endsWith("\\")) {
@@ -200,23 +198,21 @@ public class Shell {
 	}
 
 	/**
-     * Returns the prompt for the Shell.
-     * 
-     * @return the prompt for the Shell
-     */
-    private String getPrompt() {
+	 * Returns the prompt for the Shell.
+	 * @return the prompt for the Shell
+	 */
+	private String getPrompt() {
 		String prompt = this.prompts.getPrompt();
 		return ansi(prompt, Code.FG_BLUE).toString();
 	}
 
 	/**
-     * Returns an AnsiString object with the specified text and codes.
-     * 
-     * @param text the text to be appended to the AnsiString object
-     * @param codes the codes to be applied to the AnsiString object
-     * @return an AnsiString object with the specified text and codes
-     */
-    private AnsiString ansi(String text, Code... codes) {
+	 * Returns an AnsiString object with the specified text and codes.
+	 * @param text the text to be appended to the AnsiString object
+	 * @param codes the codes to be applied to the AnsiString object
+	 * @return an AnsiString object with the specified text and codes
+	 */
+	private AnsiString ansi(String text, Code... codes) {
 		return new AnsiString(this.consoleReader.getTerminal()).append(text, codes);
 	}
 
@@ -242,31 +238,29 @@ public class Shell {
 		private final Map<String, String> aliases = new HashMap<>();
 
 		/**
-         * Constructs a new ShellCommandRunner with a null command.
-         */
-        ShellCommandRunner() {
+		 * Constructs a new ShellCommandRunner with a null command.
+		 */
+		ShellCommandRunner() {
 			super(null);
 		}
 
 		/**
-         * Adds aliases for a command.
-         * 
-         * @param command the command to add aliases for
-         * @param aliases the aliases to be added for the command
-         */
-        void addAliases(String command, String... aliases) {
+		 * Adds aliases for a command.
+		 * @param command the command to add aliases for
+		 * @param aliases the aliases to be added for the command
+		 */
+		void addAliases(String command, String... aliases) {
 			for (String alias : aliases) {
 				this.aliases.put(alias, command);
 			}
 		}
 
 		/**
-         * Finds a command based on the given name.
-         * 
-         * @param name the name of the command to find
-         * @return the command object corresponding to the given name
-         */
-        @Override
+		 * Finds a command based on the given name.
+		 * @param name the name of the command to find
+		 * @return the command object corresponding to the given name
+		 */
+		@Override
 		public Command findCommand(String name) {
 			if (name.startsWith("!")) {
 				return new RunProcessCommand(name.substring(1));
@@ -278,31 +272,29 @@ public class Shell {
 		}
 
 		/**
-         * Sets the last command executed before running the command.
-         * 
-         * @param command the command to be executed
-         */
-        @Override
+		 * Sets the last command executed before running the command.
+		 * @param command the command to be executed
+		 */
+		@Override
 		protected void beforeRun(Command command) {
 			this.lastCommand = command;
 		}
 
 		/**
-         * This method is called after the execution of a command in the ShellCommandRunner class.
-         * It can be overridden in subclasses to perform additional actions or handle the command result.
-         * 
-         * @param command The command that was executed.
-         */
-        @Override
+		 * This method is called after the execution of a command in the
+		 * ShellCommandRunner class. It can be overridden in subclasses to perform
+		 * additional actions or handle the command result.
+		 * @param command The command that was executed.
+		 */
+		@Override
 		protected void afterRun(Command command) {
 		}
 
 		/**
-         * Handles the SIGINT signal.
-         * 
-         * @return true if the SIGINT signal was successfully handled, false otherwise.
-         */
-        boolean handleSigInt() {
+		 * Handles the SIGINT signal.
+		 * @return true if the SIGINT signal was successfully handled, false otherwise.
+		 */
+		boolean handleSigInt() {
 			Command command = this.lastCommand;
 			if (command instanceof RunProcessCommand runProcessCommand) {
 				return runProcessCommand.handleSigInt();

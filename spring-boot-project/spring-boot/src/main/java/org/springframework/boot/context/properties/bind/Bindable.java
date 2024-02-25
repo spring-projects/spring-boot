@@ -60,16 +60,15 @@ public final class Bindable<T> {
 	private final BindMethod bindMethod;
 
 	/**
-     * Constructs a new Bindable object with the specified parameters.
-     * 
-     * @param type the ResolvableType of the object
-     * @param boxedType the ResolvableType of the boxed object
-     * @param value the Supplier function that provides the value of the object
-     * @param annotations the array of annotations associated with the object
-     * @param bindRestrictions the set of bind restrictions for the object
-     * @param bindMethod the bind method used for binding the object
-     */
-    private Bindable(ResolvableType type, ResolvableType boxedType, Supplier<T> value, Annotation[] annotations,
+	 * Constructs a new Bindable object with the specified parameters.
+	 * @param type the ResolvableType of the object
+	 * @param boxedType the ResolvableType of the boxed object
+	 * @param value the Supplier function that provides the value of the object
+	 * @param annotations the array of annotations associated with the object
+	 * @param bindRestrictions the set of bind restrictions for the object
+	 * @param bindMethod the bind method used for binding the object
+	 */
+	private Bindable(ResolvableType type, ResolvableType boxedType, Supplier<T> value, Annotation[] annotations,
 			EnumSet<BindRestriction> bindRestrictions, BindMethod bindMethod) {
 		this.type = type;
 		this.boxedType = boxedType;
@@ -148,12 +147,12 @@ public final class Bindable<T> {
 	}
 
 	/**
-     * Compares this Bindable object with the specified object for equality.
-     * 
-     * @param obj the object to compare with
-     * @return true if the specified object is equal to this Bindable object, false otherwise
-     */
-    @Override
+	 * Compares this Bindable object with the specified object for equality.
+	 * @param obj the object to compare with
+	 * @return true if the specified object is equal to this Bindable object, false
+	 * otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -171,22 +170,21 @@ public final class Bindable<T> {
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the default implementation of the {@code hashCode()} method
-     * inherited from the {@code Object} class.
-     *
-     * @return the hash code value for this object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the default
+	 * implementation of the {@code hashCode()} method inherited from the {@code Object}
+	 * class.
+	 * @return the hash code value for this object
+	 */
+	@Override
 	public int hashCode() {
 		return ObjectUtils.nullSafeHash(this.type, this.annotations, this.bindRestrictions, this.bindMethod);
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * 
-     * @return a string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return a string representation of the object
+	 */
+	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this);
 		creator.append("type", this.type);
@@ -197,13 +195,13 @@ public final class Bindable<T> {
 	}
 
 	/**
-     * Compares two objects for equality, taking into account the possibility of null values.
-     * 
-     * @param o1 the first object to compare
-     * @param o2 the second object to compare
-     * @return true if the objects are equal or both null, false otherwise
-     */
-    private boolean nullSafeEquals(Object o1, Object o2) {
+	 * Compares two objects for equality, taking into account the possibility of null
+	 * values.
+	 * @param o1 the first object to compare
+	 * @param o2 the second object to compare
+	 * @return true if the objects are equal or both null, false otherwise
+	 */
+	private boolean nullSafeEquals(Object o1, Object o2) {
 		return ObjectUtils.nullSafeEquals(o1, o2);
 	}
 
@@ -346,14 +344,14 @@ public final class Bindable<T> {
 	}
 
 	/**
-     * Boxes the given ResolvableType if it is a primitive type or an array type.
-     * If the ResolvableType is a primitive type, it is boxed into its corresponding wrapper type.
-     * If the ResolvableType is an array type, the component type is boxed recursively.
-     * 
-     * @param type the ResolvableType to be boxed
-     * @return the boxed ResolvableType
-     */
-    private static ResolvableType box(ResolvableType type) {
+	 * Boxes the given ResolvableType if it is a primitive type or an array type. If the
+	 * ResolvableType is a primitive type, it is boxed into its corresponding wrapper
+	 * type. If the ResolvableType is an array type, the component type is boxed
+	 * recursively.
+	 * @param type the ResolvableType to be boxed
+	 * @return the boxed ResolvableType
+	 */
+	private static ResolvableType box(ResolvableType type) {
 		Class<?> resolved = type.resolve();
 		if (resolved != null && resolved.isPrimitive()) {
 			Object array = Array.newInstance(resolved, 1);

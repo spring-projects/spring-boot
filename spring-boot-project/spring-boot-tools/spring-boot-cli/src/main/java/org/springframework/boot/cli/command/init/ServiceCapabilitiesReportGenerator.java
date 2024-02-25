@@ -63,13 +63,12 @@ class ServiceCapabilitiesReportGenerator {
 	}
 
 	/**
-     * Generates a help report for the given URL and metadata.
-     * 
-     * @param url the URL of the service
-     * @param metadata the metadata of the service
-     * @return the generated help report
-     */
-    private String generateHelp(String url, InitializrServiceMetadata metadata) {
+	 * Generates a help report for the given URL and metadata.
+	 * @param url the URL of the service
+	 * @param metadata the metadata of the service
+	 * @return the generated help report
+	 */
+	private String generateHelp(String url, InitializrServiceMetadata metadata) {
 		String header = "Capabilities of " + url;
 		StringBuilder report = new StringBuilder();
 		report.append("=".repeat(header.length())).append(NEW_LINE);
@@ -85,12 +84,12 @@ class ServiceCapabilitiesReportGenerator {
 	}
 
 	/**
-     * Generates a report of the available dependencies based on the provided metadata.
-     * 
-     * @param metadata The metadata containing information about the available dependencies.
-     * @param report The StringBuilder object to append the report to.
-     */
-    private void reportAvailableDependencies(InitializrServiceMetadata metadata, StringBuilder report) {
+	 * Generates a report of the available dependencies based on the provided metadata.
+	 * @param metadata The metadata containing information about the available
+	 * dependencies.
+	 * @param report The StringBuilder object to append the report to.
+	 */
+	private void reportAvailableDependencies(InitializrServiceMetadata metadata, StringBuilder report) {
 		report.append("Available dependencies:").append(NEW_LINE);
 		report.append("-----------------------").append(NEW_LINE);
 		List<Dependency> dependencies = getSortedDependencies(metadata);
@@ -104,24 +103,22 @@ class ServiceCapabilitiesReportGenerator {
 	}
 
 	/**
-     * Returns a sorted list of dependencies based on the provided metadata.
-     *
-     * @param metadata the InitializrServiceMetadata object containing the dependencies
-     * @return a sorted list of Dependency objects
-     */
-    private List<Dependency> getSortedDependencies(InitializrServiceMetadata metadata) {
+	 * Returns a sorted list of dependencies based on the provided metadata.
+	 * @param metadata the InitializrServiceMetadata object containing the dependencies
+	 * @return a sorted list of Dependency objects
+	 */
+	private List<Dependency> getSortedDependencies(InitializrServiceMetadata metadata) {
 		List<Dependency> dependencies = new ArrayList<>(metadata.getDependencies());
 		dependencies.sort(Comparator.comparing(Dependency::getId));
 		return dependencies;
 	}
 
 	/**
-     * Reports the available project types.
-     * 
-     * @param metadata the InitializrServiceMetadata containing the project types
-     * @param report the StringBuilder to append the report to
-     */
-    private void reportAvailableProjectTypes(InitializrServiceMetadata metadata, StringBuilder report) {
+	 * Reports the available project types.
+	 * @param metadata the InitializrServiceMetadata containing the project types
+	 * @param report the StringBuilder to append the report to
+	 */
+	private void reportAvailableProjectTypes(InitializrServiceMetadata metadata, StringBuilder report) {
 		report.append("Available project types:").append(NEW_LINE);
 		report.append("------------------------").append(NEW_LINE);
 		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<>(Entry.comparingByKey());
@@ -140,12 +137,11 @@ class ServiceCapabilitiesReportGenerator {
 	}
 
 	/**
-     * Generates a report of tags for a given project type.
-     * 
-     * @param report the StringBuilder object to append the report to
-     * @param type the ProjectType object representing the project type
-     */
-    private void reportTags(StringBuilder report, ProjectType type) {
+	 * Generates a report of tags for a given project type.
+	 * @param report the StringBuilder object to append the report to
+	 * @param type the ProjectType object representing the project type
+	 */
+	private void reportTags(StringBuilder report, ProjectType type) {
 		Map<String, String> tags = type.getTags();
 		Iterator<Map.Entry<String, String>> iterator = tags.entrySet().iterator();
 		report.append(" [");
@@ -160,12 +156,11 @@ class ServiceCapabilitiesReportGenerator {
 	}
 
 	/**
-     * Generates a report of the default values for the given InitializrServiceMetadata.
-     * 
-     * @param report the StringBuilder object to append the report to
-     * @param metadata the InitializrServiceMetadata object containing the default values
-     */
-    private void reportDefaults(StringBuilder report, InitializrServiceMetadata metadata) {
+	 * Generates a report of the default values for the given InitializrServiceMetadata.
+	 * @param report the StringBuilder object to append the report to
+	 * @param metadata the InitializrServiceMetadata object containing the default values
+	 */
+	private void reportDefaults(StringBuilder report, InitializrServiceMetadata metadata) {
 		report.append("Defaults:").append(NEW_LINE);
 		report.append("---------").append(NEW_LINE);
 		List<String> defaultsKeys = new ArrayList<>(metadata.getDefaults().keySet());

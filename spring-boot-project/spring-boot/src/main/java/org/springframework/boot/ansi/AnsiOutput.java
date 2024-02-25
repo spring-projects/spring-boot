@@ -101,12 +101,11 @@ public abstract class AnsiOutput {
 	}
 
 	/**
-     * Builds a string with enabled ANSI encoding based on the given elements.
-     * 
-     * @param sb the StringBuilder to append the encoded string to
-     * @param elements the array of elements to be encoded
-     */
-    private static void buildEnabled(StringBuilder sb, Object[] elements) {
+	 * Builds a string with enabled ANSI encoding based on the given elements.
+	 * @param sb the StringBuilder to append the encoded string to
+	 * @param elements the array of elements to be encoded
+	 */
+	private static void buildEnabled(StringBuilder sb, Object[] elements) {
 		boolean writingAnsi = false;
 		boolean containsEncoding = false;
 		for (Object element : elements) {
@@ -136,12 +135,12 @@ public abstract class AnsiOutput {
 	}
 
 	/**
-     * Builds a disabled string representation by appending non-null elements from the given array to the provided StringBuilder.
-     * 
-     * @param sb the StringBuilder to append the elements to
-     * @param elements the array of elements to be appended
-     */
-    private static void buildDisabled(StringBuilder sb, Object[] elements) {
+	 * Builds a disabled string representation by appending non-null elements from the
+	 * given array to the provided StringBuilder.
+	 * @param sb the StringBuilder to append the elements to
+	 * @param elements the array of elements to be appended
+	 */
+	private static void buildDisabled(StringBuilder sb, Object[] elements) {
 		for (Object element : elements) {
 			if (!(element instanceof AnsiElement) && element != null) {
 				sb.append(element);
@@ -150,11 +149,10 @@ public abstract class AnsiOutput {
 	}
 
 	/**
-     * Returns a boolean value indicating whether ANSI output is enabled.
-     * 
-     * @return true if ANSI output is enabled, false otherwise
-     */
-    private static boolean isEnabled() {
+	 * Returns a boolean value indicating whether ANSI output is enabled.
+	 * @return true if ANSI output is enabled, false otherwise
+	 */
+	private static boolean isEnabled() {
 		if (enabled == Enabled.DETECT) {
 			if (ansiCapable == null) {
 				ansiCapable = detectIfAnsiCapable();
@@ -165,11 +163,11 @@ public abstract class AnsiOutput {
 	}
 
 	/**
-     * Detects if the current system is capable of supporting ANSI escape codes for console output.
-     * 
-     * @return {@code true} if the system is ANSI capable, {@code false} otherwise
-     */
-    private static boolean detectIfAnsiCapable() {
+	 * Detects if the current system is capable of supporting ANSI escape codes for
+	 * console output.
+	 * @return {@code true} if the system is ANSI capable, {@code false} otherwise
+	 */
+	private static boolean detectIfAnsiCapable() {
 		try {
 			if (Boolean.FALSE.equals(consoleAvailable)) {
 				return false;

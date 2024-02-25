@@ -31,11 +31,11 @@ import org.gradle.api.Project;
 final class DependencyManagementPluginAction implements PluginApplicationAction {
 
 	/**
-     * Executes the action of importing the Maven BOM for the Spring Boot plugin into the project's dependency management.
-     * 
-     * @param project the project to execute the action on
-     */
-    @Override
+	 * Executes the action of importing the Maven BOM for the Spring Boot plugin into the
+	 * project's dependency management.
+	 * @param project the project to execute the action on
+	 */
+	@Override
 	public void execute(Project project) {
 		project.getExtensions()
 			.findByType(DependencyManagementExtension.class)
@@ -43,11 +43,10 @@ final class DependencyManagementPluginAction implements PluginApplicationAction 
 	}
 
 	/**
-     * Returns the class of the plugin that this action is associated with.
-     *
-     * @return the class of the plugin
-     */
-    @Override
+	 * Returns the class of the plugin that this action is associated with.
+	 * @return the class of the plugin
+	 */
+	@Override
 	public Class<? extends Plugin<Project>> getPluginClass() {
 		return DependencyManagementPlugin.class;
 	}

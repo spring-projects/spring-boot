@@ -45,56 +45,50 @@ public class KairosProperties extends StepRegistryProperties {
 	private String password;
 
 	/**
-     * Returns the URI of the KairosProperties object.
-     *
-     * @return the URI of the KairosProperties object
-     */
-    public String getUri() {
+	 * Returns the URI of the KairosProperties object.
+	 * @return the URI of the KairosProperties object
+	 */
+	public String getUri() {
 		return this.uri;
 	}
 
 	/**
-     * Sets the URI for the KairosProperties class.
-     * 
-     * @param uri the URI to be set
-     */
-    public void setUri(String uri) {
+	 * Sets the URI for the KairosProperties class.
+	 * @param uri the URI to be set
+	 */
+	public void setUri(String uri) {
 		this.uri = uri;
 	}
 
 	/**
-     * Returns the username associated with the KairosProperties object.
-     *
-     * @return the username
-     */
-    public String getUserName() {
+	 * Returns the username associated with the KairosProperties object.
+	 * @return the username
+	 */
+	public String getUserName() {
 		return this.userName;
 	}
 
 	/**
-     * Sets the username for the KairosProperties class.
-     * 
-     * @param userName the username to be set
-     */
-    public void setUserName(String userName) {
+	 * Sets the username for the KairosProperties class.
+	 * @param userName the username to be set
+	 */
+	public void setUserName(String userName) {
 		this.userName = userName;
 	}
 
 	/**
-     * Returns the password value.
-     *
-     * @return the password value
-     */
-    public String getPassword() {
+	 * Returns the password value.
+	 * @return the password value
+	 */
+	public String getPassword() {
 		return this.password;
 	}
 
 	/**
-     * Sets the password for the KairosProperties object.
-     * 
-     * @param password the password to be set
-     */
-    public void setPassword(String password) {
+	 * Sets the password for the KairosProperties object.
+	 * @param password the password to be set
+	 */
+	public void setPassword(String password) {
 		this.password = password;
 	}
 

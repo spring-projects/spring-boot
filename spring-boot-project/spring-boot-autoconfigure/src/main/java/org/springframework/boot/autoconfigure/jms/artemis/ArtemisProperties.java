@@ -64,92 +64,84 @@ public class ArtemisProperties {
 	private final JmsPoolConnectionFactoryProperties pool = new JmsPoolConnectionFactoryProperties();
 
 	/**
-     * Returns the current mode of the ArtemisProperties.
-     *
-     * @return the current mode of the ArtemisProperties
-     */
-    public ArtemisMode getMode() {
+	 * Returns the current mode of the ArtemisProperties.
+	 * @return the current mode of the ArtemisProperties
+	 */
+	public ArtemisMode getMode() {
 		return this.mode;
 	}
 
 	/**
-     * Sets the mode of the ArtemisProperties.
-     * 
-     * @param mode the ArtemisMode to set
-     */
-    public void setMode(ArtemisMode mode) {
+	 * Sets the mode of the ArtemisProperties.
+	 * @param mode the ArtemisMode to set
+	 */
+	public void setMode(ArtemisMode mode) {
 		this.mode = mode;
 	}
 
 	/**
-     * Returns the broker URL.
-     *
-     * @return the broker URL
-     */
-    public String getBrokerUrl() {
+	 * Returns the broker URL.
+	 * @return the broker URL
+	 */
+	public String getBrokerUrl() {
 		return this.brokerUrl;
 	}
 
 	/**
-     * Sets the broker URL for connecting to the Artemis message broker.
-     * 
-     * @param brokerUrl the URL of the Artemis message broker
-     */
-    public void setBrokerUrl(String brokerUrl) {
+	 * Sets the broker URL for connecting to the Artemis message broker.
+	 * @param brokerUrl the URL of the Artemis message broker
+	 */
+	public void setBrokerUrl(String brokerUrl) {
 		this.brokerUrl = brokerUrl;
 	}
 
 	/**
-     * Returns the user associated with the ArtemisProperties object.
-     *
-     * @return the user associated with the ArtemisProperties object
-     */
-    public String getUser() {
+	 * Returns the user associated with the ArtemisProperties object.
+	 * @return the user associated with the ArtemisProperties object
+	 */
+	public String getUser() {
 		return this.user;
 	}
 
 	/**
-     * Sets the user for the ArtemisProperties.
-     * 
-     * @param user the user to be set
-     */
-    public void setUser(String user) {
+	 * Sets the user for the ArtemisProperties.
+	 * @param user the user to be set
+	 */
+	public void setUser(String user) {
 		this.user = user;
 	}
 
 	/**
-     * Returns the password value.
-     *
-     * @return the password value
-     */
-    public String getPassword() {
+	 * Returns the password value.
+	 * @return the password value
+	 */
+	public String getPassword() {
 		return this.password;
 	}
 
 	/**
-     * Sets the password for the ArtemisProperties object.
-     * 
-     * @param password the password to be set
-     */
-    public void setPassword(String password) {
+	 * Sets the password for the ArtemisProperties object.
+	 * @param password the password to be set
+	 */
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	/**
-     * Returns the embedded object.
-     *
-     * @return the embedded object
-     */
-    public Embedded getEmbedded() {
+	 * Returns the embedded object.
+	 * @return the embedded object
+	 */
+	public Embedded getEmbedded() {
 		return this.embedded;
 	}
 
 	/**
-     * Returns the JmsPoolConnectionFactoryProperties object representing the connection pool configuration.
-     *
-     * @return the JmsPoolConnectionFactoryProperties object representing the connection pool configuration
-     */
-    public JmsPoolConnectionFactoryProperties getPool() {
+	 * Returns the JmsPoolConnectionFactoryProperties object representing the connection
+	 * pool configuration.
+	 * @return the JmsPoolConnectionFactoryProperties object representing the connection
+	 * pool configuration
+	 */
+	public JmsPoolConnectionFactoryProperties getPool() {
 		return this.pool;
 	}
 
@@ -198,138 +190,124 @@ public class ArtemisProperties {
 		private boolean defaultClusterPassword = true;
 
 		/**
-         * Returns the server ID.
-         * 
-         * @return the server ID
-         */
-        public int getServerId() {
+		 * Returns the server ID.
+		 * @return the server ID
+		 */
+		public int getServerId() {
 			return this.serverId;
 		}
 
 		/**
-         * Sets the server ID for the Embedded class.
-         * 
-         * @param serverId the server ID to be set
-         */
-        public void setServerId(int serverId) {
+		 * Sets the server ID for the Embedded class.
+		 * @param serverId the server ID to be set
+		 */
+		public void setServerId(int serverId) {
 			this.serverId = serverId;
 		}
 
 		/**
-         * Returns the current state of the enabled flag.
-         *
-         * @return true if the enabled flag is set, false otherwise.
-         */
-        public boolean isEnabled() {
+		 * Returns the current state of the enabled flag.
+		 * @return true if the enabled flag is set, false otherwise.
+		 */
+		public boolean isEnabled() {
 			return this.enabled;
 		}
 
 		/**
-         * Sets the enabled status of the Embedded object.
-         * 
-         * @param enabled the enabled status to be set
-         */
-        public void setEnabled(boolean enabled) {
+		 * Sets the enabled status of the Embedded object.
+		 * @param enabled the enabled status to be set
+		 */
+		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the object is persistent.
-         * 
-         * @return true if the object is persistent, false otherwise
-         */
-        public boolean isPersistent() {
+		 * Returns a boolean value indicating whether the object is persistent.
+		 * @return true if the object is persistent, false otherwise
+		 */
+		public boolean isPersistent() {
 			return this.persistent;
 		}
 
 		/**
-         * Sets the persistent flag for the Embedded object.
-         * 
-         * @param persistent the value to set for the persistent flag
-         */
-        public void setPersistent(boolean persistent) {
+		 * Sets the persistent flag for the Embedded object.
+		 * @param persistent the value to set for the persistent flag
+		 */
+		public void setPersistent(boolean persistent) {
 			this.persistent = persistent;
 		}
 
 		/**
-         * Returns the data directory.
-         *
-         * @return the data directory
-         */
-        public String getDataDirectory() {
+		 * Returns the data directory.
+		 * @return the data directory
+		 */
+		public String getDataDirectory() {
 			return this.dataDirectory;
 		}
 
 		/**
-         * Sets the data directory for the Embedded class.
-         * 
-         * @param dataDirectory the path to the data directory
-         */
-        public void setDataDirectory(String dataDirectory) {
+		 * Sets the data directory for the Embedded class.
+		 * @param dataDirectory the path to the data directory
+		 */
+		public void setDataDirectory(String dataDirectory) {
 			this.dataDirectory = dataDirectory;
 		}
 
 		/**
-         * Returns an array of queues.
-         *
-         * @return an array of queues
-         */
-        public String[] getQueues() {
+		 * Returns an array of queues.
+		 * @return an array of queues
+		 */
+		public String[] getQueues() {
 			return this.queues;
 		}
 
 		/**
-         * Sets the queues for the Embedded class.
-         * 
-         * @param queues an array of strings representing the queues
-         */
-        public void setQueues(String[] queues) {
+		 * Sets the queues for the Embedded class.
+		 * @param queues an array of strings representing the queues
+		 */
+		public void setQueues(String[] queues) {
 			this.queues = queues;
 		}
 
 		/**
-         * Returns an array of topics.
-         *
-         * @return an array of topics
-         */
-        public String[] getTopics() {
+		 * Returns an array of topics.
+		 * @return an array of topics
+		 */
+		public String[] getTopics() {
 			return this.topics;
 		}
 
 		/**
-         * Sets the topics for the Embedded class.
-         * 
-         * @param topics an array of strings representing the topics to be set
-         */
-        public void setTopics(String[] topics) {
+		 * Sets the topics for the Embedded class.
+		 * @param topics an array of strings representing the topics to be set
+		 */
+		public void setTopics(String[] topics) {
 			this.topics = topics;
 		}
 
 		/**
-         * Returns the cluster password.
-         * 
-         * @return the cluster password
-         */
-        public String getClusterPassword() {
+		 * Returns the cluster password.
+		 * @return the cluster password
+		 */
+		public String getClusterPassword() {
 			return this.clusterPassword;
 		}
 
 		/**
-         * Sets the password for the cluster.
-         * 
-         * @param clusterPassword the password to set for the cluster
-         */
-        public void setClusterPassword(String clusterPassword) {
+		 * Sets the password for the cluster.
+		 * @param clusterPassword the password to set for the cluster
+		 */
+		public void setClusterPassword(String clusterPassword) {
 			this.clusterPassword = clusterPassword;
 			this.defaultClusterPassword = false;
 		}
 
 		/**
-         * Returns true if the cluster password is set to the default value.
-         * 
-         * @return true if the cluster password is set to the default value, false otherwise
-         */
-        public boolean isDefaultClusterPassword() {
+		 * Returns true if the cluster password is set to the default value.
+		 * @return true if the cluster password is set to the default value, false
+		 * otherwise
+		 */
+		public boolean isDefaultClusterPassword() {
 			return this.defaultClusterPassword;
 		}
 

@@ -170,14 +170,15 @@ public abstract class LoggingSystem {
 	}
 
 	/**
-     * Retrieves an instance of the LoggingSystem class based on the provided class loader and logging system class name.
-     * 
-     * @param classLoader the class loader to use for loading the logging system class
-     * @param loggingSystemClassName the fully qualified name of the logging system class
-     * @return an instance of the LoggingSystem class
-     * @throws IllegalStateException if an error occurs while retrieving the logging system instance
-     */
-    private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClassName) {
+	 * Retrieves an instance of the LoggingSystem class based on the provided class loader
+	 * and logging system class name.
+	 * @param classLoader the class loader to use for loading the logging system class
+	 * @param loggingSystemClassName the fully qualified name of the logging system class
+	 * @return an instance of the LoggingSystem class
+	 * @throws IllegalStateException if an error occurs while retrieving the logging
+	 * system instance
+	 */
+	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClassName) {
 		try {
 			Class<?> systemClass = ClassUtils.forName(loggingSystemClassName, classLoader);
 			Constructor<?> constructor = systemClass.getDeclaredConstructor(ClassLoader.class);
@@ -195,41 +196,38 @@ public abstract class LoggingSystem {
 	static class NoOpLoggingSystem extends LoggingSystem {
 
 		/**
-         * This method is called before the initialization of the logging system.
-         */
-        @Override
+		 * This method is called before the initialization of the logging system.
+		 */
+		@Override
 		public void beforeInitialize() {
 
 		}
 
 		/**
-         * Sets the log level for a specific logger.
-         *
-         * @param loggerName the name of the logger
-         * @param level the log level to be set
-         */
-        @Override
+		 * Sets the log level for a specific logger.
+		 * @param loggerName the name of the logger
+		 * @param level the log level to be set
+		 */
+		@Override
 		public void setLogLevel(String loggerName, LogLevel level) {
 
 		}
 
 		/**
-         * Returns an empty list of LoggerConfigurations.
-         *
-         * @return an empty list of LoggerConfigurations
-         */
-        @Override
+		 * Returns an empty list of LoggerConfigurations.
+		 * @return an empty list of LoggerConfigurations
+		 */
+		@Override
 		public List<LoggerConfiguration> getLoggerConfigurations() {
 			return Collections.emptyList();
 		}
 
 		/**
-         * Retrieves the logger configuration for the specified logger name.
-         *
-         * @param loggerName the name of the logger
-         * @return the logger configuration, or null if not found
-         */
-        @Override
+		 * Retrieves the logger configuration for the specified logger name.
+		 * @param loggerName the name of the logger
+		 * @return the logger configuration, or null if not found
+		 */
+		@Override
 		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
 			return null;
 		}

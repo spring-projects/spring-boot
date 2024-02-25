@@ -47,12 +47,12 @@ class SpringApplicationAdminClient {
 	private final ObjectName objectName;
 
 	/**
-     * Creates a new instance of SpringApplicationAdminClient with the specified MBeanServerConnection and JMX name.
-     * 
-     * @param connection the MBeanServerConnection to be used for JMX operations
-     * @param jmxName the JMX name of the SpringApplicationAdminClient object
-     */
-    SpringApplicationAdminClient(MBeanServerConnection connection, String jmxName) {
+	 * Creates a new instance of SpringApplicationAdminClient with the specified
+	 * MBeanServerConnection and JMX name.
+	 * @param connection the MBeanServerConnection to be used for JMX operations
+	 * @param jmxName the JMX name of the SpringApplicationAdminClient object
+	 */
+	SpringApplicationAdminClient(MBeanServerConnection connection, String jmxName) {
 		this.connection = connection;
 		this.objectName = toObjectName(jmxName);
 	}
@@ -101,13 +101,12 @@ class SpringApplicationAdminClient {
 	}
 
 	/**
-     * Converts a string representation of an object name to an ObjectName instance.
-     * 
-     * @param name the string representation of the object name
-     * @return the ObjectName instance
-     * @throws IllegalArgumentException if the provided name is invalid
-     */
-    private ObjectName toObjectName(String name) {
+	 * Converts a string representation of an object name to an ObjectName instance.
+	 * @param name the string representation of the object name
+	 * @return the ObjectName instance
+	 * @throws IllegalArgumentException if the provided name is invalid
+	 */
+	private ObjectName toObjectName(String name) {
 		try {
 			return new ObjectName(name);
 		}

@@ -49,13 +49,13 @@ import org.springframework.util.unit.DataSize;
 public class WavefrontSenderConfiguration {
 
 	/**
-     * Creates a WavefrontSender bean if no other bean of type WavefrontSender is present and if the
-     * WavefrontTracingOrMetricsCondition is met.
-     *
-     * @param properties the WavefrontProperties object containing the necessary configuration properties
-     * @return a WavefrontSender object configured with the provided properties
-     */
-    @Bean
+	 * Creates a WavefrontSender bean if no other bean of type WavefrontSender is present
+	 * and if the WavefrontTracingOrMetricsCondition is met.
+	 * @param properties the WavefrontProperties object containing the necessary
+	 * configuration properties
+	 * @return a WavefrontSender object configured with the provided properties
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@Conditional(WavefrontTracingOrMetricsCondition.class)
 	public WavefrontSender wavefrontSender(WavefrontProperties properties) {
@@ -71,30 +71,30 @@ public class WavefrontSenderConfiguration {
 	}
 
 	/**
-     * WavefrontTracingOrMetricsCondition class.
-     */
-    static final class WavefrontTracingOrMetricsCondition extends AnyNestedCondition {
+	 * WavefrontTracingOrMetricsCondition class.
+	 */
+	static final class WavefrontTracingOrMetricsCondition extends AnyNestedCondition {
 
 		/**
-         * Constructor for the WavefrontTracingOrMetricsCondition class.
-         * Initializes the object with the ConfigurationPhase.REGISTER_BEAN value.
-         */
-        WavefrontTracingOrMetricsCondition() {
+		 * Constructor for the WavefrontTracingOrMetricsCondition class. Initializes the
+		 * object with the ConfigurationPhase.REGISTER_BEAN value.
+		 */
+		WavefrontTracingOrMetricsCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
 		/**
-         * TracingCondition class.
-         */
-        @ConditionalOnEnabledTracing
+		 * TracingCondition class.
+		 */
+		@ConditionalOnEnabledTracing
 		static class TracingCondition {
 
 		}
 
 		/**
-         * MetricsCondition class.
-         */
-        @ConditionalOnEnabledMetricsExport("wavefront")
+		 * MetricsCondition class.
+		 */
+		@ConditionalOnEnabledMetricsExport("wavefront")
 		static class MetricsCondition {
 
 		}

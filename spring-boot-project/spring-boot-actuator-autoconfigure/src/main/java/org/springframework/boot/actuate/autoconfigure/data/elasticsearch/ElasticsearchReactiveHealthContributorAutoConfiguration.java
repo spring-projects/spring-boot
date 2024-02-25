@@ -49,23 +49,25 @@ public class ElasticsearchReactiveHealthContributorAutoConfiguration extends
 		CompositeReactiveHealthContributorConfiguration<ElasticsearchReactiveHealthIndicator, ReactiveElasticsearchClient> {
 
 	/**
-     * Constructs a new ElasticsearchReactiveHealthContributorAutoConfiguration.
-     * 
-     * This constructor initializes the ElasticsearchReactiveHealthContributorAutoConfiguration by calling the super constructor with the ElasticsearchReactiveHealthIndicator class as the argument.
-     * 
-     * @see ElasticsearchReactiveHealthIndicator
-     */
-    public ElasticsearchReactiveHealthContributorAutoConfiguration() {
+	 * Constructs a new ElasticsearchReactiveHealthContributorAutoConfiguration.
+	 *
+	 * This constructor initializes the
+	 * ElasticsearchReactiveHealthContributorAutoConfiguration by calling the super
+	 * constructor with the ElasticsearchReactiveHealthIndicator class as the argument.
+	 *
+	 * @see ElasticsearchReactiveHealthIndicator
+	 */
+	public ElasticsearchReactiveHealthContributorAutoConfiguration() {
 		super(ElasticsearchReactiveHealthIndicator::new);
 	}
 
 	/**
-     * Creates a ReactiveHealthContributor for Elasticsearch if no existing beans with the names "elasticsearchHealthIndicator" or "elasticsearchHealthContributor" are found.
-     * 
-     * @param clients a map of ReactiveElasticsearchClient beans
-     * @return the created ReactiveHealthContributor for Elasticsearch
-     */
-    @Bean
+	 * Creates a ReactiveHealthContributor for Elasticsearch if no existing beans with the
+	 * names "elasticsearchHealthIndicator" or "elasticsearchHealthContributor" are found.
+	 * @param clients a map of ReactiveElasticsearchClient beans
+	 * @return the created ReactiveHealthContributor for Elasticsearch
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })
 	public ReactiveHealthContributor elasticsearchHealthContributor(Map<String, ReactiveElasticsearchClient> clients) {
 		return createContributor(clients);

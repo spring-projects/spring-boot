@@ -60,11 +60,11 @@ public abstract class LayeredSpec {
 	private Layers layers;
 
 	/**
-     * Constructs a new LayeredSpec object.
-     * 
-     * @param objects the ObjectFactory used to create new instances of ApplicationSpec and DependenciesSpec
-     */
-    @Inject
+	 * Constructs a new LayeredSpec object.
+	 * @param objects the ObjectFactory used to create new instances of ApplicationSpec
+	 * and DependenciesSpec
+	 */
+	@Inject
 	public LayeredSpec(ObjectFactory objects) {
 		this.application = objects.newInstance(ApplicationSpec.class);
 		this.dependencies = objects.newInstance(DependenciesSpec.class);
@@ -167,14 +167,15 @@ public abstract class LayeredSpec {
 	}
 
 	/**
-     * Creates the layers based on the layer order defined in the LayeredSpec.
-     * If the layer order is not defined or empty, it returns the implicit layers.
-     * Otherwise, it creates custom layers using the layer order, application selectors, and dependency selectors.
-     *
-     * @return The layers created based on the layer order defined in the LayeredSpec.
-     * @throws IllegalStateException if the layer order is not defined when using custom layering.
-     */
-    private Layers createLayers() {
+	 * Creates the layers based on the layer order defined in the LayeredSpec. If the
+	 * layer order is not defined or empty, it returns the implicit layers. Otherwise, it
+	 * creates custom layers using the layer order, application selectors, and dependency
+	 * selectors.
+	 * @return The layers created based on the layer order defined in the LayeredSpec.
+	 * @throws IllegalStateException if the layer order is not defined when using custom
+	 * layering.
+	 */
+	private Layers createLayers() {
 		List<String> layerOrder = getLayerOrder().getOrNull();
 		if (layerOrder == null || layerOrder.isEmpty()) {
 			Assert.state(this.application.isEmpty() && this.dependencies.isEmpty(),
@@ -198,54 +199,51 @@ public abstract class LayeredSpec {
 		private final Function<String, S> specFactory;
 
 		/**
-         * Returns true if the intoLayers list is empty, false otherwise.
-         * 
-         * @return true if the intoLayers list is empty, false otherwise
-         */
-        boolean isEmpty() {
+		 * Returns true if the intoLayers list is empty, false otherwise.
+		 * @return true if the intoLayers list is empty, false otherwise
+		 */
+		boolean isEmpty() {
 			return this.intoLayers.isEmpty();
 		}
 
 		/**
-         * Constructs a new IntoLayersSpec object with the given specFactory and spec.
-         * 
-         * @param specFactory the factory function used to create the spec
-         * @param spec        the array of IntoLayerSpec objects
-         */
-        IntoLayersSpec(Function<String, S> specFactory, IntoLayerSpec... spec) {
+		 * Constructs a new IntoLayersSpec object with the given specFactory and spec.
+		 * @param specFactory the factory function used to create the spec
+		 * @param spec the array of IntoLayerSpec objects
+		 */
+		IntoLayersSpec(Function<String, S> specFactory, IntoLayerSpec... spec) {
 			this.intoLayers = new ArrayList<>(Arrays.asList(spec));
 			this.specFactory = specFactory;
 		}
 
 		/**
-         * Adds the specified layer to the list of layers in the IntoLayersSpec object.
-         * 
-         * @param layer the layer to be added
-         */
-        public void intoLayer(String layer) {
+		 * Adds the specified layer to the list of layers in the IntoLayersSpec object.
+		 * @param layer the layer to be added
+		 */
+		public void intoLayer(String layer) {
 			this.intoLayers.add(this.specFactory.apply(layer));
 		}
 
 		/**
-         * Adds a new layer to the IntoLayersSpec and performs the specified action on it.
-         * 
-         * @param layer the layer to be added
-         * @param action the action to be performed on the layer
-         * @throws NullPointerException if the layer or action is null
-         */
-        public void intoLayer(String layer, Action<S> action) {
+		 * Adds a new layer to the IntoLayersSpec and performs the specified action on it.
+		 * @param layer the layer to be added
+		 * @param action the action to be performed on the layer
+		 * @throws NullPointerException if the layer or action is null
+		 */
+		public void intoLayer(String layer, Action<S> action) {
 			S spec = this.specFactory.apply(layer);
 			action.execute(spec);
 			this.intoLayers.add(spec);
 		}
 
 		/**
-         * Converts the list of IntoLayerSpec objects into a list of ContentSelector objects using the provided selectorFactory function.
-         * 
-         * @param selectorFactory the function used to create ContentSelector objects from IntoLayerSpec objects
-         * @return a list of ContentSelector objects
-         */
-        <T> List<ContentSelector<T>> asSelectors(Function<IntoLayerSpec, ContentSelector<T>> selectorFactory) {
+		 * Converts the list of IntoLayerSpec objects into a list of ContentSelector
+		 * objects using the provided selectorFactory function.
+		 * @param selectorFactory the function used to create ContentSelector objects from
+		 * IntoLayerSpec objects
+		 * @return a list of ContentSelector objects
+		 */
+		<T> List<ContentSelector<T>> asSelectors(Function<IntoLayerSpec, ContentSelector<T>> selectorFactory) {
 			return this.intoLayers.stream().map(selectorFactory).toList();
 		}
 
@@ -294,40 +292,37 @@ public abstract class LayeredSpec {
 		}
 
 		/**
-         * Creates a ContentSelector object with the provided filter factory.
-         * 
-         * @param filterFactory the function that creates ContentFilter objects based on a String input
-         * @return a ContentSelector object
-         */
-        <T> ContentSelector<T> asSelector(Function<String, ContentFilter<T>> filterFactory) {
+		 * Creates a ContentSelector object with the provided filter factory.
+		 * @param filterFactory the function that creates ContentFilter objects based on a
+		 * String input
+		 * @return a ContentSelector object
+		 */
+		<T> ContentSelector<T> asSelector(Function<String, ContentFilter<T>> filterFactory) {
 			Layer layer = new Layer(this.intoLayer);
 			return new IncludeExcludeContentSelector<>(layer, this.includes, this.excludes, filterFactory);
 		}
 
 		/**
-         * Returns the value of the intoLayer property.
-         *
-         * @return the value of the intoLayer property
-         */
-        String getIntoLayer() {
+		 * Returns the value of the intoLayer property.
+		 * @return the value of the intoLayer property
+		 */
+		String getIntoLayer() {
 			return this.intoLayer;
 		}
 
 		/**
-         * Returns the list of includes.
-         *
-         * @return the list of includes
-         */
-        List<String> getIncludes() {
+		 * Returns the list of includes.
+		 * @return the list of includes
+		 */
+		List<String> getIncludes() {
 			return this.includes;
 		}
 
 		/**
-         * Returns the list of excludes.
-         *
-         * @return the list of excludes
-         */
-        List<String> getExcludes() {
+		 * Returns the list of excludes.
+		 * @return the list of excludes
+		 */
+		List<String> getExcludes() {
 			return this.excludes;
 		}
 
@@ -373,12 +368,13 @@ public abstract class LayeredSpec {
 		}
 
 		/**
-         * Creates a ContentSelector for selecting libraries based on the provided filters.
-         * 
-         * @param filterFactory a function that creates a ContentFilter for libraries based on a given string
-         * @return a ContentSelector<Library> for selecting libraries
-         */
-        ContentSelector<Library> asLibrarySelector(Function<String, ContentFilter<Library>> filterFactory) {
+		 * Creates a ContentSelector for selecting libraries based on the provided
+		 * filters.
+		 * @param filterFactory a function that creates a ContentFilter for libraries
+		 * based on a given string
+		 * @return a ContentSelector<Library> for selecting libraries
+		 */
+		ContentSelector<Library> asLibrarySelector(Function<String, ContentFilter<Library>> filterFactory) {
 			Layer layer = new Layer(getIntoLayer());
 			List<ContentFilter<Library>> includeFilters = getIncludes().stream()
 				.map(filterFactory)
@@ -404,11 +400,10 @@ public abstract class LayeredSpec {
 	public static class ApplicationSpec extends IntoLayersSpec<IntoLayerSpec> {
 
 		/**
-         * Constructs a new ApplicationSpec object.
-         * 
-         * @param factory the factory used to create IntoLayerSpec objects
-         */
-        @Inject
+		 * Constructs a new ApplicationSpec object.
+		 * @param factory the factory used to create IntoLayerSpec objects
+		 */
+		@Inject
 		public ApplicationSpec() {
 			super(new IntoLayerSpecFactory());
 		}
@@ -423,26 +418,24 @@ public abstract class LayeredSpec {
 		}
 
 		/**
-         * Returns a list of content selectors.
-         * 
-         * @return a list of content selectors
-         */
-        List<ContentSelector<String>> asSelectors() {
+		 * Returns a list of content selectors.
+		 * @return a list of content selectors
+		 */
+		List<ContentSelector<String>> asSelectors() {
 			return asSelectors((spec) -> spec.asSelector(ApplicationContentFilter::new));
 		}
 
 		/**
-         * IntoLayerSpecFactory class.
-         */
-        private static final class IntoLayerSpecFactory implements Function<String, IntoLayerSpec>, Serializable {
+		 * IntoLayerSpecFactory class.
+		 */
+		private static final class IntoLayerSpecFactory implements Function<String, IntoLayerSpec>, Serializable {
 
 			/**
-             * Applies the specified layer to create a new IntoLayerSpec object.
-             * 
-             * @param layer the layer to be applied
-             * @return a new IntoLayerSpec object with the specified layer
-             */
-            @Override
+			 * Applies the specified layer to create a new IntoLayerSpec object.
+			 * @param layer the layer to be applied
+			 * @return a new IntoLayerSpec object with the specified layer
+			 */
+			@Override
 			public IntoLayerSpec apply(String layer) {
 				return new IntoLayerSpec(layer);
 			}
@@ -457,11 +450,10 @@ public abstract class LayeredSpec {
 	public static class DependenciesSpec extends IntoLayersSpec<DependenciesIntoLayerSpec> implements Serializable {
 
 		/**
-         * Constructs a new instance of DependenciesSpec.
-         * 
-         * @param factory the factory used to create IntoLayerSpec objects
-         */
-        @Inject
+		 * Constructs a new instance of DependenciesSpec.
+		 * @param factory the factory used to create IntoLayerSpec objects
+		 */
+		@Inject
 		public DependenciesSpec() {
 			super(new IntoLayerSpecFactory());
 		}
@@ -475,28 +467,27 @@ public abstract class LayeredSpec {
 		}
 
 		/**
-         * Returns a list of content selectors for the library dependencies.
-         * 
-         * @return a list of content selectors
-         */
-        List<ContentSelector<Library>> asSelectors() {
+		 * Returns a list of content selectors for the library dependencies.
+		 * @return a list of content selectors
+		 */
+		List<ContentSelector<Library>> asSelectors() {
 			return asSelectors(
 					(spec) -> ((DependenciesIntoLayerSpec) spec).asLibrarySelector(LibraryContentFilter::new));
 		}
 
 		/**
-         * IntoLayerSpecFactory class.
-         */
-        private static final class IntoLayerSpecFactory
+		 * IntoLayerSpecFactory class.
+		 */
+		private static final class IntoLayerSpecFactory
 				implements Function<String, DependenciesIntoLayerSpec>, Serializable {
 
 			/**
-             * Creates a new DependenciesIntoLayerSpec object with the specified layer.
-             * 
-             * @param layer the layer to be used for creating the DependenciesIntoLayerSpec object
-             * @return a new DependenciesIntoLayerSpec object with the specified layer
-             */
-            @Override
+			 * Creates a new DependenciesIntoLayerSpec object with the specified layer.
+			 * @param layer the layer to be used for creating the
+			 * DependenciesIntoLayerSpec object
+			 * @return a new DependenciesIntoLayerSpec object with the specified layer
+			 */
+			@Override
 			public DependenciesIntoLayerSpec apply(String layer) {
 				return new DependenciesIntoLayerSpec(layer);
 			}

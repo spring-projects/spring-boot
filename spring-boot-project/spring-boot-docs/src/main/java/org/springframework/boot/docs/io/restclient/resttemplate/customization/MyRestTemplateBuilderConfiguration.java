@@ -30,12 +30,12 @@ import org.springframework.context.annotation.Configuration;
 public class MyRestTemplateBuilderConfiguration {
 
 	/**
-     * Configures the RestTemplateBuilder with custom settings.
-     * 
-     * @param configurer the RestTemplateBuilderConfigurer used to configure the RestTemplateBuilder
-     * @return the configured RestTemplateBuilder
-     */
-    @Bean
+	 * Configures the RestTemplateBuilder with custom settings.
+	 * @param configurer the RestTemplateBuilderConfigurer used to configure the
+	 * RestTemplateBuilder
+	 * @return the configured RestTemplateBuilder
+	 */
+	@Bean
 	public RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer configurer) {
 		return configurer.configure(new RestTemplateBuilder())
 			.setConnectTimeout(Duration.ofSeconds(5))

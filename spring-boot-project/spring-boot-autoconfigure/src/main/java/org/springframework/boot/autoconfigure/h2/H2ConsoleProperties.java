@@ -43,22 +43,21 @@ public class H2ConsoleProperties {
 	private final Settings settings = new Settings();
 
 	/**
-     * Returns the path of the H2 console.
-     *
-     * @return the path of the H2 console
-     */
-    public String getPath() {
+	 * Returns the path of the H2 console.
+	 * @return the path of the H2 console
+	 */
+	public String getPath() {
 		return this.path;
 	}
 
 	/**
-     * Sets the path for the H2 console.
-     * 
-     * @param path the path to set for the H2 console
-     * @throws IllegalArgumentException if the path is null or has a length less than or equal to 1
-     * @throws IllegalArgumentException if the path does not start with '/'
-     */
-    public void setPath(String path) {
+	 * Sets the path for the H2 console.
+	 * @param path the path to set for the H2 console
+	 * @throws IllegalArgumentException if the path is null or has a length less than or
+	 * equal to 1
+	 * @throws IllegalArgumentException if the path does not start with '/'
+	 */
+	public void setPath(String path) {
 		Assert.notNull(path, "Path must not be null");
 		Assert.isTrue(path.length() > 1, "Path must have length greater than 1");
 		Assert.isTrue(path.startsWith("/"), "Path must start with '/'");
@@ -66,36 +65,33 @@ public class H2ConsoleProperties {
 	}
 
 	/**
-     * Returns the value of the enabled property.
-     *
-     * @return the value of the enabled property
-     */
-    public boolean getEnabled() {
+	 * Returns the value of the enabled property.
+	 * @return the value of the enabled property
+	 */
+	public boolean getEnabled() {
 		return this.enabled;
 	}
 
 	/**
-     * Sets the enabled status of the H2 console.
-     * 
-     * @param enabled the enabled status to be set
-     */
-    public void setEnabled(boolean enabled) {
+	 * Sets the enabled status of the H2 console.
+	 * @param enabled the enabled status to be set
+	 */
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	/**
-     * Returns the settings of the H2 console.
-     *
-     * @return the settings of the H2 console
-     */
-    public Settings getSettings() {
+	 * Returns the settings of the H2 console.
+	 * @return the settings of the H2 console
+	 */
+	public Settings getSettings() {
 		return this.settings;
 	}
 
 	/**
-     * Settings class.
-     */
-    public static class Settings {
+	 * Settings class.
+	 */
+	public static class Settings {
 
 		/**
 		 * Whether to enable trace output.
@@ -113,56 +109,52 @@ public class H2ConsoleProperties {
 		private String webAdminPassword;
 
 		/**
-         * Returns the value of the trace flag.
-         *
-         * @return true if the trace flag is enabled, false otherwise.
-         */
-        public boolean isTrace() {
+		 * Returns the value of the trace flag.
+		 * @return true if the trace flag is enabled, false otherwise.
+		 */
+		public boolean isTrace() {
 			return this.trace;
 		}
 
 		/**
-         * Sets the trace flag.
-         * 
-         * @param trace the boolean value indicating whether to enable or disable tracing
-         */
-        public void setTrace(boolean trace) {
+		 * Sets the trace flag.
+		 * @param trace the boolean value indicating whether to enable or disable tracing
+		 */
+		public void setTrace(boolean trace) {
 			this.trace = trace;
 		}
 
 		/**
-         * Returns the value indicating whether the web server allows connections from other hosts.
-         * 
-         * @return true if the web server allows connections from other hosts, false otherwise
-         */
-        public boolean isWebAllowOthers() {
+		 * Returns the value indicating whether the web server allows connections from
+		 * other hosts.
+		 * @return true if the web server allows connections from other hosts, false
+		 * otherwise
+		 */
+		public boolean isWebAllowOthers() {
 			return this.webAllowOthers;
 		}
 
 		/**
-         * Sets the value of the webAllowOthers property.
-         * 
-         * @param webAllowOthers the new value for the webAllowOthers property
-         */
-        public void setWebAllowOthers(boolean webAllowOthers) {
+		 * Sets the value of the webAllowOthers property.
+		 * @param webAllowOthers the new value for the webAllowOthers property
+		 */
+		public void setWebAllowOthers(boolean webAllowOthers) {
 			this.webAllowOthers = webAllowOthers;
 		}
 
 		/**
-         * Returns the web admin password.
-         * 
-         * @return the web admin password
-         */
-        public String getWebAdminPassword() {
+		 * Returns the web admin password.
+		 * @return the web admin password
+		 */
+		public String getWebAdminPassword() {
 			return this.webAdminPassword;
 		}
 
 		/**
-         * Sets the password for the web admin.
-         * 
-         * @param webAdminPassword the password for the web admin
-         */
-        public void setWebAdminPassword(String webAdminPassword) {
+		 * Sets the password for the web admin.
+		 * @param webAdminPassword the password for the web admin
+		 */
+		public void setWebAdminPassword(String webAdminPassword) {
 			this.webAdminPassword = webAdminPassword;
 		}
 

@@ -47,13 +47,14 @@ public class ManagementErrorEndpoint {
 	private final ErrorProperties errorProperties;
 
 	/**
-     * Constructs a new ManagementErrorEndpoint with the specified ErrorAttributes and ErrorProperties.
-     * 
-     * @param errorAttributes the ErrorAttributes to be used for error handling
-     * @param errorProperties the ErrorProperties to be used for error handling
-     * @throws IllegalArgumentException if either errorAttributes or errorProperties is null
-     */
-    public ManagementErrorEndpoint(ErrorAttributes errorAttributes, ErrorProperties errorProperties) {
+	 * Constructs a new ManagementErrorEndpoint with the specified ErrorAttributes and
+	 * ErrorProperties.
+	 * @param errorAttributes the ErrorAttributes to be used for error handling
+	 * @param errorProperties the ErrorProperties to be used for error handling
+	 * @throws IllegalArgumentException if either errorAttributes or errorProperties is
+	 * null
+	 */
+	public ManagementErrorEndpoint(ErrorAttributes errorAttributes, ErrorProperties errorProperties) {
 		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
 		Assert.notNull(errorProperties, "ErrorProperties must not be null");
 		this.errorAttributes = errorAttributes;
@@ -61,24 +62,22 @@ public class ManagementErrorEndpoint {
 	}
 
 	/**
-     * This method is used to handle error requests and return error attributes.
-     * 
-     * @param request The ServletWebRequest object representing the current request.
-     * @return A Map object containing the error attributes.
-     */
-    @RequestMapping("${server.error.path:${error.path:/error}}")
+	 * This method is used to handle error requests and return error attributes.
+	 * @param request The ServletWebRequest object representing the current request.
+	 * @return A Map object containing the error attributes.
+	 */
+	@RequestMapping("${server.error.path:${error.path:/error}}")
 	@ResponseBody
 	public Map<String, Object> invoke(ServletWebRequest request) {
 		return this.errorAttributes.getErrorAttributes(request, getErrorAttributeOptions(request));
 	}
 
 	/**
-     * Returns the ErrorAttributeOptions based on the provided ServletWebRequest.
-     * 
-     * @param request the ServletWebRequest object
-     * @return the ErrorAttributeOptions object
-     */
-    private ErrorAttributeOptions getErrorAttributeOptions(ServletWebRequest request) {
+	 * Returns the ErrorAttributeOptions based on the provided ServletWebRequest.
+	 * @param request the ServletWebRequest object
+	 * @return the ErrorAttributeOptions object
+	 */
+	private ErrorAttributeOptions getErrorAttributeOptions(ServletWebRequest request) {
 		ErrorAttributeOptions options = ErrorAttributeOptions.defaults();
 		if (this.errorProperties.isIncludeException()) {
 			options = options.including(Include.EXCEPTION);
@@ -97,12 +96,11 @@ public class ManagementErrorEndpoint {
 	}
 
 	/**
-     * Determines whether to include the stack trace in the error response.
-     * 
-     * @param request the ServletWebRequest object representing the current request
-     * @return true if the stack trace should be included, false otherwise
-     */
-    private boolean includeStackTrace(ServletWebRequest request) {
+	 * Determines whether to include the stack trace in the error response.
+	 * @param request the ServletWebRequest object representing the current request
+	 * @return true if the stack trace should be included, false otherwise
+	 */
+	private boolean includeStackTrace(ServletWebRequest request) {
 		return switch (this.errorProperties.getIncludeStacktrace()) {
 			case ALWAYS -> true;
 			case ON_PARAM -> getBooleanParameter(request, "trace");
@@ -111,12 +109,11 @@ public class ManagementErrorEndpoint {
 	}
 
 	/**
-     * Determines whether to include the error message in the response.
-     * 
-     * @param request the ServletWebRequest object representing the current request
-     * @return true if the error message should be included, false otherwise
-     */
-    private boolean includeMessage(ServletWebRequest request) {
+	 * Determines whether to include the error message in the response.
+	 * @param request the ServletWebRequest object representing the current request
+	 * @return true if the error message should be included, false otherwise
+	 */
+	private boolean includeMessage(ServletWebRequest request) {
 		return switch (this.errorProperties.getIncludeMessage()) {
 			case ALWAYS -> true;
 			case ON_PARAM -> getBooleanParameter(request, "message");
@@ -125,12 +122,11 @@ public class ManagementErrorEndpoint {
 	}
 
 	/**
-     * Determines whether to include binding errors in the error response.
-     * 
-     * @param request the ServletWebRequest object representing the current request
-     * @return true if binding errors should be included, false otherwise
-     */
-    private boolean includeBindingErrors(ServletWebRequest request) {
+	 * Determines whether to include binding errors in the error response.
+	 * @param request the ServletWebRequest object representing the current request
+	 * @return true if binding errors should be included, false otherwise
+	 */
+	private boolean includeBindingErrors(ServletWebRequest request) {
 		return switch (this.errorProperties.getIncludeBindingErrors()) {
 			case ALWAYS -> true;
 			case ON_PARAM -> getBooleanParameter(request, "errors");
@@ -139,12 +135,11 @@ public class ManagementErrorEndpoint {
 	}
 
 	/**
-     * Determines whether to include the path in the error response.
-     * 
-     * @param request the ServletWebRequest object representing the current request
-     * @return true if the path should be included, false otherwise
-     */
-    private boolean includePath(ServletWebRequest request) {
+	 * Determines whether to include the path in the error response.
+	 * @param request the ServletWebRequest object representing the current request
+	 * @return true if the path should be included, false otherwise
+	 */
+	private boolean includePath(ServletWebRequest request) {
 		return switch (this.errorProperties.getIncludePath()) {
 			case ALWAYS -> true;
 			case ON_PARAM -> getBooleanParameter(request, "path");
@@ -153,13 +148,13 @@ public class ManagementErrorEndpoint {
 	}
 
 	/**
-     * Retrieves a boolean parameter from the given ServletWebRequest.
-     * 
-     * @param request The ServletWebRequest object from which to retrieve the parameter.
-     * @param parameterName The name of the parameter to retrieve.
-     * @return The boolean value of the parameter. Returns false if the parameter is not found or is not equal to "true".
-     */
-    protected boolean getBooleanParameter(ServletWebRequest request, String parameterName) {
+	 * Retrieves a boolean parameter from the given ServletWebRequest.
+	 * @param request The ServletWebRequest object from which to retrieve the parameter.
+	 * @param parameterName The name of the parameter to retrieve.
+	 * @return The boolean value of the parameter. Returns false if the parameter is not
+	 * found or is not equal to "true".
+	 */
+	protected boolean getBooleanParameter(ServletWebRequest request, String parameterName) {
 		String parameter = request.getParameter(parameterName);
 		if (parameter == null) {
 			return false;

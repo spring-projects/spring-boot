@@ -48,13 +48,15 @@ class AutoConfigurationSorter {
 	private final AutoConfigurationMetadata autoConfigurationMetadata;
 
 	/**
-     * Constructs a new AutoConfigurationSorter with the specified MetadataReaderFactory and AutoConfigurationMetadata.
-     * 
-     * @param metadataReaderFactory the MetadataReaderFactory to be used for reading metadata
-     * @param autoConfigurationMetadata the AutoConfigurationMetadata to be used for auto-configuration metadata
-     * @throws IllegalArgumentException if the metadataReaderFactory is null
-     */
-    AutoConfigurationSorter(MetadataReaderFactory metadataReaderFactory,
+	 * Constructs a new AutoConfigurationSorter with the specified MetadataReaderFactory
+	 * and AutoConfigurationMetadata.
+	 * @param metadataReaderFactory the MetadataReaderFactory to be used for reading
+	 * metadata
+	 * @param autoConfigurationMetadata the AutoConfigurationMetadata to be used for
+	 * auto-configuration metadata
+	 * @throws IllegalArgumentException if the metadataReaderFactory is null
+	 */
+	AutoConfigurationSorter(MetadataReaderFactory metadataReaderFactory,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
 		Assert.notNull(metadataReaderFactory, "MetadataReaderFactory must not be null");
 		this.metadataReaderFactory = metadataReaderFactory;
@@ -62,15 +64,15 @@ class AutoConfigurationSorter {
 	}
 
 	/**
-     * Returns a list of class names in priority order based on the given collection of class names.
-     * The class names are initially sorted alphabetically and then sorted by their order.
-     * The order is determined by the AutoConfigurationClasses object associated with each class name.
-     * The class names are then sorted based on the @AutoConfigureBefore and @AutoConfigureAfter annotations.
-     *
-     * @param classNames the collection of class names to be sorted
-     * @return a list of class names in priority order
-     */
-    List<String> getInPriorityOrder(Collection<String> classNames) {
+	 * Returns a list of class names in priority order based on the given collection of
+	 * class names. The class names are initially sorted alphabetically and then sorted by
+	 * their order. The order is determined by the AutoConfigurationClasses object
+	 * associated with each class name. The class names are then sorted based on
+	 * the @AutoConfigureBefore and @AutoConfigureAfter annotations.
+	 * @param classNames the collection of class names to be sorted
+	 * @return a list of class names in priority order
+	 */
+	List<String> getInPriorityOrder(Collection<String> classNames) {
 		// Initially sort alphabetically
 		List<String> alphabeticallyOrderedClassNames = new ArrayList<>(classNames);
 		Collections.sort(alphabeticallyOrderedClassNames);
@@ -90,13 +92,13 @@ class AutoConfigurationSorter {
 	}
 
 	/**
-     * Sorts the given list of class names based on the presence of the @AfterAnnotation.
-     * 
-     * @param classes The AutoConfigurationClasses object containing the auto configuration classes.
-     * @param classNames The list of class names to be sorted.
-     * @return The sorted list of class names.
-     */
-    private List<String> sortByAnnotation(AutoConfigurationClasses classes, List<String> classNames) {
+	 * Sorts the given list of class names based on the presence of the @AfterAnnotation.
+	 * @param classes The AutoConfigurationClasses object containing the auto
+	 * configuration classes.
+	 * @param classNames The list of class names to be sorted.
+	 * @return The sorted list of class names.
+	 */
+	private List<String> sortByAnnotation(AutoConfigurationClasses classes, List<String> classNames) {
 		List<String> toSort = new ArrayList<>(classNames);
 		toSort.addAll(classes.getAllNames());
 		Set<String> sorted = new LinkedHashSet<>();
@@ -109,15 +111,16 @@ class AutoConfigurationSorter {
 	}
 
 	/**
-     * Sorts the given list of strings based on the "after" annotation in the AutoConfigurationClasses.
-     * 
-     * @param classes the AutoConfigurationClasses object containing the requested classes and their "after" annotations
-     * @param toSort the list of strings to be sorted
-     * @param sorted the set of strings that have been sorted
-     * @param processing the set of strings currently being processed
-     * @param current the current string being processed
-     */
-    private void doSortByAfterAnnotation(AutoConfigurationClasses classes, List<String> toSort, Set<String> sorted,
+	 * Sorts the given list of strings based on the "after" annotation in the
+	 * AutoConfigurationClasses.
+	 * @param classes the AutoConfigurationClasses object containing the requested classes
+	 * and their "after" annotations
+	 * @param toSort the list of strings to be sorted
+	 * @param sorted the set of strings that have been sorted
+	 * @param processing the set of strings currently being processed
+	 * @param current the current string being processed
+	 */
+	private void doSortByAfterAnnotation(AutoConfigurationClasses classes, List<String> toSort, Set<String> sorted,
 			Set<String> processing, String current) {
 		if (current == null) {
 			current = toSort.remove(0);
@@ -136,56 +139,56 @@ class AutoConfigurationSorter {
 	}
 
 	/**
-     * Checks for cycles in the auto-configuration sorting process.
-     * 
-     * @param processing a set of auto-configuration classes that are currently being processed
-     * @param current the current auto-configuration class being checked for cycles
-     * @param after the auto-configuration class that comes after the current class in the sorting order
-     * 
-     * @throws IllegalStateException if a cycle is detected between the current class and the class that comes after it
-     */
-    private void checkForCycles(Set<String> processing, String current, String after) {
+	 * Checks for cycles in the auto-configuration sorting process.
+	 * @param processing a set of auto-configuration classes that are currently being
+	 * processed
+	 * @param current the current auto-configuration class being checked for cycles
+	 * @param after the auto-configuration class that comes after the current class in the
+	 * sorting order
+	 * @throws IllegalStateException if a cycle is detected between the current class and
+	 * the class that comes after it
+	 */
+	private void checkForCycles(Set<String> processing, String current, String after) {
 		Assert.state(!processing.contains(after),
 				() -> "AutoConfigure cycle detected between " + current + " and " + after);
 	}
 
 	/**
-     * AutoConfigurationClasses class.
-     */
-    private static class AutoConfigurationClasses {
+	 * AutoConfigurationClasses class.
+	 */
+	private static class AutoConfigurationClasses {
 
 		private final Map<String, AutoConfigurationClass> classes = new LinkedHashMap<>();
 
 		/**
-         * Adds the given collection of class names to the auto-configuration classes.
-         * 
-         * @param metadataReaderFactory the factory used to read metadata from class files
-         * @param autoConfigurationMetadata the metadata for auto-configuration classes
-         * @param classNames the collection of class names to be added
-         */
-        AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
+		 * Adds the given collection of class names to the auto-configuration classes.
+		 * @param metadataReaderFactory the factory used to read metadata from class files
+		 * @param autoConfigurationMetadata the metadata for auto-configuration classes
+		 * @param classNames the collection of class names to be added
+		 */
+		AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
 				AutoConfigurationMetadata autoConfigurationMetadata, Collection<String> classNames) {
 			addToClasses(metadataReaderFactory, autoConfigurationMetadata, classNames, true);
 		}
 
 		/**
-         * Returns a set of all names in the classes map.
-         *
-         * @return a set of all names in the classes map
-         */
-        Set<String> getAllNames() {
+		 * Returns a set of all names in the classes map.
+		 * @return a set of all names in the classes map
+		 */
+		Set<String> getAllNames() {
 			return this.classes.keySet();
 		}
 
 		/**
-         * Adds the given class names to the classes map in the AutoConfigurationClasses class.
-         * 
-         * @param metadataReaderFactory The metadata reader factory used to read the class metadata.
-         * @param autoConfigurationMetadata The auto configuration metadata.
-         * @param classNames The collection of class names to be added.
-         * @param required Indicates whether the class is required or not.
-         */
-        private void addToClasses(MetadataReaderFactory metadataReaderFactory,
+		 * Adds the given class names to the classes map in the AutoConfigurationClasses
+		 * class.
+		 * @param metadataReaderFactory The metadata reader factory used to read the class
+		 * metadata.
+		 * @param autoConfigurationMetadata The auto configuration metadata.
+		 * @param classNames The collection of class names to be added.
+		 * @param required Indicates whether the class is required or not.
+		 */
+		private void addToClasses(MetadataReaderFactory metadataReaderFactory,
 				AutoConfigurationMetadata autoConfigurationMetadata, Collection<String> classNames, boolean required) {
 			for (String className : classNames) {
 				if (!this.classes.containsKey(className)) {
@@ -206,22 +209,23 @@ class AutoConfigurationSorter {
 		}
 
 		/**
-         * Retrieves the AutoConfigurationClass object associated with the specified class name.
-         * 
-         * @param className the name of the class to retrieve the AutoConfigurationClass object for
-         * @return the AutoConfigurationClass object associated with the specified class name, or null if not found
-         */
-        AutoConfigurationClass get(String className) {
+		 * Retrieves the AutoConfigurationClass object associated with the specified class
+		 * name.
+		 * @param className the name of the class to retrieve the AutoConfigurationClass
+		 * object for
+		 * @return the AutoConfigurationClass object associated with the specified class
+		 * name, or null if not found
+		 */
+		AutoConfigurationClass get(String className) {
 			return this.classes.get(className);
 		}
 
 		/**
-         * Returns a set of classes that are requested after the given class name.
-         * 
-         * @param className the name of the class
-         * @return a set of classes requested after the given class name
-         */
-        Set<String> getClassesRequestedAfter(String className) {
+		 * Returns a set of classes that are requested after the given class name.
+		 * @param className the name of the class
+		 * @return a set of classes requested after the given class name
+		 */
+		Set<String> getClassesRequestedAfter(String className) {
 			Set<String> classesRequestedAfter = new LinkedHashSet<>(get(className).getAfter());
 			this.classes.forEach((name, autoConfigurationClass) -> {
 				if (autoConfigurationClass.getBefore().contains(className)) {
@@ -234,9 +238,9 @@ class AutoConfigurationSorter {
 	}
 
 	/**
-     * AutoConfigurationClass class.
-     */
-    private static class AutoConfigurationClass {
+	 * AutoConfigurationClass class.
+	 */
+	private static class AutoConfigurationClass {
 
 		private final String className;
 
@@ -251,13 +255,13 @@ class AutoConfigurationSorter {
 		private volatile Set<String> after;
 
 		/**
-         * Constructs a new AutoConfigurationClass with the specified class name, metadata reader factory, and auto configuration metadata.
-         * 
-         * @param className the fully qualified name of the class
-         * @param metadataReaderFactory the factory used to create metadata readers
-         * @param autoConfigurationMetadata the metadata for auto configuration
-         */
-        AutoConfigurationClass(String className, MetadataReaderFactory metadataReaderFactory,
+		 * Constructs a new AutoConfigurationClass with the specified class name, metadata
+		 * reader factory, and auto configuration metadata.
+		 * @param className the fully qualified name of the class
+		 * @param metadataReaderFactory the factory used to create metadata readers
+		 * @param autoConfigurationMetadata the metadata for auto configuration
+		 */
+		AutoConfigurationClass(String className, MetadataReaderFactory metadataReaderFactory,
 				AutoConfigurationMetadata autoConfigurationMetadata) {
 			this.className = className;
 			this.metadataReaderFactory = metadataReaderFactory;
@@ -265,11 +269,10 @@ class AutoConfigurationSorter {
 		}
 
 		/**
-         * Checks if the AutoConfigurationClass is available.
-         * 
-         * @return true if the AutoConfigurationClass is available, false otherwise
-         */
-        boolean isAvailable() {
+		 * Checks if the AutoConfigurationClass is available.
+		 * @return true if the AutoConfigurationClass is available, false otherwise
+		 */
+		boolean isAvailable() {
 			try {
 				if (!wasProcessed()) {
 					getAnnotationMetadata();
@@ -282,14 +285,17 @@ class AutoConfigurationSorter {
 		}
 
 		/**
-         * Returns the set of classes that this auto-configuration class should be configured before.
-         * If the 'before' set is not already initialized, it will be initialized based on the following conditions:
-         * - If the auto-configuration class has already been processed, the 'before' set will be retrieved from the auto-configuration metadata.
-         * - If the auto-configuration class has not been processed, the 'before' set will be retrieved from the @AutoConfigureBefore annotation.
-         *
-         * @return the set of classes that this auto-configuration class should be configured before
-         */
-        Set<String> getBefore() {
+		 * Returns the set of classes that this auto-configuration class should be
+		 * configured before. If the 'before' set is not already initialized, it will be
+		 * initialized based on the following conditions: - If the auto-configuration
+		 * class has already been processed, the 'before' set will be retrieved from the
+		 * auto-configuration metadata. - If the auto-configuration class has not been
+		 * processed, the 'before' set will be retrieved from the @AutoConfigureBefore
+		 * annotation.
+		 * @return the set of classes that this auto-configuration class should be
+		 * configured before
+		 */
+		Set<String> getBefore() {
 			if (this.before == null) {
 				this.before = (wasProcessed() ? this.autoConfigurationMetadata.getSet(this.className,
 						"AutoConfigureBefore", Collections.emptySet()) : getAnnotationValue(AutoConfigureBefore.class));
@@ -298,14 +304,17 @@ class AutoConfigurationSorter {
 		}
 
 		/**
-         * Returns the set of class names that this auto-configuration class should be configured after.
-         * If the 'after' set is not already initialized, it will be initialized based on the following conditions:
-         * - If the auto-configuration class has already been processed, the 'after' set will be retrieved from the auto-configuration metadata.
-         * - If the auto-configuration class has not been processed yet, the 'after' set will be retrieved from the @AutoConfigureAfter annotation.
-         * 
-         * @return the set of class names that this auto-configuration class should be configured after
-         */
-        Set<String> getAfter() {
+		 * Returns the set of class names that this auto-configuration class should be
+		 * configured after. If the 'after' set is not already initialized, it will be
+		 * initialized based on the following conditions: - If the auto-configuration
+		 * class has already been processed, the 'after' set will be retrieved from the
+		 * auto-configuration metadata. - If the auto-configuration class has not been
+		 * processed yet, the 'after' set will be retrieved from the @AutoConfigureAfter
+		 * annotation.
+		 * @return the set of class names that this auto-configuration class should be
+		 * configured after
+		 */
+		Set<String> getAfter() {
 			if (this.after == null) {
 				this.after = (wasProcessed() ? this.autoConfigurationMetadata.getSet(this.className,
 						"AutoConfigureAfter", Collections.emptySet()) : getAnnotationValue(AutoConfigureAfter.class));
@@ -314,14 +323,14 @@ class AutoConfigurationSorter {
 		}
 
 		/**
-         * Returns the order value for the auto-configuration class.
-         * If the auto-configuration class has been processed, the order value is retrieved from the autoConfigurationMetadata.
-         * Otherwise, the order value is retrieved from the annotation attributes of the AutoConfigureOrder annotation.
-         * If no order value is found, the default order value is returned.
-         *
-         * @return the order value for the auto-configuration class
-         */
-        private int getOrder() {
+		 * Returns the order value for the auto-configuration class. If the
+		 * auto-configuration class has been processed, the order value is retrieved from
+		 * the autoConfigurationMetadata. Otherwise, the order value is retrieved from the
+		 * annotation attributes of the AutoConfigureOrder annotation. If no order value
+		 * is found, the default order value is returned.
+		 * @return the order value for the auto-configuration class
+		 */
+		private int getOrder() {
 			if (wasProcessed()) {
 				return this.autoConfigurationMetadata.getInteger(this.className, "AutoConfigureOrder",
 						AutoConfigureOrder.DEFAULT_ORDER);
@@ -332,22 +341,20 @@ class AutoConfigurationSorter {
 		}
 
 		/**
-         * Returns a boolean value indicating whether the current class was processed.
-         * 
-         * @return {@code true} if the class was processed, {@code false} otherwise.
-         */
-        private boolean wasProcessed() {
+		 * Returns a boolean value indicating whether the current class was processed.
+		 * @return {@code true} if the class was processed, {@code false} otherwise.
+		 */
+		private boolean wasProcessed() {
 			return (this.autoConfigurationMetadata != null
 					&& this.autoConfigurationMetadata.wasProcessed(this.className));
 		}
 
 		/**
-         * Retrieves the value of the specified annotation.
-         * 
-         * @param annotation the annotation class to retrieve the value from
-         * @return a set of strings representing the values of the annotation
-         */
-        private Set<String> getAnnotationValue(Class<?> annotation) {
+		 * Retrieves the value of the specified annotation.
+		 * @param annotation the annotation class to retrieve the value from
+		 * @return a set of strings representing the values of the annotation
+		 */
+		private Set<String> getAnnotationValue(Class<?> annotation) {
 			Map<String, Object> attributes = getAnnotationMetadata().getAnnotationAttributes(annotation.getName(),
 					true);
 			if (attributes == null) {
@@ -360,12 +367,11 @@ class AutoConfigurationSorter {
 		}
 
 		/**
-         * Retrieves the annotation metadata for the current class.
-         * 
-         * @return the annotation metadata
-         * @throws IllegalStateException if unable to read meta-data for the class
-         */
-        private AnnotationMetadata getAnnotationMetadata() {
+		 * Retrieves the annotation metadata for the current class.
+		 * @return the annotation metadata
+		 * @throws IllegalStateException if unable to read meta-data for the class
+		 */
+		private AnnotationMetadata getAnnotationMetadata() {
 			if (this.annotationMetadata == null) {
 				try {
 					MetadataReader metadataReader = this.metadataReaderFactory.getMetadataReader(this.className);

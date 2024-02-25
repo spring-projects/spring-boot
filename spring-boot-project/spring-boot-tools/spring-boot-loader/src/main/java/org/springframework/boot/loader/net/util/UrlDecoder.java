@@ -32,9 +32,9 @@ import java.nio.charset.StandardCharsets;
 public final class UrlDecoder {
 
 	/**
-     * Constructs a new instance of the UrlDecoder class.
-     */
-    private UrlDecoder() {
+	 * Constructs a new instance of the UrlDecoder class.
+	 */
+	private UrlDecoder() {
 	}
 
 	/**
@@ -75,15 +75,14 @@ public final class UrlDecoder {
 	}
 
 	/**
-     * Fills the given ByteBuffer with the decoded characters from the specified string.
-     * 
-     * @param byteBuffer The ByteBuffer to fill with decoded characters.
-     * @param string The string containing the encoded characters.
-     * @param index The starting index in the string to decode from.
-     * @param length The length of the string.
-     * @return The updated index after decoding the characters.
-     */
-    private static int fillByteBuffer(ByteBuffer byteBuffer, String string, int index, int length) {
+	 * Fills the given ByteBuffer with the decoded characters from the specified string.
+	 * @param byteBuffer The ByteBuffer to fill with decoded characters.
+	 * @param string The string containing the encoded characters.
+	 * @param index The starting index in the string to decode from.
+	 * @param length The length of the string.
+	 * @return The updated index after decoding the characters.
+	 */
+	private static int fillByteBuffer(ByteBuffer byteBuffer, String string, int index, int length) {
 		byteBuffer.clear();
 		while (true) {
 			byteBuffer.put(unescape(string, index));
@@ -97,14 +96,15 @@ public final class UrlDecoder {
 	}
 
 	/**
-     * Unescapes a string by converting a hexadecimal representation of a byte to its corresponding byte value.
-     * 
-     * @param string the string containing the hexadecimal representation of the byte
-     * @param index the starting index of the hexadecimal representation in the string
-     * @return the byte value represented by the hexadecimal representation
-     * @throws IllegalArgumentException if the string does not contain a valid hexadecimal representation
-     */
-    private static byte unescape(String string, int index) {
+	 * Unescapes a string by converting a hexadecimal representation of a byte to its
+	 * corresponding byte value.
+	 * @param string the string containing the hexadecimal representation of the byte
+	 * @param index the starting index of the hexadecimal representation in the string
+	 * @return the byte value represented by the hexadecimal representation
+	 * @throws IllegalArgumentException if the string does not contain a valid hexadecimal
+	 * representation
+	 */
+	private static byte unescape(String string, int index) {
 		try {
 			return (byte) Integer.parseInt(string, index + 1, index + 3, 16);
 		}
@@ -114,13 +114,12 @@ public final class UrlDecoder {
 	}
 
 	/**
-     * Decodes the given ByteBuffer to a CharBuffer using the provided CharsetDecoder.
-     * 
-     * @param byteBuffer The ByteBuffer to decode.
-     * @param charBuffer The CharBuffer to store the decoded characters.
-     * @param decoder The CharsetDecoder to use for decoding.
-     */
-    private static void decodeToCharBuffer(ByteBuffer byteBuffer, CharBuffer charBuffer, CharsetDecoder decoder) {
+	 * Decodes the given ByteBuffer to a CharBuffer using the provided CharsetDecoder.
+	 * @param byteBuffer The ByteBuffer to decode.
+	 * @param charBuffer The CharBuffer to store the decoded characters.
+	 * @param decoder The CharsetDecoder to use for decoding.
+	 */
+	private static void decodeToCharBuffer(ByteBuffer byteBuffer, CharBuffer charBuffer, CharsetDecoder decoder) {
 		decoder.reset();
 		charBuffer.clear();
 		assertNoError(decoder.decode(byteBuffer, charBuffer, true));
@@ -128,12 +127,11 @@ public final class UrlDecoder {
 	}
 
 	/**
-     * Asserts that the given {@link CoderResult} does not represent an error.
-     * 
-     * @param result the {@link CoderResult} to be checked
-     * @throws IllegalArgumentException if the {@link CoderResult} represents an error
-     */
-    private static void assertNoError(CoderResult result) {
+	 * Asserts that the given {@link CoderResult} does not represent an error.
+	 * @param result the {@link CoderResult} to be checked
+	 * @throws IllegalArgumentException if the {@link CoderResult} represents an error
+	 */
+	private static void assertNoError(CoderResult result) {
 		if (result.isError()) {
 			throw new IllegalArgumentException("Error decoding percent encoded characters");
 		}

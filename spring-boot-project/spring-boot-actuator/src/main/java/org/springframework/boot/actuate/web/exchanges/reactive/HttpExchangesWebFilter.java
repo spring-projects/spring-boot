@@ -60,32 +60,29 @@ public class HttpExchangesWebFilter implements WebFilter, Ordered {
 	}
 
 	/**
-     * Returns the order of this HttpExchangesWebFilter.
-     *
-     * @return the order of this HttpExchangesWebFilter
-     */
-    @Override
+	 * Returns the order of this HttpExchangesWebFilter.
+	 * @return the order of this HttpExchangesWebFilter
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
 	/**
-     * Sets the order of the HttpExchangesWebFilter.
-     * 
-     * @param order the order value to set
-     */
-    public void setOrder(int order) {
+	 * Sets the order of the HttpExchangesWebFilter.
+	 * @param order the order value to set
+	 */
+	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	/**
-     * Filters the server web exchange and applies the specified web filter chain.
-     * 
-     * @param exchange the server web exchange to be filtered
-     * @param chain the web filter chain to be applied
-     * @return a Mono representing the completion of the filtering process
-     */
-    @Override
+	 * Filters the server web exchange and applies the specified web filter chain.
+	 * @param exchange the server web exchange to be filtered
+	 * @param chain the web filter chain to be applied
+	 * @return a Mono representing the completion of the filtering process
+	 */
+	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 		Mono<?> principal = exchange.getPrincipal().cast(Object.class).defaultIfEmpty(NONE);
 		Mono<Object> session = exchange.getSession().cast(Object.class).defaultIfEmpty(NONE);
@@ -94,25 +91,23 @@ public class HttpExchangesWebFilter implements WebFilter, Ordered {
 	}
 
 	/**
-     * Filters the server web exchange and adds the exchange on commit.
-     * 
-     * @param exchange The server web exchange to be filtered.
-     * @param chain The web filter chain.
-     * @param principalAndSession The principal and session information.
-     * @return A Mono representing the completion of the filtering process.
-     */
-    private Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain,
+	 * Filters the server web exchange and adds the exchange on commit.
+	 * @param exchange The server web exchange to be filtered.
+	 * @param chain The web filter chain.
+	 * @param principalAndSession The principal and session information.
+	 * @return A Mono representing the completion of the filtering process.
+	 */
+	private Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain,
 			PrincipalAndSession principalAndSession) {
 		return Mono.fromRunnable(() -> addExchangeOnCommit(exchange, principalAndSession)).and(chain.filter(exchange));
 	}
 
 	/**
-     * Adds an exchange to the repository when the response is committed.
-     * 
-     * @param exchange The server web exchange.
-     * @param principalAndSession The principal and session information.
-     */
-    private void addExchangeOnCommit(ServerWebExchange exchange, PrincipalAndSession principalAndSession) {
+	 * Adds an exchange to the repository when the response is committed.
+	 * @param exchange The server web exchange.
+	 * @param principalAndSession The principal and session information.
+	 */
+	private void addExchangeOnCommit(ServerWebExchange exchange, PrincipalAndSession principalAndSession) {
 		RecordableServerHttpRequest sourceRequest = new RecordableServerHttpRequest(exchange.getRequest());
 		HttpExchange.Started startedHttpExchange = HttpExchange.start(sourceRequest);
 		exchange.getResponse().beforeCommit(() -> {
@@ -134,30 +129,28 @@ public class HttpExchangesWebFilter implements WebFilter, Ordered {
 		private final WebSession session;
 
 		/**
-         * Constructs a new PrincipalAndSession object with the given zipped array.
-         * 
-         * @param zipped the zipped array containing the principal and session objects
-         */
-        PrincipalAndSession(Object[] zipped) {
+		 * Constructs a new PrincipalAndSession object with the given zipped array.
+		 * @param zipped the zipped array containing the principal and session objects
+		 */
+		PrincipalAndSession(Object[] zipped) {
 			this.principal = (zipped[0] != NONE) ? (Principal) zipped[0] : null;
 			this.session = (zipped[1] != NONE) ? (WebSession) zipped[1] : null;
 		}
 
 		/**
-         * Returns the principal associated with this PrincipalAndSession object.
-         *
-         * @return the principal associated with this PrincipalAndSession object
-         */
-        Principal getPrincipal() {
+		 * Returns the principal associated with this PrincipalAndSession object.
+		 * @return the principal associated with this PrincipalAndSession object
+		 */
+		Principal getPrincipal() {
 			return this.principal;
 		}
 
 		/**
-         * Returns the session ID associated with the current session.
-         * 
-         * @return the session ID if the session is not null and is started, otherwise null
-         */
-        String getSessionId() {
+		 * Returns the session ID associated with the current session.
+		 * @return the session ID if the session is not null and is started, otherwise
+		 * null
+		 */
+		String getSessionId() {
 			return (this.session != null && this.session.isStarted()) ? this.session.getId() : null;
 		}
 

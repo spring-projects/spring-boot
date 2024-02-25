@@ -40,12 +40,12 @@ import org.springframework.core.annotation.Order;
 class TestcontainersLifecycleBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 	/**
-     * Post-processes the bean factory to modify the destroy method name for beans implementing the Startable interface.
-     * 
-     * @param beanFactory the bean factory to be processed
-     * @throws BeansException if an error occurs during bean processing
-     */
-    @Override
+	 * Post-processes the bean factory to modify the destroy method name for beans
+	 * implementing the Startable interface.
+	 * @param beanFactory the bean factory to be processed
+	 * @throws BeansException if an error occurs during bean processing
+	 */
+	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		for (String beanName : beanFactory.getBeanNamesForType(Startable.class, false, false)) {
 			try {

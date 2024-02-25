@@ -110,11 +110,10 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	private ResolutionErrorHandler resolutionErrorHandler;
 
 	/**
-     * Executes the AOT (Ahead-of-Time) test processing.
-     * 
-     * @throws Exception if an error occurs during the execution
-     */
-    @Override
+	 * Executes the AOT (Ahead-of-Time) test processing.
+	 * @throws Exception if an error occurs during the execution
+	 */
+	@Override
 	protected void executeAot() throws Exception {
 		if (this.project.getPackaging().equals("pom")) {
 			getLog().debug("process-test-aot goal could not be applied to pom project.");
@@ -137,11 +136,10 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	}
 
 	/**
-     * Returns an array of AOT arguments.
-     * 
-     * @return the array of AOT arguments
-     */
-    private String[] getAotArguments() {
+	 * Returns an array of AOT arguments.
+	 * @return the array of AOT arguments
+	 */
+	private String[] getAotArguments() {
 		List<String> aotArguments = new ArrayList<>();
 		aotArguments.add(this.testClassesDirectory.toPath().toAbsolutePath().normalize().toString());
 		aotArguments.add(this.generatedSources.toString());
@@ -153,13 +151,14 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	}
 
 	/**
-     * Returns the class path URLs for the current project, including the JUnit Platform Launcher if specified.
-     * 
-     * @param includeJUnitPlatformLauncher true if the JUnit Platform Launcher should be included in the class path, false otherwise
-     * @return an array of URLs representing the class path
-     * @throws Exception if an error occurs while retrieving the class path
-     */
-    protected URL[] getClassPath(boolean includeJUnitPlatformLauncher) throws Exception {
+	 * Returns the class path URLs for the current project, including the JUnit Platform
+	 * Launcher if specified.
+	 * @param includeJUnitPlatformLauncher true if the JUnit Platform Launcher should be
+	 * included in the class path, false otherwise
+	 * @return an array of URLs representing the class path
+	 * @throws Exception if an error occurs while retrieving the class path
+	 */
+	protected URL[] getClassPath(boolean includeJUnitPlatformLauncher) throws Exception {
 		File[] directories = new File[] { this.testClassesDirectory, this.generatedTestClasses, this.classesDirectory,
 				this.generatedClasses };
 		URL[] classPath = getClassPath(directories);
@@ -171,13 +170,13 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	}
 
 	/**
-     * Adds the JUnit Platform Launcher to the classpath.
-     * 
-     * @param classPath the current classpath
-     * @return the updated classpath with the JUnit Platform Launcher added
-     * @throws Exception if there is an error resolving the JUnit Platform Launcher artifact
-     */
-    private URL[] addJUnitPlatformLauncher(URL[] classPath) throws Exception {
+	 * Adds the JUnit Platform Launcher to the classpath.
+	 * @param classPath the current classpath
+	 * @return the updated classpath with the JUnit Platform Launcher added
+	 * @throws Exception if there is an error resolving the JUnit Platform Launcher
+	 * artifact
+	 */
+	private URL[] addJUnitPlatformLauncher(URL[] classPath) throws Exception {
 		String version = getJUnitPlatformVersion();
 		DefaultArtifactHandler handler = new DefaultArtifactHandler("jar");
 		handler.setIncludesDependencies(true);
@@ -191,12 +190,11 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	}
 
 	/**
-     * Retrieves the version of JUnit Platform.
-     * 
-     * @return The version of JUnit Platform.
-     * @throws MojoExecutionException If the JUnit Platform dependency is not found.
-     */
-    private String getJUnitPlatformVersion() throws MojoExecutionException {
+	 * Retrieves the version of JUnit Platform.
+	 * @return The version of JUnit Platform.
+	 * @throws MojoExecutionException If the JUnit Platform dependency is not found.
+	 */
+	private String getJUnitPlatformVersion() throws MojoExecutionException {
 		String id = JUNIT_PLATFORM_GROUP_ID + ":" + JUNIT_PLATFORM_COMMONS_ARTIFACT_ID;
 		Artifact platformCommonsArtifact = this.project.getArtifactMap().get(id);
 		String version = (platformCommonsArtifact != null) ? platformCommonsArtifact.getBaseVersion() : null;
@@ -208,13 +206,12 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	}
 
 	/**
-     * Resolves the given artifact and its dependencies.
-     * 
-     * @param artifact The artifact to resolve.
-     * @return A set of resolved artifacts.
-     * @throws Exception If an error occurs during the resolution process.
-     */
-    private Set<Artifact> resolveArtifact(Artifact artifact) throws Exception {
+	 * Resolves the given artifact and its dependencies.
+	 * @param artifact The artifact to resolve.
+	 * @return A set of resolved artifacts.
+	 * @throws Exception If an error occurs during the resolution process.
+	 */
+	private Set<Artifact> resolveArtifact(Artifact artifact) throws Exception {
 		CollectRequest collectRequest = new CollectRequest();
 		collectRequest.setRoot(RepositoryUtils.toDependency(artifact, null));
 		collectRequest.setRepositories(this.project.getRemotePluginRepositories());

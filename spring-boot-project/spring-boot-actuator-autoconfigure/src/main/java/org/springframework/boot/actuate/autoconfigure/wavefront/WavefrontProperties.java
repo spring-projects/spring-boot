@@ -85,83 +85,74 @@ public class WavefrontProperties {
 	private Set<String> traceDerivedCustomTagKeys = new HashSet<>();
 
 	/**
-     * Returns the application associated with this WavefrontProperties object.
-     *
-     * @return the application associated with this WavefrontProperties object
-     */
-    public Application getApplication() {
+	 * Returns the application associated with this WavefrontProperties object.
+	 * @return the application associated with this WavefrontProperties object
+	 */
+	public Application getApplication() {
 		return this.application;
 	}
 
 	/**
-     * Returns the sender object associated with this WavefrontProperties instance.
-     *
-     * @return the sender object
-     */
-    public Sender getSender() {
+	 * Returns the sender object associated with this WavefrontProperties instance.
+	 * @return the sender object
+	 */
+	public Sender getSender() {
 		return this.sender;
 	}
 
 	/**
-     * Returns the metrics object associated with this WavefrontProperties instance.
-     *
-     * @return the metrics object
-     */
-    public Metrics getMetrics() {
+	 * Returns the metrics object associated with this WavefrontProperties instance.
+	 * @return the metrics object
+	 */
+	public Metrics getMetrics() {
 		return this.metrics;
 	}
 
 	/**
-     * Returns the URI associated with this WavefrontProperties object.
-     *
-     * @return the URI associated with this WavefrontProperties object
-     */
-    public URI getUri() {
+	 * Returns the URI associated with this WavefrontProperties object.
+	 * @return the URI associated with this WavefrontProperties object
+	 */
+	public URI getUri() {
 		return this.uri;
 	}
 
 	/**
-     * Sets the URI for the WavefrontProperties.
-     * 
-     * @param uri the URI to be set
-     */
-    public void setUri(URI uri) {
+	 * Sets the URI for the WavefrontProperties.
+	 * @param uri the URI to be set
+	 */
+	public void setUri(URI uri) {
 		this.uri = uri;
 	}
 
 	/**
-     * Returns the source of the WavefrontProperties.
-     *
-     * @return the source of the WavefrontProperties
-     */
-    public String getSource() {
+	 * Returns the source of the WavefrontProperties.
+	 * @return the source of the WavefrontProperties
+	 */
+	public String getSource() {
 		return this.source;
 	}
 
 	/**
-     * Sets the source for the WavefrontProperties.
-     * 
-     * @param source the source to set
-     */
-    public void setSource(String source) {
+	 * Sets the source for the WavefrontProperties.
+	 * @param source the source to set
+	 */
+	public void setSource(String source) {
 		this.source = source;
 	}
 
 	/**
-     * Returns the API token.
-     *
-     * @return the API token
-     */
-    public String getApiToken() {
+	 * Returns the API token.
+	 * @return the API token
+	 */
+	public String getApiToken() {
 		return this.apiToken;
 	}
 
 	/**
-     * Sets the API token for the WavefrontProperties class.
-     * 
-     * @param apiToken the API token to be set
-     */
-    public void setApiToken(String apiToken) {
+	 * Sets the API token for the WavefrontProperties class.
+	 * @param apiToken the API token to be set
+	 */
+	public void setApiToken(String apiToken) {
 		this.apiToken = apiToken;
 	}
 
@@ -192,11 +183,11 @@ public class WavefrontProperties {
 	}
 
 	/**
-     * Returns the source value if it is not null, otherwise returns the default source value.
-     *
-     * @return the source value or the default source value
-     */
-    public String getSourceOrDefault() {
+	 * Returns the source value if it is not null, otherwise returns the default source
+	 * value.
+	 * @return the source value or the default source value
+	 */
+	public String getSourceOrDefault() {
 		if (this.source != null) {
 			return this.source;
 		}
@@ -204,11 +195,10 @@ public class WavefrontProperties {
 	}
 
 	/**
-     * Returns the default source for the WavefrontProperties class.
-     * 
-     * @return the default source as a String
-     */
-    private String getSourceDefault() {
+	 * Returns the default source for the WavefrontProperties class.
+	 * @return the default source as a String
+	 */
+	private String getSourceDefault() {
 		try {
 			return InetAddress.getLocalHost().getHostName();
 		}
@@ -218,47 +208,42 @@ public class WavefrontProperties {
 	}
 
 	/**
-     * Returns true if the URI scheme is "proxy", indicating that a proxy is being used.
-     *
-     * @return true if a proxy is being used, false otherwise
-     */
-    private boolean usesProxy() {
+	 * Returns true if the URI scheme is "proxy", indicating that a proxy is being used.
+	 * @return true if a proxy is being used, false otherwise
+	 */
+	private boolean usesProxy() {
 		return "proxy".equals(this.uri.getScheme());
 	}
 
 	/**
-     * Returns the set of trace-derived custom tag keys.
-     *
-     * @return the set of trace-derived custom tag keys
-     */
-    public Set<String> getTraceDerivedCustomTagKeys() {
+	 * Returns the set of trace-derived custom tag keys.
+	 * @return the set of trace-derived custom tag keys
+	 */
+	public Set<String> getTraceDerivedCustomTagKeys() {
 		return this.traceDerivedCustomTagKeys;
 	}
 
 	/**
-     * Sets the trace derived custom tag keys for the WavefrontProperties.
-     * 
-     * @param traceDerivedCustomTagKeys the set of trace derived custom tag keys to be set
-     */
-    public void setTraceDerivedCustomTagKeys(Set<String> traceDerivedCustomTagKeys) {
+	 * Sets the trace derived custom tag keys for the WavefrontProperties.
+	 * @param traceDerivedCustomTagKeys the set of trace derived custom tag keys to be set
+	 */
+	public void setTraceDerivedCustomTagKeys(Set<String> traceDerivedCustomTagKeys) {
 		this.traceDerivedCustomTagKeys = traceDerivedCustomTagKeys;
 	}
 
 	/**
-     * Returns the API token type.
-     *
-     * @return the API token type
-     */
-    public TokenType getApiTokenType() {
+	 * Returns the API token type.
+	 * @return the API token type
+	 */
+	public TokenType getApiTokenType() {
 		return this.apiTokenType;
 	}
 
 	/**
-     * Sets the API token type for the WavefrontProperties.
-     * 
-     * @param apiTokenType the API token type to be set
-     */
-    public void setApiTokenType(TokenType apiTokenType) {
+	 * Sets the API token type for the WavefrontProperties.
+	 * @param apiTokenType the API token type to be set
+	 */
+	public void setApiTokenType(TokenType apiTokenType) {
 		this.apiTokenType = apiTokenType;
 	}
 
@@ -280,9 +265,9 @@ public class WavefrontProperties {
 	}
 
 	/**
-     * Application class.
-     */
-    public static class Application {
+	 * Application class.
+	 */
+	public static class Application {
 
 		/**
 		 * Wavefront 'Application' name used in ApplicationTags.
@@ -311,101 +296,92 @@ public class WavefrontProperties {
 		private Map<String, String> customTags = new HashMap<>();
 
 		/**
-         * Returns the name of the service.
-         *
-         * @return the name of the service
-         */
-        public String getServiceName() {
+		 * Returns the name of the service.
+		 * @return the name of the service
+		 */
+		public String getServiceName() {
 			return this.serviceName;
 		}
 
 		/**
-         * Sets the service name for the application.
-         * 
-         * @param serviceName the name of the service
-         */
-        public void setServiceName(String serviceName) {
+		 * Sets the service name for the application.
+		 * @param serviceName the name of the service
+		 */
+		public void setServiceName(String serviceName) {
 			this.serviceName = serviceName;
 		}
 
 		/**
-         * Returns the name of the Application.
-         *
-         * @return the name of the Application
-         */
-        public String getName() {
+		 * Returns the name of the Application.
+		 * @return the name of the Application
+		 */
+		public String getName() {
 			return this.name;
 		}
 
 		/**
-         * Sets the name of the application.
-         * 
-         * @param name the name to be set for the application
-         */
-        public void setName(String name) {
+		 * Sets the name of the application.
+		 * @param name the name to be set for the application
+		 */
+		public void setName(String name) {
 			this.name = name;
 		}
 
 		/**
-         * Returns the name of the cluster.
-         *
-         * @return the name of the cluster
-         */
-        public String getClusterName() {
+		 * Returns the name of the cluster.
+		 * @return the name of the cluster
+		 */
+		public String getClusterName() {
 			return this.clusterName;
 		}
 
 		/**
-         * Sets the name of the cluster.
-         * 
-         * @param clusterName the name of the cluster
-         */
-        public void setClusterName(String clusterName) {
+		 * Sets the name of the cluster.
+		 * @param clusterName the name of the cluster
+		 */
+		public void setClusterName(String clusterName) {
 			this.clusterName = clusterName;
 		}
 
 		/**
-         * Returns the name of the shard.
-         *
-         * @return the name of the shard
-         */
-        public String getShardName() {
+		 * Returns the name of the shard.
+		 * @return the name of the shard
+		 */
+		public String getShardName() {
 			return this.shardName;
 		}
 
 		/**
-         * Sets the name of the shard.
-         * 
-         * @param shardName the name of the shard to be set
-         */
-        public void setShardName(String shardName) {
+		 * Sets the name of the shard.
+		 * @param shardName the name of the shard to be set
+		 */
+		public void setShardName(String shardName) {
 			this.shardName = shardName;
 		}
 
 		/**
-         * Returns the custom tags associated with this Application.
-         * 
-         * @return a Map containing the custom tags, where the key is the tag name and the value is the tag value
-         */
-        public Map<String, String> getCustomTags() {
+		 * Returns the custom tags associated with this Application.
+		 * @return a Map containing the custom tags, where the key is the tag name and the
+		 * value is the tag value
+		 */
+		public Map<String, String> getCustomTags() {
 			return this.customTags;
 		}
 
 		/**
-         * Sets the custom tags for the application.
-         * 
-         * @param customTags a map containing the custom tags to be set
-         */
-        public void setCustomTags(Map<String, String> customTags) {
+		 * Sets the custom tags for the application.
+		 * @param customTags a map containing the custom tags to be set
+		 */
+		public void setCustomTags(Map<String, String> customTags) {
 			this.customTags = customTags;
 		}
 
 	}
 
 	/**
-     * Sender class.
-     */
-    public static class Sender {
+	 * Sender class.
+	 */
+	public static class Sender {
 
 		/**
 		 * Maximum size of queued messages.
@@ -429,83 +405,75 @@ public class WavefrontProperties {
 		private int batchSize = 10000;
 
 		/**
-         * Returns the maximum size of the queue.
-         *
-         * @return the maximum size of the queue
-         */
-        public int getMaxQueueSize() {
+		 * Returns the maximum size of the queue.
+		 * @return the maximum size of the queue
+		 */
+		public int getMaxQueueSize() {
 			return this.maxQueueSize;
 		}
 
 		/**
-         * Sets the maximum size of the queue.
-         * 
-         * @param maxQueueSize the maximum size of the queue
-         */
-        public void setMaxQueueSize(int maxQueueSize) {
+		 * Sets the maximum size of the queue.
+		 * @param maxQueueSize the maximum size of the queue
+		 */
+		public void setMaxQueueSize(int maxQueueSize) {
 			this.maxQueueSize = maxQueueSize;
 		}
 
 		/**
-         * Returns the flush interval of the Sender.
-         *
-         * @return the flush interval of the Sender
-         */
-        public Duration getFlushInterval() {
+		 * Returns the flush interval of the Sender.
+		 * @return the flush interval of the Sender
+		 */
+		public Duration getFlushInterval() {
 			return this.flushInterval;
 		}
 
 		/**
-         * Sets the flush interval for the sender.
-         * 
-         * @param flushInterval the duration between flushes
-         */
-        public void setFlushInterval(Duration flushInterval) {
+		 * Sets the flush interval for the sender.
+		 * @param flushInterval the duration between flushes
+		 */
+		public void setFlushInterval(Duration flushInterval) {
 			this.flushInterval = flushInterval;
 		}
 
 		/**
-         * Returns the size of the message.
-         *
-         * @return the size of the message
-         */
-        public DataSize getMessageSize() {
+		 * Returns the size of the message.
+		 * @return the size of the message
+		 */
+		public DataSize getMessageSize() {
 			return this.messageSize;
 		}
 
 		/**
-         * Sets the size of the message.
-         * 
-         * @param messageSize the size of the message
-         */
-        public void setMessageSize(DataSize messageSize) {
+		 * Sets the size of the message.
+		 * @param messageSize the size of the message
+		 */
+		public void setMessageSize(DataSize messageSize) {
 			this.messageSize = messageSize;
 		}
 
 		/**
-         * Returns the batch size used by the Sender.
-         *
-         * @return the batch size used by the Sender
-         */
-        public int getBatchSize() {
+		 * Returns the batch size used by the Sender.
+		 * @return the batch size used by the Sender
+		 */
+		public int getBatchSize() {
 			return this.batchSize;
 		}
 
 		/**
-         * Sets the batch size for sending messages.
-         * 
-         * @param batchSize the batch size to be set
-         */
-        public void setBatchSize(int batchSize) {
+		 * Sets the batch size for sending messages.
+		 * @param batchSize the batch size to be set
+		 */
+		public void setBatchSize(int batchSize) {
 			this.batchSize = batchSize;
 		}
 
 	}
 
 	/**
-     * Metrics class.
-     */
-    public static class Metrics {
+	 * Metrics class.
+	 */
+	public static class Metrics {
 
 		/**
 		 * Export configuration.
@@ -513,27 +481,25 @@ public class WavefrontProperties {
 		private Export export = new Export();
 
 		/**
-         * Returns the export object associated with this Metrics object.
-         *
-         * @return the export object
-         */
-        public Export getExport() {
+		 * Returns the export object associated with this Metrics object.
+		 * @return the export object
+		 */
+		public Export getExport() {
 			return this.export;
 		}
 
 		/**
-         * Sets the export object for the Metrics class.
-         * 
-         * @param export the export object to be set
-         */
-        public void setExport(Export export) {
+		 * Sets the export object for the Metrics class.
+		 * @param export the export object to be set
+		 */
+		public void setExport(Export export) {
 			this.export = export;
 		}
 
 		/**
-         * Export class.
-         */
-        public static class Export extends PushRegistryProperties {
+		 * Export class.
+		 */
+		public static class Export extends PushRegistryProperties {
 
 			/**
 			 * Global prefix to separate metrics originating from this app's
@@ -558,20 +524,18 @@ public class WavefrontProperties {
 			private boolean reportDayDistribution;
 
 			/**
-             * Returns the global prefix.
-             * 
-             * @return the global prefix
-             */
-            public String getGlobalPrefix() {
+			 * Returns the global prefix.
+			 * @return the global prefix
+			 */
+			public String getGlobalPrefix() {
 				return this.globalPrefix;
 			}
 
 			/**
-             * Sets the global prefix for the Export class.
-             * 
-             * @param globalPrefix the global prefix to be set
-             */
-            public void setGlobalPrefix(String globalPrefix) {
+			 * Sets the global prefix for the Export class.
+			 * @param globalPrefix the global prefix to be set
+			 */
+			public void setGlobalPrefix(String globalPrefix) {
 				this.globalPrefix = globalPrefix;
 			}
 
@@ -592,56 +556,55 @@ public class WavefrontProperties {
 			}
 
 			/**
-             * Returns the value of the reportMinuteDistribution property.
-             * 
-             * @return true if minute distribution is enabled for the report, false otherwise
-             */
-            public boolean isReportMinuteDistribution() {
+			 * Returns the value of the reportMinuteDistribution property.
+			 * @return true if minute distribution is enabled for the report, false
+			 * otherwise
+			 */
+			public boolean isReportMinuteDistribution() {
 				return this.reportMinuteDistribution;
 			}
 
 			/**
-             * Sets the flag to determine whether to report minute distribution.
-             * 
-             * @param reportMinuteDistribution true to report minute distribution, false otherwise
-             */
-            public void setReportMinuteDistribution(boolean reportMinuteDistribution) {
+			 * Sets the flag to determine whether to report minute distribution.
+			 * @param reportMinuteDistribution true to report minute distribution, false
+			 * otherwise
+			 */
+			public void setReportMinuteDistribution(boolean reportMinuteDistribution) {
 				this.reportMinuteDistribution = reportMinuteDistribution;
 			}
 
 			/**
-             * Returns the value of the reportHourDistribution property.
-             * 
-             * @return true if the report hour distribution is enabled, false otherwise
-             */
-            public boolean isReportHourDistribution() {
+			 * Returns the value of the reportHourDistribution property.
+			 * @return true if the report hour distribution is enabled, false otherwise
+			 */
+			public boolean isReportHourDistribution() {
 				return this.reportHourDistribution;
 			}
 
 			/**
-             * Sets the flag to determine whether to report hour distribution.
-             * 
-             * @param reportHourDistribution the flag indicating whether to report hour distribution
-             */
-            public void setReportHourDistribution(boolean reportHourDistribution) {
+			 * Sets the flag to determine whether to report hour distribution.
+			 * @param reportHourDistribution the flag indicating whether to report hour
+			 * distribution
+			 */
+			public void setReportHourDistribution(boolean reportHourDistribution) {
 				this.reportHourDistribution = reportHourDistribution;
 			}
 
 			/**
-             * Returns a boolean value indicating if the report is based on day distribution.
-             * 
-             * @return true if the report is based on day distribution, false otherwise
-             */
-            public boolean isReportDayDistribution() {
+			 * Returns a boolean value indicating if the report is based on day
+			 * distribution.
+			 * @return true if the report is based on day distribution, false otherwise
+			 */
+			public boolean isReportDayDistribution() {
 				return this.reportDayDistribution;
 			}
 
 			/**
-             * Sets the flag to determine whether to report day distribution.
-             * 
-             * @param reportDayDistribution the flag indicating whether to report day distribution
-             */
-            public void setReportDayDistribution(boolean reportDayDistribution) {
+			 * Sets the flag to determine whether to report day distribution.
+			 * @param reportDayDistribution the flag indicating whether to report day
+			 * distribution
+			 */
+			public void setReportDayDistribution(boolean reportDayDistribution) {
 				this.reportDayDistribution = reportDayDistribution;
 			}
 

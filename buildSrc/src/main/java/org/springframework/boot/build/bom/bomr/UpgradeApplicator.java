@@ -36,25 +36,25 @@ class UpgradeApplicator {
 	private final Path gradleProperties;
 
 	/**
-     * Constructs a new UpgradeApplicator object with the specified build file and gradle properties.
-     * 
-     * @param buildFile the path to the build file
-     * @param gradleProperties the path to the gradle properties file
-     */
-    UpgradeApplicator(Path buildFile, Path gradleProperties) {
+	 * Constructs a new UpgradeApplicator object with the specified build file and gradle
+	 * properties.
+	 * @param buildFile the path to the build file
+	 * @param gradleProperties the path to the gradle properties file
+	 */
+	UpgradeApplicator(Path buildFile, Path gradleProperties) {
 		this.buildFile = buildFile;
 		this.gradleProperties = gradleProperties;
 	}
 
 	/**
-     * Applies the given upgrade to the build file.
-     * 
-     * @param upgrade The upgrade to apply.
-     * @return The path of the updated file (either gradleProperties or buildFile).
-     * @throws IOException If an I/O error occurs while reading or updating the file.
-     * @throws IllegalStateException If the definition for the library specified in the upgrade is not found in the build file.
-     */
-    Path apply(Upgrade upgrade) throws IOException {
+	 * Applies the given upgrade to the build file.
+	 * @param upgrade The upgrade to apply.
+	 * @return The path of the updated file (either gradleProperties or buildFile).
+	 * @throws IOException If an I/O error occurs while reading or updating the file.
+	 * @throws IllegalStateException If the definition for the library specified in the
+	 * upgrade is not found in the build file.
+	 */
+	Path apply(Upgrade upgrade) throws IOException {
 		String buildFileContents = Files.readString(this.buildFile);
 		Matcher matcher = Pattern.compile("library\\(\"" + upgrade.getLibrary().getName() + "\", \"(.+)\"\\)")
 			.matcher(buildFileContents);
@@ -80,13 +80,13 @@ class UpgradeApplicator {
 	}
 
 	/**
-     * Updates the gradle.properties file with the new version of a library.
-     * 
-     * @param upgrade The Upgrade object containing the library and its new version.
-     * @param version The current version of the library.
-     * @throws IOException If an I/O error occurs while reading or writing the gradle.properties file.
-     */
-    private void updateGradleProperties(Upgrade upgrade, String version) throws IOException {
+	 * Updates the gradle.properties file with the new version of a library.
+	 * @param upgrade The Upgrade object containing the library and its new version.
+	 * @param version The current version of the library.
+	 * @throws IOException If an I/O error occurs while reading or writing the
+	 * gradle.properties file.
+	 */
+	private void updateGradleProperties(Upgrade upgrade, String version) throws IOException {
 		String property = version.substring(2, version.length() - 1);
 		String gradlePropertiesContents = Files.readString(this.gradleProperties);
 		String modified = gradlePropertiesContents.replace(
@@ -95,15 +95,14 @@ class UpgradeApplicator {
 	}
 
 	/**
-     * Updates the build file with the specified upgrade version.
-     * 
-     * @param upgrade The upgrade object containing the version to be applied.
-     * @param buildFileContents The contents of the build file.
-     * @param versionStart The starting index of the version in the build file contents.
-     * @param versionEnd The ending index of the version in the build file contents.
-     * @throws IOException If an I/O error occurs while updating the build file.
-     */
-    private void updateBuildFile(Upgrade upgrade, String buildFileContents, int versionStart, int versionEnd)
+	 * Updates the build file with the specified upgrade version.
+	 * @param upgrade The upgrade object containing the version to be applied.
+	 * @param buildFileContents The contents of the build file.
+	 * @param versionStart The starting index of the version in the build file contents.
+	 * @param versionEnd The ending index of the version in the build file contents.
+	 * @throws IOException If an I/O error occurs while updating the build file.
+	 */
+	private void updateBuildFile(Upgrade upgrade, String buildFileContents, int versionStart, int versionEnd)
 			throws IOException {
 		String modified = buildFileContents.substring(0, versionStart) + upgrade.getVersion()
 				+ buildFileContents.substring(versionEnd);
@@ -111,13 +110,13 @@ class UpgradeApplicator {
 	}
 
 	/**
-     * Overwrites the content of a file at the specified target path with the given content.
-     *
-     * @param target  the path of the file to be overwritten
-     * @param content the new content to be written to the file
-     * @throws IOException if an I/O error occurs while writing to the file
-     */
-    private void overwrite(Path target, String content) throws IOException {
+	 * Overwrites the content of a file at the specified target path with the given
+	 * content.
+	 * @param target the path of the file to be overwritten
+	 * @param content the new content to be written to the file
+	 * @throws IOException if an I/O error occurs while writing to the file
+	 */
+	private void overwrite(Path target, String content) throws IOException {
 		Files.writeString(target, content, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
 	}
 

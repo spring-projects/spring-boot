@@ -28,11 +28,10 @@ public class MyAccountService implements AccountService {
 	private final RiskAssessor riskAssessor;
 
 	/**
-     * Constructs a new instance of MyAccountService with the specified RiskAssessor.
-     * 
-     * @param riskAssessor the RiskAssessor to be used by the MyAccountService
-     */
-    public MyAccountService(RiskAssessor riskAssessor) {
+	 * Constructs a new instance of MyAccountService with the specified RiskAssessor.
+	 * @param riskAssessor the RiskAssessor to be used by the MyAccountService
+	 */
+	public MyAccountService(RiskAssessor riskAssessor) {
 		this.riskAssessor = riskAssessor;
 	}
 

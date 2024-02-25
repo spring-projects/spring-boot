@@ -46,13 +46,12 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 	}
 
 	/**
-     * Filters a set of artifacts based on a given filter.
-     * 
-     * @param artifacts the set of artifacts to be filtered
-     * @return a set of artifacts that pass the filter
-     * @throws ArtifactFilterException if an error occurs during the filtering process
-     */
-    @Override
+	 * Filters a set of artifacts based on a given filter.
+	 * @param artifacts the set of artifacts to be filtered
+	 * @return a set of artifacts that pass the filter
+	 * @throws ArtifactFilterException if an error occurs during the filtering process
+	 */
+	@Override
 	public Set<Artifact> filter(Set<Artifact> artifacts) throws ArtifactFilterException {
 		Set<Artifact> result = new HashSet<>();
 		for (Artifact artifact : artifacts) {
@@ -64,12 +63,11 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 	}
 
 	/**
-     * This method is used to filter an artifact based on certain criteria.
-     * 
-     * @param artifact the artifact to be filtered
-     * @return true if the artifact passes the filter, false otherwise
-     */
-    protected abstract boolean filter(Artifact artifact);
+	 * This method is used to filter an artifact based on certain criteria.
+	 * @param artifact the artifact to be filtered
+	 * @return true if the artifact passes the filter, false otherwise
+	 */
+	protected abstract boolean filter(Artifact artifact);
 
 	/**
 	 * Check if the specified {@link org.apache.maven.artifact.Artifact} matches the
@@ -91,11 +89,10 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 	}
 
 	/**
-     * Returns the list of filters.
-     *
-     * @return the list of filters
-     */
-    protected final List<? extends FilterableDependency> getFilters() {
+	 * Returns the list of filters.
+	 * @return the list of filters
+	 */
+	protected final List<? extends FilterableDependency> getFilters() {
 		return this.filters;
 	}
 

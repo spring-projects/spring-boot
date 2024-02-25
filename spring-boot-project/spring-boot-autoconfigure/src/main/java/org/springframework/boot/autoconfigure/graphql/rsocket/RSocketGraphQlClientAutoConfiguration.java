@@ -47,15 +47,18 @@ import org.springframework.util.MimeTypeUtils;
 public class RSocketGraphQlClientAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link RSocketGraphQlClient.Builder} if there is no existing bean of the same type.
-     * This method is annotated with {@link Bean} to indicate that it is a bean definition method.
-     * The scope of the bean is set to "prototype" using the {@link Scope} annotation.
-     * The bean is conditionally created only if there is no existing bean of the same type, as specified by the {@link ConditionalOnMissingBean} annotation.
-     * 
-     * @param rsocketRequesterBuilder the {@link RSocketRequester.Builder} instance to be used for creating the {@link RSocketGraphQlClient.Builder}
-     * @return a new instance of {@link RSocketGraphQlClient.Builder} configured with the provided {@link RSocketRequester.Builder}
-     */
-    @Bean
+	 * Creates a new instance of {@link RSocketGraphQlClient.Builder} if there is no
+	 * existing bean of the same type. This method is annotated with {@link Bean} to
+	 * indicate that it is a bean definition method. The scope of the bean is set to
+	 * "prototype" using the {@link Scope} annotation. The bean is conditionally created
+	 * only if there is no existing bean of the same type, as specified by the
+	 * {@link ConditionalOnMissingBean} annotation.
+	 * @param rsocketRequesterBuilder the {@link RSocketRequester.Builder} instance to be
+	 * used for creating the {@link RSocketGraphQlClient.Builder}
+	 * @return a new instance of {@link RSocketGraphQlClient.Builder} configured with the
+	 * provided {@link RSocketRequester.Builder}
+	 */
+	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
 	public RSocketGraphQlClient.Builder<?> rsocketGraphQlClientBuilder(

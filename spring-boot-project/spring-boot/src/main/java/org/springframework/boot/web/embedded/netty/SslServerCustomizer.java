@@ -57,13 +57,13 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	private volatile SslBundle sslBundle;
 
 	/**
-     * Constructs a new SslServerCustomizer with the specified Http2, clientAuth, and sslBundle.
-     * 
-     * @param http2 the Http2 instance to be used
-     * @param clientAuth the client authentication type
-     * @param sslBundle the SSL bundle containing the SSL configuration
-     */
-    public SslServerCustomizer(Http2 http2, Ssl.ClientAuth clientAuth, SslBundle sslBundle) {
+	 * Constructs a new SslServerCustomizer with the specified Http2, clientAuth, and
+	 * sslBundle.
+	 * @param http2 the Http2 instance to be used
+	 * @param clientAuth the client authentication type
+	 * @param sslBundle the SSL bundle containing the SSL configuration
+	 */
+	public SslServerCustomizer(Http2 http2, Ssl.ClientAuth clientAuth, SslBundle sslBundle) {
 		this.http2 = http2;
 		this.clientAuth = Ssl.ClientAuth.map(clientAuth, ClientAuth.NONE, ClientAuth.OPTIONAL, ClientAuth.REQUIRE);
 		this.sslBundle = sslBundle;
@@ -71,45 +71,42 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	/**
-     * Applies security to the given HttpServer by making it secure.
-     * 
-     * @param server the HttpServer to apply security to
-     * @return the HttpServer with security applied
-     */
-    @Override
+	 * Applies security to the given HttpServer by making it secure.
+	 * @param server the HttpServer to apply security to
+	 * @return the HttpServer with security applied
+	 */
+	@Override
 	public HttpServer apply(HttpServer server) {
 		return server.secure(this::applySecurity);
 	}
 
 	/**
-     * Applies security settings to the given SslContextSpec.
-     * 
-     * @param spec the SslContextSpec to apply security settings to
-     */
-    private void applySecurity(SslContextSpec spec) {
+	 * Applies security settings to the given SslContextSpec.
+	 * @param spec the SslContextSpec to apply security settings to
+	 */
+	private void applySecurity(SslContextSpec spec) {
 		spec.sslContext(this.sslProvider.getSslContext())
 			.setSniAsyncMappings((domainName, promise) -> promise.setSuccess(this.sslProvider));
 	}
 
 	/**
-     * Updates the SSL bundle with the provided SSL bundle and reloads the SSL configuration.
-     * 
-     * @param sslBundle the new SSL bundle to be updated
-     * @throws IllegalArgumentException if the provided SSL bundle is null
-     */
-    void updateSslBundle(SslBundle sslBundle) {
+	 * Updates the SSL bundle with the provided SSL bundle and reloads the SSL
+	 * configuration.
+	 * @param sslBundle the new SSL bundle to be updated
+	 * @throws IllegalArgumentException if the provided SSL bundle is null
+	 */
+	void updateSslBundle(SslBundle sslBundle) {
 		logger.debug("SSL Bundle has been updated, reloading SSL configuration");
 		this.sslBundle = sslBundle;
 		this.sslProvider = createSslProvider(sslBundle);
 	}
 
 	/**
-     * Creates an SSL provider using the provided SSL bundle.
-     * 
-     * @param sslBundle the SSL bundle containing the necessary SSL configuration
-     * @return the SSL provider
-     */
-    private SslProvider createSslProvider(SslBundle sslBundle) {
+	 * Creates an SSL provider using the provided SSL bundle.
+	 * @param sslBundle the SSL bundle containing the necessary SSL configuration
+	 * @return the SSL provider
+	 */
+	private SslProvider createSslProvider(SslBundle sslBundle) {
 		return SslProvider.builder().sslContext(createSslContextSpec(sslBundle)).build();
 	}
 

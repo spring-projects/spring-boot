@@ -28,11 +28,10 @@ import org.springframework.stereotype.Component;
 public class MyBean {
 
 	/**
-     * Constructor for MyBean class.
-     * 
-     * @param args the ApplicationArguments object containing the command line arguments
-     */
-    public MyBean(ApplicationArguments args) {
+	 * Constructor for MyBean class.
+	 * @param args the ApplicationArguments object containing the command line arguments
+	 */
+	public MyBean(ApplicationArguments args) {
 		boolean debug = args.containsOption("debug");
 		List<String> files = args.getNonOptionArgs();
 		if (debug) {

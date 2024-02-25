@@ -36,42 +36,39 @@ public final class BuildpackReference {
 	private final String value;
 
 	/**
-     * Constructs a new BuildpackReference with the specified value.
-     *
-     * @param value the value of the BuildpackReference
-     */
-    private BuildpackReference(String value) {
+	 * Constructs a new BuildpackReference with the specified value.
+	 * @param value the value of the BuildpackReference
+	 */
+	private BuildpackReference(String value) {
 		this.value = value;
 	}
 
 	/**
-     * Checks if the value of the BuildpackReference object has the specified prefix.
-     * 
-     * @param prefix the prefix to check
-     * @return true if the value starts with the specified prefix, false otherwise
-     */
-    boolean hasPrefix(String prefix) {
+	 * Checks if the value of the BuildpackReference object has the specified prefix.
+	 * @param prefix the prefix to check
+	 * @return true if the value starts with the specified prefix, false otherwise
+	 */
+	boolean hasPrefix(String prefix) {
 		return this.value.startsWith(prefix);
 	}
 
 	/**
-     * Returns a sub-reference of the current value by removing the specified prefix.
-     * 
-     * @param prefix the prefix to be removed from the value
-     * @return the sub-reference of the value after removing the prefix, or null if the value does not start with the prefix
-     */
-    String getSubReference(String prefix) {
+	 * Returns a sub-reference of the current value by removing the specified prefix.
+	 * @param prefix the prefix to be removed from the value
+	 * @return the sub-reference of the value after removing the prefix, or null if the
+	 * value does not start with the prefix
+	 */
+	String getSubReference(String prefix) {
 		return this.value.startsWith(prefix) ? this.value.substring(prefix.length()) : null;
 	}
 
 	/**
-     * Returns a Path object representing the file path of the BuildpackReference.
-     * 
-     * @return the Path object representing the file path, or null if the path is not a valid file path
-     * 
-     * @throws MalformedURLException if the path is a malformed URL
-     */
-    Path asPath() {
+	 * Returns a Path object representing the file path of the BuildpackReference.
+	 * @return the Path object representing the file path, or null if the path is not a
+	 * valid file path
+	 * @throws MalformedURLException if the path is a malformed URL
+	 */
+	Path asPath() {
 		try {
 			URL url = new URL(this.value);
 			if (url.getProtocol().equals("file")) {
@@ -91,12 +88,12 @@ public final class BuildpackReference {
 	}
 
 	/**
-     * Compares this BuildpackReference object to the specified object for equality.
-     * 
-     * @param obj the object to compare with
-     * @return true if the specified object is equal to this BuildpackReference object, false otherwise
-     */
-    @Override
+	 * Compares this BuildpackReference object to the specified object for equality.
+	 * @param obj the object to compare with
+	 * @return true if the specified object is equal to this BuildpackReference object,
+	 * false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -108,21 +105,19 @@ public final class BuildpackReference {
 	}
 
 	/**
-     * Returns the hash code value for this BuildpackReference object.
-     * 
-     * @return the hash code value for this object
-     */
-    @Override
+	 * Returns the hash code value for this BuildpackReference object.
+	 * @return the hash code value for this object
+	 */
+	@Override
 	public int hashCode() {
 		return this.value.hashCode();
 	}
 
 	/**
-     * Returns a string representation of the object.
-     *
-     * @return the string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return the string representation of the object
+	 */
+	@Override
 	public String toString() {
 		return this.value;
 	}

@@ -36,45 +36,46 @@ class ConnectionFactoryBeanCreationFailureAnalyzer
 	private final Environment environment;
 
 	/**
-     * Constructs a new ConnectionFactoryBeanCreationFailureAnalyzer with the specified environment.
-     * 
-     * @param environment the environment to be used by the ConnectionFactoryBeanCreationFailureAnalyzer
-     */
-    ConnectionFactoryBeanCreationFailureAnalyzer(Environment environment) {
+	 * Constructs a new ConnectionFactoryBeanCreationFailureAnalyzer with the specified
+	 * environment.
+	 * @param environment the environment to be used by the
+	 * ConnectionFactoryBeanCreationFailureAnalyzer
+	 */
+	ConnectionFactoryBeanCreationFailureAnalyzer(Environment environment) {
 		this.environment = environment;
 	}
 
 	/**
-     * Analyzes the failure caused by a ConnectionFactoryBeanCreationException and returns a FailureAnalysis object.
-     * 
-     * @param rootFailure the root cause of the failure
-     * @param cause the ConnectionFactoryBeanCreationException that caused the failure
-     * @return a FailureAnalysis object containing information about the failure
-     */
-    @Override
+	 * Analyzes the failure caused by a ConnectionFactoryBeanCreationException and returns
+	 * a FailureAnalysis object.
+	 * @param rootFailure the root cause of the failure
+	 * @param cause the ConnectionFactoryBeanCreationException that caused the failure
+	 * @return a FailureAnalysis object containing information about the failure
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, ConnectionFactoryBeanCreationException cause) {
 		return getFailureAnalysis(cause);
 	}
 
 	/**
-     * Generates a FailureAnalysis object based on the given ConnectionFactoryBeanCreationException.
-     * 
-     * @param cause the ConnectionFactoryBeanCreationException that occurred
-     * @return a FailureAnalysis object containing the description, action, and cause of the failure
-     */
-    private FailureAnalysis getFailureAnalysis(ConnectionFactoryBeanCreationException cause) {
+	 * Generates a FailureAnalysis object based on the given
+	 * ConnectionFactoryBeanCreationException.
+	 * @param cause the ConnectionFactoryBeanCreationException that occurred
+	 * @return a FailureAnalysis object containing the description, action, and cause of
+	 * the failure
+	 */
+	private FailureAnalysis getFailureAnalysis(ConnectionFactoryBeanCreationException cause) {
 		String description = getDescription(cause);
 		String action = getAction(cause);
 		return new FailureAnalysis(description, action, cause);
 	}
 
 	/**
-     * Returns a description of the ConnectionFactory bean creation failure.
-     * 
-     * @param cause the exception that caused the failure
-     * @return a string description of the failure
-     */
-    private String getDescription(ConnectionFactoryBeanCreationException cause) {
+	 * Returns a description of the ConnectionFactory bean creation failure.
+	 * @param cause the exception that caused the failure
+	 * @return a string description of the failure
+	 */
+	private String getDescription(ConnectionFactoryBeanCreationException cause) {
 		StringBuilder description = new StringBuilder();
 		description.append("Failed to configure a ConnectionFactory: ");
 		if (!StringUtils.hasText(cause.getUrl())) {
@@ -86,12 +87,12 @@ class ConnectionFactoryBeanCreationFailureAnalyzer
 	}
 
 	/**
-     * Returns the recommended action to be taken based on the given ConnectionFactoryBeanCreationException.
-     * 
-     * @param cause the ConnectionFactoryBeanCreationException that occurred
-     * @return the recommended action as a String
-     */
-    private String getAction(ConnectionFactoryBeanCreationException cause) {
+	 * Returns the recommended action to be taken based on the given
+	 * ConnectionFactoryBeanCreationException.
+	 * @param cause the ConnectionFactoryBeanCreationException that occurred
+	 * @return the recommended action as a String
+	 */
+	private String getAction(ConnectionFactoryBeanCreationException cause) {
 		StringBuilder action = new StringBuilder();
 		action.append(String.format("Consider the following:%n"));
 		if (EmbeddedDatabaseConnection.NONE == cause.getEmbeddedDatabaseConnection()) {
@@ -108,11 +109,10 @@ class ConnectionFactoryBeanCreationFailureAnalyzer
 	}
 
 	/**
-     * Returns a string representation of the active profiles.
-     * 
-     * @return a string representation of the active profiles
-     */
-    private String getActiveProfiles() {
+	 * Returns a string representation of the active profiles.
+	 * @return a string representation of the active profiles
+	 */
+	private String getActiveProfiles() {
 		StringBuilder message = new StringBuilder();
 		String[] profiles = this.environment.getActiveProfiles();
 		if (ObjectUtils.isEmpty(profiles)) {

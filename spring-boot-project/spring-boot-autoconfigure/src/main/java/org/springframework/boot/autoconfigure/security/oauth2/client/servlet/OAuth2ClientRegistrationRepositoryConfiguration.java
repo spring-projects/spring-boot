@@ -43,12 +43,14 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 class OAuth2ClientRegistrationRepositoryConfiguration {
 
 	/**
-     * Creates an instance of {@link InMemoryClientRegistrationRepository} if no bean of type {@link ClientRegistrationRepository} is present.
-     * 
-     * @param properties the {@link OAuth2ClientProperties} containing the client registration properties
-     * @return an instance of {@link InMemoryClientRegistrationRepository} with the provided client registrations
-     */
-    @Bean
+	 * Creates an instance of {@link InMemoryClientRegistrationRepository} if no bean of
+	 * type {@link ClientRegistrationRepository} is present.
+	 * @param properties the {@link OAuth2ClientProperties} containing the client
+	 * registration properties
+	 * @return an instance of {@link InMemoryClientRegistrationRepository} with the
+	 * provided client registrations
+	 */
+	@Bean
 	@ConditionalOnMissingBean(ClientRegistrationRepository.class)
 	InMemoryClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
 		List<ClientRegistration> registrations = new ArrayList<>(

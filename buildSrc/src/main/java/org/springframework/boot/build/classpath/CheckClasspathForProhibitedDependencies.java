@@ -38,42 +38,39 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 	private Configuration classpath;
 
 	/**
-     * This method checks the classpath for any prohibited dependencies.
-     * 
-     * @return void
-     */
-    public CheckClasspathForProhibitedDependencies() {
+	 * This method checks the classpath for any prohibited dependencies.
+	 * @return void
+	 */
+	public CheckClasspathForProhibitedDependencies() {
 		getOutputs().upToDateWhen((task) -> true);
 	}
 
 	/**
-     * Sets the classpath for the CheckClasspathForProhibitedDependencies class.
-     * 
-     * @param classpath the Configuration object representing the classpath to be set
-     */
-    public void setClasspath(Configuration classpath) {
+	 * Sets the classpath for the CheckClasspathForProhibitedDependencies class.
+	 * @param classpath the Configuration object representing the classpath to be set
+	 */
+	public void setClasspath(Configuration classpath) {
 		this.classpath = classpath;
 	}
 
 	/**
-     * Returns the classpath of the CheckClasspathForProhibitedDependencies.
-     *
-     * @return the classpath of the CheckClasspathForProhibitedDependencies
-     */
-    @Classpath
+	 * Returns the classpath of the CheckClasspathForProhibitedDependencies.
+	 * @return the classpath of the CheckClasspathForProhibitedDependencies
+	 */
+	@Classpath
 	public FileCollection getClasspath() {
 		return this.classpath;
 	}
 
 	/**
-     * Checks for prohibited dependencies in the classpath.
-     * 
-     * This method retrieves the resolved artifacts from the classpath and filters out any prohibited dependencies.
-     * It then collects the filtered dependencies into a TreeSet and throws a GradleException if any prohibited dependencies are found.
-     * 
-     * @throws GradleException if any prohibited dependencies are found in the classpath
-     */
-    @TaskAction
+	 * Checks for prohibited dependencies in the classpath.
+	 *
+	 * This method retrieves the resolved artifacts from the classpath and filters out any
+	 * prohibited dependencies. It then collects the filtered dependencies into a TreeSet
+	 * and throws a GradleException if any prohibited dependencies are found.
+	 * @throws GradleException if any prohibited dependencies are found in the classpath
+	 */
+	@TaskAction
 	public void checkForProhibitedDependencies() {
 		TreeSet<String> prohibited = this.classpath.getResolvedConfiguration()
 			.getResolvedArtifacts()
@@ -92,12 +89,11 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 	}
 
 	/**
-     * Checks if a given module version identifier is prohibited.
-     * 
-     * @param id the module version identifier to check
-     * @return true if the module version identifier is prohibited, false otherwise
-     */
-    private boolean prohibited(ModuleVersionIdentifier id) {
+	 * Checks if a given module version identifier is prohibited.
+	 * @param id the module version identifier to check
+	 * @return true if the module version identifier is prohibited, false otherwise
+	 */
+	private boolean prohibited(ModuleVersionIdentifier id) {
 		String group = id.getGroup();
 		if (group.equals("javax.batch")) {
 			return false;

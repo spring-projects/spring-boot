@@ -39,24 +39,23 @@ final class ClassPathIndexFile {
 	private final Set<String> lines;
 
 	/**
-     * Constructs a new ClassPathIndexFile object with the specified root directory and list of lines.
-     * 
-     * @param root the root directory of the class path index file
-     * @param lines the list of lines in the class path index file
-     */
-    private ClassPathIndexFile(File root, List<String> lines) {
+	 * Constructs a new ClassPathIndexFile object with the specified root directory and
+	 * list of lines.
+	 * @param root the root directory of the class path index file
+	 * @param lines the list of lines in the class path index file
+	 */
+	private ClassPathIndexFile(File root, List<String> lines) {
 		this.root = root;
 		this.lines = lines.stream().map(this::extractName).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	/**
-     * Extracts the name from a line in the classpath index file.
-     * 
-     * @param line the line to extract the name from
-     * @return the extracted name
-     * @throws IllegalStateException if the line is malformed
-     */
-    private String extractName(String line) {
+	 * Extracts the name from a line in the classpath index file.
+	 * @param line the line to extract the name from
+	 * @return the extracted name
+	 * @throws IllegalStateException if the line is malformed
+	 */
+	private String extractName(String line) {
 		if (line.startsWith("- \"") && line.endsWith("\"")) {
 			return line.substring(3, line.length() - 1);
 		}
@@ -64,21 +63,19 @@ final class ClassPathIndexFile {
 	}
 
 	/**
-     * Returns the size of the lines list.
-     *
-     * @return the size of the lines list
-     */
-    int size() {
+	 * Returns the size of the lines list.
+	 * @return the size of the lines list
+	 */
+	int size() {
 		return this.lines.size();
 	}
 
 	/**
-     * Checks if the given name is contained in the lines of the ClassPathIndexFile.
-     * 
-     * @param name the name to be checked
-     * @return true if the name is contained in the lines, false otherwise
-     */
-    boolean containsEntry(String name) {
+	 * Checks if the given name is contained in the lines of the ClassPathIndexFile.
+	 * @param name the name to be checked
+	 * @return true if the name is contained in the lines, false otherwise
+	 */
+	boolean containsEntry(String name) {
 		if (name == null || name.isEmpty()) {
 			return false;
 		}
@@ -86,22 +83,20 @@ final class ClassPathIndexFile {
 	}
 
 	/**
-     * Retrieves a list of URLs from the lines of the ClassPathIndexFile.
-     *
-     * @return a list of URLs extracted from the lines
-     */
-    List<URL> getUrls() {
+	 * Retrieves a list of URLs from the lines of the ClassPathIndexFile.
+	 * @return a list of URLs extracted from the lines
+	 */
+	List<URL> getUrls() {
 		return this.lines.stream().map(this::asUrl).toList();
 	}
 
 	/**
-     * Converts a given line into a URL object.
-     *
-     * @param line the line to be converted into a URL
-     * @return the URL object representing the given line
-     * @throws IllegalStateException if the URL is malformed
-     */
-    private URL asUrl(String line) {
+	 * Converts a given line into a URL object.
+	 * @param line the line to be converted into a URL
+	 * @return the URL object representing the given line
+	 * @throws IllegalStateException if the URL is malformed
+	 */
+	private URL asUrl(String line) {
 		try {
 			return new File(this.root, line).toURI().toURL();
 		}
@@ -111,26 +106,25 @@ final class ClassPathIndexFile {
 	}
 
 	/**
-     * Loads the ClassPathIndexFile if it exists at the specified location.
-     * 
-     * @param root the root directory where the ClassPathIndexFile is located
-     * @param location the location of the ClassPathIndexFile relative to the root directory
-     * @return the loaded ClassPathIndexFile if it exists, null otherwise
-     * @throws IOException if an I/O error occurs while loading the ClassPathIndexFile
-     */
-    static ClassPathIndexFile loadIfPossible(File root, String location) throws IOException {
+	 * Loads the ClassPathIndexFile if it exists at the specified location.
+	 * @param root the root directory where the ClassPathIndexFile is located
+	 * @param location the location of the ClassPathIndexFile relative to the root
+	 * directory
+	 * @return the loaded ClassPathIndexFile if it exists, null otherwise
+	 * @throws IOException if an I/O error occurs while loading the ClassPathIndexFile
+	 */
+	static ClassPathIndexFile loadIfPossible(File root, String location) throws IOException {
 		return loadIfPossible(root, new File(root, location));
 	}
 
 	/**
-     * Loads the ClassPathIndexFile if it exists and is a file.
-     * 
-     * @param root The root directory of the ClassPathIndexFile.
-     * @param indexFile The index file to be loaded.
-     * @return The loaded ClassPathIndexFile if it exists and is a file, otherwise null.
-     * @throws IOException If an I/O error occurs while reading the index file.
-     */
-    private static ClassPathIndexFile loadIfPossible(File root, File indexFile) throws IOException {
+	 * Loads the ClassPathIndexFile if it exists and is a file.
+	 * @param root The root directory of the ClassPathIndexFile.
+	 * @param indexFile The index file to be loaded.
+	 * @return The loaded ClassPathIndexFile if it exists and is a file, otherwise null.
+	 * @throws IOException If an I/O error occurs while reading the index file.
+	 */
+	private static ClassPathIndexFile loadIfPossible(File root, File indexFile) throws IOException {
 		if (indexFile.exists() && indexFile.isFile()) {
 			List<String> lines = Files.readAllLines(indexFile.toPath())
 				.stream()
@@ -142,12 +136,11 @@ final class ClassPathIndexFile {
 	}
 
 	/**
-     * Checks if a given line of text has any content.
-     * 
-     * @param line the line of text to be checked
-     * @return true if the line has content, false otherwise
-     */
-    private static boolean lineHasText(String line) {
+	 * Checks if a given line of text has any content.
+	 * @param line the line of text to be checked
+	 * @return true if the line has content, false otherwise
+	 */
+	private static boolean lineHasText(String line) {
 		return !line.trim().isEmpty();
 	}
 

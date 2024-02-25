@@ -43,13 +43,12 @@ public class ClientsConfiguredCondition extends SpringBootCondition {
 		.mapOf(String.class, OAuth2ClientProperties.Registration.class);
 
 	/**
-     * Determines the outcome of the condition for the ClientsConfiguredCondition.
-     * 
-     * @param context   the condition context
-     * @param metadata  the annotated type metadata
-     * @return          the condition outcome
-     */
-    @Override
+	 * Determines the outcome of the condition for the ClientsConfiguredCondition.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @return the condition outcome
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("OAuth2 Clients Configured Condition");
 		Map<String, OAuth2ClientProperties.Registration> registrations = getRegistrations(context.getEnvironment());
@@ -63,12 +62,12 @@ public class ClientsConfiguredCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Retrieves the registrations for OAuth2 clients from the given environment.
-     * 
-     * @param environment the environment containing the OAuth2 client registrations
-     * @return a map of OAuth2 client registrations, where the key is the client ID and the value is the registration properties
-     */
-    private Map<String, OAuth2ClientProperties.Registration> getRegistrations(Environment environment) {
+	 * Retrieves the registrations for OAuth2 clients from the given environment.
+	 * @param environment the environment containing the OAuth2 client registrations
+	 * @return a map of OAuth2 client registrations, where the key is the client ID and
+	 * the value is the registration properties
+	 */
+	private Map<String, OAuth2ClientProperties.Registration> getRegistrations(Environment environment) {
 		return Binder.get(environment)
 			.bind("spring.security.oauth2.client.registration", STRING_REGISTRATION_MAP)
 			.orElse(Collections.emptyMap());

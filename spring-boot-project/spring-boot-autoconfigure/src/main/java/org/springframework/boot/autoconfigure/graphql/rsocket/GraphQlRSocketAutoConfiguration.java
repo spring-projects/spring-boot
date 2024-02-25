@@ -53,14 +53,15 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 public class GraphQlRSocketAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link GraphQlRSocketHandler} if no other bean of the same type is present.
-     * 
-     * @param graphQlService the {@link ExecutionGraphQlService} to be used by the handler
-     * @param interceptors an {@link ObjectProvider} of {@link RSocketGraphQlInterceptor} to be applied to the handler
-     * @param objectMapper the {@link ObjectMapper} to be used for JSON encoding
-     * @return a new instance of {@link GraphQlRSocketHandler}
-     */
-    @Bean
+	 * Creates a new instance of {@link GraphQlRSocketHandler} if no other bean of the
+	 * same type is present.
+	 * @param graphQlService the {@link ExecutionGraphQlService} to be used by the handler
+	 * @param interceptors an {@link ObjectProvider} of {@link RSocketGraphQlInterceptor}
+	 * to be applied to the handler
+	 * @param objectMapper the {@link ObjectMapper} to be used for JSON encoding
+	 * @return a new instance of {@link GraphQlRSocketHandler}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public GraphQlRSocketHandler graphQlRSocketHandler(ExecutionGraphQlService graphQlService,
 			ObjectProvider<RSocketGraphQlInterceptor> interceptors, ObjectMapper objectMapper) {
@@ -69,12 +70,12 @@ public class GraphQlRSocketAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link GraphQlRSocketController} if no other bean of the same type is present.
-     * 
-     * @param handler the {@link GraphQlRSocketHandler} to be used by the controller
-     * @return a new instance of {@link GraphQlRSocketController}
-     */
-    @Bean
+	 * Creates a new instance of {@link GraphQlRSocketController} if no other bean of the
+	 * same type is present.
+	 * @param handler the {@link GraphQlRSocketHandler} to be used by the controller
+	 * @return a new instance of {@link GraphQlRSocketController}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public GraphQlRSocketController graphQlRSocketController(GraphQlRSocketHandler handler) {
 		return new GraphQlRSocketController(handler);

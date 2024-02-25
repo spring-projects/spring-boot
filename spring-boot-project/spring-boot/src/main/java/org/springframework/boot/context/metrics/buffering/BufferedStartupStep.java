@@ -52,15 +52,15 @@ class BufferedStartupStep implements StartupStep {
 	private final AtomicBoolean ended = new AtomicBoolean();
 
 	/**
-     * Constructs a new BufferedStartupStep with the specified parent, name, id, start time, and recorder.
-     * 
-     * @param parent the parent BufferedStartupStep of this step
-     * @param name the name of this step
-     * @param id the unique identifier of this step
-     * @param startTime the start time of this step
-     * @param recorder the consumer function used to record this step
-     */
-    BufferedStartupStep(BufferedStartupStep parent, String name, long id, Instant startTime,
+	 * Constructs a new BufferedStartupStep with the specified parent, name, id, start
+	 * time, and recorder.
+	 * @param parent the parent BufferedStartupStep of this step
+	 * @param name the name of this step
+	 * @param id the unique identifier of this step
+	 * @param startTime the start time of this step
+	 * @param recorder the consumer function used to record this step
+	 */
+	BufferedStartupStep(BufferedStartupStep parent, String name, long id, Instant startTime,
 			Consumer<BufferedStartupStep> recorder) {
 		this.parent = parent;
 		this.name = name;
@@ -70,84 +70,76 @@ class BufferedStartupStep implements StartupStep {
 	}
 
 	/**
-     * Returns the parent BufferedStartupStep of this BufferedStartupStep.
-     *
-     * @return the parent BufferedStartupStep of this BufferedStartupStep
-     */
-    BufferedStartupStep getParent() {
+	 * Returns the parent BufferedStartupStep of this BufferedStartupStep.
+	 * @return the parent BufferedStartupStep of this BufferedStartupStep
+	 */
+	BufferedStartupStep getParent() {
 		return this.parent;
 	}
 
 	/**
-     * Returns the name of the BufferedStartupStep.
-     *
-     * @return the name of the BufferedStartupStep
-     */
-    @Override
+	 * Returns the name of the BufferedStartupStep.
+	 * @return the name of the BufferedStartupStep
+	 */
+	@Override
 	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Returns the ID of the BufferedStartupStep.
-     *
-     * @return the ID of the BufferedStartupStep
-     */
-    @Override
+	 * Returns the ID of the BufferedStartupStep.
+	 * @return the ID of the BufferedStartupStep
+	 */
+	@Override
 	public long getId() {
 		return this.id;
 	}
 
 	/**
-     * Returns the start time of the BufferedStartupStep.
-     *
-     * @return the start time of the BufferedStartupStep
-     */
-    Instant getStartTime() {
+	 * Returns the start time of the BufferedStartupStep.
+	 * @return the start time of the BufferedStartupStep
+	 */
+	Instant getStartTime() {
 		return this.startTime;
 	}
 
 	/**
-     * Returns the ID of the parent of this BufferedStartupStep.
-     * 
-     * @return the ID of the parent, or null if there is no parent
-     */
-    @Override
+	 * Returns the ID of the parent of this BufferedStartupStep.
+	 * @return the ID of the parent, or null if there is no parent
+	 */
+	@Override
 	public Long getParentId() {
 		return (this.parent != null) ? this.parent.getId() : null;
 	}
 
 	/**
-     * Returns the tags associated with this BufferedStartupStep.
-     * 
-     * @return the tags associated with this BufferedStartupStep
-     */
-    @Override
+	 * Returns the tags associated with this BufferedStartupStep.
+	 * @return the tags associated with this BufferedStartupStep
+	 */
+	@Override
 	public Tags getTags() {
 		return Collections.unmodifiableList(this.tags)::iterator;
 	}
 
 	/**
-     * Adds a tag with the specified key and value to this startup step.
-     * 
-     * @param key the key of the tag
-     * @param value the value of the tag
-     * @return the updated startup step with the added tag
-     */
-    @Override
+	 * Adds a tag with the specified key and value to this startup step.
+	 * @param key the key of the tag
+	 * @param value the value of the tag
+	 * @return the updated startup step with the added tag
+	 */
+	@Override
 	public StartupStep tag(String key, Supplier<String> value) {
 		return tag(key, value.get());
 	}
 
 	/**
-     * Adds a tag to the current startup step.
-     * 
-     * @param key   the key of the tag
-     * @param value the value of the tag
-     * @return the current startup step
-     * @throws IllegalStateException if the startup step has already ended
-     */
-    @Override
+	 * Adds a tag to the current startup step.
+	 * @param key the key of the tag
+	 * @param value the value of the tag
+	 * @return the current startup step
+	 * @throws IllegalStateException if the startup step has already ended
+	 */
+	@Override
 	public StartupStep tag(String key, String value) {
 		Assert.state(!this.ended.get(), "StartupStep has already ended.");
 		this.tags.add(new DefaultTag(key, value));
@@ -155,60 +147,56 @@ class BufferedStartupStep implements StartupStep {
 	}
 
 	/**
-     * Ends the execution of the BufferedStartupStep.
-     * Sets the 'ended' flag to true and calls the 'recorder' function to accept this step.
-     */
-    @Override
+	 * Ends the execution of the BufferedStartupStep. Sets the 'ended' flag to true and
+	 * calls the 'recorder' function to accept this step.
+	 */
+	@Override
 	public void end() {
 		this.ended.set(true);
 		this.recorder.accept(this);
 	}
 
 	/**
-     * Returns a boolean value indicating whether the BufferedStartupStep has ended.
-     *
-     * @return true if the BufferedStartupStep has ended, false otherwise.
-     */
-    boolean isEnded() {
+	 * Returns a boolean value indicating whether the BufferedStartupStep has ended.
+	 * @return true if the BufferedStartupStep has ended, false otherwise.
+	 */
+	boolean isEnded() {
 		return this.ended.get();
 	}
 
 	/**
-     * DefaultTag class.
-     */
-    static class DefaultTag implements Tag {
+	 * DefaultTag class.
+	 */
+	static class DefaultTag implements Tag {
 
 		private final String key;
 
 		private final String value;
 
 		/**
-         * Constructs a new DefaultTag with the specified key and value.
-         *
-         * @param key   the key of the tag
-         * @param value the value of the tag
-         */
-        DefaultTag(String key, String value) {
+		 * Constructs a new DefaultTag with the specified key and value.
+		 * @param key the key of the tag
+		 * @param value the value of the tag
+		 */
+		DefaultTag(String key, String value) {
 			this.key = key;
 			this.value = value;
 		}
 
 		/**
-         * Returns the key associated with this DefaultTag.
-         *
-         * @return the key associated with this DefaultTag
-         */
-        @Override
+		 * Returns the key associated with this DefaultTag.
+		 * @return the key associated with this DefaultTag
+		 */
+		@Override
 		public String getKey() {
 			return this.key;
 		}
 
 		/**
-         * Returns the value of the DefaultTag.
-         *
-         * @return the value of the DefaultTag
-         */
-        @Override
+		 * Returns the value of the DefaultTag.
+		 * @return the value of the DefaultTag
+		 */
+		@Override
 		public String getValue() {
 			return this.value;
 		}

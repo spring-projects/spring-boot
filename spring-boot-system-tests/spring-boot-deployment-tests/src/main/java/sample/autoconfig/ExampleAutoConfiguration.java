@@ -30,27 +30,25 @@ import org.springframework.context.annotation.Bean;
 public class ExampleAutoConfiguration {
 
 	/**
-     * Creates a new instance of the TestEndpoint class.
-     * 
-     * @return the TestEndpoint instance
-     */
-    @Bean
+	 * Creates a new instance of the TestEndpoint class.
+	 * @return the TestEndpoint instance
+	 */
+	@Bean
 	public TestEndpoint testEndpoint() {
 		return new TestEndpoint();
 	}
 
 	/**
-     * TestEndpoint class.
-     */
-    @Endpoint(id = "war")
+	 * TestEndpoint class.
+	 */
+	@Endpoint(id = "war")
 	static class TestEndpoint {
 
 		/**
-         * Returns a JSON string with the message "hello":"world".
-         *
-         * @return a JSON string with the message "hello":"world"
-         */
-        @ReadOperation
+		 * Returns a JSON string with the message "hello":"world".
+		 * @return a JSON string with the message "hello":"world"
+		 */
+		@ReadOperation
 		String hello() {
 			return "{\"hello\":\"world\"}";
 		}

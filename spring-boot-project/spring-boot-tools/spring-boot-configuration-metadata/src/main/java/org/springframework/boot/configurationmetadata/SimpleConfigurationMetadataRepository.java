@@ -34,21 +34,19 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 	private final Map<String, ConfigurationMetadataGroup> allGroups = new HashMap<>();
 
 	/**
-     * Returns an unmodifiable map of all configuration metadata groups.
-     *
-     * @return an unmodifiable map of all configuration metadata groups
-     */
-    @Override
+	 * Returns an unmodifiable map of all configuration metadata groups.
+	 * @return an unmodifiable map of all configuration metadata groups
+	 */
+	@Override
 	public Map<String, ConfigurationMetadataGroup> getAllGroups() {
 		return Collections.unmodifiableMap(this.allGroups);
 	}
 
 	/**
-     * Returns a map of all properties in the configuration metadata repository.
-     * 
-     * @return a map of property names to ConfigurationMetadataProperty objects
-     */
-    @Override
+	 * Returns a map of all properties in the configuration metadata repository.
+	 * @return a map of property names to ConfigurationMetadataProperty objects
+	 */
+	@Override
 	public Map<String, ConfigurationMetadataProperty> getAllProperties() {
 		Map<String, ConfigurationMetadataProperty> properties = new HashMap<>();
 		for (ConfigurationMetadataGroup group : this.allGroups.values()) {
@@ -107,13 +105,14 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 	}
 
 	/**
-     * Retrieves the ConfigurationMetadataGroup associated with the given ConfigurationMetadataSource.
-     * If the source is null, it returns the root ConfigurationMetadataGroup.
-     * 
-     * @param source the ConfigurationMetadataSource to retrieve the group for
-     * @return the ConfigurationMetadataGroup associated with the source, or the root group if the source is null
-     */
-    private ConfigurationMetadataGroup getGroup(ConfigurationMetadataSource source) {
+	 * Retrieves the ConfigurationMetadataGroup associated with the given
+	 * ConfigurationMetadataSource. If the source is null, it returns the root
+	 * ConfigurationMetadataGroup.
+	 * @param source the ConfigurationMetadataSource to retrieve the group for
+	 * @return the ConfigurationMetadataGroup associated with the source, or the root
+	 * group if the source is null
+	 */
+	private ConfigurationMetadataGroup getGroup(ConfigurationMetadataSource source) {
 		if (source == null) {
 			return this.allGroups.computeIfAbsent(ROOT_GROUP, (key) -> new ConfigurationMetadataGroup(ROOT_GROUP));
 		}
@@ -121,15 +120,15 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 	}
 
 	/**
-     * Adds or merges a configuration metadata source to the given map of sources.
-     * If a source with the same name already exists in the map, the properties of the existing source are merged with the new source.
-     * If no source with the same name exists, the new source is added to the map.
-     * 
-     * @param sources the map of configuration metadata sources
-     * @param name the name of the configuration metadata source
-     * @param source the configuration metadata source to be added or merged
-     */
-    private void addOrMergeSource(Map<String, ConfigurationMetadataSource> sources, String name,
+	 * Adds or merges a configuration metadata source to the given map of sources. If a
+	 * source with the same name already exists in the map, the properties of the existing
+	 * source are merged with the new source. If no source with the same name exists, the
+	 * new source is added to the map.
+	 * @param sources the map of configuration metadata sources
+	 * @param name the name of the configuration metadata source
+	 * @param source the configuration metadata source to be added or merged
+	 */
+	private void addOrMergeSource(Map<String, ConfigurationMetadataSource> sources, String name,
 			ConfigurationMetadataSource source) {
 		ConfigurationMetadataSource existingSource = sources.get(name);
 		if (existingSource == null) {

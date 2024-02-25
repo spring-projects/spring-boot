@@ -34,12 +34,12 @@ import org.springframework.ws.test.server.MockWebServiceClient;
 public class MockWebServiceClientAutoConfiguration {
 
 	/**
-     * Creates a mock web service client using the provided application context.
-     * 
-     * @param applicationContext the application context to use for creating the mock web service client
-     * @return the created mock web service client
-     */
-    @Bean
+	 * Creates a mock web service client using the provided application context.
+	 * @param applicationContext the application context to use for creating the mock web
+	 * service client
+	 * @return the created mock web service client
+	 */
+	@Bean
 	MockWebServiceClient mockWebServiceClient(ApplicationContext applicationContext) {
 		return MockWebServiceClient.createClient(applicationContext);
 	}

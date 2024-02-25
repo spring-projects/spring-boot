@@ -45,43 +45,39 @@ public class ParentContextCloserApplicationListener
 	private ApplicationContext context;
 
 	/**
-     * Returns the order value of this ParentContextCloserApplicationListener.
-     *
-     * @return the order value of this ParentContextCloserApplicationListener
-     */
-    @Override
+	 * Returns the order value of this ParentContextCloserApplicationListener.
+	 * @return the order value of this ParentContextCloserApplicationListener
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
 	/**
-     * Sets the application context for this ParentContextCloserApplicationListener.
-     * 
-     * @param context the application context to be set
-     * @throws BeansException if an error occurs while setting the application context
-     */
-    @Override
+	 * Sets the application context for this ParentContextCloserApplicationListener.
+	 * @param context the application context to be set
+	 * @throws BeansException if an error occurs while setting the application context
+	 */
+	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		this.context = context;
 	}
 
 	/**
-     * This method is called when a ParentContextAvailableEvent is triggered.
-     * It installs a listener in the parent application context if necessary.
-     * 
-     * @param event The ParentContextAvailableEvent that was triggered
-     */
-    @Override
+	 * This method is called when a ParentContextAvailableEvent is triggered. It installs
+	 * a listener in the parent application context if necessary.
+	 * @param event The ParentContextAvailableEvent that was triggered
+	 */
+	@Override
 	public void onApplicationEvent(ParentContextAvailableEvent event) {
 		maybeInstallListenerInParent(event.getApplicationContext());
 	}
 
 	/**
-     * Installs a listener in the parent context to close the child context.
-     * 
-     * @param child The child context to install the listener for.
-     */
-    private void maybeInstallListenerInParent(ConfigurableApplicationContext child) {
+	 * Installs a listener in the parent context to close the child context.
+	 * @param child The child context to install the listener for.
+	 */
+	private void maybeInstallListenerInParent(ConfigurableApplicationContext child) {
 		if (child == this.context && child.getParent() instanceof ConfigurableApplicationContext parent) {
 			parent.addApplicationListener(createContextCloserListener(child));
 		}
@@ -105,22 +101,20 @@ public class ParentContextCloserApplicationListener
 		private final WeakReference<ConfigurableApplicationContext> childContext;
 
 		/**
-         * Constructs a new ContextCloserListener with the specified child context.
-         * 
-         * @param childContext the child context to be associated with the listener
-         */
-        public ContextCloserListener(ConfigurableApplicationContext childContext) {
+		 * Constructs a new ContextCloserListener with the specified child context.
+		 * @param childContext the child context to be associated with the listener
+		 */
+		public ContextCloserListener(ConfigurableApplicationContext childContext) {
 			this.childContext = new WeakReference<>(childContext);
 		}
 
 		/**
-         * This method is called when the application context is closed.
-         * It checks if the child context is active and if it is the parent of the closed context.
-         * If both conditions are met, it closes the child context.
-         * 
-         * @param event The event triggered when the application context is closed.
-         */
-        @Override
+		 * This method is called when the application context is closed. It checks if the
+		 * child context is active and if it is the parent of the closed context. If both
+		 * conditions are met, it closes the child context.
+		 * @param event The event triggered when the application context is closed.
+		 */
+		@Override
 		public void onApplicationEvent(ContextClosedEvent event) {
 			ConfigurableApplicationContext context = this.childContext.get();
 			if ((context != null) && (event.getApplicationContext() == context.getParent()) && context.isActive()) {
@@ -129,12 +123,14 @@ public class ParentContextCloserApplicationListener
 		}
 
 		/**
-         * Compares this ContextCloserListener object to the specified object. The result is true if and only if the argument is not null and is a ContextCloserListener object that represents the same child context as this object.
-         * 
-         * @param obj the object to compare this ContextCloserListener against
-         * @return true if the given object represents a ContextCloserListener equivalent to this ContextCloserListener, false otherwise
-         */
-        @Override
+		 * Compares this ContextCloserListener object to the specified object. The result
+		 * is true if and only if the argument is not null and is a ContextCloserListener
+		 * object that represents the same child context as this object.
+		 * @param obj the object to compare this ContextCloserListener against
+		 * @return true if the given object represents a ContextCloserListener equivalent
+		 * to this ContextCloserListener, false otherwise
+		 */
+		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -149,11 +145,11 @@ public class ParentContextCloserApplicationListener
 		}
 
 		/**
-         * Returns a hash code value for the object. This method overrides the hashCode() method in the Object class.
-         * 
-         * @return the hash code value for the object
-         */
-        @Override
+		 * Returns a hash code value for the object. This method overrides the hashCode()
+		 * method in the Object class.
+		 * @return the hash code value for the object
+		 */
+		@Override
 		public int hashCode() {
 			return ObjectUtils.nullSafeHashCode(this.childContext.get());
 		}

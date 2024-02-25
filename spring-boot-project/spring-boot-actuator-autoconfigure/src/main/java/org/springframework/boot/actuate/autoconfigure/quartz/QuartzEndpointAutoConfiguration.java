@@ -47,13 +47,14 @@ import org.springframework.context.annotation.Bean;
 public class QuartzEndpointAutoConfiguration {
 
 	/**
-     * Creates a QuartzEndpoint bean if a Scheduler bean is present and no other QuartzEndpoint bean is already defined.
-     * 
-     * @param scheduler The Scheduler bean to be used by the QuartzEndpoint.
-     * @param sanitizingFunctions An ObjectProvider of SanitizingFunction beans to be used by the QuartzEndpoint.
-     * @return The QuartzEndpoint bean.
-     */
-    @Bean
+	 * Creates a QuartzEndpoint bean if a Scheduler bean is present and no other
+	 * QuartzEndpoint bean is already defined.
+	 * @param scheduler The Scheduler bean to be used by the QuartzEndpoint.
+	 * @param sanitizingFunctions An ObjectProvider of SanitizingFunction beans to be used
+	 * by the QuartzEndpoint.
+	 * @return The QuartzEndpoint bean.
+	 */
+	@Bean
 	@ConditionalOnBean(Scheduler.class)
 	@ConditionalOnMissingBean
 	public QuartzEndpoint quartzEndpoint(Scheduler scheduler, ObjectProvider<SanitizingFunction> sanitizingFunctions) {
@@ -61,15 +62,17 @@ public class QuartzEndpointAutoConfiguration {
 	}
 
 	/**
-     * Creates a QuartzEndpointWebExtension bean if a QuartzEndpoint bean is present and no other QuartzEndpointWebExtension bean is defined.
-     * The bean is conditionally created if the QuartzEndpoint is available as an endpoint and the exposure is either WEB or CLOUD_FOUNDRY.
-     * The QuartzEndpointWebExtension bean is created with the provided QuartzEndpoint and the showValues and roles properties from QuartzEndpointProperties.
-     * 
-     * @param endpoint The QuartzEndpoint bean.
-     * @param properties The QuartzEndpointProperties bean.
-     * @return The created QuartzEndpointWebExtension bean.
-     */
-    @Bean
+	 * Creates a QuartzEndpointWebExtension bean if a QuartzEndpoint bean is present and
+	 * no other QuartzEndpointWebExtension bean is defined. The bean is conditionally
+	 * created if the QuartzEndpoint is available as an endpoint and the exposure is
+	 * either WEB or CLOUD_FOUNDRY. The QuartzEndpointWebExtension bean is created with
+	 * the provided QuartzEndpoint and the showValues and roles properties from
+	 * QuartzEndpointProperties.
+	 * @param endpoint The QuartzEndpoint bean.
+	 * @param properties The QuartzEndpointProperties bean.
+	 * @return The created QuartzEndpointWebExtension bean.
+	 */
+	@Bean
 	@ConditionalOnBean(QuartzEndpoint.class)
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint(exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })

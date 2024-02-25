@@ -69,11 +69,10 @@ public class RabbitTemplateConfigurer {
 	}
 
 	/**
-     * Returns the RabbitProperties object associated with this RabbitTemplateConfigurer.
-     *
-     * @return the RabbitProperties object
-     */
-    protected final RabbitProperties getRabbitProperties() {
+	 * Returns the RabbitProperties object associated with this RabbitTemplateConfigurer.
+	 * @return the RabbitProperties object
+	 */
+	protected final RabbitProperties getRabbitProperties() {
 		return this.rabbitProperties;
 	}
 
@@ -110,11 +109,10 @@ public class RabbitTemplateConfigurer {
 	}
 
 	/**
-     * Determines the mandatory flag for the RabbitTemplate.
-     * 
-     * @return {@code true} if the mandatory flag is set, {@code false} otherwise
-     */
-    private boolean determineMandatoryFlag() {
+	 * Determines the mandatory flag for the RabbitTemplate.
+	 * @return {@code true} if the mandatory flag is set, {@code false} otherwise
+	 */
+	private boolean determineMandatoryFlag() {
 		Boolean mandatory = this.rabbitProperties.getTemplate().getMandatory();
 		return (mandatory != null) ? mandatory : this.rabbitProperties.isPublisherReturns();
 	}

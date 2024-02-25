@@ -36,12 +36,13 @@ import org.springframework.scheduling.config.ScheduledTaskHolder;
 public class ScheduledTasksEndpointAutoConfiguration {
 
 	/**
-     * Creates a new instance of the {@link ScheduledTasksEndpoint} class if no bean of the same type exists.
-     * 
-     * @param holders the object provider for {@link ScheduledTaskHolder} instances
-     * @return a new instance of {@link ScheduledTasksEndpoint} with the ordered list of {@link ScheduledTaskHolder} instances
-     */
-    @Bean
+	 * Creates a new instance of the {@link ScheduledTasksEndpoint} class if no bean of
+	 * the same type exists.
+	 * @param holders the object provider for {@link ScheduledTaskHolder} instances
+	 * @return a new instance of {@link ScheduledTasksEndpoint} with the ordered list of
+	 * {@link ScheduledTaskHolder} instances
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public ScheduledTasksEndpoint scheduledTasksEndpoint(ObjectProvider<ScheduledTaskHolder> holders) {
 		return new ScheduledTasksEndpoint(holders.orderedStream().toList());

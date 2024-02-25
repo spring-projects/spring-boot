@@ -193,21 +193,21 @@ public class AnnotationConfigReactiveWebServerApplicationContext extends Reactiv
 	}
 
 	/**
-     * Prepare the application context for a refresh operation.
-     * This method clears the cache of the scanner and then calls the super class's prepareRefresh method.
-     */
-    @Override
+	 * Prepare the application context for a refresh operation. This method clears the
+	 * cache of the scanner and then calls the super class's prepareRefresh method.
+	 */
+	@Override
 	protected void prepareRefresh() {
 		this.scanner.clearCache();
 		super.prepareRefresh();
 	}
 
 	/**
-     * Post-processes the bean factory by scanning base packages and registering annotated classes.
-     * 
-     * @param beanFactory the bean factory to be post-processed
-     */
-    @Override
+	 * Post-processes the bean factory by scanning base packages and registering annotated
+	 * classes.
+	 * @param beanFactory the bean factory to be post-processed
+	 */
+	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		super.postProcessBeanFactory(beanFactory);
 		if (!ObjectUtils.isEmpty(this.basePackages)) {

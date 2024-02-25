@@ -57,54 +57,53 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	private BindValidationException exception;
 
 	/**
-     * Constructs a new ValidationBindHandler with the specified validators.
-     * 
-     * @param validators the validators to be used for validation
-     */
-    public ValidationBindHandler(Validator... validators) {
+	 * Constructs a new ValidationBindHandler with the specified validators.
+	 * @param validators the validators to be used for validation
+	 */
+	public ValidationBindHandler(Validator... validators) {
 		this.validators = validators;
 	}
 
 	/**
-     * Constructs a new ValidationBindHandler with the specified parent BindHandler and validators.
-     * 
-     * @param parent the parent BindHandler
-     * @param validators the validators to be used for validation
-     */
-    public ValidationBindHandler(BindHandler parent, Validator... validators) {
+	 * Constructs a new ValidationBindHandler with the specified parent BindHandler and
+	 * validators.
+	 * @param parent the parent BindHandler
+	 * @param validators the validators to be used for validation
+	 */
+	public ValidationBindHandler(BindHandler parent, Validator... validators) {
 		super(parent);
 		this.validators = validators;
 	}
 
 	/**
-     * Overrides the onStart method in the ValidationBindHandler class.
-     * 
-     * This method is called when binding starts for a specific configuration property name and target.
-     * It stores the type of the target in the boundTypes map using the configuration property name as the key.
-     * 
-     * @param name the configuration property name
-     * @param target the target to be bound
-     * @param context the bind context
-     * @return the bindable target
-     */
-    @Override
+	 * Overrides the onStart method in the ValidationBindHandler class.
+	 *
+	 * This method is called when binding starts for a specific configuration property
+	 * name and target. It stores the type of the target in the boundTypes map using the
+	 * configuration property name as the key.
+	 * @param name the configuration property name
+	 * @param target the target to be bound
+	 * @param context the bind context
+	 * @return the bindable target
+	 */
+	@Override
 	public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
 		this.boundTypes.put(name, target.getType());
 		return super.onStart(name, target, context);
 	}
 
 	/**
-     * This method is called when the binding process is successful.
-     * It stores the bound result in the boundResults map using the configuration property name as the key.
-     * If the bind context has a configuration property, it adds it to the boundProperties list.
-     * 
-     * @param name    the name of the configuration property being bound
-     * @param target  the bindable target for the binding process
-     * @param context the bind context for the binding process
-     * @param result  the result of the binding process
-     * @return the result of the super class's onSuccess method
-     */
-    @Override
+	 * This method is called when the binding process is successful. It stores the bound
+	 * result in the boundResults map using the configuration property name as the key. If
+	 * the bind context has a configuration property, it adds it to the boundProperties
+	 * list.
+	 * @param name the name of the configuration property being bound
+	 * @param target the bindable target for the binding process
+	 * @param context the bind context for the binding process
+	 * @param result the result of the binding process
+	 * @return the result of the super class's onSuccess method
+	 */
+	@Override
 	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		this.boundResults.put(name, result);
 		if (context.getConfigurationProperty() != null) {
@@ -114,16 +113,15 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	/**
-     * Handles the failure of binding a configuration property.
-     * 
-     * @param name    the name of the configuration property
-     * @param target  the bindable target
-     * @param context the bind context
-     * @param error   the exception that occurred during binding
-     * @return the result of the binding process
-     * @throws Exception if an error occurs during the handling of the failure
-     */
-    @Override
+	 * Handles the failure of binding a configuration property.
+	 * @param name the name of the configuration property
+	 * @param target the bindable target
+	 * @param context the bind context
+	 * @param error the exception that occurred during binding
+	 * @return the result of the binding process
+	 * @throws Exception if an error occurs during the handling of the failure
+	 */
+	@Override
 	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
 			throws Exception {
 		Object result = super.onFailure(name, target, context, error);
@@ -136,9 +134,10 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	/**
-     * Clears the bound types, bound results, bound properties, and exception of the ValidationBindHandler.
-     */
-    private void clear() {
+	 * Clears the bound types, bound results, bound properties, and exception of the
+	 * ValidationBindHandler.
+	 */
+	private void clear() {
 		this.boundTypes.clear();
 		this.boundResults.clear();
 		this.boundProperties.clear();
@@ -146,16 +145,16 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	/**
-     * This method is called when the binding process finishes. It performs validation on the bound properties
-     * and then calls the superclass's onFinish method.
-     *
-     * @param name     the name of the configuration property being bound
-     * @param target   the bindable target object
-     * @param context  the bind context
-     * @param result   the result of the binding process
-     * @throws Exception if an error occurs during validation or when calling the superclass's onFinish method
-     */
-    @Override
+	 * This method is called when the binding process finishes. It performs validation on
+	 * the bound properties and then calls the superclass's onFinish method.
+	 * @param name the name of the configuration property being bound
+	 * @param target the bindable target object
+	 * @param context the bind context
+	 * @param result the result of the binding process
+	 * @throws Exception if an error occurs during validation or when calling the
+	 * superclass's onFinish method
+	 */
+	@Override
 	public void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
 			throws Exception {
 		validate(name, target, context, result);
@@ -163,14 +162,13 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	/**
-     * Validates the given configuration property name, target, context, and result.
-     * 
-     * @param name the configuration property name to validate
-     * @param target the bindable target to validate
-     * @param context the bind context
-     * @param result the result object to validate
-     */
-    private void validate(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
+	 * Validates the given configuration property name, target, context, and result.
+	 * @param name the configuration property name to validate
+	 * @param target the bindable target to validate
+	 * @param context the bind context
+	 * @param result the result object to validate
+	 */
+	private void validate(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		if (this.exception == null) {
 			Object validationTarget = getValidationTarget(target, context, result);
 			Class<?> validationType = target.getBoxedType().resolve();
@@ -184,14 +182,13 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	/**
-     * Returns the validation target based on the provided parameters.
-     * 
-     * @param target the bindable target
-     * @param context the bind context
-     * @param result the validation result
-     * @return the validation target
-     */
-    private Object getValidationTarget(Bindable<?> target, BindContext context, Object result) {
+	 * Returns the validation target based on the provided parameters.
+	 * @param target the bindable target
+	 * @param context the bind context
+	 * @param result the validation result
+	 * @return the validation target
+	 */
+	private Object getValidationTarget(Bindable<?> target, BindContext context, Object result) {
 		if (result != null) {
 			return result;
 		}
@@ -202,13 +199,13 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	/**
-     * Validates the given target object using the registered validators and pushes the validation result.
-     * 
-     * @param name   the name of the configuration property being validated
-     * @param target the target object to be validated
-     * @param type   the class type of the target object
-     */
-    private void validateAndPush(ConfigurationPropertyName name, Object target, Class<?> type) {
+	 * Validates the given target object using the registered validators and pushes the
+	 * validation result.
+	 * @param name the name of the configuration property being validated
+	 * @param target the target object to be validated
+	 * @param type the class type of the target object
+	 */
+	private void validateAndPush(ConfigurationPropertyName name, Object target, Class<?> type) {
 		ValidationResult result = null;
 		for (Validator validator : this.validators) {
 			if (validator.supports(type)) {
@@ -229,33 +226,31 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		private final ConfigurationPropertyName name;
 
 		/**
-         * Constructs a new ValidationResult object with the specified configuration property name and target object.
-         * 
-         * @param name the configuration property name
-         * @param target the target object
-         */
-        protected ValidationResult(ConfigurationPropertyName name, Object target) {
+		 * Constructs a new ValidationResult object with the specified configuration
+		 * property name and target object.
+		 * @param name the configuration property name
+		 * @param target the target object
+		 */
+		protected ValidationResult(ConfigurationPropertyName name, Object target) {
 			super(target, null);
 			this.name = name;
 		}
 
 		/**
-         * Returns the name of the object.
-         *
-         * @return the name of the object
-         */
-        @Override
+		 * Returns the name of the object.
+		 * @return the name of the object
+		 */
+		@Override
 		public String getObjectName() {
 			return this.name.toString();
 		}
 
 		/**
-         * Returns the type of the specified field.
-         * 
-         * @param field the name of the field
-         * @return the type of the field, or null if the type cannot be resolved
-         */
-        @Override
+		 * Returns the type of the specified field.
+		 * @param field the name of the field
+		 * @return the type of the field, or null if the type cannot be resolved
+		 */
+		@Override
 		public Class<?> getFieldType(String field) {
 			ResolvableType type = getBoundField(ValidationBindHandler.this.boundTypes, field);
 			Class<?> resolved = (type != null) ? type.resolve() : null;
@@ -266,12 +261,11 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		}
 
 		/**
-         * Retrieves the actual value of a field from the validation result.
-         * 
-         * @param field the name of the field
-         * @return the actual value of the field
-         */
-        @Override
+		 * Retrieves the actual value of a field from the validation result.
+		 * @param field the name of the field
+		 * @return the actual value of the field
+		 */
+		@Override
 		protected Object getActualFieldValue(String field) {
 			Object boundField = getBoundField(ValidationBindHandler.this.boundResults, field);
 			if (boundField != null) {
@@ -289,12 +283,13 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		}
 
 		/**
-         * Checks if the given Throwable is an instance of NotReadablePropertyException or any of its causes.
-         * 
-         * @param ex the Throwable to check
-         * @return true if the Throwable or any of its causes is an instance of NotReadablePropertyException, false otherwise
-         */
-        private boolean isPropertyNotReadable(Throwable ex) {
+		 * Checks if the given Throwable is an instance of NotReadablePropertyException or
+		 * any of its causes.
+		 * @param ex the Throwable to check
+		 * @return true if the Throwable or any of its causes is an instance of
+		 * NotReadablePropertyException, false otherwise
+		 */
+		private boolean isPropertyNotReadable(Throwable ex) {
 			while (ex != null) {
 				if (ex instanceof NotReadablePropertyException) {
 					return true;
@@ -305,13 +300,13 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		}
 
 		/**
-         * Retrieves the bound field from the given map of bound fields based on the provided field name.
-         * 
-         * @param boundFields the map of bound fields
-         * @param field the field name
-         * @return the bound field if found, otherwise null
-         */
-        private <T> T getBoundField(Map<ConfigurationPropertyName, T> boundFields, String field) {
+		 * Retrieves the bound field from the given map of bound fields based on the
+		 * provided field name.
+		 * @param boundFields the map of bound fields
+		 * @param field the field name
+		 * @return the bound field if found, otherwise null
+		 */
+		private <T> T getBoundField(Map<ConfigurationPropertyName, T> boundFields, String field) {
 			try {
 				ConfigurationPropertyName name = getName(field);
 				T bound = boundFields.get(name);
@@ -333,13 +328,12 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		}
 
 		/**
-         * Checks if the given ConfigurationPropertyName matches the given fieldName.
-         * 
-         * @param name the ConfigurationPropertyName to be checked
-         * @param fieldName the ConfigurationPropertyName to be compared with
-         * @return true if the names match, false otherwise
-         */
-        private boolean isFieldNameMatch(ConfigurationPropertyName name, ConfigurationPropertyName fieldName) {
+		 * Checks if the given ConfigurationPropertyName matches the given fieldName.
+		 * @param name the ConfigurationPropertyName to be checked
+		 * @param fieldName the ConfigurationPropertyName to be compared with
+		 * @return true if the names match, false otherwise
+		 */
+		private boolean isFieldNameMatch(ConfigurationPropertyName name, ConfigurationPropertyName fieldName) {
 			if (name.getNumberOfElements() != fieldName.getNumberOfElements()) {
 				return false;
 			}
@@ -354,21 +348,19 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		}
 
 		/**
-         * Returns the ConfigurationPropertyName for the given field.
-         * 
-         * @param field the field for which to get the ConfigurationPropertyName
-         * @return the ConfigurationPropertyName for the given field
-         */
-        private ConfigurationPropertyName getName(String field) {
+		 * Returns the ConfigurationPropertyName for the given field.
+		 * @param field the field for which to get the ConfigurationPropertyName
+		 * @return the ConfigurationPropertyName for the given field
+		 */
+		private ConfigurationPropertyName getName(String field) {
 			return this.name.append(DataObjectPropertyName.toDashedForm(field));
 		}
 
 		/**
-         * Returns the validation errors for the current configuration property.
-         * 
-         * @return the validation errors for the current configuration property
-         */
-        ValidationErrors getValidationErrors() {
+		 * Returns the validation errors for the current configuration property.
+		 * @return the validation errors for the current configuration property
+		 */
+		ValidationErrors getValidationErrors() {
 			Set<ConfigurationProperty> boundProperties = ValidationBindHandler.this.boundProperties.stream()
 				.filter((property) -> this.name.isAncestorOf(property.getName()))
 				.collect(Collectors.toCollection(LinkedHashSet::new));

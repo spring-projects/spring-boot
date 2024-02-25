@@ -27,11 +27,10 @@ public class NoSuchCommandException extends CommandException {
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * Constructs a new NoSuchCommandException with the specified command name.
-     * 
-     * @param name the name of the invalid command
-     */
-    public NoSuchCommandException(String name) {
+	 * Constructs a new NoSuchCommandException with the specified command name.
+	 * @param name the name of the invalid command
+	 */
+	public NoSuchCommandException(String name) {
 		super(String.format("'%1$s' is not a valid command. See 'help'.", name));
 	}
 

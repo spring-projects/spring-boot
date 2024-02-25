@@ -36,17 +36,16 @@ final class BuildpackResolvers {
 	private static final List<BuildpackResolver> resolvers = getResolvers();
 
 	/**
-     * Private constructor for the BuildpackResolvers class.
-     */
-    private BuildpackResolvers() {
+	 * Private constructor for the BuildpackResolvers class.
+	 */
+	private BuildpackResolvers() {
 	}
 
 	/**
-     * Returns a list of buildpack resolvers.
-     * 
-     * @return the list of buildpack resolvers
-     */
-    private static List<BuildpackResolver> getResolvers() {
+	 * Returns a list of buildpack resolvers.
+	 * @return the list of buildpack resolvers
+	 */
+	private static List<BuildpackResolver> getResolvers() {
 		List<BuildpackResolver> resolvers = new ArrayList<>();
 		resolvers.add(BuilderBuildpack::resolve);
 		resolvers.add(DirectoryBuildpack::resolve);
@@ -75,14 +74,13 @@ final class BuildpackResolvers {
 	}
 
 	/**
-     * Resolves the buildpack based on the given context and reference.
-     * 
-     * @param context   the buildpack resolver context
-     * @param reference the buildpack reference
-     * @return the resolved buildpack
-     * @throws IllegalArgumentException if the buildpack reference is invalid
-     */
-    private static Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
+	 * Resolves the buildpack based on the given context and reference.
+	 * @param context the buildpack resolver context
+	 * @param reference the buildpack reference
+	 * @return the resolved buildpack
+	 * @throws IllegalArgumentException if the buildpack reference is invalid
+	 */
+	private static Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
 		Assert.notNull(reference, "Reference must not be null");
 		for (BuildpackResolver resolver : resolvers) {
 			Buildpack buildpack = resolver.resolve(context, reference);

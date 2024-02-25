@@ -49,20 +49,18 @@ public class MyProperties {
 	}
 
 	/**
-     * Returns the remote address of the current instance.
-     *
-     * @return the remote address of the current instance
-     */
-    public InetAddress getRemoteAddress() {
+	 * Returns the remote address of the current instance.
+	 * @return the remote address of the current instance
+	 */
+	public InetAddress getRemoteAddress() {
 		return this.remoteAddress;
 	}
 
 	/**
-     * Returns the security object associated with this MyProperties instance.
-     *
-     * @return the security object
-     */
-    public Security getSecurity() {
+	 * Returns the security object associated with this MyProperties instance.
+	 * @return the security object
+	 */
+	public Security getSecurity() {
 		return this.security;
 	}
 	// @fold:off
@@ -90,20 +88,18 @@ public class MyProperties {
 		}
 
 		/**
-         * Returns the password of the Security object.
-         *
-         * @return the password of the Security object
-         */
-        public String getPassword() {
+		 * Returns the password of the Security object.
+		 * @return the password of the Security object
+		 */
+		public String getPassword() {
 			return this.password;
 		}
 
 		/**
-         * Returns the list of roles.
-         *
-         * @return the list of roles
-         */
-        public List<String> getRoles() {
+		 * Returns the list of roles.
+		 * @return the list of roles
+		 */
+		public List<String> getRoles() {
 			return this.roles;
 		}
 		// @fold:off

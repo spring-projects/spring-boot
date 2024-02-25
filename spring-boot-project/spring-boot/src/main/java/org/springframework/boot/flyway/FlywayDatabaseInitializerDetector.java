@@ -32,11 +32,10 @@ import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
 class FlywayDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
 
 	/**
-     * Returns the set of bean types that are used as database initializers.
-     *
-     * @return the set of bean types that are used as database initializers
-     */
-    @Override
+	 * Returns the set of bean types that are used as database initializers.
+	 * @return the set of bean types that are used as database initializers
+	 */
+	@Override
 	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		return Collections.singleton(Flyway.class);
 	}

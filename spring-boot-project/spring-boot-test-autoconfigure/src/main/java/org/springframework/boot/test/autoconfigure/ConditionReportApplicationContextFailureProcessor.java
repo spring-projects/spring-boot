@@ -33,13 +33,13 @@ import org.springframework.test.context.ApplicationContextFailureProcessor;
 public class ConditionReportApplicationContextFailureProcessor implements ApplicationContextFailureProcessor {
 
 	/**
-     * This method is called when there is a failure in loading the application context.
-     * It prints the condition evaluation report message if the context is an instance of ConfigurableApplicationContext.
-     * 
-     * @param context the application context
-     * @param exception the exception that caused the failure
-     */
-    @Override
+	 * This method is called when there is a failure in loading the application context.
+	 * It prints the condition evaluation report message if the context is an instance of
+	 * ConfigurableApplicationContext.
+	 * @param context the application context
+	 * @param exception the exception that caused the failure
+	 */
+	@Override
 	public void processLoadFailure(ApplicationContext context, Throwable exception) {
 		if (context instanceof ConfigurableApplicationContext configurableContext) {
 			ConditionEvaluationReport report = ConditionEvaluationReport.get(configurableContext.getBeanFactory());

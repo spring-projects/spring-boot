@@ -36,12 +36,11 @@ import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 class DisabledOnOsCondition implements ExecutionCondition {
 
 	/**
-     * Evaluates the execution condition for the {@link DisabledOnOs} annotation.
-     * 
-     * @param context the extension context
-     * @return the condition evaluation result
-     */
-    @Override
+	 * Evaluates the execution condition for the {@link DisabledOnOs} annotation.
+	 * @param context the extension context
+	 * @return the condition evaluation result
+	 */
+	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
 		if (context.getElement().isEmpty()) {
 			return ConditionEvaluationResult.enabled("No element for @DisabledOnOs found");
@@ -56,12 +55,12 @@ class DisabledOnOsCondition implements ExecutionCondition {
 	}
 
 	/**
-     * Evaluates the condition based on the provided DisabledOnOs annotation.
-     * 
-     * @param annotation the DisabledOnOs annotation to evaluate
-     * @return the ConditionEvaluationResult indicating whether the condition is enabled or disabled
-     */
-    private ConditionEvaluationResult evaluate(DisabledOnOs annotation) {
+	 * Evaluates the condition based on the provided DisabledOnOs annotation.
+	 * @param annotation the DisabledOnOs annotation to evaluate
+	 * @return the ConditionEvaluationResult indicating whether the condition is enabled
+	 * or disabled
+	 */
+	private ConditionEvaluationResult evaluate(DisabledOnOs annotation) {
 		String architecture = System.getProperty("os.arch");
 		String os = System.getProperty("os.name");
 		boolean onDisabledOs = Arrays.stream(annotation.os()).anyMatch(OS::isCurrentOs);

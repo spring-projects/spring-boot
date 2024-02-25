@@ -81,12 +81,11 @@ class LocationResourceLoader {
 	}
 
 	/**
-     * Validates that the given location is not a pattern.
-     * 
-     * @param location the location to be validated
-     * @throws IllegalStateException if the location is a pattern
-     */
-    private void validateNonPattern(String location) {
+	 * Validates that the given location is not a pattern.
+	 * @param location the location to be validated
+	 * @throws IllegalStateException if the location is a pattern
+	 */
+	private void validateNonPattern(String location) {
 		Assert.state(!isPattern(location), () -> String.format("Location '%s' must not be a pattern", location));
 	}
 
@@ -130,12 +129,13 @@ class LocationResourceLoader {
 	}
 
 	/**
-     * Validates the pattern of a location for a given resource type.
-     * 
-     * @param location The location to be validated.
-     * @param type The resource type.
-     * @throws IllegalStateException if the location is not a pattern, uses classpath wildcards, contains multiple wildcards, or does not end with '*/
-    private void validatePattern(String location, ResourceType type) {
+	 * Validates the pattern of a location for a given resource type.
+	 * @param location The location to be validated.
+	 * @param type The resource type.
+	 * @throws IllegalStateException if the location is not a pattern, uses classpath
+	 * wildcards, contains multiple wildcards, or does not end with '
+	 */
+	private void validatePattern(String location, ResourceType type) {
 		Assert.state(isPattern(location), () -> String.format("Location '%s' must be a pattern", location));
 		Assert.state(!location.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX),
 				() -> String.format("Location '%s' cannot use classpath wildcards", location));
@@ -147,14 +147,13 @@ class LocationResourceLoader {
 	}
 
 	/**
-     * Retrieves the file from the given resource.
-     * 
-     * @param patternLocation the pattern location of the resource
-     * @param resource the resource object
-     * @return the file object representing the resource
-     * @throws IllegalStateException if unable to load the config data resource
-     */
-    private File getFile(String patternLocation, Resource resource) {
+	 * Retrieves the file from the given resource.
+	 * @param patternLocation the pattern location of the resource
+	 * @param resource the resource object
+	 * @return the file object representing the resource
+	 * @throws IllegalStateException if unable to load the config data resource
+	 */
+	private File getFile(String patternLocation, Resource resource) {
 		try {
 			return resource.getFile();
 		}
@@ -165,12 +164,11 @@ class LocationResourceLoader {
 	}
 
 	/**
-     * Checks if a given file is a visible directory.
-     * 
-     * @param file the file to check
-     * @return true if the file is a visible directory, false otherwise
-     */
-    private boolean isVisibleDirectory(File file) {
+	 * Checks if a given file is a visible directory.
+	 * @param file the file to check
+	 * @return true if the file is a visible directory, false otherwise
+	 */
+	private boolean isVisibleDirectory(File file) {
 		return file.isDirectory() && !file.getName().startsWith("..");
 	}
 

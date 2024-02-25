@@ -47,20 +47,21 @@ public class HazelcastHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<HazelcastHealthIndicator, HazelcastInstance> {
 
 	/**
-     * Constructs a new instance of HazelcastHealthContributorAutoConfiguration.
-     * This constructor calls the super constructor with the HazelcastHealthIndicator class as the argument.
-     */
-    public HazelcastHealthContributorAutoConfiguration() {
+	 * Constructs a new instance of HazelcastHealthContributorAutoConfiguration. This
+	 * constructor calls the super constructor with the HazelcastHealthIndicator class as
+	 * the argument.
+	 */
+	public HazelcastHealthContributorAutoConfiguration() {
 		super(HazelcastHealthIndicator::new);
 	}
 
 	/**
-     * Creates a Hazelcast HealthContributor bean if no bean with the names "hazelcastHealthIndicator" and "hazelcastHealthContributor" exists.
-     * 
-     * @param hazelcastInstances a map of Hazelcast instances
-     * @return the created Hazelcast HealthContributor bean
-     */
-    @Bean
+	 * Creates a Hazelcast HealthContributor bean if no bean with the names
+	 * "hazelcastHealthIndicator" and "hazelcastHealthContributor" exists.
+	 * @param hazelcastInstances a map of Hazelcast instances
+	 * @return the created Hazelcast HealthContributor bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = { "hazelcastHealthIndicator", "hazelcastHealthContributor" })
 	public HealthContributor hazelcastHealthContributor(Map<String, HazelcastInstance> hazelcastInstances) {
 		return createContributor(hazelcastInstances);

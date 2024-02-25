@@ -46,95 +46,87 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 public class SampleTomcatWebSocketApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
 
 	/**
-     * Registers WebSocket handlers for the given WebSocketHandlerRegistry.
-     * 
-     * @param registry the WebSocketHandlerRegistry to register the handlers with
-     */
-    @Override
+	 * Registers WebSocket handlers for the given WebSocketHandlerRegistry.
+	 * @param registry the WebSocketHandlerRegistry to register the handlers with
+	 */
+	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		registry.addHandler(echoWebSocketHandler(), "/echo").withSockJS();
 		registry.addHandler(snakeWebSocketHandler(), "/snake").withSockJS();
 	}
 
 	/**
-     * Configures the Spring application builder.
-     * 
-     * @param application the Spring application builder
-     * @return the sources of the SampleTomcatWebSocketApplication class
-     */
-    @Override
+	 * Configures the Spring application builder.
+	 * @param application the Spring application builder
+	 * @return the sources of the SampleTomcatWebSocketApplication class
+	 */
+	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(SampleTomcatWebSocketApplication.class);
 	}
 
 	/**
-     * Creates and returns an instance of the EchoService interface.
-     * 
-     * @return the EchoService instance
-     */
-    @Bean
+	 * Creates and returns an instance of the EchoService interface.
+	 * @return the EchoService instance
+	 */
+	@Bean
 	public EchoService echoService() {
 		return new DefaultEchoService("Did you say \"%s\"?");
 	}
 
 	/**
-     * Creates a new instance of the GreetingService interface.
-     * 
-     * @return the newly created GreetingService instance
-     */
-    @Bean
+	 * Creates a new instance of the GreetingService interface.
+	 * @return the newly created GreetingService instance
+	 */
+	@Bean
 	public GreetingService greetingService() {
 		return new SimpleGreetingService();
 	}
 
 	/**
-     * Creates a new instance of EchoWebSocketHandler and returns it as a WebSocketHandler.
-     * The EchoWebSocketHandler is initialized with an instance of EchoService.
-     * 
-     * @return the WebSocketHandler for handling WebSocket connections
-     */
-    @Bean
+	 * Creates a new instance of EchoWebSocketHandler and returns it as a
+	 * WebSocketHandler. The EchoWebSocketHandler is initialized with an instance of
+	 * EchoService.
+	 * @return the WebSocketHandler for handling WebSocket connections
+	 */
+	@Bean
 	public WebSocketHandler echoWebSocketHandler() {
 		return new EchoWebSocketHandler(echoService());
 	}
 
 	/**
-     * Creates a WebSocketHandler for handling snake game WebSocket connections.
-     * 
-     * @return the WebSocketHandler for snake game WebSocket connections
-     */
-    @Bean
+	 * Creates a WebSocketHandler for handling snake game WebSocket connections.
+	 * @return the WebSocketHandler for snake game WebSocket connections
+	 */
+	@Bean
 	public WebSocketHandler snakeWebSocketHandler() {
 		return new PerConnectionWebSocketHandler(SnakeWebSocketHandler.class);
 	}
 
 	/**
-     * Creates a new instance of ReverseWebSocketEndpoint.
-     * 
-     * @return the newly created ReverseWebSocketEndpoint instance
-     */
-    @Bean
+	 * Creates a new instance of ReverseWebSocketEndpoint.
+	 * @return the newly created ReverseWebSocketEndpoint instance
+	 */
+	@Bean
 	public ReverseWebSocketEndpoint reverseWebSocketEndpoint() {
 		return new ReverseWebSocketEndpoint();
 	}
 
 	/**
-     * Initializes and configures the ServerEndpointExporter.
-     * 
-     * @return the ServerEndpointExporter instance
-     */
-    @Bean
+	 * Initializes and configures the ServerEndpointExporter.
+	 * @return the ServerEndpointExporter instance
+	 */
+	@Bean
 	public ServerEndpointExporter serverEndpointExporter() {
 		return new ServerEndpointExporter();
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring application by running the SampleTomcatWebSocketApplication class.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring
+	 * application by running the SampleTomcatWebSocketApplication class.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleTomcatWebSocketApplication.class, args);
 	}
 

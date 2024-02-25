@@ -30,11 +30,11 @@ public class MyProperties {
 	private final Map<String, MyPojo> map = new LinkedHashMap<>();
 
 	/**
-     * Returns the map of type <code>Map<String, MyPojo></code>.
-     * 
-     * @return the map containing key-value pairs of type <code>String</code> and <code>MyPojo</code>
-     */
-    public Map<String, MyPojo> getMap() {
+	 * Returns the map of type <code>Map<String, MyPojo></code>.
+	 * @return the map containing key-value pairs of type <code>String</code> and
+	 * <code>MyPojo</code>
+	 */
+	public Map<String, MyPojo> getMap() {
 		return this.map;
 	}
 

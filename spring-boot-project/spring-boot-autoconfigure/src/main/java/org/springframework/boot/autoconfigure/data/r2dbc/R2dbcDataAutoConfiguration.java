@@ -61,37 +61,38 @@ public class R2dbcDataAutoConfiguration {
 	private final R2dbcDialect dialect;
 
 	/**
-     * Constructs a new instance of R2dbcDataAutoConfiguration with the specified DatabaseClient.
-     * 
-     * @param databaseClient the DatabaseClient to be used for database operations
-     */
-    public R2dbcDataAutoConfiguration(DatabaseClient databaseClient) {
+	 * Constructs a new instance of R2dbcDataAutoConfiguration with the specified
+	 * DatabaseClient.
+	 * @param databaseClient the DatabaseClient to be used for database operations
+	 */
+	public R2dbcDataAutoConfiguration(DatabaseClient databaseClient) {
 		this.databaseClient = databaseClient;
 		this.dialect = DialectResolver.getDialect(this.databaseClient.getConnectionFactory());
 	}
 
 	/**
-     * Creates a new instance of {@link R2dbcEntityTemplate} if no other bean of the same type is present.
-     * 
-     * @param r2dbcConverter the {@link R2dbcConverter} used for mapping entities to database tables
-     * @return a new instance of {@link R2dbcEntityTemplate}
-     */
-    @Bean
+	 * Creates a new instance of {@link R2dbcEntityTemplate} if no other bean of the same
+	 * type is present.
+	 * @param r2dbcConverter the {@link R2dbcConverter} used for mapping entities to
+	 * database tables
+	 * @return a new instance of {@link R2dbcEntityTemplate}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public R2dbcEntityTemplate r2dbcEntityTemplate(R2dbcConverter r2dbcConverter) {
 		return new R2dbcEntityTemplate(this.databaseClient, this.dialect, r2dbcConverter);
 	}
 
 	/**
-     * Returns the RelationalManagedTypes bean if it is not already present in the application context.
-     * This bean is responsible for scanning the application context for classes annotated with @Table
-     * and creating a RelationalManagedTypes object from them.
-     * 
-     * @param applicationContext the application context to scan for annotated classes
-     * @return the RelationalManagedTypes bean
-     * @throws ClassNotFoundException if the EntityScanner fails to scan for classes
-     */
-    @Bean
+	 * Returns the RelationalManagedTypes bean if it is not already present in the
+	 * application context. This bean is responsible for scanning the application context
+	 * for classes annotated with @Table and creating a RelationalManagedTypes object from
+	 * them.
+	 * @param applicationContext the application context to scan for annotated classes
+	 * @return the RelationalManagedTypes bean
+	 * @throws ClassNotFoundException if the EntityScanner fails to scan for classes
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	static RelationalManagedTypes r2dbcManagedTypes(ApplicationContext applicationContext)
 			throws ClassNotFoundException {
@@ -99,14 +100,16 @@ public class R2dbcDataAutoConfiguration {
 	}
 
 	/**
-     * Creates and configures an instance of {@link R2dbcMappingContext}.
-     * 
-     * @param namingStrategy The {@link NamingStrategy} to be used for naming conventions. If not provided, {@link DefaultNamingStrategy} will be used.
-     * @param r2dbcCustomConversions The {@link R2dbcCustomConversions} to be used for custom type conversions.
-     * @param r2dbcManagedTypes The {@link RelationalManagedTypes} to be used for managing entity types.
-     * @return The configured instance of {@link R2dbcMappingContext}.
-     */
-    @Bean
+	 * Creates and configures an instance of {@link R2dbcMappingContext}.
+	 * @param namingStrategy The {@link NamingStrategy} to be used for naming conventions.
+	 * If not provided, {@link DefaultNamingStrategy} will be used.
+	 * @param r2dbcCustomConversions The {@link R2dbcCustomConversions} to be used for
+	 * custom type conversions.
+	 * @param r2dbcManagedTypes The {@link RelationalManagedTypes} to be used for managing
+	 * entity types.
+	 * @return The configured instance of {@link R2dbcMappingContext}.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public R2dbcMappingContext r2dbcMappingContext(ObjectProvider<NamingStrategy> namingStrategy,
 			R2dbcCustomConversions r2dbcCustomConversions, RelationalManagedTypes r2dbcManagedTypes) {
@@ -118,13 +121,15 @@ public class R2dbcDataAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link MappingR2dbcConverter} if no other bean of the same type is present.
-     * 
-     * @param mappingContext the {@link R2dbcMappingContext} used for mapping entities to database tables
-     * @param r2dbcCustomConversions the {@link R2dbcCustomConversions} used for custom type conversions
-     * @return a new instance of {@link MappingR2dbcConverter}
-     */
-    @Bean
+	 * Creates a new instance of {@link MappingR2dbcConverter} if no other bean of the
+	 * same type is present.
+	 * @param mappingContext the {@link R2dbcMappingContext} used for mapping entities to
+	 * database tables
+	 * @param r2dbcCustomConversions the {@link R2dbcCustomConversions} used for custom
+	 * type conversions
+	 * @return a new instance of {@link MappingR2dbcConverter}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public MappingR2dbcConverter r2dbcConverter(R2dbcMappingContext mappingContext,
 			R2dbcCustomConversions r2dbcCustomConversions) {
@@ -132,17 +137,20 @@ public class R2dbcDataAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link R2dbcCustomConversions} if no other bean of the same type is present.
-     * This method is annotated with {@link ConditionalOnMissingBean} to ensure that it is only executed if no other bean
-     * of the same type is already defined in the application context.
-     * 
-     * The method retrieves a list of converters from the current dialect and adds them to a new list. It then adds all
-     * the converters from {@link R2dbcCustomConversions.STORE_CONVERTERS} to the list. Finally, it creates a new instance
-     * of {@link R2dbcCustomConversions} using the list of converters and an empty list of custom conversions.
-     * 
-     * @return a new instance of {@link R2dbcCustomConversions} if no other bean of the same type is present
-     */
-    @Bean
+	 * Creates a new instance of {@link R2dbcCustomConversions} if no other bean of the
+	 * same type is present. This method is annotated with
+	 * {@link ConditionalOnMissingBean} to ensure that it is only executed if no other
+	 * bean of the same type is already defined in the application context.
+	 *
+	 * The method retrieves a list of converters from the current dialect and adds them to
+	 * a new list. It then adds all the converters from
+	 * {@link R2dbcCustomConversions.STORE_CONVERTERS} to the list. Finally, it creates a
+	 * new instance of {@link R2dbcCustomConversions} using the list of converters and an
+	 * empty list of custom conversions.
+	 * @return a new instance of {@link R2dbcCustomConversions} if no other bean of the
+	 * same type is present
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public R2dbcCustomConversions r2dbcCustomConversions() {
 		List<Object> converters = new ArrayList<>(this.dialect.getConverters());

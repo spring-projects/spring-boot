@@ -40,12 +40,12 @@ public class TextResourceOrigin implements Origin {
 	private final Location location;
 
 	/**
-     * Constructs a new TextResourceOrigin object with the specified resource and location.
-     * 
-     * @param resource the resource associated with the origin
-     * @param location the location of the origin
-     */
-    public TextResourceOrigin(Resource resource, Location location) {
+	 * Constructs a new TextResourceOrigin object with the specified resource and
+	 * location.
+	 * @param resource the resource associated with the origin
+	 * @param location the location of the origin
+	 */
+	public TextResourceOrigin(Resource resource, Location location) {
 		this.resource = resource;
 		this.location = location;
 	}
@@ -67,22 +67,20 @@ public class TextResourceOrigin implements Origin {
 	}
 
 	/**
-     * Returns the parent origin of this TextResourceOrigin.
-     * 
-     * @return the parent origin of this TextResourceOrigin
-     */
-    @Override
+	 * Returns the parent origin of this TextResourceOrigin.
+	 * @return the parent origin of this TextResourceOrigin
+	 */
+	@Override
 	public Origin getParent() {
 		return Origin.from(this.resource);
 	}
 
 	/**
-     * Compares this TextResourceOrigin object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this TextResourceOrigin object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -100,12 +98,11 @@ public class TextResourceOrigin implements Origin {
 	}
 
 	/**
-     * Returns the hash code value for this TextResourceOrigin object.
-     * The hash code is generated based on the resource and location properties.
-     *
-     * @return the hash code value for this TextResourceOrigin object
-     */
-    @Override
+	 * Returns the hash code value for this TextResourceOrigin object. The hash code is
+	 * generated based on the resource and location properties.
+	 * @return the hash code value for this TextResourceOrigin object
+	 */
+	@Override
 	public int hashCode() {
 		int result = 1;
 		result = 31 * result + ObjectUtils.nullSafeHashCode(this.resource);
@@ -114,11 +111,10 @@ public class TextResourceOrigin implements Origin {
 	}
 
 	/**
-     * Returns a string representation of the TextResourceOrigin object.
-     * 
-     * @return a string representation of the TextResourceOrigin object
-     */
-    @Override
+	 * Returns a string representation of the TextResourceOrigin object.
+	 * @return a string representation of the TextResourceOrigin object
+	 */
+	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append(getResourceDescription(this.resource));
@@ -129,16 +125,15 @@ public class TextResourceOrigin implements Origin {
 	}
 
 	/**
-     * Returns the description of the given resource.
-     * If the resource is an instance of OriginTrackedResource, the description of its underlying resource is returned.
-     * If the resource is null, the description "unknown resource [?]" is returned.
-     * If the resource is an instance of ClassPathResource, the description of the class path resource is returned.
-     * Otherwise, the description of the resource is returned.
-     *
-     * @param resource the resource for which the description is to be retrieved
-     * @return the description of the resource
-     */
-    private String getResourceDescription(Resource resource) {
+	 * Returns the description of the given resource. If the resource is an instance of
+	 * OriginTrackedResource, the description of its underlying resource is returned. If
+	 * the resource is null, the description "unknown resource [?]" is returned. If the
+	 * resource is an instance of ClassPathResource, the description of the class path
+	 * resource is returned. Otherwise, the description of the resource is returned.
+	 * @param resource the resource for which the description is to be retrieved
+	 * @return the description of the resource
+	 */
+	private String getResourceDescription(Resource resource) {
 		if (resource instanceof OriginTrackedResource originTrackedResource) {
 			return getResourceDescription(originTrackedResource.getResource());
 		}
@@ -152,12 +147,12 @@ public class TextResourceOrigin implements Origin {
 	}
 
 	/**
-     * Retrieves the description of a resource.
-     * 
-     * @param resource The ClassPathResource to retrieve the description from.
-     * @return The description of the resource, or the resource's description if it is not a JarUri.
-     */
-    private String getResourceDescription(ClassPathResource resource) {
+	 * Retrieves the description of a resource.
+	 * @param resource The ClassPathResource to retrieve the description from.
+	 * @return The description of the resource, or the resource's description if it is not
+	 * a JarUri.
+	 */
+	private String getResourceDescription(ClassPathResource resource) {
 		try {
 			JarUri jarUri = JarUri.from(resource.getURI());
 			if (jarUri != null) {
@@ -206,12 +201,12 @@ public class TextResourceOrigin implements Origin {
 		}
 
 		/**
-         * Compares this Location object to the specified object for equality.
-         * 
-         * @param obj the object to compare to
-         * @return true if the specified object is equal to this Location object, false otherwise
-         */
-        @Override
+		 * Compares this Location object to the specified object for equality.
+		 * @param obj the object to compare to
+		 * @return true if the specified object is equal to this Location object, false
+		 * otherwise
+		 */
+		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -227,22 +222,22 @@ public class TextResourceOrigin implements Origin {
 		}
 
 		/**
-         * Returns a hash code value for the object. The hash code is calculated by multiplying the line number by 31 and adding the column number.
-         *
-         * @return the hash code value for the object
-         */
-        @Override
+		 * Returns a hash code value for the object. The hash code is calculated by
+		 * multiplying the line number by 31 and adding the column number.
+		 * @return the hash code value for the object
+		 */
+		@Override
 		public int hashCode() {
 			return (31 * this.line) + this.column;
 		}
 
 		/**
-         * Returns a string representation of the Location object.
-         * The string is formatted as "line:column", where line and column are the respective values incremented by 1.
-         *
-         * @return a string representation of the Location object
-         */
-        @Override
+		 * Returns a string representation of the Location object. The string is formatted
+		 * as "line:column", where line and column are the respective values incremented
+		 * by 1.
+		 * @return a string representation of the Location object
+		 */
+		@Override
 		public String toString() {
 			return (this.line + 1) + ":" + (this.column + 1);
 		}

@@ -44,24 +44,23 @@ class SpringPropertyModelHandler extends ModelHandlerBase {
 	private final Environment environment;
 
 	/**
-     * Constructs a new instance of SpringPropertyModelHandler with the specified context and environment.
-     * 
-     * @param context the context object
-     * @param environment the environment object
-     */
-    SpringPropertyModelHandler(Context context, Environment environment) {
+	 * Constructs a new instance of SpringPropertyModelHandler with the specified context
+	 * and environment.
+	 * @param context the context object
+	 * @param environment the environment object
+	 */
+	SpringPropertyModelHandler(Context context, Environment environment) {
 		super(context);
 		this.environment = environment;
 	}
 
 	/**
-     * Handles the interpretation of a SpringPropertyModel.
-     * 
-     * @param intercon the ModelInterpretationContext
-     * @param model the SpringPropertyModel to be handled
-     * @throws ModelHandlerException if there is an error handling the model
-     */
-    @Override
+	 * Handles the interpretation of a SpringPropertyModel.
+	 * @param intercon the ModelInterpretationContext
+	 * @param model the SpringPropertyModel to be handled
+	 * @throws ModelHandlerException if there is an error handling the model
+	 */
+	@Override
 	public void handle(ModelInterpretationContext intercon, Model model) throws ModelHandlerException {
 		SpringPropertyModel propertyModel = (SpringPropertyModel) model;
 		Scope scope = ActionUtil.stringToScope(propertyModel.getScope());
@@ -74,14 +73,13 @@ class SpringPropertyModelHandler extends ModelHandlerBase {
 	}
 
 	/**
-     * Retrieves the value of a property from the Spring Environment.
-     * If the Spring Environment is not available, it returns the default value.
-     *
-     * @param source the name of the property to retrieve
-     * @param defaultValue the default value to return if the property is not found
-     * @return the value of the property if found, otherwise the default value
-     */
-    private String getValue(String source, String defaultValue) {
+	 * Retrieves the value of a property from the Spring Environment. If the Spring
+	 * Environment is not available, it returns the default value.
+	 * @param source the name of the property to retrieve
+	 * @param defaultValue the default value to return if the property is not found
+	 * @return the value of the property if found, otherwise the default value
+	 */
+	private String getValue(String source, String defaultValue) {
 		if (this.environment == null) {
 			addWarn("No Spring Environment available to resolve " + source);
 			return defaultValue;

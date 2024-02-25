@@ -82,12 +82,11 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	}
 
 	/**
-     * Determines whether the specified event type is supported by this listener.
-     * 
-     * @param eventType the event type to check
-     * @return true if the event type is supported, false otherwise
-     */
-    @Override
+	 * Determines whether the specified event type is supported by this listener.
+	 * @param eventType the event type to check
+	 * @return true if the event type is supported, false otherwise
+	 */
+	@Override
 	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
 		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(eventType)
 				|| ApplicationPreparedEvent.class.isAssignableFrom(eventType)
@@ -95,12 +94,11 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	}
 
 	/**
-     * This method is called when an application event is triggered.
-     * It handles different types of application events and performs specific actions based on the event type.
-     * 
-     * @param event The application event that is triggered
-     */
-    @Override
+	 * This method is called when an application event is triggered. It handles different
+	 * types of application events and performs specific actions based on the event type.
+	 * @param event The application event that is triggered
+	 */
+	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationEnvironmentPreparedEvent environmentPreparedEvent) {
 			onApplicationEnvironmentPreparedEvent(environmentPreparedEvent);
@@ -114,14 +112,13 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	}
 
 	/**
-     * This method is called when the ApplicationEnvironmentPreparedEvent is triggered.
-     * It retrieves the ConfigurableEnvironment and SpringApplication from the event.
-     * It then iterates through the EnvironmentPostProcessors and calls the postProcessEnvironment method on each of them,
-     * passing in the environment and application.
-     * 
-     * @param event The ApplicationEnvironmentPreparedEvent that triggered this method.
-     */
-    private void onApplicationEnvironmentPreparedEvent(ApplicationEnvironmentPreparedEvent event) {
+	 * This method is called when the ApplicationEnvironmentPreparedEvent is triggered. It
+	 * retrieves the ConfigurableEnvironment and SpringApplication from the event. It then
+	 * iterates through the EnvironmentPostProcessors and calls the postProcessEnvironment
+	 * method on each of them, passing in the environment and application.
+	 * @param event The ApplicationEnvironmentPreparedEvent that triggered this method.
+	 */
+	private void onApplicationEnvironmentPreparedEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
 		SpringApplication application = event.getSpringApplication();
 		for (EnvironmentPostProcessor postProcessor : getEnvironmentPostProcessors(application.getResourceLoader(),
@@ -131,37 +128,39 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	}
 
 	/**
-     * This method is called when the application is prepared.
-     * It finishes the execution of the application.
-     */
-    private void onApplicationPreparedEvent() {
+	 * This method is called when the application is prepared. It finishes the execution
+	 * of the application.
+	 */
+	private void onApplicationPreparedEvent() {
 		finish();
 	}
 
 	/**
-     * This method is called when the application fails to start.
-     * It finishes the execution of the application.
-     */
-    private void onApplicationFailedEvent() {
+	 * This method is called when the application fails to start. It finishes the
+	 * execution of the application.
+	 */
+	private void onApplicationFailedEvent() {
 		finish();
 	}
 
 	/**
-     * This method is used to finish the execution of the application.
-     * It switches over all the deferred logs before finishing.
-     */
-    private void finish() {
+	 * This method is used to finish the execution of the application. It switches over
+	 * all the deferred logs before finishing.
+	 */
+	private void finish() {
 		this.deferredLogs.switchOverAll();
 	}
 
 	/**
-     * Retrieves the list of environment post processors based on the provided resource loader and bootstrap context.
-     * 
-     * @param resourceLoader The resource loader used to load the environment post processors.
-     * @param bootstrapContext The bootstrap context used to configure the environment post processors.
-     * @return The list of environment post processors.
-     */
-    List<EnvironmentPostProcessor> getEnvironmentPostProcessors(ResourceLoader resourceLoader,
+	 * Retrieves the list of environment post processors based on the provided resource
+	 * loader and bootstrap context.
+	 * @param resourceLoader The resource loader used to load the environment post
+	 * processors.
+	 * @param bootstrapContext The bootstrap context used to configure the environment
+	 * post processors.
+	 * @return The list of environment post processors.
+	 */
+	List<EnvironmentPostProcessor> getEnvironmentPostProcessors(ResourceLoader resourceLoader,
 			ConfigurableBootstrapContext bootstrapContext) {
 		ClassLoader classLoader = (resourceLoader != null) ? resourceLoader.getClassLoader() : null;
 		EnvironmentPostProcessorsFactory postProcessorsFactory = this.postProcessorsFactory.apply(classLoader);
@@ -169,21 +168,19 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	}
 
 	/**
-     * Returns the order value of this EnvironmentPostProcessorApplicationListener.
-     *
-     * @return the order value of this EnvironmentPostProcessorApplicationListener
-     */
-    @Override
+	 * Returns the order value of this EnvironmentPostProcessorApplicationListener.
+	 * @return the order value of this EnvironmentPostProcessorApplicationListener
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
 	/**
-     * Sets the order of the EnvironmentPostProcessorApplicationListener.
-     * 
-     * @param order the order value to set
-     */
-    public void setOrder(int order) {
+	 * Sets the order of the EnvironmentPostProcessorApplicationListener.
+	 * @param order the order value to set
+	 */
+	public void setOrder(int order) {
 		this.order = order;
 	}
 

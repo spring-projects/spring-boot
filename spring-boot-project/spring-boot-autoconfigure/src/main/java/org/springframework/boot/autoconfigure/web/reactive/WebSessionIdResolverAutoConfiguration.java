@@ -52,26 +52,29 @@ public class WebSessionIdResolverAutoConfiguration {
 	private final ServerProperties serverProperties;
 
 	/**
-     * Constructs a new instance of the {@code WebSessionIdResolverAutoConfiguration} class with the specified {@code ServerProperties} and {@code WebFluxProperties}.
-     *
-     * @param serverProperties the {@code ServerProperties} object containing server-related configuration properties
-     * @param webFluxProperties the {@code WebFluxProperties} object containing WebFlux-related configuration properties
-     */
-    public WebSessionIdResolverAutoConfiguration(ServerProperties serverProperties,
+	 * Constructs a new instance of the {@code WebSessionIdResolverAutoConfiguration}
+	 * class with the specified {@code ServerProperties} and {@code WebFluxProperties}.
+	 * @param serverProperties the {@code ServerProperties} object containing
+	 * server-related configuration properties
+	 * @param webFluxProperties the {@code WebFluxProperties} object containing
+	 * WebFlux-related configuration properties
+	 */
+	public WebSessionIdResolverAutoConfiguration(ServerProperties serverProperties,
 			WebFluxProperties webFluxProperties) {
 		this.serverProperties = serverProperties;
 	}
 
 	/**
-     * Creates a new instance of {@link WebSessionIdResolver} if no other bean of the same type is present.
-     * 
-     * This method initializes a {@link CookieWebSessionIdResolver} and sets the cookie name based on the server properties.
-     * If the cookie name is specified in the server properties, it is set on the resolver.
-     * The method also adds a cookie initializer to the resolver.
-     * 
-     * @return the {@link WebSessionIdResolver} bean
-     */
-    @Bean
+	 * Creates a new instance of {@link WebSessionIdResolver} if no other bean of the same
+	 * type is present.
+	 *
+	 * This method initializes a {@link CookieWebSessionIdResolver} and sets the cookie
+	 * name based on the server properties. If the cookie name is specified in the server
+	 * properties, it is set on the resolver. The method also adds a cookie initializer to
+	 * the resolver.
+	 * @return the {@link WebSessionIdResolver} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public WebSessionIdResolver webSessionIdResolver() {
 		CookieWebSessionIdResolver resolver = new CookieWebSessionIdResolver();
@@ -84,11 +87,10 @@ public class WebSessionIdResolverAutoConfiguration {
 	}
 
 	/**
-     * Initializes the cookie with the provided builder.
-     *
-     * @param builder the ResponseCookieBuilder used to build the cookie
-     */
-    private void initializeCookie(ResponseCookieBuilder builder) {
+	 * Initializes the cookie with the provided builder.
+	 * @param builder the ResponseCookieBuilder used to build the cookie
+	 */
+	private void initializeCookie(ResponseCookieBuilder builder) {
 		Cookie cookie = this.serverProperties.getReactive().getSession().getCookie();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(cookie::getDomain).to(builder::domain);
@@ -100,12 +102,11 @@ public class WebSessionIdResolverAutoConfiguration {
 	}
 
 	/**
-     * Returns the SameSite attribute value of the given cookie properties.
-     * 
-     * @param properties the cookie properties
-     * @return the SameSite attribute value, or null if it is not set
-     */
-    private String getSameSite(Cookie properties) {
+	 * Returns the SameSite attribute value of the given cookie properties.
+	 * @param properties the cookie properties
+	 * @return the SameSite attribute value, or null if it is not set
+	 */
+	private String getSameSite(Cookie properties) {
 		SameSite sameSite = properties.getSameSite();
 		return (sameSite != null) ? sameSite.attributeValue() : null;
 	}

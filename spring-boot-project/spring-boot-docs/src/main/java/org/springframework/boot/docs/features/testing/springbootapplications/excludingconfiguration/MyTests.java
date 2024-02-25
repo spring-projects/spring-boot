@@ -29,16 +29,14 @@ import org.springframework.context.annotation.Import;
 class MyTests {
 
 	/**
-     * This is an example test method.
-     * 
-     * @param None
-     * @return None
-     * 
-     * @throws None
-     * 
-     * @since 1.0
-     */
-    @Test
+	 * This is an example test method.
+	 * @param None
+	 * @return None
+	 * @throws None
+	 *
+	 * @since 1.0
+	 */
+	@Test
 	void exampleTest() {
 		// ...
 	}

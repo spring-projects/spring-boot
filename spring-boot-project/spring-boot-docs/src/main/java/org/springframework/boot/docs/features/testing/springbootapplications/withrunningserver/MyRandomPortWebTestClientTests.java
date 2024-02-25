@@ -30,12 +30,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 class MyRandomPortWebTestClientTests {
 
 	/**
-     * This is an example test method that tests the "/" endpoint using a WebTestClient.
-     * It verifies that the response status is OK and the response body is "Hello World".
-     *
-     * @param webClient the WebTestClient instance used for making HTTP requests
-     */
-    @Test
+	 * This is an example test method that tests the "/" endpoint using a WebTestClient.
+	 * It verifies that the response status is OK and the response body is "Hello World".
+	 * @param webClient the WebTestClient instance used for making HTTP requests
+	 */
+	@Test
 	void exampleTest(@Autowired WebTestClient webClient) {
 		// @formatter:off
 		webClient

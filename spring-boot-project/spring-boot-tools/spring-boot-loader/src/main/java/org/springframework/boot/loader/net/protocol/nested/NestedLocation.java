@@ -56,13 +56,12 @@ public record NestedLocation(Path path, String nestedEntryName) {
 	private static final Map<String, NestedLocation> cache = new ConcurrentHashMap<>();
 
 	/**
-     * Constructs a new NestedLocation object with the given path and nested entry name.
-     * 
-     * @param path the path to the nested location
-     * @param nestedEntryName the name of the nested entry within the location
-     * @throws IllegalArgumentException if the path is null
-     */
-    public NestedLocation(Path path, String nestedEntryName) {
+	 * Constructs a new NestedLocation object with the given path and nested entry name.
+	 * @param path the path to the nested location
+	 * @param nestedEntryName the name of the nested entry within the location
+	 * @throws IllegalArgumentException if the path is null
+	 */
+	public NestedLocation(Path path, String nestedEntryName) {
 		if (path == null) {
 			throw new IllegalArgumentException("'path' must not be null");
 		}
@@ -97,13 +96,12 @@ public record NestedLocation(Path path, String nestedEntryName) {
 	}
 
 	/**
-     * Parses the given path and returns a NestedLocation object.
-     * 
-     * @param path the path to be parsed
-     * @return a NestedLocation object representing the parsed path
-     * @throws IllegalArgumentException if the path is null or empty
-     */
-    static NestedLocation parse(String path) {
+	 * Parses the given path and returns a NestedLocation object.
+	 * @param path the path to be parsed
+	 * @return a NestedLocation object representing the parsed path
+	 * @throws IllegalArgumentException if the path is null or empty
+	 */
+	static NestedLocation parse(String path) {
 		if (path == null || path.isEmpty()) {
 			throw new IllegalArgumentException("'path' must not be empty");
 		}
@@ -112,13 +110,13 @@ public record NestedLocation(Path path, String nestedEntryName) {
 	}
 
 	/**
-     * Creates a new NestedLocation object based on the given index and location.
-     * 
-     * @param index    the index of the nested entry in the location string, or -1 if there is no nested entry
-     * @param location the location string
-     * @return a new NestedLocation object
-     */
-    private static NestedLocation create(int index, String location) {
+	 * Creates a new NestedLocation object based on the given index and location.
+	 * @param index the index of the nested entry in the location string, or -1 if there
+	 * is no nested entry
+	 * @param location the location string
+	 * @return a new NestedLocation object
+	 */
+	private static NestedLocation create(int index, String location) {
 		String locationPath = (index != -1) ? location.substring(0, index) : location;
 		if (isWindows() && !isUncPath(location)) {
 			while (locationPath.startsWith("/")) {
@@ -130,30 +128,28 @@ public record NestedLocation(Path path, String nestedEntryName) {
 	}
 
 	/**
-     * Returns true if the operating system is Windows.
-     * 
-     * @return true if the operating system is Windows, false otherwise
-     */
-    private static boolean isWindows() {
+	 * Returns true if the operating system is Windows.
+	 * @return true if the operating system is Windows, false otherwise
+	 */
+	private static boolean isWindows() {
 		return File.separatorChar == '\\';
 	}
 
 	/**
-     * Checks if the given input is a UNC (Universal Naming Convention) path.
-     * 
-     * @param input the input string to be checked
-     * @return true if the input is a UNC path, false otherwise
-     */
-    private static boolean isUncPath(String input) {
+	 * Checks if the given input is a UNC (Universal Naming Convention) path.
+	 * @param input the input string to be checked
+	 * @return true if the input is a UNC path, false otherwise
+	 */
+	private static boolean isUncPath(String input) {
 		return !input.contains(":");
 	}
 
 	/**
-     * Clears the cache.
-     * 
-     * This method clears the cache by calling the clear() method on the cache object.
-     */
-    static void clearCache() {
+	 * Clears the cache.
+	 *
+	 * This method clears the cache by calling the clear() method on the cache object.
+	 */
+	static void clearCache() {
 		cache.clear();
 	}
 

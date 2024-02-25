@@ -24,12 +24,11 @@ import java.util.Date;
 class MyService {
 
 	/**
-     * This method takes a Date object and a String name as parameters.
-     * 
-     * @param date The Date object to be processed.
-     * @param name The name to be used in the processing.
-     */
-    void someMethod(Date date, String name) {
+	 * This method takes a Date object and a String name as parameters.
+	 * @param date The Date object to be processed.
+	 * @param name The name to be used in the processing.
+	 */
+	void someMethod(Date date, String name) {
 	}
 
 }

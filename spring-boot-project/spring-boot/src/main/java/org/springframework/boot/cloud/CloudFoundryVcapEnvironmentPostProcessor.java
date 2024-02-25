@@ -110,31 +110,29 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	}
 
 	/**
-     * Sets the order of the CloudFoundryVcapEnvironmentPostProcessor.
-     * 
-     * @param order the order value to set
-     */
-    public void setOrder(int order) {
+	 * Sets the order of the CloudFoundryVcapEnvironmentPostProcessor.
+	 * @param order the order value to set
+	 */
+	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	/**
-     * Returns the order value of this CloudFoundryVcapEnvironmentPostProcessor.
-     * 
-     * @return the order value
-     */
-    @Override
+	 * Returns the order value of this CloudFoundryVcapEnvironmentPostProcessor.
+	 * @return the order value
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
 	/**
-     * Post-processes the environment by adding properties from the Cloud Foundry VCAP environment.
-     * 
-     * @param environment the configurable environment
-     * @param application the Spring application
-     */
-    @Override
+	 * Post-processes the environment by adding properties from the Cloud Foundry VCAP
+	 * environment.
+	 * @param environment the configurable environment
+	 * @param application the Spring application
+	 */
+	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
 			Properties properties = new Properties();
@@ -153,13 +151,13 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	}
 
 	/**
-     * Adds properties from another Properties object to the given Properties object with a specified prefix.
-     * 
-     * @param properties the Properties object to add the properties to
-     * @param other the Properties object containing the properties to be added
-     * @param prefix the prefix to be added to the keys of the properties
-     */
-    private void addWithPrefix(Properties properties, Properties other, String prefix) {
+	 * Adds properties from another Properties object to the given Properties object with
+	 * a specified prefix.
+	 * @param properties the Properties object to add the properties to
+	 * @param other the Properties object containing the properties to be added
+	 * @param prefix the prefix to be added to the keys of the properties
+	 */
+	private void addWithPrefix(Properties properties, Properties other, String prefix) {
 		for (String key : other.stringPropertyNames()) {
 			String prefixed = prefix + key;
 			properties.setProperty(prefixed, other.getProperty(key));
@@ -167,13 +165,12 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	}
 
 	/**
-     * Retrieves properties from the application environment.
-     * 
-     * @param environment The environment object containing the application properties.
-     * @param parser The JSON parser used to parse the VCAP_APPLICATION property.
-     * @return The properties extracted from the application environment.
-     */
-    private Properties getPropertiesFromApplication(Environment environment, JsonParser parser) {
+	 * Retrieves properties from the application environment.
+	 * @param environment The environment object containing the application properties.
+	 * @param parser The JSON parser used to parse the VCAP_APPLICATION property.
+	 * @return The properties extracted from the application environment.
+	 */
+	private Properties getPropertiesFromApplication(Environment environment, JsonParser parser) {
 		Properties properties = new Properties();
 		try {
 			String property = environment.getProperty(VCAP_APPLICATION, "{}");
@@ -187,13 +184,12 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	}
 
 	/**
-     * Retrieves properties from Cloud Foundry VCAP_SERVICES environment variable.
-     * 
-     * @param environment The environment object containing the VCAP_SERVICES property.
-     * @param parser The JSON parser used to parse the VCAP_SERVICES property.
-     * @return The properties extracted from the VCAP_SERVICES environment variable.
-     */
-    private Properties getPropertiesFromServices(Environment environment, JsonParser parser) {
+	 * Retrieves properties from Cloud Foundry VCAP_SERVICES environment variable.
+	 * @param environment The environment object containing the VCAP_SERVICES property.
+	 * @param parser The JSON parser used to parse the VCAP_SERVICES property.
+	 * @return The properties extracted from the VCAP_SERVICES environment variable.
+	 */
+	private Properties getPropertiesFromServices(Environment environment, JsonParser parser) {
 		Properties properties = new Properties();
 		try {
 			String property = environment.getProperty(VCAP_SERVICES, "{}");
@@ -207,24 +203,22 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	}
 
 	/**
-     * Extracts properties from the application and adds them to the provided map.
-     * 
-     * @param properties the properties to extract from
-     * @param map the map to add the extracted properties to
-     */
-    private void extractPropertiesFromApplication(Properties properties, Map<String, Object> map) {
+	 * Extracts properties from the application and adds them to the provided map.
+	 * @param properties the properties to extract from
+	 * @param map the map to add the extracted properties to
+	 */
+	private void extractPropertiesFromApplication(Properties properties, Map<String, Object> map) {
 		if (map != null) {
 			flatten(properties, map, "");
 		}
 	}
 
 	/**
-     * Extracts properties from services and adds them to the provided properties object.
-     * 
-     * @param properties the properties object to add the extracted properties to
-     * @param map the map containing the services
-     */
-    private void extractPropertiesFromServices(Properties properties, Map<String, Object> map) {
+	 * Extracts properties from services and adds them to the provided properties object.
+	 * @param properties the properties object to add the extracted properties to
+	 * @param map the map containing the services
+	 */
+	private void extractPropertiesFromServices(Properties properties, Map<String, Object> map) {
 		if (map != null) {
 			for (Object services : map.values()) {
 				@SuppressWarnings("unchecked")
@@ -243,13 +237,12 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	}
 
 	/**
-     * Recursively flattens a nested map into a Properties object.
-     * 
-     * @param properties the Properties object to store the flattened map
-     * @param input the nested map to be flattened
-     * @param path the current path in the nested map
-     */
-    @SuppressWarnings("unchecked")
+	 * Recursively flattens a nested map into a Properties object.
+	 * @param properties the Properties object to store the flattened map
+	 * @param input the nested map to be flattened
+	 * @param path the current path in the nested map
+	 */
+	@SuppressWarnings("unchecked")
 	private void flatten(Properties properties, Map<String, Object> input, String path) {
 		input.forEach((key, value) -> {
 			String name = getPropertyName(path, key);
@@ -283,16 +276,14 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	}
 
 	/**
-     * Returns the property name based on the given path and key.
-     * If the path is empty or null, the key is returned as is.
-     * If the key starts with '[', the path is appended to the key.
-     * Otherwise, the path and key are concatenated with a dot separator.
-     *
-     * @param path the path to the property
-     * @param key the key of the property
-     * @return the property name
-     */
-    private String getPropertyName(String path, String key) {
+	 * Returns the property name based on the given path and key. If the path is empty or
+	 * null, the key is returned as is. If the key starts with '[', the path is appended
+	 * to the key. Otherwise, the path and key are concatenated with a dot separator.
+	 * @param path the path to the property
+	 * @param key the key of the property
+	 * @return the property name
+	 */
+	private String getPropertyName(String path, String key) {
 		if (!StringUtils.hasText(path)) {
 			return key;
 		}

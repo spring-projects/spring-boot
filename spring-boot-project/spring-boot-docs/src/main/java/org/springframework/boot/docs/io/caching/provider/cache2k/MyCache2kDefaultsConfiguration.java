@@ -29,12 +29,12 @@ import org.springframework.context.annotation.Configuration;
 public class MyCache2kDefaultsConfiguration {
 
 	/**
-     * Returns a Cache2kBuilderCustomizer that sets the default configuration for Cache2k caches.
-     * The default configuration includes an entry capacity of 200 and an expiration time of 5 minutes after write.
-     *
-     * @return the Cache2kBuilderCustomizer that sets the default configuration
-     */
-    @Bean
+	 * Returns a Cache2kBuilderCustomizer that sets the default configuration for Cache2k
+	 * caches. The default configuration includes an entry capacity of 200 and an
+	 * expiration time of 5 minutes after write.
+	 * @return the Cache2kBuilderCustomizer that sets the default configuration
+	 */
+	@Bean
 	public Cache2kBuilderCustomizer myCache2kDefaultsCustomizer() {
 		// @formatter:off
 		return (builder) -> builder.entryCapacity(200)

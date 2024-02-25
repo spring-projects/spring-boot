@@ -27,11 +27,10 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
 class DataCouchbaseTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataCouchbaseTest> {
 
 	/**
-     * Constructs a new DataCouchbaseTypeExcludeFilter with the specified test class.
-     * 
-     * @param testClass the test class to be used for filtering
-     */
-    DataCouchbaseTypeExcludeFilter(Class<?> testClass) {
+	 * Constructs a new DataCouchbaseTypeExcludeFilter with the specified test class.
+	 * @param testClass the test class to be used for filtering
+	 */
+	DataCouchbaseTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 

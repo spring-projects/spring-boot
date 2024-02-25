@@ -41,20 +41,20 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 class GsonHttpMessageConvertersConfiguration {
 
 	/**
-     * GsonHttpMessageConverterConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * GsonHttpMessageConverterConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Gson.class)
 	@Conditional(PreferGsonOrJacksonAndJsonbUnavailableCondition.class)
 	static class GsonHttpMessageConverterConfiguration {
 
 		/**
-         * Creates a new instance of GsonHttpMessageConverter if no other bean of the same type is present.
-         * 
-         * @param gson the Gson object to be used by the converter
-         * @return the created GsonHttpMessageConverter object
-         */
-        @Bean
+		 * Creates a new instance of GsonHttpMessageConverter if no other bean of the same
+		 * type is present.
+		 * @param gson the Gson object to be used by the converter
+		 * @return the created GsonHttpMessageConverter object
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		GsonHttpMessageConverter gsonHttpMessageConverter(Gson gson) {
 			GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
@@ -65,32 +65,31 @@ class GsonHttpMessageConvertersConfiguration {
 	}
 
 	/**
-     * PreferGsonOrJacksonAndJsonbUnavailableCondition class.
-     */
-    private static class PreferGsonOrJacksonAndJsonbUnavailableCondition extends AnyNestedCondition {
+	 * PreferGsonOrJacksonAndJsonbUnavailableCondition class.
+	 */
+	private static class PreferGsonOrJacksonAndJsonbUnavailableCondition extends AnyNestedCondition {
 
 		/**
-         * Constructor for the PreferGsonOrJacksonAndJsonbUnavailableCondition class.
-         * 
-         * @param phase the configuration phase for registering the bean
-         */
-        PreferGsonOrJacksonAndJsonbUnavailableCondition() {
+		 * Constructor for the PreferGsonOrJacksonAndJsonbUnavailableCondition class.
+		 * @param phase the configuration phase for registering the bean
+		 */
+		PreferGsonOrJacksonAndJsonbUnavailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
 		/**
-         * GsonPreferred class.
-         */
-        @ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+		 * GsonPreferred class.
+		 */
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
 				havingValue = "gson")
 		static class GsonPreferred {
 
 		}
 
 		/**
-         * JacksonJsonbUnavailable class.
-         */
-        @Conditional(JacksonAndJsonbUnavailableCondition.class)
+		 * JacksonJsonbUnavailable class.
+		 */
+		@Conditional(JacksonAndJsonbUnavailableCondition.class)
 		static class JacksonJsonbUnavailable {
 
 		}
@@ -98,31 +97,30 @@ class GsonHttpMessageConvertersConfiguration {
 	}
 
 	/**
-     * JacksonAndJsonbUnavailableCondition class.
-     */
-    private static class JacksonAndJsonbUnavailableCondition extends NoneNestedConditions {
+	 * JacksonAndJsonbUnavailableCondition class.
+	 */
+	private static class JacksonAndJsonbUnavailableCondition extends NoneNestedConditions {
 
 		/**
-         * Constructor for JacksonAndJsonbUnavailableCondition.
-         * 
-         * @param phase the configuration phase
-         */
-        JacksonAndJsonbUnavailableCondition() {
+		 * Constructor for JacksonAndJsonbUnavailableCondition.
+		 * @param phase the configuration phase
+		 */
+		JacksonAndJsonbUnavailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
 		/**
-         * JacksonAvailable class.
-         */
-        @ConditionalOnBean(MappingJackson2HttpMessageConverter.class)
+		 * JacksonAvailable class.
+		 */
+		@ConditionalOnBean(MappingJackson2HttpMessageConverter.class)
 		static class JacksonAvailable {
 
 		}
 
 		/**
-         * JsonbPreferred class.
-         */
-        @ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+		 * JsonbPreferred class.
+		 */
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
 				havingValue = "jsonb")
 		static class JsonbPreferred {
 

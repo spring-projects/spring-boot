@@ -28,13 +28,12 @@ import org.springframework.http.codec.ServerSentEventHttpMessageReader;
 public class MyCodecsConfiguration {
 
 	/**
-     * Returns a CodecCustomizer bean that customizes the codec configuration.
-     * This method registers a custom ServerSentEventHttpMessageReader codec
-     * and sets the registerDefaults flag to false.
-     *
-     * @return the CodecCustomizer bean
-     */
-    @Bean
+	 * Returns a CodecCustomizer bean that customizes the codec configuration. This method
+	 * registers a custom ServerSentEventHttpMessageReader codec and sets the
+	 * registerDefaults flag to false.
+	 * @return the CodecCustomizer bean
+	 */
+	@Bean
 	public CodecCustomizer myCodecCustomizer() {
 		return (configurer) -> {
 			configurer.registerDefaults(false);

@@ -54,12 +54,11 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 public class TaskExecutorMetricsAutoConfiguration {
 
 	/**
-     * Binds the task executors to the registry for monitoring purposes.
-     * 
-     * @param executors the map of executor bean names to executor instances
-     * @param registry the meter registry for monitoring
-     */
-    @Autowired
+	 * Binds the task executors to the registry for monitoring purposes.
+	 * @param executors the map of executor bean names to executor instances
+	 * @param registry the meter registry for monitoring
+	 */
+	@Autowired
 	public void bindTaskExecutorsToRegistry(Map<String, Executor> executors, MeterRegistry registry) {
 		executors.forEach((beanName, executor) -> {
 			if (executor instanceof ThreadPoolTaskExecutor threadPoolTaskExecutor) {
@@ -72,36 +71,39 @@ public class TaskExecutorMetricsAutoConfiguration {
 	}
 
 	/**
-     * Returns a LazyInitializationExcludeFilter for the TaskExecutorMetricsAutoConfiguration class.
-     * This filter excludes the TaskExecutorMetricsAutoConfiguration class from being eagerly initialized.
-     * 
-     * @return the LazyInitializationExcludeFilter for the TaskExecutorMetricsAutoConfiguration class
-     */
-    @Bean
+	 * Returns a LazyInitializationExcludeFilter for the
+	 * TaskExecutorMetricsAutoConfiguration class. This filter excludes the
+	 * TaskExecutorMetricsAutoConfiguration class from being eagerly initialized.
+	 * @return the LazyInitializationExcludeFilter for the
+	 * TaskExecutorMetricsAutoConfiguration class
+	 */
+	@Bean
 	static LazyInitializationExcludeFilter eagerTaskExecutorMetrics() {
 		return LazyInitializationExcludeFilter.forBeanTypes(TaskExecutorMetricsAutoConfiguration.class);
 	}
 
 	/**
-     * Monitors the given ThreadPoolExecutor and binds the metrics to the provided MeterRegistry.
-     * 
-     * @param registry the MeterRegistry to bind the metrics to
-     * @param threadPoolExecutor the ThreadPoolExecutor to monitor
-     * @param name the name of the ThreadPoolExecutor
-     */
-    private void monitor(MeterRegistry registry, ThreadPoolExecutor threadPoolExecutor, String name) {
+	 * Monitors the given ThreadPoolExecutor and binds the metrics to the provided
+	 * MeterRegistry.
+	 * @param registry the MeterRegistry to bind the metrics to
+	 * @param threadPoolExecutor the ThreadPoolExecutor to monitor
+	 * @param name the name of the ThreadPoolExecutor
+	 */
+	private void monitor(MeterRegistry registry, ThreadPoolExecutor threadPoolExecutor, String name) {
 		if (threadPoolExecutor != null) {
 			new ExecutorServiceMetrics(threadPoolExecutor, name, Collections.emptyList()).bindTo(registry);
 		}
 	}
 
 	/**
-     * Safely retrieves the underlying ThreadPoolExecutor from the given ThreadPoolTaskExecutor.
-     * 
-     * @param taskExecutor the ThreadPoolTaskExecutor to retrieve the ThreadPoolExecutor from
-     * @return the ThreadPoolExecutor if it exists, or null if an IllegalStateException occurs
-     */
-    private ThreadPoolExecutor safeGetThreadPoolExecutor(ThreadPoolTaskExecutor taskExecutor) {
+	 * Safely retrieves the underlying ThreadPoolExecutor from the given
+	 * ThreadPoolTaskExecutor.
+	 * @param taskExecutor the ThreadPoolTaskExecutor to retrieve the ThreadPoolExecutor
+	 * from
+	 * @return the ThreadPoolExecutor if it exists, or null if an IllegalStateException
+	 * occurs
+	 */
+	private ThreadPoolExecutor safeGetThreadPoolExecutor(ThreadPoolTaskExecutor taskExecutor) {
 		try {
 			return taskExecutor.getThreadPoolExecutor();
 		}
@@ -111,12 +113,14 @@ public class TaskExecutorMetricsAutoConfiguration {
 	}
 
 	/**
-     * Safely retrieves the underlying ThreadPoolExecutor from the given ThreadPoolTaskScheduler.
-     * 
-     * @param taskScheduler the ThreadPoolTaskScheduler to retrieve the ThreadPoolExecutor from
-     * @return the ThreadPoolExecutor if it exists, or null if an IllegalStateException occurs
-     */
-    private ThreadPoolExecutor safeGetThreadPoolExecutor(ThreadPoolTaskScheduler taskScheduler) {
+	 * Safely retrieves the underlying ThreadPoolExecutor from the given
+	 * ThreadPoolTaskScheduler.
+	 * @param taskScheduler the ThreadPoolTaskScheduler to retrieve the ThreadPoolExecutor
+	 * from
+	 * @return the ThreadPoolExecutor if it exists, or null if an IllegalStateException
+	 * occurs
+	 */
+	private ThreadPoolExecutor safeGetThreadPoolExecutor(ThreadPoolTaskScheduler taskScheduler) {
 		try {
 			return taskScheduler.getScheduledThreadPoolExecutor();
 		}

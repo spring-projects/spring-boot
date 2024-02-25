@@ -35,11 +35,11 @@ class MySecurityTests {
 	private MockMvc mvc;
 
 	/**
-     * Test case to verify that a protected URL can be accessed by a user with the role "ADMIN".
-     * 
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
+	 * Test case to verify that a protected URL can be accessed by a user with the role
+	 * "ADMIN".
+	 * @throws Exception if an error occurs during the test
+	 */
+	@Test
 	@WithMockUser(roles = "ADMIN")
 	void requestProtectedUrlWithUser() throws Exception {
 		this.mvc.perform(get("/"));

@@ -59,14 +59,14 @@ class ConnectionFactoryOptionsInitializer {
 	}
 
 	/**
-     * Initializes the embedded options for the R2DBC connection factory.
-     * 
-     * @param properties the R2DBC properties
-     * @param embeddedDatabaseConnection the embedded database connection
-     * @return the builder with the initialized options
-     * @throws ConnectionFactoryBeanCreationException if failed to determine a suitable R2DBC Connection URL
-     */
-    private Builder initializeEmbeddedOptions(R2dbcProperties properties,
+	 * Initializes the embedded options for the R2DBC connection factory.
+	 * @param properties the R2DBC properties
+	 * @param embeddedDatabaseConnection the embedded database connection
+	 * @return the builder with the initialized options
+	 * @throws ConnectionFactoryBeanCreationException if failed to determine a suitable
+	 * R2DBC Connection URL
+	 */
+	private Builder initializeEmbeddedOptions(R2dbcProperties properties,
 			EmbeddedDatabaseConnection embeddedDatabaseConnection) {
 		String url = embeddedDatabaseConnection.getUrl(determineEmbeddedDatabaseName(properties));
 		if (url == null) {
@@ -85,28 +85,26 @@ class ConnectionFactoryOptionsInitializer {
 	}
 
 	/**
-     * Determines the name of the embedded database based on the provided R2dbcProperties.
-     * If a database name is specified in the properties, that name is returned.
-     * Otherwise, the default name "testdb" is returned.
-     *
-     * @param properties the R2dbcProperties object containing the database configuration
-     * @return the name of the embedded database
-     */
-    private String determineEmbeddedDatabaseName(R2dbcProperties properties) {
+	 * Determines the name of the embedded database based on the provided R2dbcProperties.
+	 * If a database name is specified in the properties, that name is returned.
+	 * Otherwise, the default name "testdb" is returned.
+	 * @param properties the R2dbcProperties object containing the database configuration
+	 * @return the name of the embedded database
+	 */
+	private String determineEmbeddedDatabaseName(R2dbcProperties properties) {
 		String databaseName = determineDatabaseName(properties);
 		return (databaseName != null) ? databaseName : "testdb";
 	}
 
 	/**
-     * Determines the database name based on the provided R2dbcProperties.
-     * If the generateUniqueName flag is set to true, it will generate a unique name.
-     * If a name is provided in the properties, it will use that name.
-     * If neither condition is met, it will return null.
-     *
-     * @param properties the R2dbcProperties object containing the database properties
-     * @return the determined database name or null if no name is determined
-     */
-    private String determineDatabaseName(R2dbcProperties properties) {
+	 * Determines the database name based on the provided R2dbcProperties. If the
+	 * generateUniqueName flag is set to true, it will generate a unique name. If a name
+	 * is provided in the properties, it will use that name. If neither condition is met,
+	 * it will return null.
+	 * @param properties the R2dbcProperties object containing the database properties
+	 * @return the determined database name or null if no name is determined
+	 */
+	private String determineDatabaseName(R2dbcProperties properties) {
 		if (properties.isGenerateUniqueName()) {
 			return properties.determineUniqueName();
 		}
@@ -117,58 +115,56 @@ class ConnectionFactoryOptionsInitializer {
 	}
 
 	/**
-     * Determines the embedded username based on the provided R2dbcProperties.
-     * If the username is not empty or null, it is returned.
-     * Otherwise, the default username "sa" is returned.
-     *
-     * @param properties the R2dbcProperties object containing the username
-     * @return the determined embedded username
-     */
-    private String determineEmbeddedUsername(R2dbcProperties properties) {
+	 * Determines the embedded username based on the provided R2dbcProperties. If the
+	 * username is not empty or null, it is returned. Otherwise, the default username "sa"
+	 * is returned.
+	 * @param properties the R2dbcProperties object containing the username
+	 * @return the determined embedded username
+	 */
+	private String determineEmbeddedUsername(R2dbcProperties properties) {
 		String username = ifHasText(properties.getUsername());
 		return (username != null) ? username : "sa";
 	}
 
 	/**
-     * Creates a new ConnectionFactoryBeanCreationException with the specified message, R2DBC URL, and embedded database connection.
-     *
-     * @param message the detail message
-     * @param r2dbcUrl the R2DBC URL
-     * @param embeddedDatabaseConnection the embedded database connection
-     * @return the new ConnectionFactoryBeanCreationException
-     */
-    private ConnectionFactoryBeanCreationException connectionFactoryBeanCreationException(String message,
+	 * Creates a new ConnectionFactoryBeanCreationException with the specified message,
+	 * R2DBC URL, and embedded database connection.
+	 * @param message the detail message
+	 * @param r2dbcUrl the R2DBC URL
+	 * @param embeddedDatabaseConnection the embedded database connection
+	 * @return the new ConnectionFactoryBeanCreationException
+	 */
+	private ConnectionFactoryBeanCreationException connectionFactoryBeanCreationException(String message,
 			String r2dbcUrl, EmbeddedDatabaseConnection embeddedDatabaseConnection) {
 		return new ConnectionFactoryBeanCreationException(message, r2dbcUrl, embeddedDatabaseConnection);
 	}
 
 	/**
-     * Checks if the given candidate string has text.
-     * 
-     * @param candidate the string to be checked
-     * @return the candidate string if it has text, otherwise null
-     */
-    private String ifHasText(String candidate) {
+	 * Checks if the given candidate string has text.
+	 * @param candidate the string to be checked
+	 * @return the candidate string if it has text, otherwise null
+	 */
+	private String ifHasText(String candidate) {
 		return (StringUtils.hasText(candidate)) ? candidate : null;
 	}
 
 	/**
-     * ConnectionFactoryBeanCreationException class.
-     */
-    static class ConnectionFactoryBeanCreationException extends BeanCreationException {
+	 * ConnectionFactoryBeanCreationException class.
+	 */
+	static class ConnectionFactoryBeanCreationException extends BeanCreationException {
 
 		private final String url;
 
 		private final EmbeddedDatabaseConnection embeddedDatabaseConnection;
 
 		/**
-         * Constructs a new ConnectionFactoryBeanCreationException with the specified detail message, URL, and embedded database connection.
-         * 
-         * @param message the detail message for the exception
-         * @param url the URL used for the connection
-         * @param embeddedDatabaseConnection the embedded database connection used
-         */
-        ConnectionFactoryBeanCreationException(String message, String url,
+		 * Constructs a new ConnectionFactoryBeanCreationException with the specified
+		 * detail message, URL, and embedded database connection.
+		 * @param message the detail message for the exception
+		 * @param url the URL used for the connection
+		 * @param embeddedDatabaseConnection the embedded database connection used
+		 */
+		ConnectionFactoryBeanCreationException(String message, String url,
 				EmbeddedDatabaseConnection embeddedDatabaseConnection) {
 			super(message);
 			this.url = url;
@@ -176,20 +172,18 @@ class ConnectionFactoryOptionsInitializer {
 		}
 
 		/**
-         * Returns the URL associated with this ConnectionFactoryBeanCreationException.
-         *
-         * @return the URL associated with this ConnectionFactoryBeanCreationException
-         */
-        String getUrl() {
+		 * Returns the URL associated with this ConnectionFactoryBeanCreationException.
+		 * @return the URL associated with this ConnectionFactoryBeanCreationException
+		 */
+		String getUrl() {
 			return this.url;
 		}
 
 		/**
-         * Returns the embedded database connection.
-         *
-         * @return the embedded database connection
-         */
-        EmbeddedDatabaseConnection getEmbeddedDatabaseConnection() {
+		 * Returns the embedded database connection.
+		 * @return the embedded database connection
+		 */
+		EmbeddedDatabaseConnection getEmbeddedDatabaseConnection() {
 			return this.embeddedDatabaseConnection;
 		}
 

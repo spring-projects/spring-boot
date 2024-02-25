@@ -28,12 +28,13 @@ import org.springframework.test.context.TestContextBootstrapper;
 class DataRedisTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	/**
-     * Retrieves the properties specified in the {@link DataRedisTest} annotation for the given test class.
-     * 
-     * @param testClass the test class for which to retrieve the properties
-     * @return an array of properties specified in the {@link DataRedisTest} annotation, or null if the annotation is not present
-     */
-    @Override
+	 * Retrieves the properties specified in the {@link DataRedisTest} annotation for the
+	 * given test class.
+	 * @param testClass the test class for which to retrieve the properties
+	 * @return an array of properties specified in the {@link DataRedisTest} annotation,
+	 * or null if the annotation is not present
+	 */
+	@Override
 	protected String[] getProperties(Class<?> testClass) {
 		DataRedisTest dataRedisTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, DataRedisTest.class);
 		return (dataRedisTest != null) ? dataRedisTest.properties() : null;

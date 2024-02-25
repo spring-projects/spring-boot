@@ -32,32 +32,30 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 public class IgnoreErrorsBindHandler extends AbstractBindHandler {
 
 	/**
-     * Constructs a new IgnoreErrorsBindHandler.
-     */
-    public IgnoreErrorsBindHandler() {
+	 * Constructs a new IgnoreErrorsBindHandler.
+	 */
+	public IgnoreErrorsBindHandler() {
 	}
 
 	/**
-     * Constructs a new IgnoreErrorsBindHandler with the specified parent BindHandler.
-     * 
-     * @param parent the parent BindHandler to set
-     */
-    public IgnoreErrorsBindHandler(BindHandler parent) {
+	 * Constructs a new IgnoreErrorsBindHandler with the specified parent BindHandler.
+	 * @param parent the parent BindHandler to set
+	 */
+	public IgnoreErrorsBindHandler(BindHandler parent) {
 		super(parent);
 	}
 
 	/**
-     * This method is called when an error occurs during the binding process.
-     * It returns the value of the target if it is not null, otherwise it returns null.
-     *
-     * @param name    the name of the configuration property
-     * @param target  the bindable target
-     * @param context the bind context
-     * @param error   the exception that occurred during binding
-     * @return the value of the target if not null, otherwise null
-     * @throws Exception if an error occurs during the execution of the method
-     */
-    @Override
+	 * This method is called when an error occurs during the binding process. It returns
+	 * the value of the target if it is not null, otherwise it returns null.
+	 * @param name the name of the configuration property
+	 * @param target the bindable target
+	 * @param context the bind context
+	 * @param error the exception that occurred during binding
+	 * @return the value of the target if not null, otherwise null
+	 * @throws Exception if an error occurs during the execution of the method
+	 */
+	@Override
 	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
 			throws Exception {
 		return (target.getValue() != null) ? target.getValue().get() : null;

@@ -33,24 +33,22 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 public class WebDriverTestExecutionListener extends AbstractTestExecutionListener {
 
 	/**
-     * Returns the order in which this listener should be executed.
-     * The order is determined by subtracting 100 from the lowest precedence value.
-     * 
-     * @return the order of execution for this listener
-     */
-    @Override
+	 * Returns the order in which this listener should be executed. The order is
+	 * determined by subtracting 100 from the lowest precedence value.
+	 * @return the order of execution for this listener
+	 */
+	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE - 100;
 	}
 
 	/**
-     * This method is called after each test method is executed.
-     * It resets the WebDriverScope if it exists and sets the attribute to reinject dependencies.
-     *
-     * @param testContext the TestContext object containing information about the test
-     * @throws Exception if an error occurs during the execution of the method
-     */
-    @Override
+	 * This method is called after each test method is executed. It resets the
+	 * WebDriverScope if it exists and sets the attribute to reinject dependencies.
+	 * @param testContext the TestContext object containing information about the test
+	 * @throws Exception if an error occurs during the execution of the method
+	 */
+	@Override
 	public void afterTestMethod(TestContext testContext) throws Exception {
 		WebDriverScope scope = WebDriverScope.getFrom(testContext.getApplicationContext());
 		if (scope != null && scope.reset()) {

@@ -38,83 +38,81 @@ public class FreeMarkerTemplateAvailabilityProvider extends PathBasedTemplateAva
 	private static final String REQUIRED_CLASS_NAME = "freemarker.template.Configuration";
 
 	/**
-     * Constructs a new {@code FreeMarkerTemplateAvailabilityProvider} with the specified required class name,
-     * properties class, and properties prefix.
-     * 
-     * @param requiredClassName the name of the required class
-     * @param propertiesClass the class representing the properties
-     * @param propertiesPrefix the prefix for the properties
-     */
-    public FreeMarkerTemplateAvailabilityProvider() {
+	 * Constructs a new {@code FreeMarkerTemplateAvailabilityProvider} with the specified
+	 * required class name, properties class, and properties prefix.
+	 * @param requiredClassName the name of the required class
+	 * @param propertiesClass the class representing the properties
+	 * @param propertiesPrefix the prefix for the properties
+	 */
+	public FreeMarkerTemplateAvailabilityProvider() {
 		super(REQUIRED_CLASS_NAME, FreeMarkerTemplateAvailabilityProperties.class, "spring.freemarker");
 	}
 
 	/**
-     * FreeMarkerTemplateAvailabilityProperties class.
-     */
-    protected static final class FreeMarkerTemplateAvailabilityProperties extends TemplateAvailabilityProperties {
+	 * FreeMarkerTemplateAvailabilityProperties class.
+	 */
+	protected static final class FreeMarkerTemplateAvailabilityProperties extends TemplateAvailabilityProperties {
 
 		private List<String> templateLoaderPath = new ArrayList<>(
 				Arrays.asList(FreeMarkerProperties.DEFAULT_TEMPLATE_LOADER_PATH));
 
 		/**
-         * Constructs a new {@code FreeMarkerTemplateAvailabilityProperties} with the default prefix and suffix.
-         */
-        FreeMarkerTemplateAvailabilityProperties() {
+		 * Constructs a new {@code FreeMarkerTemplateAvailabilityProperties} with the
+		 * default prefix and suffix.
+		 */
+		FreeMarkerTemplateAvailabilityProperties() {
 			super(FreeMarkerProperties.DEFAULT_PREFIX, FreeMarkerProperties.DEFAULT_SUFFIX);
 		}
 
 		/**
-         * Returns the list of paths to be used by the loader for loading templates.
-         * 
-         * @return the list of paths to be used by the loader for loading templates
-         */
-        @Override
+		 * Returns the list of paths to be used by the loader for loading templates.
+		 * @return the list of paths to be used by the loader for loading templates
+		 */
+		@Override
 		protected List<String> getLoaderPath() {
 			return this.templateLoaderPath;
 		}
 
 		/**
-         * Returns the list of template loader paths.
-         * 
-         * @return the list of template loader paths
-         */
-        public List<String> getTemplateLoaderPath() {
+		 * Returns the list of template loader paths.
+		 * @return the list of template loader paths
+		 */
+		public List<String> getTemplateLoaderPath() {
 			return this.templateLoaderPath;
 		}
 
 		/**
-         * Sets the template loader path for FreeMarker templates.
-         * 
-         * @param templateLoaderPath the list of template loader paths to be set
-         */
-        public void setTemplateLoaderPath(List<String> templateLoaderPath) {
+		 * Sets the template loader path for FreeMarker templates.
+		 * @param templateLoaderPath the list of template loader paths to be set
+		 */
+		public void setTemplateLoaderPath(List<String> templateLoaderPath) {
 			this.templateLoaderPath = templateLoaderPath;
 		}
 
 	}
 
 	/**
-     * FreeMarkerTemplateAvailabilityRuntimeHints class.
-     */
-    static class FreeMarkerTemplateAvailabilityRuntimeHints extends BindableRuntimeHintsRegistrar {
+	 * FreeMarkerTemplateAvailabilityRuntimeHints class.
+	 */
+	static class FreeMarkerTemplateAvailabilityRuntimeHints extends BindableRuntimeHintsRegistrar {
 
 		/**
-         * Constructs a new instance of the {@code FreeMarkerTemplateAvailabilityRuntimeHints} class.
-         * 
-         * @param properties the {@code FreeMarkerTemplateAvailabilityProperties} object to use for initialization
-         */
-        FreeMarkerTemplateAvailabilityRuntimeHints() {
+		 * Constructs a new instance of the
+		 * {@code FreeMarkerTemplateAvailabilityRuntimeHints} class.
+		 * @param properties the {@code FreeMarkerTemplateAvailabilityProperties} object
+		 * to use for initialization
+		 */
+		FreeMarkerTemplateAvailabilityRuntimeHints() {
 			super(FreeMarkerTemplateAvailabilityProperties.class);
 		}
 
 		/**
-         * Registers the runtime hints for FreeMarker template availability.
-         * 
-         * @param hints the runtime hints to register
-         * @param classLoader the class loader to use for checking the presence of a required class
-         */
-        @Override
+		 * Registers the runtime hints for FreeMarker template availability.
+		 * @param hints the runtime hints to register
+		 * @param classLoader the class loader to use for checking the presence of a
+		 * required class
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			if (ClassUtils.isPresent(REQUIRED_CLASS_NAME, classLoader)) {
 				super.registerHints(hints, classLoader);

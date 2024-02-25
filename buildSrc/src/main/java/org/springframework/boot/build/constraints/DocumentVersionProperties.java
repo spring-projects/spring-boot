@@ -44,51 +44,48 @@ public class DocumentVersionProperties extends DefaultTask {
 	private File outputFile;
 
 	/**
-     * Constructs a new instance of DocumentVersionProperties.
-     * 
-     * @param objectFactory the object factory used to create the version properties
-     */
-    @Inject
+	 * Constructs a new instance of DocumentVersionProperties.
+	 * @param objectFactory the object factory used to create the version properties
+	 */
+	@Inject
 	public DocumentVersionProperties(ObjectFactory objectFactory) {
 		this.versionProperties = objectFactory.setProperty(VersionProperty.class);
 	}
 
 	/**
-     * Returns the version properties of the document.
-     *
-     * @return the version properties of the document
-     */
-    @Input
+	 * Returns the version properties of the document.
+	 * @return the version properties of the document
+	 */
+	@Input
 	public SetProperty<VersionProperty> getVersionProperties() {
 		return this.versionProperties;
 	}
 
 	/**
-     * Returns the output file associated with this DocumentVersionProperties object.
-     *
-     * @return the output file
-     */
-    @OutputFile
+	 * Returns the output file associated with this DocumentVersionProperties object.
+	 * @return the output file
+	 */
+	@OutputFile
 	public File getOutputFile() {
 		return this.outputFile;
 	}
 
 	/**
-     * Sets the output file for the document version properties.
-     * 
-     * @param outputFile the output file to be set
-     */
-    public void setOutputFile(File outputFile) {
+	 * Sets the output file for the document version properties.
+	 * @param outputFile the output file to be set
+	 */
+	public void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
 	}
 
 	/**
-     * Generates a Javadoc style documentation comment for the {@code documentVersionProperties} method.
-     * This method is responsible for documenting the version properties of libraries.
-     *
-     * @throws IOException if an I/O error occurs while writing the documentation to the output file.
-     */
-    @TaskAction
+	 * Generates a Javadoc style documentation comment for the
+	 * {@code documentVersionProperties} method. This method is responsible for
+	 * documenting the version properties of libraries.
+	 * @throws IOException if an I/O error occurs while writing the documentation to the
+	 * output file.
+	 */
+	@TaskAction
 	public void documentVersionProperties() throws IOException {
 		this.outputFile.getParentFile().mkdirs();
 		try (PrintWriter writer = new PrintWriter(new FileWriter(this.outputFile))) {

@@ -36,22 +36,20 @@ class MongoContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<MongoDBContainer, MongoConnectionDetails> {
 
 	/**
-     * Constructs a new MongoContainerConnectionDetailsFactory object.
-     * 
-     * @param connectionName the name of the connection
-     * @param connectionString the connection string
-     */
-    MongoContainerConnectionDetailsFactory() {
+	 * Constructs a new MongoContainerConnectionDetailsFactory object.
+	 * @param connectionName the name of the connection
+	 * @param connectionString the connection string
+	 */
+	MongoContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "com.mongodb.ConnectionString");
 	}
 
 	/**
-     * Returns the connection details for the specified container connection source.
-     * 
-     * @param source the container connection source
-     * @return the connection details for the container
-     */
-    @Override
+	 * Returns the connection details for the specified container connection source.
+	 * @param source the container connection source
+	 * @return the connection details for the container
+	 */
+	@Override
 	protected MongoConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MongoDBContainer> source) {
 		return new MongoContainerConnectionDetails(source);
 	}
@@ -63,20 +61,20 @@ class MongoContainerConnectionDetailsFactory
 			implements MongoConnectionDetails {
 
 		/**
-         * Constructs a new MongoContainerConnectionDetails object with the specified ContainerConnectionSource.
-         * 
-         * @param source the ContainerConnectionSource used to create the MongoDB container connection
-         */
-        private MongoContainerConnectionDetails(ContainerConnectionSource<MongoDBContainer> source) {
+		 * Constructs a new MongoContainerConnectionDetails object with the specified
+		 * ContainerConnectionSource.
+		 * @param source the ContainerConnectionSource used to create the MongoDB
+		 * container connection
+		 */
+		private MongoContainerConnectionDetails(ContainerConnectionSource<MongoDBContainer> source) {
 			super(source);
 		}
 
 		/**
-         * Returns the connection string for the MongoDB container.
-         * 
-         * @return the connection string
-         */
-        @Override
+		 * Returns the connection string for the MongoDB container.
+		 * @return the connection string
+		 */
+		@Override
 		public ConnectionString getConnectionString() {
 			return new ConnectionString(getContainer().getReplicaSetUrl());
 		}

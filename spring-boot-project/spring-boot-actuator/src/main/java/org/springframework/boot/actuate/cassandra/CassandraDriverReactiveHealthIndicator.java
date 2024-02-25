@@ -53,12 +53,11 @@ public class CassandraDriverReactiveHealthIndicator extends AbstractReactiveHeal
 	}
 
 	/**
-     * Performs a health check on the Cassandra driver reactive session.
-     * 
-     * @param builder the health builder used to construct the health status
-     * @return a Mono emitting the health status
-     */
-    @Override
+	 * Performs a health check on the Cassandra driver reactive session.
+	 * @param builder the health builder used to construct the health status
+	 * @return a Mono emitting the health status
+	 */
+	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
 		return Mono.fromSupplier(() -> {
 			Collection<Node> nodes = this.session.getMetadata().getNodes().values();

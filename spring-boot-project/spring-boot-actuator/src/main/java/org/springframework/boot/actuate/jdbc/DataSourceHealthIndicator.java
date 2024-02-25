@@ -87,23 +87,22 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	}
 
 	/**
-     * Callback method invoked by the Spring container after all bean properties have been set.
-     * 
-     * @throws Exception if an error occurs during the initialization process
-     * @throws IllegalStateException if the dataSource property is not specified
-     */
-    @Override
+	 * Callback method invoked by the Spring container after all bean properties have been
+	 * set.
+	 * @throws Exception if an error occurs during the initialization process
+	 * @throws IllegalStateException if the dataSource property is not specified
+	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.state(this.dataSource != null, "DataSource for DataSourceHealthIndicator must be specified");
 	}
 
 	/**
-     * Performs a health check on the data source.
-     * 
-     * @param builder the Health.Builder object used to build the health status
-     * @throws Exception if an error occurs during the health check
-     */
-    @Override
+	 * Performs a health check on the data source.
+	 * @param builder the Health.Builder object used to build the health status
+	 * @throws Exception if an error occurs during the health check
+	 */
+	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		if (this.dataSource == null) {
 			builder.up().withDetail("database", "unknown");
@@ -114,11 +113,10 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	}
 
 	/**
-     * Performs a health check on the data source.
-     * 
-     * @param builder the Health.Builder object to build the health status and details
-     */
-    private void doDataSourceHealthCheck(Health.Builder builder) {
+	 * Performs a health check on the data source.
+	 * @param builder the Health.Builder object to build the health status and details
+	 */
+	private void doDataSourceHealthCheck(Health.Builder builder) {
 		builder.up().withDetail("database", getProduct());
 		String validationQuery = this.query;
 		if (StringUtils.hasText(validationQuery)) {
@@ -136,42 +134,38 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	}
 
 	/**
-     * Retrieves the product from the database.
-     * 
-     * @return the product retrieved from the database
-     */
-    private String getProduct() {
+	 * Retrieves the product from the database.
+	 * @return the product retrieved from the database
+	 */
+	private String getProduct() {
 		return this.jdbcTemplate.execute((ConnectionCallback<String>) this::getProduct);
 	}
 
 	/**
-     * Retrieves the name of the database product to which the connection belongs.
-     * 
-     * @param connection the connection to the database
-     * @return the name of the database product
-     * @throws SQLException if a database access error occurs
-     */
-    private String getProduct(Connection connection) throws SQLException {
+	 * Retrieves the name of the database product to which the connection belongs.
+	 * @param connection the connection to the database
+	 * @return the name of the database product
+	 * @throws SQLException if a database access error occurs
+	 */
+	private String getProduct(Connection connection) throws SQLException {
 		return connection.getMetaData().getDatabaseProductName();
 	}
 
 	/**
-     * Checks if the connection to the database is valid.
-     * 
-     * @return true if the connection is valid, false otherwise
-     */
-    private Boolean isConnectionValid() {
+	 * Checks if the connection to the database is valid.
+	 * @return true if the connection is valid, false otherwise
+	 */
+	private Boolean isConnectionValid() {
 		return this.jdbcTemplate.execute((ConnectionCallback<Boolean>) this::isConnectionValid);
 	}
 
 	/**
-     * Checks if the connection is valid.
-     * 
-     * @param connection the connection to be checked
-     * @return true if the connection is valid, false otherwise
-     * @throws SQLException if an SQL exception occurs
-     */
-    private Boolean isConnectionValid(Connection connection) throws SQLException {
+	 * Checks if the connection is valid.
+	 * @param connection the connection to be checked
+	 * @return true if the connection is valid, false otherwise
+	 * @throws SQLException if an SQL exception occurs
+	 */
+	private Boolean isConnectionValid(Connection connection) throws SQLException {
 		return connection.isValid(0);
 	}
 
@@ -207,15 +201,15 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	private static final class SingleColumnRowMapper implements RowMapper<Object> {
 
 		/**
-         * Maps a single column from a ResultSet to an Object.
-         * 
-         * @param rs the ResultSet to map the column from
-         * @param rowNum the current row number
-         * @return the mapped Object
-         * @throws SQLException if a database access error occurs
-         * @throws IncorrectResultSetColumnCountException if the number of columns in the ResultSet is not 1
-         */
-        @Override
+		 * Maps a single column from a ResultSet to an Object.
+		 * @param rs the ResultSet to map the column from
+		 * @param rowNum the current row number
+		 * @return the mapped Object
+		 * @throws SQLException if a database access error occurs
+		 * @throws IncorrectResultSetColumnCountException if the number of columns in the
+		 * ResultSet is not 1
+		 */
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			ResultSetMetaData metaData = rs.getMetaData();
 			int columns = metaData.getColumnCount();

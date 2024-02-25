@@ -50,11 +50,11 @@ public class ObservationRestClientCustomizer implements RestClientCustomizer {
 	}
 
 	/**
-     * Customizes the given RestClientBuilder by setting the observation registry and convention.
-     * 
-     * @param restClientBuilder the RestClientBuilder to be customized
-     */
-    @Override
+	 * Customizes the given RestClientBuilder by setting the observation registry and
+	 * convention.
+	 * @param restClientBuilder the RestClientBuilder to be customized
+	 */
+	@Override
 	public void customize(Builder restClientBuilder) {
 		restClientBuilder.observationRegistry(this.observationRegistry);
 		restClientBuilder.observationConvention(this.observationConvention);

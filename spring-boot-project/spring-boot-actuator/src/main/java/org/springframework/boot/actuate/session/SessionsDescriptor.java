@@ -35,20 +35,18 @@ public final class SessionsDescriptor implements OperationResponseBody {
 	private final List<SessionDescriptor> sessions;
 
 	/**
-     * Constructs a new SessionsDescriptor object with the given sessions.
-     * 
-     * @param sessions a map of session IDs to session objects
-     */
-    public SessionsDescriptor(Map<String, ? extends Session> sessions) {
+	 * Constructs a new SessionsDescriptor object with the given sessions.
+	 * @param sessions a map of session IDs to session objects
+	 */
+	public SessionsDescriptor(Map<String, ? extends Session> sessions) {
 		this.sessions = sessions.values().stream().map(SessionDescriptor::new).toList();
 	}
 
 	/**
-     * Returns the list of session descriptors.
-     *
-     * @return the list of session descriptors
-     */
-    public List<SessionDescriptor> getSessions() {
+	 * Returns the list of session descriptors.
+	 * @return the list of session descriptors
+	 */
+	public List<SessionDescriptor> getSessions() {
 		return this.sessions;
 	}
 
@@ -71,11 +69,10 @@ public final class SessionsDescriptor implements OperationResponseBody {
 		private final boolean expired;
 
 		/**
-         * Constructs a new SessionDescriptor object based on the provided Session object.
-         * 
-         * @param session the Session object to create the SessionDescriptor from
-         */
-        SessionDescriptor(Session session) {
+		 * Constructs a new SessionDescriptor object based on the provided Session object.
+		 * @param session the Session object to create the SessionDescriptor from
+		 */
+		SessionDescriptor(Session session) {
 			this.id = session.getId();
 			this.attributeNames = session.getAttributeNames();
 			this.creationTime = session.getCreationTime();
@@ -85,56 +82,52 @@ public final class SessionsDescriptor implements OperationResponseBody {
 		}
 
 		/**
-         * Returns the ID of the session.
-         * 
-         * @return the ID of the session
-         */
-        public String getId() {
+		 * Returns the ID of the session.
+		 * @return the ID of the session
+		 */
+		public String getId() {
 			return this.id;
 		}
 
 		/**
-         * Returns a set of attribute names.
-         * 
-         * @return a set of attribute names
-         */
-        public Set<String> getAttributeNames() {
+		 * Returns a set of attribute names.
+		 * @return a set of attribute names
+		 */
+		public Set<String> getAttributeNames() {
 			return this.attributeNames;
 		}
 
 		/**
-         * Returns the creation time of the session.
-         *
-         * @return the creation time of the session
-         */
-        public Instant getCreationTime() {
+		 * Returns the creation time of the session.
+		 * @return the creation time of the session
+		 */
+		public Instant getCreationTime() {
 			return this.creationTime;
 		}
 
 		/**
-         * Returns the last accessed time of the session.
-         *
-         * @return the last accessed time of the session
-         */
-        public Instant getLastAccessedTime() {
+		 * Returns the last accessed time of the session.
+		 * @return the last accessed time of the session
+		 */
+		public Instant getLastAccessedTime() {
 			return this.lastAccessedTime;
 		}
 
 		/**
-         * Returns the maximum time interval, in seconds, that the session can remain inactive before it is invalidated.
-         *
-         * @return the maximum time interval, in seconds, that the session can remain inactive
-         */
-        public long getMaxInactiveInterval() {
+		 * Returns the maximum time interval, in seconds, that the session can remain
+		 * inactive before it is invalidated.
+		 * @return the maximum time interval, in seconds, that the session can remain
+		 * inactive
+		 */
+		public long getMaxInactiveInterval() {
 			return this.maxInactiveInterval;
 		}
 
 		/**
-         * Checks if the session is expired.
-         * 
-         * @return true if the session is expired, false otherwise
-         */
-        public boolean isExpired() {
+		 * Checks if the session is expired.
+		 * @return true if the session is expired, false otherwise
+		 */
+		public boolean isExpired() {
 			return this.expired;
 		}
 

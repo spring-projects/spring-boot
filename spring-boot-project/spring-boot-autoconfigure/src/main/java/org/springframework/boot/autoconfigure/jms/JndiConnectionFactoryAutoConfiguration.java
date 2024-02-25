@@ -54,15 +54,16 @@ public class JndiConnectionFactoryAutoConfiguration {
 	private static final String[] JNDI_LOCATIONS = { "java:/JmsXA", "java:/XAConnectionFactory" };
 
 	/**
-     * Creates a JMS connection factory based on the provided JmsProperties.
-     * If a JNDI name is specified in the properties, it will be used to lookup the connection factory.
-     * Otherwise, a default JNDI connection factory will be used.
-     *
-     * @param properties the JmsProperties containing the JNDI name and other configuration properties
-     * @return the JMS connection factory
-     * @throws NamingException if there is an error in looking up the JNDI connection factory
-     */
-    @Bean
+	 * Creates a JMS connection factory based on the provided JmsProperties. If a JNDI
+	 * name is specified in the properties, it will be used to lookup the connection
+	 * factory. Otherwise, a default JNDI connection factory will be used.
+	 * @param properties the JmsProperties containing the JNDI name and other
+	 * configuration properties
+	 * @return the JMS connection factory
+	 * @throws NamingException if there is an error in looking up the JNDI connection
+	 * factory
+	 */
+	@Bean
 	public ConnectionFactory jmsConnectionFactory(JmsProperties properties) throws NamingException {
 		JndiLocatorDelegate jndiLocatorDelegate = JndiLocatorDelegate.createDefaultResourceRefLocator();
 		if (StringUtils.hasLength(properties.getJndiName())) {
@@ -72,13 +73,14 @@ public class JndiConnectionFactoryAutoConfiguration {
 	}
 
 	/**
-     * Finds the JNDI ConnectionFactory using the provided JndiLocatorDelegate.
-     * 
-     * @param jndiLocatorDelegate the JndiLocatorDelegate used to lookup the ConnectionFactory
-     * @return the ConnectionFactory found in JNDI
-     * @throws IllegalStateException if the ConnectionFactory is not found in any of the JNDI locations
-     */
-    private ConnectionFactory findJndiConnectionFactory(JndiLocatorDelegate jndiLocatorDelegate) {
+	 * Finds the JNDI ConnectionFactory using the provided JndiLocatorDelegate.
+	 * @param jndiLocatorDelegate the JndiLocatorDelegate used to lookup the
+	 * ConnectionFactory
+	 * @return the ConnectionFactory found in JNDI
+	 * @throws IllegalStateException if the ConnectionFactory is not found in any of the
+	 * JNDI locations
+	 */
+	private ConnectionFactory findJndiConnectionFactory(JndiLocatorDelegate jndiLocatorDelegate) {
 		for (String name : JNDI_LOCATIONS) {
 			try {
 				return jndiLocatorDelegate.lookup(name, ConnectionFactory.class);
@@ -97,26 +99,26 @@ public class JndiConnectionFactoryAutoConfiguration {
 	static class JndiOrPropertyCondition extends AnyNestedCondition {
 
 		/**
-         * Constructs a new JndiOrPropertyCondition with the specified configuration phase.
-         * 
-         * @param configurationPhase the configuration phase for this condition
-         */
-        JndiOrPropertyCondition() {
+		 * Constructs a new JndiOrPropertyCondition with the specified configuration
+		 * phase.
+		 * @param configurationPhase the configuration phase for this condition
+		 */
+		JndiOrPropertyCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
 		/**
-         * Jndi class.
-         */
-        @ConditionalOnJndi({ "java:/JmsXA", "java:/XAConnectionFactory" })
+		 * Jndi class.
+		 */
+		@ConditionalOnJndi({ "java:/JmsXA", "java:/XAConnectionFactory" })
 		static class Jndi {
 
 		}
 
 		/**
-         * Property class.
-         */
-        @ConditionalOnProperty(prefix = "spring.jms", name = "jndi-name")
+		 * Property class.
+		 */
+		@ConditionalOnProperty(prefix = "spring.jms", name = "jndi-name")
 		static class Property {
 
 		}

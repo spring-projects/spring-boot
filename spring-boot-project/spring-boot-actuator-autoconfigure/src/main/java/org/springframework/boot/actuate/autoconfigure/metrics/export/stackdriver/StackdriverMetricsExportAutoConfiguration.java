@@ -52,34 +52,34 @@ public class StackdriverMetricsExportAutoConfiguration {
 	private final StackdriverProperties properties;
 
 	/**
-     * Constructs a new instance of StackdriverMetricsExportAutoConfiguration with the specified StackdriverProperties.
-     *
-     * @param stackdriverProperties the StackdriverProperties to be used for configuration
-     */
-    public StackdriverMetricsExportAutoConfiguration(StackdriverProperties stackdriverProperties) {
+	 * Constructs a new instance of StackdriverMetricsExportAutoConfiguration with the
+	 * specified StackdriverProperties.
+	 * @param stackdriverProperties the StackdriverProperties to be used for configuration
+	 */
+	public StackdriverMetricsExportAutoConfiguration(StackdriverProperties stackdriverProperties) {
 		this.properties = stackdriverProperties;
 	}
 
 	/**
-     * Creates a StackdriverConfig bean if no other bean of the same type is present.
-     * This bean is used to configure Stackdriver metrics export.
-     * 
-     * @return the StackdriverConfig bean
-     */
-    @Bean
+	 * Creates a StackdriverConfig bean if no other bean of the same type is present. This
+	 * bean is used to configure Stackdriver metrics export.
+	 * @return the StackdriverConfig bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public StackdriverConfig stackdriverConfig() {
 		return new StackdriverPropertiesConfigAdapter(this.properties);
 	}
 
 	/**
-     * Creates a StackdriverMeterRegistry bean if there is no existing bean of the same type.
-     * 
-     * @param stackdriverConfig the StackdriverConfig object containing the configuration properties for Stackdriver
-     * @param clock the Clock object used for measuring time
-     * @return the StackdriverMeterRegistry bean
-     */
-    @Bean
+	 * Creates a StackdriverMeterRegistry bean if there is no existing bean of the same
+	 * type.
+	 * @param stackdriverConfig the StackdriverConfig object containing the configuration
+	 * properties for Stackdriver
+	 * @param clock the Clock object used for measuring time
+	 * @return the StackdriverMeterRegistry bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public StackdriverMeterRegistry stackdriverMeterRegistry(StackdriverConfig stackdriverConfig, Clock clock) {
 		return StackdriverMeterRegistry.builder(stackdriverConfig).clock(clock).build();

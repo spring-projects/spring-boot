@@ -79,21 +79,21 @@ public class DispatcherServletAutoConfiguration {
 	public static final String DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME = "dispatcherServletRegistration";
 
 	/**
-     * DispatcherServletConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * DispatcherServletConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(DefaultDispatcherServletCondition.class)
 	@ConditionalOnClass(ServletRegistration.class)
 	@EnableConfigurationProperties(WebMvcProperties.class)
 	protected static class DispatcherServletConfiguration {
 
 		/**
-         * Creates and configures the DispatcherServlet bean.
-         *
-         * @param webMvcProperties the WebMvcProperties object containing the configuration properties
-         * @return the configured DispatcherServlet bean
-         */
-        @Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
+		 * Creates and configures the DispatcherServlet bean.
+		 * @param webMvcProperties the WebMvcProperties object containing the
+		 * configuration properties
+		 * @return the configured DispatcherServlet bean
+		 */
+		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public DispatcherServlet dispatcherServlet(WebMvcProperties webMvcProperties) {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
 			dispatcherServlet.setDispatchOptionsRequest(webMvcProperties.isDispatchOptionsRequest());
@@ -105,30 +105,38 @@ public class DispatcherServletAutoConfiguration {
 		}
 
 		/**
-         * Configures whether an exception should be thrown if no handler is found for a request.
-         * 
-         * @param webMvcProperties the WebMvcProperties object containing the configuration properties
-         * @param dispatcherServlet the DispatcherServlet instance to configure
-         * @deprecated This method is deprecated and may be removed in future versions. Use alternative methods for handling exceptions when no handler is found.
-         */
-        @SuppressWarnings({ "deprecation", "removal" })
+		 * Configures whether an exception should be thrown if no handler is found for a
+		 * request.
+		 * @param webMvcProperties the WebMvcProperties object containing the
+		 * configuration properties
+		 * @param dispatcherServlet the DispatcherServlet instance to configure
+		 * @deprecated This method is deprecated and may be removed in future versions.
+		 * Use alternative methods for handling exceptions when no handler is found.
+		 */
+		@SuppressWarnings({ "deprecation", "removal" })
 		private void configureThrowExceptionIfNoHandlerFound(WebMvcProperties webMvcProperties,
 				DispatcherServlet dispatcherServlet) {
 			dispatcherServlet.setThrowExceptionIfNoHandlerFound(webMvcProperties.isThrowExceptionIfNoHandlerFound());
 		}
 
 		/**
-         * Returns the configured MultipartResolver bean.
-         * 
-         * This method is annotated with @Bean, @ConditionalOnBean(MultipartResolver.class), and @ConditionalOnMissingBean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME),
-         * which ensures that this method is only executed if a MultipartResolver bean is present in the application context and no bean with the name DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME exists.
-         * 
-         * If a MultipartResolver bean is found, it is returned as is. Otherwise, the method returns the provided MultipartResolver bean.
-         * 
-         * @param resolver The MultipartResolver bean to be returned if no MultipartResolver bean is found in the application context.
-         * @return The configured MultipartResolver bean.
-         */
-        @Bean
+		 * Returns the configured MultipartResolver bean.
+		 *
+		 * This method is annotated
+		 * with @Bean, @ConditionalOnBean(MultipartResolver.class),
+		 * and @ConditionalOnMissingBean(name =
+		 * DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME), which ensures that this method
+		 * is only executed if a MultipartResolver bean is present in the application
+		 * context and no bean with the name
+		 * DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME exists.
+		 *
+		 * If a MultipartResolver bean is found, it is returned as is. Otherwise, the
+		 * method returns the provided MultipartResolver bean.
+		 * @param resolver The MultipartResolver bean to be returned if no
+		 * MultipartResolver bean is found in the application context.
+		 * @return The configured MultipartResolver bean.
+		 */
+		@Bean
 		@ConditionalOnBean(MultipartResolver.class)
 		@ConditionalOnMissingBean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
 		public MultipartResolver multipartResolver(MultipartResolver resolver) {
@@ -139,9 +147,9 @@ public class DispatcherServletAutoConfiguration {
 	}
 
 	/**
-     * DispatcherServletRegistrationConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * DispatcherServletRegistrationConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(DispatcherServletRegistrationCondition.class)
 	@ConditionalOnClass(ServletRegistration.class)
 	@EnableConfigurationProperties(WebMvcProperties.class)
@@ -149,14 +157,14 @@ public class DispatcherServletAutoConfiguration {
 	protected static class DispatcherServletRegistrationConfiguration {
 
 		/**
-         * Creates a {@link DispatcherServletRegistrationBean} for the {@link DispatcherServlet} with the default name and path.
-         * 
-         * @param dispatcherServlet the {@link DispatcherServlet} instance
-         * @param webMvcProperties the {@link WebMvcProperties} instance
-         * @param multipartConfig the {@link MultipartConfigElement} instance
-         * @return the {@link DispatcherServletRegistrationBean} instance
-         */
-        @Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
+		 * Creates a {@link DispatcherServletRegistrationBean} for the
+		 * {@link DispatcherServlet} with the default name and path.
+		 * @param dispatcherServlet the {@link DispatcherServlet} instance
+		 * @param webMvcProperties the {@link WebMvcProperties} instance
+		 * @param multipartConfig the {@link MultipartConfigElement} instance
+		 * @return the {@link DispatcherServletRegistrationBean} instance
+		 */
+		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		@ConditionalOnBean(value = DispatcherServlet.class, name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public DispatcherServletRegistrationBean dispatcherServletRegistration(DispatcherServlet dispatcherServlet,
 				WebMvcProperties webMvcProperties, ObjectProvider<MultipartConfigElement> multipartConfig) {
@@ -171,19 +179,18 @@ public class DispatcherServletAutoConfiguration {
 	}
 
 	/**
-     * DefaultDispatcherServletCondition class.
-     */
-    @Order(Ordered.LOWEST_PRECEDENCE - 10)
+	 * DefaultDispatcherServletCondition class.
+	 */
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	private static final class DefaultDispatcherServletCondition extends SpringBootCondition {
 
 		/**
-         * Determines the match outcome for the DefaultDispatcherServletCondition.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the condition outcome
-         */
-        @Override
+		 * Determines the match outcome for the DefaultDispatcherServletCondition.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the condition outcome
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Default DispatcherServlet");
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
@@ -208,19 +215,19 @@ public class DispatcherServletAutoConfiguration {
 	}
 
 	/**
-     * DispatcherServletRegistrationCondition class.
-     */
-    @Order(Ordered.LOWEST_PRECEDENCE - 10)
+	 * DispatcherServletRegistrationCondition class.
+	 */
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	private static final class DispatcherServletRegistrationCondition extends SpringBootCondition {
 
 		/**
-         * Determines the match outcome for the condition based on the given context and metadata.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the condition outcome
-         */
-        @Override
+		 * Determines the match outcome for the condition based on the given context and
+		 * metadata.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the condition outcome
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 			ConditionOutcome outcome = checkDefaultDispatcherName(beanFactory);
@@ -231,12 +238,12 @@ public class DispatcherServletAutoConfiguration {
 		}
 
 		/**
-         * Checks if the default dispatcher servlet name is present in the bean factory.
-         * 
-         * @param beanFactory the bean factory to check
-         * @return the condition outcome indicating if the default dispatcher servlet name is present or not
-         */
-        private ConditionOutcome checkDefaultDispatcherName(ConfigurableListableBeanFactory beanFactory) {
+		 * Checks if the default dispatcher servlet name is present in the bean factory.
+		 * @param beanFactory the bean factory to check
+		 * @return the condition outcome indicating if the default dispatcher servlet name
+		 * is present or not
+		 */
+		private ConditionOutcome checkDefaultDispatcherName(ConfigurableListableBeanFactory beanFactory) {
 			boolean containsDispatcherBean = beanFactory.containsBean(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			if (!containsDispatcherBean) {
 				return ConditionOutcome.match();
@@ -251,12 +258,12 @@ public class DispatcherServletAutoConfiguration {
 		}
 
 		/**
-         * Checks if there is a servlet registration bean in the bean factory.
-         * 
-         * @param beanFactory the bean factory to check
-         * @return the condition outcome indicating if the servlet registration bean is found or not
-         */
-        private ConditionOutcome checkServletRegistration(ConfigurableListableBeanFactory beanFactory) {
+		 * Checks if there is a servlet registration bean in the bean factory.
+		 * @param beanFactory the bean factory to check
+		 * @return the condition outcome indicating if the servlet registration bean is
+		 * found or not
+		 */
+		private ConditionOutcome checkServletRegistration(ConfigurableListableBeanFactory beanFactory) {
 			ConditionMessage.Builder message = startMessage();
 			List<String> registrations = Arrays
 				.asList(beanFactory.getBeanNamesForType(ServletRegistrationBean.class, false, false));
@@ -283,11 +290,11 @@ public class DispatcherServletAutoConfiguration {
 		}
 
 		/**
-         * Returns a new instance of ConditionMessage.Builder for starting a message related to DispatcherServlet Registration.
-         *
-         * @return the ConditionMessage.Builder instance for starting a message
-         */
-        private ConditionMessage.Builder startMessage() {
+		 * Returns a new instance of ConditionMessage.Builder for starting a message
+		 * related to DispatcherServlet Registration.
+		 * @return the ConditionMessage.Builder instance for starting a message
+		 */
+		private ConditionMessage.Builder startMessage() {
 			return ConditionMessage.forCondition("DispatcherServlet Registration");
 		}
 

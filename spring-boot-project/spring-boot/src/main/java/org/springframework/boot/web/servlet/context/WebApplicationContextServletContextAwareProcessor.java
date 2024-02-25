@@ -37,36 +37,36 @@ public class WebApplicationContextServletContextAwareProcessor extends ServletCo
 	private final ConfigurableWebApplicationContext webApplicationContext;
 
 	/**
-     * Constructs a new instance of the {@code WebApplicationContextServletContextAwareProcessor} class.
-     * 
-     * @param webApplicationContext the {@code ConfigurableWebApplicationContext} to be set as the web application context
-     * @throws IllegalArgumentException if the {@code webApplicationContext} is null
-     */
-    public WebApplicationContextServletContextAwareProcessor(ConfigurableWebApplicationContext webApplicationContext) {
+	 * Constructs a new instance of the
+	 * {@code WebApplicationContextServletContextAwareProcessor} class.
+	 * @param webApplicationContext the {@code ConfigurableWebApplicationContext} to be
+	 * set as the web application context
+	 * @throws IllegalArgumentException if the {@code webApplicationContext} is null
+	 */
+	public WebApplicationContextServletContextAwareProcessor(ConfigurableWebApplicationContext webApplicationContext) {
 		Assert.notNull(webApplicationContext, "WebApplicationContext must not be null");
 		this.webApplicationContext = webApplicationContext;
 	}
 
 	/**
-     * Returns the ServletContext associated with this WebApplicationContext.
-     * If the ServletContext is not available from the WebApplicationContext,
-     * the ServletContext from the superclass is returned.
-     *
-     * @return the ServletContext associated with this WebApplicationContext,
-     *         or the ServletContext from the superclass if not available
-     */
-    @Override
+	 * Returns the ServletContext associated with this WebApplicationContext. If the
+	 * ServletContext is not available from the WebApplicationContext, the ServletContext
+	 * from the superclass is returned.
+	 * @return the ServletContext associated with this WebApplicationContext, or the
+	 * ServletContext from the superclass if not available
+	 */
+	@Override
 	protected ServletContext getServletContext() {
 		ServletContext servletContext = this.webApplicationContext.getServletContext();
 		return (servletContext != null) ? servletContext : super.getServletContext();
 	}
 
 	/**
-     * Returns the servlet configuration for this servlet.
-     * 
-     * @return the servlet configuration for this servlet, or {@code null} if not available
-     */
-    @Override
+	 * Returns the servlet configuration for this servlet.
+	 * @return the servlet configuration for this servlet, or {@code null} if not
+	 * available
+	 */
+	@Override
 	protected ServletConfig getServletConfig() {
 		ServletConfig servletConfig = this.webApplicationContext.getServletConfig();
 		return (servletConfig != null) ? servletConfig : super.getServletConfig();

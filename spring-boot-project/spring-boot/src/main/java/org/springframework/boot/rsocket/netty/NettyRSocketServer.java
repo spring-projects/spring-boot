@@ -46,24 +46,23 @@ public class NettyRSocketServer implements RSocketServer {
 	private CloseableChannel channel;
 
 	/**
-     * Creates a new instance of NettyRSocketServer.
-     *
-     * @param starter the Mono representing the starter for the server
-     * @param lifecycleTimeout the duration representing the timeout for server lifecycle operations
-     * @throws IllegalArgumentException if the starter is null
-     */
-    public NettyRSocketServer(Mono<CloseableChannel> starter, Duration lifecycleTimeout) {
+	 * Creates a new instance of NettyRSocketServer.
+	 * @param starter the Mono representing the starter for the server
+	 * @param lifecycleTimeout the duration representing the timeout for server lifecycle
+	 * operations
+	 * @throws IllegalArgumentException if the starter is null
+	 */
+	public NettyRSocketServer(Mono<CloseableChannel> starter, Duration lifecycleTimeout) {
 		Assert.notNull(starter, "starter must not be null");
 		this.starter = starter;
 		this.lifecycleTimeout = lifecycleTimeout;
 	}
 
 	/**
-     * Returns the address of the server.
-     * 
-     * @return the address of the server, or null if the channel is not initialized
-     */
-    @Override
+	 * Returns the address of the server.
+	 * @return the address of the server, or null if the channel is not initialized
+	 */
+	@Override
 	public InetSocketAddress address() {
 		if (this.channel != null) {
 			return this.channel.address();
@@ -72,11 +71,10 @@ public class NettyRSocketServer implements RSocketServer {
 	}
 
 	/**
-     * Starts the Netty RSocket server.
-     * 
-     * @throws RSocketServerException if an error occurs while starting the server
-     */
-    @Override
+	 * Starts the Netty RSocket server.
+	 * @throws RSocketServerException if an error occurs while starting the server
+	 */
+	@Override
 	public void start() throws RSocketServerException {
 		this.channel = block(this.starter, this.lifecycleTimeout);
 		logger.info("Netty RSocket started on port " + address().getPort());
@@ -84,12 +82,11 @@ public class NettyRSocketServer implements RSocketServer {
 	}
 
 	/**
-     * Starts a daemon await thread for the given CloseableChannel.
-     * The await thread waits for the channel to be closed and then blocks.
-     * 
-     * @param channel the CloseableChannel to wait for
-     */
-    private void startDaemonAwaitThread(CloseableChannel channel) {
+	 * Starts a daemon await thread for the given CloseableChannel. The await thread waits
+	 * for the channel to be closed and then blocks.
+	 * @param channel the CloseableChannel to wait for
+	 */
+	private void startDaemonAwaitThread(CloseableChannel channel) {
 		Thread awaitThread = new Thread(() -> channel.onClose().block(), "rsocket");
 		awaitThread.setContextClassLoader(getClass().getClassLoader());
 		awaitThread.setDaemon(false);
@@ -97,11 +94,10 @@ public class NettyRSocketServer implements RSocketServer {
 	}
 
 	/**
-     * Stops the RSocket server.
-     * 
-     * @throws RSocketServerException if an error occurs while stopping the server
-     */
-    @Override
+	 * Stops the RSocket server.
+	 * @throws RSocketServerException if an error occurs while stopping the server
+	 */
+	@Override
 	public void stop() throws RSocketServerException {
 		if (this.channel != null) {
 			this.channel.dispose();
@@ -110,13 +106,12 @@ public class NettyRSocketServer implements RSocketServer {
 	}
 
 	/**
-     * Blocks the execution until the result of the Mono is available.
-     * 
-     * @param mono the Mono to block
-     * @param timeout the maximum duration to wait for the result (optional)
-     * @return the result of the Mono
-     */
-    private <T> T block(Mono<T> mono, Duration timeout) {
+	 * Blocks the execution until the result of the Mono is available.
+	 * @param mono the Mono to block
+	 * @param timeout the maximum duration to wait for the result (optional)
+	 * @return the result of the Mono
+	 */
+	private <T> T block(Mono<T> mono, Duration timeout) {
 		return (timeout != null) ? mono.block(timeout) : mono.block();
 	}
 

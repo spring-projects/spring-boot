@@ -34,13 +34,13 @@ import org.springframework.core.annotation.Order;
 class MissingWebServerFactoryBeanFailureAnalyzer extends AbstractFailureAnalyzer<MissingWebServerFactoryBeanException> {
 
 	/**
-     * Analyzes the failure caused by a MissingWebServerFactoryBeanException and generates a FailureAnalysis object.
-     * 
-     * @param rootFailure The root cause of the failure.
-     * @param cause The MissingWebServerFactoryBeanException that caused the failure.
-     * @return A FailureAnalysis object containing information about the failure.
-     */
-    @Override
+	 * Analyzes the failure caused by a MissingWebServerFactoryBeanException and generates
+	 * a FailureAnalysis object.
+	 * @param rootFailure The root cause of the failure.
+	 * @param cause The MissingWebServerFactoryBeanException that caused the failure.
+	 * @return A FailureAnalysis object containing information about the failure.
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, MissingWebServerFactoryBeanException cause) {
 		return new FailureAnalysis(
 				"Web application could not be started as there was no " + cause.getBeanType().getName()

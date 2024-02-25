@@ -37,22 +37,21 @@ class MappingWebEndpointPathMapper implements PathMapper {
 	private final Map<EndpointId, String> pathMapping;
 
 	/**
-     * Constructs a new MappingWebEndpointPathMapper with the provided path mapping.
-     *
-     * @param pathMapping a Map containing the path mappings, where the key is the endpoint ID and the value is the path
-     */
-    MappingWebEndpointPathMapper(Map<String, String> pathMapping) {
+	 * Constructs a new MappingWebEndpointPathMapper with the provided path mapping.
+	 * @param pathMapping a Map containing the path mappings, where the key is the
+	 * endpoint ID and the value is the path
+	 */
+	MappingWebEndpointPathMapper(Map<String, String> pathMapping) {
 		this.pathMapping = new HashMap<>();
 		pathMapping.forEach((id, path) -> this.pathMapping.put(EndpointId.fromPropertyValue(id), path));
 	}
 
 	/**
-     * Retrieves the root path for the given endpoint ID.
-     * 
-     * @param endpointId the ID of the endpoint
-     * @return the root path for the endpoint, or null if not found
-     */
-    @Override
+	 * Retrieves the root path for the given endpoint ID.
+	 * @param endpointId the ID of the endpoint
+	 * @return the root path for the endpoint, or null if not found
+	 */
+	@Override
 	public String getRootPath(EndpointId endpointId) {
 		String path = this.pathMapping.get(endpointId);
 		return StringUtils.hasText(path) ? path : null;

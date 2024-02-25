@@ -33,11 +33,10 @@ import org.flywaydb.core.internal.scanner.Scanner;
 class NativeImageResourceProviderCustomizer extends ResourceProviderCustomizer {
 
 	/**
-     * Customizes the FluentConfiguration by setting the resource provider if it is null.
-     * 
-     * @param configuration the FluentConfiguration to be customized
-     */
-    @Override
+	 * Customizes the FluentConfiguration by setting the resource provider if it is null.
+	 * @param configuration the FluentConfiguration to be customized
+	 */
+	@Override
 	public void customize(FluentConfiguration configuration) {
 		if (configuration.getResourceProvider() == null) {
 			Scanner<JavaMigration> scanner = new Scanner<>(JavaMigration.class,

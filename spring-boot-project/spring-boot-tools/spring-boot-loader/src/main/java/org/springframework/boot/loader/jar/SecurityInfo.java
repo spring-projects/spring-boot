@@ -40,44 +40,46 @@ final class SecurityInfo {
 	private final CodeSigner[][] codeSignerLookups;
 
 	/**
-     * Constructs a new SecurityInfo object with the given arrays of certificates and code signers.
-     * 
-     * @param entryCertificates an array of arrays of certificates representing the certificate lookups
-     * @param entryCodeSigners an array of arrays of code signers representing the code signer lookups
-     */
-    private SecurityInfo(Certificate[][] entryCertificates, CodeSigner[][] entryCodeSigners) {
+	 * Constructs a new SecurityInfo object with the given arrays of certificates and code
+	 * signers.
+	 * @param entryCertificates an array of arrays of certificates representing the
+	 * certificate lookups
+	 * @param entryCodeSigners an array of arrays of code signers representing the code
+	 * signer lookups
+	 */
+	private SecurityInfo(Certificate[][] entryCertificates, CodeSigner[][] entryCodeSigners) {
 		this.certificateLookups = entryCertificates;
 		this.codeSignerLookups = entryCodeSigners;
 	}
 
 	/**
-     * Retrieves the certificates associated with the given content entry.
-     * 
-     * @param contentEntry the content entry for which to retrieve the certificates
-     * @return an array of certificates associated with the content entry, or null if no certificates are found
-     */
-    Certificate[] getCertificates(ZipContent.Entry contentEntry) {
+	 * Retrieves the certificates associated with the given content entry.
+	 * @param contentEntry the content entry for which to retrieve the certificates
+	 * @return an array of certificates associated with the content entry, or null if no
+	 * certificates are found
+	 */
+	Certificate[] getCertificates(ZipContent.Entry contentEntry) {
 		return (this.certificateLookups != null) ? clone(this.certificateLookups[contentEntry.getLookupIndex()]) : null;
 	}
 
 	/**
-     * Retrieves the code signers associated with the specified content entry.
-     * 
-     * @param contentEntry the content entry for which to retrieve the code signers
-     * @return an array of CodeSigner objects representing the code signers, or null if no code signers are found
-     */
-    CodeSigner[] getCodeSigners(ZipContent.Entry contentEntry) {
+	 * Retrieves the code signers associated with the specified content entry.
+	 * @param contentEntry the content entry for which to retrieve the code signers
+	 * @return an array of CodeSigner objects representing the code signers, or null if no
+	 * code signers are found
+	 */
+	CodeSigner[] getCodeSigners(ZipContent.Entry contentEntry) {
 		return (this.codeSignerLookups != null) ? clone(this.codeSignerLookups[contentEntry.getLookupIndex()]) : null;
 	}
 
 	/**
-     * Creates a shallow copy of the specified array.
-     * 
-     * @param array the array to be cloned
-     * @return a shallow copy of the specified array, or {@code null} if the specified array is {@code null}
-     * @param <T> the type of the elements in the array
-     */
-    private <T> T[] clone(T[] array) {
+	 * Creates a shallow copy of the specified array.
+	 * @param array the array to be cloned
+	 * @return a shallow copy of the specified array, or {@code null} if the specified
+	 * array is {@code null}
+	 * @param <T> the type of the elements in the array
+	 */
+	private <T> T[] clone(T[] array) {
 		return (array != null) ? array.clone() : null;
 	}
 

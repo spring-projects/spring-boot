@@ -66,23 +66,21 @@ class WebMvcEndpointChildContextConfiguration {
 	}
 
 	/**
-     * Creates a ManagementErrorPageCustomizer bean if an ErrorAttributes bean is present.
-     * 
-     * @param serverProperties the ServerProperties bean used to customize the error pages
-     * @return the ManagementErrorPageCustomizer bean
-     */
-    @Bean
+	 * Creates a ManagementErrorPageCustomizer bean if an ErrorAttributes bean is present.
+	 * @param serverProperties the ServerProperties bean used to customize the error pages
+	 * @return the ManagementErrorPageCustomizer bean
+	 */
+	@Bean
 	@ConditionalOnBean(ErrorAttributes.class)
 	ManagementErrorPageCustomizer managementErrorPageCustomizer(ServerProperties serverProperties) {
 		return new ManagementErrorPageCustomizer(serverProperties);
 	}
 
 	/**
-     * Creates a new instance of the {@link DispatcherServlet} with customized settings.
-     * 
-     * @return The created {@link DispatcherServlet} instance.
-     */
-    @Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
+	 * Creates a new instance of the {@link DispatcherServlet} with customized settings.
+	 * @return The created {@link DispatcherServlet} instance.
+	 */
+	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 	DispatcherServlet dispatcherServlet() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 		// Ensure the parent configuration does not leak down to us
@@ -94,55 +92,54 @@ class WebMvcEndpointChildContextConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link DispatcherServletRegistrationBean} with the provided {@link DispatcherServlet} and root mapping.
-     * 
-     * @param dispatcherServlet the {@link DispatcherServlet} instance to be registered
-     * @return the {@link DispatcherServletRegistrationBean} instance
-     */
-    @Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
+	 * Creates a new instance of {@link DispatcherServletRegistrationBean} with the
+	 * provided {@link DispatcherServlet} and root mapping.
+	 * @param dispatcherServlet the {@link DispatcherServlet} instance to be registered
+	 * @return the {@link DispatcherServletRegistrationBean} instance
+	 */
+	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 	DispatcherServletRegistrationBean dispatcherServletRegistrationBean(DispatcherServlet dispatcherServlet) {
 		return new DispatcherServletRegistrationBean(dispatcherServlet, "/");
 	}
 
 	/**
-     * Creates a new instance of CompositeHandlerMapping.
-     * 
-     * @return the created CompositeHandlerMapping instance
-     */
-    @Bean(name = DispatcherServlet.HANDLER_MAPPING_BEAN_NAME)
+	 * Creates a new instance of CompositeHandlerMapping.
+	 * @return the created CompositeHandlerMapping instance
+	 */
+	@Bean(name = DispatcherServlet.HANDLER_MAPPING_BEAN_NAME)
 	CompositeHandlerMapping compositeHandlerMapping() {
 		return new CompositeHandlerMapping();
 	}
 
 	/**
-     * Creates a composite handler adapter for the DispatcherServlet.
-     * 
-     * @param beanFactory the ListableBeanFactory used to retrieve the handler adapters
-     * @return the CompositeHandlerAdapter instance
-     */
-    @Bean(name = DispatcherServlet.HANDLER_ADAPTER_BEAN_NAME)
+	 * Creates a composite handler adapter for the DispatcherServlet.
+	 * @param beanFactory the ListableBeanFactory used to retrieve the handler adapters
+	 * @return the CompositeHandlerAdapter instance
+	 */
+	@Bean(name = DispatcherServlet.HANDLER_ADAPTER_BEAN_NAME)
 	CompositeHandlerAdapter compositeHandlerAdapter(ListableBeanFactory beanFactory) {
 		return new CompositeHandlerAdapter(beanFactory);
 	}
 
 	/**
-     * Creates a new instance of CompositeHandlerExceptionResolver.
-     * 
-     * @return the newly created CompositeHandlerExceptionResolver instance
-     */
-    @Bean(name = DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
+	 * Creates a new instance of CompositeHandlerExceptionResolver.
+	 * @return the newly created CompositeHandlerExceptionResolver instance
+	 */
+	@Bean(name = DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
 	CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
 		return new CompositeHandlerExceptionResolver();
 	}
 
 	/**
-     * Creates and returns a new instance of {@link RequestContextFilter} if no bean of type {@link RequestContextListener} or {@link RequestContextFilter} is already present in the application context.
-     * 
-     * The created {@link RequestContextFilter} is an instance of {@link OrderedRequestContextFilter}.
-     * 
-     * @return the created {@link RequestContextFilter}
-     */
-    @Bean
+	 * Creates and returns a new instance of {@link RequestContextFilter} if no bean of
+	 * type {@link RequestContextListener} or {@link RequestContextFilter} is already
+	 * present in the application context.
+	 *
+	 * The created {@link RequestContextFilter} is an instance of
+	 * {@link OrderedRequestContextFilter}.
+	 * @return the created {@link RequestContextFilter}
+	 */
+	@Bean
 	@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
 	RequestContextFilter requestContextFilter() {
 		return new OrderedRequestContextFilter();
@@ -158,30 +155,28 @@ class WebMvcEndpointChildContextConfiguration {
 		private final ServerProperties properties;
 
 		/**
-         * Constructs a new ManagementErrorPageCustomizer with the specified ServerProperties.
-         *
-         * @param properties the ServerProperties to be used by the customizer
-         */
-        ManagementErrorPageCustomizer(ServerProperties properties) {
+		 * Constructs a new ManagementErrorPageCustomizer with the specified
+		 * ServerProperties.
+		 * @param properties the ServerProperties to be used by the customizer
+		 */
+		ManagementErrorPageCustomizer(ServerProperties properties) {
 			this.properties = properties;
 		}
 
 		/**
-         * Customize the ConfigurableServletWebServerFactory to add error pages.
-         * 
-         * @param factory the ConfigurableServletWebServerFactory to customize
-         */
-        @Override
+		 * Customize the ConfigurableServletWebServerFactory to add error pages.
+		 * @param factory the ConfigurableServletWebServerFactory to customize
+		 */
+		@Override
 		public void customize(ConfigurableServletWebServerFactory factory) {
 			factory.addErrorPages(new ErrorPage(this.properties.getError().getPath()));
 		}
 
 		/**
-         * Returns the order in which this customizer should be applied.
-         * 
-         * @return the order value, with lower values indicating higher priority
-         */
-        @Override
+		 * Returns the order in which this customizer should be applied.
+		 * @return the order value, with lower values indicating higher priority
+		 */
+		@Override
 		public int getOrder() {
 			return 0;
 		}

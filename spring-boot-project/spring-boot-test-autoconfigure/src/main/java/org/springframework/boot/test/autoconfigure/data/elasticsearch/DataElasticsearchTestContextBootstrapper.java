@@ -29,12 +29,13 @@ import org.springframework.test.context.TestContextBootstrapper;
 class DataElasticsearchTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	/**
-     * Retrieves the properties specified in the {@link DataElasticsearchTest} annotation for the given test class.
-     * 
-     * @param testClass the test class for which to retrieve the properties
-     * @return an array of properties specified in the {@link DataElasticsearchTest} annotation, or null if the annotation is not present
-     */
-    @Override
+	 * Retrieves the properties specified in the {@link DataElasticsearchTest} annotation
+	 * for the given test class.
+	 * @param testClass the test class for which to retrieve the properties
+	 * @return an array of properties specified in the {@link DataElasticsearchTest}
+	 * annotation, or null if the annotation is not present
+	 */
+	@Override
 	protected String[] getProperties(Class<?> testClass) {
 		DataElasticsearchTest dataElasticsearchTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				DataElasticsearchTest.class);

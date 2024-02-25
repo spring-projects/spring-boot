@@ -29,62 +29,58 @@ class AppOpticsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 		implements AppOpticsConfig {
 
 	/**
-     * Constructs a new AppOpticsPropertiesConfigAdapter with the specified AppOpticsProperties.
-     *
-     * @param properties the AppOpticsProperties to be used for configuring the adapter
-     */
-    AppOpticsPropertiesConfigAdapter(AppOpticsProperties properties) {
+	 * Constructs a new AppOpticsPropertiesConfigAdapter with the specified
+	 * AppOpticsProperties.
+	 * @param properties the AppOpticsProperties to be used for configuring the adapter
+	 */
+	AppOpticsPropertiesConfigAdapter(AppOpticsProperties properties) {
 		super(properties);
 	}
 
 	/**
-     * Returns the prefix for the AppOptics metrics export configuration properties.
-     * The prefix is used to group the properties related to AppOptics metrics export.
-     *
-     * @return the prefix for the AppOptics metrics export configuration properties
-     */
-    @Override
+	 * Returns the prefix for the AppOptics metrics export configuration properties. The
+	 * prefix is used to group the properties related to AppOptics metrics export.
+	 * @return the prefix for the AppOptics metrics export configuration properties
+	 */
+	@Override
 	public String prefix() {
 		return "management.appoptics.metrics.export";
 	}
 
 	/**
-     * Returns the URI for the AppOptics properties.
-     * 
-     * @return the URI for the AppOptics properties
-     */
-    @Override
+	 * Returns the URI for the AppOptics properties.
+	 * @return the URI for the AppOptics properties
+	 */
+	@Override
 	public String uri() {
 		return get(AppOpticsProperties::getUri, AppOpticsConfig.super::uri);
 	}
 
 	/**
-     * Returns the API token for the AppOptics configuration.
-     *
-     * @return the API token for the AppOptics configuration
-     */
-    @Override
+	 * Returns the API token for the AppOptics configuration.
+	 * @return the API token for the AppOptics configuration
+	 */
+	@Override
 	public String apiToken() {
 		return get(AppOpticsProperties::getApiToken, AppOpticsConfig.super::apiToken);
 	}
 
 	/**
-     * Returns the host tag value.
-     *
-     * @return the host tag value
-     */
-    @Override
+	 * Returns the host tag value.
+	 * @return the host tag value
+	 */
+	@Override
 	public String hostTag() {
 		return get(AppOpticsProperties::getHostTag, AppOpticsConfig.super::hostTag);
 	}
 
 	/**
-     * Returns the value of the floorTimes property from the AppOpticsPropertiesConfigAdapter.
-     * If the property is not set in the adapter, it falls back to the default value provided by the AppOpticsConfig interface.
-     *
-     * @return the value of the floorTimes property
-     */
-    @Override
+	 * Returns the value of the floorTimes property from the
+	 * AppOpticsPropertiesConfigAdapter. If the property is not set in the adapter, it
+	 * falls back to the default value provided by the AppOpticsConfig interface.
+	 * @return the value of the floorTimes property
+	 */
+	@Override
 	public boolean floorTimes() {
 		return get(AppOpticsProperties::isFloorTimes, AppOpticsConfig.super::floorTimes);
 	}

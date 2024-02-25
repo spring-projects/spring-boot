@@ -91,22 +91,20 @@ public interface Content {
 		return new Content() {
 
 			/**
-     * Returns the size of the content.
-     *
-     * @return the size of the content
-     */
-    @Override
+			 * Returns the size of the content.
+			 * @return the size of the content
+			 */
+			@Override
 			public int size() {
 				return size;
 			}
 
 			/**
-     * Writes the content to the specified output stream.
-     * 
-     * @param outputStream the output stream to write the content to
-     * @throws IOException if an I/O error occurs while writing the content
-     */
-    @Override
+			 * Writes the content to the specified output stream.
+			 * @param outputStream the output stream to write the content to
+			 * @throws IOException if an I/O error occurs while writing the content
+			 */
+			@Override
 			public void writeTo(OutputStream outputStream) throws IOException {
 				FileCopyUtils.copy(supplier.get(), outputStream);
 			}

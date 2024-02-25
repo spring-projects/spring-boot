@@ -47,55 +47,51 @@ abstract class HttpSender extends Sender {
 	private volatile boolean closed;
 
 	/**
-     * Returns the encoding type used by the HttpSender.
-     * 
-     * @return The encoding type, which is JSON.
-     */
-    @Override
+	 * Returns the encoding type used by the HttpSender.
+	 * @return The encoding type, which is JSON.
+	 */
+	@Override
 	public Encoding encoding() {
 		return Encoding.JSON;
 	}
 
 	/**
-     * Returns the maximum number of bytes allowed for a message.
-     *
-     * @return the maximum number of bytes allowed for a message
-     */
-    @Override
+	 * Returns the maximum number of bytes allowed for a message.
+	 * @return the maximum number of bytes allowed for a message
+	 */
+	@Override
 	public int messageMaxBytes() {
 		return (int) MESSAGE_MAX_SIZE.toBytes();
 	}
 
 	/**
-     * Calculates the size of the message in bytes based on the encoded spans.
-     * 
-     * @param encodedSpans the list of encoded spans
-     * @return the size of the message in bytes
-     */
-    @Override
+	 * Calculates the size of the message in bytes based on the encoded spans.
+	 * @param encodedSpans the list of encoded spans
+	 * @return the size of the message in bytes
+	 */
+	@Override
 	public int messageSizeInBytes(List<byte[]> encodedSpans) {
 		return encoding().listSizeInBytes(encodedSpans);
 	}
 
 	/**
-     * Calculates the size of the message in bytes based on the encoded size in bytes.
-     * 
-     * @param encodedSizeInBytes the size of the message after encoding in bytes
-     * @return the size of the message in bytes
-     */
-    @Override
+	 * Calculates the size of the message in bytes based on the encoded size in bytes.
+	 * @param encodedSizeInBytes the size of the message after encoding in bytes
+	 * @return the size of the message in bytes
+	 */
+	@Override
 	public int messageSizeInBytes(int encodedSizeInBytes) {
 		return encoding().listSizeInBytes(encodedSizeInBytes);
 	}
 
 	/**
-     * This method is used to check the status of the HttpSender.
-     * It sends an empty list of spans and returns the result of the check.
-     * 
-     * @return CheckResult - The result of the check. If the check is successful, it returns CheckResult.OK.
-     *                      If an IOException or RuntimeException occurs during the check, it returns a failed CheckResult with the exception.
-     */
-    @Override
+	 * This method is used to check the status of the HttpSender. It sends an empty list
+	 * of spans and returns the result of the check.
+	 * @return CheckResult - The result of the check. If the check is successful, it
+	 * returns CheckResult.OK. If an IOException or RuntimeException occurs during the
+	 * check, it returns a failed CheckResult with the exception.
+	 */
+	@Override
 	public CheckResult check() {
 		try {
 			sendSpans(Collections.emptyList()).execute();
@@ -107,11 +103,10 @@ abstract class HttpSender extends Sender {
 	}
 
 	/**
-     * Closes the HttpSender.
-     * 
-     * @throws IOException if an I/O error occurs while closing the HttpSender.
-     */
-    @Override
+	 * Closes the HttpSender.
+	 * @throws IOException if an I/O error occurs while closing the HttpSender.
+	 */
+	@Override
 	public void close() throws IOException {
 		this.closed = true;
 	}
@@ -125,13 +120,12 @@ abstract class HttpSender extends Sender {
 	protected abstract HttpPostCall sendSpans(byte[] batchedEncodedSpans);
 
 	/**
-     * Sends a list of encoded spans.
-     * 
-     * @param encodedSpans the list of encoded spans to be sent
-     * @return a Call object representing the asynchronous request
-     * @throws ClosedSenderException if the sender is closed
-     */
-    @Override
+	 * Sends a list of encoded spans.
+	 * @param encodedSpans the list of encoded spans to be sent
+	 * @return a Call object representing the asynchronous request
+	 * @throws ClosedSenderException if the sender is closed
+	 */
+	@Override
 	public Call<Void> sendSpans(List<byte[]> encodedSpans) {
 		if (this.closed) {
 			throw new ClosedSenderException();
@@ -140,9 +134,9 @@ abstract class HttpSender extends Sender {
 	}
 
 	/**
-     * HttpPostCall class.
-     */
-    abstract static class HttpPostCall extends Call.Base<Void> {
+	 * HttpPostCall class.
+	 */
+	abstract static class HttpPostCall extends Call.Base<Void> {
 
 		/**
 		 * Only use gzip compression on data which is bigger than this in bytes.
@@ -152,20 +146,18 @@ abstract class HttpSender extends Sender {
 		private final byte[] body;
 
 		/**
-         * Sends an HTTP POST request with the specified body.
-         * 
-         * @param body the body of the request as a byte array
-         */
-        HttpPostCall(byte[] body) {
+		 * Sends an HTTP POST request with the specified body.
+		 * @param body the body of the request as a byte array
+		 */
+		HttpPostCall(byte[] body) {
 			this.body = body;
 		}
 
 		/**
-         * Returns the body of the HTTP POST call.
-         * 
-         * @return the body of the HTTP POST call as a byte array
-         */
-        protected byte[] getBody() {
+		 * Returns the body of the HTTP POST call.
+		 * @return the body of the HTTP POST call as a byte array
+		 */
+		protected byte[] getBody() {
 			if (needsCompression()) {
 				return compress(this.body);
 			}
@@ -173,20 +165,18 @@ abstract class HttpSender extends Sender {
 		}
 
 		/**
-         * Returns the uncompressed body of the HTTP POST call.
-         *
-         * @return the uncompressed body as a byte array
-         */
-        protected byte[] getUncompressedBody() {
+		 * Returns the uncompressed body of the HTTP POST call.
+		 * @return the uncompressed body as a byte array
+		 */
+		protected byte[] getUncompressedBody() {
 			return this.body;
 		}
 
 		/**
-         * Returns the default HttpHeaders for the HttpPostCall class.
-         * 
-         * @return the default HttpHeaders
-         */
-        protected HttpHeaders getDefaultHeaders() {
+		 * Returns the default HttpHeaders for the HttpPostCall class.
+		 * @return the default HttpHeaders
+		 */
+		protected HttpHeaders getDefaultHeaders() {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("b3", "0");
 			headers.set("Content-Type", "application/json");
@@ -197,22 +187,21 @@ abstract class HttpSender extends Sender {
 		}
 
 		/**
-         * Checks if the body of the HTTP post call needs compression.
-         * 
-         * @return true if the body length is greater than the compression threshold, false otherwise.
-         */
-        private boolean needsCompression() {
+		 * Checks if the body of the HTTP post call needs compression.
+		 * @return true if the body length is greater than the compression threshold,
+		 * false otherwise.
+		 */
+		private boolean needsCompression() {
 			return this.body.length > COMPRESSION_THRESHOLD.toBytes();
 		}
 
 		/**
-         * Compresses the given byte array using GZIP compression.
-         * 
-         * @param input the byte array to be compressed
-         * @return the compressed byte array
-         * @throws UncheckedIOException if an I/O error occurs during compression
-         */
-        private byte[] compress(byte[] input) {
+		 * Compresses the given byte array using GZIP compression.
+		 * @param input the byte array to be compressed
+		 * @return the compressed byte array
+		 * @throws UncheckedIOException if an I/O error occurs during compression
+		 */
+		private byte[] compress(byte[] input) {
 			ByteArrayOutputStream result = new ByteArrayOutputStream();
 			try (GZIPOutputStream gzip = new GZIPOutputStream(result)) {
 				gzip.write(input);

@@ -42,11 +42,10 @@ final class BuildpackLayersMetadata extends MappedObject {
 	private final Buildpacks buildpacks;
 
 	/**
-     * Constructs a new instance of BuildpackLayersMetadata with the specified JSON node.
-     * 
-     * @param node the JSON node containing the buildpack layers metadata
-     */
-    private BuildpackLayersMetadata(JsonNode node) {
+	 * Constructs a new instance of BuildpackLayersMetadata with the specified JSON node.
+	 * @param node the JSON node containing the buildpack layers metadata
+	 */
+	private BuildpackLayersMetadata(JsonNode node) {
 		super(node, MethodHandles.lookup());
 		this.buildpacks = Buildpacks.fromJson(getNode());
 	}
@@ -107,20 +106,21 @@ final class BuildpackLayersMetadata extends MappedObject {
 	}
 
 	/**
-     * Buildpacks class.
-     */
-    private static final class Buildpacks {
+	 * Buildpacks class.
+	 */
+	private static final class Buildpacks {
 
 		private final Map<String, BuildpackVersions> buildpacks = new HashMap<>();
 
 		/**
-         * Retrieves the details of a specific buildpack based on the provided id and version.
-         * 
-         * @param id      the id of the buildpack
-         * @param version the version of the buildpack
-         * @return the BuildpackLayerDetails object containing the details of the buildpack, or null if not found
-         */
-        private BuildpackLayerDetails getBuildpack(String id, String version) {
+		 * Retrieves the details of a specific buildpack based on the provided id and
+		 * version.
+		 * @param id the id of the buildpack
+		 * @param version the version of the buildpack
+		 * @return the BuildpackLayerDetails object containing the details of the
+		 * buildpack, or null if not found
+		 */
+		private BuildpackLayerDetails getBuildpack(String id, String version) {
 			if (this.buildpacks.containsKey(id)) {
 				return this.buildpacks.get(id).getBuildpack(version);
 			}
@@ -128,22 +128,20 @@ final class BuildpackLayersMetadata extends MappedObject {
 		}
 
 		/**
-         * Adds the specified buildpack versions to the buildpacks map.
-         * 
-         * @param id the ID of the buildpack
-         * @param versions the buildpack versions to be added
-         */
-        private void addBuildpackVersions(String id, BuildpackVersions versions) {
+		 * Adds the specified buildpack versions to the buildpacks map.
+		 * @param id the ID of the buildpack
+		 * @param versions the buildpack versions to be added
+		 */
+		private void addBuildpackVersions(String id, BuildpackVersions versions) {
 			this.buildpacks.put(id, versions);
 		}
 
 		/**
-         * Converts a JSON node to a Buildpacks object.
-         * 
-         * @param node the JSON node to convert
-         * @return the Buildpacks object
-         */
-        private static Buildpacks fromJson(JsonNode node) {
+		 * Converts a JSON node to a Buildpacks object.
+		 * @param node the JSON node to convert
+		 * @return the Buildpacks object
+		 */
+		private static Buildpacks fromJson(JsonNode node) {
 			Buildpacks buildpacks = new Buildpacks();
 			node.fields()
 				.forEachRemaining((field) -> buildpacks.addBuildpackVersions(field.getKey(),
@@ -154,39 +152,38 @@ final class BuildpackLayersMetadata extends MappedObject {
 	}
 
 	/**
-     * BuildpackVersions class.
-     */
-    private static final class BuildpackVersions {
+	 * BuildpackVersions class.
+	 */
+	private static final class BuildpackVersions {
 
 		private final Map<String, BuildpackLayerDetails> versions = new HashMap<>();
 
 		/**
-         * Retrieves the details of a buildpack based on the specified version.
-         * 
-         * @param version the version of the buildpack to retrieve
-         * @return the BuildpackLayerDetails object containing the details of the buildpack
-         */
-        private BuildpackLayerDetails getBuildpack(String version) {
+		 * Retrieves the details of a buildpack based on the specified version.
+		 * @param version the version of the buildpack to retrieve
+		 * @return the BuildpackLayerDetails object containing the details of the
+		 * buildpack
+		 */
+		private BuildpackLayerDetails getBuildpack(String version) {
 			return this.versions.get(version);
 		}
 
 		/**
-         * Adds a buildpack version with the specified version number and details to the versions map.
-         * 
-         * @param version the version number of the buildpack
-         * @param details the details of the buildpack layer
-         */
-        private void addBuildpackVersion(String version, BuildpackLayerDetails details) {
+		 * Adds a buildpack version with the specified version number and details to the
+		 * versions map.
+		 * @param version the version number of the buildpack
+		 * @param details the details of the buildpack layer
+		 */
+		private void addBuildpackVersion(String version, BuildpackLayerDetails details) {
 			this.versions.put(version, details);
 		}
 
 		/**
-         * Converts a JSON node to a {@link BuildpackVersions} object.
-         * 
-         * @param node the JSON node to convert
-         * @return the {@link BuildpackVersions} object
-         */
-        private static BuildpackVersions fromJson(JsonNode node) {
+		 * Converts a JSON node to a {@link BuildpackVersions} object.
+		 * @param node the JSON node to convert
+		 * @return the {@link BuildpackVersions} object
+		 */
+		private static BuildpackVersions fromJson(JsonNode node) {
 			BuildpackVersions versions = new BuildpackVersions();
 			node.fields()
 				.forEachRemaining((field) -> versions.addBuildpackVersion(field.getKey(),
@@ -197,9 +194,9 @@ final class BuildpackLayersMetadata extends MappedObject {
 	}
 
 	/**
-     * BuildpackLayerDetails class.
-     */
-    static final class BuildpackLayerDetails extends MappedObject {
+	 * BuildpackLayerDetails class.
+	 */
+	static final class BuildpackLayerDetails extends MappedObject {
 
 		private final String name;
 
@@ -208,11 +205,11 @@ final class BuildpackLayersMetadata extends MappedObject {
 		private final String layerDiffId;
 
 		/**
-         * Constructs a new BuildpackLayerDetails object by parsing the provided JSON node.
-         * 
-         * @param node the JSON node containing the buildpack layer details
-         */
-        private BuildpackLayerDetails(JsonNode node) {
+		 * Constructs a new BuildpackLayerDetails object by parsing the provided JSON
+		 * node.
+		 * @param node the JSON node containing the buildpack layer details
+		 */
+		private BuildpackLayerDetails(JsonNode node) {
 			super(node, MethodHandles.lookup());
 			this.name = valueAt("/name", String.class);
 			this.homepage = valueAt("/homepage", String.class);
@@ -244,12 +241,11 @@ final class BuildpackLayersMetadata extends MappedObject {
 		}
 
 		/**
-         * Creates a new instance of BuildpackLayerDetails from a JSON node.
-         * 
-         * @param node the JSON node containing the buildpack layer details
-         * @return a new instance of BuildpackLayerDetails
-         */
-        private static BuildpackLayerDetails fromJson(JsonNode node) {
+		 * Creates a new instance of BuildpackLayerDetails from a JSON node.
+		 * @param node the JSON node containing the buildpack layer details
+		 * @return a new instance of BuildpackLayerDetails
+		 */
+		private static BuildpackLayerDetails fromJson(JsonNode node) {
 			return new BuildpackLayerDetails(node);
 		}
 

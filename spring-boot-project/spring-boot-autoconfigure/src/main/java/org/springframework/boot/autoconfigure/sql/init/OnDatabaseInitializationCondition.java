@@ -54,13 +54,13 @@ public class OnDatabaseInitializationCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Determines the match outcome for the condition based on the database initialization mode.
-     * 
-     * @param context the condition context
-     * @param metadata the annotated type metadata
-     * @return the condition outcome
-     */
-    @Override
+	 * Determines the match outcome for the condition based on the database initialization
+	 * mode.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @return the condition outcome
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Environment environment = context.getEnvironment();
 		String propertyName = getConfiguredProperty(environment);
@@ -72,26 +72,27 @@ public class OnDatabaseInitializationCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Checks if the given database initialization mode matches the condition.
-     * 
-     * @param mode the database initialization mode to be checked
-     * @return {@code true} if the mode is not equal to {@code DatabaseInitializationMode.NEVER}, {@code false} otherwise
-     */
-    private boolean match(DatabaseInitializationMode mode) {
+	 * Checks if the given database initialization mode matches the condition.
+	 * @param mode the database initialization mode to be checked
+	 * @return {@code true} if the mode is not equal to
+	 * {@code DatabaseInitializationMode.NEVER}, {@code false} otherwise
+	 */
+	private boolean match(DatabaseInitializationMode mode) {
 		return !mode.equals(DatabaseInitializationMode.NEVER);
 	}
 
 	/**
-     * Returns the database initialization mode based on the given environment and property name.
-     * If the property name is provided, it retrieves the value from the environment and converts it to uppercase.
-     * If the value is not empty, it returns the corresponding DatabaseInitializationMode.
-     * If the value is empty, it returns the default DatabaseInitializationMode.EMBEDDED.
-     *
-     * @param environment  the environment containing the properties
-     * @param propertyName the name of the property to retrieve the database initialization mode from
-     * @return the database initialization mode based on the environment and property name
-     */
-    private DatabaseInitializationMode getDatabaseInitializationMode(Environment environment, String propertyName) {
+	 * Returns the database initialization mode based on the given environment and
+	 * property name. If the property name is provided, it retrieves the value from the
+	 * environment and converts it to uppercase. If the value is not empty, it returns the
+	 * corresponding DatabaseInitializationMode. If the value is empty, it returns the
+	 * default DatabaseInitializationMode.EMBEDDED.
+	 * @param environment the environment containing the properties
+	 * @param propertyName the name of the property to retrieve the database
+	 * initialization mode from
+	 * @return the database initialization mode based on the environment and property name
+	 */
+	private DatabaseInitializationMode getDatabaseInitializationMode(Environment environment, String propertyName) {
 		if (StringUtils.hasText(propertyName)) {
 			String candidate = environment.getProperty(propertyName, "embedded").toUpperCase(Locale.ENGLISH);
 			if (StringUtils.hasText(candidate)) {
@@ -102,12 +103,11 @@ public class OnDatabaseInitializationCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Returns the first configured property from the given environment.
-     * 
-     * @param environment the environment to check for configured properties
-     * @return the first configured property name, or null if none found
-     */
-    private String getConfiguredProperty(Environment environment) {
+	 * Returns the first configured property from the given environment.
+	 * @param environment the environment to check for configured properties
+	 * @return the first configured property name, or null if none found
+	 */
+	private String getConfiguredProperty(Environment environment) {
 		for (String propertyName : this.propertyNames) {
 			if (environment.containsProperty(propertyName)) {
 				return propertyName;

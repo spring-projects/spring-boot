@@ -43,23 +43,22 @@ public final class OnlyOnceLoggingDenyMeterFilter implements MeterFilter {
 	private final Supplier<String> message;
 
 	/**
-     * Creates a new instance of OnlyOnceLoggingDenyMeterFilter with the given message supplier.
-     * 
-     * @param message the supplier that provides the message to be logged
-     * @throws IllegalArgumentException if the message supplier is null
-     */
-    public OnlyOnceLoggingDenyMeterFilter(Supplier<String> message) {
+	 * Creates a new instance of OnlyOnceLoggingDenyMeterFilter with the given message
+	 * supplier.
+	 * @param message the supplier that provides the message to be logged
+	 * @throws IllegalArgumentException if the message supplier is null
+	 */
+	public OnlyOnceLoggingDenyMeterFilter(Supplier<String> message) {
 		Assert.notNull(message, "Message must not be null");
 		this.message = message;
 	}
 
 	/**
-     * Determines whether to accept or deny a meter based on the provided id.
-     * 
-     * @param id the id of the meter to be checked
-     * @return the meter filter reply, which is always set to DENY
-     */
-    @Override
+	 * Determines whether to accept or deny a meter based on the provided id.
+	 * @param id the id of the meter to be checked
+	 * @return the meter filter reply, which is always set to DENY
+	 */
+	@Override
 	public MeterFilterReply accept(Id id) {
 		if (logger.isWarnEnabled() && this.alreadyWarned.compareAndSet(false, true)) {
 			logger.warn(this.message.get());

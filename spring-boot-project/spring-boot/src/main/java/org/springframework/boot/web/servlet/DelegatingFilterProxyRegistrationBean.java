@@ -74,37 +74,36 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 	}
 
 	/**
-     * Set the ApplicationContext that this object runs in.
-     * <p>
-     * Invoked after population of normal bean properties but before an init callback such as InitializingBean's
-     * afterPropertiesSet or a custom init-method. Invoked after ResourceLoaderAware's setResourceLoader.
-     * <p>
-     * This method will be called after all the setter methods have been called, so you can be sure that any
-     * bean properties you need have been set before this method is called.
-     *
-     * @param applicationContext the ApplicationContext object to be set
-     * @throws BeansException if any error occurs while setting the ApplicationContext
-     */
-    @Override
+	 * Set the ApplicationContext that this object runs in.
+	 * <p>
+	 * Invoked after population of normal bean properties but before an init callback such
+	 * as InitializingBean's afterPropertiesSet or a custom init-method. Invoked after
+	 * ResourceLoaderAware's setResourceLoader.
+	 * <p>
+	 * This method will be called after all the setter methods have been called, so you
+	 * can be sure that any bean properties you need have been set before this method is
+	 * called.
+	 * @param applicationContext the ApplicationContext object to be set
+	 * @throws BeansException if any error occurs while setting the ApplicationContext
+	 */
+	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
 	/**
-     * Returns the name of the target bean.
-     *
-     * @return the name of the target bean
-     */
-    protected String getTargetBeanName() {
+	 * Returns the name of the target bean.
+	 * @return the name of the target bean
+	 */
+	protected String getTargetBeanName() {
 		return this.targetBeanName;
 	}
 
 	/**
-     * Returns the DelegatingFilterProxy instance for this registration bean.
-     * 
-     * @return the DelegatingFilterProxy instance
-     */
-    @Override
+	 * Returns the DelegatingFilterProxy instance for this registration bean.
+	 * @return the DelegatingFilterProxy instance
+	 */
+	@Override
 	public DelegatingFilterProxy getFilter() {
 		return new DelegatingFilterProxy(this.targetBeanName, getWebApplicationContext()) {
 
@@ -117,13 +116,15 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 	}
 
 	/**
-     * Retrieves the WebApplicationContext associated with this DelegatingFilterProxyRegistrationBean.
-     * 
-     * @return the WebApplicationContext associated with this DelegatingFilterProxyRegistrationBean
-     * @throws IllegalStateException if the ApplicationContext has not been injected
-     * @throws IllegalArgumentException if the ApplicationContext is not an instance of WebApplicationContext
-     */
-    private WebApplicationContext getWebApplicationContext() {
+	 * Retrieves the WebApplicationContext associated with this
+	 * DelegatingFilterProxyRegistrationBean.
+	 * @return the WebApplicationContext associated with this
+	 * DelegatingFilterProxyRegistrationBean
+	 * @throws IllegalStateException if the ApplicationContext has not been injected
+	 * @throws IllegalArgumentException if the ApplicationContext is not an instance of
+	 * WebApplicationContext
+	 */
+	private WebApplicationContext getWebApplicationContext() {
 		Assert.notNull(this.applicationContext, "ApplicationContext be injected");
 		Assert.isInstanceOf(WebApplicationContext.class, this.applicationContext);
 		return (WebApplicationContext) this.applicationContext;

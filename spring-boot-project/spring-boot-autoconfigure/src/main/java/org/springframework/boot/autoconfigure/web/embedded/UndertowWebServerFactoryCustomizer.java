@@ -64,35 +64,33 @@ public class UndertowWebServerFactoryCustomizer
 	private final ServerProperties serverProperties;
 
 	/**
-     * Constructs a new UndertowWebServerFactoryCustomizer with the specified environment and server properties.
-     * 
-     * @param environment the environment used for configuration
-     * @param serverProperties the server properties used for configuration
-     */
-    public UndertowWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
+	 * Constructs a new UndertowWebServerFactoryCustomizer with the specified environment
+	 * and server properties.
+	 * @param environment the environment used for configuration
+	 * @param serverProperties the server properties used for configuration
+	 */
+	public UndertowWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
 		this.environment = environment;
 		this.serverProperties = serverProperties;
 	}
 
 	/**
-     * Returns the order value for this customizer.
-     * 
-     * The order value determines the order in which the customizers are applied.
-     * A lower value means higher priority.
-     * 
-     * @return the order value for this customizer
-     */
-    @Override
+	 * Returns the order value for this customizer.
+	 *
+	 * The order value determines the order in which the customizers are applied. A lower
+	 * value means higher priority.
+	 * @return the order value for this customizer
+	 */
+	@Override
 	public int getOrder() {
 		return 0;
 	}
 
 	/**
-     * Customize the Undertow web server factory.
-     *
-     * @param factory the configurable Undertow web server factory
-     */
-    @Override
+	 * Customize the Undertow web server factory.
+	 * @param factory the configurable Undertow web server factory
+	 */
+	@Override
 	public void customize(ConfigurableUndertowWebServerFactory factory) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		ServerOptions options = new ServerOptions(factory);
@@ -106,12 +104,12 @@ public class UndertowWebServerFactoryCustomizer
 	}
 
 	/**
-     * Maps the Undertow properties from the server properties to the UndertowWebServerFactory.
-     *
-     * @param factory       the UndertowWebServerFactory to configure
-     * @param serverOptions the ServerOptions to set the Undertow properties
-     */
-    private void mapUndertowProperties(ConfigurableUndertowWebServerFactory factory, ServerOptions serverOptions) {
+	 * Maps the Undertow properties from the server properties to the
+	 * UndertowWebServerFactory.
+	 * @param factory the UndertowWebServerFactory to configure
+	 * @param serverOptions the ServerOptions to set the Undertow properties
+	 */
+	private void mapUndertowProperties(ConfigurableUndertowWebServerFactory factory, ServerOptions serverOptions) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Undertow properties = this.serverProperties.getUndertow();
 		map.from(properties::getBufferSize).whenNonNull().asInt(DataSize::toBytes).to(factory::setBufferSize);
@@ -139,12 +137,11 @@ public class UndertowWebServerFactoryCustomizer
 	}
 
 	/**
-     * Maps the slash properties from the Undertow properties to the server options.
-     * 
-     * @param properties the Undertow properties
-     * @param serverOptions the server options
-     */
-    @SuppressWarnings({ "deprecation", "removal" })
+	 * Maps the slash properties from the Undertow properties to the server options.
+	 * @param properties the Undertow properties
+	 * @param serverOptions the server options
+	 */
+	@SuppressWarnings({ "deprecation", "removal" })
 	private void mapSlashProperties(Undertow properties, ServerOptions serverOptions) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::isAllowEncodedSlash).to(serverOptions.option(UndertowOptions.ALLOW_ENCODED_SLASH));
@@ -153,21 +150,20 @@ public class UndertowWebServerFactoryCustomizer
 	}
 
 	/**
-     * Checks if the given value is positive.
-     *
-     * @param value the value to be checked
-     * @return true if the value is positive, false otherwise
-     */
-    private boolean isPositive(Number value) {
+	 * Checks if the given value is positive.
+	 * @param value the value to be checked
+	 * @return true if the value is positive, false otherwise
+	 */
+	private boolean isPositive(Number value) {
 		return value.longValue() > 0;
 	}
 
 	/**
-     * Maps the access log properties from the server properties to the Undertow web server factory.
-     * 
-     * @param factory the Undertow web server factory to configure
-     */
-    private void mapAccessLogProperties(ConfigurableUndertowWebServerFactory factory) {
+	 * Maps the access log properties from the server properties to the Undertow web
+	 * server factory.
+	 * @param factory the Undertow web server factory to configure
+	 */
+	private void mapAccessLogProperties(ConfigurableUndertowWebServerFactory factory) {
 		Accesslog properties = this.serverProperties.getUndertow().getAccesslog();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::isEnabled).to(factory::setAccessLogEnabled);
@@ -179,11 +175,11 @@ public class UndertowWebServerFactoryCustomizer
 	}
 
 	/**
-     * Returns a boolean value indicating whether to use forward headers or deduce it based on the active cloud platform.
-     * 
-     * @return {@code true} if forward headers should be used, {@code false} otherwise
-     */
-    private boolean getOrDeduceUseForwardHeaders() {
+	 * Returns a boolean value indicating whether to use forward headers or deduce it
+	 * based on the active cloud platform.
+	 * @return {@code true} if forward headers should be used, {@code false} otherwise
+	 */
+	private boolean getOrDeduceUseForwardHeaders() {
 		if (this.serverProperties.getForwardHeadersStrategy() == null) {
 			CloudPlatform platform = CloudPlatform.getActive(this.environment);
 			return platform != null && platform.isUsingForwardHeaders();
@@ -192,9 +188,9 @@ public class UndertowWebServerFactoryCustomizer
 	}
 
 	/**
-     * AbstractOptions class.
-     */
-    private abstract static class AbstractOptions {
+	 * AbstractOptions class.
+	 */
+	private abstract static class AbstractOptions {
 
 		private final Class<?> source;
 
@@ -203,12 +199,11 @@ public class UndertowWebServerFactoryCustomizer
 		private final ConfigurableUndertowWebServerFactory factory;
 
 		/**
-         * Constructs a new AbstractOptions object.
-         * 
-         * @param source the source class from which to retrieve the options
-         * @param factory the ConfigurableUndertowWebServerFactory instance
-         */
-        AbstractOptions(Class<?> source, ConfigurableUndertowWebServerFactory factory) {
+		 * Constructs a new AbstractOptions object.
+		 * @param source the source class from which to retrieve the options
+		 * @param factory the ConfigurableUndertowWebServerFactory instance
+		 */
+		AbstractOptions(Class<?> source, ConfigurableUndertowWebServerFactory factory) {
 			Map<String, Option<?>> lookup = new HashMap<>();
 			ReflectionUtils.doWithLocalFields(source, (field) -> {
 				int modifiers = field.getModifiers();
@@ -229,22 +224,20 @@ public class UndertowWebServerFactoryCustomizer
 		}
 
 		/**
-         * Returns the factory used to create the ConfigurableUndertowWebServer instances.
-         *
-         * @return the factory used to create the ConfigurableUndertowWebServer instances
-         */
-        protected ConfigurableUndertowWebServerFactory getFactory() {
+		 * Returns the factory used to create the ConfigurableUndertowWebServer instances.
+		 * @return the factory used to create the ConfigurableUndertowWebServer instances
+		 */
+		protected ConfigurableUndertowWebServerFactory getFactory() {
 			return this.factory;
 		}
 
 		/**
-         * Applies the given function to each entry in the provided map.
-         * The function is applied to the parsed value of each entry, based on the corresponding option.
-         * 
-         * @param function the function to be applied to each parsed value
-         * @return a consumer that applies the function to each entry in the map
-         */
-        @SuppressWarnings("unchecked")
+		 * Applies the given function to each entry in the provided map. The function is
+		 * applied to the parsed value of each entry, based on the corresponding option.
+		 * @param function the function to be applied to each parsed value
+		 * @return a consumer that applies the function to each entry in the map
+		 */
+		@SuppressWarnings("unchecked")
 		<T> Consumer<Map<String, String>> forEach(Function<Option<T>, Consumer<T>> function) {
 			return (map) -> map.forEach((key, value) -> {
 				Option<T> option = (Option<T>) this.nameLookup.get(getCanonicalName(key));
@@ -256,12 +249,11 @@ public class UndertowWebServerFactoryCustomizer
 		}
 
 		/**
-         * Returns the canonical name of a given name.
-         * 
-         * @param name the name to get the canonical name of
-         * @return the canonical name of the given name
-         */
-        private static String getCanonicalName(String name) {
+		 * Returns the canonical name of a given name.
+		 * @param name the name to get the canonical name of
+		 * @return the canonical name of the given name
+		 */
+		private static String getCanonicalName(String name) {
 			StringBuilder canonicalName = new StringBuilder(name.length());
 			name.chars()
 				.filter(Character::isLetterOrDigit)
@@ -279,21 +271,23 @@ public class UndertowWebServerFactoryCustomizer
 	private static class ServerOptions extends AbstractOptions {
 
 		/**
-         * Constructs a new ServerOptions object with the specified ConfigurableUndertowWebServerFactory.
-         * 
-         * @param factory the ConfigurableUndertowWebServerFactory to be used for creating the server
-         */
-        ServerOptions(ConfigurableUndertowWebServerFactory factory) {
+		 * Constructs a new ServerOptions object with the specified
+		 * ConfigurableUndertowWebServerFactory.
+		 * @param factory the ConfigurableUndertowWebServerFactory to be used for creating
+		 * the server
+		 */
+		ServerOptions(ConfigurableUndertowWebServerFactory factory) {
 			super(UndertowOptions.class, factory);
 		}
 
 		/**
-         * Returns a Consumer that sets the specified Option value for the ServerOptions builder.
-         * 
-         * @param option the Option to set
-         * @return a Consumer that sets the specified Option value for the ServerOptions builder
-         */
-        <T> Consumer<T> option(Option<T> option) {
+		 * Returns a Consumer that sets the specified Option value for the ServerOptions
+		 * builder.
+		 * @param option the Option to set
+		 * @return a Consumer that sets the specified Option value for the ServerOptions
+		 * builder
+		 */
+		<T> Consumer<T> option(Option<T> option) {
 			return (value) -> getFactory().addBuilderCustomizers((builder) -> builder.setServerOption(option, value));
 		}
 
@@ -306,22 +300,22 @@ public class UndertowWebServerFactoryCustomizer
 	private static class SocketOptions extends AbstractOptions {
 
 		/**
-         * Constructs a new SocketOptions object with the specified ConfigurableUndertowWebServerFactory.
-         *
-         * @param factory the ConfigurableUndertowWebServerFactory to be used for configuring the socket options
-         */
-        SocketOptions(ConfigurableUndertowWebServerFactory factory) {
+		 * Constructs a new SocketOptions object with the specified
+		 * ConfigurableUndertowWebServerFactory.
+		 * @param factory the ConfigurableUndertowWebServerFactory to be used for
+		 * configuring the socket options
+		 */
+		SocketOptions(ConfigurableUndertowWebServerFactory factory) {
 			super(Options.class, factory);
 		}
 
 		/**
-         * Returns a Consumer that sets the specified Option value for the SocketOptions.
-         *
-         * @param option the Option to set
-         * @param <T> the type of the Option value
-         * @return a Consumer that sets the specified Option value
-         */
-        <T> Consumer<T> option(Option<T> option) {
+		 * Returns a Consumer that sets the specified Option value for the SocketOptions.
+		 * @param option the Option to set
+		 * @param <T> the type of the Option value
+		 * @return a Consumer that sets the specified Option value
+		 */
+		<T> Consumer<T> option(Option<T> option) {
 			return (value) -> getFactory().addBuilderCustomizers((builder) -> builder.setSocketOption(option, value));
 		}
 

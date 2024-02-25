@@ -35,11 +35,11 @@ public class CacheManagerCustomizers {
 	private final List<CacheManagerCustomizer<?>> customizers;
 
 	/**
-     * Constructs a new CacheManagerCustomizers object with the specified list of customizers.
-     * 
-     * @param customizers the list of customizers to be applied to the CacheManager
-     */
-    public CacheManagerCustomizers(List<? extends CacheManagerCustomizer<?>> customizers) {
+	 * Constructs a new CacheManagerCustomizers object with the specified list of
+	 * customizers.
+	 * @param customizers the list of customizers to be applied to the CacheManager
+	 */
+	public CacheManagerCustomizers(List<? extends CacheManagerCustomizer<?>> customizers) {
 		this.customizers = (customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList();
 	}
 

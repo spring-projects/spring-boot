@@ -33,43 +33,41 @@ public class HibernateSettings {
 	private Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 
 	/**
-     * Sets the DDL auto setting for Hibernate.
-     * 
-     * @param ddlAuto the supplier that provides the DDL auto setting
-     * @return the updated HibernateSettings object
-     */
-    public HibernateSettings ddlAuto(Supplier<String> ddlAuto) {
+	 * Sets the DDL auto setting for Hibernate.
+	 * @param ddlAuto the supplier that provides the DDL auto setting
+	 * @return the updated HibernateSettings object
+	 */
+	public HibernateSettings ddlAuto(Supplier<String> ddlAuto) {
 		this.ddlAuto = ddlAuto;
 		return this;
 	}
 
 	/**
-     * Returns the value of ddlAuto.
-     * 
-     * @return the value of ddlAuto, or null if ddlAuto is not set
-     */
-    public String getDdlAuto() {
+	 * Returns the value of ddlAuto.
+	 * @return the value of ddlAuto, or null if ddlAuto is not set
+	 */
+	public String getDdlAuto() {
 		return (this.ddlAuto != null) ? this.ddlAuto.get() : null;
 	}
 
 	/**
-     * Sets the list of HibernatePropertiesCustomizer instances to customize the Hibernate properties.
-     * 
-     * @param hibernatePropertiesCustomizers the collection of HibernatePropertiesCustomizer instances
-     * @return the HibernateSettings instance
-     */
-    public HibernateSettings hibernatePropertiesCustomizers(
+	 * Sets the list of HibernatePropertiesCustomizer instances to customize the Hibernate
+	 * properties.
+	 * @param hibernatePropertiesCustomizers the collection of
+	 * HibernatePropertiesCustomizer instances
+	 * @return the HibernateSettings instance
+	 */
+	public HibernateSettings hibernatePropertiesCustomizers(
 			Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
 		this.hibernatePropertiesCustomizers = new ArrayList<>(hibernatePropertiesCustomizers);
 		return this;
 	}
 
 	/**
-     * Returns the collection of HibernatePropertiesCustomizer objects.
-     *
-     * @return the collection of HibernatePropertiesCustomizer objects
-     */
-    public Collection<HibernatePropertiesCustomizer> getHibernatePropertiesCustomizers() {
+	 * Returns the collection of HibernatePropertiesCustomizer objects.
+	 * @return the collection of HibernatePropertiesCustomizer objects
+	 */
+	public Collection<HibernatePropertiesCustomizer> getHibernatePropertiesCustomizers() {
 		return this.hibernatePropertiesCustomizers;
 	}
 

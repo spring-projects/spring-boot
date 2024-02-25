@@ -28,11 +28,10 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 class OracleXeJdbcDockerComposeConnectionDetailsFactory extends OracleJdbcDockerComposeConnectionDetailsFactory {
 
 	/**
-     * Constructs a new OracleXeJdbcDockerComposeConnectionDetailsFactory object.
-     * 
-     * @param container the OracleContainer object representing the Oracle XE container
-     */
-    protected OracleXeJdbcDockerComposeConnectionDetailsFactory() {
+	 * Constructs a new OracleXeJdbcDockerComposeConnectionDetailsFactory object.
+	 * @param container the OracleContainer object representing the Oracle XE container
+	 */
+	protected OracleXeJdbcDockerComposeConnectionDetailsFactory() {
 		super(OracleContainer.XE);
 	}
 

@@ -54,14 +54,15 @@ class ReactiveCloudFoundrySecurityService {
 	private final String cloudControllerUrl;
 
 	/**
-     * Constructs a new ReactiveCloudFoundrySecurityService with the specified WebClient.Builder, cloudControllerUrl, and skipSslValidation flag.
-     * 
-     * @param webClientBuilder the WebClient.Builder used to build the WebClient for making HTTP requests
-     * @param cloudControllerUrl the URL of the Cloud Controller
-     * @param skipSslValidation flag indicating whether SSL validation should be skipped
-     * @throws IllegalArgumentException if webClientBuilder or cloudControllerUrl is null
-     */
-    ReactiveCloudFoundrySecurityService(WebClient.Builder webClientBuilder, String cloudControllerUrl,
+	 * Constructs a new ReactiveCloudFoundrySecurityService with the specified
+	 * WebClient.Builder, cloudControllerUrl, and skipSslValidation flag.
+	 * @param webClientBuilder the WebClient.Builder used to build the WebClient for
+	 * making HTTP requests
+	 * @param cloudControllerUrl the URL of the Cloud Controller
+	 * @param skipSslValidation flag indicating whether SSL validation should be skipped
+	 * @throws IllegalArgumentException if webClientBuilder or cloudControllerUrl is null
+	 */
+	ReactiveCloudFoundrySecurityService(WebClient.Builder webClientBuilder, String cloudControllerUrl,
 			boolean skipSslValidation) {
 		Assert.notNull(webClientBuilder, "WebClient must not be null");
 		Assert.notNull(cloudControllerUrl, "CloudControllerUrl must not be null");
@@ -73,21 +74,20 @@ class ReactiveCloudFoundrySecurityService {
 	}
 
 	/**
-     * Builds a ReactorClientHttpConnector with a trust all SSL configuration.
-     * 
-     * @return The ReactorClientHttpConnector with trust all SSL configuration.
-     */
-    protected ReactorClientHttpConnector buildTrustAllSslConnector() {
+	 * Builds a ReactorClientHttpConnector with a trust all SSL configuration.
+	 * @return The ReactorClientHttpConnector with trust all SSL configuration.
+	 */
+	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
 		HttpClient client = HttpClient.create().secure((spec) -> spec.sslContext(createSslContextSpec()));
 		return new ReactorClientHttpConnector(client);
 	}
 
 	/**
-     * Creates a new instance of Http11SslContextSpec for configuring SSL context for client.
-     * 
-     * @return the Http11SslContextSpec instance
-     */
-    private Http11SslContextSpec createSslContextSpec() {
+	 * Creates a new instance of Http11SslContextSpec for configuring SSL context for
+	 * client.
+	 * @return the Http11SslContextSpec instance
+	 */
+	private Http11SslContextSpec createSslContextSpec() {
 		return Http11SslContextSpec.forClient()
 			.configure((builder) -> builder.sslProvider(SslProvider.JDK)
 				.trustManager(InsecureTrustManagerFactory.INSTANCE));
@@ -112,12 +112,12 @@ class ReactiveCloudFoundrySecurityService {
 	}
 
 	/**
-     * Maps the given throwable to a CloudFoundryAuthorizationException based on the type of error.
-     * 
-     * @param throwable the throwable to be mapped
-     * @return a CloudFoundryAuthorizationException based on the type of error
-     */
-    private Throwable mapError(Throwable throwable) {
+	 * Maps the given throwable to a CloudFoundryAuthorizationException based on the type
+	 * of error.
+	 * @param throwable the throwable to be mapped
+	 * @return a CloudFoundryAuthorizationException based on the type of error
+	 */
+	private Throwable mapError(Throwable throwable) {
 		if (throwable instanceof WebClientResponseException webClientResponseException) {
 			HttpStatusCode statusCode = webClientResponseException.getStatusCode();
 			if (statusCode.equals(HttpStatus.FORBIDDEN)) {
@@ -131,12 +131,11 @@ class ReactiveCloudFoundrySecurityService {
 	}
 
 	/**
-     * Returns the access level based on the provided body.
-     * 
-     * @param body the map containing the request body
-     * @return the access level based on the read_sensitive_data flag in the body
-     */
-    private AccessLevel getAccessLevel(Map<?, ?> body) {
+	 * Returns the access level based on the provided body.
+	 * @param body the map containing the request body
+	 * @return the access level based on the read_sensitive_data flag in the body
+	 */
+	private AccessLevel getAccessLevel(Map<?, ?> body) {
 		if (Boolean.TRUE.equals(body.get("read_sensitive_data"))) {
 			return AccessLevel.FULL;
 		}
@@ -144,12 +143,11 @@ class ReactiveCloudFoundrySecurityService {
 	}
 
 	/**
-     * Returns the URI for retrieving permissions for a specific application.
-     * 
-     * @param applicationId the ID of the application
-     * @return the URI for retrieving permissions
-     */
-    private String getPermissionsUri(String applicationId) {
+	 * Returns the URI for retrieving permissions for a specific application.
+	 * @param applicationId the ID of the application
+	 * @return the URI for retrieving permissions
+	 */
+	private String getPermissionsUri(String applicationId) {
 		return this.cloudControllerUrl + "/v2/apps/" + applicationId + "/permissions";
 	}
 
@@ -162,13 +160,13 @@ class ReactiveCloudFoundrySecurityService {
 	}
 
 	/**
-     * Fetches the token keys from the specified URL.
-     *
-     * @param url the URL to fetch the token keys from
-     * @return a Mono that emits a Map of token keys
-     * @throws CloudFoundryAuthorizationException if there is an error retrieving the token keys
-     */
-    private Mono<? extends Map<String, String>> fetchTokenKeys(String url) {
+	 * Fetches the token keys from the specified URL.
+	 * @param url the URL to fetch the token keys from
+	 * @return a Mono that emits a Map of token keys
+	 * @throws CloudFoundryAuthorizationException if there is an error retrieving the
+	 * token keys
+	 */
+	private Mono<? extends Map<String, String>> fetchTokenKeys(String url) {
 		RequestHeadersSpec<?> uri = this.webClient.get().uri(url + "/token_keys");
 		return uri.retrieve()
 			.bodyToMono(STRING_OBJECT_MAP)
@@ -177,12 +175,11 @@ class ReactiveCloudFoundrySecurityService {
 	}
 
 	/**
-     * Extracts the token keys from the given response and returns them as a map.
-     * 
-     * @param response the response containing the token keys
-     * @return a map of token keys with their corresponding values
-     */
-    private Map<String, String> extractTokenKeys(Map<String, Object> response) {
+	 * Extracts the token keys from the given response and returns them as a map.
+	 * @param response the response containing the token keys
+	 * @return a map of token keys with their corresponding values
+	 */
+	private Map<String, String> extractTokenKeys(Map<String, Object> response) {
 		Map<String, String> tokenKeys = new HashMap<>();
 		for (Object key : (List<?>) response.get("keys")) {
 			Map<?, ?> tokenKey = (Map<?, ?>) key;

@@ -58,23 +58,26 @@ public class WebFluxObservationAutoConfiguration {
 	private final ObservationProperties observationProperties;
 
 	/**
-     * Constructs a new instance of the {@code WebFluxObservationAutoConfiguration} class with the specified {@code observationProperties}.
-     *
-     * @param observationProperties the properties for configuring the observation in WebFlux
-     */
-    WebFluxObservationAutoConfiguration(ObservationProperties observationProperties) {
+	 * Constructs a new instance of the {@code WebFluxObservationAutoConfiguration} class
+	 * with the specified {@code observationProperties}.
+	 * @param observationProperties the properties for configuring the observation in
+	 * WebFlux
+	 */
+	WebFluxObservationAutoConfiguration(ObservationProperties observationProperties) {
 		this.observationProperties = observationProperties;
 	}
 
 	/**
-     * Creates a MeterFilter bean for filtering metrics based on the maximum number of URI tags.
-     * The maximum number of URI tags is determined by the 'maxUriTags' property in the 'web.server' section of the MetricsProperties.
-     * If the maximum number of URI tags is reached, a logging message will be generated.
-     * 
-     * @param metricsProperties The MetricsProperties bean containing the configuration properties.
-     * @return The MeterFilter bean for filtering metrics based on the maximum number of URI tags.
-     */
-    @Bean
+	 * Creates a MeterFilter bean for filtering metrics based on the maximum number of URI
+	 * tags. The maximum number of URI tags is determined by the 'maxUriTags' property in
+	 * the 'web.server' section of the MetricsProperties. If the maximum number of URI
+	 * tags is reached, a logging message will be generated.
+	 * @param metricsProperties The MetricsProperties bean containing the configuration
+	 * properties.
+	 * @return The MeterFilter bean for filtering metrics based on the maximum number of
+	 * URI tags.
+	 */
+	@Bean
 	@Order(0)
 	MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties) {
 		String name = this.observationProperties.getHttp().getServer().getRequests().getName();
@@ -85,11 +88,11 @@ public class WebFluxObservationAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of DefaultServerRequestObservationConvention if no bean of type ServerRequestObservationConvention is present.
-     * 
-     * @return the DefaultServerRequestObservationConvention instance
-     */
-    @Bean
+	 * Creates a new instance of DefaultServerRequestObservationConvention if no bean of
+	 * type ServerRequestObservationConvention is present.
+	 * @return the DefaultServerRequestObservationConvention instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean(ServerRequestObservationConvention.class)
 	DefaultServerRequestObservationConvention defaultServerRequestObservationConvention() {
 		return new DefaultServerRequestObservationConvention(

@@ -42,13 +42,15 @@ class CompositeHandlerMapping implements HandlerMapping {
 	private List<HandlerMapping> mappings;
 
 	/**
-     * Retrieves the handler execution chain for the given HttpServletRequest.
-     * 
-     * @param request the HttpServletRequest for which to retrieve the handler execution chain
-     * @return the HandlerExecutionChain for the given request, or null if no handler is found
-     * @throws Exception if an exception occurs during the retrieval of the handler execution chain
-     */
-    @Override
+	 * Retrieves the handler execution chain for the given HttpServletRequest.
+	 * @param request the HttpServletRequest for which to retrieve the handler execution
+	 * chain
+	 * @return the HandlerExecutionChain for the given request, or null if no handler is
+	 * found
+	 * @throws Exception if an exception occurs during the retrieval of the handler
+	 * execution chain
+	 */
+	@Override
 	public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		for (HandlerMapping mapping : getMappings()) {
 			HandlerExecutionChain handler = mapping.getHandler(request);
@@ -60,11 +62,10 @@ class CompositeHandlerMapping implements HandlerMapping {
 	}
 
 	/**
-     * Checks if any of the mappings in the CompositeHandlerMapping uses path patterns.
-     * 
-     * @return true if any of the mappings uses path patterns, false otherwise
-     */
-    @Override
+	 * Checks if any of the mappings in the CompositeHandlerMapping uses path patterns.
+	 * @return true if any of the mappings uses path patterns, false otherwise
+	 */
+	@Override
 	public boolean usesPathPatterns() {
 		for (HandlerMapping mapping : getMappings()) {
 			if (mapping.usesPathPatterns()) {
@@ -75,13 +76,13 @@ class CompositeHandlerMapping implements HandlerMapping {
 	}
 
 	/**
-     * Returns the list of handler mappings.
-     * 
-     * If the mappings have not been extracted yet, this method will extract them and store them in the 'mappings' variable.
-     * 
-     * @return the list of handler mappings
-     */
-    private List<HandlerMapping> getMappings() {
+	 * Returns the list of handler mappings.
+	 *
+	 * If the mappings have not been extracted yet, this method will extract them and
+	 * store them in the 'mappings' variable.
+	 * @return the list of handler mappings
+	 */
+	private List<HandlerMapping> getMappings() {
 		if (this.mappings == null) {
 			this.mappings = extractMappings();
 		}
@@ -89,11 +90,10 @@ class CompositeHandlerMapping implements HandlerMapping {
 	}
 
 	/**
-     * Extracts the mappings from the CompositeHandlerMapping.
-     * 
-     * @return the list of HandlerMappings extracted from the CompositeHandlerMapping
-     */
-    private List<HandlerMapping> extractMappings() {
+	 * Extracts the mappings from the CompositeHandlerMapping.
+	 * @return the list of HandlerMappings extracted from the CompositeHandlerMapping
+	 */
+	private List<HandlerMapping> extractMappings() {
 		List<HandlerMapping> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);

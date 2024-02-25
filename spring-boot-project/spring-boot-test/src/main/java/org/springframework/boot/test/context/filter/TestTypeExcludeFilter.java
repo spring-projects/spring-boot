@@ -45,14 +45,15 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 	private static final TestTypeExcludeFilter INSTANCE = new TestTypeExcludeFilter();
 
 	/**
-     * Determines if the given metadata reader matches the specified criteria.
-     * 
-     * @param metadataReader The metadata reader to be matched.
-     * @param metadataReaderFactory The metadata reader factory used to obtain metadata readers.
-     * @return {@code true} if the metadata reader matches the criteria, {@code false} otherwise.
-     * @throws IOException if an I/O error occurs while reading the metadata.
-     */
-    @Override
+	 * Determines if the given metadata reader matches the specified criteria.
+	 * @param metadataReader The metadata reader to be matched.
+	 * @param metadataReaderFactory The metadata reader factory used to obtain metadata
+	 * readers.
+	 * @return {@code true} if the metadata reader matches the criteria, {@code false}
+	 * otherwise.
+	 * @throws IOException if an I/O error occurs while reading the metadata.
+	 */
+	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		if (isTestConfiguration(metadataReader)) {
@@ -76,43 +77,42 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 	}
 
 	/**
-     * Compares this object with the specified object for equality.
-     * 
-     * @param obj the object to compare with
-     * @return {@code true} if the specified object is of the same class as this object, {@code false} otherwise
-     */
-    @Override
+	 * Compares this object with the specified object for equality.
+	 * @param obj the object to compare with
+	 * @return {@code true} if the specified object is of the same class as this object,
+	 * {@code false} otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		return (obj != null) && (getClass() == obj.getClass());
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the hashCode() method in the Object class.
-     * 
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the hashCode()
+	 * method in the Object class.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		return getClass().hashCode();
 	}
 
 	/**
-     * Determines if the given metadata reader represents a test configuration.
-     * 
-     * @param metadataReader the metadata reader to check
-     * @return {@code true} if the metadata reader is annotated with {@link TestComponent}, {@code false} otherwise
-     */
-    private boolean isTestConfiguration(MetadataReader metadataReader) {
+	 * Determines if the given metadata reader represents a test configuration.
+	 * @param metadataReader the metadata reader to check
+	 * @return {@code true} if the metadata reader is annotated with
+	 * {@link TestComponent}, {@code false} otherwise
+	 */
+	private boolean isTestConfiguration(MetadataReader metadataReader) {
 		return (metadataReader.getAnnotationMetadata().isAnnotated(TestComponent.class.getName()));
 	}
 
 	/**
-     * Checks if the given metadata reader represents a test class.
-     * 
-     * @param metadataReader the metadata reader to check
-     * @return true if the metadata reader represents a test class, false otherwise
-     */
-    private boolean isTestClass(MetadataReader metadataReader) {
+	 * Checks if the given metadata reader represents a test class.
+	 * @param metadataReader the metadata reader to check
+	 * @return true if the metadata reader represents a test class, false otherwise
+	 */
+	private boolean isTestClass(MetadataReader metadataReader) {
 		for (String annotation : CLASS_ANNOTATIONS) {
 			if (metadataReader.getAnnotationMetadata().hasAnnotation(annotation)) {
 				return true;
@@ -128,13 +128,14 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 	}
 
 	/**
-     * Registers the TestTypeExcludeFilter instance with the given ConfigurableListableBeanFactory.
-     * If the bean factory does not already contain a singleton with the specified bean name,
-     * the TestTypeExcludeFilter instance is registered as a singleton with the bean factory.
-     * 
-     * @param beanFactory the ConfigurableListableBeanFactory to register the TestTypeExcludeFilter with
-     */
-    static void registerWith(ConfigurableListableBeanFactory beanFactory) {
+	 * Registers the TestTypeExcludeFilter instance with the given
+	 * ConfigurableListableBeanFactory. If the bean factory does not already contain a
+	 * singleton with the specified bean name, the TestTypeExcludeFilter instance is
+	 * registered as a singleton with the bean factory.
+	 * @param beanFactory the ConfigurableListableBeanFactory to register the
+	 * TestTypeExcludeFilter with
+	 */
+	static void registerWith(ConfigurableListableBeanFactory beanFactory) {
 		if (!beanFactory.containsSingleton(BEAN_NAME)) {
 			beanFactory.registerSingleton(BEAN_NAME, INSTANCE);
 		}

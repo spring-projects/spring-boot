@@ -48,38 +48,34 @@ public class SessionProperties {
 	private Servlet servlet = new Servlet();
 
 	/**
-     * Returns the timeout duration for the session.
-     *
-     * @return the timeout duration for the session
-     */
-    public Duration getTimeout() {
+	 * Returns the timeout duration for the session.
+	 * @return the timeout duration for the session
+	 */
+	public Duration getTimeout() {
 		return this.timeout;
 	}
 
 	/**
-     * Sets the timeout for the session.
-     * 
-     * @param timeout the duration of the timeout
-     */
-    public void setTimeout(Duration timeout) {
+	 * Sets the timeout for the session.
+	 * @param timeout the duration of the timeout
+	 */
+	public void setTimeout(Duration timeout) {
 		this.timeout = timeout;
 	}
 
 	/**
-     * Returns the servlet associated with this SessionProperties object.
-     *
-     * @return the servlet associated with this SessionProperties object
-     */
-    public Servlet getServlet() {
+	 * Returns the servlet associated with this SessionProperties object.
+	 * @return the servlet associated with this SessionProperties object
+	 */
+	public Servlet getServlet() {
 		return this.servlet;
 	}
 
 	/**
-     * Sets the servlet for the SessionProperties.
-     * 
-     * @param servlet the servlet to be set
-     */
-    public void setServlet(Servlet servlet) {
+	 * Sets the servlet for the SessionProperties.
+	 * @param servlet the servlet to be set
+	 */
+	public void setServlet(Servlet servlet) {
 		this.servlet = servlet;
 	}
 
@@ -111,38 +107,34 @@ public class SessionProperties {
 				Arrays.asList(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
 
 		/**
-         * Returns the filter order.
-         * 
-         * @return the filter order
-         */
-        public int getFilterOrder() {
+		 * Returns the filter order.
+		 * @return the filter order
+		 */
+		public int getFilterOrder() {
 			return this.filterOrder;
 		}
 
 		/**
-         * Sets the filter order.
-         * 
-         * @param filterOrder the filter order to be set
-         */
-        public void setFilterOrder(int filterOrder) {
+		 * Sets the filter order.
+		 * @param filterOrder the filter order to be set
+		 */
+		public void setFilterOrder(int filterOrder) {
 			this.filterOrder = filterOrder;
 		}
 
 		/**
-         * Returns the set of dispatcher types for which the filter is registered.
-         *
-         * @return the set of dispatcher types for which the filter is registered
-         */
-        public Set<DispatcherType> getFilterDispatcherTypes() {
+		 * Returns the set of dispatcher types for which the filter is registered.
+		 * @return the set of dispatcher types for which the filter is registered
+		 */
+		public Set<DispatcherType> getFilterDispatcherTypes() {
 			return this.filterDispatcherTypes;
 		}
 
 		/**
-         * Sets the dispatcher types for the filter.
-         * 
-         * @param filterDispatcherTypes the set of dispatcher types for the filter
-         */
-        public void setFilterDispatcherTypes(Set<DispatcherType> filterDispatcherTypes) {
+		 * Sets the dispatcher types for the filter.
+		 * @param filterDispatcherTypes the set of dispatcher types for the filter
+		 */
+		public void setFilterDispatcherTypes(Set<DispatcherType> filterDispatcherTypes) {
 			this.filterDispatcherTypes = filterDispatcherTypes;
 		}
 

@@ -31,11 +31,11 @@ public class JmsPoolConnectionFactoryFactory {
 	private final JmsPoolConnectionFactoryProperties properties;
 
 	/**
-     * Constructs a new JmsPoolConnectionFactoryFactory with the specified properties.
-     * 
-     * @param properties the JmsPoolConnectionFactoryProperties object containing the properties for the factory
-     */
-    public JmsPoolConnectionFactoryFactory(JmsPoolConnectionFactoryProperties properties) {
+	 * Constructs a new JmsPoolConnectionFactoryFactory with the specified properties.
+	 * @param properties the JmsPoolConnectionFactoryProperties object containing the
+	 * properties for the factory
+	 */
+	public JmsPoolConnectionFactoryFactory(JmsPoolConnectionFactoryProperties properties) {
 		this.properties = properties;
 	}
 

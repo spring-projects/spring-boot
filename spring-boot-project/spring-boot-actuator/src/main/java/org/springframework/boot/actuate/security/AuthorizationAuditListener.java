@@ -40,12 +40,12 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 	public static final String AUTHORIZATION_FAILURE = "AUTHORIZATION_FAILURE";
 
 	/**
-     * This method is called when an AuthorizationEvent is triggered.
-     * It checks if the event is an instance of AuthorizationDeniedEvent and calls the onAuthorizationDeniedEvent method.
-     *
-     * @param event The AuthorizationEvent that is triggered.
-     */
-    @Override
+	 * This method is called when an AuthorizationEvent is triggered. It checks if the
+	 * event is an instance of AuthorizationDeniedEvent and calls the
+	 * onAuthorizationDeniedEvent method.
+	 * @param event The AuthorizationEvent that is triggered.
+	 */
+	@Override
 	public void onApplicationEvent(AuthorizationEvent event) {
 		if (event instanceof AuthorizationDeniedEvent<?> authorizationDeniedEvent) {
 			onAuthorizationDeniedEvent(authorizationDeniedEvent);
@@ -53,11 +53,10 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 	}
 
 	/**
-     * Handles the event when authorization is denied.
-     * 
-     * @param event The AuthorizationDeniedEvent object containing the event details.
-     */
-    private void onAuthorizationDeniedEvent(AuthorizationDeniedEvent<?> event) {
+	 * Handles the event when authorization is denied.
+	 * @param event The AuthorizationDeniedEvent object containing the event details.
+	 */
+	private void onAuthorizationDeniedEvent(AuthorizationDeniedEvent<?> event) {
 		String name = getName(event.getAuthentication());
 		Map<String, Object> data = new LinkedHashMap<>();
 		Object details = getDetails(event.getAuthentication());
@@ -68,12 +67,11 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 	}
 
 	/**
-     * Returns the name of the authentication obtained from the given supplier.
-     * 
-     * @param authentication the supplier providing the authentication
-     * @return the name of the authentication, or "<unknown>" if an exception occurs
-     */
-    private String getName(Supplier<Authentication> authentication) {
+	 * Returns the name of the authentication obtained from the given supplier.
+	 * @param authentication the supplier providing the authentication
+	 * @return the name of the authentication, or "<unknown>" if an exception occurs
+	 */
+	private String getName(Supplier<Authentication> authentication) {
 		try {
 			return authentication.get().getName();
 		}
@@ -83,12 +81,11 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 	}
 
 	/**
-     * Retrieves the details of the authentication provided by the given supplier.
-     * 
-     * @param authentication the supplier that provides the authentication
-     * @return the details of the authentication, or null if an exception occurs
-     */
-    private Object getDetails(Supplier<Authentication> authentication) {
+	 * Retrieves the details of the authentication provided by the given supplier.
+	 * @param authentication the supplier that provides the authentication
+	 * @return the details of the authentication, or null if an exception occurs
+	 */
+	private Object getDetails(Supplier<Authentication> authentication) {
 		try {
 			return authentication.get().getDetails();
 		}

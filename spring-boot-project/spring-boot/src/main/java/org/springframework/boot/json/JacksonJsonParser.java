@@ -52,35 +52,32 @@ public class JacksonJsonParser extends AbstractJsonParser {
 	}
 
 	/**
-     * Parses a JSON string into a Map object.
-     * 
-     * @param json the JSON string to parse
-     * @return a Map object representing the parsed JSON
-     * @throws Exception if an error occurs during parsing
-     */
-    @Override
+	 * Parses a JSON string into a Map object.
+	 * @param json the JSON string to parse
+	 * @return a Map object representing the parsed JSON
+	 * @throws Exception if an error occurs during parsing
+	 */
+	@Override
 	public Map<String, Object> parseMap(String json) {
 		return tryParse(() -> getObjectMapper().readValue(json, MAP_TYPE), Exception.class);
 	}
 
 	/**
-     * Parses a JSON string into a list of objects.
-     * 
-     * @param json the JSON string to parse
-     * @return a list of objects parsed from the JSON string
-     * @throws Exception if an error occurs during parsing
-     */
-    @Override
+	 * Parses a JSON string into a list of objects.
+	 * @param json the JSON string to parse
+	 * @return a list of objects parsed from the JSON string
+	 * @throws Exception if an error occurs during parsing
+	 */
+	@Override
 	public List<Object> parseList(String json) {
 		return tryParse(() -> getObjectMapper().readValue(json, LIST_TYPE), Exception.class);
 	}
 
 	/**
-     * Returns the ObjectMapper instance.
-     * 
-     * @return the ObjectMapper instance
-     */
-    private ObjectMapper getObjectMapper() {
+	 * Returns the ObjectMapper instance.
+	 * @return the ObjectMapper instance
+	 */
+	private ObjectMapper getObjectMapper() {
 		if (this.objectMapper == null) {
 			this.objectMapper = new ObjectMapper();
 		}
@@ -88,16 +85,16 @@ public class JacksonJsonParser extends AbstractJsonParser {
 	}
 
 	/**
-     * MapTypeReference class.
-     */
-    private static final class MapTypeReference extends TypeReference<Map<String, Object>> {
+	 * MapTypeReference class.
+	 */
+	private static final class MapTypeReference extends TypeReference<Map<String, Object>> {
 
 	}
 
 	/**
-     * ListTypeReference class.
-     */
-    private static final class ListTypeReference extends TypeReference<List<Object>> {
+	 * ListTypeReference class.
+	 */
+	private static final class ListTypeReference extends TypeReference<List<Object>> {
 
 	}
 

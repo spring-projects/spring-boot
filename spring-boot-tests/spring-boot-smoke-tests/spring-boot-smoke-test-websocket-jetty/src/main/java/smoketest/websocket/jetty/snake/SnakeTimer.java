@@ -43,17 +43,17 @@ public final class SnakeTimer {
 	private static Timer gameTimer = null;
 
 	/**
-     * Private constructor for the SnakeTimer class.
-     */
-    private SnakeTimer() {
+	 * Private constructor for the SnakeTimer class.
+	 */
+	private SnakeTimer() {
 	}
 
 	/**
-     * Adds a snake to the collection of snakes and starts the timer if it is the first snake added.
-     *
-     * @param snake the snake to be added
-     */
-    public static void addSnake(Snake snake) {
+	 * Adds a snake to the collection of snakes and starts the timer if it is the first
+	 * snake added.
+	 * @param snake the snake to be added
+	 */
+	public static void addSnake(Snake snake) {
 		synchronized (MONITOR) {
 			if (snakes.isEmpty()) {
 				startTimer();
@@ -63,20 +63,19 @@ public final class SnakeTimer {
 	}
 
 	/**
-     * Returns an unmodifiable collection of all the snakes in the SnakeTimer.
-     *
-     * @return an unmodifiable collection of snakes
-     */
-    public static Collection<Snake> getSnakes() {
+	 * Returns an unmodifiable collection of all the snakes in the SnakeTimer.
+	 * @return an unmodifiable collection of snakes
+	 */
+	public static Collection<Snake> getSnakes() {
 		return Collections.unmodifiableCollection(snakes.values());
 	}
 
 	/**
-     * Removes the specified snake from the list of snakes and stops the timer if there are no more snakes.
-     *
-     * @param snake the snake to be removed
-     */
-    public static void removeSnake(Snake snake) {
+	 * Removes the specified snake from the list of snakes and stops the timer if there
+	 * are no more snakes.
+	 * @param snake the snake to be removed
+	 */
+	public static void removeSnake(Snake snake) {
 		synchronized (MONITOR) {
 			snakes.remove(snake.getId());
 			if (snakes.isEmpty()) {
@@ -86,11 +85,10 @@ public final class SnakeTimer {
 	}
 
 	/**
-     * Updates the snakes and broadcasts the updated locations in JSON format.
-     * 
-     * @throws Exception if an error occurs during the update process
-     */
-    public static void tick() throws Exception {
+	 * Updates the snakes and broadcasts the updated locations in JSON format.
+	 * @throws Exception if an error occurs during the update process
+	 */
+	public static void tick() throws Exception {
 		StringBuilder sb = new StringBuilder();
 		for (Iterator<Snake> iterator = SnakeTimer.getSnakes().iterator(); iterator.hasNext();) {
 			Snake snake = iterator.next();
@@ -104,11 +102,10 @@ public final class SnakeTimer {
 	}
 
 	/**
-     * Broadcasts a message to all connected snakes.
-     * 
-     * @param message the message to be broadcasted
-     */
-    public static void broadcast(String message) {
+	 * Broadcasts a message to all connected snakes.
+	 * @param message the message to be broadcasted
+	 */
+	public static void broadcast(String message) {
 		Collection<Snake> snakes = new CopyOnWriteArrayList<>(SnakeTimer.getSnakes());
 		for (Snake snake : snakes) {
 			try {
@@ -122,13 +119,13 @@ public final class SnakeTimer {
 	}
 
 	/**
-     * Starts the game timer.
-     * 
-     * The game timer is responsible for scheduling and executing the tick() method at a fixed rate.
-     * 
-     * @throws Throwable if an error occurs while executing the tick() method
-     */
-    public static void startTimer() {
+	 * Starts the game timer.
+	 *
+	 * The game timer is responsible for scheduling and executing the tick() method at a
+	 * fixed rate.
+	 * @throws Throwable if an error occurs while executing the tick() method
+	 */
+	public static void startTimer() {
 		gameTimer = new Timer(SnakeTimer.class.getSimpleName() + " Timer");
 		gameTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
@@ -144,9 +141,9 @@ public final class SnakeTimer {
 	}
 
 	/**
-     * Stops the game timer if it is running.
-     */
-    public static void stopTimer() {
+	 * Stops the game timer if it is running.
+	 */
+	public static void stopTimer() {
 		if (gameTimer != null) {
 			gameTimer.cancel();
 		}

@@ -46,18 +46,19 @@ import org.springframework.context.annotation.Configuration;
 public class DataSourcePoolMetadataProvidersConfiguration {
 
 	/**
-     * TomcatDataSourcePoolMetadataProviderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * TomcatDataSourcePoolMetadataProviderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	static class TomcatDataSourcePoolMetadataProviderConfiguration {
 
 		/**
-         * Returns a DataSourcePoolMetadataProvider that provides metadata about the Tomcat JDBC connection pool DataSource.
-         * 
-         * @return the DataSourcePoolMetadataProvider for the Tomcat JDBC connection pool DataSource
-         */
-        @Bean
+		 * Returns a DataSourcePoolMetadataProvider that provides metadata about the
+		 * Tomcat JDBC connection pool DataSource.
+		 * @return the DataSourcePoolMetadataProvider for the Tomcat JDBC connection pool
+		 * DataSource
+		 */
+		@Bean
 		DataSourcePoolMetadataProvider tomcatPoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
 				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper.unwrap(dataSource,
@@ -72,18 +73,17 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 	}
 
 	/**
-     * HikariPoolDataSourceMetadataProviderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * HikariPoolDataSourceMetadataProviderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HikariDataSource.class)
 	static class HikariPoolDataSourceMetadataProviderConfiguration {
 
 		/**
-         * Returns a DataSourcePoolMetadataProvider for HikariCP DataSource.
-         * 
-         * @return the DataSourcePoolMetadataProvider for HikariCP DataSource
-         */
-        @Bean
+		 * Returns a DataSourcePoolMetadataProvider for HikariCP DataSource.
+		 * @return the DataSourcePoolMetadataProvider for HikariCP DataSource
+		 */
+		@Bean
 		DataSourcePoolMetadataProvider hikariPoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
 				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class,
@@ -98,18 +98,19 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 	}
 
 	/**
-     * CommonsDbcp2PoolDataSourceMetadataProviderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * CommonsDbcp2PoolDataSourceMetadataProviderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(BasicDataSource.class)
 	static class CommonsDbcp2PoolDataSourceMetadataProviderConfiguration {
 
 		/**
-         * Returns a DataSourcePoolMetadataProvider that provides metadata about the Commons DBCP2 pool DataSource.
-         * 
-         * @return The DataSourcePoolMetadataProvider for the Commons DBCP2 pool DataSource.
-         */
-        @Bean
+		 * Returns a DataSourcePoolMetadataProvider that provides metadata about the
+		 * Commons DBCP2 pool DataSource.
+		 * @return The DataSourcePoolMetadataProvider for the Commons DBCP2 pool
+		 * DataSource.
+		 */
+		@Bean
 		DataSourcePoolMetadataProvider commonsDbcp2PoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
 				BasicDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource, BasicDataSourceMXBean.class,
@@ -124,18 +125,17 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 	}
 
 	/**
-     * OracleUcpPoolDataSourceMetadataProviderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * OracleUcpPoolDataSourceMetadataProviderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ PoolDataSource.class, OracleConnection.class })
 	static class OracleUcpPoolDataSourceMetadataProviderConfiguration {
 
 		/**
-         * Returns a DataSourcePoolMetadataProvider for Oracle UCP Pool DataSource.
-         * 
-         * @return the DataSourcePoolMetadataProvider for Oracle UCP Pool DataSource
-         */
-        @Bean
+		 * Returns a DataSourcePoolMetadataProvider for Oracle UCP Pool DataSource.
+		 * @return the DataSourcePoolMetadataProvider for Oracle UCP Pool DataSource
+		 */
+		@Bean
 		DataSourcePoolMetadataProvider oracleUcpPoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
 				PoolDataSource ucpDataSource = DataSourceUnwrapper.unwrap(dataSource, PoolDataSource.class);

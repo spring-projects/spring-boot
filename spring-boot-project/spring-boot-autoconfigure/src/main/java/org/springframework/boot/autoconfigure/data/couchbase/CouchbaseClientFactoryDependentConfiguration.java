@@ -37,13 +37,14 @@ import org.springframework.data.couchbase.repository.config.RepositoryOperations
 class CouchbaseClientFactoryDependentConfiguration {
 
 	/**
-     * Creates a new instance of the CouchbaseTemplate bean.
-     * 
-     * @param couchbaseClientFactory The CouchbaseClientFactory used to create the Couchbase client.
-     * @param mappingCouchbaseConverter The MappingCouchbaseConverter used for object mapping.
-     * @return The newly created CouchbaseTemplate bean.
-     */
-    @Bean(name = BeanNames.COUCHBASE_TEMPLATE)
+	 * Creates a new instance of the CouchbaseTemplate bean.
+	 * @param couchbaseClientFactory The CouchbaseClientFactory used to create the
+	 * Couchbase client.
+	 * @param mappingCouchbaseConverter The MappingCouchbaseConverter used for object
+	 * mapping.
+	 * @return The newly created CouchbaseTemplate bean.
+	 */
+	@Bean(name = BeanNames.COUCHBASE_TEMPLATE)
 	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_TEMPLATE)
 	CouchbaseTemplate couchbaseTemplate(CouchbaseClientFactory couchbaseClientFactory,
 			MappingCouchbaseConverter mappingCouchbaseConverter) {
@@ -51,12 +52,13 @@ class CouchbaseClientFactoryDependentConfiguration {
 	}
 
 	/**
-     * Creates a new {@link RepositoryOperationsMapping} bean for Couchbase operations mapping.
-     * 
-     * @param couchbaseTemplate the {@link CouchbaseTemplate} to be used for the operations mapping
-     * @return the created {@link RepositoryOperationsMapping} bean
-     */
-    @Bean(name = BeanNames.COUCHBASE_OPERATIONS_MAPPING)
+	 * Creates a new {@link RepositoryOperationsMapping} bean for Couchbase operations
+	 * mapping.
+	 * @param couchbaseTemplate the {@link CouchbaseTemplate} to be used for the
+	 * operations mapping
+	 * @return the created {@link RepositoryOperationsMapping} bean
+	 */
+	@Bean(name = BeanNames.COUCHBASE_OPERATIONS_MAPPING)
 	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_OPERATIONS_MAPPING)
 	RepositoryOperationsMapping couchbaseRepositoryOperationsMapping(CouchbaseTemplate couchbaseTemplate) {
 		return new RepositoryOperationsMapping(couchbaseTemplate);

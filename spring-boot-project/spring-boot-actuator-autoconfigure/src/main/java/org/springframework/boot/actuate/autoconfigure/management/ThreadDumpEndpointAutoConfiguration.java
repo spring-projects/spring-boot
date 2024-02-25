@@ -34,11 +34,11 @@ import org.springframework.context.annotation.Bean;
 public class ThreadDumpEndpointAutoConfiguration {
 
 	/**
-     * Creates a new instance of the {@link ThreadDumpEndpoint} if no other bean of the same type is present.
-     * 
-     * @return the {@link ThreadDumpEndpoint} bean
-     */
-    @Bean
+	 * Creates a new instance of the {@link ThreadDumpEndpoint} if no other bean of the
+	 * same type is present.
+	 * @return the {@link ThreadDumpEndpoint} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public ThreadDumpEndpoint dumpEndpoint() {
 		return new ThreadDumpEndpoint();

@@ -39,11 +39,10 @@ public class ConfigurationMetadataGroup implements Serializable {
 	private final Map<String, ConfigurationMetadataProperty> properties = new HashMap<>();
 
 	/**
-     * Constructs a new ConfigurationMetadataGroup with the specified id.
-     * 
-     * @param id the id of the configuration metadata group
-     */
-    public ConfigurationMetadataGroup(String id) {
+	 * Constructs a new ConfigurationMetadataGroup with the specified id.
+	 * @param id the id of the configuration metadata group
+	 */
+	public ConfigurationMetadataGroup(String id) {
 		this.id = id;
 	}
 

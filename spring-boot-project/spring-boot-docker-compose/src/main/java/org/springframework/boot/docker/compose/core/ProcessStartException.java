@@ -28,12 +28,11 @@ import java.io.IOException;
 class ProcessStartException extends RuntimeException {
 
 	/**
-     * Constructs a new ProcessStartException with the specified command and IOException.
-     * 
-     * @param command the command that failed to start
-     * @param ex the IOException that occurred while starting the command
-     */
-    ProcessStartException(String[] command, IOException ex) {
+	 * Constructs a new ProcessStartException with the specified command and IOException.
+	 * @param command the command that failed to start
+	 * @param ex the IOException that occurred while starting the command
+	 */
+	ProcessStartException(String[] command, IOException ex) {
 		super("Unable to start command %s".formatted(String.join(" ", command)), ex);
 	}
 

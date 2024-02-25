@@ -28,12 +28,11 @@ import org.springframework.stereotype.Component;
 public class Printer {
 
 	/**
-     * Prints the SVN and client information.
-     * 
-     * @param svn               the SVN URL
-     * @param subversionClient  the Subversion client
-     */
-    Printer(@Value("${svn}") String svn, SubversionClient subversionClient) {
+	 * Prints the SVN and client information.
+	 * @param svn the SVN URL
+	 * @param subversionClient the Subversion client
+	 */
+	Printer(@Value("${svn}") String svn, SubversionClient subversionClient) {
 		System.out.println("--- svn " + svn);
 		System.out.println("--- client " + subversionClient.getClass().getName());
 	}

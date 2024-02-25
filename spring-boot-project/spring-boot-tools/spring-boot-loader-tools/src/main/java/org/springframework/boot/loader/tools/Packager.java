@@ -181,22 +181,20 @@ public abstract class Packager {
 	}
 
 	/**
-     * Checks if the source file has already been packaged.
-     * 
-     * @return true if the source file has already been packaged, false otherwise
-     */
-    protected final boolean isAlreadyPackaged() {
+	 * Checks if the source file has already been packaged.
+	 * @return true if the source file has already been packaged, false otherwise
+	 */
+	protected final boolean isAlreadyPackaged() {
 		return isAlreadyPackaged(this.source);
 	}
 
 	/**
-     * Checks if the given file is already packaged as a JAR file.
-     * 
-     * @param file the file to be checked
-     * @return {@code true} if the file is already packaged, {@code false} otherwise
-     * @throws IllegalStateException if there is an error reading the archive file
-     */
-    protected final boolean isAlreadyPackaged(File file) {
+	 * Checks if the given file is already packaged as a JAR file.
+	 * @param file the file to be checked
+	 * @return {@code true} if the file is already packaged, {@code false} otherwise
+	 * @throws IllegalStateException if there is an error reading the archive file
+	 */
+	protected final boolean isAlreadyPackaged(File file) {
 		try (JarFile jarFile = new JarFile(file)) {
 			Manifest manifest = jarFile.getManifest();
 			return (manifest != null && manifest.getMainAttributes().getValue(BOOT_VERSION_ATTRIBUTE) != null);
@@ -207,42 +205,42 @@ public abstract class Packager {
 	}
 
 	/**
-     * Writes the contents of a JarFile to a specified AbstractJarWriter, including any required libraries.
-     * 
-     * @param sourceJar the JarFile to be written
-     * @param libraries the Libraries object containing any required libraries
-     * @param writer the AbstractJarWriter to write the contents to
-     * @throws IOException if an I/O error occurs during the writing process
-     */
-    protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer) throws IOException {
+	 * Writes the contents of a JarFile to a specified AbstractJarWriter, including any
+	 * required libraries.
+	 * @param sourceJar the JarFile to be written
+	 * @param libraries the Libraries object containing any required libraries
+	 * @param writer the AbstractJarWriter to write the contents to
+	 * @throws IOException if an I/O error occurs during the writing process
+	 */
+	protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer) throws IOException {
 		write(sourceJar, libraries, writer, false);
 	}
 
 	/**
-     * Writes the contents of a JarFile to a specified AbstractJarWriter, along with the specified Libraries.
-     * 
-     * @param sourceJar The JarFile to be written.
-     * @param libraries The Libraries to be included in the output.
-     * @param writer The AbstractJarWriter to write the JarFile contents to.
-     * @param ensureReproducibleBuild A flag indicating whether to ensure a reproducible build.
-     * @throws IOException If an I/O error occurs during the writing process.
-     * @throws IllegalArgumentException If the libraries parameter is null.
-     */
-    protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer,
+	 * Writes the contents of a JarFile to a specified AbstractJarWriter, along with the
+	 * specified Libraries.
+	 * @param sourceJar The JarFile to be written.
+	 * @param libraries The Libraries to be included in the output.
+	 * @param writer The AbstractJarWriter to write the JarFile contents to.
+	 * @param ensureReproducibleBuild A flag indicating whether to ensure a reproducible
+	 * build.
+	 * @throws IOException If an I/O error occurs during the writing process.
+	 * @throws IllegalArgumentException If the libraries parameter is null.
+	 */
+	protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer,
 			boolean ensureReproducibleBuild) throws IOException {
 		Assert.notNull(libraries, "Libraries must not be null");
 		write(sourceJar, writer, new PackagedLibraries(libraries, ensureReproducibleBuild));
 	}
 
 	/**
-     * Writes the contents of a JAR file to the specified writer.
-     * 
-     * @param sourceJar   the source JAR file to be written
-     * @param writer      the writer to write the JAR file contents to
-     * @param libraries   the packaged libraries to be written
-     * @throws IOException if an I/O error occurs during the writing process
-     */
-    private void write(JarFile sourceJar, AbstractJarWriter writer, PackagedLibraries libraries) throws IOException {
+	 * Writes the contents of a JAR file to the specified writer.
+	 * @param sourceJar the source JAR file to be written
+	 * @param writer the writer to write the JAR file contents to
+	 * @param libraries the packaged libraries to be written
+	 * @throws IOException if an I/O error occurs during the writing process
+	 */
+	private void write(JarFile sourceJar, AbstractJarWriter writer, PackagedLibraries libraries) throws IOException {
 		if (isLayered()) {
 			writer.useLayers(this.layers, this.layersIndex);
 		}
@@ -259,12 +257,11 @@ public abstract class Packager {
 	}
 
 	/**
-     * Writes the loader classes to the given {@link AbstractJarWriter}.
-     * 
-     * @param writer the {@link AbstractJarWriter} to write the loader classes to
-     * @throws IOException if an I/O error occurs while writing the loader classes
-     */
-    private void writeLoaderClasses(AbstractJarWriter writer) throws IOException {
+	 * Writes the loader classes to the given {@link AbstractJarWriter}.
+	 * @param writer the {@link AbstractJarWriter} to write the loader classes to
+	 * @throws IOException if an I/O error occurs while writing the loader classes
+	 */
+	private void writeLoaderClasses(AbstractJarWriter writer) throws IOException {
 		Layout layout = getLayout();
 		if (layout instanceof CustomLoaderLayout customLoaderLayout) {
 			customLoaderLayout.writeLoadedClasses(writer);
@@ -275,14 +272,14 @@ public abstract class Packager {
 	}
 
 	/**
-     * Writes a native image argument file based on the written libraries.
-     * 
-     * @param writer            the AbstractJarWriter used to write the argument file
-     * @param sourceJar         the JarFile containing the source code
-     * @param writtenLibraries  a map of written libraries
-     * @throws IOException      if an I/O error occurs while reading or writing the argument file
-     */
-    private void writeNativeImageArgFile(AbstractJarWriter writer, JarFile sourceJar,
+	 * Writes a native image argument file based on the written libraries.
+	 * @param writer the AbstractJarWriter used to write the argument file
+	 * @param sourceJar the JarFile containing the source code
+	 * @param writtenLibraries a map of written libraries
+	 * @throws IOException if an I/O error occurs while reading or writing the argument
+	 * file
+	 */
+	private void writeNativeImageArgFile(AbstractJarWriter writer, JarFile sourceJar,
 			Map<String, Library> writtenLibraries) throws IOException {
 		Set<String> excludes = new LinkedHashSet<>();
 		for (Map.Entry<String, Library> entry : writtenLibraries.entrySet()) {
@@ -308,12 +305,11 @@ public abstract class Packager {
 	}
 
 	/**
-     * Writes the layer index to the given AbstractJarWriter.
-     * 
-     * @param writer the AbstractJarWriter to write the layer index to
-     * @throws IOException if an I/O error occurs while writing the layer index
-     */
-    private void writeLayerIndex(AbstractJarWriter writer) throws IOException {
+	 * Writes the layer index to the given AbstractJarWriter.
+	 * @param writer the AbstractJarWriter to write the layer index to
+	 * @throws IOException if an I/O error occurs while writing the layer index
+	 */
+	private void writeLayerIndex(AbstractJarWriter writer) throws IOException {
 		String name = this.layout.getLayersIndexFileLocation();
 		if (StringUtils.hasLength(name)) {
 			Layer layer = this.layers.getLayer(name);
@@ -323,25 +319,23 @@ public abstract class Packager {
 	}
 
 	/**
-     * Writes a signature file if necessary for the given written libraries.
-     * 
-     * @param writtenLibraries the map of written libraries
-     * @param writer the abstract jar writer
-     * @throws IOException if an I/O error occurs
-     */
-    protected void writeSignatureFileIfNecessary(Map<String, Library> writtenLibraries, AbstractJarWriter writer)
+	 * Writes a signature file if necessary for the given written libraries.
+	 * @param writtenLibraries the map of written libraries
+	 * @param writer the abstract jar writer
+	 * @throws IOException if an I/O error occurs
+	 */
+	protected void writeSignatureFileIfNecessary(Map<String, Library> writtenLibraries, AbstractJarWriter writer)
 			throws IOException {
 	}
 
 	/**
-     * Returns the entity transformer based on the layout type.
-     * If the layout is an instance of RepackagingLayout, it returns a new instance of RepackagingEntryTransformer
-     * with the given repackagingLayout.
-     * Otherwise, it returns EntryTransformer.NONE.
-     *
-     * @return the entity transformer based on the layout type
-     */
-    private EntryTransformer getEntityTransformer() {
+	 * Returns the entity transformer based on the layout type. If the layout is an
+	 * instance of RepackagingLayout, it returns a new instance of
+	 * RepackagingEntryTransformer with the given repackagingLayout. Otherwise, it returns
+	 * EntryTransformer.NONE.
+	 * @return the entity transformer based on the layout type
+	 */
+	private EntryTransformer getEntityTransformer() {
 		if (getLayout() instanceof RepackagingLayout repackagingLayout) {
 			return new RepackagingEntryTransformer(repackagingLayout);
 		}
@@ -349,12 +343,11 @@ public abstract class Packager {
 	}
 
 	/**
-     * Checks if the provided input stream contains a valid ZIP file.
-     * 
-     * @param supplier the supplier of the input stream
-     * @return true if the input stream is a valid ZIP file, false otherwise
-     */
-    private boolean isZip(InputStreamSupplier supplier) {
+	 * Checks if the provided input stream contains a valid ZIP file.
+	 * @param supplier the supplier of the input stream
+	 * @return true if the input stream is a valid ZIP file, false otherwise
+	 */
+	private boolean isZip(InputStreamSupplier supplier) {
 		try {
 			try (InputStream inputStream = supplier.openStream()) {
 				return isZip(inputStream);
@@ -366,13 +359,12 @@ public abstract class Packager {
 	}
 
 	/**
-     * Checks if the given input stream represents a ZIP file.
-     * 
-     * @param inputStream the input stream to check
-     * @return true if the input stream is a ZIP file, false otherwise
-     * @throws IOException if an I/O error occurs while reading the input stream
-     */
-    private boolean isZip(InputStream inputStream) throws IOException {
+	 * Checks if the given input stream represents a ZIP file.
+	 * @param inputStream the input stream to check
+	 * @return true if the input stream is a ZIP file, false otherwise
+	 * @throws IOException if an I/O error occurs while reading the input stream
+	 */
+	private boolean isZip(InputStream inputStream) throws IOException {
 		for (byte magicByte : ZIP_FILE_HEADER) {
 			if (inputStream.read() != magicByte) {
 				return false;
@@ -382,13 +374,12 @@ public abstract class Packager {
 	}
 
 	/**
-     * Builds a manifest for the given JarFile.
-     * 
-     * @param source the JarFile to build the manifest for
-     * @return the built Manifest
-     * @throws IOException if an I/O error occurs while building the manifest
-     */
-    private Manifest buildManifest(JarFile source) throws IOException {
+	 * Builds a manifest for the given JarFile.
+	 * @param source the JarFile to build the manifest for
+	 * @return the built Manifest
+	 * @throws IOException if an I/O error occurs while building the manifest
+	 */
+	private Manifest buildManifest(JarFile source) throws IOException {
 		Manifest manifest = createInitialManifest(source);
 		addMainAndStartAttributes(source, manifest);
 		addBootAttributes(manifest.getMainAttributes());
@@ -396,15 +387,14 @@ public abstract class Packager {
 	}
 
 	/**
-     * Creates an initial manifest for the given JarFile.
-     * If the source JarFile already has a manifest, it is used as the initial manifest.
-     * Otherwise, a new manifest is created with a default Manifest-Version attribute of "1.0".
-     *
-     * @param source the JarFile for which to create the initial manifest
-     * @return the initial manifest
-     * @throws IOException if an I/O error occurs while reading the source JarFile
-     */
-    private Manifest createInitialManifest(JarFile source) throws IOException {
+	 * Creates an initial manifest for the given JarFile. If the source JarFile already
+	 * has a manifest, it is used as the initial manifest. Otherwise, a new manifest is
+	 * created with a default Manifest-Version attribute of "1.0".
+	 * @param source the JarFile for which to create the initial manifest
+	 * @return the initial manifest
+	 * @throws IOException if an I/O error occurs while reading the source JarFile
+	 */
+	private Manifest createInitialManifest(JarFile source) throws IOException {
 		if (source.getManifest() != null) {
 			return new Manifest(source.getManifest());
 		}
@@ -414,13 +404,12 @@ public abstract class Packager {
 	}
 
 	/**
-     * Adds the main and start attributes to the given manifest.
-     * 
-     * @param source   the JarFile containing the source files
-     * @param manifest the Manifest to add the attributes to
-     * @throws IOException if an I/O error occurs while reading the JarFile
-     */
-    private void addMainAndStartAttributes(JarFile source, Manifest manifest) throws IOException {
+	 * Adds the main and start attributes to the given manifest.
+	 * @param source the JarFile containing the source files
+	 * @param manifest the Manifest to add the attributes to
+	 * @throws IOException if an I/O error occurs while reading the JarFile
+	 */
+	private void addMainAndStartAttributes(JarFile source, Manifest manifest) throws IOException {
 		String mainClass = getMainClass(source, manifest);
 		String launcherClass = getLayout().getLauncherClassName();
 		if (launcherClass != null) {
@@ -434,14 +423,13 @@ public abstract class Packager {
 	}
 
 	/**
-     * Returns the main class of the given JAR file.
-     * 
-     * @param source   the JAR file to retrieve the main class from
-     * @param manifest the manifest of the JAR file
-     * @return the main class of the JAR file
-     * @throws IOException if an I/O error occurs while reading the JAR file
-     */
-    private String getMainClass(JarFile source, Manifest manifest) throws IOException {
+	 * Returns the main class of the given JAR file.
+	 * @param source the JAR file to retrieve the main class from
+	 * @param manifest the manifest of the JAR file
+	 * @return the main class of the JAR file
+	 * @throws IOException if an I/O error occurs while reading the JAR file
+	 */
+	private String getMainClass(JarFile source, Manifest manifest) throws IOException {
 		if (this.mainClass != null) {
 			return this.mainClass;
 		}
@@ -453,13 +441,12 @@ public abstract class Packager {
 	}
 
 	/**
-     * Finds the main method in the given JarFile with a timeout warning.
-     * 
-     * @param source the JarFile to search for the main method
-     * @return the name of the main method found
-     * @throws IOException if an I/O error occurs while reading the JarFile
-     */
-    private String findMainMethodWithTimeoutWarning(JarFile source) throws IOException {
+	 * Finds the main method in the given JarFile with a timeout warning.
+	 * @param source the JarFile to search for the main method
+	 * @return the name of the main method found
+	 * @throws IOException if an I/O error occurs while reading the JarFile
+	 */
+	private String findMainMethodWithTimeoutWarning(JarFile source) throws IOException {
 		long startTime = System.currentTimeMillis();
 		String mainMethod = findMainMethod(source);
 		long duration = System.currentTimeMillis() - startTime;
@@ -472,13 +459,12 @@ public abstract class Packager {
 	}
 
 	/**
-     * Finds the main method in the given JarFile.
-     * 
-     * @param source the JarFile to search for the main method
-     * @return the fully qualified name of the main class containing the main method
-     * @throws IOException if an I/O error occurs while reading the JarFile
-     */
-    protected String findMainMethod(JarFile source) throws IOException {
+	 * Finds the main method in the given JarFile.
+	 * @param source the JarFile to search for the main method
+	 * @return the fully qualified name of the main class containing the main method
+	 * @throws IOException if an I/O error occurs while reading the JarFile
+	 */
+	protected String findMainMethod(JarFile source) throws IOException {
 		return MainClassFinder.findSingleMainClass(source, getLayout().getClassesLocation(),
 				SPRING_BOOT_APPLICATION_CLASS_NAME);
 	}
@@ -495,23 +481,21 @@ public abstract class Packager {
 	}
 
 	/**
-     * Returns the source file used by the Packager.
-     *
-     * @return the source file used by the Packager
-     */
-    protected final File getSource() {
+	 * Returns the source file used by the Packager.
+	 * @return the source file used by the Packager
+	 */
+	protected final File getSource() {
 		return this.source;
 	}
 
 	/**
-     * Returns the layout for the Packager.
-     * If the layout is not already created, it creates a new layout using the layout factory and the source.
-     * It checks if the created layout is not null, otherwise throws an exception.
-     * 
-     * @return the layout for the Packager
-     * @throws IllegalStateException if unable to detect layout
-     */
-    protected final Layout getLayout() {
+	 * Returns the layout for the Packager. If the layout is not already created, it
+	 * creates a new layout using the layout factory and the source. It checks if the
+	 * created layout is not null, otherwise throws an exception.
+	 * @return the layout for the Packager
+	 * @throws IllegalStateException if unable to detect layout
+	 */
+	protected final Layout getLayout() {
 		if (this.layout == null) {
 			Layout createdLayout = getLayoutFactory().getLayout(this.source);
 			Assert.state(createdLayout != null, "Unable to detect layout");
@@ -521,16 +505,15 @@ public abstract class Packager {
 	}
 
 	/**
-     * Returns the layout factory for the packager.
-     * If the layout factory is already set, it will be returned.
-     * Otherwise, it will load the layout factories using SpringFactoriesLoader.
-     * If no layout factories are found, it will return a new instance of DefaultLayoutFactory.
-     * If multiple layout factories are found, an exception will be thrown.
-     *
-     * @return the layout factory for the packager
-     * @throws IllegalStateException if no unique layout factory is found
-     */
-    private LayoutFactory getLayoutFactory() {
+	 * Returns the layout factory for the packager. If the layout factory is already set,
+	 * it will be returned. Otherwise, it will load the layout factories using
+	 * SpringFactoriesLoader. If no layout factories are found, it will return a new
+	 * instance of DefaultLayoutFactory. If multiple layout factories are found, an
+	 * exception will be thrown.
+	 * @return the layout factory for the packager
+	 * @throws IllegalStateException if no unique layout factory is found
+	 */
+	private LayoutFactory getLayoutFactory() {
 		if (this.layoutFactory != null) {
 			return this.layoutFactory;
 		}
@@ -543,21 +526,19 @@ public abstract class Packager {
 	}
 
 	/**
-     * Adds boot attributes to the given attributes object.
-     * 
-     * @param attributes the attributes object to add boot attributes to
-     */
-    private void addBootAttributes(Attributes attributes) {
+	 * Adds boot attributes to the given attributes object.
+	 * @param attributes the attributes object to add boot attributes to
+	 */
+	private void addBootAttributes(Attributes attributes) {
 		attributes.putValue(BOOT_VERSION_ATTRIBUTE, getClass().getPackage().getImplementationVersion());
 		addBootAttributesForLayout(attributes);
 	}
 
 	/**
-     * Adds boot attributes for the layout.
-     * 
-     * @param attributes the attributes to add the boot attributes to
-     */
-    private void addBootAttributesForLayout(Attributes attributes) {
+	 * Adds boot attributes for the layout.
+	 * @param attributes the attributes to add the boot attributes to
+	 */
+	private void addBootAttributesForLayout(Attributes attributes) {
 		Layout layout = getLayout();
 		if (layout instanceof RepackagingLayout repackagingLayout) {
 			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, repackagingLayout.getRepackagedClassesLocation());
@@ -573,24 +554,23 @@ public abstract class Packager {
 	}
 
 	/**
-     * Puts the specified name-value pair into the given Attributes object if the value has a length.
-     * 
-     * @param attributes the Attributes object to put the name-value pair into
-     * @param name the name of the attribute
-     * @param value the value of the attribute
-     */
-    private void putIfHasLength(Attributes attributes, String name, String value) {
+	 * Puts the specified name-value pair into the given Attributes object if the value
+	 * has a length.
+	 * @param attributes the Attributes object to put the name-value pair into
+	 * @param name the name of the attribute
+	 * @param value the value of the attribute
+	 */
+	private void putIfHasLength(Attributes attributes, String name, String value) {
 		if (StringUtils.hasLength(value)) {
 			attributes.putValue(name, value);
 		}
 	}
 
 	/**
-     * Checks if the Packager is layered.
-     * 
-     * @return true if the Packager is layered, false otherwise.
-     */
-    private boolean isLayered() {
+	 * Checks if the Packager is layered.
+	 * @return true if the Packager is layered, false otherwise.
+	 */
+	private boolean isLayered() {
 		return this.layers != null;
 	}
 
@@ -618,21 +598,20 @@ public abstract class Packager {
 		private final RepackagingLayout layout;
 
 		/**
-         * Constructs a new RepackagingEntryTransformer with the specified layout.
-         *
-         * @param layout the RepackagingLayout to be used by the transformer
-         */
-        private RepackagingEntryTransformer(RepackagingLayout layout) {
+		 * Constructs a new RepackagingEntryTransformer with the specified layout.
+		 * @param layout the RepackagingLayout to be used by the transformer
+		 */
+		private RepackagingEntryTransformer(RepackagingLayout layout) {
 			this.layout = layout;
 		}
 
 		/**
-         * Transforms a JarArchiveEntry.
-         * 
-         * @param entry the JarArchiveEntry to be transformed
-         * @return the transformed JarArchiveEntry, or null if the entry should be excluded
-         */
-        @Override
+		 * Transforms a JarArchiveEntry.
+		 * @param entry the JarArchiveEntry to be transformed
+		 * @return the transformed JarArchiveEntry, or null if the entry should be
+		 * excluded
+		 */
+		@Override
 		public JarArchiveEntry transform(JarArchiveEntry entry) {
 			if (entry.getName().equals("META-INF/INDEX.LIST")) {
 				return null;
@@ -666,22 +645,21 @@ public abstract class Packager {
 		}
 
 		/**
-         * Transforms the given name by appending it to the location of the repackaged classes.
-         * 
-         * @param name the name to be transformed
-         * @return the transformed name
-         */
-        private String transformName(String name) {
+		 * Transforms the given name by appending it to the location of the repackaged
+		 * classes.
+		 * @param name the name to be transformed
+		 * @return the transformed name
+		 */
+		private String transformName(String name) {
 			return this.layout.getRepackagedClassesLocation() + name;
 		}
 
 		/**
-         * Checks if the given JarArchiveEntry is transformable.
-         * 
-         * @param entry the JarArchiveEntry to check
-         * @return true if the entry is transformable, false otherwise
-         */
-        private boolean isTransformable(JarArchiveEntry entry) {
+		 * Checks if the given JarArchiveEntry is transformable.
+		 * @param entry the JarArchiveEntry to check
+		 * @return true if the entry is transformable, false otherwise
+		 */
+		private boolean isTransformable(JarArchiveEntry entry) {
 			String name = entry.getName();
 			if (name.startsWith("META-INF/")) {
 				return name.equals("META-INF/aop.xml") || name.endsWith(".kotlin_module")
@@ -704,13 +682,13 @@ public abstract class Packager {
 		private final Function<JarEntry, Library> libraryLookup;
 
 		/**
-         * Packs the libraries into a map, either ensuring a reproducible build or not.
-         * 
-         * @param libraries             the libraries to be packed
-         * @param ensureReproducibleBuild   flag indicating whether to ensure a reproducible build or not
-         * @throws IOException          if an I/O error occurs while packing the libraries
-         */
-        PackagedLibraries(Libraries libraries, boolean ensureReproducibleBuild) throws IOException {
+		 * Packs the libraries into a map, either ensuring a reproducible build or not.
+		 * @param libraries the libraries to be packed
+		 * @param ensureReproducibleBuild flag indicating whether to ensure a reproducible
+		 * build or not
+		 * @throws IOException if an I/O error occurs while packing the libraries
+		 */
+		PackagedLibraries(Libraries libraries, boolean ensureReproducibleBuild) throws IOException {
 			this.libraries = (ensureReproducibleBuild) ? new TreeMap<>() : new LinkedHashMap<>();
 			libraries.doWithLibraries((library) -> {
 				if (isZip(library::openStream)) {
@@ -725,12 +703,12 @@ public abstract class Packager {
 		}
 
 		/**
-         * Adds a library to the packaged libraries.
-         * 
-         * @param library the library to be added
-         * @throws IllegalArgumentException if the library is already present in the packaged libraries
-         */
-        private void addLibrary(Library library) {
+		 * Adds a library to the packaged libraries.
+		 * @param library the library to be added
+		 * @throws IllegalArgumentException if the library is already present in the
+		 * packaged libraries
+		 */
+		private void addLibrary(Library library) {
 			String location = getLayout().getLibraryLocation(library.getName(), library.getScope());
 			if (location != null) {
 				String path = location + library.getName();
@@ -740,41 +718,41 @@ public abstract class Packager {
 		}
 
 		/**
-         * Looks up a library in the packaged libraries.
-         * 
-         * @param entry the JarEntry representing the library
-         * @return the Library object associated with the given JarEntry, or null if not found
-         */
-        private Library lookup(JarEntry entry) {
+		 * Looks up a library in the packaged libraries.
+		 * @param entry the JarEntry representing the library
+		 * @return the Library object associated with the given JarEntry, or null if not
+		 * found
+		 */
+		private Library lookup(JarEntry entry) {
 			return this.libraries.get(entry.getName());
 		}
 
 		/**
-         * Returns the UnpackHandler object associated with this PackagedLibraries instance.
-         * 
-         * @return the UnpackHandler object
-         */
-        UnpackHandler getUnpackHandler() {
+		 * Returns the UnpackHandler object associated with this PackagedLibraries
+		 * instance.
+		 * @return the UnpackHandler object
+		 */
+		UnpackHandler getUnpackHandler() {
 			return this.unpackHandler;
 		}
 
 		/**
-         * Returns the library lookup function.
-         *
-         * @return the library lookup function
-         */
-        Function<JarEntry, Library> getLibraryLookup() {
+		 * Returns the library lookup function.
+		 * @return the library lookup function
+		 */
+		Function<JarEntry, Library> getLibraryLookup() {
 			return this.libraryLookup;
 		}
 
 		/**
-         * Writes the libraries to the given AbstractJarWriter and returns a map of the written libraries.
-         * 
-         * @param writer the AbstractJarWriter to write the libraries to
-         * @return a map of the written libraries, where the key is the library path and the value is the Library object
-         * @throws IOException if an I/O error occurs while writing the libraries
-         */
-        Map<String, Library> write(AbstractJarWriter writer) throws IOException {
+		 * Writes the libraries to the given AbstractJarWriter and returns a map of the
+		 * written libraries.
+		 * @param writer the AbstractJarWriter to write the libraries to
+		 * @return a map of the written libraries, where the key is the library path and
+		 * the value is the Library object
+		 * @throws IOException if an I/O error occurs while writing the libraries
+		 */
+		Map<String, Library> write(AbstractJarWriter writer) throws IOException {
 			Map<String, Library> writtenLibraries = new LinkedHashMap<>();
 			for (Entry<String, Library> entry : this.libraries.entrySet()) {
 				String path = entry.getKey();
@@ -790,14 +768,13 @@ public abstract class Packager {
 		}
 
 		/**
-         * Writes the classpath index file if necessary.
-         * 
-         * @param paths the collection of paths to be included in the index file
-         * @param layout the layout of the packaged libraries
-         * @param writer the abstract jar writer used to write the index file
-         * @throws IOException if an I/O error occurs while writing the index file
-         */
-        private void writeClasspathIndexIfNecessary(Collection<String> paths, Layout layout, AbstractJarWriter writer)
+		 * Writes the classpath index file if necessary.
+		 * @param paths the collection of paths to be included in the index file
+		 * @param layout the layout of the packaged libraries
+		 * @param writer the abstract jar writer used to write the index file
+		 * @throws IOException if an I/O error occurs while writing the index file
+		 */
+		private void writeClasspathIndexIfNecessary(Collection<String> paths, Layout layout, AbstractJarWriter writer)
 				throws IOException {
 			if (layout.getClasspathIndexFileLocation() != null) {
 				List<String> names = paths.stream().map((path) -> "- \"" + path + "\"").toList();
@@ -812,26 +789,24 @@ public abstract class Packager {
 		private final class PackagedLibrariesUnpackHandler implements UnpackHandler {
 
 			/**
-             * Determines if a library requires unpacking.
-             * 
-             * @param name the name of the library
-             * @return true if the library requires unpacking, false otherwise
-             */
-            @Override
+			 * Determines if a library requires unpacking.
+			 * @param name the name of the library
+			 * @return true if the library requires unpacking, false otherwise
+			 */
+			@Override
 			public boolean requiresUnpack(String name) {
 				Library library = PackagedLibraries.this.libraries.get(name);
 				return library != null && library.isUnpackRequired();
 			}
 
 			/**
-             * Calculates the SHA1 hash of a library file.
-             * 
-             * @param name the name of the library file
-             * @return the SHA1 hash of the library file
-             * @throws IOException if an I/O error occurs while reading the library file
-             * @throws IllegalArgumentException if no library is found for the given name
-             */
-            @Override
+			 * Calculates the SHA1 hash of a library file.
+			 * @param name the name of the library file
+			 * @return the SHA1 hash of the library file
+			 * @throws IOException if an I/O error occurs while reading the library file
+			 * @throws IllegalArgumentException if no library is found for the given name
+			 */
+			@Override
 			public String sha1Hash(String name) throws IOException {
 				Library library = PackagedLibraries.this.libraries.get(name);
 				Assert.notNull(library, () -> "No library found for entry name '" + name + "'");

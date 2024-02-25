@@ -70,20 +70,19 @@ public class Review implements Serializable {
 	private String details;
 
 	/**
-     * Creates a new instance of the Review class.
-     */
-    protected Review() {
+	 * Creates a new instance of the Review class.
+	 */
+	protected Review() {
 	}
 
 	/**
-     * Creates a new Review object with the given hotel, index, and review details.
-     * 
-     * @param hotel the hotel associated with the review (must not be null)
-     * @param index the index of the review
-     * @param details the review details (must not be null)
-     * @throws IllegalArgumentException if hotel or details is null
-     */
-    public Review(Hotel hotel, int index, ReviewDetails details) {
+	 * Creates a new Review object with the given hotel, index, and review details.
+	 * @param hotel the hotel associated with the review (must not be null)
+	 * @param index the index of the review
+	 * @param details the review details (must not be null)
+	 * @throws IllegalArgumentException if hotel or details is null
+	 */
+	public Review(Hotel hotel, int index, ReviewDetails details) {
 		Assert.notNull(hotel, "Hotel must not be null");
 		Assert.notNull(details, "Details must not be null");
 		this.hotel = hotel;
@@ -96,110 +95,98 @@ public class Review implements Serializable {
 	}
 
 	/**
-     * Returns the hotel associated with this review.
-     *
-     * @return the hotel associated with this review
-     */
-    public Hotel getHotel() {
+	 * Returns the hotel associated with this review.
+	 * @return the hotel associated with this review
+	 */
+	public Hotel getHotel() {
 		return this.hotel;
 	}
 
 	/**
-     * Returns the index value.
-     *
-     * @return the index value
-     */
-    public int getIndex() {
+	 * Returns the index value.
+	 * @return the index value
+	 */
+	public int getIndex() {
 		return this.index;
 	}
 
 	/**
-     * Returns the rating of the review.
-     *
-     * @return the rating of the review
-     */
-    public Rating getRating() {
+	 * Returns the rating of the review.
+	 * @return the rating of the review
+	 */
+	public Rating getRating() {
 		return this.rating;
 	}
 
 	/**
-     * Sets the rating for the review.
-     * 
-     * @param rating the rating to be set
-     */
-    public void setRating(Rating rating) {
+	 * Sets the rating for the review.
+	 * @param rating the rating to be set
+	 */
+	public void setRating(Rating rating) {
 		this.rating = rating;
 	}
 
 	/**
-     * Returns the check-in date of the review.
-     *
-     * @return the check-in date of the review
-     */
-    public Date getCheckInDate() {
+	 * Returns the check-in date of the review.
+	 * @return the check-in date of the review
+	 */
+	public Date getCheckInDate() {
 		return this.checkInDate;
 	}
 
 	/**
-     * Sets the check-in date for the review.
-     * 
-     * @param checkInDate the check-in date to be set
-     */
-    public void setCheckInDate(Date checkInDate) {
+	 * Sets the check-in date for the review.
+	 * @param checkInDate the check-in date to be set
+	 */
+	public void setCheckInDate(Date checkInDate) {
 		this.checkInDate = checkInDate;
 	}
 
 	/**
-     * Returns the trip type of the review.
-     * 
-     * @return the trip type of the review
-     */
-    public TripType getTripType() {
+	 * Returns the trip type of the review.
+	 * @return the trip type of the review
+	 */
+	public TripType getTripType() {
 		return this.tripType;
 	}
 
 	/**
-     * Sets the trip type for the review.
-     * 
-     * @param tripType the trip type to be set
-     */
-    public void setTripType(TripType tripType) {
+	 * Sets the trip type for the review.
+	 * @param tripType the trip type to be set
+	 */
+	public void setTripType(TripType tripType) {
 		this.tripType = tripType;
 	}
 
 	/**
-     * Returns the title of the review.
-     *
-     * @return the title of the review
-     */
-    public String getTitle() {
+	 * Returns the title of the review.
+	 * @return the title of the review
+	 */
+	public String getTitle() {
 		return this.title;
 	}
 
 	/**
-     * Sets the title of the review.
-     * 
-     * @param title the title to be set
-     */
-    public void setTitle(String title) {
+	 * Sets the title of the review.
+	 * @param title the title to be set
+	 */
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
 	/**
-     * Returns the details of the review.
-     *
-     * @return the details of the review
-     */
-    public String getDetails() {
+	 * Returns the details of the review.
+	 * @return the details of the review
+	 */
+	public String getDetails() {
 		return this.details;
 	}
 
 	/**
-     * Sets the details of the review.
-     * 
-     * @param details the details of the review
-     */
-    public void setDetails(String details) {
+	 * Sets the details of the review.
+	 * @param details the details of the review
+	 */
+	public void setDetails(String details) {
 		this.details = details;
 	}
 

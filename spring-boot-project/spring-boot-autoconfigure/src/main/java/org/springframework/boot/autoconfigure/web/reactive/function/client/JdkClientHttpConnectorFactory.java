@@ -33,12 +33,11 @@ import org.springframework.http.client.reactive.JdkClientHttpConnector;
 class JdkClientHttpConnectorFactory implements ClientHttpConnectorFactory<JdkClientHttpConnector> {
 
 	/**
-     * Creates a JdkClientHttpConnector with the provided SSL bundle.
-     * 
-     * @param sslBundle the SSL bundle containing the SSL options and context
-     * @return a JdkClientHttpConnector with the provided SSL bundle
-     */
-    @Override
+	 * Creates a JdkClientHttpConnector with the provided SSL bundle.
+	 * @param sslBundle the SSL bundle containing the SSL options and context
+	 * @return a JdkClientHttpConnector with the provided SSL bundle
+	 */
+	@Override
 	public JdkClientHttpConnector createClientHttpConnector(SslBundle sslBundle) {
 		Builder builder = HttpClient.newBuilder();
 		if (sslBundle != null) {

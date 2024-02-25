@@ -36,14 +36,15 @@ import org.springframework.web.servlet.mvc.Controller;
 class WelcomePageNotAcceptableHandlerMapping extends AbstractUrlHandlerMapping {
 
 	/**
-     * Constructs a new WelcomePageNotAcceptableHandlerMapping with the specified parameters.
-     * 
-     * @param templateAvailabilityProviders the TemplateAvailabilityProviders to resolve template availability
-     * @param applicationContext the ApplicationContext to access application context
-     * @param indexHtmlResource the Resource representing the index.html file
-     * @param staticPathPattern the pattern for static path
-     */
-    WelcomePageNotAcceptableHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
+	 * Constructs a new WelcomePageNotAcceptableHandlerMapping with the specified
+	 * parameters.
+	 * @param templateAvailabilityProviders the TemplateAvailabilityProviders to resolve
+	 * template availability
+	 * @param applicationContext the ApplicationContext to access application context
+	 * @param indexHtmlResource the Resource representing the index.html file
+	 * @param staticPathPattern the pattern for static path
+	 */
+	WelcomePageNotAcceptableHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
 			ApplicationContext applicationContext, Resource indexHtmlResource, String staticPathPattern) {
 		setOrder(LOWEST_PRECEDENCE - 10); // Before ResourceHandlerRegistry
 		WelcomePage welcomePage = WelcomePage.resolve(templateAvailabilityProviders, applicationContext,
@@ -54,26 +55,25 @@ class WelcomePageNotAcceptableHandlerMapping extends AbstractUrlHandlerMapping {
 	}
 
 	/**
-     * Handles the HTTP request and response for the WelcomePageNotAcceptableHandlerMapping class.
-     * Sets the response status to NOT_ACCEPTABLE (406) and returns null.
-     * 
-     * @param request  the HttpServletRequest object representing the HTTP request
-     * @param response the HttpServletResponse object representing the HTTP response
-     * @return         null
-     */
-    private ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
+	 * Handles the HTTP request and response for the
+	 * WelcomePageNotAcceptableHandlerMapping class. Sets the response status to
+	 * NOT_ACCEPTABLE (406) and returns null.
+	 * @param request the HttpServletRequest object representing the HTTP request
+	 * @param response the HttpServletResponse object representing the HTTP response
+	 * @return null
+	 */
+	private ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
 		response.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
 		return null;
 	}
 
 	/**
-     * Retrieves the handler for the given HttpServletRequest.
-     * 
-     * @param request The HttpServletRequest object representing the incoming request.
-     * @return The handler object for the given request.
-     * @throws Exception if an error occurs while retrieving the handler.
-     */
-    @Override
+	 * Retrieves the handler for the given HttpServletRequest.
+	 * @param request The HttpServletRequest object representing the incoming request.
+	 * @return The handler object for the given request.
+	 * @throws Exception if an error occurs while retrieving the handler.
+	 */
+	@Override
 	protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
 		return super.getHandlerInternal(request);
 	}

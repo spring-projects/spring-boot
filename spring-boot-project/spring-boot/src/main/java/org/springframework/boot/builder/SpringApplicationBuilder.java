@@ -95,21 +95,20 @@ public class SpringApplicationBuilder {
 	private boolean configuredAsChild = false;
 
 	/**
-     * Constructs a new SpringApplicationBuilder with the specified sources.
-     *
-     * @param sources the classes to be used as sources for the application context
-     */
-    public SpringApplicationBuilder(Class<?>... sources) {
+	 * Constructs a new SpringApplicationBuilder with the specified sources.
+	 * @param sources the classes to be used as sources for the application context
+	 */
+	public SpringApplicationBuilder(Class<?>... sources) {
 		this(null, sources);
 	}
 
 	/**
-     * Constructs a new SpringApplicationBuilder with the specified resource loader and sources.
-     * 
-     * @param resourceLoader the resource loader to use for loading resources
-     * @param sources the sources (classes) to be used for configuring the application
-     */
-    public SpringApplicationBuilder(ResourceLoader resourceLoader, Class<?>... sources) {
+	 * Constructs a new SpringApplicationBuilder with the specified resource loader and
+	 * sources.
+	 * @param resourceLoader the resource loader to use for loading resources
+	 * @param sources the sources (classes) to be used for configuring the application
+	 */
+	public SpringApplicationBuilder(ResourceLoader resourceLoader, Class<?>... sources) {
 		this.application = createSpringApplication(resourceLoader, sources);
 	}
 
@@ -163,11 +162,10 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-     * Configures the application as a child if necessary.
-     * 
-     * @param args the command line arguments
-     */
-    private void configureAsChildIfNecessary(String... args) {
+	 * Configures the application as a child if necessary.
+	 * @param args the command line arguments
+	 */
+	private void configureAsChildIfNecessary(String... args) {
 		if (this.parent != null && !this.configuredAsChild) {
 			this.configuredAsChild = true;
 			if (!this.registerShutdownHookApplied) {
@@ -246,13 +244,12 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-     * Runs the application and extracts the parent SpringApplicationBuilder.
-     * 
-     * @param args the command line arguments
-     * @return the parent SpringApplicationBuilder
-     * @throws IllegalStateException if no parent is defined yet
-     */
-    private SpringApplicationBuilder runAndExtractParent(String... args) {
+	 * Runs the application and extracts the parent SpringApplicationBuilder.
+	 * @param args the command line arguments
+	 * @return the parent SpringApplicationBuilder
+	 * @throws IllegalStateException if no parent is defined yet
+	 */
+	private SpringApplicationBuilder runAndExtractParent(String... args) {
 		if (this.context == null) {
 			run(args);
 		}
@@ -356,12 +353,11 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-     * Sets the banner mode for the application.
-     * 
-     * @param bannerMode the banner mode to set
-     * @return the updated SpringApplicationBuilder object
-     */
-    public SpringApplicationBuilder bannerMode(Banner.Mode bannerMode) {
+	 * Sets the banner mode for the application.
+	 * @param bannerMode the banner mode to set
+	 * @return the updated SpringApplicationBuilder object
+	 */
+	public SpringApplicationBuilder bannerMode(Banner.Mode bannerMode) {
 		this.application.setBannerMode(bannerMode);
 		return this;
 	}
@@ -459,12 +455,11 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-     * Converts an array of key-value pairs into a Map.
-     * 
-     * @param properties the array of key-value pairs
-     * @return a Map containing the key-value pairs
-     */
-    private Map<String, Object> getMapFromKeyValuePairs(String[] properties) {
+	 * Converts an array of key-value pairs into a Map.
+	 * @param properties the array of key-value pairs
+	 * @return a Map containing the key-value pairs
+	 */
+	private Map<String, Object> getMapFromKeyValuePairs(String[] properties) {
 		Map<String, Object> map = new HashMap<>();
 		for (String property : properties) {
 			int index = lowestIndexOf(property, ":", "=");
@@ -476,13 +471,13 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-     * Returns the lowest index of the given candidates in the specified property.
-     * 
-     * @param property   the property to search in
-     * @param candidates the candidates to search for
-     * @return the lowest index of the candidates in the property, or -1 if none of the candidates are found
-     */
-    private int lowestIndexOf(String property, String... candidates) {
+	 * Returns the lowest index of the given candidates in the specified property.
+	 * @param property the property to search in
+	 * @param candidates the candidates to search for
+	 * @return the lowest index of the candidates in the property, or -1 if none of the
+	 * candidates are found
+	 */
+	private int lowestIndexOf(String property, String... candidates) {
 		int index = -1;
 		for (String candidate : candidates) {
 			int candidateIndex = property.indexOf(candidate);
@@ -506,12 +501,12 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-     * Converts a Properties object into a Map<String, Object>.
-     * 
-     * @param properties the Properties object to convert
-     * @return a Map<String, Object> containing the key-value pairs from the Properties object
-     */
-    private Map<String, Object> getMapFromProperties(Properties properties) {
+	 * Converts a Properties object into a Map<String, Object>.
+	 * @param properties the Properties object to convert
+	 * @return a Map<String, Object> containing the key-value pairs from the Properties
+	 * object
+	 */
+	private Map<String, Object> getMapFromProperties(Properties properties) {
 		Map<String, Object> map = new HashMap<>();
 		for (Object key : Collections.list(properties.propertyNames())) {
 			map.put((String) key, properties.get(key));
@@ -549,12 +544,11 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-     * Sets additional profiles for the Spring application.
-     * 
-     * @param additionalProfiles the collection of additional profiles to be set
-     * @return the updated SpringApplicationBuilder object
-     */
-    private SpringApplicationBuilder additionalProfiles(Collection<String> additionalProfiles) {
+	 * Sets additional profiles for the Spring application.
+	 * @param additionalProfiles the collection of additional profiles to be set
+	 * @return the updated SpringApplicationBuilder object
+	 */
+	private SpringApplicationBuilder additionalProfiles(Collection<String> additionalProfiles) {
 		this.additionalProfiles = new LinkedHashSet<>(additionalProfiles);
 		this.application.setAdditionalProfiles(StringUtils.toStringArray(this.additionalProfiles));
 		return this;

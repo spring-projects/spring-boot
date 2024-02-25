@@ -40,46 +40,46 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 	private volatile List<String> autoConfigurations;
 
 	/**
-     * Set the ClassLoader to be used for loading beans.
-     * 
-     * @param beanClassLoader the ClassLoader to be used for loading beans
-     */
-    @Override
+	 * Set the ClassLoader to be used for loading beans.
+	 * @param beanClassLoader the ClassLoader to be used for loading beans
+	 */
+	@Override
 	public void setBeanClassLoader(ClassLoader beanClassLoader) {
 		this.beanClassLoader = beanClassLoader;
 	}
 
 	/**
-     * Determines if the given metadata reader matches the AutoConfigurationExcludeFilter criteria.
-     * 
-     * @param metadataReader the metadata reader to be checked
-     * @param metadataReaderFactory the factory for creating metadata readers
-     * @return true if the metadata reader matches the criteria, false otherwise
-     * @throws IOException if an I/O error occurs while reading the metadata
-     */
-    @Override
+	 * Determines if the given metadata reader matches the AutoConfigurationExcludeFilter
+	 * criteria.
+	 * @param metadataReader the metadata reader to be checked
+	 * @param metadataReaderFactory the factory for creating metadata readers
+	 * @return true if the metadata reader matches the criteria, false otherwise
+	 * @throws IOException if an I/O error occurs while reading the metadata
+	 */
+	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		return isConfiguration(metadataReader) && isAutoConfiguration(metadataReader);
 	}
 
 	/**
-     * Determines if the given metadata reader represents a configuration class.
-     * 
-     * @param metadataReader the metadata reader to check
-     * @return {@code true} if the metadata reader is annotated with {@link Configuration}, {@code false} otherwise
-     */
-    private boolean isConfiguration(MetadataReader metadataReader) {
+	 * Determines if the given metadata reader represents a configuration class.
+	 * @param metadataReader the metadata reader to check
+	 * @return {@code true} if the metadata reader is annotated with
+	 * {@link Configuration}, {@code false} otherwise
+	 */
+	private boolean isConfiguration(MetadataReader metadataReader) {
 		return metadataReader.getAnnotationMetadata().isAnnotated(Configuration.class.getName());
 	}
 
 	/**
-     * Checks if the given metadata reader is annotated with AutoConfiguration or if its class name is present in the list of auto configurations.
-     * 
-     * @param metadataReader the metadata reader to check
-     * @return true if the metadata reader is annotated with AutoConfiguration or if its class name is present in the list of auto configurations, false otherwise
-     */
-    private boolean isAutoConfiguration(MetadataReader metadataReader) {
+	 * Checks if the given metadata reader is annotated with AutoConfiguration or if its
+	 * class name is present in the list of auto configurations.
+	 * @param metadataReader the metadata reader to check
+	 * @return true if the metadata reader is annotated with AutoConfiguration or if its
+	 * class name is present in the list of auto configurations, false otherwise
+	 */
+	private boolean isAutoConfiguration(MetadataReader metadataReader) {
 		boolean annotatedWithAutoConfiguration = metadataReader.getAnnotationMetadata()
 			.isAnnotated(AutoConfiguration.class.getName());
 		return annotatedWithAutoConfiguration
@@ -87,11 +87,10 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 	}
 
 	/**
-     * Retrieves the list of auto configurations.
-     * 
-     * @return The list of auto configurations.
-     */
-    protected List<String> getAutoConfigurations() {
+	 * Retrieves the list of auto configurations.
+	 * @return The list of auto configurations.
+	 */
+	protected List<String> getAutoConfigurations() {
 		if (this.autoConfigurations == null) {
 			this.autoConfigurations = ImportCandidates.load(AutoConfiguration.class, this.beanClassLoader)
 				.getCandidates();

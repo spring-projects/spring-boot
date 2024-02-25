@@ -45,38 +45,39 @@ class MessageSourceMessageInterpolator implements MessageInterpolator {
 	private final MessageInterpolator messageInterpolator;
 
 	/**
-     * Constructs a new MessageSourceMessageInterpolator with the specified MessageSource and MessageInterpolator.
-     * 
-     * @param messageSource the MessageSource to be used for resolving messages
-     * @param messageInterpolator the MessageInterpolator to be used for interpolating message parameters
-     */
-    MessageSourceMessageInterpolator(MessageSource messageSource, MessageInterpolator messageInterpolator) {
+	 * Constructs a new MessageSourceMessageInterpolator with the specified MessageSource
+	 * and MessageInterpolator.
+	 * @param messageSource the MessageSource to be used for resolving messages
+	 * @param messageInterpolator the MessageInterpolator to be used for interpolating
+	 * message parameters
+	 */
+	MessageSourceMessageInterpolator(MessageSource messageSource, MessageInterpolator messageInterpolator) {
 		this.messageSource = messageSource;
 		this.messageInterpolator = messageInterpolator;
 	}
 
 	/**
-     * Interpolates the given message template with the given context and returns the interpolated string.
-     * Uses the current locale obtained from the LocaleContextHolder.
-     *
-     * @param messageTemplate the message template to be interpolated
-     * @param context the context containing the variables to be replaced in the message template
-     * @return the interpolated string
-     */
-    @Override
+	 * Interpolates the given message template with the given context and returns the
+	 * interpolated string. Uses the current locale obtained from the LocaleContextHolder.
+	 * @param messageTemplate the message template to be interpolated
+	 * @param context the context containing the variables to be replaced in the message
+	 * template
+	 * @return the interpolated string
+	 */
+	@Override
 	public String interpolate(String messageTemplate, Context context) {
 		return interpolate(messageTemplate, context, LocaleContextHolder.getLocale());
 	}
 
 	/**
-     * Interpolates the given message template with the provided context and locale.
-     * 
-     * @param messageTemplate the message template to be interpolated
-     * @param context the context containing the variables to be replaced in the message template
-     * @param locale the locale in which the message should be interpolated
-     * @return the interpolated message
-     */
-    @Override
+	 * Interpolates the given message template with the provided context and locale.
+	 * @param messageTemplate the message template to be interpolated
+	 * @param context the context containing the variables to be replaced in the message
+	 * template
+	 * @param locale the locale in which the message should be interpolated
+	 * @return the interpolated message
+	 */
+	@Override
 	public String interpolate(String messageTemplate, Context context, Locale locale) {
 		String message = replaceParameters(messageTemplate, locale);
 		return this.messageInterpolator.interpolate(message, context, locale);
@@ -96,15 +97,14 @@ class MessageSourceMessageInterpolator implements MessageInterpolator {
 	}
 
 	/**
-     * Replaces parameters in the given message with their corresponding values.
-     * 
-     * @param message the message string to replace parameters in
-     * @param locale the locale to use for parameter replacement
-     * @param visitedParameters a set of visited parameters to detect circular references
-     * @return the message string with parameters replaced
-     * @throws IllegalArgumentException if a circular reference is detected
-     */
-    private String replaceParameters(String message, Locale locale, Set<String> visitedParameters) {
+	 * Replaces parameters in the given message with their corresponding values.
+	 * @param message the message string to replace parameters in
+	 * @param locale the locale to use for parameter replacement
+	 * @param visitedParameters a set of visited parameters to detect circular references
+	 * @return the message string with parameters replaced
+	 * @throws IllegalArgumentException if a circular reference is detected
+	 */
+	private String replaceParameters(String message, Locale locale, Set<String> visitedParameters) {
 		StringBuilder buf = new StringBuilder(message);
 		int parentheses = 0;
 		int startIndex = -1;
@@ -145,14 +145,15 @@ class MessageSourceMessageInterpolator implements MessageInterpolator {
 	}
 
 	/**
-     * Replaces the parameter in the given message with its corresponding value from the message source.
-     * 
-     * @param parameter the parameter to be replaced
-     * @param locale the locale to be used for message retrieval
-     * @param visitedParameters a set of visited parameters to avoid infinite recursion
-     * @return the message with the parameter replaced by its value, or null if the value is not found or is the same as the parameter
-     */
-    private String replaceParameter(String parameter, Locale locale, Set<String> visitedParameters) {
+	 * Replaces the parameter in the given message with its corresponding value from the
+	 * message source.
+	 * @param parameter the parameter to be replaced
+	 * @param locale the locale to be used for message retrieval
+	 * @param visitedParameters a set of visited parameters to avoid infinite recursion
+	 * @return the message with the parameter replaced by its value, or null if the value
+	 * is not found or is the same as the parameter
+	 */
+	private String replaceParameter(String parameter, Locale locale, Set<String> visitedParameters) {
 		parameter = replaceParameters(parameter, locale, visitedParameters);
 		String value = this.messageSource.getMessage(parameter, null, null, locale);
 		return (value != null && !isUsingCodeAsDefaultMessage(value, parameter))
@@ -160,13 +161,12 @@ class MessageSourceMessageInterpolator implements MessageInterpolator {
 	}
 
 	/**
-     * Checks if the given value is using the code as the default message.
-     * 
-     * @param value the value to check
-     * @param parameter the parameter to compare with the value
-     * @return true if the value is using the code as the default message, false otherwise
-     */
-    private boolean isUsingCodeAsDefaultMessage(String value, String parameter) {
+	 * Checks if the given value is using the code as the default message.
+	 * @param value the value to check
+	 * @param parameter the parameter to compare with the value
+	 * @return true if the value is using the code as the default message, false otherwise
+	 */
+	private boolean isUsingCodeAsDefaultMessage(String value, String parameter) {
 		return value.equals(parameter);
 	}
 

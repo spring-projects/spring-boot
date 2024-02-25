@@ -44,25 +44,24 @@ import org.springframework.integration.context.IntegrationProperties;
 class IntegrationPropertiesEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
 	/**
-     * Returns the order value of this post-processor.
-     * 
-     * The order value is set to {@link Ordered#LOWEST_PRECEDENCE}, indicating that this post-processor
-     * should be executed after all other post-processors.
-     * 
-     * @return the order value of this post-processor
-     */
-    @Override
+	 * Returns the order value of this post-processor.
+	 *
+	 * The order value is set to {@link Ordered#LOWEST_PRECEDENCE}, indicating that this
+	 * post-processor should be executed after all other post-processors.
+	 * @return the order value of this post-processor
+	 */
+	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE;
 	}
 
 	/**
-     * Post-processes the environment by registering a property source for the integration properties file.
-     * 
-     * @param environment the configurable environment
-     * @param application the spring application
-     */
-    @Override
+	 * Post-processes the environment by registering a property source for the integration
+	 * properties file.
+	 * @param environment the configurable environment
+	 * @param application the spring application
+	 */
+	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		Resource resource = new ClassPathResource("META-INF/spring.integration.properties");
 		if (resource.exists()) {
@@ -71,13 +70,13 @@ class IntegrationPropertiesEnvironmentPostProcessor implements EnvironmentPostPr
 	}
 
 	/**
-     * Registers the integration properties property source in the given environment.
-     * 
-     * @param environment the configurable environment
-     * @param resource the resource containing the integration properties
-     * @throws IllegalStateException if failed to load integration properties from the resource
-     */
-    protected void registerIntegrationPropertiesPropertySource(ConfigurableEnvironment environment, Resource resource) {
+	 * Registers the integration properties property source in the given environment.
+	 * @param environment the configurable environment
+	 * @param resource the resource containing the integration properties
+	 * @throws IllegalStateException if failed to load integration properties from the
+	 * resource
+	 */
+	protected void registerIntegrationPropertiesPropertySource(ConfigurableEnvironment environment, Resource resource) {
 		PropertiesPropertySourceLoader loader = new PropertiesPropertySourceLoader();
 		try {
 			OriginTrackedMapPropertySource propertyFileSource = (OriginTrackedMapPropertySource) loader
@@ -91,9 +90,9 @@ class IntegrationPropertiesEnvironmentPostProcessor implements EnvironmentPostPr
 	}
 
 	/**
-     * IntegrationPropertiesPropertySource class.
-     */
-    private static final class IntegrationPropertiesPropertySource extends PropertySource<Map<String, Object>>
+	 * IntegrationPropertiesPropertySource class.
+	 */
+	private static final class IntegrationPropertiesPropertySource extends PropertySource<Map<String, Object>>
 			implements OriginLookup<String> {
 
 		private static final String PREFIX = "spring.integration.";
@@ -119,33 +118,31 @@ class IntegrationPropertiesEnvironmentPostProcessor implements EnvironmentPostPr
 		private final OriginTrackedMapPropertySource delegate;
 
 		/**
-         * Constructs a new IntegrationPropertiesPropertySource with the specified delegate.
-         * 
-         * @param delegate the OriginTrackedMapPropertySource delegate
-         */
-        IntegrationPropertiesPropertySource(OriginTrackedMapPropertySource delegate) {
+		 * Constructs a new IntegrationPropertiesPropertySource with the specified
+		 * delegate.
+		 * @param delegate the OriginTrackedMapPropertySource delegate
+		 */
+		IntegrationPropertiesPropertySource(OriginTrackedMapPropertySource delegate) {
 			super("META-INF/spring.integration.properties", delegate.getSource());
 			this.delegate = delegate;
 		}
 
 		/**
-         * Retrieves the value of the specified property.
-         * 
-         * @param name the name of the property to retrieve
-         * @return the value of the property
-         */
-        @Override
+		 * Retrieves the value of the specified property.
+		 * @param name the name of the property to retrieve
+		 * @return the value of the property
+		 */
+		@Override
 		public Object getProperty(String name) {
 			return this.delegate.getProperty(KEYS_MAPPING.get(name));
 		}
 
 		/**
-         * Retrieves the origin of a property value based on the given key.
-         * 
-         * @param key the key of the property
-         * @return the origin of the property value
-         */
-        @Override
+		 * Retrieves the origin of a property value based on the given key.
+		 * @param key the key of the property
+		 * @return the origin of the property value
+		 */
+		@Override
 		public Origin getOrigin(String key) {
 			return this.delegate.getOrigin(KEYS_MAPPING.get(key));
 		}

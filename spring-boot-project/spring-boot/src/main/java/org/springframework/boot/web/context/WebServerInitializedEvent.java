@@ -31,11 +31,10 @@ import org.springframework.context.ApplicationEvent;
 public abstract class WebServerInitializedEvent extends ApplicationEvent {
 
 	/**
-     * Constructs a new WebServerInitializedEvent with the specified WebServer.
-     *
-     * @param webServer the WebServer that has been initialized
-     */
-    protected WebServerInitializedEvent(WebServer webServer) {
+	 * Constructs a new WebServerInitializedEvent with the specified WebServer.
+	 * @param webServer the WebServer that has been initialized
+	 */
+	protected WebServerInitializedEvent(WebServer webServer) {
 		super(webServer);
 	}
 

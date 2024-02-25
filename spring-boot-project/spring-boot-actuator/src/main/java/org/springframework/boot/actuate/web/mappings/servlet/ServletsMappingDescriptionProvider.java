@@ -42,12 +42,13 @@ import org.springframework.web.context.WebApplicationContext;
 public class ServletsMappingDescriptionProvider implements MappingDescriptionProvider {
 
 	/**
-     * Returns a list of ServletRegistrationMappingDescription objects that describe the mappings of servlets in the given ApplicationContext.
-     * 
-     * @param context the ApplicationContext to describe the servlet mappings for
-     * @return a list of ServletRegistrationMappingDescription objects describing the servlet mappings
-     */
-    @Override
+	 * Returns a list of ServletRegistrationMappingDescription objects that describe the
+	 * mappings of servlets in the given ApplicationContext.
+	 * @param context the ApplicationContext to describe the servlet mappings for
+	 * @return a list of ServletRegistrationMappingDescription objects describing the
+	 * servlet mappings
+	 */
+	@Override
 	public List<ServletRegistrationMappingDescription> describeMappings(ApplicationContext context) {
 		if (context instanceof WebApplicationContext webApplicationContext) {
 			return webApplicationContext.getServletContext()
@@ -61,29 +62,27 @@ public class ServletsMappingDescriptionProvider implements MappingDescriptionPro
 	}
 
 	/**
-     * Returns the mapping name for the servlets.
-     * 
-     * @return the mapping name for the servlets
-     */
-    @Override
+	 * Returns the mapping name for the servlets.
+	 * @return the mapping name for the servlets
+	 */
+	@Override
 	public String getMappingName() {
 		return "servlets";
 	}
 
 	/**
-     * ServletsMappingDescriptionProviderRuntimeHints class.
-     */
-    static class ServletsMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
+	 * ServletsMappingDescriptionProviderRuntimeHints class.
+	 */
+	static class ServletsMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		/**
-         * Registers the runtime hints for the ServletsMappingDescriptionProvider.
-         * 
-         * @param hints the runtime hints to register
-         * @param classLoader the class loader to use for reflection
-         */
-        @Override
+		 * Registers the runtime hints for the ServletsMappingDescriptionProvider.
+		 * @param hints the runtime hints to register
+		 * @param classLoader the class loader to use for reflection
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(),
 					ServletRegistrationMappingDescription.class);

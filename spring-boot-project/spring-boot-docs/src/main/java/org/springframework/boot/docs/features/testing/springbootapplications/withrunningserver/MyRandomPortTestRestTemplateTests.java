@@ -32,11 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MyRandomPortTestRestTemplateTests {
 
 	/**
-     * Test method to verify the functionality of the exampleTest.
-     * 
-     * @param restTemplate The TestRestTemplate instance used for making HTTP requests.
-     */
-    @Test
+	 * Test method to verify the functionality of the exampleTest.
+	 * @param restTemplate The TestRestTemplate instance used for making HTTP requests.
+	 */
+	@Test
 	void exampleTest(@Autowired TestRestTemplate restTemplate) {
 		String body = restTemplate.getForObject("/", String.class);
 		assertThat(body).isEqualTo("Hello World");

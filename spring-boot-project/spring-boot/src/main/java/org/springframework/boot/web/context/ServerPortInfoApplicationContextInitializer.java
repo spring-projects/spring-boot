@@ -55,47 +55,49 @@ public class ServerPortInfoApplicationContextInitializer implements
 	private static final String PROPERTY_SOURCE_NAME = "server.ports";
 
 	/**
-     * Initializes the ServerPortInfoApplicationContextInitializer by adding itself as an application listener to the provided ConfigurableApplicationContext.
-     * 
-     * @param applicationContext the ConfigurableApplicationContext to which this initializer will be added as an application listener
-     */
-    @Override
+	 * Initializes the ServerPortInfoApplicationContextInitializer by adding itself as an
+	 * application listener to the provided ConfigurableApplicationContext.
+	 * @param applicationContext the ConfigurableApplicationContext to which this
+	 * initializer will be added as an application listener
+	 */
+	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		applicationContext.addApplicationListener(this);
 	}
 
 	/**
-     * This method is called when the web server is initialized.
-     * It sets the port property for the application context based on the web server's port.
-     * The port property is determined by concatenating "local." with the name of the application context and ".port".
-     * 
-     * @param event The WebServerInitializedEvent containing information about the web server initialization.
-     */
-    @Override
+	 * This method is called when the web server is initialized. It sets the port property
+	 * for the application context based on the web server's port. The port property is
+	 * determined by concatenating "local." with the name of the application context and
+	 * ".port".
+	 * @param event The WebServerInitializedEvent containing information about the web
+	 * server initialization.
+	 */
+	@Override
 	public void onApplicationEvent(WebServerInitializedEvent event) {
 		String propertyName = "local." + getName(event.getApplicationContext()) + ".port";
 		setPortProperty(event.getApplicationContext(), propertyName, event.getWebServer().getPort());
 	}
 
 	/**
-     * Returns the name of the web server application context.
-     * 
-     * @param context the web server application context
-     * @return the name of the web server application context, or "server" if the name is empty or null
-     */
-    private String getName(WebServerApplicationContext context) {
+	 * Returns the name of the web server application context.
+	 * @param context the web server application context
+	 * @return the name of the web server application context, or "server" if the name is
+	 * empty or null
+	 */
+	private String getName(WebServerApplicationContext context) {
 		String name = context.getServerNamespace();
 		return StringUtils.hasText(name) ? name : "server";
 	}
 
 	/**
-     * Sets the port property for the given ApplicationContext and its parent ApplicationContexts.
-     * 
-     * @param context the ApplicationContext to set the port property for
-     * @param propertyName the name of the port property
-     * @param port the port value to set
-     */
-    private void setPortProperty(ApplicationContext context, String propertyName, int port) {
+	 * Sets the port property for the given ApplicationContext and its parent
+	 * ApplicationContexts.
+	 * @param context the ApplicationContext to set the port property for
+	 * @param propertyName the name of the port property
+	 * @param port the port value to set
+	 */
+	private void setPortProperty(ApplicationContext context, String propertyName, int port) {
 		if (context instanceof ConfigurableApplicationContext configurableContext) {
 			setPortProperty(configurableContext.getEnvironment(), propertyName, port);
 		}
@@ -105,13 +107,12 @@ public class ServerPortInfoApplicationContextInitializer implements
 	}
 
 	/**
-     * Sets the port property in the given environment.
-     * 
-     * @param environment the configurable environment
-     * @param propertyName the name of the property to set
-     * @param port the port value to set
-     */
-    @SuppressWarnings("unchecked")
+	 * Sets the port property in the given environment.
+	 * @param environment the configurable environment
+	 * @param propertyName the name of the property to set
+	 * @param port the port value to set
+	 */
+	@SuppressWarnings("unchecked")
 	private void setPortProperty(ConfigurableEnvironment environment, String propertyName, int port) {
 		MutablePropertySources sources = environment.getPropertySources();
 		PropertySource<?> source = sources.get(PROPERTY_SOURCE_NAME);

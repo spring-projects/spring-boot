@@ -77,23 +77,22 @@ import org.springframework.util.StringUtils;
 class OnBeanCondition extends FilteringSpringBootCondition implements ConfigurationCondition {
 
 	/**
-     * Returns the configuration phase of this method.
-     * 
-     * @return The configuration phase of this method.
-     */
-    @Override
+	 * Returns the configuration phase of this method.
+	 * @return The configuration phase of this method.
+	 */
+	@Override
 	public ConfigurationPhase getConfigurationPhase() {
 		return ConfigurationPhase.REGISTER_BEAN;
 	}
 
 	/**
-     * Retrieves the outcomes of the condition evaluation for each auto configuration class.
-     * 
-     * @param autoConfigurationClasses the array of auto configuration classes
-     * @param autoConfigurationMetadata the auto configuration metadata
-     * @return the array of condition outcomes
-     */
-    @Override
+	 * Retrieves the outcomes of the condition evaluation for each auto configuration
+	 * class.
+	 * @param autoConfigurationClasses the array of auto configuration classes
+	 * @param autoConfigurationMetadata the auto configuration metadata
+	 * @return the array of condition outcomes
+	 */
+	@Override
 	protected final ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
 		ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
@@ -113,13 +112,13 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Returns the outcome of the condition evaluation based on the required bean types and annotation.
-     * 
-     * @param requiredBeanTypes the set of required bean types
-     * @param annotation the annotation class
-     * @return the condition outcome
-     */
-    private ConditionOutcome getOutcome(Set<String> requiredBeanTypes, Class<? extends Annotation> annotation) {
+	 * Returns the outcome of the condition evaluation based on the required bean types
+	 * and annotation.
+	 * @param requiredBeanTypes the set of required bean types
+	 * @param annotation the annotation class
+	 * @return the condition outcome
+	 */
+	private ConditionOutcome getOutcome(Set<String> requiredBeanTypes, Class<? extends Annotation> annotation) {
 		List<String> missing = filter(requiredBeanTypes, ClassNameFilter.MISSING, getBeanClassLoader());
 		if (!missing.isEmpty()) {
 			ConditionMessage message = ConditionMessage.forCondition(annotation)
@@ -131,13 +130,12 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Determines the outcome of the condition for a given context and metadata.
-     * 
-     * @param context the condition context
-     * @param metadata the annotated type metadata
-     * @return the condition outcome
-     */
-    @Override
+	 * Determines the outcome of the condition for a given context and metadata.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @return the condition outcome
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionMessage matchMessage = ConditionMessage.empty();
 		MergedAnnotations annotations = metadata.getAnnotations();
@@ -192,13 +190,13 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Retrieves the matching beans based on the given condition context and specification.
-     * 
-     * @param context The condition context.
-     * @param spec The specification for matching beans.
-     * @return The match result containing the matched beans.
-     */
-    protected final MatchResult getMatchingBeans(ConditionContext context, Spec<?> spec) {
+	 * Retrieves the matching beans based on the given condition context and
+	 * specification.
+	 * @param context The condition context.
+	 * @param spec The specification for matching beans.
+	 * @return The match result containing the matched beans.
+	 */
+	protected final MatchResult getMatchingBeans(ConditionContext context, Spec<?> spec) {
 		ClassLoader classLoader = context.getClassLoader();
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		boolean considerHierarchy = spec.getStrategy() != SearchStrategy.CURRENT;
@@ -247,16 +245,16 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Retrieves the names of beans that are ignored based on their type.
-     * 
-     * @param classLoader           the class loader to use for loading classes
-     * @param beanFactory           the bean factory to retrieve bean names from
-     * @param considerHierarchy     flag indicating whether to consider the hierarchy of bean types
-     * @param ignoredTypes          the set of types to ignore
-     * @param parameterizedContainers the set of parameterized containers
-     * @return                      the set of names of beans ignored by type
-     */
-    private Set<String> getNamesOfBeansIgnoredByType(ClassLoader classLoader, ListableBeanFactory beanFactory,
+	 * Retrieves the names of beans that are ignored based on their type.
+	 * @param classLoader the class loader to use for loading classes
+	 * @param beanFactory the bean factory to retrieve bean names from
+	 * @param considerHierarchy flag indicating whether to consider the hierarchy of bean
+	 * types
+	 * @param ignoredTypes the set of types to ignore
+	 * @param parameterizedContainers the set of parameterized containers
+	 * @return the set of names of beans ignored by type
+	 */
+	private Set<String> getNamesOfBeansIgnoredByType(ClassLoader classLoader, ListableBeanFactory beanFactory,
 			boolean considerHierarchy, Set<String> ignoredTypes, Set<Class<?>> parameterizedContainers) {
 		Set<String> result = null;
 		for (String ignoredType : ignoredTypes) {
@@ -268,17 +266,17 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Retrieves the names of beans of a specified type from the given bean factory.
-     * 
-     * @param classLoader the class loader to use for resolving the type
-     * @param considerHierarchy flag indicating whether to consider the type hierarchy
-     * @param beanFactory the bean factory to retrieve the bean names from
-     * @param type the fully qualified name of the type to retrieve bean names for
-     * @param parameterizedContainers a set of parameterized container classes
-     * @return a set of bean names matching the specified type, or an empty set if no beans are found
-     * @throws LinkageError if a linkage error occurs while resolving the type
-     */
-    private Set<String> getBeanNamesForType(ClassLoader classLoader, boolean considerHierarchy,
+	 * Retrieves the names of beans of a specified type from the given bean factory.
+	 * @param classLoader the class loader to use for resolving the type
+	 * @param considerHierarchy flag indicating whether to consider the type hierarchy
+	 * @param beanFactory the bean factory to retrieve the bean names from
+	 * @param type the fully qualified name of the type to retrieve bean names for
+	 * @param parameterizedContainers a set of parameterized container classes
+	 * @return a set of bean names matching the specified type, or an empty set if no
+	 * beans are found
+	 * @throws LinkageError if a linkage error occurs while resolving the type
+	 */
+	private Set<String> getBeanNamesForType(ClassLoader classLoader, boolean considerHierarchy,
 			ListableBeanFactory beanFactory, String type, Set<Class<?>> parameterizedContainers) throws LinkageError {
 		try {
 			return getBeanNamesForType(beanFactory, considerHierarchy, resolve(type, classLoader),
@@ -290,15 +288,14 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Retrieves the names of beans of a specified type from the given bean factory.
-     * 
-     * @param beanFactory the bean factory to retrieve the bean names from
-     * @param considerHierarchy flag indicating whether to consider the bean hierarchy
-     * @param type the type of beans to retrieve
-     * @param parameterizedContainers a set of parameterized container classes
-     * @return a set of bean names of the specified type, or an empty set if none found
-     */
-    private Set<String> getBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy, Class<?> type,
+	 * Retrieves the names of beans of a specified type from the given bean factory.
+	 * @param beanFactory the bean factory to retrieve the bean names from
+	 * @param considerHierarchy flag indicating whether to consider the bean hierarchy
+	 * @param type the type of beans to retrieve
+	 * @param parameterizedContainers a set of parameterized container classes
+	 * @return a set of bean names of the specified type, or an empty set if none found
+	 */
+	private Set<String> getBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy, Class<?> type,
 			Set<Class<?>> parameterizedContainers) {
 		Set<String> result = collectBeanNamesForType(beanFactory, considerHierarchy, type, parameterizedContainers,
 				null);
@@ -306,16 +303,16 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Collects the bean names for a given type from the provided bean factory.
-     * 
-     * @param beanFactory the bean factory to collect bean names from
-     * @param considerHierarchy flag indicating whether to consider the hierarchy of bean factories
-     * @param type the type of beans to collect names for
-     * @param parameterizedContainers set of parameterized container classes to consider
-     * @param result the set to store the collected bean names
-     * @return the set of collected bean names
-     */
-    private Set<String> collectBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy,
+	 * Collects the bean names for a given type from the provided bean factory.
+	 * @param beanFactory the bean factory to collect bean names from
+	 * @param considerHierarchy flag indicating whether to consider the hierarchy of bean
+	 * factories
+	 * @param type the type of beans to collect names for
+	 * @param parameterizedContainers set of parameterized container classes to consider
+	 * @param result the set to store the collected bean names
+	 * @return the set of collected bean names
+	 */
+	private Set<String> collectBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy,
 			Class<?> type, Set<Class<?>> parameterizedContainers, Set<String> result) {
 		result = addAll(result, beanFactory.getBeanNamesForType(type, true, false));
 		for (Class<?> container : parameterizedContainers) {
@@ -333,16 +330,17 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Retrieves a set of bean names that are annotated with a specific annotation type.
-     * 
-     * @param classLoader the class loader to use for resolving the annotation type
-     * @param beanFactory the bean factory to search for annotated beans
-     * @param type the fully qualified name of the annotation type
-     * @param considerHierarchy flag indicating whether to consider the hierarchy of beans
-     * @return a set of bean names that are annotated with the specified annotation type, or an empty set if none found
-     * @throws LinkageError if there is a linkage error while resolving the annotation type
-     */
-    private Set<String> getBeanNamesForAnnotation(ClassLoader classLoader, ConfigurableListableBeanFactory beanFactory,
+	 * Retrieves a set of bean names that are annotated with a specific annotation type.
+	 * @param classLoader the class loader to use for resolving the annotation type
+	 * @param beanFactory the bean factory to search for annotated beans
+	 * @param type the fully qualified name of the annotation type
+	 * @param considerHierarchy flag indicating whether to consider the hierarchy of beans
+	 * @return a set of bean names that are annotated with the specified annotation type,
+	 * or an empty set if none found
+	 * @throws LinkageError if there is a linkage error while resolving the annotation
+	 * type
+	 */
+	private Set<String> getBeanNamesForAnnotation(ClassLoader classLoader, ConfigurableListableBeanFactory beanFactory,
 			String type, boolean considerHierarchy) throws LinkageError {
 		Set<String> result = null;
 		try {
@@ -356,29 +354,28 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Resolves the annotation type based on the given class loader and type.
-     * 
-     * @param classLoader the class loader to use for resolving the annotation type
-     * @param type the fully qualified name of the annotation type
-     * @return the resolved annotation type
-     * @throws ClassNotFoundException if the annotation type cannot be found
-     */
-    @SuppressWarnings("unchecked")
+	 * Resolves the annotation type based on the given class loader and type.
+	 * @param classLoader the class loader to use for resolving the annotation type
+	 * @param type the fully qualified name of the annotation type
+	 * @return the resolved annotation type
+	 * @throws ClassNotFoundException if the annotation type cannot be found
+	 */
+	@SuppressWarnings("unchecked")
 	private Class<? extends Annotation> resolveAnnotationType(ClassLoader classLoader, String type)
 			throws ClassNotFoundException {
 		return (Class<? extends Annotation>) resolve(type, classLoader);
 	}
 
 	/**
-     * Collects the names of beans that are annotated with the specified annotation type.
-     * 
-     * @param beanFactory the ListableBeanFactory to search for beans
-     * @param annotationType the type of annotation to search for
-     * @param considerHierarchy flag indicating whether to consider the parent bean factory hierarchy
-     * @param result the set to store the collected bean names
-     * @return the set of bean names annotated with the specified annotation type
-     */
-    private Set<String> collectBeanNamesForAnnotation(ListableBeanFactory beanFactory,
+	 * Collects the names of beans that are annotated with the specified annotation type.
+	 * @param beanFactory the ListableBeanFactory to search for beans
+	 * @param annotationType the type of annotation to search for
+	 * @param considerHierarchy flag indicating whether to consider the parent bean
+	 * factory hierarchy
+	 * @param result the set to store the collected bean names
+	 * @return the set of bean names annotated with the specified annotation type
+	 */
+	private Set<String> collectBeanNamesForAnnotation(ListableBeanFactory beanFactory,
 			Class<? extends Annotation> annotationType, boolean considerHierarchy, Set<String> result) {
 		result = addAll(result, getBeanNamesForAnnotation(beanFactory, annotationType));
 		if (considerHierarchy) {
@@ -391,13 +388,13 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Retrieves the names of beans that are annotated with the specified annotation type.
-     * 
-     * @param beanFactory the ListableBeanFactory to search for beans
-     * @param annotationType the annotation type to search for
-     * @return an array of bean names that are annotated with the specified annotation type
-     */
-    private String[] getBeanNamesForAnnotation(ListableBeanFactory beanFactory,
+	 * Retrieves the names of beans that are annotated with the specified annotation type.
+	 * @param beanFactory the ListableBeanFactory to search for beans
+	 * @param annotationType the annotation type to search for
+	 * @return an array of bean names that are annotated with the specified annotation
+	 * type
+	 */
+	private String[] getBeanNamesForAnnotation(ListableBeanFactory beanFactory,
 			Class<? extends Annotation> annotationType) {
 		Set<String> foundBeanNames = new LinkedHashSet<>();
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
@@ -422,14 +419,13 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Checks if the specified bean is present in the given bean factory.
-     * 
-     * @param beanFactory the bean factory to check
-     * @param beanName the name of the bean to check
-     * @param considerHierarchy flag indicating whether to consider the bean hierarchy
-     * @return {@code true} if the bean is present, {@code false} otherwise
-     */
-    private boolean containsBean(ConfigurableListableBeanFactory beanFactory, String beanName,
+	 * Checks if the specified bean is present in the given bean factory.
+	 * @param beanFactory the bean factory to check
+	 * @param beanName the name of the bean to check
+	 * @param considerHierarchy flag indicating whether to consider the bean hierarchy
+	 * @return {@code true} if the bean is present, {@code false} otherwise
+	 */
+	private boolean containsBean(ConfigurableListableBeanFactory beanFactory, String beanName,
 			boolean considerHierarchy) {
 		if (considerHierarchy) {
 			return beanFactory.containsBean(beanName);
@@ -438,12 +434,12 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Creates a reason message for no matches found in the given {@link MatchResult}.
-     * 
-     * @param matchResult the {@link MatchResult} containing the unmatched annotations, types, and names
-     * @return the reason message for no matches found
-     */
-    private String createOnBeanNoMatchReason(MatchResult matchResult) {
+	 * Creates a reason message for no matches found in the given {@link MatchResult}.
+	 * @param matchResult the {@link MatchResult} containing the unmatched annotations,
+	 * types, and names
+	 * @return the reason message for no matches found
+	 */
+	private String createOnBeanNoMatchReason(MatchResult matchResult) {
 		StringBuilder reason = new StringBuilder();
 		appendMessageForNoMatches(reason, matchResult.getUnmatchedAnnotations(), "annotated with");
 		appendMessageForNoMatches(reason, matchResult.getUnmatchedTypes(), "of type");
@@ -452,13 +448,12 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Appends a message to the given StringBuilder if there are no matches found.
-     * 
-     * @param reason      the StringBuilder to append the message to
-     * @param unmatched   the collection of unmatched beans
-     * @param description the description of the beans being searched for
-     */
-    private void appendMessageForNoMatches(StringBuilder reason, Collection<String> unmatched, String description) {
+	 * Appends a message to the given StringBuilder if there are no matches found.
+	 * @param reason the StringBuilder to append the message to
+	 * @param unmatched the collection of unmatched beans
+	 * @param description the description of the beans being searched for
+	 */
+	private void appendMessageForNoMatches(StringBuilder reason, Collection<String> unmatched, String description) {
 		if (!unmatched.isEmpty()) {
 			if (!reason.isEmpty()) {
 				reason.append(" and ");
@@ -471,12 +466,12 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Creates a reason message for when no bean match is found.
-     * 
-     * @param matchResult the match result containing the matched annotations, types, and names
-     * @return the reason message for no bean match
-     */
-    private String createOnMissingBeanNoMatchReason(MatchResult matchResult) {
+	 * Creates a reason message for when no bean match is found.
+	 * @param matchResult the match result containing the matched annotations, types, and
+	 * names
+	 * @return the reason message for no bean match
+	 */
+	private String createOnMissingBeanNoMatchReason(MatchResult matchResult) {
 		StringBuilder reason = new StringBuilder();
 		appendMessageForMatches(reason, matchResult.getMatchedAnnotations(), "annotated with");
 		appendMessageForMatches(reason, matchResult.getMatchedTypes(), "of type");
@@ -491,13 +486,12 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Appends a message for the matches to the given StringBuilder.
-     * 
-     * @param reason      the StringBuilder to append the message to
-     * @param matches     a Map containing the matches
-     * @param description the description of the beans
-     */
-    private void appendMessageForMatches(StringBuilder reason, Map<String, Collection<String>> matches,
+	 * Appends a message for the matches to the given StringBuilder.
+	 * @param reason the StringBuilder to append the message to
+	 * @param matches a Map containing the matches
+	 * @param description the description of the beans
+	 */
+	private void appendMessageForMatches(StringBuilder reason, Map<String, Collection<String>> matches,
 			String description) {
 		if (!matches.isEmpty()) {
 			matches.forEach((key, value) -> {
@@ -515,14 +509,15 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Retrieves the list of primary beans from the given bean factory based on the provided bean names.
-     * 
-     * @param beanFactory The configurable listable bean factory to retrieve the beans from.
-     * @param beanNames The set of bean names to consider.
-     * @param considerHierarchy Flag indicating whether to consider the bean hierarchy.
-     * @return The list of primary beans.
-     */
-    private List<String> getPrimaryBeans(ConfigurableListableBeanFactory beanFactory, Set<String> beanNames,
+	 * Retrieves the list of primary beans from the given bean factory based on the
+	 * provided bean names.
+	 * @param beanFactory The configurable listable bean factory to retrieve the beans
+	 * from.
+	 * @param beanNames The set of bean names to consider.
+	 * @param considerHierarchy Flag indicating whether to consider the bean hierarchy.
+	 * @return The list of primary beans.
+	 */
+	private List<String> getPrimaryBeans(ConfigurableListableBeanFactory beanFactory, Set<String> beanNames,
 			boolean considerHierarchy) {
 		List<String> primaryBeans = new ArrayList<>();
 		for (String beanName : beanNames) {
@@ -535,14 +530,15 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Finds the bean definition for the given bean name in the specified bean factory.
-     * 
-     * @param beanFactory the configurable listable bean factory to search for the bean definition
-     * @param beanName the name of the bean to find the definition for
-     * @param considerHierarchy flag indicating whether to consider the parent bean factory hierarchy
-     * @return the bean definition if found, null otherwise
-     */
-    private BeanDefinition findBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName,
+	 * Finds the bean definition for the given bean name in the specified bean factory.
+	 * @param beanFactory the configurable listable bean factory to search for the bean
+	 * definition
+	 * @param beanName the name of the bean to find the definition for
+	 * @param considerHierarchy flag indicating whether to consider the parent bean
+	 * factory hierarchy
+	 * @return the bean definition if found, null otherwise
+	 */
+	private BeanDefinition findBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName,
 			boolean considerHierarchy) {
 		if (beanFactory.containsBeanDefinition(beanName)) {
 			return beanFactory.getBeanDefinition(beanName);
@@ -555,13 +551,12 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Adds all elements from the additional collection to the result set.
-     * 
-     * @param result the set to add elements to
-     * @param additional the collection containing additional elements to be added
-     * @return the updated result set with the additional elements added
-     */
-    private static Set<String> addAll(Set<String> result, Collection<String> additional) {
+	 * Adds all elements from the additional collection to the result set.
+	 * @param result the set to add elements to
+	 * @param additional the collection containing additional elements to be added
+	 * @return the updated result set with the additional elements added
+	 */
+	private static Set<String> addAll(Set<String> result, Collection<String> additional) {
 		if (CollectionUtils.isEmpty(additional)) {
 			return result;
 		}
@@ -571,13 +566,12 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-     * Adds all the elements from the given array to the provided set.
-     * 
-     * @param result the set to which the elements will be added
-     * @param additional the array of elements to be added to the set
-     * @return the updated set with the additional elements added
-     */
-    private static Set<String> addAll(Set<String> result, String[] additional) {
+	 * Adds all the elements from the given array to the provided set.
+	 * @param result the set to which the elements will be added
+	 * @param additional the array of elements to be added to the set
+	 * @return the updated set with the additional elements added
+	 */
+	private static Set<String> addAll(Set<String> result, String[] additional) {
 		if (ObjectUtils.isEmpty(additional)) {
 			return result;
 		}
@@ -608,14 +602,16 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		private final SearchStrategy strategy;
 
 		/**
-         * Constructs a new instance of the {@code Spec} class.
-         * 
-         * @param context the {@code ConditionContext} object representing the condition context
-         * @param metadata the {@code AnnotatedTypeMetadata} object representing the annotated type metadata
-         * @param annotations the {@code MergedAnnotations} object representing the merged annotations
-         * @param annotationType the {@code Class} object representing the annotation type
-         */
-        Spec(ConditionContext context, AnnotatedTypeMetadata metadata, MergedAnnotations annotations,
+		 * Constructs a new instance of the {@code Spec} class.
+		 * @param context the {@code ConditionContext} object representing the condition
+		 * context
+		 * @param metadata the {@code AnnotatedTypeMetadata} object representing the
+		 * annotated type metadata
+		 * @param annotations the {@code MergedAnnotations} object representing the merged
+		 * annotations
+		 * @param annotationType the {@code Class} object representing the annotation type
+		 */
+		Spec(ConditionContext context, AnnotatedTypeMetadata metadata, MergedAnnotations annotations,
 				Class<A> annotationType) {
 			MultiValueMap<String, Object> attributes = annotations.stream(annotationType)
 				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
@@ -643,23 +639,22 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Extracts the types from the given attributes using the specified keys.
-         * 
-         * @param attributes the MultiValueMap containing the attributes
-         * @return a Set of Strings representing the extracted types
-         */
-        protected Set<String> extractTypes(MultiValueMap<String, Object> attributes) {
+		 * Extracts the types from the given attributes using the specified keys.
+		 * @param attributes the MultiValueMap containing the attributes
+		 * @return a Set of Strings representing the extracted types
+		 */
+		protected Set<String> extractTypes(MultiValueMap<String, Object> attributes) {
 			return extract(attributes, "value", "type");
 		}
 
 		/**
-         * Extracts a set of strings from the given attributes based on the specified attribute names.
-         * 
-         * @param attributes the multi-value map of attributes
-         * @param attributeNames the names of the attributes to extract
-         * @return a set of strings extracted from the attributes
-         */
-        private Set<String> extract(MultiValueMap<String, Object> attributes, String... attributeNames) {
+		 * Extracts a set of strings from the given attributes based on the specified
+		 * attribute names.
+		 * @param attributes the multi-value map of attributes
+		 * @param attributeNames the names of the attributes to extract
+		 * @return a set of strings extracted from the attributes
+		 */
+		private Set<String> extract(MultiValueMap<String, Object> attributes, String... attributeNames) {
 			if (attributes.isEmpty()) {
 				return Collections.emptySet();
 			}
@@ -679,22 +674,20 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Merges the given additional strings into the specified result set.
-         * 
-         * @param result the set to merge the additional strings into
-         * @param additional the additional strings to be merged into the result set
-         */
-        private void merge(Set<String> result, String... additional) {
+		 * Merges the given additional strings into the specified result set.
+		 * @param result the set to merge the additional strings into
+		 * @param additional the additional strings to be merged into the result set
+		 */
+		private void merge(Set<String> result, String... additional) {
 			Collections.addAll(result, additional);
 		}
 
 		/**
-         * Resolves a set of class names into a set of Class objects when possible.
-         * 
-         * @param classNames the set of class names to resolve
-         * @return a set of resolved Class objects
-         */
-        private Set<Class<?>> resolveWhenPossible(Set<String> classNames) {
+		 * Resolves a set of class names into a set of Class objects when possible.
+		 * @param classNames the set of class names to resolve
+		 * @return a set of resolved Class objects
+		 */
+		private Set<Class<?>> resolveWhenPossible(Set<String> classNames) {
 			if (classNames.isEmpty()) {
 				return Collections.emptySet();
 			}
@@ -711,13 +704,13 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Validates the bean type deduction exception.
-         * 
-         * @param ex the bean type deduction exception
-         * @throws IllegalStateException if no element is specified using type, name, or annotation
-         * @throws IllegalStateException if the attempt to deduce the bean's type failed
-         */
-        protected void validate(BeanTypeDeductionException ex) {
+		 * Validates the bean type deduction exception.
+		 * @param ex the bean type deduction exception
+		 * @throws IllegalStateException if no element is specified using type, name, or
+		 * annotation
+		 * @throws IllegalStateException if the attempt to deduce the bean's type failed
+		 */
+		protected void validate(BeanTypeDeductionException ex) {
 			if (!hasAtLeastOneElement(this.types, this.names, this.annotations)) {
 				String message = getAnnotationName() + " did not specify a bean using type, name or annotation";
 				if (ex == null) {
@@ -728,12 +721,12 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Checks if at least one of the given sets has at least one element.
-         *
-         * @param sets the sets to check
-         * @return {@code true} if at least one set has at least one element, {@code false} otherwise
-         */
-        private boolean hasAtLeastOneElement(Set<?>... sets) {
+		 * Checks if at least one of the given sets has at least one element.
+		 * @param sets the sets to check
+		 * @return {@code true} if at least one set has at least one element,
+		 * {@code false} otherwise
+		 */
+		private boolean hasAtLeastOneElement(Set<?>... sets) {
 			for (Set<?> set : sets) {
 				if (!set.isEmpty()) {
 					return true;
@@ -743,22 +736,20 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Returns the name of the annotation.
-         * 
-         * @return the name of the annotation
-         */
-        protected final String getAnnotationName() {
+		 * Returns the name of the annotation.
+		 * @return the name of the annotation
+		 */
+		protected final String getAnnotationName() {
 			return "@" + ClassUtils.getShortName(this.annotationType);
 		}
 
 		/**
-         * Deduces the bean type based on the given context and metadata.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return a set of deduced bean types
-         */
-        private Set<String> deducedBeanType(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		 * Deduces the bean type based on the given context and metadata.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return a set of deduced bean types
+		 */
+		private Set<String> deducedBeanType(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			if (metadata instanceof MethodMetadata && metadata.isAnnotated(Bean.class.getName())) {
 				return deducedBeanTypeForBeanMethod(context, (MethodMetadata) metadata);
 			}
@@ -766,14 +757,14 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Deduces the bean type for a bean method.
-         * 
-         * @param context the condition context
-         * @param metadata the method metadata
-         * @return a set containing the deduced bean type
-         * @throws BeanTypeDeductionException if an error occurs during bean type deduction
-         */
-        private Set<String> deducedBeanTypeForBeanMethod(ConditionContext context, MethodMetadata metadata) {
+		 * Deduces the bean type for a bean method.
+		 * @param context the condition context
+		 * @param metadata the method metadata
+		 * @return a set containing the deduced bean type
+		 * @throws BeanTypeDeductionException if an error occurs during bean type
+		 * deduction
+		 */
+		private Set<String> deducedBeanTypeForBeanMethod(ConditionContext context, MethodMetadata metadata) {
 			try {
 				Class<?> returnType = getReturnType(context, metadata);
 				return Collections.singleton(returnType.getName());
@@ -784,15 +775,16 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Retrieves the return type of a method based on the provided context and metadata.
-         * 
-         * @param context the condition context
-         * @param metadata the method metadata
-         * @return the return type of the method
-         * @throws ClassNotFoundException if the return type class cannot be found
-         * @throws LinkageError if there is a linkage error while resolving the return type
-         */
-        private Class<?> getReturnType(ConditionContext context, MethodMetadata metadata)
+		 * Retrieves the return type of a method based on the provided context and
+		 * metadata.
+		 * @param context the condition context
+		 * @param metadata the method metadata
+		 * @return the return type of the method
+		 * @throws ClassNotFoundException if the return type class cannot be found
+		 * @throws LinkageError if there is a linkage error while resolving the return
+		 * type
+		 */
+		private Class<?> getReturnType(ConditionContext context, MethodMetadata metadata)
 				throws ClassNotFoundException, LinkageError {
 			// Safe to load at this point since we are in the REGISTER_BEAN phase
 			ClassLoader classLoader = context.getClassLoader();
@@ -804,12 +796,11 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Checks if the given type is a parameterized container.
-         * 
-         * @param type the type to check
-         * @return true if the type is a parameterized container, false otherwise
-         */
-        private boolean isParameterizedContainer(Class<?> type) {
+		 * Checks if the given type is a parameterized container.
+		 * @param type the type to check
+		 * @return true if the type is a parameterized container, false otherwise
+		 */
+		private boolean isParameterizedContainer(Class<?> type) {
 			for (Class<?> parameterizedContainer : this.parameterizedContainers) {
 				if (parameterizedContainer.isAssignableFrom(type)) {
 					return true;
@@ -819,15 +810,16 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Retrieves the generic return type of a method based on the provided metadata and class loader.
-         * 
-         * @param metadata the metadata of the method
-         * @param classLoader the class loader to use for resolving the declaring class
-         * @return the generic return type of the method
-         * @throws ClassNotFoundException if the declaring class cannot be found
-         * @throws LinkageError if there is a linkage error while resolving the declaring class
-         */
-        private Class<?> getReturnTypeGeneric(MethodMetadata metadata, ClassLoader classLoader)
+		 * Retrieves the generic return type of a method based on the provided metadata
+		 * and class loader.
+		 * @param metadata the metadata of the method
+		 * @param classLoader the class loader to use for resolving the declaring class
+		 * @return the generic return type of the method
+		 * @throws ClassNotFoundException if the declaring class cannot be found
+		 * @throws LinkageError if there is a linkage error while resolving the declaring
+		 * class
+		 */
+		private Class<?> getReturnTypeGeneric(MethodMetadata metadata, ClassLoader classLoader)
 				throws ClassNotFoundException, LinkageError {
 			Class<?> declaringClass = resolve(metadata.getDeclaringClassName(), classLoader);
 			Method beanMethod = findBeanMethod(declaringClass, metadata.getMethodName());
@@ -835,14 +827,14 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Finds a bean method in the specified declaring class with the given method name.
-         * 
-         * @param declaringClass the class in which to search for the method
-         * @param methodName the name of the method to find
-         * @return the found bean method
-         * @throws IllegalStateException if the bean method cannot be found
-         */
-        private Method findBeanMethod(Class<?> declaringClass, String methodName) {
+		 * Finds a bean method in the specified declaring class with the given method
+		 * name.
+		 * @param declaringClass the class in which to search for the method
+		 * @param methodName the name of the method to find
+		 * @return the found bean method
+		 * @throws IllegalStateException if the bean method cannot be found
+		 */
+		private Method findBeanMethod(Class<?> declaringClass, String methodName) {
 			Method method = ReflectionUtils.findMethod(declaringClass, methodName);
 			if (isBeanMethod(method)) {
 				return method;
@@ -857,95 +849,87 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Checks if the given method is a bean method.
-         * 
-         * @param method the method to check
-         * @return {@code true} if the method is a bean method, {@code false} otherwise
-         */
-        private boolean isBeanMethod(Method method) {
+		 * Checks if the given method is a bean method.
+		 * @param method the method to check
+		 * @return {@code true} if the method is a bean method, {@code false} otherwise
+		 */
+		private boolean isBeanMethod(Method method) {
 			return method != null && MergedAnnotations.from(method, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
 				.isPresent(Bean.class);
 		}
 
 		/**
-         * Returns the search strategy to be used.
-         * 
-         * @return the search strategy
-         */
-        private SearchStrategy getStrategy() {
+		 * Returns the search strategy to be used.
+		 * @return the search strategy
+		 */
+		private SearchStrategy getStrategy() {
 			return (this.strategy != null) ? this.strategy : SearchStrategy.ALL;
 		}
 
 		/**
-         * Returns the set of names.
-         *
-         * @return the set of names
-         */
-        Set<String> getNames() {
+		 * Returns the set of names.
+		 * @return the set of names
+		 */
+		Set<String> getNames() {
 			return this.names;
 		}
 
 		/**
-         * Returns the set of types.
-         *
-         * @return the set of types
-         */
-        Set<String> getTypes() {
+		 * Returns the set of types.
+		 * @return the set of types
+		 */
+		Set<String> getTypes() {
 			return this.types;
 		}
 
 		/**
-         * Returns the set of annotations associated with this object.
-         *
-         * @return the set of annotations
-         */
-        Set<String> getAnnotations() {
+		 * Returns the set of annotations associated with this object.
+		 * @return the set of annotations
+		 */
+		Set<String> getAnnotations() {
 			return this.annotations;
 		}
 
 		/**
-         * Returns the set of ignored types.
-         *
-         * @return the set of ignored types
-         */
-        Set<String> getIgnoredTypes() {
+		 * Returns the set of ignored types.
+		 * @return the set of ignored types
+		 */
+		Set<String> getIgnoredTypes() {
 			return this.ignoredTypes;
 		}
 
 		/**
-         * Returns the parameterized containers.
-         * 
-         * @return the parameterized containers
-         */
-        Set<Class<?>> getParameterizedContainers() {
+		 * Returns the parameterized containers.
+		 * @return the parameterized containers
+		 */
+		Set<Class<?>> getParameterizedContainers() {
 			return this.parameterizedContainers;
 		}
 
 		/**
-         * Returns a new instance of {@link ConditionMessage.Builder} for creating a condition message.
-         * 
-         * @return a new instance of {@link ConditionMessage.Builder}
-         */
-        ConditionMessage.Builder message() {
+		 * Returns a new instance of {@link ConditionMessage.Builder} for creating a
+		 * condition message.
+		 * @return a new instance of {@link ConditionMessage.Builder}
+		 */
+		ConditionMessage.Builder message() {
 			return ConditionMessage.forCondition(this.annotationType, this);
 		}
 
 		/**
-         * Creates a new ConditionMessage.Builder object by adding the current condition to the given ConditionMessage.
-         * 
-         * @param message the ConditionMessage to which the current condition is added
-         * @return a new ConditionMessage.Builder object with the current condition added
-         */
-        ConditionMessage.Builder message(ConditionMessage message) {
+		 * Creates a new ConditionMessage.Builder object by adding the current condition
+		 * to the given ConditionMessage.
+		 * @param message the ConditionMessage to which the current condition is added
+		 * @return a new ConditionMessage.Builder object with the current condition added
+		 */
+		ConditionMessage.Builder message(ConditionMessage message) {
 			return message.andCondition(this.annotationType, this);
 		}
 
 		/**
-         * Returns a string representation of the object.
-         * 
-         * @return a string representation of the object
-         */
-        @Override
+		 * Returns a string representation of the object.
+		 * @return a string representation of the object
+		 */
+		@Override
 		public String toString() {
 			boolean hasNames = !this.names.isEmpty();
 			boolean hasTypes = !this.types.isEmpty();
@@ -984,23 +968,26 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		private static final Collection<String> FILTERED_TYPES = Arrays.asList("", Object.class.getName());
 
 		/**
-         * Constructs a new SingleCandidateSpec with the specified ConditionContext, AnnotatedTypeMetadata, and MergedAnnotations.
-         * 
-         * @param context the ConditionContext representing the current condition evaluation context
-         * @param metadata the AnnotatedTypeMetadata representing the metadata of the annotated type
-         * @param annotations the MergedAnnotations representing the merged annotations of the annotated type
-         */
-        SingleCandidateSpec(ConditionContext context, AnnotatedTypeMetadata metadata, MergedAnnotations annotations) {
+		 * Constructs a new SingleCandidateSpec with the specified ConditionContext,
+		 * AnnotatedTypeMetadata, and MergedAnnotations.
+		 * @param context the ConditionContext representing the current condition
+		 * evaluation context
+		 * @param metadata the AnnotatedTypeMetadata representing the metadata of the
+		 * annotated type
+		 * @param annotations the MergedAnnotations representing the merged annotations of
+		 * the annotated type
+		 */
+		SingleCandidateSpec(ConditionContext context, AnnotatedTypeMetadata metadata, MergedAnnotations annotations) {
 			super(context, metadata, annotations, ConditionalOnSingleCandidate.class);
 		}
 
 		/**
-         * Extracts the types from the given attributes and removes the filtered types.
-         * 
-         * @param attributes the attributes from which to extract the types
-         * @return the set of types extracted from the attributes, with the filtered types removed
-         */
-        @Override
+		 * Extracts the types from the given attributes and removes the filtered types.
+		 * @param attributes the attributes from which to extract the types
+		 * @return the set of types extracted from the attributes, with the filtered types
+		 * removed
+		 */
+		@Override
 		protected Set<String> extractTypes(MultiValueMap<String, Object> attributes) {
 			Set<String> types = super.extractTypes(attributes);
 			types.removeAll(FILTERED_TYPES);
@@ -1008,12 +995,12 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		/**
-         * Validates the given BeanTypeDeductionException.
-         * 
-         * @param ex the BeanTypeDeductionException to be validated
-         * @throws IllegalArgumentException if the number of types specified in the annotation is not equal to 1
-         */
-        @Override
+		 * Validates the given BeanTypeDeductionException.
+		 * @param ex the BeanTypeDeductionException to be validated
+		 * @throws IllegalArgumentException if the number of types specified in the
+		 * annotation is not equal to 1
+		 */
+		@Override
 		protected void validate(BeanTypeDeductionException ex) {
 			Assert.isTrue(getTypes().size() == 1,
 					() -> getAnnotationName() + " annotations must specify only one type (got "
@@ -1042,144 +1029,132 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		private final Set<String> namesOfAllMatches = new HashSet<>();
 
 		/**
-         * Records a matched name.
-         * 
-         * @param name the name to be recorded
-         */
-        private void recordMatchedName(String name) {
+		 * Records a matched name.
+		 * @param name the name to be recorded
+		 */
+		private void recordMatchedName(String name) {
 			this.matchedNames.add(name);
 			this.namesOfAllMatches.add(name);
 		}
 
 		/**
-         * Records an unmatched name.
-         * 
-         * @param name the name to be recorded
-         */
-        private void recordUnmatchedName(String name) {
+		 * Records an unmatched name.
+		 * @param name the name to be recorded
+		 */
+		private void recordUnmatchedName(String name) {
 			this.unmatchedNames.add(name);
 		}
 
 		/**
-         * Records the matched annotation and the collection of matching names.
-         * 
-         * @param annotation the annotation to be recorded
-         * @param matchingNames the collection of matching names
-         */
-        private void recordMatchedAnnotation(String annotation, Collection<String> matchingNames) {
+		 * Records the matched annotation and the collection of matching names.
+		 * @param annotation the annotation to be recorded
+		 * @param matchingNames the collection of matching names
+		 */
+		private void recordMatchedAnnotation(String annotation, Collection<String> matchingNames) {
 			this.matchedAnnotations.put(annotation, matchingNames);
 			this.namesOfAllMatches.addAll(matchingNames);
 		}
 
 		/**
-         * Records an unmatched annotation.
-         * 
-         * @param annotation the unmatched annotation to be recorded
-         */
-        private void recordUnmatchedAnnotation(String annotation) {
+		 * Records an unmatched annotation.
+		 * @param annotation the unmatched annotation to be recorded
+		 */
+		private void recordUnmatchedAnnotation(String annotation) {
 			this.unmatchedAnnotations.add(annotation);
 		}
 
 		/**
-         * Records the matched type and the collection of matching names.
-         * 
-         * @param type the type of the match
-         * @param matchingNames the collection of matching names
-         */
-        private void recordMatchedType(String type, Collection<String> matchingNames) {
+		 * Records the matched type and the collection of matching names.
+		 * @param type the type of the match
+		 * @param matchingNames the collection of matching names
+		 */
+		private void recordMatchedType(String type, Collection<String> matchingNames) {
 			this.matchedTypes.put(type, matchingNames);
 			this.namesOfAllMatches.addAll(matchingNames);
 		}
 
 		/**
-         * Records an unmatched type.
-         * 
-         * @param type the type to be recorded
-         */
-        private void recordUnmatchedType(String type) {
+		 * Records an unmatched type.
+		 * @param type the type to be recorded
+		 */
+		private void recordUnmatchedType(String type) {
 			this.unmatchedTypes.add(type);
 		}
 
 		/**
-         * Checks if all the annotations, names, and types are matched.
-         * 
-         * @return true if all the annotations, names, and types are matched, false otherwise.
-         */
-        boolean isAllMatched() {
+		 * Checks if all the annotations, names, and types are matched.
+		 * @return true if all the annotations, names, and types are matched, false
+		 * otherwise.
+		 */
+		boolean isAllMatched() {
 			return this.unmatchedAnnotations.isEmpty() && this.unmatchedNames.isEmpty()
 					&& this.unmatchedTypes.isEmpty();
 		}
 
 		/**
-         * Checks if there are any matches found in the MatchResult object.
-         * 
-         * @return true if there are any matches found, false otherwise.
-         */
-        boolean isAnyMatched() {
+		 * Checks if there are any matches found in the MatchResult object.
+		 * @return true if there are any matches found, false otherwise.
+		 */
+		boolean isAnyMatched() {
 			return (!this.matchedAnnotations.isEmpty()) || (!this.matchedNames.isEmpty())
 					|| (!this.matchedTypes.isEmpty());
 		}
 
 		/**
-         * Returns a map of matched annotations.
-         * 
-         * @return a map where the keys are annotation names and the values are collections of matched annotations
-         */
-        Map<String, Collection<String>> getMatchedAnnotations() {
+		 * Returns a map of matched annotations.
+		 * @return a map where the keys are annotation names and the values are
+		 * collections of matched annotations
+		 */
+		Map<String, Collection<String>> getMatchedAnnotations() {
 			return this.matchedAnnotations;
 		}
 
 		/**
-         * Returns the list of matched names.
-         *
-         * @return the list of matched names
-         */
-        List<String> getMatchedNames() {
+		 * Returns the list of matched names.
+		 * @return the list of matched names
+		 */
+		List<String> getMatchedNames() {
 			return this.matchedNames;
 		}
 
 		/**
-         * Returns the matched types.
-         * 
-         * @return a map containing the matched types, where the keys are strings and the values are collections of strings
-         */
-        Map<String, Collection<String>> getMatchedTypes() {
+		 * Returns the matched types.
+		 * @return a map containing the matched types, where the keys are strings and the
+		 * values are collections of strings
+		 */
+		Map<String, Collection<String>> getMatchedTypes() {
 			return this.matchedTypes;
 		}
 
 		/**
-         * Returns a list of unmatched annotations.
-         * 
-         * @return the list of unmatched annotations
-         */
-        List<String> getUnmatchedAnnotations() {
+		 * Returns a list of unmatched annotations.
+		 * @return the list of unmatched annotations
+		 */
+		List<String> getUnmatchedAnnotations() {
 			return this.unmatchedAnnotations;
 		}
 
 		/**
-         * Returns a list of unmatched names.
-         * 
-         * @return the list of unmatched names
-         */
-        List<String> getUnmatchedNames() {
+		 * Returns a list of unmatched names.
+		 * @return the list of unmatched names
+		 */
+		List<String> getUnmatchedNames() {
 			return this.unmatchedNames;
 		}
 
 		/**
-         * Returns a list of unmatched types.
-         * 
-         * @return the list of unmatched types
-         */
-        List<String> getUnmatchedTypes() {
+		 * Returns a list of unmatched types.
+		 * @return the list of unmatched types
+		 */
+		List<String> getUnmatchedTypes() {
 			return this.unmatchedTypes;
 		}
 
 		/**
-         * Returns a Set of Strings containing the names of all matches.
-         *
-         * @return a Set of Strings containing the names of all matches
-         */
-        Set<String> getNamesOfAllMatches() {
+		 * Returns a Set of Strings containing the names of all matches.
+		 * @return a Set of Strings containing the names of all matches
+		 */
+		Set<String> getNamesOfAllMatches() {
 			return this.namesOfAllMatches;
 		}
 
@@ -1191,13 +1166,13 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	static final class BeanTypeDeductionException extends RuntimeException {
 
 		/**
-         * Constructs a new BeanTypeDeductionException with the specified class name, bean method name, and cause.
-         * 
-         * @param className the name of the class
-         * @param beanMethodName the name of the bean method
-         * @param cause the cause of the exception
-         */
-        private BeanTypeDeductionException(String className, String beanMethodName, Throwable cause) {
+		 * Constructs a new BeanTypeDeductionException with the specified class name, bean
+		 * method name, and cause.
+		 * @param className the name of the class
+		 * @param beanMethodName the name of the bean method
+		 * @param cause the cause of the exception
+		 */
+		private BeanTypeDeductionException(String className, String beanMethodName, Throwable cause) {
 			super("Failed to deduce bean type for " + className + "." + beanMethodName, cause);
 		}
 

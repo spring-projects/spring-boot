@@ -30,13 +30,12 @@ import org.cache2k.extra.spring.SpringCache2kCache;
 public class Cache2kCacheMeterBinderProvider implements CacheMeterBinderProvider<SpringCache2kCache> {
 
 	/**
-     * Returns a MeterBinder for the given SpringCache2kCache and tags.
-     *
-     * @param cache the SpringCache2kCache to bind metrics for
-     * @param tags the tags to associate with the metrics
-     * @return a MeterBinder for the given cache and tags
-     */
-    @Override
+	 * Returns a MeterBinder for the given SpringCache2kCache and tags.
+	 * @param cache the SpringCache2kCache to bind metrics for
+	 * @param tags the tags to associate with the metrics
+	 * @return a MeterBinder for the given cache and tags
+	 */
+	@Override
 	public MeterBinder getMeterBinder(SpringCache2kCache cache, Iterable<Tag> tags) {
 		return new Cache2kCacheMetrics(cache.getNativeCache(), tags);
 	}

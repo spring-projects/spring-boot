@@ -39,22 +39,20 @@ class MariaDbR2dbcDockerComposeConnectionDetailsFactory
 	private static final String[] MARIADB_CONTAINER_NAMES = { "mariadb", "bitnami/mariadb" };
 
 	/**
-     * Constructs a new MariaDbR2dbcDockerComposeConnectionDetailsFactory.
-     * 
-     * @param containerNames the names of the MariaDB containers
-     * @param connectionFactoryOptions the options for the connection factory
-     */
-    MariaDbR2dbcDockerComposeConnectionDetailsFactory() {
+	 * Constructs a new MariaDbR2dbcDockerComposeConnectionDetailsFactory.
+	 * @param containerNames the names of the MariaDB containers
+	 * @param connectionFactoryOptions the options for the connection factory
+	 */
+	MariaDbR2dbcDockerComposeConnectionDetailsFactory() {
 		super(MARIADB_CONTAINER_NAMES, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	/**
-     * Retrieves the connection details for a Docker Compose service.
-     * 
-     * @param source the Docker Compose connection source
-     * @return the R2dbcConnectionDetails for the specified Docker Compose service
-     */
-    @Override
+	 * Retrieves the connection details for a Docker Compose service.
+	 * @param source the Docker Compose connection source
+	 * @return the R2dbcConnectionDetails for the specified Docker Compose service
+	 */
+	@Override
 	protected R2dbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new MariaDbR2dbcDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -71,11 +69,12 @@ class MariaDbR2dbcDockerComposeConnectionDetailsFactory
 		private final ConnectionFactoryOptions connectionFactoryOptions;
 
 		/**
-         * Constructs a new MariaDbR2dbcDockerComposeConnectionDetails object with the provided RunningService.
-         * 
-         * @param service the RunningService object representing the running MariaDB service
-         */
-        MariaDbR2dbcDockerComposeConnectionDetails(RunningService service) {
+		 * Constructs a new MariaDbR2dbcDockerComposeConnectionDetails object with the
+		 * provided RunningService.
+		 * @param service the RunningService object representing the running MariaDB
+		 * service
+		 */
+		MariaDbR2dbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			MariaDbEnvironment environment = new MariaDbEnvironment(service.env());
 			this.connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service, environment.getDatabase(),
@@ -83,11 +82,10 @@ class MariaDbR2dbcDockerComposeConnectionDetailsFactory
 		}
 
 		/**
-         * Returns the connection factory options for establishing a connection.
-         *
-         * @return the connection factory options
-         */
-        @Override
+		 * Returns the connection factory options for establishing a connection.
+		 * @return the connection factory options
+		 */
+		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
 			return this.connectionFactoryOptions;
 		}

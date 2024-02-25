@@ -140,21 +140,19 @@ public class PropertiesLauncher extends Launcher {
 	private final Properties properties = new Properties();
 
 	/**
-     * Constructs a new instance of PropertiesLauncher.
-     * 
-     * @throws Exception if an error occurs during the construction of the instance
-     */
-    public PropertiesLauncher() throws Exception {
+	 * Constructs a new instance of PropertiesLauncher.
+	 * @throws Exception if an error occurs during the construction of the instance
+	 */
+	public PropertiesLauncher() throws Exception {
 		this(Archive.create(Launcher.class));
 	}
 
 	/**
-     * Constructs a new PropertiesLauncher with the specified Archive.
-     * 
-     * @param archive the Archive to be used by the PropertiesLauncher
-     * @throws Exception if an error occurs during initialization
-     */
-    PropertiesLauncher(Archive archive) throws Exception {
+	 * Constructs a new PropertiesLauncher with the specified Archive.
+	 * @param archive the Archive to be used by the PropertiesLauncher
+	 * @throws Exception if an error occurs during initialization
+	 */
+	PropertiesLauncher(Archive archive) throws Exception {
 		this.archive = archive;
 		this.homeDirectory = getHomeDirectory();
 		initializeProperties();
@@ -162,21 +160,19 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Returns the home directory as a File object.
-     * 
-     * @return the home directory as a File object
-     * @throws Exception if an error occurs while retrieving the home directory
-     */
-    protected File getHomeDirectory() throws Exception {
+	 * Returns the home directory as a File object.
+	 * @return the home directory as a File object
+	 * @throws Exception if an error occurs while retrieving the home directory
+	 */
+	protected File getHomeDirectory() throws Exception {
 		return new File(getPropertyWithDefault(HOME, "${user.dir}"));
 	}
 
 	/**
-     * Initializes the properties for the PropertiesLauncher.
-     * 
-     * @throws Exception if an error occurs during initialization
-     */
-    private void initializeProperties() throws Exception {
+	 * Initializes the properties for the PropertiesLauncher.
+	 * @throws Exception if an error occurs during initialization
+	 */
+	private void initializeProperties() throws Exception {
 		List<String> configs = new ArrayList<>();
 		if (getProperty(CONFIG_LOCATION) != null) {
 			configs.add(getProperty(CONFIG_LOCATION));
@@ -204,13 +200,12 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Retrieves the resource specified by the given configuration string.
-     * 
-     * @param config the configuration string specifying the resource
-     * @return an InputStream representing the resource
-     * @throws Exception if an error occurs while retrieving the resource
-     */
-    private InputStream getResource(String config) throws Exception {
+	 * Retrieves the resource specified by the given configuration string.
+	 * @param config the configuration string specifying the resource
+	 * @return an InputStream representing the resource
+	 * @throws Exception if an error occurs while retrieving the resource
+	 */
+	private InputStream getResource(String config) throws Exception {
 		if (config.startsWith("classpath:")) {
 			return getClasspathResource(config.substring("classpath:".length()));
 		}
@@ -222,12 +217,12 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Retrieves an input stream for a resource located in the classpath.
-     * 
-     * @param config the path of the resource to retrieve
-     * @return an input stream for the specified resource, or null if the resource is not found
-     */
-    private InputStream getClasspathResource(String config) {
+	 * Retrieves an input stream for a resource located in the classpath.
+	 * @param config the path of the resource to retrieve
+	 * @return an input stream for the specified resource, or null if the resource is not
+	 * found
+	 */
+	private InputStream getClasspathResource(String config) {
 		config = stripLeadingSlashes(config);
 		config = "/" + config;
 		debug.log("Trying classpath: %s", config);
@@ -235,12 +230,11 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Handles the given URL path.
-     * 
-     * @param path the URL path to be handled
-     * @return the processed URL path
-     */
-    private String handleUrl(String path) {
+	 * Handles the given URL path.
+	 * @param path the URL path to be handled
+	 * @return the processed URL path
+	 */
+	private String handleUrl(String path) {
 		if (path.startsWith("jar:file:") || path.startsWith("file:")) {
 			path = URLDecoder.decode(path, StandardCharsets.UTF_8);
 			if (path.startsWith("file:")) {
@@ -254,23 +248,21 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Checks if the given configuration string is a valid URL.
-     * 
-     * @param config the configuration string to be checked
-     * @return true if the configuration string is a valid URL, false otherwise
-     */
-    private boolean isUrl(String config) {
+	 * Checks if the given configuration string is a valid URL.
+	 * @param config the configuration string to be checked
+	 * @return true if the configuration string is a valid URL, false otherwise
+	 */
+	private boolean isUrl(String config) {
 		return config.contains("://");
 	}
 
 	/**
-     * Retrieves the resource from the specified URL.
-     * 
-     * @param config the URL of the resource to retrieve
-     * @return an InputStream representing the resource
-     * @throws Exception if an error occurs while retrieving the resource
-     */
-    private InputStream getURLResource(String config) throws Exception {
+	 * Retrieves the resource from the specified URL.
+	 * @param config the URL of the resource to retrieve
+	 * @return an InputStream representing the resource
+	 * @throws Exception if an error occurs while retrieving the resource
+	 */
+	private InputStream getURLResource(String config) throws Exception {
 		URL url = new URL(config);
 		if (exists(url)) {
 			URLConnection connection = url.openConnection();
@@ -286,13 +278,13 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Checks if a given URL exists by making a HEAD request and checking the response code.
-     * 
-     * @param url the URL to check
-     * @return true if the URL exists, false otherwise
-     * @throws IOException if an I/O error occurs while making the request
-     */
-    private boolean exists(URL url) throws IOException {
+	 * Checks if a given URL exists by making a HEAD request and checking the response
+	 * code.
+	 * @param url the URL to check
+	 * @return true if the URL exists, false otherwise
+	 * @throws IOException if an I/O error occurs while making the request
+	 */
+	private boolean exists(URL url) throws IOException {
 		URLConnection connection = url.openConnection();
 		try {
 			connection.setUseCaches(connection.getClass().getSimpleName().startsWith("JNLP"));
@@ -314,36 +306,33 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Disconnects the given URL connection.
-     * 
-     * @param connection the URL connection to disconnect
-     */
-    private void disconnect(URLConnection connection) {
+	 * Disconnects the given URL connection.
+	 * @param connection the URL connection to disconnect
+	 */
+	private void disconnect(URLConnection connection) {
 		if (connection instanceof HttpURLConnection httpConnection) {
 			httpConnection.disconnect();
 		}
 	}
 
 	/**
-     * Retrieves the input stream of a file resource based on the provided configuration.
-     * 
-     * @param config the path to the file resource
-     * @return the input stream of the file resource
-     * @throws Exception if an error occurs while retrieving the file resource
-     */
-    private InputStream getFileResource(String config) throws Exception {
+	 * Retrieves the input stream of a file resource based on the provided configuration.
+	 * @param config the path to the file resource
+	 * @return the input stream of the file resource
+	 * @throws Exception if an error occurs while retrieving the file resource
+	 */
+	private InputStream getFileResource(String config) throws Exception {
 		File file = new File(config);
 		debug.log("Trying file: %s", config);
 		return (!file.canRead()) ? null : new FileInputStream(file);
 	}
 
 	/**
-     * Loads a resource from an input stream and populates the properties object.
-     * 
-     * @param resource the input stream of the resource to be loaded
-     * @throws Exception if an error occurs while loading the resource
-     */
-    private void loadResource(InputStream resource) throws Exception {
+	 * Loads a resource from an input stream and populates the properties object.
+	 * @param resource the input stream of the resource to be loaded
+	 * @throws Exception if an error occurs while loading the resource
+	 */
+	private void loadResource(InputStream resource) throws Exception {
 		this.properties.load(resource);
 		resolvePropertyPlaceholders();
 		if ("true".equalsIgnoreCase(getProperty(SET_SYSTEM_PROPERTIES))) {
@@ -352,14 +341,14 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Resolves property placeholders in the properties object.
-     * 
-     * This method iterates over each property in the properties object and resolves any placeholders present in the property value.
-     * The resolved value is then updated in the properties object.
-     * 
-     * @throws NullPointerException if the properties object is null
-     */
-    private void resolvePropertyPlaceholders() {
+	 * Resolves property placeholders in the properties object.
+	 *
+	 * This method iterates over each property in the properties object and resolves any
+	 * placeholders present in the property value. The resolved value is then updated in
+	 * the properties object.
+	 * @throws NullPointerException if the properties object is null
+	 */
+	private void resolvePropertyPlaceholders() {
 		for (String name : this.properties.stringPropertyNames()) {
 			String value = this.properties.getProperty(name);
 			String resolved = SystemPropertyUtils.resolvePlaceholders(this.properties, value);
@@ -370,15 +359,16 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Adds the resolved properties to the System properties.
-     * 
-     * This method iterates over the properties stored in the instance variable 'properties' and adds each property to the System properties using the System.setProperty() method.
-     * 
-     * @throws NullPointerException if the 'properties' instance variable is null.
-     * 
-     * @see PropertiesLauncher
-     */
-    private void addToSystemProperties() {
+	 * Adds the resolved properties to the System properties.
+	 *
+	 * This method iterates over the properties stored in the instance variable
+	 * 'properties' and adds each property to the System properties using the
+	 * System.setProperty() method.
+	 * @throws NullPointerException if the 'properties' instance variable is null.
+	 *
+	 * @see PropertiesLauncher
+	 */
+	private void addToSystemProperties() {
 		debug.log("Adding resolved properties to System properties");
 		for (String name : this.properties.stringPropertyNames()) {
 			String value = this.properties.getProperty(name);
@@ -387,12 +377,11 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Retrieves the paths from the property file.
-     * 
-     * @return a list of paths
-     * @throws Exception if an error occurs while retrieving the paths
-     */
-    private List<String> getPaths() throws Exception {
+	 * Retrieves the paths from the property file.
+	 * @return a list of paths
+	 * @throws Exception if an error occurs while retrieving the paths
+	 */
+	private List<String> getPaths() throws Exception {
 		String path = getProperty(PATH);
 		List<String> paths = (path != null) ? parsePathsProperty(path) : Collections.emptyList();
 		debug.log("Nested archive paths: %s", this.paths);
@@ -400,12 +389,11 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Parses the comma-separated paths property and returns a list of paths.
-     * 
-     * @param commaSeparatedPaths the comma-separated paths property
-     * @return a list of paths
-     */
-    private List<String> parsePathsProperty(String commaSeparatedPaths) {
+	 * Parses the comma-separated paths property and returns a list of paths.
+	 * @param commaSeparatedPaths the comma-separated paths property
+	 * @return a list of paths
+	 */
+	private List<String> parsePathsProperty(String commaSeparatedPaths) {
 		List<String> paths = new ArrayList<>();
 		for (String path : commaSeparatedPaths.split(",")) {
 			path = cleanupPath(path);
@@ -420,16 +408,14 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Cleans up the given path by removing leading and trailing whitespaces.
-     * If the path starts with "./", it removes the "./" prefix.
-     * If the path is an archive, it returns the path as is.
-     * If the path ends with "/*", it removes the "/*" suffix.
-     * If the path is a directory and does not end with "/", it appends "/" to the path.
-     * 
-     * @param path the path to be cleaned up
-     * @return the cleaned up path
-     */
-    private String cleanupPath(String path) {
+	 * Cleans up the given path by removing leading and trailing whitespaces. If the path
+	 * starts with "./", it removes the "./" prefix. If the path is an archive, it returns
+	 * the path as is. If the path ends with "/*", it removes the "/*" suffix. If the path
+	 * is a directory and does not end with "/", it appends "/" to the path.
+	 * @param path the path to be cleaned up
+	 * @return the cleaned up path
+	 */
+	private String cleanupPath(String path) {
 		path = path.trim();
 		// No need for current dir path
 		if (path.startsWith("./")) {
@@ -446,15 +432,15 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Creates a custom class loader based on the provided URLs.
-     * If a loader class name is specified in the system properties, it wraps the class loader with the specified custom class loader.
-     * Otherwise, it creates a class loader using the default implementation.
-     *
-     * @param urls The collection of URLs to be used by the class loader.
-     * @return The created class loader.
-     * @throws Exception If an error occurs while creating the class loader.
-     */
-    @Override
+	 * Creates a custom class loader based on the provided URLs. If a loader class name is
+	 * specified in the system properties, it wraps the class loader with the specified
+	 * custom class loader. Otherwise, it creates a class loader using the default
+	 * implementation.
+	 * @param urls The collection of URLs to be used by the class loader.
+	 * @return The created class loader.
+	 * @throws Exception If an error occurs while creating the class loader.
+	 */
+	@Override
 	protected ClassLoader createClassLoader(Collection<URL> urls) throws Exception {
 		String loaderClassName = getProperty("loader.classLoader");
 		if (loaderClassName == null) {
@@ -469,15 +455,15 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Wraps the given parent class loader with a custom class loader specified by the provided loader class name.
-     * 
-     * @param parent The parent class loader to be wrapped.
-     * @param loaderClassName The fully qualified name of the custom class loader.
-     * @return The wrapped custom class loader.
-     * @throws Exception If an error occurs while creating the custom class loader.
-     * @throws IllegalStateException If the custom class loader cannot be created.
-     */
-    private ClassLoader wrapWithCustomClassLoader(ClassLoader parent, String loaderClassName) throws Exception {
+	 * Wraps the given parent class loader with a custom class loader specified by the
+	 * provided loader class name.
+	 * @param parent The parent class loader to be wrapped.
+	 * @param loaderClassName The fully qualified name of the custom class loader.
+	 * @return The wrapped custom class loader.
+	 * @throws Exception If an error occurs while creating the custom class loader.
+	 * @throws IllegalStateException If the custom class loader cannot be created.
+	 */
+	private ClassLoader wrapWithCustomClassLoader(ClassLoader parent, String loaderClassName) throws Exception {
 		Instantiator<ClassLoader> instantiator = new Instantiator<>(parent, loaderClassName);
 		ClassLoader loader = instantiator.declaredConstructor(ClassLoader.class).newInstance(parent);
 		loader = (loader != null) ? loader
@@ -490,23 +476,21 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Returns the archive for the PropertiesLauncher.
-     * Since we don't have a single archive and are not exploded, this method returns null.
-     *
-     * @return null - since there is no single archive and not exploded.
-     */
-    @Override
+	 * Returns the archive for the PropertiesLauncher. Since we don't have a single
+	 * archive and are not exploded, this method returns null.
+	 * @return null - since there is no single archive and not exploded.
+	 */
+	@Override
 	protected Archive getArchive() {
 		return null; // We don't have a single archive and are not exploded.
 	}
 
 	/**
-     * Returns the main class to be executed.
-     * 
-     * @return the main class
-     * @throws Exception if no 'Main' or 'Start-Class' property is specified
-     */
-    @Override
+	 * Returns the main class to be executed.
+	 * @return the main class
+	 * @throws Exception if no 'Main' or 'Start-Class' property is specified
+	 */
+	@Override
 	protected String getMainClass() throws Exception {
 		String mainClass = getProperty(MAIN, "Start-Class");
 		if (mainClass == null) {
@@ -516,25 +500,23 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Retrieves the command line arguments for the application.
-     * 
-     * @param args the additional command line arguments passed to the method
-     * @return an array of command line arguments
-     * @throws Exception if an error occurs while retrieving the arguments
-     */
-    protected String[] getArgs(String... args) throws Exception {
+	 * Retrieves the command line arguments for the application.
+	 * @param args the additional command line arguments passed to the method
+	 * @return an array of command line arguments
+	 * @throws Exception if an error occurs while retrieving the arguments
+	 */
+	protected String[] getArgs(String... args) throws Exception {
 		String loaderArgs = getProperty(ARGS);
 		return (loaderArgs != null) ? merge(loaderArgs.split("\\s+"), args) : args;
 	}
 
 	/**
-     * Merges two arrays of strings into a single array.
-     * 
-     * @param a1 the first array of strings
-     * @param a2 the second array of strings
-     * @return the merged array of strings
-     */
-    private String[] merge(String[] a1, String[] a2) {
+	 * Merges two arrays of strings into a single array.
+	 * @param a1 the first array of strings
+	 * @param a2 the second array of strings
+	 * @return the merged array of strings
+	 */
+	private String[] merge(String[] a1, String[] a2) {
 		String[] result = new String[a1.length + a2.length];
 		System.arraycopy(a1, 0, result, 0, a1.length);
 		System.arraycopy(a2, 0, result, a1.length, a2.length);
@@ -542,51 +524,48 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Retrieves the value of the specified property.
-     * 
-     * @param name the name of the property to retrieve
-     * @return the value of the property
-     * @throws Exception if an error occurs while retrieving the property
-     */
-    private String getProperty(String name) throws Exception {
+	 * Retrieves the value of the specified property.
+	 * @param name the name of the property to retrieve
+	 * @return the value of the property
+	 * @throws Exception if an error occurs while retrieving the property
+	 */
+	private String getProperty(String name) throws Exception {
 		return getProperty(name, null, null);
 	}
 
 	/**
-     * Retrieves the value of a property from the manifest file.
-     * 
-     * @param name         the name of the property to retrieve
-     * @param manifestKey  the key in the manifest file associated with the property
-     * @return             the value of the property, or null if not found
-     * @throws Exception   if an error occurs while retrieving the property
-     */
-    private String getProperty(String name, String manifestKey) throws Exception {
+	 * Retrieves the value of a property from the manifest file.
+	 * @param name the name of the property to retrieve
+	 * @param manifestKey the key in the manifest file associated with the property
+	 * @return the value of the property, or null if not found
+	 * @throws Exception if an error occurs while retrieving the property
+	 */
+	private String getProperty(String name, String manifestKey) throws Exception {
 		return getProperty(name, manifestKey, null);
 	}
 
 	/**
-     * Retrieves the value of the property with the given name from the properties file.
-     * If the property is not found, the default value is returned.
-     *
-     * @param name         the name of the property to retrieve
-     * @param defaultValue the default value to return if the property is not found
-     * @return the value of the property if found, otherwise the default value
-     * @throws Exception if an error occurs while retrieving the property
-     */
-    private String getPropertyWithDefault(String name, String defaultValue) throws Exception {
+	 * Retrieves the value of the property with the given name from the properties file.
+	 * If the property is not found, the default value is returned.
+	 * @param name the name of the property to retrieve
+	 * @param defaultValue the default value to return if the property is not found
+	 * @return the value of the property if found, otherwise the default value
+	 * @throws Exception if an error occurs while retrieving the property
+	 */
+	private String getPropertyWithDefault(String name, String defaultValue) throws Exception {
 		return getProperty(name, null, defaultValue);
 	}
 
 	/**
-     * Retrieves the value of a property based on the given name, manifest key, and default value.
-     * 
-     * @param name          the name of the property
-     * @param manifestKey   the key in the manifest file associated with the property
-     * @param defaultValue  the default value to be returned if the property is not found
-     * @return              the resolved value of the property
-     * @throws Exception    if an error occurs while retrieving the property
-     */
-    private String getProperty(String name, String manifestKey, String defaultValue) throws Exception {
+	 * Retrieves the value of a property based on the given name, manifest key, and
+	 * default value.
+	 * @param name the name of the property
+	 * @param manifestKey the key in the manifest file associated with the property
+	 * @param defaultValue the default value to be returned if the property is not found
+	 * @return the resolved value of the property
+	 * @throws Exception if an error occurs while retrieving the property
+	 */
+	private String getProperty(String name, String manifestKey, String defaultValue) throws Exception {
 		manifestKey = (manifestKey != null) ? manifestKey : toCamelCase(name.replace('.', '-'));
 		String value = SystemPropertyUtils.getProperty(name);
 		if (value != null) {
@@ -619,28 +598,29 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Retrieves the value associated with the specified manifest key from the given archive.
-     * 
-     * @param archive The archive from which to retrieve the manifest.
-     * @param manifestKey The key of the value to retrieve from the manifest.
-     * @return The value associated with the specified manifest key, or null if the manifest or the key is not found.
-     * @throws Exception If an error occurs while retrieving the manifest or the value.
-     */
-    String getManifestValue(Archive archive, String manifestKey) throws Exception {
+	 * Retrieves the value associated with the specified manifest key from the given
+	 * archive.
+	 * @param archive The archive from which to retrieve the manifest.
+	 * @param manifestKey The key of the value to retrieve from the manifest.
+	 * @return The value associated with the specified manifest key, or null if the
+	 * manifest or the key is not found.
+	 * @throws Exception If an error occurs while retrieving the manifest or the value.
+	 */
+	String getManifestValue(Archive archive, String manifestKey) throws Exception {
 		Manifest manifest = archive.getManifest();
 		return (manifest != null) ? manifest.getMainAttributes().getValue(manifestKey) : null;
 	}
 
 	/**
-     * Resolves the value of a property by replacing any placeholders with their corresponding values from the properties map.
-     * 
-     * @param name         the name of the property
-     * @param manifestKey  the key in the manifest file (optional)
-     * @param value        the value of the property
-     * @param from         the source of the property value
-     * @return             the resolved value of the property
-     */
-    private String getResolvedProperty(String name, String manifestKey, String value, String from) {
+	 * Resolves the value of a property by replacing any placeholders with their
+	 * corresponding values from the properties map.
+	 * @param name the name of the property
+	 * @param manifestKey the key in the manifest file (optional)
+	 * @param value the value of the property
+	 * @param from the source of the property value
+	 * @return the resolved value of the property
+	 */
+	private String getResolvedProperty(String name, String manifestKey, String value, String from) {
 		value = SystemPropertyUtils.resolvePlaceholders(this.properties, value);
 		String altName = (manifestKey != null && !manifestKey.equals(name)) ? "[%s] ".formatted(manifestKey) : "";
 		debug.log("Property '%s'%s from %s: %s", name, altName, from, value);
@@ -649,23 +629,21 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Closes the archive if it is not null.
-     *
-     * @throws Exception if an error occurs while closing the archive.
-     */
-    void close() throws Exception {
+	 * Closes the archive if it is not null.
+	 * @throws Exception if an error occurs while closing the archive.
+	 */
+	void close() throws Exception {
 		if (this.archive != null) {
 			this.archive.close();
 		}
 	}
 
 	/**
-     * Converts a given string to camel case.
-     * 
-     * @param string the string to be converted
-     * @return the camel case representation of the given string
-     */
-    public static String toCamelCase(CharSequence string) {
+	 * Converts a given string to camel case.
+	 * @param string the string to be converted
+	 * @return the camel case representation of the given string
+	 */
+	public static String toCamelCase(CharSequence string) {
 		if (string == null) {
 			return null;
 		}
@@ -681,22 +659,20 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Capitalizes the first letter of a given string.
-     * 
-     * @param str the string to be capitalized
-     * @return the capitalized string
-     */
-    private static String capitalize(String str) {
+	 * Capitalizes the first letter of a given string.
+	 * @param str the string to be capitalized
+	 * @return the capitalized string
+	 */
+	private static String capitalize(String str) {
 		return Character.toUpperCase(str.charAt(0)) + str.substring(1);
 	}
 
 	/**
-     * Returns a set of URLs representing the classpath.
-     * 
-     * @return the set of URLs representing the classpath
-     * @throws Exception if an error occurs while retrieving the classpath URLs
-     */
-    @Override
+	 * Returns a set of URLs representing the classpath.
+	 * @return the set of URLs representing the classpath
+	 * @throws Exception if an error occurs while retrieving the classpath URLs
+	 */
+	@Override
 	protected Set<URL> getClassPathUrls() throws Exception {
 		Set<URL> urls = new LinkedHashSet<>();
 		for (String path : getPaths()) {
@@ -709,13 +685,12 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Retrieves the classpath URLs for a given path.
-     * 
-     * @param path The path to retrieve classpath URLs from.
-     * @return A set of classpath URLs.
-     * @throws Exception If an error occurs while retrieving the classpath URLs.
-     */
-    private Set<URL> getClassPathUrlsForPath(String path) throws Exception {
+	 * Retrieves the classpath URLs for a given path.
+	 * @param path The path to retrieve classpath URLs from.
+	 * @return A set of classpath URLs.
+	 * @throws Exception If an error occurs while retrieving the classpath URLs.
+	 */
+	private Set<URL> getClassPathUrlsForPath(String path) throws Exception {
 		File file = (!isAbsolutePath(path)) ? new File(this.homeDirectory, path) : new File(path);
 		Set<URL> urls = new LinkedHashSet<>();
 		if (!"/".equals(path)) {
@@ -740,13 +715,12 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Returns a set of URLs representing the classpath for a nested path.
-     * 
-     * @param path the nested path
-     * @return a set of URLs representing the classpath for the nested path
-     * @throws Exception if an error occurs while retrieving the classpath URLs
-     */
-    private Set<URL> getClassPathUrlsForNested(String path) throws Exception {
+	 * Returns a set of URLs representing the classpath for a nested path.
+	 * @param path the nested path
+	 * @return a set of URLs representing the classpath for the nested path
+	 * @throws Exception if an error occurs while retrieving the classpath URLs
+	 */
+	private Set<URL> getClassPathUrlsForNested(String path) throws Exception {
 		boolean isJustArchive = isArchive(path);
 		if (!path.equals("/") && path.startsWith("/")
 				|| (this.archive.isExploded() && this.archive.getRootDirectory().equals(this.homeDirectory))) {
@@ -787,68 +761,62 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * Retrieves the classpath URLs for the root archive.
-     * 
-     * @return A set of URLs representing the classpath entries from the root archive.
-     * @throws IOException if an I/O error occurs while retrieving the classpath URLs.
-     */
-    private Set<URL> getClassPathUrlsForRoot() throws IOException {
+	 * Retrieves the classpath URLs for the root archive.
+	 * @return A set of URLs representing the classpath entries from the root archive.
+	 * @throws IOException if an I/O error occurs while retrieving the classpath URLs.
+	 */
+	private Set<URL> getClassPathUrlsForRoot() throws IOException {
 		debug.log("Adding classpath entries from root archive %s", this.archive);
 		return this.archive.getClassPathUrls(JarLauncher::isLibraryFileOrClassesDirectory);
 	}
 
 	/**
-     * Returns a Predicate that includes entries based on the given prefix.
-     * The Predicate includes entries that are directories and have the same name as the prefix,
-     * or entries that are archives and have a name that starts with the prefix.
-     *
-     * @param prefix the prefix to filter entries by
-     * @return a Predicate that includes entries based on the given prefix
-     */
-    private Predicate<Entry> includeByPrefix(String prefix) {
+	 * Returns a Predicate that includes entries based on the given prefix. The Predicate
+	 * includes entries that are directories and have the same name as the prefix, or
+	 * entries that are archives and have a name that starts with the prefix.
+	 * @param prefix the prefix to filter entries by
+	 * @return a Predicate that includes entries based on the given prefix
+	 */
+	private Predicate<Entry> includeByPrefix(String prefix) {
 		return (entry) -> (entry.isDirectory() && entry.name().equals(prefix))
 				|| (isArchive(entry) && entry.name().startsWith(prefix));
 	}
 
 	/**
-     * Determines if the given entry is an archive.
-     * 
-     * @param entry the entry to check
-     * @return true if the entry is an archive, false otherwise
-     */
-    private boolean isArchive(Entry entry) {
+	 * Determines if the given entry is an archive.
+	 * @param entry the entry to check
+	 * @return true if the entry is an archive, false otherwise
+	 */
+	private boolean isArchive(Entry entry) {
 		return isArchive(entry.name());
 	}
 
 	/**
-     * Checks if the given file name is an archive file.
-     * 
-     * @param name the name of the file to be checked
-     * @return true if the file is an archive file, false otherwise
-     */
-    private boolean isArchive(String name) {
+	 * Checks if the given file name is an archive file.
+	 * @param name the name of the file to be checked
+	 * @return true if the file is an archive file, false otherwise
+	 */
+	private boolean isArchive(String name) {
 		name = name.toLowerCase(Locale.ENGLISH);
 		return name.endsWith(".jar") || name.endsWith(".zip");
 	}
 
 	/**
-     * Checks if the given root path is an absolute path.
-     * 
-     * @param root the root path to be checked
-     * @return true if the root path is an absolute path, false otherwise
-     */
-    private boolean isAbsolutePath(String root) {
+	 * Checks if the given root path is an absolute path.
+	 * @param root the root path to be checked
+	 * @return true if the root path is an absolute path, false otherwise
+	 */
+	private boolean isAbsolutePath(String root) {
 		// Windows contains ":" others start with "/"
 		return root.contains(":") || root.startsWith("/");
 	}
 
 	/**
-     * Removes leading slashes from the given string.
-     * 
-     * @param string the string to remove leading slashes from
-     * @return the string without leading slashes
-     */
-    private String stripLeadingSlashes(String string) {
+	 * Removes leading slashes from the given string.
+	 * @param string the string to remove leading slashes from
+	 * @return the string without leading slashes
+	 */
+	private String stripLeadingSlashes(String string) {
 		while (string.startsWith("/")) {
 			string = string.substring(1);
 		}
@@ -856,12 +824,11 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-     * The main method of the PropertiesLauncher class.
-     * 
-     * @param args the command line arguments passed to the main method
-     * @throws Exception if an error occurs during the execution of the main method
-     */
-    public static void main(String[] args) throws Exception {
+	 * The main method of the PropertiesLauncher class.
+	 * @param args the command line arguments passed to the main method
+	 * @throws Exception if an error occurs during the execution of the main method
+	 */
+	public static void main(String[] args) throws Exception {
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		args = launcher.getArgs(args);
 		launcher.launch(args);
@@ -873,46 +840,47 @@ public class PropertiesLauncher extends Launcher {
 	private record Instantiator<T>(ClassLoader parent, Class<?> type) {
 
 		/**
-     * Constructs a new instance of the PropertiesLauncher class with the specified parent ClassLoader and className.
-     * 
-     * @param parent the parent ClassLoader to be used for loading the class
-     * @param className the fully qualified name of the class to be instantiated
-     * @throws ClassNotFoundException if the class with the specified className cannot be found
-     */
-    Instantiator(ClassLoader parent, String className) throws ClassNotFoundException {
+		 * Constructs a new instance of the PropertiesLauncher class with the specified
+		 * parent ClassLoader and className.
+		 * @param parent the parent ClassLoader to be used for loading the class
+		 * @param className the fully qualified name of the class to be instantiated
+		 * @throws ClassNotFoundException if the class with the specified className cannot
+		 * be found
+		 */
+		Instantiator(ClassLoader parent, String className) throws ClassNotFoundException {
 			this(parent, Class.forName(className, true, parent));
 		}
 
 		/**
-     * Constructs a new instance of the PropertiesLauncher class without any parameters.
-     *
-     * @return a new instance of the PropertiesLauncher class
-     * @throws Exception if an error occurs during the construction of the instance
-     */
-    T constructWithoutParameters() throws Exception {
+		 * Constructs a new instance of the PropertiesLauncher class without any
+		 * parameters.
+		 * @return a new instance of the PropertiesLauncher class
+		 * @throws Exception if an error occurs during the construction of the instance
+		 */
+		T constructWithoutParameters() throws Exception {
 			return declaredConstructor().newInstance();
 		}
 
 		/**
-     * Returns a new instance of the Using class with the specified parameter types.
-     * 
-     * @param parameterTypes the parameter types for the constructor of the Using class
-     * @return a new instance of the Using class
-     */
-    Using<T> declaredConstructor(Class<?>... parameterTypes) {
+		 * Returns a new instance of the Using class with the specified parameter types.
+		 * @param parameterTypes the parameter types for the constructor of the Using
+		 * class
+		 * @return a new instance of the Using class
+		 */
+		Using<T> declaredConstructor(Class<?>... parameterTypes) {
 			return new Using<>(this, parameterTypes);
 		}
 
 		private record Using<T>(Instantiator<T> instantiator, Class<?>... parameterTypes) {
 
 			/**
-     * Creates a new instance of the specified type using the provided initialization arguments.
-     *
-     * @param initargs the initialization arguments for the new instance
-     * @return a new instance of the specified type
-     * @throws Exception if an error occurs during the instantiation process
-     */
-    @SuppressWarnings("unchecked")
+			 * Creates a new instance of the specified type using the provided
+			 * initialization arguments.
+			 * @param initargs the initialization arguments for the new instance
+			 * @return a new instance of the specified type
+			 * @throws Exception if an error occurs during the instantiation process
+			 */
+			@SuppressWarnings("unchecked")
 			T newInstance(Object... initargs) throws Exception {
 				try {
 					Constructor<?> constructor = this.instantiator.type().getDeclaredConstructor(this.parameterTypes);

@@ -31,37 +31,35 @@ import org.springframework.boot.loader.archive.Archive;
 public class WarLauncher extends ExecutableArchiveLauncher {
 
 	/**
-     * Creates a new instance of the WarLauncher class.
-     */
-    public WarLauncher() {
+	 * Creates a new instance of the WarLauncher class.
+	 */
+	public WarLauncher() {
 	}
 
 	/**
-     * Constructs a new WarLauncher object with the specified Archive.
-     * 
-     * @param archive the Archive object to be used by the WarLauncher
-     */
-    protected WarLauncher(Archive archive) {
+	 * Constructs a new WarLauncher object with the specified Archive.
+	 * @param archive the Archive object to be used by the WarLauncher
+	 */
+	protected WarLauncher(Archive archive) {
 		super(archive);
 	}
 
 	/**
-     * Returns whether or not the class path archives should be post-processed.
-     * 
-     * @return {@code true} if the class path archives should be post-processed, {@code false} otherwise.
-     */
-    @Override
+	 * Returns whether or not the class path archives should be post-processed.
+	 * @return {@code true} if the class path archives should be post-processed,
+	 * {@code false} otherwise.
+	 */
+	@Override
 	protected boolean isPostProcessingClassPathArchives() {
 		return false;
 	}
 
 	/**
-     * Determines if the given archive entry is a nested archive.
-     * 
-     * @param entry the archive entry to check
-     * @return true if the entry is a nested archive, false otherwise
-     */
-    @Override
+	 * Determines if the given archive entry is a nested archive.
+	 * @param entry the archive entry to check
+	 * @return true if the entry is a nested archive, false otherwise
+	 */
+	@Override
 	public boolean isNestedArchive(Archive.Entry entry) {
 		if (entry.isDirectory()) {
 			return entry.getName().equals("WEB-INF/classes/");
@@ -70,24 +68,22 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	/**
-     * Returns the prefix path for the archive entry in the WAR file.
-     * The prefix path is set to "WEB-INF/".
-     *
-     * @return the prefix path for the archive entry
-     */
-    @Override
+	 * Returns the prefix path for the archive entry in the WAR file. The prefix path is
+	 * set to "WEB-INF/".
+	 * @return the prefix path for the archive entry
+	 */
+	@Override
 	protected String getArchiveEntryPathPrefix() {
 		return "WEB-INF/";
 	}
 
 	/**
-     * The main method is the entry point of the program.
-     * It launches the WarLauncher class and passes the command line arguments.
-     *
-     * @param args the command line arguments
-     * @throws Exception if an error occurs during program execution
-     */
-    public static void main(String[] args) throws Exception {
+	 * The main method is the entry point of the program. It launches the WarLauncher
+	 * class and passes the command line arguments.
+	 * @param args the command line arguments
+	 * @throws Exception if an error occurs during program execution
+	 */
+	public static void main(String[] args) throws Exception {
 		new WarLauncher().launch(args);
 	}
 

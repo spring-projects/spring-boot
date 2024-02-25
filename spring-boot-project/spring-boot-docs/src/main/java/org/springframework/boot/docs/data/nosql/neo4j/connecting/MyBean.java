@@ -31,11 +31,10 @@ public class MyBean {
 	private final Driver driver;
 
 	/**
-     * Constructs a new instance of MyBean with the specified Driver.
-     *
-     * @param driver the Driver object to be assigned to the MyBean instance
-     */
-    public MyBean(Driver driver) {
+	 * Constructs a new instance of MyBean with the specified Driver.
+	 * @param driver the Driver object to be assigned to the MyBean instance
+	 */
+	public MyBean(Driver driver) {
 		this.driver = driver;
 	}
 

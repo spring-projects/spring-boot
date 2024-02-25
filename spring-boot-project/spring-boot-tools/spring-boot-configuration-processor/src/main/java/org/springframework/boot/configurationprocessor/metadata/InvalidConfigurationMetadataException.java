@@ -31,22 +31,22 @@ public class InvalidConfigurationMetadataException extends RuntimeException {
 	private final Diagnostic.Kind kind;
 
 	/**
-     * Constructs a new InvalidConfigurationMetadataException with the specified detail message and diagnostic kind.
-     *
-     * @param message the detail message (which is saved for later retrieval by the getMessage() method)
-     * @param kind the diagnostic kind associated with the exception
-     */
-    public InvalidConfigurationMetadataException(String message, Diagnostic.Kind kind) {
+	 * Constructs a new InvalidConfigurationMetadataException with the specified detail
+	 * message and diagnostic kind.
+	 * @param message the detail message (which is saved for later retrieval by the
+	 * getMessage() method)
+	 * @param kind the diagnostic kind associated with the exception
+	 */
+	public InvalidConfigurationMetadataException(String message, Diagnostic.Kind kind) {
 		super(message);
 		this.kind = kind;
 	}
 
 	/**
-     * Returns the kind of diagnostic associated with this exception.
-     *
-     * @return the kind of diagnostic
-     */
-    public Diagnostic.Kind getKind() {
+	 * Returns the kind of diagnostic associated with this exception.
+	 * @return the kind of diagnostic
+	 */
+	public Diagnostic.Kind getKind() {
 		return this.kind;
 	}
 

@@ -49,12 +49,11 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 	private ConfigurableListableBeanFactory beanFactory;
 
 	/**
-     * Sets the bean factory for this post-processor.
-     * 
-     * @param beanFactory the bean factory to set
-     * @throws BeansException if an error occurs while setting the bean factory
-     */
-    @Override
+	 * Sets the bean factory for this post-processor.
+	 * @param beanFactory the bean factory to set
+	 * @throws BeansException if an error occurs while setting the bean factory
+	 */
+	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		if (beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
 			this.beanFactory = listableBeanFactory;
@@ -62,15 +61,15 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 	}
 
 	/**
-     * Registers bean definitions for the PrimaryDefaultValidatorPostProcessor class.
-     * 
-     * This method is responsible for registering the bean definitions for the PrimaryDefaultValidatorPostProcessor class.
-     * It takes in the importingClassMetadata and BeanDefinitionRegistry as parameters.
-     * 
-     * @param importingClassMetadata the metadata of the importing class
-     * @param registry the registry for bean definitions
-     */
-    @Override
+	 * Registers bean definitions for the PrimaryDefaultValidatorPostProcessor class.
+	 *
+	 * This method is responsible for registering the bean definitions for the
+	 * PrimaryDefaultValidatorPostProcessor class. It takes in the importingClassMetadata
+	 * and BeanDefinitionRegistry as parameters.
+	 * @param importingClassMetadata the metadata of the importing class
+	 * @param registry the registry for bean definitions
+	 */
+	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		BeanDefinition definition = getAutoConfiguredValidator(registry);
 		if (definition != null) {
@@ -79,12 +78,14 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 	}
 
 	/**
-     * Retrieves the auto-configured validator bean definition from the given bean definition registry.
-     * 
-     * @param registry the bean definition registry to search for the validator bean definition
-     * @return the auto-configured validator bean definition, or null if not found or not of the expected type
-     */
-    private BeanDefinition getAutoConfiguredValidator(BeanDefinitionRegistry registry) {
+	 * Retrieves the auto-configured validator bean definition from the given bean
+	 * definition registry.
+	 * @param registry the bean definition registry to search for the validator bean
+	 * definition
+	 * @return the auto-configured validator bean definition, or null if not found or not
+	 * of the expected type
+	 */
+	private BeanDefinition getAutoConfiguredValidator(BeanDefinitionRegistry registry) {
 		if (registry.containsBeanDefinition(VALIDATOR_BEAN_NAME)) {
 			BeanDefinition definition = registry.getBeanDefinition(VALIDATOR_BEAN_NAME);
 			if (definition.getRole() == BeanDefinition.ROLE_INFRASTRUCTURE
@@ -96,22 +97,20 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 	}
 
 	/**
-     * Checks if the type of a bean with the given name matches the specified type.
-     * 
-     * @param name the name of the bean to check
-     * @param type the type to match against
-     * @return true if the type of the bean matches the specified type, false otherwise
-     */
-    private boolean isTypeMatch(String name, Class<?> type) {
+	 * Checks if the type of a bean with the given name matches the specified type.
+	 * @param name the name of the bean to check
+	 * @param type the type to match against
+	 * @return true if the type of the bean matches the specified type, false otherwise
+	 */
+	private boolean isTypeMatch(String name, Class<?> type) {
 		return this.beanFactory != null && this.beanFactory.isTypeMatch(name, type);
 	}
 
 	/**
-     * Checks if there is a primary Spring validator bean registered in the bean factory.
-     * 
-     * @return true if a primary Spring validator bean is found, false otherwise
-     */
-    private boolean hasPrimarySpringValidator() {
+	 * Checks if there is a primary Spring validator bean registered in the bean factory.
+	 * @return true if a primary Spring validator bean is found, false otherwise
+	 */
+	private boolean hasPrimarySpringValidator() {
 		String[] validatorBeans = this.beanFactory.getBeanNamesForType(Validator.class, false, false);
 		for (String validatorBean : validatorBeans) {
 			BeanDefinition definition = this.beanFactory.getBeanDefinition(validatorBean);

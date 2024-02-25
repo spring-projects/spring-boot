@@ -52,28 +52,31 @@ public class SimpleAsyncTaskSchedulerBuilder {
 	private final Duration taskTerminationTimeout;
 
 	/**
-     * Constructs a new SimpleAsyncTaskSchedulerBuilder with default values for all parameters.
-     * 
-     * @param param1 the first parameter (optional)
-     * @param param2 the second parameter (optional)
-     * @param param3 the third parameter (optional)
-     * @param param4 the fourth parameter (optional)
-     * @param param5 the fifth parameter (optional)
-     */
-    public SimpleAsyncTaskSchedulerBuilder() {
+	 * Constructs a new SimpleAsyncTaskSchedulerBuilder with default values for all
+	 * parameters.
+	 * @param param1 the first parameter (optional)
+	 * @param param2 the second parameter (optional)
+	 * @param param3 the third parameter (optional)
+	 * @param param4 the fourth parameter (optional)
+	 * @param param5 the fifth parameter (optional)
+	 */
+	public SimpleAsyncTaskSchedulerBuilder() {
 		this(null, null, null, null, null);
 	}
 
 	/**
-     * Constructs a new SimpleAsyncTaskSchedulerBuilder with the specified parameters.
-     *
-     * @param threadNamePrefix         the prefix to use for the names of the threads created by the task scheduler
-     * @param concurrencyLimit         the maximum number of concurrent tasks that can be executed by the task scheduler
-     * @param virtualThreads           whether to use virtual threads for task execution
-     * @param taskSchedulerCustomizers the set of customizers to apply to the task scheduler
-     * @param taskTerminationTimeout   the maximum time to wait for task termination when shutting down the task scheduler
-     */
-    private SimpleAsyncTaskSchedulerBuilder(String threadNamePrefix, Integer concurrencyLimit, Boolean virtualThreads,
+	 * Constructs a new SimpleAsyncTaskSchedulerBuilder with the specified parameters.
+	 * @param threadNamePrefix the prefix to use for the names of the threads created by
+	 * the task scheduler
+	 * @param concurrencyLimit the maximum number of concurrent tasks that can be executed
+	 * by the task scheduler
+	 * @param virtualThreads whether to use virtual threads for task execution
+	 * @param taskSchedulerCustomizers the set of customizers to apply to the task
+	 * scheduler
+	 * @param taskTerminationTimeout the maximum time to wait for task termination when
+	 * shutting down the task scheduler
+	 */
+	private SimpleAsyncTaskSchedulerBuilder(String threadNamePrefix, Integer concurrencyLimit, Boolean virtualThreads,
 			Set<SimpleAsyncTaskSchedulerCustomizer> taskSchedulerCustomizers, Duration taskTerminationTimeout) {
 		this.threadNamePrefix = threadNamePrefix;
 		this.concurrencyLimit = concurrencyLimit;
@@ -212,14 +215,14 @@ public class SimpleAsyncTaskSchedulerBuilder {
 	}
 
 	/**
-     * Appends the elements from the specified iterable to the given set.
-     * 
-     * @param set       the set to append elements to (nullable)
-     * @param additions the iterable containing elements to be appended
-     * @param <T>       the type of elements in the set
-     * @return an unmodifiable set containing the original elements from the set and the appended elements
-     */
-    private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
+	 * Appends the elements from the specified iterable to the given set.
+	 * @param set the set to append elements to (nullable)
+	 * @param additions the iterable containing elements to be appended
+	 * @param <T> the type of elements in the set
+	 * @return an unmodifiable set containing the original elements from the set and the
+	 * appended elements
+	 */
+	private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
 		additions.forEach(result::add);
 		return Collections.unmodifiableSet(result);

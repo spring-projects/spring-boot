@@ -30,23 +30,22 @@ import org.springframework.util.ReflectionUtils;
 class ClearCachesApplicationListener implements ApplicationListener<ContextRefreshedEvent> {
 
 	/**
-     * This method is called when the application context is refreshed.
-     * It clears the reflection cache and class loader caches.
-     * 
-     * @param event The context refreshed event
-     */
-    @Override
+	 * This method is called when the application context is refreshed. It clears the
+	 * reflection cache and class loader caches.
+	 * @param event The context refreshed event
+	 */
+	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		ReflectionUtils.clearCache();
 		clearClassLoaderCaches(Thread.currentThread().getContextClassLoader());
 	}
 
 	/**
-     * Clears the caches of the given class loader and its parent class loaders recursively.
-     * 
-     * @param classLoader the class loader whose caches need to be cleared
-     */
-    private void clearClassLoaderCaches(ClassLoader classLoader) {
+	 * Clears the caches of the given class loader and its parent class loaders
+	 * recursively.
+	 * @param classLoader the class loader whose caches need to be cleared
+	 */
+	private void clearClassLoaderCaches(ClassLoader classLoader) {
 		if (classLoader == null) {
 			return;
 		}

@@ -60,29 +60,30 @@ public abstract class MockServletWebServer {
 	private final int port;
 
 	/**
-     * Creates a new instance of MockServletWebServer with the specified initializers and port.
-     * 
-     * @param initializers an array of Initializer objects to be used for initializing the server
-     * @param port the port number on which the server will listen for incoming requests
-     */
-    public MockServletWebServer(Initializer[] initializers, int port) {
+	 * Creates a new instance of MockServletWebServer with the specified initializers and
+	 * port.
+	 * @param initializers an array of Initializer objects to be used for initializing the
+	 * server
+	 * @param port the port number on which the server will listen for incoming requests
+	 */
+	public MockServletWebServer(Initializer[] initializers, int port) {
 		this.initializers = initializers;
 		this.port = port;
 		initialize();
 	}
 
 	/**
-     * Initializes the MockServletWebServer.
-     * 
-     * This method sets up the necessary configurations and mock objects for the MockServletWebServer.
-     * It mocks the behavior of the ServletContext by using Mockito's mock() method.
-     * It sets up mock behaviors for adding servlets, filters, and initializing parameters.
-     * It also sets up a mock SessionCookieConfig and initializes a map for storing init parameters.
-     * Finally, it calls the onStartup() method of each Initializer in the initializers list.
-     * 
-     * @throws RuntimeException if a ServletException occurs during initialization
-     */
-    private void initialize() {
+	 * Initializes the MockServletWebServer.
+	 *
+	 * This method sets up the necessary configurations and mock objects for the
+	 * MockServletWebServer. It mocks the behavior of the ServletContext by using
+	 * Mockito's mock() method. It sets up mock behaviors for adding servlets, filters,
+	 * and initializing parameters. It also sets up a mock SessionCookieConfig and
+	 * initializes a map for storing init parameters. Finally, it calls the onStartup()
+	 * method of each Initializer in the initializers list.
+	 * @throws RuntimeException if a ServletException occurs during initialization
+	 */
+	private void initialize() {
 		try {
 			this.servletContext = mock(ServletContext.class);
 			lenient().doAnswer((invocation) -> {
@@ -118,77 +119,73 @@ public abstract class MockServletWebServer {
 	}
 
 	/**
-     * Stops the MockServletWebServer by clearing the servlet context and registered servlets.
-     */
-    public void stop() {
+	 * Stops the MockServletWebServer by clearing the servlet context and registered
+	 * servlets.
+	 */
+	public void stop() {
 		this.servletContext = null;
 		this.registeredServlets.clear();
 	}
 
 	/**
-     * Returns the ServletContext associated with this MockServletWebServer.
-     *
-     * @return the ServletContext associated with this MockServletWebServer
-     */
-    public ServletContext getServletContext() {
+	 * Returns the ServletContext associated with this MockServletWebServer.
+	 * @return the ServletContext associated with this MockServletWebServer
+	 */
+	public ServletContext getServletContext() {
 		return this.servletContext;
 	}
 
 	/**
-     * Returns an array of all registered servlets.
-     *
-     * @return an array of Servlet objects representing the registered servlets
-     */
-    public Servlet[] getServlets() {
+	 * Returns an array of all registered servlets.
+	 * @return an array of Servlet objects representing the registered servlets
+	 */
+	public Servlet[] getServlets() {
 		Servlet[] servlets = new Servlet[this.registeredServlets.size()];
 		Arrays.setAll(servlets, (i) -> this.registeredServlets.get(i).getServlet());
 		return servlets;
 	}
 
 	/**
-     * Returns the RegisteredServlet object at the specified index from the list of registered servlets.
-     *
-     * @param index the index of the RegisteredServlet object to retrieve
-     * @return the RegisteredServlet object at the specified index
-     */
-    public RegisteredServlet getRegisteredServlet(int index) {
+	 * Returns the RegisteredServlet object at the specified index from the list of
+	 * registered servlets.
+	 * @param index the index of the RegisteredServlet object to retrieve
+	 * @return the RegisteredServlet object at the specified index
+	 */
+	public RegisteredServlet getRegisteredServlet(int index) {
 		return getRegisteredServlets().get(index);
 	}
 
 	/**
-     * Returns a list of registered servlets.
-     *
-     * @return the list of registered servlets
-     */
-    public List<RegisteredServlet> getRegisteredServlets() {
+	 * Returns a list of registered servlets.
+	 * @return the list of registered servlets
+	 */
+	public List<RegisteredServlet> getRegisteredServlets() {
 		return this.registeredServlets;
 	}
 
 	/**
-     * Retrieves the registered filter at the specified index from the list of registered filters.
-     *
-     * @param index the index of the filter to retrieve
-     * @return the registered filter at the specified index
-     */
-    public RegisteredFilter getRegisteredFilters(int index) {
+	 * Retrieves the registered filter at the specified index from the list of registered
+	 * filters.
+	 * @param index the index of the filter to retrieve
+	 * @return the registered filter at the specified index
+	 */
+	public RegisteredFilter getRegisteredFilters(int index) {
 		return getRegisteredFilters().get(index);
 	}
 
 	/**
-     * Returns the list of registered filters.
-     *
-     * @return the list of registered filters
-     */
-    public List<RegisteredFilter> getRegisteredFilters() {
+	 * Returns the list of registered filters.
+	 * @return the list of registered filters
+	 */
+	public List<RegisteredFilter> getRegisteredFilters() {
 		return this.registeredFilters;
 	}
 
 	/**
-     * Returns the port number on which the server is running.
-     *
-     * @return the port number
-     */
-    public int getPort() {
+	 * Returns the port number on which the server is running.
+	 * @return the port number
+	 */
+	public int getPort() {
 		return this.port;
 	}
 
@@ -202,30 +199,27 @@ public abstract class MockServletWebServer {
 		private final ServletRegistration.Dynamic registration;
 
 		/**
-         * Constructs a new RegisteredServlet object with the given servlet.
-         * 
-         * @param servlet the servlet to be registered
-         */
-        public RegisteredServlet(Servlet servlet) {
+		 * Constructs a new RegisteredServlet object with the given servlet.
+		 * @param servlet the servlet to be registered
+		 */
+		public RegisteredServlet(Servlet servlet) {
 			this.servlet = servlet;
 			this.registration = mock(ServletRegistration.Dynamic.class);
 		}
 
 		/**
-         * Returns the dynamic registration of the servlet.
-         *
-         * @return the dynamic registration of the servlet
-         */
-        public ServletRegistration.Dynamic getRegistration() {
+		 * Returns the dynamic registration of the servlet.
+		 * @return the dynamic registration of the servlet
+		 */
+		public ServletRegistration.Dynamic getRegistration() {
 			return this.registration;
 		}
 
 		/**
-         * Returns the servlet associated with this RegisteredServlet.
-         *
-         * @return the servlet associated with this RegisteredServlet
-         */
-        public Servlet getServlet() {
+		 * Returns the servlet associated with this RegisteredServlet.
+		 * @return the servlet associated with this RegisteredServlet
+		 */
+		public Servlet getServlet() {
 			return this.servlet;
 		}
 
@@ -241,30 +235,27 @@ public abstract class MockServletWebServer {
 		private final FilterRegistration.Dynamic registration;
 
 		/**
-         * Constructs a new RegisteredFilter object with the specified filter.
-         * 
-         * @param filter the filter to be registered
-         */
-        public RegisteredFilter(Filter filter) {
+		 * Constructs a new RegisteredFilter object with the specified filter.
+		 * @param filter the filter to be registered
+		 */
+		public RegisteredFilter(Filter filter) {
 			this.filter = filter;
 			this.registration = mock(FilterRegistration.Dynamic.class);
 		}
 
 		/**
-         * Returns the dynamic registration of the filter.
-         *
-         * @return the dynamic registration of the filter
-         */
-        public FilterRegistration.Dynamic getRegistration() {
+		 * Returns the dynamic registration of the filter.
+		 * @return the dynamic registration of the filter
+		 */
+		public FilterRegistration.Dynamic getRegistration() {
 			return this.registration;
 		}
 
 		/**
-         * Returns the filter associated with this RegisteredFilter object.
-         *
-         * @return the filter associated with this RegisteredFilter object
-         */
-        public Filter getFilter() {
+		 * Returns the filter associated with this RegisteredFilter object.
+		 * @return the filter associated with this RegisteredFilter object
+		 */
+		public Filter getFilter() {
 			return this.filter;
 		}
 

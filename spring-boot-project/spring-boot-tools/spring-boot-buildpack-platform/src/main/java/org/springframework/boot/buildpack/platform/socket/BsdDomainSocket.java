@@ -42,37 +42,34 @@ class BsdDomainSocket extends DomainSocket {
 	}
 
 	/**
-     * Constructs a new BsdDomainSocket object with the specified path.
-     *
-     * @param path the path of the domain socket
-     * @throws IOException if an I/O error occurs while creating the socket
-     */
-    BsdDomainSocket(String path) throws IOException {
+	 * Constructs a new BsdDomainSocket object with the specified path.
+	 * @param path the path of the domain socket
+	 * @throws IOException if an I/O error occurs while creating the socket
+	 */
+	BsdDomainSocket(String path) throws IOException {
 		super(path);
 	}
 
 	/**
-     * Connects to a local domain socket using the given path and handle.
-     * 
-     * @param path   the path of the local domain socket
-     * @param handle the handle of the local domain socket
-     */
-    @Override
+	 * Connects to a local domain socket using the given path and handle.
+	 * @param path the path of the local domain socket
+	 * @param handle the handle of the local domain socket
+	 */
+	@Override
 	protected void connect(String path, int handle) {
 		SockaddrUn address = new SockaddrUn(AF_LOCAL, path.getBytes(StandardCharsets.UTF_8));
 		connect(handle, address, address.size());
 	}
 
 	/**
-     * Connects a socket to a Unix domain address.
-     *
-     * @param fd the file descriptor of the socket to connect
-     * @param address the Unix domain address to connect to
-     * @param addressLen the length of the Unix domain address
-     * @return the result of the connection attempt
-     * @throws LastErrorException if an error occurs during the connection attempt
-     */
-    private native int connect(int fd, SockaddrUn address, int addressLen) throws LastErrorException;
+	 * Connects a socket to a Unix domain address.
+	 * @param fd the file descriptor of the socket to connect
+	 * @param address the Unix domain address to connect to
+	 * @param addressLen the length of the Unix domain address
+	 * @return the result of the connection attempt
+	 * @throws LastErrorException if an error occurs during the connection attempt
+	 */
+	private native int connect(int fd, SockaddrUn address, int addressLen) throws LastErrorException;
 
 	/**
 	 * Native {@code sockaddr_un} structure as defined in {@code sys/un.h}.
@@ -86,13 +83,13 @@ class BsdDomainSocket extends DomainSocket {
 		public byte[] sunPath = new byte[MAX_PATH_LENGTH];
 
 		/**
-         * Constructs a new SockaddrUn object with the specified sunFamily and path.
-         * 
-         * @param sunFamily the sunFamily value for the SockaddrUn object
-         * @param path the path value for the SockaddrUn object
-         * @throws IllegalArgumentException if the length of the path exceeds MAX_PATH_LENGTH
-         */
-        private SockaddrUn(byte sunFamily, byte[] path) {
+		 * Constructs a new SockaddrUn object with the specified sunFamily and path.
+		 * @param sunFamily the sunFamily value for the SockaddrUn object
+		 * @param path the path value for the SockaddrUn object
+		 * @throws IllegalArgumentException if the length of the path exceeds
+		 * MAX_PATH_LENGTH
+		 */
+		private SockaddrUn(byte sunFamily, byte[] path) {
 			Assert.isTrue(path.length < MAX_PATH_LENGTH, () -> "Path cannot exceed " + MAX_PATH_LENGTH + " bytes");
 			System.arraycopy(path, 0, this.sunPath, 0, path.length);
 			this.sunPath[path.length] = 0;
@@ -102,11 +99,10 @@ class BsdDomainSocket extends DomainSocket {
 		}
 
 		/**
-         * Returns the field order of the SockaddrUn class.
-         * 
-         * @return a list of field names in the order they appear in the class
-         */
-        @Override
+		 * Returns the field order of the SockaddrUn class.
+		 * @return a list of field names in the order they appear in the class
+		 */
+		@Override
 		protected List<String> getFieldOrder() {
 			return Arrays.asList("sunLen", "sunFamily", "sunPath");
 		}

@@ -54,11 +54,11 @@ public final class ReactiveWebApplicationContextRunner extends
 	}
 
 	/**
-     * Constructs a new ReactiveWebApplicationContextRunner with the given configuration.
-     *
-     * @param configuration the RunnerConfiguration used to configure the ReactiveWebApplicationContextRunner
-     */
-    private ReactiveWebApplicationContextRunner(
+	 * Constructs a new ReactiveWebApplicationContextRunner with the given configuration.
+	 * @param configuration the RunnerConfiguration used to configure the
+	 * ReactiveWebApplicationContextRunner
+	 */
+	private ReactiveWebApplicationContextRunner(
 			RunnerConfiguration<ConfigurableReactiveWebApplicationContext> configuration) {
 		super(configuration, ReactiveWebApplicationContextRunner::new);
 	}

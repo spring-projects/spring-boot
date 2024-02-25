@@ -39,22 +39,20 @@ class ImperativeAppConfig {
 	private static final String TOPIC = "pulsar-smoke-test-topic";
 
 	/**
-     * Creates a Pulsar topic with the specified topic name and number of partitions.
-     *
-     * @return the PulsarTopic object representing the created topic
-     */
-    @Bean
+	 * Creates a Pulsar topic with the specified topic name and number of partitions.
+	 * @return the PulsarTopic object representing the created topic
+	 */
+	@Bean
 	PulsarTopic pulsarTestTopic() {
 		return PulsarTopic.builder(TOPIC).numberOfPartitions(1).build();
 	}
 
 	/**
-     * Sends messages to a Pulsar topic using the provided PulsarTemplate.
-     * 
-     * @param template the PulsarTemplate used to send messages
-     * @return an ApplicationRunner that sends messages to the Pulsar topic
-     */
-    @Bean
+	 * Sends messages to a Pulsar topic using the provided PulsarTemplate.
+	 * @param template the PulsarTemplate used to send messages
+	 * @return an ApplicationRunner that sends messages to the Pulsar topic
+	 */
+	@Bean
 	ApplicationRunner sendMessagesToPulsarTopic(PulsarTemplate<SampleMessage> template) {
 		return (args) -> {
 			for (int i = 0; i < 10; i++) {
@@ -65,11 +63,10 @@ class ImperativeAppConfig {
 	}
 
 	/**
-     * This method is used to consume messages from a Pulsar topic.
-     * 
-     * @param msg The message to be consumed from the Pulsar topic.
-     */
-    @PulsarListener(topics = TOPIC)
+	 * This method is used to consume messages from a Pulsar topic.
+	 * @param msg The message to be consumed from the Pulsar topic.
+	 */
+	@PulsarListener(topics = TOPIC)
 	void consumeMessagesFromPulsarTopic(SampleMessage msg) {
 		logger.info("++++++CONSUME IMPERATIVE:(" + msg.id() + ")------");
 	}

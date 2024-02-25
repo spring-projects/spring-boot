@@ -36,12 +36,11 @@ public class WelcomeController {
 	private String message = "Hello World";
 
 	/**
-     * Retrieves the welcome page.
-     * 
-     * @param model the model object to be populated with data
-     * @return the name of the view to be rendered
-     */
-    @GetMapping("/")
+	 * Retrieves the welcome page.
+	 * @param model the model object to be populated with data
+	 * @return the name of the view to be rendered
+	 */
+	@GetMapping("/")
 	public String welcome(Map<String, Object> model) {
 		model.put("time", new Date());
 		model.put("message", this.message);
@@ -49,52 +48,50 @@ public class WelcomeController {
 	}
 
 	/**
-     * Handles the request for "/serviceUnavailable" endpoint.
-     * 
-     * @return A string representation of the response.
-     * @throws ServiceUnavailableException if the service is unavailable.
-     */
-    @RequestMapping("/serviceUnavailable")
+	 * Handles the request for "/serviceUnavailable" endpoint.
+	 * @return A string representation of the response.
+	 * @throws ServiceUnavailableException if the service is unavailable.
+	 */
+	@RequestMapping("/serviceUnavailable")
 	public String ServiceUnavailable() {
 		throw new ServiceUnavailableException();
 	}
 
 	/**
-     * This method is used to handle the "/bang" endpoint.
-     * It throws a RuntimeException with the message "Boom".
-     * 
-     * @return A string representing the result of the operation.
-     * @throws RuntimeException if an error occurs during the operation.
-     */
-    @RequestMapping("/bang")
+	 * This method is used to handle the "/bang" endpoint. It throws a RuntimeException
+	 * with the message "Boom".
+	 * @return A string representing the result of the operation.
+	 * @throws RuntimeException if an error occurs during the operation.
+	 */
+	@RequestMapping("/bang")
 	public String bang() {
 		throw new RuntimeException("Boom");
 	}
 
 	/**
-     * This method is used to handle the request mapping for "/insufficientStorage" endpoint.
-     * It throws an InsufficientStorageException to indicate that there is not enough storage available.
-     * 
-     * @return A string indicating the error message for insufficient storage.
-     * @throws InsufficientStorageException If there is not enough storage available.
-     */
-    @RequestMapping("/insufficientStorage")
+	 * This method is used to handle the request mapping for "/insufficientStorage"
+	 * endpoint. It throws an InsufficientStorageException to indicate that there is not
+	 * enough storage available.
+	 * @return A string indicating the error message for insufficient storage.
+	 * @throws InsufficientStorageException If there is not enough storage available.
+	 */
+	@RequestMapping("/insufficientStorage")
 	public String insufficientStorage() {
 		throw new InsufficientStorageException();
 	}
 
 	/**
-     * ServiceUnavailableException class.
-     */
-    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+	 * ServiceUnavailableException class.
+	 */
+	@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
 	private static final class ServiceUnavailableException extends RuntimeException {
 
 	}
 
 	/**
-     * InsufficientStorageException class.
-     */
-    @ResponseStatus(HttpStatus.INSUFFICIENT_STORAGE)
+	 * InsufficientStorageException class.
+	 */
+	@ResponseStatus(HttpStatus.INSUFFICIENT_STORAGE)
 	private static final class InsufficientStorageException extends RuntimeException {
 
 	}

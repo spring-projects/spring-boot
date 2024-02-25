@@ -42,12 +42,13 @@ import org.springframework.web.context.WebApplicationContext;
 public class FiltersMappingDescriptionProvider implements MappingDescriptionProvider {
 
 	/**
-     * Returns a list of {@link FilterRegistrationMappingDescription} objects that describe the mappings of filters in the given application context.
-     * 
-     * @param context the application context to describe the filter mappings for
-     * @return a list of {@link FilterRegistrationMappingDescription} objects representing the filter mappings
-     */
-    @Override
+	 * Returns a list of {@link FilterRegistrationMappingDescription} objects that
+	 * describe the mappings of filters in the given application context.
+	 * @param context the application context to describe the filter mappings for
+	 * @return a list of {@link FilterRegistrationMappingDescription} objects representing
+	 * the filter mappings
+	 */
+	@Override
 	public List<FilterRegistrationMappingDescription> describeMappings(ApplicationContext context) {
 		if (context instanceof WebApplicationContext webApplicationContext) {
 			return webApplicationContext.getServletContext()
@@ -61,29 +62,27 @@ public class FiltersMappingDescriptionProvider implements MappingDescriptionProv
 	}
 
 	/**
-     * Returns the mapping name for the servlet filters.
-     * 
-     * @return the mapping name for the servlet filters
-     */
-    @Override
+	 * Returns the mapping name for the servlet filters.
+	 * @return the mapping name for the servlet filters
+	 */
+	@Override
 	public String getMappingName() {
 		return "servletFilters";
 	}
 
 	/**
-     * FiltersMappingDescriptionProviderRuntimeHints class.
-     */
-    static class FiltersMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
+	 * FiltersMappingDescriptionProviderRuntimeHints class.
+	 */
+	static class FiltersMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		/**
-         * Registers the runtime hints for FiltersMappingDescriptionProvider.
-         * 
-         * @param hints the runtime hints to be registered
-         * @param classLoader the class loader to be used for reflection
-         */
-        @Override
+		 * Registers the runtime hints for FiltersMappingDescriptionProvider.
+		 * @param hints the runtime hints to be registered
+		 * @param classLoader the class loader to be used for reflection
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(),
 					FilterRegistrationMappingDescription.class);

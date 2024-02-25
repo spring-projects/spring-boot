@@ -31,13 +31,14 @@ class HikariDriverConfigurationFailureAnalyzer extends AbstractFailureAnalyzer<C
 	private static final String EXPECTED_MESSAGE = "cannot use driverClassName and dataSourceClassName together.";
 
 	/**
-     * Analyzes the failure caused by a CannotGetJdbcConnectionException in the HikariDriverConfigurationFailureAnalyzer class.
-     * 
-     * @param rootFailure The root cause of the failure.
-     * @param cause The CannotGetJdbcConnectionException that caused the failure.
-     * @return A FailureAnalysis object if the failure is caused by a specific sub-cause, null otherwise.
-     */
-    @Override
+	 * Analyzes the failure caused by a CannotGetJdbcConnectionException in the
+	 * HikariDriverConfigurationFailureAnalyzer class.
+	 * @param rootFailure The root cause of the failure.
+	 * @param cause The CannotGetJdbcConnectionException that caused the failure.
+	 * @return A FailureAnalysis object if the failure is caused by a specific sub-cause,
+	 * null otherwise.
+	 */
+	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, CannotGetJdbcConnectionException cause) {
 		Throwable subCause = cause.getCause();
 		if (subCause == null || !EXPECTED_MESSAGE.equals(subCause.getMessage())) {

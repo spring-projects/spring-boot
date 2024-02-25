@@ -34,11 +34,10 @@ public class MyBean {
 	private final DSLContext create;
 
 	/**
-     * Constructs a new instance of MyBean with the specified DSLContext.
-     * 
-     * @param dslContext the DSLContext to be used for creating the instance
-     */
-    public MyBean(DSLContext dslContext) {
+	 * Constructs a new instance of MyBean with the specified DSLContext.
+	 * @param dslContext the DSLContext to be used for creating the instance
+	 */
+	public MyBean(DSLContext dslContext) {
 		this.create = dslContext;
 	}
 

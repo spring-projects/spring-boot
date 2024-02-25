@@ -36,13 +36,12 @@ class CentralDirectoryParser {
 	private final List<CentralDirectoryVisitor> visitors = new ArrayList<>();
 
 	/**
-     * Adds a visitor to the list of visitors for the CentralDirectoryParser.
-     * 
-     * @param <T> the type of visitor to add
-     * @param visitor the visitor to add
-     * @return the added visitor
-     */
-    <T extends CentralDirectoryVisitor> T addVisitor(T visitor) {
+	 * Adds a visitor to the list of visitors for the CentralDirectoryParser.
+	 * @param <T> the type of visitor to add
+	 * @param visitor the visitor to add
+	 * @return the added visitor
+	 */
+	<T extends CentralDirectoryVisitor> T addVisitor(T visitor) {
 		this.visitors.add(visitor);
 		return visitor;
 	}
@@ -67,13 +66,13 @@ class CentralDirectoryParser {
 	}
 
 	/**
-     * Parses the entries in the central directory.
-     * 
-     * @param endRecord The central directory end record.
-     * @param centralDirectoryData The random access data containing the central directory.
-     * @throws IOException If an I/O error occurs.
-     */
-    private void parseEntries(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData)
+	 * Parses the entries in the central directory.
+	 * @param endRecord The central directory end record.
+	 * @param centralDirectoryData The random access data containing the central
+	 * directory.
+	 * @throws IOException If an I/O error occurs.
+	 */
+	private void parseEntries(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData)
 			throws IOException {
 		byte[] bytes = centralDirectoryData.read(0, centralDirectoryData.getSize());
 		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
@@ -87,15 +86,16 @@ class CentralDirectoryParser {
 	}
 
 	/**
-     * Retrieves the archive data from the given RandomAccessData based on the provided CentralDirectoryEndRecord.
-     * If the start offset of the archive is 0, the entire data is considered as the archive data.
-     * Otherwise, a subsection of the data starting from the offset is returned.
-     *
-     * @param endRecord The CentralDirectoryEndRecord containing the start offset of the archive.
-     * @param data The RandomAccessData containing the archive data.
-     * @return The archive data as a RandomAccessData object.
-     */
-    private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord, RandomAccessData data) {
+	 * Retrieves the archive data from the given RandomAccessData based on the provided
+	 * CentralDirectoryEndRecord. If the start offset of the archive is 0, the entire data
+	 * is considered as the archive data. Otherwise, a subsection of the data starting
+	 * from the offset is returned.
+	 * @param endRecord The CentralDirectoryEndRecord containing the start offset of the
+	 * archive.
+	 * @param data The RandomAccessData containing the archive data.
+	 * @return The archive data as a RandomAccessData object.
+	 */
+	private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord, RandomAccessData data) {
 		long offset = endRecord.getStartOfArchive(data);
 		if (offset == 0) {
 			return data;
@@ -104,37 +104,35 @@ class CentralDirectoryParser {
 	}
 
 	/**
-     * Visits the start of the central directory.
-     * 
-     * @param endRecord the central directory end record
-     * @param centralDirectoryData the random access data of the central directory
-     */
-    private void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData) {
+	 * Visits the start of the central directory.
+	 * @param endRecord the central directory end record
+	 * @param centralDirectoryData the random access data of the central directory
+	 */
+	private void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData) {
 		for (CentralDirectoryVisitor visitor : this.visitors) {
 			visitor.visitStart(endRecord, centralDirectoryData);
 		}
 	}
 
 	/**
-     * Visits the file header of a central directory entry.
-     * 
-     * @param dataOffset the offset of the file data within the archive
-     * @param fileHeader the central directory file header to visit
-     */
-    private void visitFileHeader(long dataOffset, CentralDirectoryFileHeader fileHeader) {
+	 * Visits the file header of a central directory entry.
+	 * @param dataOffset the offset of the file data within the archive
+	 * @param fileHeader the central directory file header to visit
+	 */
+	private void visitFileHeader(long dataOffset, CentralDirectoryFileHeader fileHeader) {
 		for (CentralDirectoryVisitor visitor : this.visitors) {
 			visitor.visitFileHeader(fileHeader, dataOffset);
 		}
 	}
 
 	/**
-     * Visits the end of the central directory.
-     * 
-     * This method calls the visitEnd() method of each visitor in the list of visitors.
-     * 
-     * @see CentralDirectoryVisitor#visitEnd()
-     */
-    private void visitEnd() {
+	 * Visits the end of the central directory.
+	 *
+	 * This method calls the visitEnd() method of each visitor in the list of visitors.
+	 *
+	 * @see CentralDirectoryVisitor#visitEnd()
+	 */
+	private void visitEnd() {
 		for (CentralDirectoryVisitor visitor : this.visitors) {
 			visitor.visitEnd();
 		}

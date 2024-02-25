@@ -33,39 +33,36 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 class LdapRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	/**
-     * Returns the annotation class that is used to enable LDAP repositories.
-     *
-     * @return the annotation class {@code EnableLdapRepositories}
-     */
-    @Override
+	 * Returns the annotation class that is used to enable LDAP repositories.
+	 * @return the annotation class {@code EnableLdapRepositories}
+	 */
+	@Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableLdapRepositories.class;
 	}
 
 	/**
-     * Returns the configuration class for enabling LDAP repositories.
-     *
-     * @return the configuration class for enabling LDAP repositories
-     */
-    @Override
+	 * Returns the configuration class for enabling LDAP repositories.
+	 * @return the configuration class for enabling LDAP repositories
+	 */
+	@Override
 	protected Class<?> getConfiguration() {
 		return EnableLdapRepositoriesConfiguration.class;
 	}
 
 	/**
-     * Returns the repository configuration extension for LDAP repositories.
-     * 
-     * @return The repository configuration extension for LDAP repositories.
-     */
-    @Override
+	 * Returns the repository configuration extension for LDAP repositories.
+	 * @return The repository configuration extension for LDAP repositories.
+	 */
+	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new LdapRepositoryConfigurationExtension();
 	}
 
 	/**
-     * EnableLdapRepositoriesConfiguration class.
-     */
-    @EnableLdapRepositories
+	 * EnableLdapRepositoriesConfiguration class.
+	 */
+	@EnableLdapRepositories
 	private static final class EnableLdapRepositoriesConfiguration {
 
 	}

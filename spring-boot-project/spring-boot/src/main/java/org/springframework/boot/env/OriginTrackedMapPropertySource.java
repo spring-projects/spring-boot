@@ -60,13 +60,12 @@ public final class OriginTrackedMapPropertySource extends MapPropertySource impl
 	}
 
 	/**
-     * Retrieves the value of a property with the given name from this property source.
-     * If the value is an instance of OriginTrackedValue, the actual value is returned.
-     * 
-     * @param name the name of the property to retrieve
-     * @return the value of the property, or null if the property does not exist
-     */
-    @Override
+	 * Retrieves the value of a property with the given name from this property source. If
+	 * the value is an instance of OriginTrackedValue, the actual value is returned.
+	 * @param name the name of the property to retrieve
+	 * @return the value of the property, or null if the property does not exist
+	 */
+	@Override
 	public Object getProperty(String name) {
 		Object value = super.getProperty(name);
 		if (value instanceof OriginTrackedValue originTrackedValue) {
@@ -76,12 +75,11 @@ public final class OriginTrackedMapPropertySource extends MapPropertySource impl
 	}
 
 	/**
-     * Retrieves the origin of a property value based on its name.
-     * 
-     * @param name the name of the property
-     * @return the origin of the property value, or null if not found
-     */
-    @Override
+	 * Retrieves the origin of a property value based on its name.
+	 * @param name the name of the property
+	 * @return the origin of the property value, or null if not found
+	 */
+	@Override
 	public Origin getOrigin(String name) {
 		Object value = super.getProperty(name);
 		if (value instanceof OriginTrackedValue originTrackedValue) {
@@ -91,11 +89,11 @@ public final class OriginTrackedMapPropertySource extends MapPropertySource impl
 	}
 
 	/**
-     * Returns a boolean value indicating whether the OriginTrackedMapPropertySource is immutable.
-     * 
-     * @return true if the OriginTrackedMapPropertySource is immutable, false otherwise.
-     */
-    @Override
+	 * Returns a boolean value indicating whether the OriginTrackedMapPropertySource is
+	 * immutable.
+	 * @return true if the OriginTrackedMapPropertySource is immutable, false otherwise.
+	 */
+	@Override
 	public boolean isImmutable() {
 		return this.immutable;
 	}

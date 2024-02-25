@@ -55,16 +55,17 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 	private Environment environment;
 
 	/**
-     * Register bean definitions for repositories.
-     * 
-     * This method is responsible for registering bean definitions for repositories based on the provided
-     * importing class metadata, bean definition registry, and bean name generator.
-     * 
-     * @param importingClassMetadata the metadata of the class importing the repositories
-     * @param registry the bean definition registry to register the repositories with
-     * @param importBeanNameGenerator the bean name generator to generate names for the imported beans
-     */
-    @Override
+	 * Register bean definitions for repositories.
+	 *
+	 * This method is responsible for registering bean definitions for repositories based
+	 * on the provided importing class metadata, bean definition registry, and bean name
+	 * generator.
+	 * @param importingClassMetadata the metadata of the class importing the repositories
+	 * @param registry the bean definition registry to register the repositories with
+	 * @param importBeanNameGenerator the bean name generator to generate names for the
+	 * imported beans
+	 */
+	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry,
 			BeanNameGenerator importBeanNameGenerator) {
 		RepositoryConfigurationDelegate delegate = new RepositoryConfigurationDelegate(
@@ -73,24 +74,23 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 	}
 
 	/**
-     * Register bean definitions based on the given annotation metadata and bean definition registry.
-     * 
-     * @param importingClassMetadata the annotation metadata of the importing class
-     * @param registry the bean definition registry to register the bean definitions with
-     */
-    @Override
+	 * Register bean definitions based on the given annotation metadata and bean
+	 * definition registry.
+	 * @param importingClassMetadata the annotation metadata of the importing class
+	 * @param registry the bean definition registry to register the bean definitions with
+	 */
+	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		registerBeanDefinitions(importingClassMetadata, registry, null);
 	}
 
 	/**
-     * Returns the configuration source for the repository.
-     * 
-     * @param registry the bean definition registry
-     * @param importBeanNameGenerator the bean name generator for imported beans
-     * @return the configuration source for the repository
-     */
-    private AnnotationRepositoryConfigurationSource getConfigurationSource(BeanDefinitionRegistry registry,
+	 * Returns the configuration source for the repository.
+	 * @param registry the bean definition registry
+	 * @param importBeanNameGenerator the bean name generator for imported beans
+	 * @return the configuration source for the repository
+	 */
+	private AnnotationRepositoryConfigurationSource getConfigurationSource(BeanDefinitionRegistry registry,
 			BeanNameGenerator importBeanNameGenerator) {
 		AnnotationMetadata metadata = AnnotationMetadata.introspect(getConfiguration());
 		return new AutoConfiguredAnnotationRepositoryConfigurationSource(metadata, getAnnotation(), this.resourceLoader,
@@ -99,11 +99,10 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 	}
 
 	/**
-     * Returns the base packages for auto-configuration.
-     * 
-     * @return a streamable object containing the base packages
-     */
-    protected Streamable<String> getBasePackages() {
+	 * Returns the base packages for auto-configuration.
+	 * @return a streamable object containing the base packages
+	 */
+	protected Streamable<String> getBasePackages() {
 		return Streamable.of(AutoConfigurationPackages.get(this.beanFactory));
 	}
 
@@ -135,43 +134,41 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 	}
 
 	/**
-     * Set the resource loader to be used for loading resources.
-     * 
-     * @param resourceLoader the resource loader to be used
-     */
-    @Override
+	 * Set the resource loader to be used for loading resources.
+	 * @param resourceLoader the resource loader to be used
+	 */
+	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
 
 	/**
-     * Set the BeanFactory that this object runs in.
-     * <p>
-     * Invoked after population of normal bean properties but before an init callback such as InitializingBean's
-     * {@code afterPropertiesSet} or a custom init-method. Invoked after ResourceLoaderAware's {@code setResourceLoader},
-     * ApplicationEventPublisherAware's {@code setApplicationEventPublisher} and MessageSourceAware's
-     * {@code setMessageSource}.
-     * <p>
-     * Used to resolve dependencies that cannot be resolved via setters, like a ApplicationContext reference or a
-     * ResourceLoader reference.
-     * <p>
-     * This method will be called after all the properties have been set, and before the initialization callback methods
-     * are invoked.
-     * 
-     * @param beanFactory the BeanFactory object that this object runs in
-     * @throws BeansException if initialization of the BeanFactory failed
-     */
-    @Override
+	 * Set the BeanFactory that this object runs in.
+	 * <p>
+	 * Invoked after population of normal bean properties but before an init callback such
+	 * as InitializingBean's {@code afterPropertiesSet} or a custom init-method. Invoked
+	 * after ResourceLoaderAware's {@code setResourceLoader},
+	 * ApplicationEventPublisherAware's {@code setApplicationEventPublisher} and
+	 * MessageSourceAware's {@code setMessageSource}.
+	 * <p>
+	 * Used to resolve dependencies that cannot be resolved via setters, like a
+	 * ApplicationContext reference or a ResourceLoader reference.
+	 * <p>
+	 * This method will be called after all the properties have been set, and before the
+	 * initialization callback methods are invoked.
+	 * @param beanFactory the BeanFactory object that this object runs in
+	 * @throws BeansException if initialization of the BeanFactory failed
+	 */
+	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
 
 	/**
-     * Set the environment for this configuration source.
-     * 
-     * @param environment the environment to set
-     */
-    @Override
+	 * Set the environment for this configuration source.
+	 * @param environment the environment to set
+	 */
+	@Override
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
 	}
@@ -183,37 +180,35 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 			extends AnnotationRepositoryConfigurationSource {
 
 		/**
-         * Constructs a new AutoConfiguredAnnotationRepositoryConfigurationSource with the specified parameters.
-         *
-         * @param metadata the metadata of the annotation
-         * @param annotation the class of the annotation
-         * @param resourceLoader the resource loader to use
-         * @param environment the environment to use
-         * @param registry the bean definition registry to use
-         * @param generator the bean name generator to use
-         */
-        AutoConfiguredAnnotationRepositoryConfigurationSource(AnnotationMetadata metadata,
+		 * Constructs a new AutoConfiguredAnnotationRepositoryConfigurationSource with the
+		 * specified parameters.
+		 * @param metadata the metadata of the annotation
+		 * @param annotation the class of the annotation
+		 * @param resourceLoader the resource loader to use
+		 * @param environment the environment to use
+		 * @param registry the bean definition registry to use
+		 * @param generator the bean name generator to use
+		 */
+		AutoConfiguredAnnotationRepositoryConfigurationSource(AnnotationMetadata metadata,
 				Class<? extends Annotation> annotation, ResourceLoader resourceLoader, Environment environment,
 				BeanDefinitionRegistry registry, BeanNameGenerator generator) {
 			super(metadata, annotation, resourceLoader, environment, registry, generator);
 		}
 
 		/**
-         * Returns the base packages for the repository configuration.
-         *
-         * @return the base packages for the repository configuration
-         */
-        @Override
+		 * Returns the base packages for the repository configuration.
+		 * @return the base packages for the repository configuration
+		 */
+		@Override
 		public Streamable<String> getBasePackages() {
 			return AbstractRepositoryConfigurationSourceSupport.this.getBasePackages();
 		}
 
 		/**
-         * Returns the bootstrap mode of the repository configuration source.
-         *
-         * @return the bootstrap mode of the repository configuration source
-         */
-        @Override
+		 * Returns the bootstrap mode of the repository configuration source.
+		 * @return the bootstrap mode of the repository configuration source
+		 */
+		@Override
 		public BootstrapMode getBootstrapMode() {
 			return AbstractRepositoryConfigurationSourceSupport.this.getBootstrapMode();
 		}

@@ -28,61 +28,56 @@ public class Project {
 	private String name;
 
 	/**
-     * Constructs a new Project object with the specified slug and name.
-     * 
-     * @param slug the slug of the project
-     * @param name the name of the project
-     */
-    public Project(String slug, String name) {
+	 * Constructs a new Project object with the specified slug and name.
+	 * @param slug the slug of the project
+	 * @param name the name of the project
+	 */
+	public Project(String slug, String name) {
 		this.slug = slug;
 		this.name = name;
 	}
 
 	/**
-     * Returns the slug of the Project.
-     *
-     * @return the slug of the Project
-     */
-    public String getSlug() {
+	 * Returns the slug of the Project.
+	 * @return the slug of the Project
+	 */
+	public String getSlug() {
 		return this.slug;
 	}
 
 	/**
-     * Sets the slug for the project.
-     * 
-     * @param slug the slug to be set
-     */
-    public void setSlug(String slug) {
+	 * Sets the slug for the project.
+	 * @param slug the slug to be set
+	 */
+	public void setSlug(String slug) {
 		this.slug = slug;
 	}
 
 	/**
-     * Returns the name of the Project.
-     *
-     * @return the name of the Project
-     */
-    public String getName() {
+	 * Returns the name of the Project.
+	 * @return the name of the Project
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Sets the name of the project.
-     * 
-     * @param name the name of the project
-     */
-    public void setName(String name) {
+	 * Sets the name of the project.
+	 * @param name the name of the project
+	 */
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-     * Compares this Project object to the specified object for equality.
-     * Returns true if the specified object is also a Project object and
-     * has the same slug as this Project object.
-     *
-     * @param o the object to be compared for equality with this Project object
-     * @return true if the specified object is equal to this Project object, false otherwise
-     */
-    @Override
+	 * Compares this Project object to the specified object for equality. Returns true if
+	 * the specified object is also a Project object and has the same slug as this Project
+	 * object.
+	 * @param o the object to be compared for equality with this Project object
+	 * @return true if the specified object is equal to this Project object, false
+	 * otherwise
+	 */
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -95,11 +90,10 @@ public class Project {
 	}
 
 	/**
-     * Returns the hash code value for the Project object.
-     * 
-     * @return the hash code value based on the slug of the Project
-     */
-    @Override
+	 * Returns the hash code value for the Project object.
+	 * @return the hash code value based on the slug of the Project
+	 */
+	@Override
 	public int hashCode() {
 		return Objects.hash(this.slug);
 	}

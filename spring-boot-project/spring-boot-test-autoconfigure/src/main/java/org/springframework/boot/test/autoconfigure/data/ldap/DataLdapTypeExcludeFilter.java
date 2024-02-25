@@ -28,11 +28,10 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
 public final class DataLdapTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataLdapTest> {
 
 	/**
-     * Constructs a new DataLdapTypeExcludeFilter object with the specified test class.
-     * 
-     * @param testClass the test class to be used for filtering
-     */
-    DataLdapTypeExcludeFilter(Class<?> testClass) {
+	 * Constructs a new DataLdapTypeExcludeFilter object with the specified test class.
+	 * @param testClass the test class to be used for filtering
+	 */
+	DataLdapTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 

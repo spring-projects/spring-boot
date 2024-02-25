@@ -42,38 +42,34 @@ public class CodecProperties {
 	private DataSize maxInMemorySize;
 
 	/**
-     * Returns a boolean value indicating whether to log request details.
-     * 
-     * @return true if request details should be logged, false otherwise
-     */
-    public boolean isLogRequestDetails() {
+	 * Returns a boolean value indicating whether to log request details.
+	 * @return true if request details should be logged, false otherwise
+	 */
+	public boolean isLogRequestDetails() {
 		return this.logRequestDetails;
 	}
 
 	/**
-     * Sets the flag to log request details.
-     * 
-     * @param logRequestDetails the flag indicating whether to log request details
-     */
-    public void setLogRequestDetails(boolean logRequestDetails) {
+	 * Sets the flag to log request details.
+	 * @param logRequestDetails the flag indicating whether to log request details
+	 */
+	public void setLogRequestDetails(boolean logRequestDetails) {
 		this.logRequestDetails = logRequestDetails;
 	}
 
 	/**
-     * Returns the maximum size of data that can be stored in memory.
-     *
-     * @return the maximum size of data that can be stored in memory
-     */
-    public DataSize getMaxInMemorySize() {
+	 * Returns the maximum size of data that can be stored in memory.
+	 * @return the maximum size of data that can be stored in memory
+	 */
+	public DataSize getMaxInMemorySize() {
 		return this.maxInMemorySize;
 	}
 
 	/**
-     * Sets the maximum size for in-memory data.
-     * 
-     * @param maxInMemorySize the maximum size for in-memory data
-     */
-    public void setMaxInMemorySize(DataSize maxInMemorySize) {
+	 * Sets the maximum size for in-memory data.
+	 * @param maxInMemorySize the maximum size for in-memory data
+	 */
+	public void setMaxInMemorySize(DataSize maxInMemorySize) {
 		this.maxInMemorySize = maxInMemorySize;
 	}
 

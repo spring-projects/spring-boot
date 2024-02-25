@@ -46,45 +46,49 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 			ReferenceType.SOFT);
 
 	/**
-     * Constructs a new SpringConfigurationPropertySources object with the given sources.
-     *
-     * @param sources the sources of property values to be used for configuration
-     * @throws IllegalArgumentException if the sources parameter is null
-     */
-    SpringConfigurationPropertySources(Iterable<PropertySource<?>> sources) {
+	 * Constructs a new SpringConfigurationPropertySources object with the given sources.
+	 * @param sources the sources of property values to be used for configuration
+	 * @throws IllegalArgumentException if the sources parameter is null
+	 */
+	SpringConfigurationPropertySources(Iterable<PropertySource<?>> sources) {
 		Assert.notNull(sources, "Sources must not be null");
 		this.sources = sources;
 	}
 
 	/**
-     * Checks if the given Iterable of PropertySources is being used by the SpringConfigurationPropertySources instance.
-     * 
-     * @param sources the Iterable of PropertySources to check
-     * @return true if the given Iterable of PropertySources is being used, false otherwise
-     */
-    boolean isUsingSources(Iterable<PropertySource<?>> sources) {
+	 * Checks if the given Iterable of PropertySources is being used by the
+	 * SpringConfigurationPropertySources instance.
+	 * @param sources the Iterable of PropertySources to check
+	 * @return true if the given Iterable of PropertySources is being used, false
+	 * otherwise
+	 */
+	boolean isUsingSources(Iterable<PropertySource<?>> sources) {
 		return this.sources == sources;
 	}
 
 	/**
-     * Returns an iterator over the configuration property sources in this SpringConfigurationPropertySources object.
-     * 
-     * @return an iterator over the configuration property sources
-     */
-    @Override
+	 * Returns an iterator over the configuration property sources in this
+	 * SpringConfigurationPropertySources object.
+	 * @return an iterator over the configuration property sources
+	 */
+	@Override
 	public Iterator<ConfigurationPropertySource> iterator() {
 		return new SourcesIterator(this.sources.iterator(), this::adapt);
 	}
 
 	/**
-     * Adapts a PropertySource to a ConfigurationPropertySource.
-     * 
-     * This method takes a PropertySource and adapts it to a ConfigurationPropertySource. It first checks if the adapted source is already present in the cache. If it is, it returns the cached result. If not, it creates a new ConfigurationPropertySource using the SpringConfigurationPropertySource.from() method. If the source implements the OriginLookup interface, it adds the prefix to the result using the withPrefix() method. Finally, it adds the adapted source to the cache and returns the result.
-     * 
-     * @param source the PropertySource to be adapted
-     * @return the adapted ConfigurationPropertySource
-     */
-    private ConfigurationPropertySource adapt(PropertySource<?> source) {
+	 * Adapts a PropertySource to a ConfigurationPropertySource.
+	 *
+	 * This method takes a PropertySource and adapts it to a ConfigurationPropertySource.
+	 * It first checks if the adapted source is already present in the cache. If it is, it
+	 * returns the cached result. If not, it creates a new ConfigurationPropertySource
+	 * using the SpringConfigurationPropertySource.from() method. If the source implements
+	 * the OriginLookup interface, it adds the prefix to the result using the withPrefix()
+	 * method. Finally, it adds the adapted source to the cache and returns the result.
+	 * @param source the PropertySource to be adapted
+	 * @return the adapted ConfigurationPropertySource
+	 */
+	private ConfigurationPropertySource adapt(PropertySource<?> source) {
 		ConfigurationPropertySource result = this.cache.get(source);
 		// Most PropertySources test equality only using the source name, so we need to
 		// check the actual source hasn't also changed.
@@ -100,9 +104,9 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 	}
 
 	/**
-     * SourcesIterator class.
-     */
-    private static class SourcesIterator implements Iterator<ConfigurationPropertySource> {
+	 * SourcesIterator class.
+	 */
+	private static class SourcesIterator implements Iterator<ConfigurationPropertySource> {
 
 		private final Deque<Iterator<PropertySource<?>>> iterators;
 
@@ -111,12 +115,12 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 		private final Function<PropertySource<?>, ConfigurationPropertySource> adapter;
 
 		/**
-         * Constructs a new SourcesIterator with the specified iterator and adapter.
-         * 
-         * @param iterator the iterator to be used for iterating over property sources
-         * @param adapter the function used to adapt property sources to configuration property sources
-         */
-        SourcesIterator(Iterator<PropertySource<?>> iterator,
+		 * Constructs a new SourcesIterator with the specified iterator and adapter.
+		 * @param iterator the iterator to be used for iterating over property sources
+		 * @param adapter the function used to adapt property sources to configuration
+		 * property sources
+		 */
+		SourcesIterator(Iterator<PropertySource<?>> iterator,
 				Function<PropertySource<?>, ConfigurationPropertySource> adapter) {
 			this.iterators = new ArrayDeque<>(4);
 			this.iterators.push(iterator);
@@ -124,22 +128,20 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 		}
 
 		/**
-         * Returns true if there is another element in the iteration, false otherwise.
-         * 
-         * @return true if there is another element in the iteration, false otherwise
-         */
-        @Override
+		 * Returns true if there is another element in the iteration, false otherwise.
+		 * @return true if there is another element in the iteration, false otherwise
+		 */
+		@Override
 		public boolean hasNext() {
 			return fetchNext() != null;
 		}
 
 		/**
-         * Retrieves the next ConfigurationPropertySource from the iterator.
-         * 
-         * @return The next ConfigurationPropertySource.
-         * @throws NoSuchElementException if there are no more elements in the iterator.
-         */
-        @Override
+		 * Retrieves the next ConfigurationPropertySource from the iterator.
+		 * @return The next ConfigurationPropertySource.
+		 * @throws NoSuchElementException if there are no more elements in the iterator.
+		 */
+		@Override
 		public ConfigurationPropertySource next() {
 			ConfigurationPropertySource next = fetchNext();
 			if (next == null) {
@@ -150,11 +152,11 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 		}
 
 		/**
-         * Fetches the next ConfigurationPropertySource from the iterator.
-         * 
-         * @return the next ConfigurationPropertySource, or null if there are no more sources
-         */
-        private ConfigurationPropertySource fetchNext() {
+		 * Fetches the next ConfigurationPropertySource from the iterator.
+		 * @return the next ConfigurationPropertySource, or null if there are no more
+		 * sources
+		 */
+		private ConfigurationPropertySource fetchNext() {
 			if (this.next == null) {
 				if (this.iterators.isEmpty()) {
 					return null;
@@ -177,21 +179,20 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 		}
 
 		/**
-         * Pushes the iterator of property sources from the given environment onto the stack.
-         * 
-         * @param environment the configurable environment containing the property sources
-         */
-        private void push(ConfigurableEnvironment environment) {
+		 * Pushes the iterator of property sources from the given environment onto the
+		 * stack.
+		 * @param environment the configurable environment containing the property sources
+		 */
+		private void push(ConfigurableEnvironment environment) {
 			this.iterators.push(environment.getPropertySources().iterator());
 		}
 
 		/**
-         * Checks if the given property source is ignored.
-         * 
-         * @param candidate the property source to check
-         * @return {@code true} if the property source is ignored, {@code false} otherwise
-         */
-        private boolean isIgnored(PropertySource<?> candidate) {
+		 * Checks if the given property source is ignored.
+		 * @param candidate the property source to check
+		 * @return {@code true} if the property source is ignored, {@code false} otherwise
+		 */
+		private boolean isIgnored(PropertySource<?> candidate) {
 			return (candidate instanceof StubPropertySource
 					|| candidate instanceof ConfigurationPropertySourcesPropertySource);
 		}

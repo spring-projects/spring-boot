@@ -38,29 +38,26 @@ public class MyMessagingProperties {
 	}
 
 	/**
-     * Sets the list of addresses for messaging.
-     * 
-     * @param addresses the list of addresses to be set
-     */
-    public void setAddresses(List<String> addresses) {
+	 * Sets the list of addresses for messaging.
+	 * @param addresses the list of addresses to be set
+	 */
+	public void setAddresses(List<String> addresses) {
 		this.addresses = addresses;
 	}
 
 	/**
-     * Returns the container type of the messaging properties.
-     * 
-     * @return the container type of the messaging properties
-     */
-    public ContainerType getContainerType() {
+	 * Returns the container type of the messaging properties.
+	 * @return the container type of the messaging properties
+	 */
+	public ContainerType getContainerType() {
 		return this.containerType;
 	}
 
 	/**
-     * Sets the container type for the messaging properties.
-     * 
-     * @param containerType the container type to be set
-     */
-    public void setContainerType(ContainerType containerType) {
+	 * Sets the container type for the messaging properties.
+	 * @param containerType the container type to be set
+	 */
+	public void setContainerType(ContainerType containerType) {
 		this.containerType = containerType;
 	}
 	// @fold:off

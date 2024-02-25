@@ -56,13 +56,12 @@ public class ReactiveSessionsEndpoint {
 	}
 
 	/**
-     * Retrieves the sessions for a given username.
-     *
-     * @param username the username for which to retrieve the sessions
-     * @return a Mono emitting the SessionsDescriptor containing the sessions for the given username,
-     *         or an empty Mono if the indexedSessionRepository is null
-     */
-    @ReadOperation
+	 * Retrieves the sessions for a given username.
+	 * @param username the username for which to retrieve the sessions
+	 * @return a Mono emitting the SessionsDescriptor containing the sessions for the
+	 * given username, or an empty Mono if the indexedSessionRepository is null
+	 */
+	@ReadOperation
 	public Mono<SessionsDescriptor> sessionsForUsername(String username) {
 		if (this.indexedSessionRepository == null) {
 			return Mono.empty();
@@ -71,23 +70,22 @@ public class ReactiveSessionsEndpoint {
 	}
 
 	/**
-     * Retrieves a session with the given session ID.
-     *
-     * @param sessionId the ID of the session to retrieve
-     * @return a Mono emitting the session descriptor if found, or an empty Mono if not found
-     */
-    @ReadOperation
+	 * Retrieves a session with the given session ID.
+	 * @param sessionId the ID of the session to retrieve
+	 * @return a Mono emitting the session descriptor if found, or an empty Mono if not
+	 * found
+	 */
+	@ReadOperation
 	public Mono<SessionDescriptor> getSession(@Selector String sessionId) {
 		return this.sessionRepository.findById(sessionId).map(SessionDescriptor::new);
 	}
 
 	/**
-     * Deletes a session with the given session ID.
-     *
-     * @param sessionId the ID of the session to be deleted
-     * @return a Mono that completes when the session is deleted
-     */
-    @DeleteOperation
+	 * Deletes a session with the given session ID.
+	 * @param sessionId the ID of the session to be deleted
+	 * @return a Mono that completes when the session is deleted
+	 */
+	@DeleteOperation
 	public Mono<Void> deleteSession(@Selector String sessionId) {
 		return this.sessionRepository.deleteById(sessionId);
 	}

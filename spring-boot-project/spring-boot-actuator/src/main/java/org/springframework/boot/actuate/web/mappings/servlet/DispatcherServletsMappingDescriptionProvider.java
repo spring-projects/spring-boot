@@ -67,22 +67,20 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 	}
 
 	/**
-     * Returns the mapping name for the DispatcherServlets.
-     *
-     * @return the mapping name for the DispatcherServlets
-     */
-    @Override
+	 * Returns the mapping name for the DispatcherServlets.
+	 * @return the mapping name for the DispatcherServlets
+	 */
+	@Override
 	public String getMappingName() {
 		return "dispatcherServlets";
 	}
 
 	/**
-     * Returns a map of servlet mappings descriptions for the given application context.
-     * 
-     * @param context the application context to describe mappings for
-     * @return a map of servlet mappings descriptions
-     */
-    @Override
+	 * Returns a map of servlet mappings descriptions for the given application context.
+	 * @param context the application context to describe mappings for
+	 * @return a map of servlet mappings descriptions
+	 */
+	@Override
 	public Map<String, List<DispatcherServletMappingDescription>> describeMappings(ApplicationContext context) {
 		if (context instanceof WebApplicationContext webApplicationContext) {
 			return describeMappings(webApplicationContext);
@@ -91,12 +89,14 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 	}
 
 	/**
-     * Returns a map of dispatcher servlet mappings for each dispatcher servlet in the given web application context.
-     * 
-     * @param context the web application context
-     * @return a map of dispatcher servlet mappings, where the key is the name of the dispatcher servlet and the value is a list of DispatcherServletMappingDescription objects
-     */
-    private Map<String, List<DispatcherServletMappingDescription>> describeMappings(WebApplicationContext context) {
+	 * Returns a map of dispatcher servlet mappings for each dispatcher servlet in the
+	 * given web application context.
+	 * @param context the web application context
+	 * @return a map of dispatcher servlet mappings, where the key is the name of the
+	 * dispatcher servlet and the value is a list of DispatcherServletMappingDescription
+	 * objects
+	 */
+	private Map<String, List<DispatcherServletMappingDescription>> describeMappings(WebApplicationContext context) {
 		Map<String, List<DispatcherServletMappingDescription>> mappings = new HashMap<>();
 		determineDispatcherServlets(context).forEach((name, dispatcherServlet) -> mappings.put(name,
 				describeMappings(new DispatcherServletHandlerMappings(name, dispatcherServlet, context))));
@@ -104,12 +104,12 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 	}
 
 	/**
-     * Determines the dispatcher servlets in the given web application context.
-     * 
-     * @param context the web application context
-     * @return a map of dispatcher servlets, where the key is the servlet name and the value is the dispatcher servlet instance
-     */
-    private Map<String, DispatcherServlet> determineDispatcherServlets(WebApplicationContext context) {
+	 * Determines the dispatcher servlets in the given web application context.
+	 * @param context the web application context
+	 * @return a map of dispatcher servlets, where the key is the servlet name and the
+	 * value is the dispatcher servlet instance
+	 */
+	private Map<String, DispatcherServlet> determineDispatcherServlets(WebApplicationContext context) {
 		Map<String, DispatcherServlet> dispatcherServlets = new LinkedHashMap<>();
 		context.getBeansOfType(ServletRegistrationBean.class).values().forEach((registration) -> {
 			Servlet servlet = registration.getServlet();
@@ -126,36 +126,35 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 	}
 
 	/**
-     * Returns a list of DispatcherServletMappingDescription objects that describe the mappings
-     * in the given DispatcherServletHandlerMappings.
-     *
-     * @param mappings the DispatcherServletHandlerMappings to describe
-     * @return a list of DispatcherServletMappingDescription objects
-     */
-    private List<DispatcherServletMappingDescription> describeMappings(DispatcherServletHandlerMappings mappings) {
+	 * Returns a list of DispatcherServletMappingDescription objects that describe the
+	 * mappings in the given DispatcherServletHandlerMappings.
+	 * @param mappings the DispatcherServletHandlerMappings to describe
+	 * @return a list of DispatcherServletMappingDescription objects
+	 */
+	private List<DispatcherServletMappingDescription> describeMappings(DispatcherServletHandlerMappings mappings) {
 		return mappings.getHandlerMappings().stream().flatMap(this::describe).toList();
 	}
 
 	/**
-     * Returns a stream of DispatcherServletMappingDescription objects that describe the given handler mapping.
-     * 
-     * @param handlerMapping the handler mapping to describe
-     * @param descriptionProviders the list of description providers to use
-     * @param <T> the type of the handler mapping
-     * @return a stream of DispatcherServletMappingDescription objects
-     */
-    private <T> Stream<DispatcherServletMappingDescription> describe(T handlerMapping) {
+	 * Returns a stream of DispatcherServletMappingDescription objects that describe the
+	 * given handler mapping.
+	 * @param handlerMapping the handler mapping to describe
+	 * @param descriptionProviders the list of description providers to use
+	 * @param <T> the type of the handler mapping
+	 * @return a stream of DispatcherServletMappingDescription objects
+	 */
+	private <T> Stream<DispatcherServletMappingDescription> describe(T handlerMapping) {
 		return describe(handlerMapping, descriptionProviders).stream();
 	}
 
 	/**
-     * Describes the given handler mapping using the provided description providers.
-     * 
-     * @param handlerMapping         the handler mapping to describe
-     * @param descriptionProviders   the list of description providers to use
-     * @return                       a list of DispatcherServletMappingDescription objects describing the handler mapping
-     */
-    @SuppressWarnings("unchecked")
+	 * Describes the given handler mapping using the provided description providers.
+	 * @param handlerMapping the handler mapping to describe
+	 * @param descriptionProviders the list of description providers to use
+	 * @return a list of DispatcherServletMappingDescription objects describing the
+	 * handler mapping
+	 */
+	@SuppressWarnings("unchecked")
 	private static <T> List<DispatcherServletMappingDescription> describe(T handlerMapping,
 			List<HandlerMappingDescriptionProvider<?>> descriptionProviders) {
 		for (HandlerMappingDescriptionProvider<?> descriptionProvider : descriptionProviders) {
@@ -175,41 +174,43 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 	}
 
 	/**
-     * RequestMappingInfoHandlerMappingDescriptionProvider class.
-     */
-    private static final class RequestMappingInfoHandlerMappingDescriptionProvider
+	 * RequestMappingInfoHandlerMappingDescriptionProvider class.
+	 */
+	private static final class RequestMappingInfoHandlerMappingDescriptionProvider
 			implements HandlerMappingDescriptionProvider<RequestMappingInfoHandlerMapping> {
 
 		/**
-         * Returns the mapping class for the RequestMappingInfoHandlerMapping.
-         * 
-         * @return the mapping class for the RequestMappingInfoHandlerMapping
-         */
-        @Override
+		 * Returns the mapping class for the RequestMappingInfoHandlerMapping.
+		 * @return the mapping class for the RequestMappingInfoHandlerMapping
+		 */
+		@Override
 		public Class<RequestMappingInfoHandlerMapping> getMappingClass() {
 			return RequestMappingInfoHandlerMapping.class;
 		}
 
 		/**
-         * Returns a list of DispatcherServletMappingDescription objects that describe the handler methods
-         * registered in the provided RequestMappingInfoHandlerMapping.
-         *
-         * @param handlerMapping the RequestMappingInfoHandlerMapping containing the registered handler methods
-         * @return a list of DispatcherServletMappingDescription objects describing the handler methods
-         */
-        @Override
+		 * Returns a list of DispatcherServletMappingDescription objects that describe the
+		 * handler methods registered in the provided RequestMappingInfoHandlerMapping.
+		 * @param handlerMapping the RequestMappingInfoHandlerMapping containing the
+		 * registered handler methods
+		 * @return a list of DispatcherServletMappingDescription objects describing the
+		 * handler methods
+		 */
+		@Override
 		public List<DispatcherServletMappingDescription> describe(RequestMappingInfoHandlerMapping handlerMapping) {
 			Map<RequestMappingInfo, HandlerMethod> handlerMethods = handlerMapping.getHandlerMethods();
 			return handlerMethods.entrySet().stream().map(this::describe).toList();
 		}
 
 		/**
-         * Generates a description of the DispatcherServlet mapping based on the provided mapping entry.
-         * 
-         * @param mapping the mapping entry containing the RequestMappingInfo and HandlerMethod
-         * @return a DispatcherServletMappingDescription object containing the details of the mapping
-         */
-        private DispatcherServletMappingDescription describe(Entry<RequestMappingInfo, HandlerMethod> mapping) {
+		 * Generates a description of the DispatcherServlet mapping based on the provided
+		 * mapping entry.
+		 * @param mapping the mapping entry containing the RequestMappingInfo and
+		 * HandlerMethod
+		 * @return a DispatcherServletMappingDescription object containing the details of
+		 * the mapping
+		 */
+		private DispatcherServletMappingDescription describe(Entry<RequestMappingInfo, HandlerMethod> mapping) {
 			DispatcherServletMappingDetails mappingDetails = new DispatcherServletMappingDetails();
 			mappingDetails.setHandlerMethod(new HandlerMethodDescription(mapping.getValue()));
 			mappingDetails.setRequestMappingConditions(new RequestMappingConditionsDescription(mapping.getKey()));
@@ -220,80 +221,82 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 	}
 
 	/**
-     * UrlHandlerMappingDescriptionProvider class.
-     */
-    private static final class UrlHandlerMappingDescriptionProvider
+	 * UrlHandlerMappingDescriptionProvider class.
+	 */
+	private static final class UrlHandlerMappingDescriptionProvider
 			implements HandlerMappingDescriptionProvider<AbstractUrlHandlerMapping> {
 
 		/**
-         * Returns the mapping class for the UrlHandlerMapping.
-         * 
-         * @return the mapping class for the UrlHandlerMapping
-         */
-        @Override
+		 * Returns the mapping class for the UrlHandlerMapping.
+		 * @return the mapping class for the UrlHandlerMapping
+		 */
+		@Override
 		public Class<AbstractUrlHandlerMapping> getMappingClass() {
 			return AbstractUrlHandlerMapping.class;
 		}
 
 		/**
-         * Returns a list of DispatcherServletMappingDescription objects that describe the given handler mapping.
-         *
-         * @param handlerMapping the AbstractUrlHandlerMapping to describe
-         * @return a list of DispatcherServletMappingDescription objects
-         */
-        @Override
+		 * Returns a list of DispatcherServletMappingDescription objects that describe the
+		 * given handler mapping.
+		 * @param handlerMapping the AbstractUrlHandlerMapping to describe
+		 * @return a list of DispatcherServletMappingDescription objects
+		 */
+		@Override
 		public List<DispatcherServletMappingDescription> describe(AbstractUrlHandlerMapping handlerMapping) {
 			return handlerMapping.getHandlerMap().entrySet().stream().map(this::describe).toList();
 		}
 
 		/**
-         * Generates a description for a DispatcherServlet mapping.
-         * 
-         * @param mapping the mapping entry containing the URL pattern and the corresponding handler object
-         * @return a DispatcherServletMappingDescription object representing the mapping
-         */
-        private DispatcherServletMappingDescription describe(Entry<String, Object> mapping) {
+		 * Generates a description for a DispatcherServlet mapping.
+		 * @param mapping the mapping entry containing the URL pattern and the
+		 * corresponding handler object
+		 * @return a DispatcherServletMappingDescription object representing the mapping
+		 */
+		private DispatcherServletMappingDescription describe(Entry<String, Object> mapping) {
 			return new DispatcherServletMappingDescription(mapping.getKey(), mapping.getValue().toString(), null);
 		}
 
 	}
 
 	/**
-     * IterableDelegatesHandlerMappingDescriptionProvider class.
-     */
-    @SuppressWarnings("rawtypes")
+	 * IterableDelegatesHandlerMappingDescriptionProvider class.
+	 */
+	@SuppressWarnings("rawtypes")
 	private static final class IterableDelegatesHandlerMappingDescriptionProvider
 			implements HandlerMappingDescriptionProvider<Iterable> {
 
 		private final List<HandlerMappingDescriptionProvider<?>> descriptionProviders;
 
 		/**
-         * Constructs a new IterableDelegatesHandlerMappingDescriptionProvider with the specified list of description providers.
-         * 
-         * @param descriptionProviders the list of HandlerMappingDescriptionProvider instances to be used by this IterableDelegatesHandlerMappingDescriptionProvider
-         */
-        private IterableDelegatesHandlerMappingDescriptionProvider(
+		 * Constructs a new IterableDelegatesHandlerMappingDescriptionProvider with the
+		 * specified list of description providers.
+		 * @param descriptionProviders the list of HandlerMappingDescriptionProvider
+		 * instances to be used by this IterableDelegatesHandlerMappingDescriptionProvider
+		 */
+		private IterableDelegatesHandlerMappingDescriptionProvider(
 				List<HandlerMappingDescriptionProvider<?>> descriptionProviders) {
 			this.descriptionProviders = descriptionProviders;
 		}
 
 		/**
-         * Returns the mapping class for the IterableDelegatesHandlerMappingDescriptionProvider.
-         * 
-         * @return the mapping class for the IterableDelegatesHandlerMappingDescriptionProvider
-         */
-        @Override
+		 * Returns the mapping class for the
+		 * IterableDelegatesHandlerMappingDescriptionProvider.
+		 * @return the mapping class for the
+		 * IterableDelegatesHandlerMappingDescriptionProvider
+		 */
+		@Override
 		public Class<Iterable> getMappingClass() {
 			return Iterable.class;
 		}
 
 		/**
-         * Generates a list of DispatcherServletMappingDescription objects by describing the given handler mappings.
-         * 
-         * @param handlerMapping the iterable collection of handler mappings to describe
-         * @return a list of DispatcherServletMappingDescription objects describing the handler mappings
-         */
-        @Override
+		 * Generates a list of DispatcherServletMappingDescription objects by describing
+		 * the given handler mappings.
+		 * @param handlerMapping the iterable collection of handler mappings to describe
+		 * @return a list of DispatcherServletMappingDescription objects describing the
+		 * handler mappings
+		 */
+		@Override
 		public List<DispatcherServletMappingDescription> describe(Iterable handlerMapping) {
 			List<DispatcherServletMappingDescription> descriptions = new ArrayList<>();
 			for (Object delegate : handlerMapping) {
@@ -306,19 +309,19 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 	}
 
 	/**
-     * DispatcherServletsMappingDescriptionProviderRuntimeHints class.
-     */
-    static class DispatcherServletsMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
+	 * DispatcherServletsMappingDescriptionProviderRuntimeHints class.
+	 */
+	static class DispatcherServletsMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		/**
-         * Registers the runtime hints for the DispatcherServletsMappingDescriptionProvider.
-         * 
-         * @param hints the runtime hints to register
-         * @param classLoader the class loader to use for reflection
-         */
-        @Override
+		 * Registers the runtime hints for the
+		 * DispatcherServletsMappingDescriptionProvider.
+		 * @param hints the runtime hints to register
+		 * @param classLoader the class loader to use for reflection
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(),
 					DispatcherServletMappingDescription.class);

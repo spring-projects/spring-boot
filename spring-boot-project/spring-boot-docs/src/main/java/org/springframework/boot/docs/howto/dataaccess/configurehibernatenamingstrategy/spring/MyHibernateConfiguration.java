@@ -29,11 +29,11 @@ import org.springframework.context.annotation.Configuration;
 public class MyHibernateConfiguration {
 
 	/**
-     * Returns a case-sensitive physical naming strategy that converts camel case names to underscores.
-     * 
-     * @return the case-sensitive physical naming strategy
-     */
-    @Bean
+	 * Returns a case-sensitive physical naming strategy that converts camel case names to
+	 * underscores.
+	 * @return the case-sensitive physical naming strategy
+	 */
+	@Bean
 	public CamelCaseToUnderscoresNamingStrategy caseSensitivePhysicalNamingStrategy() {
 		return new CamelCaseToUnderscoresNamingStrategy() {
 

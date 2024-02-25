@@ -31,38 +31,34 @@ public class PersonHash {
 	private String description;
 
 	/**
-     * Returns the ID of the person.
-     *
-     * @return the ID of the person
-     */
-    public String getId() {
+	 * Returns the ID of the person.
+	 * @return the ID of the person
+	 */
+	public String getId() {
 		return this.id;
 	}
 
 	/**
-     * Sets the ID of the person.
-     * 
-     * @param id the ID to set
-     */
-    public void setId(String id) {
+	 * Sets the ID of the person.
+	 * @param id the ID to set
+	 */
+	public void setId(String id) {
 		this.id = id;
 	}
 
 	/**
-     * Returns the description of the PersonHash object.
-     *
-     * @return the description of the PersonHash object
-     */
-    public String getDescription() {
+	 * Returns the description of the PersonHash object.
+	 * @return the description of the PersonHash object
+	 */
+	public String getDescription() {
 		return this.description;
 	}
 
 	/**
-     * Sets the description of the person.
-     * 
-     * @param description the description to be set
-     */
-    public void setDescription(String description) {
+	 * Sets the description of the person.
+	 * @param description the description to be set
+	 */
+	public void setDescription(String description) {
 		this.description = description;
 	}
 

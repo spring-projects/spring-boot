@@ -39,22 +39,22 @@ class ProjectGenerator {
 	private final InitializrService initializrService;
 
 	/**
-     * Constructs a new ProjectGenerator object with the specified InitializrService.
-     * 
-     * @param initializrService the InitializrService to be used for generating projects
-     */
-    ProjectGenerator(InitializrService initializrService) {
+	 * Constructs a new ProjectGenerator object with the specified InitializrService.
+	 * @param initializrService the InitializrService to be used for generating projects
+	 */
+	ProjectGenerator(InitializrService initializrService) {
 		this.initializrService = initializrService;
 	}
 
 	/**
-     * Generates a project based on the given project generation request.
-     * 
-     * @param request The project generation request containing the necessary information for project generation.
-     * @param force   A boolean flag indicating whether to force the generation even if the project already exists.
-     * @throws IOException If an I/O error occurs during project generation.
-     */
-    void generateProject(ProjectGenerationRequest request, boolean force) throws IOException {
+	 * Generates a project based on the given project generation request.
+	 * @param request The project generation request containing the necessary information
+	 * for project generation.
+	 * @param force A boolean flag indicating whether to force the generation even if the
+	 * project already exists.
+	 * @throws IOException If an I/O error occurs during project generation.
+	 */
+	void generateProject(ProjectGenerationRequest request, boolean force) throws IOException {
 		ProjectGenerationResponse response = this.initializrService.generate(request);
 		String fileName = (request.getOutput() != null) ? request.getOutput() : response.getFileName();
 		if (shouldExtract(request, response)) {
@@ -90,12 +90,11 @@ class ProjectGenerator {
 	}
 
 	/**
-     * Checks if the given entity is a zip archive.
-     * 
-     * @param entity The ProjectGenerationResponse entity to be checked.
-     * @return true if the entity is a zip archive, false otherwise.
-     */
-    private boolean isZipArchive(ProjectGenerationResponse entity) {
+	 * Checks if the given entity is a zip archive.
+	 * @param entity The ProjectGenerationResponse entity to be checked.
+	 * @return true if the entity is a zip archive, false otherwise.
+	 */
+	private boolean isZipArchive(ProjectGenerationResponse entity) {
 		if (entity.getContentType() != null) {
 			try {
 				return ZIP_MIME_TYPE.equals(entity.getContentType().getMimeType());
@@ -108,14 +107,16 @@ class ProjectGenerator {
 	}
 
 	/**
-     * Extracts a project from a ProjectGenerationResponse entity and saves it to the specified output directory.
-     * 
-     * @param entity    The ProjectGenerationResponse entity containing the project content.
-     * @param output    The output directory where the project will be saved. If null, the current working directory will be used.
-     * @param overwrite A boolean flag indicating whether to overwrite existing files in the output directory.
-     * @throws IOException If an I/O error occurs during the extraction process.
-     */
-    private void extractProject(ProjectGenerationResponse entity, String output, boolean overwrite) throws IOException {
+	 * Extracts a project from a ProjectGenerationResponse entity and saves it to the
+	 * specified output directory.
+	 * @param entity The ProjectGenerationResponse entity containing the project content.
+	 * @param output The output directory where the project will be saved. If null, the
+	 * current working directory will be used.
+	 * @param overwrite A boolean flag indicating whether to overwrite existing files in
+	 * the output directory.
+	 * @throws IOException If an I/O error occurs during the extraction process.
+	 */
+	private void extractProject(ProjectGenerationResponse entity, String output, boolean overwrite) throws IOException {
 		File outputDirectory = (output != null) ? new File(output) : new File(System.getProperty("user.dir"));
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs();
@@ -129,15 +130,16 @@ class ProjectGenerator {
 	}
 
 	/**
-     * Extracts files from a ZipInputStream to the specified output directory.
-     * 
-     * @param zipStream        the ZipInputStream containing the files to be extracted
-     * @param overwrite        a boolean indicating whether to overwrite existing files in the output directory
-     * @param outputDirectory  the directory where the extracted files will be placed
-     * @throws IOException     if an I/O error occurs while extracting the files
-     * @throws ReportableException  if the extracted files would be written outside the output directory or if a file already exists and overwrite is false
-     */
-    private void extractFromStream(ZipInputStream zipStream, boolean overwrite, File outputDirectory)
+	 * Extracts files from a ZipInputStream to the specified output directory.
+	 * @param zipStream the ZipInputStream containing the files to be extracted
+	 * @param overwrite a boolean indicating whether to overwrite existing files in the
+	 * output directory
+	 * @param outputDirectory the directory where the extracted files will be placed
+	 * @throws IOException if an I/O error occurs while extracting the files
+	 * @throws ReportableException if the extracted files would be written outside the
+	 * output directory or if a file already exists and overwrite is false
+	 */
+	private void extractFromStream(ZipInputStream zipStream, boolean overwrite, File outputDirectory)
 			throws IOException {
 		ZipEntry entry = zipStream.getNextEntry();
 		String canonicalOutputPath = outputDirectory.getCanonicalPath() + File.separator;
@@ -166,14 +168,14 @@ class ProjectGenerator {
 	}
 
 	/**
-     * Writes the project generation response to the specified output file.
-     * 
-     * @param entity    The project generation response to be written.
-     * @param output    The path of the output file.
-     * @param overwrite Specifies whether to overwrite the existing file if it already exists.
-     * @throws IOException If an I/O error occurs while writing the file.
-     */
-    private void writeProject(ProjectGenerationResponse entity, String output, boolean overwrite) throws IOException {
+	 * Writes the project generation response to the specified output file.
+	 * @param entity The project generation response to be written.
+	 * @param output The path of the output file.
+	 * @param overwrite Specifies whether to overwrite the existing file if it already
+	 * exists.
+	 * @throws IOException If an I/O error occurs while writing the file.
+	 */
+	private void writeProject(ProjectGenerationResponse entity, String output, boolean overwrite) throws IOException {
 		File outputFile = new File(output);
 		if (outputFile.exists()) {
 			if (!overwrite) {
@@ -190,12 +192,11 @@ class ProjectGenerator {
 	}
 
 	/**
-     * Fixes the executable flag of a file in the specified directory.
-     * 
-     * @param dir the directory where the file is located
-     * @param fileName the name of the file to fix the executable flag for
-     */
-    private void fixExecutableFlag(File dir, String fileName) {
+	 * Fixes the executable flag of a file in the specified directory.
+	 * @param dir the directory where the file is located
+	 * @param fileName the name of the file to fix the executable flag for
+	 */
+	private void fixExecutableFlag(File dir, String fileName) {
 		File f = new File(dir, fileName);
 		if (f.exists()) {
 			f.setExecutable(true, false);

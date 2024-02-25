@@ -40,13 +40,13 @@ public class SimpleClientWebSocketHandler extends TextWebSocketHandler {
 	private final AtomicReference<String> messagePayload;
 
 	/**
-     * Constructs a new SimpleClientWebSocketHandler with the specified GreetingService, CountDownLatch, and AtomicReference.
-     * 
-     * @param greetingService the GreetingService to be used by the WebSocket handler
-     * @param latch the CountDownLatch to be used for synchronization
-     * @param message the AtomicReference to store the message payload
-     */
-    public SimpleClientWebSocketHandler(GreetingService greetingService, CountDownLatch latch,
+	 * Constructs a new SimpleClientWebSocketHandler with the specified GreetingService,
+	 * CountDownLatch, and AtomicReference.
+	 * @param greetingService the GreetingService to be used by the WebSocket handler
+	 * @param latch the CountDownLatch to be used for synchronization
+	 * @param message the AtomicReference to store the message payload
+	 */
+	public SimpleClientWebSocketHandler(GreetingService greetingService, CountDownLatch latch,
 			AtomicReference<String> message) {
 		this.greetingService = greetingService;
 		this.latch = latch;
@@ -54,26 +54,24 @@ public class SimpleClientWebSocketHandler extends TextWebSocketHandler {
 	}
 
 	/**
-     * This method is called after a WebSocket connection is established.
-     * It sends a greeting message to the client.
-     *
-     * @param session The WebSocket session that was established.
-     * @throws Exception If an error occurs while sending the message.
-     */
-    @Override
+	 * This method is called after a WebSocket connection is established. It sends a
+	 * greeting message to the client.
+	 * @param session The WebSocket session that was established.
+	 * @throws Exception If an error occurs while sending the message.
+	 */
+	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		TextMessage message = new TextMessage(this.greetingService.getGreeting());
 		session.sendMessage(message);
 	}
 
 	/**
-     * Handles a text message received from the WebSocket session.
-     * 
-     * @param session the WebSocket session
-     * @param message the text message received
-     * @throws Exception if an error occurs while handling the message
-     */
-    @Override
+	 * Handles a text message received from the WebSocket session.
+	 * @param session the WebSocket session
+	 * @param message the text message received
+	 * @throws Exception if an error occurs while handling the message
+	 */
+	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		this.logger.info("Received: " + message + " (" + this.latch.getCount() + ")");
 		session.close();

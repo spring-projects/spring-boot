@@ -29,32 +29,29 @@ import org.springframework.core.env.StandardEnvironment;
 class ApplicationEnvironment extends StandardEnvironment {
 
 	/**
-     * Retrieves the value of the active profiles property.
-     * 
-     * @return the value of the active profiles property, or null if not available
-     */
-    @Override
+	 * Retrieves the value of the active profiles property.
+	 * @return the value of the active profiles property, or null if not available
+	 */
+	@Override
 	protected String doGetActiveProfilesProperty() {
 		return null;
 	}
 
 	/**
-     * Retrieves the value of the default profiles property.
-     * 
-     * @return the value of the default profiles property, which is null in this case
-     */
-    @Override
+	 * Retrieves the value of the default profiles property.
+	 * @return the value of the default profiles property, which is null in this case
+	 */
+	@Override
 	protected String doGetDefaultProfilesProperty() {
 		return null;
 	}
 
 	/**
-     * Creates a ConfigurablePropertyResolver using the provided MutablePropertySources.
-     * 
-     * @param propertySources the MutablePropertySources to use for resolving properties
-     * @return the created ConfigurablePropertyResolver
-     */
-    @Override
+	 * Creates a ConfigurablePropertyResolver using the provided MutablePropertySources.
+	 * @param propertySources the MutablePropertySources to use for resolving properties
+	 * @return the created ConfigurablePropertyResolver
+	 */
+	@Override
 	protected ConfigurablePropertyResolver createPropertyResolver(MutablePropertySources propertySources) {
 		return ConfigurationPropertySources.createPropertyResolver(propertySources);
 	}

@@ -30,11 +30,10 @@ public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter impl
 	private int order = Ordered.HIGHEST_PRECEDENCE;
 
 	/**
-     * Returns the order of the filter in the filter chain.
-     * 
-     * @return the order of the filter
-     */
-    @Override
+	 * Returns the order of the filter in the filter chain.
+	 * @return the order of the filter
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}

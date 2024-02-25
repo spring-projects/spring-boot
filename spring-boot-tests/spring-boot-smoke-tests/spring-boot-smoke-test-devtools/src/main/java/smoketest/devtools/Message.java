@@ -27,9 +27,9 @@ public final class Message {
 	public static String MESSAGE = "Message";
 
 	/**
-     * Private constructor for the Message class.
-     */
-    private Message() {
+	 * Private constructor for the Message class.
+	 */
+	private Message() {
 	}
 
 }

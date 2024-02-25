@@ -39,15 +39,18 @@ import org.springframework.web.reactive.function.client.WebClient;
 class WebClientObservationConfiguration {
 
 	/**
-     * Creates an instance of ObservationWebClientCustomizer by customizing the WebClient with observation capabilities.
-     * 
-     * @param observationRegistry The ObservationRegistry used to register observations.
-     * @param customConvention The custom ClientRequestObservationConvention provided by the user.
-     * @param observationProperties The ObservationProperties used to configure the observation settings.
-     * @param metricsProperties The MetricsProperties used to configure the metrics settings.
-     * @return The ObservationWebClientCustomizer instance.
-     */
-    @Bean
+	 * Creates an instance of ObservationWebClientCustomizer by customizing the WebClient
+	 * with observation capabilities.
+	 * @param observationRegistry The ObservationRegistry used to register observations.
+	 * @param customConvention The custom ClientRequestObservationConvention provided by
+	 * the user.
+	 * @param observationProperties The ObservationProperties used to configure the
+	 * observation settings.
+	 * @param metricsProperties The MetricsProperties used to configure the metrics
+	 * settings.
+	 * @return The ObservationWebClientCustomizer instance.
+	 */
+	@Bean
 	ObservationWebClientCustomizer observationWebClientCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties, MetricsProperties metricsProperties) {

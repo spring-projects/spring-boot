@@ -67,13 +67,12 @@ class ConfigDataLocationResolvers {
 	}
 
 	/**
-     * Reorders the list of ConfigDataLocationResolver objects by moving the StandardConfigDataLocationResolver
-     * to the end of the list, if present.
-     *
-     * @param resolvers the list of ConfigDataLocationResolver objects to be reordered
-     * @return the reordered list of ConfigDataLocationResolver objects
-     */
-    @SuppressWarnings("rawtypes")
+	 * Reorders the list of ConfigDataLocationResolver objects by moving the
+	 * StandardConfigDataLocationResolver to the end of the list, if present.
+	 * @param resolvers the list of ConfigDataLocationResolver objects to be reordered
+	 * @return the reordered list of ConfigDataLocationResolver objects
+	 */
+	@SuppressWarnings("rawtypes")
 	private List<ConfigDataLocationResolver<?>> reorder(List<ConfigDataLocationResolver> resolvers) {
 		List<ConfigDataLocationResolver<?>> reordered = new ArrayList<>(resolvers.size());
 		StandardConfigDataLocationResolver resourceResolver = null;
@@ -92,15 +91,15 @@ class ConfigDataLocationResolvers {
 	}
 
 	/**
-     * Resolves the given configuration data location using the available resolvers.
-     * 
-     * @param context the resolver context
-     * @param location the configuration data location to resolve
-     * @param profiles the active profiles
-     * @return a list of resolution results
-     * @throws UnsupportedConfigDataLocationException if the given location is not supported by any resolver
-     */
-    List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolverContext context, ConfigDataLocation location,
+	 * Resolves the given configuration data location using the available resolvers.
+	 * @param context the resolver context
+	 * @param location the configuration data location to resolve
+	 * @param profiles the active profiles
+	 * @return a list of resolution results
+	 * @throws UnsupportedConfigDataLocationException if the given location is not
+	 * supported by any resolver
+	 */
+	List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolverContext context, ConfigDataLocation location,
 			Profiles profiles) {
 		if (location == null) {
 			return Collections.emptyList();
@@ -114,16 +113,19 @@ class ConfigDataLocationResolvers {
 	}
 
 	/**
-     * Resolves the given {@link ConfigDataLocation} using the provided {@link ConfigDataLocationResolver},
-     * {@link ConfigDataLocationResolverContext}, and {@link Profiles}.
-     * 
-     * @param resolver The {@link ConfigDataLocationResolver} used to resolve the location.
-     * @param context The {@link ConfigDataLocationResolverContext} used during resolution.
-     * @param location The {@link ConfigDataLocation} to be resolved.
-     * @param profiles The {@link Profiles} to be used for profile-specific resolution.
-     * @return A list of {@link ConfigDataResolutionResult} containing the resolved configuration data.
-     */
-    private List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolver<?> resolver,
+	 * Resolves the given {@link ConfigDataLocation} using the provided
+	 * {@link ConfigDataLocationResolver}, {@link ConfigDataLocationResolverContext}, and
+	 * {@link Profiles}.
+	 * @param resolver The {@link ConfigDataLocationResolver} used to resolve the
+	 * location.
+	 * @param context The {@link ConfigDataLocationResolverContext} used during
+	 * resolution.
+	 * @param location The {@link ConfigDataLocation} to be resolved.
+	 * @param profiles The {@link Profiles} to be used for profile-specific resolution.
+	 * @return A list of {@link ConfigDataResolutionResult} containing the resolved
+	 * configuration data.
+	 */
+	private List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolver<?> resolver,
 			ConfigDataLocationResolverContext context, ConfigDataLocation location, Profiles profiles) {
 		List<ConfigDataResolutionResult> resolved = resolve(location, false, () -> resolver.resolve(context, location));
 		if (profiles == null) {
@@ -135,14 +137,15 @@ class ConfigDataLocationResolvers {
 	}
 
 	/**
-     * Resolves the configuration data for the given location.
-     * 
-     * @param location         the location of the configuration data
-     * @param profileSpecific  flag indicating whether the resolution is profile-specific
-     * @param resolveAction    the supplier function to resolve the configuration data resources
-     * @return                 a list of ConfigDataResolutionResult objects representing the resolved configuration data
-     */
-    private List<ConfigDataResolutionResult> resolve(ConfigDataLocation location, boolean profileSpecific,
+	 * Resolves the configuration data for the given location.
+	 * @param location the location of the configuration data
+	 * @param profileSpecific flag indicating whether the resolution is profile-specific
+	 * @param resolveAction the supplier function to resolve the configuration data
+	 * resources
+	 * @return a list of ConfigDataResolutionResult objects representing the resolved
+	 * configuration data
+	 */
+	private List<ConfigDataResolutionResult> resolve(ConfigDataLocation location, boolean profileSpecific,
 			Supplier<List<? extends ConfigDataResource>> resolveAction) {
 		List<ConfigDataResource> resources = nonNullList(resolveAction.get());
 		List<ConfigDataResolutionResult> resolved = new ArrayList<>(resources.size());
@@ -153,26 +156,24 @@ class ConfigDataLocationResolvers {
 	}
 
 	/**
-     * Returns a non-null list based on the given list.
-     * 
-     * @param <T> the type of elements in the list
-     * @param list the list to be checked for null
-     * @return a non-null list if the given list is not null, otherwise an empty list
-     */
-    @SuppressWarnings("unchecked")
+	 * Returns a non-null list based on the given list.
+	 * @param <T> the type of elements in the list
+	 * @param list the list to be checked for null
+	 * @return a non-null list if the given list is not null, otherwise an empty list
+	 */
+	@SuppressWarnings("unchecked")
 	private <T> List<T> nonNullList(List<? extends T> list) {
 		return (list != null) ? (List<T>) list : Collections.emptyList();
 	}
 
 	/**
-     * Merges two lists into a single list.
-     * 
-     * @param <T> the type of elements in the lists
-     * @param list1 the first list to be merged
-     * @param list2 the second list to be merged
-     * @return a new list containing all elements from both input lists
-     */
-    private <T> List<T> merge(List<T> list1, List<T> list2) {
+	 * Merges two lists into a single list.
+	 * @param <T> the type of elements in the lists
+	 * @param list1 the first list to be merged
+	 * @param list2 the second list to be merged
+	 * @return a new list containing all elements from both input lists
+	 */
+	private <T> List<T> merge(List<T> list1, List<T> list2) {
 		List<T> merged = new ArrayList<>(list1.size() + list2.size());
 		merged.addAll(list1);
 		merged.addAll(list2);

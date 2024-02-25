@@ -62,20 +62,18 @@ public enum AnsiBackground implements AnsiElement {
 	private final String code;
 
 	/**
-     * Constructor for the AnsiBackground class.
-     * 
-     * @param code the ANSI escape code for setting the background color
-     */
-    AnsiBackground(String code) {
+	 * Constructor for the AnsiBackground class.
+	 * @param code the ANSI escape code for setting the background color
+	 */
+	AnsiBackground(String code) {
 		this.code = code;
 	}
 
 	/**
-     * Returns the string representation of the AnsiBackground object.
-     *
-     * @return the code representing the AnsiBackground object
-     */
-    @Override
+	 * Returns the string representation of the AnsiBackground object.
+	 * @return the code representing the AnsiBackground object
+	 */
+	@Override
 	public String toString() {
 		return this.code;
 	}

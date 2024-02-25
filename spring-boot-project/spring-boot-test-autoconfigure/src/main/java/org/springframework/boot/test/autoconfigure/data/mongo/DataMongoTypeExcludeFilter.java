@@ -28,11 +28,10 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
 public final class DataMongoTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataMongoTest> {
 
 	/**
-     * Constructs a new DataMongoTypeExcludeFilter with the specified testClass.
-     *
-     * @param testClass the class to be used for filtering data
-     */
-    DataMongoTypeExcludeFilter(Class<?> testClass) {
+	 * Constructs a new DataMongoTypeExcludeFilter with the specified testClass.
+	 * @param testClass the class to be used for filtering data
+	 */
+	DataMongoTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 

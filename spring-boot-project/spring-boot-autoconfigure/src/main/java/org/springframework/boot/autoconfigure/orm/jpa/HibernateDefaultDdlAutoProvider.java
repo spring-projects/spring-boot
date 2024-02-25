@@ -35,21 +35,21 @@ class HibernateDefaultDdlAutoProvider implements SchemaManagementProvider {
 	private final Iterable<SchemaManagementProvider> providers;
 
 	/**
-     * Constructs a new HibernateDefaultDdlAutoProvider with the specified list of SchemaManagementProvider instances.
-     *
-     * @param providers the list of SchemaManagementProvider instances to be used by this HibernateDefaultDdlAutoProvider
-     */
-    HibernateDefaultDdlAutoProvider(Iterable<SchemaManagementProvider> providers) {
+	 * Constructs a new HibernateDefaultDdlAutoProvider with the specified list of
+	 * SchemaManagementProvider instances.
+	 * @param providers the list of SchemaManagementProvider instances to be used by this
+	 * HibernateDefaultDdlAutoProvider
+	 */
+	HibernateDefaultDdlAutoProvider(Iterable<SchemaManagementProvider> providers) {
 		this.providers = providers;
 	}
 
 	/**
-     * Returns the default DDL auto value for the given data source.
-     * 
-     * @param dataSource the data source to check
-     * @return the default DDL auto value
-     */
-    String getDefaultDdlAuto(DataSource dataSource) {
+	 * Returns the default DDL auto value for the given data source.
+	 * @param dataSource the data source to check
+	 * @return the default DDL auto value
+	 */
+	String getDefaultDdlAuto(DataSource dataSource) {
 		if (!EmbeddedDatabaseConnection.isEmbedded(dataSource)) {
 			return "none";
 		}
@@ -61,12 +61,11 @@ class HibernateDefaultDdlAutoProvider implements SchemaManagementProvider {
 	}
 
 	/**
-     * Returns the schema management strategy for the given data source.
-     * 
-     * @param dataSource the data source to get the schema management for
-     * @return the schema management strategy for the given data source
-     */
-    @Override
+	 * Returns the schema management strategy for the given data source.
+	 * @param dataSource the data source to get the schema management for
+	 * @return the schema management strategy for the given data source
+	 */
+	@Override
 	public SchemaManagement getSchemaManagement(DataSource dataSource) {
 		return StreamSupport.stream(this.providers.spliterator(), false)
 			.map((provider) -> provider.getSchemaManagement(dataSource))

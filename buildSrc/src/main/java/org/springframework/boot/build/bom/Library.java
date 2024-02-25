@@ -85,74 +85,66 @@ public class Library {
 	}
 
 	/**
-     * Returns the name of the Library.
-     *
-     * @return the name of the Library
-     */
-    public String getName() {
+	 * Returns the name of the Library.
+	 * @return the name of the Library
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Returns the name of the calendar.
-     *
-     * @return the name of the calendar
-     */
-    public String getCalendarName() {
+	 * Returns the name of the calendar.
+	 * @return the name of the calendar
+	 */
+	public String getCalendarName() {
 		return this.calendarName;
 	}
 
 	/**
-     * Returns the version of the library.
-     *
-     * @return the version of the library
-     */
-    public LibraryVersion getVersion() {
+	 * Returns the version of the library.
+	 * @return the version of the library
+	 */
+	public LibraryVersion getVersion() {
 		return this.version;
 	}
 
 	/**
-     * Returns the list of groups in the library.
-     *
-     * @return the list of groups
-     */
-    public List<Group> getGroups() {
+	 * Returns the list of groups in the library.
+	 * @return the list of groups
+	 */
+	public List<Group> getGroups() {
 		return this.groups;
 	}
 
 	/**
-     * Returns the version property of the Library.
-     *
-     * @return the version property of the Library
-     */
-    public String getVersionProperty() {
+	 * Returns the version property of the Library.
+	 * @return the version property of the Library
+	 */
+	public String getVersionProperty() {
 		return this.versionProperty;
 	}
 
 	/**
-     * Returns a list of prohibited versions.
-     * 
-     * @return the list of prohibited versions
-     */
-    public List<ProhibitedVersion> getProhibitedVersions() {
+	 * Returns a list of prohibited versions.
+	 * @return the list of prohibited versions
+	 */
+	public List<ProhibitedVersion> getProhibitedVersions() {
 		return this.prohibitedVersions;
 	}
 
 	/**
-     * Returns a boolean value indicating whether snapshots should be considered.
-     * 
-     * @return true if snapshots should be considered, false otherwise
-     */
-    public boolean isConsiderSnapshots() {
+	 * Returns a boolean value indicating whether snapshots should be considered.
+	 * @return true if snapshots should be considered, false otherwise
+	 */
+	public boolean isConsiderSnapshots() {
 		return this.considerSnapshots;
 	}
 
 	/**
-     * Returns the version alignment of the library.
-     * 
-     * @return the version alignment of the library
-     */
-    public VersionAlignment getVersionAlignment() {
+	 * Returns the version alignment of the library.
+	 * @return the version alignment of the library
+	 */
+	public VersionAlignment getVersionAlignment() {
 		return this.versionAlignment;
 	}
 
@@ -172,15 +164,19 @@ public class Library {
 		private final String reason;
 
 		/**
-         * Constructs a new ProhibitedVersion object with the specified range, startswith, endswith, contains, and reason.
-         * 
-         * @param range the VersionRange object representing the range of prohibited versions
-         * @param startsWith the list of strings representing the prohibited versions that start with any of the specified strings
-         * @param endsWith the list of strings representing the prohibited versions that end with any of the specified strings
-         * @param contains the list of strings representing the prohibited versions that contain any of the specified strings
-         * @param reason the reason for prohibiting the specified versions
-         */
-        public ProhibitedVersion(VersionRange range, List<String> startsWith, List<String> endsWith,
+		 * Constructs a new ProhibitedVersion object with the specified range, startswith,
+		 * endswith, contains, and reason.
+		 * @param range the VersionRange object representing the range of prohibited
+		 * versions
+		 * @param startsWith the list of strings representing the prohibited versions that
+		 * start with any of the specified strings
+		 * @param endsWith the list of strings representing the prohibited versions that
+		 * end with any of the specified strings
+		 * @param contains the list of strings representing the prohibited versions that
+		 * contain any of the specified strings
+		 * @param reason the reason for prohibiting the specified versions
+		 */
+		public ProhibitedVersion(VersionRange range, List<String> startsWith, List<String> endsWith,
 				List<String> contains, String reason) {
 			this.range = range;
 			this.startsWith = startsWith;
@@ -190,57 +186,51 @@ public class Library {
 		}
 
 		/**
-         * Returns the range of prohibited versions.
-         *
-         * @return the range of prohibited versions
-         */
-        public VersionRange getRange() {
+		 * Returns the range of prohibited versions.
+		 * @return the range of prohibited versions
+		 */
+		public VersionRange getRange() {
 			return this.range;
 		}
 
 		/**
-         * Returns the list of strings that start with a specific character or substring.
-         *
-         * @return the list of strings that start with a specific character or substring
-         */
-        public List<String> getStartsWith() {
+		 * Returns the list of strings that start with a specific character or substring.
+		 * @return the list of strings that start with a specific character or substring
+		 */
+		public List<String> getStartsWith() {
 			return this.startsWith;
 		}
 
 		/**
-         * Returns the list of strings representing the suffixes used for filtering.
-         *
-         * @return the list of strings representing the suffixes used for filtering
-         */
-        public List<String> getEndsWith() {
+		 * Returns the list of strings representing the suffixes used for filtering.
+		 * @return the list of strings representing the suffixes used for filtering
+		 */
+		public List<String> getEndsWith() {
 			return this.endsWith;
 		}
 
 		/**
-         * Returns the list of strings containing the prohibited versions.
-         *
-         * @return the list of strings containing the prohibited versions
-         */
-        public List<String> getContains() {
+		 * Returns the list of strings containing the prohibited versions.
+		 * @return the list of strings containing the prohibited versions
+		 */
+		public List<String> getContains() {
 			return this.contains;
 		}
 
 		/**
-         * Returns the reason for the prohibition.
-         *
-         * @return the reason for the prohibition
-         */
-        public String getReason() {
+		 * Returns the reason for the prohibition.
+		 * @return the reason for the prohibition
+		 */
+		public String getReason() {
 			return this.reason;
 		}
 
 		/**
-         * Checks if a given candidate string is prohibited.
-         * 
-         * @param candidate the candidate string to check
-         * @return true if the candidate string is prohibited, false otherwise
-         */
-        public boolean isProhibited(String candidate) {
+		 * Checks if a given candidate string is prohibited.
+		 * @param candidate the candidate string to check
+		 * @return true if the candidate string is prohibited, false otherwise
+		 */
+		public boolean isProhibited(String candidate) {
 			boolean result = false;
 			result = result
 					|| (this.range != null && this.range.containsVersion(new DefaultArtifactVersion(candidate)));
@@ -253,27 +243,25 @@ public class Library {
 	}
 
 	/**
-     * LibraryVersion class.
-     */
-    public static class LibraryVersion {
+	 * LibraryVersion class.
+	 */
+	public static class LibraryVersion {
 
 		private final DependencyVersion version;
 
 		/**
-         * Constructs a new LibraryVersion object with the specified DependencyVersion.
-         * 
-         * @param version the DependencyVersion to set for the LibraryVersion object
-         */
-        public LibraryVersion(DependencyVersion version) {
+		 * Constructs a new LibraryVersion object with the specified DependencyVersion.
+		 * @param version the DependencyVersion to set for the LibraryVersion object
+		 */
+		public LibraryVersion(DependencyVersion version) {
 			this.version = version;
 		}
 
 		/**
-         * Returns the version of the dependency.
-         *
-         * @return the version of the dependency
-         */
-        public DependencyVersion getVersion() {
+		 * Returns the version of the dependency.
+		 * @return the version of the dependency
+		 */
+		public DependencyVersion getVersion() {
 			return this.version;
 		}
 
@@ -293,14 +281,14 @@ public class Library {
 		private final List<String> boms;
 
 		/**
-         * Constructs a new Group object with the specified id, modules, plugins, and boms.
-         * 
-         * @param id the id of the group
-         * @param modules the list of modules associated with the group
-         * @param plugins the list of plugins associated with the group
-         * @param boms the list of boms associated with the group
-         */
-        public Group(String id, List<Module> modules, List<String> plugins, List<String> boms) {
+		 * Constructs a new Group object with the specified id, modules, plugins, and
+		 * boms.
+		 * @param id the id of the group
+		 * @param modules the list of modules associated with the group
+		 * @param plugins the list of plugins associated with the group
+		 * @param boms the list of boms associated with the group
+		 */
+		public Group(String id, List<Module> modules, List<String> plugins, List<String> boms) {
 			this.id = id;
 			this.modules = modules;
 			this.plugins = plugins;
@@ -308,38 +296,34 @@ public class Library {
 		}
 
 		/**
-         * Returns the ID of the group.
-         *
-         * @return the ID of the group
-         */
-        public String getId() {
+		 * Returns the ID of the group.
+		 * @return the ID of the group
+		 */
+		public String getId() {
 			return this.id;
 		}
 
 		/**
-         * Returns the list of modules in the group.
-         *
-         * @return the list of modules in the group
-         */
-        public List<Module> getModules() {
+		 * Returns the list of modules in the group.
+		 * @return the list of modules in the group
+		 */
+		public List<Module> getModules() {
 			return this.modules;
 		}
 
 		/**
-         * Returns the list of plugins.
-         * 
-         * @return the list of plugins
-         */
-        public List<String> getPlugins() {
+		 * Returns the list of plugins.
+		 * @return the list of plugins
+		 */
+		public List<String> getPlugins() {
 			return this.plugins;
 		}
 
 		/**
-         * Returns the list of BOMs.
-         *
-         * @return the list of BOMs
-         */
-        public List<String> getBoms() {
+		 * Returns the list of BOMs.
+		 * @return the list of BOMs
+		 */
+		public List<String> getBoms() {
 			return this.boms;
 		}
 
@@ -359,43 +343,40 @@ public class Library {
 		private final List<Exclusion> exclusions;
 
 		/**
-         * Constructs a new Module with the specified name.
-         * 
-         * @param name the name of the module
-         */
-        public Module(String name) {
+		 * Constructs a new Module with the specified name.
+		 * @param name the name of the module
+		 */
+		public Module(String name) {
 			this(name, Collections.emptyList());
 		}
 
 		/**
-         * Constructs a new Module with the specified name and type.
-         * 
-         * @param name the name of the module
-         * @param type the type of the module
-         */
-        public Module(String name, String type) {
+		 * Constructs a new Module with the specified name and type.
+		 * @param name the name of the module
+		 * @param type the type of the module
+		 */
+		public Module(String name, String type) {
 			this(name, type, null, Collections.emptyList());
 		}
 
 		/**
-         * Constructs a new Module with the specified name and exclusions.
-         * 
-         * @param name the name of the module
-         * @param exclusions the list of exclusions for the module
-         */
-        public Module(String name, List<Exclusion> exclusions) {
+		 * Constructs a new Module with the specified name and exclusions.
+		 * @param name the name of the module
+		 * @param exclusions the list of exclusions for the module
+		 */
+		public Module(String name, List<Exclusion> exclusions) {
 			this(name, null, null, exclusions);
 		}
 
 		/**
-         * Constructs a new Module with the specified name, type, classifier, and exclusions.
-         * 
-         * @param name the name of the module
-         * @param type the type of the module
-         * @param classifier the classifier of the module (can be null)
-         * @param exclusions the list of exclusions for the module
-         */
-        public Module(String name, String type, String classifier, List<Exclusion> exclusions) {
+		 * Constructs a new Module with the specified name, type, classifier, and
+		 * exclusions.
+		 * @param name the name of the module
+		 * @param type the type of the module
+		 * @param classifier the classifier of the module (can be null)
+		 * @param exclusions the list of exclusions for the module
+		 */
+		public Module(String name, String type, String classifier, List<Exclusion> exclusions) {
 			this.name = name;
 			this.type = type;
 			this.classifier = (classifier != null) ? classifier : "";
@@ -403,38 +384,34 @@ public class Library {
 		}
 
 		/**
-         * Returns the name of the Module.
-         *
-         * @return the name of the Module
-         */
-        public String getName() {
+		 * Returns the name of the Module.
+		 * @return the name of the Module
+		 */
+		public String getName() {
 			return this.name;
 		}
 
 		/**
-         * Returns the classifier of the Module.
-         * 
-         * @return the classifier of the Module
-         */
-        public String getClassifier() {
+		 * Returns the classifier of the Module.
+		 * @return the classifier of the Module
+		 */
+		public String getClassifier() {
 			return this.classifier;
 		}
 
 		/**
-         * Returns the type of the Module.
-         * 
-         * @return the type of the Module
-         */
-        public String getType() {
+		 * Returns the type of the Module.
+		 * @return the type of the Module
+		 */
+		public String getType() {
 			return this.type;
 		}
 
 		/**
-         * Returns the list of exclusions.
-         * 
-         * @return the list of exclusions
-         */
-        public List<Exclusion> getExclusions() {
+		 * Returns the list of exclusions.
+		 * @return the list of exclusions
+		 */
+		public List<Exclusion> getExclusions() {
 			return this.exclusions;
 		}
 
@@ -450,31 +427,28 @@ public class Library {
 		private final String artifactId;
 
 		/**
-         * Constructs a new Exclusion with the specified groupId and artifactId.
-         * 
-         * @param groupId the group ID of the exclusion
-         * @param artifactId the artifact ID of the exclusion
-         */
-        public Exclusion(String groupId, String artifactId) {
+		 * Constructs a new Exclusion with the specified groupId and artifactId.
+		 * @param groupId the group ID of the exclusion
+		 * @param artifactId the artifact ID of the exclusion
+		 */
+		public Exclusion(String groupId, String artifactId) {
 			this.groupId = groupId;
 			this.artifactId = artifactId;
 		}
 
 		/**
-         * Returns the group ID of the Exclusion.
-         *
-         * @return the group ID of the Exclusion
-         */
-        public String getGroupId() {
+		 * Returns the group ID of the Exclusion.
+		 * @return the group ID of the Exclusion
+		 */
+		public String getGroupId() {
 			return this.groupId;
 		}
 
 		/**
-         * Returns the artifact ID of the Exclusion.
-         *
-         * @return the artifact ID of the Exclusion
-         */
-        public String getArtifactId() {
+		 * Returns the artifact ID of the Exclusion.
+		 * @return the artifact ID of the Exclusion
+		 */
+		public String getArtifactId() {
 			return this.artifactId;
 		}
 
@@ -498,15 +472,14 @@ public class Library {
 		private Set<String> alignedVersions;
 
 		/**
-         * Initializes a new instance of the VersionAlignment class.
-         * 
-         * @param from The source version from which the alignment is being performed.
-         * @param managedBy The entity responsible for managing the alignment.
-         * @param project The project for which the alignment is being performed.
-         * @param libraries The list of libraries involved in the alignment.
-         * @param groups The list of groups involved in the alignment.
-         */
-        VersionAlignment(String from, String managedBy, Project project, List<Library> libraries, List<Group> groups) {
+		 * Initializes a new instance of the VersionAlignment class.
+		 * @param from The source version from which the alignment is being performed.
+		 * @param managedBy The entity responsible for managing the alignment.
+		 * @param project The project for which the alignment is being performed.
+		 * @param libraries The list of libraries involved in the alignment.
+		 * @param groups The list of groups involved in the alignment.
+		 */
+		VersionAlignment(String from, String managedBy, Project project, List<Library> libraries, List<Group> groups) {
 			this.from = from;
 			this.managedBy = managedBy;
 			this.project = project;
@@ -515,12 +488,12 @@ public class Library {
 		}
 
 		/**
-         * Resolves the aligned versions of the libraries based on the managedBy property.
-         * 
-         * @return a Set of Strings representing the aligned versions
-         * @throws IllegalStateException if the managedBy property is null or if the managing library is not found
-         */
-        public Set<String> resolve() {
+		 * Resolves the aligned versions of the libraries based on the managedBy property.
+		 * @return a Set of Strings representing the aligned versions
+		 * @throws IllegalStateException if the managedBy property is null or if the
+		 * managing library is not found
+		 */
+		public Set<String> resolve() {
 			if (this.managedBy == null) {
 				throw new IllegalStateException("Version alignment without managedBy is not supported");
 			}
@@ -552,12 +525,11 @@ public class Library {
 		}
 
 		/**
-         * Resolves aligning dependencies using the given library manager.
-         * 
-         * @param manager the library manager to use for resolving dependencies
-         * @return a map containing the resolved versions of the dependencies
-         */
-        private Map<String, String> resolveAligningDependencies(Library manager) {
+		 * Resolves aligning dependencies using the given library manager.
+		 * @param manager the library manager to use for resolving dependencies
+		 * @return a map containing the resolved versions of the dependencies
+		 */
+		private Map<String, String> resolveAligningDependencies(Library manager) {
 			DependencyHandler dependencyHandler = this.project.getDependencies();
 			List<Dependency> boms = manager.getGroups()
 				.stream()
@@ -582,30 +554,28 @@ public class Library {
 		}
 
 		/**
-         * Returns the value of the 'from' field.
-         *
-         * @return the value of the 'from' field
-         */
-        String getFrom() {
+		 * Returns the value of the 'from' field.
+		 * @return the value of the 'from' field
+		 */
+		String getFrom() {
 			return this.from;
 		}
 
 		/**
-         * Returns the value of the managedBy property.
-         *
-         * @return the value of the managedBy property
-         */
-        String getManagedBy() {
+		 * Returns the value of the managedBy property.
+		 * @return the value of the managedBy property
+		 */
+		String getManagedBy() {
 			return this.managedBy;
 		}
 
 		/**
-         * Returns a string representation of the VersionAlignment object.
-         * The string includes the version from dependencies and the manager responsible for managing it.
-         * 
-         * @return a string representation of the VersionAlignment object
-         */
-        @Override
+		 * Returns a string representation of the VersionAlignment object. The string
+		 * includes the version from dependencies and the manager responsible for managing
+		 * it.
+		 * @return a string representation of the VersionAlignment object
+		 */
+		@Override
 		public String toString() {
 			return "version from dependencies of " + this.from + " that is managed by " + this.managedBy;
 		}

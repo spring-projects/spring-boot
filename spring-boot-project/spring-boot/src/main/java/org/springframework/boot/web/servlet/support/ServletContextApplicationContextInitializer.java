@@ -62,30 +62,28 @@ public class ServletContextApplicationContextInitializer
 	}
 
 	/**
-     * Sets the order of the ServletContextApplicationContextInitializer.
-     * 
-     * @param order the order value to set
-     */
-    public void setOrder(int order) {
+	 * Sets the order of the ServletContextApplicationContextInitializer.
+	 * @param order the order value to set
+	 */
+	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	/**
-     * Returns the order of this ServletContextApplicationContextInitializer.
-     * 
-     * @return the order of this ServletContextApplicationContextInitializer
-     */
-    @Override
+	 * Returns the order of this ServletContextApplicationContextInitializer.
+	 * @return the order of this ServletContextApplicationContextInitializer
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
 	/**
-     * Initializes the application context with the given servlet context.
-     * 
-     * @param applicationContext the configurable web application context to be initialized
-     */
-    @Override
+	 * Initializes the application context with the given servlet context.
+	 * @param applicationContext the configurable web application context to be
+	 * initialized
+	 */
+	@Override
 	public void initialize(ConfigurableWebApplicationContext applicationContext) {
 		applicationContext.setServletContext(this.servletContext);
 		if (this.addApplicationContextAttribute) {

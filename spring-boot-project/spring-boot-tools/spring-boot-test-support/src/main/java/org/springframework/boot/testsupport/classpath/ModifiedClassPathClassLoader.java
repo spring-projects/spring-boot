@@ -80,14 +80,14 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	private final ClassLoader junitLoader;
 
 	/**
-     * Constructs a new ModifiedClassPathClassLoader with the specified URLs, excluded packages, parent class loader, and JUnit class loader.
-     * 
-     * @param urls the URLs from which to load classes and resources
-     * @param excludedPackages the set of packages to be excluded from loading
-     * @param parent the parent class loader for delegation
-     * @param junitLoader the class loader for JUnit classes
-     */
-    ModifiedClassPathClassLoader(URL[] urls, Set<String> excludedPackages, ClassLoader parent,
+	 * Constructs a new ModifiedClassPathClassLoader with the specified URLs, excluded
+	 * packages, parent class loader, and JUnit class loader.
+	 * @param urls the URLs from which to load classes and resources
+	 * @param excludedPackages the set of packages to be excluded from loading
+	 * @param parent the parent class loader for delegation
+	 * @param junitLoader the class loader for JUnit classes
+	 */
+	ModifiedClassPathClassLoader(URL[] urls, Set<String> excludedPackages, ClassLoader parent,
 			ClassLoader junitLoader) {
 		super(urls, parent);
 		this.excludedPackages = excludedPackages;
@@ -95,13 +95,12 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Loads the class with the specified name.
-     * 
-     * @param name the name of the class to be loaded
-     * @return the loaded class
-     * @throws ClassNotFoundException if the class cannot be found
-     */
-    @Override
+	 * Loads the class with the specified name.
+	 * @param name the name of the class to be loaded
+	 * @return the loaded class
+	 * @throws ClassNotFoundException if the class cannot be found
+	 */
+	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
 		if (name.startsWith("org.junit") || name.startsWith("org.hamcrest")
 				|| name.startsWith("io.netty.internal.tcnative")) {
@@ -115,14 +114,15 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Retrieves a ModifiedClassPathClassLoader based on the provided test class, test method, and arguments.
-     * 
-     * @param testClass   the test class to consider
-     * @param testMethod  the test method to consider
-     * @param arguments   the list of arguments to consider
-     * @return            a ModifiedClassPathClassLoader if annotated elements are found, otherwise null
-     */
-    static ModifiedClassPathClassLoader get(Class<?> testClass, Method testMethod, List<Object> arguments) {
+	 * Retrieves a ModifiedClassPathClassLoader based on the provided test class, test
+	 * method, and arguments.
+	 * @param testClass the test class to consider
+	 * @param testMethod the test method to consider
+	 * @param arguments the list of arguments to consider
+	 * @return a ModifiedClassPathClassLoader if annotated elements are found, otherwise
+	 * null
+	 */
+	static ModifiedClassPathClassLoader get(Class<?> testClass, Method testMethod, List<Object> arguments) {
 		Set<AnnotatedElement> candidates = new LinkedHashSet<>();
 		candidates.add(testClass);
 		candidates.add(testMethod);
@@ -137,12 +137,11 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Retrieves all annotated elements from the given array.
-     * 
-     * @param array the array containing the elements to retrieve annotated elements from
-     * @return a collection of annotated elements found in the array
-     */
-    private static Collection<AnnotatedElement> getAnnotatedElements(Object[] array) {
+	 * Retrieves all annotated elements from the given array.
+	 * @param array the array containing the elements to retrieve annotated elements from
+	 * @return a collection of annotated elements found in the array
+	 */
+	private static Collection<AnnotatedElement> getAnnotatedElements(Object[] array) {
 		Set<AnnotatedElement> result = new LinkedHashSet<>();
 		for (Object item : array) {
 			if (item instanceof AnnotatedElement) {
@@ -156,15 +155,13 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Checks if the given {@link AnnotatedElement} has any of the following annotations:
-     * - {@link ForkedClassPath}
-     * - {@link ClassPathOverrides}
-     * - {@link ClassPathExclusions}
-     *
-     * @param element the {@link AnnotatedElement} to check for annotations
-     * @return {@code true} if any of the annotations are present, {@code false} otherwise
-     */
-    private static boolean hasAnnotation(AnnotatedElement element) {
+	 * Checks if the given {@link AnnotatedElement} has any of the following annotations:
+	 * - {@link ForkedClassPath} - {@link ClassPathOverrides} -
+	 * {@link ClassPathExclusions}
+	 * @param element the {@link AnnotatedElement} to check for annotations
+	 * @return {@code true} if any of the annotations are present, {@code false} otherwise
+	 */
+	private static boolean hasAnnotation(AnnotatedElement element) {
 		MergedAnnotations annotations = MergedAnnotations.from(element,
 				MergedAnnotations.SearchStrategy.TYPE_HIERARCHY);
 		return annotations.isPresent(ForkedClassPath.class) || annotations.isPresent(ClassPathOverrides.class)
@@ -172,13 +169,13 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Computes a ModifiedClassPathClassLoader based on the given class loader and list of annotated classes.
-     * 
-     * @param classLoader the original class loader
-     * @param annotatedClasses the list of annotated classes
-     * @return a ModifiedClassPathClassLoader instance
-     */
-    private static ModifiedClassPathClassLoader compute(ClassLoader classLoader,
+	 * Computes a ModifiedClassPathClassLoader based on the given class loader and list of
+	 * annotated classes.
+	 * @param classLoader the original class loader
+	 * @param annotatedClasses the list of annotated classes
+	 * @return a ModifiedClassPathClassLoader instance
+	 */
+	private static ModifiedClassPathClassLoader compute(ClassLoader classLoader,
 			List<AnnotatedElement> annotatedClasses) {
 		List<MergedAnnotations> annotations = annotatedClasses.stream()
 			.map((source) -> MergedAnnotations.from(source, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY))
@@ -188,12 +185,11 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Extracts the URLs from the given class loader.
-     * 
-     * @param classLoader the class loader from which to extract the URLs
-     * @return an array of URLs extracted from the class loader
-     */
-    private static URL[] extractUrls(ClassLoader classLoader) {
+	 * Extracts the URLs from the given class loader.
+	 * @param classLoader the class loader from which to extract the URLs
+	 * @return an array of URLs extracted from the class loader
+	 */
+	private static URL[] extractUrls(ClassLoader classLoader) {
 		List<URL> extractedUrls = new ArrayList<>();
 		doExtractUrls(classLoader).forEach((URL url) -> {
 			if (isManifestOnlyJar(url)) {
@@ -207,12 +203,11 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Extracts the URLs from the given ClassLoader.
-     * 
-     * @param classLoader the ClassLoader from which to extract the URLs
-     * @return a Stream of URLs extracted from the ClassLoader
-     */
-    private static Stream<URL> doExtractUrls(ClassLoader classLoader) {
+	 * Extracts the URLs from the given ClassLoader.
+	 * @param classLoader the ClassLoader from which to extract the URLs
+	 * @return a Stream of URLs extracted from the ClassLoader
+	 */
+	private static Stream<URL> doExtractUrls(ClassLoader classLoader) {
 		if (classLoader instanceof URLClassLoader urlClassLoader) {
 			return Stream.of(urlClassLoader.getURLs());
 		}
@@ -221,13 +216,12 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Converts the given entry string to a URL.
-     * 
-     * @param entry the entry string to convert
-     * @return the URL representation of the entry string
-     * @throws IllegalArgumentException if an error occurs during the conversion
-     */
-    private static URL toURL(String entry) {
+	 * Converts the given entry string to a URL.
+	 * @param entry the entry string to convert
+	 * @return the URL representation of the entry string
+	 * @throws IllegalArgumentException if an error occurs during the conversion
+	 */
+	private static URL toURL(String entry) {
 		try {
 			return new File(entry).toURI().toURL();
 		}
@@ -237,22 +231,20 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Checks if the given URL points to a manifest-only JAR file.
-     * 
-     * @param url the URL to check
-     * @return true if the URL points to a manifest-only JAR file, false otherwise
-     */
-    private static boolean isManifestOnlyJar(URL url) {
+	 * Checks if the given URL points to a manifest-only JAR file.
+	 * @param url the URL to check
+	 * @return true if the URL points to a manifest-only JAR file, false otherwise
+	 */
+	private static boolean isManifestOnlyJar(URL url) {
 		return isShortenedIntelliJJar(url);
 	}
 
 	/**
-     * Checks if the given URL is a shortened IntelliJ JAR.
-     * 
-     * @param url the URL to check
-     * @return true if the URL is a shortened IntelliJ JAR, false otherwise
-     */
-    private static boolean isShortenedIntelliJJar(URL url) {
+	 * Checks if the given URL is a shortened IntelliJ JAR.
+	 * @param url the URL to check
+	 * @return true if the URL is a shortened IntelliJ JAR, false otherwise
+	 */
+	private static boolean isShortenedIntelliJJar(URL url) {
 		String urlPath = url.getPath();
 		boolean isCandidate = INTELLIJ_CLASSPATH_JAR_PATTERN.matcher(urlPath).matches();
 		if (isCandidate) {
@@ -269,13 +261,12 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Extracts URLs from the manifest classpath of the specified booter JAR.
-     * 
-     * @param booterJar the URL of the booter JAR
-     * @return a list of URLs extracted from the manifest classpath
-     * @throws RuntimeException if an exception occurs during the extraction process
-     */
-    private static List<URL> extractUrlsFromManifestClassPath(URL booterJar) {
+	 * Extracts URLs from the manifest classpath of the specified booter JAR.
+	 * @param booterJar the URL of the booter JAR
+	 * @return a list of URLs extracted from the manifest classpath
+	 * @throws RuntimeException if an exception occurs during the extraction process
+	 */
+	private static List<URL> extractUrlsFromManifestClassPath(URL booterJar) {
 		List<URL> urls = new ArrayList<>();
 		try {
 			for (String entry : getClassPath(booterJar)) {
@@ -289,38 +280,37 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Retrieves the class path from the specified booter JAR file.
-     * 
-     * @param booterJar the URL of the booter JAR file
-     * @return an array of strings representing the class path entries
-     * @throws Exception if an error occurs while retrieving the class path
-     */
-    private static String[] getClassPath(URL booterJar) throws Exception {
+	 * Retrieves the class path from the specified booter JAR file.
+	 * @param booterJar the URL of the booter JAR file
+	 * @return an array of strings representing the class path entries
+	 * @throws Exception if an error occurs while retrieving the class path
+	 */
+	private static String[] getClassPath(URL booterJar) throws Exception {
 		Attributes attributes = getManifestMainAttributesFromUrl(booterJar);
 		return StringUtils.delimitedListToStringArray(attributes.getValue(Attributes.Name.CLASS_PATH), " ");
 	}
 
 	/**
-     * Retrieves the main attributes from the manifest file of a JAR file located at the specified URL.
-     * 
-     * @param url the URL of the JAR file
-     * @return the main attributes from the manifest file
-     * @throws Exception if an error occurs while retrieving the main attributes
-     */
-    private static Attributes getManifestMainAttributesFromUrl(URL url) throws Exception {
+	 * Retrieves the main attributes from the manifest file of a JAR file located at the
+	 * specified URL.
+	 * @param url the URL of the JAR file
+	 * @return the main attributes from the manifest file
+	 * @throws Exception if an error occurs while retrieving the main attributes
+	 */
+	private static Attributes getManifestMainAttributesFromUrl(URL url) throws Exception {
 		try (JarFile jarFile = new JarFile(new File(url.toURI()))) {
 			return jarFile.getManifest().getMainAttributes();
 		}
 	}
 
 	/**
-     * Processes the given array of URLs and filters them based on the provided list of merged annotations.
-     * 
-     * @param urls        the array of URLs to be processed
-     * @param annotations the list of merged annotations used for filtering
-     * @return an array of processed URLs after filtering
-     */
-    private static URL[] processUrls(URL[] urls, List<MergedAnnotations> annotations) {
+	 * Processes the given array of URLs and filters them based on the provided list of
+	 * merged annotations.
+	 * @param urls the array of URLs to be processed
+	 * @param annotations the list of merged annotations used for filtering
+	 * @return an array of processed URLs after filtering
+	 */
+	private static URL[] processUrls(URL[] urls, List<MergedAnnotations> annotations) {
 		ClassPathEntryFilter filter = new ClassPathEntryFilter(annotations);
 		List<URL> additionalUrls = getAdditionalUrls(annotations);
 		List<URL> processedUrls = new ArrayList<>(additionalUrls);
@@ -333,12 +323,11 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Retrieves additional URLs from a list of merged annotations.
-     * 
-     * @param annotations the list of merged annotations
-     * @return a list of additional URLs
-     */
-    private static List<URL> getAdditionalUrls(List<MergedAnnotations> annotations) {
+	 * Retrieves additional URLs from a list of merged annotations.
+	 * @param annotations the list of merged annotations
+	 * @return a list of additional URLs
+	 */
+	private static List<URL> getAdditionalUrls(List<MergedAnnotations> annotations) {
 		Set<URL> urls = new LinkedHashSet<>();
 		for (MergedAnnotations candidate : annotations) {
 			MergedAnnotation<ClassPathOverrides> annotation = candidate.get(ClassPathOverrides.class);
@@ -350,13 +339,14 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Resolves the coordinates of the artifacts and returns a list of URLs.
-     * 
-     * @param coordinates an array of coordinates representing the artifacts to be resolved
-     * @return a list of URLs representing the resolved artifacts
-     * @throws IllegalStateException if resolution fails after the maximum number of attempts
-     */
-    private static List<URL> resolveCoordinates(String[] coordinates) {
+	 * Resolves the coordinates of the artifacts and returns a list of URLs.
+	 * @param coordinates an array of coordinates representing the artifacts to be
+	 * resolved
+	 * @return a list of URLs representing the resolved artifacts
+	 * @throws IllegalStateException if resolution fails after the maximum number of
+	 * attempts
+	 */
+	private static List<URL> resolveCoordinates(String[] coordinates) {
 		Exception latestFailure = null;
 		RepositorySystem repositorySystem = createRepositorySystem();
 		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
@@ -387,12 +377,10 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Creates a repository system.
-     * 
-     * @return The created repository system.
-     * @deprecated This method is deprecated and should not be used.
-     */
-    @SuppressWarnings("deprecation")
+	 * Creates a repository system.
+	 * @return The created repository system.
+	 */
+	@SuppressWarnings("deprecation")
 	private static RepositorySystem createRepositorySystem() {
 		org.eclipse.aether.impl.DefaultServiceLocator serviceLocator = MavenRepositorySystemUtils.newServiceLocator();
 		serviceLocator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
@@ -402,12 +390,11 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Creates a list of dependencies based on the given array of coordinates.
-     * 
-     * @param allCoordinates the array of coordinates representing the dependencies
-     * @return the list of dependencies created
-     */
-    private static List<Dependency> createDependencies(String[] allCoordinates) {
+	 * Creates a list of dependencies based on the given array of coordinates.
+	 * @param allCoordinates the array of coordinates representing the dependencies
+	 * @return the list of dependencies created
+	 */
+	private static List<Dependency> createDependencies(String[] allCoordinates) {
 		List<Dependency> dependencies = new ArrayList<>();
 		for (String coordinate : allCoordinates) {
 			dependencies.add(new Dependency(new DefaultArtifact(coordinate), null));
@@ -416,12 +403,12 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	/**
-     * Returns a set of excluded packages based on the provided list of merged annotations.
-     * 
-     * @param annotations the list of merged annotations to process
-     * @return a set of excluded packages
-     */
-    private static Set<String> excludedPackages(List<MergedAnnotations> annotations) {
+	 * Returns a set of excluded packages based on the provided list of merged
+	 * annotations.
+	 * @param annotations the list of merged annotations to process
+	 * @return a set of excluded packages
+	 */
+	private static Set<String> excludedPackages(List<MergedAnnotations> annotations) {
 		Set<String> excludedPackages = new HashSet<>();
 		for (MergedAnnotations candidate : annotations) {
 			MergedAnnotation<ClassPathExclusions> annotation = candidate.get(ClassPathExclusions.class);
@@ -442,11 +429,12 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		private final AntPathMatcher matcher = new AntPathMatcher();
 
 		/**
-         * Constructs a new ClassPathEntryFilter with the given list of merged annotations.
-         * 
-         * @param annotations the list of merged annotations to be used for filtering class path entries
-         */
-        private ClassPathEntryFilter(List<MergedAnnotations> annotations) {
+		 * Constructs a new ClassPathEntryFilter with the given list of merged
+		 * annotations.
+		 * @param annotations the list of merged annotations to be used for filtering
+		 * class path entries
+		 */
+		private ClassPathEntryFilter(List<MergedAnnotations> annotations) {
 			Set<String> exclusions = new LinkedHashSet<>();
 			for (MergedAnnotations candidate : annotations) {
 				MergedAnnotation<ClassPathExclusions> annotation = candidate.get(ClassPathExclusions.class);
@@ -458,12 +446,11 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		}
 
 		/**
-         * Checks if the given URL is excluded based on the specified exclusions.
-         * 
-         * @param url the URL to check
-         * @return true if the URL is excluded, false otherwise
-         */
-        private boolean isExcluded(URL url) {
+		 * Checks if the given URL is excluded based on the specified exclusions.
+		 * @param url the URL to check
+		 * @return true if the URL is excluded, false otherwise
+		 */
+		private boolean isExcluded(URL url) {
 			if ("file".equals(url.getProtocol())) {
 				try {
 					URI uri = url.toURI();

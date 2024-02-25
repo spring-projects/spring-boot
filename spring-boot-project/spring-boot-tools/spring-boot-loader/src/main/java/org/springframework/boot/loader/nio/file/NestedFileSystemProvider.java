@@ -53,25 +53,24 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	private Map<Path, NestedFileSystem> fileSystems = new HashMap<>();
 
 	/**
-     * Returns the scheme of the file system provider.
-     *
-     * @return the scheme of the file system provider
-     */
-    @Override
+	 * Returns the scheme of the file system provider.
+	 * @return the scheme of the file system provider
+	 */
+	@Override
 	public String getScheme() {
 		return "nested";
 	}
 
 	/**
-     * Creates a new file system for the specified URI and environment.
-     * 
-     * @param uri The URI of the file system.
-     * @param env The environment variables.
-     * @return The newly created file system.
-     * @throws IOException If an I/O error occurs.
-     * @throws FileSystemAlreadyExistsException If a file system already exists for the specified URI.
-     */
-    @Override
+	 * Creates a new file system for the specified URI and environment.
+	 * @param uri The URI of the file system.
+	 * @param env The environment variables.
+	 * @return The newly created file system.
+	 * @throws IOException If an I/O error occurs.
+	 * @throws FileSystemAlreadyExistsException If a file system already exists for the
+	 * specified URI.
+	 */
+	@Override
 	public FileSystem newFileSystem(URI uri, Map<String, ?> env) throws IOException {
 		NestedLocation location = NestedLocation.fromUri(uri);
 		Path jarPath = location.path();
@@ -86,13 +85,12 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	}
 
 	/**
-     * Returns the FileSystem object for the specified URI.
-     * 
-     * @param uri The URI of the file system.
-     * @return The FileSystem object associated with the specified URI.
-     * @throws FileSystemNotFoundException If the file system is not found.
-     */
-    @Override
+	 * Returns the FileSystem object for the specified URI.
+	 * @param uri The URI of the file system.
+	 * @return The FileSystem object associated with the specified URI.
+	 * @throws FileSystemNotFoundException If the file system is not found.
+	 */
+	@Override
 	public FileSystem getFileSystem(URI uri) {
 		NestedLocation location = NestedLocation.fromUri(uri);
 		synchronized (this.fileSystems) {
@@ -105,12 +103,11 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	}
 
 	/**
-     * Returns the path for the specified URI.
-     * 
-     * @param uri the URI for which to retrieve the path
-     * @return the path corresponding to the specified URI
-     */
-    @Override
+	 * Returns the path for the specified URI.
+	 * @param uri the URI for which to retrieve the path
+	 * @return the path corresponding to the specified URI
+	 */
+	@Override
 	public Path getPath(URI uri) {
 		NestedLocation location = NestedLocation.fromUri(uri);
 		synchronized (this.fileSystems) {
@@ -122,26 +119,24 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	}
 
 	/**
-     * Removes the specified NestedFileSystem from the list of file systems.
-     * 
-     * @param fileSystem the NestedFileSystem to be removed
-     */
-    void removeFileSystem(NestedFileSystem fileSystem) {
+	 * Removes the specified NestedFileSystem from the list of file systems.
+	 * @param fileSystem the NestedFileSystem to be removed
+	 */
+	void removeFileSystem(NestedFileSystem fileSystem) {
 		synchronized (this.fileSystems) {
 			this.fileSystems.remove(fileSystem.getJarPath());
 		}
 	}
 
 	/**
-     * Creates a new byte channel for reading and writing to a file.
-     * 
-     * @param path the path to the file
-     * @param options the set of options specifying how the file is opened
-     * @param attrs the file attributes to set when creating the file
-     * @return a new SeekableByteChannel for the file
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Creates a new byte channel for reading and writing to a file.
+	 * @param path the path to the file
+	 * @param options the set of options specifying how the file is opened
+	 * @param attrs the file attributes to set when creating the file
+	 * @return a new SeekableByteChannel for the file
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs)
 			throws IOException {
 		NestedPath nestedPath = NestedPath.cast(path);
@@ -149,106 +144,103 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	}
 
 	/**
-     * Returns a new directory stream for the given directory, using the specified filter.
-     * 
-     * @param dir the directory to create the directory stream for
-     * @param filter the filter to apply to the directory stream
-     * @return a new directory stream for the given directory
-     * @throws IOException if an I/O error occurs
-     * @throws NotDirectoryException if the specified path is not a directory
-     */
-    @Override
+	 * Returns a new directory stream for the given directory, using the specified filter.
+	 * @param dir the directory to create the directory stream for
+	 * @param filter the filter to apply to the directory stream
+	 * @return a new directory stream for the given directory
+	 * @throws IOException if an I/O error occurs
+	 * @throws NotDirectoryException if the specified path is not a directory
+	 */
+	@Override
 	public DirectoryStream<Path> newDirectoryStream(Path dir, Filter<? super Path> filter) throws IOException {
 		throw new NotDirectoryException(NestedPath.cast(dir).toString());
 	}
 
 	/**
-     * Creates a new directory at the specified path with the given attributes.
-     *
-     * @param dir the path of the directory to be created
-     * @param attrs the attributes to set for the new directory
-     * @throws IOException if an I/O error occurs while creating the directory
-     * @throws ReadOnlyFileSystemException if the file system is read-only and cannot create the directory
-     */
-    @Override
+	 * Creates a new directory at the specified path with the given attributes.
+	 * @param dir the path of the directory to be created
+	 * @param attrs the attributes to set for the new directory
+	 * @throws IOException if an I/O error occurs while creating the directory
+	 * @throws ReadOnlyFileSystemException if the file system is read-only and cannot
+	 * create the directory
+	 */
+	@Override
 	public void createDirectory(Path dir, FileAttribute<?>... attrs) throws IOException {
 		throw new ReadOnlyFileSystemException();
 	}
 
 	/**
-     * Deletes the specified file or directory.
-     * 
-     * @param path the path of the file or directory to be deleted
-     * @throws IOException if an I/O error occurs
-     * @throws ReadOnlyFileSystemException if the file system is read-only
-     */
-    @Override
+	 * Deletes the specified file or directory.
+	 * @param path the path of the file or directory to be deleted
+	 * @throws IOException if an I/O error occurs
+	 * @throws ReadOnlyFileSystemException if the file system is read-only
+	 */
+	@Override
 	public void delete(Path path) throws IOException {
 		throw new ReadOnlyFileSystemException();
 	}
 
 	/**
-     * Copies a file from the source path to the target path.
-     *
-     * @param source the path of the file to be copied
-     * @param target the path where the file should be copied to
-     * @param options options specifying how the copy should be performed
-     * @throws IOException if an I/O error occurs during the copy operation
-     * @throws ReadOnlyFileSystemException if the file system is read-only and the copy operation is not allowed
-     */
-    @Override
+	 * Copies a file from the source path to the target path.
+	 * @param source the path of the file to be copied
+	 * @param target the path where the file should be copied to
+	 * @param options options specifying how the copy should be performed
+	 * @throws IOException if an I/O error occurs during the copy operation
+	 * @throws ReadOnlyFileSystemException if the file system is read-only and the copy
+	 * operation is not allowed
+	 */
+	@Override
 	public void copy(Path source, Path target, CopyOption... options) throws IOException {
 		throw new ReadOnlyFileSystemException();
 	}
 
 	/**
-     * Moves a file or directory from the source path to the target path.
-     *
-     * @param source the path of the file or directory to be moved
-     * @param target the target path where the file or directory will be moved to
-     * @param options options specifying how the move operation should be performed
-     * @throws IOException if an I/O error occurs during the move operation
-     * @throws ReadOnlyFileSystemException if the file system is read-only and the move operation is not supported
-     */
-    @Override
+	 * Moves a file or directory from the source path to the target path.
+	 * @param source the path of the file or directory to be moved
+	 * @param target the target path where the file or directory will be moved to
+	 * @param options options specifying how the move operation should be performed
+	 * @throws IOException if an I/O error occurs during the move operation
+	 * @throws ReadOnlyFileSystemException if the file system is read-only and the move
+	 * operation is not supported
+	 */
+	@Override
 	public void move(Path source, Path target, CopyOption... options) throws IOException {
 		throw new ReadOnlyFileSystemException();
 	}
 
 	/**
-     * Compares two paths and determines if they refer to the same file.
-     * 
-     * @param path the first path to compare
-     * @param path2 the second path to compare
-     * @return true if the two paths refer to the same file, false otherwise
-     * @throws IOException if an I/O error occurs while comparing the paths
-     */
-    @Override
+	 * Compares two paths and determines if they refer to the same file.
+	 * @param path the first path to compare
+	 * @param path2 the second path to compare
+	 * @return true if the two paths refer to the same file, false otherwise
+	 * @throws IOException if an I/O error occurs while comparing the paths
+	 */
+	@Override
 	public boolean isSameFile(Path path, Path path2) throws IOException {
 		return path.equals(path2);
 	}
 
 	/**
-     * Returns whether or not the specified file is hidden.
-     *
-     * @param path the path to the file
-     * @return true if the file is hidden, false otherwise
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Returns whether or not the specified file is hidden.
+	 * @param path the path to the file
+	 * @return true if the file is hidden, false otherwise
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public boolean isHidden(Path path) throws IOException {
 		return false;
 	}
 
 	/**
-     * Returns the {@code FileStore} object representing the file store where the specified path is located.
-     * 
-     * @param path the path for which the file store is to be returned
-     * @return the {@code FileStore} object representing the file store where the specified path is located
-     * @throws IOException if an I/O error occurs
-     * @throws IllegalArgumentException if the specified path does not exist
-     */
-    @Override
+	 * Returns the {@code FileStore} object representing the file store where the
+	 * specified path is located.
+	 * @param path the path for which the file store is to be returned
+	 * @return the {@code FileStore} object representing the file store where the
+	 * specified path is located
+	 * @throws IOException if an I/O error occurs
+	 * @throws IllegalArgumentException if the specified path does not exist
+	 */
+	@Override
 	public FileStore getFileStore(Path path) throws IOException {
 		NestedPath nestedPath = NestedPath.cast(path);
 		nestedPath.assertExists();
@@ -256,45 +248,45 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	}
 
 	/**
-     * Checks the access permissions for the specified path.
-     * 
-     * @param path the path to check access permissions for
-     * @param modes the access modes to check
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Checks the access permissions for the specified path.
+	 * @param path the path to check access permissions for
+	 * @param modes the access modes to check
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public void checkAccess(Path path, AccessMode... modes) throws IOException {
 		Path jarPath = getJarPath(path);
 		jarPath.getFileSystem().provider().checkAccess(jarPath, modes);
 	}
 
 	/**
-     * Returns the file attribute view of the specified type for the given path.
-     * 
-     * @param path     the path to the file
-     * @param type     the class representing the file attribute view
-     * @param options  options indicating how symbolic links are handled
-     * @return         the file attribute view of the specified type for the given path
-     * @throws         UnsupportedOperationException if the file system provider does not support the file attribute view
-     * @throws         IllegalArgumentException if the given path is invalid or the type parameter is null
-     * @throws         SecurityException if a security manager is present and it denies access to the file
-     */
-    @Override
+	 * Returns the file attribute view of the specified type for the given path.
+	 * @param path the path to the file
+	 * @param type the class representing the file attribute view
+	 * @param options options indicating how symbolic links are handled
+	 * @return the file attribute view of the specified type for the given path
+	 * @throws UnsupportedOperationException if the file system provider does not support
+	 * the file attribute view
+	 * @throws IllegalArgumentException if the given path is invalid or the type parameter
+	 * is null
+	 * @throws SecurityException if a security manager is present and it denies access to
+	 * the file
+	 */
+	@Override
 	public <V extends FileAttributeView> V getFileAttributeView(Path path, Class<V> type, LinkOption... options) {
 		Path jarPath = getJarPath(path);
 		return jarPath.getFileSystem().provider().getFileAttributeView(jarPath, type, options);
 	}
 
 	/**
-     * Reads the attributes of a file or directory specified by the given path.
-     * 
-     * @param path the path to the file or directory
-     * @param type the class representing the type of attributes to be read
-     * @param options options indicating how symbolic links are handled
-     * @return the attributes of the file or directory
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Reads the attributes of a file or directory specified by the given path.
+	 * @param path the path to the file or directory
+	 * @param type the class representing the type of attributes to be read
+	 * @param options options indicating how symbolic links are handled
+	 * @return the attributes of the file or directory
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public <A extends BasicFileAttributes> A readAttributes(Path path, Class<A> type, LinkOption... options)
 			throws IOException {
 		Path jarPath = getJarPath(path);
@@ -302,41 +294,39 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	}
 
 	/**
-     * Reads the attributes of a file or directory specified by the given path.
-     * 
-     * @param path       the path to the file or directory
-     * @param attributes the attributes to read
-     * @param options    options indicating how symbolic links are handled
-     * @return a map containing the attributes of the file or directory
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Reads the attributes of a file or directory specified by the given path.
+	 * @param path the path to the file or directory
+	 * @param attributes the attributes to read
+	 * @param options options indicating how symbolic links are handled
+	 * @return a map containing the attributes of the file or directory
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public Map<String, Object> readAttributes(Path path, String attributes, LinkOption... options) throws IOException {
 		Path jarPath = getJarPath(path);
 		return jarPath.getFileSystem().provider().readAttributes(jarPath, attributes, options);
 	}
 
 	/**
-     * Returns the path of the JAR file associated with the given path.
-     *
-     * @param path the path for which to retrieve the JAR file path
-     * @return the path of the JAR file associated with the given path
-     */
-    protected Path getJarPath(Path path) {
+	 * Returns the path of the JAR file associated with the given path.
+	 * @param path the path for which to retrieve the JAR file path
+	 * @return the path of the JAR file associated with the given path
+	 */
+	protected Path getJarPath(Path path) {
 		return NestedPath.cast(path).getJarPath();
 	}
 
 	/**
-     * Sets the value of the specified attribute for the file or directory identified by the given path.
-     * 
-     * @param path the path to the file or directory
-     * @param attribute the attribute to set
-     * @param value the value to set for the attribute
-     * @param options options indicating how the file or directory should be handled
-     * @throws IOException if an I/O error occurs
-     * @throws ReadOnlyFileSystemException if the file system is read-only
-     */
-    @Override
+	 * Sets the value of the specified attribute for the file or directory identified by
+	 * the given path.
+	 * @param path the path to the file or directory
+	 * @param attribute the attribute to set
+	 * @param value the value to set for the attribute
+	 * @param options options indicating how the file or directory should be handled
+	 * @throws IOException if an I/O error occurs
+	 * @throws ReadOnlyFileSystemException if the file system is read-only
+	 */
+	@Override
 	public void setAttribute(Path path, String attribute, Object value, LinkOption... options) throws IOException {
 		throw new ReadOnlyFileSystemException();
 	}

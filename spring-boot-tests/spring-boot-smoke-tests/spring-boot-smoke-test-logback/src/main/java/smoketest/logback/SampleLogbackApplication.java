@@ -32,22 +32,22 @@ public class SampleLogbackApplication {
 	private static final Logger logger = LoggerFactory.getLogger(SampleLogbackApplication.class);
 
 	/**
-     * This method is annotated with @PostConstruct and is used to log debug and trace messages.
-     * It logs a sample debug message and a sample trace message using the logger.
-     */
-    @PostConstruct
+	 * This method is annotated with @PostConstruct and is used to log debug and trace
+	 * messages. It logs a sample debug message and a sample trace message using the
+	 * logger.
+	 */
+	@PostConstruct
 	public void logSomething() {
 		logger.debug("Sample Debug Message");
 		logger.trace("Sample Trace Message");
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring application and closes it after execution.
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring
+	 * application and closes it after execution.
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleLogbackApplication.class, args).close();
 	}
 

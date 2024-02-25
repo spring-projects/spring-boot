@@ -111,31 +111,29 @@ final class PemPrivateKeyParser {
 	}
 
 	/**
-     * Private constructor for the PemPrivateKeyParser class.
-     */
-    private PemPrivateKeyParser() {
+	 * Private constructor for the PemPrivateKeyParser class.
+	 */
+	private PemPrivateKeyParser() {
 	}
 
 	/**
-     * Creates a PKCS8EncodedKeySpec for PKCS1 RSA private key.
-     * 
-     * @param bytes the byte array representing the private key
-     * @param password the password for the private key (can be null)
-     * @return the PKCS8EncodedKeySpec for the private key
-     */
-    private static PKCS8EncodedKeySpec createKeySpecForPkcs1Rsa(byte[] bytes, String password) {
+	 * Creates a PKCS8EncodedKeySpec for PKCS1 RSA private key.
+	 * @param bytes the byte array representing the private key
+	 * @param password the password for the private key (can be null)
+	 * @return the PKCS8EncodedKeySpec for the private key
+	 */
+	private static PKCS8EncodedKeySpec createKeySpecForPkcs1Rsa(byte[] bytes, String password) {
 		return createKeySpecForAlgorithm(bytes, RSA_ALGORITHM, null);
 	}
 
 	/**
-     * Creates a PKCS8EncodedKeySpec for a SEC1 EC private key.
-     * 
-     * @param bytes the byte array representing the private key
-     * @param password the password for the private key
-     * @return the PKCS8EncodedKeySpec for the private key
-     * @throws IllegalStateException if the key spec is not in the expected format
-     */
-    private static PKCS8EncodedKeySpec createKeySpecForSec1Ec(byte[] bytes, String password) {
+	 * Creates a PKCS8EncodedKeySpec for a SEC1 EC private key.
+	 * @param bytes the byte array representing the private key
+	 * @param password the password for the private key
+	 * @return the PKCS8EncodedKeySpec for the private key
+	 * @throws IllegalStateException if the key spec is not in the expected format
+	 */
+	private static PKCS8EncodedKeySpec createKeySpecForSec1Ec(byte[] bytes, String password) {
 		DerElement ecPrivateKey = DerElement.of(bytes);
 		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
 				"Key spec should be an ASN.1 encoded sequence");
@@ -152,14 +150,14 @@ final class PemPrivateKeyParser {
 	}
 
 	/**
-     * Retrieves the EC parameters from the given DER element.
-     * If the parameters are null, returns the default 384-bit elliptic curve parameters.
-     * 
-     * @param parameters the DER element containing the EC parameters
-     * @return the encoded object identifier representing the EC parameters
-     * @throws IllegalStateException if the key spec does not contain encoded parameters or if the parameters are not a primitive object identifier
-     */
-    private static EncodedOid getEcParameters(DerElement parameters) {
+	 * Retrieves the EC parameters from the given DER element. If the parameters are null,
+	 * returns the default 384-bit elliptic curve parameters.
+	 * @param parameters the DER element containing the EC parameters
+	 * @return the encoded object identifier representing the EC parameters
+	 * @throws IllegalStateException if the key spec does not contain encoded parameters
+	 * or if the parameters are not a primitive object identifier
+	 */
+	private static EncodedOid getEcParameters(DerElement parameters) {
 		if (parameters == null) {
 			return ELLIPTIC_CURVE_384_BIT;
 		}
@@ -171,15 +169,14 @@ final class PemPrivateKeyParser {
 	}
 
 	/**
-     * Creates a PKCS8EncodedKeySpec for the given byte array, algorithm, and parameters.
-     * 
-     * @param bytes the byte array representing the private key
-     * @param algorithm the encoded OID of the algorithm
-     * @param parameters the encoded OID of the parameters
-     * @return a PKCS8EncodedKeySpec for the given byte array, algorithm, and parameters
-     * @throws IllegalStateException if an IOException occurs during the encoding process
-     */
-    private static PKCS8EncodedKeySpec createKeySpecForAlgorithm(byte[] bytes, EncodedOid algorithm,
+	 * Creates a PKCS8EncodedKeySpec for the given byte array, algorithm, and parameters.
+	 * @param bytes the byte array representing the private key
+	 * @param algorithm the encoded OID of the algorithm
+	 * @param parameters the encoded OID of the parameters
+	 * @return a PKCS8EncodedKeySpec for the given byte array, algorithm, and parameters
+	 * @throws IllegalStateException if an IOException occurs during the encoding process
+	 */
+	private static PKCS8EncodedKeySpec createKeySpecForAlgorithm(byte[] bytes, EncodedOid algorithm,
 			EncodedOid parameters) {
 		try {
 			DerEncoder encoder = new DerEncoder();
@@ -197,16 +194,18 @@ final class PemPrivateKeyParser {
 	}
 
 	/**
-     * Creates a PKCS8EncodedKeySpec for the given byte array and password.
-     * 
-     * @param bytes    the byte array representing the PKCS8 encoded private key
-     * @param password the password to decrypt the private key (optional)
-     * @return a PKCS8EncodedKeySpec for the given byte array and password
-     * @throws IllegalStateException if the key spec is not in the expected ASN.1 encoded sequence format
-     * @throws IllegalArgumentException if the key spec does not start with a version or does not contain a private key
-     * @throws IllegalArgumentException if the key spec does not contain a valid algorithm identifier
-     */
-    private static PKCS8EncodedKeySpec createKeySpecForPkcs8(byte[] bytes, String password) {
+	 * Creates a PKCS8EncodedKeySpec for the given byte array and password.
+	 * @param bytes the byte array representing the PKCS8 encoded private key
+	 * @param password the password to decrypt the private key (optional)
+	 * @return a PKCS8EncodedKeySpec for the given byte array and password
+	 * @throws IllegalStateException if the key spec is not in the expected ASN.1 encoded
+	 * sequence format
+	 * @throws IllegalArgumentException if the key spec does not start with a version or
+	 * does not contain a private key
+	 * @throws IllegalArgumentException if the key spec does not contain a valid algorithm
+	 * identifier
+	 */
+	private static PKCS8EncodedKeySpec createKeySpecForPkcs8(byte[] bytes, String password) {
 		DerElement ecPrivateKey = DerElement.of(bytes);
 		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
 				"Key spec should be an ASN.1 encoded sequence");
@@ -224,13 +223,12 @@ final class PemPrivateKeyParser {
 	}
 
 	/**
-     * Creates a PKCS8EncodedKeySpec for PKCS8 encrypted private key.
-     * 
-     * @param bytes the byte array containing the encrypted private key
-     * @param password the password used for decryption
-     * @return the PKCS8EncodedKeySpec for the decrypted private key
-     */
-    private static PKCS8EncodedKeySpec createKeySpecForPkcs8Encrypted(byte[] bytes, String password) {
+	 * Creates a PKCS8EncodedKeySpec for PKCS8 encrypted private key.
+	 * @param bytes the byte array containing the encrypted private key
+	 * @param password the password used for decryption
+	 * @return the PKCS8EncodedKeySpec for the decrypted private key
+	 */
+	private static PKCS8EncodedKeySpec createKeySpecForPkcs8Encrypted(byte[] bytes, String password) {
 		return Pkcs8PrivateKeyDecryptor.decrypt(bytes, password);
 	}
 
@@ -280,14 +278,16 @@ final class PemPrivateKeyParser {
 		private final String[] algorithms;
 
 		/**
-         * Constructs a new PemParser with the specified header, footer, keySpecFactory, and algorithms.
-         * 
-         * @param header the header string used to identify the start of a PEM encoded block
-         * @param footer the footer string used to identify the end of a PEM encoded block
-         * @param keySpecFactory the function used to create a PKCS8EncodedKeySpec from the decoded PEM block and algorithm
-         * @param algorithms the list of algorithms supported by the PemParser
-         */
-        PemParser(String header, String footer, BiFunction<byte[], String, PKCS8EncodedKeySpec> keySpecFactory,
+		 * Constructs a new PemParser with the specified header, footer, keySpecFactory,
+		 * and algorithms.
+		 * @param header the header string used to identify the start of a PEM encoded
+		 * block
+		 * @param footer the footer string used to identify the end of a PEM encoded block
+		 * @param keySpecFactory the function used to create a PKCS8EncodedKeySpec from
+		 * the decoded PEM block and algorithm
+		 * @param algorithms the list of algorithms supported by the PemParser
+		 */
+		PemParser(String header, String footer, BiFunction<byte[], String, PKCS8EncodedKeySpec> keySpecFactory,
 				String... algorithms) {
 			this.pattern = Pattern.compile(header + BASE64_TEXT + footer, Pattern.CASE_INSENSITIVE);
 			this.keySpecFactory = keySpecFactory;
@@ -295,36 +295,33 @@ final class PemPrivateKeyParser {
 		}
 
 		/**
-         * Parses a private key from a given text and password.
-         * 
-         * @param text     the text containing the private key
-         * @param password the password to decrypt the private key
-         * @return the parsed private key, or null if parsing fails
-         */
-        PrivateKey parse(String text, String password) {
+		 * Parses a private key from a given text and password.
+		 * @param text the text containing the private key
+		 * @param password the password to decrypt the private key
+		 * @return the parsed private key, or null if parsing fails
+		 */
+		PrivateKey parse(String text, String password) {
 			Matcher matcher = this.pattern.matcher(text);
 			return (!matcher.find()) ? null : parse(decodeBase64(matcher.group(BASE64_TEXT_GROUP)), password);
 		}
 
 		/**
-         * Decodes a Base64 encoded string into a byte array.
-         * 
-         * @param content the Base64 encoded string to decode
-         * @return the decoded byte array
-         */
-        private static byte[] decodeBase64(String content) {
+		 * Decodes a Base64 encoded string into a byte array.
+		 * @param content the Base64 encoded string to decode
+		 * @return the decoded byte array
+		 */
+		private static byte[] decodeBase64(String content) {
 			byte[] contentBytes = content.replaceAll("\r", "").replaceAll("\n", "").getBytes();
 			return Base64.getDecoder().decode(contentBytes);
 		}
 
 		/**
-         * Parses a byte array into a private key using the provided password.
-         *
-         * @param bytes    the byte array containing the private key data
-         * @param password the password to decrypt the private key (if encrypted)
-         * @return the parsed private key, or null if parsing fails
-         */
-        private PrivateKey parse(byte[] bytes, String password) {
+		 * Parses a byte array into a private key using the provided password.
+		 * @param bytes the byte array containing the private key data
+		 * @param password the password to decrypt the private key (if encrypted)
+		 * @return the parsed private key, or null if parsing fails
+		 */
+		private PrivateKey parse(byte[] bytes, String password) {
 			PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes, password);
 			if (keySpec.getAlgorithm() != null) {
 				try {
@@ -357,54 +354,49 @@ final class PemPrivateKeyParser {
 		private final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
 		/**
-         * Encodes an object identifier (OID) using the DER encoding format.
-         * 
-         * @param encodedOid the encoded OID to be processed
-         * @throws IOException if an I/O error occurs while encoding the OID
-         */
-        void objectIdentifier(EncodedOid encodedOid) throws IOException {
+		 * Encodes an object identifier (OID) using the DER encoding format.
+		 * @param encodedOid the encoded OID to be processed
+		 * @throws IOException if an I/O error occurs while encoding the OID
+		 */
+		void objectIdentifier(EncodedOid encodedOid) throws IOException {
 			int code = (encodedOid != null) ? 0x06 : 0x05;
 			codeLengthBytes(code, (encodedOid != null) ? encodedOid.toByteArray() : null);
 		}
 
 		/**
-         * Encodes an integer value into a DER-encoded byte array.
-         * 
-         * @param encodedInteger the integer value to be encoded
-         * @throws IOException if an I/O error occurs while encoding the integer
-         */
-        void integer(int... encodedInteger) throws IOException {
+		 * Encodes an integer value into a DER-encoded byte array.
+		 * @param encodedInteger the integer value to be encoded
+		 * @throws IOException if an I/O error occurs while encoding the integer
+		 */
+		void integer(int... encodedInteger) throws IOException {
 			codeLengthBytes(0x02, bytes(encodedInteger));
 		}
 
 		/**
-         * Encodes the given byte array as an octet string.
-         * 
-         * @param bytes the byte array to be encoded
-         * @throws IOException if an I/O error occurs during encoding
-         */
-        void octetString(byte[] bytes) throws IOException {
+		 * Encodes the given byte array as an octet string.
+		 * @param bytes the byte array to be encoded
+		 * @throws IOException if an I/O error occurs during encoding
+		 */
+		void octetString(byte[] bytes) throws IOException {
 			codeLengthBytes(0x04, bytes);
 		}
 
 		/**
-         * Encodes a sequence of bytes using DER encoding.
-         * 
-         * @param bytes the array of bytes to be encoded
-         * @throws IOException if an I/O error occurs during encoding
-         */
-        void sequence(byte[] bytes) throws IOException {
+		 * Encodes a sequence of bytes using DER encoding.
+		 * @param bytes the array of bytes to be encoded
+		 * @throws IOException if an I/O error occurs during encoding
+		 */
+		void sequence(byte[] bytes) throws IOException {
 			codeLengthBytes(0x30, bytes);
 		}
 
 		/**
-         * Writes the given code and byte array to the stream.
-         * 
-         * @param code the code to write
-         * @param bytes the byte array to write
-         * @throws IOException if an I/O error occurs
-         */
-        void codeLengthBytes(int code, byte[] bytes) throws IOException {
+		 * Writes the given code and byte array to the stream.
+		 * @param code the code to write
+		 * @param bytes the byte array to write
+		 * @throws IOException if an I/O error occurs
+		 */
+		void codeLengthBytes(int code, byte[] bytes) throws IOException {
 			this.stream.write(code);
 			int length = (bytes != null) ? bytes.length : 0;
 			if (length <= 127) {
@@ -428,12 +420,11 @@ final class PemPrivateKeyParser {
 		}
 
 		/**
-         * Converts an array of integers to an array of bytes.
-         *
-         * @param elements the array of integers to be converted
-         * @return the resulting array of bytes, or null if the input array is null
-         */
-        private static byte[] bytes(int... elements) {
+		 * Converts an array of integers to an array of bytes.
+		 * @param elements the array of integers to be converted
+		 * @return the resulting array of bytes, or null if the input array is null
+		 */
+		private static byte[] bytes(int... elements) {
 			if (elements == null) {
 				return null;
 			}
@@ -445,23 +436,21 @@ final class PemPrivateKeyParser {
 		}
 
 		/**
-         * Converts the byte array to a DER-encoded sequence.
-         * 
-         * @return the DER-encoded sequence as a byte array
-         * @throws IOException if an I/O error occurs during encoding
-         */
-        byte[] toSequence() throws IOException {
+		 * Converts the byte array to a DER-encoded sequence.
+		 * @return the DER-encoded sequence as a byte array
+		 * @throws IOException if an I/O error occurs during encoding
+		 */
+		byte[] toSequence() throws IOException {
 			DerEncoder sequenceEncoder = new DerEncoder();
 			sequenceEncoder.sequence(toByteArray());
 			return sequenceEncoder.toByteArray();
 		}
 
 		/**
-         * Converts the contents of the stream to a byte array.
-         *
-         * @return the byte array representation of the stream
-         */
-        byte[] toByteArray() {
+		 * Converts the contents of the stream to a byte array.
+		 * @return the byte array representation of the stream
+		 */
+		byte[] toByteArray() {
 			return this.stream.toByteArray();
 		}
 
@@ -479,11 +468,10 @@ final class PemPrivateKeyParser {
 		private final ByteBuffer contents;
 
 		/**
-         * Constructs a new DerElement object from the given ByteBuffer.
-         * 
-         * @param bytes the ByteBuffer containing the DER-encoded data
-         */
-        private DerElement(ByteBuffer bytes) {
+		 * Constructs a new DerElement object from the given ByteBuffer.
+		 * @param bytes the ByteBuffer containing the DER-encoded data
+		 */
+		private DerElement(ByteBuffer bytes) {
 			byte b = bytes.get();
 			this.valueType = ((b & 0x20) == 0) ? ValueType.PRIMITIVE : ValueType.ENCODED;
 			this.tagType = decodeTagType(b, bytes);
@@ -495,13 +483,12 @@ final class PemPrivateKeyParser {
 		}
 
 		/**
-         * Decodes the tag type from a byte and a ByteBuffer.
-         * 
-         * @param b     the byte containing the tag type
-         * @param bytes the ByteBuffer containing the remaining bytes
-         * @return the decoded tag type as a long
-         */
-        private long decodeTagType(byte b, ByteBuffer bytes) {
+		 * Decodes the tag type from a byte and a ByteBuffer.
+		 * @param b the byte containing the tag type
+		 * @param bytes the ByteBuffer containing the remaining bytes
+		 * @return the decoded tag type as a long
+		 */
+		private long decodeTagType(byte b, ByteBuffer bytes) {
 			long tagType = (b & 0x1F);
 			if (tagType != 0x1F) {
 				return tagType;
@@ -517,13 +504,13 @@ final class PemPrivateKeyParser {
 		}
 
 		/**
-         * Decodes the length of a DER element from the given ByteBuffer.
-         * 
-         * @param bytes the ByteBuffer containing the DER element
-         * @return the decoded length of the DER element
-         * @throws IllegalStateException if the length encoding is infinite or reserved, or if there is a length overflow
-         */
-        private int decodeLength(ByteBuffer bytes) {
+		 * Decodes the length of a DER element from the given ByteBuffer.
+		 * @param bytes the ByteBuffer containing the DER element
+		 * @return the decoded length of the DER element
+		 * @throws IllegalStateException if the length encoding is infinite or reserved,
+		 * or if there is a length overflow
+		 */
+		private int decodeLength(ByteBuffer bytes) {
 			byte b = bytes.get();
 			if ((b & 0x80) == 0) {
 				return b & 0x7F;
@@ -541,52 +528,52 @@ final class PemPrivateKeyParser {
 		}
 
 		/**
-         * Checks if the given ValueType is equal to the valueType of this DerElement.
-         * 
-         * @param valueType the ValueType to compare with
-         * @return true if the valueType is equal to the valueType of this DerElement, false otherwise
-         */
-        boolean isType(ValueType valueType) {
+		 * Checks if the given ValueType is equal to the valueType of this DerElement.
+		 * @param valueType the ValueType to compare with
+		 * @return true if the valueType is equal to the valueType of this DerElement,
+		 * false otherwise
+		 */
+		boolean isType(ValueType valueType) {
 			return this.valueType == valueType;
 		}
 
 		/**
-         * Checks if the given ValueType and TagType match the current DerElement's valueType and tagType.
-         * 
-         * @param valueType the ValueType to compare with the current DerElement's valueType
-         * @param tagType the TagType to compare with the current DerElement's tagType
-         * @return true if the valueType and tagType match the current DerElement's valueType and tagType, false otherwise
-         */
-        boolean isType(ValueType valueType, TagType tagType) {
+		 * Checks if the given ValueType and TagType match the current DerElement's
+		 * valueType and tagType.
+		 * @param valueType the ValueType to compare with the current DerElement's
+		 * valueType
+		 * @param tagType the TagType to compare with the current DerElement's tagType
+		 * @return true if the valueType and tagType match the current DerElement's
+		 * valueType and tagType, false otherwise
+		 */
+		boolean isType(ValueType valueType, TagType tagType) {
 			return this.valueType == valueType && this.tagType == tagType.getNumber();
 		}
 
 		/**
-         * Returns the contents of the ByteBuffer.
-         *
-         * @return the contents of the ByteBuffer
-         */
-        ByteBuffer getContents() {
+		 * Returns the contents of the ByteBuffer.
+		 * @return the contents of the ByteBuffer
+		 */
+		ByteBuffer getContents() {
 			return this.contents;
 		}
 
 		/**
-         * Creates a new DerElement object from the given byte array.
-         * 
-         * @param bytes the byte array to create the DerElement from
-         * @return the created DerElement object
-         */
-        static DerElement of(byte[] bytes) {
+		 * Creates a new DerElement object from the given byte array.
+		 * @param bytes the byte array to create the DerElement from
+		 * @return the created DerElement object
+		 */
+		static DerElement of(byte[] bytes) {
 			return of(ByteBuffer.wrap(bytes));
 		}
 
 		/**
-         * Creates a new DerElement object from the given ByteBuffer.
-         * 
-         * @param bytes the ByteBuffer containing the DER encoded data
-         * @return a new DerElement object if the ByteBuffer has remaining bytes, null otherwise
-         */
-        static DerElement of(ByteBuffer bytes) {
+		 * Creates a new DerElement object from the given ByteBuffer.
+		 * @param bytes the ByteBuffer containing the DER encoded data
+		 * @return a new DerElement object if the ByteBuffer has remaining bytes, null
+		 * otherwise
+		 */
+		static DerElement of(ByteBuffer bytes) {
 			return (bytes.remaining() > 0) ? new DerElement(bytes) : null;
 		}
 
@@ -603,20 +590,18 @@ final class PemPrivateKeyParser {
 			private final int number;
 
 			/**
-         * Creates a new instance of DerElement with the specified number.
-         * 
-         * @param number the number to be assigned to the DerElement
-         */
-        TagType(int number) {
+			 * Creates a new instance of DerElement with the specified number.
+			 * @param number the number to be assigned to the DerElement
+			 */
+			TagType(int number) {
 				this.number = number;
 			}
 
 			/**
-         * Returns the value of the number property.
-         *
-         * @return the value of the number property
-         */
-        int getNumber() {
+			 * Returns the value of the number property.
+			 * @return the value of the number property
+			 */
+			int getNumber() {
 				return this.number;
 			}
 
@@ -632,15 +617,15 @@ final class PemPrivateKeyParser {
 		public static final String PBES2_ALGORITHM = "PBES2";
 
 		/**
-         * Decrypts an encrypted private key using the provided password.
-         * 
-         * @param bytes the encrypted private key bytes
-         * @param password the password used for decryption
-         * @return the decrypted PKCS8EncodedKeySpec
-         * @throws IllegalArgumentException if there is an error decrypting the private key
-         * @throws NullPointerException if the password is null
-         */
-        static PKCS8EncodedKeySpec decrypt(byte[] bytes, String password) {
+		 * Decrypts an encrypted private key using the provided password.
+		 * @param bytes the encrypted private key bytes
+		 * @param password the password used for decryption
+		 * @return the decrypted PKCS8EncodedKeySpec
+		 * @throws IllegalArgumentException if there is an error decrypting the private
+		 * key
+		 * @throws NullPointerException if the password is null
+		 */
+		static PKCS8EncodedKeySpec decrypt(byte[] bytes, String password) {
 			Assert.notNull(password, "Password is required for an encrypted private key");
 			try {
 				EncryptedPrivateKeyInfo keyInfo = new EncryptedPrivateKeyInfo(bytes);
@@ -658,13 +643,12 @@ final class PemPrivateKeyParser {
 		}
 
 		/**
-         * Returns the encryption algorithm used for decrypting the private key.
-         * 
-         * @param algParameters the algorithm parameters
-         * @param algName the name of the encryption algorithm
-         * @return the encryption algorithm used for decrypting the private key
-         */
-        private static String getEncryptionAlgorithm(AlgorithmParameters algParameters, String algName) {
+		 * Returns the encryption algorithm used for decrypting the private key.
+		 * @param algParameters the algorithm parameters
+		 * @param algName the name of the encryption algorithm
+		 * @return the encryption algorithm used for decrypting the private key
+		 */
+		private static String getEncryptionAlgorithm(AlgorithmParameters algParameters, String algName) {
 			if (algParameters != null && PBES2_ALGORITHM.equals(algName)) {
 				return algParameters.toString();
 			}
@@ -691,30 +675,30 @@ final class PemPrivateKeyParser {
 		private final byte[] value;
 
 		/**
-         * Constructs a new EncodedOid object with the specified byte array value.
-         *
-         * @param value the byte array value representing the encoded OID
-         */
-        private EncodedOid(byte[] value) {
+		 * Constructs a new EncodedOid object with the specified byte array value.
+		 * @param value the byte array value representing the encoded OID
+		 */
+		private EncodedOid(byte[] value) {
 			this.value = value;
 		}
 
 		/**
-         * Returns a byte array representation of the value.
-         *
-         * @return a byte array representation of the value
-         */
-        byte[] toByteArray() {
+		 * Returns a byte array representation of the value.
+		 * @return a byte array representation of the value
+		 */
+		byte[] toByteArray() {
 			return this.value.clone();
 		}
 
 		/**
-         * Compares this EncodedOid object to the specified object. The result is true if and only if the argument is not null and is an EncodedOid object that represents the same encoded OID value as this object.
-         *
-         * @param obj the object to compare this EncodedOid against
-         * @return true if the given object represents an EncodedOid equivalent to this EncodedOid, false otherwise
-         */
-        @Override
+		 * Compares this EncodedOid object to the specified object. The result is true if
+		 * and only if the argument is not null and is an EncodedOid object that
+		 * represents the same encoded OID value as this object.
+		 * @param obj the object to compare this EncodedOid against
+		 * @return true if the given object represents an EncodedOid equivalent to this
+		 * EncodedOid, false otherwise
+		 */
+		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -726,66 +710,60 @@ final class PemPrivateKeyParser {
 		}
 
 		/**
-         * Returns a hash code value for the object. 
-         * The hash code is generated based on the values of the elements in the 'value' array.
-         *
-         * @return the hash code value for the object.
-         */
-        @Override
+		 * Returns a hash code value for the object. The hash code is generated based on
+		 * the values of the elements in the 'value' array.
+		 * @return the hash code value for the object.
+		 */
+		@Override
 		public int hashCode() {
 			return Arrays.hashCode(this.value);
 		}
 
 		/**
-         * Returns the encoded OID value represented by the given hexadecimal string.
-         * 
-         * @param hexString the hexadecimal string representing the encoded OID value
-         * @return the encoded OID value
-         * @throws IllegalArgumentException if the hexadecimal string is invalid
-         */
-        static EncodedOid of(String hexString) {
+		 * Returns the encoded OID value represented by the given hexadecimal string.
+		 * @param hexString the hexadecimal string representing the encoded OID value
+		 * @return the encoded OID value
+		 * @throws IllegalArgumentException if the hexadecimal string is invalid
+		 */
+		static EncodedOid of(String hexString) {
 			return of(HexFormat.of().parseHex(hexString));
 		}
 
 		/**
-         * Returns the encoded OID of the given DER element.
-         * 
-         * @param derElement the DER element containing the OID
-         * @return the encoded OID
-         */
-        static EncodedOid of(DerElement derElement) {
+		 * Returns the encoded OID of the given DER element.
+		 * @param derElement the DER element containing the OID
+		 * @return the encoded OID
+		 */
+		static EncodedOid of(DerElement derElement) {
 			return of(derElement.getContents());
 		}
 
 		/**
-         * Converts a ByteBuffer to an EncodedOid object.
-         * 
-         * @param byteBuffer the ByteBuffer to be converted
-         * @return the EncodedOid object representing the ByteBuffer
-         */
-        static EncodedOid of(ByteBuffer byteBuffer) {
+		 * Converts a ByteBuffer to an EncodedOid object.
+		 * @param byteBuffer the ByteBuffer to be converted
+		 * @return the EncodedOid object representing the ByteBuffer
+		 */
+		static EncodedOid of(ByteBuffer byteBuffer) {
 			return of(byteBuffer.array(), byteBuffer.arrayOffset() + byteBuffer.position(), byteBuffer.remaining());
 		}
 
 		/**
-         * Creates an EncodedOid object from the given byte array.
-         * 
-         * @param bytes the byte array containing the encoded OID
-         * @return the EncodedOid object
-         */
-        static EncodedOid of(byte[] bytes) {
+		 * Creates an EncodedOid object from the given byte array.
+		 * @param bytes the byte array containing the encoded OID
+		 * @return the EncodedOid object
+		 */
+		static EncodedOid of(byte[] bytes) {
 			return of(bytes, 0, bytes.length);
 		}
 
 		/**
-         * Creates an instance of EncodedOid using the specified byte array.
-         * 
-         * @param bytes the byte array containing the encoded OID
-         * @param off the starting offset in the byte array
-         * @param len the length of the encoded OID
-         * @return an instance of EncodedOid
-         */
-        static EncodedOid of(byte[] bytes, int off, int len) {
+		 * Creates an instance of EncodedOid using the specified byte array.
+		 * @param bytes the byte array containing the encoded OID
+		 * @param off the starting offset in the byte array
+		 * @param len the length of the encoded OID
+		 * @return an instance of EncodedOid
+		 */
+		static EncodedOid of(byte[] bytes, int off, int len) {
 			byte[] value = new byte[len];
 			System.arraycopy(bytes, off, value, 0, len);
 			return new EncodedOid(value);

@@ -36,22 +36,20 @@ class SqlServerR2dbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
 	/**
-     * Constructs a new SqlServerR2dbcDockerComposeConnectionDetailsFactory object.
-     * 
-     * @param imageName the name of the Docker image for the SQL Server
-     * @param connectionFactoryOptions the options for the R2DBC connection factory
-     */
-    SqlServerR2dbcDockerComposeConnectionDetailsFactory() {
+	 * Constructs a new SqlServerR2dbcDockerComposeConnectionDetailsFactory object.
+	 * @param imageName the name of the Docker image for the SQL Server
+	 * @param connectionFactoryOptions the options for the R2DBC connection factory
+	 */
+	SqlServerR2dbcDockerComposeConnectionDetailsFactory() {
 		super("mssql/server", "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	/**
-     * Retrieves the connection details for a Docker Compose connection source.
-     * 
-     * @param source the Docker Compose connection source
-     * @return the R2dbcConnectionDetails for the Docker Compose connection
-     */
-    @Override
+	 * Retrieves the connection details for a Docker Compose connection source.
+	 * @param source the Docker Compose connection source
+	 * @return the R2dbcConnectionDetails for the Docker Compose connection
+	 */
+	@Override
 	protected R2dbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new SqlServerR2dbcDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -68,11 +66,11 @@ class SqlServerR2dbcDockerComposeConnectionDetailsFactory
 		private final ConnectionFactoryOptions connectionFactoryOptions;
 
 		/**
-         * Constructs a new SqlServerR2dbcDockerComposeConnectionDetails object with the provided RunningService.
-         * 
-         * @param service the RunningService object representing the running service
-         */
-        SqlServerR2dbcDockerComposeConnectionDetails(RunningService service) {
+		 * Constructs a new SqlServerR2dbcDockerComposeConnectionDetails object with the
+		 * provided RunningService.
+		 * @param service the RunningService object representing the running service
+		 */
+		SqlServerR2dbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			SqlServerEnvironment environment = new SqlServerEnvironment(service.env());
 			this.connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service, "",
@@ -80,11 +78,11 @@ class SqlServerR2dbcDockerComposeConnectionDetailsFactory
 		}
 
 		/**
-         * Returns the connection factory options for the SqlServerR2dbcDockerComposeConnectionDetails.
-         *
-         * @return the connection factory options
-         */
-        @Override
+		 * Returns the connection factory options for the
+		 * SqlServerR2dbcDockerComposeConnectionDetails.
+		 * @return the connection factory options
+		 */
+		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
 			return this.connectionFactoryOptions;
 		}

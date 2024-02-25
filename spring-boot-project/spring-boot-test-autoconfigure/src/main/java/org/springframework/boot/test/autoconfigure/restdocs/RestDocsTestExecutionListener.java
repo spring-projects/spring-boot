@@ -38,24 +38,25 @@ public class RestDocsTestExecutionListener extends AbstractTestExecutionListener
 			RestDocsTestExecutionListener.class.getClassLoader());
 
 	/**
-     * Returns the order of this RestDocsTestExecutionListener.
-     * The order is determined by subtracting 100 from the lowest precedence.
-     * 
-     * @return the order of this RestDocsTestExecutionListener
-     */
-    @Override
+	 * Returns the order of this RestDocsTestExecutionListener. The order is determined by
+	 * subtracting 100 from the lowest precedence.
+	 * @return the order of this RestDocsTestExecutionListener
+	 */
+	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE - 100;
 	}
 
 	/**
-     * This method is called before each test method is executed.
-     * It checks if REST Docs is present and if so, it calls the beforeTestMethod method of the DocumentationHandler class.
-     *
-     * @param testContext the TestContext object containing information about the test being executed
-     * @throws Exception if an error occurs during the execution of the beforeTestMethod method
-     */
-    @Override
+	 * This method is called before each test method is executed. It checks if REST Docs
+	 * is present and if so, it calls the beforeTestMethod method of the
+	 * DocumentationHandler class.
+	 * @param testContext the TestContext object containing information about the test
+	 * being executed
+	 * @throws Exception if an error occurs during the execution of the beforeTestMethod
+	 * method
+	 */
+	@Override
 	public void beforeTestMethod(TestContext testContext) throws Exception {
 		if (REST_DOCS_PRESENT) {
 			new DocumentationHandler().beforeTestMethod(testContext);
@@ -63,13 +64,15 @@ public class RestDocsTestExecutionListener extends AbstractTestExecutionListener
 	}
 
 	/**
-     * This method is called after each test method is executed.
-     * It checks if REST Docs is present and if so, it calls the afterTestMethod method of the DocumentationHandler class.
-     * 
-     * @param testContext the TestContext object containing information about the test execution
-     * @throws Exception if an error occurs during the execution of the afterTestMethod method
-     */
-    @Override
+	 * This method is called after each test method is executed. It checks if REST Docs is
+	 * present and if so, it calls the afterTestMethod method of the DocumentationHandler
+	 * class.
+	 * @param testContext the TestContext object containing information about the test
+	 * execution
+	 * @throws Exception if an error occurs during the execution of the afterTestMethod
+	 * method
+	 */
+	@Override
 	public void afterTestMethod(TestContext testContext) throws Exception {
 		if (REST_DOCS_PRESENT) {
 			new DocumentationHandler().afterTestMethod(testContext);
@@ -77,17 +80,18 @@ public class RestDocsTestExecutionListener extends AbstractTestExecutionListener
 	}
 
 	/**
-     * DocumentationHandler class.
-     */
-    private static final class DocumentationHandler {
+	 * DocumentationHandler class.
+	 */
+	private static final class DocumentationHandler {
 
 		/**
-         * This method is called before each test method to initialize the ManualRestDocumentation object and
-         * invoke the 'beforeTest' method on it if it exists.
-         * 
-         * @param testContext The TestContext object containing information about the test being executed.
-         */
-        private void beforeTestMethod(TestContext testContext) {
+		 * This method is called before each test method to initialize the
+		 * ManualRestDocumentation object and invoke the 'beforeTest' method on it if it
+		 * exists.
+		 * @param testContext The TestContext object containing information about the test
+		 * being executed.
+		 */
+		private void beforeTestMethod(TestContext testContext) {
 			ManualRestDocumentation restDocumentation = findManualRestDocumentation(testContext);
 			if (restDocumentation != null) {
 				restDocumentation.beforeTest(testContext.getTestClass(), testContext.getTestMethod().getName());
@@ -95,13 +99,14 @@ public class RestDocsTestExecutionListener extends AbstractTestExecutionListener
 		}
 
 		/**
-         * This method is called after each test method execution to perform necessary actions for generating documentation.
-         * It retrieves the ManualRestDocumentation instance from the TestContext and calls the afterTest() method on it.
-         * If the ManualRestDocumentation instance is not found, no action is taken.
-         *
-         * @param testContext The TestContext object containing information about the current test execution.
-         */
-        private void afterTestMethod(TestContext testContext) {
+		 * This method is called after each test method execution to perform necessary
+		 * actions for generating documentation. It retrieves the ManualRestDocumentation
+		 * instance from the TestContext and calls the afterTest() method on it. If the
+		 * ManualRestDocumentation instance is not found, no action is taken.
+		 * @param testContext The TestContext object containing information about the
+		 * current test execution.
+		 */
+		private void afterTestMethod(TestContext testContext) {
 			ManualRestDocumentation restDocumentation = findManualRestDocumentation(testContext);
 			if (restDocumentation != null) {
 				restDocumentation.afterTest();
@@ -109,12 +114,12 @@ public class RestDocsTestExecutionListener extends AbstractTestExecutionListener
 		}
 
 		/**
-         * Finds the ManualRestDocumentation bean from the TestContext's application context.
-         * 
-         * @param testContext the TestContext object containing the application context
-         * @return the ManualRestDocumentation bean if found, null otherwise
-         */
-        private ManualRestDocumentation findManualRestDocumentation(TestContext testContext) {
+		 * Finds the ManualRestDocumentation bean from the TestContext's application
+		 * context.
+		 * @param testContext the TestContext object containing the application context
+		 * @return the ManualRestDocumentation bean if found, null otherwise
+		 */
+		private ManualRestDocumentation findManualRestDocumentation(TestContext testContext) {
 			try {
 				return testContext.getApplicationContext().getBean(ManualRestDocumentation.class);
 			}

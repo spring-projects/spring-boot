@@ -26,11 +26,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SampleJettySslApplication {
 
 	/**
-     * The main method of the SampleJettySslApplication class.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method of the SampleJettySslApplication class.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleJettySslApplication.class, args);
 	}
 

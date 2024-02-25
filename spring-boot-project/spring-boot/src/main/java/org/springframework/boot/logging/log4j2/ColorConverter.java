@@ -88,12 +88,12 @@ public final class ColorConverter extends LogEventPatternConverter {
 	private final AnsiElement styling;
 
 	/**
-     * Constructs a new ColorConverter with the specified list of PatternFormatters and AnsiElement styling.
-     * 
-     * @param formatters the list of PatternFormatters to be used by the ColorConverter
-     * @param styling the AnsiElement styling to be applied by the ColorConverter
-     */
-    private ColorConverter(List<PatternFormatter> formatters, AnsiElement styling) {
+	 * Constructs a new ColorConverter with the specified list of PatternFormatters and
+	 * AnsiElement styling.
+	 * @param formatters the list of PatternFormatters to be used by the ColorConverter
+	 * @param styling the AnsiElement styling to be applied by the ColorConverter
+	 */
+	private ColorConverter(List<PatternFormatter> formatters, AnsiElement styling) {
 		super("style", "style");
 		this.formatters = formatters;
 		this.styling = styling;
@@ -121,12 +121,11 @@ public final class ColorConverter extends LogEventPatternConverter {
 	}
 
 	/**
-     * Returns true if any of the formatters in the list of formatters
-     * handles throwable objects, otherwise returns false.
-     * 
-     * @return true if any formatter handles throwable objects, false otherwise
-     */
-    @Override
+	 * Returns true if any of the formatters in the list of formatters handles throwable
+	 * objects, otherwise returns false.
+	 * @return true if any formatter handles throwable objects, false otherwise
+	 */
+	@Override
 	public boolean handlesThrowable() {
 		for (PatternFormatter formatter : this.formatters) {
 			if (formatter.handlesThrowable()) {
@@ -137,12 +136,12 @@ public final class ColorConverter extends LogEventPatternConverter {
 	}
 
 	/**
-     * Formats the given log event and appends the formatted string to the provided StringBuilder.
-     * 
-     * @param event        the log event to be formatted
-     * @param toAppendTo   the StringBuilder to append the formatted string to
-     */
-    @Override
+	 * Formats the given log event and appends the formatted string to the provided
+	 * StringBuilder.
+	 * @param event the log event to be formatted
+	 * @param toAppendTo the StringBuilder to append the formatted string to
+	 */
+	@Override
 	public void format(LogEvent event, StringBuilder toAppendTo) {
 		StringBuilder buf = new StringBuilder();
 		for (PatternFormatter formatter : this.formatters) {
@@ -160,13 +159,12 @@ public final class ColorConverter extends LogEventPatternConverter {
 	}
 
 	/**
-     * Appends an ANSI string to the given StringBuilder with the specified ANSI element.
-     * 
-     * @param toAppendTo the StringBuilder to append the ANSI string to
-     * @param in the input string to be converted to ANSI
-     * @param element the ANSI element to apply to the input string
-     */
-    protected void appendAnsiString(StringBuilder toAppendTo, String in, AnsiElement element) {
+	 * Appends an ANSI string to the given StringBuilder with the specified ANSI element.
+	 * @param toAppendTo the StringBuilder to append the ANSI string to
+	 * @param in the input string to be converted to ANSI
+	 * @param element the ANSI element to apply to the input string
+	 */
+	protected void appendAnsiString(StringBuilder toAppendTo, String in, AnsiElement element) {
 		toAppendTo.append(AnsiOutput.toString(element, in));
 	}
 

@@ -34,11 +34,10 @@ class JpaTagRepository implements TagRepository {
 	private EntityManager entityManager;
 
 	/**
-     * Retrieves all tags from the database.
-     *
-     * @return a list of Tag objects representing all the tags in the database.
-     */
-    @Override
+	 * Retrieves all tags from the database.
+	 * @return a list of Tag objects representing all the tags in the database.
+	 */
+	@Override
 	public List<Tag> findAll() {
 		return this.entityManager.createQuery("SELECT t FROM Tag t", Tag.class).getResultList();
 	}

@@ -27,20 +27,18 @@ public class MyPersonProperties {
 	private String firstName;
 
 	/**
-     * Returns the first name of the person.
-     *
-     * @return the first name of the person
-     */
-    public String getFirstName() {
+	 * Returns the first name of the person.
+	 * @return the first name of the person
+	 */
+	public String getFirstName() {
 		return this.firstName;
 	}
 
 	/**
-     * Sets the first name of the person.
-     * 
-     * @param firstName the first name to be set
-     */
-    public void setFirstName(String firstName) {
+	 * Sets the first name of the person.
+	 * @param firstName the first name to be set
+	 */
+	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 

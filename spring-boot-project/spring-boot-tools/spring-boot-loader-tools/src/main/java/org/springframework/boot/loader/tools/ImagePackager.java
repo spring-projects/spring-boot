@@ -60,14 +60,14 @@ public class ImagePackager extends Packager {
 	}
 
 	/**
-     * Packages the image by creating a JAR file with the specified libraries and using the provided writer.
-     * If the image is already packaged, a backup file is used instead of the original source file.
-     * 
-     * @param libraries The libraries to include in the JAR file.
-     * @param writer The writer to use for creating the JAR file.
-     * @throws IOException If an I/O error occurs during the packaging process.
-     */
-    private void packageImage(Libraries libraries, AbstractJarWriter writer) throws IOException {
+	 * Packages the image by creating a JAR file with the specified libraries and using
+	 * the provided writer. If the image is already packaged, a backup file is used
+	 * instead of the original source file.
+	 * @param libraries The libraries to include in the JAR file.
+	 * @param writer The writer to use for creating the JAR file.
+	 * @throws IOException If an I/O error occurs during the packaging process.
+	 */
+	private void packageImage(Libraries libraries, AbstractJarWriter writer) throws IOException {
 		File source = isAlreadyPackaged() ? getBackupFile() : getSource();
 		try (JarFile sourceJar = new JarFile(source)) {
 			write(sourceJar, libraries, writer);
@@ -82,22 +82,20 @@ public class ImagePackager extends Packager {
 		private final BiConsumer<ZipEntry, EntryWriter> exporter;
 
 		/**
-         * Constructs a new DelegatingJarWriter with the specified exporter.
-         *
-         * @param exporter the exporter to be used for writing entries to the JAR file
-         */
-        DelegatingJarWriter(BiConsumer<ZipEntry, EntryWriter> exporter) {
+		 * Constructs a new DelegatingJarWriter with the specified exporter.
+		 * @param exporter the exporter to be used for writing entries to the JAR file
+		 */
+		DelegatingJarWriter(BiConsumer<ZipEntry, EntryWriter> exporter) {
 			this.exporter = exporter;
 		}
 
 		/**
-         * Writes the given ZipEntry to the archive using the provided EntryWriter.
-         * 
-         * @param entry The ZipEntry to be written to the archive.
-         * @param entryWriter The EntryWriter used to write the ZipEntry.
-         * @throws IOException If an I/O error occurs while writing the ZipEntry.
-         */
-        @Override
+		 * Writes the given ZipEntry to the archive using the provided EntryWriter.
+		 * @param entry The ZipEntry to be written to the archive.
+		 * @param entryWriter The EntryWriter used to write the ZipEntry.
+		 * @throws IOException If an I/O error occurs while writing the ZipEntry.
+		 */
+		@Override
 		protected void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException {
 			this.exporter.accept(entry, entryWriter);
 		}

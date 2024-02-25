@@ -43,56 +43,55 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	private final ReactiveRedisConnectionFactory connectionFactory;
 
 	/**
-     * Constructs a new RedisReactiveHealthIndicator with the specified ReactiveRedisConnectionFactory.
-     * 
-     * @param connectionFactory the ReactiveRedisConnectionFactory to be used for health check
-     */
-    public RedisReactiveHealthIndicator(ReactiveRedisConnectionFactory connectionFactory) {
+	 * Constructs a new RedisReactiveHealthIndicator with the specified
+	 * ReactiveRedisConnectionFactory.
+	 * @param connectionFactory the ReactiveRedisConnectionFactory to be used for health
+	 * check
+	 */
+	public RedisReactiveHealthIndicator(ReactiveRedisConnectionFactory connectionFactory) {
 		super("Redis health check failed");
 		this.connectionFactory = connectionFactory;
 	}
 
 	/**
-     * Performs a health check on the Redis connection.
-     *
-     * @param builder the Health.Builder used to build the health status
-     * @return a Mono emitting the health status
-     */
-    @Override
+	 * Performs a health check on the Redis connection.
+	 * @param builder the Health.Builder used to build the health status
+	 * @return a Mono emitting the health status
+	 */
+	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
 		return getConnection().flatMap((connection) -> doHealthCheck(builder, connection));
 	}
 
 	/**
-     * Retrieves a reactive Redis connection from the connection factory.
-     *
-     * @return a Mono emitting the reactive Redis connection
-     */
-    private Mono<ReactiveRedisConnection> getConnection() {
+	 * Retrieves a reactive Redis connection from the connection factory.
+	 * @return a Mono emitting the reactive Redis connection
+	 */
+	private Mono<ReactiveRedisConnection> getConnection() {
 		return Mono.fromSupplier(this.connectionFactory::getReactiveConnection)
 			.subscribeOn(Schedulers.boundedElastic());
 	}
 
 	/**
-     * Performs a health check on the Redis connection.
-     * 
-     * @param builder the Health.Builder object used to build the health status
-     * @param connection the ReactiveRedisConnection object representing the Redis connection
-     * @return a Mono object that emits the Health status
-     */
-    private Mono<Health> doHealthCheck(Health.Builder builder, ReactiveRedisConnection connection) {
+	 * Performs a health check on the Redis connection.
+	 * @param builder the Health.Builder object used to build the health status
+	 * @param connection the ReactiveRedisConnection object representing the Redis
+	 * connection
+	 * @return a Mono object that emits the Health status
+	 */
+	private Mono<Health> doHealthCheck(Health.Builder builder, ReactiveRedisConnection connection) {
 		return getHealth(builder, connection).onErrorResume((ex) -> Mono.just(builder.down(ex).build()))
 			.flatMap((health) -> connection.closeLater().thenReturn(health));
 	}
 
 	/**
-     * Retrieves the health status of the Redis server.
-     *
-     * @param builder The Health.Builder object used to build the Health instance.
-     * @param connection The ReactiveRedisConnection object used to interact with the Redis server.
-     * @return A Mono<Health> object representing the health status of the Redis server.
-     */
-    private Mono<Health> getHealth(Health.Builder builder, ReactiveRedisConnection connection) {
+	 * Retrieves the health status of the Redis server.
+	 * @param builder The Health.Builder object used to build the Health instance.
+	 * @param connection The ReactiveRedisConnection object used to interact with the
+	 * Redis server.
+	 * @return A Mono<Health> object representing the health status of the Redis server.
+	 */
+	private Mono<Health> getHealth(Health.Builder builder, ReactiveRedisConnection connection) {
 		if (connection instanceof ReactiveRedisClusterConnection clusterConnection) {
 			return clusterConnection.clusterGetClusterInfo().map((info) -> fromClusterInfo(builder, info));
 		}
@@ -100,24 +99,24 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	}
 
 	/**
-     * Returns an instance of Health indicating that the Redis health check is up.
-     * 
-     * @param builder the Health.Builder object used to build the Health instance
-     * @param info the Properties object containing additional information about the health check
-     * @return an instance of Health indicating that the Redis health check is up
-     */
-    private Health up(Health.Builder builder, Properties info) {
+	 * Returns an instance of Health indicating that the Redis health check is up.
+	 * @param builder the Health.Builder object used to build the Health instance
+	 * @param info the Properties object containing additional information about the
+	 * health check
+	 * @return an instance of Health indicating that the Redis health check is up
+	 */
+	private Health up(Health.Builder builder, Properties info) {
 		return RedisHealth.up(builder, info).build();
 	}
 
 	/**
-     * Retrieves the health information from the given cluster information and builds a {@link Health} object.
-     *
-     * @param builder     the builder used to construct the {@link Health} object
-     * @param clusterInfo the cluster information used to retrieve the health information
-     * @return the {@link Health} object containing the health information
-     */
-    private Health fromClusterInfo(Health.Builder builder, ClusterInfo clusterInfo) {
+	 * Retrieves the health information from the given cluster information and builds a
+	 * {@link Health} object.
+	 * @param builder the builder used to construct the {@link Health} object
+	 * @param clusterInfo the cluster information used to retrieve the health information
+	 * @return the {@link Health} object containing the health information
+	 */
+	private Health fromClusterInfo(Health.Builder builder, ClusterInfo clusterInfo) {
 		return RedisHealth.fromClusterInfo(builder, clusterInfo).build();
 	}
 

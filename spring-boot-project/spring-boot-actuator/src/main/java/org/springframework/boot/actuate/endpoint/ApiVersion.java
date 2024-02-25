@@ -46,20 +46,18 @@ public enum ApiVersion implements Producible<ApiVersion> {
 	private final MimeType mimeType;
 
 	/**
-     * Constructs a new instance of the ApiVersion class with the specified MIME type.
-     * 
-     * @param mimeType the MIME type to be set for the ApiVersion instance
-     */
-    ApiVersion(String mimeType) {
+	 * Constructs a new instance of the ApiVersion class with the specified MIME type.
+	 * @param mimeType the MIME type to be set for the ApiVersion instance
+	 */
+	ApiVersion(String mimeType) {
 		this.mimeType = MimeTypeUtils.parseMimeType(mimeType);
 	}
 
 	/**
-     * Returns the MIME type produced by this API version.
-     *
-     * @return the MIME type produced by this API version
-     */
-    @Override
+	 * Returns the MIME type produced by this API version.
+	 * @return the MIME type produced by this API version
+	 */
+	@Override
 	public MimeType getProducedMimeType() {
 		return this.mimeType;
 	}

@@ -33,39 +33,36 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 class CouchbaseRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	/**
-     * Returns the annotation class that is used to enable Couchbase repositories.
-     *
-     * @return the annotation class {@code EnableCouchbaseRepositories}
-     */
-    @Override
+	 * Returns the annotation class that is used to enable Couchbase repositories.
+	 * @return the annotation class {@code EnableCouchbaseRepositories}
+	 */
+	@Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableCouchbaseRepositories.class;
 	}
 
 	/**
-     * Returns the configuration class for enabling Couchbase repositories.
-     * 
-     * @return the configuration class for enabling Couchbase repositories
-     */
-    @Override
+	 * Returns the configuration class for enabling Couchbase repositories.
+	 * @return the configuration class for enabling Couchbase repositories
+	 */
+	@Override
 	protected Class<?> getConfiguration() {
 		return EnableCouchbaseRepositoriesConfiguration.class;
 	}
 
 	/**
-     * Returns the repository configuration extension for Couchbase repositories.
-     * 
-     * @return The CouchbaseRepositoryConfigurationExtension instance.
-     */
-    @Override
+	 * Returns the repository configuration extension for Couchbase repositories.
+	 * @return The CouchbaseRepositoryConfigurationExtension instance.
+	 */
+	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new CouchbaseRepositoryConfigurationExtension();
 	}
 
 	/**
-     * EnableCouchbaseRepositoriesConfiguration class.
-     */
-    @EnableCouchbaseRepositories
+	 * EnableCouchbaseRepositoriesConfiguration class.
+	 */
+	@EnableCouchbaseRepositories
 	private static final class EnableCouchbaseRepositoriesConfiguration {
 
 	}

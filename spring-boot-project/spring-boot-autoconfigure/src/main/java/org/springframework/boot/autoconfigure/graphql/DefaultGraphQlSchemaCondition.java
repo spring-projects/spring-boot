@@ -49,23 +49,21 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class DefaultGraphQlSchemaCondition extends SpringBootCondition implements ConfigurationCondition {
 
 	/**
-     * Returns the configuration phase of this method.
-     *
-     * @return The configuration phase of this method.
-     */
-    @Override
+	 * Returns the configuration phase of this method.
+	 * @return The configuration phase of this method.
+	 */
+	@Override
 	public ConfigurationCondition.ConfigurationPhase getConfigurationPhase() {
 		return ConfigurationCondition.ConfigurationPhase.REGISTER_BEAN;
 	}
 
 	/**
-     * Determines the outcome of the condition for the given context and metadata.
-     *
-     * @param context  the condition context
-     * @param metadata the annotated type metadata
-     * @return the condition outcome
-     */
-    @Override
+	 * Determines the outcome of the condition for the given context and metadata.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @return the condition outcome
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		boolean match = false;
 		List<ConditionMessage> messages = new ArrayList<>(2);
@@ -98,14 +96,13 @@ class DefaultGraphQlSchemaCondition extends SpringBootCondition implements Confi
 	}
 
 	/**
-     * Resolves the schema resources based on the given locations and extensions.
-     * 
-     * @param resolver the resource pattern resolver
-     * @param locations the array of locations to search for schema resources
-     * @param extensions the array of file extensions to consider for schema resources
-     * @return the list of resolved schema resources
-     */
-    private List<Resource> resolveSchemaResources(ResourcePatternResolver resolver, String[] locations,
+	 * Resolves the schema resources based on the given locations and extensions.
+	 * @param resolver the resource pattern resolver
+	 * @param locations the array of locations to search for schema resources
+	 * @param extensions the array of file extensions to consider for schema resources
+	 * @return the list of resolved schema resources
+	 */
+	private List<Resource> resolveSchemaResources(ResourcePatternResolver resolver, String[] locations,
 			String[] extensions) {
 		List<Resource> resources = new ArrayList<>();
 		for (String location : locations) {
@@ -117,13 +114,14 @@ class DefaultGraphQlSchemaCondition extends SpringBootCondition implements Confi
 	}
 
 	/**
-     * Resolves the schema resources based on the given pattern using the provided resource pattern resolver.
-     * 
-     * @param resolver the resource pattern resolver to use for resolving the schema resources
-     * @param pattern the pattern to match the schema resources against
-     * @return a list of resolved schema resources
-     */
-    private List<Resource> resolveSchemaResources(ResourcePatternResolver resolver, String pattern) {
+	 * Resolves the schema resources based on the given pattern using the provided
+	 * resource pattern resolver.
+	 * @param resolver the resource pattern resolver to use for resolving the schema
+	 * resources
+	 * @param pattern the pattern to match the schema resources against
+	 * @return a list of resolved schema resources
+	 */
+	private List<Resource> resolveSchemaResources(ResourcePatternResolver resolver, String pattern) {
 		try {
 			return Arrays.asList(resolver.getResources(pattern));
 		}

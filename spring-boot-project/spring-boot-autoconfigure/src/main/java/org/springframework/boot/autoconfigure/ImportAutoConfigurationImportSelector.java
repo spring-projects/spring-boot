@@ -63,12 +63,11 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	/**
-     * Determines the imports for the given annotation metadata.
-     * 
-     * @param metadata the annotation metadata
-     * @return the set of imports
-     */
-    @Override
+	 * Determines the imports for the given annotation metadata.
+	 * @param metadata the annotation metadata
+	 * @return the set of imports
+	 */
+	@Override
 	public Set<Object> determineImports(AnnotationMetadata metadata) {
 		List<String> candidateConfigurations = getCandidateConfigurations(metadata, null);
 		Set<String> result = new LinkedHashSet<>(candidateConfigurations);
@@ -77,24 +76,24 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	/**
-     * Retrieves the attributes of the specified annotation metadata.
-     * 
-     * @param metadata the annotation metadata to retrieve attributes from
-     * @return the attributes of the annotation metadata, or null if no attributes are found
-     */
-    @Override
+	 * Retrieves the attributes of the specified annotation metadata.
+	 * @param metadata the annotation metadata to retrieve attributes from
+	 * @return the attributes of the annotation metadata, or null if no attributes are
+	 * found
+	 */
+	@Override
 	protected AnnotationAttributes getAttributes(AnnotationMetadata metadata) {
 		return null;
 	}
 
 	/**
-     * Retrieves the candidate configurations based on the provided metadata and attributes.
-     * 
-     * @param metadata the metadata of the import
-     * @param attributes the attributes of the import
-     * @return the list of candidate configurations
-     */
-    @Override
+	 * Retrieves the candidate configurations based on the provided metadata and
+	 * attributes.
+	 * @param metadata the metadata of the import
+	 * @param attributes the attributes of the import
+	 * @return the list of candidate configurations
+	 */
+	@Override
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		List<String> candidates = new ArrayList<>();
 		Map<Class<?>, List<Annotation>> annotations = getAnnotations(metadata);
@@ -104,13 +103,13 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	/**
-     * Collects candidate configurations for the given source class and list of annotations.
-     * 
-     * @param source the source class
-     * @param annotations the list of annotations
-     * @param candidates the list to store the candidate configurations
-     */
-    private void collectCandidateConfigurations(Class<?> source, List<Annotation> annotations,
+	 * Collects candidate configurations for the given source class and list of
+	 * annotations.
+	 * @param source the source class
+	 * @param annotations the list of annotations
+	 * @param candidates the list to store the candidate configurations
+	 */
+	private void collectCandidateConfigurations(Class<?> source, List<Annotation> annotations,
 			List<String> candidates) {
 		for (Annotation annotation : annotations) {
 			candidates.addAll(getConfigurationsForAnnotation(source, annotation));
@@ -118,13 +117,12 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	/**
-     * Retrieves the configurations for a given annotation and source class.
-     * 
-     * @param source the source class
-     * @param annotation the annotation to retrieve configurations for
-     * @return a collection of configuration classes
-     */
-    private Collection<String> getConfigurationsForAnnotation(Class<?> source, Annotation annotation) {
+	 * Retrieves the configurations for a given annotation and source class.
+	 * @param source the source class
+	 * @param annotation the annotation to retrieve configurations for
+	 * @return a collection of configuration classes
+	 */
+	private Collection<String> getConfigurationsForAnnotation(Class<?> source, Annotation annotation) {
 		String[] classes = (String[]) AnnotationUtils.getAnnotationAttributes(annotation, true).get("classes");
 		if (classes.length > 0) {
 			return Arrays.asList(classes);
@@ -133,12 +131,12 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	/**
-     * Maps the factory name by removing the optional prefix if present.
-     * 
-     * @param name the factory name to be mapped
-     * @return the mapped factory name without the optional prefix, or null if the mapped name is not present
-     */
-    private String mapFactoryName(String name) {
+	 * Maps the factory name by removing the optional prefix if present.
+	 * @param name the factory name to be mapped
+	 * @return the mapped factory name without the optional prefix, or null if the mapped
+	 * name is not present
+	 */
+	private String mapFactoryName(String name) {
 		if (!name.startsWith(OPTIONAL_PREFIX)) {
 			return name;
 		}
@@ -147,34 +145,31 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	/**
-     * Checks if a given class is present in the classpath.
-     * 
-     * @param className the name of the class to check
-     * @return true if the class is present, false otherwise
-     */
-    private boolean present(String className) {
+	 * Checks if a given class is present in the classpath.
+	 * @param className the name of the class to check
+	 * @return true if the class is present, false otherwise
+	 */
+	private boolean present(String className) {
 		String resourcePath = ClassUtils.convertClassNameToResourcePath(className) + ".class";
 		return new ClassPathResource(resourcePath).exists();
 	}
 
 	/**
-     * Loads the factory names from the given source class.
-     * 
-     * @param source the source class from which to load the factory names
-     * @return a collection of factory names
-     */
-    protected Collection<String> loadFactoryNames(Class<?> source) {
+	 * Loads the factory names from the given source class.
+	 * @param source the source class from which to load the factory names
+	 * @return a collection of factory names
+	 */
+	protected Collection<String> loadFactoryNames(Class<?> source) {
 		return ImportCandidates.load(source, getBeanClassLoader()).getCandidates();
 	}
 
 	/**
-     * Retrieves the set of exclusions for the given metadata and attributes.
-     * 
-     * @param metadata the annotation metadata
-     * @param attributes the annotation attributes
-     * @return the set of exclusions
-     */
-    @Override
+	 * Retrieves the set of exclusions for the given metadata and attributes.
+	 * @param metadata the annotation metadata
+	 * @param attributes the annotation attributes
+	 * @return the set of exclusions
+	 */
+	@Override
 	protected Set<String> getExclusions(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		Set<String> exclusions = new LinkedHashSet<>();
 		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), getBeanClassLoader());
@@ -200,12 +195,12 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	/**
-     * Retrieves the annotations present on the given {@link AnnotationMetadata}.
-     * 
-     * @param metadata the {@link AnnotationMetadata} to retrieve annotations from
-     * @return an unmodifiable {@link Map} containing the annotations, grouped by their corresponding classes
-     */
-    protected final Map<Class<?>, List<Annotation>> getAnnotations(AnnotationMetadata metadata) {
+	 * Retrieves the annotations present on the given {@link AnnotationMetadata}.
+	 * @param metadata the {@link AnnotationMetadata} to retrieve annotations from
+	 * @return an unmodifiable {@link Map} containing the annotations, grouped by their
+	 * corresponding classes
+	 */
+	protected final Map<Class<?>, List<Annotation>> getAnnotations(AnnotationMetadata metadata) {
 		MultiValueMap<Class<?>, Annotation> annotations = new LinkedMultiValueMap<>();
 		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), getBeanClassLoader());
 		collectAnnotations(source, annotations, new HashSet<>());
@@ -213,13 +208,13 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	/**
-     * Recursively collects annotations from the given source class and its superclasses.
-     * 
-     * @param source the source class to collect annotations from
-     * @param annotations the map to store collected annotations
-     * @param seen the set to keep track of already visited classes to avoid infinite recursion
-     */
-    private void collectAnnotations(Class<?> source, MultiValueMap<Class<?>, Annotation> annotations,
+	 * Recursively collects annotations from the given source class and its superclasses.
+	 * @param source the source class to collect annotations from
+	 * @param annotations the map to store collected annotations
+	 * @param seen the set to keep track of already visited classes to avoid infinite
+	 * recursion
+	 */
+	private void collectAnnotations(Class<?> source, MultiValueMap<Class<?>, Annotation> annotations,
 			HashSet<Class<?>> seen) {
 		if (source != null && seen.add(source)) {
 			for (Annotation annotation : source.getDeclaredAnnotations()) {
@@ -235,22 +230,20 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	/**
-     * Returns the order of this ImportAutoConfigurationImportSelector.
-     * The order is determined by subtracting 1 from the order of the superclass.
-     *
-     * @return the order of this ImportAutoConfigurationImportSelector
-     */
-    @Override
+	 * Returns the order of this ImportAutoConfigurationImportSelector. The order is
+	 * determined by subtracting 1 from the order of the superclass.
+	 * @return the order of this ImportAutoConfigurationImportSelector
+	 */
+	@Override
 	public int getOrder() {
 		return super.getOrder() - 1;
 	}
 
 	/**
-     * Handles invalid excludes.
-     * 
-     * @param invalidExcludes the list of invalid excludes
-     */
-    @Override
+	 * Handles invalid excludes.
+	 * @param invalidExcludes the list of invalid excludes
+	 */
+	@Override
 	protected void handleInvalidExcludes(List<String> invalidExcludes) {
 		// Ignore for test
 	}

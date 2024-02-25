@@ -39,12 +39,12 @@ import org.springframework.context.annotation.Bean;
 public class DiskSpaceHealthContributorAutoConfiguration {
 
 	/**
-     * Creates a new instance of DiskSpaceHealthIndicator if no bean with the name "diskSpaceHealthIndicator" is present.
-     * 
-     * @param properties the properties used to configure the DiskSpaceHealthIndicator
-     * @return a new instance of DiskSpaceHealthIndicator
-     */
-    @Bean
+	 * Creates a new instance of DiskSpaceHealthIndicator if no bean with the name
+	 * "diskSpaceHealthIndicator" is present.
+	 * @param properties the properties used to configure the DiskSpaceHealthIndicator
+	 * @return a new instance of DiskSpaceHealthIndicator
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = "diskSpaceHealthIndicator")
 	public DiskSpaceHealthIndicator diskSpaceHealthIndicator(DiskSpaceHealthIndicatorProperties properties) {
 		return new DiskSpaceHealthIndicator(properties.getPath(), properties.getThreshold());

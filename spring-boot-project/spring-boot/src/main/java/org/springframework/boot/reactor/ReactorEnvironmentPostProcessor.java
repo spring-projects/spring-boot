@@ -43,13 +43,12 @@ public class ReactorEnvironmentPostProcessor implements EnvironmentPostProcessor
 	private static final String REACTOR_DEBUGAGENT_CLASS = "reactor.tools.agent.ReactorDebugAgent";
 
 	/**
-     * Post-processes the environment and application for Reactor.
-     * 
-     * @param environment the configurable environment
-     * @param application the Spring application
-     * @throws RuntimeException if failed to initialize Reactor's debug agent
-     */
-    @Override
+	 * Post-processes the environment and application for Reactor.
+	 * @param environment the configurable environment
+	 * @param application the Spring application
+	 * @throws RuntimeException if failed to initialize Reactor's debug agent
+	 */
+	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (ClassUtils.isPresent(REACTOR_DEBUGAGENT_CLASS, null)) {
 			Boolean agentEnabled = environment.getProperty("spring.reactor.debug-agent.enabled", Boolean.class);
@@ -70,14 +69,13 @@ public class ReactorEnvironmentPostProcessor implements EnvironmentPostProcessor
 	}
 
 	/**
-     * Returns the order value of this post-processor.
-     * 
-     * The order value is set to {@link Ordered#LOWEST_PRECEDENCE}, indicating that
-     * this post-processor should have the lowest precedence and be applied last.
-     * 
-     * @return the order value of this post-processor
-     */
-    @Override
+	 * Returns the order value of this post-processor.
+	 *
+	 * The order value is set to {@link Ordered#LOWEST_PRECEDENCE}, indicating that this
+	 * post-processor should have the lowest precedence and be applied last.
+	 * @return the order value of this post-processor
+	 */
+	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE;
 	}

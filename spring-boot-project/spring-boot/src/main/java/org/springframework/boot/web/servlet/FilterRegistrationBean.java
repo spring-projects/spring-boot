@@ -63,11 +63,10 @@ public class FilterRegistrationBean<T extends Filter> extends AbstractFilterRegi
 	}
 
 	/**
-     * Returns the filter instance associated with this FilterRegistrationBean.
-     *
-     * @return the filter instance
-     */
-    @Override
+	 * Returns the filter instance associated with this FilterRegistrationBean.
+	 * @return the filter instance
+	 */
+	@Override
 	public T getFilter() {
 		return this.filter;
 	}

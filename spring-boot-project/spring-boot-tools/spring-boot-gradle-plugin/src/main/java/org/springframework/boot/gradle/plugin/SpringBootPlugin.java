@@ -114,14 +114,13 @@ public class SpringBootPlugin implements Plugin<Project> {
 			+ SPRING_BOOT_VERSION;
 
 	/**
-     * Applies the SpringBootPlugin to the given project.
-     * 
-     * This method verifies the Gradle version, creates the extension for the project,
-     * creates the bootArchives configuration, and registers the plugin actions.
-     * 
-     * @param project the project to apply the plugin to
-     */
-    @Override
+	 * Applies the SpringBootPlugin to the given project.
+	 *
+	 * This method verifies the Gradle version, creates the extension for the project,
+	 * creates the bootArchives configuration, and registers the plugin actions.
+	 * @param project the project to apply the plugin to
+	 */
+	@Override
 	public void apply(Project project) {
 		verifyGradleVersion();
 		createExtension(project);
@@ -130,11 +129,10 @@ public class SpringBootPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * Verifies the Gradle version required by the Spring Boot plugin.
-     * 
-     * @throws GradleException if the current Gradle version is older than 7.5
-     */
-    private void verifyGradleVersion() {
+	 * Verifies the Gradle version required by the Spring Boot plugin.
+	 * @throws GradleException if the current Gradle version is older than 7.5
+	 */
+	private void verifyGradleVersion() {
 		GradleVersion currentVersion = GradleVersion.current();
 		if (currentVersion.compareTo(GradleVersion.version("7.5")) < 0) {
 			throw new GradleException("Spring Boot plugin requires Gradle 7.x (7.5 or later). "
@@ -143,21 +141,19 @@ public class SpringBootPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * Creates a SpringBoot extension for the given project.
-     * 
-     * @param project the project to create the extension for
-     */
-    private void createExtension(Project project) {
+	 * Creates a SpringBoot extension for the given project.
+	 * @param project the project to create the extension for
+	 */
+	private void createExtension(Project project) {
 		project.getExtensions().create("springBoot", SpringBootExtension.class, project);
 	}
 
 	/**
-     * Creates a configuration for Spring Boot archive artifacts.
-     * 
-     * @param project the project to create the configuration for
-     * @return the created configuration
-     */
-    private Configuration createBootArchivesConfiguration(Project project) {
+	 * Creates a configuration for Spring Boot archive artifacts.
+	 * @param project the project to create the configuration for
+	 * @return the created configuration
+	 */
+	private Configuration createBootArchivesConfiguration(Project project) {
 		Configuration bootArchives = project.getConfigurations().create(BOOT_ARCHIVES_CONFIGURATION_NAME);
 		bootArchives.setDescription("Configuration for Spring Boot archive artifacts.");
 		bootArchives.setCanBeResolved(false);
@@ -165,12 +161,11 @@ public class SpringBootPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * Registers plugin actions for the given project and bootArchives configuration.
-     * 
-     * @param project the project to register plugin actions for
-     * @param bootArchives the bootArchives configuration
-     */
-    private void registerPluginActions(Project project, Configuration bootArchives) {
+	 * Registers plugin actions for the given project and bootArchives configuration.
+	 * @param project the project to register plugin actions for
+	 * @param bootArchives the bootArchives configuration
+	 */
+	private void registerPluginActions(Project project, Configuration bootArchives) {
 		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(bootArchives,
 				project.getArtifacts());
 		List<PluginApplicationAction> actions = Arrays.asList(new JavaPluginAction(singlePublishedArtifact),
@@ -183,12 +178,12 @@ public class SpringBootPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * Executes the given action with the plugin class of the specified {@link PluginApplicationAction}.
-     * 
-     * @param action the {@link PluginApplicationAction} to execute
-     * @param consumer the consumer to accept the plugin class
-     */
-    private void withPluginClassOfAction(PluginApplicationAction action,
+	 * Executes the given action with the plugin class of the specified
+	 * {@link PluginApplicationAction}.
+	 * @param action the {@link PluginApplicationAction} to execute
+	 * @param consumer the consumer to accept the plugin class
+	 */
+	private void withPluginClassOfAction(PluginApplicationAction action,
 			Consumer<Class<? extends Plugin<? extends Project>>> consumer) {
 		Class<? extends Plugin<? extends Project>> pluginClass;
 		try {

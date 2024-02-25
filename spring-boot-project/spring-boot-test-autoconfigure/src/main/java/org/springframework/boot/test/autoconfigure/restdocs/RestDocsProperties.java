@@ -45,56 +45,50 @@ public class RestDocsProperties {
 	private Integer uriPort;
 
 	/**
-     * Returns the URI scheme.
-     *
-     * @return the URI scheme
-     */
-    public String getUriScheme() {
+	 * Returns the URI scheme.
+	 * @return the URI scheme
+	 */
+	public String getUriScheme() {
 		return this.uriScheme;
 	}
 
 	/**
-     * Sets the URI scheme for the RestDocsProperties.
-     * 
-     * @param uriScheme the URI scheme to be set
-     */
-    public void setUriScheme(String uriScheme) {
+	 * Sets the URI scheme for the RestDocsProperties.
+	 * @param uriScheme the URI scheme to be set
+	 */
+	public void setUriScheme(String uriScheme) {
 		this.uriScheme = uriScheme;
 	}
 
 	/**
-     * Returns the URI host.
-     *
-     * @return the URI host
-     */
-    public String getUriHost() {
+	 * Returns the URI host.
+	 * @return the URI host
+	 */
+	public String getUriHost() {
 		return this.uriHost;
 	}
 
 	/**
-     * Sets the URI host for the RestDocsProperties.
-     * 
-     * @param uriHost the URI host to be set
-     */
-    public void setUriHost(String uriHost) {
+	 * Sets the URI host for the RestDocsProperties.
+	 * @param uriHost the URI host to be set
+	 */
+	public void setUriHost(String uriHost) {
 		this.uriHost = uriHost;
 	}
 
 	/**
-     * Returns the URI port.
-     *
-     * @return the URI port
-     */
-    public Integer getUriPort() {
+	 * Returns the URI port.
+	 * @return the URI port
+	 */
+	public Integer getUriPort() {
 		return this.uriPort;
 	}
 
 	/**
-     * Sets the URI port for the RestDocsProperties.
-     * 
-     * @param uriPort the URI port to be set
-     */
-    public void setUriPort(Integer uriPort) {
+	 * Sets the URI port for the RestDocsProperties.
+	 * @param uriPort the URI port to be set
+	 */
+	public void setUriPort(Integer uriPort) {
 		this.uriPort = uriPort;
 	}
 

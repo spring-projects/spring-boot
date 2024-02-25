@@ -32,13 +32,13 @@ import org.springframework.util.ClassUtils;
 public abstract class LogbackInitializer {
 
 	/**
-     * Initializes the Logback configuration.
-     * Checks if the necessary classes for Logback are present and sets the root log level.
-     * 
-     * @see org.slf4j.LoggerFactory
-     * @see ch.qos.logback.classic.Logger
-     */
-    public static void initialize() {
+	 * Initializes the Logback configuration. Checks if the necessary classes for Logback
+	 * are present and sets the root log level.
+	 *
+	 * @see org.slf4j.LoggerFactory
+	 * @see ch.qos.logback.classic.Logger
+	 */
+	public static void initialize() {
 		if (ClassUtils.isPresent("org.slf4j.LoggerFactory", null)
 				&& ClassUtils.isPresent("ch.qos.logback.classic.Logger", null)) {
 			new Initializer().setRootLogLevel();
@@ -46,16 +46,16 @@ public abstract class LogbackInitializer {
 	}
 
 	/**
-     * Initializer class.
-     */
-    private static final class Initializer {
+	 * Initializer class.
+	 */
+	private static final class Initializer {
 
 		/**
-         * Sets the root log level to INFO.
-         * This method retrieves the root logger from the logger factory and sets its log level to INFO.
-         * This will affect all loggers in the application.
-         */
-        void setRootLogLevel() {
+		 * Sets the root log level to INFO. This method retrieves the root logger from the
+		 * logger factory and sets its log level to INFO. This will affect all loggers in
+		 * the application.
+		 */
+		void setRootLogLevel() {
 			ILoggerFactory factory = LoggerFactory.getILoggerFactory();
 			Logger logger = factory.getLogger(Logger.ROOT_LOGGER_NAME);
 			((ch.qos.logback.classic.Logger) logger).setLevel(Level.INFO);

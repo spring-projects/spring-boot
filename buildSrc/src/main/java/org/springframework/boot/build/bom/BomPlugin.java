@@ -52,11 +52,11 @@ public class BomPlugin implements Plugin<Project> {
 	static final String API_ENFORCED_CONFIGURATION_NAME = "apiEnforced";
 
 	/**
-     * Applies the necessary plugins and configurations to the given project for the BomPlugin.
-     * 
-     * @param project The project to apply the plugins and configurations to.
-     */
-    @Override
+	 * Applies the necessary plugins and configurations to the given project for the
+	 * BomPlugin.
+	 * @param project The project to apply the plugins and configurations to.
+	 */
+	@Override
 	public void apply(Project project) {
 		PluginContainer plugins = project.getPlugins();
 		plugins.apply(DeployedPlugin.class);
@@ -76,11 +76,10 @@ public class BomPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * Creates an API enforced configuration for the given project.
-     * 
-     * @param project the project for which the API enforced configuration is created
-     */
-    private void createApiEnforcedConfiguration(Project project) {
+	 * Creates an API enforced configuration for the given project.
+	 * @param project the project for which the API enforced configuration is created
+	 */
+	private void createApiEnforcedConfiguration(Project project) {
 		Configuration apiEnforced = project.getConfigurations()
 			.create(API_ENFORCED_CONFIGURATION_NAME, (configuration) -> {
 				configuration.setCanBeConsumed(false);
@@ -96,51 +95,51 @@ public class BomPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * PublishingCustomizer class.
-     */
-    private static final class PublishingCustomizer {
+	 * PublishingCustomizer class.
+	 */
+	private static final class PublishingCustomizer {
 
 		private final Project project;
 
 		private final BomExtension bom;
 
 		/**
-         * Constructs a new instance of the PublishingCustomizer class with the specified project and bom.
-         * 
-         * @param project the project to be associated with the PublishingCustomizer
-         * @param bom the BomExtension to be associated with the PublishingCustomizer
-         */
-        private PublishingCustomizer(Project project, BomExtension bom) {
+		 * Constructs a new instance of the PublishingCustomizer class with the specified
+		 * project and bom.
+		 * @param project the project to be associated with the PublishingCustomizer
+		 * @param bom the BomExtension to be associated with the PublishingCustomizer
+		 */
+		private PublishingCustomizer(Project project, BomExtension bom) {
 			this.project = project;
 			this.bom = bom;
 		}
 
 		/**
-         * Customizes the publishing configuration for the project.
-         * This method retrieves the PublishingExtension from the project's extensions and configures all MavenPublication publications.
-         * The configuration is done by invoking the configurePublication method for each MavenPublication.
-         */
-        private void customize() {
+		 * Customizes the publishing configuration for the project. This method retrieves
+		 * the PublishingExtension from the project's extensions and configures all
+		 * MavenPublication publications. The configuration is done by invoking the
+		 * configurePublication method for each MavenPublication.
+		 */
+		private void customize() {
 			PublishingExtension publishing = this.project.getExtensions().getByType(PublishingExtension.class);
 			publishing.getPublications().withType(MavenPublication.class).all(this::configurePublication);
 		}
 
 		/**
-         * Configures the Maven publication by customizing the POM.
-         * 
-         * @param publication the Maven publication to be configured
-         */
-        private void configurePublication(MavenPublication publication) {
+		 * Configures the Maven publication by customizing the POM.
+		 * @param publication the Maven publication to be configured
+		 */
+		private void configurePublication(MavenPublication publication) {
 			publication.pom(this::customizePom);
 		}
 
 		/**
-         * Customizes the POM file by adding properties, managing dependencies, replacing versions with version property references,
-         * adding exclusions and types to managed dependencies, and adding plugin management.
-         * 
-         * @param pom the MavenPom object representing the POM file to be customized
-         */
-        @SuppressWarnings("unchecked")
+		 * Customizes the POM file by adding properties, managing dependencies, replacing
+		 * versions with version property references, adding exclusions and types to
+		 * managed dependencies, and adding plugin management.
+		 * @param pom the MavenPom object representing the POM file to be customized
+		 */
+		@SuppressWarnings("unchecked")
 		private void customizePom(MavenPom pom) {
 			pom.withXml((xml) -> {
 				Node projectNode = xml.asNode();
@@ -162,12 +161,12 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		/**
-         * Adds the properties node before the dependencyManagement node in the projectNode.
-         * 
-         * @param projectNode the project node to add the properties node to
-         * @param properties the properties node to be added
-         */
-        @SuppressWarnings("unchecked")
+		 * Adds the properties node before the dependencyManagement node in the
+		 * projectNode.
+		 * @param projectNode the project node to add the properties node to
+		 * @param properties the properties node to be added
+		 */
+		@SuppressWarnings("unchecked")
 		private void addPropertiesBeforeDependencyManagement(Node projectNode, Node properties) {
 			for (int i = 0; i < projectNode.children().size(); i++) {
 				if (isNodeWithName(projectNode.children().get(i), "dependencyManagement")) {
@@ -178,11 +177,11 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		/**
-         * Replaces the versions of dependencies with version property references.
-         * 
-         * @param dependencyManagement the Node representing the dependency management section
-         */
-        private void replaceVersionsWithVersionPropertyReferences(Node dependencyManagement) {
+		 * Replaces the versions of dependencies with version property references.
+		 * @param dependencyManagement the Node representing the dependency management
+		 * section
+		 */
+		private void replaceVersionsWithVersionPropertyReferences(Node dependencyManagement) {
 			Node dependencies = findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
 				for (Node dependency : findChildren(dependencies, "dependency")) {
@@ -199,11 +198,10 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		/**
-         * Adds exclusions to managed dependencies.
-         * 
-         * @param dependencyManagement The dependency management node.
-         */
-        private void addExclusionsToManagedDependencies(Node dependencyManagement) {
+		 * Adds exclusions to managed dependencies.
+		 * @param dependencyManagement The dependency management node.
+		 */
+		private void addExclusionsToManagedDependencies(Node dependencyManagement) {
 			Node dependencies = findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
 				for (Node dependency : findChildren(dependencies, "dependency")) {
@@ -227,12 +225,11 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		/**
-         * Adds types to managed dependencies.
-         * 
-         * @param dependencyManagement The dependency management node.
-         * @throws IllegalStateException if multiple types are found for a dependency.
-         */
-        private void addTypesToManagedDependencies(Node dependencyManagement) {
+		 * Adds types to managed dependencies.
+		 * @param dependencyManagement The dependency management node.
+		 * @throws IllegalStateException if multiple types are found for a dependency.
+		 */
+		private void addTypesToManagedDependencies(Node dependencyManagement) {
 			Node dependencies = findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
 				for (Node dependency : findChildren(dependencies, "dependency")) {
@@ -260,11 +257,11 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		/**
-         * Adds classified managed dependencies to the given dependency management node.
-         * 
-         * @param dependencyManagement The dependency management node to add the classified dependencies to.
-         */
-        @SuppressWarnings("unchecked")
+		 * Adds classified managed dependencies to the given dependency management node.
+		 * @param dependencyManagement The dependency management node to add the
+		 * classified dependencies to.
+		 */
+		@SuppressWarnings("unchecked")
 		private void addClassifiedManagedDependencies(Node dependencyManagement) {
 			Node dependencies = findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
@@ -301,11 +298,10 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		/**
-         * Adds plugin management to the specified project node.
-         * 
-         * @param projectNode the project node to add plugin management to
-         */
-        private void addPluginManagement(Node projectNode) {
+		 * Adds plugin management to the specified project node.
+		 * @param projectNode the project node to add plugin management to
+		 */
+		private void addPluginManagement(Node projectNode) {
 			for (Library library : this.bom.getLibraries()) {
 				for (Group group : library.getGroups()) {
 					Node plugins = findOrCreateNode(projectNode, "build", "pluginManagement", "plugins");
@@ -323,13 +319,12 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		/**
-         * Finds or creates a node in the tree structure based on the given path.
-         * 
-         * @param parent The parent node in the tree structure.
-         * @param path   The path to the desired node, represented as an array of strings.
-         * @return The found or created node.
-         */
-        private Node findOrCreateNode(Node parent, String... path) {
+		 * Finds or creates a node in the tree structure based on the given path.
+		 * @param parent The parent node in the tree structure.
+		 * @param path The path to the desired node, represented as an array of strings.
+		 * @return The found or created node.
+		 */
+		private Node findOrCreateNode(Node parent, String... path) {
 			Node current = parent;
 			for (String nodeName : path) {
 				Node child = findChild(current, nodeName);
@@ -342,13 +337,12 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		/**
-         * Finds a child node with the given name in the parent node.
-         * 
-         * @param parent the parent node to search in
-         * @param name   the name of the child node to find
-         * @return the found child node, or null if not found
-         */
-        private Node findChild(Node parent, String name) {
+		 * Finds a child node with the given name in the parent node.
+		 * @param parent the parent node to search in
+		 * @param name the name of the child node to find
+		 * @return the found child node, or null if not found
+		 */
+		private Node findChild(Node parent, String name) {
 			for (Object child : parent.children()) {
 				if (child instanceof Node node) {
 					if ((node.name() instanceof QName qname) && name.equals(qname.getLocalPart())) {
@@ -363,25 +357,24 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		/**
-         * Finds the children of a given parent node with a specific name.
-         * 
-         * @param parent the parent node to search for children
-         * @param name the name of the children nodes to find
-         * @return a list of child nodes with the specified name
-         */
-        @SuppressWarnings("unchecked")
+		 * Finds the children of a given parent node with a specific name.
+		 * @param parent the parent node to search for children
+		 * @param name the name of the children nodes to find
+		 * @return a list of child nodes with the specified name
+		 */
+		@SuppressWarnings("unchecked")
 		private List<Node> findChildren(Node parent, String name) {
 			return parent.children().stream().filter((child) -> isNodeWithName(child, name)).toList();
 		}
 
 		/**
-         * Checks if the given candidate object is a Node with the specified name.
-         * 
-         * @param candidate the object to be checked
-         * @param name the name to be compared with the Node's name
-         * @return true if the candidate is a Node with the specified name, false otherwise
-         */
-        private boolean isNodeWithName(Object candidate, String name) {
+		 * Checks if the given candidate object is a Node with the specified name.
+		 * @param candidate the object to be checked
+		 * @param name the name to be compared with the Node's name
+		 * @return true if the candidate is a Node with the specified name, false
+		 * otherwise
+		 */
+		private boolean isNodeWithName(Object candidate, String name) {
 			if (candidate instanceof Node node) {
 				if ((node.name() instanceof QName qname) && name.equals(qname.getLocalPart())) {
 					return true;

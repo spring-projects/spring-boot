@@ -46,13 +46,12 @@ import org.springframework.util.ReflectionUtils;
 class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFactory {
 
 	/**
-     * Creates a context customizer for the given test class and configuration attributes.
-     * 
-     * @param testClass the test class for which the context customizer is being created
-     * @param configAttributes the configuration attributes for the test class
-     * @return the created context customizer
-     */
-    @Override
+	 * Creates a context customizer for the given test class and configuration attributes.
+	 * @param testClass the test class for which the context customizer is being created
+	 * @param configAttributes the configuration attributes for the test class
+	 * @return the created context customizer
+	 */
+	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		List<ContainerConnectionSource<?>> sources = new ArrayList<>();
@@ -61,12 +60,11 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	}
 
 	/**
-     * Collects the sources of container connection for the given candidate class.
-     * 
-     * @param candidate the candidate class to collect sources for
-     * @param sources the list of container connection sources to add to
-     */
-    private void collectSources(Class<?> candidate, List<ContainerConnectionSource<?>> sources) {
+	 * Collects the sources of container connection for the given candidate class.
+	 * @param candidate the candidate class to collect sources for
+	 * @param sources the list of container connection sources to add to
+	 */
+	private void collectSources(Class<?> candidate, List<ContainerConnectionSource<?>> sources) {
 		if (candidate == Object.class || candidate == null) {
 			return;
 		}
@@ -85,14 +83,15 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	}
 
 	/**
-     * Creates a {@link ContainerConnectionSource} for a field annotated with {@link ServiceConnection}.
-     * 
-     * @param field the field annotated with {@link ServiceConnection}
-     * @param annotation the merged annotation of {@link ServiceConnection}
-     * @return the created {@link ContainerConnectionSource}
-     * @throws IllegalStateException if the field is not static or if the field value is not an instance of {@link Container}
-     */
-    @SuppressWarnings("unchecked")
+	 * Creates a {@link ContainerConnectionSource} for a field annotated with
+	 * {@link ServiceConnection}.
+	 * @param field the field annotated with {@link ServiceConnection}
+	 * @param annotation the merged annotation of {@link ServiceConnection}
+	 * @return the created {@link ContainerConnectionSource}
+	 * @throws IllegalStateException if the field is not static or if the field value is
+	 * not an instance of {@link Container}
+	 */
+	@SuppressWarnings("unchecked")
 	private <C extends Container<?>> ContainerConnectionSource<?> createSource(Field field,
 			MergedAnnotation<ServiceConnection> annotation) {
 		Assert.state(Modifier.isStatic(field.getModifiers()),
@@ -112,22 +111,21 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	}
 
 	/**
-     * Retrieves the value of a given field using reflection.
-     * 
-     * @param field the field to retrieve the value from
-     * @return the value of the field
-     */
-    private Object getFieldValue(Field field) {
+	 * Retrieves the value of a given field using reflection.
+	 * @param field the field to retrieve the value from
+	 * @return the value of the field
+	 */
+	private Object getFieldValue(Field field) {
 		ReflectionUtils.makeAccessible(field);
 		return ReflectionUtils.getField(field, null);
 	}
 
 	/**
-     * Returns a boolean value indicating whether the Ahead-of-Time (AOT) processing is in progress.
-     * 
-     * @return {@code true} if AOT processing is in progress, {@code false} otherwise.
-     */
-    private boolean isAotProcessingInProgress() {
+	 * Returns a boolean value indicating whether the Ahead-of-Time (AOT) processing is in
+	 * progress.
+	 * @return {@code true} if AOT processing is in progress, {@code false} otherwise.
+	 */
+	private boolean isAotProcessingInProgress() {
 		return Boolean.getBoolean("spring.aot.processing");
 	}
 

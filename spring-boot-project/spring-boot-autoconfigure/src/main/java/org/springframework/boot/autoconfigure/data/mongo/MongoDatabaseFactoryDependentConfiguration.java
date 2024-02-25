@@ -56,27 +56,31 @@ import org.springframework.util.StringUtils;
 class MongoDatabaseFactoryDependentConfiguration {
 
 	/**
-     * Creates a new instance of MongoTemplate if no bean of type MongoOperations is present.
-     * 
-     * @param factory the MongoDatabaseFactory to be used for creating the MongoTemplate
-     * @param converter the MongoConverter to be used for converting objects
-     * @return a new instance of MongoTemplate if no bean of type MongoOperations is present
-     */
-    @Bean
+	 * Creates a new instance of MongoTemplate if no bean of type MongoOperations is
+	 * present.
+	 * @param factory the MongoDatabaseFactory to be used for creating the MongoTemplate
+	 * @param converter the MongoConverter to be used for converting objects
+	 * @return a new instance of MongoTemplate if no bean of type MongoOperations is
+	 * present
+	 */
+	@Bean
 	@ConditionalOnMissingBean(MongoOperations.class)
 	MongoTemplate mongoTemplate(MongoDatabaseFactory factory, MongoConverter converter) {
 		return new MongoTemplate(factory, converter);
 	}
 
 	/**
-     * Creates a {@link MappingMongoConverter} bean if no other bean of type {@link MongoConverter} is present.
-     * 
-     * @param factory the {@link MongoDatabaseFactory} to be used for creating the {@link MappingMongoConverter}
-     * @param context the {@link MongoMappingContext} to be used for creating the {@link MappingMongoConverter}
-     * @param conversions the {@link MongoCustomConversions} to be used for creating the {@link MappingMongoConverter}
-     * @return the created {@link MappingMongoConverter} bean
-     */
-    @Bean
+	 * Creates a {@link MappingMongoConverter} bean if no other bean of type
+	 * {@link MongoConverter} is present.
+	 * @param factory the {@link MongoDatabaseFactory} to be used for creating the
+	 * {@link MappingMongoConverter}
+	 * @param context the {@link MongoMappingContext} to be used for creating the
+	 * {@link MappingMongoConverter}
+	 * @param conversions the {@link MongoCustomConversions} to be used for creating the
+	 * {@link MappingMongoConverter}
+	 * @return the created {@link MappingMongoConverter} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(MongoConverter.class)
 	MappingMongoConverter mappingMongoConverter(MongoDatabaseFactory factory, MongoMappingContext context,
 			MongoCustomConversions conversions) {
@@ -87,15 +91,18 @@ class MongoDatabaseFactoryDependentConfiguration {
 	}
 
 	/**
-     * Creates a new {@link GridFsTemplate} bean if no other bean of type {@link GridFsOperations} is present.
-     * 
-     * @param properties the {@link MongoProperties} containing the MongoDB connection details
-     * @param factory the {@link MongoDatabaseFactory} used to create the MongoDB database connection
-     * @param mongoTemplate the {@link MongoTemplate} used for MongoDB operations
-     * @param connectionDetails the {@link MongoConnectionDetails} containing additional MongoDB connection details
-     * @return a new {@link GridFsTemplate} instance
-     */
-    @Bean
+	 * Creates a new {@link GridFsTemplate} bean if no other bean of type
+	 * {@link GridFsOperations} is present.
+	 * @param properties the {@link MongoProperties} containing the MongoDB connection
+	 * details
+	 * @param factory the {@link MongoDatabaseFactory} used to create the MongoDB database
+	 * connection
+	 * @param mongoTemplate the {@link MongoTemplate} used for MongoDB operations
+	 * @param connectionDetails the {@link MongoConnectionDetails} containing additional
+	 * MongoDB connection details
+	 * @return a new {@link GridFsTemplate} instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean(GridFsOperations.class)
 	GridFsTemplate gridFsTemplate(MongoProperties properties, MongoDatabaseFactory factory, MongoTemplate mongoTemplate,
 			MongoConnectionDetails connectionDetails) {
@@ -115,13 +122,16 @@ class MongoDatabaseFactoryDependentConfiguration {
 		private final MongoConnectionDetails connectionDetails;
 
 		/**
-         * Constructs a new GridFsMongoDatabaseFactory with the given MongoDatabaseFactory and MongoConnectionDetails.
-         * 
-         * @param mongoDatabaseFactory the MongoDatabaseFactory to be used for creating the underlying MongoDB database
-         * @param connectionDetails the MongoConnectionDetails containing the connection information for the MongoDB server
-         * @throws IllegalArgumentException if either mongoDatabaseFactory or connectionDetails is null
-         */
-        GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory,
+		 * Constructs a new GridFsMongoDatabaseFactory with the given MongoDatabaseFactory
+		 * and MongoConnectionDetails.
+		 * @param mongoDatabaseFactory the MongoDatabaseFactory to be used for creating
+		 * the underlying MongoDB database
+		 * @param connectionDetails the MongoConnectionDetails containing the connection
+		 * information for the MongoDB server
+		 * @throws IllegalArgumentException if either mongoDatabaseFactory or
+		 * connectionDetails is null
+		 */
+		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory,
 				MongoConnectionDetails connectionDetails) {
 			Assert.notNull(mongoDatabaseFactory, "MongoDatabaseFactory must not be null");
 			Assert.notNull(connectionDetails, "ConnectionDetails must not be null");
@@ -130,12 +140,11 @@ class MongoDatabaseFactoryDependentConfiguration {
 		}
 
 		/**
-         * Retrieves the MongoDatabase instance for the GridFS database.
-         * 
-         * @return the MongoDatabase instance for the GridFS database
-         * @throws DataAccessException if there is an error accessing the database
-         */
-        @Override
+		 * Retrieves the MongoDatabase instance for the GridFS database.
+		 * @return the MongoDatabase instance for the GridFS database
+		 * @throws DataAccessException if there is an error accessing the database
+		 */
+		@Override
 		public MongoDatabase getMongoDatabase() throws DataAccessException {
 			String gridFsDatabase = getGridFsDatabase(this.connectionDetails);
 			if (StringUtils.hasText(gridFsDatabase)) {
@@ -145,56 +154,53 @@ class MongoDatabaseFactoryDependentConfiguration {
 		}
 
 		/**
-         * Retrieves the MongoDatabase instance for the specified database name.
-         * 
-         * @param dbName the name of the database
-         * @return the MongoDatabase instance
-         * @throws DataAccessException if there is an error accessing the database
-         */
-        @Override
+		 * Retrieves the MongoDatabase instance for the specified database name.
+		 * @param dbName the name of the database
+		 * @return the MongoDatabase instance
+		 * @throws DataAccessException if there is an error accessing the database
+		 */
+		@Override
 		public MongoDatabase getMongoDatabase(String dbName) throws DataAccessException {
 			return this.mongoDatabaseFactory.getMongoDatabase(dbName);
 		}
 
 		/**
-         * Returns the PersistenceExceptionTranslator for this GridFsMongoDatabaseFactory.
-         * 
-         * @return the PersistenceExceptionTranslator for this GridFsMongoDatabaseFactory
-         */
-        @Override
+		 * Returns the PersistenceExceptionTranslator for this GridFsMongoDatabaseFactory.
+		 * @return the PersistenceExceptionTranslator for this GridFsMongoDatabaseFactory
+		 */
+		@Override
 		public PersistenceExceptionTranslator getExceptionTranslator() {
 			return this.mongoDatabaseFactory.getExceptionTranslator();
 		}
 
 		/**
-         * Returns a client session for the given options.
-         * 
-         * @param options the options for the client session
-         * @return a client session
-         */
-        @Override
+		 * Returns a client session for the given options.
+		 * @param options the options for the client session
+		 * @return a client session
+		 */
+		@Override
 		public ClientSession getSession(ClientSessionOptions options) {
 			return this.mongoDatabaseFactory.getSession(options);
 		}
 
 		/**
-         * Returns a new MongoDatabaseFactory instance with the specified ClientSession.
-         *
-         * @param session the ClientSession to be associated with the MongoDatabaseFactory
-         * @return a new MongoDatabaseFactory instance with the specified ClientSession
-         */
-        @Override
+		 * Returns a new MongoDatabaseFactory instance with the specified ClientSession.
+		 * @param session the ClientSession to be associated with the MongoDatabaseFactory
+		 * @return a new MongoDatabaseFactory instance with the specified ClientSession
+		 */
+		@Override
 		public MongoDatabaseFactory withSession(ClientSession session) {
 			return this.mongoDatabaseFactory.withSession(session);
 		}
 
 		/**
-         * Returns the name of the GridFS database based on the provided MongoConnectionDetails.
-         * 
-         * @param connectionDetails the MongoConnectionDetails object containing the GridFS information
-         * @return the name of the GridFS database, or null if not specified
-         */
-        private String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
+		 * Returns the name of the GridFS database based on the provided
+		 * MongoConnectionDetails.
+		 * @param connectionDetails the MongoConnectionDetails object containing the
+		 * GridFS information
+		 * @return the name of the GridFS database, or null if not specified
+		 */
+		private String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
 			return (connectionDetails.getGridFs() != null) ? connectionDetails.getGridFs().getDatabase() : null;
 		}
 

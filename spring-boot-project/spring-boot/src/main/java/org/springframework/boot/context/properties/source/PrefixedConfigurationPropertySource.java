@@ -30,13 +30,13 @@ class PrefixedConfigurationPropertySource implements ConfigurationPropertySource
 	private final ConfigurationPropertyName prefix;
 
 	/**
-     * Constructs a new PrefixedConfigurationPropertySource with the given source and prefix.
-     *
-     * @param source the underlying ConfigurationPropertySource (must not be null)
-     * @param prefix the prefix to be applied to property names (must not be empty)
-     * @throws IllegalArgumentException if the source is null or the prefix is empty
-     */
-    PrefixedConfigurationPropertySource(ConfigurationPropertySource source, String prefix) {
+	 * Constructs a new PrefixedConfigurationPropertySource with the given source and
+	 * prefix.
+	 * @param source the underlying ConfigurationPropertySource (must not be null)
+	 * @param prefix the prefix to be applied to property names (must not be empty)
+	 * @throws IllegalArgumentException if the source is null or the prefix is empty
+	 */
+	PrefixedConfigurationPropertySource(ConfigurationPropertySource source, String prefix) {
 		Assert.notNull(source, "Source must not be null");
 		Assert.hasText(prefix, "Prefix must not be empty");
 		this.source = source;
@@ -44,21 +44,19 @@ class PrefixedConfigurationPropertySource implements ConfigurationPropertySource
 	}
 
 	/**
-     * Returns the prefix associated with this PrefixedConfigurationPropertySource.
-     *
-     * @return the prefix associated with this PrefixedConfigurationPropertySource
-     */
-    protected final ConfigurationPropertyName getPrefix() {
+	 * Returns the prefix associated with this PrefixedConfigurationPropertySource.
+	 * @return the prefix associated with this PrefixedConfigurationPropertySource
+	 */
+	protected final ConfigurationPropertyName getPrefix() {
 		return this.prefix;
 	}
 
 	/**
-     * Retrieves the configuration property with the given name from the source.
-     * 
-     * @param name The name of the configuration property to retrieve.
-     * @return The configuration property with the given name, or null if not found.
-     */
-    @Override
+	 * Retrieves the configuration property with the given name from the source.
+	 * @param name The name of the configuration property to retrieve.
+	 * @return The configuration property with the given name, or null if not found.
+	 */
+	@Override
 	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		ConfigurationProperty configurationProperty = this.source.getConfigurationProperty(getPrefixedName(name));
 		if (configurationProperty == null) {
@@ -69,42 +67,41 @@ class PrefixedConfigurationPropertySource implements ConfigurationPropertySource
 	}
 
 	/**
-     * Returns the prefixed name of the given configuration property name.
-     * 
-     * @param name the configuration property name
-     * @return the prefixed configuration property name
-     */
-    private ConfigurationPropertyName getPrefixedName(ConfigurationPropertyName name) {
+	 * Returns the prefixed name of the given configuration property name.
+	 * @param name the configuration property name
+	 * @return the prefixed configuration property name
+	 */
+	private ConfigurationPropertyName getPrefixedName(ConfigurationPropertyName name) {
 		return this.prefix.append(name);
 	}
 
 	/**
-     * Checks if the PrefixedConfigurationPropertySource contains a descendant of the specified ConfigurationPropertyName.
-     * 
-     * @param name the ConfigurationPropertyName to check for descendants
-     * @return the ConfigurationPropertyState indicating if the PrefixedConfigurationPropertySource contains a descendant of the specified ConfigurationPropertyName
-     */
-    @Override
+	 * Checks if the PrefixedConfigurationPropertySource contains a descendant of the
+	 * specified ConfigurationPropertyName.
+	 * @param name the ConfigurationPropertyName to check for descendants
+	 * @return the ConfigurationPropertyState indicating if the
+	 * PrefixedConfigurationPropertySource contains a descendant of the specified
+	 * ConfigurationPropertyName
+	 */
+	@Override
 	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		return this.source.containsDescendantOf(getPrefixedName(name));
 	}
 
 	/**
-     * Returns the underlying source of the PrefixedConfigurationPropertySource.
-     * 
-     * @return the underlying source of the PrefixedConfigurationPropertySource
-     */
-    @Override
+	 * Returns the underlying source of the PrefixedConfigurationPropertySource.
+	 * @return the underlying source of the PrefixedConfigurationPropertySource
+	 */
+	@Override
 	public Object getUnderlyingSource() {
 		return this.source.getUnderlyingSource();
 	}
 
 	/**
-     * Returns the source of the configuration property.
-     *
-     * @return the source of the configuration property
-     */
-    protected ConfigurationPropertySource getSource() {
+	 * Returns the source of the configuration property.
+	 * @return the source of the configuration property
+	 */
+	protected ConfigurationPropertySource getSource() {
 		return this.source;
 	}
 

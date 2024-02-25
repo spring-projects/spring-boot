@@ -57,16 +57,16 @@ public class ConnectionFactoryOptionsBuilder {
 	}
 
 	/**
-     * Builds a ConnectionFactoryOptions object based on the provided parameters.
-     *
-     * @param service   the RunningService object representing the service to connect to (must not be null)
-     * @param database  the name of the database to connect to (must not be null)
-     * @param user      the username to use for authentication (can be null or empty)
-     * @param password  the password to use for authentication (can be null or empty)
-     * @return a ConnectionFactoryOptions object with the specified options
-     * @throws IllegalArgumentException if the service or database is null
-     */
-    public ConnectionFactoryOptions build(RunningService service, String database, String user, String password) {
+	 * Builds a ConnectionFactoryOptions object based on the provided parameters.
+	 * @param service the RunningService object representing the service to connect to
+	 * (must not be null)
+	 * @param database the name of the database to connect to (must not be null)
+	 * @param user the username to use for authentication (can be null or empty)
+	 * @param password the password to use for authentication (can be null or empty)
+	 * @return a ConnectionFactoryOptions object with the specified options
+	 * @throws IllegalArgumentException if the service or database is null
+	 */
+	public ConnectionFactoryOptions build(RunningService service, String database, String user, String password) {
 		Assert.notNull(service, "Service must not be null");
 		Assert.notNull(database, "Database must not be null");
 		ConnectionFactoryOptions.Builder builder = ConnectionFactoryOptions.builder()
@@ -85,13 +85,13 @@ public class ConnectionFactoryOptionsBuilder {
 	}
 
 	/**
-     * Applies the parameters defined in the labels of the RunningService to the ConnectionFactoryOptions.Builder.
-     * 
-     * @param service the RunningService containing the labels with the parameters
-     * @param builder the ConnectionFactoryOptions.Builder to apply the parameters to
-     * @throws IllegalStateException if there is an error applying the parameters
-     */
-    private void applyParameters(RunningService service, ConnectionFactoryOptions.Builder builder) {
+	 * Applies the parameters defined in the labels of the RunningService to the
+	 * ConnectionFactoryOptions.Builder.
+	 * @param service the RunningService containing the labels with the parameters
+	 * @param builder the ConnectionFactoryOptions.Builder to apply the parameters to
+	 * @throws IllegalStateException if there is an error applying the parameters
+	 */
+	private void applyParameters(RunningService service, ConnectionFactoryOptions.Builder builder) {
 		String parameters = service.labels().get(PARAMETERS_LABEL);
 		try {
 			if (StringUtils.hasText(parameters)) {
@@ -105,13 +105,13 @@ public class ConnectionFactoryOptionsBuilder {
 	}
 
 	/**
-     * Parses the given parameters string and returns a map of key-value pairs.
-     * 
-     * @param parameters the parameters string to be parsed
-     * @return a map of key-value pairs representing the parsed parameters
-     * @throws IllegalArgumentException if the parameters string is not in the correct format
-     */
-    private Map<String, String> parseParameters(String parameters) {
+	 * Parses the given parameters string and returns a map of key-value pairs.
+	 * @param parameters the parameters string to be parsed
+	 * @return a map of key-value pairs representing the parsed parameters
+	 * @throws IllegalArgumentException if the parameters string is not in the correct
+	 * format
+	 */
+	private Map<String, String> parseParameters(String parameters) {
 		Map<String, String> result = new LinkedHashMap<>();
 		for (String parameter : StringUtils.commaDelimitedListToStringArray(parameters)) {
 			String[] parts = parameter.split("=");

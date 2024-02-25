@@ -65,13 +65,13 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	private static final ConcurrentReferenceHashMap<Environment, Optional<Boolean>> enabledByDefaultCache = new ConcurrentReferenceHashMap<>();
 
 	/**
-     * Determines the match outcome for the given condition context and annotated type metadata.
-     * 
-     * @param context the condition context
-     * @param metadata the annotated type metadata
-     * @return the match outcome
-     */
-    @Override
+	 * Determines the match outcome for the given condition context and annotated type
+	 * metadata.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @return the match outcome
+	 */
+	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Environment environment = context.getEnvironment();
 		MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation = metadata.getAnnotations()
@@ -82,15 +82,14 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Retrieves the target class for the conditional endpoint.
-     * 
-     * @param context the condition context
-     * @param metadata the annotated type metadata
-     * @param condition the merged annotation for ConditionalOnAvailableEndpoint
-     * @return the target class for the conditional endpoint
-     * @throws IllegalStateException if the endpoint id extraction fails
-     */
-    private Class<?> getTarget(ConditionContext context, AnnotatedTypeMetadata metadata,
+	 * Retrieves the target class for the conditional endpoint.
+	 * @param context the condition context
+	 * @param metadata the annotated type metadata
+	 * @param condition the merged annotation for ConditionalOnAvailableEndpoint
+	 * @return the target class for the conditional endpoint
+	 * @throws IllegalStateException if the endpoint id extraction fails
+	 */
+	private Class<?> getTarget(ConditionContext context, AnnotatedTypeMetadata metadata,
 			MergedAnnotation<ConditionalOnAvailableEndpoint> condition) {
 		Class<?> target = condition.getClass("endpoint");
 		if (target != Void.class) {
@@ -109,13 +108,14 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Retrieves the merged annotation of type {@link Endpoint} for the given target class.
-     * 
-     * @param target the target class to retrieve the annotation from
-     * @return the merged annotation of type {@link Endpoint} if present, otherwise null
-     * @throws IllegalStateException if no endpoint is specified and the return type of the @Bean method is neither an @Endpoint, nor an @EndpointExtension
-     */
-    protected MergedAnnotation<Endpoint> getEndpointAnnotation(Class<?> target) {
+	 * Retrieves the merged annotation of type {@link Endpoint} for the given target
+	 * class.
+	 * @param target the target class to retrieve the annotation from
+	 * @return the merged annotation of type {@link Endpoint} if present, otherwise null
+	 * @throws IllegalStateException if no endpoint is specified and the return type of
+	 * the @Bean method is neither an @Endpoint, nor an @EndpointExtension
+	 */
+	protected MergedAnnotation<Endpoint> getEndpointAnnotation(Class<?> target) {
 		MergedAnnotations annotations = MergedAnnotations.from(target, SearchStrategy.TYPE_HIERARCHY);
 		MergedAnnotation<Endpoint> endpoint = annotations.get(Endpoint.class);
 		if (endpoint.isPresent()) {
@@ -128,14 +128,15 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Determines the outcome of the condition for a given environment, condition annotation, and endpoint annotation.
-     * 
-     * @param environment The environment in which the condition is being evaluated.
-     * @param conditionAnnotation The merged annotation of the ConditionalOnAvailableEndpoint condition.
-     * @param endpointAnnotation The merged annotation of the Endpoint.
-     * @return The outcome of the condition evaluation.
-     */
-    private ConditionOutcome getMatchOutcome(Environment environment,
+	 * Determines the outcome of the condition for a given environment, condition
+	 * annotation, and endpoint annotation.
+	 * @param environment The environment in which the condition is being evaluated.
+	 * @param conditionAnnotation The merged annotation of the
+	 * ConditionalOnAvailableEndpoint condition.
+	 * @param endpointAnnotation The merged annotation of the Endpoint.
+	 * @return The outcome of the condition evaluation.
+	 */
+	private ConditionOutcome getMatchOutcome(Environment environment,
 			MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation,
 			MergedAnnotation<Endpoint> endpointAnnotation) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnAvailableEndpoint.class);
@@ -156,15 +157,15 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Determines the enablement outcome of an endpoint based on the environment and endpoint annotations.
-     * 
-     * @param environment the environment to check for properties
-     * @param endpointAnnotation the merged annotation of the endpoint
-     * @param endpointId the ID of the endpoint
-     * @param message the builder for the condition message
-     * @return the enablement outcome of the endpoint
-     */
-    private ConditionOutcome getEnablementOutcome(Environment environment,
+	 * Determines the enablement outcome of an endpoint based on the environment and
+	 * endpoint annotations.
+	 * @param environment the environment to check for properties
+	 * @param endpointAnnotation the merged annotation of the endpoint
+	 * @param endpointId the ID of the endpoint
+	 * @param message the builder for the condition message
+	 * @return the enablement outcome of the endpoint
+	 */
+	private ConditionOutcome getEnablementOutcome(Environment environment,
 			MergedAnnotation<Endpoint> endpointAnnotation, EndpointId endpointId, ConditionMessage.Builder message) {
 		String key = "management.endpoint." + endpointId.toLowerCaseString() + ".enabled";
 		Boolean userDefinedEnabled = environment.getProperty(key, Boolean.class);
@@ -183,25 +184,25 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Determines if the endpoint is enabled by default in the given environment.
-     * 
-     * @param environment the environment in which to check the default enabled status
-     * @return {@code true} if the endpoint is enabled by default, {@code false} if it is disabled by default,
-     *         or {@code null} if the default enabled status is not specified
-     */
-    private Boolean isEnabledByDefault(Environment environment) {
+	 * Determines if the endpoint is enabled by default in the given environment.
+	 * @param environment the environment in which to check the default enabled status
+	 * @return {@code true} if the endpoint is enabled by default, {@code false} if it is
+	 * disabled by default, or {@code null} if the default enabled status is not specified
+	 */
+	private Boolean isEnabledByDefault(Environment environment) {
 		Optional<Boolean> enabledByDefault = enabledByDefaultCache.computeIfAbsent(environment,
 				(ignore) -> Optional.ofNullable(environment.getProperty(ENABLED_BY_DEFAULT_KEY, Boolean.class)));
 		return enabledByDefault.orElse(null);
 	}
 
 	/**
-     * Returns a set of EndpointExposure values to check based on the provided ConditionalOnAvailableEndpoint annotation.
-     * 
-     * @param conditionAnnotation the ConditionalOnAvailableEndpoint annotation to extract the exposure values from
-     * @return a set of EndpointExposure values to check
-     */
-    private Set<EndpointExposure> getExposuresToCheck(
+	 * Returns a set of EndpointExposure values to check based on the provided
+	 * ConditionalOnAvailableEndpoint annotation.
+	 * @param conditionAnnotation the ConditionalOnAvailableEndpoint annotation to extract
+	 * the exposure values from
+	 * @return a set of EndpointExposure values to check
+	 */
+	private Set<EndpointExposure> getExposuresToCheck(
 			MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation) {
 		EndpointExposure[] exposure = conditionAnnotation.getEnumArray("exposure", EndpointExposure.class);
 		return (exposure.length == 0) ? EnumSet.allOf(EndpointExposure.class)
@@ -209,12 +210,11 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	}
 
 	/**
-     * Retrieves the set of exposure filters based on the given environment.
-     * 
-     * @param environment the environment to retrieve the exposure filters for
-     * @return the set of exposure filters
-     */
-    private Set<ExposureFilter> getExposureFilters(Environment environment) {
+	 * Retrieves the set of exposure filters based on the given environment.
+	 * @param environment the environment to retrieve the exposure filters for
+	 * @return the set of exposure filters
+	 */
+	private Set<ExposureFilter> getExposureFilters(Environment environment) {
 		Set<ExposureFilter> exposureFilters = exposureFiltersCache.get(environment);
 		if (exposureFilters == null) {
 			exposureFilters = new HashSet<>(2);
@@ -231,19 +231,19 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	}
 
 	/**
-     * ExposureFilter class.
-     */
-    static final class ExposureFilter extends IncludeExcludeEndpointFilter<ExposableEndpoint<?>> {
+	 * ExposureFilter class.
+	 */
+	static final class ExposureFilter extends IncludeExcludeEndpointFilter<ExposableEndpoint<?>> {
 
 		private final EndpointExposure exposure;
 
 		/**
-         * Constructs a new ExposureFilter with the specified environment and endpoint exposure.
-         * 
-         * @param environment the environment to filter
-         * @param exposure the endpoint exposure to apply
-         */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+		 * Constructs a new ExposureFilter with the specified environment and endpoint
+		 * exposure.
+		 * @param environment the environment to filter
+		 * @param exposure the endpoint exposure to apply
+		 */
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		private ExposureFilter(Environment environment, EndpointExposure exposure) {
 			super((Class) ExposableEndpoint.class, environment,
 					"management.endpoints." + getCanonicalName(exposure) + ".exposure", exposure.getDefaultIncludes());
@@ -252,12 +252,11 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		}
 
 		/**
-         * Returns the canonical name for the given EndpointExposure.
-         * 
-         * @param exposure the EndpointExposure to get the canonical name for
-         * @return the canonical name
-         */
-        private static String getCanonicalName(EndpointExposure exposure) {
+		 * Returns the canonical name for the given EndpointExposure.
+		 * @param exposure the EndpointExposure to get the canonical name for
+		 * @return the canonical name
+		 */
+		private static String getCanonicalName(EndpointExposure exposure) {
 			if (EndpointExposure.CLOUD_FOUNDRY.equals(exposure)) {
 				return "cloud-foundry";
 			}
@@ -265,21 +264,19 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		}
 
 		/**
-         * Returns the exposure of the ExposureFilter.
-         *
-         * @return the exposure of the ExposureFilter
-         */
-        EndpointExposure getExposure() {
+		 * Returns the exposure of the ExposureFilter.
+		 * @return the exposure of the ExposureFilter
+		 */
+		EndpointExposure getExposure() {
 			return this.exposure;
 		}
 
 		/**
-         * Checks if the given endpoint ID is exposed.
-         * 
-         * @param id the endpoint ID to check
-         * @return true if the endpoint ID is exposed, false otherwise
-         */
-        boolean isExposed(EndpointId id) {
+		 * Checks if the given endpoint ID is exposed.
+		 * @param id the endpoint ID to check
+		 * @return true if the endpoint ID is exposed, false otherwise
+		 */
+		boolean isExposed(EndpointId id) {
 			return super.match(id);
 		}
 

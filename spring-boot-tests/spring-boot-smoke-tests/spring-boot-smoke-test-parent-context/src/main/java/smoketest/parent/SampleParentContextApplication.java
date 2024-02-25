@@ -37,41 +37,39 @@ import org.springframework.integration.file.FileWritingMessageHandler;
 public class SampleParentContextApplication {
 
 	/**
-     * The main method is the entry point of the application.
-     * It creates a new SpringApplicationBuilder object with the Parent class as the parent context,
-     * and the SampleParentContextApplication class as the child context.
-     * It then runs the application with the provided command line arguments.
-     *
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It creates a new
+	 * SpringApplicationBuilder object with the Parent class as the parent context, and
+	 * the SampleParentContextApplication class as the child context. It then runs the
+	 * application with the provided command line arguments.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		new SpringApplicationBuilder(Parent.class).child(SampleParentContextApplication.class).run(args);
 	}
 
 	/**
-     * Parent class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * Parent class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
 	protected static class Parent {
 
 		private final ServiceProperties serviceProperties;
 
 		/**
-         * Constructs a new Parent object with the specified ServiceProperties.
-         * 
-         * @param serviceProperties the ServiceProperties to be associated with the Parent object
-         */
-        public Parent(ServiceProperties serviceProperties) {
+		 * Constructs a new Parent object with the specified ServiceProperties.
+		 * @param serviceProperties the ServiceProperties to be associated with the Parent
+		 * object
+		 */
+		public Parent(ServiceProperties serviceProperties) {
 			this.serviceProperties = serviceProperties;
 		}
 
 		/**
-         * Creates a file reader message source.
-         * 
-         * @return the file reader message source
-         */
-        @Bean
+		 * Creates a file reader message source.
+		 * @return the file reader message source
+		 */
+		@Bean
 		public FileReadingMessageSource fileReader() {
 			FileReadingMessageSource reader = new FileReadingMessageSource();
 			reader.setDirectory(this.serviceProperties.getInputDir());
@@ -79,31 +77,29 @@ public class SampleParentContextApplication {
 		}
 
 		/**
-         * Creates a new DirectChannel object.
-         * 
-         * @return the newly created DirectChannel object
-         */
-        @Bean
+		 * Creates a new DirectChannel object.
+		 * @return the newly created DirectChannel object
+		 */
+		@Bean
 		public DirectChannel inputChannel() {
 			return new DirectChannel();
 		}
 
 		/**
-         * Creates a new DirectChannel object.
-         * 
-         * @return the newly created DirectChannel object
-         */
-        @Bean
+		 * Creates a new DirectChannel object.
+		 * @return the newly created DirectChannel object
+		 */
+		@Bean
 		public DirectChannel outputChannel() {
 			return new DirectChannel();
 		}
 
 		/**
-         * Creates a {@link FileWritingMessageHandler} bean for writing messages to a file.
-         * 
-         * @return the created {@link FileWritingMessageHandler} bean
-         */
-        @Bean
+		 * Creates a {@link FileWritingMessageHandler} bean for writing messages to a
+		 * file.
+		 * @return the created {@link FileWritingMessageHandler} bean
+		 */
+		@Bean
 		public FileWritingMessageHandler fileWriter() {
 			FileWritingMessageHandler writer = new FileWritingMessageHandler(this.serviceProperties.getOutputDir());
 			writer.setExpectReply(false);
@@ -111,12 +107,12 @@ public class SampleParentContextApplication {
 		}
 
 		/**
-         * Creates an integration flow for processing files using the provided sample endpoint.
-         * 
-         * @param endpoint the sample endpoint to be used for processing files
-         * @return the integration flow for processing files
-         */
-        @Bean
+		 * Creates an integration flow for processing files using the provided sample
+		 * endpoint.
+		 * @param endpoint the sample endpoint to be used for processing files
+		 * @return the integration flow for processing files
+		 */
+		@Bean
 		public IntegrationFlow integrationFlow(SampleEndpoint endpoint) {
 			return IntegrationFlow.from(fileReader(), new FixedRatePoller())
 				.channel(inputChannel())
@@ -127,16 +123,15 @@ public class SampleParentContextApplication {
 		}
 
 		/**
-         * FixedRatePoller class.
-         */
-        private static final class FixedRatePoller implements Consumer<SourcePollingChannelAdapterSpec> {
+		 * FixedRatePoller class.
+		 */
+		private static final class FixedRatePoller implements Consumer<SourcePollingChannelAdapterSpec> {
 
 			/**
-             * Sets the polling configuration for the SourcePollingChannelAdapterSpec.
-             * 
-             * @param spec the SourcePollingChannelAdapterSpec to configure
-             */
-            @Override
+			 * Sets the polling configuration for the SourcePollingChannelAdapterSpec.
+			 * @param spec the SourcePollingChannelAdapterSpec to configure
+			 */
+			@Override
 			public void accept(SourcePollingChannelAdapterSpec spec) {
 				spec.poller(Pollers.fixedRate(500));
 			}

@@ -48,14 +48,15 @@ public class ValidationErrors implements Iterable<ObjectError> {
 	private final List<ObjectError> errors;
 
 	/**
-     * Constructs a new instance of ValidationErrors with the specified parameters.
-     * 
-     * @param name the name of the configuration property causing the validation errors (must not be null)
-     * @param boundProperties the set of bound configuration properties (must not be null)
-     * @param errors the list of object errors representing the validation errors (must not be null)
-     * @throws IllegalArgumentException if any of the parameters are null
-     */
-    ValidationErrors(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+	 * Constructs a new instance of ValidationErrors with the specified parameters.
+	 * @param name the name of the configuration property causing the validation errors
+	 * (must not be null)
+	 * @param boundProperties the set of bound configuration properties (must not be null)
+	 * @param errors the list of object errors representing the validation errors (must
+	 * not be null)
+	 * @throws IllegalArgumentException if any of the parameters are null
+	 */
+	ValidationErrors(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
 			List<ObjectError> errors) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(boundProperties, "BoundProperties must not be null");
@@ -66,14 +67,16 @@ public class ValidationErrors implements Iterable<ObjectError> {
 	}
 
 	/**
-     * Converts a list of ObjectErrors into a list of converted ObjectErrors.
-     * 
-     * @param name            the ConfigurationPropertyName object representing the name of the configuration property
-     * @param boundProperties the Set of ConfigurationProperty objects representing the bound properties
-     * @param errors          the List of ObjectError objects representing the errors to be converted
-     * @return                an unmodifiable List of converted ObjectError objects
-     */
-    private List<ObjectError> convertErrors(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+	 * Converts a list of ObjectErrors into a list of converted ObjectErrors.
+	 * @param name the ConfigurationPropertyName object representing the name of the
+	 * configuration property
+	 * @param boundProperties the Set of ConfigurationProperty objects representing the
+	 * bound properties
+	 * @param errors the List of ObjectError objects representing the errors to be
+	 * converted
+	 * @return an unmodifiable List of converted ObjectError objects
+	 */
+	private List<ObjectError> convertErrors(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
 			List<ObjectError> errors) {
 		List<ObjectError> converted = new ArrayList<>(errors.size());
 		for (ObjectError error : errors) {
@@ -83,14 +86,13 @@ public class ValidationErrors implements Iterable<ObjectError> {
 	}
 
 	/**
-     * Converts the given error to an ObjectError if it is a FieldError.
-     * 
-     * @param name            the ConfigurationPropertyName associated with the error
-     * @param boundProperties the set of bound ConfigurationProperties
-     * @param error           the error to be converted
-     * @return the converted error, or the original error if it is not a FieldError
-     */
-    private ObjectError convertError(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+	 * Converts the given error to an ObjectError if it is a FieldError.
+	 * @param name the ConfigurationPropertyName associated with the error
+	 * @param boundProperties the set of bound ConfigurationProperties
+	 * @param error the error to be converted
+	 * @return the converted error, or the original error if it is not a FieldError
+	 */
+	private ObjectError convertError(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
 			ObjectError error) {
 		if (error instanceof FieldError fieldError) {
 			return convertFieldError(name, boundProperties, fieldError);
@@ -99,14 +101,16 @@ public class ValidationErrors implements Iterable<ObjectError> {
 	}
 
 	/**
-     * Converts a {@link FieldError} to an {@link OriginTrackedFieldError} if it is not already an instance of {@link OriginProvider}.
-     * 
-     * @param name the {@link ConfigurationPropertyName} associated with the error
-     * @param boundProperties the set of {@link ConfigurationProperty} objects that are bound to the error
-     * @param error the {@link FieldError} to be converted
-     * @return the converted {@link FieldError} as an {@link OriginTrackedFieldError} if necessary
-     */
-    private FieldError convertFieldError(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+	 * Converts a {@link FieldError} to an {@link OriginTrackedFieldError} if it is not
+	 * already an instance of {@link OriginProvider}.
+	 * @param name the {@link ConfigurationPropertyName} associated with the error
+	 * @param boundProperties the set of {@link ConfigurationProperty} objects that are
+	 * bound to the error
+	 * @param error the {@link FieldError} to be converted
+	 * @return the converted {@link FieldError} as an {@link OriginTrackedFieldError} if
+	 * necessary
+	 */
+	private FieldError convertFieldError(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
 			FieldError error) {
 		if (error instanceof OriginProvider) {
 			return error;
@@ -115,14 +119,14 @@ public class ValidationErrors implements Iterable<ObjectError> {
 	}
 
 	/**
-     * Finds the origin of a field error based on the given configuration property name, set of bound properties, and field error.
-     * 
-     * @param name the configuration property name
-     * @param boundProperties the set of bound properties
-     * @param error the field error
-     * @return the origin of the field error, or null if not found
-     */
-    private Origin findFieldErrorOrigin(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+	 * Finds the origin of a field error based on the given configuration property name,
+	 * set of bound properties, and field error.
+	 * @param name the configuration property name
+	 * @param boundProperties the set of bound properties
+	 * @param error the field error
+	 * @return the origin of the field error, or null if not found
+	 */
+	private Origin findFieldErrorOrigin(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
 			FieldError error) {
 		for (ConfigurationProperty boundProperty : boundProperties) {
 			if (isForError(name, boundProperty.getName(), error)) {
@@ -133,14 +137,14 @@ public class ValidationErrors implements Iterable<ObjectError> {
 	}
 
 	/**
-     * Checks if the given ConfigurationPropertyName is for the specified error.
-     * 
-     * @param name                the ConfigurationPropertyName to check
-     * @param boundPropertyName   the ConfigurationPropertyName of the bound property
-     * @param error               the FieldError to compare with
-     * @return                    true if the given ConfigurationPropertyName is for the specified error, false otherwise
-     */
-    private boolean isForError(ConfigurationPropertyName name, ConfigurationPropertyName boundPropertyName,
+	 * Checks if the given ConfigurationPropertyName is for the specified error.
+	 * @param name the ConfigurationPropertyName to check
+	 * @param boundPropertyName the ConfigurationPropertyName of the bound property
+	 * @param error the FieldError to compare with
+	 * @return true if the given ConfigurationPropertyName is for the specified error,
+	 * false otherwise
+	 */
+	private boolean isForError(ConfigurationPropertyName name, ConfigurationPropertyName boundPropertyName,
 			FieldError error) {
 		return name.isParentOf(boundPropertyName)
 				&& boundPropertyName.getLastElement(Form.UNIFORM).equalsIgnoreCase(error.getField());
@@ -163,11 +167,10 @@ public class ValidationErrors implements Iterable<ObjectError> {
 	}
 
 	/**
-     * Checks if there are any errors in the validation errors list.
-     * 
-     * @return true if there are errors, false otherwise
-     */
-    public boolean hasErrors() {
+	 * Checks if there are any errors in the validation errors list.
+	 * @return true if there are errors, false otherwise
+	 */
+	public boolean hasErrors() {
 		return !this.errors.isEmpty();
 	}
 
@@ -180,11 +183,10 @@ public class ValidationErrors implements Iterable<ObjectError> {
 	}
 
 	/**
-     * Returns an iterator over the elements in this ValidationErrors object.
-     *
-     * @return an iterator over the elements in this ValidationErrors object
-     */
-    @Override
+	 * Returns an iterator over the elements in this ValidationErrors object.
+	 * @return an iterator over the elements in this ValidationErrors object
+	 */
+	@Override
 	public Iterator<ObjectError> iterator() {
 		return this.errors.iterator();
 	}

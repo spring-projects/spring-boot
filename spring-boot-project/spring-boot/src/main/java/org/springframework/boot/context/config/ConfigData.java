@@ -155,21 +155,21 @@ public final class ConfigData {
 		private final Options options;
 
 		/**
-         * Constructs a new instance of the AlwaysPropertySourceOptions class with the specified options.
-         *
-         * @param options the options to be set for the AlwaysPropertySourceOptions instance
-         */
-        AlwaysPropertySourceOptions(Options options) {
+		 * Constructs a new instance of the AlwaysPropertySourceOptions class with the
+		 * specified options.
+		 * @param options the options to be set for the AlwaysPropertySourceOptions
+		 * instance
+		 */
+		AlwaysPropertySourceOptions(Options options) {
 			this.options = options;
 		}
 
 		/**
-         * Retrieves the options from the specified property source.
-         * 
-         * @param propertySource the property source to retrieve options from
-         * @return the options retrieved from the property source
-         */
-        @Override
+		 * Retrieves the options from the specified property source.
+		 * @param propertySource the property source to retrieve options from
+		 * @return the options retrieved from the property source
+		 */
+		@Override
 		public Options get(PropertySource<?> propertySource) {
 			return this.options;
 		}
@@ -191,20 +191,18 @@ public final class ConfigData {
 		private final Set<Option> options;
 
 		/**
-         * Constructs a new Options object with the given set of options.
-         * 
-         * @param options the set of options to be included in the Options object
-         */
-        private Options(Set<Option> options) {
+		 * Constructs a new Options object with the given set of options.
+		 * @param options the set of options to be included in the Options object
+		 */
+		private Options(Set<Option> options) {
 			this.options = Collections.unmodifiableSet(options);
 		}
 
 		/**
-         * Returns a set of options.
-         *
-         * @return a set of options
-         */
-        Set<Option> asSet() {
+		 * Returns a set of options.
+		 * @return a set of options
+		 */
+		Set<Option> asSet() {
 			return this.options;
 		}
 
@@ -218,12 +216,12 @@ public final class ConfigData {
 		}
 
 		/**
-         * Compares this Options object with the specified object for equality.
-         * 
-         * @param obj the object to compare with
-         * @return true if the specified object is equal to this Options object, false otherwise
-         */
-        @Override
+		 * Compares this Options object with the specified object for equality.
+		 * @param obj the object to compare with
+		 * @return true if the specified object is equal to this Options object, false
+		 * otherwise
+		 */
+		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -236,21 +234,20 @@ public final class ConfigData {
 		}
 
 		/**
-         * Returns the hash code value for the Options object. The hash code is generated based on the options stored in the object.
-         *
-         * @return the hash code value for the Options object
-         */
-        @Override
+		 * Returns the hash code value for the Options object. The hash code is generated
+		 * based on the options stored in the object.
+		 * @return the hash code value for the Options object
+		 */
+		@Override
 		public int hashCode() {
 			return this.options.hashCode();
 		}
 
 		/**
-         * Returns a string representation of the options.
-         *
-         * @return a string representation of the options
-         */
-        @Override
+		 * Returns a string representation of the options.
+		 * @return a string representation of the options
+		 */
+		@Override
 		public String toString() {
 			return this.options.toString();
 		}
@@ -276,12 +273,12 @@ public final class ConfigData {
 		}
 
 		/**
-         * Creates a copy of the current Options object and applies the provided processor to modify the copied EnumSet of options.
-         * 
-         * @param processor the consumer function to modify the copied EnumSet of options
-         * @return a new Options object with the modified EnumSet of options
-         */
-        private Options copy(Consumer<EnumSet<Option>> processor) {
+		 * Creates a copy of the current Options object and applies the provided processor
+		 * to modify the copied EnumSet of options.
+		 * @param processor the consumer function to modify the copied EnumSet of options
+		 * @return a new Options object with the modified EnumSet of options
+		 */
+		private Options copy(Consumer<EnumSet<Option>> processor) {
 			EnumSet<Option> options = EnumSet.noneOf(Option.class);
 			options.addAll(this.options);
 			processor.accept(options);

@@ -38,13 +38,12 @@ public abstract class AbstractDataSourcePoolMetadata<T extends DataSource> imple
 	}
 
 	/**
-     * Returns the usage of the data source pool.
-     * 
-     * @return The usage of the data source pool as a Float value between 0 and 1, or null if the maximum size or current size is not available.
-     *         If the maximum size is negative, returns -1.
-     *         If the current size is 0, returns 0.
-     */
-    @Override
+	 * Returns the usage of the data source pool.
+	 * @return The usage of the data source pool as a Float value between 0 and 1, or null
+	 * if the maximum size or current size is not available. If the maximum size is
+	 * negative, returns -1. If the current size is 0, returns 0.
+	 */
+	@Override
 	public Float getUsage() {
 		Integer maxSize = getMax();
 		Integer currentSize = getActive();
@@ -61,11 +60,11 @@ public abstract class AbstractDataSourcePoolMetadata<T extends DataSource> imple
 	}
 
 	/**
-     * Returns the data source associated with this AbstractDataSourcePoolMetadata instance.
-     *
-     * @return the data source
-     */
-    protected final T getDataSource() {
+	 * Returns the data source associated with this AbstractDataSourcePoolMetadata
+	 * instance.
+	 * @return the data source
+	 */
+	protected final T getDataSource() {
 		return this.dataSource;
 	}
 

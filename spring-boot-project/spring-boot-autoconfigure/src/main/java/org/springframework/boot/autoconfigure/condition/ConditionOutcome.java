@@ -124,14 +124,14 @@ public class ConditionOutcome {
 	}
 
 	/**
-     * Compares this ConditionOutcome object to the specified object for equality.
-     * Returns true if and only if the specified object is also a ConditionOutcome object,
-     * both objects have the same class, and their match and message fields are equal.
-     * 
-     * @param obj the object to compare this ConditionOutcome against
-     * @return true if the given object represents a ConditionOutcome equivalent to this object, false otherwise
-     */
-    @Override
+	 * Compares this ConditionOutcome object to the specified object for equality. Returns
+	 * true if and only if the specified object is also a ConditionOutcome object, both
+	 * objects have the same class, and their match and message fields are equal.
+	 * @param obj the object to compare this ConditionOutcome against
+	 * @return true if the given object represents a ConditionOutcome equivalent to this
+	 * object, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -147,22 +147,23 @@ public class ConditionOutcome {
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the default implementation of the {@code hashCode} method.
-     * The hash code is calculated based on the {@code match} and {@code message} properties of the {@code ConditionOutcome} object.
-     * 
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the default
+	 * implementation of the {@code hashCode} method. The hash code is calculated based on
+	 * the {@code match} and {@code message} properties of the {@code ConditionOutcome}
+	 * object.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		return Boolean.hashCode(this.match) * 31 + ObjectUtils.nullSafeHashCode(this.message);
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * 
-     * @return the string representation of the object, or an empty string if the message is null
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return the string representation of the object, or an empty string if the message
+	 * is null
+	 */
+	@Override
 	public String toString() {
 		return (this.message != null) ? this.message.toString() : "";
 	}

@@ -34,56 +34,52 @@ class ConfigurationPropertySourcesPropertySource extends PropertySource<Iterable
 		implements OriginLookup<String> {
 
 	/**
-     * Constructs a new ConfigurationPropertySourcesPropertySource with the specified name and source.
-     * 
-     * @param name the name of the property source
-     * @param source the iterable collection of configuration property sources
-     */
-    ConfigurationPropertySourcesPropertySource(String name, Iterable<ConfigurationPropertySource> source) {
+	 * Constructs a new ConfigurationPropertySourcesPropertySource with the specified name
+	 * and source.
+	 * @param name the name of the property source
+	 * @param source the iterable collection of configuration property sources
+	 */
+	ConfigurationPropertySourcesPropertySource(String name, Iterable<ConfigurationPropertySource> source) {
 		super(name, source);
 	}
 
 	/**
-     * Checks if the specified property exists in the configuration property sources.
-     *
-     * @param name the name of the property to check
-     * @return true if the property exists, false otherwise
-     */
-    @Override
+	 * Checks if the specified property exists in the configuration property sources.
+	 * @param name the name of the property to check
+	 * @return true if the property exists, false otherwise
+	 */
+	@Override
 	public boolean containsProperty(String name) {
 		return findConfigurationProperty(name) != null;
 	}
 
 	/**
-     * Retrieves the value of a configuration property by its name.
-     * 
-     * @param name the name of the configuration property
-     * @return the value of the configuration property, or null if not found
-     */
-    @Override
+	 * Retrieves the value of a configuration property by its name.
+	 * @param name the name of the configuration property
+	 * @return the value of the configuration property, or null if not found
+	 */
+	@Override
 	public Object getProperty(String name) {
 		ConfigurationProperty configurationProperty = findConfigurationProperty(name);
 		return (configurationProperty != null) ? configurationProperty.getValue() : null;
 	}
 
 	/**
-     * Retrieves the origin of a configuration property based on its name.
-     * 
-     * @param name the name of the configuration property
-     * @return the origin of the configuration property
-     */
-    @Override
+	 * Retrieves the origin of a configuration property based on its name.
+	 * @param name the name of the configuration property
+	 * @return the origin of the configuration property
+	 */
+	@Override
 	public Origin getOrigin(String name) {
 		return Origin.from(findConfigurationProperty(name));
 	}
 
 	/**
-     * Finds a ConfigurationProperty with the given name.
-     * 
-     * @param name the name of the ConfigurationProperty to find
-     * @return the ConfigurationProperty with the given name, or null if not found
-     */
-    private ConfigurationProperty findConfigurationProperty(String name) {
+	 * Finds a ConfigurationProperty with the given name.
+	 * @param name the name of the ConfigurationProperty to find
+	 * @return the ConfigurationProperty with the given name, or null if not found
+	 */
+	private ConfigurationProperty findConfigurationProperty(String name) {
 		try {
 			return findConfigurationProperty(ConfigurationPropertyName.of(name, true));
 		}
@@ -93,12 +89,11 @@ class ConfigurationPropertySourcesPropertySource extends PropertySource<Iterable
 	}
 
 	/**
-     * Finds a ConfigurationProperty with the given name.
-     * 
-     * @param name the name of the ConfigurationProperty to find
-     * @return the ConfigurationProperty with the given name, or null if not found
-     */
-    ConfigurationProperty findConfigurationProperty(ConfigurationPropertyName name) {
+	 * Finds a ConfigurationProperty with the given name.
+	 * @param name the name of the ConfigurationProperty to find
+	 * @return the ConfigurationProperty with the given name, or null if not found
+	 */
+	ConfigurationProperty findConfigurationProperty(ConfigurationPropertyName name) {
 		if (name == null) {
 			return null;
 		}

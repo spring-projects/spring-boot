@@ -45,23 +45,25 @@ import org.springframework.context.annotation.Bean;
 public class AuditAutoConfiguration {
 
 	/**
-     * Creates an instance of AuditListener if no other bean of type AbstractAuditListener is present.
-     * 
-     * @param auditEventRepository the repository for audit events
-     * @return the created AuditListener instance
-     */
-    @Bean
+	 * Creates an instance of AuditListener if no other bean of type AbstractAuditListener
+	 * is present.
+	 * @param auditEventRepository the repository for audit events
+	 * @return the created AuditListener instance
+	 */
+	@Bean
 	@ConditionalOnMissingBean(AbstractAuditListener.class)
 	public AuditListener auditListener(AuditEventRepository auditEventRepository) {
 		return new AuditListener(auditEventRepository);
 	}
 
 	/**
-     * Creates an instance of {@link AuthenticationAuditListener} if the class {@link org.springframework.security.authentication.event.AbstractAuthenticationEvent} is present and there is no existing bean of type {@link AbstractAuthenticationAuditListener}.
-     * 
-     * @return the created instance of {@link AuthenticationAuditListener}
-     */
-    @Bean
+	 * Creates an instance of {@link AuthenticationAuditListener} if the class
+	 * {@link org.springframework.security.authentication.event.AbstractAuthenticationEvent}
+	 * is present and there is no existing bean of type
+	 * {@link AbstractAuthenticationAuditListener}.
+	 * @return the created instance of {@link AuthenticationAuditListener}
+	 */
+	@Bean
 	@ConditionalOnClass(name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
 	@ConditionalOnMissingBean(AbstractAuthenticationAuditListener.class)
 	public AuthenticationAuditListener authenticationAuditListener() {
@@ -69,11 +71,13 @@ public class AuditAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link AuthorizationAuditListener} if the class {@link org.springframework.security.access.event.AbstractAuthorizationEvent} is present and there is no existing bean of type {@link AbstractAuthorizationAuditListener}.
-     * 
-     * @return the created {@link AuthorizationAuditListener} instance
-     */
-    @Bean
+	 * Creates a new instance of {@link AuthorizationAuditListener} if the class
+	 * {@link org.springframework.security.access.event.AbstractAuthorizationEvent} is
+	 * present and there is no existing bean of type
+	 * {@link AbstractAuthorizationAuditListener}.
+	 * @return the created {@link AuthorizationAuditListener} instance
+	 */
+	@Bean
 	@ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
 	@ConditionalOnMissingBean(AbstractAuthorizationAuditListener.class)
 	public AuthorizationAuditListener authorizationAuditListener() {

@@ -29,11 +29,10 @@ import org.springframework.context.annotation.Bean;
 public class MyContainersConfiguration {
 
 	/**
-     * Creates a Neo4jContainer with the specified version.
-     *
-     * @return the created Neo4jContainer
-     */
-    @Bean
+	 * Creates a Neo4jContainer with the specified version.
+	 * @return the created Neo4jContainer
+	 */
+	@Bean
 	@ServiceConnection
 	public Neo4jContainer<?> neo4jContainer() {
 		return new Neo4jContainer<>("neo4j:5");

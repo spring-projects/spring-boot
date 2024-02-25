@@ -27,9 +27,10 @@ public class NoHelpCommandArgumentsException extends CommandException {
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * Constructs a new NoHelpCommandArgumentsException with the default options to show usage and hide the message.
-     */
-    public NoHelpCommandArgumentsException() {
+	 * Constructs a new NoHelpCommandArgumentsException with the default options to show
+	 * usage and hide the message.
+	 */
+	public NoHelpCommandArgumentsException() {
 		super(Option.SHOW_USAGE, Option.HIDE_MESSAGE);
 	}
 

@@ -67,28 +67,26 @@ class InitializrService {
 	private HttpClient http;
 
 	/**
-     * Constructs a new InitializrService object.
-     */
-    InitializrService() {
+	 * Constructs a new InitializrService object.
+	 */
+	InitializrService() {
 	}
 
 	/**
-     * Constructs a new InitializrService with the specified HttpClient.
-     *
-     * @param http the HttpClient to be used for making HTTP requests
-     */
-    InitializrService(HttpClient http) {
+	 * Constructs a new InitializrService with the specified HttpClient.
+	 * @param http the HttpClient to be used for making HTTP requests
+	 */
+	InitializrService(HttpClient http) {
 		this.http = http;
 	}
 
 	/**
-     * Returns the HttpClient instance.
-     * If the HttpClient instance is null, it creates a new instance using the HttpClientBuilder.
-     * The HttpClient instance is configured to use system properties.
-     * 
-     * @return the HttpClient instance
-     */
-    protected HttpClient getHttp() {
+	 * Returns the HttpClient instance. If the HttpClient instance is null, it creates a
+	 * new instance using the HttpClientBuilder. The HttpClient instance is configured to
+	 * use system properties.
+	 * @return the HttpClient instance
+	 */
+	protected HttpClient getHttp() {
 		if (this.http == null) {
 			this.http = HttpClientBuilder.create().useSystemProperties().build();
 		}
@@ -146,14 +144,14 @@ class InitializrService {
 	}
 
 	/**
-     * Parses the JSON metadata from the given HTTP entity and returns an instance of InitializrServiceMetadata.
-     * 
-     * @param httpEntity the HTTP entity containing the JSON metadata
-     * @return an instance of InitializrServiceMetadata parsed from the JSON metadata
-     * @throws IOException if an I/O error occurs while reading the HTTP entity
-     * @throws ReportableException if the content received from the server is invalid
-     */
-    private InitializrServiceMetadata parseJsonMetadata(HttpEntity httpEntity) throws IOException {
+	 * Parses the JSON metadata from the given HTTP entity and returns an instance of
+	 * InitializrServiceMetadata.
+	 * @param httpEntity the HTTP entity containing the JSON metadata
+	 * @return an instance of InitializrServiceMetadata parsed from the JSON metadata
+	 * @throws IOException if an I/O error occurs while reading the HTTP entity
+	 * @throws ReportableException if the content received from the server is invalid
+	 */
+	private InitializrServiceMetadata parseJsonMetadata(HttpEntity httpEntity) throws IOException {
 		try {
 			return new InitializrServiceMetadata(getContentAsJson(httpEntity));
 		}
@@ -163,14 +161,14 @@ class InitializrService {
 	}
 
 	/**
-     * Validates the response received from the server.
-     * 
-     * @param httpResponse The ClassicHttpResponse object representing the response received from the server.
-     * @param serviceUrl The URL of the server.
-     * @throws ReportableException If no content is received from the server.
-     * @throws Exception If the response code is not 200.
-     */
-    private void validateResponse(ClassicHttpResponse httpResponse, String serviceUrl) {
+	 * Validates the response received from the server.
+	 * @param httpResponse The ClassicHttpResponse object representing the response
+	 * received from the server.
+	 * @param serviceUrl The URL of the server.
+	 * @throws ReportableException If no content is received from the server.
+	 * @throws Exception If the response code is not 200.
+	 */
+	private void validateResponse(ClassicHttpResponse httpResponse, String serviceUrl) {
 		if (httpResponse.getEntity() == null) {
 			throw new ReportableException("No content received from server '" + serviceUrl + "'");
 		}
@@ -180,14 +178,13 @@ class InitializrService {
 	}
 
 	/**
-     * Creates a response object for project generation.
-     * 
-     * @param httpResponse The HTTP response received from the server.
-     * @param httpEntity The HTTP entity containing the response content.
-     * @return The project generation response object.
-     * @throws IOException If an I/O error occurs while reading the response content.
-     */
-    private ProjectGenerationResponse createResponse(ClassicHttpResponse httpResponse, HttpEntity httpEntity)
+	 * Creates a response object for project generation.
+	 * @param httpResponse The HTTP response received from the server.
+	 * @param httpEntity The HTTP entity containing the response content.
+	 * @return The project generation response object.
+	 * @throws IOException If an I/O error occurs while reading the response content.
+	 */
+	private ProjectGenerationResponse createResponse(ClassicHttpResponse httpResponse, HttpEntity httpEntity)
 			throws IOException {
 		ProjectGenerationResponse response = new ProjectGenerationResponse(
 				ContentType.create(httpEntity.getContentType()));
@@ -220,15 +217,14 @@ class InitializrService {
 	}
 
 	/**
-     * Executes an HTTP request and returns the response.
-     * 
-     * @param request     the HTTP request to be executed
-     * @param url         the URI of the service to send the request to
-     * @param description a description of the action being performed
-     * @return the HTTP response received from the service
-     * @throws ReportableException if an error occurs while executing the request
-     */
-    private ClassicHttpResponse execute(HttpUriRequest request, URI url, String description) {
+	 * Executes an HTTP request and returns the response.
+	 * @param request the HTTP request to be executed
+	 * @param url the URI of the service to send the request to
+	 * @param description a description of the action being performed
+	 * @return the HTTP response received from the service
+	 * @throws ReportableException if an error occurs while executing the request
+	 */
+	private ClassicHttpResponse execute(HttpUriRequest request, URI url, String description) {
 		try {
 			HttpHost host = HttpHost.create(url);
 			request.addHeader("User-Agent", "SpringBootCli/" + getClass().getPackage().getImplementationVersion());
@@ -241,14 +237,14 @@ class InitializrService {
 	}
 
 	/**
-     * Creates a ReportableException with the given URL and ClassicHttpResponse.
-     * 
-     * @param url The URL used for the service call.
-     * @param httpResponse The ClassicHttpResponse returned by the service.
-     * @return A ReportableException with the appropriate error message.
-     * @throws ReportableException if an error occurs during the creation of the exception.
-     */
-    private ReportableException createException(String url, ClassicHttpResponse httpResponse) {
+	 * Creates a ReportableException with the given URL and ClassicHttpResponse.
+	 * @param url The URL used for the service call.
+	 * @param httpResponse The ClassicHttpResponse returned by the service.
+	 * @return A ReportableException with the appropriate error message.
+	 * @throws ReportableException if an error occurs during the creation of the
+	 * exception.
+	 */
+	private ReportableException createException(String url, ClassicHttpResponse httpResponse) {
 		StatusLine statusLine = new StatusLine(httpResponse);
 		String message = "Initializr service call failed using '" + url + "' - service returned "
 				+ statusLine.getReasonPhrase();
@@ -264,12 +260,11 @@ class InitializrService {
 	}
 
 	/**
-     * Extracts the message from the given HttpEntity.
-     * 
-     * @param entity the HttpEntity to extract the message from
-     * @return the extracted message, or null if no message is found
-     */
-    private String extractMessage(HttpEntity entity) {
+	 * Extracts the message from the given HttpEntity.
+	 * @param entity the HttpEntity to extract the message from
+	 * @return the extracted message, or null if no message is found
+	 */
+	private String extractMessage(HttpEntity entity) {
 		if (entity != null) {
 			try {
 				JSONObject error = getContentAsJson(entity);
@@ -285,25 +280,23 @@ class InitializrService {
 	}
 
 	/**
-     * Converts the content of the given HttpEntity object into a JSONObject.
-     * 
-     * @param entity the HttpEntity object containing the content to be converted
-     * @return the content of the HttpEntity object as a JSONObject
-     * @throws IOException if an I/O error occurs while reading the content
-     * @throws JSONException if the content cannot be converted into a JSONObject
-     */
-    private JSONObject getContentAsJson(HttpEntity entity) throws IOException, JSONException {
+	 * Converts the content of the given HttpEntity object into a JSONObject.
+	 * @param entity the HttpEntity object containing the content to be converted
+	 * @return the content of the HttpEntity object as a JSONObject
+	 * @throws IOException if an I/O error occurs while reading the content
+	 * @throws JSONException if the content cannot be converted into a JSONObject
+	 */
+	private JSONObject getContentAsJson(HttpEntity entity) throws IOException, JSONException {
 		return new JSONObject(getContent(entity));
 	}
 
 	/**
-     * Retrieves the content from the given HttpEntity.
-     * 
-     * @param entity the HttpEntity from which to retrieve the content
-     * @return the content as a String
-     * @throws IOException if an I/O error occurs while retrieving the content
-     */
-    private String getContent(HttpEntity entity) throws IOException {
+	 * Retrieves the content from the given HttpEntity.
+	 * @param entity the HttpEntity from which to retrieve the content
+	 * @return the content as a String
+	 * @throws IOException if an I/O error occurs while retrieving the content
+	 */
+	private String getContent(HttpEntity entity) throws IOException {
 		ContentType contentType = ContentType.create(entity.getContentType());
 		Charset charset = contentType.getCharset();
 		charset = (charset != null) ? charset : StandardCharsets.UTF_8;
@@ -312,12 +305,12 @@ class InitializrService {
 	}
 
 	/**
-     * Extracts the file name from the given header.
-     * 
-     * @param header the header containing the file name
-     * @return the extracted file name, or null if the header is null or the file name cannot be extracted
-     */
-    private String extractFileName(Header header) {
+	 * Extracts the file name from the given header.
+	 * @param header the header containing the file name
+	 * @return the extracted file name, or null if the header is null or the file name
+	 * cannot be extracted
+	 */
+	private String extractFileName(Header header) {
 		if (header != null) {
 			String value = header.getValue();
 			int start = value.indexOf(FILENAME_HEADER_PREFIX);

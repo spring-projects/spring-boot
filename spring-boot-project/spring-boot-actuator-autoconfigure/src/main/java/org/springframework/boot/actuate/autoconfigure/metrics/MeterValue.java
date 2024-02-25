@@ -37,20 +37,18 @@ public final class MeterValue {
 	private final Object value;
 
 	/**
-     * Sets the value of the meter.
-     * 
-     * @param value the value to set for the meter
-     */
-    MeterValue(double value) {
+	 * Sets the value of the meter.
+	 * @param value the value to set for the meter
+	 */
+	MeterValue(double value) {
 		this.value = value;
 	}
 
 	/**
-     * Sets the value of the meter.
-     * 
-     * @param value the duration value to set
-     */
-    MeterValue(Duration value) {
+	 * Sets the value of the meter.
+	 * @param value the duration value to set
+	 */
+	MeterValue(Duration value) {
 		this.value = value;
 	}
 
@@ -73,11 +71,11 @@ public final class MeterValue {
 	}
 
 	/**
-     * Returns the summary value of the distribution.
-     *
-     * @return the summary value of the distribution, or null if the value is not of type Double
-     */
-    private Double getDistributionSummaryValue() {
+	 * Returns the summary value of the distribution.
+	 * @return the summary value of the distribution, or null if the value is not of type
+	 * Double
+	 */
+	private Double getDistributionSummaryValue() {
 		if (this.value instanceof Double doubleValue) {
 			return doubleValue;
 		}
@@ -85,14 +83,15 @@ public final class MeterValue {
 	}
 
 	/**
-     * Returns the timer value in nanoseconds.
-     * 
-     * If the value is of type Double, it is converted to nanoseconds by multiplying it with the conversion factor from milliseconds to nanoseconds.
-     * If the value is of type Duration, it is converted to nanoseconds using the toNanos() method.
-     * 
-     * @return the timer value in nanoseconds, or null if the value is not of type Double or Duration
-     */
-    private Long getTimerValue() {
+	 * Returns the timer value in nanoseconds.
+	 *
+	 * If the value is of type Double, it is converted to nanoseconds by multiplying it
+	 * with the conversion factor from milliseconds to nanoseconds. If the value is of
+	 * type Duration, it is converted to nanoseconds using the toNanos() method.
+	 * @return the timer value in nanoseconds, or null if the value is not of type Double
+	 * or Duration
+	 */
+	private Long getTimerValue() {
 		if (this.value instanceof Double doubleValue) {
 			return TimeUnit.MILLISECONDS.toNanos(doubleValue.longValue());
 		}
@@ -127,12 +126,13 @@ public final class MeterValue {
 	}
 
 	/**
-     * Parses a string representation of a duration and returns the corresponding Duration object.
-     * 
-     * @param value the string representation of the duration to be parsed
-     * @return the Duration object representing the parsed duration, or null if the parsing fails
-     */
-    private static Duration safeParseDuration(String value) {
+	 * Parses a string representation of a duration and returns the corresponding Duration
+	 * object.
+	 * @param value the string representation of the duration to be parsed
+	 * @return the Duration object representing the parsed duration, or null if the
+	 * parsing fails
+	 */
+	private static Duration safeParseDuration(String value) {
 		try {
 			return DurationStyle.detectAndParse(value);
 		}

@@ -69,9 +69,10 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	private boolean bufferContent = false;
 
 	/**
-     * Constructs a new MockServerRestTemplateCustomizer with a default SimpleRequestExpectationManager.
-     */
-    public MockServerRestTemplateCustomizer() {
+	 * Constructs a new MockServerRestTemplateCustomizer with a default
+	 * SimpleRequestExpectationManager.
+	 */
+	public MockServerRestTemplateCustomizer() {
 		this(SimpleRequestExpectationManager::new);
 	}
 
@@ -116,14 +117,15 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	/**
-     * Customizes the given RestTemplate instance by creating a MockRestServiceServer and setting up expectation manager.
-     * If detectRootUri is enabled, a RootUriRequestExpectationManager is created and used as the expectation manager.
-     * If bufferContent is enabled, the server builder buffers the content.
-     * The expectation manager and server are then added to the expectationManagers and servers maps respectively.
-     * 
-     * @param restTemplate the RestTemplate instance to be customized
-     */
-    @Override
+	 * Customizes the given RestTemplate instance by creating a MockRestServiceServer and
+	 * setting up expectation manager. If detectRootUri is enabled, a
+	 * RootUriRequestExpectationManager is created and used as the expectation manager. If
+	 * bufferContent is enabled, the server builder buffers the content. The expectation
+	 * manager and server are then added to the expectationManagers and servers maps
+	 * respectively.
+	 * @param restTemplate the RestTemplate instance to be customized
+	 */
+	@Override
 	public void customize(RestTemplate restTemplate) {
 		RequestExpectationManager expectationManager = createExpectationManager();
 		if (this.detectRootUri) {
@@ -139,22 +141,23 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	/**
-     * Creates a new instance of RequestExpectationManager.
-     * 
-     * @return The newly created RequestExpectationManager instance.
-     */
-    protected RequestExpectationManager createExpectationManager() {
+	 * Creates a new instance of RequestExpectationManager.
+	 * @return The newly created RequestExpectationManager instance.
+	 */
+	protected RequestExpectationManager createExpectationManager() {
 		return this.expectationManagerSupplier.get();
 	}
 
 	/**
-     * Returns the MockRestServiceServer associated with this MockServerRestTemplateCustomizer.
-     * 
-     * @return the MockRestServiceServer
-     * @throws IllegalStateException if MockServerRestTemplateCustomizer has not been bound to a RestTemplate
-     * @throws IllegalStateException if MockServerRestTemplateCustomizer has been bound to more than one RestTemplate
-     */
-    public MockRestServiceServer getServer() {
+	 * Returns the MockRestServiceServer associated with this
+	 * MockServerRestTemplateCustomizer.
+	 * @return the MockRestServiceServer
+	 * @throws IllegalStateException if MockServerRestTemplateCustomizer has not been
+	 * bound to a RestTemplate
+	 * @throws IllegalStateException if MockServerRestTemplateCustomizer has been bound to
+	 * more than one RestTemplate
+	 */
+	public MockRestServiceServer getServer() {
 		Assert.state(!this.servers.isEmpty(), "Unable to return a single MockRestServiceServer since "
 				+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
 		Assert.state(this.servers.size() == 1, "Unable to return a single MockRestServiceServer since "
@@ -163,30 +166,33 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	/**
-     * Returns the map of RestTemplate instances and their corresponding RequestExpectationManager instances.
-     *
-     * @return the map of RestTemplate instances and their corresponding RequestExpectationManager instances
-     */
-    public Map<RestTemplate, RequestExpectationManager> getExpectationManagers() {
+	 * Returns the map of RestTemplate instances and their corresponding
+	 * RequestExpectationManager instances.
+	 * @return the map of RestTemplate instances and their corresponding
+	 * RequestExpectationManager instances
+	 */
+	public Map<RestTemplate, RequestExpectationManager> getExpectationManagers() {
 		return this.expectationManagers;
 	}
 
 	/**
-     * Retrieves the MockRestServiceServer associated with the given RestTemplate.
-     * 
-     * @param restTemplate the RestTemplate for which to retrieve the MockRestServiceServer
-     * @return the MockRestServiceServer associated with the given RestTemplate, or null if not found
-     */
-    public MockRestServiceServer getServer(RestTemplate restTemplate) {
+	 * Retrieves the MockRestServiceServer associated with the given RestTemplate.
+	 * @param restTemplate the RestTemplate for which to retrieve the
+	 * MockRestServiceServer
+	 * @return the MockRestServiceServer associated with the given RestTemplate, or null
+	 * if not found
+	 */
+	public MockRestServiceServer getServer(RestTemplate restTemplate) {
 		return this.servers.get(restTemplate);
 	}
 
 	/**
-     * Returns an unmodifiable map of RestTemplate instances and their corresponding MockRestServiceServer instances.
-     * 
-     * @return an unmodifiable map of RestTemplate instances and their corresponding MockRestServiceServer instances
-     */
-    public Map<RestTemplate, MockRestServiceServer> getServers() {
+	 * Returns an unmodifiable map of RestTemplate instances and their corresponding
+	 * MockRestServiceServer instances.
+	 * @return an unmodifiable map of RestTemplate instances and their corresponding
+	 * MockRestServiceServer instances
+	 */
+	public Map<RestTemplate, MockRestServiceServer> getServers() {
 		return Collections.unmodifiableMap(this.servers);
 	}
 

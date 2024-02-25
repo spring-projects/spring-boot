@@ -27,12 +27,11 @@ import org.springframework.context.annotation.Bean;
 public class MyMeterBinderConfiguration {
 
 	/**
-     * Creates a MeterBinder for monitoring the size of a queue.
-     * 
-     * @param queue the queue to monitor
-     * @return the MeterBinder for monitoring the queue size
-     */
-    @Bean
+	 * Creates a MeterBinder for monitoring the size of a queue.
+	 * @param queue the queue to monitor
+	 * @return the MeterBinder for monitoring the queue size
+	 */
+	@Bean
 	public MeterBinder queueSize(Queue queue) {
 		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
 	}

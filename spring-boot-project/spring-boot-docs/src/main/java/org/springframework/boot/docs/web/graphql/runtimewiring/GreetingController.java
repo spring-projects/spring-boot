@@ -27,12 +27,11 @@ import org.springframework.stereotype.Controller;
 public class GreetingController {
 
 	/**
-     * Returns a greeting message with the provided name.
-     *
-     * @param name the name to be included in the greeting message
-     * @return a greeting message with the provided name
-     */
-    @QueryMapping
+	 * Returns a greeting message with the provided name.
+	 * @param name the name to be included in the greeting message
+	 * @return a greeting message with the provided name
+	 */
+	@QueryMapping
 	public String greeting(@Argument String name) {
 		return "Hello, " + name + "!";
 	}

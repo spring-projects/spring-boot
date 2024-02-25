@@ -33,39 +33,36 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 class R2dbcRepositoriesAutoConfigureRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	/**
-     * Returns the annotation class that is used to enable R2dbc repositories.
-     *
-     * @return the annotation class {@code EnableR2dbcRepositories}
-     */
-    @Override
+	 * Returns the annotation class that is used to enable R2dbc repositories.
+	 * @return the annotation class {@code EnableR2dbcRepositories}
+	 */
+	@Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableR2dbcRepositories.class;
 	}
 
 	/**
-     * Returns the configuration class for enabling R2DBC repositories.
-     * 
-     * @return the configuration class for enabling R2DBC repositories
-     */
-    @Override
+	 * Returns the configuration class for enabling R2DBC repositories.
+	 * @return the configuration class for enabling R2DBC repositories
+	 */
+	@Override
 	protected Class<?> getConfiguration() {
 		return EnableR2dbcRepositoriesConfiguration.class;
 	}
 
 	/**
-     * Returns the repository configuration extension for R2DBC repositories.
-     * 
-     * @return the repository configuration extension
-     */
-    @Override
+	 * Returns the repository configuration extension for R2DBC repositories.
+	 * @return the repository configuration extension
+	 */
+	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new R2dbcRepositoryConfigurationExtension();
 	}
 
 	/**
-     * EnableR2dbcRepositoriesConfiguration class.
-     */
-    @EnableR2dbcRepositories
+	 * EnableR2dbcRepositoriesConfiguration class.
+	 */
+	@EnableR2dbcRepositories
 	private static final class EnableR2dbcRepositoriesConfiguration {
 
 	}

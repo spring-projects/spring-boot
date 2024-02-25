@@ -25,20 +25,18 @@ import java.util.List;
 class Dictionary {
 
 	/**
-     * Loads a dictionary.
-     * 
-     * @return a new instance of the Dictionary class.
-     */
-    static Dictionary load() {
+	 * Loads a dictionary.
+	 * @return a new instance of the Dictionary class.
+	 */
+	static Dictionary load() {
 		return new Dictionary();
 	}
 
 	/**
-     * Returns an empty list of words.
-     *
-     * @return an empty list of words
-     */
-    List<String> getWords() {
+	 * Returns an empty list of words.
+	 * @return an empty list of words
+	 */
+	List<String> getWords() {
 		return Collections.emptyList();
 	}
 

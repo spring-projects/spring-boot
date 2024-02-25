@@ -31,12 +31,12 @@ import org.springframework.core.env.ConfigurableEnvironment;
 class ActiveProfilesEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
 	/**
-     * This method is used to post-process the environment and add the "dev" profile if the "enableEnvironmentPostProcessor" property is not null.
-     * 
-     * @param environment the configurable environment
-     * @param application the spring application
-     */
-    @Override
+	 * This method is used to post-process the environment and add the "dev" profile if
+	 * the "enableEnvironmentPostProcessor" property is not null.
+	 * @param environment the configurable environment
+	 * @param application the spring application
+	 */
+	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (environment.getProperty("enableEnvironmentPostProcessor") != null) {
 			environment.addActiveProfile("dev");

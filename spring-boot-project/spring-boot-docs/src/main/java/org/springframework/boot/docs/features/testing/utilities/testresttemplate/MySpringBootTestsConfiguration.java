@@ -37,19 +37,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class MySpringBootTestsConfiguration {
 
 	/**
-     * ExampleController class.
-     */
-    @RestController
+	 * ExampleController class.
+	 */
+	@RestController
 	private static final class ExampleController {
 
 		/**
-         * This method is used to handle the request mapping for "/example" endpoint.
-         * It returns a ResponseEntity object with a status of OK and a body of "test".
-         * The response also includes a location header with the URI "https://other.example.com/example".
-         *
-         * @return ResponseEntity<String> - The response entity containing the status, body, and location header.
-         */
-        @RequestMapping("/example")
+		 * This method is used to handle the request mapping for "/example" endpoint. It
+		 * returns a ResponseEntity object with a status of OK and a body of "test". The
+		 * response also includes a location header with the URI
+		 * "https://other.example.com/example".
+		 * @return ResponseEntity<String> - The response entity containing the status,
+		 * body, and location header.
+		 */
+		@RequestMapping("/example")
 		ResponseEntity<String> example() {
 			return ResponseEntity.ok().location(URI.create("https://other.example.com/example")).body("test");
 		}

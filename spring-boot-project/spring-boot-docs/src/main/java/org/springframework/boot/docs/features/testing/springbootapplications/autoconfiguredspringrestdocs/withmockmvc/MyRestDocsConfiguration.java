@@ -28,12 +28,11 @@ import org.springframework.restdocs.templates.TemplateFormats;
 public class MyRestDocsConfiguration implements RestDocsMockMvcConfigurationCustomizer {
 
 	/**
-     * Customize the MockMvcRestDocumentationConfigurer.
-     * This method sets the template format to Markdown.
-     * 
-     * @param configurer the MockMvcRestDocumentationConfigurer to customize
-     */
-    @Override
+	 * Customize the MockMvcRestDocumentationConfigurer. This method sets the template
+	 * format to Markdown.
+	 * @param configurer the MockMvcRestDocumentationConfigurer to customize
+	 */
+	@Override
 	public void customize(MockMvcRestDocumentationConfigurer configurer) {
 		configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
 	}

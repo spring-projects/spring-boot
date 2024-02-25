@@ -153,12 +153,12 @@ public final class HttpExchange {
 		private final RecordableHttpRequest request;
 
 		/**
-         * Initializes a new instance of the Started class with the specified clock and recordable HTTP request.
-         * 
-         * @param clock The clock used to retrieve the current timestamp.
-         * @param request The recordable HTTP request associated with the instance.
-         */
-        private Started(Clock clock, RecordableHttpRequest request) {
+		 * Initializes a new instance of the Started class with the specified clock and
+		 * recordable HTTP request.
+		 * @param clock The clock used to retrieve the current timestamp.
+		 * @param request The recordable HTTP request associated with the instance.
+		 */
+		private Started(Clock clock, RecordableHttpRequest request) {
 			this.timestamp = Instant.now(clock);
 			this.request = request;
 		}
@@ -227,15 +227,15 @@ public final class HttpExchange {
 		}
 
 		/**
-         * Returns the result of the supplier if the given include is included in the set of includes.
-         * 
-         * @param includes the set of includes to check
-         * @param include the include to check for inclusion
-         * @param supplier the supplier to provide the result
-         * @param <T> the type of the result
-         * @return the result of the supplier if the include is included, otherwise null
-         */
-        private <T> T getIfIncluded(Set<Include> includes, Include include, Supplier<T> supplier) {
+		 * Returns the result of the supplier if the given include is included in the set
+		 * of includes.
+		 * @param includes the set of includes to check
+		 * @param include the include to check for inclusion
+		 * @param supplier the supplier to provide the result
+		 * @param <T> the type of the result
+		 * @return the result of the supplier if the include is included, otherwise null
+		 */
+		private <T> T getIfIncluded(Set<Include> includes, Include include, Supplier<T> supplier) {
 			return (includes.contains(include)) ? supplier.get() : null;
 		}
 
@@ -255,14 +255,13 @@ public final class HttpExchange {
 		private final Map<String, List<String>> headers;
 
 		/**
-         * Constructs a new Request object with the given RecordableHttpRequest and includes.
-         * 
-         * @param request the RecordableHttpRequest object representing the request
-         * @param includes the set of Include options to include in the request
-         * 
-         * @throws NullPointerException if the request is null
-         */
-        private Request(RecordableHttpRequest request, Set<Include> includes) {
+		 * Constructs a new Request object with the given RecordableHttpRequest and
+		 * includes.
+		 * @param request the RecordableHttpRequest object representing the request
+		 * @param includes the set of Include options to include in the request
+		 * @throws NullPointerException if the request is null
+		 */
+		private Request(RecordableHttpRequest request, Set<Include> includes) {
 			this.uri = request.getUri();
 			this.remoteAddress = (includes.contains(Include.REMOTE_ADDRESS)) ? request.getRemoteAddress() : null;
 			this.method = request.getMethod();
@@ -286,13 +285,12 @@ public final class HttpExchange {
 		}
 
 		/**
-         * Filters the given headers based on the specified includes.
-         * 
-         * @param headers the headers to be filtered
-         * @param includes the set of includes to determine which headers to include
-         * @return a map containing the filtered headers
-         */
-        private Map<String, List<String>> filterHeaders(Map<String, List<String>> headers, Set<Include> includes) {
+		 * Filters the given headers based on the specified includes.
+		 * @param headers the headers to be filtered
+		 * @param includes the set of includes to determine which headers to include
+		 * @return a map containing the filtered headers
+		 */
+		private Map<String, List<String>> filterHeaders(Map<String, List<String>> headers, Set<Include> includes) {
 			HeadersFilter filter = new HeadersFilter(includes, Include.REQUEST_HEADERS);
 			filter.excludeUnless(HttpHeaders.COOKIE, Include.COOKIE_HEADERS);
 			filter.excludeUnless(HttpHeaders.AUTHORIZATION, Include.AUTHORIZATION_HEADER);
@@ -343,12 +341,12 @@ public final class HttpExchange {
 		private final Map<String, List<String>> headers;
 
 		/**
-         * Constructs a new Response object with the given RecordableHttpResponse and includes.
-         * 
-         * @param request the RecordableHttpResponse object representing the request
-         * @param includes the set of Include options to filter the headers
-         */
-        private Response(RecordableHttpResponse request, Set<Include> includes) {
+		 * Constructs a new Response object with the given RecordableHttpResponse and
+		 * includes.
+		 * @param request the RecordableHttpResponse object representing the request
+		 * @param includes the set of Include options to filter the headers
+		 */
+		private Response(RecordableHttpResponse request, Set<Include> includes) {
 			this.status = request.getStatus();
 			this.headers = Collections.unmodifiableMap(filterHeaders(request.getHeaders(), includes));
 		}
@@ -366,13 +364,12 @@ public final class HttpExchange {
 		}
 
 		/**
-         * Filters the given headers based on the specified includes.
-         * 
-         * @param headers the map of headers to be filtered
-         * @param includes the set of includes to determine which headers to include
-         * @return a new map of filtered headers
-         */
-        private Map<String, List<String>> filterHeaders(Map<String, List<String>> headers, Set<Include> includes) {
+		 * Filters the given headers based on the specified includes.
+		 * @param headers the map of headers to be filtered
+		 * @param includes the set of includes to determine which headers to include
+		 * @return a new map of filtered headers
+		 */
+		private Map<String, List<String>> filterHeaders(Map<String, List<String>> headers, Set<Include> includes) {
 			HeadersFilter filter = new HeadersFilter(includes, Include.RESPONSE_HEADERS);
 			filter.excludeUnless(HttpHeaders.SET_COOKIE, Include.COOKIE_HEADERS);
 			return filter.apply(headers);
@@ -421,12 +418,11 @@ public final class HttpExchange {
 		}
 
 		/**
-         * Creates a new Session object using the provided sessionIdSupplier.
-         * 
-         * @param sessionIdSupplier the supplier function that provides the session ID
-         * @return a new Session object if the session ID is not null, otherwise null
-         */
-        static Session from(Supplier<String> sessionIdSupplier) {
+		 * Creates a new Session object using the provided sessionIdSupplier.
+		 * @param sessionIdSupplier the supplier function that provides the session ID
+		 * @return a new Session object if the session ID is not null, otherwise null
+		 */
+		static Session from(Supplier<String> sessionIdSupplier) {
 			String id = sessionIdSupplier.get();
 			return (id != null) ? new Session(id) : null;
 		}
@@ -458,13 +454,13 @@ public final class HttpExchange {
 		}
 
 		/**
-         * Returns a Principal object from the given supplier.
-         * 
-         * @param principalSupplier the supplier that provides the java.security.Principal object
-         * @return a Principal object created from the java.security.Principal object provided by the supplier,
-         *         or null if the supplier returns null
-         */
-        static Principal from(Supplier<java.security.Principal> principalSupplier) {
+		 * Returns a Principal object from the given supplier.
+		 * @param principalSupplier the supplier that provides the java.security.Principal
+		 * object
+		 * @return a Principal object created from the java.security.Principal object
+		 * provided by the supplier, or null if the supplier returns null
+		 */
+		static Principal from(Supplier<java.security.Principal> principalSupplier) {
 			java.security.Principal principal = principalSupplier.get();
 			return (principal != null) ? new Principal(principal.getName()) : null;
 		}
@@ -483,36 +479,36 @@ public final class HttpExchange {
 		private final Set<String> filteredHeaderNames;
 
 		/**
-         * Constructs a new HeadersFilter object with the specified set of includes and required include.
-         * 
-         * @param includes the set of includes to filter the headers
-         * @param requiredInclude the required include that must be present in the filtered headers
-         */
-        HeadersFilter(Set<Include> includes, Include requiredInclude) {
+		 * Constructs a new HeadersFilter object with the specified set of includes and
+		 * required include.
+		 * @param includes the set of includes to filter the headers
+		 * @param requiredInclude the required include that must be present in the
+		 * filtered headers
+		 */
+		HeadersFilter(Set<Include> includes, Include requiredInclude) {
 			this.includes = includes;
 			this.requiredInclude = requiredInclude;
 			this.filteredHeaderNames = new HashSet<>();
 		}
 
 		/**
-         * Adds the specified header name to the filteredHeaderNames list, unless the specified Include exception is present in the includes list.
-         * 
-         * @param header the header name to be added to the filteredHeaderNames list
-         * @param exception the Include object that should be excluded from the check
-         */
-        void excludeUnless(String header, Include exception) {
+		 * Adds the specified header name to the filteredHeaderNames list, unless the
+		 * specified Include exception is present in the includes list.
+		 * @param header the header name to be added to the filteredHeaderNames list
+		 * @param exception the Include object that should be excluded from the check
+		 */
+		void excludeUnless(String header, Include exception) {
 			if (!this.includes.contains(exception)) {
 				this.filteredHeaderNames.add(header.toLowerCase());
 			}
 		}
 
 		/**
-         * Applies a filter to the given headers map.
-         * 
-         * @param headers the headers map to be filtered
-         * @return a filtered headers map
-         */
-        Map<String, List<String>> apply(Map<String, List<String>> headers) {
+		 * Applies a filter to the given headers map.
+		 * @param headers the headers map to be filtered
+		 * @return a filtered headers map
+		 */
+		Map<String, List<String>> apply(Map<String, List<String>> headers) {
 			if (!this.includes.contains(this.requiredInclude)) {
 				return Collections.emptyMap();
 			}

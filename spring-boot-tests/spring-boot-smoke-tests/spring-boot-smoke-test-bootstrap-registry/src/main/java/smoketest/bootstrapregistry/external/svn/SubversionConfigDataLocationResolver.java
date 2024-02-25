@@ -35,27 +35,27 @@ class SubversionConfigDataLocationResolver implements ConfigDataLocationResolver
 	private static final String PREFIX = "svn:";
 
 	/**
-     * Determines if the given ConfigDataLocation is resolvable by this resolver.
-     * 
-     * @param context the ConfigDataLocationResolverContext
-     * @param location the ConfigDataLocation to be resolved
-     * @return true if the location has the specified prefix, false otherwise
-     */
-    @Override
+	 * Determines if the given ConfigDataLocation is resolvable by this resolver.
+	 * @param context the ConfigDataLocationResolverContext
+	 * @param location the ConfigDataLocation to be resolved
+	 * @return true if the location has the specified prefix, false otherwise
+	 */
+	@Override
 	public boolean isResolvable(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
 		return location.hasPrefix(PREFIX);
 	}
 
 	/**
-     * Resolves the Subversion configuration data resource for the given location.
-     * 
-     * @param context The context for resolving the configuration data location.
-     * @param location The location of the configuration data.
-     * @return A list containing the resolved Subversion configuration data resource.
-     * @throws ConfigDataLocationNotFoundException If the configuration data location is not found.
-     * @throws ConfigDataResourceNotFoundException If the configuration data resource is not found.
-     */
-    @Override
+	 * Resolves the Subversion configuration data resource for the given location.
+	 * @param context The context for resolving the configuration data location.
+	 * @param location The location of the configuration data.
+	 * @return A list containing the resolved Subversion configuration data resource.
+	 * @throws ConfigDataLocationNotFoundException If the configuration data location is
+	 * not found.
+	 * @throws ConfigDataResourceNotFoundException If the configuration data resource is
+	 * not found.
+	 */
+	@Override
 	public List<SubversionConfigDataResource> resolve(ConfigDataLocationResolverContext context,
 			ConfigDataLocation location)
 			throws ConfigDataLocationNotFoundException, ConfigDataResourceNotFoundException {

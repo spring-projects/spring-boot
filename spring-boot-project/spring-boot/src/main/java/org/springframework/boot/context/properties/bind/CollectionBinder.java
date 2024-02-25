@@ -34,23 +34,21 @@ import org.springframework.core.ResolvableType;
 class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 
 	/**
-     * Constructs a new CollectionBinder with the specified context.
-     *
-     * @param context the context to be used by the CollectionBinder
-     */
-    CollectionBinder(Context context) {
+	 * Constructs a new CollectionBinder with the specified context.
+	 * @param context the context to be used by the CollectionBinder
+	 */
+	CollectionBinder(Context context) {
 		super(context);
 	}
 
 	/**
-     * Binds an aggregate configuration property to a target object.
-     * 
-     * @param name the name of the configuration property
-     * @param target the target object to bind the configuration property to
-     * @param elementBinder the element binder to use for binding individual elements
-     * @return the bound aggregate object, or null if the aggregate was not supplied
-     */
-    @Override
+	 * Binds an aggregate configuration property to a target object.
+	 * @param name the name of the configuration property
+	 * @param target the target object to bind the configuration property to
+	 * @param elementBinder the element binder to use for binding individual elements
+	 * @return the bound aggregate object, or null if the aggregate was not supplied
+	 */
+	@Override
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
 		ResolvableType aggregateType = ResolvableType.forClassWithGenerics(List.class,
@@ -66,13 +64,12 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	/**
-     * Merges the existing collection with the additional collection.
-     * 
-     * @param existing   a Supplier that provides the existing collection
-     * @param additional the additional collection to be merged
-     * @return the merged collection
-     */
-    @Override
+	 * Merges the existing collection with the additional collection.
+	 * @param existing a Supplier that provides the existing collection
+	 * @param additional the additional collection to be merged
+	 * @return the merged collection
+	 */
+	@Override
 	protected Collection<Object> merge(Supplier<Collection<Object>> existing, Collection<Object> additional) {
 		Collection<Object> existingCollection = getExistingIfPossible(existing);
 		if (existingCollection == null) {
@@ -89,12 +86,11 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	/**
-     * Retrieves an existing collection if possible.
-     * 
-     * @param existing a supplier that provides an existing collection
-     * @return the existing collection if available, or null if an exception occurs
-     */
-    private Collection<Object> getExistingIfPossible(Supplier<Collection<Object>> existing) {
+	 * Retrieves an existing collection if possible.
+	 * @param existing a supplier that provides an existing collection
+	 * @return the existing collection if available, or null if an exception occurs
+	 */
+	private Collection<Object> getExistingIfPossible(Supplier<Collection<Object>> existing) {
 		try {
 			return existing.get();
 		}
@@ -104,13 +100,14 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	/**
-     * Copies the elements of the given collection into a new collection if possible.
-     * If an exception occurs during the creation of the new collection, the original collection is returned.
-     *
-     * @param collection the collection to be copied
-     * @return a new collection containing the elements of the given collection, or the original collection if an exception occurs
-     */
-    private Collection<Object> copyIfPossible(Collection<Object> collection) {
+	 * Copies the elements of the given collection into a new collection if possible. If
+	 * an exception occurs during the creation of the new collection, the original
+	 * collection is returned.
+	 * @param collection the collection to be copied
+	 * @return a new collection containing the elements of the given collection, or the
+	 * original collection if an exception occurs
+	 */
+	private Collection<Object> copyIfPossible(Collection<Object> collection) {
 		try {
 			return createNewCollection(collection);
 		}
@@ -120,12 +117,13 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	/**
-     * Creates a new collection with the same type as the input collection and copies all elements from the input collection to the new collection.
-     * 
-     * @param collection the input collection
-     * @return a new collection with the same type as the input collection and all elements copied from the input collection
-     */
-    private Collection<Object> createNewCollection(Collection<Object> collection) {
+	 * Creates a new collection with the same type as the input collection and copies all
+	 * elements from the input collection to the new collection.
+	 * @param collection the input collection
+	 * @return a new collection with the same type as the input collection and all
+	 * elements copied from the input collection
+	 */
+	private Collection<Object> createNewCollection(Collection<Object> collection) {
 		Collection<Object> result = CollectionFactory.createCollection(collection.getClass(), collection.size());
 		result.addAll(collection);
 		return result;

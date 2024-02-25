@@ -78,61 +78,55 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	private SslBundles sslBundles;
 
 	/**
-     * Sets the port number for the server.
-     * 
-     * @param port the port number to set
-     */
-    @Override
+	 * Sets the port number for the server.
+	 * @param port the port number to set
+	 */
+	@Override
 	public void setPort(int port) {
 		this.port = port;
 	}
 
 	/**
-     * Sets the fragment size for the RSocket server.
-     * 
-     * @param fragmentSize the fragment size to be set
-     */
-    @Override
+	 * Sets the fragment size for the RSocket server.
+	 * @param fragmentSize the fragment size to be set
+	 */
+	@Override
 	public void setFragmentSize(DataSize fragmentSize) {
 		this.fragmentSize = fragmentSize;
 	}
 
 	/**
-     * Sets the address of the server.
-     * 
-     * @param address the InetAddress representing the server address
-     */
-    @Override
+	 * Sets the address of the server.
+	 * @param address the InetAddress representing the server address
+	 */
+	@Override
 	public void setAddress(InetAddress address) {
 		this.address = address;
 	}
 
 	/**
-     * Sets the transport for the RSocket server.
-     * 
-     * @param transport the transport to be set
-     */
-    @Override
+	 * Sets the transport for the RSocket server.
+	 * @param transport the transport to be set
+	 */
+	@Override
 	public void setTransport(RSocketServer.Transport transport) {
 		this.transport = transport;
 	}
 
 	/**
-     * Sets the SSL configuration for the Netty RSocket server.
-     *
-     * @param ssl the SSL configuration to be set
-     */
-    @Override
+	 * Sets the SSL configuration for the Netty RSocket server.
+	 * @param ssl the SSL configuration to be set
+	 */
+	@Override
 	public void setSsl(Ssl ssl) {
 		this.ssl = ssl;
 	}
 
 	/**
-     * Sets the SSL bundles for the Netty RSocket server.
-     * 
-     * @param sslBundles the SSL bundles to be set
-     */
-    @Override
+	 * Sets the SSL bundles for the Netty RSocket server.
+	 * @param sslBundles the SSL bundles to be set
+	 */
+	@Override
 	public void setSslBundles(SslBundles sslBundles) {
 		this.sslBundles = sslBundles;
 	}
@@ -178,12 +172,11 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	/**
-     * Creates a NettyRSocketServer instance with the given SocketAcceptor.
-     * 
-     * @param socketAcceptor the SocketAcceptor to be used by the server
-     * @return a NettyRSocketServer instance
-     */
-    @Override
+	 * Creates a NettyRSocketServer instance with the given SocketAcceptor.
+	 * @param socketAcceptor the SocketAcceptor to be used by the server
+	 * @return a NettyRSocketServer instance
+	 */
+	@Override
 	public NettyRSocketServer create(SocketAcceptor socketAcceptor) {
 		ServerTransport<CloseableChannel> transport = createTransport();
 		io.rsocket.core.RSocketServer server = io.rsocket.core.RSocketServer.create(socketAcceptor);
@@ -193,22 +186,20 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	/**
-     * Configures the RSocket server with the provided server instance.
-     *
-     * @param server the RSocket server instance to be configured
-     */
-    private void configureServer(io.rsocket.core.RSocketServer server) {
+	 * Configures the RSocket server with the provided server instance.
+	 * @param server the RSocket server instance to be configured
+	 */
+	private void configureServer(io.rsocket.core.RSocketServer server) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.fragmentSize).asInt(DataSize::toBytes).to(server::fragment);
 		this.rSocketServerCustomizers.forEach((customizer) -> customizer.customize(server));
 	}
 
 	/**
-     * Creates a transport for the server based on the configured transport type.
-     *
-     * @return the created transport
-     */
-    private ServerTransport<CloseableChannel> createTransport() {
+	 * Creates a transport for the server based on the configured transport type.
+	 * @return the created transport
+	 */
+	private ServerTransport<CloseableChannel> createTransport() {
 		if (this.transport == RSocketServer.Transport.WEBSOCKET) {
 			return createWebSocketTransport();
 		}
@@ -216,11 +207,10 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	/**
-     * Creates a WebSocket transport for the server.
-     *
-     * @return the WebSocket transport
-     */
-    private ServerTransport<CloseableChannel> createWebSocketTransport() {
+	 * Creates a WebSocket transport for the server.
+	 * @return the WebSocket transport
+	 */
+	private ServerTransport<CloseableChannel> createWebSocketTransport() {
 		HttpServer httpServer = HttpServer.create();
 		if (this.resourceFactory != null) {
 			httpServer = httpServer.runOn(this.resourceFactory.getLoopResources());
@@ -232,21 +222,19 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	/**
-     * Customizes the SSL configuration of the given {@link HttpServer} instance.
-     *
-     * @param httpServer the {@link HttpServer} instance to customize
-     * @return the customized {@link HttpServer} instance
-     */
-    private HttpServer customizeSslConfiguration(HttpServer httpServer) {
+	 * Customizes the SSL configuration of the given {@link HttpServer} instance.
+	 * @param httpServer the {@link HttpServer} instance to customize
+	 * @return the customized {@link HttpServer} instance
+	 */
+	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
 		return new SslServerCustomizer(null, this.ssl.getClientAuth(), getSslBundle()).apply(httpServer);
 	}
 
 	/**
-     * Creates a TCP transport for the server.
-     *
-     * @return the created TCP transport
-     */
-    private ServerTransport<CloseableChannel> createTcpTransport() {
+	 * Creates a TCP transport for the server.
+	 * @return the created TCP transport
+	 */
+	private ServerTransport<CloseableChannel> createTcpTransport() {
 		TcpServer tcpServer = TcpServer.create();
 		if (this.resourceFactory != null) {
 			tcpServer = tcpServer.runOn(this.resourceFactory.getLoopResources());
@@ -258,20 +246,18 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	/**
-     * Retrieves the SSL bundle for the Netty RSocket server.
-     * 
-     * @return the SSL bundle for the server
-     */
-    private SslBundle getSslBundle() {
+	 * Retrieves the SSL bundle for the Netty RSocket server.
+	 * @return the SSL bundle for the server
+	 */
+	private SslBundle getSslBundle() {
 		return WebServerSslBundle.get(this.ssl, this.sslBundles);
 	}
 
 	/**
-     * Returns the listen address for the Netty RSocket server.
-     * 
-     * @return the listen address as an InetSocketAddress
-     */
-    private InetSocketAddress getListenAddress() {
+	 * Returns the listen address for the Netty RSocket server.
+	 * @return the listen address as an InetSocketAddress
+	 */
+	private InetSocketAddress getListenAddress() {
 		if (this.address != null) {
 			return new InetSocketAddress(this.address.getHostAddress(), this.port);
 		}
@@ -279,31 +265,31 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	/**
-     * TcpSslServerCustomizer class.
-     */
-    private static final class TcpSslServerCustomizer
+	 * TcpSslServerCustomizer class.
+	 */
+	private static final class TcpSslServerCustomizer
 			extends org.springframework.boot.web.embedded.netty.SslServerCustomizer {
 
 		private final SslBundle sslBundle;
 
 		/**
-         * Constructs a new TcpSslServerCustomizer with the specified client authentication mode and SSL bundle.
-         * 
-         * @param clientAuth the client authentication mode to be used
-         * @param sslBundle the SSL bundle containing the SSL certificate, private key, and truststore
-         */
-        private TcpSslServerCustomizer(Ssl.ClientAuth clientAuth, SslBundle sslBundle) {
+		 * Constructs a new TcpSslServerCustomizer with the specified client
+		 * authentication mode and SSL bundle.
+		 * @param clientAuth the client authentication mode to be used
+		 * @param sslBundle the SSL bundle containing the SSL certificate, private key,
+		 * and truststore
+		 */
+		private TcpSslServerCustomizer(Ssl.ClientAuth clientAuth, SslBundle sslBundle) {
 			super(null, clientAuth, sslBundle);
 			this.sslBundle = sslBundle;
 		}
 
 		/**
-         * Applies SSL configuration to the given TCP server.
-         * 
-         * @param server the TCP server to apply SSL configuration to
-         * @return the TCP server with SSL configuration applied
-         */
-        private TcpServer apply(TcpServer server) {
+		 * Applies SSL configuration to the given TCP server.
+		 * @param server the TCP server to apply SSL configuration to
+		 * @return the TCP server with SSL configuration applied
+		 */
+		private TcpServer apply(TcpServer server) {
 			AbstractProtocolSslContextSpec<?> sslContextSpec = createSslContextSpec(this.sslBundle);
 			return server.secure((spec) -> spec.sslContext(sslContextSpec));
 		}

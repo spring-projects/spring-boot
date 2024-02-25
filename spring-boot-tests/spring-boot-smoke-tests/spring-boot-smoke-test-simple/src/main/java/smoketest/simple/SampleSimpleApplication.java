@@ -39,13 +39,12 @@ public class SampleSimpleApplication implements CommandLineRunner {
 	private HelloWorldService helloWorldService;
 
 	/**
-     * This method is the entry point of the application.
-     * It runs the application and prints the hello message from the HelloWorldService.
-     * If the argument "exitcode" is provided, it throws an ExitException.
-     *
-     * @param args The command line arguments passed to the application.
-     */
-    @Override
+	 * This method is the entry point of the application. It runs the application and
+	 * prints the hello message from the HelloWorldService. If the argument "exitcode" is
+	 * provided, it throws an ExitException.
+	 * @param args The command line arguments passed to the application.
+	 */
+	@Override
 	public void run(String... args) {
 		System.out.println(this.helloWorldService.getHelloMessage());
 		if (args.length > 0 && args[0].equals("exitcode")) {
@@ -54,12 +53,11 @@ public class SampleSimpleApplication implements CommandLineRunner {
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring Boot application by calling the SpringApplication.run() method.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring Boot
+	 * application by calling the SpringApplication.run() method.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleSimpleApplication.class, args);
 	}
 

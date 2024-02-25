@@ -29,22 +29,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyApplication {
 
 	/**
-     * Returns a greeting message.
-     * 
-     * @return the greeting message "Hello World!"
-     */
-    @RequestMapping("/")
+	 * Returns a greeting message.
+	 * @return the greeting message "Hello World!"
+	 */
+	@RequestMapping("/")
 	String home() {
 		return "Hello World!";
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring Boot application by calling the SpringApplication.run() method.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring Boot
+	 * application by calling the SpringApplication.run() method.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(MyApplication.class, args);
 	}
 

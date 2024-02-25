@@ -48,14 +48,18 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 	private int order = 0;
 
 	/**
-     * Constructs a new StandardMongoClientSettingsBuilderCustomizer with the specified parameters.
-     *
-     * @param connectionString the connection string to be used for configuring the MongoDB client settings
-     * @param uuidRepresentation the UUID representation to be used for configuring the MongoDB client settings
-     * @param ssl the SSL configuration to be used for configuring the MongoDB client settings
-     * @param sslBundles the SSL bundles to be used for configuring the MongoDB client settings
-     */
-    public StandardMongoClientSettingsBuilderCustomizer(ConnectionString connectionString,
+	 * Constructs a new StandardMongoClientSettingsBuilderCustomizer with the specified
+	 * parameters.
+	 * @param connectionString the connection string to be used for configuring the
+	 * MongoDB client settings
+	 * @param uuidRepresentation the UUID representation to be used for configuring the
+	 * MongoDB client settings
+	 * @param ssl the SSL configuration to be used for configuring the MongoDB client
+	 * settings
+	 * @param sslBundles the SSL bundles to be used for configuring the MongoDB client
+	 * settings
+	 */
+	public StandardMongoClientSettingsBuilderCustomizer(ConnectionString connectionString,
 			UuidRepresentation uuidRepresentation, MongoProperties.Ssl ssl, SslBundles sslBundles) {
 		this.connectionString = connectionString;
 		this.uuidRepresentation = uuidRepresentation;
@@ -64,11 +68,10 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 	}
 
 	/**
-     * Customize the MongoClientSettings.Builder with the provided settings.
-     * 
-     * @param settingsBuilder the MongoClientSettings.Builder to customize
-     */
-    @Override
+	 * Customize the MongoClientSettings.Builder with the provided settings.
+	 * @param settingsBuilder the MongoClientSettings.Builder to customize
+	 */
+	@Override
 	public void customize(MongoClientSettings.Builder settingsBuilder) {
 		settingsBuilder.uuidRepresentation(this.uuidRepresentation);
 		settingsBuilder.applyConnectionString(this.connectionString);
@@ -78,11 +81,10 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 	}
 
 	/**
-     * Configures SSL settings for the MongoDB client.
-     * 
-     * @param settings the SSL settings builder
-     */
-    private void configureSsl(SslSettings.Builder settings) {
+	 * Configures SSL settings for the MongoDB client.
+	 * @param settings the SSL settings builder
+	 */
+	private void configureSsl(SslSettings.Builder settings) {
 		settings.enabled(true);
 		if (this.ssl.getBundle() != null) {
 			SslBundle sslBundle = this.sslBundles.getBundle(this.ssl.getBundle());
@@ -92,11 +94,10 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 	}
 
 	/**
-     * Returns the order in which this customizer will be applied.
-     * 
-     * @return the order value
-     */
-    @Override
+	 * Returns the order in which this customizer will be applied.
+	 * @return the order value
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}

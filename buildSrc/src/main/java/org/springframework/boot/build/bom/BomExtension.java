@@ -87,63 +87,57 @@ public class BomExtension {
 	private final Project project;
 
 	/**
-     * Constructs a new instance of BomExtension.
-     * 
-     * @param dependencyHandler The dependency handler to be used.
-     * @param project The project associated with the BomExtension.
-     */
-    public BomExtension(DependencyHandler dependencyHandler, Project project) {
+	 * Constructs a new instance of BomExtension.
+	 * @param dependencyHandler The dependency handler to be used.
+	 * @param project The project associated with the BomExtension.
+	 */
+	public BomExtension(DependencyHandler dependencyHandler, Project project) {
 		this.dependencyHandler = dependencyHandler;
 		this.upgradeHandler = project.getObjects().newInstance(UpgradeHandler.class);
 		this.project = project;
 	}
 
 	/**
-     * Returns the list of libraries.
-     * 
-     * @return the list of libraries
-     */
-    public List<Library> getLibraries() {
+	 * Returns the list of libraries.
+	 * @return the list of libraries
+	 */
+	public List<Library> getLibraries() {
 		return this.libraries;
 	}
 
 	/**
-     * Upgrades the BomExtension by executing the specified action on the upgrade handler.
-     * 
-     * @param action the action to be executed on the upgrade handler
-     */
-    public void upgrade(Action<UpgradeHandler> action) {
+	 * Upgrades the BomExtension by executing the specified action on the upgrade handler.
+	 * @param action the action to be executed on the upgrade handler
+	 */
+	public void upgrade(Action<UpgradeHandler> action) {
 		action.execute(this.upgradeHandler);
 	}
 
 	/**
-     * Returns the Upgrade object with the specified upgrade policy and GitHub details.
-     * 
-     * @return the Upgrade object
-     */
-    public Upgrade getUpgrade() {
+	 * Returns the Upgrade object with the specified upgrade policy and GitHub details.
+	 * @return the Upgrade object
+	 */
+	public Upgrade getUpgrade() {
 		return new Upgrade(this.upgradeHandler.upgradePolicy, new GitHub(this.upgradeHandler.gitHub.organization,
 				this.upgradeHandler.gitHub.repository, this.upgradeHandler.gitHub.issueLabels));
 	}
 
 	/**
-     * Executes the specified action on the library with the given name.
-     * 
-     * @param name The name of the library.
-     * @param action The action to be performed on the library.
-     */
-    public void library(String name, Action<LibraryHandler> action) {
+	 * Executes the specified action on the library with the given name.
+	 * @param name The name of the library.
+	 * @param action The action to be performed on the library.
+	 */
+	public void library(String name, Action<LibraryHandler> action) {
 		library(name, null, action);
 	}
 
 	/**
-     * Adds a library to the project's library collection.
-     * 
-     * @param name The name of the library.
-     * @param version The version of the library.
-     * @param action The action to be performed on the library handler.
-     */
-    public void library(String name, String version, Action<LibraryHandler> action) {
+	 * Adds a library to the project's library collection.
+	 * @param name The name of the library.
+	 * @param version The version of the library.
+	 * @param action The action to be performed on the library handler.
+	 */
+	public void library(String name, String version, Action<LibraryHandler> action) {
 		ObjectFactory objects = this.project.getObjects();
 		LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, (version != null) ? version : "");
 		action.execute(libraryHandler);
@@ -157,15 +151,17 @@ public class BomExtension {
 	}
 
 	/**
-     * This method creates an effective BOM artifact.
-     * It creates a configuration called "effectiveBom" and matches the task with the name "GENERATE_POM_TASK_NAME".
-     * It then creates a Sync task called "syncBom" and sets its destination directory to "generated/bom" in the build directory.
-     * It copies the generated POM file and settings.xml file to the syncBom task.
-     * It creates a MavenExec task called "generateEffectiveBom" and sets its project directory to "generated/bom".
-     * It generates the effective BOM XML file using the Maven command "help:effective-pom" and saves it to "generated/effective-bom/{projectName}-effective-bom.xml".
-     * It adds the effective BOM artifact to the project's artifacts.
-     */
-    public void effectiveBomArtifact() {
+	 * This method creates an effective BOM artifact. It creates a configuration called
+	 * "effectiveBom" and matches the task with the name "GENERATE_POM_TASK_NAME". It then
+	 * creates a Sync task called "syncBom" and sets its destination directory to
+	 * "generated/bom" in the build directory. It copies the generated POM file and
+	 * settings.xml file to the syncBom task. It creates a MavenExec task called
+	 * "generateEffectiveBom" and sets its project directory to "generated/bom". It
+	 * generates the effective BOM XML file using the Maven command "help:effective-pom"
+	 * and saves it to "generated/effective-bom/{projectName}-effective-bom.xml". It adds
+	 * the effective BOM artifact to the project's artifacts.
+	 */
+	public void effectiveBomArtifact() {
 		Configuration effectiveBomConfiguration = this.project.getConfigurations().create("effectiveBom");
 		this.project.getTasks()
 			.matching((task) -> task.getName().equals(DeployedPlugin.GENERATE_POM_TASK_NAME))
@@ -205,62 +201,60 @@ public class BomExtension {
 	}
 
 	/**
-     * Creates a dependency notation string using the provided groupId, artifactId, and version.
-     * 
-     * @param groupId    the group ID of the dependency
-     * @param artifactId the artifact ID of the dependency
-     * @param version    the version of the dependency
-     * @return the dependency notation string in the format "groupId:artifactId:version"
-     */
-    private String createDependencyNotation(String groupId, String artifactId, DependencyVersion version) {
+	 * Creates a dependency notation string using the provided groupId, artifactId, and
+	 * version.
+	 * @param groupId the group ID of the dependency
+	 * @param artifactId the artifact ID of the dependency
+	 * @param version the version of the dependency
+	 * @return the dependency notation string in the format "groupId:artifactId:version"
+	 */
+	private String createDependencyNotation(String groupId, String artifactId, DependencyVersion version) {
 		return groupId + ":" + artifactId + ":" + version;
 	}
 
 	/**
-     * Returns the properties of the BomExtension.
-     *
-     * @return a map containing the properties of the BomExtension
-     */
-    Map<String, DependencyVersion> getProperties() {
+	 * Returns the properties of the BomExtension.
+	 * @return a map containing the properties of the BomExtension
+	 */
+	Map<String, DependencyVersion> getProperties() {
 		return this.properties;
 	}
 
 	/**
-     * Retrieves the version property of an artifact based on its coordinates.
-     * 
-     * @param groupId    the group ID of the artifact
-     * @param artifactId the artifact ID
-     * @param classifier the classifier of the artifact
-     * @return the version property of the artifact, or null if not found
-     */
-    String getArtifactVersionProperty(String groupId, String artifactId, String classifier) {
+	 * Retrieves the version property of an artifact based on its coordinates.
+	 * @param groupId the group ID of the artifact
+	 * @param artifactId the artifact ID
+	 * @param classifier the classifier of the artifact
+	 * @return the version property of the artifact, or null if not found
+	 */
+	String getArtifactVersionProperty(String groupId, String artifactId, String classifier) {
 		String coordinates = groupId + ":" + artifactId + ":" + classifier;
 		return this.artifactVersionProperties.get(coordinates);
 	}
 
 	/**
-     * Sets the version property for the specified artifact in the BOM extension.
-     * 
-     * @param groupId         the group ID of the artifact
-     * @param artifactId      the artifact ID of the artifact
-     * @param versionProperty the version property to be set
-     */
-    private void putArtifactVersionProperty(String groupId, String artifactId, String versionProperty) {
+	 * Sets the version property for the specified artifact in the BOM extension.
+	 * @param groupId the group ID of the artifact
+	 * @param artifactId the artifact ID of the artifact
+	 * @param versionProperty the version property to be set
+	 */
+	private void putArtifactVersionProperty(String groupId, String artifactId, String versionProperty) {
 		putArtifactVersionProperty(groupId, artifactId, null, versionProperty);
 	}
 
 	/**
-     * Puts the version property for the specified artifact coordinates into the artifactVersionProperties map.
-     * The artifact coordinates consist of the groupId, artifactId, and optional classifier.
-     * If a version property already exists for the specified coordinates, an InvalidUserDataException is thrown.
-     *
-     * @param groupId The group ID of the artifact.
-     * @param artifactId The artifact ID.
-     * @param classifier The optional classifier.
-     * @param versionProperty The version property to be stored.
-     * @throws InvalidUserDataException If a version property already exists for the specified coordinates.
-     */
-    private void putArtifactVersionProperty(String groupId, String artifactId, String classifier,
+	 * Puts the version property for the specified artifact coordinates into the
+	 * artifactVersionProperties map. The artifact coordinates consist of the groupId,
+	 * artifactId, and optional classifier. If a version property already exists for the
+	 * specified coordinates, an InvalidUserDataException is thrown.
+	 * @param groupId The group ID of the artifact.
+	 * @param artifactId The artifact ID.
+	 * @param classifier The optional classifier.
+	 * @param versionProperty The version property to be stored.
+	 * @throws InvalidUserDataException If a version property already exists for the
+	 * specified coordinates.
+	 */
+	private void putArtifactVersionProperty(String groupId, String artifactId, String classifier,
 			String versionProperty) {
 		String coordinates = groupId + ":" + artifactId + ":" + ((classifier != null) ? classifier : "");
 		String existing = this.artifactVersionProperties.putIfAbsent(coordinates, versionProperty);
@@ -271,11 +265,10 @@ public class BomExtension {
 	}
 
 	/**
-     * Adds a library to the list of libraries in the BomExtension.
-     * 
-     * @param library the library to be added
-     */
-    private void addLibrary(Library library) {
+	 * Adds a library to the list of libraries in the BomExtension.
+	 * @param library the library to be added
+	 */
+	private void addLibrary(Library library) {
 		this.libraries.add(library);
 		String versionProperty = library.getVersionProperty();
 		if (versionProperty != null) {
@@ -301,9 +294,9 @@ public class BomExtension {
 	}
 
 	/**
-     * LibraryHandler class.
-     */
-    public static class LibraryHandler {
+	 * LibraryHandler class.
+	 */
+	public static class LibraryHandler {
 
 		private final List<Group> groups = new ArrayList<>();
 
@@ -318,47 +311,44 @@ public class BomExtension {
 		private AlignWithVersionHandler alignWithVersion;
 
 		/**
-         * Constructs a new LibraryHandler object with the specified version.
-         * 
-         * @param version the version of the library
-         */
-        @Inject
+		 * Constructs a new LibraryHandler object with the specified version.
+		 * @param version the version of the library
+		 */
+		@Inject
 		public LibraryHandler(String version) {
 			this.version = version;
 		}
 
 		/**
-         * Sets the version of the library.
-         * 
-         * @param version the version to set
-         */
-        public void version(String version) {
+		 * Sets the version of the library.
+		 * @param version the version to set
+		 */
+		public void version(String version) {
 			this.version = version;
 		}
 
 		/**
-         * Enables the consideration of snapshots in the LibraryHandler.
-         */
-        public void considerSnapshots() {
+		 * Enables the consideration of snapshots in the LibraryHandler.
+		 */
+		public void considerSnapshots() {
 			this.considerSnapshots = true;
 		}
 
 		/**
-         * Sets the name of the calendar.
-         * 
-         * @param calendarName the name of the calendar
-         */
-        public void setCalendarName(String calendarName) {
+		 * Sets the name of the calendar.
+		 * @param calendarName the name of the calendar
+		 */
+		public void setCalendarName(String calendarName) {
 			this.calendarName = calendarName;
 		}
 
 		/**
-         * Creates a new group with the specified ID and executes the provided action on it.
-         * 
-         * @param id the ID of the group
-         * @param action the action to be executed on the group
-         */
-        public void group(String id, Action<GroupHandler> action) {
+		 * Creates a new group with the specified ID and executes the provided action on
+		 * it.
+		 * @param id the ID of the group
+		 * @param action the action to be executed on the group
+		 */
+		public void group(String id, Action<GroupHandler> action) {
 			GroupHandler groupHandler = new GroupHandler(id);
 			action.execute(groupHandler);
 			this.groups
@@ -366,12 +356,12 @@ public class BomExtension {
 		}
 
 		/**
-         * Prohibits a specific action by adding a new prohibited version to the list of prohibited versions.
-         * 
-         * @param action the action to be prohibited
-         * @throws IllegalArgumentException if the action is null
-         */
-        public void prohibit(Action<ProhibitedHandler> action) {
+		 * Prohibits a specific action by adding a new prohibited version to the list of
+		 * prohibited versions.
+		 * @param action the action to be prohibited
+		 * @throws IllegalArgumentException if the action is null
+		 */
+		public void prohibit(Action<ProhibitedHandler> action) {
 			ProhibitedHandler handler = new ProhibitedHandler();
 			action.execute(handler);
 			this.prohibitedVersions.add(new ProhibitedVersion(handler.versionRange, handler.startsWith,
@@ -379,19 +369,18 @@ public class BomExtension {
 		}
 
 		/**
-         * Aligns with a specific version by executing the provided action.
-         * 
-         * @param action the action to be executed for aligning with the version
-         */
-        public void alignWithVersion(Action<AlignWithVersionHandler> action) {
+		 * Aligns with a specific version by executing the provided action.
+		 * @param action the action to be executed for aligning with the version
+		 */
+		public void alignWithVersion(Action<AlignWithVersionHandler> action) {
 			this.alignWithVersion = new AlignWithVersionHandler();
 			action.execute(this.alignWithVersion);
 		}
 
 		/**
-         * ProhibitedHandler class.
-         */
-        public static class ProhibitedHandler {
+		 * ProhibitedHandler class.
+		 */
+		public static class ProhibitedHandler {
 
 			private String reason;
 
@@ -404,12 +393,11 @@ public class BomExtension {
 			private VersionRange versionRange;
 
 			/**
-             * Sets the version range for the ProhibitedHandler.
-             * 
-             * @param versionRange the version range to be set
-             * @throws InvalidUserCodeException if the version range is invalid
-             */
-            public void versionRange(String versionRange) {
+			 * Sets the version range for the ProhibitedHandler.
+			 * @param versionRange the version range to be set
+			 * @throws InvalidUserCodeException if the version range is invalid
+			 */
+			public void versionRange(String versionRange) {
 				try {
 					this.versionRange = VersionRange.createFromVersionSpec(versionRange);
 				}
@@ -419,75 +407,70 @@ public class BomExtension {
 			}
 
 			/**
-             * Adds a string to the list of strings that the ProhibitedHandler starts with.
-             * 
-             * @param startsWith the string to be added
-             */
-            public void startsWith(String startsWith) {
+			 * Adds a string to the list of strings that the ProhibitedHandler starts
+			 * with.
+			 * @param startsWith the string to be added
+			 */
+			public void startsWith(String startsWith) {
 				this.startsWith.add(startsWith);
 			}
 
 			/**
-             * Adds the specified collection of strings to the existing collection of strings
-             * that represent the starting characters to be checked.
-             * 
-             * @param startsWith the collection of strings to be added
-             */
-            public void startsWith(Collection<String> startsWith) {
+			 * Adds the specified collection of strings to the existing collection of
+			 * strings that represent the starting characters to be checked.
+			 * @param startsWith the collection of strings to be added
+			 */
+			public void startsWith(Collection<String> startsWith) {
 				this.startsWith.addAll(startsWith);
 			}
 
 			/**
-             * Adds a string to the list of strings to check if it ends with.
-             * 
-             * @param endsWith the string to add to the list
-             */
-            public void endsWith(String endsWith) {
+			 * Adds a string to the list of strings to check if it ends with.
+			 * @param endsWith the string to add to the list
+			 */
+			public void endsWith(String endsWith) {
 				this.endsWith.add(endsWith);
 			}
 
 			/**
-             * Adds the specified collection of strings to the list of endings to check for.
-             * 
-             * @param endsWith the collection of strings to add
-             */
-            public void endsWith(Collection<String> endsWith) {
+			 * Adds the specified collection of strings to the list of endings to check
+			 * for.
+			 * @param endsWith the collection of strings to add
+			 */
+			public void endsWith(Collection<String> endsWith) {
 				this.endsWith.addAll(endsWith);
 			}
 
 			/**
-             * Adds a string to the list of prohibited words.
-             * 
-             * @param contains the string to be added
-             */
-            public void contains(String contains) {
+			 * Adds a string to the list of prohibited words.
+			 * @param contains the string to be added
+			 */
+			public void contains(String contains) {
 				this.contains.add(contains);
 			}
 
 			/**
-             * Adds the specified list of strings to the existing list of contains.
-             * 
-             * @param contains the list of strings to be added
-             */
-            public void contains(List<String> contains) {
+			 * Adds the specified list of strings to the existing list of contains.
+			 * @param contains the list of strings to be added
+			 */
+			public void contains(List<String> contains) {
 				this.contains.addAll(contains);
 			}
 
 			/**
-             * Sets the reason for prohibition.
-             * 
-             * @param because the reason for prohibition
-             */
-            public void because(String because) {
+			 * Sets the reason for prohibition.
+			 * @param because the reason for prohibition
+			 */
+			public void because(String because) {
 				this.reason = because;
 			}
 
 		}
 
 		/**
-         * GroupHandler class.
-         */
-        public class GroupHandler extends GroovyObjectSupport {
+		 * GroupHandler class.
+		 */
+		public class GroupHandler extends GroovyObjectSupport {
 
 			private final String id;
 
@@ -498,54 +481,50 @@ public class BomExtension {
 			private List<String> plugins = new ArrayList<>();
 
 			/**
-             * Constructs a new GroupHandler object with the specified id.
-             * 
-             * @param id the id of the group
-             */
-            public GroupHandler(String id) {
+			 * Constructs a new GroupHandler object with the specified id.
+			 * @param id the id of the group
+			 */
+			public GroupHandler(String id) {
 				this.id = id;
 			}
 
 			/**
-             * Sets the modules for the GroupHandler.
-             * 
-             * @param modules the list of modules to be set
-             * 
-             * @throws IllegalArgumentException if any of the modules are not of type Module or String
-             */
-            public void setModules(List<Object> modules) {
+			 * Sets the modules for the GroupHandler.
+			 * @param modules the list of modules to be set
+			 * @throws IllegalArgumentException if any of the modules are not of type
+			 * Module or String
+			 */
+			public void setModules(List<Object> modules) {
 				this.modules = modules.stream()
 					.map((input) -> (input instanceof Module module) ? module : new Module((String) input))
 					.toList();
 			}
 
 			/**
-             * Sets the list of imports for the GroupHandler class.
-             * 
-             * @param imports the list of imports to be set
-             */
-            public void setImports(List<String> imports) {
+			 * Sets the list of imports for the GroupHandler class.
+			 * @param imports the list of imports to be set
+			 */
+			public void setImports(List<String> imports) {
 				this.imports = imports;
 			}
 
 			/**
-             * Sets the list of plugins for the GroupHandler.
-             * 
-             * @param plugins the list of plugins to be set
-             */
-            public void setPlugins(List<String> plugins) {
+			 * Sets the list of plugins for the GroupHandler.
+			 * @param plugins the list of plugins to be set
+			 */
+			public void setPlugins(List<String> plugins) {
 				this.plugins = plugins;
 			}
 
 			/**
-             * Handles the missing method for the GroupHandler class.
-             * 
-             * @param name The name of the missing method.
-             * @param args The arguments passed to the missing method.
-             * @return The created Module object based on the provided arguments.
-             * @throws InvalidUserDataException If the configuration for the module is invalid.
-             */
-            public Object methodMissing(String name, Object args) {
+			 * Handles the missing method for the GroupHandler class.
+			 * @param name The name of the missing method.
+			 * @param args The arguments passed to the missing method.
+			 * @return The created Module object based on the provided arguments.
+			 * @throws InvalidUserDataException If the configuration for the module is
+			 * invalid.
+			 */
+			public Object methodMissing(String name, Object args) {
 				if (args instanceof Object[] && ((Object[]) args).length == 1) {
 					Object arg = ((Object[]) args)[0];
 					if (arg instanceof Closure<?> closure) {
@@ -560,9 +539,9 @@ public class BomExtension {
 			}
 
 			/**
-             * ModuleHandler class.
-             */
-            public class ModuleHandler {
+			 * ModuleHandler class.
+			 */
+			public class ModuleHandler {
 
 				private final List<Exclusion> exclusions = new ArrayList<>();
 
@@ -571,29 +550,26 @@ public class BomExtension {
 				private String classifier;
 
 				/**
-                 * Adds an exclusion to the list of exclusions.
-                 * 
-                 * @param exclusion a Map containing the group and module to be excluded
-                 */
-                public void exclude(Map<String, String> exclusion) {
+				 * Adds an exclusion to the list of exclusions.
+				 * @param exclusion a Map containing the group and module to be excluded
+				 */
+				public void exclude(Map<String, String> exclusion) {
 					this.exclusions.add(new Exclusion(exclusion.get("group"), exclusion.get("module")));
 				}
 
 				/**
-                 * Sets the type of the module.
-                 * 
-                 * @param type the type of the module
-                 */
-                public void setType(String type) {
+				 * Sets the type of the module.
+				 * @param type the type of the module
+				 */
+				public void setType(String type) {
 					this.type = type;
 				}
 
 				/**
-                 * Sets the classifier for the ModuleHandler.
-                 * 
-                 * @param classifier the classifier to be set
-                 */
-                public void setClassifier(String classifier) {
+				 * Sets the classifier for the ModuleHandler.
+				 * @param classifier the classifier to be set
+				 */
+				public void setClassifier(String classifier) {
 					this.classifier = classifier;
 				}
 
@@ -602,29 +578,27 @@ public class BomExtension {
 		}
 
 		/**
-         * AlignWithVersionHandler class.
-         */
-        public static class AlignWithVersionHandler {
+		 * AlignWithVersionHandler class.
+		 */
+		public static class AlignWithVersionHandler {
 
 			private String from;
 
 			private String managedBy;
 
 			/**
-             * Sets the "from" value for the AlignWithVersionHandler.
-             * 
-             * @param from the value to set as the "from" value
-             */
-            public void from(String from) {
+			 * Sets the "from" value for the AlignWithVersionHandler.
+			 * @param from the value to set as the "from" value
+			 */
+			public void from(String from) {
 				this.from = from;
 			}
 
 			/**
-             * Sets the manager of the AlignWithVersionHandler.
-             * 
-             * @param managedBy the name of the manager
-             */
-            public void managedBy(String managedBy) {
+			 * Sets the manager of the AlignWithVersionHandler.
+			 * @param managedBy the name of the manager
+			 */
+			public void managedBy(String managedBy) {
 				this.managedBy = managedBy;
 			}
 
@@ -633,78 +607,74 @@ public class BomExtension {
 	}
 
 	/**
-     * UpgradeHandler class.
-     */
-    public static class UpgradeHandler {
+	 * UpgradeHandler class.
+	 */
+	public static class UpgradeHandler {
 
 		private UpgradePolicy upgradePolicy;
 
 		private final GitHubHandler gitHub = new GitHubHandler();
 
 		/**
-         * Sets the upgrade policy for the UpgradeHandler.
-         * 
-         * @param upgradePolicy the upgrade policy to be set
-         */
-        public void setPolicy(UpgradePolicy upgradePolicy) {
+		 * Sets the upgrade policy for the UpgradeHandler.
+		 * @param upgradePolicy the upgrade policy to be set
+		 */
+		public void setPolicy(UpgradePolicy upgradePolicy) {
 			this.upgradePolicy = upgradePolicy;
 		}
 
 		/**
-         * Executes the specified action on the GitHubHandler instance.
-         * 
-         * @param action the action to be executed on the GitHubHandler
-         */
-        public void gitHub(Action<GitHubHandler> action) {
+		 * Executes the specified action on the GitHubHandler instance.
+		 * @param action the action to be executed on the GitHubHandler
+		 */
+		public void gitHub(Action<GitHubHandler> action) {
 			action.execute(this.gitHub);
 		}
 
 	}
 
 	/**
-     * Upgrade class.
-     */
-    public static final class Upgrade {
+	 * Upgrade class.
+	 */
+	public static final class Upgrade {
 
 		private final UpgradePolicy upgradePolicy;
 
 		private final GitHub gitHub;
 
 		/**
-         * Constructs a new Upgrade object with the specified upgrade policy and GitHub instance.
-         * 
-         * @param upgradePolicy the upgrade policy to be used
-         * @param gitHub the GitHub instance to be used
-         */
-        private Upgrade(UpgradePolicy upgradePolicy, GitHub gitHub) {
+		 * Constructs a new Upgrade object with the specified upgrade policy and GitHub
+		 * instance.
+		 * @param upgradePolicy the upgrade policy to be used
+		 * @param gitHub the GitHub instance to be used
+		 */
+		private Upgrade(UpgradePolicy upgradePolicy, GitHub gitHub) {
 			this.upgradePolicy = upgradePolicy;
 			this.gitHub = gitHub;
 		}
 
 		/**
-         * Returns the upgrade policy of the Upgrade object.
-         *
-         * @return the upgrade policy
-         */
-        public UpgradePolicy getPolicy() {
+		 * Returns the upgrade policy of the Upgrade object.
+		 * @return the upgrade policy
+		 */
+		public UpgradePolicy getPolicy() {
 			return this.upgradePolicy;
 		}
 
 		/**
-         * Returns the GitHub object associated with this Upgrade instance.
-         *
-         * @return the GitHub object
-         */
-        public GitHub getGitHub() {
+		 * Returns the GitHub object associated with this Upgrade instance.
+		 * @return the GitHub object
+		 */
+		public GitHub getGitHub() {
 			return this.gitHub;
 		}
 
 	}
 
 	/**
-     * GitHubHandler class.
-     */
-    public static class GitHubHandler {
+	 * GitHubHandler class.
+	 */
+	public static class GitHubHandler {
 
 		private String organization = "spring-projects";
 
@@ -713,38 +683,35 @@ public class BomExtension {
 		private List<String> issueLabels;
 
 		/**
-         * Sets the organization for the GitHubHandler.
-         * 
-         * @param organization the organization to be set
-         */
-        public void setOrganization(String organization) {
+		 * Sets the organization for the GitHubHandler.
+		 * @param organization the organization to be set
+		 */
+		public void setOrganization(String organization) {
 			this.organization = organization;
 		}
 
 		/**
-         * Sets the repository for the GitHubHandler.
-         * 
-         * @param repository the repository to be set
-         */
-        public void setRepository(String repository) {
+		 * Sets the repository for the GitHubHandler.
+		 * @param repository the repository to be set
+		 */
+		public void setRepository(String repository) {
 			this.repository = repository;
 		}
 
 		/**
-         * Sets the issue labels for the GitHubHandler.
-         * 
-         * @param issueLabels the list of labels to be set
-         */
-        public void setIssueLabels(List<String> issueLabels) {
+		 * Sets the issue labels for the GitHubHandler.
+		 * @param issueLabels the list of labels to be set
+		 */
+		public void setIssueLabels(List<String> issueLabels) {
 			this.issueLabels = issueLabels;
 		}
 
 	}
 
 	/**
-     * GitHub class.
-     */
-    public static final class GitHub {
+	 * GitHub class.
+	 */
+	public static final class GitHub {
 
 		private String organization = "spring-projects";
 
@@ -753,70 +720,68 @@ public class BomExtension {
 		private final List<String> issueLabels;
 
 		/**
-         * Constructs a new GitHub object with the specified organization, repository, and issue labels.
-         * 
-         * @param organization the organization name associated with the GitHub repository
-         * @param repository the repository name on GitHub
-         * @param issueLabels a list of labels associated with the issues in the repository
-         */
-        private GitHub(String organization, String repository, List<String> issueLabels) {
+		 * Constructs a new GitHub object with the specified organization, repository, and
+		 * issue labels.
+		 * @param organization the organization name associated with the GitHub repository
+		 * @param repository the repository name on GitHub
+		 * @param issueLabels a list of labels associated with the issues in the
+		 * repository
+		 */
+		private GitHub(String organization, String repository, List<String> issueLabels) {
 			this.organization = organization;
 			this.repository = repository;
 			this.issueLabels = issueLabels;
 		}
 
 		/**
-         * Returns the organization of the GitHub class.
-         *
-         * @return the organization of the GitHub class
-         */
-        public String getOrganization() {
+		 * Returns the organization of the GitHub class.
+		 * @return the organization of the GitHub class
+		 */
+		public String getOrganization() {
 			return this.organization;
 		}
 
 		/**
-         * Returns the repository associated with this GitHub object.
-         *
-         * @return the repository associated with this GitHub object
-         */
-        public String getRepository() {
+		 * Returns the repository associated with this GitHub object.
+		 * @return the repository associated with this GitHub object
+		 */
+		public String getRepository() {
 			return this.repository;
 		}
 
 		/**
-         * Returns the list of labels associated with the issue.
-         *
-         * @return the list of labels associated with the issue
-         */
-        public List<String> getIssueLabels() {
+		 * Returns the list of labels associated with the issue.
+		 * @return the list of labels associated with the issue
+		 */
+		public List<String> getIssueLabels() {
 			return this.issueLabels;
 		}
 
 	}
 
 	/**
-     * StripUnrepeatableOutputAction class.
-     */
-    private static final class StripUnrepeatableOutputAction implements Action<Task> {
+	 * StripUnrepeatableOutputAction class.
+	 */
+	private static final class StripUnrepeatableOutputAction implements Action<Task> {
 
 		private final File effectiveBom;
 
 		/**
-         * Constructs a new StripUnrepeatableOutputAction object with the specified XML file.
-         * 
-         * @param xmlFile the XML file to be used as the effective BOM
-         */
-        private StripUnrepeatableOutputAction(File xmlFile) {
+		 * Constructs a new StripUnrepeatableOutputAction object with the specified XML
+		 * file.
+		 * @param xmlFile the XML file to be used as the effective BOM
+		 */
+		private StripUnrepeatableOutputAction(File xmlFile) {
 			this.effectiveBom = xmlFile;
 		}
 
 		/**
-         * Executes the given task by stripping unrepeatable output from the effective BOM.
-         * 
-         * @param task the task to be executed
-         * @throws TaskExecutionException if an error occurs during task execution
-         */
-        @Override
+		 * Executes the given task by stripping unrepeatable output from the effective
+		 * BOM.
+		 * @param task the task to be executed
+		 * @throws TaskExecutionException if an error occurs during task execution
+		 */
+		@Override
 		public void execute(Task task) {
 			try {
 				Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(this.effectiveBom);

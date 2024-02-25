@@ -35,67 +35,66 @@ class ActiveMQContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<Container<?>, ActiveMQConnectionDetails> {
 
 	/**
-     * Constructs a new ActiveMQContainerConnectionDetailsFactory with the specified connection details.
-     * 
-     * @param connectionDetails the connection details for the ActiveMQ container
-     */
-    ActiveMQContainerConnectionDetailsFactory() {
+	 * Constructs a new ActiveMQContainerConnectionDetailsFactory with the specified
+	 * connection details.
+	 * @param connectionDetails the connection details for the ActiveMQ container
+	 */
+	ActiveMQContainerConnectionDetailsFactory() {
 		super("symptoma/activemq");
 	}
 
 	/**
-     * Returns the ActiveMQConnectionDetails for the specified ContainerConnectionSource.
-     * 
-     * @param source the ContainerConnectionSource to get the connection details for
-     * @return the ActiveMQConnectionDetails for the specified ContainerConnectionSource
-     */
-    @Override
+	 * Returns the ActiveMQConnectionDetails for the specified ContainerConnectionSource.
+	 * @param source the ContainerConnectionSource to get the connection details for
+	 * @return the ActiveMQConnectionDetails for the specified ContainerConnectionSource
+	 */
+	@Override
 	protected ActiveMQConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 		return new ActiveMQContainerConnectionDetails(source);
 	}
 
 	/**
-     * ActiveMQContainerConnectionDetails class.
-     */
-    private static final class ActiveMQContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
+	 * ActiveMQContainerConnectionDetails class.
+	 */
+	private static final class ActiveMQContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
 			implements ActiveMQConnectionDetails {
 
 		/**
-         * Constructs a new ActiveMQContainerConnectionDetails object with the specified ContainerConnectionSource.
-         *
-         * @param source the ContainerConnectionSource used to create the ActiveMQContainerConnectionDetails
-         */
-        private ActiveMQContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		 * Constructs a new ActiveMQContainerConnectionDetails object with the specified
+		 * ContainerConnectionSource.
+		 * @param source the ContainerConnectionSource used to create the
+		 * ActiveMQContainerConnectionDetails
+		 */
+		private ActiveMQContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 
 		/**
-         * Returns the broker URL for the ActiveMQ container connection.
-         * The broker URL is constructed by concatenating the TCP protocol, the host of the container, and the first mapped port of the container.
-         * 
-         * @return the broker URL in the format "tcp://<host>:<port>"
-         */
-        @Override
+		 * Returns the broker URL for the ActiveMQ container connection. The broker URL is
+		 * constructed by concatenating the TCP protocol, the host of the container, and
+		 * the first mapped port of the container.
+		 * @return the broker URL in the format "tcp://<host>:<port>"
+		 */
+		@Override
 		public String getBrokerUrl() {
 			return "tcp://" + getContainer().getHost() + ":" + getContainer().getFirstMappedPort();
 		}
 
 		/**
-         * Returns the username of the user associated with the ActiveMQ container connection.
-         * 
-         * @return the username of the user
-         */
-        @Override
+		 * Returns the username of the user associated with the ActiveMQ container
+		 * connection.
+		 * @return the username of the user
+		 */
+		@Override
 		public String getUser() {
 			return getContainer().getEnvMap().get("ACTIVEMQ_USERNAME");
 		}
 
 		/**
-         * Returns the password for the ActiveMQ connection.
-         * 
-         * @return the password for the ActiveMQ connection
-         */
-        @Override
+		 * Returns the password for the ActiveMQ connection.
+		 * @return the password for the ActiveMQ connection
+		 */
+		@Override
 		public String getPassword() {
 			return getContainer().getEnvMap().get("ACTIVEMQ_PASSWORD");
 		}

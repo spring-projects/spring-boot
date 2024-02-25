@@ -30,33 +30,30 @@ class ListCommand extends Command {
 	private final Context context;
 
 	/**
-     * Constructor for ListCommand class.
-     * 
-     * @param context the context object
-     */
-    ListCommand(Context context) {
+	 * Constructor for ListCommand class.
+	 * @param context the context object
+	 */
+	ListCommand(Context context) {
 		super("list", "List layers from the jar that can be extracted", Options.none(), Parameters.none());
 		this.context = context;
 	}
 
 	/**
-     * Runs the ListCommand with the given options and parameters.
-     * 
-     * @param options     a map of options for the command
-     * @param parameters  a list of parameters for the command
-     */
-    @Override
+	 * Runs the ListCommand with the given options and parameters.
+	 * @param options a map of options for the command
+	 * @param parameters a list of parameters for the command
+	 */
+	@Override
 	protected void run(Map<Option, String> options, List<String> parameters) {
 		printLayers(Layers.get(this.context), System.out);
 	}
 
 	/**
-     * Prints the layers in the given Layers object to the specified PrintStream.
-     *
-     * @param layers the Layers object containing the layers to be printed
-     * @param out the PrintStream to which the layers will be printed
-     */
-    void printLayers(Layers layers, PrintStream out) {
+	 * Prints the layers in the given Layers object to the specified PrintStream.
+	 * @param layers the Layers object containing the layers to be printed
+	 * @param out the PrintStream to which the layers will be printed
+	 */
+	void printLayers(Layers layers, PrintStream out) {
 		layers.forEach(out::println);
 	}
 

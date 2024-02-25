@@ -41,12 +41,12 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer
 	}
 
 	/**
-     * Configure the SimpleRabbitListenerContainerFactory with the provided ConnectionFactory and RabbitProperties.
-     *
-     * @param factory the SimpleRabbitListenerContainerFactory to configure
-     * @param connectionFactory the ConnectionFactory to use
-     */
-    @Override
+	 * Configure the SimpleRabbitListenerContainerFactory with the provided
+	 * ConnectionFactory and RabbitProperties.
+	 * @param factory the SimpleRabbitListenerContainerFactory to configure
+	 * @param connectionFactory the ConnectionFactory to use
+	 */
+	@Override
 	public void configure(SimpleRabbitListenerContainerFactory factory, ConnectionFactory connectionFactory) {
 		PropertyMapper map = PropertyMapper.get();
 		RabbitProperties.SimpleContainer config = getRabbitProperties().getListener().getSimple();

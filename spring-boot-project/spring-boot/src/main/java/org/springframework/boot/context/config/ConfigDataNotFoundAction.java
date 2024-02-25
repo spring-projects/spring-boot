@@ -34,13 +34,12 @@ public enum ConfigDataNotFoundAction {
 	FAIL {
 
 		/**
-     * Handles the given exception by throwing it.
-     * 
-     * @param logger the logger used for logging the exception
-     * @param ex the ConfigDataNotFoundException to be handled
-     * @throws ConfigDataNotFoundException the exception to be thrown
-     */
-    @Override
+		 * Handles the given exception by throwing it.
+		 * @param logger the logger used for logging the exception
+		 * @param ex the ConfigDataNotFoundException to be handled
+		 * @throws ConfigDataNotFoundException the exception to be thrown
+		 */
+		@Override
 		void handle(Log logger, ConfigDataNotFoundException ex) {
 			throw ex;
 		}
@@ -53,13 +52,12 @@ public enum ConfigDataNotFoundAction {
 	IGNORE {
 
 		/**
-     * Handles the given ConfigDataNotFoundException by logging a trace message
-     * indicating that the missing config data is being ignored.
-     * 
-     * @param logger the logger used to log the trace message
-     * @param ex the ConfigDataNotFoundException to be handled
-     */
-    @Override
+		 * Handles the given ConfigDataNotFoundException by logging a trace message
+		 * indicating that the missing config data is being ignored.
+		 * @param logger the logger used to log the trace message
+		 * @param ex the ConfigDataNotFoundException to be handled
+		 */
+		@Override
 		void handle(Log logger, ConfigDataNotFoundException ex) {
 			logger.trace(LogMessage.format("Ignoring missing config data %s", ex.getReferenceDescription()));
 		}

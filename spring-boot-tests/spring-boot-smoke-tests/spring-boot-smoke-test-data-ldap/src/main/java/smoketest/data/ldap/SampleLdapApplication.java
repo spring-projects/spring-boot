@@ -29,22 +29,22 @@ public class SampleLdapApplication implements CommandLineRunner {
 	private final PersonRepository repository;
 
 	/**
-     * Constructs a new instance of SampleLdapApplication with the specified PersonRepository.
-     * 
-     * @param repository the PersonRepository to be used by the application
-     */
-    public SampleLdapApplication(PersonRepository repository) {
+	 * Constructs a new instance of SampleLdapApplication with the specified
+	 * PersonRepository.
+	 * @param repository the PersonRepository to be used by the application
+	 */
+	public SampleLdapApplication(PersonRepository repository) {
 		this.repository = repository;
 	}
 
 	/**
-     * This method is the entry point of the application and is responsible for fetching all people from the repository
-     * and printing them to the console. It also fetches an individual person by phone number and prints the result.
-     *
-     * @param args The command line arguments passed to the application.
-     * @throws Exception If an error occurs while fetching or printing the people.
-     */
-    @Override
+	 * This method is the entry point of the application and is responsible for fetching
+	 * all people from the repository and printing them to the console. It also fetches an
+	 * individual person by phone number and prints the result.
+	 * @param args The command line arguments passed to the application.
+	 * @throws Exception If an error occurs while fetching or printing the people.
+	 */
+	@Override
 	public void run(String... args) throws Exception {
 
 		// fetch all people
@@ -62,12 +62,11 @@ public class SampleLdapApplication implements CommandLineRunner {
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring application and closes it after execution.
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring
+	 * application and closes it after execution.
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleLdapApplication.class, args).close();
 	}
 

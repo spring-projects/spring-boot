@@ -34,23 +34,21 @@ public class ApplicationContentFilter implements ContentFilter<String> {
 	private final String pattern;
 
 	/**
-     * Constructs a new ApplicationContentFilter with the specified pattern.
-     * 
-     * @param pattern the pattern to be used for filtering content
-     * @throws IllegalArgumentException if the pattern is empty
-     */
-    public ApplicationContentFilter(String pattern) {
+	 * Constructs a new ApplicationContentFilter with the specified pattern.
+	 * @param pattern the pattern to be used for filtering content
+	 * @throws IllegalArgumentException if the pattern is empty
+	 */
+	public ApplicationContentFilter(String pattern) {
 		Assert.hasText(pattern, "Pattern must not be empty");
 		this.pattern = pattern;
 	}
 
 	/**
-     * Determines if the given path matches the pattern of this ApplicationContentFilter.
-     * 
-     * @param path the path to be matched
-     * @return true if the path matches the pattern, false otherwise
-     */
-    @Override
+	 * Determines if the given path matches the pattern of this ApplicationContentFilter.
+	 * @param path the path to be matched
+	 * @return true if the path matches the pattern, false otherwise
+	 */
+	@Override
 	public boolean matches(String path) {
 		return MATCHER.match(this.pattern, path);
 	}

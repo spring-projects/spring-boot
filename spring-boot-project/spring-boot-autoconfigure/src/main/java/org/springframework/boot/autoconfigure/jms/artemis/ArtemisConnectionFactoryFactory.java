@@ -52,14 +52,14 @@ class ArtemisConnectionFactoryFactory {
 	private final ListableBeanFactory beanFactory;
 
 	/**
-     * Constructs a new instance of ArtemisConnectionFactoryFactory.
-     * 
-     * @param beanFactory the ListableBeanFactory to be used for creating the factory
-     * @param properties the ArtemisProperties containing the configuration properties
-     * @param connectionDetails the ArtemisConnectionDetails containing the connection details
-     * @throws IllegalArgumentException if any of the parameters are null
-     */
-    ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
+	 * Constructs a new instance of ArtemisConnectionFactoryFactory.
+	 * @param beanFactory the ListableBeanFactory to be used for creating the factory
+	 * @param properties the ArtemisProperties containing the configuration properties
+	 * @param connectionDetails the ArtemisConnectionDetails containing the connection
+	 * details
+	 * @throws IllegalArgumentException if any of the parameters are null
+	 */
+	ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
 			ArtemisConnectionDetails connectionDetails) {
 		Assert.notNull(beanFactory, "BeanFactory must not be null");
 		Assert.notNull(properties, "Properties must not be null");
@@ -70,13 +70,12 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	/**
-     * Creates a connection factory of the specified type.
-     * 
-     * @param factoryClass the class of the connection factory to create
-     * @return the created connection factory
-     * @throws IllegalStateException if unable to create the connection factory
-     */
-    <T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
+	 * Creates a connection factory of the specified type.
+	 * @param factoryClass the class of the connection factory to create
+	 * @return the created connection factory
+	 * @throws IllegalStateException if unable to create the connection factory
+	 */
+	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
 		try {
 			startEmbeddedJms();
 			return doCreateConnectionFactory(factoryClass);
@@ -87,12 +86,12 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	/**
-     * Starts the embedded JMS server.
-     * This method iterates through a list of embedded JMS classes and checks if they are present.
-     * If a class is present, it attempts to get all beans of that class type from the bean factory.
-     * Any exceptions thrown during this process are ignored.
-     */
-    private void startEmbeddedJms() {
+	 * Starts the embedded JMS server. This method iterates through a list of embedded JMS
+	 * classes and checks if they are present. If a class is present, it attempts to get
+	 * all beans of that class type from the bean factory. Any exceptions thrown during
+	 * this process are ignored.
+	 */
+	private void startEmbeddedJms() {
 		for (String embeddedJmsClass : EMBEDDED_JMS_CLASSES) {
 			if (ClassUtils.isPresent(embeddedJmsClass, null)) {
 				try {
@@ -106,13 +105,12 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	/**
-     * Creates a connection factory of the specified type.
-     * 
-     * @param factoryClass the class of the connection factory to create
-     * @return the created connection factory
-     * @throws Exception if an error occurs during the creation of the connection factory
-     */
-    private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(Class<T> factoryClass) throws Exception {
+	 * Creates a connection factory of the specified type.
+	 * @param factoryClass the class of the connection factory to create
+	 * @return the created connection factory
+	 * @throws Exception if an error occurs during the creation of the connection factory
+	 */
+	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(Class<T> factoryClass) throws Exception {
 		ArtemisMode mode = this.connectionDetails.getMode();
 		if (mode == null) {
 			mode = deduceMode();
@@ -135,11 +133,10 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	/**
-     * Checks if any of the embedded JMS classes are present.
-     * 
-     * @return true if any of the embedded JMS classes are present, false otherwise
-     */
-    private boolean isEmbeddedJmsClassPresent() {
+	 * Checks if any of the embedded JMS classes are present.
+	 * @return true if any of the embedded JMS classes are present, false otherwise
+	 */
+	private boolean isEmbeddedJmsClassPresent() {
 		for (String embeddedJmsClass : EMBEDDED_JMS_CLASSES) {
 			if (ClassUtils.isPresent(embeddedJmsClass, null)) {
 				return true;
@@ -149,14 +146,14 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	/**
-     * Creates an embedded connection factory of the specified type.
-     * 
-     * @param factoryClass the class of the connection factory to create
-     * @return the created embedded connection factory
-     * @throws Exception if an error occurs while creating the connection factory
-     * @throws IllegalStateException if the required Artemis JMS server library is not in the classpath
-     */
-    private <T extends ActiveMQConnectionFactory> T createEmbeddedConnectionFactory(Class<T> factoryClass)
+	 * Creates an embedded connection factory of the specified type.
+	 * @param factoryClass the class of the connection factory to create
+	 * @return the created embedded connection factory
+	 * @throws Exception if an error occurs while creating the connection factory
+	 * @throws IllegalStateException if the required Artemis JMS server library is not in
+	 * the classpath
+	 */
+	private <T extends ActiveMQConnectionFactory> T createEmbeddedConnectionFactory(Class<T> factoryClass)
 			throws Exception {
 		try {
 			TransportConfiguration transportConfiguration = new TransportConfiguration(
@@ -171,13 +168,12 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	/**
-     * Creates a native connection factory of the specified factory class.
-     * 
-     * @param factoryClass the class of the connection factory to create
-     * @return the created native connection factory
-     * @throws Exception if an error occurs while creating the connection factory
-     */
-    private <T extends ActiveMQConnectionFactory> T createNativeConnectionFactory(Class<T> factoryClass)
+	 * Creates a native connection factory of the specified factory class.
+	 * @param factoryClass the class of the connection factory to create
+	 * @return the created native connection factory
+	 * @throws Exception if an error occurs while creating the connection factory
+	 */
+	private <T extends ActiveMQConnectionFactory> T createNativeConnectionFactory(Class<T> factoryClass)
 			throws Exception {
 		T connectionFactory = newNativeConnectionFactory(factoryClass);
 		String user = this.connectionDetails.getUser();
@@ -189,13 +185,14 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	/**
-     * Creates a new instance of the native connection factory based on the provided factory class.
-     * 
-     * @param factoryClass the class of the native connection factory
-     * @return a new instance of the native connection factory
-     * @throws Exception if an error occurs during the creation of the native connection factory
-     */
-    private <T extends ActiveMQConnectionFactory> T newNativeConnectionFactory(Class<T> factoryClass) throws Exception {
+	 * Creates a new instance of the native connection factory based on the provided
+	 * factory class.
+	 * @param factoryClass the class of the native connection factory
+	 * @return a new instance of the native connection factory
+	 * @throws Exception if an error occurs during the creation of the native connection
+	 * factory
+	 */
+	private <T extends ActiveMQConnectionFactory> T newNativeConnectionFactory(Class<T> factoryClass) throws Exception {
 		String brokerUrl = StringUtils.hasText(this.connectionDetails.getBrokerUrl())
 				? this.connectionDetails.getBrokerUrl() : DEFAULT_BROKER_URL;
 		Constructor<T> constructor = factoryClass.getConstructor(String.class);

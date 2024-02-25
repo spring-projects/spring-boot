@@ -36,11 +36,10 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 public class GitProperties extends InfoProperties {
 
 	/**
-     * Constructs a new GitProperties object with the given entries.
-     * 
-     * @param entries the properties entries to be processed
-     */
-    public GitProperties(Properties entries) {
+	 * Constructs a new GitProperties object with the given entries.
+	 * @param entries the properties entries to be processed
+	 */
+	public GitProperties(Properties entries) {
 		super(processEntries(entries));
 	}
 
@@ -89,12 +88,11 @@ public class GitProperties extends InfoProperties {
 	}
 
 	/**
-     * Processes the entries in the given properties object.
-     * 
-     * @param properties the properties object to be processed
-     * @return the processed properties object
-     */
-    private static Properties processEntries(Properties properties) {
+	 * Processes the entries in the given properties object.
+	 * @param properties the properties object to be processed
+	 * @return the processed properties object
+	 */
+	private static Properties processEntries(Properties properties) {
 		coercePropertyToEpoch(properties, "commit.time");
 		coercePropertyToEpoch(properties, "build.time");
 		Object commitId = properties.get("commit.id");
@@ -106,12 +104,12 @@ public class GitProperties extends InfoProperties {
 	}
 
 	/**
-     * Coerces the value of a property to epoch format and updates the property in the given Properties object.
-     * 
-     * @param properties the Properties object containing the properties
-     * @param key the key of the property to be coerced
-     */
-    private static void coercePropertyToEpoch(Properties properties, String key) {
+	 * Coerces the value of a property to epoch format and updates the property in the
+	 * given Properties object.
+	 * @param properties the Properties object containing the properties
+	 * @param key the key of the property to be coerced
+	 */
+	private static void coercePropertyToEpoch(Properties properties, String key) {
 		String value = properties.getProperty(key);
 		if (value != null) {
 			properties.setProperty(key, coerceToEpoch(value));
@@ -141,13 +139,12 @@ public class GitProperties extends InfoProperties {
 	}
 
 	/**
-     * Parses a string representation of epoch seconds into a Long value.
-     * 
-     * @param s the string representation of epoch seconds
-     * @return the Long value representing the parsed epoch seconds, multiplied by 1000
-     *         or null if the input string is not a valid number
-     */
-    private static Long parseEpochSecond(String s) {
+	 * Parses a string representation of epoch seconds into a Long value.
+	 * @param s the string representation of epoch seconds
+	 * @return the Long value representing the parsed epoch seconds, multiplied by 1000 or
+	 * null if the input string is not a valid number
+	 */
+	private static Long parseEpochSecond(String s) {
 		try {
 			return Long.parseLong(s) * 1000;
 		}
@@ -157,17 +154,16 @@ public class GitProperties extends InfoProperties {
 	}
 
 	/**
-     * GitPropertiesRuntimeHints class.
-     */
-    static class GitPropertiesRuntimeHints implements RuntimeHintsRegistrar {
+	 * GitPropertiesRuntimeHints class.
+	 */
+	static class GitPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
 		/**
-         * Registers the runtime hints for Git properties.
-         * 
-         * @param hints the runtime hints to register
-         * @param classLoader the class loader to use
-         */
-        @Override
+		 * Registers the runtime hints for Git properties.
+		 * @param hints the runtime hints to register
+		 * @param classLoader the class loader to use
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources().registerPattern("git.properties");
 		}

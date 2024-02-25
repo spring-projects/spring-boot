@@ -33,25 +33,25 @@ import org.springframework.context.annotation.Configuration;
 public class MyGraphiteConfiguration {
 
 	/**
-     * Creates a new instance of GraphiteMeterRegistry using the provided GraphiteConfig and Clock.
-     * 
-     * @param config the GraphiteConfig to use for configuring the GraphiteMeterRegistry
-     * @param clock the Clock to use for measuring time
-     * @return a new instance of GraphiteMeterRegistry
-     */
-    @Bean
+	 * Creates a new instance of GraphiteMeterRegistry using the provided GraphiteConfig
+	 * and Clock.
+	 * @param config the GraphiteConfig to use for configuring the GraphiteMeterRegistry
+	 * @param clock the Clock to use for measuring time
+	 * @return a new instance of GraphiteMeterRegistry
+	 */
+	@Bean
 	public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock clock) {
 		return new GraphiteMeterRegistry(config, clock, this::toHierarchicalName);
 	}
 
 	/**
-     * Converts a Meter.Id object to a hierarchical name using the specified NamingConvention.
-     * 
-     * @param id The Meter.Id object to convert.
-     * @param convention The NamingConvention to use for the conversion.
-     * @return The hierarchical name generated from the Meter.Id object.
-     */
-    private String toHierarchicalName(Meter.Id id, NamingConvention convention) {
+	 * Converts a Meter.Id object to a hierarchical name using the specified
+	 * NamingConvention.
+	 * @param id The Meter.Id object to convert.
+	 * @param convention The NamingConvention to use for the conversion.
+	 * @return The hierarchical name generated from the Meter.Id object.
+	 */
+	private String toHierarchicalName(Meter.Id id, NamingConvention convention) {
 		return /**/ HierarchicalNameMapper.DEFAULT.toHierarchicalName(id, convention);
 	}
 

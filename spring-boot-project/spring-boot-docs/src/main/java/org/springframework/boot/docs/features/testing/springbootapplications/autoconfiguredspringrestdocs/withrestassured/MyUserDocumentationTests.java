@@ -37,12 +37,11 @@ import static org.springframework.restdocs.restassured.RestAssuredRestDocumentat
 class MyUserDocumentationTests {
 
 	/**
-     * Test method to list users.
-     * 
-     * @param documentationSpec the RequestSpecification for documentation
-     * @param port the local server port
-     */
-    @Test
+	 * Test method to list users.
+	 * @param documentationSpec the RequestSpecification for documentation
+	 * @param port the local server port
+	 */
+	@Test
 	void listUsers(@Autowired RequestSpecification documentationSpec, @LocalServerPort int port) {
 		// @formatter:off
 		given(documentationSpec)

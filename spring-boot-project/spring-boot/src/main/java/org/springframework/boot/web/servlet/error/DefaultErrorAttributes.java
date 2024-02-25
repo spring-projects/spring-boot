@@ -71,26 +71,24 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	private static final String ERROR_INTERNAL_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
 
 	/**
-     * Returns the order of this DefaultErrorAttributes instance.
-     * The order is set to the highest precedence value.
-     *
-     * @return the order value
-     */
-    @Override
+	 * Returns the order of this DefaultErrorAttributes instance. The order is set to the
+	 * highest precedence value.
+	 * @return the order value
+	 */
+	@Override
 	public int getOrder() {
 		return Ordered.HIGHEST_PRECEDENCE;
 	}
 
 	/**
-     * Resolves the exception thrown during the execution of a handler method.
-     * 
-     * @param request  the HttpServletRequest object representing the current request
-     * @param response the HttpServletResponse object representing the current response
-     * @param handler  the handler object that was executed
-     * @param ex       the exception that was thrown during the execution of the handler method
-     * @return         null
-     */
-    @Override
+	 * Resolves the exception thrown during the execution of a handler method.
+	 * @param request the HttpServletRequest object representing the current request
+	 * @param response the HttpServletResponse object representing the current response
+	 * @param handler the handler object that was executed
+	 * @param ex the exception that was thrown during the execution of the handler method
+	 * @return null
+	 */
+	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
 			Exception ex) {
 		storeErrorAttributes(request, ex);
@@ -98,23 +96,21 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	/**
-     * Stores the error attributes and exception in the request attribute.
-     * 
-     * @param request the HttpServletRequest object
-     * @param ex the Exception object
-     */
-    private void storeErrorAttributes(HttpServletRequest request, Exception ex) {
+	 * Stores the error attributes and exception in the request attribute.
+	 * @param request the HttpServletRequest object
+	 * @param ex the Exception object
+	 */
+	private void storeErrorAttributes(HttpServletRequest request, Exception ex) {
 		request.setAttribute(ERROR_INTERNAL_ATTRIBUTE, ex);
 	}
 
 	/**
-     * Returns the error attributes for the given web request and error attribute options.
-     * 
-     * @param webRequest The web request for which to retrieve the error attributes.
-     * @param options The error attribute options specifying which attributes to include.
-     * @return A map of error attributes.
-     */
-    @Override
+	 * Returns the error attributes for the given web request and error attribute options.
+	 * @param webRequest The web request for which to retrieve the error attributes.
+	 * @param options The error attribute options specifying which attributes to include.
+	 * @return A map of error attributes.
+	 */
+	@Override
 	public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 		Map<String, Object> errorAttributes = getErrorAttributes(webRequest, options.isIncluded(Include.STACK_TRACE));
 		if (!options.isIncluded(Include.EXCEPTION)) {
@@ -136,13 +132,12 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	/**
-     * Returns a map of error attributes for the given web request.
-     * 
-     * @param webRequest the web request
-     * @param includeStackTrace whether to include the stack trace in the error details
-     * @return a map of error attributes
-     */
-    private Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+	 * Returns a map of error attributes for the given web request.
+	 * @param webRequest the web request
+	 * @param includeStackTrace whether to include the stack trace in the error details
+	 * @return a map of error attributes
+	 */
+	private Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
 		addStatus(errorAttributes, webRequest);
@@ -152,15 +147,18 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	/**
-     * Adds the status and error attributes to the errorAttributes map.
-     * If the status attribute is not found in the requestAttributes, it sets the status to 999 and error to "None".
-     * Otherwise, it sets the status to the value found in the requestAttributes and tries to obtain the corresponding
-     * reason phrase from the HttpStatus enum. If the reason phrase is not found, it sets the error to "Http Status " + status.
-     *
-     * @param errorAttributes   the map to which the status and error attributes will be added
-     * @param requestAttributes the request attributes from which the status attribute will be retrieved
-     */
-    private void addStatus(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
+	 * Adds the status and error attributes to the errorAttributes map. If the status
+	 * attribute is not found in the requestAttributes, it sets the status to 999 and
+	 * error to "None". Otherwise, it sets the status to the value found in the
+	 * requestAttributes and tries to obtain the corresponding reason phrase from the
+	 * HttpStatus enum. If the reason phrase is not found, it sets the error to "Http
+	 * Status " + status.
+	 * @param errorAttributes the map to which the status and error attributes will be
+	 * added
+	 * @param requestAttributes the request attributes from which the status attribute
+	 * will be retrieved
+	 */
+	private void addStatus(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
 		Integer status = getAttribute(requestAttributes, RequestDispatcher.ERROR_STATUS_CODE);
 		if (status == null) {
 			errorAttributes.put("status", 999);
@@ -178,13 +176,12 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	/**
-     * Adds error details to the given error attributes map.
-     * 
-     * @param errorAttributes the map to add error details to
-     * @param webRequest the current web request
-     * @param includeStackTrace whether to include the stack trace in the error details
-     */
-    private void addErrorDetails(Map<String, Object> errorAttributes, WebRequest webRequest,
+	 * Adds error details to the given error attributes map.
+	 * @param errorAttributes the map to add error details to
+	 * @param webRequest the current web request
+	 * @param includeStackTrace whether to include the stack trace in the error details
+	 */
+	private void addErrorDetails(Map<String, Object> errorAttributes, WebRequest webRequest,
 			boolean includeStackTrace) {
 		Throwable error = getError(webRequest);
 		if (error != null) {
@@ -200,15 +197,14 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	/**
-     * Adds an error message to the given error attributes map based on the provided error and request.
-     * If the error is a binding result, the error message is extracted from the binding result.
-     * Otherwise, the error message is extracted from the exception.
-     *
-     * @param errorAttributes the error attributes map to add the error message to
-     * @param webRequest the web request associated with the error
-     * @param error the error or exception to extract the error message from
-     */
-    private void addErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
+	 * Adds an error message to the given error attributes map based on the provided error
+	 * and request. If the error is a binding result, the error message is extracted from
+	 * the binding result. Otherwise, the error message is extracted from the exception.
+	 * @param errorAttributes the error attributes map to add the error message to
+	 * @param webRequest the web request associated with the error
+	 * @param error the error or exception to extract the error message from
+	 */
+	private void addErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
 		BindingResult result = extractBindingResult(error);
 		if (result == null) {
 			addExceptionErrorMessage(errorAttributes, webRequest, error);
@@ -219,13 +215,12 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	/**
-     * Adds the error message to the error attributes map.
-     * 
-     * @param errorAttributes the error attributes map
-     * @param webRequest the web request
-     * @param error the throwable error
-     */
-    private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
+	 * Adds the error message to the error attributes map.
+	 * @param errorAttributes the error attributes map
+	 * @param webRequest the web request
+	 * @param error the throwable error
+	 */
+	private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
 		errorAttributes.put("message", getMessage(webRequest, error));
 	}
 
@@ -255,24 +250,25 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	/**
-     * Adds an error message and errors to the given error attributes map based on the provided BindingResult.
-     * 
-     * @param errorAttributes the error attributes map to add the error message and errors to
-     * @param result the BindingResult containing the validation errors
-     */
-    private void addBindingResultErrorMessage(Map<String, Object> errorAttributes, BindingResult result) {
+	 * Adds an error message and errors to the given error attributes map based on the
+	 * provided BindingResult.
+	 * @param errorAttributes the error attributes map to add the error message and errors
+	 * to
+	 * @param result the BindingResult containing the validation errors
+	 */
+	private void addBindingResultErrorMessage(Map<String, Object> errorAttributes, BindingResult result) {
 		errorAttributes.put("message", "Validation failed for object='" + result.getObjectName() + "'. "
 				+ "Error count: " + result.getErrorCount());
 		errorAttributes.put("errors", result.getAllErrors());
 	}
 
 	/**
-     * Extracts the BindingResult from the given Throwable error.
-     * 
-     * @param error the Throwable error to extract the BindingResult from
-     * @return the BindingResult if the error is an instance of BindingResult, otherwise null
-     */
-    private BindingResult extractBindingResult(Throwable error) {
+	 * Extracts the BindingResult from the given Throwable error.
+	 * @param error the Throwable error to extract the BindingResult from
+	 * @return the BindingResult if the error is an instance of BindingResult, otherwise
+	 * null
+	 */
+	private BindingResult extractBindingResult(Throwable error) {
 		if (error instanceof BindingResult bindingResult) {
 			return bindingResult;
 		}
@@ -280,12 +276,11 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	/**
-     * Adds the stack trace of the given error to the error attributes map.
-     * 
-     * @param errorAttributes the map to store the error attributes
-     * @param error the error for which the stack trace needs to be added
-     */
-    private void addStackTrace(Map<String, Object> errorAttributes, Throwable error) {
+	 * Adds the stack trace of the given error to the error attributes map.
+	 * @param errorAttributes the map to store the error attributes
+	 * @param error the error for which the stack trace needs to be added
+	 */
+	private void addStackTrace(Map<String, Object> errorAttributes, Throwable error) {
 		StringWriter stackTrace = new StringWriter();
 		error.printStackTrace(new PrintWriter(stackTrace));
 		stackTrace.flush();
@@ -293,12 +288,11 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	/**
-     * Adds the path attribute to the error attributes map.
-     * 
-     * @param errorAttributes the error attributes map
-     * @param requestAttributes the request attributes
-     */
-    private void addPath(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
+	 * Adds the path attribute to the error attributes map.
+	 * @param errorAttributes the error attributes map
+	 * @param requestAttributes the request attributes
+	 */
+	private void addPath(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
 		String path = getAttribute(requestAttributes, RequestDispatcher.ERROR_REQUEST_URI);
 		if (path != null) {
 			errorAttributes.put("path", path);
@@ -306,12 +300,11 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	/**
-     * Retrieves the error that occurred during the processing of the web request.
-     * 
-     * @param webRequest the current web request
-     * @return the Throwable object representing the error, or null if no error occurred
-     */
-    @Override
+	 * Retrieves the error that occurred during the processing of the web request.
+	 * @param webRequest the current web request
+	 * @return the Throwable object representing the error, or null if no error occurred
+	 */
+	@Override
 	public Throwable getError(WebRequest webRequest) {
 		Throwable exception = getAttribute(webRequest, ERROR_INTERNAL_ATTRIBUTE);
 		if (exception == null) {
@@ -321,18 +314,19 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	/**
-     * Retrieves the attribute with the specified name from the given RequestAttributes object.
-     * 
-     * @param requestAttributes the RequestAttributes object from which to retrieve the attribute
-     * @param name the name of the attribute to retrieve
-     * @return the attribute value, or null if the attribute does not exist
-     * @throws ClassCastException if the attribute value cannot be cast to the specified type
-     * 
-     * @param <T> the type of the attribute value
-     * 
-     * @since 1.0
-     */
-    @SuppressWarnings("unchecked")
+	 * Retrieves the attribute with the specified name from the given RequestAttributes
+	 * object.
+	 * @param requestAttributes the RequestAttributes object from which to retrieve the
+	 * attribute
+	 * @param name the name of the attribute to retrieve
+	 * @return the attribute value, or null if the attribute does not exist
+	 * @throws ClassCastException if the attribute value cannot be cast to the specified
+	 * type
+	 * @param <T> the type of the attribute value
+	 *
+	 * @since 1.0
+	 */
+	@SuppressWarnings("unchecked")
 	private <T> T getAttribute(RequestAttributes requestAttributes, String name) {
 		return (T) requestAttributes.getAttribute(name, RequestAttributes.SCOPE_REQUEST);
 	}

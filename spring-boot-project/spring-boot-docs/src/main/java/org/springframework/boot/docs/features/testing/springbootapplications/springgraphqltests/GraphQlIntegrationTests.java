@@ -31,11 +31,10 @@ import org.springframework.graphql.test.tester.HttpGraphQlTester;
 class GraphQlIntegrationTests {
 
 	/**
-     * Test case to verify that the greeting is generated with a specific name.
-     * 
-     * @param graphQlTester the HttpGraphQlTester instance used for testing
-     */
-    @Test
+	 * Test case to verify that the greeting is generated with a specific name.
+	 * @param graphQlTester the HttpGraphQlTester instance used for testing
+	 */
+	@Test
 	void shouldGreetWithSpecificName(@Autowired HttpGraphQlTester graphQlTester) {
 		HttpGraphQlTester authenticatedTester = graphQlTester.mutate()
 			.webTestClient((client) -> client.defaultHeaders((headers) -> headers.setBasicAuth("admin", "ilovespring")))

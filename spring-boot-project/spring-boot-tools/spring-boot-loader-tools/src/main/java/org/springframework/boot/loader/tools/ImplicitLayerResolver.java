@@ -27,12 +27,11 @@ class ImplicitLayerResolver extends StandardLayers {
 	private static final String SPRING_BOOT_LOADER_PREFIX = "org/springframework/boot/loader/";
 
 	/**
-     * Returns the layer associated with the given name.
-     * 
-     * @param name the name of the layer
-     * @return the layer associated with the given name
-     */
-    @Override
+	 * Returns the layer associated with the given name.
+	 * @param name the name of the layer
+	 * @return the layer associated with the given name
+	 */
+	@Override
 	public Layer getLayer(String name) {
 		if (name.startsWith(SPRING_BOOT_LOADER_PREFIX)) {
 			return SPRING_BOOT_LOADER;
@@ -41,12 +40,11 @@ class ImplicitLayerResolver extends StandardLayers {
 	}
 
 	/**
-     * Returns the layer of the given library.
-     * 
-     * @param library the library to get the layer for
-     * @return the layer of the library
-     */
-    @Override
+	 * Returns the layer of the given library.
+	 * @param library the library to get the layer for
+	 * @return the layer of the library
+	 */
+	@Override
 	public Layer getLayer(Library library) {
 		if (library.isLocal()) {
 			return APPLICATION;

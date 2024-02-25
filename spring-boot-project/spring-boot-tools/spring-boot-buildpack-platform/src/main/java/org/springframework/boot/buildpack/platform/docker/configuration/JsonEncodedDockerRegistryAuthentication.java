@@ -33,21 +33,20 @@ class JsonEncodedDockerRegistryAuthentication implements DockerRegistryAuthentic
 	private String authHeader;
 
 	/**
-     * Returns the authentication header.
-     *
-     * @return the authentication header
-     */
-    @Override
+	 * Returns the authentication header.
+	 * @return the authentication header
+	 */
+	@Override
 	public String getAuthHeader() {
 		return this.authHeader;
 	}
 
 	/**
-     * Creates the authentication header for the Docker registry.
-     * 
-     * @throws IllegalStateException if there is an error creating the Docker registry authentication header
-     */
-    protected void createAuthHeader() {
+	 * Creates the authentication header for the Docker registry.
+	 * @throws IllegalStateException if there is an error creating the Docker registry
+	 * authentication header
+	 */
+	protected void createAuthHeader() {
 		try {
 			this.authHeader = Base64.getUrlEncoder().encodeToString(SharedObjectMapper.get().writeValueAsBytes(this));
 		}

@@ -74,11 +74,10 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	}
 
 	/**
-     * Returns an iterator over the entries in this InfoProperties object.
-     *
-     * @return an iterator over the entries in this InfoProperties object
-     */
-    @Override
+	 * Returns an iterator over the entries in this InfoProperties object.
+	 * @return an iterator over the entries in this InfoProperties object
+	 */
+	@Override
 	public Iterator<Entry> iterator() {
 		return new PropertiesIterator(this.entries);
 	}
@@ -92,60 +91,59 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	}
 
 	/**
-     * Creates a deep copy of the given Properties object.
-     * 
-     * @param properties the Properties object to be copied
-     * @return a new Properties object that is a copy of the input properties
-     */
-    private Properties copy(Properties properties) {
+	 * Creates a deep copy of the given Properties object.
+	 * @param properties the Properties object to be copied
+	 * @return a new Properties object that is a copy of the input properties
+	 */
+	private Properties copy(Properties properties) {
 		Properties copy = new Properties();
 		copy.putAll(properties);
 		return copy;
 	}
 
 	/**
-     * PropertiesIterator class.
-     */
-    private static final class PropertiesIterator implements Iterator<Entry> {
+	 * PropertiesIterator class.
+	 */
+	private static final class PropertiesIterator implements Iterator<Entry> {
 
 		private final Iterator<Map.Entry<Object, Object>> iterator;
 
 		/**
-         * Constructs a new PropertiesIterator object with the specified Properties object.
-         * 
-         * @param properties the Properties object to iterate over
-         */
-        private PropertiesIterator(Properties properties) {
+		 * Constructs a new PropertiesIterator object with the specified Properties
+		 * object.
+		 * @param properties the Properties object to iterate over
+		 */
+		private PropertiesIterator(Properties properties) {
 			this.iterator = properties.entrySet().iterator();
 		}
 
 		/**
-         * Returns true if there is at least one more element in the iteration, false otherwise.
-         * 
-         * @return true if there is at least one more element in the iteration, false otherwise
-         */
-        @Override
+		 * Returns true if there is at least one more element in the iteration, false
+		 * otherwise.
+		 * @return true if there is at least one more element in the iteration, false
+		 * otherwise
+		 */
+		@Override
 		public boolean hasNext() {
 			return this.iterator.hasNext();
 		}
 
 		/**
-         * Returns the next entry in the iteration.
-         * 
-         * @return the next entry in the iteration
-         */
-        @Override
+		 * Returns the next entry in the iteration.
+		 * @return the next entry in the iteration
+		 */
+		@Override
 		public Entry next() {
 			Map.Entry<Object, Object> entry = this.iterator.next();
 			return new Entry((String) entry.getKey(), (String) entry.getValue());
 		}
 
 		/**
-         * Throws an UnsupportedOperationException as InfoProperties are immutable and cannot be removed.
-         * 
-         * @throws UnsupportedOperationException if remove() is called
-         */
-        @Override
+		 * Throws an UnsupportedOperationException as InfoProperties are immutable and
+		 * cannot be removed.
+		 * @throws UnsupportedOperationException if remove() is called
+		 */
+		@Override
 		public void remove() {
 			throw new UnsupportedOperationException("InfoProperties are immutable.");
 		}
@@ -162,31 +160,28 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 		private final String value;
 
 		/**
-         * Constructs a new Entry object with the specified key and value.
-         *
-         * @param key   the key associated with the entry
-         * @param value the value associated with the entry
-         */
-        private Entry(String key, String value) {
+		 * Constructs a new Entry object with the specified key and value.
+		 * @param key the key associated with the entry
+		 * @param value the value associated with the entry
+		 */
+		private Entry(String key, String value) {
 			this.key = key;
 			this.value = value;
 		}
 
 		/**
-         * Returns the key associated with this Entry.
-         *
-         * @return the key associated with this Entry
-         */
-        public String getKey() {
+		 * Returns the key associated with this Entry.
+		 * @return the key associated with this Entry
+		 */
+		public String getKey() {
 			return this.key;
 		}
 
 		/**
-         * Returns the value of the Entry.
-         *
-         * @return the value of the Entry
-         */
-        public String getValue() {
+		 * Returns the value of the Entry.
+		 * @return the value of the Entry
+		 */
+		public String getValue() {
 			return this.value;
 		}
 

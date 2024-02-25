@@ -85,18 +85,22 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 	}
 
 	/**
-     * Creates health endpoint groups based on the provided group properties.
-     * 
-     * @param groupProperties       a map of group names to group properties
-     * @param beanFactory           the bean factory used for dependency injection
-     * @param defaultStatusAggregator   the default status aggregator to use if not specified in the group properties
-     * @param defaultHttpCodeStatusMapper   the default HTTP code status mapper to use if not specified in the group properties
-     * @param defaultShowComponents   the default show components setting to use if not specified in the group properties
-     * @param defaultShowDetails   the default show details setting to use if not specified in the group properties
-     * @param defaultRoles   the default roles to use if not specified in the group properties
-     * @return a map of group names to health endpoint groups
-     */
-    private Map<String, HealthEndpointGroup> createGroups(Map<String, Group> groupProperties, BeanFactory beanFactory,
+	 * Creates health endpoint groups based on the provided group properties.
+	 * @param groupProperties a map of group names to group properties
+	 * @param beanFactory the bean factory used for dependency injection
+	 * @param defaultStatusAggregator the default status aggregator to use if not
+	 * specified in the group properties
+	 * @param defaultHttpCodeStatusMapper the default HTTP code status mapper to use if
+	 * not specified in the group properties
+	 * @param defaultShowComponents the default show components setting to use if not
+	 * specified in the group properties
+	 * @param defaultShowDetails the default show details setting to use if not specified
+	 * in the group properties
+	 * @param defaultRoles the default roles to use if not specified in the group
+	 * properties
+	 * @return a map of group names to health endpoint groups
+	 */
+	private Map<String, HealthEndpointGroup> createGroups(Map<String, Group> groupProperties, BeanFactory beanFactory,
 			StatusAggregator defaultStatusAggregator, HttpCodeStatusMapper defaultHttpCodeStatusMapper,
 			Show defaultShowComponents, Show defaultShowDetails, Set<String> defaultRoles) {
 		Map<String, HealthEndpointGroup> groups = new LinkedHashMap<>();
@@ -129,14 +133,13 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 	}
 
 	/**
-     * Retrieves a non-qualified bean of the specified type from the given bean factory.
-     * 
-     * @param beanFactory the bean factory to search for the bean
-     * @param type the type of the bean to retrieve
-     * @param <T> the generic type of the bean
-     * @return the non-qualified bean of the specified type, or null if not found
-     */
-    private <T> T getNonQualifiedBean(ListableBeanFactory beanFactory, Class<T> type) {
+	 * Retrieves a non-qualified bean of the specified type from the given bean factory.
+	 * @param beanFactory the bean factory to search for the bean
+	 * @param type the type of the bean to retrieve
+	 * @param <T> the generic type of the bean
+	 * @return the non-qualified bean of the specified type, or null if not found
+	 */
+	private <T> T getNonQualifiedBean(ListableBeanFactory beanFactory, Class<T> type) {
 		List<String> candidates = new ArrayList<>();
 		for (String beanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, type)) {
 			String[] aliases = beanFactory.getAliases(beanName);
@@ -156,17 +159,18 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 	}
 
 	/**
-     * Retrieves a qualified bean of the specified type from the given bean factory, using the provided qualifier.
-     * If the bean is not found, a fallback supplier is used to provide a default value.
-     *
-     * @param beanFactory the bean factory to retrieve the bean from
-     * @param type the type of the bean to retrieve
-     * @param qualifier the qualifier to use when retrieving the bean
-     * @param fallback a supplier that provides a fallback value if the bean is not found
-     * @param <T> the type of the bean to retrieve
-     * @return the qualified bean of the specified type, or the fallback value if the bean is not found
-     */
-    private <T> T getQualifiedBean(BeanFactory beanFactory, Class<T> type, String qualifier, Supplier<T> fallback) {
+	 * Retrieves a qualified bean of the specified type from the given bean factory, using
+	 * the provided qualifier. If the bean is not found, a fallback supplier is used to
+	 * provide a default value.
+	 * @param beanFactory the bean factory to retrieve the bean from
+	 * @param type the type of the bean to retrieve
+	 * @param qualifier the qualifier to use when retrieving the bean
+	 * @param fallback a supplier that provides a fallback value if the bean is not found
+	 * @param <T> the type of the bean to retrieve
+	 * @return the qualified bean of the specified type, or the fallback value if the bean
+	 * is not found
+	 */
+	private <T> T getQualifiedBean(BeanFactory beanFactory, Class<T> type, String qualifier, Supplier<T> fallback) {
 		try {
 			return BeanFactoryAnnotationUtils.qualifiedBeanOfType(beanFactory, type, qualifier);
 		}
@@ -176,32 +180,29 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 	}
 
 	/**
-     * Returns the primary HealthEndpointGroup.
-     *
-     * @return the primary HealthEndpointGroup
-     */
-    @Override
+	 * Returns the primary HealthEndpointGroup.
+	 * @return the primary HealthEndpointGroup
+	 */
+	@Override
 	public HealthEndpointGroup getPrimary() {
 		return this.primaryGroup;
 	}
 
 	/**
-     * Returns a set of names of the health endpoint groups.
-     *
-     * @return a set of names of the health endpoint groups
-     */
-    @Override
+	 * Returns a set of names of the health endpoint groups.
+	 * @return a set of names of the health endpoint groups
+	 */
+	@Override
 	public Set<String> getNames() {
 		return this.groups.keySet();
 	}
 
 	/**
-     * Retrieves the HealthEndpointGroup with the specified name.
-     *
-     * @param name the name of the HealthEndpointGroup to retrieve
-     * @return the HealthEndpointGroup with the specified name, or null if not found
-     */
-    @Override
+	 * Retrieves the HealthEndpointGroup with the specified name.
+	 * @param name the name of the HealthEndpointGroup to retrieve
+	 * @return the HealthEndpointGroup with the specified name, or null if not found
+	 */
+	@Override
 	public HealthEndpointGroup get(String name) {
 		return this.groups.get(name);
 	}

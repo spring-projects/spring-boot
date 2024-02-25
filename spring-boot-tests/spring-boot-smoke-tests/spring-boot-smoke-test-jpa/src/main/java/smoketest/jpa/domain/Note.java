@@ -43,74 +43,66 @@ public class Note {
 	private List<Tag> tags;
 
 	/**
-     * Returns the ID of the Note.
-     *
-     * @return the ID of the Note
-     */
-    public long getId() {
+	 * Returns the ID of the Note.
+	 * @return the ID of the Note
+	 */
+	public long getId() {
 		return this.id;
 	}
 
 	/**
-     * Sets the ID of the note.
-     * 
-     * @param id the ID to set
-     */
-    public void setId(long id) {
+	 * Sets the ID of the note.
+	 * @param id the ID to set
+	 */
+	public void setId(long id) {
 		this.id = id;
 	}
 
 	/**
-     * Returns the title of the note.
-     *
-     * @return the title of the note
-     */
-    public String getTitle() {
+	 * Returns the title of the note.
+	 * @return the title of the note
+	 */
+	public String getTitle() {
 		return this.title;
 	}
 
 	/**
-     * Sets the title of the note.
-     * 
-     * @param title the new title for the note
-     */
-    public void setTitle(String title) {
+	 * Sets the title of the note.
+	 * @param title the new title for the note
+	 */
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
 	/**
-     * Returns the body of the note.
-     *
-     * @return the body of the note
-     */
-    public String getBody() {
+	 * Returns the body of the note.
+	 * @return the body of the note
+	 */
+	public String getBody() {
 		return this.body;
 	}
 
 	/**
-     * Sets the body of the note.
-     * 
-     * @param body the body of the note to be set
-     */
-    public void setBody(String body) {
+	 * Sets the body of the note.
+	 * @param body the body of the note to be set
+	 */
+	public void setBody(String body) {
 		this.body = body;
 	}
 
 	/**
-     * Returns the list of tags associated with the note.
-     *
-     * @return the list of tags
-     */
-    public List<Tag> getTags() {
+	 * Returns the list of tags associated with the note.
+	 * @return the list of tags
+	 */
+	public List<Tag> getTags() {
 		return this.tags;
 	}
 
 	/**
-     * Sets the list of tags for the note.
-     * 
-     * @param tags the list of tags to be set
-     */
-    public void setTags(List<Tag> tags) {
+	 * Sets the list of tags for the note.
+	 * @param tags the list of tags to be set
+	 */
+	public void setTags(List<Tag> tags) {
 		this.tags = tags;
 	}
 

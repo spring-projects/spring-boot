@@ -45,21 +45,22 @@ public class MailHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<MailHealthIndicator, JavaMailSenderImpl> {
 
 	/**
-     * Constructs a new MailHealthContributorAutoConfiguration.
-     * 
-     * This constructor initializes the MailHealthContributorAutoConfiguration with a new instance of MailHealthIndicator.
-     */
-    public MailHealthContributorAutoConfiguration() {
+	 * Constructs a new MailHealthContributorAutoConfiguration.
+	 *
+	 * This constructor initializes the MailHealthContributorAutoConfiguration with a new
+	 * instance of MailHealthIndicator.
+	 */
+	public MailHealthContributorAutoConfiguration() {
 		super(MailHealthIndicator::new);
 	}
 
 	/**
-     * Creates a mail health contributor if no existing bean with the names "mailHealthIndicator" and "mailHealthContributor" is found.
-     * 
-     * @param mailSenders a map of mail senders
-     * @return the mail health contributor
-     */
-    @Bean
+	 * Creates a mail health contributor if no existing bean with the names
+	 * "mailHealthIndicator" and "mailHealthContributor" is found.
+	 * @param mailSenders a map of mail senders
+	 * @return the mail health contributor
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = { "mailHealthIndicator", "mailHealthContributor" })
 	public HealthContributor mailHealthContributor(Map<String, JavaMailSenderImpl> mailSenders) {
 		return createContributor(mailSenders);

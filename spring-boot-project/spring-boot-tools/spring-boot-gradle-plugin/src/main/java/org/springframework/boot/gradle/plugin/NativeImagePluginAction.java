@@ -45,21 +45,19 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar;
 class NativeImagePluginAction implements PluginApplicationAction {
 
 	/**
-     * Returns the class of the plugin associated with this action.
-     *
-     * @return the class of the plugin associated with this action
-     */
-    @Override
+	 * Returns the class of the plugin associated with this action.
+	 * @return the class of the plugin associated with this action
+	 */
+	@Override
 	public Class<? extends Plugin<? extends Project>> getPluginClass() {
 		return NativeImagePlugin.class;
 	}
 
 	/**
-     * Executes the NativeImagePluginAction on the given project.
-     * 
-     * @param project The project on which the action is executed.
-     */
-    @Override
+	 * Executes the NativeImagePluginAction on the given project.
+	 * @param project The project on which the action is executed.
+	 */
+	@Override
 	public void execute(Project project) {
 		project.getPlugins().apply(SpringBootAotPlugin.class);
 		project.getPlugins().withType(JavaPlugin.class).all((plugin) -> {
@@ -75,13 +73,12 @@ class NativeImagePluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures the main native binary classpath for the project.
-     * 
-     * @param project The project to configure.
-     * @param sourceSets The source sets container.
-     * @param graalVmExtension The GraalVM extension.
-     */
-    private void configureMainNativeBinaryClasspath(Project project, SourceSetContainer sourceSets,
+	 * Configures the main native binary classpath for the project.
+	 * @param project The project to configure.
+	 * @param sourceSets The source sets container.
+	 * @param graalVmExtension The GraalVM extension.
+	 */
+	private void configureMainNativeBinaryClasspath(Project project, SourceSetContainer sourceSets,
 			GraalVMExtension graalVmExtension) {
 		FileCollection runtimeClasspath = sourceSets.getByName(SpringBootAotPlugin.AOT_SOURCE_SET_NAME)
 			.getRuntimeClasspath();
@@ -91,69 +88,67 @@ class NativeImagePluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Removes the development-only configurations from the given set of configurations.
-     * 
-     * @param configurations the set of configurations to remove development-only configurations from
-     * @return an iterable containing the configurations without the development-only configurations
-     */
-    private Iterable<Configuration> removeDevelopmentOnly(Set<Configuration> configurations) {
+	 * Removes the development-only configurations from the given set of configurations.
+	 * @param configurations the set of configurations to remove development-only
+	 * configurations from
+	 * @return an iterable containing the configurations without the development-only
+	 * configurations
+	 */
+	private Iterable<Configuration> removeDevelopmentOnly(Set<Configuration> configurations) {
 		return configurations.stream()
 			.filter(this::isNotDevelopmentOnly)
 			.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	/**
-     * Checks if the given configuration is not a development-only configuration.
-     * 
-     * @param configuration the configuration to check
-     * @return {@code true} if the configuration is not a development-only configuration, {@code false} otherwise
-     */
-    private boolean isNotDevelopmentOnly(Configuration configuration) {
+	 * Checks if the given configuration is not a development-only configuration.
+	 * @param configuration the configuration to check
+	 * @return {@code true} if the configuration is not a development-only configuration,
+	 * {@code false} otherwise
+	 */
+	private boolean isNotDevelopmentOnly(Configuration configuration) {
 		return !SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME.equals(configuration.getName())
 				&& !SpringBootPlugin.TEST_AND_DEVELOPMENT_ONLY_CONFIGURATION_NAME.equals(configuration.getName());
 	}
 
 	/**
-     * Configures the test native binary classpath for the given source sets and GraalVM extension.
-     * 
-     * @param sourceSets The source sets container.
-     * @param graalVmExtension The GraalVM extension.
-     */
-    private void configureTestNativeBinaryClasspath(SourceSetContainer sourceSets, GraalVMExtension graalVmExtension) {
+	 * Configures the test native binary classpath for the given source sets and GraalVM
+	 * extension.
+	 * @param sourceSets The source sets container.
+	 * @param graalVmExtension The GraalVM extension.
+	 */
+	private void configureTestNativeBinaryClasspath(SourceSetContainer sourceSets, GraalVMExtension graalVmExtension) {
 		FileCollection runtimeClasspath = sourceSets.getByName(SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME)
 			.getRuntimeClasspath();
 		graalVmExtension.getBinaries().getByName(NativeImagePlugin.NATIVE_TEST_EXTENSION).classpath(runtimeClasspath);
 	}
 
 	/**
-     * Configures the GraalVM extension for the given project.
-     * 
-     * @param project the project to configure the GraalVM extension for
-     * @return the configured GraalVM extension
-     */
-    private GraalVMExtension configureGraalVmExtension(Project project) {
+	 * Configures the GraalVM extension for the given project.
+	 * @param project the project to configure the GraalVM extension for
+	 * @return the configured GraalVM extension
+	 */
+	private GraalVMExtension configureGraalVmExtension(Project project) {
 		GraalVMExtension extension = project.getExtensions().getByType(GraalVMExtension.class);
 		extension.getToolchainDetection().set(false);
 		return extension;
 	}
 
 	/**
-     * Copies the reachability metadata to the boot jar.
-     * 
-     * @param project the project to copy the metadata from
-     */
-    private void copyReachabilityMetadataToBootJar(Project project) {
+	 * Copies the reachability metadata to the boot jar.
+	 * @param project the project to copy the metadata from
+	 */
+	private void copyReachabilityMetadataToBootJar(Project project) {
 		project.getTasks()
 			.named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class)
 			.configure((bootJar) -> bootJar.from(project.getTasks().named("collectReachabilityMetadata")));
 	}
 
 	/**
-     * Configures the boot build image task to produce a native image.
-     * 
-     * @param project the project to configure
-     */
-    private void configureBootBuildImageToProduceANativeImage(Project project) {
+	 * Configures the boot build image task to produce a native image.
+	 * @param project the project to configure
+	 */
+	private void configureBootBuildImageToProduceANativeImage(Project project) {
 		project.getTasks()
 			.named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
 			.configure((bootBuildImage) -> {
@@ -163,32 +158,30 @@ class NativeImagePluginAction implements PluginApplicationAction {
 	}
 
 	/**
-     * Configures the native attribute in the JAR manifest for the specified project.
-     * 
-     * @param project the project to configure
-     */
-    private void configureJarManifestNativeAttribute(Project project) {
+	 * Configures the native attribute in the JAR manifest for the specified project.
+	 * @param project the project to configure
+	 */
+	private void configureJarManifestNativeAttribute(Project project) {
 		project.getTasks()
 			.named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class)
 			.configure(this::addNativeProcessedAttribute);
 	}
 
 	/**
-     * Adds the native processed attribute to the manifest of the given BootJar.
-     * 
-     * @param bootJar the BootJar to add the native processed attribute to
-     */
-    private void addNativeProcessedAttribute(BootJar bootJar) {
+	 * Adds the native processed attribute to the manifest of the given BootJar.
+	 * @param bootJar the BootJar to add the native processed attribute to
+	 */
+	private void addNativeProcessedAttribute(BootJar bootJar) {
 		bootJar.manifest(this::addNativeProcessedAttribute);
 	}
 
 	/**
-     * Adds the "Spring-Boot-Native-Processed" attribute to the given manifest.
-     * This attribute indicates that the manifest has been processed by the Spring Boot Native Image plugin.
-     *
-     * @param manifest the manifest to which the attribute should be added
-     */
-    private void addNativeProcessedAttribute(Manifest manifest) {
+	 * Adds the "Spring-Boot-Native-Processed" attribute to the given manifest. This
+	 * attribute indicates that the manifest has been processed by the Spring Boot Native
+	 * Image plugin.
+	 * @param manifest the manifest to which the attribute should be added
+	 */
+	private void addNativeProcessedAttribute(Manifest manifest) {
 		manifest.getAttributes().put("Spring-Boot-Native-Processed", true);
 	}
 

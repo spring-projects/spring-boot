@@ -41,23 +41,23 @@ import org.springframework.context.annotation.Import;
 public class SqlInitializationAutoConfiguration {
 
 	/**
-     * SqlInitializationModeCondition class.
-     */
-    static class SqlInitializationModeCondition extends NoneNestedConditions {
+	 * SqlInitializationModeCondition class.
+	 */
+	static class SqlInitializationModeCondition extends NoneNestedConditions {
 
 		/**
-         * Constructs a new SqlInitializationModeCondition with the specified configuration phase.
-         * 
-         * @param configurationPhase the configuration phase for the condition
-         */
-        SqlInitializationModeCondition() {
+		 * Constructs a new SqlInitializationModeCondition with the specified
+		 * configuration phase.
+		 * @param configurationPhase the configuration phase for the condition
+		 */
+		SqlInitializationModeCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
 		/**
-         * ModeIsNever class.
-         */
-        @ConditionalOnProperty(prefix = "spring.sql.init", name = "mode", havingValue = "never")
+		 * ModeIsNever class.
+		 */
+		@ConditionalOnProperty(prefix = "spring.sql.init", name = "mode", havingValue = "never")
 		static class ModeIsNever {
 
 		}

@@ -34,9 +34,9 @@ import org.springframework.util.Assert;
 public final class FilePermissions {
 
 	/**
-     * Private constructor for the FilePermissions class.
-     */
-    private FilePermissions() {
+	 * Private constructor for the FilePermissions class.
+	 */
+	private FilePermissions() {
 	}
 
 	/**
@@ -73,15 +73,14 @@ public final class FilePermissions {
 	}
 
 	/**
-     * Calculates the umask value based on the given collection of POSIX file permissions.
-     * 
-     * @param permissions the collection of POSIX file permissions
-     * @param execute the permission to execute
-     * @param write the permission to write
-     * @param read the permission to read
-     * @return the umask value calculated based on the given permissions
-     */
-    private static int permissionToUmask(Collection<PosixFilePermission> permissions, PosixFilePermission execute,
+	 * Calculates the umask value based on the given collection of POSIX file permissions.
+	 * @param permissions the collection of POSIX file permissions
+	 * @param execute the permission to execute
+	 * @param write the permission to write
+	 * @param read the permission to read
+	 * @return the umask value calculated based on the given permissions
+	 */
+	private static int permissionToUmask(Collection<PosixFilePermission> permissions, PosixFilePermission execute,
 			PosixFilePermission write, PosixFilePermission read) {
 		int value = 0;
 		if (permissions.contains(execute)) {

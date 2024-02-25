@@ -47,12 +47,13 @@ class OpenTelemetryPropagationConfigurations {
 	static class PropagationWithoutBaggage {
 
 		/**
-         * Creates a {@link TextMapPropagator} based on the provided {@link TracingProperties}.
-         * 
-         * @param properties the {@link TracingProperties} used to configure the propagator
-         * @return the created {@link TextMapPropagator}
-         */
-        @Bean
+		 * Creates a {@link TextMapPropagator} based on the provided
+		 * {@link TracingProperties}.
+		 * @param properties the {@link TracingProperties} used to configure the
+		 * propagator
+		 * @return the created {@link TextMapPropagator}
+		 */
+		@Bean
 		@ConditionalOnEnabledTracing
 		TextMapPropagator textMapPropagator(TracingProperties properties) {
 			return CompositeTextMapPropagator.create(properties.getPropagation(), null);
@@ -71,21 +72,22 @@ class OpenTelemetryPropagationConfigurations {
 		private final TracingProperties tracingProperties;
 
 		/**
-         * Initializes a new instance of the PropagationWithBaggage class with the specified tracing properties.
-         * 
-         * @param tracingProperties The tracing properties to be used for propagation.
-         */
-        PropagationWithBaggage(TracingProperties tracingProperties) {
+		 * Initializes a new instance of the PropagationWithBaggage class with the
+		 * specified tracing properties.
+		 * @param tracingProperties The tracing properties to be used for propagation.
+		 */
+		PropagationWithBaggage(TracingProperties tracingProperties) {
 			this.tracingProperties = tracingProperties;
 		}
 
 		/**
-         * Creates a TextMapPropagator with baggage based on the provided OtelCurrentTraceContext.
-         * 
-         * @param otelCurrentTraceContext The OtelCurrentTraceContext used for creating the baggage propagator.
-         * @return The created TextMapPropagator with baggage.
-         */
-        @Bean
+		 * Creates a TextMapPropagator with baggage based on the provided
+		 * OtelCurrentTraceContext.
+		 * @param otelCurrentTraceContext The OtelCurrentTraceContext used for creating
+		 * the baggage propagator.
+		 * @return The created TextMapPropagator with baggage.
+		 */
+		@Bean
 		@ConditionalOnEnabledTracing
 		TextMapPropagator textMapPropagatorWithBaggage(OtelCurrentTraceContext otelCurrentTraceContext) {
 			List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
@@ -96,15 +98,20 @@ class OpenTelemetryPropagationConfigurations {
 		}
 
 		/**
-         * Creates a new instance of Slf4JBaggageEventListener if no other bean of the same type is present in the application context and if the property "management.tracing.baggage.correlation.enabled" is either not present or set to true.
-         * 
-         * This method is annotated with @Bean, @ConditionalOnMissingBean, and @ConditionalOnProperty annotations to ensure that the bean is only created if the specified conditions are met.
-         * 
-         * The created Slf4JBaggageEventListener instance is initialized with the baggage correlation fields specified in the tracing properties.
-         * 
-         * @return a new instance of Slf4JBaggageEventListener
-         */
-        @Bean
+		 * Creates a new instance of Slf4JBaggageEventListener if no other bean of the
+		 * same type is present in the application context and if the property
+		 * "management.tracing.baggage.correlation.enabled" is either not present or set
+		 * to true.
+		 *
+		 * This method is annotated with @Bean, @ConditionalOnMissingBean,
+		 * and @ConditionalOnProperty annotations to ensure that the bean is only created
+		 * if the specified conditions are met.
+		 *
+		 * The created Slf4JBaggageEventListener instance is initialized with the baggage
+		 * correlation fields specified in the tracing properties.
+		 * @return a new instance of Slf4JBaggageEventListener
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = "management.tracing.baggage.correlation", name = "enabled",
 				matchIfMissing = true)
@@ -121,12 +128,12 @@ class OpenTelemetryPropagationConfigurations {
 	static class NoPropagation {
 
 		/**
-         * Returns a TextMapPropagator that does nothing.
-         * This method is annotated with @ConditionalOnMissingBean, which means it will only be called if there is no other bean of type TextMapPropagator present in the application context.
-         * 
-         * @return a TextMapPropagator that does nothing
-         */
-        @Bean
+		 * Returns a TextMapPropagator that does nothing. This method is annotated
+		 * with @ConditionalOnMissingBean, which means it will only be called if there is
+		 * no other bean of type TextMapPropagator present in the application context.
+		 * @return a TextMapPropagator that does nothing
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		TextMapPropagator noopTextMapPropagator() {
 			return TextMapPropagator.noop();

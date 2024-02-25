@@ -36,13 +36,13 @@ class DelegatingAvailabilityProbesHealthEndpointGroup implements HealthEndpointG
 	private final AdditionalHealthEndpointPath additionalPath;
 
 	/**
-     * Constructs a new DelegatingAvailabilityProbesHealthEndpointGroup with the specified delegate and additional path.
-     *
-     * @param delegate the delegate HealthEndpointGroup to be used
-     * @param additionalPath the additional path to be used
-     * @throws IllegalArgumentException if the delegate is null
-     */
-    DelegatingAvailabilityProbesHealthEndpointGroup(HealthEndpointGroup delegate,
+	 * Constructs a new DelegatingAvailabilityProbesHealthEndpointGroup with the specified
+	 * delegate and additional path.
+	 * @param delegate the delegate HealthEndpointGroup to be used
+	 * @param additionalPath the additional path to be used
+	 * @throws IllegalArgumentException if the delegate is null
+	 */
+	DelegatingAvailabilityProbesHealthEndpointGroup(HealthEndpointGroup delegate,
 			AdditionalHealthEndpointPath additionalPath) {
 		Assert.notNull(delegate, "Delegate must not be null");
 		this.delegate = delegate;
@@ -50,64 +50,65 @@ class DelegatingAvailabilityProbesHealthEndpointGroup implements HealthEndpointG
 	}
 
 	/**
-     * Checks if the specified name is a member of the DelegatingAvailabilityProbesHealthEndpointGroup.
-     * 
-     * @param name the name to check
-     * @return true if the specified name is a member of the DelegatingAvailabilityProbesHealthEndpointGroup, false otherwise
-     */
-    @Override
+	 * Checks if the specified name is a member of the
+	 * DelegatingAvailabilityProbesHealthEndpointGroup.
+	 * @param name the name to check
+	 * @return true if the specified name is a member of the
+	 * DelegatingAvailabilityProbesHealthEndpointGroup, false otherwise
+	 */
+	@Override
 	public boolean isMember(String name) {
 		return this.delegate.isMember(name);
 	}
 
 	/**
-     * Returns a boolean value indicating whether to show the components of the availability probes health endpoint group.
-     *
-     * @param securityContext the security context
-     * @return true if the components should be shown, false otherwise
-     */
-    @Override
+	 * Returns a boolean value indicating whether to show the components of the
+	 * availability probes health endpoint group.
+	 * @param securityContext the security context
+	 * @return true if the components should be shown, false otherwise
+	 */
+	@Override
 	public boolean showComponents(SecurityContext securityContext) {
 		return this.delegate.showComponents(securityContext);
 	}
 
 	/**
-     * Returns a boolean value indicating whether to show details for the availability probes health endpoint group.
-     *
-     * @param securityContext the security context
-     * @return true if details should be shown, false otherwise
-     */
-    @Override
+	 * Returns a boolean value indicating whether to show details for the availability
+	 * probes health endpoint group.
+	 * @param securityContext the security context
+	 * @return true if details should be shown, false otherwise
+	 */
+	@Override
 	public boolean showDetails(SecurityContext securityContext) {
 		return this.delegate.showDetails(securityContext);
 	}
 
 	/**
-     * Returns the status aggregator of this DelegatingAvailabilityProbesHealthEndpointGroup.
-     *
-     * @return the status aggregator
-     */
-    @Override
+	 * Returns the status aggregator of this
+	 * DelegatingAvailabilityProbesHealthEndpointGroup.
+	 * @return the status aggregator
+	 */
+	@Override
 	public StatusAggregator getStatusAggregator() {
 		return this.delegate.getStatusAggregator();
 	}
 
 	/**
-     * Returns the HttpCodeStatusMapper used by this DelegatingAvailabilityProbesHealthEndpointGroup.
-     *
-     * @return the HttpCodeStatusMapper used by this DelegatingAvailabilityProbesHealthEndpointGroup
-     */
-    @Override
+	 * Returns the HttpCodeStatusMapper used by this
+	 * DelegatingAvailabilityProbesHealthEndpointGroup.
+	 * @return the HttpCodeStatusMapper used by this
+	 * DelegatingAvailabilityProbesHealthEndpointGroup
+	 */
+	@Override
 	public HttpCodeStatusMapper getHttpCodeStatusMapper() {
 		return this.delegate.getHttpCodeStatusMapper();
 	}
 
 	/**
-     * Returns the additional health endpoint path.
-     *
-     * @return the additional health endpoint path
-     */
-    @Override
+	 * Returns the additional health endpoint path.
+	 * @return the additional health endpoint path
+	 */
+	@Override
 	public AdditionalHealthEndpointPath getAdditionalPath() {
 		return this.additionalPath;
 	}

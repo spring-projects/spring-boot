@@ -35,45 +35,42 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 	private final Set<String> exclude;
 
 	/**
-     * Constructs a new IncludeExcludeGroupMemberPredicate with the specified include and exclude sets.
-     * 
-     * @param include the set of strings to include in the group
-     * @param exclude the set of strings to exclude from the group
-     */
-    IncludeExcludeGroupMemberPredicate(Set<String> include, Set<String> exclude) {
+	 * Constructs a new IncludeExcludeGroupMemberPredicate with the specified include and
+	 * exclude sets.
+	 * @param include the set of strings to include in the group
+	 * @param exclude the set of strings to exclude from the group
+	 */
+	IncludeExcludeGroupMemberPredicate(Set<String> include, Set<String> exclude) {
 		this.include = clean(include);
 		this.exclude = clean(exclude);
 	}
 
 	/**
-     * Tests if a given name is included in the group and not excluded.
-     * 
-     * @param name the name to be tested
-     * @return true if the name is included and not excluded, false otherwise
-     */
-    @Override
+	 * Tests if a given name is included in the group and not excluded.
+	 * @param name the name to be tested
+	 * @return true if the name is included and not excluded, false otherwise
+	 */
+	@Override
 	public boolean test(String name) {
 		name = clean(name);
 		return isIncluded(name) && !isExcluded(name);
 	}
 
 	/**
-     * Checks if the given name is included in the include list.
-     * 
-     * @param name the name to be checked
-     * @return true if the name is included, false otherwise
-     */
-    private boolean isIncluded(String name) {
+	 * Checks if the given name is included in the include list.
+	 * @param name the name to be checked
+	 * @return true if the name is included, false otherwise
+	 */
+	private boolean isIncluded(String name) {
 		return this.include.isEmpty() || this.include.contains("*") || isIncludedName(name);
 	}
 
 	/**
-     * Checks if the given name is included in the include list.
-     * 
-     * @param name the name to check
-     * @return true if the name is included, false otherwise
-     */
-    private boolean isIncludedName(String name) {
+	 * Checks if the given name is included in the include list.
+	 * @param name the name to check
+	 * @return true if the name is included, false otherwise
+	 */
+	private boolean isIncludedName(String name) {
 		if (this.include.contains(name)) {
 			return true;
 		}
@@ -85,22 +82,20 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 	}
 
 	/**
-     * Checks if a given name is excluded.
-     * 
-     * @param name the name to be checked
-     * @return true if the name is excluded, false otherwise
-     */
-    private boolean isExcluded(String name) {
+	 * Checks if a given name is excluded.
+	 * @param name the name to be checked
+	 * @return true if the name is excluded, false otherwise
+	 */
+	private boolean isExcluded(String name) {
 		return this.exclude.contains("*") || isExcludedName(name);
 	}
 
 	/**
-     * Checks if a given name is excluded.
-     * 
-     * @param name the name to check
-     * @return true if the name is excluded, false otherwise
-     */
-    private boolean isExcludedName(String name) {
+	 * Checks if a given name is excluded.
+	 * @param name the name to check
+	 * @return true if the name is excluded, false otherwise
+	 */
+	private boolean isExcludedName(String name) {
 		if (this.exclude.contains(name)) {
 			return true;
 		}
@@ -112,13 +107,12 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 	}
 
 	/**
-     * Cleans the given set of names by removing any null values and duplicates.
-     * 
-     * @param names the set of names to be cleaned (can be null)
-     * @return a cleaned set of names with null values and duplicates removed,
-     *         or an empty set if the input set is null
-     */
-    private Set<String> clean(Set<String> names) {
+	 * Cleans the given set of names by removing any null values and duplicates.
+	 * @param names the set of names to be cleaned (can be null)
+	 * @return a cleaned set of names with null values and duplicates removed, or an empty
+	 * set if the input set is null
+	 */
+	private Set<String> clean(Set<String> names) {
 		if (names == null) {
 			return Collections.emptySet();
 		}
@@ -127,12 +121,11 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 	}
 
 	/**
-     * Cleans the given name by removing leading and trailing whitespace.
-     * 
-     * @param name the name to be cleaned
-     * @return the cleaned name, or null if the input is null
-     */
-    private String clean(String name) {
+	 * Cleans the given name by removing leading and trailing whitespace.
+	 * @param name the name to be cleaned
+	 * @return the cleaned name, or null if the input is null
+	 */
+	private String clean(String name) {
 		return (name != null) ? name.trim() : null;
 	}
 

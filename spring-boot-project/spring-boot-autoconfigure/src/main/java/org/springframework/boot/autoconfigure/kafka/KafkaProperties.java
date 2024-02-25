@@ -101,147 +101,131 @@ public class KafkaProperties {
 	private final Retry retry = new Retry();
 
 	/**
-     * Returns the list of bootstrap servers.
-     *
-     * @return the list of bootstrap servers
-     */
-    public List<String> getBootstrapServers() {
+	 * Returns the list of bootstrap servers.
+	 * @return the list of bootstrap servers
+	 */
+	public List<String> getBootstrapServers() {
 		return this.bootstrapServers;
 	}
 
 	/**
-     * Sets the list of bootstrap servers for connecting to the Kafka cluster.
-     * 
-     * @param bootstrapServers the list of bootstrap servers to set
-     */
-    public void setBootstrapServers(List<String> bootstrapServers) {
+	 * Sets the list of bootstrap servers for connecting to the Kafka cluster.
+	 * @param bootstrapServers the list of bootstrap servers to set
+	 */
+	public void setBootstrapServers(List<String> bootstrapServers) {
 		this.bootstrapServers = bootstrapServers;
 	}
 
 	/**
-     * Returns the client ID associated with the Kafka properties.
-     *
-     * @return the client ID
-     */
-    public String getClientId() {
+	 * Returns the client ID associated with the Kafka properties.
+	 * @return the client ID
+	 */
+	public String getClientId() {
 		return this.clientId;
 	}
 
 	/**
-     * Sets the client ID for the Kafka properties.
-     * 
-     * @param clientId the client ID to be set
-     */
-    public void setClientId(String clientId) {
+	 * Sets the client ID for the Kafka properties.
+	 * @param clientId the client ID to be set
+	 */
+	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
 
 	/**
-     * Returns the properties of the KafkaProperties class.
-     *
-     * @return a Map containing the properties of the KafkaProperties class
-     */
-    public Map<String, String> getProperties() {
+	 * Returns the properties of the KafkaProperties class.
+	 * @return a Map containing the properties of the KafkaProperties class
+	 */
+	public Map<String, String> getProperties() {
 		return this.properties;
 	}
 
 	/**
-     * Returns the consumer associated with this KafkaProperties instance.
-     *
-     * @return the consumer associated with this KafkaProperties instance
-     */
-    public Consumer getConsumer() {
+	 * Returns the consumer associated with this KafkaProperties instance.
+	 * @return the consumer associated with this KafkaProperties instance
+	 */
+	public Consumer getConsumer() {
 		return this.consumer;
 	}
 
 	/**
-     * Returns the producer associated with this KafkaProperties instance.
-     *
-     * @return the producer associated with this KafkaProperties instance
-     */
-    public Producer getProducer() {
+	 * Returns the producer associated with this KafkaProperties instance.
+	 * @return the producer associated with this KafkaProperties instance
+	 */
+	public Producer getProducer() {
 		return this.producer;
 	}
 
 	/**
-     * Returns the listener associated with this KafkaProperties instance.
-     *
-     * @return the listener associated with this KafkaProperties instance
-     */
-    public Listener getListener() {
+	 * Returns the listener associated with this KafkaProperties instance.
+	 * @return the listener associated with this KafkaProperties instance
+	 */
+	public Listener getListener() {
 		return this.listener;
 	}
 
 	/**
-     * Returns the admin object associated with this KafkaProperties instance.
-     *
-     * @return the admin object
-     */
-    public Admin getAdmin() {
+	 * Returns the admin object associated with this KafkaProperties instance.
+	 * @return the admin object
+	 */
+	public Admin getAdmin() {
 		return this.admin;
 	}
 
 	/**
-     * Returns the Streams object associated with this KafkaProperties instance.
-     *
-     * @return the Streams object
-     */
-    public Streams getStreams() {
+	 * Returns the Streams object associated with this KafkaProperties instance.
+	 * @return the Streams object
+	 */
+	public Streams getStreams() {
 		return this.streams;
 	}
 
 	/**
-     * Returns the SSL configuration for the Kafka properties.
-     *
-     * @return the SSL configuration for the Kafka properties
-     */
-    public Ssl getSsl() {
+	 * Returns the SSL configuration for the Kafka properties.
+	 * @return the SSL configuration for the Kafka properties
+	 */
+	public Ssl getSsl() {
 		return this.ssl;
 	}
 
 	/**
-     * Returns the Jaas object associated with this KafkaProperties instance.
-     *
-     * @return the Jaas object
-     */
-    public Jaas getJaas() {
+	 * Returns the Jaas object associated with this KafkaProperties instance.
+	 * @return the Jaas object
+	 */
+	public Jaas getJaas() {
 		return this.jaas;
 	}
 
 	/**
-     * Returns the template object associated with this KafkaProperties instance.
-     *
-     * @return the template object
-     */
-    public Template getTemplate() {
+	 * Returns the template object associated with this KafkaProperties instance.
+	 * @return the template object
+	 */
+	public Template getTemplate() {
 		return this.template;
 	}
 
 	/**
-     * Returns the security configuration for the Kafka properties.
-     *
-     * @return the security configuration for the Kafka properties
-     */
-    public Security getSecurity() {
+	 * Returns the security configuration for the Kafka properties.
+	 * @return the security configuration for the Kafka properties
+	 */
+	public Security getSecurity() {
 		return this.security;
 	}
 
 	/**
-     * Returns the retry configuration for the Kafka properties.
-     *
-     * @return the retry configuration
-     */
-    public Retry getRetry() {
+	 * Returns the retry configuration for the Kafka properties.
+	 * @return the retry configuration
+	 */
+	public Retry getRetry() {
 		return this.retry;
 	}
 
 	/**
-     * Builds a map of common properties for Kafka clients.
-     * 
-     * @param sslBundles the SSL bundles to be used for SSL configuration
-     * @return a map of common properties for Kafka clients
-     */
-    private Map<String, Object> buildCommonProperties(SslBundles sslBundles) {
+	 * Builds a map of common properties for Kafka clients.
+	 * @param sslBundles the SSL bundles to be used for SSL configuration
+	 * @return a map of common properties for Kafka clients
+	 */
+	private Map<String, Object> buildCommonProperties(SslBundles sslBundles) {
 		Map<String, Object> properties = new HashMap<>();
 		if (this.bootstrapServers != null) {
 			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
@@ -376,9 +360,9 @@ public class KafkaProperties {
 	}
 
 	/**
-     * Consumer class.
-     */
-    public static class Consumer {
+	 * Consumer class.
+	 */
+	public static class Consumer {
 
 		private final Ssl ssl = new Ssl();
 
@@ -461,273 +445,243 @@ public class KafkaProperties {
 		private final Map<String, String> properties = new HashMap<>();
 
 		/**
-         * Returns the SSL object associated with this Consumer.
-         *
-         * @return the SSL object
-         */
-        public Ssl getSsl() {
+		 * Returns the SSL object associated with this Consumer.
+		 * @return the SSL object
+		 */
+		public Ssl getSsl() {
 			return this.ssl;
 		}
 
 		/**
-         * Returns the security object associated with this Consumer.
-         *
-         * @return the security object
-         */
-        public Security getSecurity() {
+		 * Returns the security object associated with this Consumer.
+		 * @return the security object
+		 */
+		public Security getSecurity() {
 			return this.security;
 		}
 
 		/**
-         * Returns the auto-commit interval for the Consumer.
-         *
-         * @return the auto-commit interval as a Duration object
-         */
-        public Duration getAutoCommitInterval() {
+		 * Returns the auto-commit interval for the Consumer.
+		 * @return the auto-commit interval as a Duration object
+		 */
+		public Duration getAutoCommitInterval() {
 			return this.autoCommitInterval;
 		}
 
 		/**
-         * Sets the auto commit interval for the consumer.
-         * 
-         * @param autoCommitInterval the auto commit interval to be set
-         */
-        public void setAutoCommitInterval(Duration autoCommitInterval) {
+		 * Sets the auto commit interval for the consumer.
+		 * @param autoCommitInterval the auto commit interval to be set
+		 */
+		public void setAutoCommitInterval(Duration autoCommitInterval) {
 			this.autoCommitInterval = autoCommitInterval;
 		}
 
 		/**
-         * Returns the value of the auto offset reset property.
-         * 
-         * @return the value of the auto offset reset property
-         */
-        public String getAutoOffsetReset() {
+		 * Returns the value of the auto offset reset property.
+		 * @return the value of the auto offset reset property
+		 */
+		public String getAutoOffsetReset() {
 			return this.autoOffsetReset;
 		}
 
 		/**
-         * Sets the auto offset reset value for the consumer.
-         * 
-         * @param autoOffsetReset the auto offset reset value to be set
-         */
-        public void setAutoOffsetReset(String autoOffsetReset) {
+		 * Sets the auto offset reset value for the consumer.
+		 * @param autoOffsetReset the auto offset reset value to be set
+		 */
+		public void setAutoOffsetReset(String autoOffsetReset) {
 			this.autoOffsetReset = autoOffsetReset;
 		}
 
 		/**
-         * Returns the list of bootstrap servers.
-         *
-         * @return the list of bootstrap servers
-         */
-        public List<String> getBootstrapServers() {
+		 * Returns the list of bootstrap servers.
+		 * @return the list of bootstrap servers
+		 */
+		public List<String> getBootstrapServers() {
 			return this.bootstrapServers;
 		}
 
 		/**
-         * Sets the list of bootstrap servers for the consumer.
-         * 
-         * @param bootstrapServers the list of bootstrap servers to be set
-         */
-        public void setBootstrapServers(List<String> bootstrapServers) {
+		 * Sets the list of bootstrap servers for the consumer.
+		 * @param bootstrapServers the list of bootstrap servers to be set
+		 */
+		public void setBootstrapServers(List<String> bootstrapServers) {
 			this.bootstrapServers = bootstrapServers;
 		}
 
 		/**
-         * Returns the client ID associated with this Consumer.
-         *
-         * @return the client ID
-         */
-        public String getClientId() {
+		 * Returns the client ID associated with this Consumer.
+		 * @return the client ID
+		 */
+		public String getClientId() {
 			return this.clientId;
 		}
 
 		/**
-         * Sets the client ID for the consumer.
-         * 
-         * @param clientId the client ID to be set
-         */
-        public void setClientId(String clientId) {
+		 * Sets the client ID for the consumer.
+		 * @param clientId the client ID to be set
+		 */
+		public void setClientId(String clientId) {
 			this.clientId = clientId;
 		}
 
 		/**
-         * Returns the value of the enableAutoCommit property.
-         *
-         * @return the value of the enableAutoCommit property
-         */
-        public Boolean getEnableAutoCommit() {
+		 * Returns the value of the enableAutoCommit property.
+		 * @return the value of the enableAutoCommit property
+		 */
+		public Boolean getEnableAutoCommit() {
 			return this.enableAutoCommit;
 		}
 
 		/**
-         * Sets the enableAutoCommit flag for the Consumer.
-         * 
-         * @param enableAutoCommit the value to set for the enableAutoCommit flag
-         */
-        public void setEnableAutoCommit(Boolean enableAutoCommit) {
+		 * Sets the enableAutoCommit flag for the Consumer.
+		 * @param enableAutoCommit the value to set for the enableAutoCommit flag
+		 */
+		public void setEnableAutoCommit(Boolean enableAutoCommit) {
 			this.enableAutoCommit = enableAutoCommit;
 		}
 
 		/**
-         * Returns the maximum wait time for fetching data.
-         *
-         * @return the maximum wait time for fetching data
-         */
-        public Duration getFetchMaxWait() {
+		 * Returns the maximum wait time for fetching data.
+		 * @return the maximum wait time for fetching data
+		 */
+		public Duration getFetchMaxWait() {
 			return this.fetchMaxWait;
 		}
 
 		/**
-         * Sets the maximum wait time for fetching data.
-         * 
-         * @param fetchMaxWait the maximum wait time for fetching data
-         */
-        public void setFetchMaxWait(Duration fetchMaxWait) {
+		 * Sets the maximum wait time for fetching data.
+		 * @param fetchMaxWait the maximum wait time for fetching data
+		 */
+		public void setFetchMaxWait(Duration fetchMaxWait) {
 			this.fetchMaxWait = fetchMaxWait;
 		}
 
 		/**
-         * Returns the minimum size of data to be fetched.
-         * 
-         * @return the minimum size of data to be fetched
-         */
-        public DataSize getFetchMinSize() {
+		 * Returns the minimum size of data to be fetched.
+		 * @return the minimum size of data to be fetched
+		 */
+		public DataSize getFetchMinSize() {
 			return this.fetchMinSize;
 		}
 
 		/**
-         * Sets the minimum size of data to be fetched.
-         * 
-         * @param fetchMinSize the minimum size of data to be fetched
-         */
-        public void setFetchMinSize(DataSize fetchMinSize) {
+		 * Sets the minimum size of data to be fetched.
+		 * @param fetchMinSize the minimum size of data to be fetched
+		 */
+		public void setFetchMinSize(DataSize fetchMinSize) {
 			this.fetchMinSize = fetchMinSize;
 		}
 
 		/**
-         * Returns the group ID associated with this Consumer.
-         *
-         * @return the group ID
-         */
-        public String getGroupId() {
+		 * Returns the group ID associated with this Consumer.
+		 * @return the group ID
+		 */
+		public String getGroupId() {
 			return this.groupId;
 		}
 
 		/**
-         * Sets the group ID for the consumer.
-         * 
-         * @param groupId the group ID to be set
-         */
-        public void setGroupId(String groupId) {
+		 * Sets the group ID for the consumer.
+		 * @param groupId the group ID to be set
+		 */
+		public void setGroupId(String groupId) {
 			this.groupId = groupId;
 		}
 
 		/**
-         * Returns the heartbeat interval.
-         *
-         * @return the heartbeat interval
-         */
-        public Duration getHeartbeatInterval() {
+		 * Returns the heartbeat interval.
+		 * @return the heartbeat interval
+		 */
+		public Duration getHeartbeatInterval() {
 			return this.heartbeatInterval;
 		}
 
 		/**
-         * Sets the heartbeat interval for the consumer.
-         * 
-         * @param heartbeatInterval the duration of the heartbeat interval
-         */
-        public void setHeartbeatInterval(Duration heartbeatInterval) {
+		 * Sets the heartbeat interval for the consumer.
+		 * @param heartbeatInterval the duration of the heartbeat interval
+		 */
+		public void setHeartbeatInterval(Duration heartbeatInterval) {
 			this.heartbeatInterval = heartbeatInterval;
 		}
 
 		/**
-         * Returns the isolation level of the Consumer.
-         *
-         * @return the isolation level of the Consumer
-         */
-        public IsolationLevel getIsolationLevel() {
+		 * Returns the isolation level of the Consumer.
+		 * @return the isolation level of the Consumer
+		 */
+		public IsolationLevel getIsolationLevel() {
 			return this.isolationLevel;
 		}
 
 		/**
-         * Sets the isolation level for the consumer.
-         * 
-         * @param isolationLevel the isolation level to be set
-         */
-        public void setIsolationLevel(IsolationLevel isolationLevel) {
+		 * Sets the isolation level for the consumer.
+		 * @param isolationLevel the isolation level to be set
+		 */
+		public void setIsolationLevel(IsolationLevel isolationLevel) {
 			this.isolationLevel = isolationLevel;
 		}
 
 		/**
-         * Returns the key deserializer for the Consumer class.
-         *
-         * @return the key deserializer for the Consumer class
-         */
-        public Class<?> getKeyDeserializer() {
+		 * Returns the key deserializer for the Consumer class.
+		 * @return the key deserializer for the Consumer class
+		 */
+		public Class<?> getKeyDeserializer() {
 			return this.keyDeserializer;
 		}
 
 		/**
-         * Sets the key deserializer for the Consumer.
-         * 
-         * @param keyDeserializer the class representing the key deserializer
-         */
-        public void setKeyDeserializer(Class<?> keyDeserializer) {
+		 * Sets the key deserializer for the Consumer.
+		 * @param keyDeserializer the class representing the key deserializer
+		 */
+		public void setKeyDeserializer(Class<?> keyDeserializer) {
 			this.keyDeserializer = keyDeserializer;
 		}
 
 		/**
-         * Returns the value deserializer used by the consumer.
-         *
-         * @return the value deserializer used by the consumer
-         */
-        public Class<?> getValueDeserializer() {
+		 * Returns the value deserializer used by the consumer.
+		 * @return the value deserializer used by the consumer
+		 */
+		public Class<?> getValueDeserializer() {
 			return this.valueDeserializer;
 		}
 
 		/**
-         * Sets the value deserializer for the Consumer.
-         * 
-         * @param valueDeserializer the class representing the value deserializer
-         */
-        public void setValueDeserializer(Class<?> valueDeserializer) {
+		 * Sets the value deserializer for the Consumer.
+		 * @param valueDeserializer the class representing the value deserializer
+		 */
+		public void setValueDeserializer(Class<?> valueDeserializer) {
 			this.valueDeserializer = valueDeserializer;
 		}
 
 		/**
-         * Returns the maximum number of poll records that can be fetched by the consumer.
-         *
-         * @return the maximum number of poll records
-         */
-        public Integer getMaxPollRecords() {
+		 * Returns the maximum number of poll records that can be fetched by the consumer.
+		 * @return the maximum number of poll records
+		 */
+		public Integer getMaxPollRecords() {
 			return this.maxPollRecords;
 		}
 
 		/**
-         * Sets the maximum number of records to be polled by the consumer.
-         * 
-         * @param maxPollRecords the maximum number of records to be polled
-         */
-        public void setMaxPollRecords(Integer maxPollRecords) {
+		 * Sets the maximum number of records to be polled by the consumer.
+		 * @param maxPollRecords the maximum number of records to be polled
+		 */
+		public void setMaxPollRecords(Integer maxPollRecords) {
 			this.maxPollRecords = maxPollRecords;
 		}
 
 		/**
-         * Returns the properties of the Consumer.
-         * 
-         * @return a Map containing the properties of the Consumer
-         */
-        public Map<String, String> getProperties() {
+		 * Returns the properties of the Consumer.
+		 * @return a Map containing the properties of the Consumer
+		 */
+		public Map<String, String> getProperties() {
 			return this.properties;
 		}
 
 		/**
-         * Builds a map of properties for the Consumer class.
-         * 
-         * @param sslBundles the SSL bundles to include in the properties
-         * @return a map of properties for the Consumer class
-         */
-        public Map<String, Object> buildProperties(SslBundles sslBundles) {
+		 * Builds a map of properties for the Consumer class.
+		 * @param sslBundles the SSL bundles to include in the properties
+		 * @return a map of properties for the Consumer class
+		 */
+		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getAutoCommitInterval)
@@ -758,9 +712,9 @@ public class KafkaProperties {
 	}
 
 	/**
-     * Producer class.
-     */
-    public static class Producer {
+	 * Producer class.
+	 */
+	public static class Producer {
 
 		private final Ssl ssl = new Ssl();
 
@@ -826,219 +780,195 @@ public class KafkaProperties {
 		private final Map<String, String> properties = new HashMap<>();
 
 		/**
-         * Returns the SSL object associated with this Producer.
-         *
-         * @return the SSL object associated with this Producer
-         */
-        public Ssl getSsl() {
+		 * Returns the SSL object associated with this Producer.
+		 * @return the SSL object associated with this Producer
+		 */
+		public Ssl getSsl() {
 			return this.ssl;
 		}
 
 		/**
-         * Returns the security object associated with this Producer.
-         *
-         * @return the security object
-         */
-        public Security getSecurity() {
+		 * Returns the security object associated with this Producer.
+		 * @return the security object
+		 */
+		public Security getSecurity() {
 			return this.security;
 		}
 
 		/**
-         * Returns the acknowledgements received by the producer.
-         *
-         * @return the acknowledgements received by the producer
-         */
-        public String getAcks() {
+		 * Returns the acknowledgements received by the producer.
+		 * @return the acknowledgements received by the producer
+		 */
+		public String getAcks() {
 			return this.acks;
 		}
 
 		/**
-         * Sets the acknowledgement mode for the producer.
-         * 
-         * @param acks the acknowledgement mode to be set
-         */
-        public void setAcks(String acks) {
+		 * Sets the acknowledgement mode for the producer.
+		 * @param acks the acknowledgement mode to be set
+		 */
+		public void setAcks(String acks) {
 			this.acks = acks;
 		}
 
 		/**
-         * Returns the batch size used by the producer.
-         *
-         * @return the batch size used by the producer
-         */
-        public DataSize getBatchSize() {
+		 * Returns the batch size used by the producer.
+		 * @return the batch size used by the producer
+		 */
+		public DataSize getBatchSize() {
 			return this.batchSize;
 		}
 
 		/**
-         * Sets the batch size for the producer.
-         * 
-         * @param batchSize the batch size to be set
-         */
-        public void setBatchSize(DataSize batchSize) {
+		 * Sets the batch size for the producer.
+		 * @param batchSize the batch size to be set
+		 */
+		public void setBatchSize(DataSize batchSize) {
 			this.batchSize = batchSize;
 		}
 
 		/**
-         * Returns the list of bootstrap servers.
-         *
-         * @return the list of bootstrap servers
-         */
-        public List<String> getBootstrapServers() {
+		 * Returns the list of bootstrap servers.
+		 * @return the list of bootstrap servers
+		 */
+		public List<String> getBootstrapServers() {
 			return this.bootstrapServers;
 		}
 
 		/**
-         * Sets the list of bootstrap servers for the producer.
-         * 
-         * @param bootstrapServers the list of bootstrap servers to be set
-         */
-        public void setBootstrapServers(List<String> bootstrapServers) {
+		 * Sets the list of bootstrap servers for the producer.
+		 * @param bootstrapServers the list of bootstrap servers to be set
+		 */
+		public void setBootstrapServers(List<String> bootstrapServers) {
 			this.bootstrapServers = bootstrapServers;
 		}
 
 		/**
-         * Returns the buffer memory size.
-         *
-         * @return the buffer memory size
-         */
-        public DataSize getBufferMemory() {
+		 * Returns the buffer memory size.
+		 * @return the buffer memory size
+		 */
+		public DataSize getBufferMemory() {
 			return this.bufferMemory;
 		}
 
 		/**
-         * Sets the buffer memory size for the producer.
-         * 
-         * @param bufferMemory the buffer memory size to be set
-         */
-        public void setBufferMemory(DataSize bufferMemory) {
+		 * Sets the buffer memory size for the producer.
+		 * @param bufferMemory the buffer memory size to be set
+		 */
+		public void setBufferMemory(DataSize bufferMemory) {
 			this.bufferMemory = bufferMemory;
 		}
 
 		/**
-         * Returns the client ID associated with this Producer.
-         *
-         * @return the client ID
-         */
-        public String getClientId() {
+		 * Returns the client ID associated with this Producer.
+		 * @return the client ID
+		 */
+		public String getClientId() {
 			return this.clientId;
 		}
 
 		/**
-         * Sets the client ID for the Producer.
-         * 
-         * @param clientId the client ID to be set
-         */
-        public void setClientId(String clientId) {
+		 * Sets the client ID for the Producer.
+		 * @param clientId the client ID to be set
+		 */
+		public void setClientId(String clientId) {
 			this.clientId = clientId;
 		}
 
 		/**
-         * Returns the compression type used by the producer.
-         * 
-         * @return the compression type
-         */
-        public String getCompressionType() {
+		 * Returns the compression type used by the producer.
+		 * @return the compression type
+		 */
+		public String getCompressionType() {
 			return this.compressionType;
 		}
 
 		/**
-         * Sets the compression type for the producer.
-         * 
-         * @param compressionType the compression type to be set
-         */
-        public void setCompressionType(String compressionType) {
+		 * Sets the compression type for the producer.
+		 * @param compressionType the compression type to be set
+		 */
+		public void setCompressionType(String compressionType) {
 			this.compressionType = compressionType;
 		}
 
 		/**
-         * Returns the key serializer used by the producer.
-         *
-         * @return the key serializer used by the producer
-         */
-        public Class<?> getKeySerializer() {
+		 * Returns the key serializer used by the producer.
+		 * @return the key serializer used by the producer
+		 */
+		public Class<?> getKeySerializer() {
 			return this.keySerializer;
 		}
 
 		/**
-         * Sets the key serializer for the producer.
-         * 
-         * @param keySerializer the class representing the key serializer
-         */
-        public void setKeySerializer(Class<?> keySerializer) {
+		 * Sets the key serializer for the producer.
+		 * @param keySerializer the class representing the key serializer
+		 */
+		public void setKeySerializer(Class<?> keySerializer) {
 			this.keySerializer = keySerializer;
 		}
 
 		/**
-         * Returns the value serializer used by the Producer.
-         *
-         * @return the value serializer used by the Producer
-         */
-        public Class<?> getValueSerializer() {
+		 * Returns the value serializer used by the Producer.
+		 * @return the value serializer used by the Producer
+		 */
+		public Class<?> getValueSerializer() {
 			return this.valueSerializer;
 		}
 
 		/**
-         * Sets the value serializer for the Producer.
-         * 
-         * @param valueSerializer the class representing the value serializer to be used
-         */
-        public void setValueSerializer(Class<?> valueSerializer) {
+		 * Sets the value serializer for the Producer.
+		 * @param valueSerializer the class representing the value serializer to be used
+		 */
+		public void setValueSerializer(Class<?> valueSerializer) {
 			this.valueSerializer = valueSerializer;
 		}
 
 		/**
-         * Returns the number of retries for the Producer.
-         *
-         * @return the number of retries
-         */
-        public Integer getRetries() {
+		 * Returns the number of retries for the Producer.
+		 * @return the number of retries
+		 */
+		public Integer getRetries() {
 			return this.retries;
 		}
 
 		/**
-         * Sets the number of retries for the producer.
-         * 
-         * @param retries the number of retries to be set
-         */
-        public void setRetries(Integer retries) {
+		 * Sets the number of retries for the producer.
+		 * @param retries the number of retries to be set
+		 */
+		public void setRetries(Integer retries) {
 			this.retries = retries;
 		}
 
 		/**
-         * Returns the transaction ID prefix.
-         * 
-         * @return the transaction ID prefix
-         */
-        public String getTransactionIdPrefix() {
+		 * Returns the transaction ID prefix.
+		 * @return the transaction ID prefix
+		 */
+		public String getTransactionIdPrefix() {
 			return this.transactionIdPrefix;
 		}
 
 		/**
-         * Sets the prefix for the transaction ID.
-         * 
-         * @param transactionIdPrefix the prefix to be set for the transaction ID
-         */
-        public void setTransactionIdPrefix(String transactionIdPrefix) {
+		 * Sets the prefix for the transaction ID.
+		 * @param transactionIdPrefix the prefix to be set for the transaction ID
+		 */
+		public void setTransactionIdPrefix(String transactionIdPrefix) {
 			this.transactionIdPrefix = transactionIdPrefix;
 		}
 
 		/**
-         * Returns the properties of the Producer.
-         * 
-         * @return a Map containing the properties of the Producer
-         */
-        public Map<String, String> getProperties() {
+		 * Returns the properties of the Producer.
+		 * @return a Map containing the properties of the Producer
+		 */
+		public Map<String, String> getProperties() {
 			return this.properties;
 		}
 
 		/**
-         * Builds a map of properties for the Producer class.
-         * 
-         * @param sslBundles the SSL bundles to be included in the properties
-         * @return a map of properties for the Producer class
-         */
-        public Map<String, Object> buildProperties(SslBundles sslBundles) {
+		 * Builds a map of properties for the Producer class.
+		 * @param sslBundles the SSL bundles to be included in the properties
+		 * @return a map of properties for the Producer class
+		 */
+		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getAcks).to(properties.in(ProducerConfig.ACKS_CONFIG));
@@ -1058,9 +988,9 @@ public class KafkaProperties {
 	}
 
 	/**
-     * Admin class.
-     */
-    public static class Admin {
+	 * Admin class.
+	 */
+	public static class Admin {
 
 		private final Ssl ssl = new Ssl();
 
@@ -1103,147 +1033,134 @@ public class KafkaProperties {
 		private boolean autoCreate = true;
 
 		/**
-         * Returns the SSL object associated with this Admin instance.
-         *
-         * @return the SSL object
-         */
-        public Ssl getSsl() {
+		 * Returns the SSL object associated with this Admin instance.
+		 * @return the SSL object
+		 */
+		public Ssl getSsl() {
 			return this.ssl;
 		}
 
 		/**
-         * Returns the security object associated with this Admin.
-         *
-         * @return the security object
-         */
-        public Security getSecurity() {
+		 * Returns the security object associated with this Admin.
+		 * @return the security object
+		 */
+		public Security getSecurity() {
 			return this.security;
 		}
 
 		/**
-         * Returns the client ID associated with the Admin.
-         *
-         * @return the client ID
-         */
-        public String getClientId() {
+		 * Returns the client ID associated with the Admin.
+		 * @return the client ID
+		 */
+		public String getClientId() {
 			return this.clientId;
 		}
 
 		/**
-         * Sets the client ID for the Admin.
-         * 
-         * @param clientId the client ID to be set
-         */
-        public void setClientId(String clientId) {
+		 * Sets the client ID for the Admin.
+		 * @param clientId the client ID to be set
+		 */
+		public void setClientId(String clientId) {
 			this.clientId = clientId;
 		}
 
 		/**
-         * Returns the close timeout duration.
-         *
-         * @return the close timeout duration
-         */
-        public Duration getCloseTimeout() {
+		 * Returns the close timeout duration.
+		 * @return the close timeout duration
+		 */
+		public Duration getCloseTimeout() {
 			return this.closeTimeout;
 		}
 
 		/**
-         * Sets the close timeout for the Admin class.
-         * 
-         * @param closeTimeout the duration of the close timeout
-         */
-        public void setCloseTimeout(Duration closeTimeout) {
+		 * Sets the close timeout for the Admin class.
+		 * @param closeTimeout the duration of the close timeout
+		 */
+		public void setCloseTimeout(Duration closeTimeout) {
 			this.closeTimeout = closeTimeout;
 		}
 
 		/**
-         * Returns the operation timeout duration.
-         *
-         * @return the operation timeout duration
-         */
-        public Duration getOperationTimeout() {
+		 * Returns the operation timeout duration.
+		 * @return the operation timeout duration
+		 */
+		public Duration getOperationTimeout() {
 			return this.operationTimeout;
 		}
 
 		/**
-         * Sets the operation timeout for the Admin class.
-         * 
-         * @param operationTimeout the duration of the operation timeout
-         */
-        public void setOperationTimeout(Duration operationTimeout) {
+		 * Sets the operation timeout for the Admin class.
+		 * @param operationTimeout the duration of the operation timeout
+		 */
+		public void setOperationTimeout(Duration operationTimeout) {
 			this.operationTimeout = operationTimeout;
 		}
 
 		/**
-         * Returns whether the fail-fast mode is enabled or not.
-         * 
-         * @return true if fail-fast mode is enabled, false otherwise
-         */
-        public boolean isFailFast() {
+		 * Returns whether the fail-fast mode is enabled or not.
+		 * @return true if fail-fast mode is enabled, false otherwise
+		 */
+		public boolean isFailFast() {
 			return this.failFast;
 		}
 
 		/**
-         * Sets the failFast flag.
-         * 
-         * @param failFast the value to set the failFast flag to
-         */
-        public void setFailFast(boolean failFast) {
+		 * Sets the failFast flag.
+		 * @param failFast the value to set the failFast flag to
+		 */
+		public void setFailFast(boolean failFast) {
 			this.failFast = failFast;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the user has permission to modify topic configurations.
-         * 
-         * @return true if the user has permission to modify topic configurations, false otherwise
-         */
-        public boolean isModifyTopicConfigs() {
+		 * Returns a boolean value indicating whether the user has permission to modify
+		 * topic configurations.
+		 * @return true if the user has permission to modify topic configurations, false
+		 * otherwise
+		 */
+		public boolean isModifyTopicConfigs() {
 			return this.modifyTopicConfigs;
 		}
 
 		/**
-         * Sets the flag indicating whether to modify topic configurations.
-         * 
-         * @param modifyTopicConfigs true to modify topic configurations, false otherwise
-         */
-        public void setModifyTopicConfigs(boolean modifyTopicConfigs) {
+		 * Sets the flag indicating whether to modify topic configurations.
+		 * @param modifyTopicConfigs true to modify topic configurations, false otherwise
+		 */
+		public void setModifyTopicConfigs(boolean modifyTopicConfigs) {
 			this.modifyTopicConfigs = modifyTopicConfigs;
 		}
 
 		/**
-         * Returns a boolean value indicating whether auto creation is enabled.
-         * 
-         * @return true if auto creation is enabled, false otherwise
-         */
-        public boolean isAutoCreate() {
+		 * Returns a boolean value indicating whether auto creation is enabled.
+		 * @return true if auto creation is enabled, false otherwise
+		 */
+		public boolean isAutoCreate() {
 			return this.autoCreate;
 		}
 
 		/**
-         * Sets the autoCreate flag.
-         * 
-         * @param autoCreate the value to set for the autoCreate flag
-         */
-        public void setAutoCreate(boolean autoCreate) {
+		 * Sets the autoCreate flag.
+		 * @param autoCreate the value to set for the autoCreate flag
+		 */
+		public void setAutoCreate(boolean autoCreate) {
 			this.autoCreate = autoCreate;
 		}
 
 		/**
-         * Returns the properties of the Admin class.
-         * 
-         * @return a Map containing the properties of the Admin class, where the keys are strings and the values are strings
-         */
-        public Map<String, String> getProperties() {
+		 * Returns the properties of the Admin class.
+		 * @return a Map containing the properties of the Admin class, where the keys are
+		 * strings and the values are strings
+		 */
+		public Map<String, String> getProperties() {
 			return this.properties;
 		}
 
 		/**
-         * Builds a map of properties using the provided SslBundles.
-         * 
-         * @param sslBundles the SslBundles object containing SSL configurations
-         * @return a map of properties
-         */
-        public Map<String, Object> buildProperties(SslBundles sslBundles) {
+		 * Builds a map of properties using the provided SslBundles.
+		 * @param sslBundles the SslBundles object containing SSL configurations
+		 * @return a map of properties
+		 */
+		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getClientId).to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
@@ -1306,174 +1223,155 @@ public class KafkaProperties {
 		private final Map<String, String> properties = new HashMap<>();
 
 		/**
-         * Returns the SSL object associated with this Streams object.
-         *
-         * @return the SSL object associated with this Streams object
-         */
-        public Ssl getSsl() {
+		 * Returns the SSL object associated with this Streams object.
+		 * @return the SSL object associated with this Streams object
+		 */
+		public Ssl getSsl() {
 			return this.ssl;
 		}
 
 		/**
-         * Returns the security object associated with this Streams object.
-         *
-         * @return the security object
-         */
-        public Security getSecurity() {
+		 * Returns the security object associated with this Streams object.
+		 * @return the security object
+		 */
+		public Security getSecurity() {
 			return this.security;
 		}
 
 		/**
-         * Returns the Cleanup object associated with this Streams object.
-         *
-         * @return the Cleanup object associated with this Streams object
-         */
-        public Cleanup getCleanup() {
+		 * Returns the Cleanup object associated with this Streams object.
+		 * @return the Cleanup object associated with this Streams object
+		 */
+		public Cleanup getCleanup() {
 			return this.cleanup;
 		}
 
 		/**
-         * Returns the application ID.
-         * 
-         * @return the application ID
-         */
-        public String getApplicationId() {
+		 * Returns the application ID.
+		 * @return the application ID
+		 */
+		public String getApplicationId() {
 			return this.applicationId;
 		}
 
 		/**
-         * Sets the application ID for the Streams class.
-         * 
-         * @param applicationId the application ID to be set
-         */
-        public void setApplicationId(String applicationId) {
+		 * Sets the application ID for the Streams class.
+		 * @param applicationId the application ID to be set
+		 */
+		public void setApplicationId(String applicationId) {
 			this.applicationId = applicationId;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the auto startup feature is enabled.
-         * 
-         * @return true if auto startup is enabled, false otherwise
-         */
-        public boolean isAutoStartup() {
+		 * Returns a boolean value indicating whether the auto startup feature is enabled.
+		 * @return true if auto startup is enabled, false otherwise
+		 */
+		public boolean isAutoStartup() {
 			return this.autoStartup;
 		}
 
 		/**
-         * Sets the auto startup flag for the Streams class.
-         * 
-         * @param autoStartup the value to set for the auto startup flag
-         */
-        public void setAutoStartup(boolean autoStartup) {
+		 * Sets the auto startup flag for the Streams class.
+		 * @param autoStartup the value to set for the auto startup flag
+		 */
+		public void setAutoStartup(boolean autoStartup) {
 			this.autoStartup = autoStartup;
 		}
 
 		/**
-         * Returns the list of bootstrap servers.
-         *
-         * @return the list of bootstrap servers
-         */
-        public List<String> getBootstrapServers() {
+		 * Returns the list of bootstrap servers.
+		 * @return the list of bootstrap servers
+		 */
+		public List<String> getBootstrapServers() {
 			return this.bootstrapServers;
 		}
 
 		/**
-         * Sets the list of bootstrap servers for the Streams class.
-         * 
-         * @param bootstrapServers the list of bootstrap servers to be set
-         */
-        public void setBootstrapServers(List<String> bootstrapServers) {
+		 * Sets the list of bootstrap servers for the Streams class.
+		 * @param bootstrapServers the list of bootstrap servers to be set
+		 */
+		public void setBootstrapServers(List<String> bootstrapServers) {
 			this.bootstrapServers = bootstrapServers;
 		}
 
 		/**
-         * Returns the maximum size of the state store cache.
-         *
-         * @return the maximum size of the state store cache
-         */
-        public DataSize getStateStoreCacheMaxSize() {
+		 * Returns the maximum size of the state store cache.
+		 * @return the maximum size of the state store cache
+		 */
+		public DataSize getStateStoreCacheMaxSize() {
 			return this.stateStoreCacheMaxSize;
 		}
 
 		/**
-         * Sets the maximum size of the state store cache.
-         * 
-         * @param stateStoreCacheMaxSize the maximum size of the state store cache
-         */
-        public void setStateStoreCacheMaxSize(DataSize stateStoreCacheMaxSize) {
+		 * Sets the maximum size of the state store cache.
+		 * @param stateStoreCacheMaxSize the maximum size of the state store cache
+		 */
+		public void setStateStoreCacheMaxSize(DataSize stateStoreCacheMaxSize) {
 			this.stateStoreCacheMaxSize = stateStoreCacheMaxSize;
 		}
 
 		/**
-         * Returns the client ID.
-         *
-         * @return the client ID
-         */
-        public String getClientId() {
+		 * Returns the client ID.
+		 * @return the client ID
+		 */
+		public String getClientId() {
 			return this.clientId;
 		}
 
 		/**
-         * Sets the client ID for the Streams class.
-         * 
-         * @param clientId the client ID to be set
-         */
-        public void setClientId(String clientId) {
+		 * Sets the client ID for the Streams class.
+		 * @param clientId the client ID to be set
+		 */
+		public void setClientId(String clientId) {
 			this.clientId = clientId;
 		}
 
 		/**
-         * Returns the replication factor of the Streams class.
-         *
-         * @return the replication factor of the Streams class
-         */
-        public Integer getReplicationFactor() {
+		 * Returns the replication factor of the Streams class.
+		 * @return the replication factor of the Streams class
+		 */
+		public Integer getReplicationFactor() {
 			return this.replicationFactor;
 		}
 
 		/**
-         * Sets the replication factor for the Streams class.
-         * 
-         * @param replicationFactor the replication factor to be set
-         */
-        public void setReplicationFactor(Integer replicationFactor) {
+		 * Sets the replication factor for the Streams class.
+		 * @param replicationFactor the replication factor to be set
+		 */
+		public void setReplicationFactor(Integer replicationFactor) {
 			this.replicationFactor = replicationFactor;
 		}
 
 		/**
-         * Returns the state directory.
-         * 
-         * @return the state directory
-         */
-        public String getStateDir() {
+		 * Returns the state directory.
+		 * @return the state directory
+		 */
+		public String getStateDir() {
 			return this.stateDir;
 		}
 
 		/**
-         * Sets the directory path for storing the state of the Streams.
-         * 
-         * @param stateDir the directory path to set
-         */
-        public void setStateDir(String stateDir) {
+		 * Sets the directory path for storing the state of the Streams.
+		 * @param stateDir the directory path to set
+		 */
+		public void setStateDir(String stateDir) {
 			this.stateDir = stateDir;
 		}
 
 		/**
-         * Returns the properties of the Streams object.
-         *
-         * @return a Map containing the properties of the Streams object
-         */
-        public Map<String, String> getProperties() {
+		 * Returns the properties of the Streams object.
+		 * @return a Map containing the properties of the Streams object
+		 */
+		public Map<String, String> getProperties() {
 			return this.properties;
 		}
 
 		/**
-         * Builds a map of properties based on the provided SslBundles.
-         * 
-         * @param sslBundles the SslBundles object containing SSL related information
-         * @return a map of properties
-         */
-        public Map<String, Object> buildProperties(SslBundles sslBundles) {
+		 * Builds a map of properties based on the provided SslBundles.
+		 * @param sslBundles the SslBundles object containing SSL related information
+		 * @return a map of properties
+		 */
+		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getApplicationId).to(properties.in("application.id"));
@@ -1490,9 +1388,9 @@ public class KafkaProperties {
 	}
 
 	/**
-     * Template class.
-     */
-    public static class Template {
+	 * Template class.
+	 */
+	public static class Template {
 
 		/**
 		 * Default topic to which messages are sent.
@@ -1511,65 +1409,60 @@ public class KafkaProperties {
 		private boolean observationEnabled;
 
 		/**
-         * Returns the default topic.
-         *
-         * @return the default topic
-         */
-        public String getDefaultTopic() {
+		 * Returns the default topic.
+		 * @return the default topic
+		 */
+		public String getDefaultTopic() {
 			return this.defaultTopic;
 		}
 
 		/**
-         * Sets the default topic for the Template.
-         * 
-         * @param defaultTopic the default topic to be set
-         */
-        public void setDefaultTopic(String defaultTopic) {
+		 * Sets the default topic for the Template.
+		 * @param defaultTopic the default topic to be set
+		 */
+		public void setDefaultTopic(String defaultTopic) {
 			this.defaultTopic = defaultTopic;
 		}
 
 		/**
-         * Returns the transaction ID prefix.
-         * 
-         * @return the transaction ID prefix
-         */
-        public String getTransactionIdPrefix() {
+		 * Returns the transaction ID prefix.
+		 * @return the transaction ID prefix
+		 */
+		public String getTransactionIdPrefix() {
 			return this.transactionIdPrefix;
 		}
 
 		/**
-         * Sets the prefix for the transaction ID.
-         * 
-         * @param transactionIdPrefix the prefix to be set for the transaction ID
-         */
-        public void setTransactionIdPrefix(String transactionIdPrefix) {
+		 * Sets the prefix for the transaction ID.
+		 * @param transactionIdPrefix the prefix to be set for the transaction ID
+		 */
+		public void setTransactionIdPrefix(String transactionIdPrefix) {
 			this.transactionIdPrefix = transactionIdPrefix;
 		}
 
 		/**
-         * Returns a boolean value indicating whether observation is enabled.
-         * 
-         * @return true if observation is enabled, false otherwise
-         */
-        public boolean isObservationEnabled() {
+		 * Returns a boolean value indicating whether observation is enabled.
+		 * @return true if observation is enabled, false otherwise
+		 */
+		public boolean isObservationEnabled() {
 			return this.observationEnabled;
 		}
 
 		/**
-         * Sets the observation enabled flag.
-         * 
-         * @param observationEnabled the flag indicating whether observation is enabled or not
-         */
-        public void setObservationEnabled(boolean observationEnabled) {
+		 * Sets the observation enabled flag.
+		 * @param observationEnabled the flag indicating whether observation is enabled or
+		 * not
+		 */
+		public void setObservationEnabled(boolean observationEnabled) {
 			this.observationEnabled = observationEnabled;
 		}
 
 	}
 
 	/**
-     * Listener class.
-     */
-    public static class Listener {
+	 * Listener class.
+	 */
+	public static class Listener {
 
 		public enum Type {
 
@@ -1690,353 +1583,322 @@ public class KafkaProperties {
 		private boolean observationEnabled;
 
 		/**
-         * Returns the type of the listener.
-         * 
-         * @return the type of the listener
-         */
-        public Type getType() {
+		 * Returns the type of the listener.
+		 * @return the type of the listener
+		 */
+		public Type getType() {
 			return this.type;
 		}
 
 		/**
-         * Sets the type of the listener.
-         * 
-         * @param type the type to be set
-         */
-        public void setType(Type type) {
+		 * Sets the type of the listener.
+		 * @param type the type to be set
+		 */
+		public void setType(Type type) {
 			this.type = type;
 		}
 
 		/**
-         * Returns the acknowledgement mode of the listener.
-         * 
-         * @return the acknowledgement mode of the listener
-         */
-        public AckMode getAckMode() {
+		 * Returns the acknowledgement mode of the listener.
+		 * @return the acknowledgement mode of the listener
+		 */
+		public AckMode getAckMode() {
 			return this.ackMode;
 		}
 
 		/**
-         * Sets the acknowledgement mode for the listener.
-         * 
-         * @param ackMode the acknowledgement mode to be set
-         */
-        public void setAckMode(AckMode ackMode) {
+		 * Sets the acknowledgement mode for the listener.
+		 * @param ackMode the acknowledgement mode to be set
+		 */
+		public void setAckMode(AckMode ackMode) {
 			this.ackMode = ackMode;
 		}
 
 		/**
-         * Returns the value of the asyncAcks property.
-         * 
-         * @return the value of the asyncAcks property
-         */
-        public Boolean getAsyncAcks() {
+		 * Returns the value of the asyncAcks property.
+		 * @return the value of the asyncAcks property
+		 */
+		public Boolean getAsyncAcks() {
 			return this.asyncAcks;
 		}
 
 		/**
-         * Sets the flag indicating whether asynchronous acknowledgements are enabled or not.
-         * 
-         * @param asyncAcks the flag indicating whether asynchronous acknowledgements are enabled or not
-         */
-        public void setAsyncAcks(Boolean asyncAcks) {
+		 * Sets the flag indicating whether asynchronous acknowledgements are enabled or
+		 * not.
+		 * @param asyncAcks the flag indicating whether asynchronous acknowledgements are
+		 * enabled or not
+		 */
+		public void setAsyncAcks(Boolean asyncAcks) {
 			this.asyncAcks = asyncAcks;
 		}
 
 		/**
-         * Returns the client ID associated with this Listener.
-         *
-         * @return the client ID
-         */
-        public String getClientId() {
+		 * Returns the client ID associated with this Listener.
+		 * @return the client ID
+		 */
+		public String getClientId() {
 			return this.clientId;
 		}
 
 		/**
-         * Sets the client ID.
-         * 
-         * @param clientId the client ID to be set
-         */
-        public void setClientId(String clientId) {
+		 * Sets the client ID.
+		 * @param clientId the client ID to be set
+		 */
+		public void setClientId(String clientId) {
 			this.clientId = clientId;
 		}
 
 		/**
-         * Returns the concurrency level of the listener.
-         *
-         * @return the concurrency level of the listener
-         */
-        public Integer getConcurrency() {
+		 * Returns the concurrency level of the listener.
+		 * @return the concurrency level of the listener
+		 */
+		public Integer getConcurrency() {
 			return this.concurrency;
 		}
 
 		/**
-         * Sets the concurrency level for the listener.
-         * 
-         * @param concurrency the concurrency level to be set
-         */
-        public void setConcurrency(Integer concurrency) {
+		 * Sets the concurrency level for the listener.
+		 * @param concurrency the concurrency level to be set
+		 */
+		public void setConcurrency(Integer concurrency) {
 			this.concurrency = concurrency;
 		}
 
 		/**
-         * Returns the poll timeout duration.
-         *
-         * @return the poll timeout duration
-         */
-        public Duration getPollTimeout() {
+		 * Returns the poll timeout duration.
+		 * @return the poll timeout duration
+		 */
+		public Duration getPollTimeout() {
 			return this.pollTimeout;
 		}
 
 		/**
-         * Sets the poll timeout for the listener.
-         * 
-         * @param pollTimeout the duration of the poll timeout
-         */
-        public void setPollTimeout(Duration pollTimeout) {
+		 * Sets the poll timeout for the listener.
+		 * @param pollTimeout the duration of the poll timeout
+		 */
+		public void setPollTimeout(Duration pollTimeout) {
 			this.pollTimeout = pollTimeout;
 		}
 
 		/**
-         * Returns the value of the noPollThreshold.
-         * 
-         * @return the value of the noPollThreshold
-         */
-        public Float getNoPollThreshold() {
+		 * Returns the value of the noPollThreshold.
+		 * @return the value of the noPollThreshold
+		 */
+		public Float getNoPollThreshold() {
 			return this.noPollThreshold;
 		}
 
 		/**
-         * Sets the threshold value for no poll.
-         * 
-         * @param noPollThreshold the threshold value for no poll
-         */
-        public void setNoPollThreshold(Float noPollThreshold) {
+		 * Sets the threshold value for no poll.
+		 * @param noPollThreshold the threshold value for no poll
+		 */
+		public void setNoPollThreshold(Float noPollThreshold) {
 			this.noPollThreshold = noPollThreshold;
 		}
 
 		/**
-         * Returns the count of acknowledgements.
-         *
-         * @return the count of acknowledgements
-         */
-        public Integer getAckCount() {
+		 * Returns the count of acknowledgements.
+		 * @return the count of acknowledgements
+		 */
+		public Integer getAckCount() {
 			return this.ackCount;
 		}
 
 		/**
-         * Sets the acknowledgement count.
-         * 
-         * @param ackCount the acknowledgement count to be set
-         */
-        public void setAckCount(Integer ackCount) {
+		 * Sets the acknowledgement count.
+		 * @param ackCount the acknowledgement count to be set
+		 */
+		public void setAckCount(Integer ackCount) {
 			this.ackCount = ackCount;
 		}
 
 		/**
-         * Returns the acknowledgement time.
-         * 
-         * @return the acknowledgement time as a Duration object
-         */
-        public Duration getAckTime() {
+		 * Returns the acknowledgement time.
+		 * @return the acknowledgement time as a Duration object
+		 */
+		public Duration getAckTime() {
 			return this.ackTime;
 		}
 
 		/**
-         * Sets the acknowledgement time for the listener.
-         * 
-         * @param ackTime the acknowledgement time to be set
-         */
-        public void setAckTime(Duration ackTime) {
+		 * Sets the acknowledgement time for the listener.
+		 * @param ackTime the acknowledgement time to be set
+		 */
+		public void setAckTime(Duration ackTime) {
 			this.ackTime = ackTime;
 		}
 
 		/**
-         * Returns the duration of idle time between polls.
-         *
-         * @return the duration of idle time between polls
-         */
-        public Duration getIdleBetweenPolls() {
+		 * Returns the duration of idle time between polls.
+		 * @return the duration of idle time between polls
+		 */
+		public Duration getIdleBetweenPolls() {
 			return this.idleBetweenPolls;
 		}
 
 		/**
-         * Sets the duration of idle time between polls.
-         * 
-         * @param idleBetweenPolls the duration of idle time between polls
-         */
-        public void setIdleBetweenPolls(Duration idleBetweenPolls) {
+		 * Sets the duration of idle time between polls.
+		 * @param idleBetweenPolls the duration of idle time between polls
+		 */
+		public void setIdleBetweenPolls(Duration idleBetweenPolls) {
 			this.idleBetweenPolls = idleBetweenPolls;
 		}
 
 		/**
-         * Returns the idle event interval.
-         * 
-         * @return the idle event interval
-         */
-        public Duration getIdleEventInterval() {
+		 * Returns the idle event interval.
+		 * @return the idle event interval
+		 */
+		public Duration getIdleEventInterval() {
 			return this.idleEventInterval;
 		}
 
 		/**
-         * Sets the interval at which idle events are triggered.
-         * 
-         * @param idleEventInterval the duration between each idle event
-         */
-        public void setIdleEventInterval(Duration idleEventInterval) {
+		 * Sets the interval at which idle events are triggered.
+		 * @param idleEventInterval the duration between each idle event
+		 */
+		public void setIdleEventInterval(Duration idleEventInterval) {
 			this.idleEventInterval = idleEventInterval;
 		}
 
 		/**
-         * Returns the interval between idle partition events.
-         *
-         * @return the interval between idle partition events
-         */
-        public Duration getIdlePartitionEventInterval() {
+		 * Returns the interval between idle partition events.
+		 * @return the interval between idle partition events
+		 */
+		public Duration getIdlePartitionEventInterval() {
 			return this.idlePartitionEventInterval;
 		}
 
 		/**
-         * Sets the interval for idle partition events.
-         * 
-         * @param idlePartitionEventInterval the duration of the interval for idle partition events
-         */
-        public void setIdlePartitionEventInterval(Duration idlePartitionEventInterval) {
+		 * Sets the interval for idle partition events.
+		 * @param idlePartitionEventInterval the duration of the interval for idle
+		 * partition events
+		 */
+		public void setIdlePartitionEventInterval(Duration idlePartitionEventInterval) {
 			this.idlePartitionEventInterval = idlePartitionEventInterval;
 		}
 
 		/**
-         * Returns the monitor interval.
-         *
-         * @return the monitor interval
-         */
-        public Duration getMonitorInterval() {
+		 * Returns the monitor interval.
+		 * @return the monitor interval
+		 */
+		public Duration getMonitorInterval() {
 			return this.monitorInterval;
 		}
 
 		/**
-         * Sets the monitor interval for the listener.
-         * 
-         * @param monitorInterval the duration of the monitor interval
-         */
-        public void setMonitorInterval(Duration monitorInterval) {
+		 * Sets the monitor interval for the listener.
+		 * @param monitorInterval the duration of the monitor interval
+		 */
+		public void setMonitorInterval(Duration monitorInterval) {
 			this.monitorInterval = monitorInterval;
 		}
 
 		/**
-         * Returns the value of the logContainerConfig property.
-         * 
-         * @return the value of the logContainerConfig property
-         */
-        public Boolean getLogContainerConfig() {
+		 * Returns the value of the logContainerConfig property.
+		 * @return the value of the logContainerConfig property
+		 */
+		public Boolean getLogContainerConfig() {
 			return this.logContainerConfig;
 		}
 
 		/**
-         * Sets the flag to enable or disable logging of container configuration.
-         * 
-         * @param logContainerConfig the flag indicating whether to log container configuration or not
-         */
-        public void setLogContainerConfig(Boolean logContainerConfig) {
+		 * Sets the flag to enable or disable logging of container configuration.
+		 * @param logContainerConfig the flag indicating whether to log container
+		 * configuration or not
+		 */
+		public void setLogContainerConfig(Boolean logContainerConfig) {
 			this.logContainerConfig = logContainerConfig;
 		}
 
 		/**
-         * Returns a boolean value indicating whether missing topics are considered fatal.
-         * 
-         * @return true if missing topics are considered fatal, false otherwise
-         */
-        public boolean isMissingTopicsFatal() {
+		 * Returns a boolean value indicating whether missing topics are considered fatal.
+		 * @return true if missing topics are considered fatal, false otherwise
+		 */
+		public boolean isMissingTopicsFatal() {
 			return this.missingTopicsFatal;
 		}
 
 		/**
-         * Sets whether missing topics should be treated as fatal errors.
-         * 
-         * @param missingTopicsFatal true if missing topics should be treated as fatal errors, false otherwise
-         */
-        public void setMissingTopicsFatal(boolean missingTopicsFatal) {
+		 * Sets whether missing topics should be treated as fatal errors.
+		 * @param missingTopicsFatal true if missing topics should be treated as fatal
+		 * errors, false otherwise
+		 */
+		public void setMissingTopicsFatal(boolean missingTopicsFatal) {
 			this.missingTopicsFatal = missingTopicsFatal;
 		}
 
 		/**
-         * Returns a boolean value indicating whether an immediate stop is requested.
-         * 
-         * @return true if an immediate stop is requested, false otherwise
-         */
-        public boolean isImmediateStop() {
+		 * Returns a boolean value indicating whether an immediate stop is requested.
+		 * @return true if an immediate stop is requested, false otherwise
+		 */
+		public boolean isImmediateStop() {
 			return this.immediateStop;
 		}
 
 		/**
-         * Sets the flag to immediately stop the listener.
-         * 
-         * @param immediateStop true to immediately stop the listener, false otherwise
-         */
-        public void setImmediateStop(boolean immediateStop) {
+		 * Sets the flag to immediately stop the listener.
+		 * @param immediateStop true to immediately stop the listener, false otherwise
+		 */
+		public void setImmediateStop(boolean immediateStop) {
 			this.immediateStop = immediateStop;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the listener is set to automatically start.
-         * 
-         * @return true if the listener is set to automatically start, false otherwise
-         */
-        public boolean isAutoStartup() {
+		 * Returns a boolean value indicating whether the listener is set to automatically
+		 * start.
+		 * @return true if the listener is set to automatically start, false otherwise
+		 */
+		public boolean isAutoStartup() {
 			return this.autoStartup;
 		}
 
 		/**
-         * Sets the auto startup flag for the listener.
-         * 
-         * @param autoStartup the auto startup flag to set
-         */
-        public void setAutoStartup(boolean autoStartup) {
+		 * Sets the auto startup flag for the listener.
+		 * @param autoStartup the auto startup flag to set
+		 */
+		public void setAutoStartup(boolean autoStartup) {
 			this.autoStartup = autoStartup;
 		}
 
 		/**
-         * Returns the value of the changeConsumerThreadName property.
-         * 
-         * @return the value of the changeConsumerThreadName property
-         */
-        public Boolean getChangeConsumerThreadName() {
+		 * Returns the value of the changeConsumerThreadName property.
+		 * @return the value of the changeConsumerThreadName property
+		 */
+		public Boolean getChangeConsumerThreadName() {
 			return this.changeConsumerThreadName;
 		}
 
 		/**
-         * Sets the flag indicating whether to change the consumer thread name.
-         * 
-         * @param changeConsumerThreadName the flag indicating whether to change the consumer thread name
-         */
-        public void setChangeConsumerThreadName(Boolean changeConsumerThreadName) {
+		 * Sets the flag indicating whether to change the consumer thread name.
+		 * @param changeConsumerThreadName the flag indicating whether to change the
+		 * consumer thread name
+		 */
+		public void setChangeConsumerThreadName(Boolean changeConsumerThreadName) {
 			this.changeConsumerThreadName = changeConsumerThreadName;
 		}
 
 		/**
-         * Returns a boolean value indicating whether observation is enabled.
-         * 
-         * @return true if observation is enabled, false otherwise
-         */
-        public boolean isObservationEnabled() {
+		 * Returns a boolean value indicating whether observation is enabled.
+		 * @return true if observation is enabled, false otherwise
+		 */
+		public boolean isObservationEnabled() {
 			return this.observationEnabled;
 		}
 
 		/**
-         * Sets the flag indicating whether observation is enabled or not.
-         * 
-         * @param observationEnabled true if observation is enabled, false otherwise
-         */
-        public void setObservationEnabled(boolean observationEnabled) {
+		 * Sets the flag indicating whether observation is enabled or not.
+		 * @param observationEnabled true if observation is enabled, false otherwise
+		 */
+		public void setObservationEnabled(boolean observationEnabled) {
 			this.observationEnabled = observationEnabled;
 		}
 
 	}
 
 	/**
-     * Ssl class.
-     */
-    public static class Ssl {
+	 * Ssl class.
+	 */
+	public static class Ssl {
 
 		/**
 		 * Name of the SSL bundle to use.
@@ -2099,241 +1961,215 @@ public class KafkaProperties {
 		private String protocol;
 
 		/**
-         * Returns the bundle associated with this Ssl object.
-         * 
-         * @return the bundle associated with this Ssl object
-         */
-        public String getBundle() {
+		 * Returns the bundle associated with this Ssl object.
+		 * @return the bundle associated with this Ssl object
+		 */
+		public String getBundle() {
 			return this.bundle;
 		}
 
 		/**
-         * Sets the bundle for the Ssl class.
-         * 
-         * @param bundle the bundle to be set
-         */
-        public void setBundle(String bundle) {
+		 * Sets the bundle for the Ssl class.
+		 * @param bundle the bundle to be set
+		 */
+		public void setBundle(String bundle) {
 			this.bundle = bundle;
 		}
 
 		/**
-         * Returns the key password used for SSL encryption.
-         * 
-         * @return the key password used for SSL encryption
-         */
-        public String getKeyPassword() {
+		 * Returns the key password used for SSL encryption.
+		 * @return the key password used for SSL encryption
+		 */
+		public String getKeyPassword() {
 			return this.keyPassword;
 		}
 
 		/**
-         * Sets the password for the key used in SSL communication.
-         * 
-         * @param keyPassword the password for the key
-         */
-        public void setKeyPassword(String keyPassword) {
+		 * Sets the password for the key used in SSL communication.
+		 * @param keyPassword the password for the key
+		 */
+		public void setKeyPassword(String keyPassword) {
 			this.keyPassword = keyPassword;
 		}
 
 		/**
-         * Returns the certificate chain stored in the key store.
-         * 
-         * @return the certificate chain stored in the key store
-         */
-        public String getKeyStoreCertificateChain() {
+		 * Returns the certificate chain stored in the key store.
+		 * @return the certificate chain stored in the key store
+		 */
+		public String getKeyStoreCertificateChain() {
 			return this.keyStoreCertificateChain;
 		}
 
 		/**
-         * Sets the key store certificate chain.
-         * 
-         * @param keyStoreCertificateChain the key store certificate chain to be set
-         */
-        public void setKeyStoreCertificateChain(String keyStoreCertificateChain) {
+		 * Sets the key store certificate chain.
+		 * @param keyStoreCertificateChain the key store certificate chain to be set
+		 */
+		public void setKeyStoreCertificateChain(String keyStoreCertificateChain) {
 			this.keyStoreCertificateChain = keyStoreCertificateChain;
 		}
 
 		/**
-         * Returns the key store key.
-         * 
-         * @return the key store key
-         */
-        public String getKeyStoreKey() {
+		 * Returns the key store key.
+		 * @return the key store key
+		 */
+		public String getKeyStoreKey() {
 			return this.keyStoreKey;
 		}
 
 		/**
-         * Sets the key store key for SSL configuration.
-         * 
-         * @param keyStoreKey the key store key to be set
-         */
-        public void setKeyStoreKey(String keyStoreKey) {
+		 * Sets the key store key for SSL configuration.
+		 * @param keyStoreKey the key store key to be set
+		 */
+		public void setKeyStoreKey(String keyStoreKey) {
 			this.keyStoreKey = keyStoreKey;
 		}
 
 		/**
-         * Returns the location of the keystore.
-         *
-         * @return the location of the keystore
-         */
-        public Resource getKeyStoreLocation() {
+		 * Returns the location of the keystore.
+		 * @return the location of the keystore
+		 */
+		public Resource getKeyStoreLocation() {
 			return this.keyStoreLocation;
 		}
 
 		/**
-         * Sets the location of the keystore file.
-         * 
-         * @param keyStoreLocation the location of the keystore file
-         */
-        public void setKeyStoreLocation(Resource keyStoreLocation) {
+		 * Sets the location of the keystore file.
+		 * @param keyStoreLocation the location of the keystore file
+		 */
+		public void setKeyStoreLocation(Resource keyStoreLocation) {
 			this.keyStoreLocation = keyStoreLocation;
 		}
 
 		/**
-         * Returns the password for the keystore.
-         *
-         * @return the password for the keystore
-         */
-        public String getKeyStorePassword() {
+		 * Returns the password for the keystore.
+		 * @return the password for the keystore
+		 */
+		public String getKeyStorePassword() {
 			return this.keyStorePassword;
 		}
 
 		/**
-         * Sets the password for the key store.
-         * 
-         * @param keyStorePassword the password for the key store
-         */
-        public void setKeyStorePassword(String keyStorePassword) {
+		 * Sets the password for the key store.
+		 * @param keyStorePassword the password for the key store
+		 */
+		public void setKeyStorePassword(String keyStorePassword) {
 			this.keyStorePassword = keyStorePassword;
 		}
 
 		/**
-         * Returns the type of the keystore used for SSL configuration.
-         * 
-         * @return the keystore type
-         */
-        public String getKeyStoreType() {
+		 * Returns the type of the keystore used for SSL configuration.
+		 * @return the keystore type
+		 */
+		public String getKeyStoreType() {
 			return this.keyStoreType;
 		}
 
 		/**
-         * Sets the type of the keystore.
-         * 
-         * @param keyStoreType the type of the keystore
-         */
-        public void setKeyStoreType(String keyStoreType) {
+		 * Sets the type of the keystore.
+		 * @param keyStoreType the type of the keystore
+		 */
+		public void setKeyStoreType(String keyStoreType) {
 			this.keyStoreType = keyStoreType;
 		}
 
 		/**
-         * Returns the trust store certificates.
-         * 
-         * @return the trust store certificates
-         */
-        public String getTrustStoreCertificates() {
+		 * Returns the trust store certificates.
+		 * @return the trust store certificates
+		 */
+		public String getTrustStoreCertificates() {
 			return this.trustStoreCertificates;
 		}
 
 		/**
-         * Sets the trust store certificates for SSL connections.
-         * 
-         * @param trustStoreCertificates the trust store certificates to be set
-         */
-        public void setTrustStoreCertificates(String trustStoreCertificates) {
+		 * Sets the trust store certificates for SSL connections.
+		 * @param trustStoreCertificates the trust store certificates to be set
+		 */
+		public void setTrustStoreCertificates(String trustStoreCertificates) {
 			this.trustStoreCertificates = trustStoreCertificates;
 		}
 
 		/**
-         * Returns the location of the trust store.
-         *
-         * @return the location of the trust store
-         */
-        public Resource getTrustStoreLocation() {
+		 * Returns the location of the trust store.
+		 * @return the location of the trust store
+		 */
+		public Resource getTrustStoreLocation() {
 			return this.trustStoreLocation;
 		}
 
 		/**
-         * Sets the location of the trust store file.
-         * 
-         * @param trustStoreLocation the location of the trust store file
-         */
-        public void setTrustStoreLocation(Resource trustStoreLocation) {
+		 * Sets the location of the trust store file.
+		 * @param trustStoreLocation the location of the trust store file
+		 */
+		public void setTrustStoreLocation(Resource trustStoreLocation) {
 			this.trustStoreLocation = trustStoreLocation;
 		}
 
 		/**
-         * Returns the password for the trust store.
-         *
-         * @return the trust store password
-         */
-        public String getTrustStorePassword() {
+		 * Returns the password for the trust store.
+		 * @return the trust store password
+		 */
+		public String getTrustStorePassword() {
 			return this.trustStorePassword;
 		}
 
 		/**
-         * Sets the password for the trust store.
-         * 
-         * @param trustStorePassword the password for the trust store
-         */
-        public void setTrustStorePassword(String trustStorePassword) {
+		 * Sets the password for the trust store.
+		 * @param trustStorePassword the password for the trust store
+		 */
+		public void setTrustStorePassword(String trustStorePassword) {
 			this.trustStorePassword = trustStorePassword;
 		}
 
 		/**
-         * Returns the type of the trust store.
-         * 
-         * @return the trust store type
-         */
-        public String getTrustStoreType() {
+		 * Returns the type of the trust store.
+		 * @return the trust store type
+		 */
+		public String getTrustStoreType() {
 			return this.trustStoreType;
 		}
 
 		/**
-         * Sets the type of the trust store.
-         * 
-         * @param trustStoreType the type of the trust store
-         */
-        public void setTrustStoreType(String trustStoreType) {
+		 * Sets the type of the trust store.
+		 * @param trustStoreType the type of the trust store
+		 */
+		public void setTrustStoreType(String trustStoreType) {
 			this.trustStoreType = trustStoreType;
 		}
 
 		/**
-         * Returns the protocol used by the SSL connection.
-         *
-         * @return the protocol used by the SSL connection
-         */
-        public String getProtocol() {
+		 * Returns the protocol used by the SSL connection.
+		 * @return the protocol used by the SSL connection
+		 */
+		public String getProtocol() {
 			return this.protocol;
 		}
 
 		/**
-         * Sets the protocol for the SSL connection.
-         * 
-         * @param protocol the protocol to be set
-         */
-        public void setProtocol(String protocol) {
+		 * Sets the protocol for the SSL connection.
+		 * @param protocol the protocol to be set
+		 */
+		public void setProtocol(String protocol) {
 			this.protocol = protocol;
 		}
 
 		/**
-         * Builds the properties for SSL configuration.
-         * 
-         * @return a map of SSL properties
-         * 
-         * @deprecated This method has been deprecated since version 3.2.0 and will be removed in a future release.
-         *             Please use the {@link #buildProperties(Map)} method instead.
-         */
-        @Deprecated(since = "3.2.0", forRemoval = true)
+		 * Builds the properties for SSL configuration.
+		 * @return a map of SSL properties
+		 * @deprecated This method has been deprecated since version 3.2.0 and will be
+		 * removed in a future release. Please use the {@link #buildProperties(Map)}
+		 * method instead.
+		 */
+		@Deprecated(since = "3.2.0", forRemoval = true)
 		public Map<String, Object> buildProperties() {
 			return buildProperties(null);
 		}
 
 		/**
-         * Builds a map of properties based on the provided SslBundles object.
-         * 
-         * @param sslBundles The SslBundles object containing SSL bundle information.
-         * @return A map of properties.
-         */
-        public Map<String, Object> buildProperties(SslBundles sslBundles) {
+		 * Builds a map of properties based on the provided SslBundles object.
+		 * @param sslBundles The SslBundles object containing SSL bundle information.
+		 * @return A map of properties.
+		 */
+		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			validate();
 			Properties properties = new Properties();
 			if (getBundle() != null) {
@@ -2365,11 +2201,11 @@ public class KafkaProperties {
 		}
 
 		/**
-         * Validates the SSL configuration properties.
-         * 
-         * @throws MutuallyExclusiveConfigurationPropertiesException if multiple non-null values are found in the SSL configuration properties
-         */
-        private void validate() {
+		 * Validates the SSL configuration properties.
+		 * @throws MutuallyExclusiveConfigurationPropertiesException if multiple non-null
+		 * values are found in the SSL configuration properties
+		 */
+		private void validate() {
 			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.key-store-key", getKeyStoreKey());
 				entries.put("spring.kafka.ssl.key-store-location", getKeyStoreLocation());
@@ -2397,13 +2233,12 @@ public class KafkaProperties {
 		}
 
 		/**
-         * Converts a resource to its absolute file path.
-         * 
-         * @param resource the resource to convert
-         * @return the absolute file path of the resource
-         * @throws IllegalStateException if the resource is not on a file system
-         */
-        private String resourceToPath(Resource resource) {
+		 * Converts a resource to its absolute file path.
+		 * @param resource the resource to convert
+		 * @return the absolute file path of the resource
+		 * @throws IllegalStateException if the resource is not on a file system
+		 */
+		private String resourceToPath(Resource resource) {
 			try {
 				return resource.getFile().getAbsolutePath();
 			}
@@ -2415,9 +2250,9 @@ public class KafkaProperties {
 	}
 
 	/**
-     * Jaas class.
-     */
-    public static class Jaas {
+	 * Jaas class.
+	 */
+	public static class Jaas {
 
 		/**
 		 * Whether to enable JAAS configuration.
@@ -2440,74 +2275,66 @@ public class KafkaProperties {
 		private final Map<String, String> options = new HashMap<>();
 
 		/**
-         * Returns the current status of the enabled flag.
-         *
-         * @return true if the flag is enabled, false otherwise.
-         */
-        public boolean isEnabled() {
+		 * Returns the current status of the enabled flag.
+		 * @return true if the flag is enabled, false otherwise.
+		 */
+		public boolean isEnabled() {
 			return this.enabled;
 		}
 
 		/**
-         * Sets the enabled status of the Jaas object.
-         * 
-         * @param enabled the enabled status to be set
-         */
-        public void setEnabled(boolean enabled) {
+		 * Sets the enabled status of the Jaas object.
+		 * @param enabled the enabled status to be set
+		 */
+		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
 		/**
-         * Returns the login module.
-         * 
-         * @return the login module
-         */
-        public String getLoginModule() {
+		 * Returns the login module.
+		 * @return the login module
+		 */
+		public String getLoginModule() {
 			return this.loginModule;
 		}
 
 		/**
-         * Sets the login module for the JAAS class.
-         * 
-         * @param loginModule the name of the login module to be set
-         */
-        public void setLoginModule(String loginModule) {
+		 * Sets the login module for the JAAS class.
+		 * @param loginModule the name of the login module to be set
+		 */
+		public void setLoginModule(String loginModule) {
 			this.loginModule = loginModule;
 		}
 
 		/**
-         * Returns the control flag of the KafkaJaasLoginModuleInitializer.
-         *
-         * @return the control flag of the KafkaJaasLoginModuleInitializer
-         */
-        public KafkaJaasLoginModuleInitializer.ControlFlag getControlFlag() {
+		 * Returns the control flag of the KafkaJaasLoginModuleInitializer.
+		 * @return the control flag of the KafkaJaasLoginModuleInitializer
+		 */
+		public KafkaJaasLoginModuleInitializer.ControlFlag getControlFlag() {
 			return this.controlFlag;
 		}
 
 		/**
-         * Sets the control flag for the KafkaJaasLoginModuleInitializer.
-         * 
-         * @param controlFlag the control flag to be set
-         */
-        public void setControlFlag(KafkaJaasLoginModuleInitializer.ControlFlag controlFlag) {
+		 * Sets the control flag for the KafkaJaasLoginModuleInitializer.
+		 * @param controlFlag the control flag to be set
+		 */
+		public void setControlFlag(KafkaJaasLoginModuleInitializer.ControlFlag controlFlag) {
 			this.controlFlag = controlFlag;
 		}
 
 		/**
-         * Returns the options of the Jaas class.
-         * 
-         * @return a Map containing the options as key-value pairs
-         */
-        public Map<String, String> getOptions() {
+		 * Returns the options of the Jaas class.
+		 * @return a Map containing the options as key-value pairs
+		 */
+		public Map<String, String> getOptions() {
 			return this.options;
 		}
 
 		/**
-         * Sets the options for the Jaas class.
-         * 
-         * @param options a map containing the options to be set
-         */
-        public void setOptions(Map<String, String> options) {
+		 * Sets the options for the Jaas class.
+		 * @param options a map containing the options to be set
+		 */
+		public void setOptions(Map<String, String> options) {
 			if (options != null) {
 				this.options.putAll(options);
 			}
@@ -2516,9 +2343,9 @@ public class KafkaProperties {
 	}
 
 	/**
-     * Security class.
-     */
-    public static class Security {
+	 * Security class.
+	 */
+	public static class Security {
 
 		/**
 		 * Security protocol used to communicate with brokers.
@@ -2526,29 +2353,26 @@ public class KafkaProperties {
 		private String protocol;
 
 		/**
-         * Returns the protocol used by the Security class.
-         *
-         * @return the protocol used by the Security class
-         */
-        public String getProtocol() {
+		 * Returns the protocol used by the Security class.
+		 * @return the protocol used by the Security class
+		 */
+		public String getProtocol() {
 			return this.protocol;
 		}
 
 		/**
-         * Sets the protocol for the security.
-         * 
-         * @param protocol the protocol to be set
-         */
-        public void setProtocol(String protocol) {
+		 * Sets the protocol for the security.
+		 * @param protocol the protocol to be set
+		 */
+		public void setProtocol(String protocol) {
 			this.protocol = protocol;
 		}
 
 		/**
-         * Builds a map of properties for the Security class.
-         * 
-         * @return a map of properties
-         */
-        public Map<String, Object> buildProperties() {
+		 * Builds a map of properties for the Security class.
+		 * @return a map of properties
+		 */
+		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getProtocol).to(properties.in(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG));
@@ -2558,18 +2382,17 @@ public class KafkaProperties {
 	}
 
 	/**
-     * Retry class.
-     */
-    public static class Retry {
+	 * Retry class.
+	 */
+	public static class Retry {
 
 		private final Topic topic = new Topic();
 
 		/**
-         * Returns the topic of the Retry object.
-         *
-         * @return the topic of the Retry object
-         */
-        public Topic getTopic() {
+		 * Returns the topic of the Retry object.
+		 * @return the topic of the Retry object
+		 */
+		public Topic getTopic() {
 			return this.topic;
 		}
 
@@ -2612,110 +2435,98 @@ public class KafkaProperties {
 			private boolean randomBackOff = false;
 
 			/**
-             * Returns the current status of the topic's enabled flag.
-             * 
-             * @return true if the topic is enabled, false otherwise
-             */
-            public boolean isEnabled() {
+			 * Returns the current status of the topic's enabled flag.
+			 * @return true if the topic is enabled, false otherwise
+			 */
+			public boolean isEnabled() {
 				return this.enabled;
 			}
 
 			/**
-             * Sets the enabled status of the Topic.
-             * 
-             * @param enabled the enabled status to be set
-             */
-            public void setEnabled(boolean enabled) {
+			 * Sets the enabled status of the Topic.
+			 * @param enabled the enabled status to be set
+			 */
+			public void setEnabled(boolean enabled) {
 				this.enabled = enabled;
 			}
 
 			/**
-             * Returns the number of attempts made.
-             *
-             * @return the number of attempts made
-             */
-            public int getAttempts() {
+			 * Returns the number of attempts made.
+			 * @return the number of attempts made
+			 */
+			public int getAttempts() {
 				return this.attempts;
 			}
 
 			/**
-             * Sets the number of attempts made.
-             * 
-             * @param attempts the number of attempts made
-             */
-            public void setAttempts(int attempts) {
+			 * Sets the number of attempts made.
+			 * @param attempts the number of attempts made
+			 */
+			public void setAttempts(int attempts) {
 				this.attempts = attempts;
 			}
 
 			/**
-             * Returns the delay of the topic.
-             *
-             * @return the delay of the topic
-             */
-            public Duration getDelay() {
+			 * Returns the delay of the topic.
+			 * @return the delay of the topic
+			 */
+			public Duration getDelay() {
 				return this.delay;
 			}
 
 			/**
-             * Sets the delay for the Topic.
-             * 
-             * @param delay the duration of the delay
-             */
-            public void setDelay(Duration delay) {
+			 * Sets the delay for the Topic.
+			 * @param delay the duration of the delay
+			 */
+			public void setDelay(Duration delay) {
 				this.delay = delay;
 			}
 
 			/**
-             * Returns the multiplier value.
-             * 
-             * @return the multiplier value
-             */
-            public double getMultiplier() {
+			 * Returns the multiplier value.
+			 * @return the multiplier value
+			 */
+			public double getMultiplier() {
 				return this.multiplier;
 			}
 
 			/**
-             * Sets the multiplier for the Topic.
-             * 
-             * @param multiplier the multiplier value to be set
-             */
-            public void setMultiplier(double multiplier) {
+			 * Sets the multiplier for the Topic.
+			 * @param multiplier the multiplier value to be set
+			 */
+			public void setMultiplier(double multiplier) {
 				this.multiplier = multiplier;
 			}
 
 			/**
-             * Returns the maximum delay.
-             *
-             * @return the maximum delay
-             */
-            public Duration getMaxDelay() {
+			 * Returns the maximum delay.
+			 * @return the maximum delay
+			 */
+			public Duration getMaxDelay() {
 				return this.maxDelay;
 			}
 
 			/**
-             * Sets the maximum delay for the topic.
-             * 
-             * @param maxDelay the maximum delay to be set
-             */
-            public void setMaxDelay(Duration maxDelay) {
+			 * Sets the maximum delay for the topic.
+			 * @param maxDelay the maximum delay to be set
+			 */
+			public void setMaxDelay(Duration maxDelay) {
 				this.maxDelay = maxDelay;
 			}
 
 			/**
-             * Returns a boolean value indicating whether random backoff is enabled.
-             * 
-             * @return true if random backoff is enabled, false otherwise
-             */
-            public boolean isRandomBackOff() {
+			 * Returns a boolean value indicating whether random backoff is enabled.
+			 * @return true if random backoff is enabled, false otherwise
+			 */
+			public boolean isRandomBackOff() {
 				return this.randomBackOff;
 			}
 
 			/**
-             * Sets the flag indicating whether to use random back off.
-             * 
-             * @param randomBackOff the flag indicating whether to use random back off
-             */
-            public void setRandomBackOff(boolean randomBackOff) {
+			 * Sets the flag indicating whether to use random back off.
+			 * @param randomBackOff the flag indicating whether to use random back off
+			 */
+			public void setRandomBackOff(boolean randomBackOff) {
 				this.randomBackOff = randomBackOff;
 			}
 
@@ -2724,9 +2535,9 @@ public class KafkaProperties {
 	}
 
 	/**
-     * Cleanup class.
-     */
-    public static class Cleanup {
+	 * Cleanup class.
+	 */
+	public static class Cleanup {
 
 		/**
 		 * Cleanup the application’s local state directory on startup.
@@ -2739,38 +2550,35 @@ public class KafkaProperties {
 		private boolean onShutdown = false;
 
 		/**
-         * Returns a boolean value indicating whether the software is on startup.
-         * 
-         * @return true if the software is on startup, false otherwise
-         */
-        public boolean isOnStartup() {
+		 * Returns a boolean value indicating whether the software is on startup.
+		 * @return true if the software is on startup, false otherwise
+		 */
+		public boolean isOnStartup() {
 			return this.onStartup;
 		}
 
 		/**
-         * Sets the value indicating whether the cleanup process should run on startup.
-         * 
-         * @param onStartup the value indicating whether the cleanup process should run on startup
-         */
-        public void setOnStartup(boolean onStartup) {
+		 * Sets the value indicating whether the cleanup process should run on startup.
+		 * @param onStartup the value indicating whether the cleanup process should run on
+		 * startup
+		 */
+		public void setOnStartup(boolean onStartup) {
 			this.onStartup = onStartup;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the system is on shutdown.
-         * 
-         * @return true if the system is on shutdown, false otherwise
-         */
-        public boolean isOnShutdown() {
+		 * Returns a boolean value indicating whether the system is on shutdown.
+		 * @return true if the system is on shutdown, false otherwise
+		 */
+		public boolean isOnShutdown() {
 			return this.onShutdown;
 		}
 
 		/**
-         * Sets the value indicating whether the shutdown event has occurred.
-         * 
-         * @param onShutdown the value indicating whether the shutdown event has occurred
-         */
-        public void setOnShutdown(boolean onShutdown) {
+		 * Sets the value indicating whether the shutdown event has occurred.
+		 * @param onShutdown the value indicating whether the shutdown event has occurred
+		 */
+		public void setOnShutdown(boolean onShutdown) {
 			this.onShutdown = onShutdown;
 		}
 
@@ -2792,51 +2600,49 @@ public class KafkaProperties {
 		private final byte id;
 
 		/**
-     * Constructs a new IsolationLevel object with the specified ID.
-     *
-     * @param id the ID of the isolation level
-     */
-    IsolationLevel(byte id) {
+		 * Constructs a new IsolationLevel object with the specified ID.
+		 * @param id the ID of the isolation level
+		 */
+		IsolationLevel(byte id) {
 			this.id = id;
 		}
 
 		/**
-     * Returns the ID of the KafkaProperties object.
-     *
-     * @return the ID of the KafkaProperties object
-     */
-    public byte id() {
+		 * Returns the ID of the KafkaProperties object.
+		 * @return the ID of the KafkaProperties object
+		 */
+		public byte id() {
 			return this.id;
 		}
 
 	}
 
 	/**
-     * Properties class.
-     */
-    @SuppressWarnings("serial")
+	 * Properties class.
+	 */
+	@SuppressWarnings("serial")
 	private static final class Properties extends HashMap<String, Object> {
 
 		/**
-         * Associates the specified value with the specified key in this Properties object.
-         * 
-         * @param key the key with which the specified value is to be associated
-         * @return a Consumer that accepts a value and puts it into this Properties object with the specified key
-         */
-        <V> java.util.function.Consumer<V> in(String key) {
+		 * Associates the specified value with the specified key in this Properties
+		 * object.
+		 * @param key the key with which the specified value is to be associated
+		 * @return a Consumer that accepts a value and puts it into this Properties object
+		 * with the specified key
+		 */
+		<V> java.util.function.Consumer<V> in(String key) {
 			return (value) -> put(key, value);
 		}
 
 		/**
-         * Adds SSL, security, and custom properties to the current properties object.
-         * 
-         * @param ssl         the SSL object used to build SSL properties
-         * @param security    the Security object used to build security properties
-         * @param properties  a map of custom properties to be added
-         * @param sslBundles  the SSLBundles object used to build SSL properties
-         * @return the updated properties object
-         */
-        Properties with(Ssl ssl, Security security, Map<String, String> properties, SslBundles sslBundles) {
+		 * Adds SSL, security, and custom properties to the current properties object.
+		 * @param ssl the SSL object used to build SSL properties
+		 * @param security the Security object used to build security properties
+		 * @param properties a map of custom properties to be added
+		 * @param sslBundles the SSLBundles object used to build SSL properties
+		 * @return the updated properties object
+		 */
+		Properties with(Ssl ssl, Security security, Map<String, String> properties, SslBundles sslBundles) {
 			putAll(ssl.buildProperties(sslBundles));
 			putAll(security.buildProperties());
 			putAll(properties);

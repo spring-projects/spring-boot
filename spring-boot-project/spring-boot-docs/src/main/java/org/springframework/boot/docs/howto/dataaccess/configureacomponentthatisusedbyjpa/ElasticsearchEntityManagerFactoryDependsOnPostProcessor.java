@@ -30,11 +30,12 @@ public class ElasticsearchEntityManagerFactoryDependsOnPostProcessor
 		extends EntityManagerFactoryDependsOnPostProcessor {
 
 	/**
-     * Constructs a new ElasticsearchEntityManagerFactoryDependsOnPostProcessor with the specified Elasticsearch client bean name.
-     *
-     * @param elasticsearchClientBeanName the name of the Elasticsearch client bean that this post processor depends on
-     */
-    public ElasticsearchEntityManagerFactoryDependsOnPostProcessor() {
+	 * Constructs a new ElasticsearchEntityManagerFactoryDependsOnPostProcessor with the
+	 * specified Elasticsearch client bean name.
+	 * @param elasticsearchClientBeanName the name of the Elasticsearch client bean that
+	 * this post processor depends on
+	 */
+	public ElasticsearchEntityManagerFactoryDependsOnPostProcessor() {
 		super("elasticsearchClient");
 	}
 

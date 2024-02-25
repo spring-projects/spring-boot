@@ -24,12 +24,11 @@ import org.springframework.boot.SpringApplication;
 public class TestMyApplication {
 
 	/**
-     * The main method is the entry point of the application.
-     * It initializes and runs the Spring application using the SpringApplication class.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It initializes and runs the
+	 * Spring application using the SpringApplication class.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.from(MyApplication::main).run(args);
 	}
 

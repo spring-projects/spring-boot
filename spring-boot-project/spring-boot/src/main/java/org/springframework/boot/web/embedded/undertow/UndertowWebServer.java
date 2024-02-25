@@ -103,11 +103,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Starts the embedded Undertow web server.
-     * 
-     * @throws WebServerException if unable to start the server
-     */
-    @Override
+	 * Starts the embedded Undertow web server.
+	 * @throws WebServerException if unable to start the server
+	 */
+	@Override
 	public void start() throws WebServerException {
 		synchronized (this.monitor) {
 			if (this.started) {
@@ -144,11 +143,12 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Stops the Undertow web server and closes any associated resources silently.
-     * If the web server is not running or if there are no associated resources, this method does nothing.
-     * Any exceptions that occur during the stopping or closing process are ignored.
-     */
-    private void destroySilently() {
+	 * Stops the Undertow web server and closes any associated resources silently. If the
+	 * web server is not running or if there are no associated resources, this method does
+	 * nothing. Any exceptions that occur during the stopping or closing process are
+	 * ignored.
+	 */
+	private void destroySilently() {
 		try {
 			if (this.undertow != null) {
 				this.undertow.stop();
@@ -161,11 +161,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Closes the given Closeable object silently, without throwing any exceptions.
-     * 
-     * @param closeable the Closeable object to be closed
-     */
-    private void closeSilently(Closeable closeable) {
+	 * Closes the given Closeable object silently, without throwing any exceptions.
+	 * @param closeable the Closeable object to be closed
+	 */
+	private void closeSilently(Closeable closeable) {
 		try {
 			closeable.close();
 		}
@@ -175,11 +174,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Creates and returns an instance of Undertow server.
-     * 
-     * @return The created Undertow server instance.
-     */
-    private Undertow createUndertowServer() {
+	 * Creates and returns an instance of Undertow server.
+	 * @return The created Undertow server instance.
+	 */
+	private Undertow createUndertowServer() {
 		this.closeables = new ArrayList<>();
 		this.gracefulShutdown = null;
 		HttpHandler handler = createHttpHandler();
@@ -188,11 +186,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Creates an HTTP handler by iterating through the registered HTTP handler factories.
-     * 
-     * @return The created HTTP handler.
-     */
-    protected HttpHandler createHttpHandler() {
+	 * Creates an HTTP handler by iterating through the registered HTTP handler factories.
+	 * @return The created HTTP handler.
+	 */
+	protected HttpHandler createHttpHandler() {
 		HttpHandler handler = null;
 		for (HttpHandlerFactory factory : this.httpHandlerFactories) {
 			handler = factory.getHandler(handler);
@@ -208,11 +205,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Returns a description of the ports used by the UndertowWebServer.
-     * 
-     * @return A string representation of the ports used by the UndertowWebServer.
-     */
-    private String getPortsDescription() {
+	 * Returns a description of the ports used by the UndertowWebServer.
+	 * @return A string representation of the ports used by the UndertowWebServer.
+	 */
+	private String getPortsDescription() {
 		StringBuilder description = new StringBuilder();
 		List<UndertowWebServer.Port> ports = getActualPorts();
 		description.append("port");
@@ -230,11 +226,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Retrieves the actual ports being used by the UndertowWebServer.
-     * 
-     * @return A list of Port objects representing the actual ports being used.
-     */
-    private List<Port> getActualPorts() {
+	 * Retrieves the actual ports being used by the UndertowWebServer.
+	 * @return A list of Port objects representing the actual ports being used.
+	 */
+	private List<Port> getActualPorts() {
 		List<Port> ports = new ArrayList<>();
 		try {
 			if (!this.autoStart) {
@@ -253,11 +248,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Extracts the list of bound channels from the Undertow server.
-     * 
-     * @return The list of bound channels.
-     */
-    @SuppressWarnings("unchecked")
+	 * Extracts the list of bound channels from the Undertow server.
+	 * @return The list of bound channels.
+	 */
+	@SuppressWarnings("unchecked")
 	private List<BoundChannel> extractChannels() {
 		Field channelsField = ReflectionUtils.findField(Undertow.class, "channels");
 		ReflectionUtils.makeAccessible(channelsField);
@@ -265,12 +259,12 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Retrieves the port and protocol from the given BoundChannel.
-     *
-     * @param channel the BoundChannel from which to retrieve the port and protocol
-     * @return the UndertowWebServer.Port object containing the port and protocol, or null if the port cannot be retrieved
-     */
-    private UndertowWebServer.Port getPortFromChannel(BoundChannel channel) {
+	 * Retrieves the port and protocol from the given BoundChannel.
+	 * @param channel the BoundChannel from which to retrieve the port and protocol
+	 * @return the UndertowWebServer.Port object containing the port and protocol, or null
+	 * if the port cannot be retrieved
+	 */
+	private UndertowWebServer.Port getPortFromChannel(BoundChannel channel) {
 		SocketAddress socketAddress = channel.getLocalAddress();
 		if (socketAddress instanceof InetSocketAddress inetSocketAddress) {
 			Field sslField = ReflectionUtils.findField(channel.getClass(), "ssl");
@@ -281,11 +275,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Retrieves the list of configured ports for the UndertowWebServer.
-     * 
-     * @return The list of configured ports.
-     */
-    private List<UndertowWebServer.Port> getConfiguredPorts() {
+	 * Retrieves the list of configured ports for the UndertowWebServer.
+	 * @return The list of configured ports.
+	 */
+	private List<UndertowWebServer.Port> getConfiguredPorts() {
 		List<Port> ports = new ArrayList<>();
 		for (Object listener : extractListeners()) {
 			try {
@@ -302,11 +295,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Extracts the listeners from the Undertow instance.
-     * 
-     * @return The list of listeners extracted from the Undertow instance.
-     */
-    @SuppressWarnings("unchecked")
+	 * Extracts the listeners from the Undertow instance.
+	 * @return The list of listeners extracted from the Undertow instance.
+	 */
+	@SuppressWarnings("unchecked")
 	private List<Object> extractListeners() {
 		Field listenersField = ReflectionUtils.findField(Undertow.class, "listeners");
 		ReflectionUtils.makeAccessible(listenersField);
@@ -314,12 +306,13 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Retrieves the port and protocol information from the given listener object.
-     * 
-     * @param listener the listener object from which to retrieve the port and protocol information
-     * @return the port and protocol information encapsulated in an UndertowWebServer.Port object
-     */
-    private UndertowWebServer.Port getPortFromListener(Object listener) {
+	 * Retrieves the port and protocol information from the given listener object.
+	 * @param listener the listener object from which to retrieve the port and protocol
+	 * information
+	 * @return the port and protocol information encapsulated in an UndertowWebServer.Port
+	 * object
+	 */
+	private UndertowWebServer.Port getPortFromListener(Object listener) {
 		Field typeField = ReflectionUtils.findField(listener.getClass(), "type");
 		ReflectionUtils.makeAccessible(typeField);
 		String protocol = ReflectionUtils.getField(typeField, listener).toString();
@@ -330,11 +323,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Stops the Undertow web server.
-     * 
-     * @throws WebServerException if unable to stop the web server
-     */
-    @Override
+	 * Stops the Undertow web server.
+	 * @throws WebServerException if unable to stop the web server
+	 */
+	@Override
 	public void stop() throws WebServerException {
 		synchronized (this.monitor) {
 			if (!this.started) {
@@ -357,11 +349,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Returns the port number of the Undertow web server.
-     * 
-     * @return the port number, or -1 if no ports are available
-     */
-    @Override
+	 * Returns the port number of the Undertow web server.
+	 * @return the port number, or -1 if no ports are available
+	 */
+	@Override
 	public int getPort() {
 		List<Port> ports = getActualPorts();
 		if (ports.isEmpty()) {
@@ -371,11 +362,11 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Shuts down the server gracefully, allowing active requests to complete before shutting down completely.
-     * 
-     * @param callback the callback to be invoked when the shutdown is complete
-     */
-    @Override
+	 * Shuts down the server gracefully, allowing active requests to complete before
+	 * shutting down completely.
+	 * @param callback the callback to be invoked when the shutdown is complete
+	 */
+	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
 		if (this.gracefulShutdown == null) {
 			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
@@ -388,11 +379,12 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Notifies the graceful shutdown callback about the completion or abortion of the graceful shutdown process.
-     * 
-     * @param success true if the graceful shutdown process completed successfully, false otherwise
-     */
-    private void notifyGracefulCallback(boolean success) {
+	 * Notifies the graceful shutdown callback about the completion or abortion of the
+	 * graceful shutdown process.
+	 * @param success true if the graceful shutdown process completed successfully, false
+	 * otherwise
+	 */
+	private void notifyGracefulCallback(boolean success) {
 		GracefulShutdownCallback callback = this.gracefulShutdownCallback.getAndSet(null);
 		if (callback != null) {
 			if (success) {
@@ -407,11 +399,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-     * Returns the log message indicating the start of the Undertow web server.
-     * 
-     * @return the log message indicating the start of the Undertow web server
-     */
-    protected String getStartLogMessage() {
+	 * Returns the log message indicating the start of the Undertow web server.
+	 * @return the log message indicating the start of the Undertow web server
+	 */
+	protected String getStartLogMessage() {
 		return "Undertow started on " + getPortsDescription();
 	}
 
@@ -425,32 +416,30 @@ public class UndertowWebServer implements WebServer {
 		private final String protocol;
 
 		/**
-         * Constructs a new Port object with the specified number and protocol.
-         * 
-         * @param number the port number
-         * @param protocol the protocol associated with the port
-         */
-        private Port(int number, String protocol) {
+		 * Constructs a new Port object with the specified number and protocol.
+		 * @param number the port number
+		 * @param protocol the protocol associated with the port
+		 */
+		private Port(int number, String protocol) {
 			this.number = number;
 			this.protocol = protocol;
 		}
 
 		/**
-         * Returns the number associated with this Port.
-         *
-         * @return the number associated with this Port
-         */
-        int getNumber() {
+		 * Returns the number associated with this Port.
+		 * @return the number associated with this Port
+		 */
+		int getNumber() {
 			return this.number;
 		}
 
 		/**
-         * Compares this Port object to the specified object for equality.
-         * 
-         * @param obj the object to compare to
-         * @return true if the specified object is equal to this Port object, false otherwise
-         */
-        @Override
+		 * Compares this Port object to the specified object for equality.
+		 * @param obj the object to compare to
+		 * @return true if the specified object is equal to this Port object, false
+		 * otherwise
+		 */
+		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -466,22 +455,20 @@ public class UndertowWebServer implements WebServer {
 		}
 
 		/**
-         * Returns the hash code value for this Port object.
-         * 
-         * @return the hash code value for this Port object
-         */
-        @Override
+		 * Returns the hash code value for this Port object.
+		 * @return the hash code value for this Port object
+		 */
+		@Override
 		public int hashCode() {
 			return this.number;
 		}
 
 		/**
-         * Returns a string representation of the Port object.
-         * The string representation includes the port number and protocol in parentheses.
-         *
-         * @return a string representation of the Port object
-         */
-        @Override
+		 * Returns a string representation of the Port object. The string representation
+		 * includes the port number and protocol in parentheses.
+		 * @return a string representation of the Port object
+		 */
+		@Override
 		public String toString() {
 			return this.number + " (" + this.protocol + ")";
 		}
@@ -496,24 +483,24 @@ public class UndertowWebServer implements WebServer {
 		private final Closeable closeable;
 
 		/**
-         * Constructs a new CloseableHttpHandlerFactory with the specified Closeable object.
-         *
-         * @param closeable the Closeable object to be associated with the CloseableHttpHandlerFactory
-         */
-        private CloseableHttpHandlerFactory(Closeable closeable) {
+		 * Constructs a new CloseableHttpHandlerFactory with the specified Closeable
+		 * object.
+		 * @param closeable the Closeable object to be associated with the
+		 * CloseableHttpHandlerFactory
+		 */
+		private CloseableHttpHandlerFactory(Closeable closeable) {
 			this.closeable = closeable;
 		}
 
 		/**
-         * Returns the HttpHandler with the provided next HttpHandler.
-         * If the closeable is null, returns the next HttpHandler as is.
-         * Otherwise, returns a new CloseableHttpHandler that delegates the handling to the next HttpHandler
-         * and closes the closeable when closed.
-         *
-         * @param next the next HttpHandler to be used if the closeable is null
-         * @return the HttpHandler with the provided next HttpHandler
-         */
-        @Override
+		 * Returns the HttpHandler with the provided next HttpHandler. If the closeable is
+		 * null, returns the next HttpHandler as is. Otherwise, returns a new
+		 * CloseableHttpHandler that delegates the handling to the next HttpHandler and
+		 * closes the closeable when closed.
+		 * @param next the next HttpHandler to be used if the closeable is null
+		 * @return the HttpHandler with the provided next HttpHandler
+		 */
+		@Override
 		public HttpHandler getHandler(HttpHandler next) {
 			if (this.closeable == null) {
 				return next;
@@ -549,12 +536,11 @@ public class UndertowWebServer implements WebServer {
 	static class UndertowWebServerRuntimeHints implements RuntimeHintsRegistrar {
 
 		/**
-         * Registers hints for the UndertowWebServerRuntimeHints class.
-         * 
-         * @param hints The RuntimeHints object to register the hints with.
-         * @param classLoader The ClassLoader to use for reflection.
-         */
-        @Override
+		 * Registers hints for the UndertowWebServerRuntimeHints class.
+		 * @param hints The RuntimeHints object to register the hints with.
+		 * @param classLoader The ClassLoader to use for reflection.
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.reflection()
 				.registerTypeIfPresent(classLoader, "io.undertow.Undertow",

@@ -44,20 +44,18 @@ public class MyProperties {
 	}
 
 	/**
-     * Sets the remote address for the MyProperties class.
-     * 
-     * @param remoteAddress the InetAddress representing the remote address
-     */
-    public void setRemoteAddress(InetAddress remoteAddress) {
+	 * Sets the remote address for the MyProperties class.
+	 * @param remoteAddress the InetAddress representing the remote address
+	 */
+	public void setRemoteAddress(InetAddress remoteAddress) {
 		this.remoteAddress = remoteAddress;
 	}
 
 	/**
-     * Returns the security object associated with this MyProperties instance.
-     *
-     * @return the security object
-     */
-    public Security getSecurity() {
+	 * Returns the security object associated with this MyProperties instance.
+	 * @return the security object
+	 */
+	public Security getSecurity() {
 		return this.security;
 	}
 	// @fold:off
@@ -73,11 +71,10 @@ public class MyProperties {
 		}
 
 		/**
-         * Sets the username for the Security class.
-         * 
-         * @param username the username to be set
-         */
-        public void setUsername(String username) {
+		 * Sets the username for the Security class.
+		 * @param username the username to be set
+		 */
+		public void setUsername(String username) {
 			this.username = username;
 		}
 		// @fold:off

@@ -50,13 +50,12 @@ import org.springframework.util.CollectionUtils;
 public class InfinispanCacheConfiguration {
 
 	/**
-     * Creates a SpringEmbeddedCacheManager bean for managing caches.
-     * 
-     * @param customizers the customizers for the cache manager
-     * @param embeddedCacheManager the embedded cache manager
-     * @return the configured SpringEmbeddedCacheManager bean
-     */
-    @Bean
+	 * Creates a SpringEmbeddedCacheManager bean for managing caches.
+	 * @param customizers the customizers for the cache manager
+	 * @param embeddedCacheManager the embedded cache manager
+	 * @return the configured SpringEmbeddedCacheManager bean
+	 */
+	@Bean
 	public SpringEmbeddedCacheManager cacheManager(CacheManagerCustomizers customizers,
 			EmbeddedCacheManager embeddedCacheManager) {
 		SpringEmbeddedCacheManager cacheManager = new SpringEmbeddedCacheManager(embeddedCacheManager);
@@ -64,15 +63,16 @@ public class InfinispanCacheConfiguration {
 	}
 
 	/**
-     * Creates and configures an Infinispan embedded cache manager based on the provided cache properties.
-     * If a cache manager bean is already defined, this method will not be executed.
-     * 
-     * @param cacheProperties The cache properties used to configure the cache manager.
-     * @param defaultConfigurationBuilder The default configuration builder for the cache manager.
-     * @return The configured Infinispan embedded cache manager.
-     * @throws IOException If an I/O error occurs while creating the cache manager.
-     */
-    @Bean(destroyMethod = "stop")
+	 * Creates and configures an Infinispan embedded cache manager based on the provided
+	 * cache properties. If a cache manager bean is already defined, this method will not
+	 * be executed.
+	 * @param cacheProperties The cache properties used to configure the cache manager.
+	 * @param defaultConfigurationBuilder The default configuration builder for the cache
+	 * manager.
+	 * @return The configured Infinispan embedded cache manager.
+	 * @throws IOException If an I/O error occurs while creating the cache manager.
+	 */
+	@Bean(destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	public EmbeddedCacheManager infinispanCacheManager(CacheProperties cacheProperties,
 			ObjectProvider<ConfigurationBuilder> defaultConfigurationBuilder) throws IOException {
@@ -86,13 +86,12 @@ public class InfinispanCacheConfiguration {
 	}
 
 	/**
-     * Creates an embedded cache manager based on the provided cache properties.
-     * 
-     * @param cacheProperties the cache properties to be used for configuration
-     * @return the embedded cache manager
-     * @throws IOException if an I/O error occurs while reading the configuration file
-     */
-    private EmbeddedCacheManager createEmbeddedCacheManager(CacheProperties cacheProperties) throws IOException {
+	 * Creates an embedded cache manager based on the provided cache properties.
+	 * @param cacheProperties the cache properties to be used for configuration
+	 * @return the embedded cache manager
+	 * @throws IOException if an I/O error occurs while reading the configuration file
+	 */
+	private EmbeddedCacheManager createEmbeddedCacheManager(CacheProperties cacheProperties) throws IOException {
 		Resource location = cacheProperties.resolveConfigLocation(cacheProperties.getInfinispan().getConfig());
 		if (location != null) {
 			try (InputStream in = location.getInputStream()) {
@@ -103,14 +102,14 @@ public class InfinispanCacheConfiguration {
 	}
 
 	/**
-     * Returns the default cache configuration based on the provided default configuration builder.
-     * If the default configuration builder is not null, it builds and returns the configuration.
-     * If the default configuration builder is null, it returns a new empty configuration.
-     *
-     * @param defaultConfigurationBuilder the default configuration builder to use
-     * @return the default cache configuration
-     */
-    private org.infinispan.configuration.cache.Configuration getDefaultCacheConfiguration(
+	 * Returns the default cache configuration based on the provided default configuration
+	 * builder. If the default configuration builder is not null, it builds and returns
+	 * the configuration. If the default configuration builder is null, it returns a new
+	 * empty configuration.
+	 * @param defaultConfigurationBuilder the default configuration builder to use
+	 * @return the default cache configuration
+	 */
+	private org.infinispan.configuration.cache.Configuration getDefaultCacheConfiguration(
 			ConfigurationBuilder defaultConfigurationBuilder) {
 		if (defaultConfigurationBuilder != null) {
 			return defaultConfigurationBuilder.build();

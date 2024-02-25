@@ -52,12 +52,11 @@ public abstract class BuildInfoProperties implements Serializable {
 	private final Supplier<String> creationTime = SingletonSupplier.of(new CurrentIsoInstantSupplier());
 
 	/**
-     * Constructs a new instance of BuildInfoProperties.
-     * 
-     * @param project the project object
-     * @param excludes the set of excludes
-     */
-    @Inject
+	 * Constructs a new instance of BuildInfoProperties.
+	 * @param project the project object
+	 * @param excludes the set of excludes
+	 */
+	@Inject
 	public BuildInfoProperties(Project project, SetProperty<String> excludes) {
 		this.excludes = excludes;
 		getGroup().convention(project.provider(() -> project.getGroup().toString()));
@@ -114,44 +113,40 @@ public abstract class BuildInfoProperties implements Serializable {
 	public abstract MapProperty<String, Object> getAdditional();
 
 	/**
-     * Returns the artifact if it is not excluded.
-     * 
-     * @return the artifact if it is not excluded, or null if it is excluded
-     */
-    @Input
+	 * Returns the artifact if it is not excluded.
+	 * @return the artifact if it is not excluded, or null if it is excluded
+	 */
+	@Input
 	@Optional
 	String getArtifactIfNotExcluded() {
 		return getIfNotExcluded(getArtifact(), "artifact");
 	}
 
 	/**
-     * Returns the group if it is not excluded.
-     * 
-     * @return the group if it is not excluded, or null if it is excluded
-     */
-    @Input
+	 * Returns the group if it is not excluded.
+	 * @return the group if it is not excluded, or null if it is excluded
+	 */
+	@Input
 	@Optional
 	String getGroupIfNotExcluded() {
 		return getIfNotExcluded(getGroup(), "group");
 	}
 
 	/**
-     * Returns the name if it is not excluded.
-     * 
-     * @return the name if it is not excluded, or null if it is excluded.
-     */
-    @Input
+	 * Returns the name if it is not excluded.
+	 * @return the name if it is not excluded, or null if it is excluded.
+	 */
+	@Input
 	@Optional
 	String getNameIfNotExcluded() {
 		return getIfNotExcluded(getName(), "name");
 	}
 
 	/**
-     * Returns the time if it is not excluded.
-     * 
-     * @return the time as an Instant object if it is not excluded, null otherwise
-     */
-    @Input
+	 * Returns the time if it is not excluded.
+	 * @return the time as an Instant object if it is not excluded, null otherwise
+	 */
+	@Input
 	@Optional
 	Instant getTimeIfNotExcluded() {
 		String time = getIfNotExcluded(getTime(), "time", this.creationTime);
@@ -159,47 +154,44 @@ public abstract class BuildInfoProperties implements Serializable {
 	}
 
 	/**
-     * Returns the version if it is not excluded.
-     * 
-     * @return the version if it is not excluded, or null if it is excluded
-     */
-    @Input
+	 * Returns the version if it is not excluded.
+	 * @return the version if it is not excluded, or null if it is excluded
+	 */
+	@Input
 	@Optional
 	String getVersionIfNotExcluded() {
 		return getIfNotExcluded(getVersion(), "version");
 	}
 
 	/**
-     * Returns a map of additional properties if they are not excluded.
-     * 
-     * @return a map of additional properties if they are not excluded
-     */
-    @Input
+	 * Returns a map of additional properties if they are not excluded.
+	 * @return a map of additional properties if they are not excluded
+	 */
+	@Input
 	Map<String, String> getAdditionalIfNotExcluded() {
 		return coerceToStringValues(applyExclusions(getAdditional().getOrElse(Collections.emptyMap())));
 	}
 
 	/**
-     * Retrieves the value of the specified property if it is not excluded.
-     * 
-     * @param <T>      the type of the property value
-     * @param property the property to retrieve the value from
-     * @param name     the name of the property
-     * @return the value of the property if it is not excluded, otherwise null
-     */
-    private <T> T getIfNotExcluded(Property<T> property, String name) {
+	 * Retrieves the value of the specified property if it is not excluded.
+	 * @param <T> the type of the property value
+	 * @param property the property to retrieve the value from
+	 * @param name the name of the property
+	 * @return the value of the property if it is not excluded, otherwise null
+	 */
+	private <T> T getIfNotExcluded(Property<T> property, String name) {
 		return getIfNotExcluded(property, name, () -> null);
 	}
 
 	/**
-     * Retrieves the value of the specified property if it is not excluded.
-     * 
-     * @param property the property to retrieve the value from
-     * @param name the name of the property
-     * @param defaultValue a supplier function to provide a default value if the property is not set
-     * @return the value of the property if it is not excluded, or null if it is excluded
-     */
-    private <T> T getIfNotExcluded(Property<T> property, String name, Supplier<T> defaultValue) {
+	 * Retrieves the value of the specified property if it is not excluded.
+	 * @param property the property to retrieve the value from
+	 * @param name the name of the property
+	 * @param defaultValue a supplier function to provide a default value if the property
+	 * is not set
+	 * @return the value of the property if it is not excluded, or null if it is excluded
+	 */
+	private <T> T getIfNotExcluded(Property<T> property, String name, Supplier<T> defaultValue) {
 		if (this.excludes.getOrElse(Collections.emptySet()).contains(name)) {
 			return null;
 		}
@@ -207,12 +199,11 @@ public abstract class BuildInfoProperties implements Serializable {
 	}
 
 	/**
-     * Coerces the values of a given map from Object type to String type.
-     * 
-     * @param input the map containing the values to be coerced
-     * @return a new map with the coerced values
-     */
-    private Map<String, String> coerceToStringValues(Map<String, Object> input) {
+	 * Coerces the values of a given map from Object type to String type.
+	 * @param input the map containing the values to be coerced
+	 * @return a new map with the coerced values
+	 */
+	private Map<String, String> coerceToStringValues(Map<String, Object> input) {
 		Map<String, String> output = new HashMap<>();
 		input.forEach((key, value) -> {
 			if (value instanceof Provider<?> provider) {
@@ -224,12 +215,12 @@ public abstract class BuildInfoProperties implements Serializable {
 	}
 
 	/**
-     * Applies exclusions to the input map and returns a new map with excluded values set to null.
-     * 
-     * @param input the input map to apply exclusions to
-     * @return a new map with excluded values set to null
-     */
-    private Map<String, Object> applyExclusions(Map<String, Object> input) {
+	 * Applies exclusions to the input map and returns a new map with excluded values set
+	 * to null.
+	 * @param input the input map to apply exclusions to
+	 * @return a new map with excluded values set to null
+	 */
+	private Map<String, Object> applyExclusions(Map<String, Object> input) {
 		Map<String, Object> output = new HashMap<>();
 		Set<String> exclusions = this.excludes.getOrElse(Collections.emptySet());
 		input.forEach((key, value) -> output.put(key, (!exclusions.contains(key)) ? value : null));
@@ -237,16 +228,15 @@ public abstract class BuildInfoProperties implements Serializable {
 	}
 
 	/**
-     * CurrentIsoInstantSupplier class.
-     */
-    private static final class CurrentIsoInstantSupplier implements Supplier<String> {
+	 * CurrentIsoInstantSupplier class.
+	 */
+	private static final class CurrentIsoInstantSupplier implements Supplier<String> {
 
 		/**
-         * Returns the current ISO instant as a string.
-         *
-         * @return the current ISO instant formatted as a string
-         */
-        @Override
+		 * Returns the current ISO instant as a string.
+		 * @return the current ISO instant formatted as a string
+		 */
+		@Override
 		public String get() {
 			return DateTimeFormatter.ISO_INSTANT.format(Instant.now());
 		}

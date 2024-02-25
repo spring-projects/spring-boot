@@ -28,12 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class WelcomeController {
 
 	/**
-     * Retrieves the welcome message for the user.
-     * 
-     * @param principal the principal object representing the currently authenticated user
-     * @return a string containing the welcome message with the user's name
-     */
-    @GetMapping("/")
+	 * Retrieves the welcome message for the user.
+	 * @param principal the principal object representing the currently authenticated user
+	 * @return a string containing the welcome message with the user's name
+	 */
+	@GetMapping("/")
 	public String welcome(Principal principal) {
 		return "Hello " + principal.getName();
 	}

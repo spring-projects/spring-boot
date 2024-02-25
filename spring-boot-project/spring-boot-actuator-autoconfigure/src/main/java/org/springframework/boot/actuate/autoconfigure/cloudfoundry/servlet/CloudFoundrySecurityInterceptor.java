@@ -51,13 +51,14 @@ class CloudFoundrySecurityInterceptor {
 	private static final SecurityResponse SUCCESS = SecurityResponse.success();
 
 	/**
-     * Constructs a new CloudFoundrySecurityInterceptor with the specified TokenValidator, CloudFoundrySecurityService, and applicationId.
-     * 
-     * @param tokenValidator the TokenValidator used for validating tokens
-     * @param cloudFoundrySecurityService the CloudFoundrySecurityService used for handling security operations
-     * @param applicationId the ID of the application
-     */
-    CloudFoundrySecurityInterceptor(TokenValidator tokenValidator,
+	 * Constructs a new CloudFoundrySecurityInterceptor with the specified TokenValidator,
+	 * CloudFoundrySecurityService, and applicationId.
+	 * @param tokenValidator the TokenValidator used for validating tokens
+	 * @param cloudFoundrySecurityService the CloudFoundrySecurityService used for
+	 * handling security operations
+	 * @param applicationId the ID of the application
+	 */
+	CloudFoundrySecurityInterceptor(TokenValidator tokenValidator,
 			CloudFoundrySecurityService cloudFoundrySecurityService, String applicationId) {
 		this.tokenValidator = tokenValidator;
 		this.cloudFoundrySecurityService = cloudFoundrySecurityService;
@@ -65,20 +66,20 @@ class CloudFoundrySecurityInterceptor {
 	}
 
 	/**
-     * Pre-handle method for CloudFoundrySecurityInterceptor class.
-     * 
-     * This method is responsible for handling the security checks before processing the request.
-     * It checks if the request is a pre-flight request and returns success if it is.
-     * It then checks if the application id and cloud controller URL are available, and throws a CloudFoundryAuthorizationException if not.
-     * If the request method is OPTIONS, it returns success.
-     * It then calls the check method to perform additional security checks.
-     * If any exception occurs during the process, it logs the error and returns an appropriate SecurityResponse.
-     * 
-     * @param request The HttpServletRequest object representing the incoming request.
-     * @param endpointId The EndpointId object representing the endpoint id.
-     * @return A SecurityResponse object indicating the result of the security checks.
-     */
-    SecurityResponse preHandle(HttpServletRequest request, EndpointId endpointId) {
+	 * Pre-handle method for CloudFoundrySecurityInterceptor class.
+	 *
+	 * This method is responsible for handling the security checks before processing the
+	 * request. It checks if the request is a pre-flight request and returns success if it
+	 * is. It then checks if the application id and cloud controller URL are available,
+	 * and throws a CloudFoundryAuthorizationException if not. If the request method is
+	 * OPTIONS, it returns success. It then calls the check method to perform additional
+	 * security checks. If any exception occurs during the process, it logs the error and
+	 * returns an appropriate SecurityResponse.
+	 * @param request The HttpServletRequest object representing the incoming request.
+	 * @param endpointId The EndpointId object representing the endpoint id.
+	 * @return A SecurityResponse object indicating the result of the security checks.
+	 */
+	SecurityResponse preHandle(HttpServletRequest request, EndpointId endpointId) {
 		if (CorsUtils.isPreFlightRequest(request)) {
 			return SecurityResponse.success();
 		}
@@ -108,13 +109,13 @@ class CloudFoundrySecurityInterceptor {
 	}
 
 	/**
-     * Checks the access level for a given request and endpoint ID.
-     * 
-     * @param request the HttpServletRequest object representing the current request
-     * @param endpointId the EndpointId object representing the ID of the endpoint to check access for
-     * @throws CloudFoundryAuthorizationException if access is denied
-     */
-    private void check(HttpServletRequest request, EndpointId endpointId) {
+	 * Checks the access level for a given request and endpoint ID.
+	 * @param request the HttpServletRequest object representing the current request
+	 * @param endpointId the EndpointId object representing the ID of the endpoint to
+	 * check access for
+	 * @throws CloudFoundryAuthorizationException if access is denied
+	 */
+	private void check(HttpServletRequest request, EndpointId endpointId) {
 		Token token = getToken(request);
 		this.tokenValidator.validate(token);
 		AccessLevel accessLevel = this.cloudFoundrySecurityService.getAccessLevel(token.toString(), this.applicationId);
@@ -125,13 +126,13 @@ class CloudFoundrySecurityInterceptor {
 	}
 
 	/**
-     * Retrieves the token from the Authorization header in the HttpServletRequest.
-     * 
-     * @param request The HttpServletRequest object containing the request information.
-     * @return The Token object extracted from the Authorization header.
-     * @throws CloudFoundryAuthorizationException if the Authorization header is missing or invalid.
-     */
-    private Token getToken(HttpServletRequest request) {
+	 * Retrieves the token from the Authorization header in the HttpServletRequest.
+	 * @param request The HttpServletRequest object containing the request information.
+	 * @return The Token object extracted from the Authorization header.
+	 * @throws CloudFoundryAuthorizationException if the Authorization header is missing
+	 * or invalid.
+	 */
+	private Token getToken(HttpServletRequest request) {
 		String authorization = request.getHeader("Authorization");
 		String bearerPrefix = "bearer ";
 		if (authorization == null || !authorization.toLowerCase(Locale.ENGLISH).startsWith(bearerPrefix)) {

@@ -24,20 +24,18 @@ public class MyRestResponse {
 	private final String message;
 
 	/**
-     * Constructs a new MyRestResponse object with the specified message.
-     * 
-     * @param message the message to be set for the MyRestResponse object
-     */
-    public MyRestResponse(String message) {
+	 * Constructs a new MyRestResponse object with the specified message.
+	 * @param message the message to be set for the MyRestResponse object
+	 */
+	public MyRestResponse(String message) {
 		this.message = message;
 	}
 
 	/**
-     * Returns the message of the MyRestResponse object.
-     *
-     * @return the message of the MyRestResponse object
-     */
-    public String getMessage() {
+	 * Returns the message of the MyRestResponse object.
+	 * @return the message of the MyRestResponse object
+	 */
+	public String getMessage() {
 		return this.message;
 	}
 

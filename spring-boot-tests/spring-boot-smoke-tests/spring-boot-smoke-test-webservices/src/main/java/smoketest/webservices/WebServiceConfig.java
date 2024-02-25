@@ -29,12 +29,11 @@ import org.springframework.xml.xsd.XsdSchema;
 public class WebServiceConfig extends WsConfigurerAdapter {
 
 	/**
-     * Creates and configures a WSDL definition for the holiday service.
-     * 
-     * @param countriesSchema The XSD schema for the countries.
-     * @return The configured WSDL definition.
-     */
-    @Bean(name = "holiday")
+	 * Creates and configures a WSDL definition for the holiday service.
+	 * @param countriesSchema The XSD schema for the countries.
+	 * @return The configured WSDL definition.
+	 */
+	@Bean(name = "holiday")
 	public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema countriesSchema) {
 		DefaultWsdl11Definition wsdl = new DefaultWsdl11Definition();
 		wsdl.setPortTypeName("HumanResource");

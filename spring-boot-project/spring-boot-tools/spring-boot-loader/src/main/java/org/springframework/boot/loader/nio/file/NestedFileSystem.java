@@ -58,13 +58,12 @@ class NestedFileSystem extends FileSystem {
 	private final Map<String, Object> zipFileSystems = new HashMap<>();
 
 	/**
-     * Constructs a new NestedFileSystem with the specified provider and jarPath.
-     * 
-     * @param provider the NestedFileSystemProvider to be used for this NestedFileSystem
-     * @param jarPath the Path to the JAR file to be used for this NestedFileSystem
-     * @throws IllegalArgumentException if provider or jarPath is null
-     */
-    NestedFileSystem(NestedFileSystemProvider provider, Path jarPath) {
+	 * Constructs a new NestedFileSystem with the specified provider and jarPath.
+	 * @param provider the NestedFileSystemProvider to be used for this NestedFileSystem
+	 * @param jarPath the Path to the JAR file to be used for this NestedFileSystem
+	 * @throws IllegalArgumentException if provider or jarPath is null
+	 */
+	NestedFileSystem(NestedFileSystemProvider provider, Path jarPath) {
 		if (provider == null || jarPath == null) {
 			throw new IllegalArgumentException("Provider and JarPath must not be null");
 		}
@@ -73,11 +72,10 @@ class NestedFileSystem extends FileSystem {
 	}
 
 	/**
-     * Installs a zip file system if necessary for the specified nested entry name.
-     * 
-     * @param nestedEntryName the name of the nested entry
-     */
-    void installZipFileSystemIfNecessary(String nestedEntryName) {
+	 * Installs a zip file system if necessary for the specified nested entry name.
+	 * @param nestedEntryName the name of the nested entry
+	 */
+	void installZipFileSystemIfNecessary(String nestedEntryName) {
 		try {
 			boolean seen;
 			synchronized (this.zipFileSystems) {
@@ -99,12 +97,11 @@ class NestedFileSystem extends FileSystem {
 	}
 
 	/**
-     * Checks if a file system exists for the given URI.
-     * 
-     * @param uri the URI to check for a file system
-     * @return true if a file system exists for the given URI, false otherwise
-     */
-    private boolean hasFileSystem(URI uri) {
+	 * Checks if a file system exists for the given URI.
+	 * @param uri the URI to check for a file system
+	 * @return true if a file system exists for the given URI, false otherwise
+	 */
+	private boolean hasFileSystem(URI uri) {
 		try {
 			FileSystems.getFileSystem(uri);
 			return true;
@@ -115,11 +112,10 @@ class NestedFileSystem extends FileSystem {
 	}
 
 	/**
-     * Checks if a new file system is being created.
-     * 
-     * @return true if a new file system is being created, false otherwise
-     */
-    private boolean isCreatingNewFileSystem() {
+	 * Checks if a new file system is being created.
+	 * @return true if a new file system is being created, false otherwise
+	 */
+	private boolean isCreatingNewFileSystem() {
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 		if (stack != null) {
 			for (StackTraceElement element : stack) {
@@ -132,31 +128,28 @@ class NestedFileSystem extends FileSystem {
 	}
 
 	/**
-     * Returns the provider that created this file system.
-     *
-     * @return the provider that created this file system
-     */
-    @Override
+	 * Returns the provider that created this file system.
+	 * @return the provider that created this file system
+	 */
+	@Override
 	public FileSystemProvider provider() {
 		return this.provider;
 	}
 
 	/**
-     * Returns the path of the JAR file.
-     *
-     * @return the path of the JAR file
-     */
-    Path getJarPath() {
+	 * Returns the path of the JAR file.
+	 * @return the path of the JAR file
+	 */
+	Path getJarPath() {
 		return this.jarPath;
 	}
 
 	/**
-     * Closes the NestedFileSystem and releases any resources associated with it.
-     * If the NestedFileSystem is already closed, this method does nothing.
-     * 
-     * @throws IOException if an I/O error occurs while closing the NestedFileSystem
-     */
-    @Override
+	 * Closes the NestedFileSystem and releases any resources associated with it. If the
+	 * NestedFileSystem is already closed, this method does nothing.
+	 * @throws IOException if an I/O error occurs while closing the NestedFileSystem
+	 */
+	@Override
 	public void close() throws IOException {
 		if (this.closed) {
 			return;
@@ -173,11 +166,10 @@ class NestedFileSystem extends FileSystem {
 	}
 
 	/**
-     * Closes the specified ZipFileSystem.
-     * 
-     * @param zipFileSystem the ZipFileSystem to be closed
-     */
-    private void closeZipFileSystem(FileSystem zipFileSystem) {
+	 * Closes the specified ZipFileSystem.
+	 * @param zipFileSystem the ZipFileSystem to be closed
+	 */
+	private void closeZipFileSystem(FileSystem zipFileSystem) {
 		try {
 			zipFileSystem.close();
 		}
@@ -187,82 +179,77 @@ class NestedFileSystem extends FileSystem {
 	}
 
 	/**
-     * Returns a boolean value indicating whether the NestedFileSystem is open or closed.
-     *
-     * @return true if the NestedFileSystem is open, false if it is closed.
-     */
-    @Override
+	 * Returns a boolean value indicating whether the NestedFileSystem is open or closed.
+	 * @return true if the NestedFileSystem is open, false if it is closed.
+	 */
+	@Override
 	public boolean isOpen() {
 		return !this.closed;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the NestedFileSystem is read-only.
-     *
-     * @return true if the NestedFileSystem is read-only, false otherwise.
-     */
-    @Override
+	 * Returns a boolean value indicating whether the NestedFileSystem is read-only.
+	 * @return true if the NestedFileSystem is read-only, false otherwise.
+	 */
+	@Override
 	public boolean isReadOnly() {
 		return true;
 	}
 
 	/**
-     * Returns the separator used in the NestedFileSystem class.
-     *
-     * @return the separator as a String
-     */
-    @Override
+	 * Returns the separator used in the NestedFileSystem class.
+	 * @return the separator as a String
+	 */
+	@Override
 	public String getSeparator() {
 		return "/!";
 	}
 
 	/**
-     * Returns an empty set of root directories.
-     * 
-     * @return an empty set of root directories
-     * @throws IllegalStateException if the NestedFileSystem is closed
-     */
-    @Override
+	 * Returns an empty set of root directories.
+	 * @return an empty set of root directories
+	 * @throws IllegalStateException if the NestedFileSystem is closed
+	 */
+	@Override
 	public Iterable<Path> getRootDirectories() {
 		assertNotClosed();
 		return Collections.emptySet();
 	}
 
 	/**
-     * Returns an iterable collection of the file stores available in this nested file system.
-     * 
-     * @return an iterable collection of the file stores available in this nested file system
-     * 
-     * @throws IllegalStateException if the nested file system is closed
-     */
-    @Override
+	 * Returns an iterable collection of the file stores available in this nested file
+	 * system.
+	 * @return an iterable collection of the file stores available in this nested file
+	 * system
+	 * @throws IllegalStateException if the nested file system is closed
+	 */
+	@Override
 	public Iterable<FileStore> getFileStores() {
 		assertNotClosed();
 		return Collections.emptySet();
 	}
 
 	/**
-     * Returns a set of strings representing the supported file attribute views for this file system.
-     * 
-     * @return a set of strings representing the supported file attribute views
-     * @throws FileSystemException if the file system is closed
-     */
-    @Override
+	 * Returns a set of strings representing the supported file attribute views for this
+	 * file system.
+	 * @return a set of strings representing the supported file attribute views
+	 * @throws FileSystemException if the file system is closed
+	 */
+	@Override
 	public Set<String> supportedFileAttributeViews() {
 		assertNotClosed();
 		return SUPPORTED_FILE_ATTRIBUTE_VIEWS;
 	}
 
 	/**
-     * Returns a Path object representing a nested path in the file system.
-     * 
-     * @param first the first element of the nested path
-     * @param more additional elements of the nested path
-     * @return a Path object representing the nested path
-     * @throws IllegalStateException if the file system is closed
-     * @throws IllegalArgumentException if the nested path contains more than one element
-     */
-    @Override
+	 * Returns a Path object representing a nested path in the file system.
+	 * @param first the first element of the nested path
+	 * @param more additional elements of the nested path
+	 * @return a Path object representing the nested path
+	 * @throws IllegalStateException if the file system is closed
+	 * @throws IllegalArgumentException if the nested path contains more than one element
+	 */
+	@Override
 	public Path getPath(String first, String... more) {
 		assertNotClosed();
 		if (more.length != 0) {
@@ -272,47 +259,46 @@ class NestedFileSystem extends FileSystem {
 	}
 
 	/**
-     * Returns a PathMatcher object for matching paths in the specified syntax and pattern.
-     * 
-     * @param syntaxAndPattern the syntax and pattern to be used for matching paths
-     * @return a PathMatcher object for matching paths
-     * @throws UnsupportedOperationException if nested paths do not support path matchers
-     */
-    @Override
+	 * Returns a PathMatcher object for matching paths in the specified syntax and
+	 * pattern.
+	 * @param syntaxAndPattern the syntax and pattern to be used for matching paths
+	 * @return a PathMatcher object for matching paths
+	 * @throws UnsupportedOperationException if nested paths do not support path matchers
+	 */
+	@Override
 	public PathMatcher getPathMatcher(String syntaxAndPattern) {
 		throw new UnsupportedOperationException("Nested paths do not support path matchers");
 	}
 
 	/**
-     * Returns the user principal lookup service for this nested file system.
-     * 
-     * @return the user principal lookup service for this nested file system
-     * @throws UnsupportedOperationException if nested paths do not have a user principal lookup service
-     */
-    @Override
+	 * Returns the user principal lookup service for this nested file system.
+	 * @return the user principal lookup service for this nested file system
+	 * @throws UnsupportedOperationException if nested paths do not have a user principal
+	 * lookup service
+	 */
+	@Override
 	public UserPrincipalLookupService getUserPrincipalLookupService() {
 		throw new UnsupportedOperationException("Nested paths do not have a user principal lookup service");
 	}
 
 	/**
-     * Creates a new WatchService for monitoring file system events.
-     *
-     * @return a new WatchService instance
-     * @throws IOException if an I/O error occurs
-     * @throws UnsupportedOperationException if nested paths do not support the WatchService
-     */
-    @Override
+	 * Creates a new WatchService for monitoring file system events.
+	 * @return a new WatchService instance
+	 * @throws IOException if an I/O error occurs
+	 * @throws UnsupportedOperationException if nested paths do not support the
+	 * WatchService
+	 */
+	@Override
 	public WatchService newWatchService() throws IOException {
 		throw new UnsupportedOperationException("Nested paths do not support the WatchService");
 	}
 
 	/**
-     * Compares this NestedFileSystem object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this NestedFileSystem object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -325,31 +311,29 @@ class NestedFileSystem extends FileSystem {
 	}
 
 	/**
-     * Returns the hash code value for the object. The hash code is generated based on the jarPath attribute of the NestedFileSystem object.
-     *
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns the hash code value for the object. The hash code is generated based on the
+	 * jarPath attribute of the NestedFileSystem object.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		return this.jarPath.hashCode();
 	}
 
 	/**
-     * Returns the absolute path of the JAR file.
-     *
-     * @return the absolute path of the JAR file
-     */
-    @Override
+	 * Returns the absolute path of the JAR file.
+	 * @return the absolute path of the JAR file
+	 */
+	@Override
 	public String toString() {
 		return this.jarPath.toAbsolutePath().toString();
 	}
 
 	/**
-     * Checks if the NestedFileSystem is closed.
-     * 
-     * @throws ClosedFileSystemException if the NestedFileSystem is closed.
-     */
-    private void assertNotClosed() {
+	 * Checks if the NestedFileSystem is closed.
+	 * @throws ClosedFileSystemException if the NestedFileSystem is closed.
+	 */
+	private void assertNotClosed() {
 		if (this.closed) {
 			throw new ClosedFileSystemException();
 		}

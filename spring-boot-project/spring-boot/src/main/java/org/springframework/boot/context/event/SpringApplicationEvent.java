@@ -31,31 +31,29 @@ public abstract class SpringApplicationEvent extends ApplicationEvent {
 	private final String[] args;
 
 	/**
-     * Constructs a new SpringApplicationEvent with the specified application and arguments.
-     * 
-     * @param application the SpringApplication instance associated with the event
-     * @param args the command line arguments passed to the application
-     */
-    public SpringApplicationEvent(SpringApplication application, String[] args) {
+	 * Constructs a new SpringApplicationEvent with the specified application and
+	 * arguments.
+	 * @param application the SpringApplication instance associated with the event
+	 * @param args the command line arguments passed to the application
+	 */
+	public SpringApplicationEvent(SpringApplication application, String[] args) {
 		super(application);
 		this.args = args;
 	}
 
 	/**
-     * Returns the SpringApplication associated with this event.
-     * 
-     * @return the SpringApplication associated with this event
-     */
-    public SpringApplication getSpringApplication() {
+	 * Returns the SpringApplication associated with this event.
+	 * @return the SpringApplication associated with this event
+	 */
+	public SpringApplication getSpringApplication() {
 		return (SpringApplication) getSource();
 	}
 
 	/**
-     * Returns the arguments passed to the SpringApplicationEvent.
-     *
-     * @return an array of String arguments
-     */
-    public final String[] getArgs() {
+	 * Returns the arguments passed to the SpringApplicationEvent.
+	 * @return an array of String arguments
+	 */
+	public final String[] getArgs() {
 		return this.args;
 	}
 

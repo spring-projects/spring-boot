@@ -51,13 +51,12 @@ import org.springframework.test.context.TestContextAnnotationUtils;
 class TestRestTemplateContextCustomizer implements ContextCustomizer {
 
 	/**
-     * Customizes the application context for the test by registering a TestRestTemplate if the test is annotated with @SpringBootTest
-     * and has an embedded web environment.
-     * 
-     * @param context the configurable application context
-     * @param mergedContextConfiguration the merged context configuration
-     */
-    @Override
+	 * Customizes the application context for the test by registering a TestRestTemplate
+	 * if the test is annotated with @SpringBootTest and has an embedded web environment.
+	 * @param context the configurable application context
+	 * @param mergedContextConfiguration the merged context configuration
+	 */
+	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
 		if (AotDetector.useGeneratedArtifacts()) {
@@ -71,11 +70,11 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 	}
 
 	/**
-     * Registers a TestRestTemplate in the given ConfigurableApplicationContext.
-     * 
-     * @param context the ConfigurableApplicationContext to register the TestRestTemplate in
-     */
-    private void registerTestRestTemplate(ConfigurableApplicationContext context) {
+	 * Registers a TestRestTemplate in the given ConfigurableApplicationContext.
+	 * @param context the ConfigurableApplicationContext to register the TestRestTemplate
+	 * in
+	 */
+	private void registerTestRestTemplate(ConfigurableApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof BeanDefinitionRegistry registry) {
 			registerTestRestTemplate(registry);
@@ -83,35 +82,35 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 	}
 
 	/**
-     * Registers the TestRestTemplateRegistrar bean definition in the given registry.
-     * This method is used to configure the TestRestTemplateRegistrar bean, which is responsible for
-     * registering the TestRestTemplate bean in the application context.
-     * 
-     * @param registry the BeanDefinitionRegistry in which the TestRestTemplateRegistrar bean definition will be registered
-     */
-    private void registerTestRestTemplate(BeanDefinitionRegistry registry) {
+	 * Registers the TestRestTemplateRegistrar bean definition in the given registry. This
+	 * method is used to configure the TestRestTemplateRegistrar bean, which is
+	 * responsible for registering the TestRestTemplate bean in the application context.
+	 * @param registry the BeanDefinitionRegistry in which the TestRestTemplateRegistrar
+	 * bean definition will be registered
+	 */
+	private void registerTestRestTemplate(BeanDefinitionRegistry registry) {
 		RootBeanDefinition definition = new RootBeanDefinition(TestRestTemplateRegistrar.class);
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		registry.registerBeanDefinition(TestRestTemplateRegistrar.class.getName(), definition);
 	}
 
 	/**
-     * Compares this object with the specified object for equality.
-     * 
-     * @param obj the object to compare with
-     * @return {@code true} if the specified object is equal to this object, {@code false} otherwise
-     */
-    @Override
+	 * Compares this object with the specified object for equality.
+	 * @param obj the object to compare with
+	 * @return {@code true} if the specified object is equal to this object, {@code false}
+	 * otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		return (obj != null) && (obj.getClass() == getClass());
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the hashCode() method in the Object class.
-     * 
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the hashCode()
+	 * method in the Object class.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		return getClass().hashCode();
 	}
@@ -126,38 +125,35 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		private BeanFactory beanFactory;
 
 		/**
-         * Sets the bean factory for this TestRestTemplateRegistrar.
-         * 
-         * @param beanFactory the bean factory to set
-         * @throws BeansException if an error occurs while setting the bean factory
-         */
-        @Override
+		 * Sets the bean factory for this TestRestTemplateRegistrar.
+		 * @param beanFactory the bean factory to set
+		 * @throws BeansException if an error occurs while setting the bean factory
+		 */
+		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 			this.beanFactory = beanFactory;
 		}
 
 		/**
-         * Returns the order of this TestRestTemplateRegistrar.
-         * The order is set to LOWEST_PRECEDENCE.
-         *
-         * @return the order of this TestRestTemplateRegistrar
-         */
-        @Override
+		 * Returns the order of this TestRestTemplateRegistrar. The order is set to
+		 * LOWEST_PRECEDENCE.
+		 * @return the order of this TestRestTemplateRegistrar
+		 */
+		@Override
 		public int getOrder() {
 			return Ordered.LOWEST_PRECEDENCE;
 		}
 
 		/**
-         * This method is used to post-process the bean definition registry.
-         * It checks if the AotDetector is using generated artifacts and returns if true.
-         * If there are no bean names for the TestRestTemplate class in the bean factory,
-         * it registers a new bean definition for the TestRestTemplate class using the
-         * TestRestTemplateFactory.
-         *
-         * @param registry the bean definition registry to be processed
-         * @throws BeansException if an error occurs during the bean processing
-         */
-        @Override
+		 * This method is used to post-process the bean definition registry. It checks if
+		 * the AotDetector is using generated artifacts and returns if true. If there are
+		 * no bean names for the TestRestTemplate class in the bean factory, it registers
+		 * a new bean definition for the TestRestTemplate class using the
+		 * TestRestTemplateFactory.
+		 * @param registry the bean definition registry to be processed
+		 * @throws BeansException if an error occurs during the bean processing
+		 */
+		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			if (AotDetector.useGeneratedArtifacts()) {
 				return;
@@ -171,12 +167,11 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		}
 
 		/**
-         * Post-process the given bean factory.
-         *
-         * @param beanFactory the bean factory to post-process
-         * @throws BeansException if any error occurs during post-processing
-         */
-        @Override
+		 * Post-process the given bean factory.
+		 * @param beanFactory the bean factory to post-process
+		 * @throws BeansException if any error occurs during post-processing
+		 */
+		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
@@ -194,12 +189,11 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		private TestRestTemplate template;
 
 		/**
-         * Sets the application context and initializes the TestRestTemplate.
-         * 
-         * @param applicationContext the application context to set
-         * @throws BeansException if an error occurs while setting the application context
-         */
-        @Override
+		 * Sets the application context and initializes the TestRestTemplate.
+		 * @param applicationContext the application context to set
+		 * @throws BeansException if an error occurs while setting the application context
+		 */
+		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			RestTemplateBuilder builder = getRestTemplateBuilder(applicationContext);
 			boolean sslEnabled = isSslEnabled(applicationContext);
@@ -212,12 +206,11 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		}
 
 		/**
-         * Checks if SSL is enabled for the given application context.
-         * 
-         * @param context the application context
-         * @return true if SSL is enabled, false otherwise
-         */
-        private boolean isSslEnabled(ApplicationContext context) {
+		 * Checks if SSL is enabled for the given application context.
+		 * @param context the application context
+		 * @return true if SSL is enabled, false otherwise
+		 */
+		private boolean isSslEnabled(ApplicationContext context) {
 			try {
 				AbstractServletWebServerFactory webServerFactory = context
 					.getBean(AbstractServletWebServerFactory.class);
@@ -229,14 +222,14 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		}
 
 		/**
-         * Returns a RestTemplateBuilder object based on the provided ApplicationContext.
-         * If a RestTemplateBuilder bean is found in the ApplicationContext, it is returned.
-         * Otherwise, a new RestTemplateBuilder object is created and returned.
-         *
-         * @param applicationContext the ApplicationContext to retrieve the RestTemplateBuilder bean from
-         * @return a RestTemplateBuilder object
-         */
-        private RestTemplateBuilder getRestTemplateBuilder(ApplicationContext applicationContext) {
+		 * Returns a RestTemplateBuilder object based on the provided ApplicationContext.
+		 * If a RestTemplateBuilder bean is found in the ApplicationContext, it is
+		 * returned. Otherwise, a new RestTemplateBuilder object is created and returned.
+		 * @param applicationContext the ApplicationContext to retrieve the
+		 * RestTemplateBuilder bean from
+		 * @return a RestTemplateBuilder object
+		 */
+		private RestTemplateBuilder getRestTemplateBuilder(ApplicationContext applicationContext) {
 			try {
 				return applicationContext.getBean(RestTemplateBuilder.class);
 			}
@@ -246,32 +239,32 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		}
 
 		/**
-         * Returns a boolean value indicating whether the TestRestTemplateFactory is a singleton.
-         * 
-         * @return true if the TestRestTemplateFactory is a singleton, false otherwise
-         */
-        @Override
+		 * Returns a boolean value indicating whether the TestRestTemplateFactory is a
+		 * singleton.
+		 * @return true if the TestRestTemplateFactory is a singleton, false otherwise
+		 */
+		@Override
 		public boolean isSingleton() {
 			return true;
 		}
 
 		/**
-         * Returns the type of object that is created by this factory method.
-         * 
-         * @return the type of object created by this factory method, which is TestRestTemplate
-         */
-        @Override
+		 * Returns the type of object that is created by this factory method.
+		 * @return the type of object created by this factory method, which is
+		 * TestRestTemplate
+		 */
+		@Override
 		public Class<?> getObjectType() {
 			return TestRestTemplate.class;
 		}
 
 		/**
-         * Returns the TestRestTemplate object.
-         * 
-         * @return the TestRestTemplate object
-         * @throws Exception if an error occurs while retrieving the TestRestTemplate object
-         */
-        @Override
+		 * Returns the TestRestTemplate object.
+		 * @return the TestRestTemplate object
+		 * @throws Exception if an error occurs while retrieving the TestRestTemplate
+		 * object
+		 */
+		@Override
 		public TestRestTemplate getObject() throws Exception {
 			return this.template;
 		}

@@ -112,11 +112,10 @@ public class HttpWebServiceMessageSenderBuilder {
 	}
 
 	/**
-     * Returns the configured ClientHttpRequestFactory for sending HTTP requests.
-     * 
-     * @return the configured ClientHttpRequestFactory
-     */
-    private ClientHttpRequestFactory getRequestFactory() {
+	 * Returns the configured ClientHttpRequestFactory for sending HTTP requests.
+	 * @return the configured ClientHttpRequestFactory
+	 */
+	private ClientHttpRequestFactory getRequestFactory() {
 		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(this.connectTimeout,
 				this.readTimeout, this.sslBundle);
 		return (this.requestFactory != null) ? this.requestFactory.apply(settings)

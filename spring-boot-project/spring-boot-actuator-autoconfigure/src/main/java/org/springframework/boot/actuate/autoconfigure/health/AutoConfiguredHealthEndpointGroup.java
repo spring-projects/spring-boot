@@ -72,65 +72,61 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	}
 
 	/**
-     * Checks if a given name is a member of the AutoConfiguredHealthEndpointGroup.
-     * 
-     * @param name the name to check
-     * @return true if the name is a member of the AutoConfiguredHealthEndpointGroup, false otherwise
-     */
-    @Override
+	 * Checks if a given name is a member of the AutoConfiguredHealthEndpointGroup.
+	 * @param name the name to check
+	 * @return true if the name is a member of the AutoConfiguredHealthEndpointGroup,
+	 * false otherwise
+	 */
+	@Override
 	public boolean isMember(String name) {
 		return this.members.test(name);
 	}
 
 	/**
-     * Determines whether to show the components based on the provided security context.
-     * 
-     * @param securityContext the security context to check
-     * @return true if the components should be shown, false otherwise
-     */
-    @Override
+	 * Determines whether to show the components based on the provided security context.
+	 * @param securityContext the security context to check
+	 * @return true if the components should be shown, false otherwise
+	 */
+	@Override
 	public boolean showComponents(SecurityContext securityContext) {
 		Show show = (this.showComponents != null) ? this.showComponents : this.showDetails;
 		return show.isShown(securityContext, this.roles);
 	}
 
 	/**
-     * Determines whether to show details for the health endpoint group.
-     * 
-     * @param securityContext the security context to check for authorization
-     * @return true if details should be shown, false otherwise
-     */
-    @Override
+	 * Determines whether to show details for the health endpoint group.
+	 * @param securityContext the security context to check for authorization
+	 * @return true if details should be shown, false otherwise
+	 */
+	@Override
 	public boolean showDetails(SecurityContext securityContext) {
 		return this.showDetails.isShown(securityContext, this.roles);
 	}
 
 	/**
-     * Returns the status aggregator associated with this AutoConfiguredHealthEndpointGroup.
-     *
-     * @return the status aggregator
-     */
-    @Override
+	 * Returns the status aggregator associated with this
+	 * AutoConfiguredHealthEndpointGroup.
+	 * @return the status aggregator
+	 */
+	@Override
 	public StatusAggregator getStatusAggregator() {
 		return this.statusAggregator;
 	}
 
 	/**
-     * Returns the HttpCodeStatusMapper used by this AutoConfiguredHealthEndpointGroup.
-     *
-     * @return the HttpCodeStatusMapper used by this AutoConfiguredHealthEndpointGroup
-     */
-    @Override
+	 * Returns the HttpCodeStatusMapper used by this AutoConfiguredHealthEndpointGroup.
+	 * @return the HttpCodeStatusMapper used by this AutoConfiguredHealthEndpointGroup
+	 */
+	@Override
 	public HttpCodeStatusMapper getHttpCodeStatusMapper() {
 		return this.httpCodeStatusMapper;
 	}
 
 	/**
-     * Returns the additional health endpoint path.
-     *
-     * @return the additional health endpoint path
-     */
-    @Override
+	 * Returns the additional health endpoint path.
+	 * @return the additional health endpoint path
+	 */
+	@Override
 	public AdditionalHealthEndpointPath getAdditionalPath() {
 		return this.additionalPath;
 	}

@@ -35,13 +35,12 @@ public class MyEnvironmentPostProcessor implements EnvironmentPostProcessor {
 	private final YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 
 	/**
-     * This method is used to post-process the environment of the application.
-     * It loads a YAML configuration file and adds it as a property source to the environment.
-     * 
-     * @param environment The configurable environment of the application.
-     * @param application The Spring application.
-     */
-    @Override
+	 * This method is used to post-process the environment of the application. It loads a
+	 * YAML configuration file and adds it as a property source to the environment.
+	 * @param environment The configurable environment of the application.
+	 * @param application The Spring application.
+	 */
+	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		Resource path = new ClassPathResource("com/example/myapp/config.yml");
 		PropertySource<?> propertySource = loadYaml(path);
@@ -49,14 +48,14 @@ public class MyEnvironmentPostProcessor implements EnvironmentPostProcessor {
 	}
 
 	/**
-     * Loads a YAML property source from the given resource path.
-     * 
-     * @param path the resource path to load the YAML configuration from
-     * @return the loaded YAML property source
-     * @throws IllegalStateException if failed to load the YAML configuration from the given resource path
-     * @throws IllegalArgumentException if the given resource path does not exist
-     */
-    private PropertySource<?> loadYaml(Resource path) {
+	 * Loads a YAML property source from the given resource path.
+	 * @param path the resource path to load the YAML configuration from
+	 * @return the loaded YAML property source
+	 * @throws IllegalStateException if failed to load the YAML configuration from the
+	 * given resource path
+	 * @throws IllegalArgumentException if the given resource path does not exist
+	 */
+	private PropertySource<?> loadYaml(Resource path) {
 		Assert.isTrue(path.exists(), () -> "Resource " + path + " does not exist");
 		try {
 			return this.loader.load("custom-resource", path).get(0);

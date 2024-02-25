@@ -30,11 +30,10 @@ import org.springframework.data.couchbase.core.convert.CouchbaseCustomConversion
 public class MyCouchbaseConfiguration {
 
 	/**
-     * Returns the custom Couchbase conversions for the Couchbase configuration.
-     * 
-     * @return the custom Couchbase conversions
-     */
-    @Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+	 * Returns the custom Couchbase conversions for the Couchbase configuration.
+	 * @return the custom Couchbase conversions
+	 */
+	@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
 	public CouchbaseCustomConversions myCustomConversions() {
 		return new CouchbaseCustomConversions(Arrays.asList(new MyConverter()));
 	}

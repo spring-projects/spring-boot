@@ -79,11 +79,10 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	}
 
 	/**
-     * Returns the root URI for the current server.
-     * 
-     * @return the root URI
-     */
-    @Override
+	 * Returns the root URI for the current server.
+	 * @return the root URI
+	 */
+	@Override
 	public String getRootUri() {
 		String port = this.environment.getProperty("local.server.port", "8080");
 		String contextPath = this.environment.getProperty(PREFIX + "context-path", "");

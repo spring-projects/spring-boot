@@ -122,13 +122,12 @@ public abstract class Launcher {
 	protected abstract Iterator<Archive> getClassPathArchivesIterator() throws Exception;
 
 	/**
-     * Creates an archive based on the code source of the Launcher class.
-     * 
-     * @return The created archive.
-     * @throws Exception If there is an error while creating the archive.
-     * @throws IllegalStateException If the code source archive cannot be determined.
-     */
-    protected final Archive createArchive() throws Exception {
+	 * Creates an archive based on the code source of the Launcher class.
+	 * @return The created archive.
+	 * @throws Exception If there is an error while creating the archive.
+	 * @throws IllegalStateException If the code source archive cannot be determined.
+	 */
+	protected final Archive createArchive() throws Exception {
 		ProtectionDomain protectionDomain = getClass().getProtectionDomain();
 		CodeSource codeSource = protectionDomain.getCodeSource();
 		URI location = (codeSource != null) ? codeSource.getLocation().toURI() : null;

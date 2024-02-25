@@ -40,56 +40,51 @@ public class MessageController {
 	private final MessageRepository messageRepository;
 
 	/**
-     * Constructs a new MessageController with the specified MessageRepository.
-     * 
-     * @param messageRepository the MessageRepository to be used by the MessageController
-     */
-    public MessageController(MessageRepository messageRepository) {
+	 * Constructs a new MessageController with the specified MessageRepository.
+	 * @param messageRepository the MessageRepository to be used by the MessageController
+	 */
+	public MessageController(MessageRepository messageRepository) {
 		this.messageRepository = messageRepository;
 	}
 
 	/**
-     * Retrieves a list of messages.
-     * 
-     * @return ModelAndView object containing the list of messages
-     */
-    @GetMapping
+	 * Retrieves a list of messages.
+	 * @return ModelAndView object containing the list of messages
+	 */
+	@GetMapping
 	public ModelAndView list() {
 		Iterable<Message> messages = this.messageRepository.findAll();
 		return new ModelAndView("messages/list", "messages", messages);
 	}
 
 	/**
-     * Retrieves and displays a specific message by its ID.
-     * 
-     * @param id the ID of the message to be retrieved
-     * @return a ModelAndView object representing the view of the message
-     */
-    @GetMapping("{id}")
+	 * Retrieves and displays a specific message by its ID.
+	 * @param id the ID of the message to be retrieved
+	 * @return a ModelAndView object representing the view of the message
+	 */
+	@GetMapping("{id}")
 	public ModelAndView view(@PathVariable("id") Message message) {
 		return new ModelAndView("messages/view", "message", message);
 	}
 
 	/**
-     * Retrieves the create form for a new message.
-     * 
-     * @param message the message object to be bound to the form
-     * @return the view name for the create form
-     */
-    @GetMapping(params = "form")
+	 * Retrieves the create form for a new message.
+	 * @param message the message object to be bound to the form
+	 * @return the view name for the create form
+	 */
+	@GetMapping(params = "form")
 	public String createForm(@ModelAttribute Message message) {
 		return "messages/form";
 	}
 
 	/**
-     * Creates a new message.
-     * 
-     * @param message the message to be created
-     * @param result the binding result for validation errors
-     * @param redirect the redirect attributes for flash messages
-     * @return a ModelAndView object for the view
-     */
-    @PostMapping
+	 * Creates a new message.
+	 * @param message the message to be created
+	 * @param result the binding result for validation errors
+	 * @param redirect the redirect attributes for flash messages
+	 * @return a ModelAndView object for the view
+	 */
+	@PostMapping
 	public ModelAndView create(@Valid Message message, BindingResult result, RedirectAttributes redirect) {
 		if (result.hasErrors()) {
 			return new ModelAndView("messages/form", "formErrors", result.getAllErrors());
@@ -100,23 +95,21 @@ public class MessageController {
 	}
 
 	/**
-     * Handles the request mapping for the "/foo" endpoint.
-     * 
-     * @return the response string
-     * @throws RuntimeException if an expected exception occurs in the controller
-     */
-    @RequestMapping("foo")
+	 * Handles the request mapping for the "/foo" endpoint.
+	 * @return the response string
+	 * @throws RuntimeException if an expected exception occurs in the controller
+	 */
+	@RequestMapping("foo")
 	public String foo() {
 		throw new RuntimeException("Expected exception in controller");
 	}
 
 	/**
-     * Deletes a message with the given ID.
-     * 
-     * @param id the ID of the message to be deleted
-     * @return a ModelAndView object containing the updated list of messages
-     */
-    @GetMapping("delete/{id}")
+	 * Deletes a message with the given ID.
+	 * @param id the ID of the message to be deleted
+	 * @return a ModelAndView object containing the updated list of messages
+	 */
+	@GetMapping("delete/{id}")
 	public ModelAndView delete(@PathVariable("id") Long id) {
 		this.messageRepository.deleteMessage(id);
 		Iterable<Message> messages = this.messageRepository.findAll();
@@ -124,12 +117,11 @@ public class MessageController {
 	}
 
 	/**
-     * Retrieves the modify form for a specific message.
-     * 
-     * @param id the ID of the message to be modified
-     * @return a ModelAndView object representing the modify form
-     */
-    @GetMapping("modify/{id}")
+	 * Retrieves the modify form for a specific message.
+	 * @param id the ID of the message to be modified
+	 * @return a ModelAndView object representing the modify form
+	 */
+	@GetMapping("modify/{id}")
 	public ModelAndView modifyForm(@PathVariable("id") Message message) {
 		return new ModelAndView("messages/form", "message", message);
 	}

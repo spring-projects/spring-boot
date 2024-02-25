@@ -37,47 +37,42 @@ public class Person {
 	private String lastName;
 
 	/**
-     * Returns the first name of the person.
-     *
-     * @return the first name of the person
-     */
-    public String getFirstName() {
+	 * Returns the first name of the person.
+	 * @return the first name of the person
+	 */
+	public String getFirstName() {
 		return this.firstName;
 	}
 
 	/**
-     * Sets the first name of the person.
-     * 
-     * @param firstName the first name to be set
-     */
-    public void setFirstName(String firstName) {
+	 * Sets the first name of the person.
+	 * @param firstName the first name to be set
+	 */
+	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 
 	/**
-     * Returns the last name of the person.
-     *
-     * @return the last name of the person
-     */
-    public String getLastName() {
+	 * Returns the last name of the person.
+	 * @return the last name of the person
+	 */
+	public String getLastName() {
 		return this.lastName;
 	}
 
 	/**
-     * Sets the last name of the person.
-     * 
-     * @param lastname the last name to be set
-     */
-    public void setLastName(String lastname) {
+	 * Sets the last name of the person.
+	 * @param lastname the last name to be set
+	 */
+	public void setLastName(String lastname) {
 		this.lastName = lastname;
 	}
 
 	/**
-     * Returns a string representation of the Person object.
-     * 
-     * @return a string representation of the Person object
-     */
-    @Override
+	 * Returns a string representation of the Person object.
+	 * @return a string representation of the Person object
+	 */
+	@Override
 	public String toString() {
 		return "Person [firstName=" + this.firstName + ", lastName=" + this.lastName + "]";
 	}

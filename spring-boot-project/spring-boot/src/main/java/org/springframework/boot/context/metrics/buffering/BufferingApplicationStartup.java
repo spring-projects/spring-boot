@@ -78,12 +78,12 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 	}
 
 	/**
-     * Initializes a new instance of the BufferingApplicationStartup class with the specified capacity and clock.
-     * 
-     * @param capacity the maximum number of items that can be buffered
-     * @param clock the clock used to measure time
-     */
-    BufferingApplicationStartup(int capacity, Clock clock) {
+	 * Initializes a new instance of the BufferingApplicationStartup class with the
+	 * specified capacity and clock.
+	 * @param capacity the maximum number of items that can be buffered
+	 * @param clock the clock used to measure time
+	 */
+	BufferingApplicationStartup(int capacity, Clock clock) {
 		this.capacity = capacity;
 		this.clock = clock;
 		this.startTime = clock.instant();
@@ -112,12 +112,11 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 	}
 
 	/**
-     * Starts a new startup step with the given name.
-     * 
-     * @param name the name of the startup step
-     * @return the newly created startup step
-     */
-    @Override
+	 * Starts a new startup step with the given name.
+	 * @param name the name of the startup step
+	 * @return the newly created startup step
+	 */
+	@Override
 	public StartupStep start(String name) {
 		int id = this.idSeq.getAndIncrement();
 		Instant start = this.clock.instant();
@@ -132,14 +131,15 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 	}
 
 	/**
-     * Records a BufferedStartupStep if it passes the filter and the estimated size is less than the capacity.
-     * Increments the estimated size and adds a new TimelineEvent to the events list.
-     * 
-     * Continuously loops until the current BufferedStartupStep is successfully updated to the latest active step.
-     * 
-     * @param step the BufferedStartupStep to be recorded
-     */
-    private void record(BufferedStartupStep step) {
+	 * Records a BufferedStartupStep if it passes the filter and the estimated size is
+	 * less than the capacity. Increments the estimated size and adds a new TimelineEvent
+	 * to the events list.
+	 *
+	 * Continuously loops until the current BufferedStartupStep is successfully updated to
+	 * the latest active step.
+	 * @param step the BufferedStartupStep to be recorded
+	 */
+	private void record(BufferedStartupStep step) {
 		if (this.filter.test(step) && this.estimatedSize.get() < this.capacity) {
 			this.estimatedSize.incrementAndGet();
 			this.events.add(new TimelineEvent(step, this.clock.instant()));
@@ -154,12 +154,12 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 	}
 
 	/**
-     * Returns the latest active BufferedStartupStep by traversing through the parent steps.
-     * 
-     * @param step the BufferedStartupStep to start the traversal from
-     * @return the latest active BufferedStartupStep, or null if no active step is found
-     */
-    private BufferedStartupStep getLatestActive(BufferedStartupStep step) {
+	 * Returns the latest active BufferedStartupStep by traversing through the parent
+	 * steps.
+	 * @param step the BufferedStartupStep to start the traversal from
+	 * @return the latest active BufferedStartupStep, or null if no active step is found
+	 */
+	private BufferedStartupStep getLatestActive(BufferedStartupStep step) {
 		while (step != null && step.isEnded()) {
 			step = step.getParent();
 		}

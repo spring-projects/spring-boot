@@ -43,11 +43,10 @@ public class Saml2RelyingPartyProperties {
 	private final Map<String, Registration> registration = new LinkedHashMap<>();
 
 	/**
-     * Returns the map of registrations.
-     * 
-     * @return the map of registrations
-     */
-    public Map<String, Registration> getRegistration() {
+	 * Returns the map of registrations.
+	 * @return the map of registrations
+	 */
+	public Map<String, Registration> getRegistration() {
 		return this.registration;
 	}
 
@@ -81,90 +80,81 @@ public class Saml2RelyingPartyProperties {
 		private String nameIdFormat;
 
 		/**
-         * Returns the entity ID of the Registration.
-         *
-         * @return the entity ID of the Registration
-         */
-        public String getEntityId() {
+		 * Returns the entity ID of the Registration.
+		 * @return the entity ID of the Registration
+		 */
+		public String getEntityId() {
 			return this.entityId;
 		}
 
 		/**
-         * Sets the entity ID for the registration.
-         * 
-         * @param entityId the entity ID to be set
-         */
-        public void setEntityId(String entityId) {
+		 * Sets the entity ID for the registration.
+		 * @param entityId the entity ID to be set
+		 */
+		public void setEntityId(String entityId) {
 			this.entityId = entityId;
 		}
 
 		/**
-         * Returns the Acs object associated with this Registration.
-         *
-         * @return the Acs object associated with this Registration
-         */
-        public Acs getAcs() {
+		 * Returns the Acs object associated with this Registration.
+		 * @return the Acs object associated with this Registration
+		 */
+		public Acs getAcs() {
 			return this.acs;
 		}
 
 		/**
-         * Returns the signing object associated with this Registration.
-         *
-         * @return the signing object
-         */
-        public Signing getSigning() {
+		 * Returns the signing object associated with this Registration.
+		 * @return the signing object
+		 */
+		public Signing getSigning() {
 			return this.signing;
 		}
 
 		/**
-         * Returns the decryption object used for decryption operations.
-         *
-         * @return the decryption object
-         */
-        public Decryption getDecryption() {
+		 * Returns the decryption object used for decryption operations.
+		 * @return the decryption object
+		 */
+		public Decryption getDecryption() {
 			return this.decryption;
 		}
 
 		/**
-         * Returns the Singlelogout object associated with this Registration.
-         *
-         * @return the Singlelogout object associated with this Registration
-         */
-        public Singlelogout getSinglelogout() {
+		 * Returns the Singlelogout object associated with this Registration.
+		 * @return the Singlelogout object associated with this Registration
+		 */
+		public Singlelogout getSinglelogout() {
 			return this.singlelogout;
 		}
 
 		/**
-         * Returns the asserting party associated with this registration.
-         *
-         * @return the asserting party
-         */
-        public AssertingParty getAssertingparty() {
+		 * Returns the asserting party associated with this registration.
+		 * @return the asserting party
+		 */
+		public AssertingParty getAssertingparty() {
 			return this.assertingparty;
 		}
 
 		/**
-         * Returns the name ID format.
-         * 
-         * @return the name ID format
-         */
-        public String getNameIdFormat() {
+		 * Returns the name ID format.
+		 * @return the name ID format
+		 */
+		public String getNameIdFormat() {
 			return this.nameIdFormat;
 		}
 
 		/**
-         * Sets the NameID format for the registration.
-         * 
-         * @param nameIdFormat the NameID format to be set
-         */
-        public void setNameIdFormat(String nameIdFormat) {
+		 * Sets the NameID format for the registration.
+		 * @param nameIdFormat the NameID format to be set
+		 */
+		public void setNameIdFormat(String nameIdFormat) {
 			this.nameIdFormat = nameIdFormat;
 		}
 
 		/**
-         * Acs class.
-         */
-        public static class Acs {
+		 * Acs class.
+		 */
+		public static class Acs {
 
 			/**
 			 * Assertion Consumer Service location template. Can generate its location
@@ -179,47 +169,43 @@ public class Saml2RelyingPartyProperties {
 			private Saml2MessageBinding binding = Saml2MessageBinding.POST;
 
 			/**
-             * Returns the location of the Acs object.
-             * 
-             * @return the location of the Acs object
-             */
-            public String getLocation() {
+			 * Returns the location of the Acs object.
+			 * @return the location of the Acs object
+			 */
+			public String getLocation() {
 				return this.location;
 			}
 
 			/**
-             * Sets the location of the Acs.
-             * 
-             * @param location the new location of the Acs
-             */
-            public void setLocation(String location) {
+			 * Sets the location of the Acs.
+			 * @param location the new location of the Acs
+			 */
+			public void setLocation(String location) {
 				this.location = location;
 			}
 
 			/**
-             * Returns the SAML 2.0 message binding used by this Acs instance.
-             *
-             * @return the SAML 2.0 message binding
-             */
-            public Saml2MessageBinding getBinding() {
+			 * Returns the SAML 2.0 message binding used by this Acs instance.
+			 * @return the SAML 2.0 message binding
+			 */
+			public Saml2MessageBinding getBinding() {
 				return this.binding;
 			}
 
 			/**
-             * Sets the binding for the SAML 2 message.
-             * 
-             * @param binding the SAML2MessageBinding to set
-             */
-            public void setBinding(Saml2MessageBinding binding) {
+			 * Sets the binding for the SAML 2 message.
+			 * @param binding the SAML2MessageBinding to set
+			 */
+			public void setBinding(Saml2MessageBinding binding) {
 				this.binding = binding;
 			}
 
 		}
 
 		/**
-         * Signing class.
-         */
-        public static class Signing {
+		 * Signing class.
+		 */
+		public static class Signing {
 
 			/**
 			 * Credentials used for signing the SAML authentication request.
@@ -227,27 +213,25 @@ public class Saml2RelyingPartyProperties {
 			private List<Credential> credentials = new ArrayList<>();
 
 			/**
-             * Retrieves the list of credentials.
-             * 
-             * @return the list of credentials
-             */
-            public List<Credential> getCredentials() {
+			 * Retrieves the list of credentials.
+			 * @return the list of credentials
+			 */
+			public List<Credential> getCredentials() {
 				return this.credentials;
 			}
 
 			/**
-             * Sets the list of credentials for signing.
-             * 
-             * @param credentials the list of credentials to be set
-             */
-            public void setCredentials(List<Credential> credentials) {
+			 * Sets the list of credentials for signing.
+			 * @param credentials the list of credentials to be set
+			 */
+			public void setCredentials(List<Credential> credentials) {
 				this.credentials = credentials;
 			}
 
 			/**
-             * Credential class.
-             */
-            public static class Credential {
+			 * Credential class.
+			 */
+			public static class Credential {
 
 				/**
 				 * Private key used for signing.
@@ -260,38 +244,34 @@ public class Saml2RelyingPartyProperties {
 				private Resource certificateLocation;
 
 				/**
-                 * Returns the location of the private key.
-                 *
-                 * @return the location of the private key
-                 */
-                public Resource getPrivateKeyLocation() {
+				 * Returns the location of the private key.
+				 * @return the location of the private key
+				 */
+				public Resource getPrivateKeyLocation() {
 					return this.privateKeyLocation;
 				}
 
 				/**
-                 * Sets the location of the private key.
-                 * 
-                 * @param privateKey the resource representing the private key location
-                 */
-                public void setPrivateKeyLocation(Resource privateKey) {
+				 * Sets the location of the private key.
+				 * @param privateKey the resource representing the private key location
+				 */
+				public void setPrivateKeyLocation(Resource privateKey) {
 					this.privateKeyLocation = privateKey;
 				}
 
 				/**
-                 * Returns the location of the certificate.
-                 *
-                 * @return the location of the certificate
-                 */
-                public Resource getCertificateLocation() {
+				 * Returns the location of the certificate.
+				 * @return the location of the certificate
+				 */
+				public Resource getCertificateLocation() {
 					return this.certificateLocation;
 				}
 
 				/**
-                 * Sets the location of the certificate.
-                 * 
-                 * @param certificate the resource representing the certificate location
-                 */
-                public void setCertificateLocation(Resource certificate) {
+				 * Sets the location of the certificate.
+				 * @param certificate the resource representing the certificate location
+				 */
+				public void setCertificateLocation(Resource certificate) {
 					this.certificateLocation = certificate;
 				}
 
@@ -302,9 +282,9 @@ public class Saml2RelyingPartyProperties {
 	}
 
 	/**
-     * Decryption class.
-     */
-    public static class Decryption {
+	 * Decryption class.
+	 */
+	public static class Decryption {
 
 		/**
 		 * Credentials used for decrypting the SAML authentication request.
@@ -312,27 +292,25 @@ public class Saml2RelyingPartyProperties {
 		private List<Credential> credentials = new ArrayList<>();
 
 		/**
-         * Retrieves the list of credentials.
-         * 
-         * @return the list of credentials
-         */
-        public List<Credential> getCredentials() {
+		 * Retrieves the list of credentials.
+		 * @return the list of credentials
+		 */
+		public List<Credential> getCredentials() {
 			return this.credentials;
 		}
 
 		/**
-         * Sets the list of credentials for decryption.
-         * 
-         * @param credentials the list of credentials to be set
-         */
-        public void setCredentials(List<Credential> credentials) {
+		 * Sets the list of credentials for decryption.
+		 * @param credentials the list of credentials to be set
+		 */
+		public void setCredentials(List<Credential> credentials) {
 			this.credentials = credentials;
 		}
 
 		/**
-         * Credential class.
-         */
-        public static class Credential {
+		 * Credential class.
+		 */
+		public static class Credential {
 
 			/**
 			 * Private key used for decrypting.
@@ -345,38 +323,34 @@ public class Saml2RelyingPartyProperties {
 			private Resource certificateLocation;
 
 			/**
-             * Returns the location of the private key.
-             *
-             * @return the location of the private key
-             */
-            public Resource getPrivateKeyLocation() {
+			 * Returns the location of the private key.
+			 * @return the location of the private key
+			 */
+			public Resource getPrivateKeyLocation() {
 				return this.privateKeyLocation;
 			}
 
 			/**
-             * Sets the location of the private key.
-             * 
-             * @param privateKey the resource representing the private key location
-             */
-            public void setPrivateKeyLocation(Resource privateKey) {
+			 * Sets the location of the private key.
+			 * @param privateKey the resource representing the private key location
+			 */
+			public void setPrivateKeyLocation(Resource privateKey) {
 				this.privateKeyLocation = privateKey;
 			}
 
 			/**
-             * Returns the location of the certificate.
-             *
-             * @return the location of the certificate
-             */
-            public Resource getCertificateLocation() {
+			 * Returns the location of the certificate.
+			 * @return the location of the certificate
+			 */
+			public Resource getCertificateLocation() {
 				return this.certificateLocation;
 			}
 
 			/**
-             * Sets the location of the certificate.
-             * 
-             * @param certificate the resource representing the certificate location
-             */
-            public void setCertificateLocation(Resource certificate) {
+			 * Sets the location of the certificate.
+			 * @param certificate the resource representing the certificate location
+			 */
+			public void setCertificateLocation(Resource certificate) {
 				this.certificateLocation = certificate;
 			}
 
@@ -406,65 +380,58 @@ public class Saml2RelyingPartyProperties {
 		private final Singlelogout singlelogout = new Singlelogout();
 
 		/**
-         * Returns the entity ID of the asserting party.
-         *
-         * @return the entity ID of the asserting party
-         */
-        public String getEntityId() {
+		 * Returns the entity ID of the asserting party.
+		 * @return the entity ID of the asserting party
+		 */
+		public String getEntityId() {
 			return this.entityId;
 		}
 
 		/**
-         * Sets the entity ID for the asserting party.
-         * 
-         * @param entityId the entity ID to be set
-         */
-        public void setEntityId(String entityId) {
+		 * Sets the entity ID for the asserting party.
+		 * @param entityId the entity ID to be set
+		 */
+		public void setEntityId(String entityId) {
 			this.entityId = entityId;
 		}
 
 		/**
-         * Returns the metadata URI of the asserting party.
-         *
-         * @return the metadata URI of the asserting party
-         */
-        public String getMetadataUri() {
+		 * Returns the metadata URI of the asserting party.
+		 * @return the metadata URI of the asserting party
+		 */
+		public String getMetadataUri() {
 			return this.metadataUri;
 		}
 
 		/**
-         * Sets the metadata URI for the asserting party.
-         * 
-         * @param metadataUri the metadata URI to be set
-         */
-        public void setMetadataUri(String metadataUri) {
+		 * Sets the metadata URI for the asserting party.
+		 * @param metadataUri the metadata URI to be set
+		 */
+		public void setMetadataUri(String metadataUri) {
 			this.metadataUri = metadataUri;
 		}
 
 		/**
-         * Returns the Singlesignon object associated with this AssertingParty.
-         *
-         * @return the Singlesignon object associated with this AssertingParty
-         */
-        public Singlesignon getSinglesignon() {
+		 * Returns the Singlesignon object associated with this AssertingParty.
+		 * @return the Singlesignon object associated with this AssertingParty
+		 */
+		public Singlesignon getSinglesignon() {
 			return this.singlesignon;
 		}
 
 		/**
-         * Returns the verification object associated with this asserting party.
-         *
-         * @return the verification object
-         */
-        public Verification getVerification() {
+		 * Returns the verification object associated with this asserting party.
+		 * @return the verification object
+		 */
+		public Verification getVerification() {
 			return this.verification;
 		}
 
 		/**
-         * Returns the Singlelogout object associated with this AssertingParty.
-         *
-         * @return the Singlelogout object associated with this AssertingParty
-         */
-        public Singlelogout getSinglelogout() {
+		 * Returns the Singlelogout object associated with this AssertingParty.
+		 * @return the Singlelogout object associated with this AssertingParty
+		 */
+		public Singlelogout getSinglelogout() {
 			return this.singlelogout;
 		}
 
@@ -489,65 +456,58 @@ public class Saml2RelyingPartyProperties {
 			private Boolean signRequest;
 
 			/**
-             * Returns the URL associated with the Singlesignon object.
-             *
-             * @return the URL associated with the Singlesignon object
-             */
-            public String getUrl() {
+			 * Returns the URL associated with the Singlesignon object.
+			 * @return the URL associated with the Singlesignon object
+			 */
+			public String getUrl() {
 				return this.url;
 			}
 
 			/**
-             * Sets the URL for the Single Sign-On.
-             * 
-             * @param url the URL to be set for the Single Sign-On
-             */
-            public void setUrl(String url) {
+			 * Sets the URL for the Single Sign-On.
+			 * @param url the URL to be set for the Single Sign-On
+			 */
+			public void setUrl(String url) {
 				this.url = url;
 			}
 
 			/**
-             * Returns the SAML 2.0 message binding used for Single Sign-On.
-             *
-             * @return the SAML 2.0 message binding
-             */
-            public Saml2MessageBinding getBinding() {
+			 * Returns the SAML 2.0 message binding used for Single Sign-On.
+			 * @return the SAML 2.0 message binding
+			 */
+			public Saml2MessageBinding getBinding() {
 				return this.binding;
 			}
 
 			/**
-             * Sets the binding for the SAML 2.0 message.
-             * 
-             * @param binding the SAML 2.0 message binding to be set
-             */
-            public void setBinding(Saml2MessageBinding binding) {
+			 * Sets the binding for the SAML 2.0 message.
+			 * @param binding the SAML 2.0 message binding to be set
+			 */
+			public void setBinding(Saml2MessageBinding binding) {
 				this.binding = binding;
 			}
 
 			/**
-             * Returns a boolean value indicating whether the request is a sign request.
-             * 
-             * @return true if the request is a sign request, false otherwise
-             */
-            public boolean isSignRequest() {
+			 * Returns a boolean value indicating whether the request is a sign request.
+			 * @return true if the request is a sign request, false otherwise
+			 */
+			public boolean isSignRequest() {
 				return this.signRequest;
 			}
 
 			/**
-             * Returns the sign request flag.
-             * 
-             * @return the sign request flag
-             */
-            public Boolean getSignRequest() {
+			 * Returns the sign request flag.
+			 * @return the sign request flag
+			 */
+			public Boolean getSignRequest() {
 				return this.signRequest;
 			}
 
 			/**
-             * Sets the sign request flag.
-             * 
-             * @param signRequest the sign request flag to be set
-             */
-            public void setSignRequest(Boolean signRequest) {
+			 * Sets the sign request flag.
+			 * @param signRequest the sign request flag to be set
+			 */
+			public void setSignRequest(Boolean signRequest) {
 				this.signRequest = signRequest;
 			}
 
@@ -564,27 +524,25 @@ public class Saml2RelyingPartyProperties {
 			private List<Credential> credentials = new ArrayList<>();
 
 			/**
-             * Retrieves the list of credentials.
-             * 
-             * @return the list of credentials
-             */
-            public List<Credential> getCredentials() {
+			 * Retrieves the list of credentials.
+			 * @return the list of credentials
+			 */
+			public List<Credential> getCredentials() {
 				return this.credentials;
 			}
 
 			/**
-             * Sets the list of credentials for verification.
-             * 
-             * @param credentials the list of credentials to be set
-             */
-            public void setCredentials(List<Credential> credentials) {
+			 * Sets the list of credentials for verification.
+			 * @param credentials the list of credentials to be set
+			 */
+			public void setCredentials(List<Credential> credentials) {
 				this.credentials = credentials;
 			}
 
 			/**
-             * Credential class.
-             */
-            public static class Credential {
+			 * Credential class.
+			 */
+			public static class Credential {
 
 				/**
 				 * Locations of the X.509 certificate used for verification of incoming
@@ -593,20 +551,18 @@ public class Saml2RelyingPartyProperties {
 				private Resource certificate;
 
 				/**
-                 * Returns the location of the certificate.
-                 *
-                 * @return the location of the certificate
-                 */
-                public Resource getCertificateLocation() {
+				 * Returns the location of the certificate.
+				 * @return the location of the certificate
+				 */
+				public Resource getCertificateLocation() {
 					return this.certificate;
 				}
 
 				/**
-                 * Sets the location of the certificate.
-                 * 
-                 * @param certificate the resource representing the certificate location
-                 */
-                public void setCertificateLocation(Resource certificate) {
+				 * Sets the location of the certificate.
+				 * @param certificate the resource representing the certificate location
+				 */
+				public void setCertificateLocation(Resource certificate) {
 					this.certificate = certificate;
 				}
 
@@ -637,56 +593,50 @@ public class Saml2RelyingPartyProperties {
 		private Saml2MessageBinding binding;
 
 		/**
-         * Returns the URL associated with the Singlelogout instance.
-         *
-         * @return the URL associated with the Singlelogout instance
-         */
-        public String getUrl() {
+		 * Returns the URL associated with the Singlelogout instance.
+		 * @return the URL associated with the Singlelogout instance
+		 */
+		public String getUrl() {
 			return this.url;
 		}
 
 		/**
-         * Sets the URL for the Singlelogout class.
-         * 
-         * @param url the URL to be set
-         */
-        public void setUrl(String url) {
+		 * Sets the URL for the Singlelogout class.
+		 * @param url the URL to be set
+		 */
+		public void setUrl(String url) {
 			this.url = url;
 		}
 
 		/**
-         * Returns the response URL.
-         * 
-         * @return the response URL
-         */
-        public String getResponseUrl() {
+		 * Returns the response URL.
+		 * @return the response URL
+		 */
+		public String getResponseUrl() {
 			return this.responseUrl;
 		}
 
 		/**
-         * Sets the response URL for the Singlelogout class.
-         * 
-         * @param responseUrl the response URL to be set
-         */
-        public void setResponseUrl(String responseUrl) {
+		 * Sets the response URL for the Singlelogout class.
+		 * @param responseUrl the response URL to be set
+		 */
+		public void setResponseUrl(String responseUrl) {
 			this.responseUrl = responseUrl;
 		}
 
 		/**
-         * Returns the SAML 2.0 message binding used for the Single Logout functionality.
-         *
-         * @return the SAML 2.0 message binding
-         */
-        public Saml2MessageBinding getBinding() {
+		 * Returns the SAML 2.0 message binding used for the Single Logout functionality.
+		 * @return the SAML 2.0 message binding
+		 */
+		public Saml2MessageBinding getBinding() {
 			return this.binding;
 		}
 
 		/**
-         * Sets the binding for the SAML 2.0 Single Logout message.
-         * 
-         * @param binding the SAML 2.0 message binding to be set
-         */
-        public void setBinding(Saml2MessageBinding binding) {
+		 * Sets the binding for the SAML 2.0 Single Logout message.
+		 * @param binding the SAML 2.0 message binding to be set
+		 */
+		public void setBinding(Saml2MessageBinding binding) {
 			this.binding = binding;
 		}
 

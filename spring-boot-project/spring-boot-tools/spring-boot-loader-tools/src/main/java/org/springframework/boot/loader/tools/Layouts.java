@@ -35,9 +35,9 @@ import java.util.Map;
 public final class Layouts {
 
 	/**
-     * Constructs a new instance of the Layouts class.
-     */
-    private Layouts() {
+	 * Constructs a new instance of the Layouts class.
+	 */
+	private Layouts() {
 	}
 
 	/**
@@ -68,73 +68,66 @@ public final class Layouts {
 	public static class Jar implements RepackagingLayout {
 
 		/**
-         * Returns the launcher class name for the Jar.
-         * 
-         * @return the launcher class name for the Jar
-         */
-        @Override
+		 * Returns the launcher class name for the Jar.
+		 * @return the launcher class name for the Jar
+		 */
+		@Override
 		public String getLauncherClassName() {
 			return "org.springframework.boot.loader.launch.JarLauncher";
 		}
 
 		/**
-         * Returns the location of the library with the specified name and scope.
-         * 
-         * @param libraryName the name of the library
-         * @param scope the scope of the library
-         * @return the location of the library
-         */
-        @Override
+		 * Returns the location of the library with the specified name and scope.
+		 * @param libraryName the name of the library
+		 * @param scope the scope of the library
+		 * @return the location of the library
+		 */
+		@Override
 		public String getLibraryLocation(String libraryName, LibraryScope scope) {
 			return "BOOT-INF/lib/";
 		}
 
 		/**
-         * Returns the location of the classes in the Jar.
-         *
-         * @return the location of the classes in the Jar
-         */
-        @Override
+		 * Returns the location of the classes in the Jar.
+		 * @return the location of the classes in the Jar
+		 */
+		@Override
 		public String getClassesLocation() {
 			return "";
 		}
 
 		/**
-         * Returns the location of the repackaged classes.
-         * 
-         * @return the location of the repackaged classes
-         */
-        @Override
+		 * Returns the location of the repackaged classes.
+		 * @return the location of the repackaged classes
+		 */
+		@Override
 		public String getRepackagedClassesLocation() {
 			return "BOOT-INF/classes/";
 		}
 
 		/**
-         * Returns the location of the classpath index file.
-         * 
-         * @return the location of the classpath index file
-         */
-        @Override
+		 * Returns the location of the classpath index file.
+		 * @return the location of the classpath index file
+		 */
+		@Override
 		public String getClasspathIndexFileLocation() {
 			return "BOOT-INF/classpath.idx";
 		}
 
 		/**
-         * Returns the location of the layers index file.
-         * 
-         * @return the location of the layers index file
-         */
-        @Override
+		 * Returns the location of the layers index file.
+		 * @return the location of the layers index file
+		 */
+		@Override
 		public String getLayersIndexFileLocation() {
 			return "BOOT-INF/layers.idx";
 		}
 
 		/**
-         * Returns a boolean value indicating whether the method is executable.
-         *
-         * @return true if the method is executable, false otherwise.
-         */
-        @Override
+		 * Returns a boolean value indicating whether the method is executable.
+		 * @return true if the method is executable, false otherwise.
+		 */
+		@Override
 		public boolean isExecutable() {
 			return true;
 		}
@@ -147,11 +140,10 @@ public final class Layouts {
 	public static class Expanded extends Jar {
 
 		/**
-         * Returns the launcher class name.
-         *
-         * @return the launcher class name
-         */
-        @Override
+		 * Returns the launcher class name.
+		 * @return the launcher class name
+		 */
+		@Override
 		public String getLauncherClassName() {
 			return "org.springframework.boot.loader.launch.PropertiesLauncher";
 		}
@@ -164,21 +156,19 @@ public final class Layouts {
 	public static class None extends Jar {
 
 		/**
-         * Returns the launcher class name.
-         * 
-         * @return the launcher class name, which is null in this case.
-         */
-        @Override
+		 * Returns the launcher class name.
+		 * @return the launcher class name, which is null in this case.
+		 */
+		@Override
 		public String getLauncherClassName() {
 			return null;
 		}
 
 		/**
-         * Returns whether the method is executable.
-         * 
-         * @return true if the method is executable, false otherwise.
-         */
-        @Override
+		 * Returns whether the method is executable.
+		 * @return true if the method is executable, false otherwise.
+		 */
+		@Override
 		public boolean isExecutable() {
 			return false;
 		}
@@ -202,63 +192,58 @@ public final class Layouts {
 		}
 
 		/**
-         * Returns the launcher class name for the War class.
-         * 
-         * @return the launcher class name for the War class
-         */
-        @Override
+		 * Returns the launcher class name for the War class.
+		 * @return the launcher class name for the War class
+		 */
+		@Override
 		public String getLauncherClassName() {
 			return "org.springframework.boot.loader.launch.WarLauncher";
 		}
 
 		/**
-         * Returns the location of the specified library based on the given library name and scope.
-         *
-         * @param libraryName the name of the library
-         * @param scope the scope of the library
-         * @return the location of the library
-         */
-        @Override
+		 * Returns the location of the specified library based on the given library name
+		 * and scope.
+		 * @param libraryName the name of the library
+		 * @param scope the scope of the library
+		 * @return the location of the library
+		 */
+		@Override
 		public String getLibraryLocation(String libraryName, LibraryScope scope) {
 			return SCOPE_LOCATION.get(scope);
 		}
 
 		/**
-         * Returns the location of the classes directory in the web application.
-         * 
-         * @return the location of the classes directory in the web application
-         */
-        @Override
+		 * Returns the location of the classes directory in the web application.
+		 * @return the location of the classes directory in the web application
+		 */
+		@Override
 		public String getClassesLocation() {
 			return "WEB-INF/classes/";
 		}
 
 		/**
-         * Returns the location of the classpath index file.
-         * 
-         * @return the location of the classpath index file
-         */
-        @Override
+		 * Returns the location of the classpath index file.
+		 * @return the location of the classpath index file
+		 */
+		@Override
 		public String getClasspathIndexFileLocation() {
 			return "WEB-INF/classpath.idx";
 		}
 
 		/**
-         * Returns the file location of the layers index file.
-         * 
-         * @return the file location of the layers index file
-         */
-        @Override
+		 * Returns the file location of the layers index file.
+		 * @return the file location of the layers index file
+		 */
+		@Override
 		public String getLayersIndexFileLocation() {
 			return "WEB-INF/layers.idx";
 		}
 
 		/**
-         * Returns a boolean value indicating whether the method is executable.
-         *
-         * @return true if the method is executable, false otherwise.
-         */
-        @Override
+		 * Returns a boolean value indicating whether the method is executable.
+		 * @return true if the method is executable, false otherwise.
+		 */
+		@Override
 		public boolean isExecutable() {
 			return true;
 		}

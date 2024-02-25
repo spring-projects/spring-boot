@@ -55,23 +55,24 @@ public class SpringDataWebAutoConfiguration {
 	private final SpringDataWebProperties properties;
 
 	/**
-     * Constructs a new instance of SpringDataWebAutoConfiguration with the specified properties.
-     *
-     * @param properties the SpringDataWebProperties object containing the properties for Spring Data Web
-     */
-    public SpringDataWebAutoConfiguration(SpringDataWebProperties properties) {
+	 * Constructs a new instance of SpringDataWebAutoConfiguration with the specified
+	 * properties.
+	 * @param properties the SpringDataWebProperties object containing the properties for
+	 * Spring Data Web
+	 */
+	public SpringDataWebAutoConfiguration(SpringDataWebProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Returns a customizer for the {@link PageableHandlerMethodArgumentResolver}.
-     * This customizer sets the properties of the resolver based on the configuration in the application properties.
-     * If a bean of type {@link PageableHandlerMethodArgumentResolver} is already present in the application context,
-     * this customizer will not be applied.
-     *
-     * @return the customizer for the {@link PageableHandlerMethodArgumentResolver}
-     */
-    @Bean
+	 * Returns a customizer for the {@link PageableHandlerMethodArgumentResolver}. This
+	 * customizer sets the properties of the resolver based on the configuration in the
+	 * application properties. If a bean of type
+	 * {@link PageableHandlerMethodArgumentResolver} is already present in the application
+	 * context, this customizer will not be applied.
+	 * @return the customizer for the {@link PageableHandlerMethodArgumentResolver}
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer() {
 		return (resolver) -> {
@@ -87,12 +88,13 @@ public class SpringDataWebAutoConfiguration {
 	}
 
 	/**
-     * Returns a SortHandlerMethodArgumentResolverCustomizer bean if no other bean of the same type is present.
-     * This customizer sets the sort parameter for the SortHandlerMethodArgumentResolver based on the configured sort parameter in the properties.
-     *
-     * @return the SortHandlerMethodArgumentResolverCustomizer bean
-     */
-    @Bean
+	 * Returns a SortHandlerMethodArgumentResolverCustomizer bean if no other bean of the
+	 * same type is present. This customizer sets the sort parameter for the
+	 * SortHandlerMethodArgumentResolver based on the configured sort parameter in the
+	 * properties.
+	 * @return the SortHandlerMethodArgumentResolverCustomizer bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public SortHandlerMethodArgumentResolverCustomizer sortCustomizer() {
 		return (resolver) -> resolver.setSortParameter(this.properties.getSort().getSortParameter());

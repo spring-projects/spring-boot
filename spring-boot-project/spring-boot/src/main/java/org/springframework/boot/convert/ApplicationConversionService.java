@@ -58,30 +58,32 @@ public class ApplicationConversionService extends FormattingConversionService {
 	private final boolean unmodifiable;
 
 	/**
-     * Constructs a new ApplicationConversionService with the specified parent ConversionService.
-     *
-     * @param parent the parent ConversionService, or {@code null} if none
-     */
-    public ApplicationConversionService() {
+	 * Constructs a new ApplicationConversionService with the specified parent
+	 * ConversionService.
+	 * @param parent the parent ConversionService, or {@code null} if none
+	 */
+	public ApplicationConversionService() {
 		this(null);
 	}
 
 	/**
-     * Constructs a new ApplicationConversionService with the specified embedded value resolver.
-     * 
-     * @param embeddedValueResolver the embedded value resolver to be used by the conversion service
-     */
-    public ApplicationConversionService(StringValueResolver embeddedValueResolver) {
+	 * Constructs a new ApplicationConversionService with the specified embedded value
+	 * resolver.
+	 * @param embeddedValueResolver the embedded value resolver to be used by the
+	 * conversion service
+	 */
+	public ApplicationConversionService(StringValueResolver embeddedValueResolver) {
 		this(embeddedValueResolver, false);
 	}
 
 	/**
-     * Constructs a new ApplicationConversionService with the specified embedded value resolver and unmodifiable flag.
-     * 
-     * @param embeddedValueResolver the embedded value resolver to be set, can be null
-     * @param unmodifiable the flag indicating whether the conversion service is unmodifiable
-     */
-    private ApplicationConversionService(StringValueResolver embeddedValueResolver, boolean unmodifiable) {
+	 * Constructs a new ApplicationConversionService with the specified embedded value
+	 * resolver and unmodifiable flag.
+	 * @param embeddedValueResolver the embedded value resolver to be set, can be null
+	 * @param unmodifiable the flag indicating whether the conversion service is
+	 * unmodifiable
+	 */
+	private ApplicationConversionService(StringValueResolver embeddedValueResolver, boolean unmodifiable) {
 		if (embeddedValueResolver != null) {
 			setEmbeddedValueResolver(embeddedValueResolver);
 		}
@@ -90,87 +92,82 @@ public class ApplicationConversionService extends FormattingConversionService {
 	}
 
 	/**
-     * Adds a printer to the ApplicationConversionService.
-     * 
-     * @param printer the printer to be added
-     * @throws UnsupportedOperationException if the ApplicationConversionService is not modifiable
-     */
-    @Override
+	 * Adds a printer to the ApplicationConversionService.
+	 * @param printer the printer to be added
+	 * @throws UnsupportedOperationException if the ApplicationConversionService is not
+	 * modifiable
+	 */
+	@Override
 	public void addPrinter(Printer<?> printer) {
 		assertModifiable();
 		super.addPrinter(printer);
 	}
 
 	/**
-     * Adds a parser to the ApplicationConversionService.
-     * 
-     * @param parser the parser to be added
-     * @throws UnsupportedOperationException if the ApplicationConversionService is not modifiable
-     */
-    @Override
+	 * Adds a parser to the ApplicationConversionService.
+	 * @param parser the parser to be added
+	 * @throws UnsupportedOperationException if the ApplicationConversionService is not
+	 * modifiable
+	 */
+	@Override
 	public void addParser(Parser<?> parser) {
 		assertModifiable();
 		super.addParser(parser);
 	}
 
 	/**
-     * Adds a formatter to the conversion service.
-     * 
-     * @param formatter the formatter to be added
-     * @throws IllegalStateException if the conversion service is not modifiable
-     */
-    @Override
+	 * Adds a formatter to the conversion service.
+	 * @param formatter the formatter to be added
+	 * @throws IllegalStateException if the conversion service is not modifiable
+	 */
+	@Override
 	public void addFormatter(Formatter<?> formatter) {
 		assertModifiable();
 		super.addFormatter(formatter);
 	}
 
 	/**
-     * Adds a formatter for a specific field type.
-     * 
-     * @param fieldType the class representing the field type
-     * @param formatter the formatter to be added
-     * @throws IllegalStateException if the conversion service is not modifiable
-     */
-    @Override
+	 * Adds a formatter for a specific field type.
+	 * @param fieldType the class representing the field type
+	 * @param formatter the formatter to be added
+	 * @throws IllegalStateException if the conversion service is not modifiable
+	 */
+	@Override
 	public void addFormatterForFieldType(Class<?> fieldType, Formatter<?> formatter) {
 		assertModifiable();
 		super.addFormatterForFieldType(fieldType, formatter);
 	}
 
 	/**
-     * Adds a converter to the conversion service.
-     * 
-     * @param converter the converter to be added
-     * @throws UnsupportedOperationException if the conversion service is not modifiable
-     */
-    @Override
+	 * Adds a converter to the conversion service.
+	 * @param converter the converter to be added
+	 * @throws UnsupportedOperationException if the conversion service is not modifiable
+	 */
+	@Override
 	public void addConverter(Converter<?, ?> converter) {
 		assertModifiable();
 		super.addConverter(converter);
 	}
 
 	/**
-     * Adds a formatter for a specific field type.
-     * 
-     * @param fieldType the class representing the field type
-     * @param printer the printer used to format the field value as a string
-     * @param parser the parser used to parse a string into a field value
-     * @throws IllegalStateException if the conversion service is not modifiable
-     */
-    @Override
+	 * Adds a formatter for a specific field type.
+	 * @param fieldType the class representing the field type
+	 * @param printer the printer used to format the field value as a string
+	 * @param parser the parser used to parse a string into a field value
+	 * @throws IllegalStateException if the conversion service is not modifiable
+	 */
+	@Override
 	public void addFormatterForFieldType(Class<?> fieldType, Printer<?> printer, Parser<?> parser) {
 		assertModifiable();
 		super.addFormatterForFieldType(fieldType, printer, parser);
 	}
 
 	/**
-     * Adds a formatter for a field annotation to the conversion service.
-     * 
-     * @param annotationFormatterFactory the annotation formatter factory to add
-     * @throws IllegalStateException if the conversion service is not modifiable
-     */
-    @Override
+	 * Adds a formatter for a field annotation to the conversion service.
+	 * @param annotationFormatterFactory the annotation formatter factory to add
+	 * @throws IllegalStateException if the conversion service is not modifiable
+	 */
+	@Override
 	public void addFormatterForFieldAnnotation(
 			AnnotationFormatterFactory<? extends Annotation> annotationFormatterFactory) {
 		assertModifiable();
@@ -178,16 +175,15 @@ public class ApplicationConversionService extends FormattingConversionService {
 	}
 
 	/**
-     * Adds a converter to the conversion service.
-     * 
-     * @param <S> the source type of the converter
-     * @param <T> the target type of the converter
-     * @param sourceType the class representing the source type
-     * @param targetType the class representing the target type
-     * @param converter the converter to be added
-     * @throws IllegalStateException if the conversion service is not modifiable
-     */
-    @Override
+	 * Adds a converter to the conversion service.
+	 * @param <S> the source type of the converter
+	 * @param <T> the target type of the converter
+	 * @param sourceType the class representing the source type
+	 * @param targetType the class representing the target type
+	 * @param converter the converter to be added
+	 * @throws IllegalStateException if the conversion service is not modifiable
+	 */
+	@Override
 	public <S, T> void addConverter(Class<S> sourceType, Class<T> targetType,
 			Converter<? super S, ? extends T> converter) {
 		assertModifiable();
@@ -195,48 +191,47 @@ public class ApplicationConversionService extends FormattingConversionService {
 	}
 
 	/**
-     * Adds a converter to the ApplicationConversionService.
-     * 
-     * @param converter the converter to be added
-     * @throws UnsupportedOperationException if the ApplicationConversionService is not modifiable
-     */
-    @Override
+	 * Adds a converter to the ApplicationConversionService.
+	 * @param converter the converter to be added
+	 * @throws UnsupportedOperationException if the ApplicationConversionService is not
+	 * modifiable
+	 */
+	@Override
 	public void addConverter(GenericConverter converter) {
 		assertModifiable();
 		super.addConverter(converter);
 	}
 
 	/**
-     * Adds a converter factory to this ApplicationConversionService.
-     * 
-     * @param factory the converter factory to be added
-     * @throws UnsupportedOperationException if this ApplicationConversionService is not modifiable
-     */
-    @Override
+	 * Adds a converter factory to this ApplicationConversionService.
+	 * @param factory the converter factory to be added
+	 * @throws UnsupportedOperationException if this ApplicationConversionService is not
+	 * modifiable
+	 */
+	@Override
 	public void addConverterFactory(ConverterFactory<?, ?> factory) {
 		assertModifiable();
 		super.addConverterFactory(factory);
 	}
 
 	/**
-     * Removes a convertible mapping between the specified source type and target type.
-     * 
-     * @param sourceType the source type of the convertible mapping
-     * @param targetType the target type of the convertible mapping
-     * @throws UnsupportedOperationException if the conversion service is not modifiable
-     */
-    @Override
+	 * Removes a convertible mapping between the specified source type and target type.
+	 * @param sourceType the source type of the convertible mapping
+	 * @param targetType the target type of the convertible mapping
+	 * @throws UnsupportedOperationException if the conversion service is not modifiable
+	 */
+	@Override
 	public void removeConvertible(Class<?> sourceType, Class<?> targetType) {
 		assertModifiable();
 		super.removeConvertible(sourceType, targetType);
 	}
 
 	/**
-     * Checks if the ApplicationConversionService is modifiable.
-     * 
-     * @throws UnsupportedOperationException if the ApplicationConversionService is unmodifiable
-     */
-    private void assertModifiable() {
+	 * Checks if the ApplicationConversionService is modifiable.
+	 * @throws UnsupportedOperationException if the ApplicationConversionService is
+	 * unmodifiable
+	 */
+	private void assertModifiable() {
 		if (this.unmodifiable) {
 			throw new UnsupportedOperationException("This ApplicationConversionService cannot be modified");
 		}
@@ -331,12 +326,12 @@ public class ApplicationConversionService extends FormattingConversionService {
 	}
 
 	/**
-     * Adds application converters to the given registry using the provided conversion service.
-     * 
-     * @param registry the converter registry to add the converters to
-     * @param conversionService the conversion service to use for conversion
-     */
-    private static void addApplicationConverters(ConverterRegistry registry, ConversionService conversionService) {
+	 * Adds application converters to the given registry using the provided conversion
+	 * service.
+	 * @param registry the converter registry to add the converters to
+	 * @param conversionService the conversion service to use for conversion
+	 */
+	private static void addApplicationConverters(ConverterRegistry registry, ConversionService conversionService) {
 		registry.addConverter(new CharSequenceToObjectConverter(conversionService));
 	}
 

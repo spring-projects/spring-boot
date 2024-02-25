@@ -65,17 +65,16 @@ class MyServiceAutoConfigurationTests {
 	}
 
 	/**
-     * UserConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * UserConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	static class UserConfiguration {
 
 		/**
-         * Creates a custom instance of MyService with a specified name.
-         * 
-         * @return a new instance of MyService with the name "mine"
-         */
-        @Bean
+		 * Creates a custom instance of MyService with a specified name.
+		 * @return a new instance of MyService with the name "mine"
+		 */
+		@Bean
 		MyService myCustomService() {
 			return new MyService("mine");
 		}

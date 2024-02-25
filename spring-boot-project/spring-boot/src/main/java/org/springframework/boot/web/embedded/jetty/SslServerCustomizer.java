@@ -61,14 +61,14 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	private final SslBundle sslBundle;
 
 	/**
-     * Constructs a new instance of SslServerCustomizer with the specified parameters.
-     *
-     * @param http2 the Http2 object to be used for HTTP/2 configuration
-     * @param address the InetSocketAddress representing the server address
-     * @param clientAuth the ClientAuth object representing the client authentication configuration
-     * @param sslBundle the SslBundle object containing the SSL/TLS configuration
-     */
-    SslServerCustomizer(Http2 http2, InetSocketAddress address, ClientAuth clientAuth, SslBundle sslBundle) {
+	 * Constructs a new instance of SslServerCustomizer with the specified parameters.
+	 * @param http2 the Http2 object to be used for HTTP/2 configuration
+	 * @param address the InetSocketAddress representing the server address
+	 * @param clientAuth the ClientAuth object representing the client authentication
+	 * configuration
+	 * @param sslBundle the SslBundle object containing the SSL/TLS configuration
+	 */
+	SslServerCustomizer(Http2 http2, InetSocketAddress address, ClientAuth clientAuth, SslBundle sslBundle) {
 		this.address = address;
 		this.clientAuth = clientAuth;
 		this.sslBundle = sslBundle;
@@ -76,11 +76,10 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	/**
-     * Customizes the server by configuring SSL settings.
-     * 
-     * @param server the server to be customized
-     */
-    @Override
+	 * Customizes the server by configuring SSL settings.
+	 * @param server the server to be customized
+	 */
+	@Override
 	public void customize(Server server) {
 		SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
 		sslContextFactory.setEndpointIdentificationAlgorithm(null);
@@ -90,13 +89,12 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	/**
-     * Creates a ServerConnector with the given server and SSL context factory.
-     * 
-     * @param server the server to create the connector for
-     * @param sslContextFactory the SSL context factory to use for secure connections
-     * @return the created ServerConnector
-     */
-    private ServerConnector createConnector(Server server, SslContextFactory.Server sslContextFactory) {
+	 * Creates a ServerConnector with the given server and SSL context factory.
+	 * @param server the server to create the connector for
+	 * @param sslContextFactory the SSL context factory to use for secure connections
+	 * @return the created ServerConnector
+	 */
+	private ServerConnector createConnector(Server server, SslContextFactory.Server sslContextFactory) {
 		HttpConfiguration config = new HttpConfiguration();
 		config.setSendServerVersion(false);
 		config.setSecureScheme("https");
@@ -109,17 +107,17 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	/**
-     * Creates a server connector for the given server, SSL context factory, and HTTP configuration.
-     * If HTTP/2 support is enabled, a HTTP/2 server connector is created.
-     * If HTTP/2 support is not enabled, a HTTP/1.1 server connector is created.
-     * 
-     * @param server the server instance
-     * @param sslContextFactory the SSL context factory
-     * @param config the HTTP configuration
-     * @return the created server connector
-     * @throws IllegalStateException if the required dependencies for HTTP/2 support are not present
-     */
-    private ServerConnector createServerConnector(Server server, SslContextFactory.Server sslContextFactory,
+	 * Creates a server connector for the given server, SSL context factory, and HTTP
+	 * configuration. If HTTP/2 support is enabled, a HTTP/2 server connector is created.
+	 * If HTTP/2 support is not enabled, a HTTP/1.1 server connector is created.
+	 * @param server the server instance
+	 * @param sslContextFactory the SSL context factory
+	 * @param config the HTTP configuration
+	 * @return the created server connector
+	 * @throws IllegalStateException if the required dependencies for HTTP/2 support are
+	 * not present
+	 */
+	private ServerConnector createServerConnector(Server server, SslContextFactory.Server sslContextFactory,
 			HttpConfiguration config) {
 		if (this.http2 == null || !this.http2.isEnabled()) {
 			return createHttp11ServerConnector(config, sslContextFactory, server);
@@ -132,14 +130,14 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	/**
-     * Creates a HTTP/1.1 server connector with the given configuration, SSL context factory, and server.
-     * 
-     * @param config the HTTP configuration
-     * @param sslContextFactory the SSL context factory
-     * @param server the server
-     * @return the created server connector
-     */
-    private ServerConnector createHttp11ServerConnector(HttpConfiguration config,
+	 * Creates a HTTP/1.1 server connector with the given configuration, SSL context
+	 * factory, and server.
+	 * @param config the HTTP configuration
+	 * @param sslContextFactory the SSL context factory
+	 * @param server the server
+	 * @return the created server connector
+	 */
+	private ServerConnector createHttp11ServerConnector(HttpConfiguration config,
 			SslContextFactory.Server sslContextFactory, Server server) {
 		SslConnectionFactory sslConnectionFactory = createSslConnectionFactory(sslContextFactory,
 				HttpVersion.HTTP_1_1.asString());
@@ -149,44 +147,44 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	/**
-     * Creates a new instance of {@link SslConnectionFactory} with the provided {@link SslContextFactory.Server} and protocol.
-     *
-     * @param sslContextFactory the {@link SslContextFactory.Server} to be used for SSL configuration
-     * @param protocol the SSL protocol to be used
-     * @return a new instance of {@link SslConnectionFactory}
-     */
-    private SslConnectionFactory createSslConnectionFactory(SslContextFactory.Server sslContextFactory,
+	 * Creates a new instance of {@link SslConnectionFactory} with the provided
+	 * {@link SslContextFactory.Server} and protocol.
+	 * @param sslContextFactory the {@link SslContextFactory.Server} to be used for SSL
+	 * configuration
+	 * @param protocol the SSL protocol to be used
+	 * @return a new instance of {@link SslConnectionFactory}
+	 */
+	private SslConnectionFactory createSslConnectionFactory(SslContextFactory.Server sslContextFactory,
 			String protocol) {
 		return new SslConnectionFactory(sslContextFactory, protocol);
 	}
 
 	/**
-     * Checks if the Jetty ALPN (Application Layer Protocol Negotiation) library is present.
-     * 
-     * @return {@code true} if the Jetty ALPN library is present, {@code false} otherwise.
-     */
-    private boolean isJettyAlpnPresent() {
+	 * Checks if the Jetty ALPN (Application Layer Protocol Negotiation) library is
+	 * present.
+	 * @return {@code true} if the Jetty ALPN library is present, {@code false} otherwise.
+	 */
+	private boolean isJettyAlpnPresent() {
 		return ClassUtils.isPresent("org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory", null);
 	}
 
 	/**
-     * Checks if Jetty HTTP/2 is present.
-     * 
-     * @return true if Jetty HTTP/2 is present, false otherwise
-     */
-    private boolean isJettyHttp2Present() {
+	 * Checks if Jetty HTTP/2 is present.
+	 * @return true if Jetty HTTP/2 is present, false otherwise
+	 */
+	private boolean isJettyHttp2Present() {
 		return ClassUtils.isPresent("org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory", null);
 	}
 
 	/**
-     * Creates a HTTP/2 server connector with the given configuration, SSL context factory, and server.
-     * 
-     * @param config the HTTP configuration
-     * @param sslContextFactory the SSL context factory
-     * @param server the server
-     * @return the created server connector
-     */
-    private ServerConnector createHttp2ServerConnector(HttpConfiguration config,
+	 * Creates a HTTP/2 server connector with the given configuration, SSL context
+	 * factory, and server.
+	 * @param config the HTTP configuration
+	 * @param sslContextFactory the SSL context factory
+	 * @param server the server
+	 * @return the created server connector
+	 */
+	private ServerConnector createHttp2ServerConnector(HttpConfiguration config,
 			SslContextFactory.Server sslContextFactory, Server server) {
 		HttpConnectionFactory http = new HttpConnectionFactory(config);
 		HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(config);
@@ -201,12 +199,12 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	/**
-     * Creates an ALPNServerConnectionFactory.
-     * 
-     * @return the ALPNServerConnectionFactory
-     * @throws IllegalStateException if an 'org.eclipse.jetty:jetty-alpn-*-server' dependency is required for HTTP/2 support
-     */
-    private ALPNServerConnectionFactory createAlpnServerConnectionFactory() {
+	 * Creates an ALPNServerConnectionFactory.
+	 * @return the ALPNServerConnectionFactory
+	 * @throws IllegalStateException if an 'org.eclipse.jetty:jetty-alpn-*-server'
+	 * dependency is required for HTTP/2 support
+	 */
+	private ALPNServerConnectionFactory createAlpnServerConnectionFactory() {
 		try {
 			return new ALPNServerConnectionFactory();
 		}
@@ -217,11 +215,10 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	/**
-     * Checks if Conscrypt library is present.
-     * 
-     * @return true if Conscrypt library is present, false otherwise.
-     */
-    private boolean isConscryptPresent() {
+	 * Checks if Conscrypt library is present.
+	 * @return true if Conscrypt library is present, false otherwise.
+	 */
+	private boolean isConscryptPresent() {
 		return ClassUtils.isPresent("org.conscrypt.Conscrypt", null)
 				&& ClassUtils.isPresent("org.eclipse.jetty.alpn.conscrypt.server.ConscryptServerALPNProcessor", null);
 	}
@@ -262,12 +259,12 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	/**
-     * Configures SSL client authentication for the given SslContextFactory.Server instance.
-     * 
-     * @param factory the SslContextFactory.Server instance to configure
-     * @param clientAuth the desired client authentication mode
-     */
-    private void configureSslClientAuth(SslContextFactory.Server factory, ClientAuth clientAuth) {
+	 * Configures SSL client authentication for the given SslContextFactory.Server
+	 * instance.
+	 * @param factory the SslContextFactory.Server instance to configure
+	 * @param clientAuth the desired client authentication mode
+	 */
+	private void configureSslClientAuth(SslContextFactory.Server factory, ClientAuth clientAuth) {
 		factory.setWantClientAuth(clientAuth == ClientAuth.WANT || clientAuth == ClientAuth.NEED);
 		factory.setNeedClientAuth(clientAuth == ClientAuth.NEED);
 	}
@@ -282,16 +279,18 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		private final SslContextFactory sslContextFactory;
 
 		/**
-         * Constructs a new SslValidatingServerConnector with the specified SSL bundle key, SSL context factory, server,
-         * SSL connection factory, and HTTP connection factory.
-         *
-         * @param key the SSL bundle key used for validating the SSL certificate
-         * @param sslContextFactory the SSL context factory used for creating SSL contexts
-         * @param server the server to which this connector is being added
-         * @param sslConnectionFactory the SSL connection factory used for creating SSL connections
-         * @param connectionFactory the HTTP connection factory used for creating HTTP connections
-         */
-        SslValidatingServerConnector(SslBundleKey key, SslContextFactory sslContextFactory, Server server,
+		 * Constructs a new SslValidatingServerConnector with the specified SSL bundle
+		 * key, SSL context factory, server, SSL connection factory, and HTTP connection
+		 * factory.
+		 * @param key the SSL bundle key used for validating the SSL certificate
+		 * @param sslContextFactory the SSL context factory used for creating SSL contexts
+		 * @param server the server to which this connector is being added
+		 * @param sslConnectionFactory the SSL connection factory used for creating SSL
+		 * connections
+		 * @param connectionFactory the HTTP connection factory used for creating HTTP
+		 * connections
+		 */
+		SslValidatingServerConnector(SslBundleKey key, SslContextFactory sslContextFactory, Server server,
 				SslConnectionFactory sslConnectionFactory, HttpConnectionFactory connectionFactory) {
 			super(server, sslConnectionFactory, connectionFactory);
 			this.key = key;
@@ -299,14 +298,15 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 
 		/**
-         * Constructs a new SslValidatingServerConnector with the specified SSL bundle key alias, SSL context factory, server, and connection factories.
-         * 
-         * @param keyAlias the SSL bundle key alias to be used for SSL validation
-         * @param sslContextFactory the SSL context factory to be used for SSL configuration
-         * @param server the server to be associated with the connector
-         * @param factories the connection factories to be used for creating connections
-         */
-        SslValidatingServerConnector(SslBundleKey keyAlias, SslContextFactory sslContextFactory, Server server,
+		 * Constructs a new SslValidatingServerConnector with the specified SSL bundle key
+		 * alias, SSL context factory, server, and connection factories.
+		 * @param keyAlias the SSL bundle key alias to be used for SSL validation
+		 * @param sslContextFactory the SSL context factory to be used for SSL
+		 * configuration
+		 * @param server the server to be associated with the connector
+		 * @param factories the connection factories to be used for creating connections
+		 */
+		SslValidatingServerConnector(SslBundleKey keyAlias, SslContextFactory sslContextFactory, Server server,
 				ConnectionFactory... factories) {
 			super(server, factories);
 			this.key = keyAlias;
@@ -314,11 +314,10 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 
 		/**
-         * Starts the SSL validating server connector.
-         * 
-         * @throws Exception if an error occurs while starting the connector
-         */
-        @Override
+		 * Starts the SSL validating server connector.
+		 * @throws Exception if an error occurs while starting the connector
+		 */
+		@Override
 		protected void doStart() throws Exception {
 			super.doStart();
 			this.key.assertContainsAlias(this.sslContextFactory.getKeyStore());

@@ -32,11 +32,10 @@ class ConnectionInputStream extends FilterInputStream {
 	private static final int BUFFER_SIZE = 4096;
 
 	/**
-     * Constructs a new ConnectionInputStream object with the specified InputStream.
-     * 
-     * @param in the InputStream to be wrapped by this ConnectionInputStream
-     */
-    ConnectionInputStream(InputStream in) {
+	 * Constructs a new ConnectionInputStream object with the specified InputStream.
+	 * @param in the InputStream to be wrapped by this ConnectionInputStream
+	 */
+	ConnectionInputStream(InputStream in) {
 		super(in);
 	}
 

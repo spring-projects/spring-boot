@@ -30,15 +30,14 @@ public class PushImageUpdateEvent extends ImageProgressUpdateEvent {
 	private final ErrorDetail errorDetail;
 
 	/**
-     * Constructs a new PushImageUpdateEvent with the specified parameters.
-     * 
-     * @param id the ID of the event
-     * @param status the status of the event
-     * @param progressDetail the progress detail of the event
-     * @param progress the progress of the event
-     * @param errorDetail the error detail of the event
-     */
-    @JsonCreator
+	 * Constructs a new PushImageUpdateEvent with the specified parameters.
+	 * @param id the ID of the event
+	 * @param status the status of the event
+	 * @param progressDetail the progress detail of the event
+	 * @param progress the progress of the event
+	 * @param errorDetail the error detail of the event
+	 */
+	@JsonCreator
 	public PushImageUpdateEvent(String id, String status, ProgressDetail progressDetail, String progress,
 			ErrorDetail errorDetail) {
 		super(id, status, progressDetail, progress);
@@ -61,11 +60,10 @@ public class PushImageUpdateEvent extends ImageProgressUpdateEvent {
 		private final String message;
 
 		/**
-         * Constructs a new ErrorDetail object with the specified message.
-         *
-         * @param message the error message
-         */
-        @JsonCreator
+		 * Constructs a new ErrorDetail object with the specified message.
+		 * @param message the error message
+		 */
+		@JsonCreator
 		public ErrorDetail(@JsonProperty("message") String message) {
 			this.message = message;
 		}
@@ -79,11 +77,10 @@ public class PushImageUpdateEvent extends ImageProgressUpdateEvent {
 		}
 
 		/**
-         * Returns a string representation of the ErrorDetail object.
-         * 
-         * @return the message of the ErrorDetail object
-         */
-        @Override
+		 * Returns a string representation of the ErrorDetail object.
+		 * @return the message of the ErrorDetail object
+		 */
+		@Override
 		public String toString() {
 			return this.message;
 		}

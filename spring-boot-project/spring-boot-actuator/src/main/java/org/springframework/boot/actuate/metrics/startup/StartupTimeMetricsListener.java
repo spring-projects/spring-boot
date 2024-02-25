@@ -87,24 +87,22 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 	}
 
 	/**
-     * Checks if the specified event type is supported by this listener.
-     * 
-     * @param eventType the event type to check
-     * @return true if the event type is supported, false otherwise
-     */
-    @Override
+	 * Checks if the specified event type is supported by this listener.
+	 * @param eventType the event type to check
+	 * @return true if the event type is supported, false otherwise
+	 */
+	@Override
 	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
 		return ApplicationStartedEvent.class.isAssignableFrom(eventType)
 				|| ApplicationReadyEvent.class.isAssignableFrom(eventType);
 	}
 
 	/**
-     * This method is called when an application event is triggered.
-     * It checks the type of the event and calls the corresponding method.
-     * 
-     * @param event The application event that was triggered
-     */
-    @Override
+	 * This method is called when an application event is triggered. It checks the type of
+	 * the event and calls the corresponding method.
+	 * @param event The application event that was triggered
+	 */
+	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationStartedEvent startedEvent) {
 			onApplicationStarted(startedEvent);
@@ -115,38 +113,36 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 	}
 
 	/**
-     * Registers a gauge metric for the time taken to start the application.
-     * 
-     * @param event the ApplicationStartedEvent containing the time taken to start the application
-     * @see ApplicationStartedEvent
-     * @see SpringApplication
-     */
-    private void onApplicationStarted(ApplicationStartedEvent event) {
+	 * Registers a gauge metric for the time taken to start the application.
+	 * @param event the ApplicationStartedEvent containing the time taken to start the
+	 * application
+	 * @see ApplicationStartedEvent
+	 * @see SpringApplication
+	 */
+	private void onApplicationStarted(ApplicationStartedEvent event) {
 		registerGauge(this.startedTimeMetricName, "Time taken to start the application", event.getTimeTaken(),
 				event.getSpringApplication());
 	}
 
 	/**
-     * This method is called when the application is ready to service requests.
-     * It registers a gauge metric to measure the time taken for the application to be ready.
-     * 
-     * @param event The ApplicationReadyEvent that triggered this method.
-     *              It contains information about the application's readiness.
-     */
-    private void onApplicationReady(ApplicationReadyEvent event) {
+	 * This method is called when the application is ready to service requests. It
+	 * registers a gauge metric to measure the time taken for the application to be ready.
+	 * @param event The ApplicationReadyEvent that triggered this method. It contains
+	 * information about the application's readiness.
+	 */
+	private void onApplicationReady(ApplicationReadyEvent event) {
 		registerGauge(this.readyTimeMetricName, "Time taken for the application to be ready to service requests",
 				event.getTimeTaken(), event.getSpringApplication());
 	}
 
 	/**
-     * Registers a gauge metric for the startup time of the application.
-     * 
-     * @param name the name of the gauge metric
-     * @param description the description of the gauge metric
-     * @param timeTaken the duration of the startup time
-     * @param springApplication the SpringApplication instance
-     */
-    private void registerGauge(String name, String description, Duration timeTaken,
+	 * Registers a gauge metric for the startup time of the application.
+	 * @param name the name of the gauge metric
+	 * @param description the description of the gauge metric
+	 * @param timeTaken the duration of the startup time
+	 * @param springApplication the SpringApplication instance
+	 */
+	private void registerGauge(String name, String description, Duration timeTaken,
 			SpringApplication springApplication) {
 		if (timeTaken != null) {
 			Iterable<Tag> tags = createTagsFrom(springApplication);
@@ -158,12 +154,11 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 	}
 
 	/**
-     * Creates tags from the given SpringApplication object.
-     * 
-     * @param springApplication the SpringApplication object to create tags from
-     * @return an Iterable of Tag objects representing the created tags
-     */
-    private Iterable<Tag> createTagsFrom(SpringApplication springApplication) {
+	 * Creates tags from the given SpringApplication object.
+	 * @param springApplication the SpringApplication object to create tags from
+	 * @return an Iterable of Tag objects representing the created tags
+	 */
+	private Iterable<Tag> createTagsFrom(SpringApplication springApplication) {
 		Class<?> mainClass = springApplication.getMainApplicationClass();
 		return (mainClass != null) ? this.tags.and("main.application.class", mainClass.getName()) : this.tags;
 	}

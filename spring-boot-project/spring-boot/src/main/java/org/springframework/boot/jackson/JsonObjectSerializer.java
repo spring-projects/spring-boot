@@ -34,15 +34,15 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 public abstract class JsonObjectSerializer<T> extends JsonSerializer<T> {
 
 	/**
-     * Serializes the given value to JSON using the provided JsonGenerator and SerializerProvider.
-     * 
-     * @param value    the value to be serialized
-     * @param jgen     the JsonGenerator used for writing JSON content
-     * @param provider the SerializerProvider used for accessing serializers
-     * @throws IOException if an I/O error occurs during serialization
-     * @throws JsonMappingException if an error occurs during JSON mapping
-     */
-    @Override
+	 * Serializes the given value to JSON using the provided JsonGenerator and
+	 * SerializerProvider.
+	 * @param value the value to be serialized
+	 * @param jgen the JsonGenerator used for writing JSON content
+	 * @param provider the SerializerProvider used for accessing serializers
+	 * @throws IOException if an I/O error occurs during serialization
+	 * @throws JsonMappingException if an error occurs during JSON mapping
+	 */
+	@Override
 	public final void serialize(T value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
 		try {
 			jgen.writeStartObject();

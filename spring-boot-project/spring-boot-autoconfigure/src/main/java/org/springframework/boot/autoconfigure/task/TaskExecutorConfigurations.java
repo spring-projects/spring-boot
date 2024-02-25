@@ -48,21 +48,22 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 class TaskExecutorConfigurations {
 
 	/**
-     * TaskExecutorConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * TaskExecutorConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(Executor.class)
 	@SuppressWarnings("removal")
 	static class TaskExecutorConfiguration {
 
 		/**
-         * Creates a SimpleAsyncTaskExecutor bean with virtual threads for executing tasks asynchronously.
-         * This bean is conditionally created based on the Threading.VIRTUAL condition.
-         * 
-         * @param builder the SimpleAsyncTaskExecutorBuilder used to build the task executor
-         * @return the created SimpleAsyncTaskExecutor bean
-         */
-        @Bean(name = { TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
+		 * Creates a SimpleAsyncTaskExecutor bean with virtual threads for executing tasks
+		 * asynchronously. This bean is conditionally created based on the
+		 * Threading.VIRTUAL condition.
+		 * @param builder the SimpleAsyncTaskExecutorBuilder used to build the task
+		 * executor
+		 * @return the created SimpleAsyncTaskExecutor bean
+		 */
+		@Bean(name = { TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
 				AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		SimpleAsyncTaskExecutor applicationTaskExecutorVirtualThreads(SimpleAsyncTaskExecutorBuilder builder) {
@@ -70,16 +71,17 @@ class TaskExecutorConfigurations {
 		}
 
 		/**
-         * Creates a ThreadPoolTaskExecutor bean for executing tasks asynchronously.
-         * The bean is named as either TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME
-         * or AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME.
-         * The creation of the bean is conditional on the Threading.PLATFORM condition.
-         * 
-         * @param taskExecutorBuilder The builder for creating the ThreadPoolTaskExecutor.
-         * @param threadPoolTaskExecutorBuilderProvider The provider for the ThreadPoolTaskExecutorBuilder.
-         * @return The created ThreadPoolTaskExecutor bean.
-         */
-        @Lazy
+		 * Creates a ThreadPoolTaskExecutor bean for executing tasks asynchronously. The
+		 * bean is named as either
+		 * TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME or
+		 * AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME. The creation
+		 * of the bean is conditional on the Threading.PLATFORM condition.
+		 * @param taskExecutorBuilder The builder for creating the ThreadPoolTaskExecutor.
+		 * @param threadPoolTaskExecutorBuilderProvider The provider for the
+		 * ThreadPoolTaskExecutorBuilder.
+		 * @return The created ThreadPoolTaskExecutor bean.
+		 */
+		@Lazy
 		@Bean(name = { TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
 				AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
 		@ConditionalOnThreading(Threading.PLATFORM)
@@ -96,23 +98,26 @@ class TaskExecutorConfigurations {
 	}
 
 	/**
-     * TaskExecutorBuilderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * TaskExecutorBuilderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@SuppressWarnings("removal")
 	static class TaskExecutorBuilderConfiguration {
 
 		/**
-         * Creates a TaskExecutorBuilder bean if no other bean of the same type is present.
-         * 
-         * This method is deprecated since version 3.2.0 and is scheduled for removal.
-         * 
-         * @param properties the TaskExecutionProperties object containing the task execution properties
-         * @param taskExecutorCustomizers the ObjectProvider of TaskExecutorCustomizer objects
-         * @param taskDecorator the ObjectProvider of TaskDecorator objects
-         * @return a TaskExecutorBuilder object configured with the provided properties and customizers
-         */
-        @Bean
+		 * Creates a TaskExecutorBuilder bean if no other bean of the same type is
+		 * present.
+		 *
+		 * This method is deprecated since version 3.2.0 and is scheduled for removal.
+		 * @param properties the TaskExecutionProperties object containing the task
+		 * execution properties
+		 * @param taskExecutorCustomizers the ObjectProvider of TaskExecutorCustomizer
+		 * objects
+		 * @param taskDecorator the ObjectProvider of TaskDecorator objects
+		 * @return a TaskExecutorBuilder object configured with the provided properties
+		 * and customizers
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		@Deprecated(since = "3.2.0", forRemoval = true)
 		TaskExecutorBuilder taskExecutorBuilder(TaskExecutionProperties properties,
@@ -137,25 +142,27 @@ class TaskExecutorConfigurations {
 	}
 
 	/**
-     * ThreadPoolTaskExecutorBuilderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ThreadPoolTaskExecutorBuilderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@SuppressWarnings("removal")
 	static class ThreadPoolTaskExecutorBuilderConfiguration {
 
 		/**
-         * Creates a {@link ThreadPoolTaskExecutorBuilder} bean if no other bean of type {@link TaskExecutorBuilder} or
-         * {@link ThreadPoolTaskExecutorBuilder} is present in the application context.
-         *
-         * The bean is configured based on the provided {@link TaskExecutionProperties} and other optional dependencies.
-         *
-         * @param properties the task execution properties
-         * @param threadPoolTaskExecutorCustomizers the customizers for the {@link ThreadPoolTaskExecutor}
-         * @param taskExecutorCustomizers the customizers for the {@link TaskExecutor}
-         * @param taskDecorator the task decorator
-         * @return the {@link ThreadPoolTaskExecutorBuilder} bean
-         */
-        @Bean
+		 * Creates a {@link ThreadPoolTaskExecutorBuilder} bean if no other bean of type
+		 * {@link TaskExecutorBuilder} or {@link ThreadPoolTaskExecutorBuilder} is present
+		 * in the application context.
+		 *
+		 * The bean is configured based on the provided {@link TaskExecutionProperties}
+		 * and other optional dependencies.
+		 * @param properties the task execution properties
+		 * @param threadPoolTaskExecutorCustomizers the customizers for the
+		 * {@link ThreadPoolTaskExecutor}
+		 * @param taskExecutorCustomizers the customizers for the {@link TaskExecutor}
+		 * @param taskDecorator the task decorator
+		 * @return the {@link ThreadPoolTaskExecutorBuilder} bean
+		 */
+		@Bean
 		@ConditionalOnMissingBean({ TaskExecutorBuilder.class, ThreadPoolTaskExecutorBuilder.class })
 		ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder(TaskExecutionProperties properties,
 				ObjectProvider<ThreadPoolTaskExecutorCustomizer> threadPoolTaskExecutorCustomizers,
@@ -181,21 +188,20 @@ class TaskExecutorConfigurations {
 		}
 
 		/**
-         * Adapts a TaskExecutorCustomizer to a ThreadPoolTaskExecutorCustomizer.
-         * 
-         * @param customizer the TaskExecutorCustomizer to adapt
-         * @return the adapted ThreadPoolTaskExecutorCustomizer
-         */
-        private ThreadPoolTaskExecutorCustomizer adapt(TaskExecutorCustomizer customizer) {
+		 * Adapts a TaskExecutorCustomizer to a ThreadPoolTaskExecutorCustomizer.
+		 * @param customizer the TaskExecutorCustomizer to adapt
+		 * @return the adapted ThreadPoolTaskExecutorCustomizer
+		 */
+		private ThreadPoolTaskExecutorCustomizer adapt(TaskExecutorCustomizer customizer) {
 			return customizer::customize;
 		}
 
 	}
 
 	/**
-     * SimpleAsyncTaskExecutorBuilderConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * SimpleAsyncTaskExecutorBuilderConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	static class SimpleAsyncTaskExecutorBuilderConfiguration {
 
 		private final TaskExecutionProperties properties;
@@ -205,13 +211,13 @@ class TaskExecutorConfigurations {
 		private final ObjectProvider<TaskDecorator> taskDecorator;
 
 		/**
-         * Constructs a new SimpleAsyncTaskExecutorBuilderConfiguration with the specified properties, task executor customizers, and task decorator.
-         * 
-         * @param properties the properties for task execution
-         * @param taskExecutorCustomizers the customizers for the task executor
-         * @param taskDecorator the decorator for tasks
-         */
-        SimpleAsyncTaskExecutorBuilderConfiguration(TaskExecutionProperties properties,
+		 * Constructs a new SimpleAsyncTaskExecutorBuilderConfiguration with the specified
+		 * properties, task executor customizers, and task decorator.
+		 * @param properties the properties for task execution
+		 * @param taskExecutorCustomizers the customizers for the task executor
+		 * @param taskDecorator the decorator for tasks
+		 */
+		SimpleAsyncTaskExecutorBuilderConfiguration(TaskExecutionProperties properties,
 				ObjectProvider<SimpleAsyncTaskExecutorCustomizer> taskExecutorCustomizers,
 				ObjectProvider<TaskDecorator> taskDecorator) {
 			this.properties = properties;
@@ -220,12 +226,12 @@ class TaskExecutorConfigurations {
 		}
 
 		/**
-         * Creates a SimpleAsyncTaskExecutorBuilder bean if no other bean of the same type is present in the application context.
-         * This bean is conditionally created based on the threading type being PLATFORM.
-         * 
-         * @return the SimpleAsyncTaskExecutorBuilder bean
-         */
-        @Bean
+		 * Creates a SimpleAsyncTaskExecutorBuilder bean if no other bean of the same type
+		 * is present in the application context. This bean is conditionally created based
+		 * on the threading type being PLATFORM.
+		 * @return the SimpleAsyncTaskExecutorBuilder bean
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnThreading(Threading.PLATFORM)
 		SimpleAsyncTaskExecutorBuilder simpleAsyncTaskExecutorBuilder() {
@@ -233,12 +239,13 @@ class TaskExecutorConfigurations {
 		}
 
 		/**
-         * Creates a SimpleAsyncTaskExecutorBuilder bean with the name "simpleAsyncTaskExecutorBuilder" if no other bean of the same type is present.
-         * This bean is conditionally created only if the threading type is set to virtual.
-         * 
-         * @return The SimpleAsyncTaskExecutorBuilder bean with virtual threads enabled.
-         */
-        @Bean(name = "simpleAsyncTaskExecutorBuilder")
+		 * Creates a SimpleAsyncTaskExecutorBuilder bean with the name
+		 * "simpleAsyncTaskExecutorBuilder" if no other bean of the same type is present.
+		 * This bean is conditionally created only if the threading type is set to
+		 * virtual.
+		 * @return The SimpleAsyncTaskExecutorBuilder bean with virtual threads enabled.
+		 */
+		@Bean(name = "simpleAsyncTaskExecutorBuilder")
 		@ConditionalOnMissingBean
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		SimpleAsyncTaskExecutorBuilder simpleAsyncTaskExecutorBuilderVirtualThreads() {
@@ -248,11 +255,10 @@ class TaskExecutorConfigurations {
 		}
 
 		/**
-         * Returns a new instance of {@link SimpleAsyncTaskExecutorBuilder}.
-         * 
-         * @return the {@link SimpleAsyncTaskExecutorBuilder} instance
-         */
-        private SimpleAsyncTaskExecutorBuilder builder() {
+		 * Returns a new instance of {@link SimpleAsyncTaskExecutorBuilder}.
+		 * @return the {@link SimpleAsyncTaskExecutorBuilder} instance
+		 */
+		private SimpleAsyncTaskExecutorBuilder builder() {
 			SimpleAsyncTaskExecutorBuilder builder = new SimpleAsyncTaskExecutorBuilder();
 			builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
 			builder = builder.customizers(this.taskExecutorCustomizers.orderedStream()::iterator);

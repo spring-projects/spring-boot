@@ -39,24 +39,22 @@ public class DiskSpaceMetricsBinder implements MeterBinder {
 	private final Iterable<Tag> tags;
 
 	/**
-     * Constructs a new DiskSpaceMetricsBinder with the given list of paths and tags.
-     * 
-     * @param paths the list of paths to monitor disk space usage
-     * @param tags the tags to associate with the metrics
-     * @throws IllegalArgumentException if the paths list is empty
-     */
-    public DiskSpaceMetricsBinder(List<File> paths, Iterable<Tag> tags) {
+	 * Constructs a new DiskSpaceMetricsBinder with the given list of paths and tags.
+	 * @param paths the list of paths to monitor disk space usage
+	 * @param tags the tags to associate with the metrics
+	 * @throws IllegalArgumentException if the paths list is empty
+	 */
+	public DiskSpaceMetricsBinder(List<File> paths, Iterable<Tag> tags) {
 		Assert.notEmpty(paths, "Paths must not be empty");
 		this.paths = paths;
 		this.tags = tags;
 	}
 
 	/**
-     * Binds the DiskSpaceMetrics to the given MeterRegistry.
-     * 
-     * @param registry the MeterRegistry to bind the DiskSpaceMetrics to
-     */
-    @Override
+	 * Binds the DiskSpaceMetrics to the given MeterRegistry.
+	 * @param registry the MeterRegistry to bind the DiskSpaceMetrics to
+	 */
+	@Override
 	public void bindTo(MeterRegistry registry) {
 		this.paths.forEach((path) -> new DiskSpaceMetrics(path, this.tags).bindTo(registry));
 	}

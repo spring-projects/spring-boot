@@ -85,12 +85,12 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	}
 
 	/**
-     * Constructs a new FilteredClassLoader with the specified collection of class filters and resource filters.
-     * 
-     * @param classesFilters the collection of predicates used to filter classes
-     * @param resourcesFilters the collection of predicates used to filter resources
-     */
-    private FilteredClassLoader(Collection<Predicate<String>> classesFilters,
+	 * Constructs a new FilteredClassLoader with the specified collection of class filters
+	 * and resource filters.
+	 * @param classesFilters the collection of predicates used to filter classes
+	 * @param resourcesFilters the collection of predicates used to filter resources
+	 */
+	private FilteredClassLoader(Collection<Predicate<String>> classesFilters,
 			Collection<Predicate<String>> resourcesFilters) {
 		super(new URL[0], FilteredClassLoader.class.getClassLoader());
 		this.classesFilters = classesFilters;
@@ -98,14 +98,13 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	}
 
 	/**
-     * Loads the class with the specified name, applying the defined filters.
-     * 
-     * @param name    the name of the class to be loaded
-     * @param resolve indicates whether or not to resolve the class
-     * @return the loaded class
-     * @throws ClassNotFoundException if the class is filtered and cannot be loaded
-     */
-    @Override
+	 * Loads the class with the specified name, applying the defined filters.
+	 * @param name the name of the class to be loaded
+	 * @param resolve indicates whether or not to resolve the class
+	 * @return the loaded class
+	 * @throws ClassNotFoundException if the class is filtered and cannot be loaded
+	 */
+	@Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		for (Predicate<String> filter : this.classesFilters) {
 			if (filter.test(name)) {
@@ -116,17 +115,17 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	}
 
 	/**
-     * Returns a URL object representing the resource with the given name.
-     * 
-     * This method checks if the resource name passes any of the registered filters. If a filter
-     * matches the name, null is returned indicating that the resource is not accessible. If none
-     * of the filters match, the method delegates to the superclass implementation to retrieve the
-     * resource.
-     * 
-     * @param name the name of the resource
-     * @return a URL object representing the resource, or null if the resource is not accessible
-     */
-    @Override
+	 * Returns a URL object representing the resource with the given name.
+	 *
+	 * This method checks if the resource name passes any of the registered filters. If a
+	 * filter matches the name, null is returned indicating that the resource is not
+	 * accessible. If none of the filters match, the method delegates to the superclass
+	 * implementation to retrieve the resource.
+	 * @param name the name of the resource
+	 * @return a URL object representing the resource, or null if the resource is not
+	 * accessible
+	 */
+	@Override
 	public URL getResource(String name) {
 		for (Predicate<String> filter : this.resourcesFilters) {
 			if (filter.test(name)) {
@@ -137,13 +136,12 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	}
 
 	/**
-     * Returns an enumeration of URLs representing all the resources with the given name.
-     * 
-     * @param name the name of the resource
-     * @return an enumeration of URLs representing all the resources with the given name
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Returns an enumeration of URLs representing all the resources with the given name.
+	 * @param name the name of the resource
+	 * @return an enumeration of URLs representing all the resources with the given name
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public Enumeration<URL> getResources(String name) throws IOException {
 		for (Predicate<String> filter : this.resourcesFilters) {
 			if (filter.test(name)) {
@@ -154,12 +152,12 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	}
 
 	/**
-     * Retrieves an input stream for reading the specified resource.
-     * 
-     * @param name the name of the resource
-     * @return an input stream for reading the resource, or null if the resource is filtered
-     */
-    @Override
+	 * Retrieves an input stream for reading the specified resource.
+	 * @param name the name of the resource
+	 * @return an input stream for reading the resource, or null if the resource is
+	 * filtered
+	 */
+	@Override
 	public InputStream getResourceAsStream(String name) {
 		for (Predicate<String> filter : this.resourcesFilters) {
 			if (filter.test(name)) {
@@ -170,15 +168,15 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	}
 
 	/**
-     * Defines a public class with the given name, byte array, and protection domain.
-     * 
-     * @param name              the name of the class to be defined
-     * @param b                 the byte array containing the class data
-     * @param protectionDomain  the protection domain for the defined class
-     * @return                  the defined class
-     * @throws IllegalArgumentException if defining a class with the given name is not supported
-     */
-    @Override
+	 * Defines a public class with the given name, byte array, and protection domain.
+	 * @param name the name of the class to be defined
+	 * @param b the byte array containing the class data
+	 * @param protectionDomain the protection domain for the defined class
+	 * @return the defined class
+	 * @throws IllegalArgumentException if defining a class with the given name is not
+	 * supported
+	 */
+	@Override
 	public Class<?> publicDefineClass(String name, byte[] b, ProtectionDomain protectionDomain) {
 		for (Predicate<String> filter : this.classesFilters) {
 			if (filter.test(name)) {
@@ -196,21 +194,21 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 		private final Class<?>[] hiddenClasses;
 
 		/**
-         * Constructs a new ClassFilter object with the specified hidden classes.
-         *
-         * @param hiddenClasses an array of Class objects representing the classes to be hidden
-         */
-        private ClassFilter(Class<?>[] hiddenClasses) {
+		 * Constructs a new ClassFilter object with the specified hidden classes.
+		 * @param hiddenClasses an array of Class objects representing the classes to be
+		 * hidden
+		 */
+		private ClassFilter(Class<?>[] hiddenClasses) {
 			this.hiddenClasses = hiddenClasses;
 		}
 
 		/**
-         * Tests if a given class name matches any of the hidden classes.
-         * 
-         * @param className the name of the class to be tested
-         * @return true if the class name matches any of the hidden classes, false otherwise
-         */
-        @Override
+		 * Tests if a given class name matches any of the hidden classes.
+		 * @param className the name of the class to be tested
+		 * @return true if the class name matches any of the hidden classes, false
+		 * otherwise
+		 */
+		@Override
 		public boolean test(String className) {
 			for (Class<?> hiddenClass : this.hiddenClasses) {
 				if (className.equals(hiddenClass.getName())) {
@@ -221,12 +219,11 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 		}
 
 		/**
-         * Creates a new instance of ClassFilter with the specified hidden classes.
-         * 
-         * @param hiddenClasses the classes to be hidden by the ClassFilter
-         * @return a new instance of ClassFilter
-         */
-        public static ClassFilter of(Class<?>... hiddenClasses) {
+		 * Creates a new instance of ClassFilter with the specified hidden classes.
+		 * @param hiddenClasses the classes to be hidden by the ClassFilter
+		 * @return a new instance of ClassFilter
+		 */
+		public static ClassFilter of(Class<?>... hiddenClasses) {
 			return new ClassFilter(hiddenClasses);
 		}
 
@@ -240,21 +237,20 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 		private final String[] hiddenPackages;
 
 		/**
-         * Constructs a new PackageFilter object with the specified hidden packages.
-         * 
-         * @param hiddenPackages an array of strings representing the packages to be hidden
-         */
-        private PackageFilter(String[] hiddenPackages) {
+		 * Constructs a new PackageFilter object with the specified hidden packages.
+		 * @param hiddenPackages an array of strings representing the packages to be
+		 * hidden
+		 */
+		private PackageFilter(String[] hiddenPackages) {
 			this.hiddenPackages = hiddenPackages;
 		}
 
 		/**
-         * Tests if a given class name belongs to any of the hidden packages.
-         * 
-         * @param className the name of the class to be tested
-         * @return true if the class belongs to a hidden package, false otherwise
-         */
-        @Override
+		 * Tests if a given class name belongs to any of the hidden packages.
+		 * @param className the name of the class to be tested
+		 * @return true if the class belongs to a hidden package, false otherwise
+		 */
+		@Override
 		public boolean test(String className) {
 			for (String hiddenPackage : this.hiddenPackages) {
 				if (className.startsWith(hiddenPackage)) {
@@ -265,12 +261,11 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 		}
 
 		/**
-         * Creates a new PackageFilter object with the specified hidden packages.
-         * 
-         * @param hiddenPackages the packages to be hidden
-         * @return a new PackageFilter object
-         */
-        public static PackageFilter of(String... hiddenPackages) {
+		 * Creates a new PackageFilter object with the specified hidden packages.
+		 * @param hiddenPackages the packages to be hidden
+		 * @return a new PackageFilter object
+		 */
+		public static PackageFilter of(String... hiddenPackages) {
 			return new PackageFilter(hiddenPackages);
 		}
 
@@ -286,21 +281,20 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 		private final ClassPathResource[] hiddenResources;
 
 		/**
-         * Constructs a new ClassPathResourceFilter with the specified hidden resources.
-         *
-         * @param hiddenResources an array of ClassPathResource objects representing the resources to be hidden
-         */
-        private ClassPathResourceFilter(ClassPathResource[] hiddenResources) {
+		 * Constructs a new ClassPathResourceFilter with the specified hidden resources.
+		 * @param hiddenResources an array of ClassPathResource objects representing the
+		 * resources to be hidden
+		 */
+		private ClassPathResourceFilter(ClassPathResource[] hiddenResources) {
 			this.hiddenResources = hiddenResources;
 		}
 
 		/**
-         * Tests if a given resource name is hidden.
-         * 
-         * @param resourceName the name of the resource to be tested
-         * @return true if the resource is hidden, false otherwise
-         */
-        @Override
+		 * Tests if a given resource name is hidden.
+		 * @param resourceName the name of the resource to be tested
+		 * @return true if the resource is hidden, false otherwise
+		 */
+		@Override
 		public boolean test(String resourceName) {
 			for (ClassPathResource hiddenResource : this.hiddenResources) {
 				if (hiddenResource.getFilename() != null && resourceName.equals(hiddenResource.getPath())) {
@@ -311,12 +305,12 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 		}
 
 		/**
-         * Creates a new instance of ClassPathResourceFilter with the specified hidden resources.
-         * 
-         * @param hiddenResources the hidden resources to be filtered
-         * @return a new instance of ClassPathResourceFilter
-         */
-        public static ClassPathResourceFilter of(ClassPathResource... hiddenResources) {
+		 * Creates a new instance of ClassPathResourceFilter with the specified hidden
+		 * resources.
+		 * @param hiddenResources the hidden resources to be filtered
+		 * @return a new instance of ClassPathResourceFilter
+		 */
+		public static ClassPathResourceFilter of(ClassPathResource... hiddenResources) {
 			return new ClassPathResourceFilter(hiddenResources);
 		}
 

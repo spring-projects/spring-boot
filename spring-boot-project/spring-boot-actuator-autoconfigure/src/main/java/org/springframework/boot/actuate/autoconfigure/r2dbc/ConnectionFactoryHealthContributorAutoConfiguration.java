@@ -49,21 +49,21 @@ public class ConnectionFactoryHealthContributorAutoConfiguration
 	private final Map<String, ConnectionFactory> connectionFactory;
 
 	/**
-     * Constructs a new ConnectionFactoryHealthContributorAutoConfiguration with the specified connectionFactory.
-     * 
-     * @param connectionFactory a map of connection factories
-     */
-    ConnectionFactoryHealthContributorAutoConfiguration(Map<String, ConnectionFactory> connectionFactory) {
+	 * Constructs a new ConnectionFactoryHealthContributorAutoConfiguration with the
+	 * specified connectionFactory.
+	 * @param connectionFactory a map of connection factories
+	 */
+	ConnectionFactoryHealthContributorAutoConfiguration(Map<String, ConnectionFactory> connectionFactory) {
 		super(ConnectionFactoryHealthIndicator::new);
 		this.connectionFactory = connectionFactory;
 	}
 
 	/**
-     * Creates a ReactiveHealthContributor bean for R2DBC health checking if no bean with the names "r2dbcHealthIndicator" and "r2dbcHealthContributor" is present.
-     * 
-     * @return the created ReactiveHealthContributor bean for R2DBC health checking
-     */
-    @Bean
+	 * Creates a ReactiveHealthContributor bean for R2DBC health checking if no bean with
+	 * the names "r2dbcHealthIndicator" and "r2dbcHealthContributor" is present.
+	 * @return the created ReactiveHealthContributor bean for R2DBC health checking
+	 */
+	@Bean
 	@ConditionalOnMissingBean(name = { "r2dbcHealthIndicator", "r2dbcHealthContributor" })
 	public ReactiveHealthContributor r2dbcHealthContributor() {
 		return createContributor(this.connectionFactory);

@@ -41,15 +41,18 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public class JacksonEndpointAutoConfiguration {
 
 	/**
-     * Creates and configures an {@link EndpointObjectMapper} bean if the property "management.endpoints.jackson.isolated-object-mapper" is present or if it is missing.
-     * This bean is conditional on the presence of the {@link ObjectMapper} and {@link Jackson2ObjectMapperBuilder} classes.
-     * The created {@link EndpointObjectMapper} bean is used for serializing and deserializing JSON objects.
-     * The {@link ObjectMapper} is configured with the following features disabled: WRITE_DATES_AS_TIMESTAMPS and WRITE_DURATIONS_AS_TIMESTAMPS.
-     * The serialization inclusion is set to NON_NULL, meaning that null values will not be included in the serialized JSON.
-     * 
-     * @return the created {@link EndpointObjectMapper} bean
-     */
-    @Bean
+	 * Creates and configures an {@link EndpointObjectMapper} bean if the property
+	 * "management.endpoints.jackson.isolated-object-mapper" is present or if it is
+	 * missing. This bean is conditional on the presence of the {@link ObjectMapper} and
+	 * {@link Jackson2ObjectMapperBuilder} classes. The created
+	 * {@link EndpointObjectMapper} bean is used for serializing and deserializing JSON
+	 * objects. The {@link ObjectMapper} is configured with the following features
+	 * disabled: WRITE_DATES_AS_TIMESTAMPS and WRITE_DURATIONS_AS_TIMESTAMPS. The
+	 * serialization inclusion is set to NON_NULL, meaning that null values will not be
+	 * included in the serialized JSON.
+	 * @return the created {@link EndpointObjectMapper} bean
+	 */
+	@Bean
 	@ConditionalOnProperty(name = "management.endpoints.jackson.isolated-object-mapper", matchIfMissing = true)
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	public EndpointObjectMapper endpointObjectMapper() {

@@ -32,11 +32,11 @@ class ProjectGenerationResponse {
 	private String fileName;
 
 	/**
-     * Constructs a new instance of ProjectGenerationResponse with the specified content type.
-     * 
-     * @param contentType the content type of the response
-     */
-    ProjectGenerationResponse(ContentType contentType) {
+	 * Constructs a new instance of ProjectGenerationResponse with the specified content
+	 * type.
+	 * @param contentType the content type of the response
+	 */
+	ProjectGenerationResponse(ContentType contentType) {
 		this.contentType = contentType;
 	}
 
@@ -57,11 +57,10 @@ class ProjectGenerationResponse {
 	}
 
 	/**
-     * Sets the content of the ProjectGenerationResponse.
-     * 
-     * @param content the byte array representing the content to be set
-     */
-    void setContent(byte[] content) {
+	 * Sets the content of the ProjectGenerationResponse.
+	 * @param content the byte array representing the content to be set
+	 */
+	void setContent(byte[] content) {
 		this.content = content;
 	}
 
@@ -75,11 +74,10 @@ class ProjectGenerationResponse {
 	}
 
 	/**
-     * Sets the file name for the project generation response.
-     * 
-     * @param fileName the name of the file to be set
-     */
-    void setFileName(String fileName) {
+	 * Sets the file name for the project generation response.
+	 * @param fileName the name of the file to be set
+	 */
+	void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
 

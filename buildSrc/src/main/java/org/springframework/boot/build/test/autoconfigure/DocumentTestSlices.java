@@ -53,63 +53,57 @@ public class DocumentTestSlices extends DefaultTask {
 	private File outputFile;
 
 	/**
-     * Returns the collection of test slices.
-     * 
-     * @return The collection of test slices.
-     */
-    @InputFiles
+	 * Returns the collection of test slices.
+	 * @return The collection of test slices.
+	 */
+	@InputFiles
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public FileCollection getTestSlices() {
 		return this.testSlices;
 	}
 
 	/**
-     * Sets the test slices for the DocumentTestSlices class.
-     * 
-     * @param testSlices the test slices to be set
-     */
-    public void setTestSlices(FileCollection testSlices) {
+	 * Sets the test slices for the DocumentTestSlices class.
+	 * @param testSlices the test slices to be set
+	 */
+	public void setTestSlices(FileCollection testSlices) {
 		this.testSlices = testSlices;
 	}
 
 	/**
-     * Returns the output file.
-     *
-     * @return the output file
-     */
-    @OutputFile
+	 * Returns the output file.
+	 * @return the output file
+	 */
+	@OutputFile
 	public File getOutputFile() {
 		return this.outputFile;
 	}
 
 	/**
-     * Sets the output file for the document.
-     * 
-     * @param outputFile the file to set as the output file
-     */
-    public void setOutputFile(File outputFile) {
+	 * Sets the output file for the document.
+	 * @param outputFile the file to set as the output file
+	 */
+	public void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
 	}
 
 	/**
-     * This method is used to document the test slices.
-     * It reads the test slices from a source and writes them to a table.
-     *
-     * @throws IOException if there is an error reading or writing the test slices.
-     */
-    @TaskAction
+	 * This method is used to document the test slices. It reads the test slices from a
+	 * source and writes them to a table.
+	 * @throws IOException if there is an error reading or writing the test slices.
+	 */
+	@TaskAction
 	void documentTestSlices() throws IOException {
 		Set<TestSlice> testSlices = readTestSlices();
 		writeTable(testSlices);
 	}
 
 	/**
-     * Reads the test slices from the specified test slice files.
-     * 
-     * @return a set of TestSlice objects representing the test slices
-     * @throws IOException if an I/O error occurs while reading the test slice files
-     */
-    @SuppressWarnings("unchecked")
+	 * Reads the test slices from the specified test slice files.
+	 * @return a set of TestSlice objects representing the test slices
+	 * @throws IOException if an I/O error occurs while reading the test slice files
+	 */
+	@SuppressWarnings("unchecked")
 	private Set<TestSlice> readTestSlices() throws IOException {
 		Set<TestSlice> testSlices = new TreeSet<>();
 		for (File metadataFile : this.testSlices) {
@@ -126,12 +120,12 @@ public class DocumentTestSlices extends DefaultTask {
 	}
 
 	/**
-     * Writes the test slices and their imported auto-configurations to a table in the output file.
-     * 
-     * @param testSlices the set of test slices to write
-     * @throws IOException if an I/O error occurs while writing to the output file
-     */
-    private void writeTable(Set<TestSlice> testSlices) throws IOException {
+	 * Writes the test slices and their imported auto-configurations to a table in the
+	 * output file.
+	 * @param testSlices the set of test slices to write
+	 * @throws IOException if an I/O error occurs while writing to the output file
+	 */
+	private void writeTable(Set<TestSlice> testSlices) throws IOException {
 		this.outputFile.getParentFile().mkdirs();
 		try (PrintWriter writer = new PrintWriter(new FileWriter(this.outputFile))) {
 			writer.println("[cols=\"d,a\"]");
@@ -150,33 +144,34 @@ public class DocumentTestSlices extends DefaultTask {
 	}
 
 	/**
-     * TestSlice class.
-     */
-    private static final class TestSlice implements Comparable<TestSlice> {
+	 * TestSlice class.
+	 */
+	private static final class TestSlice implements Comparable<TestSlice> {
 
 		private final String className;
 
 		private final SortedSet<String> importedAutoConfigurations;
 
 		/**
-         * Constructs a new TestSlice object with the specified class name and imported auto configurations.
-         * 
-         * @param className the name of the class
-         * @param importedAutoConfigurations the set of imported auto configurations
-         */
-        private TestSlice(String className, SortedSet<String> importedAutoConfigurations) {
+		 * Constructs a new TestSlice object with the specified class name and imported
+		 * auto configurations.
+		 * @param className the name of the class
+		 * @param importedAutoConfigurations the set of imported auto configurations
+		 */
+		private TestSlice(String className, SortedSet<String> importedAutoConfigurations) {
 			this.className = ClassUtils.getShortName(className);
 			this.importedAutoConfigurations = importedAutoConfigurations;
 		}
 
 		/**
-         * Compares this TestSlice object with the specified TestSlice object for order.
-         * Returns a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
-         * 
-         * @param other the TestSlice object to be compared
-         * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object
-         */
-        @Override
+		 * Compares this TestSlice object with the specified TestSlice object for order.
+		 * Returns a negative integer, zero, or a positive integer as this object is less
+		 * than, equal to, or greater than the specified object.
+		 * @param other the TestSlice object to be compared
+		 * @return a negative integer, zero, or a positive integer as this object is less
+		 * than, equal to, or greater than the specified object
+		 */
+		@Override
 		public int compareTo(TestSlice other) {
 			return this.className.compareTo(other.className);
 		}

@@ -97,13 +97,11 @@ public final class ExitStatus {
 	}
 
 	/**
-     * Returns a string representation of the ExitStatus object.
-     * The string representation consists of the name and code of the ExitStatus object,
-     * separated by a colon.
-     *
-     * @return a string representation of the ExitStatus object
-     */
-    @Override
+	 * Returns a string representation of the ExitStatus object. The string representation
+	 * consists of the name and code of the ExitStatus object, separated by a colon.
+	 * @return a string representation of the ExitStatus object
+	 */
+	@Override
 	public String toString() {
 		return getName() + ":" + getCode();
 	}

@@ -41,23 +41,22 @@ public class ConnectionPoolMetrics implements MeterBinder {
 	private final Iterable<Tag> tags;
 
 	/**
-     * Constructs a new ConnectionPoolMetrics object with the specified ConnectionPool, name, and tags.
-     * 
-     * @param pool the ConnectionPool to monitor
-     * @param name the name of the ConnectionPoolMetrics object
-     * @param tags the additional tags to associate with the metrics
-     */
-    public ConnectionPoolMetrics(ConnectionPool pool, String name, Iterable<Tag> tags) {
+	 * Constructs a new ConnectionPoolMetrics object with the specified ConnectionPool,
+	 * name, and tags.
+	 * @param pool the ConnectionPool to monitor
+	 * @param name the name of the ConnectionPoolMetrics object
+	 * @param tags the additional tags to associate with the metrics
+	 */
+	public ConnectionPoolMetrics(ConnectionPool pool, String name, Iterable<Tag> tags) {
 		this.pool = pool;
 		this.tags = Tags.concat(tags, "name", name);
 	}
 
 	/**
-     * Binds the connection pool metrics to the given MeterRegistry.
-     * 
-     * @param registry the MeterRegistry to bind the metrics to
-     */
-    @Override
+	 * Binds the connection pool metrics to the given MeterRegistry.
+	 * @param registry the MeterRegistry to bind the metrics to
+	 */
+	@Override
 	public void bindTo(MeterRegistry registry) {
 		this.pool.getMetrics().ifPresent((poolMetrics) -> {
 			bindConnectionPoolMetric(registry,
@@ -81,22 +80,20 @@ public class ConnectionPoolMetrics implements MeterBinder {
 	}
 
 	/**
-     * Binds the connection pool metric to the given MeterRegistry.
-     * 
-     * @param registry the MeterRegistry to bind the metric to
-     * @param builder the Builder used to configure the metric
-     */
-    private void bindConnectionPoolMetric(MeterRegistry registry, Builder<?> builder) {
+	 * Binds the connection pool metric to the given MeterRegistry.
+	 * @param registry the MeterRegistry to bind the metric to
+	 * @param builder the Builder used to configure the metric
+	 */
+	private void bindConnectionPoolMetric(MeterRegistry registry, Builder<?> builder) {
 		builder.tags(this.tags).baseUnit(CONNECTIONS).register(registry);
 	}
 
 	/**
-     * Returns the metric key for the given name.
-     *
-     * @param name the name of the metric
-     * @return the metric key
-     */
-    private static String metricKey(String name) {
+	 * Returns the metric key for the given name.
+	 * @param name the name of the metric
+	 * @return the metric key
+	 */
+	private static String metricKey(String name) {
 		return "r2dbc.pool." + name;
 	}
 

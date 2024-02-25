@@ -66,75 +66,69 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	private final boolean movingToSnapshots;
 
 	/**
-     * Constructs a new instance of UpgradeDependencies with the specified BomExtension.
-     * 
-     * @param bom the BomExtension to be used for upgrading dependencies
-     */
-    @Inject
+	 * Constructs a new instance of UpgradeDependencies with the specified BomExtension.
+	 * @param bom the BomExtension to be used for upgrading dependencies
+	 */
+	@Inject
 	public UpgradeDependencies(BomExtension bom) {
 		this(bom, false);
 	}
 
 	/**
-     * Upgrades the dependencies in the specified BOM extension.
-     * 
-     * @param bom The BOM extension containing the dependencies to be upgraded.
-     * @param movingToSnapshots A boolean indicating whether the dependencies are being upgraded to snapshots.
-     */
-    protected UpgradeDependencies(BomExtension bom, boolean movingToSnapshots) {
+	 * Upgrades the dependencies in the specified BOM extension.
+	 * @param bom The BOM extension containing the dependencies to be upgraded.
+	 * @param movingToSnapshots A boolean indicating whether the dependencies are being
+	 * upgraded to snapshots.
+	 */
+	protected UpgradeDependencies(BomExtension bom, boolean movingToSnapshots) {
 		this.bom = bom;
 		getThreads().convention(2);
 		this.movingToSnapshots = movingToSnapshots;
 	}
 
 	/**
-     * Gets the milestone to which dependency upgrade issues should be assigned.
-     *
-     * @return The milestone as a String.
-     */
-    @Input
+	 * Gets the milestone to which dependency upgrade issues should be assigned.
+	 * @return The milestone as a String.
+	 */
+	@Input
 	@Option(option = "milestone", description = "Milestone to which dependency upgrade issues should be assigned")
 	public abstract Property<String> getMilestone();
 
 	/**
-     * Retrieves the number of threads to use for update resolution.
-     * 
-     * @return the number of threads to use for update resolution
-     */
-    @Input
+	 * Retrieves the number of threads to use for update resolution.
+	 * @return the number of threads to use for update resolution
+	 */
+	@Input
 	@Optional
 	@Option(option = "threads", description = "Number of Threads to use for update resolution")
 	public abstract Property<Integer> getThreads();
 
 	/**
-     * Retrieves the regular expression that identifies the libraries to upgrade.
-     * 
-     * @return The regular expression that identifies the libraries to upgrade.
-     */
-    @Input
+	 * Retrieves the regular expression that identifies the libraries to upgrade.
+	 * @return The regular expression that identifies the libraries to upgrade.
+	 */
+	@Input
 	@Optional
 	@Option(option = "libraries", description = "Regular expression that identifies the libraries to upgrade")
 	public abstract Property<String> getLibraries();
 
 	/**
-     * Returns the list of repository URIs.
-     *
-     * @return the list of repository URIs
-     */
-    @Input
+	 * Returns the list of repository URIs.
+	 * @return the list of repository URIs
+	 */
+	@Input
 	abstract ListProperty<URI> getRepositoryUris();
 
 	/**
-     * Upgrades the dependencies of the project.
-     * 
-     * This method performs the following steps:
-     * 1. Retrieves the GitHub repository based on the organization and repository specified in the BOM upgrade configuration.
-     * 2. Verifies the labels associated with the repository.
-     * 3. Determines the milestone for the repository.
-     * 4. Resolves the upgrades based on the milestone.
-     * 5. Applies the upgrades to the repository, considering the issue labels and milestone.
-     */
-    @TaskAction
+	 * Upgrades the dependencies of the project.
+	 *
+	 * This method performs the following steps: 1. Retrieves the GitHub repository based
+	 * on the organization and repository specified in the BOM upgrade configuration. 2.
+	 * Verifies the labels associated with the repository. 3. Determines the milestone for
+	 * the repository. 4. Resolves the upgrades based on the milestone. 5. Applies the
+	 * upgrades to the repository, considering the issue labels and milestone.
+	 */
+	@TaskAction
 	void upgradeDependencies() {
 		GitHubRepository repository = createGitHub().getRepository(this.bom.getUpgrade().getGitHub().getOrganization(),
 				this.bom.getUpgrade().getGitHub().getRepository());
@@ -145,14 +139,13 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Applies the specified upgrades to the given GitHub repository.
-     * 
-     * @param repository     The GitHub repository to apply the upgrades to.
-     * @param issueLabels    The labels to filter the existing upgrade issues.
-     * @param milestone      The milestone to associate the upgrade issues with.
-     * @param upgrades       The list of upgrades to apply.
-     */
-    private void applyUpgrades(GitHubRepository repository, List<String> issueLabels, Milestone milestone,
+	 * Applies the specified upgrades to the given GitHub repository.
+	 * @param repository The GitHub repository to apply the upgrades to.
+	 * @param issueLabels The labels to filter the existing upgrade issues.
+	 * @param milestone The milestone to associate the upgrade issues with.
+	 * @param upgrades The list of upgrades to apply.
+	 */
+	private void applyUpgrades(GitHubRepository repository, List<String> issueLabels, Milestone milestone,
 			List<Upgrade> upgrades) {
 		Path buildFile = getProject().getBuildFile().toPath();
 		Path gradleProperties = new File(getProject().getRootProject().getProjectDir(), "gradle.properties").toPath();
@@ -194,16 +187,17 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Retrieves the number of an existing open upgrade issue or opens a new one in the given GitHub repository.
-     * 
-     * @param repository The GitHub repository where the issue will be opened.
-     * @param issueLabels The labels to be assigned to the issue.
-     * @param milestone The milestone to be assigned to the issue.
-     * @param title The title of the issue.
-     * @param existingUpgradeIssue The existing upgrade issue, if any.
-     * @return The number of the existing open upgrade issue, if it exists, or the number of the newly opened issue.
-     */
-    private int getOrOpenUpgradeIssue(GitHubRepository repository, List<String> issueLabels, Milestone milestone,
+	 * Retrieves the number of an existing open upgrade issue or opens a new one in the
+	 * given GitHub repository.
+	 * @param repository The GitHub repository where the issue will be opened.
+	 * @param issueLabels The labels to be assigned to the issue.
+	 * @param milestone The milestone to be assigned to the issue.
+	 * @param title The title of the issue.
+	 * @param existingUpgradeIssue The existing upgrade issue, if any.
+	 * @return The number of the existing open upgrade issue, if it exists, or the number
+	 * of the newly opened issue.
+	 */
+	private int getOrOpenUpgradeIssue(GitHubRepository repository, List<String> issueLabels, Milestone milestone,
 			String title, Issue existingUpgradeIssue) {
 		if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.OPEN) {
 			return existingUpgradeIssue.getNumber();
@@ -213,12 +207,12 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Returns the message details for an existing upgrade issue.
-     * 
-     * @param existingUpgradeIssue the existing upgrade issue to get the message details for
-     * @return the message details for the existing upgrade issue
-     */
-    private String getExistingUpgradeIssueMessageDetails(Issue existingUpgradeIssue) {
+	 * Returns the message details for an existing upgrade issue.
+	 * @param existingUpgradeIssue the existing upgrade issue to get the message details
+	 * for
+	 * @return the message details for the existing upgrade issue
+	 */
+	private String getExistingUpgradeIssueMessageDetails(Issue existingUpgradeIssue) {
 		if (existingUpgradeIssue == null) {
 			return "";
 		}
@@ -229,13 +223,12 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Verifies the labels of a GitHub repository.
-     * 
-     * @param repository the GitHub repository to verify labels for
-     * @return the list of issue labels
-     * @throws InvalidUserDataException if there are unknown labels
-     */
-    private List<String> verifyLabels(GitHubRepository repository) {
+	 * Verifies the labels of a GitHub repository.
+	 * @param repository the GitHub repository to verify labels for
+	 * @return the list of issue labels
+	 * @throws InvalidUserDataException if there are unknown labels
+	 */
+	private List<String> verifyLabels(GitHubRepository repository) {
 		Set<String> availableLabels = repository.getLabels();
 		List<String> issueLabels = this.bom.getUpgrade().getGitHub().getIssueLabels();
 		if (!availableLabels.containsAll(issueLabels)) {
@@ -249,12 +242,13 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Creates a private GitHub instance using the credentials provided in the .bomr.properties file.
-     * 
-     * @return A private GitHub instance
-     * @throws InvalidUserDataException If the .bomr.properties file cannot be loaded from the user home directory
-     */
-    private GitHub createGitHub() {
+	 * Creates a private GitHub instance using the credentials provided in the
+	 * .bomr.properties file.
+	 * @return A private GitHub instance
+	 * @throws InvalidUserDataException If the .bomr.properties file cannot be loaded from
+	 * the user home directory
+	 */
+	private GitHub createGitHub() {
 		Properties bomrProperties = new Properties();
 		try (Reader reader = new FileReader(new File(System.getProperty("user.home"), ".bomr.properties"))) {
 			bomrProperties.load(reader);
@@ -268,13 +262,12 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Determines the milestone for a given GitHub repository.
-     * 
-     * @param repository The GitHub repository to determine the milestone for.
-     * @return The matching milestone for the given repository.
-     * @throws InvalidUserDataException If the milestone is not found in the repository.
-     */
-    private Milestone determineMilestone(GitHubRepository repository) {
+	 * Determines the milestone for a given GitHub repository.
+	 * @param repository The GitHub repository to determine the milestone for.
+	 * @return The matching milestone for the given repository.
+	 * @throws InvalidUserDataException If the milestone is not found in the repository.
+	 */
+	private Milestone determineMilestone(GitHubRepository repository) {
 		List<Milestone> milestones = repository.getMilestones();
 		java.util.Optional<Milestone> matchingMilestone = milestones.stream()
 			.filter((milestone) -> milestone.getName().equals(getMilestone().get()))
@@ -286,13 +279,13 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Finds an existing upgrade issue in the given list of issues based on the provided upgrade.
-     * 
-     * @param existingUpgradeIssues the list of existing upgrade issues to search in
-     * @param upgrade the upgrade to match against
-     * @return the existing upgrade issue if found, null otherwise
-     */
-    private Issue findExistingUpgradeIssue(List<Issue> existingUpgradeIssues, Upgrade upgrade) {
+	 * Finds an existing upgrade issue in the given list of issues based on the provided
+	 * upgrade.
+	 * @param existingUpgradeIssues the list of existing upgrade issues to search in
+	 * @param upgrade the upgrade to match against
+	 * @return the existing upgrade issue if found, null otherwise
+	 */
+	private Issue findExistingUpgradeIssue(List<Issue> existingUpgradeIssues, Upgrade upgrade) {
 		String toMatch = "Upgrade to " + upgrade.getLibrary().getName();
 		for (Issue existingUpgradeIssue : existingUpgradeIssues) {
 			String title = existingUpgradeIssue.getTitle();
@@ -308,13 +301,11 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Resolves the upgrades for the given milestone.
-     * 
-     * @param milestone The milestone for which upgrades need to be resolved.
-     * @return The list of upgrades resolved for the given milestone.
-     * @deprecated This method is deprecated and may be removed in future versions. Use {@link #resolveUpgrades(Milestone, boolean)} instead.
-     */
-    @SuppressWarnings("deprecation")
+	 * Resolves the upgrades for the given milestone.
+	 * @param milestone The milestone for which upgrades need to be resolved.
+	 * @return The list of upgrades resolved for the given milestone.
+	 */
+	@SuppressWarnings("deprecation")
 	private List<Upgrade> resolveUpgrades(Milestone milestone) {
 		List<Upgrade> upgrades = new InteractiveUpgradeResolver(getServices().get(UserInputHandler.class),
 				new MultithreadedLibraryUpdateResolver(getThreads().get(),
@@ -325,12 +316,11 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Determines the update predicates based on the given milestone.
-     * 
-     * @param milestone the milestone to determine the update predicates for
-     * @return the list of update predicates
-     */
-    protected List<BiPredicate<Library, DependencyVersion>> determineUpdatePredicates(Milestone milestone) {
+	 * Determines the update predicates based on the given milestone.
+	 * @param milestone the milestone to determine the update predicates for
+	 * @return the list of update predicates
+	 */
+	protected List<BiPredicate<Library, DependencyVersion>> determineUpdatePredicates(Milestone milestone) {
 		List<BiPredicate<Library, DependencyVersion>> updatePredicates = new ArrayList<>();
 		updatePredicates.add(this::compliesWithUpgradePolicy);
 		updatePredicates.add(this::isAnUpgrade);
@@ -339,47 +329,46 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Checks if the given dependency version complies with the upgrade policy of the library.
-     * 
-     * @param library   the library for which the upgrade policy needs to be checked
-     * @param candidate the dependency version to be tested against the upgrade policy
-     * @return true if the dependency version complies with the upgrade policy, false otherwise
-     */
-    private boolean compliesWithUpgradePolicy(Library library, DependencyVersion candidate) {
+	 * Checks if the given dependency version complies with the upgrade policy of the
+	 * library.
+	 * @param library the library for which the upgrade policy needs to be checked
+	 * @param candidate the dependency version to be tested against the upgrade policy
+	 * @return true if the dependency version complies with the upgrade policy, false
+	 * otherwise
+	 */
+	private boolean compliesWithUpgradePolicy(Library library, DependencyVersion candidate) {
 		return this.bom.getUpgrade().getPolicy().test(candidate, library.getVersion().getVersion());
 	}
 
 	/**
-     * Checks if a given dependency version is an upgrade for a library.
-     * 
-     * @param library the library to check for upgrade
-     * @param candidate the dependency version to check
-     * @return true if the given dependency version is an upgrade for the library, false otherwise
-     */
-    private boolean isAnUpgrade(Library library, DependencyVersion candidate) {
+	 * Checks if a given dependency version is an upgrade for a library.
+	 * @param library the library to check for upgrade
+	 * @param candidate the dependency version to check
+	 * @return true if the given dependency version is an upgrade for the library, false
+	 * otherwise
+	 */
+	private boolean isAnUpgrade(Library library, DependencyVersion candidate) {
 		return library.getVersion().getVersion().isUpgrade(candidate, this.movingToSnapshots);
 	}
 
 	/**
-     * Checks if a given dependency version is not prohibited in a library.
-     * 
-     * @param library   the library to check against
-     * @param candidate the dependency version to check
-     * @return true if the dependency version is not prohibited, false otherwise
-     */
-    private boolean isNotProhibited(Library library, DependencyVersion candidate) {
+	 * Checks if a given dependency version is not prohibited in a library.
+	 * @param library the library to check against
+	 * @param candidate the dependency version to check
+	 * @return true if the dependency version is not prohibited, false otherwise
+	 */
+	private boolean isNotProhibited(Library library, DependencyVersion candidate) {
 		return library.getProhibitedVersions()
 			.stream()
 			.noneMatch((prohibited) -> prohibited.isProhibited(candidate.toString()));
 	}
 
 	/**
-     * Returns a list of libraries that are eligible for upgrade.
-     * 
-     * @return a list of libraries that are eligible for upgrade
-     * @throws InvalidUserDataException if there are no libraries to upgrade
-     */
-    private List<Library> matchingLibraries() {
+	 * Returns a list of libraries that are eligible for upgrade.
+	 * @return a list of libraries that are eligible for upgrade
+	 * @throws InvalidUserDataException if there are no libraries to upgrade
+	 */
+	private List<Library> matchingLibraries() {
 		List<Library> matchingLibraries = this.bom.getLibraries().stream().filter(this::eligible).toList();
 		if (matchingLibraries.isEmpty()) {
 			throw new InvalidUserDataException("No libraries to upgrade");
@@ -388,12 +377,11 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Checks if a library is eligible based on a given pattern.
-     * 
-     * @param library the library to check eligibility for
-     * @return true if the library is eligible, false otherwise
-     */
-    protected boolean eligible(Library library) {
+	 * Checks if a library is eligible based on a given pattern.
+	 * @param library the library to check eligibility for
+	 * @return true if the library is eligible, false otherwise
+	 */
+	protected boolean eligible(Library library) {
 		String pattern = getLibraries().getOrNull();
 		if (pattern == null) {
 			return true;
@@ -403,20 +391,18 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	/**
-     * Returns the title of the issue related to the given upgrade.
-     *
-     * @param upgrade the upgrade object for which the issue title is to be generated
-     * @return the title of the issue
-     */
-    protected abstract String issueTitle(Upgrade upgrade);
+	 * Returns the title of the issue related to the given upgrade.
+	 * @param upgrade the upgrade object for which the issue title is to be generated
+	 * @return the title of the issue
+	 */
+	protected abstract String issueTitle(Upgrade upgrade);
 
 	/**
-     * Generates a commit message for the given upgrade and issue number.
-     *
-     * @param upgrade The upgrade to generate the commit message for.
-     * @param issueNumber The issue number associated with the upgrade.
-     * @return The commit message as a string.
-     */
-    protected abstract String commitMessage(Upgrade upgrade, int issueNumber);
+	 * Generates a commit message for the given upgrade and issue number.
+	 * @param upgrade The upgrade to generate the commit message for.
+	 * @param issueNumber The issue number associated with the upgrade.
+	 * @return The commit message as a string.
+	 */
+	protected abstract String commitMessage(Upgrade upgrade, int issueNumber);
 
 }

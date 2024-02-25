@@ -34,21 +34,19 @@ public class TomcatWebSocketServletWebServerCustomizer
 		implements WebServerFactoryCustomizer<TomcatServletWebServerFactory>, Ordered {
 
 	/**
-     * Customize the Tomcat servlet web server factory.
-     * 
-     * @param factory the Tomcat servlet web server factory to customize
-     */
-    @Override
+	 * Customize the Tomcat servlet web server factory.
+	 * @param factory the Tomcat servlet web server factory to customize
+	 */
+	@Override
 	public void customize(TomcatServletWebServerFactory factory) {
 		factory.addContextCustomizers((context) -> context.addServletContainerInitializer(new WsSci(), null));
 	}
 
 	/**
-     * Returns the order in which this customizer should be applied.
-     * 
-     * @return the order value, with a lower value indicating higher priority
-     */
-    @Override
+	 * Returns the order in which this customizer should be applied.
+	 * @return the order value, with a lower value indicating higher priority
+	 */
+	@Override
 	public int getOrder() {
 		return 0;
 	}

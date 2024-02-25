@@ -26,11 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class WelcomeController {
 
 	/**
-     * This method is used to display a welcome message.
-     * 
-     * @return The welcome message "Hello World".
-     */
-    @GetMapping("/")
+	 * This method is used to display a welcome message.
+	 * @return The welcome message "Hello World".
+	 */
+	@GetMapping("/")
 	public String welcome() {
 		return "Hello World";
 	}

@@ -33,9 +33,9 @@ public final class Handlers {
 	private static final String PACKAGE = Handlers.class.getPackageName();
 
 	/**
-     * Constructs a new instance of the Handlers class.
-     */
-    private Handlers() {
+	 * Constructs a new instance of the Handlers class.
+	 */
+	private Handlers() {
 	}
 
 	/**

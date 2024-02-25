@@ -33,40 +33,39 @@ import org.springframework.context.annotation.Bean;
 public class MyServiceAutoConfiguration {
 
 	/**
-     * Creates a new instance of MyService if no other bean of type MyService is present in the application context.
-     * 
-     * @param properties the UserProperties object containing the necessary configuration properties for MyService
-     * @return a new instance of MyService with the specified name
-     */
-    @Bean
+	 * Creates a new instance of MyService if no other bean of type MyService is present
+	 * in the application context.
+	 * @param properties the UserProperties object containing the necessary configuration
+	 * properties for MyService
+	 * @return a new instance of MyService with the specified name
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public MyService userService(UserProperties properties) {
 		return new MyService(properties.getName());
 	}
 
 	/**
-     * UserProperties class.
-     */
-    @ConfigurationProperties("user")
+	 * UserProperties class.
+	 */
+	@ConfigurationProperties("user")
 	public static class UserProperties {
 
 		private String name = "test";
 
 		/**
-         * Returns the name of the UserProperties object.
-         *
-         * @return the name of the UserProperties object
-         */
-        public String getName() {
+		 * Returns the name of the UserProperties object.
+		 * @return the name of the UserProperties object
+		 */
+		public String getName() {
 			return this.name;
 		}
 
 		/**
-         * Sets the name of the user.
-         * 
-         * @param name the name to set
-         */
-        public void setName(String name) {
+		 * Sets the name of the user.
+		 * @param name the name to set
+		 */
+		public void setName(String name) {
 			this.name = name;
 		}
 

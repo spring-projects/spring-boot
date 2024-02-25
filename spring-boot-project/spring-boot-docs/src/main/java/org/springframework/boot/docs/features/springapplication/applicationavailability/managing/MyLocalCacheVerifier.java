@@ -30,20 +30,19 @@ public class MyLocalCacheVerifier {
 	private final ApplicationEventPublisher eventPublisher;
 
 	/**
-     * Constructs a new MyLocalCacheVerifier with the specified ApplicationEventPublisher.
-     * 
-     * @param eventPublisher the ApplicationEventPublisher to be used by the MyLocalCacheVerifier
-     */
-    public MyLocalCacheVerifier(ApplicationEventPublisher eventPublisher) {
+	 * Constructs a new MyLocalCacheVerifier with the specified ApplicationEventPublisher.
+	 * @param eventPublisher the ApplicationEventPublisher to be used by the
+	 * MyLocalCacheVerifier
+	 */
+	public MyLocalCacheVerifier(ApplicationEventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
 	}
 
 	/**
-     * Checks the local cache for any issues.
-     * 
-     * @throws CacheCompletelyBrokenException if the cache is completely broken
-     */
-    public void checkLocalCache() {
+	 * Checks the local cache for any issues.
+	 * @throws CacheCompletelyBrokenException if the cache is completely broken
+	 */
+	public void checkLocalCache() {
 		try {
 			// ...
 		}

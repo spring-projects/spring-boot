@@ -194,35 +194,33 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private LogLevel springBootLogging = null;
 
 	/**
-     * Determines whether the specified event type is supported by this listener.
-     * 
-     * @param resolvableType the event type to check
-     * @return true if the event type is supported, false otherwise
-     */
-    @Override
+	 * Determines whether the specified event type is supported by this listener.
+	 * @param resolvableType the event type to check
+	 * @return true if the event type is supported, false otherwise
+	 */
+	@Override
 	public boolean supportsEventType(ResolvableType resolvableType) {
 		return isAssignableFrom(resolvableType.getRawClass(), EVENT_TYPES);
 	}
 
 	/**
-     * Determine if the specified source type is supported by this listener.
-     * 
-     * @param sourceType the source type to check
-     * @return true if the source type is supported, false otherwise
-     */
-    @Override
+	 * Determine if the specified source type is supported by this listener.
+	 * @param sourceType the source type to check
+	 * @return true if the source type is supported, false otherwise
+	 */
+	@Override
 	public boolean supportsSourceType(Class<?> sourceType) {
 		return isAssignableFrom(sourceType, SOURCE_TYPES);
 	}
 
 	/**
-     * Checks if the given type is assignable from any of the supported types.
-     *
-     * @param type            the type to check
-     * @param supportedTypes  the supported types to compare against
-     * @return                true if the given type is assignable from any of the supported types, false otherwise
-     */
-    private boolean isAssignableFrom(Class<?> type, Class<?>... supportedTypes) {
+	 * Checks if the given type is assignable from any of the supported types.
+	 * @param type the type to check
+	 * @param supportedTypes the supported types to compare against
+	 * @return true if the given type is assignable from any of the supported types, false
+	 * otherwise
+	 */
+	private boolean isAssignableFrom(Class<?> type, Class<?>... supportedTypes) {
 		if (type != null) {
 			for (Class<?> supportedType : supportedTypes) {
 				if (supportedType.isAssignableFrom(type)) {
@@ -234,12 +232,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * This method is called when an application event is triggered.
-     * It handles different types of application events and performs specific actions accordingly.
-     * 
-     * @param event The application event that is triggered
-     */
-    @Override
+	 * This method is called when an application event is triggered. It handles different
+	 * types of application events and performs specific actions accordingly.
+	 * @param event The application event that is triggered
+	 */
+	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationStartingEvent startingEvent) {
 			onApplicationStartingEvent(startingEvent);
@@ -259,26 +256,26 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * This method is called when the application is starting.
-     * It initializes the logging system by getting the logging system instance
-     * using the class loader of the Spring application. It then calls the
-     * beforeInitialize() method of the logging system to perform any necessary
-     * initialization steps.
-     *
-     * @param event the ApplicationStartingEvent object representing the application starting event
-     */
-    private void onApplicationStartingEvent(ApplicationStartingEvent event) {
+	 * This method is called when the application is starting. It initializes the logging
+	 * system by getting the logging system instance using the class loader of the Spring
+	 * application. It then calls the beforeInitialize() method of the logging system to
+	 * perform any necessary initialization steps.
+	 * @param event the ApplicationStartingEvent object representing the application
+	 * starting event
+	 */
+	private void onApplicationStartingEvent(ApplicationStartingEvent event) {
 		this.loggingSystem = LoggingSystem.get(event.getSpringApplication().getClassLoader());
 		this.loggingSystem.beforeInitialize();
 	}
 
 	/**
-     * This method is called when the ApplicationEnvironmentPreparedEvent is triggered.
-     * It initializes the logging system and sets the logging system to the current class loader.
-     * 
-     * @param event The ApplicationEnvironmentPreparedEvent object containing the event details.
-     */
-    private void onApplicationEnvironmentPreparedEvent(ApplicationEnvironmentPreparedEvent event) {
+	 * This method is called when the ApplicationEnvironmentPreparedEvent is triggered. It
+	 * initializes the logging system and sets the logging system to the current class
+	 * loader.
+	 * @param event The ApplicationEnvironmentPreparedEvent object containing the event
+	 * details.
+	 */
+	private void onApplicationEnvironmentPreparedEvent(ApplicationEnvironmentPreparedEvent event) {
 		SpringApplication springApplication = event.getSpringApplication();
 		if (this.loggingSystem == null) {
 			this.loggingSystem = LoggingSystem.get(springApplication.getClassLoader());
@@ -287,12 +284,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * This method is called when the application is prepared.
-     * It registers necessary beans related to logging in the application context.
-     * 
-     * @param event The ApplicationPreparedEvent object representing the event.
-     */
-    private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
+	 * This method is called when the application is prepared. It registers necessary
+	 * beans related to logging in the application context.
+	 * @param event The ApplicationPreparedEvent object representing the event.
+	 */
+	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
 		ConfigurableApplicationContext applicationContext = event.getApplicationContext();
 		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
@@ -310,13 +306,13 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * This method is called when the context is closed.
-     * It checks if the application context has a parent or if it contains a bean with the name LOGGING_LIFECYCLE_BEAN_NAME.
-     * If neither of these conditions are met, it proceeds to clean up the logging system.
-     *
-     * @param event The ContextClosedEvent that triggered this method.
-     */
-    private void onContextClosedEvent(ContextClosedEvent event) {
+	 * This method is called when the context is closed. It checks if the application
+	 * context has a parent or if it contains a bean with the name
+	 * LOGGING_LIFECYCLE_BEAN_NAME. If neither of these conditions are met, it proceeds to
+	 * clean up the logging system.
+	 * @param event The ContextClosedEvent that triggered this method.
+	 */
+	private void onContextClosedEvent(ContextClosedEvent event) {
 		ApplicationContext applicationContext = event.getApplicationContext();
 		if (applicationContext.getParent() != null || applicationContext.containsBean(LOGGING_LIFECYCLE_BEAN_NAME)) {
 			return;
@@ -325,22 +321,23 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * Cleans up the logging system.
-     * 
-     * This method checks if the logging system is not null and then calls the cleanUp() method of the logging system.
-     * 
-     * @see LoggingSystem#cleanUp()
-     */
-    void cleanupLoggingSystem() {
+	 * Cleans up the logging system.
+	 *
+	 * This method checks if the logging system is not null and then calls the cleanUp()
+	 * method of the logging system.
+	 *
+	 * @see LoggingSystem#cleanUp()
+	 */
+	void cleanupLoggingSystem() {
 		if (this.loggingSystem != null) {
 			this.loggingSystem.cleanUp();
 		}
 	}
 
 	/**
-     * Cleans up the logging system when the application fails.
-     */
-    private void onApplicationFailedEvent() {
+	 * Cleans up the logging system when the application fails.
+	 */
+	private void onApplicationFailedEvent() {
 		cleanupLoggingSystem();
 	}
 
@@ -364,27 +361,27 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * Retrieves the logging system properties based on the provided environment.
-     * If a logging system is available, it delegates the retrieval to the logging system.
-     * Otherwise, it creates a new instance of LoggingSystemProperties using the environment.
-     *
-     * @param environment the configurable environment containing the properties
-     * @return the logging system properties
-     */
-    private LoggingSystemProperties getLoggingSystemProperties(ConfigurableEnvironment environment) {
+	 * Retrieves the logging system properties based on the provided environment. If a
+	 * logging system is available, it delegates the retrieval to the logging system.
+	 * Otherwise, it creates a new instance of LoggingSystemProperties using the
+	 * environment.
+	 * @param environment the configurable environment containing the properties
+	 * @return the logging system properties
+	 */
+	private LoggingSystemProperties getLoggingSystemProperties(ConfigurableEnvironment environment) {
 		return (this.loggingSystem != null) ? this.loggingSystem.getSystemProperties(environment)
 				: new LoggingSystemProperties(environment);
 	}
 
 	/**
-     * Initializes the early logging level based on the environment configuration.
-     * If the parseArgs flag is set and the springBootLogging level is not already set,
-     * it checks if the "debug" or "trace" properties are set in the environment and
-     * sets the springBootLogging level accordingly.
-     * 
-     * @param environment the ConfigurableEnvironment object representing the environment configuration
-     */
-    private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {
+	 * Initializes the early logging level based on the environment configuration. If the
+	 * parseArgs flag is set and the springBootLogging level is not already set, it checks
+	 * if the "debug" or "trace" properties are set in the environment and sets the
+	 * springBootLogging level accordingly.
+	 * @param environment the ConfigurableEnvironment object representing the environment
+	 * configuration
+	 */
+	private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {
 		if (this.parseArgs && this.springBootLogging == null) {
 			if (isSet(environment, "debug")) {
 				this.springBootLogging = LogLevel.DEBUG;
@@ -396,25 +393,23 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * Checks if a property is set in the given ConfigurableEnvironment.
-     * 
-     * @param environment the ConfigurableEnvironment to check the property in
-     * @param property the name of the property to check
-     * @return true if the property is set and its value is not "false", false otherwise
-     */
-    private boolean isSet(ConfigurableEnvironment environment, String property) {
+	 * Checks if a property is set in the given ConfigurableEnvironment.
+	 * @param environment the ConfigurableEnvironment to check the property in
+	 * @param property the name of the property to check
+	 * @return true if the property is set and its value is not "false", false otherwise
+	 */
+	private boolean isSet(ConfigurableEnvironment environment, String property) {
 		String value = environment.getProperty(property);
 		return (value != null && !value.equals("false"));
 	}
 
 	/**
-     * Initializes the system with the given environment, logging system, and log file.
-     * 
-     * @param environment The configurable environment.
-     * @param system The logging system.
-     * @param logFile The log file.
-     */
-    private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system, LogFile logFile) {
+	 * Initializes the system with the given environment, logging system, and log file.
+	 * @param environment The configurable environment.
+	 * @param system The logging system.
+	 * @param logFile The log file.
+	 */
+	private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system, LogFile logFile) {
 		String logConfig = environment.getProperty(CONFIG_PROPERTY);
 		if (StringUtils.hasLength(logConfig)) {
 			logConfig = logConfig.strip();
@@ -442,22 +437,23 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * Checks if the given log configuration should be ignored.
-     * 
-     * @param logConfig the log configuration to check
-     * @return {@code true} if the log configuration should be ignored, {@code false} otherwise
-     */
-    private boolean ignoreLogConfig(String logConfig) {
+	 * Checks if the given log configuration should be ignored.
+	 * @param logConfig the log configuration to check
+	 * @return {@code true} if the log configuration should be ignored, {@code false}
+	 * otherwise
+	 */
+	private boolean ignoreLogConfig(String logConfig) {
 		return !StringUtils.hasLength(logConfig) || logConfig.startsWith("-D");
 	}
 
 	/**
-     * Initializes the final logging levels based on the provided environment and logging system.
-     * 
-     * @param environment the configurable environment containing the logging configuration
-     * @param system the logging system to be initialized
-     */
-    private void initializeFinalLoggingLevels(ConfigurableEnvironment environment, LoggingSystem system) {
+	 * Initializes the final logging levels based on the provided environment and logging
+	 * system.
+	 * @param environment the configurable environment containing the logging
+	 * configuration
+	 * @param system the logging system to be initialized
+	 */
+	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment, LoggingSystem system) {
 		bindLoggerGroups(environment);
 		if (this.springBootLogging != null) {
 			initializeSpringBootLogging(system, this.springBootLogging);
@@ -466,11 +462,10 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * Binds the logger groups to the environment.
-     * 
-     * @param environment the configurable environment
-     */
-    private void bindLoggerGroups(ConfigurableEnvironment environment) {
+	 * Binds the logger groups to the environment.
+	 * @param environment the configurable environment
+	 */
+	private void bindLoggerGroups(ConfigurableEnvironment environment) {
 		if (this.loggerGroups != null) {
 			Binder binder = Binder.get(environment);
 			binder.bind(LOGGING_GROUP, STRING_STRINGS_MAP).ifBound(this.loggerGroups::putAll);
@@ -505,13 +500,12 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * Configures the log level for a specific logger.
-     * 
-     * @param name       the name of the logger
-     * @param level      the log level to be configured
-     * @param configurer the function to configure the log level
-     */
-    private void configureLogLevel(String name, LogLevel level, BiConsumer<String, LogLevel> configurer) {
+	 * Configures the log level for a specific logger.
+	 * @param name the name of the logger
+	 * @param level the log level to be configured
+	 * @param configurer the function to configure the log level
+	 */
+	private void configureLogLevel(String name, LogLevel level, BiConsumer<String, LogLevel> configurer) {
 		if (this.loggerGroups != null) {
 			LoggerGroup group = this.loggerGroups.get(name);
 			if (group != null && group.hasMembers()) {
@@ -523,15 +517,16 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * Returns a BiConsumer that configures the log level for a given logger name using the specified LoggingSystem.
-     * The BiConsumer takes in a logger name and a log level, and sets the log level for the logger using the LoggingSystem.
-     * If the logger name is equal to the root logger name, it is set to null.
-     * If an exception occurs while setting the log level, an error log message is logged.
-     * 
-     * @param system the LoggingSystem to use for configuring log levels
-     * @return a BiConsumer that configures the log level for a given logger name using the specified LoggingSystem
-     */
-    private BiConsumer<String, LogLevel> getLogLevelConfigurer(LoggingSystem system) {
+	 * Returns a BiConsumer that configures the log level for a given logger name using
+	 * the specified LoggingSystem. The BiConsumer takes in a logger name and a log level,
+	 * and sets the log level for the logger using the LoggingSystem. If the logger name
+	 * is equal to the root logger name, it is set to null. If an exception occurs while
+	 * setting the log level, an error log message is logged.
+	 * @param system the LoggingSystem to use for configuring log levels
+	 * @return a BiConsumer that configures the log level for a given logger name using
+	 * the specified LoggingSystem
+	 */
+	private BiConsumer<String, LogLevel> getLogLevelConfigurer(LoggingSystem system) {
 		return (name, level) -> {
 			try {
 				name = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;
@@ -544,12 +539,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * Registers a shutdown hook if necessary.
-     * 
-     * @param environment the environment
-     * @param loggingSystem the logging system
-     */
-    private void registerShutdownHookIfNecessary(Environment environment, LoggingSystem loggingSystem) {
+	 * Registers a shutdown hook if necessary.
+	 * @param environment the environment
+	 * @param loggingSystem the logging system
+	 */
+	private void registerShutdownHookIfNecessary(Environment environment, LoggingSystem loggingSystem) {
 		if (environment.getProperty(REGISTER_SHUTDOWN_HOOK_PROPERTY, Boolean.class, true)) {
 			Runnable shutdownHandler = loggingSystem.getShutdownHandler();
 			if (shutdownHandler != null && shutdownHookRegistered.compareAndSet(false, true)) {
@@ -559,29 +553,26 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * Registers a shutdown hook to be executed when the application is shutting down.
-     * 
-     * @param shutdownHandler the Runnable object to be executed on shutdown
-     */
-    void registerShutdownHook(Runnable shutdownHandler) {
+	 * Registers a shutdown hook to be executed when the application is shutting down.
+	 * @param shutdownHandler the Runnable object to be executed on shutdown
+	 */
+	void registerShutdownHook(Runnable shutdownHandler) {
 		SpringApplication.getShutdownHandlers().add(shutdownHandler);
 	}
 
 	/**
-     * Sets the order of the LoggingApplicationListener.
-     * 
-     * @param order the order value to set
-     */
-    public void setOrder(int order) {
+	 * Sets the order of the LoggingApplicationListener.
+	 * @param order the order value to set
+	 */
+	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	/**
-     * Returns the order value of this LoggingApplicationListener.
-     *
-     * @return the order value of this LoggingApplicationListener
-     */
-    @Override
+	 * Returns the order value of this LoggingApplicationListener.
+	 * @return the order value of this LoggingApplicationListener
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}
@@ -605,50 +596,49 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-     * Lifecycle class.
-     */
-    private final class Lifecycle implements SmartLifecycle {
+	 * Lifecycle class.
+	 */
+	private final class Lifecycle implements SmartLifecycle {
 
 		private volatile boolean running;
 
 		/**
-         * Starts the lifecycle.
-         */
-        @Override
+		 * Starts the lifecycle.
+		 */
+		@Override
 		public void start() {
 			this.running = true;
 		}
 
 		/**
-         * Stops the lifecycle of the application.
-         * Sets the running flag to false, indicating that the application is no longer running.
-         * Cleans up the logging system.
-         */
-        @Override
+		 * Stops the lifecycle of the application. Sets the running flag to false,
+		 * indicating that the application is no longer running. Cleans up the logging
+		 * system.
+		 */
+		@Override
 		public void stop() {
 			this.running = false;
 			cleanupLoggingSystem();
 		}
 
 		/**
-         * Returns a boolean value indicating whether the Lifecycle is currently running.
-         *
-         * @return true if the Lifecycle is running, false otherwise.
-         */
-        @Override
+		 * Returns a boolean value indicating whether the Lifecycle is currently running.
+		 * @return true if the Lifecycle is running, false otherwise.
+		 */
+		@Override
 		public boolean isRunning() {
 			return this.running;
 		}
 
 		/**
-         * Returns the phase of the lifecycle.
-         * 
-         * The phase of the lifecycle is determined by the order in which the lifecycles are executed.
-         * This method returns the phase of the lifecycle, which is set to be shutdown late and always after WebServerStartStopLifecycle.
-         * 
-         * @return the phase of the lifecycle
-         */
-        @Override
+		 * Returns the phase of the lifecycle.
+		 *
+		 * The phase of the lifecycle is determined by the order in which the lifecycles
+		 * are executed. This method returns the phase of the lifecycle, which is set to
+		 * be shutdown late and always after WebServerStartStopLifecycle.
+		 * @return the phase of the lifecycle
+		 */
+		@Override
 		public int getPhase() {
 			// Shutdown late and always after WebServerStartStopLifecycle
 			return Integer.MIN_VALUE + 1;

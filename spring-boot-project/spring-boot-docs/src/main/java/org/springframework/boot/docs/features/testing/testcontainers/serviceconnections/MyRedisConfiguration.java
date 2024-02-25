@@ -29,11 +29,10 @@ import org.springframework.context.annotation.Bean;
 public class MyRedisConfiguration {
 
 	/**
-     * Creates a Redis container for the service connection.
-     * 
-     * @return the Redis container
-     */
-    @Bean
+	 * Creates a Redis container for the service connection.
+	 * @return the Redis container
+	 */
+	@Bean
 	@ServiceConnection(name = "redis")
 	public GenericContainer<?> redisContainer() {
 		return new GenericContainer<>("redis:7");

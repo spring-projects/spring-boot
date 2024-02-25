@@ -34,17 +34,15 @@ class MyIntegrationTests {
 	static Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:5");
 
 	/**
-     * This method is a test case for integration testing.
-     * It is used to test the functionality of the integration between different components.
-     * 
-     * @param none
-     * @return void
-     * 
-     * @throws none
-     * 
-     * @since 1.0
-     */
-    @Test
+	 * This method is a test case for integration testing. It is used to test the
+	 * functionality of the integration between different components.
+	 * @param none
+	 * @return void
+	 * @throws none
+	 *
+	 * @since 1.0
+	 */
+	@Test
 	void myTest() {
 		// ...
 	}

@@ -34,11 +34,10 @@ public class MyProperties {
 	}
 
 	/**
-     * Sets the contexts for the MyProperties object.
-     * 
-     * @param contexts a Map containing the contexts to be set
-     */
-    public void setContexts(Map<String, Integer> contexts) {
+	 * Sets the contexts for the MyProperties object.
+	 * @param contexts a Map containing the contexts to be set
+	 */
+	public void setContexts(Map<String, Integer> contexts) {
 		this.contexts = contexts;
 	}
 	// @fold:off

@@ -108,11 +108,10 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Initializes the Tomcat web server.
-     * 
-     * @throws WebServerException if unable to start the embedded Tomcat
-     */
-    private void initialize() throws WebServerException {
+	 * Initializes the Tomcat web server.
+	 * @throws WebServerException if unable to start the embedded Tomcat
+	 */
+	private void initialize() throws WebServerException {
 		logger.info("Tomcat initialized with " + getPortsDescription(false));
 		synchronized (this.monitor) {
 			try {
@@ -155,12 +154,11 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Finds and returns the Context object associated with the TomcatWebServer.
-     * 
-     * @return the Context object
-     * @throws IllegalStateException if the host does not contain a Context
-     */
-    private Context findContext() {
+	 * Finds and returns the Context object associated with the TomcatWebServer.
+	 * @return the Context object
+	 * @throws IllegalStateException if the host does not contain a Context
+	 */
+	private Context findContext() {
 		for (Container child : this.tomcat.getHost().findChildren()) {
 			if (child instanceof Context context) {
 				return context;
@@ -170,14 +168,14 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Adds an instance ID to the engine name.
-     * 
-     * This method increments the container counter and appends the instance ID to the engine name
-     * of the TomcatWebServer. The instance ID is obtained by calling the incrementAndGet() method
-     * on the containerCounter. If the instance ID is greater than 0, the engine name is updated
-     * by appending the instance ID to it.
-     */
-    private void addInstanceIdToEngineName() {
+	 * Adds an instance ID to the engine name.
+	 *
+	 * This method increments the container counter and appends the instance ID to the
+	 * engine name of the TomcatWebServer. The instance ID is obtained by calling the
+	 * incrementAndGet() method on the containerCounter. If the instance ID is greater
+	 * than 0, the engine name is updated by appending the instance ID to it.
+	 */
+	private void addInstanceIdToEngineName() {
 		int instanceId = containerCounter.incrementAndGet();
 		if (instanceId > 0) {
 			Engine engine = this.tomcat.getEngine();
@@ -186,12 +184,13 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Removes the service connectors from the TomcatWebServer.
-     * 
-     * This method iterates over the service connectors and removes them from the TomcatWebServer's service.
-     * The removed connectors are stored in the serviceConnectors map for future reference.
-     */
-    private void removeServiceConnectors() {
+	 * Removes the service connectors from the TomcatWebServer.
+	 *
+	 * This method iterates over the service connectors and removes them from the
+	 * TomcatWebServer's service. The removed connectors are stored in the
+	 * serviceConnectors map for future reference.
+	 */
+	private void removeServiceConnectors() {
 		doWithConnectors((service, connectors) -> {
 			this.serviceConnectors.put(service, connectors);
 			for (Connector connector : connectors) {
@@ -201,11 +200,12 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Disables the bind on init functionality for all connectors in the TomcatWebServer.
-     * This method iterates through all the connectors and checks if the "bindOnInit" property is set.
-     * If the property is not set, it sets the "bindOnInit" property to "false".
-     */
-    private void disableBindOnInit() {
+	 * Disables the bind on init functionality for all connectors in the TomcatWebServer.
+	 * This method iterates through all the connectors and checks if the "bindOnInit"
+	 * property is set. If the property is not set, it sets the "bindOnInit" property to
+	 * "false".
+	 */
+	private void disableBindOnInit() {
 		doWithConnectors((service, connectors) -> {
 			for (Connector connector : connectors) {
 				Object bindOnInit = connector.getProperty("bindOnInit");
@@ -217,11 +217,12 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Executes the specified consumer function for each service and its corresponding connectors in the TomcatWebServer.
-     * 
-     * @param consumer the consumer function to be executed for each service and connectors
-     */
-    private void doWithConnectors(BiConsumer<Service, Connector[]> consumer) {
+	 * Executes the specified consumer function for each service and its corresponding
+	 * connectors in the TomcatWebServer.
+	 * @param consumer the consumer function to be executed for each service and
+	 * connectors
+	 */
+	private void doWithConnectors(BiConsumer<Service, Connector[]> consumer) {
 		for (Service service : this.tomcat.getServer().findServices()) {
 			Connector[] connectors = service.findConnectors().clone();
 			consumer.accept(service, connectors);
@@ -229,11 +230,12 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Rethrows any deferred startup exceptions that occurred during the initialization of the Tomcat web server.
-     * 
-     * @throws Exception if any deferred startup exception occurred during the initialization process.
-     */
-    private void rethrowDeferredStartupExceptions() throws Exception {
+	 * Rethrows any deferred startup exceptions that occurred during the initialization of
+	 * the Tomcat web server.
+	 * @throws Exception if any deferred startup exception occurred during the
+	 * initialization process.
+	 */
+	private void rethrowDeferredStartupExceptions() throws Exception {
 		Container[] children = this.tomcat.getHost().findChildren();
 		for (Container container : children) {
 			if (container instanceof TomcatEmbeddedContext embeddedContext) {
@@ -252,15 +254,15 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Starts a non-daemon await thread for the TomcatWebServer.
-     * This method creates a new thread that waits for the Tomcat server to finish processing requests.
-     * The thread is given a name based on the container counter.
-     * The thread's run method calls the await method of the Tomcat server to wait for it to finish.
-     * The thread's context class loader is set to the class loader of the TomcatWebServer class.
-     * The thread is set to be a non-daemon thread.
-     * The thread is started and runs concurrently with the main thread.
-     */
-    private void startNonDaemonAwaitThread() {
+	 * Starts a non-daemon await thread for the TomcatWebServer. This method creates a new
+	 * thread that waits for the Tomcat server to finish processing requests. The thread
+	 * is given a name based on the container counter. The thread's run method calls the
+	 * await method of the Tomcat server to wait for it to finish. The thread's context
+	 * class loader is set to the class loader of the TomcatWebServer class. The thread is
+	 * set to be a non-daemon thread. The thread is started and runs concurrently with the
+	 * main thread.
+	 */
+	private void startNonDaemonAwaitThread() {
 		Thread awaitThread = new Thread("container-" + (containerCounter.get())) {
 
 			@Override
@@ -275,11 +277,10 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Starts the embedded Tomcat server.
-     *
-     * @throws WebServerException if unable to start the server
-     */
-    @Override
+	 * Starts the embedded Tomcat server.
+	 * @throws WebServerException if unable to start the server
+	 */
+	@Override
 	public void start() throws WebServerException {
 		synchronized (this.monitor) {
 			if (this.started) {
@@ -312,22 +313,20 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Returns the log message indicating the start of the Tomcat server.
-     * 
-     * @return the log message indicating the start of the Tomcat server
-     */
-    String getStartedLogMessage() {
+	 * Returns the log message indicating the start of the Tomcat server.
+	 * @return the log message indicating the start of the Tomcat server
+	 */
+	String getStartedLogMessage() {
 		String contextPath = getContextPath();
 		return "Tomcat started on " + getPortsDescription(true)
 				+ ((contextPath != null) ? " with context path '" + contextPath + "'" : "");
 	}
 
 	/**
-     * Checks if the connectors of the TomcatWebServer have started.
-     * 
-     * @param tomcatConnector The Tomcat connector to be checked.
-     */
-    private void checkThatConnectorsHaveStarted() {
+	 * Checks if the connectors of the TomcatWebServer have started.
+	 * @param tomcatConnector The Tomcat connector to be checked.
+	 */
+	private void checkThatConnectorsHaveStarted() {
 		checkConnectorHasStarted(this.tomcat.getConnector());
 		for (Connector connector : this.tomcat.getService().findConnectors()) {
 			checkConnectorHasStarted(connector);
@@ -335,25 +334,24 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Checks if the given Connector has started successfully.
-     * 
-     * @param connector The Connector to check.
-     * @throws ConnectorStartFailedException If the Connector has failed to start.
-     */
-    private void checkConnectorHasStarted(Connector connector) {
+	 * Checks if the given Connector has started successfully.
+	 * @param connector The Connector to check.
+	 * @throws ConnectorStartFailedException If the Connector has failed to start.
+	 */
+	private void checkConnectorHasStarted(Connector connector) {
 		if (LifecycleState.FAILED.equals(connector.getState())) {
 			throw new ConnectorStartFailedException(connector.getPort());
 		}
 	}
 
 	/**
-     * Stops the Tomcat server silently.
-     * <p>
-     * This method attempts to stop the Tomcat server without throwing any exceptions.
-     * If a {@link LifecycleException} occurs during the stop process, it will be ignored.
-     * </p>
-     */
-    private void stopSilently() {
+	 * Stops the Tomcat server silently.
+	 * <p>
+	 * This method attempts to stop the Tomcat server without throwing any exceptions. If
+	 * a {@link LifecycleException} occurs during the stop process, it will be ignored.
+	 * </p>
+	 */
+	private void stopSilently() {
 		try {
 			stopTomcat();
 		}
@@ -363,13 +361,14 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Destroys the Tomcat web server instance silently.
-     * <p>
-     * This method attempts to destroy the Tomcat web server instance without throwing any exceptions.
-     * If a {@link LifecycleException} occurs during the destruction process, it is ignored.
-     * </p>
-     */
-    private void destroySilently() {
+	 * Destroys the Tomcat web server instance silently.
+	 * <p>
+	 * This method attempts to destroy the Tomcat web server instance without throwing any
+	 * exceptions. If a {@link LifecycleException} occurs during the destruction process,
+	 * it is ignored.
+	 * </p>
+	 */
+	private void destroySilently() {
 		try {
 			this.tomcat.destroy();
 		}
@@ -379,11 +378,10 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Stops the Tomcat server.
-     * 
-     * @throws LifecycleException if an error occurs during the server stop process
-     */
-    private void stopTomcat() throws LifecycleException {
+	 * Stops the Tomcat server.
+	 * @throws LifecycleException if an error occurs during the server stop process
+	 */
+	private void stopTomcat() throws LifecycleException {
 		if (Thread.currentThread().getContextClassLoader() instanceof TomcatEmbeddedWebappClassLoader) {
 			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 		}
@@ -391,15 +389,16 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Adds previously removed connectors to the Tomcat server.
-     * 
-     * This method retrieves the services from the Tomcat server and adds the previously removed connectors
-     * to each service. If the 'autoStart' flag is set to false, the protocol handler for each connector is stopped.
-     * 
-     * @see TomcatWebServer
-     * @since version 1.0
-     */
-    private void addPreviouslyRemovedConnectors() {
+	 * Adds previously removed connectors to the Tomcat server.
+	 *
+	 * This method retrieves the services from the Tomcat server and adds the previously
+	 * removed connectors to each service. If the 'autoStart' flag is set to false, the
+	 * protocol handler for each connector is stopped.
+	 *
+	 * @see TomcatWebServer
+	 * @since version 1.0
+	 */
+	private void addPreviouslyRemovedConnectors() {
 		Service[] services = this.tomcat.getServer().findServices();
 		for (Service service : services) {
 			Connector[] connectors = this.serviceConnectors.get(service);
@@ -416,11 +415,10 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Stops the protocol handler for the given connector.
-     * 
-     * @param connector the connector for which the protocol handler needs to be stopped
-     */
-    private void stopProtocolHandler(Connector connector) {
+	 * Stops the protocol handler for the given connector.
+	 * @param connector the connector for which the protocol handler needs to be stopped
+	 */
+	private void stopProtocolHandler(Connector connector) {
 		try {
 			connector.getProtocolHandler().stop();
 		}
@@ -430,12 +428,11 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Performs deferred load on startup for all embedded contexts in the Tomcat host.
-     * This method is called during the startup of the TomcatWebServer.
-     * 
-     * @throws WebServerException if unable to start embedded Tomcat connectors
-     */
-    private void performDeferredLoadOnStartup() {
+	 * Performs deferred load on startup for all embedded contexts in the Tomcat host.
+	 * This method is called during the startup of the TomcatWebServer.
+	 * @throws WebServerException if unable to start embedded Tomcat connectors
+	 */
+	private void performDeferredLoadOnStartup() {
 		try {
 			for (Container child : this.tomcat.getHost().findChildren()) {
 				if (child instanceof TomcatEmbeddedContext embeddedContext) {
@@ -452,20 +449,18 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Returns a map of services and their corresponding connectors.
-     * 
-     * @return the map of services and connectors
-     */
-    Map<Service, Connector[]> getServiceConnectors() {
+	 * Returns a map of services and their corresponding connectors.
+	 * @return the map of services and connectors
+	 */
+	Map<Service, Connector[]> getServiceConnectors() {
 		return this.serviceConnectors;
 	}
 
 	/**
-     * Stops the embedded Tomcat web server.
-     * 
-     * @throws WebServerException if unable to stop the server
-     */
-    @Override
+	 * Stops the embedded Tomcat web server.
+	 * @throws WebServerException if unable to stop the server
+	 */
+	@Override
 	public void stop() throws WebServerException {
 		synchronized (this.monitor) {
 			boolean wasStarted = this.started;
@@ -488,11 +483,10 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Destroys the embedded Tomcat server.
-     * 
-     * @throws WebServerException if unable to destroy the embedded Tomcat server
-     */
-    @Override
+	 * Destroys the embedded Tomcat server.
+	 * @throws WebServerException if unable to destroy the embedded Tomcat server
+	 */
+	@Override
 	public void destroy() throws WebServerException {
 		try {
 			stopTomcat();
@@ -507,12 +501,13 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Returns a description of the ports used by the TomcatWebServer.
-     * 
-     * @param localPort true if the local port should be used, false if the remote port should be used
-     * @return a string containing the description of the ports used by the TomcatWebServer
-     */
-    private String getPortsDescription(boolean localPort) {
+	 * Returns a description of the ports used by the TomcatWebServer.
+	 * @param localPort true if the local port should be used, false if the remote port
+	 * should be used
+	 * @return a string containing the description of the ports used by the
+	 * TomcatWebServer
+	 */
+	private String getPortsDescription(boolean localPort) {
 		StringBuilder description = new StringBuilder();
 		Connector[] connectors = this.tomcat.getService().findConnectors();
 		description.append("port");
@@ -532,11 +527,10 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Returns the port number on which the Tomcat web server is running.
-     * 
-     * @return the port number if the web server is running, -1 otherwise
-     */
-    @Override
+	 * Returns the port number on which the Tomcat web server is running.
+	 * @return the port number if the web server is running, -1 otherwise
+	 */
+	@Override
 	public int getPort() {
 		Connector connector = this.tomcat.getConnector();
 		if (connector != null) {
@@ -546,11 +540,10 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Returns the context path of the Tomcat web server.
-     * 
-     * @return the context path as a String, or null if it is empty or not found
-     */
-    private String getContextPath() {
+	 * Returns the context path of the Tomcat web server.
+	 * @return the context path as a String, or null if it is empty or not found
+	 */
+	private String getContextPath() {
 		String contextPath = Arrays.stream(this.tomcat.getHost().findChildren())
 			.filter(TomcatEmbeddedContext.class::isInstance)
 			.map(TomcatEmbeddedContext.class::cast)
@@ -562,13 +555,13 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Checks if the given TomcatEmbeddedContext has any child containers that are instances of Wrapper and have a servlet class
-     * equal to "org.springframework.http.server.reactive.TomcatHttpHandlerAdapter".
-     * 
-     * @param context the TomcatEmbeddedContext to check
-     * @return true if no child containers match the specified conditions, false otherwise
-     */
-    private boolean imperative(TomcatEmbeddedContext context) {
+	 * Checks if the given TomcatEmbeddedContext has any child containers that are
+	 * instances of Wrapper and have a servlet class equal to
+	 * "org.springframework.http.server.reactive.TomcatHttpHandlerAdapter".
+	 * @param context the TomcatEmbeddedContext to check
+	 * @return true if no child containers match the specified conditions, false otherwise
+	 */
+	private boolean imperative(TomcatEmbeddedContext context) {
 		for (Container container : context.findChildren()) {
 			if (container instanceof Wrapper wrapper) {
 				if (wrapper.getServletClass()
@@ -589,11 +582,10 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	/**
-     * Shuts down the web server gracefully.
-     * 
-     * @param callback the callback to be invoked when the shutdown is complete
-     */
-    @Override
+	 * Shuts down the web server gracefully.
+	 * @param callback the callback to be invoked when the shutdown is complete
+	 */
+	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
 		if (this.gracefulShutdown == null) {
 			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);

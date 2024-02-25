@@ -76,119 +76,107 @@ public class JpaProperties {
 	private Boolean openInView;
 
 	/**
-     * Returns the properties of the JpaProperties object.
-     * 
-     * @return a Map containing the properties as key-value pairs
-     */
-    public Map<String, String> getProperties() {
+	 * Returns the properties of the JpaProperties object.
+	 * @return a Map containing the properties as key-value pairs
+	 */
+	public Map<String, String> getProperties() {
 		return this.properties;
 	}
 
 	/**
-     * Sets the properties for the JpaProperties class.
-     * 
-     * @param properties a Map containing the properties to be set
-     */
-    public void setProperties(Map<String, String> properties) {
+	 * Sets the properties for the JpaProperties class.
+	 * @param properties a Map containing the properties to be set
+	 */
+	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Returns the list of mapping resources.
-     * 
-     * @return the list of mapping resources
-     */
-    public List<String> getMappingResources() {
+	 * Returns the list of mapping resources.
+	 * @return the list of mapping resources
+	 */
+	public List<String> getMappingResources() {
 		return this.mappingResources;
 	}
 
 	/**
-     * Returns the database platform used by this JpaProperties instance.
-     * 
-     * @return the database platform used by this JpaProperties instance
-     */
-    public String getDatabasePlatform() {
+	 * Returns the database platform used by this JpaProperties instance.
+	 * @return the database platform used by this JpaProperties instance
+	 */
+	public String getDatabasePlatform() {
 		return this.databasePlatform;
 	}
 
 	/**
-     * Sets the database platform for the JPA properties.
-     * 
-     * @param databasePlatform the database platform to be set
-     */
-    public void setDatabasePlatform(String databasePlatform) {
+	 * Sets the database platform for the JPA properties.
+	 * @param databasePlatform the database platform to be set
+	 */
+	public void setDatabasePlatform(String databasePlatform) {
 		this.databasePlatform = databasePlatform;
 	}
 
 	/**
-     * Returns the database object associated with this JpaProperties instance.
-     *
-     * @return the database object
-     */
-    public Database getDatabase() {
+	 * Returns the database object associated with this JpaProperties instance.
+	 * @return the database object
+	 */
+	public Database getDatabase() {
 		return this.database;
 	}
 
 	/**
-     * Sets the database for the JpaProperties.
-     * 
-     * @param database the database to be set
-     */
-    public void setDatabase(Database database) {
+	 * Sets the database for the JpaProperties.
+	 * @param database the database to be set
+	 */
+	public void setDatabase(Database database) {
 		this.database = database;
 	}
 
 	/**
-     * Returns a boolean value indicating whether DDL generation is enabled.
-     * 
-     * @return true if DDL generation is enabled, false otherwise
-     */
-    public boolean isGenerateDdl() {
+	 * Returns a boolean value indicating whether DDL generation is enabled.
+	 * @return true if DDL generation is enabled, false otherwise
+	 */
+	public boolean isGenerateDdl() {
 		return this.generateDdl;
 	}
 
 	/**
-     * Sets the flag indicating whether to generate DDL (Data Definition Language) scripts.
-     * 
-     * @param generateDdl the flag indicating whether to generate DDL scripts
-     */
-    public void setGenerateDdl(boolean generateDdl) {
+	 * Sets the flag indicating whether to generate DDL (Data Definition Language)
+	 * scripts.
+	 * @param generateDdl the flag indicating whether to generate DDL scripts
+	 */
+	public void setGenerateDdl(boolean generateDdl) {
 		this.generateDdl = generateDdl;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the SQL statements should be shown.
-     *
-     * @return true if the SQL statements should be shown, false otherwise.
-     */
-    public boolean isShowSql() {
+	 * Returns a boolean value indicating whether the SQL statements should be shown.
+	 * @return true if the SQL statements should be shown, false otherwise.
+	 */
+	public boolean isShowSql() {
 		return this.showSql;
 	}
 
 	/**
-     * Sets the flag to determine whether to show SQL statements.
-     * 
-     * @param showSql the flag indicating whether to show SQL statements
-     */
-    public void setShowSql(boolean showSql) {
+	 * Sets the flag to determine whether to show SQL statements.
+	 * @param showSql the flag indicating whether to show SQL statements
+	 */
+	public void setShowSql(boolean showSql) {
 		this.showSql = showSql;
 	}
 
 	/**
-     * Returns the value of the openInView property.
-     * 
-     * @return true if the openInView property is set to true, false otherwise
-     */
-    public Boolean getOpenInView() {
+	 * Returns the value of the openInView property.
+	 * @return true if the openInView property is set to true, false otherwise
+	 */
+	public Boolean getOpenInView() {
 		return this.openInView;
 	}
 
 	/**
-     * Sets the flag indicating whether the view should be opened.
-     * 
-     * @param openInView a boolean value indicating whether the view should be opened
-     */
-    public void setOpenInView(Boolean openInView) {
+	 * Sets the flag indicating whether the view should be opened.
+	 * @param openInView a boolean value indicating whether the view should be opened
+	 */
+	public void setOpenInView(Boolean openInView) {
 		this.openInView = openInView;
 	}
 

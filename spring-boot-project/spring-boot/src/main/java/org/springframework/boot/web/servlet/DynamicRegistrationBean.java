@@ -110,13 +110,13 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 	}
 
 	/**
-     * Registers a servlet with the given description and servlet context.
-     * 
-     * @param description the description of the servlet
-     * @param servletContext the servlet context to register the servlet with
-     * @throws IllegalStateException if the servlet fails to register on the servlet context
-     */
-    @Override
+	 * Registers a servlet with the given description and servlet context.
+	 * @param description the description of the servlet
+	 * @param servletContext the servlet context to register the servlet with
+	 * @throws IllegalStateException if the servlet fails to register on the servlet
+	 * context
+	 */
+	@Override
 	protected final void register(String description, ServletContext servletContext) {
 		D registration = addRegistration(description, servletContext);
 		if (registration == null) {
@@ -142,30 +142,27 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 	}
 
 	/**
-     * Sets the name of the bean.
-     * 
-     * @param name the name of the bean
-     */
-    @Override
+	 * Sets the name of the bean.
+	 * @param name the name of the bean
+	 */
+	@Override
 	public void setBeanName(String name) {
 		this.beanName = name;
 	}
 
 	/**
-     * Adds a registration to the servlet context with the specified description.
-     * 
-     * @param description the description of the registration
-     * @param servletContext the servlet context to add the registration to
-     * @return the added registration
-     */
-    protected abstract D addRegistration(String description, ServletContext servletContext);
+	 * Adds a registration to the servlet context with the specified description.
+	 * @param description the description of the registration
+	 * @param servletContext the servlet context to add the registration to
+	 * @return the added registration
+	 */
+	protected abstract D addRegistration(String description, ServletContext servletContext);
 
 	/**
-     * Configures the dynamic registration.
-     * 
-     * @param registration the dynamic registration to be configured
-     */
-    protected void configure(D registration) {
+	 * Configures the dynamic registration.
+	 * @param registration the dynamic registration to be configured
+	 */
+	protected void configure(D registration) {
 		registration.setAsyncSupported(this.asyncSupported);
 		if (!this.initParameters.isEmpty()) {
 			registration.setInitParameters(this.initParameters);

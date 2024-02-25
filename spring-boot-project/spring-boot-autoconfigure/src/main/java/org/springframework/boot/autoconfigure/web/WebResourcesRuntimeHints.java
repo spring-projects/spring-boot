@@ -33,12 +33,11 @@ public class WebResourcesRuntimeHints implements RuntimeHintsRegistrar {
 			"public/");
 
 	/**
-     * Registers hints for runtime resources.
-     * 
-     * @param hints the runtime hints to register
-     * @param classLoader the class loader to use for resource lookup
-     */
-    @Override
+	 * Registers hints for runtime resources.
+	 * @param hints the runtime hints to register
+	 * @param classLoader the class loader to use for resource lookup
+	 */
+	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		ClassLoader classLoaderToUse = (classLoader != null) ? classLoader : getClass().getClassLoader();
 		String[] locations = DEFAULT_LOCATIONS.stream()

@@ -27,10 +27,10 @@ import java.time.Duration;
 public class CassandraContainer extends org.testcontainers.containers.CassandraContainer<CassandraContainer> {
 
 	/**
-     * Constructs a new CassandraContainer with the default Docker image name.
-     * The startup timeout is set to 10 minutes.
-     */
-    public CassandraContainer() {
+	 * Constructs a new CassandraContainer with the default Docker image name. The startup
+	 * timeout is set to 10 minutes.
+	 */
+	public CassandraContainer() {
 		super(DockerImageNames.cassandra());
 		withStartupTimeout(Duration.ofMinutes(10));
 	}

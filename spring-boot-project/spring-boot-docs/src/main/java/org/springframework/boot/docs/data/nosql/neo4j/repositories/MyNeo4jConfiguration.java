@@ -30,13 +30,12 @@ import org.springframework.data.neo4j.core.transaction.ReactiveNeo4jTransactionM
 public class MyNeo4jConfiguration {
 
 	/**
-     * Creates a new ReactiveNeo4jTransactionManager instance.
-     * 
-     * @param driver the Neo4j driver used for database connectivity
-     * @param databaseNameProvider the provider for selecting the database name
-     * @return the ReactiveNeo4jTransactionManager instance
-     */
-    @Bean
+	 * Creates a new ReactiveNeo4jTransactionManager instance.
+	 * @param driver the Neo4j driver used for database connectivity
+	 * @param databaseNameProvider the provider for selecting the database name
+	 * @return the ReactiveNeo4jTransactionManager instance
+	 */
+	@Bean
 	public ReactiveNeo4jTransactionManager reactiveTransactionManager(Driver driver,
 			ReactiveDatabaseSelectionProvider databaseNameProvider) {
 		return new ReactiveNeo4jTransactionManager(driver, databaseNameProvider);

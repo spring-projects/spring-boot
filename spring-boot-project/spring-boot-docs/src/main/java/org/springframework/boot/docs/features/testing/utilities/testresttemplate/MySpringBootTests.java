@@ -41,32 +41,33 @@ class MySpringBootTests {
 	private TestRestTemplate template;
 
 	/**
-     * Test case to verify the behavior of the request method.
-     * 
-     * <p>
-     * This test method sends a GET request to the "/example" endpoint and retrieves the response headers. It then asserts that the location header has the expected host value of "other.example.com".
-     * </p>
-     * 
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
+	 * Test case to verify the behavior of the request method.
+	 *
+	 * <p>
+	 * This test method sends a GET request to the "/example" endpoint and retrieves the
+	 * response headers. It then asserts that the location header has the expected host
+	 * value of "other.example.com".
+	 * </p>
+	 * @throws Exception if an error occurs during the test
+	 */
+	@Test
 	void testRequest() {
 		HttpHeaders headers = this.template.getForEntity("/example", String.class).getHeaders();
 		assertThat(headers.getLocation()).hasHost("other.example.com");
 	}
 
 	/**
-     * RestTemplateBuilderConfiguration class.
-     */
-    @TestConfiguration(proxyBeanMethods = false)
+	 * RestTemplateBuilderConfiguration class.
+	 */
+	@TestConfiguration(proxyBeanMethods = false)
 	static class RestTemplateBuilderConfiguration {
 
 		/**
-         * Creates a RestTemplateBuilder with a specified connection timeout and read timeout.
-         * 
-         * @return the RestTemplateBuilder with the specified timeouts
-         */
-        @Bean
+		 * Creates a RestTemplateBuilder with a specified connection timeout and read
+		 * timeout.
+		 * @return the RestTemplateBuilder with the specified timeouts
+		 */
+		@Bean
 		RestTemplateBuilder restTemplateBuilder() {
 			return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(1))
 				.setReadTimeout(Duration.ofSeconds(1));

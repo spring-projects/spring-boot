@@ -42,72 +42,65 @@ class DefaultDockerCompose implements DockerCompose {
 	private final DockerHost hostname;
 
 	/**
-     * Constructs a new DefaultDockerCompose object with the specified DockerCli and host.
-     * 
-     * @param cli the DockerCli object used to interact with Docker
-     * @param host the hostname of the Docker host
-     */
-    DefaultDockerCompose(DockerCli cli, String host) {
+	 * Constructs a new DefaultDockerCompose object with the specified DockerCli and host.
+	 * @param cli the DockerCli object used to interact with Docker
+	 * @param host the hostname of the Docker host
+	 */
+	DefaultDockerCompose(DockerCli cli, String host) {
 		this.cli = cli;
 		this.hostname = DockerHost.get(host, () -> cli.run(new DockerCliCommand.Context()));
 	}
 
 	/**
-     * Starts the Docker Compose services.
-     * 
-     * @param logLevel the log level to be used during the execution
-     */
-    @Override
+	 * Starts the Docker Compose services.
+	 * @param logLevel the log level to be used during the execution
+	 */
+	@Override
 	public void up(LogLevel logLevel) {
 		this.cli.run(new DockerCliCommand.ComposeUp(logLevel));
 	}
 
 	/**
-     * Shuts down the Docker Compose environment.
-     * 
-     * @param timeout the duration to wait for the shutdown to complete
-     */
-    @Override
+	 * Shuts down the Docker Compose environment.
+	 * @param timeout the duration to wait for the shutdown to complete
+	 */
+	@Override
 	public void down(Duration timeout) {
 		this.cli.run(new DockerCliCommand.ComposeDown(timeout));
 	}
 
 	/**
-     * Starts the Docker Compose CLI with the specified log level.
-     * 
-     * @param logLevel the log level to use for the Docker Compose CLI
-     */
-    @Override
+	 * Starts the Docker Compose CLI with the specified log level.
+	 * @param logLevel the log level to use for the Docker Compose CLI
+	 */
+	@Override
 	public void start(LogLevel logLevel) {
 		this.cli.run(new DockerCliCommand.ComposeStart(logLevel));
 	}
 
 	/**
-     * Stops the Docker Compose services with the specified timeout.
-     *
-     * @param timeout the duration to wait for the services to stop
-     */
-    @Override
+	 * Stops the Docker Compose services with the specified timeout.
+	 * @param timeout the duration to wait for the services to stop
+	 */
+	@Override
 	public void stop(Duration timeout) {
 		this.cli.run(new DockerCliCommand.ComposeStop(timeout));
 	}
 
 	/**
-     * Checks if there are any defined services in the Docker Compose configuration.
-     * 
-     * @return true if there are defined services, false otherwise
-     */
-    @Override
+	 * Checks if there are any defined services in the Docker Compose configuration.
+	 * @return true if there are defined services, false otherwise
+	 */
+	@Override
 	public boolean hasDefinedServices() {
 		return !this.cli.run(new DockerCliCommand.ComposeConfig()).services().isEmpty();
 	}
 
 	/**
-     * Retrieves a list of running services.
-     * 
-     * @return A list of RunningService objects representing the running services.
-     */
-    @Override
+	 * Retrieves a list of running services.
+	 * @return A list of RunningService objects representing the running services.
+	 */
+	@Override
 	public List<RunningService> getRunningServices() {
 		List<DockerCliComposePsResponse> runningPsResponses = runComposePs().stream().filter(this::isRunning).toList();
 		if (runningPsResponses.isEmpty()) {
@@ -125,25 +118,27 @@ class DefaultDockerCompose implements DockerCompose {
 	}
 
 	/**
-     * Inspects the running Docker containers based on the given list of DockerCliComposePsResponse objects.
-     * 
-     * @param runningPsResponses the list of DockerCliComposePsResponse objects representing the running containers
-     * @return a map of container IDs to DockerCliInspectResponse objects containing the inspection results
-     */
-    private Map<String, DockerCliInspectResponse> inspect(List<DockerCliComposePsResponse> runningPsResponses) {
+	 * Inspects the running Docker containers based on the given list of
+	 * DockerCliComposePsResponse objects.
+	 * @param runningPsResponses the list of DockerCliComposePsResponse objects
+	 * representing the running containers
+	 * @return a map of container IDs to DockerCliInspectResponse objects containing the
+	 * inspection results
+	 */
+	private Map<String, DockerCliInspectResponse> inspect(List<DockerCliComposePsResponse> runningPsResponses) {
 		List<String> ids = runningPsResponses.stream().map(DockerCliComposePsResponse::id).toList();
 		List<DockerCliInspectResponse> inspectResponses = this.cli.run(new DockerCliCommand.Inspect(ids));
 		return inspectResponses.stream().collect(Collectors.toMap(DockerCliInspectResponse::id, Function.identity()));
 	}
 
 	/**
-     * Inspects a Docker container with the given ID.
-     * 
-     * @param id        the ID of the container to inspect
-     * @param inspected a map containing previously inspected containers
-     * @return the DockerCliInspectResponse object representing the inspection result, or null if the container was not found
-     */
-    private DockerCliInspectResponse inspectContainer(String id, Map<String, DockerCliInspectResponse> inspected) {
+	 * Inspects a Docker container with the given ID.
+	 * @param id the ID of the container to inspect
+	 * @param inspected a map containing previously inspected containers
+	 * @return the DockerCliInspectResponse object representing the inspection result, or
+	 * null if the container was not found
+	 */
+	private DockerCliInspectResponse inspectContainer(String id, Map<String, DockerCliInspectResponse> inspected) {
 		DockerCliInspectResponse inspect = inspected.get(id);
 		if (inspect != null) {
 			return inspect;
@@ -158,21 +153,21 @@ class DefaultDockerCompose implements DockerCompose {
 	}
 
 	/**
-     * Runs the "docker-compose ps" command and returns the list of DockerCliComposePsResponse objects.
-     * 
-     * @return the list of DockerCliComposePsResponse objects representing the output of the command
-     */
-    private List<DockerCliComposePsResponse> runComposePs() {
+	 * Runs the "docker-compose ps" command and returns the list of
+	 * DockerCliComposePsResponse objects.
+	 * @return the list of DockerCliComposePsResponse objects representing the output of
+	 * the command
+	 */
+	private List<DockerCliComposePsResponse> runComposePs() {
 		return this.cli.run(new DockerCliCommand.ComposePs());
 	}
 
 	/**
-     * Checks if the Docker container is running.
-     * 
-     * @param psResponse the response from the Docker CLI compose ps command
-     * @return true if the container is running, false otherwise
-     */
-    private boolean isRunning(DockerCliComposePsResponse psResponse) {
+	 * Checks if the Docker container is running.
+	 * @param psResponse the response from the Docker CLI compose ps command
+	 * @return true if the container is running, false otherwise
+	 */
+	private boolean isRunning(DockerCliComposePsResponse psResponse) {
 		return !"exited".equals(psResponse.state());
 	}
 

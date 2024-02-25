@@ -28,22 +28,21 @@ import org.springframework.context.annotation.Bean;
 public class SampleFlywayApplication {
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring Boot application by running the SpringApplication.run() method.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring Boot
+	 * application by running the SpringApplication.run() method.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleFlywayApplication.class, args);
 	}
 
 	/**
-     * This method is a CommandLineRunner that prints all the records in the PersonRepository.
-     * 
-     * @param repository the PersonRepository used to retrieve the records
-     * @return a CommandLineRunner that prints the records
-     */
-    @Bean
+	 * This method is a CommandLineRunner that prints all the records in the
+	 * PersonRepository.
+	 * @param repository the PersonRepository used to retrieve the records
+	 * @return a CommandLineRunner that prints the records
+	 */
+	@Bean
 	public CommandLineRunner runner(PersonRepository repository) {
 		return (args) -> System.err.println(repository.findAll());
 	}

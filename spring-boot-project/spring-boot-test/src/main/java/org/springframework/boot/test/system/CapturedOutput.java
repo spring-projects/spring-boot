@@ -35,11 +35,10 @@ package org.springframework.boot.test.system;
 public interface CapturedOutput extends CharSequence {
 
 	/**
- * Returns the length of the string representation of the CapturedOutput object.
- *
- * @return the length of the string representation
- */
-@Override
+	 * Returns the length of the string representation of the CapturedOutput object.
+	 * @return the length of the string representation
+	 */
+	@Override
 	default int length() {
 		return toString().length();
 	}

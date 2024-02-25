@@ -27,12 +27,11 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 class TemplateRuntimeHints implements RuntimeHintsRegistrar {
 
 	/**
-     * Registers the runtime hints for templates.
-     * 
-     * @param hints the runtime hints to register
-     * @param classLoader the class loader to use for loading resources
-     */
-    @Override
+	 * Registers the runtime hints for templates.
+	 * @param hints the runtime hints to register
+	 * @param classLoader the class loader to use for loading resources
+	 */
+	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		hints.resources().registerPatternIfPresent(classLoader, "templates", (hint) -> hint.includes("templates/*"));
 	}

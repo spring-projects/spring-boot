@@ -27,12 +27,11 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 class SqlInitializationScriptsRuntimeHints implements RuntimeHintsRegistrar {
 
 	/**
-     * Registers the hints for the SQL initialization scripts.
-     * 
-     * @param hints the runtime hints for the SQL initialization scripts
-     * @param classLoader the class loader to use for loading the scripts
-     */
-    @Override
+	 * Registers the hints for the SQL initialization scripts.
+	 * @param hints the runtime hints for the SQL initialization scripts
+	 * @param classLoader the class loader to use for loading the scripts
+	 */
+	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		hints.resources().registerPattern("schema.sql").registerPattern("schema-*.sql");
 		hints.resources().registerPattern("data.sql").registerPattern("data-*.sql");

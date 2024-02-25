@@ -43,30 +43,28 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	private final Map<String, RegisteredSslBundle> registeredBundles = new ConcurrentHashMap<>();
 
 	/**
-     * Constructs a new DefaultSslBundleRegistry.
-     */
-    public DefaultSslBundleRegistry() {
+	 * Constructs a new DefaultSslBundleRegistry.
+	 */
+	public DefaultSslBundleRegistry() {
 	}
 
 	/**
-     * Constructs a new DefaultSslBundleRegistry with the specified name and SslBundle.
-     * 
-     * @param name the name of the registry
-     * @param bundle the SslBundle to be registered
-     */
-    public DefaultSslBundleRegistry(String name, SslBundle bundle) {
+	 * Constructs a new DefaultSslBundleRegistry with the specified name and SslBundle.
+	 * @param name the name of the registry
+	 * @param bundle the SslBundle to be registered
+	 */
+	public DefaultSslBundleRegistry(String name, SslBundle bundle) {
 		registerBundle(name, bundle);
 	}
 
 	/**
-     * Registers a new SSL bundle with the given name.
-     * 
-     * @param name   the name of the SSL bundle (must not be null)
-     * @param bundle the SSL bundle to be registered (must not be null)
-     * @throws IllegalArgumentException if either the name or the bundle is null
-     * @throws IllegalStateException    if an SSL bundle with the same name already exists
-     */
-    @Override
+	 * Registers a new SSL bundle with the given name.
+	 * @param name the name of the SSL bundle (must not be null)
+	 * @param bundle the SSL bundle to be registered (must not be null)
+	 * @throws IllegalArgumentException if either the name or the bundle is null
+	 * @throws IllegalStateException if an SSL bundle with the same name already exists
+	 */
+	@Override
 	public void registerBundle(String name, SslBundle bundle) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(bundle, "Bundle must not be null");
@@ -75,48 +73,46 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	}
 
 	/**
-     * Updates the SSL bundle with the specified name in the registry.
-     * 
-     * @param name          the name of the SSL bundle to update
-     * @param updatedBundle the updated SSL bundle
-     */
-    @Override
+	 * Updates the SSL bundle with the specified name in the registry.
+	 * @param name the name of the SSL bundle to update
+	 * @param updatedBundle the updated SSL bundle
+	 */
+	@Override
 	public void updateBundle(String name, SslBundle updatedBundle) {
 		getRegistered(name).update(updatedBundle);
 	}
 
 	/**
-     * Retrieves the SSL bundle associated with the specified name.
-     * 
-     * @param name the name of the SSL bundle to retrieve
-     * @return the SSL bundle associated with the specified name
-     */
-    @Override
+	 * Retrieves the SSL bundle associated with the specified name.
+	 * @param name the name of the SSL bundle to retrieve
+	 * @return the SSL bundle associated with the specified name
+	 */
+	@Override
 	public SslBundle getBundle(String name) {
 		return getRegistered(name).getBundle();
 	}
 
 	/**
-     * Adds a bundle update handler for the specified SSL bundle.
-     * 
-     * @param name the name of the SSL bundle
-     * @param updateHandler the update handler to be added
-     * @throws NoSuchSslBundleException if the SSL bundle with the specified name does not exist
-     */
-    @Override
+	 * Adds a bundle update handler for the specified SSL bundle.
+	 * @param name the name of the SSL bundle
+	 * @param updateHandler the update handler to be added
+	 * @throws NoSuchSslBundleException if the SSL bundle with the specified name does not
+	 * exist
+	 */
+	@Override
 	public void addBundleUpdateHandler(String name, Consumer<SslBundle> updateHandler) throws NoSuchSslBundleException {
 		getRegistered(name).addUpdateHandler(updateHandler);
 	}
 
 	/**
-     * Retrieves the registered SSL bundle with the specified name.
-     *
-     * @param name the name of the SSL bundle to retrieve
-     * @return the registered SSL bundle
-     * @throws NoSuchSslBundleException if the SSL bundle with the specified name cannot be found
-     * @throws IllegalArgumentException if the name is null
-     */
-    private RegisteredSslBundle getRegistered(String name) throws NoSuchSslBundleException {
+	 * Retrieves the registered SSL bundle with the specified name.
+	 * @param name the name of the SSL bundle to retrieve
+	 * @return the registered SSL bundle
+	 * @throws NoSuchSslBundleException if the SSL bundle with the specified name cannot
+	 * be found
+	 * @throws IllegalArgumentException if the name is null
+	 */
+	private RegisteredSslBundle getRegistered(String name) throws NoSuchSslBundleException {
 		Assert.notNull(name, "Name must not be null");
 		RegisteredSslBundle registered = this.registeredBundles.get(name);
 		if (registered == null) {
@@ -126,9 +122,9 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	}
 
 	/**
-     * RegisteredSslBundle class.
-     */
-    private static class RegisteredSslBundle {
+	 * RegisteredSslBundle class.
+	 */
+	private static class RegisteredSslBundle {
 
 		private final String name;
 
@@ -137,24 +133,21 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 		private volatile SslBundle bundle;
 
 		/**
-         * Constructs a new RegisteredSslBundle with the specified name and bundle.
-         * 
-         * @param name the name of the SSL bundle
-         * @param bundle the SSL bundle object
-         */
-        RegisteredSslBundle(String name, SslBundle bundle) {
+		 * Constructs a new RegisteredSslBundle with the specified name and bundle.
+		 * @param name the name of the SSL bundle
+		 * @param bundle the SSL bundle object
+		 */
+		RegisteredSslBundle(String name, SslBundle bundle) {
 			this.name = name;
 			this.bundle = bundle;
 		}
 
 		/**
-         * Updates the SSL bundle with the provided updated bundle.
-         * 
-         * @param updatedBundle the updated SSL bundle (must not be null)
-         * 
-         * @throws IllegalArgumentException if the updatedBundle is null
-         */
-        void update(SslBundle updatedBundle) {
+		 * Updates the SSL bundle with the provided updated bundle.
+		 * @param updatedBundle the updated SSL bundle (must not be null)
+		 * @throws IllegalArgumentException if the updatedBundle is null
+		 */
+		void update(SslBundle updatedBundle) {
 			Assert.notNull(updatedBundle, "UpdatedBundle must not be null");
 			this.bundle = updatedBundle;
 			if (this.updateHandlers.isEmpty()) {
@@ -166,20 +159,18 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 		}
 
 		/**
-         * Returns the SSL bundle associated with this RegisteredSslBundle.
-         *
-         * @return the SSL bundle
-         */
-        SslBundle getBundle() {
+		 * Returns the SSL bundle associated with this RegisteredSslBundle.
+		 * @return the SSL bundle
+		 */
+		SslBundle getBundle() {
 			return this.bundle;
 		}
 
 		/**
-         * Adds an update handler to the list of update handlers.
-         * 
-         * @param updateHandler the update handler to be added (must not be null)
-         */
-        void addUpdateHandler(Consumer<SslBundle> updateHandler) {
+		 * Adds an update handler to the list of update handlers.
+		 * @param updateHandler the update handler to be added (must not be null)
+		 */
+		void addUpdateHandler(Consumer<SslBundle> updateHandler) {
 			Assert.notNull(updateHandler, "UpdateHandler must not be null");
 			this.updateHandlers.add(updateHandler);
 		}

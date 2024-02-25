@@ -36,12 +36,12 @@ import org.springframework.r2dbc.core.DatabaseClient;
 class ConnectionFactoryDependentConfiguration {
 
 	/**
-     * Creates a new instance of DatabaseClient using the provided ConnectionFactory.
-     * 
-     * @param connectionFactory the ConnectionFactory to be used for creating the DatabaseClient
-     * @return a new instance of DatabaseClient
-     */
-    @Bean
+	 * Creates a new instance of DatabaseClient using the provided ConnectionFactory.
+	 * @param connectionFactory the ConnectionFactory to be used for creating the
+	 * DatabaseClient
+	 * @return a new instance of DatabaseClient
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	DatabaseClient r2dbcDatabaseClient(ConnectionFactory connectionFactory) {
 		return DatabaseClient.builder().connectionFactory(connectionFactory).build();

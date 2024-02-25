@@ -35,11 +35,10 @@ import org.gradle.api.tasks.testing.TestResult;
 public class TestFailuresPlugin implements Plugin<Project> {
 
 	/**
-     * Applies the TestFailuresPlugin to the given project.
-     * 
-     * @param project the project to apply the plugin to
-     */
-    @Override
+	 * Applies the TestFailuresPlugin to the given project.
+	 * @param project the project to apply the plugin to
+	 */
+	@Override
 	public void apply(Project project) {
 		Provider<TestResultsOverview> testResultsOverview = project.getGradle()
 			.getSharedServices()
@@ -51,9 +50,9 @@ public class TestFailuresPlugin implements Plugin<Project> {
 	}
 
 	/**
-     * FailureRecordingTestListener class.
-     */
-    private final class FailureRecordingTestListener implements TestListener {
+	 * FailureRecordingTestListener class.
+	 */
+	private final class FailureRecordingTestListener implements TestListener {
 
 		private final List<TestDescriptor> failures = new ArrayList<>();
 
@@ -62,25 +61,24 @@ public class TestFailuresPlugin implements Plugin<Project> {
 		private final Test test;
 
 		/**
-         * Constructs a new FailureRecordingTestListener with the specified test result overview provider and test.
-         * 
-         * @param testResultOverview the provider for the test results overview
-         * @param test the test to be recorded
-         */
-        private FailureRecordingTestListener(Provider<TestResultsOverview> testResultOverview, Test test) {
+		 * Constructs a new FailureRecordingTestListener with the specified test result
+		 * overview provider and test.
+		 * @param testResultOverview the provider for the test results overview
+		 * @param test the test to be recorded
+		 */
+		private FailureRecordingTestListener(Provider<TestResultsOverview> testResultOverview, Test test) {
 			this.testResultsOverview = testResultOverview;
 			this.test = test;
 		}
 
 		/**
-         * This method is called after the execution of a test suite.
-         * It checks if there are any failures recorded during the test suite execution.
-         * If there are failures, it adds them to the test results overview.
-         * 
-         * @param descriptor The test descriptor of the executed test suite.
-         * @param result The test result of the executed test suite.
-         */
-        @Override
+		 * This method is called after the execution of a test suite. It checks if there
+		 * are any failures recorded during the test suite execution. If there are
+		 * failures, it adds them to the test results overview.
+		 * @param descriptor The test descriptor of the executed test suite.
+		 * @param result The test result of the executed test suite.
+		 */
+		@Override
 		public void afterSuite(TestDescriptor descriptor, TestResult result) {
 			if (!this.failures.isEmpty()) {
 				this.testResultsOverview.get().addFailures(this.test, this.failures);
@@ -88,13 +86,13 @@ public class TestFailuresPlugin implements Plugin<Project> {
 		}
 
 		/**
-         * This method is called after each test execution to record any failures.
-         * If the test result has any failed tests, the descriptor of the failed test is added to the list of failures.
-         *
-         * @param descriptor The descriptor of the test that was executed.
-         * @param result The result of the test execution.
-         */
-        @Override
+		 * This method is called after each test execution to record any failures. If the
+		 * test result has any failed tests, the descriptor of the failed test is added to
+		 * the list of failures.
+		 * @param descriptor The descriptor of the test that was executed.
+		 * @param result The result of the test execution.
+		 */
+		@Override
 		public void afterTest(TestDescriptor descriptor, TestResult result) {
 			if (result.getFailedTestCount() > 0) {
 				this.failures.add(descriptor);
@@ -102,21 +100,19 @@ public class TestFailuresPlugin implements Plugin<Project> {
 		}
 
 		/**
-         * This method is called before the execution of a test suite.
-         * 
-         * @param descriptor the TestDescriptor object representing the test suite
-         */
-        @Override
+		 * This method is called before the execution of a test suite.
+		 * @param descriptor the TestDescriptor object representing the test suite
+		 */
+		@Override
 		public void beforeSuite(TestDescriptor descriptor) {
 
 		}
 
 		/**
-         * This method is called before each test execution.
-         * 
-         * @param descriptor the test descriptor containing information about the test
-         */
-        @Override
+		 * This method is called before each test execution.
+		 * @param descriptor the test descriptor containing information about the test
+		 */
+		@Override
 		public void beforeTest(TestDescriptor descriptor) {
 
 		}

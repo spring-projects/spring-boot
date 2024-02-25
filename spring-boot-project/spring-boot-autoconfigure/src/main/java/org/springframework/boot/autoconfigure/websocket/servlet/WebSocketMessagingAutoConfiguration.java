@@ -52,9 +52,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketMessagingAutoConfiguration {
 
 	/**
-     * WebSocketMessageConverterConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * WebSocketMessageConverterConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class, ObjectMapper.class })
 	@ConditionalOnClass({ ObjectMapper.class, AbstractMessageBrokerConfiguration.class })
 	static class WebSocketMessageConverterConfiguration implements WebSocketMessageBrokerConfigurer {
@@ -62,21 +62,21 @@ public class WebSocketMessagingAutoConfiguration {
 		private final ObjectMapper objectMapper;
 
 		/**
-         * Constructs a new WebSocketMessageConverterConfiguration with the specified ObjectMapper.
-         *
-         * @param objectMapper the ObjectMapper to be used for converting WebSocket messages
-         */
-        WebSocketMessageConverterConfiguration(ObjectMapper objectMapper) {
+		 * Constructs a new WebSocketMessageConverterConfiguration with the specified
+		 * ObjectMapper.
+		 * @param objectMapper the ObjectMapper to be used for converting WebSocket
+		 * messages
+		 */
+		WebSocketMessageConverterConfiguration(ObjectMapper objectMapper) {
 			this.objectMapper = objectMapper;
 		}
 
 		/**
-         * Configures the message converters for WebSocket message handling.
-         * 
-         * @param messageConverters the list of message converters to be configured
-         * @return {@code false} indicating that the configuration was not successful
-         */
-        @Override
+		 * Configures the message converters for WebSocket message handling.
+		 * @param messageConverters the list of message converters to be configured
+		 * @return {@code false} indicating that the configuration was not successful
+		 */
+		@Override
 		public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
 			MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter(this.objectMapper);
 			DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
@@ -89,11 +89,12 @@ public class WebSocketMessagingAutoConfiguration {
 		}
 
 		/**
-         * Returns a LazyInitializationExcludeFilter that filters out the "stompWebSocketHandlerMapping" bean.
-         *
-         * @return the LazyInitializationExcludeFilter for excluding the "stompWebSocketHandlerMapping" bean
-         */
-        @Bean
+		 * Returns a LazyInitializationExcludeFilter that filters out the
+		 * "stompWebSocketHandlerMapping" bean.
+		 * @return the LazyInitializationExcludeFilter for excluding the
+		 * "stompWebSocketHandlerMapping" bean
+		 */
+		@Bean
 		static LazyInitializationExcludeFilter eagerStompWebSocketHandlerMapping() {
 			return (name, definition, type) -> name.equals("stompWebSocketHandlerMapping");
 		}

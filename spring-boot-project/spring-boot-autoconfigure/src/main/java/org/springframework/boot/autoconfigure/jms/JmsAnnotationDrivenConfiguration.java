@@ -59,16 +59,15 @@ class JmsAnnotationDrivenConfiguration {
 	private final JmsProperties properties;
 
 	/**
-     * Constructs a new JmsAnnotationDrivenConfiguration with the specified parameters.
-     * 
-     * @param destinationResolver the provider for resolving JMS destinations
-     * @param transactionManager the provider for managing JTA transactions
-     * @param messageConverter the provider for converting JMS messages
-     * @param exceptionListener the provider for handling JMS exceptions
-     * @param observationRegistry the provider for registering JMS observations
-     * @param properties the JMS properties
-     */
-    JmsAnnotationDrivenConfiguration(ObjectProvider<DestinationResolver> destinationResolver,
+	 * Constructs a new JmsAnnotationDrivenConfiguration with the specified parameters.
+	 * @param destinationResolver the provider for resolving JMS destinations
+	 * @param transactionManager the provider for managing JTA transactions
+	 * @param messageConverter the provider for converting JMS messages
+	 * @param exceptionListener the provider for handling JMS exceptions
+	 * @param observationRegistry the provider for registering JMS observations
+	 * @param properties the JMS properties
+	 */
+	JmsAnnotationDrivenConfiguration(ObjectProvider<DestinationResolver> destinationResolver,
 			ObjectProvider<JtaTransactionManager> transactionManager, ObjectProvider<MessageConverter> messageConverter,
 			ObjectProvider<ExceptionListener> exceptionListener,
 			ObjectProvider<ObservationRegistry> observationRegistry, JmsProperties properties) {
@@ -81,15 +80,18 @@ class JmsAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Creates a new instance of DefaultJmsListenerContainerFactoryConfigurer.
-     * This method is annotated with @Bean, indicating that it is a Spring bean and should be managed by the Spring container.
-     * It is also annotated with @ConditionalOnMissingBean, which means that this bean will only be created if there is no other bean of the same type already defined in the container.
-     * 
-     * This method configures the DefaultJmsListenerContainerFactoryConfigurer by setting various properties such as destination resolver, transaction manager, message converter, exception listener, observation registry, and JMS properties.
-     * 
-     * @return The configured DefaultJmsListenerContainerFactoryConfigurer instance.
-     */
-    @Bean
+	 * Creates a new instance of DefaultJmsListenerContainerFactoryConfigurer. This method
+	 * is annotated with @Bean, indicating that it is a Spring bean and should be managed
+	 * by the Spring container. It is also annotated with @ConditionalOnMissingBean, which
+	 * means that this bean will only be created if there is no other bean of the same
+	 * type already defined in the container.
+	 *
+	 * This method configures the DefaultJmsListenerContainerFactoryConfigurer by setting
+	 * various properties such as destination resolver, transaction manager, message
+	 * converter, exception listener, observation registry, and JMS properties.
+	 * @return The configured DefaultJmsListenerContainerFactoryConfigurer instance.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
 		DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
@@ -103,14 +105,16 @@ class JmsAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Creates a default JMS listener container factory if no other bean with the name "jmsListenerContainerFactory" is present.
-     * This factory is conditionally created only if a single candidate bean of type ConnectionFactory is available.
-     * 
-     * @param configurer The configurer used to configure the default JMS listener container factory.
-     * @param connectionFactory The connection factory used by the default JMS listener container factory.
-     * @return The default JMS listener container factory.
-     */
-    @Bean
+	 * Creates a default JMS listener container factory if no other bean with the name
+	 * "jmsListenerContainerFactory" is present. This factory is conditionally created
+	 * only if a single candidate bean of type ConnectionFactory is available.
+	 * @param configurer The configurer used to configure the default JMS listener
+	 * container factory.
+	 * @param connectionFactory The connection factory used by the default JMS listener
+	 * container factory.
+	 * @return The default JMS listener container factory.
+	 */
+	@Bean
 	@ConditionalOnSingleCandidate(ConnectionFactory.class)
 	@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
 	DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
@@ -121,9 +125,9 @@ class JmsAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * EnableJmsConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * EnableJmsConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@EnableJms
 	@ConditionalOnMissingBean(name = JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	static class EnableJmsConfiguration {
@@ -131,21 +135,22 @@ class JmsAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * JndiConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JndiConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJndi
 	static class JndiConfiguration {
 
 		/**
-         * Creates a JndiDestinationResolver bean if no other bean of type DestinationResolver is present.
-         * 
-         * The JndiDestinationResolver is responsible for resolving JNDI destinations for messaging operations.
-         * It is configured to fallback to dynamic destinations if the JNDI lookup fails.
-         * 
-         * @return the JndiDestinationResolver bean
-         */
-        @Bean
+		 * Creates a JndiDestinationResolver bean if no other bean of type
+		 * DestinationResolver is present.
+		 *
+		 * The JndiDestinationResolver is responsible for resolving JNDI destinations for
+		 * messaging operations. It is configured to fallback to dynamic destinations if
+		 * the JNDI lookup fails.
+		 * @return the JndiDestinationResolver bean
+		 */
+		@Bean
 		@ConditionalOnMissingBean(DestinationResolver.class)
 		JndiDestinationResolver destinationResolver() {
 			JndiDestinationResolver resolver = new JndiDestinationResolver();

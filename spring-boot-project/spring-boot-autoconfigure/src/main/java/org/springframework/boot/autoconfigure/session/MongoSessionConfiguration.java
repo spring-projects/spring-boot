@@ -49,14 +49,14 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
 class MongoSessionConfiguration {
 
 	/**
-     * Customizes the MongoIndexedSessionRepository bean with the provided session properties, mongo session properties, and server properties.
-     * 
-     * @param sessionProperties the session properties
-     * @param mongoSessionProperties the mongo session properties
-     * @param serverProperties the server properties
-     * @return the session repository customizer
-     */
-    @Bean
+	 * Customizes the MongoIndexedSessionRepository bean with the provided session
+	 * properties, mongo session properties, and server properties.
+	 * @param sessionProperties the session properties
+	 * @param mongoSessionProperties the mongo session properties
+	 * @param serverProperties the server properties
+	 * @return the session repository customizer
+	 */
+	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SessionRepositoryCustomizer<MongoIndexedSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,

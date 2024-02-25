@@ -37,24 +37,22 @@ public class SampleSpringXmlApplication implements CommandLineRunner {
 	private HelloWorldService helloWorldService;
 
 	/**
-     * This method is the entry point of the application.
-     * It prints the hello message obtained from the HelloWorldService.
-     *
-     * @param args the command line arguments
-     */
-    @Override
+	 * This method is the entry point of the application. It prints the hello message
+	 * obtained from the HelloWorldService.
+	 * @param args the command line arguments
+	 */
+	@Override
 	public void run(String... args) {
 		System.out.println(this.helloWorldService.getHelloMessage());
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It initializes a SpringApplication object and sets the sources to a singleton set containing CONTEXT_XML.
-     * It then runs the application with the given arguments.
-     *
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It initializes a
+	 * SpringApplication object and sets the sources to a singleton set containing
+	 * CONTEXT_XML. It then runs the application with the given arguments.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication application = new SpringApplication();
 		application.setSources(Collections.singleton(CONTEXT_XML));
 		application.run(args);

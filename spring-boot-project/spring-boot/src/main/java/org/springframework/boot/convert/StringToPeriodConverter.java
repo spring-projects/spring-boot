@@ -38,24 +38,24 @@ import org.springframework.util.ObjectUtils;
 final class StringToPeriodConverter implements GenericConverter {
 
 	/**
-     * Returns a set of convertible types for the StringToPeriodConverter class.
-     * 
-     * @return a set containing a single ConvertiblePair object representing the conversion from String to Period.
-     */
-    @Override
+	 * Returns a set of convertible types for the StringToPeriodConverter class.
+	 * @return a set containing a single ConvertiblePair object representing the
+	 * conversion from String to Period.
+	 */
+	@Override
 	public Set<GenericConverter.ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new GenericConverter.ConvertiblePair(String.class, Period.class));
 	}
 
 	/**
-     * Converts the given source object to the specified target type.
-     * 
-     * @param source the source object to be converted
-     * @param sourceType the TypeDescriptor of the source object
-     * @param targetType the TypeDescriptor of the target type
-     * @return the converted object of the target type, or null if the source object is empty
-     */
-    @Override
+	 * Converts the given source object to the specified target type.
+	 * @param source the source object to be converted
+	 * @param sourceType the TypeDescriptor of the source object
+	 * @param targetType the TypeDescriptor of the target type
+	 * @return the converted object of the target type, or null if the source object is
+	 * empty
+	 */
+	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;
@@ -64,36 +64,35 @@ final class StringToPeriodConverter implements GenericConverter {
 	}
 
 	/**
-     * Returns the PeriodStyle based on the provided targetType.
-     * 
-     * @param targetType the TypeDescriptor representing the target type
-     * @return the PeriodStyle associated with the targetType, or null if no annotation is found
-     */
-    private PeriodStyle getStyle(TypeDescriptor targetType) {
+	 * Returns the PeriodStyle based on the provided targetType.
+	 * @param targetType the TypeDescriptor representing the target type
+	 * @return the PeriodStyle associated with the targetType, or null if no annotation is
+	 * found
+	 */
+	private PeriodStyle getStyle(TypeDescriptor targetType) {
 		PeriodFormat annotation = targetType.getAnnotation(PeriodFormat.class);
 		return (annotation != null) ? annotation.value() : null;
 	}
 
 	/**
-     * Returns the ChronoUnit associated with the given targetType.
-     * 
-     * @param targetType the TypeDescriptor representing the target type
-     * @return the ChronoUnit associated with the targetType, or null if no annotation is present
-     */
-    private ChronoUnit getPeriodUnit(TypeDescriptor targetType) {
+	 * Returns the ChronoUnit associated with the given targetType.
+	 * @param targetType the TypeDescriptor representing the target type
+	 * @return the ChronoUnit associated with the targetType, or null if no annotation is
+	 * present
+	 */
+	private ChronoUnit getPeriodUnit(TypeDescriptor targetType) {
 		PeriodUnit annotation = targetType.getAnnotation(PeriodUnit.class);
 		return (annotation != null) ? annotation.value() : null;
 	}
 
 	/**
-     * Converts a string representation of a period to a Period object.
-     * 
-     * @param source the string representation of the period
-     * @param style the style of the period (optional, will be detected if null)
-     * @param unit the unit of the period to be converted to
-     * @return the converted Period object
-     */
-    private Period convert(String source, PeriodStyle style, ChronoUnit unit) {
+	 * Converts a string representation of a period to a Period object.
+	 * @param source the string representation of the period
+	 * @param style the style of the period (optional, will be detected if null)
+	 * @param unit the unit of the period to be converted to
+	 * @return the converted Period object
+	 */
+	private Period convert(String source, PeriodStyle style, ChronoUnit unit) {
 		style = (style != null) ? style : PeriodStyle.detect(source);
 		return style.parse(source, unit);
 	}

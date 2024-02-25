@@ -27,11 +27,10 @@ import org.springframework.stereotype.Component;
 public class MyWebServerFactoryCustomizer implements WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> {
 
 	/**
-     * Customize the ConfigurableReactiveWebServerFactory by setting the port to 9000.
-     * 
-     * @param server the ConfigurableReactiveWebServerFactory to be customized
-     */
-    @Override
+	 * Customize the ConfigurableReactiveWebServerFactory by setting the port to 9000.
+	 * @param server the ConfigurableReactiveWebServerFactory to be customized
+	 */
+	@Override
 	public void customize(ConfigurableReactiveWebServerFactory server) {
 		server.setPort(9000);
 	}

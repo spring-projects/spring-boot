@@ -67,35 +67,34 @@ public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered
 	}
 
 	/**
-     * Returns the order of this HttpExchangesFilter.
-     *
-     * @return the order of this HttpExchangesFilter
-     */
-    @Override
+	 * Returns the order of this HttpExchangesFilter.
+	 * @return the order of this HttpExchangesFilter
+	 */
+	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
 	/**
-     * Sets the order of the HTTP exchanges filter.
-     * 
-     * @param order the order of the filter
-     */
-    public void setOrder(int order) {
+	 * Sets the order of the HTTP exchanges filter.
+	 * @param order the order of the filter
+	 */
+	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	/**
-     * This method is responsible for filtering incoming HTTP requests and recording the exchanges.
-     * It overrides the doFilterInternal method from the parent class.
-     * 
-     * @param request The HttpServletRequest object representing the incoming request.
-     * @param response The HttpServletResponse object representing the response to be sent.
-     * @param filterChain The FilterChain object for invoking the next filter in the chain.
-     * @throws ServletException If an exception occurs during the filtering process.
-     * @throws IOException If an I/O exception occurs during the filtering process.
-     */
-    @Override
+	 * This method is responsible for filtering incoming HTTP requests and recording the
+	 * exchanges. It overrides the doFilterInternal method from the parent class.
+	 * @param request The HttpServletRequest object representing the incoming request.
+	 * @param response The HttpServletResponse object representing the response to be
+	 * sent.
+	 * @param filterChain The FilterChain object for invoking the next filter in the
+	 * chain.
+	 * @throws ServletException If an exception occurs during the filtering process.
+	 * @throws IOException If an I/O exception occurs during the filtering process.
+	 */
+	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		if (!isRequestValid(request)) {
@@ -118,12 +117,11 @@ public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered
 	}
 
 	/**
-     * Checks if the provided HttpServletRequest object represents a valid request.
-     * 
-     * @param request the HttpServletRequest object to be validated
-     * @return true if the request is valid, false otherwise
-     */
-    private boolean isRequestValid(HttpServletRequest request) {
+	 * Checks if the provided HttpServletRequest object represents a valid request.
+	 * @param request the HttpServletRequest object to be validated
+	 * @return true if the request is valid, false otherwise
+	 */
+	private boolean isRequestValid(HttpServletRequest request) {
 		try {
 			new URI(request.getRequestURL().toString());
 			return true;
@@ -134,12 +132,11 @@ public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered
 	}
 
 	/**
-     * Retrieves the session ID from the provided HttpServletRequest object.
-     * 
-     * @param request the HttpServletRequest object from which to retrieve the session ID
-     * @return the session ID if a session exists, otherwise null
-     */
-    private String getSessionId(HttpServletRequest request) {
+	 * Retrieves the session ID from the provided HttpServletRequest object.
+	 * @param request the HttpServletRequest object from which to retrieve the session ID
+	 * @return the session ID if a session exists, otherwise null
+	 */
+	private String getSessionId(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		return (session != null) ? session.getId() : null;
 	}

@@ -34,40 +34,38 @@ public class UndertowWebSocketServletWebServerCustomizer
 		implements WebServerFactoryCustomizer<UndertowServletWebServerFactory>, Ordered {
 
 	/**
-     * Customizes the Undertow servlet web server factory by adding a WebsocketDeploymentInfoCustomizer.
-     * 
-     * @param factory the UndertowServletWebServerFactory to be customized
-     */
-    @Override
+	 * Customizes the Undertow servlet web server factory by adding a
+	 * WebsocketDeploymentInfoCustomizer.
+	 * @param factory the UndertowServletWebServerFactory to be customized
+	 */
+	@Override
 	public void customize(UndertowServletWebServerFactory factory) {
 		WebsocketDeploymentInfoCustomizer customizer = new WebsocketDeploymentInfoCustomizer();
 		factory.addDeploymentInfoCustomizers(customizer);
 	}
 
 	/**
-     * Returns the order value for this customizer.
-     * 
-     * The order value determines the order in which the customizers are applied.
-     * A lower value means higher priority.
-     * 
-     * @return the order value for this customizer
-     */
-    @Override
+	 * Returns the order value for this customizer.
+	 *
+	 * The order value determines the order in which the customizers are applied. A lower
+	 * value means higher priority.
+	 * @return the order value for this customizer
+	 */
+	@Override
 	public int getOrder() {
 		return 0;
 	}
 
 	/**
-     * WebsocketDeploymentInfoCustomizer class.
-     */
-    private static final class WebsocketDeploymentInfoCustomizer implements UndertowDeploymentInfoCustomizer {
+	 * WebsocketDeploymentInfoCustomizer class.
+	 */
+	private static final class WebsocketDeploymentInfoCustomizer implements UndertowDeploymentInfoCustomizer {
 
 		/**
-         * Customizes the deployment information for WebSocket.
-         * 
-         * @param deploymentInfo the deployment information to be customized
-         */
-        @Override
+		 * Customizes the deployment information for WebSocket.
+		 * @param deploymentInfo the deployment information to be customized
+		 */
+		@Override
 		public void customize(DeploymentInfo deploymentInfo) {
 			WebSocketDeploymentInfo info = new WebSocketDeploymentInfo();
 			deploymentInfo.addServletContextAttribute(WebSocketDeploymentInfo.ATTRIBUTE_NAME, info);

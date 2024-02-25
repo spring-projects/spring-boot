@@ -51,14 +51,17 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
 class HazelcastSessionConfiguration {
 
 	/**
-     * Customizes the HazelcastIndexedSessionRepository with the provided session properties, Hazelcast session properties, and server properties.
-     * 
-     * @param sessionProperties The session properties used to determine the session timeout.
-     * @param hazelcastSessionProperties The Hazelcast session properties used to configure the session repository.
-     * @param serverProperties The server properties used to determine the default session timeout.
-     * @return The customized HazelcastIndexedSessionRepository.
-     */
-    @Bean
+	 * Customizes the HazelcastIndexedSessionRepository with the provided session
+	 * properties, Hazelcast session properties, and server properties.
+	 * @param sessionProperties The session properties used to determine the session
+	 * timeout.
+	 * @param hazelcastSessionProperties The Hazelcast session properties used to
+	 * configure the session repository.
+	 * @param serverProperties The server properties used to determine the default session
+	 * timeout.
+	 * @return The customized HazelcastIndexedSessionRepository.
+	 */
+	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SessionRepositoryCustomizer<HazelcastIndexedSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, HazelcastSessionProperties hazelcastSessionProperties,

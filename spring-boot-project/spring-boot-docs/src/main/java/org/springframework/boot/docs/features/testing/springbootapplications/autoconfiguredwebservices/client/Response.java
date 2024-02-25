@@ -30,11 +30,10 @@ class Response {
 	private int status;
 
 	/**
-     * Returns the status of the response.
-     *
-     * @return the status of the response
-     */
-    int getStatus() {
+	 * Returns the status of the response.
+	 * @return the status of the response
+	 */
+	int getStatus() {
 		return this.status;
 	}
 

@@ -72,46 +72,44 @@ public class MappedObject {
 	}
 
 	/**
-     * Retrieves the root object from the given proxy object.
-     * 
-     * @param proxy the proxy object
-     * @return the root object of type T
-     * @throws ClassCastException if the proxy object is not of type MappedObject
-     * @since version 1.0
-     */
-    @SuppressWarnings("unchecked")
+	 * Retrieves the root object from the given proxy object.
+	 * @param proxy the proxy object
+	 * @return the root object of type T
+	 * @throws ClassCastException if the proxy object is not of type MappedObject
+	 * @since version 1.0
+	 */
+	@SuppressWarnings("unchecked")
 	protected static <T extends MappedObject> T getRoot(Object proxy) {
 		MappedInvocationHandler handler = (MappedInvocationHandler) Proxy.getInvocationHandler(proxy);
 		return (T) handler.root;
 	}
 
 	/**
-     * Retrieves the value at the specified expression from the given proxy object.
-     * 
-     * @param proxy      the proxy object from which to retrieve the value
-     * @param expression the expression specifying the path to the desired value
-     * @param type       the class type of the desired value
-     * @param <T>        the generic type of the desired value
-     * @return the value at the specified expression, casted to the specified type
-     */
-    protected static <T> T valueAt(Object proxy, String expression, Class<T> type) {
+	 * Retrieves the value at the specified expression from the given proxy object.
+	 * @param proxy the proxy object from which to retrieve the value
+	 * @param expression the expression specifying the path to the desired value
+	 * @param type the class type of the desired value
+	 * @param <T> the generic type of the desired value
+	 * @return the value at the specified expression, casted to the specified type
+	 */
+	protected static <T> T valueAt(Object proxy, String expression, Class<T> type) {
 		MappedInvocationHandler handler = (MappedInvocationHandler) Proxy.getInvocationHandler(proxy);
 		return valueAt(handler.root, handler.node, handler.lookup, expression, type);
 	}
 
 	/**
-     * Retrieves the value at the specified expression from the given JSON node.
-     * 
-     * @param root       the root MappedObject
-     * @param node       the JSON node to retrieve the value from
-     * @param lookup     the lookup object for resolving references
-     * @param expression the expression to evaluate
-     * @param type       the expected type of the value
-     * @param <T>        the generic type of the value
-     * @return the value at the specified expression, or null if not found
-     * @throws IllegalStateException if there is an error converting the JSON value to the specified type
-     */
-    @SuppressWarnings("unchecked")
+	 * Retrieves the value at the specified expression from the given JSON node.
+	 * @param root the root MappedObject
+	 * @param node the JSON node to retrieve the value from
+	 * @param lookup the lookup object for resolving references
+	 * @param expression the expression to evaluate
+	 * @param type the expected type of the value
+	 * @param <T> the generic type of the value
+	 * @return the value at the specified expression, or null if not found
+	 * @throws IllegalStateException if there is an error converting the JSON value to the
+	 * specified type
+	 */
+	@SuppressWarnings("unchecked")
 	private static <T> T valueAt(MappedObject root, JsonNode node, Lookup lookup, String expression, Class<T> type) {
 		JsonNode result = node.at(expression);
 		if (result.isMissingNode() && expression.startsWith("/") && expression.length() > 1
@@ -213,28 +211,27 @@ public class MappedObject {
 		private final Lookup lookup;
 
 		/**
-         * Constructs a new MappedInvocationHandler with the specified root, node, and lookup.
-         * 
-         * @param root the MappedObject representing the root object of the mapping
-         * @param node the JsonNode representing the JSON data to be mapped
-         * @param lookup the Lookup object used for method lookup
-         */
-        MappedInvocationHandler(MappedObject root, JsonNode node, Lookup lookup) {
+		 * Constructs a new MappedInvocationHandler with the specified root, node, and
+		 * lookup.
+		 * @param root the MappedObject representing the root object of the mapping
+		 * @param node the JsonNode representing the JSON data to be mapped
+		 * @param lookup the Lookup object used for method lookup
+		 */
+		MappedInvocationHandler(MappedObject root, JsonNode node, Lookup lookup) {
 			this.root = root;
 			this.node = node;
 			this.lookup = lookup;
 		}
 
 		/**
-         * Invokes the method on the proxy object.
-         * 
-         * @param proxy the proxy object
-         * @param method the method to be invoked
-         * @param args the arguments to be passed to the method
-         * @return the result of the method invocation
-         * @throws Throwable if an error occurs during method invocation
-         */
-        @Override
+		 * Invokes the method on the proxy object.
+		 * @param proxy the proxy object
+		 * @param method the method to be invoked
+		 * @param args the arguments to be passed to the method
+		 * @return the result of the method invocation
+		 * @throws Throwable if an error occurs during method invocation
+		 */
+		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			Class<?> declaringClass = method.getDeclaringClass();
 			if (method.isDefault()) {
@@ -252,13 +249,13 @@ public class MappedObject {
 		}
 
 		/**
-         * Returns the name of the method by removing the prefixes "get" or "is" if present.
-         * 
-         * @param name the original name of the method
-         * @return the modified name of the method
-         * @throws IllegalStateException if the name is empty
-         */
-        private String getName(String name) {
+		 * Returns the name of the method by removing the prefixes "get" or "is" if
+		 * present.
+		 * @param name the original name of the method
+		 * @return the modified name of the method
+		 * @throws IllegalStateException if the name is empty
+		 */
+		private String getName(String name) {
 			StringBuilder result = new StringBuilder(name);
 			if (name.startsWith(GET)) {
 				result = new StringBuilder(name.substring(GET.length()));
@@ -272,13 +269,12 @@ public class MappedObject {
 		}
 
 		/**
-         * Retrieves the value for the specified property.
-         * 
-         * @param name the name of the property
-         * @param type the expected type of the property value
-         * @return the value of the property
-         */
-        private Object valueForProperty(String name, Class<?> type) {
+		 * Retrieves the value for the specified property.
+		 * @param name the name of the property
+		 * @param type the expected type of the property value
+		 * @return the value of the property
+		 */
+		private Object valueForProperty(String name, Class<?> type) {
 			return valueAt(this.root, this.node, this.lookup, "/" + name, type);
 		}
 

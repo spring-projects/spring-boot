@@ -41,20 +41,18 @@ enum ImageType {
 	private final String description;
 
 	/**
-     * Constructs a new ImageType object with the specified description.
-     * 
-     * @param description the description of the image type
-     */
-    ImageType(String description) {
+	 * Constructs a new ImageType object with the specified description.
+	 * @param description the description of the image type
+	 */
+	ImageType(String description) {
 		this.description = description;
 	}
 
 	/**
-     * Returns the description of the ImageType.
-     *
-     * @return the description of the ImageType
-     */
-    String getDescription() {
+	 * Returns the description of the ImageType.
+	 * @return the description of the ImageType
+	 */
+	String getDescription() {
 		return this.description;
 	}
 

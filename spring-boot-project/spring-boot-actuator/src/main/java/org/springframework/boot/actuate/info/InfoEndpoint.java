@@ -47,11 +47,11 @@ public class InfoEndpoint {
 	}
 
 	/**
-     * Retrieves the information from the InfoContributors and returns it as a Map of details.
-     * 
-     * @return A Map containing the details retrieved from the InfoContributors.
-     */
-    @ReadOperation
+	 * Retrieves the information from the InfoContributors and returns it as a Map of
+	 * details.
+	 * @return A Map containing the details retrieved from the InfoContributors.
+	 */
+	@ReadOperation
 	public Map<String, Object> info() {
 		Info.Builder builder = new Info.Builder();
 		for (InfoContributor contributor : this.infoContributors) {

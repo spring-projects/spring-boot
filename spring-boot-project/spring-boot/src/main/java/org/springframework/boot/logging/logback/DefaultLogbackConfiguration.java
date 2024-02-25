@@ -50,20 +50,18 @@ class DefaultLogbackConfiguration {
 	private final LogFile logFile;
 
 	/**
-     * Constructs a new DefaultLogbackConfiguration with the specified log file.
-     * 
-     * @param logFile the log file to be used for logging
-     */
-    DefaultLogbackConfiguration(LogFile logFile) {
+	 * Constructs a new DefaultLogbackConfiguration with the specified log file.
+	 * @param logFile the log file to be used for logging
+	 */
+	DefaultLogbackConfiguration(LogFile logFile) {
 		this.logFile = logFile;
 	}
 
 	/**
-     * Applies the Logback configuration.
-     * 
-     * @param config the LogbackConfigurator object used for configuring Logback
-     */
-    void apply(LogbackConfigurator config) {
+	 * Applies the Logback configuration.
+	 * @param config the LogbackConfigurator object used for configuring Logback
+	 */
+	void apply(LogbackConfigurator config) {
 		synchronized (config.getConfigurationLock()) {
 			defaults(config);
 			Appender<ILoggingEvent> consoleAppender = consoleAppender(config);
@@ -78,11 +76,10 @@ class DefaultLogbackConfiguration {
 	}
 
 	/**
-     * Sets the default configuration for Logback.
-     * 
-     * @param config The LogbackConfigurator object used for configuration.
-     */
-    private void defaults(LogbackConfigurator config) {
+	 * Sets the default configuration for Logback.
+	 * @param config The LogbackConfigurator object used for configuration.
+	 */
+	private void defaults(LogbackConfigurator config) {
 		config.conversionRule("clr", ColorConverter.class);
 		config.conversionRule("correlationId", CorrelationIdConverter.class);
 		config.conversionRule("wex", WhitespaceThrowableProxyConverter.class);
@@ -116,12 +113,11 @@ class DefaultLogbackConfiguration {
 	}
 
 	/**
-     * Creates a console appender with the specified configuration.
-     * 
-     * @param config the LogbackConfigurator object used for configuration
-     * @return the created ConsoleAppender<ILoggingEvent> object
-     */
-    private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
+	 * Creates a console appender with the specified configuration.
+	 * @param config the LogbackConfigurator object used for configuration
+	 * @return the created ConsoleAppender<ILoggingEvent> object
+	 */
+	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
 		ThresholdFilter filter = new ThresholdFilter();
 		filter.setLevel(resolve(config, "${CONSOLE_LOG_THRESHOLD}"));
@@ -137,13 +133,12 @@ class DefaultLogbackConfiguration {
 	}
 
 	/**
-     * Creates a file appender for logging events.
-     * 
-     * @param config the LogbackConfigurator instance
-     * @param logFile the path to the log file
-     * @return the created file appender
-     */
-    private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config, String logFile) {
+	 * Creates a file appender for logging events.
+	 * @param config the LogbackConfigurator instance
+	 * @param logFile the path to the log file
+	 * @return the created file appender
+	 */
+	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config, String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		ThresholdFilter filter = new ThresholdFilter();
 		filter.setLevel(resolve(config, "${FILE_LOG_THRESHOLD}"));
@@ -161,12 +156,11 @@ class DefaultLogbackConfiguration {
 	}
 
 	/**
-     * Sets the rolling policy for the given appender.
-     * 
-     * @param appender the rolling file appender to set the policy for
-     * @param config the logback configurator
-     */
-    private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender, LogbackConfigurator config) {
+	 * Sets the rolling policy for the given appender.
+	 * @param appender the rolling file appender to set the policy for
+	 * @param config the logback configurator
+	 */
+	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender, LogbackConfigurator config) {
 		SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new SizeAndTimeBasedRollingPolicy<>();
 		rollingPolicy.setContext(config.getContext());
 		rollingPolicy.setFileNamePattern(
@@ -182,59 +176,56 @@ class DefaultLogbackConfiguration {
 	}
 
 	/**
-     * Resolves a boolean value based on the given LogbackConfigurator and string value.
-     * 
-     * @param config the LogbackConfigurator used for resolving the value
-     * @param val the string value to be resolved
-     * @return the resolved boolean value
-     */
-    private boolean resolveBoolean(LogbackConfigurator config, String val) {
+	 * Resolves a boolean value based on the given LogbackConfigurator and string value.
+	 * @param config the LogbackConfigurator used for resolving the value
+	 * @param val the string value to be resolved
+	 * @return the resolved boolean value
+	 */
+	private boolean resolveBoolean(LogbackConfigurator config, String val) {
 		return Boolean.parseBoolean(resolve(config, val));
 	}
 
 	/**
-     * Resolves the given string value to an integer using the provided LogbackConfigurator.
-     * 
-     * @param config the LogbackConfigurator used for resolving the value
-     * @param val the string value to be resolved
-     * @return the resolved integer value
-     * @throws NumberFormatException if the string value cannot be parsed as an integer
-     */
-    private int resolveInt(LogbackConfigurator config, String val) {
+	 * Resolves the given string value to an integer using the provided
+	 * LogbackConfigurator.
+	 * @param config the LogbackConfigurator used for resolving the value
+	 * @param val the string value to be resolved
+	 * @return the resolved integer value
+	 * @throws NumberFormatException if the string value cannot be parsed as an integer
+	 */
+	private int resolveInt(LogbackConfigurator config, String val) {
 		return Integer.parseInt(resolve(config, val));
 	}
 
 	/**
-     * Resolves the file size based on the given value and Logback configurator.
-     * 
-     * @param config the Logback configurator used for resolving the file size
-     * @param val the value representing the file size
-     * @return the resolved file size
-     */
-    private FileSize resolveFileSize(LogbackConfigurator config, String val) {
+	 * Resolves the file size based on the given value and Logback configurator.
+	 * @param config the Logback configurator used for resolving the file size
+	 * @param val the value representing the file size
+	 * @return the resolved file size
+	 */
+	private FileSize resolveFileSize(LogbackConfigurator config, String val) {
 		return FileSize.valueOf(resolve(config, val));
 	}
 
 	/**
-     * Resolves the charset based on the given value.
-     * 
-     * @param config the LogbackConfigurator object used for configuration
-     * @param val the value representing the charset
-     * @return the Charset object representing the resolved charset
-     */
-    private Charset resolveCharset(LogbackConfigurator config, String val) {
+	 * Resolves the charset based on the given value.
+	 * @param config the LogbackConfigurator object used for configuration
+	 * @param val the value representing the charset
+	 * @return the Charset object representing the resolved charset
+	 */
+	private Charset resolveCharset(LogbackConfigurator config, String val) {
 		return Charset.forName(resolve(config, val));
 	}
 
 	/**
-     * Resolves the given value by substituting variables using the LogbackConfigurator's context.
-     * 
-     * @param config the LogbackConfigurator instance used for variable substitution
-     * @param val the value to be resolved
-     * @return the resolved value with variables substituted
-     * @throws RuntimeException if a ScanException occurs during variable substitution
-     */
-    private String resolve(LogbackConfigurator config, String val) {
+	 * Resolves the given value by substituting variables using the LogbackConfigurator's
+	 * context.
+	 * @param config the LogbackConfigurator instance used for variable substitution
+	 * @param val the value to be resolved
+	 * @return the resolved value with variables substituted
+	 * @throws RuntimeException if a ScanException occurs during variable substitution
+	 */
+	private String resolve(LogbackConfigurator config, String val) {
 		try {
 			return OptionHelper.substVars(val, config.getContext());
 		}

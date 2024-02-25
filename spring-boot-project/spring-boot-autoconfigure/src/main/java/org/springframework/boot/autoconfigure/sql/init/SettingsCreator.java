@@ -30,18 +30,19 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 final class SettingsCreator {
 
 	/**
-     * Private constructor for the SettingsCreator class.
-     */
-    private SettingsCreator() {
+	 * Private constructor for the SettingsCreator class.
+	 */
+	private SettingsCreator() {
 	}
 
 	/**
-     * Creates a new instance of {@link DatabaseInitializationSettings} based on the provided {@link SqlInitializationProperties}.
-     * 
-     * @param properties the {@link SqlInitializationProperties} containing the initialization properties
-     * @return the created {@link DatabaseInitializationSettings} instance
-     */
-    static DatabaseInitializationSettings createFrom(SqlInitializationProperties properties) {
+	 * Creates a new instance of {@link DatabaseInitializationSettings} based on the
+	 * provided {@link SqlInitializationProperties}.
+	 * @param properties the {@link SqlInitializationProperties} containing the
+	 * initialization properties
+	 * @return the created {@link DatabaseInitializationSettings} instance
+	 */
+	static DatabaseInitializationSettings createFrom(SqlInitializationProperties properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings
 			.setSchemaLocations(scriptLocations(properties.getSchemaLocations(), "schema", properties.getPlatform()));
@@ -54,17 +55,16 @@ final class SettingsCreator {
 	}
 
 	/**
-     * Returns a list of script locations based on the provided parameters.
-     * If the locations list is not null, it is returned as is.
-     * Otherwise, a fallback list is created and returned.
-     * The fallback list includes optional script locations based on the provided fallback and platform parameters.
-     * 
-     * @param locations the list of script locations to be returned
-     * @param fallback the fallback script name
-     * @param platform the platform for which the script locations are being generated
-     * @return a list of script locations
-     */
-    private static List<String> scriptLocations(List<String> locations, String fallback, String platform) {
+	 * Returns a list of script locations based on the provided parameters. If the
+	 * locations list is not null, it is returned as is. Otherwise, a fallback list is
+	 * created and returned. The fallback list includes optional script locations based on
+	 * the provided fallback and platform parameters.
+	 * @param locations the list of script locations to be returned
+	 * @param fallback the fallback script name
+	 * @param platform the platform for which the script locations are being generated
+	 * @return a list of script locations
+	 */
+	private static List<String> scriptLocations(List<String> locations, String fallback, String platform) {
 		if (locations != null) {
 			return locations;
 		}

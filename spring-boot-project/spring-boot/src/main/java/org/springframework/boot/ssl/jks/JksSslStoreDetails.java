@@ -45,21 +45,19 @@ public record JksSslStoreDetails(String type, String provider, String location, 
 	}
 
 	/**
-     * Checks if the JksSslStoreDetails object is empty.
-     * 
-     * @return true if the object is empty, false otherwise
-     */
-    boolean isEmpty() {
+	 * Checks if the JksSslStoreDetails object is empty.
+	 * @return true if the object is empty, false otherwise
+	 */
+	boolean isEmpty() {
 		return isEmpty(this.type) && isEmpty(this.provider) && isEmpty(this.location);
 	}
 
 	/**
-     * Checks if the given value is empty.
-     * 
-     * @param value the value to be checked
-     * @return {@code true} if the value is empty, {@code false} otherwise
-     */
-    private boolean isEmpty(String value) {
+	 * Checks if the given value is empty.
+	 * @param value the value to be checked
+	 * @return {@code true} if the value is empty, {@code false} otherwise
+	 */
+	private boolean isEmpty(String value) {
 		return !StringUtils.hasText(value);
 	}
 

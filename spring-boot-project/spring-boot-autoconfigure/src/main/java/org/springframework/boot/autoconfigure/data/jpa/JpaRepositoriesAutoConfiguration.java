@@ -80,12 +80,12 @@ import org.springframework.util.ClassUtils;
 public class JpaRepositoriesAutoConfiguration {
 
 	/**
-     * Returns a customizer for the EntityManagerFactoryBuilder that sets the bootstrap executor if a BootstrapExecutorCondition is met.
-     * 
-     * @param taskExecutors a map of task executors
-     * @return the customizer for the EntityManagerFactoryBuilder
-     */
-    @Bean
+	 * Returns a customizer for the EntityManagerFactoryBuilder that sets the bootstrap
+	 * executor if a BootstrapExecutorCondition is met.
+	 * @param taskExecutors a map of task executors
+	 * @return the customizer for the EntityManagerFactoryBuilder
+	 */
+	@Bean
 	@Conditional(BootstrapExecutorCondition.class)
 	public EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
 			Map<String, AsyncTaskExecutor> taskExecutors) {
@@ -98,12 +98,11 @@ public class JpaRepositoriesAutoConfiguration {
 	}
 
 	/**
-     * Determines the bootstrap executor to be used for asynchronous task execution.
-     * 
-     * @param taskExecutors a map of task executors
-     * @return the bootstrap executor
-     */
-    private AsyncTaskExecutor determineBootstrapExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
+	 * Determines the bootstrap executor to be used for asynchronous task execution.
+	 * @param taskExecutors a map of task executors
+	 * @return the bootstrap executor
+	 */
+	private AsyncTaskExecutor determineBootstrapExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
 		if (taskExecutors.size() == 1) {
 			return taskExecutors.values().iterator().next();
 		}
@@ -111,32 +110,32 @@ public class JpaRepositoriesAutoConfiguration {
 	}
 
 	/**
-     * BootstrapExecutorCondition class.
-     */
-    private static final class BootstrapExecutorCondition extends AnyNestedCondition {
+	 * BootstrapExecutorCondition class.
+	 */
+	private static final class BootstrapExecutorCondition extends AnyNestedCondition {
 
 		/**
-         * Constructs a new BootstrapExecutorCondition with the specified configuration phase.
-         * 
-         * @param configurationPhase the configuration phase for the condition
-         */
-        BootstrapExecutorCondition() {
+		 * Constructs a new BootstrapExecutorCondition with the specified configuration
+		 * phase.
+		 * @param configurationPhase the configuration phase for the condition
+		 */
+		BootstrapExecutorCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
 		/**
-         * DeferredBootstrapMode class.
-         */
-        @ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode",
+		 * DeferredBootstrapMode class.
+		 */
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode",
 				havingValue = "deferred")
 		static class DeferredBootstrapMode {
 
 		}
 
 		/**
-         * LazyBootstrapMode class.
-         */
-        @ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "lazy")
+		 * LazyBootstrapMode class.
+		 */
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "lazy")
 		static class LazyBootstrapMode {
 
 		}
@@ -144,31 +143,29 @@ public class JpaRepositoriesAutoConfiguration {
 	}
 
 	/**
-     * JpaRepositoriesImportSelector class.
-     */
-    static class JpaRepositoriesImportSelector implements ImportSelector {
+	 * JpaRepositoriesImportSelector class.
+	 */
+	static class JpaRepositoriesImportSelector implements ImportSelector {
 
 		private static final boolean ENVERS_AVAILABLE = ClassUtils.isPresent(
 				"org.springframework.data.envers.repository.config.EnableEnversRepositories",
 				JpaRepositoriesImportSelector.class.getClassLoader());
 
 		/**
-         * Selects the imports for the JpaRepositoriesImportSelector class.
-         * 
-         * @param importingClassMetadata the metadata of the importing class
-         * @return an array of strings representing the imports to be included
-         */
-        @Override
+		 * Selects the imports for the JpaRepositoriesImportSelector class.
+		 * @param importingClassMetadata the metadata of the importing class
+		 * @return an array of strings representing the imports to be included
+		 */
+		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			return new String[] { determineImport() };
 		}
 
 		/**
-         * Determines the import class name based on the availability of Envers.
-         * 
-         * @return the import class name
-         */
-        private String determineImport() {
+		 * Determines the import class name based on the availability of Envers.
+		 * @return the import class name
+		 */
+		private String determineImport() {
 			return ENVERS_AVAILABLE ? EnversRevisionRepositoriesRegistrar.class.getName()
 					: JpaRepositoriesRegistrar.class.getName();
 		}

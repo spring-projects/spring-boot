@@ -31,11 +31,10 @@ public class GoodbyeWorldService implements MessageService {
 	private String name;
 
 	/**
-     * Returns a goodbye message with the name of the person.
-     *
-     * @return the goodbye message
-     */
-    @Override
+	 * Returns a goodbye message with the name of the person.
+	 * @return the goodbye message
+	 */
+	@Override
 	public String getMessage() {
 		return "Goodbye " + this.name;
 	}

@@ -31,11 +31,10 @@ public class MyBean {
 	private final MongoTemplate mongoTemplate;
 
 	/**
-     * Constructs a new instance of MyBean with the specified MongoTemplate.
-     *
-     * @param mongoTemplate the MongoTemplate to be used for database operations
-     */
-    public MyBean(MongoTemplate mongoTemplate) {
+	 * Constructs a new instance of MyBean with the specified MongoTemplate.
+	 * @param mongoTemplate the MongoTemplate to be used for database operations
+	 */
+	public MyBean(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 

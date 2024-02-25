@@ -43,11 +43,11 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfiguration {
 
 	/**
-     * Creates an instance of InMemoryUserDetailsManager and populates it with a list of user details.
-     * 
-     * @return the InMemoryUserDetailsManager instance
-     */
-    @Bean
+	 * Creates an instance of InMemoryUserDetailsManager and populates it with a list of
+	 * user details.
+	 * @return the InMemoryUserDetailsManager instance
+	 */
+	@Bean
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
 		List<UserDetails> userDetails = new ArrayList<>();
 		userDetails.add(createUserDetails("user", "password", "ROLE_USER"));
@@ -57,15 +57,15 @@ public class SecurityConfiguration {
 	}
 
 	/**
-     * Creates a UserDetails object with the given username, password, and authorities.
-     * 
-     * @param username    the username for the user
-     * @param password    the password for the user
-     * @param authorities the authorities for the user
-     * @return a UserDetails object representing the user
-     * @deprecated This method uses a deprecated method for password encoding. It is recommended to use a more secure method for password encoding.
-     */
-    @SuppressWarnings("deprecation")
+	 * Creates a UserDetails object with the given username, password, and authorities.
+	 * @param username the username for the user
+	 * @param password the password for the user
+	 * @param authorities the authorities for the user
+	 * @return a UserDetails object representing the user
+	 * @deprecated This method uses a deprecated method for password encoding. It is
+	 * recommended to use a more secure method for password encoding.
+	 */
+	@SuppressWarnings("deprecation")
 	private UserDetails createUserDetails(String username, String password, String... authorities) {
 		UserBuilder builder = User.withDefaultPasswordEncoder();
 		builder.username(username);
@@ -75,14 +75,14 @@ public class SecurityConfiguration {
 	}
 
 	/**
-     * Configures the security filter chain for the application.
-     * 
-     * @param http the HttpSecurity object to configure
-     * @param handlerMappingIntrospector the HandlerMappingIntrospector object to use for request matching
-     * @return the configured SecurityFilterChain
-     * @throws Exception if an error occurs during configuration
-     */
-    @Bean
+	 * Configures the security filter chain for the application.
+	 * @param http the HttpSecurity object to configure
+	 * @param handlerMappingIntrospector the HandlerMappingIntrospector object to use for
+	 * request matching
+	 * @return the configured SecurityFilterChain
+	 * @throws Exception if an error occurs during configuration
+	 */
+	@Bean
 	SecurityFilterChain configure(HttpSecurity http, HandlerMappingIntrospector handlerMappingIntrospector)
 			throws Exception {
 		http.authorizeHttpRequests((requests) -> {

@@ -81,17 +81,17 @@ public class ImageArchive implements TarArchive {
 	private final List<Layer> newLayers;
 
 	/**
-     * Creates a new instance of ImageArchive with the given parameters.
-     * 
-     * @param objectMapper the object mapper used for serialization and deserialization of objects
-     * @param imageConfig the configuration of the image
-     * @param createDate the date when the image was created
-     * @param tag the reference tag of the image
-     * @param os the operating system of the image
-     * @param existingLayers the list of existing layers in the image
-     * @param newLayers the list of new layers to be added to the image
-     */
-    ImageArchive(ObjectMapper objectMapper, ImageConfig imageConfig, Instant createDate, ImageReference tag, String os,
+	 * Creates a new instance of ImageArchive with the given parameters.
+	 * @param objectMapper the object mapper used for serialization and deserialization of
+	 * objects
+	 * @param imageConfig the configuration of the image
+	 * @param createDate the date when the image was created
+	 * @param tag the reference tag of the image
+	 * @param os the operating system of the image
+	 * @param existingLayers the list of existing layers in the image
+	 * @param newLayers the list of new layers to be added to the image
+	 */
+	ImageArchive(ObjectMapper objectMapper, ImageConfig imageConfig, Instant createDate, ImageReference tag, String os,
 			List<LayerId> existingLayers, List<Layer> newLayers) {
 		this.objectMapper = objectMapper;
 		this.imageConfig = imageConfig;
@@ -127,36 +127,33 @@ public class ImageArchive implements TarArchive {
 	}
 
 	/**
-     * Writes the ImageArchive to the specified OutputStream.
-     * 
-     * @param outputStream the OutputStream to write the ImageArchive to
-     * @throws IOException if an I/O error occurs while writing the ImageArchive
-     */
-    @Override
+	 * Writes the ImageArchive to the specified OutputStream.
+	 * @param outputStream the OutputStream to write the ImageArchive to
+	 * @throws IOException if an I/O error occurs while writing the ImageArchive
+	 */
+	@Override
 	public void writeTo(OutputStream outputStream) throws IOException {
 		TarArchive.of(this::write).writeTo(outputStream);
 	}
 
 	/**
-     * Writes the layout, config, and manifest files for the image archive.
-     * 
-     * @param writer the layout writer to use
-     * @throws IOException if an I/O error occurs while writing the files
-     */
-    private void write(Layout writer) throws IOException {
+	 * Writes the layout, config, and manifest files for the image archive.
+	 * @param writer the layout writer to use
+	 * @throws IOException if an I/O error occurs while writing the files
+	 */
+	private void write(Layout writer) throws IOException {
 		List<LayerId> writtenLayers = writeLayers(writer);
 		String config = writeConfig(writer, writtenLayers);
 		writeManifest(writer, config, writtenLayers);
 	}
 
 	/**
-     * Writes the layers to the given layout writer.
-     * 
-     * @param writer the layout writer to write the layers to
-     * @return the list of written layer IDs
-     * @throws IOException if an I/O error occurs while writing the layers
-     */
-    private List<LayerId> writeLayers(Layout writer) throws IOException {
+	 * Writes the layers to the given layout writer.
+	 * @param writer the layout writer to write the layers to
+	 * @return the list of written layer IDs
+	 * @throws IOException if an I/O error occurs while writing the layers
+	 */
+	private List<LayerId> writeLayers(Layout writer) throws IOException {
 		for (int i = 0; i < this.existingLayers.size(); i++) {
 			writeEmptyLayer(writer, EMPTY_LAYER_NAME_PREFIX + i);
 		}
@@ -168,40 +165,37 @@ public class ImageArchive implements TarArchive {
 	}
 
 	/**
-     * Writes an empty layer to the specified layout with the given name.
-     * 
-     * @param writer the layout to write the empty layer to
-     * @param name the name of the empty layer
-     * @throws IOException if an I/O error occurs while writing the empty layer
-     */
-    private void writeEmptyLayer(Layout writer, String name) throws IOException {
+	 * Writes an empty layer to the specified layout with the given name.
+	 * @param writer the layout to write the empty layer to
+	 * @param name the name of the empty layer
+	 * @throws IOException if an I/O error occurs while writing the empty layer
+	 */
+	private void writeEmptyLayer(Layout writer, String name) throws IOException {
 		writer.file(name, Owner.ROOT, Content.of(""));
 	}
 
 	/**
-     * Writes a layer to the specified layout and returns the layer ID.
-     * 
-     * @param writer the layout to write the layer to
-     * @param layer the layer to be written
-     * @return the ID of the written layer
-     * @throws IOException if an I/O error occurs while writing the layer
-     */
-    private LayerId writeLayer(Layout writer, Layer layer) throws IOException {
+	 * Writes a layer to the specified layout and returns the layer ID.
+	 * @param writer the layout to write the layer to
+	 * @param layer the layer to be written
+	 * @return the ID of the written layer
+	 * @throws IOException if an I/O error occurs while writing the layer
+	 */
+	private LayerId writeLayer(Layout writer, Layer layer) throws IOException {
 		LayerId id = layer.getId();
 		writer.file(id.getHash() + ".tar", Owner.ROOT, layer);
 		return id;
 	}
 
 	/**
-     * Writes the configuration file for the given writer and list of written layers.
-     * 
-     * @param writer The layout writer to use for writing the configuration file.
-     * @param writtenLayers The list of layer IDs that have been written.
-     * @return The name of the configuration file.
-     * @throws IOException If an I/O error occurs while writing the configuration file.
-     * @throws IllegalStateException If the SHA-256 algorithm is not available.
-     */
-    private String writeConfig(Layout writer, List<LayerId> writtenLayers) throws IOException {
+	 * Writes the configuration file for the given writer and list of written layers.
+	 * @param writer The layout writer to use for writing the configuration file.
+	 * @param writtenLayers The list of layer IDs that have been written.
+	 * @return The name of the configuration file.
+	 * @throws IOException If an I/O error occurs while writing the configuration file.
+	 * @throws IllegalStateException If the SHA-256 algorithm is not available.
+	 */
+	private String writeConfig(Layout writer, List<LayerId> writtenLayers) throws IOException {
 		try {
 			ObjectNode config = createConfig(writtenLayers);
 			String json = this.objectMapper.writeValueAsString(config).replace("\r\n", "\n");
@@ -217,12 +211,11 @@ public class ImageArchive implements TarArchive {
 	}
 
 	/**
-     * Creates a configuration object for the image archive.
-     * 
-     * @param writtenLayers the list of written layers
-     * @return the configuration object
-     */
-    private ObjectNode createConfig(List<LayerId> writtenLayers) {
+	 * Creates a configuration object for the image archive.
+	 * @param writtenLayers the list of written layers
+	 * @return the configuration object
+	 */
+	private ObjectNode createConfig(List<LayerId> writtenLayers) {
 		ObjectNode config = this.objectMapper.createObjectNode();
 		config.set("config", this.imageConfig.getNodeCopy());
 		config.set("created", config.textNode(getCreatedDate()));
@@ -233,21 +226,21 @@ public class ImageArchive implements TarArchive {
 	}
 
 	/**
-     * Returns the created date of the image archive.
-     * 
-     * @return the created date of the image archive in the format specified by the DATE_FORMATTER
-     */
-    private String getCreatedDate() {
+	 * Returns the created date of the image archive.
+	 * @return the created date of the image archive in the format specified by the
+	 * DATE_FORMATTER
+	 */
+	private String getCreatedDate() {
 		return DATE_FORMATTER.format(this.createDate);
 	}
 
 	/**
-     * Creates a JSON node representing the history of written layers in the image archive.
-     * 
-     * @param writtenLayers the list of layer IDs representing the written layers
-     * @return a JSON node representing the history of written layers
-     */
-    private JsonNode createHistory(List<LayerId> writtenLayers) {
+	 * Creates a JSON node representing the history of written layers in the image
+	 * archive.
+	 * @param writtenLayers the list of layer IDs representing the written layers
+	 * @return a JSON node representing the history of written layers
+	 */
+	private JsonNode createHistory(List<LayerId> writtenLayers) {
 		ArrayNode history = this.objectMapper.createArrayNode();
 		int size = this.existingLayers.size() + writtenLayers.size();
 		for (int i = 0; i < size; i++) {
@@ -257,12 +250,12 @@ public class ImageArchive implements TarArchive {
 	}
 
 	/**
-     * Creates the root filesystem JSON node for the image archive.
-     * 
-     * @param writtenLayers the list of layer IDs that have been written to the image archive
-     * @return the root filesystem JSON node
-     */
-    private JsonNode createRootFs(List<LayerId> writtenLayers) {
+	 * Creates the root filesystem JSON node for the image archive.
+	 * @param writtenLayers the list of layer IDs that have been written to the image
+	 * archive
+	 * @return the root filesystem JSON node
+	 */
+	private JsonNode createRootFs(List<LayerId> writtenLayers) {
 		ObjectNode rootFs = this.objectMapper.createObjectNode();
 		ArrayNode diffIds = rootFs.putArray("diff_ids");
 		this.existingLayers.stream().map(Object::toString).forEach(diffIds::add);
@@ -271,27 +264,25 @@ public class ImageArchive implements TarArchive {
 	}
 
 	/**
-     * Writes the manifest file for the given configuration and list of written layers.
-     * 
-     * @param writer The layout writer to use for writing the manifest file.
-     * @param config The configuration for which the manifest is being written.
-     * @param writtenLayers The list of written layers.
-     * @throws IOException If an I/O error occurs while writing the manifest file.
-     */
-    private void writeManifest(Layout writer, String config, List<LayerId> writtenLayers) throws IOException {
+	 * Writes the manifest file for the given configuration and list of written layers.
+	 * @param writer The layout writer to use for writing the manifest file.
+	 * @param config The configuration for which the manifest is being written.
+	 * @param writtenLayers The list of written layers.
+	 * @throws IOException If an I/O error occurs while writing the manifest file.
+	 */
+	private void writeManifest(Layout writer, String config, List<LayerId> writtenLayers) throws IOException {
 		ArrayNode manifest = createManifest(config, writtenLayers);
 		String manifestJson = this.objectMapper.writeValueAsString(manifest);
 		writer.file("manifest.json", Owner.ROOT, Content.of(manifestJson));
 	}
 
 	/**
-     * Creates a manifest for the given configuration and list of written layers.
-     * 
-     * @param config The configuration for the manifest.
-     * @param writtenLayers The list of written layers.
-     * @return The created manifest as an ArrayNode.
-     */
-    private ArrayNode createManifest(String config, List<LayerId> writtenLayers) {
+	 * Creates a manifest for the given configuration and list of written layers.
+	 * @param config The configuration for the manifest.
+	 * @param writtenLayers The list of written layers.
+	 * @return The created manifest as an ArrayNode.
+	 */
+	private ArrayNode createManifest(String config, List<LayerId> writtenLayers) {
 		ArrayNode manifest = this.objectMapper.createArrayNode();
 		ObjectNode entry = manifest.addObject();
 		entry.set("Config", entry.textNode(config));
@@ -303,12 +294,11 @@ public class ImageArchive implements TarArchive {
 	}
 
 	/**
-     * Returns an ArrayNode containing the manifest layers.
-     * 
-     * @param writtenLayers the list of written layers
-     * @return the ArrayNode containing the manifest layers
-     */
-    private ArrayNode getManifestLayers(List<LayerId> writtenLayers) {
+	 * Returns an ArrayNode containing the manifest layers.
+	 * @param writtenLayers the list of written layers
+	 * @return the ArrayNode containing the manifest layers
+	 */
+	private ArrayNode getManifestLayers(List<LayerId> writtenLayers) {
 		ArrayNode layers = this.objectMapper.createArrayNode();
 		for (int i = 0; i < this.existingLayers.size(); i++) {
 			layers.add(EMPTY_LAYER_NAME_PREFIX + i);
@@ -354,23 +344,21 @@ public class ImageArchive implements TarArchive {
 		private final List<Layer> newLayers = new ArrayList<>();
 
 		/**
-         * Updates the image and its configuration.
-         * 
-         * @param image the new image to be updated
-         */
-        private Update(Image image) {
+		 * Updates the image and its configuration.
+		 * @param image the new image to be updated
+		 */
+		private Update(Image image) {
 			this.image = image;
 			this.config = image.getConfig();
 		}
 
 		/**
-         * Applies the given update to the ImageArchive.
-         * 
-         * @param update the update to apply
-         * @return the updated ImageArchive
-         * @throws IOException if an I/O error occurs
-         */
-        private ImageArchive applyTo(IOConsumer<Update> update) throws IOException {
+		 * Applies the given update to the ImageArchive.
+		 * @param update the update to apply
+		 * @return the updated ImageArchive
+		 * @throws IOException if an I/O error occurs
+		 */
+		private ImageArchive applyTo(IOConsumer<Update> update) throws IOException {
 			update.accept(this);
 			Instant createDate = (this.createDate != null) ? this.createDate : WINDOWS_EPOCH_PLUS_SECOND;
 			return new ImageArchive(SharedObjectMapper.get(), this.config, createDate, this.tag, this.image.getOs(),

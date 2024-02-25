@@ -92,55 +92,50 @@ public class GradleBuild {
 	private final Map<String, String> scriptProperties = new HashMap<>();
 
 	/**
-     * Constructs a new GradleBuild object using the specified DSL.
-     * 
-     * @param dsl the DSL to be used for the GradleBuild object
-     */
-    public GradleBuild() {
+	 * Constructs a new GradleBuild object using the specified DSL.
+	 * @param dsl the DSL to be used for the GradleBuild object
+	 */
+	public GradleBuild() {
 		this(Dsl.GROOVY);
 	}
 
 	/**
-     * Constructs a new GradleBuild object with the specified Dsl.
-     * 
-     * @param dsl the Dsl object to be associated with the GradleBuild
-     */
-    public GradleBuild(Dsl dsl) {
+	 * Constructs a new GradleBuild object with the specified Dsl.
+	 * @param dsl the Dsl object to be associated with the GradleBuild
+	 */
+	public GradleBuild(Dsl dsl) {
 		this.dsl = dsl;
 	}
 
 	/**
-     * Returns the Dsl object associated with this GradleBuild.
-     *
-     * @return the Dsl object
-     */
-    public Dsl getDsl() {
+	 * Returns the Dsl object associated with this GradleBuild.
+	 * @return the Dsl object
+	 */
+	public Dsl getDsl() {
 		return this.dsl;
 	}
 
 	/**
-     * Sets up the project directory before running the Gradle build.
-     * 
-     * @throws IOException if an I/O error occurs while creating the temporary directory
-     */
-    void before() throws IOException {
+	 * Sets up the project directory before running the Gradle build.
+	 * @throws IOException if an I/O error occurs while creating the temporary directory
+	 */
+	void before() throws IOException {
 		this.projectDir = Files.createTempDirectory("gradle-").toFile();
 	}
 
 	/**
-     * Deletes the project directory and sets the script to null.
-     */
-    void after() {
+	 * Deletes the project directory and sets the script to null.
+	 */
+	void after() {
 		this.script = null;
 		FileSystemUtils.deleteRecursively(this.projectDir);
 	}
 
 	/**
-     * Returns a list of files representing the classpath for the plugins.
-     * 
-     * @return A list of files representing the classpath for the plugins.
-     */
-    private List<File> pluginClasspath() {
+	 * Returns a list of files representing the classpath for the plugins.
+	 * @return A list of files representing the classpath for the plugins.
+	 */
+	private List<File> pluginClasspath() {
 		return Arrays.asList(new File("bin/main"), new File("build/classes/java/main"),
 				new File("build/resources/main"), new File(pathOfJarContaining(LaunchScript.class)),
 				new File(pathOfJarContaining(ClassVisitor.class)),
@@ -166,13 +161,12 @@ public class GradleBuild {
 	}
 
 	/**
-     * Returns the path of the JAR file containing the specified class.
-     * 
-     * @param className the fully qualified name of the class
-     * @return the path of the JAR file containing the class
-     * @throws IllegalArgumentException if the class is not found
-     */
-    private String pathOfJarContaining(String className) {
+	 * Returns the path of the JAR file containing the specified class.
+	 * @param className the fully qualified name of the class
+	 * @return the path of the JAR file containing the class
+	 * @throws IllegalArgumentException if the class is not found
+	 */
+	private String pathOfJarContaining(String className) {
 		try {
 			return pathOfJarContaining(Class.forName(className));
 		}
@@ -182,118 +176,108 @@ public class GradleBuild {
 	}
 
 	/**
-     * Returns the path of the JAR file containing the specified class.
-     * 
-     * @param type the class for which to retrieve the JAR file path
-     * @return the path of the JAR file containing the specified class
-     */
-    private String pathOfJarContaining(Class<?> type) {
+	 * Returns the path of the JAR file containing the specified class.
+	 * @param type the class for which to retrieve the JAR file path
+	 * @return the path of the JAR file containing the specified class
+	 */
+	private String pathOfJarContaining(Class<?> type) {
 		return type.getProtectionDomain().getCodeSource().getLocation().getPath();
 	}
 
 	/**
-     * Sets the Gradle build script.
-     * 
-     * @param script the Gradle build script to set
-     * @return the GradleBuild object
-     */
-    public GradleBuild script(String script) {
+	 * Sets the Gradle build script.
+	 * @param script the Gradle build script to set
+	 * @return the GradleBuild object
+	 */
+	public GradleBuild script(String script) {
 		this.script = script.endsWith(this.dsl.getExtension()) ? script : script + this.dsl.getExtension();
 		return this;
 	}
 
 	/**
-     * Sets the settings for the GradleBuild.
-     * 
-     * @param settings the settings to be set
-     */
-    public void settings(String settings) {
+	 * Sets the settings for the GradleBuild.
+	 * @param settings the settings to be set
+	 */
+	public void settings(String settings) {
 		this.settings = settings;
 	}
 
 	/**
-     * Sets the minimum Gradle version for expecting deprecation warnings.
-     * 
-     * @param gradleVersion the minimum Gradle version (e.g. "5.0")
-     * @return the GradleBuild object with the updated expectation
-     */
-    public GradleBuild expectDeprecationWarningsWithAtLeastVersion(String gradleVersion) {
+	 * Sets the minimum Gradle version for expecting deprecation warnings.
+	 * @param gradleVersion the minimum Gradle version (e.g. "5.0")
+	 * @return the GradleBuild object with the updated expectation
+	 */
+	public GradleBuild expectDeprecationWarningsWithAtLeastVersion(String gradleVersion) {
 		this.expectDeprecationWarnings = GradleVersion.version(gradleVersion);
 		return this;
 	}
 
 	/**
-     * Sets the expected deprecation messages for the Gradle build.
-     * 
-     * @param messages the expected deprecation messages
-     * @return the GradleBuild object with the expected deprecation messages set
-     */
-    public GradleBuild expectDeprecationMessages(String... messages) {
+	 * Sets the expected deprecation messages for the Gradle build.
+	 * @param messages the expected deprecation messages
+	 * @return the GradleBuild object with the expected deprecation messages set
+	 */
+	public GradleBuild expectDeprecationMessages(String... messages) {
 		this.expectedDeprecationMessages.addAll(Arrays.asList(messages));
 		return this;
 	}
 
 	/**
-     * Enables the configuration cache for the Gradle build.
-     * 
-     * @return the GradleBuild object with the configuration cache enabled
-     */
-    public GradleBuild configurationCache() {
+	 * Enables the configuration cache for the Gradle build.
+	 * @return the GradleBuild object with the configuration cache enabled
+	 */
+	public GradleBuild configurationCache() {
 		this.configurationCache = true;
 		return this;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the configuration cache is enabled.
-     * 
-     * @return true if the configuration cache is enabled, false otherwise
-     */
-    public boolean isConfigurationCache() {
+	 * Returns a boolean value indicating whether the configuration cache is enabled.
+	 * @return true if the configuration cache is enabled, false otherwise
+	 */
+	public boolean isConfigurationCache() {
 		return this.configurationCache;
 	}
 
 	/**
-     * Sets a script property with the specified key and value.
-     * 
-     * @param key   the key of the script property
-     * @param value the value of the script property
-     * @return the GradleBuild instance with the updated script property
-     */
-    public GradleBuild scriptProperty(String key, String value) {
+	 * Sets a script property with the specified key and value.
+	 * @param key the key of the script property
+	 * @param value the value of the script property
+	 * @return the GradleBuild instance with the updated script property
+	 */
+	public GradleBuild scriptProperty(String key, String value) {
 		this.scriptProperties.put(key, value);
 		return this;
 	}
 
 	/**
-     * Sets a script property from a properties file.
-     * 
-     * @param propertiesFile the properties file to read from
-     * @param key the key of the property to set
-     * @return the GradleBuild instance with the script property set
-     */
-    public GradleBuild scriptPropertyFrom(File propertiesFile, String key) {
+	 * Sets a script property from a properties file.
+	 * @param propertiesFile the properties file to read from
+	 * @param key the key of the property to set
+	 * @return the GradleBuild instance with the script property set
+	 */
+	public GradleBuild scriptPropertyFrom(File propertiesFile, String key) {
 		this.scriptProperties.put(key, getProperty(propertiesFile, key));
 		return this;
 	}
 
 	/**
-     * Checks if the Gradle version is at least the specified version.
-     * 
-     * @param version the version to compare against
-     * @return true if the Gradle version is at least the specified version, false otherwise
-     */
-    public boolean gradleVersionIsAtLeast(String version) {
+	 * Checks if the Gradle version is at least the specified version.
+	 * @param version the version to compare against
+	 * @return true if the Gradle version is at least the specified version, false
+	 * otherwise
+	 */
+	public boolean gradleVersionIsAtLeast(String version) {
 		return GradleVersion.version(this.gradleVersion).compareTo(GradleVersion.version(version)) >= 0;
 	}
 
 	/**
-     * Builds the project with the given arguments.
-     * 
-     * @param arguments the arguments to be passed to the build
-     * @return the result of the build
-     * @throws RuntimeException if an exception occurs during the build process
-     */
-    public BuildResult build(String... arguments) {
+	 * Builds the project with the given arguments.
+	 * @param arguments the arguments to be passed to the build
+	 * @return the result of the build
+	 * @throws RuntimeException if an exception occurs during the build process
+	 */
+	public BuildResult build(String... arguments) {
 		try {
 			BuildResult result = prepareRunner(arguments).build();
 			if (this.expectDeprecationWarnings == null || (this.gradleVersion != null
@@ -314,13 +298,12 @@ public class GradleBuild {
 	}
 
 	/**
-     * Builds and fails the Gradle project with the given arguments.
-     * 
-     * @param arguments the arguments to be passed to the Gradle runner
-     * @return the build result
-     * @throws RuntimeException if an exception occurs during the build process
-     */
-    public BuildResult buildAndFail(String... arguments) {
+	 * Builds and fails the Gradle project with the given arguments.
+	 * @param arguments the arguments to be passed to the Gradle runner
+	 * @return the build result
+	 * @throws RuntimeException if an exception occurs during the build process
+	 */
+	public BuildResult buildAndFail(String... arguments) {
 		try {
 			return prepareRunner(arguments).buildAndFail();
 		}
@@ -330,13 +313,12 @@ public class GradleBuild {
 	}
 
 	/**
-     * Prepares a GradleRunner with the given arguments.
-     * 
-     * @param arguments The arguments to be passed to the GradleRunner.
-     * @return A GradleRunner configured with the provided arguments.
-     * @throws IOException If an I/O error occurs while preparing the GradleRunner.
-     */
-    public GradleRunner prepareRunner(String... arguments) throws IOException {
+	 * Prepares a GradleRunner with the given arguments.
+	 * @param arguments The arguments to be passed to the GradleRunner.
+	 * @return A GradleRunner configured with the provided arguments.
+	 * @throws IOException If an I/O error occurs while preparing the GradleRunner.
+	 */
+	public GradleRunner prepareRunner(String... arguments) throws IOException {
 		this.scriptProperties.put("bootVersion", getBootVersion());
 		this.scriptProperties.put("dependencyManagementPluginVersion", getDependencyManagementPluginVersion());
 		copyTransformedScript(this.script, new File(this.projectDir, "build" + this.dsl.getExtension()));
@@ -371,13 +353,12 @@ public class GradleBuild {
 	}
 
 	/**
-     * Copies the transformed script to the specified destination file.
-     * 
-     * @param script the path of the script to be copied
-     * @param destination the destination file where the transformed script will be copied
-     * @throws IOException if an I/O error occurs during the copying process
-     */
-    private void copyTransformedScript(String script, File destination) throws IOException {
+	 * Copies the transformed script to the specified destination file.
+	 * @param script the path of the script to be copied
+	 * @param destination the destination file where the transformed script will be copied
+	 * @throws IOException if an I/O error occurs during the copying process
+	 */
+	private void copyTransformedScript(String script, File destination) throws IOException {
 		String scriptContent = FileCopyUtils.copyToString(new FileReader(script));
 		for (Entry<String, String> property : this.scriptProperties.entrySet()) {
 			scriptContent = scriptContent.replace("{" + property.getKey() + "}", property.getValue());
@@ -386,14 +367,13 @@ public class GradleBuild {
 	}
 
 	/**
-     * Returns the directory for the Gradle test kit.
-     * The directory is created in the system's temporary directory.
-     * The directory name is constructed using the current user's name, the boot version, and the Gradle version.
-     * If the Gradle version is not specified, the default version is used.
-     *
-     * @return the directory for the Gradle test kit
-     */
-    private File getTestKitDir() {
+	 * Returns the directory for the Gradle test kit. The directory is created in the
+	 * system's temporary directory. The directory name is constructed using the current
+	 * user's name, the boot version, and the Gradle version. If the Gradle version is not
+	 * specified, the default version is used.
+	 * @return the directory for the Gradle test kit
+	 */
+	private File getTestKitDir() {
 		File temp = new File(System.getProperty("java.io.tmpdir"));
 		String username = System.getProperty("user.name");
 		String gradleVersion = (this.gradleVersion != null) ? this.gradleVersion : "default";
@@ -401,70 +381,64 @@ public class GradleBuild {
 	}
 
 	/**
-     * Returns the project directory.
-     *
-     * @return the project directory
-     */
-    public File getProjectDir() {
+	 * Returns the project directory.
+	 * @return the project directory
+	 */
+	public File getProjectDir() {
 		return this.projectDir;
 	}
 
 	/**
-     * Sets the project directory for the Gradle build.
-     * 
-     * @param projectDir the project directory to be set
-     */
-    public void setProjectDir(File projectDir) {
+	 * Sets the project directory for the Gradle build.
+	 * @param projectDir the project directory to be set
+	 */
+	public void setProjectDir(File projectDir) {
 		this.projectDir = projectDir;
 	}
 
 	/**
-     * Sets the Gradle version for the build.
-     * 
-     * @param version the Gradle version to set
-     * @return the GradleBuild object with the updated Gradle version
-     */
-    public GradleBuild gradleVersion(String version) {
+	 * Sets the Gradle version for the build.
+	 * @param version the Gradle version to set
+	 * @return the GradleBuild object with the updated Gradle version
+	 */
+	public GradleBuild gradleVersion(String version) {
 		this.gradleVersion = version;
 		return this;
 	}
 
 	/**
-     * Returns the Gradle version used in the GradleBuild.
-     *
-     * @return the Gradle version
-     */
-    public String getGradleVersion() {
+	 * Returns the Gradle version used in the GradleBuild.
+	 * @return the Gradle version
+	 */
+	public String getGradleVersion() {
 		return this.gradleVersion;
 	}
 
 	/**
-     * Sets the Spring Boot version for the Gradle build.
-     * 
-     * @param version the Spring Boot version to set
-     * @return the GradleBuild object with the updated Spring Boot version
-     */
-    public GradleBuild bootVersion(String version) {
+	 * Sets the Spring Boot version for the Gradle build.
+	 * @param version the Spring Boot version to set
+	 * @return the GradleBuild object with the updated Spring Boot version
+	 */
+	public GradleBuild bootVersion(String version) {
 		this.springBootVersion = version;
 		return this;
 	}
 
 	/**
-     * Returns the Spring Boot version used in the GradleBuild.
-     *
-     * @return the Spring Boot version
-     */
-    private String getBootVersion() {
+	 * Returns the Spring Boot version used in the GradleBuild.
+	 * @return the Spring Boot version
+	 */
+	private String getBootVersion() {
 		return this.springBootVersion;
 	}
 
 	/**
-     * Retrieves the version of the dependency management plugin.
-     *
-     * @return the version of the dependency management plugin
-     * @throws IllegalStateException if the dependency management plugin version cannot be found
-     */
-    private static String getDependencyManagementPluginVersion() {
+	 * Retrieves the version of the dependency management plugin.
+	 * @return the version of the dependency management plugin
+	 * @throws IllegalStateException if the dependency management plugin version cannot be
+	 * found
+	 */
+	private static String getDependencyManagementPluginVersion() {
 		try {
 			URL location = DependencyManagementExtension.class.getProtectionDomain().getCodeSource().getLocation();
 			try (JarFile jar = new JarFile(new File(location.toURI()))) {
@@ -477,14 +451,14 @@ public class GradleBuild {
 	}
 
 	/**
-     * Retrieves the value of a property from a properties file.
-     * 
-     * @param propertiesFile The properties file to read from.
-     * @param key The key of the property to retrieve.
-     * @return The value of the property.
-     * @throws AssertionError If the properties file does not exist or if the property is empty.
-     */
-    private String getProperty(File propertiesFile, String key) {
+	 * Retrieves the value of a property from a properties file.
+	 * @param propertiesFile The properties file to read from.
+	 * @param key The key of the property to retrieve.
+	 * @return The value of the property.
+	 * @throws AssertionError If the properties file does not exist or if the property is
+	 * empty.
+	 */
+	private String getProperty(File propertiesFile, String key) {
 		try {
 			assertThat(propertiesFile)
 				.withFailMessage("Expecting properties file to exist at path '%s'", propertiesFile.getCanonicalFile())

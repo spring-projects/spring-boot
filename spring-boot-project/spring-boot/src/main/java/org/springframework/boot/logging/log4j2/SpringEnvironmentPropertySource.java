@@ -36,44 +36,40 @@ class SpringEnvironmentPropertySource implements PropertySource {
 	private final Environment environment;
 
 	/**
-     * Constructs a new SpringEnvironmentPropertySource with the given Environment.
-     * 
-     * @param environment the Environment to use for retrieving property values
-     * @throws IllegalArgumentException if the environment is null
-     */
-    SpringEnvironmentPropertySource(Environment environment) {
+	 * Constructs a new SpringEnvironmentPropertySource with the given Environment.
+	 * @param environment the Environment to use for retrieving property values
+	 * @throws IllegalArgumentException if the environment is null
+	 */
+	SpringEnvironmentPropertySource(Environment environment) {
 		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;
 	}
 
 	/**
-     * Returns the priority of the SpringEnvironmentPropertySource.
-     * 
-     * @return the priority value of the SpringEnvironmentPropertySource
-     */
-    @Override
+	 * Returns the priority of the SpringEnvironmentPropertySource.
+	 * @return the priority value of the SpringEnvironmentPropertySource
+	 */
+	@Override
 	public int getPriority() {
 		return PRIORITY;
 	}
 
 	/**
-     * Retrieves the value of the property associated with the specified key.
-     * 
-     * @param key the key of the property to retrieve
-     * @return the value of the property, or null if the property does not exist
-     */
-    @Override
+	 * Retrieves the value of the property associated with the specified key.
+	 * @param key the key of the property to retrieve
+	 * @return the value of the property, or null if the property does not exist
+	 */
+	@Override
 	public String getProperty(String key) {
 		return this.environment.getProperty(key);
 	}
 
 	/**
-     * Checks if the property source contains a property with the specified key.
-     * 
-     * @param key the key of the property to check
-     * @return true if the property source contains the property, false otherwise
-     */
-    @Override
+	 * Checks if the property source contains a property with the specified key.
+	 * @param key the key of the property to check
+	 * @return true if the property source contains the property, false otherwise
+	 */
+	@Override
 	public boolean containsProperty(String key) {
 		return this.environment.containsProperty(key);
 	}

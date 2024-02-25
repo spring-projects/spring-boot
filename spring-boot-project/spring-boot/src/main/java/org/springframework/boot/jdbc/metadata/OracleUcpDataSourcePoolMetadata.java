@@ -33,21 +33,22 @@ import org.springframework.util.StringUtils;
 public class OracleUcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<PoolDataSource> {
 
 	/**
-     * Constructs a new OracleUcpDataSourcePoolMetadata object with the specified PoolDataSource.
-     * 
-     * @param dataSource the PoolDataSource object to be used for creating the OracleUcpDataSourcePoolMetadata
-     */
-    public OracleUcpDataSourcePoolMetadata(PoolDataSource dataSource) {
+	 * Constructs a new OracleUcpDataSourcePoolMetadata object with the specified
+	 * PoolDataSource.
+	 * @param dataSource the PoolDataSource object to be used for creating the
+	 * OracleUcpDataSourcePoolMetadata
+	 */
+	public OracleUcpDataSourcePoolMetadata(PoolDataSource dataSource) {
 		super(dataSource);
 	}
 
 	/**
-     * Returns the number of active connections in the Oracle UCP data source pool.
-     * 
-     * @return the number of active connections
-     * @throws SQLException if an error occurs while retrieving the number of active connections
-     */
-    @Override
+	 * Returns the number of active connections in the Oracle UCP data source pool.
+	 * @return the number of active connections
+	 * @throws SQLException if an error occurs while retrieving the number of active
+	 * connections
+	 */
+	@Override
 	public Integer getActive() {
 		try {
 			return getDataSource().getBorrowedConnectionsCount();
@@ -58,12 +59,12 @@ public class OracleUcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetad
 	}
 
 	/**
-     * Returns the number of idle connections in the Oracle UCP data source pool.
-     * 
-     * @return the number of idle connections
-     * @throws SQLException if an error occurs while retrieving the number of idle connections
-     */
-    @Override
+	 * Returns the number of idle connections in the Oracle UCP data source pool.
+	 * @return the number of idle connections
+	 * @throws SQLException if an error occurs while retrieving the number of idle
+	 * connections
+	 */
+	@Override
 	public Integer getIdle() {
 		try {
 			return getDataSource().getAvailableConnectionsCount();
@@ -74,41 +75,38 @@ public class OracleUcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetad
 	}
 
 	/**
-     * Returns the maximum pool size of the data source.
-     * 
-     * @return the maximum pool size of the data source
-     */
-    @Override
+	 * Returns the maximum pool size of the data source.
+	 * @return the maximum pool size of the data source
+	 */
+	@Override
 	public Integer getMax() {
 		return getDataSource().getMaxPoolSize();
 	}
 
 	/**
-     * Returns the minimum pool size of the Oracle UCP data source.
-     * 
-     * @return the minimum pool size of the Oracle UCP data source
-     */
-    @Override
+	 * Returns the minimum pool size of the Oracle UCP data source.
+	 * @return the minimum pool size of the Oracle UCP data source
+	 */
+	@Override
 	public Integer getMin() {
 		return getDataSource().getMinPoolSize();
 	}
 
 	/**
-     * Returns the validation query for the Oracle UCP data source.
-     * 
-     * @return the validation query for the Oracle UCP data source
-     */
-    @Override
+	 * Returns the validation query for the Oracle UCP data source.
+	 * @return the validation query for the Oracle UCP data source
+	 */
+	@Override
 	public String getValidationQuery() {
 		return getDataSource().getSQLForValidateConnection();
 	}
 
 	/**
-     * Retrieves the default value for the autoCommit property of the underlying data source.
-     * 
-     * @return the default value for the autoCommit property, or null if not set
-     */
-    @Override
+	 * Retrieves the default value for the autoCommit property of the underlying data
+	 * source.
+	 * @return the default value for the autoCommit property, or null if not set
+	 */
+	@Override
 	public Boolean getDefaultAutoCommit() {
 		String autoCommit = getDataSource().getConnectionProperty("autoCommit");
 		return StringUtils.hasText(autoCommit) ? Boolean.valueOf(autoCommit) : null;

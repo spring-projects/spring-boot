@@ -78,25 +78,25 @@ public class BraveAutoConfiguration {
 	private final TracingProperties tracingProperties;
 
 	/**
-     * Constructs a new instance of BraveAutoConfiguration with the specified TracingProperties.
-     *
-     * @param tracingProperties the TracingProperties to be used for configuration
-     */
-    BraveAutoConfiguration(TracingProperties tracingProperties) {
+	 * Constructs a new instance of BraveAutoConfiguration with the specified
+	 * TracingProperties.
+	 * @param tracingProperties the TracingProperties to be used for configuration
+	 */
+	BraveAutoConfiguration(TracingProperties tracingProperties) {
 		this.tracingProperties = tracingProperties;
 	}
 
 	/**
-     * Creates a composite span handler bean if no other bean of the same type is present.
-     * The composite span handler is responsible for handling spans by applying predicates, reporters, and filters.
-     * The order of execution is determined by the precedence of the beans.
-     *
-     * @param predicates an object provider for span exporting predicates
-     * @param reporters an object provider for span reporters
-     * @param filters an object provider for span filters
-     * @return the composite span handler bean
-     */
-    @Bean
+	 * Creates a composite span handler bean if no other bean of the same type is present.
+	 * The composite span handler is responsible for handling spans by applying
+	 * predicates, reporters, and filters. The order of execution is determined by the
+	 * precedence of the beans.
+	 * @param predicates an object provider for span exporting predicates
+	 * @param reporters an object provider for span reporters
+	 * @param filters an object provider for span filters
+	 * @return the composite span handler bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	CompositeSpanHandler compositeSpanHandler(ObjectProvider<SpanExportingPredicate> predicates,
@@ -106,18 +106,18 @@ public class BraveAutoConfiguration {
 	}
 
 	/**
-     * Creates a Tracing bean using Brave library.
-     * 
-     * @param environment The environment object.
-     * @param spanHandlers The list of SpanHandler objects.
-     * @param tracingCustomizers The list of TracingCustomizer objects.
-     * @param currentTraceContext The CurrentTraceContext object.
-     * @param propagationFactory The Factory object for propagation.
-     * @param sampler The Sampler object.
-     * @return The Tracing bean.
-     * @throws IncompatibleConfigurationException if span joining is supported and W3C propagation is configured.
-     */
-    @Bean
+	 * Creates a Tracing bean using Brave library.
+	 * @param environment The environment object.
+	 * @param spanHandlers The list of SpanHandler objects.
+	 * @param tracingCustomizers The list of TracingCustomizer objects.
+	 * @param currentTraceContext The CurrentTraceContext object.
+	 * @param propagationFactory The Factory object for propagation.
+	 * @param sampler The Sampler object.
+	 * @return The Tracing bean.
+	 * @throws IncompatibleConfigurationException if span joining is supported and W3C
+	 * propagation is configured.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	Tracing braveTracing(Environment environment, List<SpanHandler> spanHandlers,
 			List<TracingCustomizer> tracingCustomizers, CurrentTraceContext currentTraceContext,
@@ -155,25 +155,25 @@ public class BraveAutoConfiguration {
 	}
 
 	/**
-     * Creates a Brave Tracer bean if no other bean of type Tracer is present.
-     * 
-     * @param tracing the Tracing instance used to create the Tracer
-     * @return the Brave Tracer bean
-     */
-    @Bean
+	 * Creates a Brave Tracer bean if no other bean of type Tracer is present.
+	 * @param tracing the Tracing instance used to create the Tracer
+	 * @return the Brave Tracer bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	brave.Tracer braveTracer(Tracing tracing) {
 		return tracing.tracer();
 	}
 
 	/**
-     * Creates a bean of type CurrentTraceContext if no other bean of the same type is present.
-     * 
-     * @param scopeDecorators The list of scope decorators to be added to the builder
-     * @param currentTraceContextCustomizers The list of customizers to customize the builder
-     * @return The created CurrentTraceContext bean
-     */
-    @Bean
+	 * Creates a bean of type CurrentTraceContext if no other bean of the same type is
+	 * present.
+	 * @param scopeDecorators The list of scope decorators to be added to the builder
+	 * @param currentTraceContextCustomizers The list of customizers to customize the
+	 * builder
+	 * @return The created CurrentTraceContext bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	CurrentTraceContext braveCurrentTraceContext(List<CurrentTraceContext.ScopeDecorator> scopeDecorators,
 			List<CurrentTraceContextCustomizer> currentTraceContextCustomizers) {
@@ -186,25 +186,25 @@ public class BraveAutoConfiguration {
 	}
 
 	/**
-     * Creates a sampler for Brave tracing based on the probability specified in the tracing properties.
-     * If no sampler bean is already defined, this method will be used to create one.
-     *
-     * @return the created sampler
-     */
-    @Bean
+	 * Creates a sampler for Brave tracing based on the probability specified in the
+	 * tracing properties. If no sampler bean is already defined, this method will be used
+	 * to create one.
+	 * @return the created sampler
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	Sampler braveSampler() {
 		return Sampler.create(this.tracingProperties.getSampling().getProbability());
 	}
 
 	/**
-     * Creates a BraveTracer bean if no other bean of type io.micrometer.tracing.Tracer is present.
-     * 
-     * @param tracer The Brave Tracer instance to be used.
-     * @param currentTraceContext The CurrentTraceContext instance to be used.
-     * @return A BraveTracer instance.
-     */
-    @Bean
+	 * Creates a BraveTracer bean if no other bean of type io.micrometer.tracing.Tracer is
+	 * present.
+	 * @param tracer The Brave Tracer instance to be used.
+	 * @param currentTraceContext The CurrentTraceContext instance to be used.
+	 * @return A BraveTracer instance.
+	 */
+	@Bean
 	@ConditionalOnMissingBean(io.micrometer.tracing.Tracer.class)
 	BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext) {
 		return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext),
@@ -212,37 +212,36 @@ public class BraveAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of BravePropagator if there is no existing bean of the same type.
-     * 
-     * @param tracing the Tracing instance used for creating the BravePropagator
-     * @return a new instance of BravePropagator
-     */
-    @Bean
+	 * Creates a new instance of BravePropagator if there is no existing bean of the same
+	 * type.
+	 * @param tracing the Tracing instance used for creating the BravePropagator
+	 * @return a new instance of BravePropagator
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	BravePropagator bravePropagator(Tracing tracing) {
 		return new BravePropagator(tracing);
 	}
 
 	/**
-     * Creates a CurrentSpanCustomizer bean if there is no existing bean of type SpanCustomizer.
-     * This bean is created using the provided Tracing bean.
-     * 
-     * @param tracing the Tracing bean used to create the CurrentSpanCustomizer bean
-     * @return the CurrentSpanCustomizer bean
-     */
-    @Bean
+	 * Creates a CurrentSpanCustomizer bean if there is no existing bean of type
+	 * SpanCustomizer. This bean is created using the provided Tracing bean.
+	 * @param tracing the Tracing bean used to create the CurrentSpanCustomizer bean
+	 * @return the CurrentSpanCustomizer bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(SpanCustomizer.class)
 	CurrentSpanCustomizer currentSpanCustomizer(Tracing tracing) {
 		return CurrentSpanCustomizer.create(tracing);
 	}
 
 	/**
-     * Creates a BraveSpanCustomizer bean if there is no existing bean of type io.micrometer.tracing.SpanCustomizer.
-     * 
-     * @param spanCustomizer the existing SpanCustomizer bean
-     * @return a new BraveSpanCustomizer bean
-     */
-    @Bean
+	 * Creates a BraveSpanCustomizer bean if there is no existing bean of type
+	 * io.micrometer.tracing.SpanCustomizer.
+	 * @param spanCustomizer the existing SpanCustomizer bean
+	 * @return a new BraveSpanCustomizer bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean(io.micrometer.tracing.SpanCustomizer.class)
 	BraveSpanCustomizer braveSpanCustomizer(SpanCustomizer spanCustomizer) {
 		return new BraveSpanCustomizer(spanCustomizer);

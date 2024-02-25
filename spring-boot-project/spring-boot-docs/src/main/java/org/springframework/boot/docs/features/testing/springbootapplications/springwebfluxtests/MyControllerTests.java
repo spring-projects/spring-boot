@@ -39,9 +39,9 @@ class MyControllerTests {
 	private UserVehicleService userVehicleService;
 
 	/**
-     * Test case for example method.
-     */
-    @Test
+	 * Test case for example method.
+	 */
+	@Test
 	void testExample() {
 		// @formatter:off
 		given(this.userVehicleService.getVehicleDetails("sboot"))

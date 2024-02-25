@@ -36,11 +36,10 @@ class SchedulerDependsOnDatabaseInitializationDetector
 		extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector {
 
 	/**
-     * Returns a set of classes that the database initialization bean depends on.
-     * 
-     * @return the set of classes that the database initialization bean depends on
-     */
-    @Override
+	 * Returns a set of classes that the database initialization bean depends on.
+	 * @return the set of classes that the database initialization bean depends on
+	 */
+	@Override
 	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
 		return new HashSet<>(Arrays.asList(Scheduler.class, SchedulerFactoryBean.class));
 	}

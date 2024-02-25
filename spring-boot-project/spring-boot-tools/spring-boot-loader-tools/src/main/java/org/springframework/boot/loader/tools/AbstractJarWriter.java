@@ -84,15 +84,15 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-     * Writes the entries of a JarFile to a destination, applying transformations and handling unpacking.
-     * 
-     * @param jarFile the JarFile to write entries from
-     * @param entryTransformer the transformer to apply to each entry
-     * @param unpackHandler the handler for unpacking entries
-     * @param libraryLookup the function to lookup the library for each entry
-     * @throws IOException if an I/O error occurs during the writing process
-     */
-    final void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
+	 * Writes the entries of a JarFile to a destination, applying transformations and
+	 * handling unpacking.
+	 * @param jarFile the JarFile to write entries from
+	 * @param entryTransformer the transformer to apply to each entry
+	 * @param unpackHandler the handler for unpacking entries
+	 * @param libraryLookup the function to lookup the library for each entry
+	 * @throws IOException if an I/O error occurs during the writing process
+	 */
+	final void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
 			Function<JarEntry, Library> libraryLookup) throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
@@ -105,16 +105,15 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-     * Writes an entry to a JAR file.
-     * 
-     * @param jarFile          the JAR file to write the entry to
-     * @param entryTransformer the transformer to apply to the entry before writing
-     * @param unpackHandler    the handler for unpacking the entry
-     * @param entry            the entry to write
-     * @param library          the library associated with the entry
-     * @throws IOException if an I/O error occurs while writing the entry
-     */
-    private void writeEntry(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
+	 * Writes an entry to a JAR file.
+	 * @param jarFile the JAR file to write the entry to
+	 * @param entryTransformer the transformer to apply to the entry before writing
+	 * @param unpackHandler the handler for unpacking the entry
+	 * @param entry the entry to write
+	 * @param library the library associated with the entry
+	 * @throws IOException if an I/O error occurs while writing the entry
+	 */
+	private void writeEntry(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
 			JarArchiveEntry entry, Library library) throws IOException {
 		setUpEntry(jarFile, entry);
 		try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
@@ -127,15 +126,15 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-     * Sets up the given JarArchiveEntry by checking if it has a valid zip header and if its compression method is not stored.
-     * If the entry has a valid zip header and is not stored, it sets up the entry's compressed size and CRC.
-     * If the entry does not have a valid zip header or is stored, it sets the entry's compressed size to -1.
-     *
-     * @param jarFile The JarFile containing the entry.
-     * @param entry   The JarArchiveEntry to be set up.
-     * @throws IOException If an I/O error occurs while reading the entry's input stream.
-     */
-    private void setUpEntry(JarFile jarFile, JarArchiveEntry entry) throws IOException {
+	 * Sets up the given JarArchiveEntry by checking if it has a valid zip header and if
+	 * its compression method is not stored. If the entry has a valid zip header and is
+	 * not stored, it sets up the entry's compressed size and CRC. If the entry does not
+	 * have a valid zip header or is stored, it sets the entry's compressed size to -1.
+	 * @param jarFile The JarFile containing the entry.
+	 * @param entry The JarArchiveEntry to be set up.
+	 * @throws IOException If an I/O error occurs while reading the entry's input stream.
+	 */
+	private void setUpEntry(JarFile jarFile, JarArchiveEntry entry) throws IOException {
 		try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
 			if (inputStream.hasZipHeader() && entry.getMethod() != ZipEntry.STORED) {
 				new CrcAndSize(inputStream).setupStoredEntry(entry);
@@ -208,12 +207,12 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-     * Retrieves the timestamp of the first non-directory entry in the nested library.
-     * 
-     * @param library the library to retrieve the timestamp from
-     * @return the timestamp of the first non-directory entry in the nested library, or the last modified timestamp of the library if an exception occurs
-     */
-    private long getNestedLibraryTime(Library library) {
+	 * Retrieves the timestamp of the first non-directory entry in the nested library.
+	 * @param library the library to retrieve the timestamp from
+	 * @return the timestamp of the first non-directory entry in the nested library, or
+	 * the last modified timestamp of the library if an exception occurs
+	 */
+	private long getNestedLibraryTime(Library library) {
 		try {
 			try (JarInputStream jarStream = new JarInputStream(library.openStream())) {
 				JarEntry entry = jarStream.getNextJarEntry();
@@ -232,22 +231,20 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-     * Writes the loader classes using the default loader implementation.
-     * 
-     * @throws IOException if an I/O error occurs while writing the loader classes
-     */
-    @Override
+	 * Writes the loader classes using the default loader implementation.
+	 * @throws IOException if an I/O error occurs while writing the loader classes
+	 */
+	@Override
 	public void writeLoaderClasses() throws IOException {
 		writeLoaderClasses(LoaderImplementation.DEFAULT);
 	}
 
 	/**
-     * Writes the loader classes for the given loader implementation.
-     * 
-     * @param loaderImplementation the loader implementation to write the classes for
-     * @throws IOException if an I/O error occurs while writing the classes
-     */
-    @Override
+	 * Writes the loader classes for the given loader implementation.
+	 * @param loaderImplementation the loader implementation to write the classes for
+	 * @throws IOException if an I/O error occurs while writing the classes
+	 */
+	@Override
 	public void writeLoaderClasses(LoaderImplementation loaderImplementation) throws IOException {
 		writeLoaderClasses((loaderImplementation != null) ? loaderImplementation.getJarResourceName()
 				: LoaderImplementation.DEFAULT.getJarResourceName());
@@ -273,43 +270,40 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-     * Checks if the given JarEntry is a directory entry.
-     * 
-     * @param entry the JarEntry to check
-     * @return true if the entry is a directory entry and not the "META-INF/" directory, false otherwise
-     */
-    private boolean isDirectoryEntry(JarEntry entry) {
+	 * Checks if the given JarEntry is a directory entry.
+	 * @param entry the JarEntry to check
+	 * @return true if the entry is a directory entry and not the "META-INF/" directory,
+	 * false otherwise
+	 */
+	private boolean isDirectoryEntry(JarEntry entry) {
 		return entry.isDirectory() && !entry.getName().equals("META-INF/");
 	}
 
 	/**
-     * Checks if the given JarEntry is a class entry.
-     * 
-     * @param entry the JarEntry to be checked
-     * @return true if the JarEntry is a class entry, false otherwise
-     */
-    private boolean isClassEntry(JarEntry entry) {
+	 * Checks if the given JarEntry is a class entry.
+	 * @param entry the JarEntry to be checked
+	 * @return true if the JarEntry is a class entry, false otherwise
+	 */
+	private boolean isClassEntry(JarEntry entry) {
 		return entry.getName().endsWith(".class");
 	}
 
 	/**
-     * Checks if the given JarEntry is a services entry.
-     * 
-     * @param entry the JarEntry to be checked
-     * @return true if the entry is a services entry, false otherwise
-     */
-    private boolean isServicesEntry(JarEntry entry) {
+	 * Checks if the given JarEntry is a services entry.
+	 * @param entry the JarEntry to be checked
+	 * @return true if the entry is a services entry, false otherwise
+	 */
+	private boolean isServicesEntry(JarEntry entry) {
 		return !entry.isDirectory() && entry.getName().startsWith("META-INF/services/");
 	}
 
 	/**
-     * Writes a JarArchiveEntry to the Jar file using the specified EntryWriter.
-     * 
-     * @param entry the JarArchiveEntry to be written
-     * @param entryWriter the EntryWriter to use for writing the entry
-     * @throws IOException if an I/O error occurs while writing the entry
-     */
-    private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter) throws IOException {
+	 * Writes a JarArchiveEntry to the Jar file using the specified EntryWriter.
+	 * @param entry the JarArchiveEntry to be written
+	 * @param entryWriter the EntryWriter to use for writing the entry
+	 * @throws IOException if an I/O error occurs while writing the entry
+	 */
+	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter) throws IOException {
 		writeEntry(entry, null, entryWriter, UnpackHandler.NEVER);
 	}
 
@@ -340,12 +334,11 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-     * Updates the layer index for the given JarArchiveEntry and Library.
-     * 
-     * @param entry   the JarArchiveEntry to update the layer index for
-     * @param library the Library associated with the entry (can be null)
-     */
-    private void updateLayerIndex(JarArchiveEntry entry, Library library) {
+	 * Updates the layer index for the given JarArchiveEntry and Library.
+	 * @param entry the JarArchiveEntry to update the layer index for
+	 * @param library the Library associated with the entry (can be null)
+	 */
+	private void updateLayerIndex(JarArchiveEntry entry, Library library) {
 		if (this.layers != null && !entry.getName().endsWith("/")) {
 			Layer layer = (library != null) ? this.layers.getLayer(library) : this.layers.getLayer(entry.getName());
 			this.layersIndex.add(layer, entry.getName());
@@ -353,21 +346,19 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-     * Writes the specified entry to the archive using the provided entry writer.
-     *
-     * @param entry the zip entry to be written to the archive
-     * @param entryWriter the entry writer used to write the entry
-     * @throws IOException if an I/O error occurs while writing the entry
-     */
-    protected abstract void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException;
+	 * Writes the specified entry to the archive using the provided entry writer.
+	 * @param entry the zip entry to be written to the archive
+	 * @param entryWriter the entry writer used to write the entry
+	 * @throws IOException if an I/O error occurs while writing the entry
+	 */
+	protected abstract void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException;
 
 	/**
-     * Writes the parent directory entries for the given name.
-     * 
-     * @param name the name of the directory
-     * @throws IOException if an I/O error occurs
-     */
-    private void writeParentDirectoryEntries(String name) throws IOException {
+	 * Writes the parent directory entries for the given name.
+	 * @param name the name of the directory
+	 * @throws IOException if an I/O error occurs
+	 */
+	private void writeParentDirectoryEntries(String name) throws IOException {
 		String parent = name.endsWith("/") ? name.substring(0, name.length() - 1) : name;
 		while (parent.lastIndexOf('/') != -1) {
 			parent = parent.substring(0, parent.lastIndexOf('/'));
@@ -378,15 +369,15 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-     * Adds an unpack comment to the given entry if necessary.
-     * 
-     * @param entry         the JarArchiveEntry to add the comment to
-     * @param entryWriter   the EntryWriter for the entry
-     * @param unpackHandler the UnpackHandler to check if unpacking is required
-     * @return the updated EntryWriter with the unpack comment added, or the original EntryWriter if no unpacking is required
-     * @throws IOException if an I/O error occurs while writing the entry
-     */
-    private EntryWriter addUnpackCommentIfNecessary(JarArchiveEntry entry, EntryWriter entryWriter,
+	 * Adds an unpack comment to the given entry if necessary.
+	 * @param entry the JarArchiveEntry to add the comment to
+	 * @param entryWriter the EntryWriter for the entry
+	 * @param unpackHandler the UnpackHandler to check if unpacking is required
+	 * @return the updated EntryWriter with the unpack comment added, or the original
+	 * EntryWriter if no unpacking is required
+	 * @throws IOException if an I/O error occurs while writing the entry
+	 */
+	private EntryWriter addUnpackCommentIfNecessary(JarArchiveEntry entry, EntryWriter entryWriter,
 			UnpackHandler unpackHandler) throws IOException {
 		if (entryWriter == null || !unpackHandler.requiresUnpack(entry.getName())) {
 			return entryWriter;
@@ -405,21 +396,20 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		private final InputStream inputStream;
 
 		/**
-         * Constructs a new InputStreamEntryWriter with the specified input stream.
-         *
-         * @param inputStream the input stream to be written
-         */
-        InputStreamEntryWriter(InputStream inputStream) {
+		 * Constructs a new InputStreamEntryWriter with the specified input stream.
+		 * @param inputStream the input stream to be written
+		 */
+		InputStreamEntryWriter(InputStream inputStream) {
 			this.inputStream = inputStream;
 		}
 
 		/**
-         * Writes the contents of the input stream to the specified output stream.
-         *
-         * @param outputStream the output stream to write the contents to
-         * @throws IOException if an I/O error occurs while reading from the input stream or writing to the output stream
-         */
-        @Override
+		 * Writes the contents of the input stream to the specified output stream.
+		 * @param outputStream the output stream to write the contents to
+		 * @throws IOException if an I/O error occurs while reading from the input stream
+		 * or writing to the output stream
+		 */
+		@Override
 		public void write(OutputStream outputStream) throws IOException {
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int bytesRead;
@@ -441,34 +431,32 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		private long size;
 
 		/**
-         * Calculates the CRC and size of the input stream.
-         * 
-         * @param supplier the supplier of the input stream
-         * @throws IOException if an I/O error occurs while reading the input stream
-         */
-        CrcAndSize(InputStreamSupplier supplier) throws IOException {
+		 * Calculates the CRC and size of the input stream.
+		 * @param supplier the supplier of the input stream
+		 * @throws IOException if an I/O error occurs while reading the input stream
+		 */
+		CrcAndSize(InputStreamSupplier supplier) throws IOException {
 			try (InputStream inputStream = supplier.openStream()) {
 				load(inputStream);
 			}
 		}
 
 		/**
-         * Calculates the CRC (Cyclic Redundancy Check) and size of the given input stream.
-         * 
-         * @param inputStream the input stream to calculate CRC and size for
-         * @throws IOException if an I/O error occurs while reading the input stream
-         */
-        CrcAndSize(InputStream inputStream) throws IOException {
+		 * Calculates the CRC (Cyclic Redundancy Check) and size of the given input
+		 * stream.
+		 * @param inputStream the input stream to calculate CRC and size for
+		 * @throws IOException if an I/O error occurs while reading the input stream
+		 */
+		CrcAndSize(InputStream inputStream) throws IOException {
 			load(inputStream);
 		}
 
 		/**
-         * Loads data from the given input stream and updates the CRC and size.
-         * 
-         * @param inputStream the input stream to read data from
-         * @throws IOException if an I/O error occurs while reading from the input stream
-         */
-        private void load(InputStream inputStream) throws IOException {
+		 * Loads data from the given input stream and updates the CRC and size.
+		 * @param inputStream the input stream to read data from
+		 * @throws IOException if an I/O error occurs while reading from the input stream
+		 */
+		private void load(InputStream inputStream) throws IOException {
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int bytesRead;
 			while ((bytesRead = inputStream.read(buffer)) != -1) {
@@ -478,11 +466,10 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		}
 
 		/**
-         * Sets up the stored entry for the given JarArchiveEntry.
-         * 
-         * @param entry the JarArchiveEntry to set up
-         */
-        void setupStoredEntry(JarArchiveEntry entry) {
+		 * Sets up the stored entry for the given JarArchiveEntry.
+		 * @param entry the JarArchiveEntry to set up
+		 */
+		void setupStoredEntry(JarArchiveEntry entry) {
 			entry.setSize(this.size);
 			entry.setCompressedSize(this.size);
 			entry.setCrc(this.crc.getValue());
@@ -516,25 +503,23 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		UnpackHandler NEVER = new UnpackHandler() {
 
 			/**
-     * Determines if the given file name requires unpacking.
-     * 
-     * @param name the name of the file
-     * @return true if the file requires unpacking, false otherwise
-     */
-    @Override
+			 * Determines if the given file name requires unpacking.
+			 * @param name the name of the file
+			 * @return true if the file requires unpacking, false otherwise
+			 */
+			@Override
 			public boolean requiresUnpack(String name) {
 				return false;
 			}
 
 			/**
-     * Calculates the SHA1 hash of the given name.
-     *
-     * @param name the name to calculate the SHA1 hash for
-     * @return the SHA1 hash of the given name
-     * @throws IOException if an I/O error occurs
-     * @throws UnsupportedOperationException if the operation is not supported
-     */
-    @Override
+			 * Calculates the SHA1 hash of the given name.
+			 * @param name the name to calculate the SHA1 hash for
+			 * @return the SHA1 hash of the given name
+			 * @throws IOException if an I/O error occurs
+			 * @throws UnsupportedOperationException if the operation is not supported
+			 */
+			@Override
 			public String sha1Hash(String name) throws IOException {
 				throw new UnsupportedOperationException();
 			}
@@ -555,33 +540,30 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		private final Library library;
 
 		/**
-         * Constructs a new LibraryUnpackHandler with the specified Library.
-         * 
-         * @param library the Library to be used by the handler
-         */
-        private LibraryUnpackHandler(Library library) {
+		 * Constructs a new LibraryUnpackHandler with the specified Library.
+		 * @param library the Library to be used by the handler
+		 */
+		private LibraryUnpackHandler(Library library) {
 			this.library = library;
 		}
 
 		/**
-         * Determines if the given name requires unpacking.
-         * 
-         * @param name the name of the file or resource
-         * @return true if unpacking is required, false otherwise
-         */
-        @Override
+		 * Determines if the given name requires unpacking.
+		 * @param name the name of the file or resource
+		 * @return true if unpacking is required, false otherwise
+		 */
+		@Override
 		public boolean requiresUnpack(String name) {
 			return this.library.isUnpackRequired();
 		}
 
 		/**
-         * Calculates the SHA1 hash of a given file.
-         * 
-         * @param name the name of the file to calculate the hash for
-         * @return the SHA1 hash of the file
-         * @throws IOException if an I/O error occurs while reading the file
-         */
-        @Override
+		 * Calculates the SHA1 hash of a given file.
+		 * @param name the name of the file to calculate the hash for
+		 * @return the SHA1 hash of the file
+		 * @throws IOException if an I/O error occurs while reading the file
+		 */
+		@Override
 		public String sha1Hash(String name) throws IOException {
 			return Digest.sha1(this.library::openStream);
 		}

@@ -61,54 +61,54 @@ import org.springframework.util.StringUtils;
 public class DataSourcePoolMetricsAutoConfiguration {
 
 	/**
-     * DataSourcePoolMetadataMetricsConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * DataSourcePoolMetadataMetricsConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(DataSourcePoolMetadataProvider.class)
 	static class DataSourcePoolMetadataMetricsConfiguration {
 
 		private static final String DATASOURCE_SUFFIX = "dataSource";
 
 		/**
-         * Creates a new instance of DataSourcePoolMetadataMeterBinder.
-         * 
-         * @param dataSources the map of data sources
-         * @param metadataProviders the provider for data source pool metadata
-         * @return the DataSourcePoolMetadataMeterBinder instance
-         */
-        @Bean
+		 * Creates a new instance of DataSourcePoolMetadataMeterBinder.
+		 * @param dataSources the map of data sources
+		 * @param metadataProviders the provider for data source pool metadata
+		 * @return the DataSourcePoolMetadataMeterBinder instance
+		 */
+		@Bean
 		DataSourcePoolMetadataMeterBinder dataSourcePoolMetadataMeterBinder(Map<String, DataSource> dataSources,
 				ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
 			return new DataSourcePoolMetadataMeterBinder(dataSources, metadataProviders);
 		}
 
 		/**
-         * DataSourcePoolMetadataMeterBinder class.
-         */
-        static class DataSourcePoolMetadataMeterBinder implements MeterBinder {
+		 * DataSourcePoolMetadataMeterBinder class.
+		 */
+		static class DataSourcePoolMetadataMeterBinder implements MeterBinder {
 
 			private final Map<String, DataSource> dataSources;
 
 			private final ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders;
 
 			/**
-             * Constructs a new DataSourcePoolMetadataMeterBinder with the specified dataSources and metadataProviders.
-             * 
-             * @param dataSources the map of data sources, where the key is the data source name and the value is the data source object
-             * @param metadataProviders the object provider for the data source pool metadata providers
-             */
-            DataSourcePoolMetadataMeterBinder(Map<String, DataSource> dataSources,
+			 * Constructs a new DataSourcePoolMetadataMeterBinder with the specified
+			 * dataSources and metadataProviders.
+			 * @param dataSources the map of data sources, where the key is the data
+			 * source name and the value is the data source object
+			 * @param metadataProviders the object provider for the data source pool
+			 * metadata providers
+			 */
+			DataSourcePoolMetadataMeterBinder(Map<String, DataSource> dataSources,
 					ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
 				this.dataSources = dataSources;
 				this.metadataProviders = metadataProviders;
 			}
 
 			/**
-             * Binds the DataSourcePoolMetadataProvider to the given MeterRegistry.
-             * 
-             * @param registry the MeterRegistry to bind to
-             */
-            @Override
+			 * Binds the DataSourcePoolMetadataProvider to the given MeterRegistry.
+			 * @param registry the MeterRegistry to bind to
+			 */
+			@Override
 			public void bindTo(MeterRegistry registry) {
 				List<DataSourcePoolMetadataProvider> metadataProvidersList = this.metadataProviders.stream().toList();
 				this.dataSources.forEach((name, dataSource) -> bindDataSourceToRegistry(name, dataSource,
@@ -116,15 +116,16 @@ public class DataSourcePoolMetricsAutoConfiguration {
 			}
 
 			/**
-             * Binds the given {@link DataSource} to the provided {@link MeterRegistry} by creating
-             * and registering a new {@link DataSourcePoolMetrics} instance.
-             *
-             * @param beanName the name of the bean associated with the {@link DataSource}
-             * @param dataSource the {@link DataSource} to bind to the {@link MeterRegistry}
-             * @param metadataProviders the collection of {@link DataSourcePoolMetadataProvider}s
-             * @param registry the {@link MeterRegistry} to bind the {@link DataSource} to
-             */
-            private void bindDataSourceToRegistry(String beanName, DataSource dataSource,
+			 * Binds the given {@link DataSource} to the provided {@link MeterRegistry} by
+			 * creating and registering a new {@link DataSourcePoolMetrics} instance.
+			 * @param beanName the name of the bean associated with the {@link DataSource}
+			 * @param dataSource the {@link DataSource} to bind to the
+			 * {@link MeterRegistry}
+			 * @param metadataProviders the collection of
+			 * {@link DataSourcePoolMetadataProvider}s
+			 * @param registry the {@link MeterRegistry} to bind the {@link DataSource} to
+			 */
+			private void bindDataSourceToRegistry(String beanName, DataSource dataSource,
 					Collection<DataSourcePoolMetadataProvider> metadataProviders, MeterRegistry registry) {
 				String dataSourceName = getDataSourceName(beanName);
 				new DataSourcePoolMetrics(dataSource, metadataProviders, dataSourceName, Collections.emptyList())
@@ -149,47 +150,48 @@ public class DataSourcePoolMetricsAutoConfiguration {
 	}
 
 	/**
-     * HikariDataSourceMetricsConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * HikariDataSourceMetricsConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HikariDataSource.class)
 	static class HikariDataSourceMetricsConfiguration {
 
 		/**
-         * Creates a HikariDataSourceMeterBinder object for monitoring Hikari data sources.
-         * 
-         * @param dataSources the provider for obtaining the data sources
-         * @return a HikariDataSourceMeterBinder object
-         */
-        @Bean
+		 * Creates a HikariDataSourceMeterBinder object for monitoring Hikari data
+		 * sources.
+		 * @param dataSources the provider for obtaining the data sources
+		 * @return a HikariDataSourceMeterBinder object
+		 */
+		@Bean
 		HikariDataSourceMeterBinder hikariDataSourceMeterBinder(ObjectProvider<DataSource> dataSources) {
 			return new HikariDataSourceMeterBinder(dataSources);
 		}
 
 		/**
-         * HikariDataSourceMeterBinder class.
-         */
-        static class HikariDataSourceMeterBinder implements MeterBinder {
+		 * HikariDataSourceMeterBinder class.
+		 */
+		static class HikariDataSourceMeterBinder implements MeterBinder {
 
 			private static final Log logger = LogFactory.getLog(HikariDataSourceMeterBinder.class);
 
 			private final ObjectProvider<DataSource> dataSources;
 
 			/**
-             * Constructs a new HikariDataSourceMeterBinder with the specified dataSources.
-             *
-             * @param dataSources the ObjectProvider of DataSource objects to be used by the meter binder
-             */
-            HikariDataSourceMeterBinder(ObjectProvider<DataSource> dataSources) {
+			 * Constructs a new HikariDataSourceMeterBinder with the specified
+			 * dataSources.
+			 * @param dataSources the ObjectProvider of DataSource objects to be used by
+			 * the meter binder
+			 */
+			HikariDataSourceMeterBinder(ObjectProvider<DataSource> dataSources) {
 				this.dataSources = dataSources;
 			}
 
 			/**
-             * Binds the given MeterRegistry to the HikariDataSource instances in the dataSources list.
-             * 
-             * @param registry the MeterRegistry to bind
-             */
-            @Override
+			 * Binds the given MeterRegistry to the HikariDataSource instances in the
+			 * dataSources list.
+			 * @param registry the MeterRegistry to bind
+			 */
+			@Override
 			public void bindTo(MeterRegistry registry) {
 				for (DataSource dataSource : this.dataSources) {
 					HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class,
@@ -201,12 +203,13 @@ public class DataSourcePoolMetricsAutoConfiguration {
 			}
 
 			/**
-             * Binds the given MeterRegistry to the HikariDataSource if the HikariDataSource does not already have a MetricRegistry or MetricsTrackerFactory set.
-             * 
-             * @param hikari - The HikariDataSource to bind the MeterRegistry to.
-             * @param registry - The MeterRegistry to bind to the HikariDataSource.
-             */
-            private void bindMetricsRegistryToHikariDataSource(HikariDataSource hikari, MeterRegistry registry) {
+			 * Binds the given MeterRegistry to the HikariDataSource if the
+			 * HikariDataSource does not already have a MetricRegistry or
+			 * MetricsTrackerFactory set.
+			 * @param hikari - The HikariDataSource to bind the MeterRegistry to.
+			 * @param registry - The MeterRegistry to bind to the HikariDataSource.
+			 */
+			private void bindMetricsRegistryToHikariDataSource(HikariDataSource hikari, MeterRegistry registry) {
 				if (hikari.getMetricRegistry() == null && hikari.getMetricsTrackerFactory() == null) {
 					try {
 						hikari.setMetricsTrackerFactory(new MicrometerMetricsTrackerFactory(registry));

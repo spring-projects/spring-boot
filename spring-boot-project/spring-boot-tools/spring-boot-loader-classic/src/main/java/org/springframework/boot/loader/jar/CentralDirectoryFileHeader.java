@@ -55,22 +55,22 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	private long localHeaderOffset;
 
 	/**
-     * Creates a new instance of the CentralDirectoryFileHeader class.
-     */
-    CentralDirectoryFileHeader() {
+	 * Creates a new instance of the CentralDirectoryFileHeader class.
+	 */
+	CentralDirectoryFileHeader() {
 	}
 
 	/**
-     * Constructs a new CentralDirectoryFileHeader object with the specified parameters.
-     * 
-     * @param header the byte array containing the header data
-     * @param headerOffset the offset in the byte array where the header starts
-     * @param name the name of the file
-     * @param extra the extra data associated with the file
-     * @param comment the comment associated with the file
-     * @param localHeaderOffset the offset in the archive where the local file header starts
-     */
-    CentralDirectoryFileHeader(byte[] header, int headerOffset, AsciiBytes name, byte[] extra, AsciiBytes comment,
+	 * Constructs a new CentralDirectoryFileHeader object with the specified parameters.
+	 * @param header the byte array containing the header data
+	 * @param headerOffset the offset in the byte array where the header starts
+	 * @param name the name of the file
+	 * @param extra the extra data associated with the file
+	 * @param comment the comment associated with the file
+	 * @param localHeaderOffset the offset in the archive where the local file header
+	 * starts
+	 */
+	CentralDirectoryFileHeader(byte[] header, int headerOffset, AsciiBytes name, byte[] extra, AsciiBytes comment,
 			long localHeaderOffset) {
 		this.header = header;
 		this.headerOffset = headerOffset;
@@ -81,16 +81,17 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	/**
-     * Loads the data for a CentralDirectoryFileHeader object.
-     * 
-     * @param data The byte array containing the data to load.
-     * @param dataOffset The offset in the byte array where the data starts.
-     * @param variableData The RandomAccessData object containing the variable part of the data.
-     * @param variableOffset The offset in the RandomAccessData object where the variable part starts.
-     * @param filter The JarEntryFilter object used to filter the name of the file.
-     * @throws IOException If an I/O error occurs while loading the data.
-     */
-    void load(byte[] data, int dataOffset, RandomAccessData variableData, long variableOffset, JarEntryFilter filter)
+	 * Loads the data for a CentralDirectoryFileHeader object.
+	 * @param data The byte array containing the data to load.
+	 * @param dataOffset The offset in the byte array where the data starts.
+	 * @param variableData The RandomAccessData object containing the variable part of the
+	 * data.
+	 * @param variableOffset The offset in the RandomAccessData object where the variable
+	 * part starts.
+	 * @param filter The JarEntryFilter object used to filter the name of the file.
+	 * @throws IOException If an I/O error occurs while loading the data.
+	 */
+	void load(byte[] data, int dataOffset, RandomAccessData variableData, long variableOffset, JarEntryFilter filter)
 			throws IOException {
 		// Load fixed part
 		this.header = data;
@@ -124,16 +125,15 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	/**
-     * Returns the offset of the local file header for this file entry in the ZIP file.
-     * 
-     * @param compressedSize the compressed size of the file entry
-     * @param uncompressedSize the uncompressed size of the file entry
-     * @param localHeaderOffset the offset of the local file header in the ZIP file
-     * @param extra the extra field data of the file entry
-     * @return the offset of the local file header
-     * @throws IOException if the Zip64 Extended Information Extra Field is not found
-     */
-    private long getLocalHeaderOffset(long compressedSize, long uncompressedSize, long localHeaderOffset, byte[] extra)
+	 * Returns the offset of the local file header for this file entry in the ZIP file.
+	 * @param compressedSize the compressed size of the file entry
+	 * @param uncompressedSize the uncompressed size of the file entry
+	 * @param localHeaderOffset the offset of the local file header in the ZIP file
+	 * @param extra the extra field data of the file entry
+	 * @return the offset of the local file header
+	 * @throws IOException if the Zip64 Extended Information Extra Field is not found
+	 */
+	private long getLocalHeaderOffset(long compressedSize, long uncompressedSize, long localHeaderOffset, byte[] extra)
 			throws IOException {
 		if (localHeaderOffset != 0xFFFFFFFFL) {
 			return localHeaderOffset;
@@ -159,51 +159,47 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	/**
-     * Returns the name of the CentralDirectoryFileHeader.
-     *
-     * @return the name of the CentralDirectoryFileHeader
-     */
-    AsciiBytes getName() {
+	 * Returns the name of the CentralDirectoryFileHeader.
+	 * @return the name of the CentralDirectoryFileHeader
+	 */
+	AsciiBytes getName() {
 		return this.name;
 	}
 
 	/**
-     * Checks if the CentralDirectoryFileHeader has the specified name and suffix.
-     * 
-     * @param name   the name to check against
-     * @param suffix the suffix to check against
-     * @return true if the CentralDirectoryFileHeader has the specified name and suffix, false otherwise
-     */
-    @Override
+	 * Checks if the CentralDirectoryFileHeader has the specified name and suffix.
+	 * @param name the name to check against
+	 * @param suffix the suffix to check against
+	 * @return true if the CentralDirectoryFileHeader has the specified name and suffix,
+	 * false otherwise
+	 */
+	@Override
 	public boolean hasName(CharSequence name, char suffix) {
 		return this.name.matches(name, suffix);
 	}
 
 	/**
-     * Returns a boolean value indicating whether the current file is a directory.
-     * 
-     * @return true if the current file is a directory, false otherwise.
-     */
-    boolean isDirectory() {
+	 * Returns a boolean value indicating whether the current file is a directory.
+	 * @return true if the current file is a directory, false otherwise.
+	 */
+	boolean isDirectory() {
 		return this.name.endsWith(SLASH);
 	}
 
 	/**
-     * Returns the method value from the Central Directory File Header.
-     * 
-     * @return The method value as an integer.
-     */
-    @Override
+	 * Returns the method value from the Central Directory File Header.
+	 * @return The method value as an integer.
+	 */
+	@Override
 	public int getMethod() {
 		return (int) Bytes.littleEndianValue(this.header, this.headerOffset + 10, 2);
 	}
 
 	/**
-     * Returns the time in milliseconds when the file was last modified.
-     * 
-     * @return the time in milliseconds
-     */
-    long getTime() {
+	 * Returns the time in milliseconds when the file was last modified.
+	 * @return the time in milliseconds
+	 */
+	long getTime() {
 		long datetime = Bytes.littleEndianValue(this.header, this.headerOffset + 12, 4);
 		return decodeMsDosFormatDateTime(datetime);
 	}
@@ -229,77 +225,70 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	/**
-     * Returns the CRC value of the Central Directory File Header.
-     *
-     * @return the CRC value as a long
-     */
-    long getCrc() {
+	 * Returns the CRC value of the Central Directory File Header.
+	 * @return the CRC value as a long
+	 */
+	long getCrc() {
 		return Bytes.littleEndianValue(this.header, this.headerOffset + 16, 4);
 	}
 
 	/**
-     * Returns the compressed size of the file.
-     * 
-     * @return The compressed size of the file.
-     */
-    @Override
+	 * Returns the compressed size of the file.
+	 * @return The compressed size of the file.
+	 */
+	@Override
 	public long getCompressedSize() {
 		return Bytes.littleEndianValue(this.header, this.headerOffset + 20, 4);
 	}
 
 	/**
-     * Returns the size of the file.
-     * 
-     * @return The size of the file in bytes.
-     */
-    @Override
+	 * Returns the size of the file.
+	 * @return The size of the file in bytes.
+	 */
+	@Override
 	public long getSize() {
 		return Bytes.littleEndianValue(this.header, this.headerOffset + 24, 4);
 	}
 
 	/**
-     * Returns the extra data of the CentralDirectoryFileHeader.
-     *
-     * @return the extra data as a byte array
-     */
-    byte[] getExtra() {
+	 * Returns the extra data of the CentralDirectoryFileHeader.
+	 * @return the extra data as a byte array
+	 */
+	byte[] getExtra() {
 		return this.extra;
 	}
 
 	/**
-     * Checks if the CentralDirectoryFileHeader has any extra data.
-     * 
-     * @return true if the CentralDirectoryFileHeader has extra data, false otherwise.
-     */
-    boolean hasExtra() {
+	 * Checks if the CentralDirectoryFileHeader has any extra data.
+	 * @return true if the CentralDirectoryFileHeader has extra data, false otherwise.
+	 */
+	boolean hasExtra() {
 		return this.extra.length > 0;
 	}
 
 	/**
-     * Returns the comment associated with this CentralDirectoryFileHeader.
-     *
-     * @return the comment associated with this CentralDirectoryFileHeader
-     */
-    AsciiBytes getComment() {
+	 * Returns the comment associated with this CentralDirectoryFileHeader.
+	 * @return the comment associated with this CentralDirectoryFileHeader
+	 */
+	AsciiBytes getComment() {
 		return this.comment;
 	}
 
 	/**
-     * Returns the offset of the local header for this central directory file header.
-     *
-     * @return the offset of the local header
-     */
-    @Override
+	 * Returns the offset of the local header for this central directory file header.
+	 * @return the offset of the local header
+	 */
+	@Override
 	public long getLocalHeaderOffset() {
 		return this.localHeaderOffset;
 	}
 
 	/**
-     * Creates and returns a deep copy of the CentralDirectoryFileHeader object.
-     * 
-     * @return a new CentralDirectoryFileHeader object that is a clone of the current object
-     */
-    @Override
+	 * Creates and returns a deep copy of the CentralDirectoryFileHeader object.
+	 * @return a new CentralDirectoryFileHeader object that is a clone of the current
+	 * object
+	 */
+	@Override
 	public CentralDirectoryFileHeader clone() {
 		byte[] header = new byte[46];
 		System.arraycopy(this.header, this.headerOffset, header, 0, header.length);
@@ -307,15 +296,16 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	/**
-     * Creates a CentralDirectoryFileHeader object from the given RandomAccessData, offset, and JarEntryFilter.
-     * 
-     * @param data the RandomAccessData containing the file header information
-     * @param offset the offset in the RandomAccessData where the file header starts
-     * @param filter the JarEntryFilter used to filter the file header
-     * @return the CentralDirectoryFileHeader object created from the given data and offset
-     * @throws IOException if an I/O error occurs while reading the data
-     */
-    static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data, long offset, JarEntryFilter filter)
+	 * Creates a CentralDirectoryFileHeader object from the given RandomAccessData,
+	 * offset, and JarEntryFilter.
+	 * @param data the RandomAccessData containing the file header information
+	 * @param offset the offset in the RandomAccessData where the file header starts
+	 * @param filter the JarEntryFilter used to filter the file header
+	 * @return the CentralDirectoryFileHeader object created from the given data and
+	 * offset
+	 * @throws IOException if an I/O error occurs while reading the data
+	 */
+	static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data, long offset, JarEntryFilter filter)
 			throws IOException {
 		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
 		byte[] bytes = data.read(offset, 46);
@@ -324,14 +314,13 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	/**
-     * Returns the value of the specified ChronoField within the given range.
-     *
-     * @param value the value to be checked
-     * @param field the ChronoField to retrieve the value from
-     * @return the value of the ChronoField within the specified range
-     * @throws ArithmeticException if the value is out of the range of the ChronoField
-     */
-    private static int getChronoValue(long value, ChronoField field) {
+	 * Returns the value of the specified ChronoField within the given range.
+	 * @param value the value to be checked
+	 * @param field the ChronoField to retrieve the value from
+	 * @return the value of the ChronoField within the specified range
+	 * @throws ArithmeticException if the value is out of the range of the ChronoField
+	 */
+	private static int getChronoValue(long value, ChronoField field) {
 		ValueRange range = field.range();
 		return Math.toIntExact(Math.min(Math.max(value, range.getMinimum()), range.getMaximum()));
 	}

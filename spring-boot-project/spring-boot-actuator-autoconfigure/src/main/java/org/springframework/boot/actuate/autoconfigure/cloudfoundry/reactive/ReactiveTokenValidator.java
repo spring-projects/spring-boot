@@ -46,21 +46,21 @@ class ReactiveTokenValidator {
 	private volatile Map<String, String> cachedTokenKeys = Collections.emptyMap();
 
 	/**
-     * Constructs a new ReactiveTokenValidator with the specified ReactiveCloudFoundrySecurityService.
-     * 
-     * @param securityService the ReactiveCloudFoundrySecurityService used for token validation
-     */
-    ReactiveTokenValidator(ReactiveCloudFoundrySecurityService securityService) {
+	 * Constructs a new ReactiveTokenValidator with the specified
+	 * ReactiveCloudFoundrySecurityService.
+	 * @param securityService the ReactiveCloudFoundrySecurityService used for token
+	 * validation
+	 */
+	ReactiveTokenValidator(ReactiveCloudFoundrySecurityService securityService) {
 		this.securityService = securityService;
 	}
 
 	/**
-     * Validates the given token by performing a series of validation steps.
-     *
-     * @param token the token to be validated
-     * @return a Mono representing the completion of the validation process
-     */
-    Mono<Void> validate(Token token) {
+	 * Validates the given token by performing a series of validation steps.
+	 * @param token the token to be validated
+	 * @return a Mono representing the completion of the validation process
+	 */
+	Mono<Void> validate(Token token) {
 		return validateAlgorithm(token).then(validateKeyIdAndSignature(token))
 			.then(validateExpiry(token))
 			.then(validateIssuer(token))
@@ -68,13 +68,13 @@ class ReactiveTokenValidator {
 	}
 
 	/**
-     * Validates the algorithm used for token signature.
-     * 
-     * @param token the token to be validated
-     * @return a Mono<Void> indicating the completion of the validation process
-     * @throws CloudFoundryAuthorizationException if the algorithm is invalid or unsupported
-     */
-    private Mono<Void> validateAlgorithm(Token token) {
+	 * Validates the algorithm used for token signature.
+	 * @param token the token to be validated
+	 * @return a Mono<Void> indicating the completion of the validation process
+	 * @throws CloudFoundryAuthorizationException if the algorithm is invalid or
+	 * unsupported
+	 */
+	private Mono<Void> validateAlgorithm(Token token) {
 		String algorithm = token.getSignatureAlgorithm();
 		if (algorithm == null) {
 			return Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE,
@@ -88,13 +88,13 @@ class ReactiveTokenValidator {
 	}
 
 	/**
-     * Validates the key ID and signature of a token.
-     *
-     * @param token The token to be validated.
-     * @return A Mono that completes when the validation is successful.
-     * @throws CloudFoundryAuthorizationException if the RSA signature does not match the content.
-     */
-    private Mono<Void> validateKeyIdAndSignature(Token token) {
+	 * Validates the key ID and signature of a token.
+	 * @param token The token to be validated.
+	 * @return A Mono that completes when the validation is successful.
+	 * @throws CloudFoundryAuthorizationException if the RSA signature does not match the
+	 * content.
+	 */
+	private Mono<Void> validateKeyIdAndSignature(Token token) {
 		return getTokenKey(token).filter((tokenKey) -> hasValidSignature(token, tokenKey))
 			.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE,
 					"RSA Signature did not match content")))
@@ -102,13 +102,13 @@ class ReactiveTokenValidator {
 	}
 
 	/**
-     * Retrieves the token key for the given token.
-     * 
-     * @param token The token for which to retrieve the key.
-     * @return A Mono emitting the token key as a String.
-     * @throws CloudFoundryAuthorizationException if the key ID present in the token header does not match any of the fetched token keys.
-     */
-    private Mono<String> getTokenKey(Token token) {
+	 * Retrieves the token key for the given token.
+	 * @param token The token for which to retrieve the key.
+	 * @return A Mono emitting the token key as a String.
+	 * @throws CloudFoundryAuthorizationException if the key ID present in the token
+	 * header does not match any of the fetched token keys.
+	 */
+	private Mono<String> getTokenKey(Token token) {
 		String keyId = token.getKeyId();
 		String cached = this.cachedTokenKeys.get(keyId);
 		if (cached != null) {
@@ -123,22 +123,20 @@ class ReactiveTokenValidator {
 	}
 
 	/**
-     * Caches the provided token keys.
-     * 
-     * @param tokenKeys the token keys to be cached
-     */
-    private void cacheTokenKeys(Map<String, String> tokenKeys) {
+	 * Caches the provided token keys.
+	 * @param tokenKeys the token keys to be cached
+	 */
+	private void cacheTokenKeys(Map<String, String> tokenKeys) {
 		this.cachedTokenKeys = Map.copyOf(tokenKeys);
 	}
 
 	/**
-     * Checks if the given token has a valid signature using the provided key.
-     * 
-     * @param token The token to be validated.
-     * @param key The key used to verify the token's signature.
-     * @return {@code true} if the token has a valid signature, {@code false} otherwise.
-     */
-    private boolean hasValidSignature(Token token, String key) {
+	 * Checks if the given token has a valid signature using the provided key.
+	 * @param token The token to be validated.
+	 * @param key The key used to verify the token's signature.
+	 * @return {@code true} if the token has a valid signature, {@code false} otherwise.
+	 */
+	private boolean hasValidSignature(Token token, String key) {
 		try {
 			PublicKey publicKey = getPublicKey(key);
 			Signature signature = Signature.getInstance("SHA256withRSA");
@@ -152,14 +150,13 @@ class ReactiveTokenValidator {
 	}
 
 	/**
-     * Retrieves the public key from the given string representation.
-     * 
-     * @param key the string representation of the public key
-     * @return the PublicKey object representing the public key
-     * @throws NoSuchAlgorithmException if the specified algorithm is not available
-     * @throws InvalidKeySpecException if the provided key specification is invalid
-     */
-    private PublicKey getPublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
+	 * Retrieves the public key from the given string representation.
+	 * @param key the string representation of the public key
+	 * @return the PublicKey object representing the public key
+	 * @throws NoSuchAlgorithmException if the specified algorithm is not available
+	 * @throws InvalidKeySpecException if the provided key specification is invalid
+	 */
+	private PublicKey getPublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		key = key.replace("-----BEGIN PUBLIC KEY-----\n", "");
 		key = key.replace("-----END PUBLIC KEY-----", "");
 		key = key.trim().replace("\n", "");
@@ -169,12 +166,12 @@ class ReactiveTokenValidator {
 	}
 
 	/**
-     * Validates the expiry of a given token.
-     *
-     * @param token The token to be validated.
-     * @return A Mono that completes successfully if the token is not expired, or throws a CloudFoundryAuthorizationException if the token is expired.
-     */
-    private Mono<Void> validateExpiry(Token token) {
+	 * Validates the expiry of a given token.
+	 * @param token The token to be validated.
+	 * @return A Mono that completes successfully if the token is not expired, or throws a
+	 * CloudFoundryAuthorizationException if the token is expired.
+	 */
+	private Mono<Void> validateExpiry(Token token) {
 		long currentTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
 		if (currentTime > token.getExpiry()) {
 			return Mono.error(new CloudFoundryAuthorizationException(Reason.TOKEN_EXPIRED, "Token expired"));
@@ -183,13 +180,12 @@ class ReactiveTokenValidator {
 	}
 
 	/**
-     * Validates the issuer of a token.
-     * 
-     * @param token The token to be validated.
-     * @return A Mono that completes when the validation is done.
-     * @throws CloudFoundryAuthorizationException If the token issuer does not match.
-     */
-    private Mono<Void> validateIssuer(Token token) {
+	 * Validates the issuer of a token.
+	 * @param token The token to be validated.
+	 * @return A Mono that completes when the validation is done.
+	 * @throws CloudFoundryAuthorizationException If the token issuer does not match.
+	 */
+	private Mono<Void> validateIssuer(Token token) {
 		return this.securityService.getUaaUrl()
 			.map((uaaUrl) -> String.format("%s/oauth/token", uaaUrl))
 			.filter((issuerUri) -> issuerUri.equals(token.getIssuer()))
@@ -199,13 +195,14 @@ class ReactiveTokenValidator {
 	}
 
 	/**
-     * Validates the audience of the given token.
-     *
-     * @param token the token to validate
-     * @return a Mono that completes successfully if the audience is valid, or completes with an error if the audience is invalid
-     * @throws CloudFoundryAuthorizationException if the token does not have the required audience
-     */
-    private Mono<Void> validateAudience(Token token) {
+	 * Validates the audience of the given token.
+	 * @param token the token to validate
+	 * @return a Mono that completes successfully if the audience is valid, or completes
+	 * with an error if the audience is invalid
+	 * @throws CloudFoundryAuthorizationException if the token does not have the required
+	 * audience
+	 */
+	private Mono<Void> validateAudience(Token token) {
 		if (!token.getScope().contains("actuator.read")) {
 			return Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_AUDIENCE,
 					"Token does not have audience actuator"));

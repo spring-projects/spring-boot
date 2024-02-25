@@ -40,16 +40,18 @@ class MyRestTemplateServiceTests {
 	private MockRestServiceServer server;
 
 	/**
-     * Test method to verify that the getVehicleDetails method returns the expected details when the result is success.
-     * 
-     * <p>
-     * This method sets up a mock server to expect a request to "/greet/details" and responds with a success status and the message "hello".
-     * It then calls the callRestService method of the MyRestTemplateService class and asserts that the returned greeting is equal to "hello".
-     * </p>
-     * 
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
+	 * Test method to verify that the getVehicleDetails method returns the expected
+	 * details when the result is success.
+	 *
+	 * <p>
+	 * This method sets up a mock server to expect a request to "/greet/details" and
+	 * responds with a success status and the message "hello". It then calls the
+	 * callRestService method of the MyRestTemplateService class and asserts that the
+	 * returned greeting is equal to "hello".
+	 * </p>
+	 * @throws Exception if an error occurs during the test
+	 */
+	@Test
 	void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails() {
 		this.server.expect(requestTo("/greet/details")).andRespond(withSuccess("hello", MediaType.TEXT_PLAIN));
 		String greeting = this.service.callRestService();

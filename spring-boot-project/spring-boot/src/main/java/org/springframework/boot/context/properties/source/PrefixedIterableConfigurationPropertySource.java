@@ -27,41 +27,38 @@ class PrefixedIterableConfigurationPropertySource extends PrefixedConfigurationP
 		implements IterableConfigurationPropertySource {
 
 	/**
-     * Constructs a new PrefixedIterableConfigurationPropertySource with the specified source and prefix.
-     *
-     * @param source the IterableConfigurationPropertySource to be wrapped
-     * @param prefix the prefix to be applied to the property names
-     */
-    PrefixedIterableConfigurationPropertySource(IterableConfigurationPropertySource source, String prefix) {
+	 * Constructs a new PrefixedIterableConfigurationPropertySource with the specified
+	 * source and prefix.
+	 * @param source the IterableConfigurationPropertySource to be wrapped
+	 * @param prefix the prefix to be applied to the property names
+	 */
+	PrefixedIterableConfigurationPropertySource(IterableConfigurationPropertySource source, String prefix) {
 		super(source, prefix);
 	}
 
 	/**
-     * Returns a stream of ConfigurationPropertyName objects.
-     * 
-     * @return a stream of ConfigurationPropertyName objects
-     */
-    @Override
+	 * Returns a stream of ConfigurationPropertyName objects.
+	 * @return a stream of ConfigurationPropertyName objects
+	 */
+	@Override
 	public Stream<ConfigurationPropertyName> stream() {
 		return getSource().stream().map(this::stripPrefix);
 	}
 
 	/**
-     * Strips the prefix from the given configuration property name.
-     * 
-     * @param name the configuration property name to strip the prefix from
-     * @return the configuration property name without the prefix
-     */
-    private ConfigurationPropertyName stripPrefix(ConfigurationPropertyName name) {
+	 * Strips the prefix from the given configuration property name.
+	 * @param name the configuration property name to strip the prefix from
+	 * @return the configuration property name without the prefix
+	 */
+	private ConfigurationPropertyName stripPrefix(ConfigurationPropertyName name) {
 		return (getPrefix().isAncestorOf(name)) ? name.subName(getPrefix().getNumberOfElements()) : name;
 	}
 
 	/**
-     * Returns the source of the configuration property.
-     * 
-     * @return the source of the configuration property
-     */
-    @Override
+	 * Returns the source of the configuration property.
+	 * @return the source of the configuration property
+	 */
+	@Override
 	protected IterableConfigurationPropertySource getSource() {
 		return (IterableConfigurationPropertySource) super.getSource();
 	}

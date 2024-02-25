@@ -36,13 +36,13 @@ import org.springframework.context.annotation.Configuration;
 class SimpleCacheConfiguration {
 
 	/**
-     * Creates a ConcurrentMapCacheManager with the specified cache properties and cache manager customizers.
-     * 
-     * @param cacheProperties the cache properties
-     * @param cacheManagerCustomizers the cache manager customizers
-     * @return the created ConcurrentMapCacheManager
-     */
-    @Bean
+	 * Creates a ConcurrentMapCacheManager with the specified cache properties and cache
+	 * manager customizers.
+	 * @param cacheProperties the cache properties
+	 * @param cacheManagerCustomizers the cache manager customizers
+	 * @return the created ConcurrentMapCacheManager
+	 */
+	@Bean
 	ConcurrentMapCacheManager cacheManager(CacheProperties cacheProperties,
 			CacheManagerCustomizers cacheManagerCustomizers) {
 		ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();

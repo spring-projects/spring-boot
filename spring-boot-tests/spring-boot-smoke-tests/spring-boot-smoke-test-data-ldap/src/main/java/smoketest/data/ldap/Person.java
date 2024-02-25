@@ -35,11 +35,10 @@ public class Person {
 	private String phone;
 
 	/**
-     * Returns a string representation of the Customer object.
-     * 
-     * @return a string representation of the Customer object
-     */
-    @Override
+	 * Returns a string representation of the Customer object.
+	 * @return a string representation of the Customer object
+	 */
+	@Override
 	public String toString() {
 		return String.format("Customer[dn=%s, phone='%s']", this.dn, this.phone);
 	}

@@ -33,39 +33,36 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 class CassandraRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	/**
-     * Returns the annotation class that is used to enable Cassandra repositories.
-     *
-     * @return the annotation class {@code EnableCassandraRepositories}
-     */
-    @Override
+	 * Returns the annotation class that is used to enable Cassandra repositories.
+	 * @return the annotation class {@code EnableCassandraRepositories}
+	 */
+	@Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableCassandraRepositories.class;
 	}
 
 	/**
-     * Returns the configuration class for enabling Cassandra repositories.
-     * 
-     * @return the configuration class for enabling Cassandra repositories
-     */
-    @Override
+	 * Returns the configuration class for enabling Cassandra repositories.
+	 * @return the configuration class for enabling Cassandra repositories
+	 */
+	@Override
 	protected Class<?> getConfiguration() {
 		return EnableCassandraRepositoriesConfiguration.class;
 	}
 
 	/**
-     * Returns the repository configuration extension for Cassandra repositories.
-     * 
-     * @return the repository configuration extension
-     */
-    @Override
+	 * Returns the repository configuration extension for Cassandra repositories.
+	 * @return the repository configuration extension
+	 */
+	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new CassandraRepositoryConfigurationExtension();
 	}
 
 	/**
-     * EnableCassandraRepositoriesConfiguration class.
-     */
-    @EnableCassandraRepositories
+	 * EnableCassandraRepositoriesConfiguration class.
+	 */
+	@EnableCassandraRepositories
 	private static final class EnableCassandraRepositoriesConfiguration {
 
 	}

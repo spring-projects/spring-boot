@@ -68,21 +68,19 @@ import org.springframework.util.ReflectionUtils;
 public class JsonTestersAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link JsonMarshalTestersBeanPostProcessor}.
-     * 
-     * @return the newly created {@link JsonMarshalTestersBeanPostProcessor} instance
-     */
-    @Bean
+	 * Creates a new instance of {@link JsonMarshalTestersBeanPostProcessor}.
+	 * @return the newly created {@link JsonMarshalTestersBeanPostProcessor} instance
+	 */
+	@Bean
 	public static JsonMarshalTestersBeanPostProcessor jsonMarshalTestersBeanPostProcessor() {
 		return new JsonMarshalTestersBeanPostProcessor();
 	}
 
 	/**
-     * Creates a factory bean for BasicJsonTester.
-     * 
-     * @return the factory bean for BasicJsonTester
-     */
-    @Bean
+	 * Creates a factory bean for BasicJsonTester.
+	 * @return the factory bean for BasicJsonTester
+	 */
+	@Bean
 	@Scope("prototype")
 	@ImportRuntimeHints(BasicJsonTesterRuntimeHints.class)
 	public FactoryBean<BasicJsonTester> basicJsonTesterFactoryBean() {
@@ -90,23 +88,28 @@ public class JsonTestersAutoConfiguration {
 	}
 
 	/**
-     * JacksonJsonTestersConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JacksonJsonTestersConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	static class JacksonJsonTestersConfiguration {
 
 		/**
-         * Factory method for creating a {@link JacksonTester} instance as a {@link FactoryBean}.
-         * This method is annotated with {@link Bean} to indicate that it should be processed by the Spring container.
-         * The {@link Scope} annotation is used to specify that the created bean should have a prototype scope.
-         * The {@link ConditionalOnBean} annotation ensures that this bean is only created if an {@link ObjectMapper} bean is present in the container.
-         * The {@link ImportRuntimeHints} annotation is used to import the {@link JacksonTesterRuntimeHints} class, which provides runtime hints for the JacksonTester.
-         * 
-         * @param mapper the {@link ObjectMapper} bean to be used for creating the JacksonTester
-         * @return a {@link FactoryBean} instance for creating a {@link JacksonTester} object
-         */
-        @Bean
+		 * Factory method for creating a {@link JacksonTester} instance as a
+		 * {@link FactoryBean}. This method is annotated with {@link Bean} to indicate
+		 * that it should be processed by the Spring container. The {@link Scope}
+		 * annotation is used to specify that the created bean should have a prototype
+		 * scope. The {@link ConditionalOnBean} annotation ensures that this bean is only
+		 * created if an {@link ObjectMapper} bean is present in the container. The
+		 * {@link ImportRuntimeHints} annotation is used to import the
+		 * {@link JacksonTesterRuntimeHints} class, which provides runtime hints for the
+		 * JacksonTester.
+		 * @param mapper the {@link ObjectMapper} bean to be used for creating the
+		 * JacksonTester
+		 * @return a {@link FactoryBean} instance for creating a {@link JacksonTester}
+		 * object
+		 */
+		@Bean
 		@Scope("prototype")
 		@ConditionalOnBean(ObjectMapper.class)
 		@ImportRuntimeHints(JacksonTesterRuntimeHints.class)
@@ -115,16 +118,17 @@ public class JsonTestersAutoConfiguration {
 		}
 
 		/**
-         * JacksonTesterRuntimeHints class.
-         */
-        static class JacksonTesterRuntimeHints extends AbstractJsonMarshalTesterRuntimeHints {
+		 * JacksonTesterRuntimeHints class.
+		 */
+		static class JacksonTesterRuntimeHints extends AbstractJsonMarshalTesterRuntimeHints {
 
 			/**
-             * Constructs a new instance of JacksonTesterRuntimeHints.
-             * 
-             * This constructor calls the constructor of the superclass, JacksonTester, passing the class JacksonTester.class as an argument.
-             */
-            JacksonTesterRuntimeHints() {
+			 * Constructs a new instance of JacksonTesterRuntimeHints.
+			 *
+			 * This constructor calls the constructor of the superclass, JacksonTester,
+			 * passing the class JacksonTester.class as an argument.
+			 */
+			JacksonTesterRuntimeHints() {
 				super(JacksonTester.class);
 			}
 
@@ -133,27 +137,31 @@ public class JsonTestersAutoConfiguration {
 	}
 
 	/**
-     * GsonJsonTestersConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * GsonJsonTestersConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Gson.class)
 	static class GsonJsonTestersConfiguration {
 
 		/**
-         * Creates a factory bean for GsonTester instances.
-         * 
-         * This method is annotated with @Bean to indicate that it is a bean definition method.
-         * 
-         * This method is annotated with @Scope("prototype") to indicate that a new instance of GsonTester should be created each time it is requested.
-         * 
-         * This method is annotated with @ConditionalOnBean(Gson.class) to indicate that the bean creation should be conditional on the presence of a bean of type Gson.
-         * 
-         * This method is annotated with @ImportRuntimeHints(GsonTesterRuntimeHints.class) to indicate that additional runtime hints should be imported from the GsonTesterRuntimeHints class.
-         * 
-         * @param gson The Gson instance to be used by the GsonTester.
-         * @return A FactoryBean for GsonTester instances.
-         */
-        @Bean
+		 * Creates a factory bean for GsonTester instances.
+		 *
+		 * This method is annotated with @Bean to indicate that it is a bean definition
+		 * method.
+		 *
+		 * This method is annotated with @Scope("prototype") to indicate that a new
+		 * instance of GsonTester should be created each time it is requested.
+		 *
+		 * This method is annotated with @ConditionalOnBean(Gson.class) to indicate that
+		 * the bean creation should be conditional on the presence of a bean of type Gson.
+		 *
+		 * This method is annotated with @ImportRuntimeHints(GsonTesterRuntimeHints.class)
+		 * to indicate that additional runtime hints should be imported from the
+		 * GsonTesterRuntimeHints class.
+		 * @param gson The Gson instance to be used by the GsonTester.
+		 * @return A FactoryBean for GsonTester instances.
+		 */
+		@Bean
 		@Scope("prototype")
 		@ConditionalOnBean(Gson.class)
 		@ImportRuntimeHints(GsonTesterRuntimeHints.class)
@@ -162,16 +170,15 @@ public class JsonTestersAutoConfiguration {
 		}
 
 		/**
-         * GsonTesterRuntimeHints class.
-         */
-        static class GsonTesterRuntimeHints extends AbstractJsonMarshalTesterRuntimeHints {
+		 * GsonTesterRuntimeHints class.
+		 */
+		static class GsonTesterRuntimeHints extends AbstractJsonMarshalTesterRuntimeHints {
 
 			/**
-             * Constructs a new GsonTesterRuntimeHints object.
-             * 
-             * @param gsonTesterClass the class representing the GsonTester class
-             */
-            GsonTesterRuntimeHints() {
+			 * Constructs a new GsonTesterRuntimeHints object.
+			 * @param gsonTesterClass the class representing the GsonTester class
+			 */
+			GsonTesterRuntimeHints() {
 				super(GsonTester.class);
 			}
 
@@ -180,19 +187,18 @@ public class JsonTestersAutoConfiguration {
 	}
 
 	/**
-     * JsonbJsonTesterConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * JsonbJsonTesterConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Jsonb.class)
 	static class JsonbJsonTesterConfiguration {
 
 		/**
-         * Creates a factory bean for creating instances of JsonbTester.
-         * 
-         * @param jsonb the Jsonb instance to be used by the JsonbTester
-         * @return a FactoryBean for creating instances of JsonbTester
-         */
-        @Bean
+		 * Creates a factory bean for creating instances of JsonbTester.
+		 * @param jsonb the Jsonb instance to be used by the JsonbTester
+		 * @return a FactoryBean for creating instances of JsonbTester
+		 */
+		@Bean
 		@Scope("prototype")
 		@ConditionalOnBean(Jsonb.class)
 		@ImportRuntimeHints(JsonbJsonTesterRuntimeHints.class)
@@ -201,15 +207,15 @@ public class JsonTestersAutoConfiguration {
 		}
 
 		/**
-         * JsonbJsonTesterRuntimeHints class.
-         */
-        static class JsonbJsonTesterRuntimeHints extends AbstractJsonMarshalTesterRuntimeHints {
+		 * JsonbJsonTesterRuntimeHints class.
+		 */
+		static class JsonbJsonTesterRuntimeHints extends AbstractJsonMarshalTesterRuntimeHints {
 
 			/**
-             * Constructor for JsonbJsonTesterRuntimeHints class.
-             * Initializes the object by calling the super constructor with the JsonbTester class.
-             */
-            JsonbJsonTesterRuntimeHints() {
+			 * Constructor for JsonbJsonTesterRuntimeHints class. Initializes the object
+			 * by calling the super constructor with the JsonbTester class.
+			 */
+			JsonbJsonTesterRuntimeHints() {
 				super(JsonbTester.class);
 			}
 
@@ -230,33 +236,33 @@ public class JsonTestersAutoConfiguration {
 		private final M marshaller;
 
 		/**
-         * Constructs a new JsonTesterFactoryBean with the specified objectType and marshaller.
-         * 
-         * @param objectType the class representing the type of object to be tested
-         * @param marshaller the marshaller used for marshalling and unmarshalling JSON data
-         */
-        JsonTesterFactoryBean(Class<?> objectType, M marshaller) {
+		 * Constructs a new JsonTesterFactoryBean with the specified objectType and
+		 * marshaller.
+		 * @param objectType the class representing the type of object to be tested
+		 * @param marshaller the marshaller used for marshalling and unmarshalling JSON
+		 * data
+		 */
+		JsonTesterFactoryBean(Class<?> objectType, M marshaller) {
 			this.objectType = objectType;
 			this.marshaller = marshaller;
 		}
 
 		/**
-         * Returns a boolean value indicating whether the JsonTesterFactoryBean is a singleton.
-         * 
-         * @return true if the JsonTesterFactoryBean is a singleton, false otherwise.
-         */
-        @Override
+		 * Returns a boolean value indicating whether the JsonTesterFactoryBean is a
+		 * singleton.
+		 * @return true if the JsonTesterFactoryBean is a singleton, false otherwise.
+		 */
+		@Override
 		public boolean isSingleton() {
 			return false;
 		}
 
 		/**
-         * Retrieves the object of type T.
-         * 
-         * @return the object of type T
-         * @throws Exception if an error occurs while retrieving the object
-         */
-        @Override
+		 * Retrieves the object of type T.
+		 * @return the object of type T
+		 * @throws Exception if an error occurs while retrieving the object
+		 */
+		@Override
 		@SuppressWarnings("unchecked")
 		public T getObject() throws Exception {
 			if (this.marshaller == null) {
@@ -276,11 +282,10 @@ public class JsonTestersAutoConfiguration {
 		}
 
 		/**
-         * Returns the type of the object created by this factory bean.
-         * 
-         * @return the type of the object created by this factory bean
-         */
-        @Override
+		 * Returns the type of the object created by this factory bean.
+		 * @return the type of the object created by this factory bean
+		 */
+		@Override
 		public Class<?> getObjectType() {
 			return this.objectType;
 		}
@@ -293,26 +298,25 @@ public class JsonTestersAutoConfiguration {
 	static class JsonMarshalTestersBeanPostProcessor implements InstantiationAwareBeanPostProcessor {
 
 		/**
-         * This method is called after the initialization of a bean. It processes the fields of the bean using reflection.
-         * 
-         * @param bean the initialized bean
-         * @param beanName the name of the bean
-         * @return the processed bean
-         * @throws BeansException if an error occurs during the processing of the bean
-         */
-        @Override
+		 * This method is called after the initialization of a bean. It processes the
+		 * fields of the bean using reflection.
+		 * @param bean the initialized bean
+		 * @param beanName the name of the bean
+		 * @return the processed bean
+		 * @throws BeansException if an error occurs during the processing of the bean
+		 */
+		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			ReflectionUtils.doWithFields(bean.getClass(), (field) -> processField(bean, field));
 			return bean;
 		}
 
 		/**
-         * Processes a field of a bean object.
-         * 
-         * @param bean the bean object
-         * @param field the field to be processed
-         */
-        private void processField(Object bean, Field field) {
+		 * Processes a field of a bean object.
+		 * @param bean the bean object
+		 * @param field the field to be processed
+		 */
+		private void processField(Object bean, Field field) {
 			if (AbstractJsonMarshalTester.class.isAssignableFrom(field.getType())) {
 				initializeTester(bean, field, bean.getClass(), ResolvableType.forField(field).getGeneric());
 			}
@@ -322,13 +326,12 @@ public class JsonTestersAutoConfiguration {
 		}
 
 		/**
-         * Initializes the tester object for the given bean and field.
-         * 
-         * @param bean the bean object
-         * @param field the field object
-         * @param args optional arguments for initialization
-         */
-        private void initializeTester(Object bean, Field field, Object... args) {
+		 * Initializes the tester object for the given bean and field.
+		 * @param bean the bean object
+		 * @param field the field object
+		 * @param args optional arguments for initialization
+		 */
+		private void initializeTester(Object bean, Field field, Object... args) {
 			ReflectionUtils.makeAccessible(field);
 			Object tester = ReflectionUtils.getField(field, bean);
 			if (tester != null) {
@@ -339,29 +342,30 @@ public class JsonTestersAutoConfiguration {
 	}
 
 	/**
-     * AbstractJsonMarshalTesterRuntimeHints class.
-     */
-    @SuppressWarnings("rawtypes")
+	 * AbstractJsonMarshalTesterRuntimeHints class.
+	 */
+	@SuppressWarnings("rawtypes")
 	static class AbstractJsonMarshalTesterRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final Class<? extends AbstractJsonMarshalTester> tester;
 
 		/**
-         * Constructs a new instance of the AbstractJsonMarshalTesterRuntimeHints class with the specified tester.
-         * 
-         * @param tester the class of the AbstractJsonMarshalTester to be used for runtime hints
-         */
-        AbstractJsonMarshalTesterRuntimeHints(Class<? extends AbstractJsonMarshalTester> tester) {
+		 * Constructs a new instance of the AbstractJsonMarshalTesterRuntimeHints class
+		 * with the specified tester.
+		 * @param tester the class of the AbstractJsonMarshalTester to be used for runtime
+		 * hints
+		 */
+		AbstractJsonMarshalTesterRuntimeHints(Class<? extends AbstractJsonMarshalTester> tester) {
 			this.tester = tester;
 		}
 
 		/**
-         * Registers hints for the runtime behavior of the AbstractJsonMarshalTester class.
-         * 
-         * @param hints The runtime hints to register.
-         * @param classLoader The class loader to use for reflection.
-         */
-        @Override
+		 * Registers hints for the runtime behavior of the AbstractJsonMarshalTester
+		 * class.
+		 * @param hints The runtime hints to register.
+		 * @param classLoader The class loader to use for reflection.
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			ReflectionHints reflection = hints.reflection();
 			reflection.registerType(this.tester, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
@@ -373,17 +377,16 @@ public class JsonTestersAutoConfiguration {
 	}
 
 	/**
-     * BasicJsonTesterRuntimeHints class.
-     */
-    static class BasicJsonTesterRuntimeHints implements RuntimeHintsRegistrar {
+	 * BasicJsonTesterRuntimeHints class.
+	 */
+	static class BasicJsonTesterRuntimeHints implements RuntimeHintsRegistrar {
 
 		/**
-         * Registers hints for the BasicJsonTester class.
-         * 
-         * @param hints        the RuntimeHints object to register the hints with
-         * @param classLoader  the ClassLoader to use for reflection
-         */
-        @Override
+		 * Registers hints for the BasicJsonTester class.
+		 * @param hints the RuntimeHints object to register the hints with
+		 * @param classLoader the ClassLoader to use for reflection
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			ReflectionHints reflection = hints.reflection();
 			reflection.registerType(BasicJsonTester.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);

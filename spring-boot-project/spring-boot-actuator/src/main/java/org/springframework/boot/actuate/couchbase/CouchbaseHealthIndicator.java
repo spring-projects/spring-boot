@@ -47,12 +47,11 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	/**
-     * Performs a health check on the Couchbase cluster.
-     * 
-     * @param builder the Health.Builder object used to build the health status
-     * @throws Exception if an error occurs during the health check
-     */
-    @Override
+	 * Performs a health check on the Couchbase cluster.
+	 * @param builder the Health.Builder object used to build the health status
+	 * @throws Exception if an error occurs during the health check
+	 */
+	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		DiagnosticsResult diagnostics = this.cluster.diagnostics();
 		new CouchbaseHealth(diagnostics).applyTo(builder);

@@ -44,13 +44,15 @@ import org.springframework.context.annotation.Bean;
 public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 
 	/**
-     * Creates a {@link ConfigurationPropertiesReportEndpoint} bean if there is no existing bean of the same type.
-     * 
-     * @param properties The {@link ConfigurationPropertiesReportEndpointProperties} object containing the properties for the endpoint.
-     * @param sanitizingFunctions The {@link ObjectProvider} of {@link SanitizingFunction} objects used for sanitizing the endpoint values.
-     * @return The {@link ConfigurationPropertiesReportEndpoint} bean.
-     */
-    @Bean
+	 * Creates a {@link ConfigurationPropertiesReportEndpoint} bean if there is no
+	 * existing bean of the same type.
+	 * @param properties The {@link ConfigurationPropertiesReportEndpointProperties}
+	 * object containing the properties for the endpoint.
+	 * @param sanitizingFunctions The {@link ObjectProvider} of {@link SanitizingFunction}
+	 * objects used for sanitizing the endpoint values.
+	 * @return The {@link ConfigurationPropertiesReportEndpoint} bean.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint(
 			ConfigurationPropertiesReportEndpointProperties properties,
@@ -60,16 +62,16 @@ public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 	}
 
 	/**
-     * Creates a web extension for the ConfigurationPropertiesReportEndpoint.
-     * This extension is conditional on the absence of a bean of the same type,
-     * the presence of the ConfigurationPropertiesReportEndpoint bean, and the availability
-     * of the endpoint for web and Cloud Foundry exposure.
-     *
-     * @param configurationPropertiesReportEndpoint The ConfigurationPropertiesReportEndpoint bean.
-     * @param properties                           The properties for the ConfigurationPropertiesReportEndpoint.
-     * @return The ConfigurationPropertiesReportEndpointWebExtension.
-     */
-    @Bean
+	 * Creates a web extension for the ConfigurationPropertiesReportEndpoint. This
+	 * extension is conditional on the absence of a bean of the same type, the presence of
+	 * the ConfigurationPropertiesReportEndpoint bean, and the availability of the
+	 * endpoint for web and Cloud Foundry exposure.
+	 * @param configurationPropertiesReportEndpoint The
+	 * ConfigurationPropertiesReportEndpoint bean.
+	 * @param properties The properties for the ConfigurationPropertiesReportEndpoint.
+	 * @return The ConfigurationPropertiesReportEndpointWebExtension.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(ConfigurationPropertiesReportEndpoint.class)
 	@ConditionalOnAvailableEndpoint(exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })

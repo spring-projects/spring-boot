@@ -38,9 +38,9 @@ import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConve
 class JacksonHttpMessageConvertersConfiguration {
 
 	/**
-     * MappingJackson2HttpMessageConverterConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * MappingJackson2HttpMessageConverterConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	@ConditionalOnBean(ObjectMapper.class)
 	@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
@@ -48,14 +48,17 @@ class JacksonHttpMessageConvertersConfiguration {
 	static class MappingJackson2HttpMessageConverterConfiguration {
 
 		/**
-         * Creates a new instance of {@link MappingJackson2HttpMessageConverter} if no bean of type {@link MappingJackson2HttpMessageConverter} is present.
-         * The method is conditionally executed based on the absence of beans of type {@link MappingJackson2HttpMessageConverter},
-         * {@link TypeConstrainedMappingJackson2HttpMessageConverter}, and {@link AlpsJsonHttpMessageConverter}.
-         * 
-         * @param objectMapper the {@link ObjectMapper} to be used for JSON serialization and deserialization
-         * @return a new instance of {@link MappingJackson2HttpMessageConverter}
-         */
-        @Bean
+		 * Creates a new instance of {@link MappingJackson2HttpMessageConverter} if no
+		 * bean of type {@link MappingJackson2HttpMessageConverter} is present. The method
+		 * is conditionally executed based on the absence of beans of type
+		 * {@link MappingJackson2HttpMessageConverter},
+		 * {@link TypeConstrainedMappingJackson2HttpMessageConverter}, and
+		 * {@link AlpsJsonHttpMessageConverter}.
+		 * @param objectMapper the {@link ObjectMapper} to be used for JSON serialization
+		 * and deserialization
+		 * @return a new instance of {@link MappingJackson2HttpMessageConverter}
+		 */
+		@Bean
 		@ConditionalOnMissingBean(value = MappingJackson2HttpMessageConverter.class,
 				ignoredType = {
 						"org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2HttpMessageConverter",
@@ -67,22 +70,22 @@ class JacksonHttpMessageConvertersConfiguration {
 	}
 
 	/**
-     * MappingJackson2XmlHttpMessageConverterConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * MappingJackson2XmlHttpMessageConverterConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(XmlMapper.class)
 	@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
 	protected static class MappingJackson2XmlHttpMessageConverterConfiguration {
 
 		/**
-         * Creates a new instance of MappingJackson2XmlHttpMessageConverter.
-         * This method is annotated with @Bean and @ConditionalOnMissingBean, indicating that it will be used as a bean in the application context
-         * if there is no other bean of the same type already defined.
-         * 
-         * @param builder the Jackson2ObjectMapperBuilder used to create the XML mapper
-         * @return a new instance of MappingJackson2XmlHttpMessageConverter
-         */
-        @Bean
+		 * Creates a new instance of MappingJackson2XmlHttpMessageConverter. This method
+		 * is annotated with @Bean and @ConditionalOnMissingBean, indicating that it will
+		 * be used as a bean in the application context if there is no other bean of the
+		 * same type already defined.
+		 * @param builder the Jackson2ObjectMapperBuilder used to create the XML mapper
+		 * @return a new instance of MappingJackson2XmlHttpMessageConverter
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		public MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter(
 				Jackson2ObjectMapperBuilder builder) {

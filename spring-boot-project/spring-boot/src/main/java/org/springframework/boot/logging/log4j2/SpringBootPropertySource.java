@@ -38,65 +38,59 @@ public class SpringBootPropertySource implements PropertySource {
 		.singletonMap(ShutdownCallbackRegistry.SHUTDOWN_HOOK_ENABLED, "false");
 
 	/**
-     * Applies the given action to each key-value pair in the properties map.
-     * 
-     * @param action the action to be applied to each key-value pair
-     * @throws NullPointerException if the specified action is null
-     */
-    @Override
+	 * Applies the given action to each key-value pair in the properties map.
+	 * @param action the action to be applied to each key-value pair
+	 * @throws NullPointerException if the specified action is null
+	 */
+	@Override
 	public void forEach(BiConsumer<String, String> action) {
 		this.properties.forEach(action::accept);
 	}
 
 	/**
-     * Returns the normal form of the given tokens.
-     * 
-     * @param tokens the tokens to be converted to normal form
-     * @return the normal form of the tokens
-     */
-    @Override
+	 * Returns the normal form of the given tokens.
+	 * @param tokens the tokens to be converted to normal form
+	 * @return the normal form of the tokens
+	 */
+	@Override
 	public CharSequence getNormalForm(Iterable<? extends CharSequence> tokens) {
 		return PREFIX + Util.joinAsCamelCase(tokens);
 	}
 
 	/**
-     * Returns the priority of the SpringBootPropertySource.
-     * 
-     * @return the priority of the SpringBootPropertySource
-     */
-    @Override
+	 * Returns the priority of the SpringBootPropertySource.
+	 * @return the priority of the SpringBootPropertySource
+	 */
+	@Override
 	public int getPriority() {
 		return -200;
 	}
 
 	/**
-     * Retrieves the value of the property associated with the specified key.
-     * 
-     * @param key the key of the property to retrieve
-     * @return the value of the property, or null if the key is not found
-     */
-    @Override
+	 * Retrieves the value of the property associated with the specified key.
+	 * @param key the key of the property to retrieve
+	 * @return the value of the property, or null if the key is not found
+	 */
+	@Override
 	public String getProperty(String key) {
 		return this.properties.get(key);
 	}
 
 	/**
-     * Checks if the specified key is present in the properties map.
-     * 
-     * @param key the key to check
-     * @return true if the key is present, false otherwise
-     */
-    @Override
+	 * Checks if the specified key is present in the properties map.
+	 * @param key the key to check
+	 * @return true if the key is present, false otherwise
+	 */
+	@Override
 	public boolean containsProperty(String key) {
 		return this.properties.containsKey(key);
 	}
 
 	/**
-     * Returns a collection of property names.
-     *
-     * @return a collection of property names
-     */
-    @Override
+	 * Returns a collection of property names.
+	 * @return a collection of property names
+	 */
+	@Override
 	public Collection<String> getPropertyNames() {
 		return this.properties.keySet();
 	}

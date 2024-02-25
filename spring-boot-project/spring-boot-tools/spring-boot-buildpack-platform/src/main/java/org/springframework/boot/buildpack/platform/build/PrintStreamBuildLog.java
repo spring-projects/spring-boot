@@ -33,31 +33,31 @@ class PrintStreamBuildLog extends AbstractBuildLog {
 	private final PrintStream out;
 
 	/**
-     * Constructs a new PrintStreamBuildLog object with the specified PrintStream as the output stream.
-     * 
-     * @param out the PrintStream to be used as the output stream
-     */
-    PrintStreamBuildLog(PrintStream out) {
+	 * Constructs a new PrintStreamBuildLog object with the specified PrintStream as the
+	 * output stream.
+	 * @param out the PrintStream to be used as the output stream
+	 */
+	PrintStreamBuildLog(PrintStream out) {
 		this.out = out;
 	}
 
 	/**
-     * Logs a message to the output stream.
-     * 
-     * @param message the message to be logged
-     */
-    @Override
+	 * Logs a message to the output stream.
+	 * @param message the message to be logged
+	 */
+	@Override
 	protected void log(String message) {
 		this.out.println(message);
 	}
 
 	/**
-     * Returns a consumer that displays the progress of a total progress event using a total progress bar.
-     * 
-     * @param prefix the prefix to be displayed before the progress bar
-     * @return a consumer that displays the progress of a total progress event using a total progress bar
-     */
-    @Override
+	 * Returns a consumer that displays the progress of a total progress event using a
+	 * total progress bar.
+	 * @param prefix the prefix to be displayed before the progress bar
+	 * @return a consumer that displays the progress of a total progress event using a
+	 * total progress bar
+	 */
+	@Override
 	protected Consumer<TotalProgressEvent> getProgressConsumer(String prefix) {
 		return new TotalProgressBar(prefix, '.', false, this.out);
 	}

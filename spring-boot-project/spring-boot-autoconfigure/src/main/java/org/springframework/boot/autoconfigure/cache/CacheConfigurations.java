@@ -49,32 +49,30 @@ final class CacheConfigurations {
 	}
 
 	/**
-     * Private constructor for the CacheConfigurations class.
-     */
-    private CacheConfigurations() {
+	 * Private constructor for the CacheConfigurations class.
+	 */
+	private CacheConfigurations() {
 	}
 
 	/**
-     * Returns the configuration class name for the specified cache type.
-     *
-     * @param cacheType the cache type
-     * @return the configuration class name
-     * @throws IllegalArgumentException if the cache type is unknown
-     */
-    static String getConfigurationClass(CacheType cacheType) {
+	 * Returns the configuration class name for the specified cache type.
+	 * @param cacheType the cache type
+	 * @return the configuration class name
+	 * @throws IllegalArgumentException if the cache type is unknown
+	 */
+	static String getConfigurationClass(CacheType cacheType) {
 		String configurationClassName = MAPPINGS.get(cacheType);
 		Assert.state(configurationClassName != null, () -> "Unknown cache type " + cacheType);
 		return configurationClassName;
 	}
 
 	/**
-     * Returns the CacheType based on the given configuration class name.
-     * 
-     * @param configurationClassName the fully qualified name of the configuration class
-     * @return the corresponding CacheType
-     * @throws IllegalStateException if the configuration class is unknown
-     */
-    static CacheType getType(String configurationClassName) {
+	 * Returns the CacheType based on the given configuration class name.
+	 * @param configurationClassName the fully qualified name of the configuration class
+	 * @return the corresponding CacheType
+	 * @throws IllegalStateException if the configuration class is unknown
+	 */
+	static CacheType getType(String configurationClassName) {
 		for (Map.Entry<CacheType, String> entry : MAPPINGS.entrySet()) {
 			if (entry.getValue().equals(configurationClassName)) {
 				return entry.getKey();

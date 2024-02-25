@@ -54,46 +54,46 @@ import org.springframework.core.type.MethodMetadata;
 public class DevToolsR2dbcAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link InMemoryR2dbcDatabaseShutdownExecutor}.
-     * 
-     * @param eventPublisher the {@link ApplicationEventPublisher} used to publish events
-     * @param connectionFactory the {@link ConnectionFactory} used to establish database connections
-     * @return a new instance of {@link InMemoryR2dbcDatabaseShutdownExecutor}
-     */
-    @Bean
+	 * Creates a new instance of {@link InMemoryR2dbcDatabaseShutdownExecutor}.
+	 * @param eventPublisher the {@link ApplicationEventPublisher} used to publish events
+	 * @param connectionFactory the {@link ConnectionFactory} used to establish database
+	 * connections
+	 * @return a new instance of {@link InMemoryR2dbcDatabaseShutdownExecutor}
+	 */
+	@Bean
 	InMemoryR2dbcDatabaseShutdownExecutor inMemoryR2dbcDatabaseShutdownExecutor(
 			ApplicationEventPublisher eventPublisher, ConnectionFactory connectionFactory) {
 		return new InMemoryR2dbcDatabaseShutdownExecutor(eventPublisher, connectionFactory);
 	}
 
 	/**
-     * InMemoryR2dbcDatabaseShutdownExecutor class.
-     */
-    final class InMemoryR2dbcDatabaseShutdownExecutor implements DisposableBean {
+	 * InMemoryR2dbcDatabaseShutdownExecutor class.
+	 */
+	final class InMemoryR2dbcDatabaseShutdownExecutor implements DisposableBean {
 
 		private final ApplicationEventPublisher eventPublisher;
 
 		private final ConnectionFactory connectionFactory;
 
 		/**
-         * Constructs a new InMemoryR2dbcDatabaseShutdownExecutor with the specified ApplicationEventPublisher and ConnectionFactory.
-         * 
-         * @param eventPublisher the ApplicationEventPublisher used to publish events
-         * @param connectionFactory the ConnectionFactory used to establish database connections
-         */
-        InMemoryR2dbcDatabaseShutdownExecutor(ApplicationEventPublisher eventPublisher,
+		 * Constructs a new InMemoryR2dbcDatabaseShutdownExecutor with the specified
+		 * ApplicationEventPublisher and ConnectionFactory.
+		 * @param eventPublisher the ApplicationEventPublisher used to publish events
+		 * @param connectionFactory the ConnectionFactory used to establish database
+		 * connections
+		 */
+		InMemoryR2dbcDatabaseShutdownExecutor(ApplicationEventPublisher eventPublisher,
 				ConnectionFactory connectionFactory) {
 			this.eventPublisher = eventPublisher;
 			this.connectionFactory = connectionFactory;
 		}
 
 		/**
-         * This method is called when the application is shutting down. It checks if the database should be shutdown and if so,
-         * it executes the shutdown process.
-         *
-         * @throws Exception if an error occurs during the shutdown process
-         */
-        @Override
+		 * This method is called when the application is shutting down. It checks if the
+		 * database should be shutdown and if so, it executes the shutdown process.
+		 * @throws Exception if an error occurs during the shutdown process
+		 */
+		@Override
 		public void destroy() throws Exception {
 			if (shouldShutdown()) {
 				Mono.usingWhen(this.connectionFactory.create(), this::executeShutdown, this::closeConnection,
@@ -104,11 +104,12 @@ public class DevToolsR2dbcAutoConfiguration {
 		}
 
 		/**
-         * Determines whether the application should be shut down based on the type of database connection.
-         * 
-         * @return {@code true} if the database connection is an embedded database connection, {@code false} otherwise.
-         */
-        private boolean shouldShutdown() {
+		 * Determines whether the application should be shut down based on the type of
+		 * database connection.
+		 * @return {@code true} if the database connection is an embedded database
+		 * connection, {@code false} otherwise.
+		 */
+		private boolean shouldShutdown() {
 			try {
 				return EmbeddedDatabaseConnection.isEmbedded(this.connectionFactory);
 			}
@@ -118,61 +119,59 @@ public class DevToolsR2dbcAutoConfiguration {
 		}
 
 		/**
-         * Executes a shutdown command on the given database connection.
-         *
-         * @param connection the database connection to execute the shutdown command on
-         * @return a Mono that represents the completion of the shutdown command
-         */
-        private Mono<?> executeShutdown(Connection connection) {
+		 * Executes a shutdown command on the given database connection.
+		 * @param connection the database connection to execute the shutdown command on
+		 * @return a Mono that represents the completion of the shutdown command
+		 */
+		private Mono<?> executeShutdown(Connection connection) {
 			return Mono.from(connection.createStatement("SHUTDOWN").execute());
 		}
 
 		/**
-         * Closes the given connection and returns a Publisher that completes when the connection is closed.
-         * 
-         * @param connection the connection to be closed
-         * @return a Publisher that completes when the connection is closed
-         */
-        private Publisher<Void> closeConnection(Connection connection) {
+		 * Closes the given connection and returns a Publisher that completes when the
+		 * connection is closed.
+		 * @param connection the connection to be closed
+		 * @return a Publisher that completes when the connection is closed
+		 */
+		private Publisher<Void> closeConnection(Connection connection) {
 			return closeConnection(connection, null);
 		}
 
 		/**
-         * Closes the given connection and returns a Publisher that completes when the connection is closed.
-         *
-         * @param connection the connection to be closed
-         * @param ex the throwable that caused the connection to be closed, or null if the connection was closed normally
-         * @return a Publisher that completes when the connection is closed
-         */
-        private Publisher<Void> closeConnection(Connection connection, Throwable ex) {
+		 * Closes the given connection and returns a Publisher that completes when the
+		 * connection is closed.
+		 * @param connection the connection to be closed
+		 * @param ex the throwable that caused the connection to be closed, or null if the
+		 * connection was closed normally
+		 * @return a Publisher that completes when the connection is closed
+		 */
+		private Publisher<Void> closeConnection(Connection connection, Throwable ex) {
 			return connection.close();
 		}
 
 	}
 
 	/**
-     * DevToolsConnectionFactoryCondition class.
-     */
-    static class DevToolsConnectionFactoryCondition extends SpringBootCondition implements ConfigurationCondition {
+	 * DevToolsConnectionFactoryCondition class.
+	 */
+	static class DevToolsConnectionFactoryCondition extends SpringBootCondition implements ConfigurationCondition {
 
 		/**
-         * Returns the configuration phase of this method.
-         * 
-         * @return The configuration phase of this method.
-         */
-        @Override
+		 * Returns the configuration phase of this method.
+		 * @return The configuration phase of this method.
+		 */
+		@Override
 		public ConfigurationPhase getConfigurationPhase() {
 			return ConfigurationPhase.REGISTER_BEAN;
 		}
 
 		/**
-         * Determines the match outcome for the DevTools ConnectionFactory Condition.
-         * 
-         * @param context the condition context
-         * @param metadata the annotated type metadata
-         * @return the condition outcome
-         */
-        @Override
+		 * Determines the match outcome for the DevTools ConnectionFactory Condition.
+		 * @param context the condition context
+		 * @param metadata the annotated type metadata
+		 * @return the condition outcome
+		 */
+		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("DevTools ConnectionFactory Condition");
 			String[] beanNames = context.getBeanFactory().getBeanNamesForType(ConnectionFactory.class, true, false);
@@ -188,12 +187,11 @@ public class DevToolsR2dbcAutoConfiguration {
 		}
 
 		/**
-         * Determines if the given bean definition is auto-configured.
-         * 
-         * @param beanDefinition the annotated bean definition to check
-         * @return true if the bean definition is auto-configured, false otherwise
-         */
-        private boolean isAutoConfigured(AnnotatedBeanDefinition beanDefinition) {
+		 * Determines if the given bean definition is auto-configured.
+		 * @param beanDefinition the annotated bean definition to check
+		 * @return true if the bean definition is auto-configured, false otherwise
+		 */
+		private boolean isAutoConfigured(AnnotatedBeanDefinition beanDefinition) {
 			MethodMetadata methodMetadata = beanDefinition.getFactoryMethodMetadata();
 			return methodMetadata != null && methodMetadata.getDeclaringClassName()
 				.startsWith(R2dbcAutoConfiguration.class.getPackage().getName());
@@ -202,27 +200,26 @@ public class DevToolsR2dbcAutoConfiguration {
 	}
 
 	/**
-     * R2dbcDatabaseShutdownEvent class.
-     */
-    static class R2dbcDatabaseShutdownEvent {
+	 * R2dbcDatabaseShutdownEvent class.
+	 */
+	static class R2dbcDatabaseShutdownEvent {
 
 		private final ConnectionFactory connectionFactory;
 
 		/**
-         * Constructs a new R2dbcDatabaseShutdownEvent with the specified ConnectionFactory.
-         *
-         * @param connectionFactory the ConnectionFactory associated with the event
-         */
-        R2dbcDatabaseShutdownEvent(ConnectionFactory connectionFactory) {
+		 * Constructs a new R2dbcDatabaseShutdownEvent with the specified
+		 * ConnectionFactory.
+		 * @param connectionFactory the ConnectionFactory associated with the event
+		 */
+		R2dbcDatabaseShutdownEvent(ConnectionFactory connectionFactory) {
 			this.connectionFactory = connectionFactory;
 		}
 
 		/**
-         * Returns the connection factory associated with this event.
-         *
-         * @return the connection factory associated with this event
-         */
-        ConnectionFactory getConnectionFactory() {
+		 * Returns the connection factory associated with this event.
+		 * @return the connection factory associated with this event
+		 */
+		ConnectionFactory getConnectionFactory() {
 			return this.connectionFactory;
 		}
 

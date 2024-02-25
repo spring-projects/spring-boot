@@ -34,63 +34,66 @@ final class BindMethodAttribute {
 	static final String NAME = BindMethod.class.getName();
 
 	/**
-     * Constructs a new BindMethodAttribute.
-     */
-    private BindMethodAttribute() {
+	 * Constructs a new BindMethodAttribute.
+	 */
+	private BindMethodAttribute() {
 	}
 
 	/**
-     * Retrieves the {@link BindMethod} from the given {@link ApplicationContext} using the specified bean name.
-     * 
-     * @param applicationContext the {@link ApplicationContext} to retrieve the {@link BindMethod} from
-     * @param beanName the name of the bean to retrieve
-     * @return the {@link BindMethod} if found, or {@code null} if not found
-     */
-    static BindMethod get(ApplicationContext applicationContext, String beanName) {
+	 * Retrieves the {@link BindMethod} from the given {@link ApplicationContext} using
+	 * the specified bean name.
+	 * @param applicationContext the {@link ApplicationContext} to retrieve the
+	 * {@link BindMethod} from
+	 * @param beanName the name of the bean to retrieve
+	 * @return the {@link BindMethod} if found, or {@code null} if not found
+	 */
+	static BindMethod get(ApplicationContext applicationContext, String beanName) {
 		return (applicationContext instanceof ConfigurableApplicationContext configurableApplicationContext)
 				? get(configurableApplicationContext.getBeanFactory(), beanName) : null;
 	}
 
 	/**
-     * Retrieves the BindMethod for the specified bean name from the given ConfigurableListableBeanFactory.
-     * 
-     * @param beanFactory the ConfigurableListableBeanFactory to retrieve the BindMethod from
-     * @param beanName the name of the bean to retrieve the BindMethod for
-     * @return the BindMethod for the specified bean name, or null if the bean definition does not exist
-     */
-    static BindMethod get(ConfigurableListableBeanFactory beanFactory, String beanName) {
+	 * Retrieves the BindMethod for the specified bean name from the given
+	 * ConfigurableListableBeanFactory.
+	 * @param beanFactory the ConfigurableListableBeanFactory to retrieve the BindMethod
+	 * from
+	 * @param beanName the name of the bean to retrieve the BindMethod for
+	 * @return the BindMethod for the specified bean name, or null if the bean definition
+	 * does not exist
+	 */
+	static BindMethod get(ConfigurableListableBeanFactory beanFactory, String beanName) {
 		return (!beanFactory.containsBeanDefinition(beanName)) ? null : get(beanFactory.getBeanDefinition(beanName));
 	}
 
 	/**
-     * Retrieves the {@link BindMethod} associated with the specified bean name from the given {@link BeanDefinitionRegistry}.
-     * 
-     * @param beanDefinitionRegistry the registry containing the bean definitions
-     * @param beanName the name of the bean to retrieve the bind method for
-     * @return the bind method associated with the specified bean name, or {@code null} if the bean definition does not exist
-     */
-    static BindMethod get(BeanDefinitionRegistry beanDefinitionRegistry, String beanName) {
+	 * Retrieves the {@link BindMethod} associated with the specified bean name from the
+	 * given {@link BeanDefinitionRegistry}.
+	 * @param beanDefinitionRegistry the registry containing the bean definitions
+	 * @param beanName the name of the bean to retrieve the bind method for
+	 * @return the bind method associated with the specified bean name, or {@code null} if
+	 * the bean definition does not exist
+	 */
+	static BindMethod get(BeanDefinitionRegistry beanDefinitionRegistry, String beanName) {
 		return (!beanDefinitionRegistry.containsBeanDefinition(beanName)) ? null
 				: get(beanDefinitionRegistry.getBeanDefinition(beanName));
 	}
 
 	/**
-     * Retrieves the BindMethod object associated with the given AttributeAccessor.
-     * 
-     * @param attributes the AttributeAccessor containing the BindMethod object
-     * @return the BindMethod object associated with the given AttributeAccessor
-     */
-    static BindMethod get(AttributeAccessor attributes) {
+	 * Retrieves the BindMethod object associated with the given AttributeAccessor.
+	 * @param attributes the AttributeAccessor containing the BindMethod object
+	 * @return the BindMethod object associated with the given AttributeAccessor
+	 */
+	static BindMethod get(AttributeAccessor attributes) {
 		return (BindMethod) attributes.getAttribute(NAME);
 	}
 
 	/**
-     * Sets the attribute with the given name and bind method in the provided attribute accessor.
-     *
-     * @param attributes the attribute accessor to set the attribute in
-     * @param bindMethod the bind method to set as the attribute value
-     */
-    static void set(AttributeAccessor attributes, BindMethod bindMethod) {
+	 * Sets the attribute with the given name and bind method in the provided attribute
+	 * accessor.
+	 * @param attributes the attribute accessor to set the attribute in
+	 * @param bindMethod the bind method to set as the attribute value
+	 */
+	static void set(AttributeAccessor attributes, BindMethod bindMethod) {
 		attributes.setAttribute(NAME, bindMethod);
 	}
 

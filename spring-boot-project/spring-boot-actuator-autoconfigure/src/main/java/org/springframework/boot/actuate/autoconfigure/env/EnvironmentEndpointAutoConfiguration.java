@@ -43,14 +43,17 @@ import org.springframework.core.env.Environment;
 public class EnvironmentEndpointAutoConfiguration {
 
 	/**
-     * Creates an instance of the {@link EnvironmentEndpoint} class if no other bean of the same type is present.
-     * 
-     * @param environment The {@link Environment} object used to retrieve environment information.
-     * @param properties The {@link EnvironmentEndpointProperties} object containing endpoint properties.
-     * @param sanitizingFunctions The {@link ObjectProvider} of {@link SanitizingFunction} used for sanitizing environment values.
-     * @return An instance of the {@link EnvironmentEndpoint} class.
-     */
-    @Bean
+	 * Creates an instance of the {@link EnvironmentEndpoint} class if no other bean of
+	 * the same type is present.
+	 * @param environment The {@link Environment} object used to retrieve environment
+	 * information.
+	 * @param properties The {@link EnvironmentEndpointProperties} object containing
+	 * endpoint properties.
+	 * @param sanitizingFunctions The {@link ObjectProvider} of {@link SanitizingFunction}
+	 * used for sanitizing environment values.
+	 * @return An instance of the {@link EnvironmentEndpoint} class.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	public EnvironmentEndpoint environmentEndpoint(Environment environment, EnvironmentEndpointProperties properties,
 			ObjectProvider<SanitizingFunction> sanitizingFunctions) {
@@ -59,16 +62,22 @@ public class EnvironmentEndpointAutoConfiguration {
 	}
 
 	/**
-     * Creates a new instance of {@link EnvironmentEndpointWebExtension} if no other bean of the same type is present in the application context.
-     * This bean is conditionally created based on the presence of a bean of type {@link EnvironmentEndpoint} and the availability of the endpoint for exposure.
-     * The {@link EnvironmentEndpointWebExtension} is created with the provided {@link EnvironmentEndpoint} bean, the value visibility flag from {@link EnvironmentEndpointProperties},
-     * and the roles from {@link EnvironmentEndpointProperties}.
-     *
-     * @param environmentEndpoint the {@link EnvironmentEndpoint} bean to be used by the {@link EnvironmentEndpointWebExtension}
-     * @param properties the {@link EnvironmentEndpointProperties} containing the configuration properties for the endpoint
-     * @return a new instance of {@link EnvironmentEndpointWebExtension} if the conditions are met, otherwise null
-     */
-    @Bean
+	 * Creates a new instance of {@link EnvironmentEndpointWebExtension} if no other bean
+	 * of the same type is present in the application context. This bean is conditionally
+	 * created based on the presence of a bean of type {@link EnvironmentEndpoint} and the
+	 * availability of the endpoint for exposure. The
+	 * {@link EnvironmentEndpointWebExtension} is created with the provided
+	 * {@link EnvironmentEndpoint} bean, the value visibility flag from
+	 * {@link EnvironmentEndpointProperties}, and the roles from
+	 * {@link EnvironmentEndpointProperties}.
+	 * @param environmentEndpoint the {@link EnvironmentEndpoint} bean to be used by the
+	 * {@link EnvironmentEndpointWebExtension}
+	 * @param properties the {@link EnvironmentEndpointProperties} containing the
+	 * configuration properties for the endpoint
+	 * @return a new instance of {@link EnvironmentEndpointWebExtension} if the conditions
+	 * are met, otherwise null
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(EnvironmentEndpoint.class)
 	@ConditionalOnAvailableEndpoint(exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })

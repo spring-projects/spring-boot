@@ -33,12 +33,11 @@ public class WelcomeController {
 	private String message = "Hello World";
 
 	/**
-     * Retrieves the welcome page.
-     * 
-     * @param model the model object to be populated with data
-     * @return the name of the view to be rendered
-     */
-    @GetMapping("/")
+	 * Retrieves the welcome page.
+	 * @param model the model object to be populated with data
+	 * @return the name of the view to be rendered
+	 */
+	@GetMapping("/")
 	public String welcome(Map<String, Object> model) {
 		model.put("time", new Date());
 		model.put("message", this.message);

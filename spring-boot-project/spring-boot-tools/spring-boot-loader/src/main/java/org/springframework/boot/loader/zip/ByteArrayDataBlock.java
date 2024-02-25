@@ -39,48 +39,48 @@ class ByteArrayDataBlock implements CloseableDataBlock {
 	}
 
 	/**
-     * Constructs a new ByteArrayDataBlock object with the specified byte array and maximum read size.
-     * 
-     * @param bytes the byte array to be used by the ByteArrayDataBlock
-     * @param maxReadSize the maximum number of bytes that can be read from the ByteArrayDataBlock
-     */
-    ByteArrayDataBlock(byte[] bytes, int maxReadSize) {
+	 * Constructs a new ByteArrayDataBlock object with the specified byte array and
+	 * maximum read size.
+	 * @param bytes the byte array to be used by the ByteArrayDataBlock
+	 * @param maxReadSize the maximum number of bytes that can be read from the
+	 * ByteArrayDataBlock
+	 */
+	ByteArrayDataBlock(byte[] bytes, int maxReadSize) {
 		this.bytes = bytes;
 		this.maxReadSize = maxReadSize;
 	}
 
 	/**
-     * Returns the size of the ByteArrayDataBlock.
-     *
-     * @return the size of the ByteArrayDataBlock
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
+	 * Returns the size of the ByteArrayDataBlock.
+	 * @return the size of the ByteArrayDataBlock
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
 	public long size() throws IOException {
 		return this.bytes.length;
 	}
 
 	/**
-     * Reads bytes from this ByteArrayDataBlock into the specified ByteBuffer at the given position.
-     * 
-     * @param dst the ByteBuffer to read bytes into
-     * @param pos the position in this ByteArrayDataBlock to start reading from
-     * @return the number of bytes read into the ByteBuffer
-     * @throws IOException if an I/O error occurs while reading
-     */
-    @Override
+	 * Reads bytes from this ByteArrayDataBlock into the specified ByteBuffer at the given
+	 * position.
+	 * @param dst the ByteBuffer to read bytes into
+	 * @param pos the position in this ByteArrayDataBlock to start reading from
+	 * @return the number of bytes read into the ByteBuffer
+	 * @throws IOException if an I/O error occurs while reading
+	 */
+	@Override
 	public int read(ByteBuffer dst, long pos) throws IOException {
 		return read(dst, (int) pos);
 	}
 
 	/**
-     * Reads bytes from the ByteArrayDataBlock and stores them in the specified ByteBuffer at the given position.
-     * 
-     * @param dst The ByteBuffer to store the read bytes.
-     * @param pos The position in the ByteArrayDataBlock to start reading from.
-     * @return The number of bytes read and stored in the ByteBuffer.
-     */
-    private int read(ByteBuffer dst, int pos) {
+	 * Reads bytes from the ByteArrayDataBlock and stores them in the specified ByteBuffer
+	 * at the given position.
+	 * @param dst The ByteBuffer to store the read bytes.
+	 * @param pos The position in the ByteArrayDataBlock to start reading from.
+	 * @return The number of bytes read and stored in the ByteBuffer.
+	 */
+	private int read(ByteBuffer dst, int pos) {
 		int remaining = dst.remaining();
 		int length = Math.min(this.bytes.length - pos, remaining);
 		if (this.maxReadSize > 0 && length > this.maxReadSize) {
@@ -91,11 +91,10 @@ class ByteArrayDataBlock implements CloseableDataBlock {
 	}
 
 	/**
-     * Closes the ByteArrayDataBlock.
-     * 
-     * @throws IOException if an I/O error occurs while closing the ByteArrayDataBlock.
-     */
-    @Override
+	 * Closes the ByteArrayDataBlock.
+	 * @throws IOException if an I/O error occurs while closing the ByteArrayDataBlock.
+	 */
+	@Override
 	public void close() throws IOException {
 	}
 

@@ -126,33 +126,30 @@ class ConfigDataProperties {
 		}
 
 		/**
-         * Checks if the given cloud platform is active.
-         * 
-         * @param cloudPlatform the cloud platform to check
-         * @return true if the given cloud platform is active, false otherwise
-         */
-        private boolean isActive(CloudPlatform cloudPlatform) {
+		 * Checks if the given cloud platform is active.
+		 * @param cloudPlatform the cloud platform to check
+		 * @return true if the given cloud platform is active, false otherwise
+		 */
+		private boolean isActive(CloudPlatform cloudPlatform) {
 			return this.onCloudPlatform == null || this.onCloudPlatform == cloudPlatform;
 		}
 
 		/**
-         * Checks if the given profiles are active.
-         * 
-         * @param profiles the profiles to check
-         * @return {@code true} if the profiles are active, {@code false} otherwise
-         */
-        private boolean isActive(Profiles profiles) {
+		 * Checks if the given profiles are active.
+		 * @param profiles the profiles to check
+		 * @return {@code true} if the profiles are active, {@code false} otherwise
+		 */
+		private boolean isActive(Profiles profiles) {
 			return ObjectUtils.isEmpty(this.onProfile)
 					|| (profiles != null && matchesActiveProfiles(profiles::isAccepted));
 		}
 
 		/**
-         * Checks if the active profiles match the given predicate.
-         * 
-         * @param activeProfiles the predicate to match the active profiles against
-         * @return true if the active profiles match the given predicate, false otherwise
-         */
-        private boolean matchesActiveProfiles(Predicate<String> activeProfiles) {
+		 * Checks if the active profiles match the given predicate.
+		 * @param activeProfiles the predicate to match the active profiles against
+		 * @return true if the active profiles match the given predicate, false otherwise
+		 */
+		private boolean matchesActiveProfiles(Predicate<String> activeProfiles) {
 			return org.springframework.core.env.Profiles.of(this.onProfile).matches(activeProfiles);
 		}
 

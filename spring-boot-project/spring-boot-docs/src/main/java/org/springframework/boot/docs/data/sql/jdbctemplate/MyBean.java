@@ -28,19 +28,18 @@ public class MyBean {
 	private final JdbcTemplate jdbcTemplate;
 
 	/**
-     * Constructs a new instance of MyBean with the specified JdbcTemplate.
-     *
-     * @param jdbcTemplate the JdbcTemplate to be used by this MyBean
-     */
-    public MyBean(JdbcTemplate jdbcTemplate) {
+	 * Constructs a new instance of MyBean with the specified JdbcTemplate.
+	 * @param jdbcTemplate the JdbcTemplate to be used by this MyBean
+	 */
+	public MyBean(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	/**
-     * This method is used to perform a specific action.
-     * It deletes all records from the customer table.
-     */
-    public void doSomething() {
+	 * This method is used to perform a specific action. It deletes all records from the
+	 * customer table.
+	 */
+	public void doSomething() {
 		/* @chomp:line this.jdbcTemplate ... */ this.jdbcTemplate.execute("delete from customer");
 	}
 

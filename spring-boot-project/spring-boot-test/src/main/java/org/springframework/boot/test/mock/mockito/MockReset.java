@@ -123,29 +123,27 @@ public enum MockReset {
 		private final MockReset reset;
 
 		/**
-         * Sets the reset invocation listener.
-         * 
-         * @param reset the mock reset object to be set as the invocation listener
-         */
-        ResetInvocationListener(MockReset reset) {
+		 * Sets the reset invocation listener.
+		 * @param reset the mock reset object to be set as the invocation listener
+		 */
+		ResetInvocationListener(MockReset reset) {
 			this.reset = reset;
 		}
 
 		/**
-         * Returns the reset object associated with this ResetInvocationListener.
-         *
-         * @return the reset object associated with this ResetInvocationListener
-         */
-        MockReset getReset() {
+		 * Returns the reset object associated with this ResetInvocationListener.
+		 * @return the reset object associated with this ResetInvocationListener
+		 */
+		MockReset getReset() {
 			return this.reset;
 		}
 
 		/**
-         * Reports the invocation of a method.
-         * 
-         * @param methodInvocationReport the report containing information about the method invocation
-         */
-        @Override
+		 * Reports the invocation of a method.
+		 * @param methodInvocationReport the report containing information about the
+		 * method invocation
+		 */
+		@Override
 		public void reportInvocation(MethodInvocationReport methodInvocationReport) {
 		}
 

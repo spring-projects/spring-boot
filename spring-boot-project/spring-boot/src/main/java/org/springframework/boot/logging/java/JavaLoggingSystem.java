@@ -69,43 +69,43 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	private final Set<Logger> configuredLoggers = Collections.synchronizedSet(new HashSet<>());
 
 	/**
-     * Constructs a new JavaLoggingSystem with the specified class loader.
-     *
-     * @param classLoader the class loader to be used for loading classes and resources
-     */
-    public JavaLoggingSystem(ClassLoader classLoader) {
+	 * Constructs a new JavaLoggingSystem with the specified class loader.
+	 * @param classLoader the class loader to be used for loading classes and resources
+	 */
+	public JavaLoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
 	}
 
 	/**
-     * Returns an array of standard configuration locations.
-     * 
-     * @return an array of standard configuration locations
-     */
-    @Override
+	 * Returns an array of standard configuration locations.
+	 * @return an array of standard configuration locations
+	 */
+	@Override
 	protected String[] getStandardConfigLocations() {
 		return new String[] { "logging.properties" };
 	}
 
 	/**
-     * This method is called before the initialization of the JavaLoggingSystem.
-     * It overrides the superclass method and sets the logging level of the root logger to SEVERE.
-     */
-    @Override
+	 * This method is called before the initialization of the JavaLoggingSystem. It
+	 * overrides the superclass method and sets the logging level of the root logger to
+	 * SEVERE.
+	 */
+	@Override
 	public void beforeInitialize() {
 		super.beforeInitialize();
 		Logger.getLogger("").setLevel(Level.SEVERE);
 	}
 
 	/**
-     * Loads the default logging configuration based on the provided initialization context and log file.
-     * If a log file is provided, the configuration is loaded from the "logging-file.properties" file.
-     * If no log file is provided, the configuration is loaded from the "logging.properties" file.
-     *
-     * @param initializationContext The initialization context for logging.
-     * @param logFile The log file to load the configuration from. Can be null if no log file is provided.
-     */
-    @Override
+	 * Loads the default logging configuration based on the provided initialization
+	 * context and log file. If a log file is provided, the configuration is loaded from
+	 * the "logging-file.properties" file. If no log file is provided, the configuration
+	 * is loaded from the "logging.properties" file.
+	 * @param initializationContext The initialization context for logging.
+	 * @param logFile The log file to load the configuration from. Can be null if no log
+	 * file is provided.
+	 */
+	@Override
 	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
 		if (logFile != null) {
 			loadConfiguration(getPackagedConfigFile("logging-file.properties"), logFile);
@@ -116,27 +116,25 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Loads the configuration for the logging system.
-     * 
-     * @param initializationContext the initialization context for the logging system
-     * @param location the location of the configuration file
-     * @param logFile the log file to be used
-     */
-    @Override
+	 * Loads the configuration for the logging system.
+	 * @param initializationContext the initialization context for the logging system
+	 * @param location the location of the configuration file
+	 * @param logFile the log file to be used
+	 */
+	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
 			LogFile logFile) {
 		loadConfiguration(location, logFile);
 	}
 
 	/**
-     * Loads the configuration for the Java logging system.
-     * 
-     * @param location the location of the configuration file
-     * @param logFile the log file to be used in the configuration
-     * @throws IllegalStateException if the Java logging system could not be initialized
-     * @throws IllegalArgumentException if the location is null
-     */
-    protected void loadConfiguration(String location, LogFile logFile) {
+	 * Loads the configuration for the Java logging system.
+	 * @param location the location of the configuration file
+	 * @param logFile the log file to be used in the configuration
+	 * @throws IllegalStateException if the Java logging system could not be initialized
+	 * @throws IllegalArgumentException if the location is null
+	 */
+	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		try {
 			String configuration = FileCopyUtils
@@ -152,22 +150,20 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Returns a set of supported log levels.
-     *
-     * @return a set of supported log levels
-     */
-    @Override
+	 * Returns a set of supported log levels.
+	 * @return a set of supported log levels
+	 */
+	@Override
 	public Set<LogLevel> getSupportedLogLevels() {
 		return LEVELS.getSupported();
 	}
 
 	/**
-     * Sets the log level for a specific logger.
-     * 
-     * @param loggerName the name of the logger
-     * @param level the log level to be set
-     */
-    @Override
+	 * Sets the log level for a specific logger.
+	 * @param loggerName the name of the logger
+	 * @param level the log level to be set
+	 */
+	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
 		if (loggerName == null || ROOT_LOGGER_NAME.equals(loggerName)) {
 			loggerName = "";
@@ -180,11 +176,11 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Retrieves a list of all logger configurations.
-     * 
-     * @return A list of LoggerConfiguration objects representing the configurations of all loggers.
-     */
-    @Override
+	 * Retrieves a list of all logger configurations.
+	 * @return A list of LoggerConfiguration objects representing the configurations of
+	 * all loggers.
+	 */
+	@Override
 	public List<LoggerConfiguration> getLoggerConfigurations() {
 		List<LoggerConfiguration> result = new ArrayList<>();
 		Enumeration<String> names = LogManager.getLogManager().getLoggerNames();
@@ -196,12 +192,11 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Retrieves the configuration of a logger with the specified name.
-     * 
-     * @param loggerName the name of the logger
-     * @return the configuration of the logger, or null if the logger does not exist
-     */
-    @Override
+	 * Retrieves the configuration of a logger with the specified name.
+	 * @param loggerName the name of the logger
+	 * @return the configuration of the logger, or null if the logger does not exist
+	 */
+	@Override
 	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
 		Logger logger = Logger.getLogger(loggerName);
 		if (logger == null) {
@@ -214,12 +209,11 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Retrieves the effective logging level for the specified root logger.
-     * 
-     * @param root the root logger to retrieve the effective level from
-     * @return the effective logging level for the root logger
-     */
-    private Level getEffectiveLevel(Logger root) {
+	 * Retrieves the effective logging level for the specified root logger.
+	 * @param root the root logger to retrieve the effective level from
+	 * @return the effective logging level for the root logger
+	 */
+	private Level getEffectiveLevel(Logger root) {
 		Logger logger = root;
 		while (logger.getLevel() == null) {
 			logger = logger.getParent();
@@ -228,20 +222,20 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-     * Returns a Runnable object that can be used as a shutdown handler.
-     * This handler resets the logging configuration by calling the reset() method of the LogManager class.
-     *
-     * @return a Runnable object that resets the logging configuration
-     */
-    @Override
+	 * Returns a Runnable object that can be used as a shutdown handler. This handler
+	 * resets the logging configuration by calling the reset() method of the LogManager
+	 * class.
+	 * @return a Runnable object that resets the logging configuration
+	 */
+	@Override
 	public Runnable getShutdownHandler() {
 		return () -> LogManager.getLogManager().reset();
 	}
 
 	/**
-     * Cleans up the configured loggers.
-     */
-    @Override
+	 * Cleans up the configured loggers.
+	 */
+	@Override
 	public void cleanUp() {
 		this.configuredLoggers.clear();
 	}
@@ -256,12 +250,11 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 				Factory.class.getClassLoader());
 
 		/**
-         * Returns the logging system based on the provided class loader.
-         * 
-         * @param classLoader the class loader to be used for loading the logging system
-         * @return the logging system if it is present, otherwise null
-         */
-        @Override
+		 * Returns the logging system based on the provided class loader.
+		 * @param classLoader the class loader to be used for loading the logging system
+		 * @return the logging system if it is present, otherwise null
+		 */
+		@Override
 		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
 			if (PRESENT) {
 				return new JavaLoggingSystem(classLoader);

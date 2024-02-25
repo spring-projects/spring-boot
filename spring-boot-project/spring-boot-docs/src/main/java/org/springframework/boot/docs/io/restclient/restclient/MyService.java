@@ -28,21 +28,20 @@ public class MyService {
 	private final RestClient restClient;
 
 	/**
-     * Constructs a new instance of MyService with the provided RestClient.Builder.
-     * 
-     * @param restClientBuilder the RestClient.Builder used to build the RestClient instance
-     */
-    public MyService(RestClient.Builder restClientBuilder) {
+	 * Constructs a new instance of MyService with the provided RestClient.Builder.
+	 * @param restClientBuilder the RestClient.Builder used to build the RestClient
+	 * instance
+	 */
+	public MyService(RestClient.Builder restClientBuilder) {
 		this.restClient = restClientBuilder.baseUrl("https://example.org").build();
 	}
 
 	/**
-     * Makes a REST call to retrieve the details for a given name.
-     * 
-     * @param name the name for which details are to be retrieved
-     * @return the details of the given name
-     */
-    public Details someRestCall(String name) {
+	 * Makes a REST call to retrieve the details for a given name.
+	 * @param name the name for which details are to be retrieved
+	 * @return the details of the given name
+	 */
+	public Details someRestCall(String name) {
 		return this.restClient.get().uri("/{name}/details", name).retrieve().body(Details.class);
 	}
 

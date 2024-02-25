@@ -56,11 +56,11 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	private final WebAuditListener webListener = maybeCreateWebListener();
 
 	/**
-     * Creates a web audit listener if the required class is present.
-     * 
-     * @return the created web audit listener if the required class is present, otherwise null
-     */
-    private static WebAuditListener maybeCreateWebListener() {
+	 * Creates a web audit listener if the required class is present.
+	 * @return the created web audit listener if the required class is present, otherwise
+	 * null
+	 */
+	private static WebAuditListener maybeCreateWebListener() {
 		if (ClassUtils.isPresent(WEB_LISTENER_CHECK_CLASS, null)) {
 			return new WebAuditListener();
 		}
@@ -68,12 +68,12 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	}
 
 	/**
-     * This method is called when an application event related to authentication occurs.
-     * It handles different types of authentication events such as failure, success, and web events.
-     * 
-     * @param event The authentication event that occurred
-     */
-    @Override
+	 * This method is called when an application event related to authentication occurs.
+	 * It handles different types of authentication events such as failure, success, and
+	 * web events.
+	 * @param event The authentication event that occurred
+	 */
+	@Override
 	public void onApplicationEvent(AbstractAuthenticationEvent event) {
 		if (event instanceof AbstractAuthenticationFailureEvent failureEvent) {
 			onAuthenticationFailureEvent(failureEvent);
@@ -87,11 +87,10 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	}
 
 	/**
-     * Handles the event when authentication fails.
-     * 
-     * @param event The authentication failure event.
-     */
-    private void onAuthenticationFailureEvent(AbstractAuthenticationFailureEvent event) {
+	 * Handles the event when authentication fails.
+	 * @param event The authentication failure event.
+	 */
+	private void onAuthenticationFailureEvent(AbstractAuthenticationFailureEvent event) {
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("type", event.getException().getClass().getName());
 		data.put("message", event.getException().getMessage());
@@ -102,12 +101,11 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	}
 
 	/**
-     * This method is called when an authentication success event occurs.
-     * It publishes an audit event with the authentication success details.
-     * 
-     * @param event The authentication success event.
-     */
-    private void onAuthenticationSuccessEvent(AuthenticationSuccessEvent event) {
+	 * This method is called when an authentication success event occurs. It publishes an
+	 * audit event with the authentication success details.
+	 * @param event The authentication success event.
+	 */
+	private void onAuthenticationSuccessEvent(AuthenticationSuccessEvent event) {
 		Map<String, Object> data = new LinkedHashMap<>();
 		if (event.getAuthentication().getDetails() != null) {
 			data.put("details", event.getAuthentication().getDetails());
@@ -116,17 +114,17 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	}
 
 	/**
-     * WebAuditListener class.
-     */
-    private static final class WebAuditListener {
+	 * WebAuditListener class.
+	 */
+	private static final class WebAuditListener {
 
 		/**
-         * Processes the authentication event and publishes an audit event to the provided listener.
-         * 
-         * @param listener the authentication audit listener to publish the audit event to
-         * @param input the authentication event to process
-         */
-        void process(AuthenticationAuditListener listener, AbstractAuthenticationEvent input) {
+		 * Processes the authentication event and publishes an audit event to the provided
+		 * listener.
+		 * @param listener the authentication audit listener to publish the audit event to
+		 * @param input the authentication event to process
+		 */
+		void process(AuthenticationAuditListener listener, AbstractAuthenticationEvent input) {
 			if (listener != null) {
 				AuthenticationSwitchUserEvent event = (AuthenticationSwitchUserEvent) input;
 				Map<String, Object> data = new HashMap<>();
@@ -142,12 +140,12 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 		}
 
 		/**
-         * Determines if the given event is an instance of AuthenticationSwitchUserEvent.
-         * 
-         * @param event the event to be checked
-         * @return true if the event is an instance of AuthenticationSwitchUserEvent, false otherwise
-         */
-        boolean accepts(AbstractAuthenticationEvent event) {
+		 * Determines if the given event is an instance of AuthenticationSwitchUserEvent.
+		 * @param event the event to be checked
+		 * @return true if the event is an instance of AuthenticationSwitchUserEvent,
+		 * false otherwise
+		 */
+		boolean accepts(AbstractAuthenticationEvent event) {
 			return event instanceof AuthenticationSwitchUserEvent;
 		}
 

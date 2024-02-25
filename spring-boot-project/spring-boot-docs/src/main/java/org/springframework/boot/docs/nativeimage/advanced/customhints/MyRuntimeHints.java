@@ -29,12 +29,11 @@ import org.springframework.util.ReflectionUtils;
 public class MyRuntimeHints implements RuntimeHintsRegistrar {
 
 	/**
-     * Registers hints for runtime behavior.
-     * 
-     * @param hints the runtime hints object
-     * @param classLoader the class loader to use for reflection
-     */
-    @Override
+	 * Registers hints for runtime behavior.
+	 * @param hints the runtime hints object
+	 * @param classLoader the class loader to use for reflection
+	 */
+	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		// Register method for reflection
 		Method method = ReflectionUtils.findMethod(MyClass.class, "sayHello", String.class);

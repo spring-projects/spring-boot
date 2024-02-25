@@ -29,12 +29,13 @@ import org.springframework.context.annotation.Configuration;
 public class MyRabbitConfiguration {
 
 	/**
-     * Creates a custom RabbitListenerContainerFactory with a custom ConnectionFactory and MessageConverter.
-     * 
-     * @param configurer the SimpleRabbitListenerContainerFactoryConfigurer used to configure the factory
-     * @return the created SimpleRabbitListenerContainerFactory
-     */
-    @Bean
+	 * Creates a custom RabbitListenerContainerFactory with a custom ConnectionFactory and
+	 * MessageConverter.
+	 * @param configurer the SimpleRabbitListenerContainerFactoryConfigurer used to
+	 * configure the factory
+	 * @return the created SimpleRabbitListenerContainerFactory
+	 */
+	@Bean
 	public SimpleRabbitListenerContainerFactory myFactory(SimpleRabbitListenerContainerFactoryConfigurer configurer) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		ConnectionFactory connectionFactory = getCustomConnectionFactory();
@@ -44,11 +45,10 @@ public class MyRabbitConfiguration {
 	}
 
 	/**
-     * Returns a custom ConnectionFactory object.
-     *
-     * @return the custom ConnectionFactory object
-     */
-    private ConnectionFactory getCustomConnectionFactory() {
+	 * Returns a custom ConnectionFactory object.
+	 * @return the custom ConnectionFactory object
+	 */
+	private ConnectionFactory getCustomConnectionFactory() {
 		return /**/ null;
 	}
 

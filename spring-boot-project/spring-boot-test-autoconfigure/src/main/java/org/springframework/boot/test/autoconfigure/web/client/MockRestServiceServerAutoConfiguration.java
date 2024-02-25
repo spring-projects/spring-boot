@@ -51,34 +51,32 @@ import org.springframework.web.client.RestTemplate;
 public class MockRestServiceServerAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link MockServerRestTemplateCustomizer}.
-     * 
-     * @return the created {@link MockServerRestTemplateCustomizer} instance
-     */
-    @Bean
+	 * Creates a new instance of {@link MockServerRestTemplateCustomizer}.
+	 * @return the created {@link MockServerRestTemplateCustomizer} instance
+	 */
+	@Bean
 	public MockServerRestTemplateCustomizer mockServerRestTemplateCustomizer() {
 		return new MockServerRestTemplateCustomizer();
 	}
 
 	/**
-     * Creates a new instance of MockServerRestClientCustomizer.
-     * 
-     * @return the created MockServerRestClientCustomizer instance
-     */
-    @Bean
+	 * Creates a new instance of MockServerRestClientCustomizer.
+	 * @return the created MockServerRestClientCustomizer instance
+	 */
+	@Bean
 	public MockServerRestClientCustomizer mockServerRestClientCustomizer() {
 		return new MockServerRestClientCustomizer();
 	}
 
 	/**
-     * Creates a mock server for testing RESTful services.
-     * 
-     * @param restTemplateCustomizer The customizer for the RestTemplate used by the server.
-     * @param restClientCustomizer The customizer for the RestClient used by the server.
-     * @return The created MockRestServiceServer.
-     * @throws IllegalStateException if an exception occurs while creating the server.
-     */
-    @Bean
+	 * Creates a mock server for testing RESTful services.
+	 * @param restTemplateCustomizer The customizer for the RestTemplate used by the
+	 * server.
+	 * @param restClientCustomizer The customizer for the RestClient used by the server.
+	 * @return The created MockRestServiceServer.
+	 * @throws IllegalStateException if an exception occurs while creating the server.
+	 */
+	@Bean
 	public MockRestServiceServer mockRestServiceServer(MockServerRestTemplateCustomizer restTemplateCustomizer,
 			MockServerRestClientCustomizer restClientCustomizer) {
 		try {
@@ -90,15 +88,18 @@ public class MockRestServiceServerAutoConfiguration {
 	}
 
 	/**
-     * Creates a deferred {@link MockRestServiceServer} instance with the provided {@link MockServerRestTemplateCustomizer}
-     * and {@link MockServerRestClientCustomizer}.
-     *
-     * @param restTemplateCustomizer the {@link MockServerRestTemplateCustomizer} to customize the {@link RestTemplate}
-     * @param restClientCustomizer the {@link MockServerRestClientCustomizer} to customize the {@link RestClient}
-     * @return a deferred {@link MockRestServiceServer} instance
-     * @throws Exception if an error occurs during the creation of the {@link MockRestServiceServer}
-     */
-    private MockRestServiceServer createDeferredMockRestServiceServer(
+	 * Creates a deferred {@link MockRestServiceServer} instance with the provided
+	 * {@link MockServerRestTemplateCustomizer} and
+	 * {@link MockServerRestClientCustomizer}.
+	 * @param restTemplateCustomizer the {@link MockServerRestTemplateCustomizer} to
+	 * customize the {@link RestTemplate}
+	 * @param restClientCustomizer the {@link MockServerRestClientCustomizer} to customize
+	 * the {@link RestClient}
+	 * @return a deferred {@link MockRestServiceServer} instance
+	 * @throws Exception if an error occurs during the creation of the
+	 * {@link MockRestServiceServer}
+	 */
+	private MockRestServiceServer createDeferredMockRestServiceServer(
 			MockServerRestTemplateCustomizer restTemplateCustomizer,
 			MockServerRestClientCustomizer restClientCustomizer) throws Exception {
 		Constructor<MockRestServiceServer> constructor = MockRestServiceServer.class
@@ -121,91 +122,97 @@ public class MockRestServiceServerAutoConfiguration {
 		private final MockServerRestClientCustomizer restClientCustomizer;
 
 		/**
-         * Constructs a new DeferredRequestExpectationManager with the specified MockServerRestTemplateCustomizer and MockServerRestClientCustomizer.
-         * 
-         * @param restTemplateCustomizer the MockServerRestTemplateCustomizer to customize the MockServerRestTemplate
-         * @param restClientCustomizer the MockServerRestClientCustomizer to customize the MockServerRestClient
-         */
-        DeferredRequestExpectationManager(MockServerRestTemplateCustomizer restTemplateCustomizer,
+		 * Constructs a new DeferredRequestExpectationManager with the specified
+		 * MockServerRestTemplateCustomizer and MockServerRestClientCustomizer.
+		 * @param restTemplateCustomizer the MockServerRestTemplateCustomizer to customize
+		 * the MockServerRestTemplate
+		 * @param restClientCustomizer the MockServerRestClientCustomizer to customize the
+		 * MockServerRestClient
+		 */
+		DeferredRequestExpectationManager(MockServerRestTemplateCustomizer restTemplateCustomizer,
 				MockServerRestClientCustomizer restClientCustomizer) {
 			this.restTemplateCustomizer = restTemplateCustomizer;
 			this.restClientCustomizer = restClientCustomizer;
 		}
 
 		/**
-         * Sets the expectation for a request with the specified count and request matcher.
-         * 
-         * @param count The expected count of the request.
-         * @param requestMatcher The matcher to match the request against.
-         * @return The response actions for the expectation.
-         */
-        @Override
+		 * Sets the expectation for a request with the specified count and request
+		 * matcher.
+		 * @param count The expected count of the request.
+		 * @param requestMatcher The matcher to match the request against.
+		 * @return The response actions for the expectation.
+		 */
+		@Override
 		public ResponseActions expectRequest(ExpectedCount count, RequestMatcher requestMatcher) {
 			return getDelegate().expectRequest(count, requestMatcher);
 		}
 
 		/**
-         * Validates the given client HTTP request.
-         *
-         * @param request the client HTTP request to be validated
-         * @return the client HTTP response
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
+		 * Validates the given client HTTP request.
+		 * @param request the client HTTP request to be validated
+		 * @return the client HTTP response
+		 * @throws IOException if an I/O error occurs
+		 */
+		@Override
 		public ClientHttpResponse validateRequest(ClientHttpRequest request) throws IOException {
 			return getDelegate().validateRequest(request);
 		}
 
 		/**
-         * Verifies the deferred request expectation manager.
-         * This method calls the verify method of the delegate object.
-         */
-        @Override
+		 * Verifies the deferred request expectation manager. This method calls the verify
+		 * method of the delegate object.
+		 */
+		@Override
 		public void verify() {
 			getDelegate().verify();
 		}
 
 		/**
-         * Verifies the deferred request expectation within the specified timeout duration.
-         * 
-         * @param timeout the duration within which the deferred request expectation should be verified
-         */
-        @Override
+		 * Verifies the deferred request expectation within the specified timeout
+		 * duration.
+		 * @param timeout the duration within which the deferred request expectation
+		 * should be verified
+		 */
+		@Override
 		public void verify(Duration timeout) {
 			getDelegate().verify(timeout);
 		}
 
 		/**
-         * Resets the expectations for the {@link RestTemplateCustomizer} and {@link RestClientCustomizer}.
-         * This method clears all the expectation managers for both the {@link RestTemplateCustomizer} and {@link RestClientCustomizer}.
-         */
-        @Override
+		 * Resets the expectations for the {@link RestTemplateCustomizer} and
+		 * {@link RestClientCustomizer}. This method clears all the expectation managers
+		 * for both the {@link RestTemplateCustomizer} and {@link RestClientCustomizer}.
+		 */
+		@Override
 		public void reset() {
 			resetExpectations(this.restTemplateCustomizer.getExpectationManagers().values());
 			resetExpectations(this.restClientCustomizer.getExpectationManagers().values());
 		}
 
 		/**
-         * Resets the expectations for the given collection of RequestExpectationManagers.
-         * If the collection contains only one RequestExpectationManager, it will be reset.
-         *
-         * @param expectationManagers the collection of RequestExpectationManagers to reset expectations for
-         */
-        private void resetExpectations(Collection<RequestExpectationManager> expectationManagers) {
+		 * Resets the expectations for the given collection of RequestExpectationManagers.
+		 * If the collection contains only one RequestExpectationManager, it will be
+		 * reset.
+		 * @param expectationManagers the collection of RequestExpectationManagers to
+		 * reset expectations for
+		 */
+		private void resetExpectations(Collection<RequestExpectationManager> expectationManagers) {
 			if (expectationManagers.size() == 1) {
 				expectationManagers.iterator().next().reset();
 			}
 		}
 
 		/**
-         * Returns the delegate RequestExpectationManager based on the bound customizers.
-         * 
-         * @return The delegate RequestExpectationManager
-         * @throws IllegalStateException if neither a RestTemplate nor a RestClient customizer is bound
-         * @throws IllegalStateException if both a RestTemplate and a RestClient customizer are bound
-         * @throws IllegalStateException if more than one RestTemplate or RestClient customizer is bound
-         */
-        private RequestExpectationManager getDelegate() {
+		 * Returns the delegate RequestExpectationManager based on the bound customizers.
+		 * @return The delegate RequestExpectationManager
+		 * @throws IllegalStateException if neither a RestTemplate nor a RestClient
+		 * customizer is bound
+		 * @throws IllegalStateException if both a RestTemplate and a RestClient
+		 * customizer are bound
+		 * @throws IllegalStateException if more than one RestTemplate or RestClient
+		 * customizer is bound
+		 */
+		private RequestExpectationManager getDelegate() {
 			Map<RestTemplate, RequestExpectationManager> restTemplateExpectationManagers = this.restTemplateCustomizer
 				.getExpectationManagers();
 			Map<RestClient.Builder, RequestExpectationManager> restClientExpectationManagers = this.restClientCustomizer

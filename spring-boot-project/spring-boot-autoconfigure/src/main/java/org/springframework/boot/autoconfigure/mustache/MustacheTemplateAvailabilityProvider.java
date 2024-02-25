@@ -32,15 +32,14 @@ import org.springframework.util.ClassUtils;
 public class MustacheTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
 	/**
-     * Checks if a template is available for the given view.
-     * 
-     * @param view the view name
-     * @param environment the environment
-     * @param classLoader the class loader
-     * @param resourceLoader the resource loader
-     * @return true if the template is available, false otherwise
-     */
-    @Override
+	 * Checks if a template is available for the given view.
+	 * @param view the view name
+	 * @param environment the environment
+	 * @param classLoader the class loader
+	 * @param resourceLoader the resource loader
+	 * @return true if the template is available, false otherwise
+	 */
+	@Override
 	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
 			ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("com.samskivert.mustache.Template", classLoader)) {

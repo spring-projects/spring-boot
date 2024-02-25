@@ -60,24 +60,22 @@ public class SimpleHttpCodeStatusMapper implements HttpCodeStatusMapper {
 	}
 
 	/**
-     * Returns the status code corresponding to the given status.
-     * 
-     * @param status the status for which to retrieve the status code
-     * @return the status code corresponding to the given status
-     */
-    @Override
+	 * Returns the status code corresponding to the given status.
+	 * @param status the status for which to retrieve the status code
+	 * @return the status code corresponding to the given status
+	 */
+	@Override
 	public int getStatusCode(Status status) {
 		String code = getUniformCode(status.getCode());
 		return this.mappings.getOrDefault(code, WebEndpointResponse.STATUS_OK);
 	}
 
 	/**
-     * Returns a map of uniform mappings based on the given mappings.
-     * 
-     * @param mappings the original mappings to be processed
-     * @return a map of uniform mappings
-     */
-    private static Map<String, Integer> getUniformMappings(Map<String, Integer> mappings) {
+	 * Returns a map of uniform mappings based on the given mappings.
+	 * @param mappings the original mappings to be processed
+	 * @return a map of uniform mappings
+	 */
+	private static Map<String, Integer> getUniformMappings(Map<String, Integer> mappings) {
 		Map<String, Integer> result = new LinkedHashMap<>();
 		for (Map.Entry<String, Integer> entry : mappings.entrySet()) {
 			String code = getUniformCode(entry.getKey());
@@ -89,12 +87,11 @@ public class SimpleHttpCodeStatusMapper implements HttpCodeStatusMapper {
 	}
 
 	/**
-     * Returns the uniform code for the given code.
-     * 
-     * @param code the code to get the uniform code for
-     * @return the uniform code, or null if the input code is null
-     */
-    private static String getUniformCode(String code) {
+	 * Returns the uniform code for the given code.
+	 * @param code the code to get the uniform code for
+	 * @return the uniform code, or null if the input code is null
+	 */
+	private static String getUniformCode(String code) {
 		if (code == null) {
 			return null;
 		}

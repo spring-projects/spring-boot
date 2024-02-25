@@ -30,20 +30,18 @@ class MockitoBeans implements Iterable<Object> {
 	private final List<Object> beans = new ArrayList<>();
 
 	/**
-     * Adds a bean to the list of beans.
-     * 
-     * @param bean the bean to be added
-     */
-    void add(Object bean) {
+	 * Adds a bean to the list of beans.
+	 * @param bean the bean to be added
+	 */
+	void add(Object bean) {
 		this.beans.add(bean);
 	}
 
 	/**
-     * Returns an iterator over the elements in this MockitoBeans object.
-     *
-     * @return an iterator over the elements in this MockitoBeans object
-     */
-    @Override
+	 * Returns an iterator over the elements in this MockitoBeans object.
+	 * @return an iterator over the elements in this MockitoBeans object
+	 */
+	@Override
 	public Iterator<Object> iterator() {
 		return this.beans.iterator();
 	}

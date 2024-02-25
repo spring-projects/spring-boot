@@ -44,51 +44,50 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 public class HazelcastJpaDependencyAutoConfiguration {
 
 	/**
-     * HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor class.
-     */
-    @Conditional(OnHazelcastAndJpaCondition.class)
+	 * HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor class.
+	 */
+	@Conditional(OnHazelcastAndJpaCondition.class)
 	static class HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor
 			extends EntityManagerFactoryDependsOnPostProcessor {
 
 		/**
-         * Constructs a new HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor with the specified Hazelcast instance dependency.
-         *
-         * @param hazelcastInstance the Hazelcast instance to depend on
-         */
-        HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor() {
+		 * Constructs a new HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor
+		 * with the specified Hazelcast instance dependency.
+		 * @param hazelcastInstance the Hazelcast instance to depend on
+		 */
+		HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor() {
 			super("hazelcastInstance");
 		}
 
 	}
 
 	/**
-     * OnHazelcastAndJpaCondition class.
-     */
-    static class OnHazelcastAndJpaCondition extends AllNestedConditions {
+	 * OnHazelcastAndJpaCondition class.
+	 */
+	static class OnHazelcastAndJpaCondition extends AllNestedConditions {
 
 		/**
-         * Constructor for the OnHazelcastAndJpaCondition class.
-         * 
-         * Initializes a new instance of the class with the specified configuration phase.
-         * 
-         * @param configurationPhase The configuration phase for the condition.
-         */
-        OnHazelcastAndJpaCondition() {
+		 * Constructor for the OnHazelcastAndJpaCondition class.
+		 *
+		 * Initializes a new instance of the class with the specified configuration phase.
+		 * @param configurationPhase The configuration phase for the condition.
+		 */
+		OnHazelcastAndJpaCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
 		/**
-         * HasHazelcastInstance class.
-         */
-        @ConditionalOnBean(name = "hazelcastInstance")
+		 * HasHazelcastInstance class.
+		 */
+		@ConditionalOnBean(name = "hazelcastInstance")
 		static class HasHazelcastInstance {
 
 		}
 
 		/**
-         * HasJpa class.
-         */
-        @ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
+		 * HasJpa class.
+		 */
+		@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
 		static class HasJpa {
 
 		}

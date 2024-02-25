@@ -47,26 +47,28 @@ import org.springframework.context.annotation.Configuration;
 public class MongoAutoConfiguration {
 
 	/**
-     * Creates a new instance of {@link PropertiesMongoConnectionDetails} if there is no existing bean of type {@link MongoConnectionDetails}.
-     * Uses the provided {@link MongoProperties} to construct the {@link PropertiesMongoConnectionDetails}.
-     * 
-     * @param properties the {@link MongoProperties} used to construct the {@link PropertiesMongoConnectionDetails}
-     * @return a new instance of {@link PropertiesMongoConnectionDetails} if there is no existing bean of type {@link MongoConnectionDetails}
-     */
-    @Bean
+	 * Creates a new instance of {@link PropertiesMongoConnectionDetails} if there is no
+	 * existing bean of type {@link MongoConnectionDetails}. Uses the provided
+	 * {@link MongoProperties} to construct the {@link PropertiesMongoConnectionDetails}.
+	 * @param properties the {@link MongoProperties} used to construct the
+	 * {@link PropertiesMongoConnectionDetails}
+	 * @return a new instance of {@link PropertiesMongoConnectionDetails} if there is no
+	 * existing bean of type {@link MongoConnectionDetails}
+	 */
+	@Bean
 	@ConditionalOnMissingBean(MongoConnectionDetails.class)
 	PropertiesMongoConnectionDetails mongoConnectionDetails(MongoProperties properties) {
 		return new PropertiesMongoConnectionDetails(properties);
 	}
 
 	/**
-     * Creates a new instance of MongoClient if no bean of type MongoClient is already present.
-     * 
-     * @param builderCustomizers the customizers for the MongoClientSettingsBuilder
-     * @param settings the settings for the MongoClient
-     * @return a new instance of MongoClient
-     */
-    @Bean
+	 * Creates a new instance of MongoClient if no bean of type MongoClient is already
+	 * present.
+	 * @param builderCustomizers the customizers for the MongoClientSettingsBuilder
+	 * @param settings the settings for the MongoClient
+	 * @return a new instance of MongoClient
+	 */
+	@Bean
 	@ConditionalOnMissingBean(MongoClient.class)
 	public MongoClient mongo(ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers,
 			MongoClientSettings settings) {
@@ -74,31 +76,29 @@ public class MongoAutoConfiguration {
 	}
 
 	/**
-     * MongoClientSettingsConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * MongoClientSettingsConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(MongoClientSettings.class)
 	static class MongoClientSettingsConfiguration {
 
 		/**
-         * Returns the MongoClientSettings object with default settings.
-         * 
-         * @return the MongoClientSettings object with default settings
-         */
-        @Bean
+		 * Returns the MongoClientSettings object with default settings.
+		 * @return the MongoClientSettings object with default settings
+		 */
+		@Bean
 		MongoClientSettings mongoClientSettings() {
 			return MongoClientSettings.builder().build();
 		}
 
 		/**
-         * Returns a customizer for the standard MongoDB client settings builder.
-         * 
-         * @param properties the MongoDB properties
-         * @param connectionDetails the MongoDB connection details
-         * @param sslBundles the SSL bundles (optional)
-         * @return the customizer for the standard MongoDB client settings builder
-         */
-        @Bean
+		 * Returns a customizer for the standard MongoDB client settings builder.
+		 * @param properties the MongoDB properties
+		 * @param connectionDetails the MongoDB connection details
+		 * @param sslBundles the SSL bundles (optional)
+		 * @return the customizer for the standard MongoDB client settings builder
+		 */
+		@Bean
 		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
 				MongoConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
 			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails.getConnectionString(),

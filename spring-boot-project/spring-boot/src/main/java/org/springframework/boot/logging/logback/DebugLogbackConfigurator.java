@@ -34,25 +34,23 @@ import ch.qos.logback.core.status.Status;
 class DebugLogbackConfigurator extends LogbackConfigurator {
 
 	/**
-     * Constructs a new DebugLogbackConfigurator with the specified LoggerContext.
-     *
-     * @param context the LoggerContext to be used by the DebugLogbackConfigurator
-     */
-    DebugLogbackConfigurator(LoggerContext context) {
+	 * Constructs a new DebugLogbackConfigurator with the specified LoggerContext.
+	 * @param context the LoggerContext to be used by the DebugLogbackConfigurator
+	 */
+	DebugLogbackConfigurator(LoggerContext context) {
 		super(context);
 	}
 
 	/**
-     * Adds a conversion rule for a specific word using the provided converter class.
-     * 
-     * @param conversionWord the word to be converted
-     * @param converterClass the class implementing the Converter interface for the conversion
-     * 
-     * @throws IllegalArgumentException if the conversionWord or converterClass is null
-     * 
-     * @since 1.0
-     */
-    @Override
+	 * Adds a conversion rule for a specific word using the provided converter class.
+	 * @param conversionWord the word to be converted
+	 * @param converterClass the class implementing the Converter interface for the
+	 * conversion
+	 * @throws IllegalArgumentException if the conversionWord or converterClass is null
+	 *
+	 * @since 1.0
+	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public void conversionRule(String conversionWord, Class<? extends Converter> converterClass) {
 		info("Adding conversion rule of type '" + converterClass.getName() + "' for word '" + conversionWord + "'");
@@ -60,26 +58,25 @@ class DebugLogbackConfigurator extends LogbackConfigurator {
 	}
 
 	/**
-     * Adds an appender to the Logback configuration.
-     * 
-     * @param name     the name of the appender
-     * @param appender the appender to be added
-     */
-    @Override
+	 * Adds an appender to the Logback configuration.
+	 * @param name the name of the appender
+	 * @param appender the appender to be added
+	 */
+	@Override
 	public void appender(String name, Appender<?> appender) {
 		info("Adding appender '" + appender + "' named '" + name + "'");
 		super.appender(name, appender);
 	}
 
 	/**
-     * Configures a logger with the specified name, level, additive flag, and appender.
-     * 
-     * @param name     the name of the logger
-     * @param level    the level of the logger
-     * @param additive the additive flag indicating whether the logger should inherit appenders from its ancestors
-     * @param appender the appender to be added to the logger
-     */
-    @Override
+	 * Configures a logger with the specified name, level, additive flag, and appender.
+	 * @param name the name of the logger
+	 * @param level the level of the logger
+	 * @param additive the additive flag indicating whether the logger should inherit
+	 * appenders from its ancestors
+	 * @param appender the appender to be added to the logger
+	 */
+	@Override
 	public void logger(String name, Level level, boolean additive, Appender<ILoggingEvent> appender) {
 		info("Configuring logger '" + name + "' with level '" + level + "'. Additive: " + additive);
 		if (appender != null) {
@@ -89,22 +86,20 @@ class DebugLogbackConfigurator extends LogbackConfigurator {
 	}
 
 	/**
-     * Starts the specified LifeCycle.
-     * 
-     * @param lifeCycle the LifeCycle to start
-     */
-    @Override
+	 * Starts the specified LifeCycle.
+	 * @param lifeCycle the LifeCycle to start
+	 */
+	@Override
 	public void start(LifeCycle lifeCycle) {
 		info("Starting '" + lifeCycle + "'");
 		super.start(lifeCycle);
 	}
 
 	/**
-     * Logs an informational message.
-     * 
-     * @param message the message to be logged
-     */
-    private void info(String message) {
+	 * Logs an informational message.
+	 * @param message the message to be logged
+	 */
+	private void info(String message) {
 		getContext().getStatusManager().add(new InfoStatus(message, this));
 	}
 

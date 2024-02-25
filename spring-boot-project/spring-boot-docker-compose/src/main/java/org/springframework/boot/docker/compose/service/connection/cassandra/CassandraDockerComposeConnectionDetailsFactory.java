@@ -37,23 +37,24 @@ class CassandraDockerComposeConnectionDetailsFactory
 	private static final int CASSANDRA_PORT = 9042;
 
 	/**
-     * Constructs a new CassandraDockerComposeConnectionDetailsFactory object.
-     * 
-     * This constructor initializes the object by calling the super constructor with the specified CASSANDRA_CONTAINER_NAMES.
-     * 
-     * @param CASSANDRA_CONTAINER_NAMES the names of the Cassandra containers in the Docker Compose file
-     */
-    CassandraDockerComposeConnectionDetailsFactory() {
+	 * Constructs a new CassandraDockerComposeConnectionDetailsFactory object.
+	 *
+	 * This constructor initializes the object by calling the super constructor with the
+	 * specified CASSANDRA_CONTAINER_NAMES.
+	 * @param CASSANDRA_CONTAINER_NAMES the names of the Cassandra containers in the
+	 * Docker Compose file
+	 */
+	CassandraDockerComposeConnectionDetailsFactory() {
 		super(CASSANDRA_CONTAINER_NAMES);
 	}
 
 	/**
-     * Returns the connection details for a Cassandra instance running in a Docker Compose environment.
-     * 
-     * @param source the Docker Compose connection source
-     * @return the Cassandra connection details
-     */
-    @Override
+	 * Returns the connection details for a Cassandra instance running in a Docker Compose
+	 * environment.
+	 * @param source the Docker Compose connection source
+	 * @return the Cassandra connection details
+	 */
+	@Override
 	protected CassandraConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new CassandraDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -70,11 +71,12 @@ class CassandraDockerComposeConnectionDetailsFactory
 		private final String datacenter;
 
 		/**
-         * Constructs a new CassandraDockerComposeConnectionDetails object with the specified RunningService.
-         * 
-         * @param service the RunningService object representing the Cassandra Docker Compose service
-         */
-        CassandraDockerComposeConnectionDetails(RunningService service) {
+		 * Constructs a new CassandraDockerComposeConnectionDetails object with the
+		 * specified RunningService.
+		 * @param service the RunningService object representing the Cassandra Docker
+		 * Compose service
+		 */
+		CassandraDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			CassandraEnvironment cassandraEnvironment = new CassandraEnvironment(service.env());
 			this.contactPoints = List.of(new Node(service.host(), service.ports().get(CASSANDRA_PORT)));
@@ -82,21 +84,20 @@ class CassandraDockerComposeConnectionDetailsFactory
 		}
 
 		/**
-         * Returns the list of contact points for establishing a connection to the Cassandra cluster.
-         *
-         * @return the list of contact points
-         */
-        @Override
+		 * Returns the list of contact points for establishing a connection to the
+		 * Cassandra cluster.
+		 * @return the list of contact points
+		 */
+		@Override
 		public List<Node> getContactPoints() {
 			return this.contactPoints;
 		}
 
 		/**
-         * Returns the name of the local datacenter.
-         *
-         * @return the name of the local datacenter
-         */
-        @Override
+		 * Returns the name of the local datacenter.
+		 * @return the name of the local datacenter
+		 */
+		@Override
 		public String getLocalDatacenter() {
 			return this.datacenter;
 		}

@@ -25,18 +25,19 @@ package org.springframework.boot.system;
 public final class SystemProperties {
 
 	/**
-     * Private constructor for the SystemProperties class.
-     */
-    private SystemProperties() {
+	 * Private constructor for the SystemProperties class.
+	 */
+	private SystemProperties() {
 	}
 
 	/**
-     * Retrieves the value of the specified system property or environment variable.
-     * 
-     * @param properties the names of the system properties or environment variables to retrieve
-     * @return the value of the first property or variable found, or null if none are found
-     */
-    public static String get(String... properties) {
+	 * Retrieves the value of the specified system property or environment variable.
+	 * @param properties the names of the system properties or environment variables to
+	 * retrieve
+	 * @return the value of the first property or variable found, or null if none are
+	 * found
+	 */
+	public static String get(String... properties) {
 		for (String property : properties) {
 			try {
 				String override = System.getProperty(property);

@@ -41,20 +41,24 @@ import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
 public class MockMvcWebClientAutoConfiguration {
 
 	/**
-     * Creates a {@link MockMvcWebClientBuilder} bean if there is no existing bean of type {@link WebClient} or {@link MockMvcWebClientBuilder},
-     * and if there is a bean of type {@link MockMvc}.
-     * 
-     * This bean is conditional on the absence of beans of type {@link WebClient} and {@link MockMvcWebClientBuilder},
-     * and the presence of a bean of type {@link MockMvc}.
-     * 
-     * The created {@link MockMvcWebClientBuilder} bean is configured with the provided {@link MockMvc} instance,
-     * and a {@link LocalHostWebClient} delegate that uses the provided {@link Environment}.
-     * 
-     * @param mockMvc the {@link MockMvc} instance to be used for configuring the {@link MockMvcWebClientBuilder}
-     * @param environment the {@link Environment} instance to be used by the {@link LocalHostWebClient} delegate
-     * @return the created {@link MockMvcWebClientBuilder} bean
-     */
-    @Bean
+	 * Creates a {@link MockMvcWebClientBuilder} bean if there is no existing bean of type
+	 * {@link WebClient} or {@link MockMvcWebClientBuilder}, and if there is a bean of
+	 * type {@link MockMvc}.
+	 *
+	 * This bean is conditional on the absence of beans of type {@link WebClient} and
+	 * {@link MockMvcWebClientBuilder}, and the presence of a bean of type
+	 * {@link MockMvc}.
+	 *
+	 * The created {@link MockMvcWebClientBuilder} bean is configured with the provided
+	 * {@link MockMvc} instance, and a {@link LocalHostWebClient} delegate that uses the
+	 * provided {@link Environment}.
+	 * @param mockMvc the {@link MockMvc} instance to be used for configuring the
+	 * {@link MockMvcWebClientBuilder}
+	 * @param environment the {@link Environment} instance to be used by the
+	 * {@link LocalHostWebClient} delegate
+	 * @return the created {@link MockMvcWebClientBuilder} bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean({ WebClient.class, MockMvcWebClientBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
 	public MockMvcWebClientBuilder mockMvcWebClientBuilder(MockMvc mockMvc, Environment environment) {
@@ -62,12 +66,12 @@ public class MockMvcWebClientAutoConfiguration {
 	}
 
 	/**
-     * Creates a WebClient bean using HtmlUnit implementation if no other WebClient bean is present and if a MockMvcWebClientBuilder bean is present.
-     * 
-     * @param builder the MockMvcWebClientBuilder used to build the WebClient
-     * @return the WebClient bean
-     */
-    @Bean
+	 * Creates a WebClient bean using HtmlUnit implementation if no other WebClient bean
+	 * is present and if a MockMvcWebClientBuilder bean is present.
+	 * @param builder the MockMvcWebClientBuilder used to build the WebClient
+	 * @return the WebClient bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(MockMvcWebClientBuilder.class)
 	public WebClient htmlUnitWebClient(MockMvcWebClientBuilder builder) {

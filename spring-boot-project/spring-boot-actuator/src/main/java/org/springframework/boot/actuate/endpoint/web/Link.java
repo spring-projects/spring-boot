@@ -60,11 +60,10 @@ public class Link {
 	}
 
 	/**
-     * Returns a string representation of the Link object.
-     *
-     * @return a string representation of the Link object
-     */
-    @Override
+	 * Returns a string representation of the Link object.
+	 * @return a string representation of the Link object
+	 */
+	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("href", this.href).toString();
 	}

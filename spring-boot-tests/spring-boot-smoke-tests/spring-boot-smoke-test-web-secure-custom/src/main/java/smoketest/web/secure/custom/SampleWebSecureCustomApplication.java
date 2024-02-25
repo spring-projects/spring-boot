@@ -34,44 +34,40 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SampleWebSecureCustomApplication implements WebMvcConfigurer {
 
 	/**
-     * Adds view controllers to the registry.
-     * 
-     * @param registry the ViewControllerRegistry to add the view controllers to
-     */
-    @Override
+	 * Adds view controllers to the registry.
+	 * @param registry the ViewControllerRegistry to add the view controllers to
+	 */
+	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/").setViewName("home");
 		registry.addViewController("/login").setViewName("login");
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It initializes and runs the Spring Boot application using the SpringApplicationBuilder.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It initializes and runs the
+	 * Spring Boot application using the SpringApplicationBuilder.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		new SpringApplicationBuilder(SampleWebSecureCustomApplication.class).run(args);
 	}
 
 	/**
-     * ApplicationSecurity class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ApplicationSecurity class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	protected static class ApplicationSecurity {
 
 		/**
-         * Configures the security filter chain for the application.
-         * Disables CSRF protection.
-         * Permits all requests with dispatcher type FORWARD.
-         * Requires full authentication for all other requests.
-         * Configures form login with a login page at "/login" and permits all access to the login page.
-         * 
-         * @param http the HttpSecurity object to configure
-         * @return the configured SecurityFilterChain
-         * @throws Exception if an error occurs during configuration
-         */
-        @Bean
+		 * Configures the security filter chain for the application. Disables CSRF
+		 * protection. Permits all requests with dispatcher type FORWARD. Requires full
+		 * authentication for all other requests. Configures form login with a login page
+		 * at "/login" and permits all access to the login page.
+		 * @param http the HttpSecurity object to configure
+		 * @return the configured SecurityFilterChain
+		 * @throws Exception if an error occurs during configuration
+		 */
+		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.csrf((csrf) -> csrf.disable());
 			http.authorizeHttpRequests((requests) -> {

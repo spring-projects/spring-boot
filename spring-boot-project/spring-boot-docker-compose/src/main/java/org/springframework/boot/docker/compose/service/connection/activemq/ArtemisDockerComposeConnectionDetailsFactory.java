@@ -35,21 +35,20 @@ class ArtemisDockerComposeConnectionDetailsFactory
 	private static final int ACTIVEMQ_PORT = 61616;
 
 	/**
-     * Constructs a new instance of ArtemisDockerComposeConnectionDetailsFactory with the specified Docker image name.
-     * 
-     * @param dockerImageName the name of the Docker image to use for the Artemis broker
-     */
-    protected ArtemisDockerComposeConnectionDetailsFactory() {
+	 * Constructs a new instance of ArtemisDockerComposeConnectionDetailsFactory with the
+	 * specified Docker image name.
+	 * @param dockerImageName the name of the Docker image to use for the Artemis broker
+	 */
+	protected ArtemisDockerComposeConnectionDetailsFactory() {
 		super("apache/activemq-artemis");
 	}
 
 	/**
-     * Retrieves the connection details for a Docker Compose service.
-     * 
-     * @param source the source of the Docker Compose connection
-     * @return the connection details for the Docker Compose service
-     */
-    @Override
+	 * Retrieves the connection details for a Docker Compose service.
+	 * @param source the source of the Docker Compose connection
+	 * @return the connection details for the Docker Compose service
+	 */
+	@Override
 	protected ArtemisConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new ArtemisDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -66,52 +65,48 @@ class ArtemisDockerComposeConnectionDetailsFactory
 		private final String brokerUrl;
 
 		/**
-         * Constructs a new ArtemisDockerComposeConnectionDetails object with the provided RunningService.
-         * 
-         * @param service the RunningService object representing the running service
-         */
-        protected ArtemisDockerComposeConnectionDetails(RunningService service) {
+		 * Constructs a new ArtemisDockerComposeConnectionDetails object with the provided
+		 * RunningService.
+		 * @param service the RunningService object representing the running service
+		 */
+		protected ArtemisDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new ArtemisEnvironment(service.env());
 			this.brokerUrl = "tcp://" + service.host() + ":" + service.ports().get(ACTIVEMQ_PORT);
 		}
 
 		/**
-         * Returns the mode of the Artemis Docker Compose connection details.
-         * 
-         * @return the mode of the connection details, which is {@link ArtemisMode#NATIVE}
-         */
-        @Override
+		 * Returns the mode of the Artemis Docker Compose connection details.
+		 * @return the mode of the connection details, which is {@link ArtemisMode#NATIVE}
+		 */
+		@Override
 		public ArtemisMode getMode() {
 			return ArtemisMode.NATIVE;
 		}
 
 		/**
-         * Returns the broker URL for the Artemis Docker Compose connection details.
-         *
-         * @return the broker URL
-         */
-        @Override
+		 * Returns the broker URL for the Artemis Docker Compose connection details.
+		 * @return the broker URL
+		 */
+		@Override
 		public String getBrokerUrl() {
 			return this.brokerUrl;
 		}
 
 		/**
-         * Returns the user associated with the current environment.
-         * 
-         * @return the user associated with the current environment
-         */
-        @Override
+		 * Returns the user associated with the current environment.
+		 * @return the user associated with the current environment
+		 */
+		@Override
 		public String getUser() {
 			return this.environment.getUser();
 		}
 
 		/**
-         * Returns the password for the connection details.
-         * 
-         * @return the password for the connection details
-         */
-        @Override
+		 * Returns the password for the connection details.
+		 * @return the password for the connection details
+		 */
+		@Override
 		public String getPassword() {
 			return this.environment.getPassword();
 		}

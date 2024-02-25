@@ -35,24 +35,26 @@ class MetricsRepositoryMethodInvocationListenerBeanPostProcessor implements Bean
 	private final RepositoryFactoryCustomizer customizer;
 
 	/**
-     * Constructs a new MetricsRepositoryMethodInvocationListenerBeanPostProcessor with the specified listener.
-     * 
-     * @param listener the SingletonSupplier of MetricsRepositoryMethodInvocationListener to be used
-     */
-    MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
+	 * Constructs a new MetricsRepositoryMethodInvocationListenerBeanPostProcessor with
+	 * the specified listener.
+	 * @param listener the SingletonSupplier of MetricsRepositoryMethodInvocationListener
+	 * to be used
+	 */
+	MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
 			SingletonSupplier<MetricsRepositoryMethodInvocationListener> listener) {
 		this.customizer = new MetricsRepositoryFactoryCustomizer(listener);
 	}
 
 	/**
-     * This method is called before the initialization of a bean. It checks if the bean is an instance of RepositoryFactoryBeanSupport and if so, adds a RepositoryFactoryCustomizer to it.
-     * 
-     * @param bean The bean being initialized.
-     * @param beanName The name of the bean being initialized.
-     * @return The initialized bean.
-     * @throws BeansException If an error occurs during the initialization process.
-     */
-    @Override
+	 * This method is called before the initialization of a bean. It checks if the bean is
+	 * an instance of RepositoryFactoryBeanSupport and if so, adds a
+	 * RepositoryFactoryCustomizer to it.
+	 * @param bean The bean being initialized.
+	 * @param beanName The name of the bean being initialized.
+	 * @return The initialized bean.
+	 * @throws BeansException If an error occurs during the initialization process.
+	 */
+	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof RepositoryFactoryBeanSupport) {
 			((RepositoryFactoryBeanSupport<?, ?, ?>) bean).addRepositoryFactoryCustomizer(this.customizer);
@@ -61,28 +63,28 @@ class MetricsRepositoryMethodInvocationListenerBeanPostProcessor implements Bean
 	}
 
 	/**
-     * MetricsRepositoryFactoryCustomizer class.
-     */
-    private static final class MetricsRepositoryFactoryCustomizer implements RepositoryFactoryCustomizer {
+	 * MetricsRepositoryFactoryCustomizer class.
+	 */
+	private static final class MetricsRepositoryFactoryCustomizer implements RepositoryFactoryCustomizer {
 
 		private final SingletonSupplier<MetricsRepositoryMethodInvocationListener> listenerSupplier;
 
 		/**
-         * Constructs a new MetricsRepositoryFactoryCustomizer with the specified listener supplier.
-         *
-         * @param listenerSupplier the supplier for the MetricsRepositoryMethodInvocationListener
-         */
-        private MetricsRepositoryFactoryCustomizer(
+		 * Constructs a new MetricsRepositoryFactoryCustomizer with the specified listener
+		 * supplier.
+		 * @param listenerSupplier the supplier for the
+		 * MetricsRepositoryMethodInvocationListener
+		 */
+		private MetricsRepositoryFactoryCustomizer(
 				SingletonSupplier<MetricsRepositoryMethodInvocationListener> listenerSupplier) {
 			this.listenerSupplier = listenerSupplier;
 		}
 
 		/**
-         * Adds an invocation listener to the given repository factory.
-         * 
-         * @param repositoryFactory the repository factory to customize
-         */
-        @Override
+		 * Adds an invocation listener to the given repository factory.
+		 * @param repositoryFactory the repository factory to customize
+		 */
+		@Override
 		public void customize(RepositoryFactorySupport repositoryFactory) {
 			repositoryFactory.addInvocationListener(this.listenerSupplier.get());
 		}

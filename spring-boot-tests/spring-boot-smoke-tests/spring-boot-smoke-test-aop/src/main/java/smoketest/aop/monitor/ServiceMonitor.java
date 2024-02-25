@@ -30,11 +30,10 @@ import org.springframework.stereotype.Component;
 public class ServiceMonitor {
 
 	/**
-     * Logs the completion of service access.
-     * 
-     * @param joinPoint the join point representing the intercepted method
-     */
-    @AfterReturning("execution(* smoketest..*Service.*(..))")
+	 * Logs the completion of service access.
+	 * @param joinPoint the join point representing the intercepted method
+	 */
+	@AfterReturning("execution(* smoketest..*Service.*(..))")
 	public void logServiceAccess(JoinPoint joinPoint) {
 		System.out.println("Completed: " + joinPoint);
 	}

@@ -33,15 +33,14 @@ import org.springframework.boot.env.ConfigTreePropertySource.Option;
 public class ConfigTreeConfigDataLoader implements ConfigDataLoader<ConfigTreeConfigDataResource> {
 
 	/**
-     * Loads the configuration data from a ConfigTreeConfigDataResource.
-     * 
-     * @param context the ConfigDataLoaderContext
-     * @param resource the ConfigTreeConfigDataResource to load from
-     * @return the loaded ConfigData
-     * @throws IOException if an I/O error occurs while loading the data
-     * @throws ConfigDataResourceNotFoundException if the resource does not exist
-     */
-    @Override
+	 * Loads the configuration data from a ConfigTreeConfigDataResource.
+	 * @param context the ConfigDataLoaderContext
+	 * @param resource the ConfigTreeConfigDataResource to load from
+	 * @return the loaded ConfigData
+	 * @throws IOException if an I/O error occurs while loading the data
+	 * @throws ConfigDataResourceNotFoundException if the resource does not exist
+	 */
+	@Override
 	public ConfigData load(ConfigDataLoaderContext context, ConfigTreeConfigDataResource resource)
 			throws IOException, ConfigDataResourceNotFoundException {
 		Path path = resource.getPath();

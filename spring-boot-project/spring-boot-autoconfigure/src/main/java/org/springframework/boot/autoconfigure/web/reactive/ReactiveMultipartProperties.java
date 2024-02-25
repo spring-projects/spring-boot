@@ -72,110 +72,98 @@ public class ReactiveMultipartProperties {
 	private Charset headersCharset = StandardCharsets.UTF_8;
 
 	/**
-     * Returns the maximum size of data that can be stored in memory.
-     *
-     * @return the maximum size of data that can be stored in memory
-     */
-    public DataSize getMaxInMemorySize() {
+	 * Returns the maximum size of data that can be stored in memory.
+	 * @return the maximum size of data that can be stored in memory
+	 */
+	public DataSize getMaxInMemorySize() {
 		return this.maxInMemorySize;
 	}
 
 	/**
-     * Sets the maximum size of data that can be stored in memory.
-     * 
-     * @param maxInMemorySize the maximum size of data to be stored in memory
-     */
-    public void setMaxInMemorySize(DataSize maxInMemorySize) {
+	 * Sets the maximum size of data that can be stored in memory.
+	 * @param maxInMemorySize the maximum size of data to be stored in memory
+	 */
+	public void setMaxInMemorySize(DataSize maxInMemorySize) {
 		this.maxInMemorySize = maxInMemorySize;
 	}
 
 	/**
-     * Returns the maximum size of the headers in bytes.
-     *
-     * @return the maximum size of the headers
-     */
-    public DataSize getMaxHeadersSize() {
+	 * Returns the maximum size of the headers in bytes.
+	 * @return the maximum size of the headers
+	 */
+	public DataSize getMaxHeadersSize() {
 		return this.maxHeadersSize;
 	}
 
 	/**
-     * Sets the maximum size of the headers in a multipart request.
-     * 
-     * @param maxHeadersSize the maximum size of the headers
-     */
-    public void setMaxHeadersSize(DataSize maxHeadersSize) {
+	 * Sets the maximum size of the headers in a multipart request.
+	 * @param maxHeadersSize the maximum size of the headers
+	 */
+	public void setMaxHeadersSize(DataSize maxHeadersSize) {
 		this.maxHeadersSize = maxHeadersSize;
 	}
 
 	/**
-     * Returns the maximum disk usage per partition.
-     *
-     * @return the maximum disk usage per partition
-     */
-    public DataSize getMaxDiskUsagePerPart() {
+	 * Returns the maximum disk usage per partition.
+	 * @return the maximum disk usage per partition
+	 */
+	public DataSize getMaxDiskUsagePerPart() {
 		return this.maxDiskUsagePerPart;
 	}
 
 	/**
-     * Sets the maximum disk usage per part.
-     * 
-     * @param maxDiskUsagePerPart the maximum disk usage per part to be set
-     */
-    public void setMaxDiskUsagePerPart(DataSize maxDiskUsagePerPart) {
+	 * Sets the maximum disk usage per part.
+	 * @param maxDiskUsagePerPart the maximum disk usage per part to be set
+	 */
+	public void setMaxDiskUsagePerPart(DataSize maxDiskUsagePerPart) {
 		this.maxDiskUsagePerPart = maxDiskUsagePerPart;
 	}
 
 	/**
-     * Returns the maximum number of parts allowed in a multipart request.
-     *
-     * @return the maximum number of parts allowed
-     */
-    public Integer getMaxParts() {
+	 * Returns the maximum number of parts allowed in a multipart request.
+	 * @return the maximum number of parts allowed
+	 */
+	public Integer getMaxParts() {
 		return this.maxParts;
 	}
 
 	/**
-     * Sets the maximum number of parts allowed in a multipart request.
-     * 
-     * @param maxParts the maximum number of parts allowed
-     */
-    public void setMaxParts(Integer maxParts) {
+	 * Sets the maximum number of parts allowed in a multipart request.
+	 * @param maxParts the maximum number of parts allowed
+	 */
+	public void setMaxParts(Integer maxParts) {
 		this.maxParts = maxParts;
 	}
 
 	/**
-     * Returns the file storage directory.
-     *
-     * @return the file storage directory
-     */
-    public String getFileStorageDirectory() {
+	 * Returns the file storage directory.
+	 * @return the file storage directory
+	 */
+	public String getFileStorageDirectory() {
 		return this.fileStorageDirectory;
 	}
 
 	/**
-     * Sets the directory where files will be stored.
-     * 
-     * @param fileStorageDirectory the directory path where files will be stored
-     */
-    public void setFileStorageDirectory(String fileStorageDirectory) {
+	 * Sets the directory where files will be stored.
+	 * @param fileStorageDirectory the directory path where files will be stored
+	 */
+	public void setFileStorageDirectory(String fileStorageDirectory) {
 		this.fileStorageDirectory = fileStorageDirectory;
 	}
 
 	/**
-     * Returns the charset used for the headers in the ReactiveMultipartProperties class.
-     *
-     * @return the charset used for the headers
-     */
-    public Charset getHeadersCharset() {
+	 * Returns the charset used for the headers in the ReactiveMultipartProperties class.
+	 * @return the charset used for the headers
+	 */
+	public Charset getHeadersCharset() {
 		return this.headersCharset;
 	}
 
 	/**
-     * Sets the charset for the headers in the ReactiveMultipartProperties class.
-     * 
-     * @param headersCharset the charset to be set for the headers
-     */
-    public void setHeadersCharset(Charset headersCharset) {
+	 * Sets the charset for the headers in the ReactiveMultipartProperties class.
+	 * @param headersCharset the charset to be set for the headers
+	 */
+	public void setHeadersCharset(Charset headersCharset) {
 		this.headersCharset = headersCharset;
 	}
 

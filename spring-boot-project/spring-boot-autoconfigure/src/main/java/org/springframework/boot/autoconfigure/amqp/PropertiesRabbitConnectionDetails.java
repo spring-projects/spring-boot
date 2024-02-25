@@ -31,50 +31,46 @@ class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
 	private final RabbitProperties properties;
 
 	/**
-     * Constructs a new instance of PropertiesRabbitConnectionDetails with the specified RabbitProperties.
-     * 
-     * @param properties the RabbitProperties object containing the connection details
-     */
-    PropertiesRabbitConnectionDetails(RabbitProperties properties) {
+	 * Constructs a new instance of PropertiesRabbitConnectionDetails with the specified
+	 * RabbitProperties.
+	 * @param properties the RabbitProperties object containing the connection details
+	 */
+	PropertiesRabbitConnectionDetails(RabbitProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-     * Returns the username associated with the RabbitMQ connection details.
-     * 
-     * @return the username determined by the properties
-     */
-    @Override
+	 * Returns the username associated with the RabbitMQ connection details.
+	 * @return the username determined by the properties
+	 */
+	@Override
 	public String getUsername() {
 		return this.properties.determineUsername();
 	}
 
 	/**
-     * Returns the password for the RabbitMQ connection.
-     * 
-     * @return the password for the RabbitMQ connection
-     */
-    @Override
+	 * Returns the password for the RabbitMQ connection.
+	 * @return the password for the RabbitMQ connection
+	 */
+	@Override
 	public String getPassword() {
 		return this.properties.determinePassword();
 	}
 
 	/**
-     * Returns the virtual host determined by the properties.
-     * 
-     * @return the virtual host determined by the properties
-     */
-    @Override
+	 * Returns the virtual host determined by the properties.
+	 * @return the virtual host determined by the properties
+	 */
+	@Override
 	public String getVirtualHost() {
 		return this.properties.determineVirtualHost();
 	}
 
 	/**
-     * Retrieves a list of addresses for the RabbitMQ connection.
-     * 
-     * @return a list of Address objects representing the RabbitMQ addresses
-     */
-    @Override
+	 * Retrieves a list of addresses for the RabbitMQ connection.
+	 * @return a list of Address objects representing the RabbitMQ addresses
+	 */
+	@Override
 	public List<Address> getAddresses() {
 		List<Address> addresses = new ArrayList<>();
 		for (String address : this.properties.determineAddresses().split(",")) {

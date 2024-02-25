@@ -34,23 +34,22 @@ public class MyAccountService implements AccountService {
 	private final PrintStream out;
 
 	/**
-     * Constructs a new instance of MyAccountService with the specified RiskAssessor.
-     * 
-     * @param riskAssessor the RiskAssessor to be used by this MyAccountService
-     */
-    @Autowired
+	 * Constructs a new instance of MyAccountService with the specified RiskAssessor.
+	 * @param riskAssessor the RiskAssessor to be used by this MyAccountService
+	 */
+	@Autowired
 	public MyAccountService(RiskAssessor riskAssessor) {
 		this.riskAssessor = riskAssessor;
 		this.out = System.out;
 	}
 
 	/**
-     * Constructs a new instance of MyAccountService with the specified RiskAssessor and PrintStream.
-     * 
-     * @param riskAssessor the RiskAssessor used for assessing risks
-     * @param out the PrintStream used for output
-     */
-    public MyAccountService(RiskAssessor riskAssessor, PrintStream out) {
+	 * Constructs a new instance of MyAccountService with the specified RiskAssessor and
+	 * PrintStream.
+	 * @param riskAssessor the RiskAssessor used for assessing risks
+	 * @param out the PrintStream used for output
+	 */
+	public MyAccountService(RiskAssessor riskAssessor, PrintStream out) {
 		this.riskAssessor = riskAssessor;
 		this.out = out;
 	}

@@ -27,11 +27,11 @@ import org.springframework.context.annotation.Configuration;
 public class ThirdPartyConfiguration {
 
 	/**
-     * Creates a new instance of AnotherComponent by reading the properties with the prefix "another" from the configuration.
-     * 
-     * @return a new instance of AnotherComponent
-     */
-    @Bean
+	 * Creates a new instance of AnotherComponent by reading the properties with the
+	 * prefix "another" from the configuration.
+	 * @return a new instance of AnotherComponent
+	 */
+	@Bean
 	@ConfigurationProperties(prefix = "another")
 	public AnotherComponent anotherComponent() {
 		return new AnotherComponent();

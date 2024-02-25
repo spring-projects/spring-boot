@@ -45,11 +45,10 @@ public class Deprecation implements Serializable {
 	}
 
 	/**
-     * Sets the level of deprecation for this class.
-     * 
-     * @param level the level of deprecation to be set
-     */
-    public void setLevel(Level level) {
+	 * Sets the level of deprecation for this class.
+	 * @param level the level of deprecation to be set
+	 */
+	public void setLevel(Level level) {
 		this.level = level;
 	}
 
@@ -63,11 +62,10 @@ public class Deprecation implements Serializable {
 	}
 
 	/**
-     * Sets the reason for deprecation.
-     * 
-     * @param reason the reason for deprecation
-     */
-    public void setReason(String reason) {
+	 * Sets the reason for deprecation.
+	 * @param reason the reason for deprecation
+	 */
+	public void setReason(String reason) {
 		this.reason = reason;
 	}
 
@@ -82,11 +80,10 @@ public class Deprecation implements Serializable {
 	}
 
 	/**
-     * Sets the short reason for deprecation.
-     * 
-     * @param shortReason the short reason for deprecation
-     */
-    public void setShortReason(String shortReason) {
+	 * Sets the short reason for deprecation.
+	 * @param shortReason the short reason for deprecation
+	 */
+	public void setShortReason(String shortReason) {
 		this.shortReason = shortReason;
 	}
 
@@ -100,20 +97,18 @@ public class Deprecation implements Serializable {
 	}
 
 	/**
-     * Sets the replacement value for the deprecated method.
-     * 
-     * @param replacement the replacement value to be set
-     */
-    public void setReplacement(String replacement) {
+	 * Sets the replacement value for the deprecated method.
+	 * @param replacement the replacement value to be set
+	 */
+	public void setReplacement(String replacement) {
 		this.replacement = replacement;
 	}
 
 	/**
-     * Returns a string representation of the Deprecation object.
-     *
-     * @return a string representation of the Deprecation object
-     */
-    @Override
+	 * Returns a string representation of the Deprecation object.
+	 * @return a string representation of the Deprecation object
+	 */
+	@Override
 	public String toString() {
 		return "Deprecation{level='" + this.level + '\'' + ", reason='" + this.reason + '\'' + ", replacement='"
 				+ this.replacement + '\'' + '}';

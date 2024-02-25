@@ -28,31 +28,30 @@ public class SubversionServerCertificate {
 	private final String data;
 
 	/**
-     * Initializes a new instance of the SubversionServerCertificate class with the specified data.
-     * 
-     * @param data The certificate data to be stored.
-     */
-    SubversionServerCertificate(String data) {
+	 * Initializes a new instance of the SubversionServerCertificate class with the
+	 * specified data.
+	 * @param data The certificate data to be stored.
+	 */
+	SubversionServerCertificate(String data) {
 		this.data = data;
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * 
-     * @return the string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return the string representation of the object
+	 */
+	@Override
 	public String toString() {
 		return this.data;
 	}
 
 	/**
-     * Creates a SubversionServerCertificate object from the given data.
-     * 
-     * @param data the data to create the SubversionServerCertificate from
-     * @return a SubversionServerCertificate object if the data is not empty or null, otherwise null
-     */
-    public static SubversionServerCertificate of(String data) {
+	 * Creates a SubversionServerCertificate object from the given data.
+	 * @param data the data to create the SubversionServerCertificate from
+	 * @return a SubversionServerCertificate object if the data is not empty or null,
+	 * otherwise null
+	 */
+	public static SubversionServerCertificate of(String data) {
 		return StringUtils.hasText(data) ? new SubversionServerCertificate(data) : null;
 	}
 

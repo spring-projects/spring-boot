@@ -43,11 +43,10 @@ public class JooqExceptionTranslator implements ExecuteListener {
 			LogFactory.getLog(JooqExceptionTranslator.class));
 
 	/**
-     * Handles exceptions thrown during the execution of a jOOQ query.
-     * 
-     * @param context the execution context
-     */
-    @Override
+	 * Handles exceptions thrown during the execution of a jOOQ query.
+	 * @param context the execution context
+	 */
+	@Override
 	public void exception(ExecuteContext context) {
 		this.delegate.exception(context);
 	}

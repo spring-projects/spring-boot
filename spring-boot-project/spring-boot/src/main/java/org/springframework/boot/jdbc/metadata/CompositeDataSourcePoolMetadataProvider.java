@@ -45,12 +45,11 @@ public class CompositeDataSourcePoolMetadataProvider implements DataSourcePoolMe
 	}
 
 	/**
-     * Retrieves the DataSource pool metadata for the given DataSource.
-     * 
-     * @param dataSource the DataSource for which to retrieve the pool metadata
-     * @return the DataSource pool metadata, or null if not found
-     */
-    @Override
+	 * Retrieves the DataSource pool metadata for the given DataSource.
+	 * @param dataSource the DataSource for which to retrieve the pool metadata
+	 * @return the DataSource pool metadata, or null if not found
+	 */
+	@Override
 	public DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
 		for (DataSourcePoolMetadataProvider provider : this.providers) {
 			DataSourcePoolMetadata metadata = provider.getDataSourcePoolMetadata(dataSource);

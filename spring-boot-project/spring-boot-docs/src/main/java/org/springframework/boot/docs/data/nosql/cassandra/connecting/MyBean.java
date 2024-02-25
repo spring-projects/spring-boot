@@ -28,11 +28,10 @@ public class MyBean {
 	private final CassandraTemplate template;
 
 	/**
-     * Constructs a new instance of MyBean with the specified CassandraTemplate.
-     *
-     * @param template the CassandraTemplate to be used for database operations
-     */
-    public MyBean(CassandraTemplate template) {
+	 * Constructs a new instance of MyBean with the specified CassandraTemplate.
+	 * @param template the CassandraTemplate to be used for database operations
+	 */
+	public MyBean(CassandraTemplate template) {
 		this.template = template;
 	}
 

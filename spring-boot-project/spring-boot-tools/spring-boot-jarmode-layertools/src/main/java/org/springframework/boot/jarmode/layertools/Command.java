@@ -138,11 +138,11 @@ abstract class Command {
 		private final List<String> descriptions;
 
 		/**
-         * Constructs a new Parameters object with the given array of descriptions.
-         * 
-         * @param descriptions the array of descriptions to be used for constructing the Parameters object
-         */
-        private Parameters(String[] descriptions) {
+		 * Constructs a new Parameters object with the given array of descriptions.
+		 * @param descriptions the array of descriptions to be used for constructing the
+		 * Parameters object
+		 */
+		private Parameters(String[] descriptions) {
 			this.descriptions = Collections.unmodifiableList(Arrays.asList(descriptions));
 		}
 
@@ -155,11 +155,10 @@ abstract class Command {
 		}
 
 		/**
-         * Returns a string representation of the descriptions.
-         *
-         * @return a string representation of the descriptions
-         */
-        @Override
+		 * Returns a string representation of the descriptions.
+		 * @return a string representation of the descriptions
+		 */
+		@Override
 		public String toString() {
 			return this.descriptions.toString();
 		}
@@ -192,22 +191,20 @@ abstract class Command {
 		private final Option[] values;
 
 		/**
-         * Constructs a new Options object with the given array of Option values.
-         *
-         * @param values the array of Option values to be assigned to the Options object
-         */
-        private Options(Option[] values) {
+		 * Constructs a new Options object with the given array of Option values.
+		 * @param values the array of Option values to be assigned to the Options object
+		 */
+		private Options(Option[] values) {
 			this.values = values;
 		}
 
 		/**
-         * Finds an option based on the given argument.
-         * 
-         * @param arg the argument to search for an option
-         * @return the option if found, null otherwise
-         * @throws UnknownOptionException if the option is not found
-         */
-        private Option find(String arg) {
+		 * Finds an option based on the given argument.
+		 * @param arg the argument to search for an option
+		 * @return the option if found, null otherwise
+		 * @throws UnknownOptionException if the option is not found
+		 */
+		private Option find(String arg) {
 			if (arg.startsWith("--")) {
 				String name = arg.substring(2);
 				for (Option candidate : this.values) {
@@ -270,13 +267,13 @@ abstract class Command {
 		private final String description;
 
 		/**
-         * Constructs a new Option with the specified name, value description, and description.
-         * 
-         * @param name the name of the option
-         * @param valueDescription the description of the value of the option
-         * @param description the description of the option
-         */
-        private Option(String name, String valueDescription, String description) {
+		 * Constructs a new Option with the specified name, value description, and
+		 * description.
+		 * @param name the name of the option
+		 * @param valueDescription the description of the value of the option
+		 * @param description the description of the option
+		 */
+		private Option(String name, String valueDescription, String description) {
 			this.name = name;
 			this.description = description;
 			this.valueDescription = valueDescription;
@@ -316,13 +313,12 @@ abstract class Command {
 		}
 
 		/**
-         * Claims an argument from the given deque of arguments.
-         * 
-         * @param args the deque of arguments
-         * @return the claimed argument
-         * @throws MissingValueException if the deque of arguments is empty
-         */
-        private String claimArg(Deque<String> args) {
+		 * Claims an argument from the given deque of arguments.
+		 * @param args the deque of arguments
+		 * @return the claimed argument
+		 * @throws MissingValueException if the deque of arguments is empty
+		 */
+		private String claimArg(Deque<String> args) {
 			if (this.valueDescription != null) {
 				if (args.isEmpty()) {
 					throw new MissingValueException(this.name);
@@ -333,12 +329,14 @@ abstract class Command {
 		}
 
 		/**
-         * Compares this Option object to the specified object. The result is true if and only if the argument is not null and is an Option object that represents the same name as this object.
-         *
-         * @param obj the object to compare this Option against
-         * @return true if the given object represents an Option equivalent to this Option, false otherwise
-         */
-        @Override
+		 * Compares this Option object to the specified object. The result is true if and
+		 * only if the argument is not null and is an Option object that represents the
+		 * same name as this object.
+		 * @param obj the object to compare this Option against
+		 * @return true if the given object represents an Option equivalent to this
+		 * Option, false otherwise
+		 */
+		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -350,21 +348,19 @@ abstract class Command {
 		}
 
 		/**
-         * Returns the hash code value for this Option object.
-         * 
-         * @return the hash code value for this Option object
-         */
-        @Override
+		 * Returns the hash code value for this Option object.
+		 * @return the hash code value for this Option object
+		 */
+		@Override
 		public int hashCode() {
 			return this.name.hashCode();
 		}
 
 		/**
-         * Returns a string representation of the Option object.
-         *
-         * @return the name of the Option object
-         */
-        @Override
+		 * Returns a string representation of the Option object.
+		 * @return the name of the Option object
+		 */
+		@Override
 		public String toString() {
 			return this.name;
 		}

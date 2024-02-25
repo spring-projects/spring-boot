@@ -42,11 +42,10 @@ public interface SpanExporters extends Iterable<SpanExporter> {
 	List<SpanExporter> list();
 
 	/**
- * Returns an iterator over the elements in this SpanExporters object.
- *
- * @return an iterator over the elements in this SpanExporters object
- */
-@Override
+	 * Returns an iterator over the elements in this SpanExporters object.
+	 * @return an iterator over the elements in this SpanExporters object
+	 */
+	@Override
 	default Iterator<SpanExporter> iterator() {
 		return list().iterator();
 	}

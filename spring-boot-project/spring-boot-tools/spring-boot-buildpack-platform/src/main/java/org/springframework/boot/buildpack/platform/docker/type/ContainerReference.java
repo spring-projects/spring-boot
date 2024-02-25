@@ -29,23 +29,24 @@ public final class ContainerReference {
 	private final String value;
 
 	/**
-     * Constructs a new ContainerReference with the specified value.
-     * 
-     * @param value the value of the ContainerReference
-     * @throws IllegalArgumentException if the value is empty
-     */
-    private ContainerReference(String value) {
+	 * Constructs a new ContainerReference with the specified value.
+	 * @param value the value of the ContainerReference
+	 * @throws IllegalArgumentException if the value is empty
+	 */
+	private ContainerReference(String value) {
 		Assert.hasText(value, "Value must not be empty");
 		this.value = value;
 	}
 
 	/**
-     * Compares this ContainerReference object to the specified object. The result is true if and only if the argument is not null and is a ContainerReference object that represents the same value as this object.
-     * 
-     * @param obj the object to compare this ContainerReference against
-     * @return true if the given object represents a ContainerReference equivalent to this object, false otherwise
-     */
-    @Override
+	 * Compares this ContainerReference object to the specified object. The result is true
+	 * if and only if the argument is not null and is a ContainerReference object that
+	 * represents the same value as this object.
+	 * @param obj the object to compare this ContainerReference against
+	 * @return true if the given object represents a ContainerReference equivalent to this
+	 * object, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -58,21 +59,19 @@ public final class ContainerReference {
 	}
 
 	/**
-     * Returns the hash code value for this ContainerReference object.
-     * 
-     * @return the hash code value for this object
-     */
-    @Override
+	 * Returns the hash code value for this ContainerReference object.
+	 * @return the hash code value for this object
+	 */
+	@Override
 	public int hashCode() {
 		return this.value.hashCode();
 	}
 
 	/**
-     * Returns a string representation of the ContainerReference object.
-     *
-     * @return the string representation of the ContainerReference object
-     */
-    @Override
+	 * Returns a string representation of the ContainerReference object.
+	 * @return the string representation of the ContainerReference object
+	 */
+	@Override
 	public String toString() {
 		return this.value;
 	}

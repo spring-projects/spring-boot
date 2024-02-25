@@ -34,14 +34,13 @@ import org.springframework.security.web.SecurityFilterChain;
 public class DevProfileSecurityConfiguration {
 
 	/**
-     * Configures the security filter chain for the H2 console.
-     * This filter chain has the highest precedence.
-     * 
-     * @param http the HttpSecurity object to configure
-     * @return the configured SecurityFilterChain for the H2 console
-     * @throws Exception if an error occurs during configuration
-     */
-    @Bean
+	 * Configures the security filter chain for the H2 console. This filter chain has the
+	 * highest precedence.
+	 * @param http the HttpSecurity object to configure
+	 * @return the configured SecurityFilterChain for the H2 console
+	 * @throws Exception if an error occurs during configuration
+	 */
+	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.securityMatcher(PathRequest.toH2Console());

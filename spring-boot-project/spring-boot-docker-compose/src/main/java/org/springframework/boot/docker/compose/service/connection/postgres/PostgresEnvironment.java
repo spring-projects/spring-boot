@@ -38,53 +38,49 @@ class PostgresEnvironment {
 	private final String database;
 
 	/**
-     * Constructs a new PostgresEnvironment object with the provided environment variables.
-     * 
-     * @param env a Map containing the environment variables
-     */
-    PostgresEnvironment(Map<String, String> env) {
+	 * Constructs a new PostgresEnvironment object with the provided environment
+	 * variables.
+	 * @param env a Map containing the environment variables
+	 */
+	PostgresEnvironment(Map<String, String> env) {
 		this.username = env.getOrDefault("POSTGRES_USER", env.getOrDefault("POSTGRESQL_USER", "postgres"));
 		this.password = extractPassword(env);
 		this.database = env.getOrDefault("POSTGRES_DB", env.getOrDefault("POSTGRESQL_DB", this.username));
 	}
 
 	/**
-     * Extracts the password from the environment variables.
-     * 
-     * @param env the map of environment variables
-     * @return the extracted password
-     * @throws IllegalStateException if the PostgreSQL password is not provided
-     */
-    private String extractPassword(Map<String, String> env) {
+	 * Extracts the password from the environment variables.
+	 * @param env the map of environment variables
+	 * @return the extracted password
+	 * @throws IllegalStateException if the PostgreSQL password is not provided
+	 */
+	private String extractPassword(Map<String, String> env) {
 		String password = env.getOrDefault("POSTGRES_PASSWORD", env.get("POSTGRESQL_PASSWORD"));
 		Assert.state(StringUtils.hasLength(password), "PostgreSQL password must be provided");
 		return password;
 	}
 
 	/**
-     * Returns the username associated with the PostgresEnvironment object.
-     *
-     * @return the username
-     */
-    String getUsername() {
+	 * Returns the username associated with the PostgresEnvironment object.
+	 * @return the username
+	 */
+	String getUsername() {
 		return this.username;
 	}
 
 	/**
-     * Retrieves the password associated with the PostgresEnvironment object.
-     * 
-     * @return the password as a String
-     */
-    String getPassword() {
+	 * Retrieves the password associated with the PostgresEnvironment object.
+	 * @return the password as a String
+	 */
+	String getPassword() {
 		return this.password;
 	}
 
 	/**
-     * Returns the name of the database.
-     *
-     * @return the name of the database
-     */
-    String getDatabase() {
+	 * Returns the name of the database.
+	 * @return the name of the database
+	 */
+	String getDatabase() {
 		return this.database;
 	}
 

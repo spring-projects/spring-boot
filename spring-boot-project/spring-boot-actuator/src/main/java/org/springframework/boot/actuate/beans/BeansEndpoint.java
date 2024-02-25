@@ -53,11 +53,12 @@ public class BeansEndpoint {
 	}
 
 	/**
-     * Retrieves the beans descriptor for the current application context and its parent contexts.
-     * 
-     * @return The beans descriptor containing information about the beans in the application context.
-     */
-    @ReadOperation
+	 * Retrieves the beans descriptor for the current application context and its parent
+	 * contexts.
+	 * @return The beans descriptor containing information about the beans in the
+	 * application context.
+	 */
+	@ReadOperation
 	public BeansDescriptor beans() {
 		Map<String, ContextBeansDescriptor> contexts = new HashMap<>();
 		ConfigurableApplicationContext context = this.context;
@@ -69,12 +70,13 @@ public class BeansEndpoint {
 	}
 
 	/**
-     * Retrieves the configurable parent application context of the given application context.
-     * 
-     * @param context the application context to retrieve the parent from
-     * @return the configurable parent application context, or null if the parent is not a configurable application context
-     */
-    private static ConfigurableApplicationContext getConfigurableParent(ConfigurableApplicationContext context) {
+	 * Retrieves the configurable parent application context of the given application
+	 * context.
+	 * @param context the application context to retrieve the parent from
+	 * @return the configurable parent application context, or null if the parent is not a
+	 * configurable application context
+	 */
+	private static ConfigurableApplicationContext getConfigurableParent(ConfigurableApplicationContext context) {
 		ApplicationContext parent = context.getParent();
 		if (parent instanceof ConfigurableApplicationContext configurableParent) {
 			return configurableParent;
@@ -90,20 +92,19 @@ public class BeansEndpoint {
 		private final Map<String, ContextBeansDescriptor> contexts;
 
 		/**
-         * Constructs a new BeansDescriptor with the specified contexts.
-         *
-         * @param contexts a map of String keys to ContextBeansDescriptor values representing the contexts
-         */
-        private BeansDescriptor(Map<String, ContextBeansDescriptor> contexts) {
+		 * Constructs a new BeansDescriptor with the specified contexts.
+		 * @param contexts a map of String keys to ContextBeansDescriptor values
+		 * representing the contexts
+		 */
+		private BeansDescriptor(Map<String, ContextBeansDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
 		/**
-         * Returns the map of contexts in the BeansDescriptor.
-         *
-         * @return the map of contexts in the BeansDescriptor
-         */
-        public Map<String, ContextBeansDescriptor> getContexts() {
+		 * Returns the map of contexts in the BeansDescriptor.
+		 * @return the map of contexts in the BeansDescriptor
+		 */
+		public Map<String, ContextBeansDescriptor> getContexts() {
 			return this.contexts;
 		}
 
@@ -119,41 +120,39 @@ public class BeansEndpoint {
 		private final String parentId;
 
 		/**
-         * Constructs a new ContextBeansDescriptor with the specified beans and parentId.
-         * 
-         * @param beans the map of beans with their corresponding bean descriptors
-         * @param parentId the identifier of the parent context
-         */
-        private ContextBeansDescriptor(Map<String, BeanDescriptor> beans, String parentId) {
+		 * Constructs a new ContextBeansDescriptor with the specified beans and parentId.
+		 * @param beans the map of beans with their corresponding bean descriptors
+		 * @param parentId the identifier of the parent context
+		 */
+		private ContextBeansDescriptor(Map<String, BeanDescriptor> beans, String parentId) {
 			this.beans = beans;
 			this.parentId = parentId;
 		}
 
 		/**
-         * Returns the parent ID of the ContextBeansDescriptor.
-         * 
-         * @return the parent ID of the ContextBeansDescriptor
-         */
-        public String getParentId() {
+		 * Returns the parent ID of the ContextBeansDescriptor.
+		 * @return the parent ID of the ContextBeansDescriptor
+		 */
+		public String getParentId() {
 			return this.parentId;
 		}
 
 		/**
-         * Returns a map of bean names to their corresponding BeanDescriptor objects.
-         * 
-         * @return a map of bean names to BeanDescriptor objects
-         */
-        public Map<String, BeanDescriptor> getBeans() {
+		 * Returns a map of bean names to their corresponding BeanDescriptor objects.
+		 * @return a map of bean names to BeanDescriptor objects
+		 */
+		public Map<String, BeanDescriptor> getBeans() {
 			return this.beans;
 		}
 
 		/**
-         * Returns a ContextBeansDescriptor object describing the beans in the given ConfigurableApplicationContext.
-         * 
-         * @param context the ConfigurableApplicationContext to describe
-         * @return a ContextBeansDescriptor object describing the beans in the given context, or null if the context is null
-         */
-        private static ContextBeansDescriptor describing(ConfigurableApplicationContext context) {
+		 * Returns a ContextBeansDescriptor object describing the beans in the given
+		 * ConfigurableApplicationContext.
+		 * @param context the ConfigurableApplicationContext to describe
+		 * @return a ContextBeansDescriptor object describing the beans in the given
+		 * context, or null if the context is null
+		 */
+		private static ContextBeansDescriptor describing(ConfigurableApplicationContext context) {
 			if (context == null) {
 				return null;
 			}
@@ -163,12 +162,12 @@ public class BeansEndpoint {
 		}
 
 		/**
-         * Returns a map of bean descriptors for all beans in the given bean factory.
-         * 
-         * @param beanFactory the configurable listable bean factory
-         * @return a map of bean descriptors, where the key is the bean name and the value is the bean descriptor
-         */
-        private static Map<String, BeanDescriptor> describeBeans(ConfigurableListableBeanFactory beanFactory) {
+		 * Returns a map of bean descriptors for all beans in the given bean factory.
+		 * @param beanFactory the configurable listable bean factory
+		 * @return a map of bean descriptors, where the key is the bean name and the value
+		 * is the bean descriptor
+		 */
+		private static Map<String, BeanDescriptor> describeBeans(ConfigurableListableBeanFactory beanFactory) {
 			Map<String, BeanDescriptor> beans = new HashMap<>();
 			for (String beanName : beanFactory.getBeanDefinitionNames()) {
 				BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
@@ -180,28 +179,28 @@ public class BeansEndpoint {
 		}
 
 		/**
-         * Returns a {@link BeanDescriptor} object that describes the specified bean.
-         * 
-         * @param name the name of the bean
-         * @param definition the {@link BeanDefinition} object representing the bean's definition
-         * @param factory the {@link ConfigurableListableBeanFactory} object used to retrieve information about the bean
-         * @return a {@link BeanDescriptor} object containing information about the bean
-         */
-        private static BeanDescriptor describeBean(String name, BeanDefinition definition,
+		 * Returns a {@link BeanDescriptor} object that describes the specified bean.
+		 * @param name the name of the bean
+		 * @param definition the {@link BeanDefinition} object representing the bean's
+		 * definition
+		 * @param factory the {@link ConfigurableListableBeanFactory} object used to
+		 * retrieve information about the bean
+		 * @return a {@link BeanDescriptor} object containing information about the bean
+		 */
+		private static BeanDescriptor describeBean(String name, BeanDefinition definition,
 				ConfigurableListableBeanFactory factory) {
 			return new BeanDescriptor(factory.getAliases(name), definition.getScope(), factory.getType(name),
 					definition.getResourceDescription(), factory.getDependenciesForBean(name));
 		}
 
 		/**
-         * Checks if a bean is eligible based on its name, definition, and bean factory.
-         * 
-         * @param beanName the name of the bean
-         * @param bd the bean definition
-         * @param bf the configurable bean factory
-         * @return true if the bean is eligible, false otherwise
-         */
-        private static boolean isBeanEligible(String beanName, BeanDefinition bd, ConfigurableBeanFactory bf) {
+		 * Checks if a bean is eligible based on its name, definition, and bean factory.
+		 * @param beanName the name of the bean
+		 * @param bd the bean definition
+		 * @param bf the configurable bean factory
+		 * @return true if the bean is eligible, false otherwise
+		 */
+		private static boolean isBeanEligible(String beanName, BeanDefinition bd, ConfigurableBeanFactory bf) {
 			return (bd.getRole() != BeanDefinition.ROLE_INFRASTRUCTURE
 					&& (!bd.isLazyInit() || bf.containsSingleton(beanName)));
 		}
@@ -224,15 +223,15 @@ public class BeansEndpoint {
 		private final String[] dependencies;
 
 		/**
-         * Constructs a new BeanDescriptor with the specified aliases, scope, type, resource, and dependencies.
-         * 
-         * @param aliases the aliases for the bean
-         * @param scope the scope of the bean (default is singleton)
-         * @param type the class type of the bean
-         * @param resource the resource associated with the bean
-         * @param dependencies the dependencies of the bean
-         */
-        private BeanDescriptor(String[] aliases, String scope, Class<?> type, String resource, String[] dependencies) {
+		 * Constructs a new BeanDescriptor with the specified aliases, scope, type,
+		 * resource, and dependencies.
+		 * @param aliases the aliases for the bean
+		 * @param scope the scope of the bean (default is singleton)
+		 * @param type the class type of the bean
+		 * @param resource the resource associated with the bean
+		 * @param dependencies the dependencies of the bean
+		 */
+		private BeanDescriptor(String[] aliases, String scope, Class<?> type, String resource, String[] dependencies) {
 			this.aliases = aliases;
 			this.scope = (StringUtils.hasText(scope) ? scope : BeanDefinition.SCOPE_SINGLETON);
 			this.type = type;
@@ -241,47 +240,42 @@ public class BeansEndpoint {
 		}
 
 		/**
-         * Returns an array of aliases for this BeanDescriptor.
-         *
-         * @return an array of aliases
-         */
-        public String[] getAliases() {
+		 * Returns an array of aliases for this BeanDescriptor.
+		 * @return an array of aliases
+		 */
+		public String[] getAliases() {
 			return this.aliases;
 		}
 
 		/**
-         * Returns the scope of the BeanDescriptor.
-         * 
-         * @return the scope of the BeanDescriptor
-         */
-        public String getScope() {
+		 * Returns the scope of the BeanDescriptor.
+		 * @return the scope of the BeanDescriptor
+		 */
+		public String getScope() {
 			return this.scope;
 		}
 
 		/**
-         * Returns the type of the bean.
-         * 
-         * @return the type of the bean
-         */
-        public Class<?> getType() {
+		 * Returns the type of the bean.
+		 * @return the type of the bean
+		 */
+		public Class<?> getType() {
 			return this.type;
 		}
 
 		/**
-         * Returns the resource associated with this BeanDescriptor.
-         *
-         * @return the resource associated with this BeanDescriptor
-         */
-        public String getResource() {
+		 * Returns the resource associated with this BeanDescriptor.
+		 * @return the resource associated with this BeanDescriptor
+		 */
+		public String getResource() {
 			return this.resource;
 		}
 
 		/**
-         * Returns an array of dependencies.
-         *
-         * @return an array of dependencies
-         */
-        public String[] getDependencies() {
+		 * Returns an array of dependencies.
+		 * @return an array of dependencies
+		 */
+		public String[] getDependencies() {
 			return this.dependencies;
 		}
 

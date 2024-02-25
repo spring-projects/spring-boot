@@ -192,22 +192,21 @@ public class AnnotationConfigServletWebApplicationContext extends GenericWebAppl
 	}
 
 	/**
-     * Prepare the refresh process.
-     * This method clears the cache of the scanner and calls the super class's prepareRefresh method.
-     */
-    @Override
+	 * Prepare the refresh process. This method clears the cache of the scanner and calls
+	 * the super class's prepareRefresh method.
+	 */
+	@Override
 	protected void prepareRefresh() {
 		this.scanner.clearCache();
 		super.prepareRefresh();
 	}
 
 	/**
-     * Post-processes the bean factory after it has been initialized.
-     * 
-     * @param beanFactory the bean factory to be post-processed
-     * @since 1.0.0
-     */
-    @Override
+	 * Post-processes the bean factory after it has been initialized.
+	 * @param beanFactory the bean factory to be post-processed
+	 * @since 1.0.0
+	 */
+	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		super.postProcessBeanFactory(beanFactory);
 		if (!ObjectUtils.isEmpty(this.basePackages)) {
@@ -219,15 +218,14 @@ public class AnnotationConfigServletWebApplicationContext extends GenericWebAppl
 	}
 
 	/**
-     * Register a bean with the given name, class, supplier, and customizers.
-     * 
-     * @param <T> the type of the bean
-     * @param beanName the name of the bean
-     * @param beanClass the class of the bean
-     * @param supplier the supplier for creating the bean instance
-     * @param customizers the customizers to apply to the bean definition
-     */
-    @Override
+	 * Register a bean with the given name, class, supplier, and customizers.
+	 * @param <T> the type of the bean
+	 * @param beanName the name of the bean
+	 * @param beanClass the class of the bean
+	 * @param supplier the supplier for creating the bean instance
+	 * @param customizers the customizers to apply to the bean definition
+	 */
+	@Override
 	public <T> void registerBean(String beanName, Class<T> beanClass, Supplier<T> supplier,
 			BeanDefinitionCustomizer... customizers) {
 		this.reader.registerBean(beanClass, beanName, supplier, customizers);

@@ -31,12 +31,12 @@ final class OriginTrackedFieldError extends FieldError implements OriginProvider
 	private final Origin origin;
 
 	/**
-     * Constructs a new OriginTrackedFieldError with the specified FieldError and Origin.
-     * 
-     * @param fieldError the FieldError object containing information about the field error
-     * @param origin the Origin object representing the origin of the field error
-     */
-    private OriginTrackedFieldError(FieldError fieldError, Origin origin) {
+	 * Constructs a new OriginTrackedFieldError with the specified FieldError and Origin.
+	 * @param fieldError the FieldError object containing information about the field
+	 * error
+	 * @param origin the Origin object representing the origin of the field error
+	 */
+	private OriginTrackedFieldError(FieldError fieldError, Origin origin) {
 		super(fieldError.getObjectName(), fieldError.getField(), fieldError.getRejectedValue(),
 				fieldError.isBindingFailure(), fieldError.getCodes(), fieldError.getArguments(),
 				fieldError.getDefaultMessage());
@@ -44,23 +44,21 @@ final class OriginTrackedFieldError extends FieldError implements OriginProvider
 	}
 
 	/**
-     * Returns the origin of the OriginTrackedFieldError.
-     * 
-     * @return the origin of the OriginTrackedFieldError
-     */
-    @Override
+	 * Returns the origin of the OriginTrackedFieldError.
+	 * @return the origin of the OriginTrackedFieldError
+	 */
+	@Override
 	public Origin getOrigin() {
 		return this.origin;
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * If the origin is null, it returns the default string representation.
-     * Otherwise, it returns the default string representation appended with the origin.
-     *
-     * @return a string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object. If the origin is null, it returns
+	 * the default string representation. Otherwise, it returns the default string
+	 * representation appended with the origin.
+	 * @return a string representation of the object
+	 */
+	@Override
 	public String toString() {
 		if (this.origin == null) {
 			return super.toString();
@@ -69,13 +67,14 @@ final class OriginTrackedFieldError extends FieldError implements OriginProvider
 	}
 
 	/**
-     * Creates a new OriginTrackedFieldError object based on the provided FieldError and Origin.
-     * 
-     * @param fieldError the original FieldError object
-     * @param origin the Origin object representing the source of the error
-     * @return a new OriginTrackedFieldError object if both fieldError and origin are not null, otherwise returns the original FieldError object
-     */
-    static FieldError of(FieldError fieldError, Origin origin) {
+	 * Creates a new OriginTrackedFieldError object based on the provided FieldError and
+	 * Origin.
+	 * @param fieldError the original FieldError object
+	 * @param origin the Origin object representing the source of the error
+	 * @return a new OriginTrackedFieldError object if both fieldError and origin are not
+	 * null, otherwise returns the original FieldError object
+	 */
+	static FieldError of(FieldError fieldError, Origin origin) {
 		if (fieldError == null || origin == null) {
 			return fieldError;
 		}

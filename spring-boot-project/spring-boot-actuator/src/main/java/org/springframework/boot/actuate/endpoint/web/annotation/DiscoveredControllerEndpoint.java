@@ -34,36 +34,33 @@ class DiscoveredControllerEndpoint extends AbstractDiscoveredEndpoint<Operation>
 	private final String rootPath;
 
 	/**
-     * Constructs a new DiscoveredControllerEndpoint with the specified parameters.
-     * 
-     * @param discoverer the EndpointDiscoverer used to discover the endpoint
-     * @param endpointBean the bean representing the endpoint
-     * @param id the unique identifier for the endpoint
-     * @param rootPath the root path for the endpoint
-     * @param enabledByDefault indicates whether the endpoint is enabled by default
-     */
-    DiscoveredControllerEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
+	 * Constructs a new DiscoveredControllerEndpoint with the specified parameters.
+	 * @param discoverer the EndpointDiscoverer used to discover the endpoint
+	 * @param endpointBean the bean representing the endpoint
+	 * @param id the unique identifier for the endpoint
+	 * @param rootPath the root path for the endpoint
+	 * @param enabledByDefault indicates whether the endpoint is enabled by default
+	 */
+	DiscoveredControllerEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
 			String rootPath, boolean enabledByDefault) {
 		super(discoverer, endpointBean, id, enabledByDefault, Collections.emptyList());
 		this.rootPath = rootPath;
 	}
 
 	/**
-     * Returns the controller object associated with this discovered controller endpoint.
-     * 
-     * @return the controller object
-     */
-    @Override
+	 * Returns the controller object associated with this discovered controller endpoint.
+	 * @return the controller object
+	 */
+	@Override
 	public Object getController() {
 		return getEndpointBean();
 	}
 
 	/**
-     * Returns the root path of the controller endpoint.
-     *
-     * @return the root path of the controller endpoint
-     */
-    @Override
+	 * Returns the root path of the controller endpoint.
+	 * @return the root path of the controller endpoint
+	 */
+	@Override
 	public String getRootPath() {
 		return this.rootPath;
 	}

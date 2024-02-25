@@ -126,14 +126,15 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 	/**
-     * Initializes the handler methods for the web endpoints.
-     * 
-     * This method iterates through each {@link ExposableWebEndpoint} and its associated {@link WebOperation},
-     * and registers the mapping for each operation.
-     * 
-     * If the {@code shouldRegisterLinksMapping} flag is set to true, it also registers the links mapping.
-     */
-    @Override
+	 * Initializes the handler methods for the web endpoints.
+	 *
+	 * This method iterates through each {@link ExposableWebEndpoint} and its associated
+	 * {@link WebOperation}, and registers the mapping for each operation.
+	 *
+	 * If the {@code shouldRegisterLinksMapping} flag is set to true, it also registers
+	 * the links mapping.
+	 */
+	@Override
 	protected void initHandlerMethods() {
 		for (ExposableWebEndpoint endpoint : this.endpoints) {
 			for (WebOperation operation : endpoint.getOperations()) {
@@ -146,25 +147,23 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 	/**
-     * Creates a handler method for the given handler and method.
-     * 
-     * @param handler the handler object
-     * @param method the method object
-     * @return the created handler method
-     */
-    @Override
+	 * Creates a handler method for the given handler and method.
+	 * @param handler the handler object
+	 * @param method the method object
+	 * @return the created handler method
+	 */
+	@Override
 	protected HandlerMethod createHandlerMethod(Object handler, Method method) {
 		HandlerMethod handlerMethod = super.createHandlerMethod(handler, method);
 		return new WebFluxEndpointHandlerMethod(handlerMethod.getBean(), handlerMethod.getMethod());
 	}
 
 	/**
-     * Registers a mapping for the given operation on the specified endpoint.
-     * 
-     * @param endpoint The exposable web endpoint.
-     * @param operation The web operation to register.
-     */
-    private void registerMappingForOperation(ExposableWebEndpoint endpoint, WebOperation operation) {
+	 * Registers a mapping for the given operation on the specified endpoint.
+	 * @param endpoint The exposable web endpoint.
+	 * @param operation The web operation to register.
+	 */
+	private void registerMappingForOperation(ExposableWebEndpoint endpoint, WebOperation operation) {
 		RequestMappingInfo requestMappingInfo = createRequestMappingInfo(operation);
 		if (operation.getType() == OperationType.WRITE) {
 			ReactiveWebOperation reactiveWebOperation = wrapReactiveWebOperation(endpoint, operation,
@@ -178,13 +177,13 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 	/**
-     * Registers a read mapping for the given request mapping information, endpoint, and operation.
-     * 
-     * @param requestMappingInfo the request mapping information for the mapping
-     * @param endpoint the exposable web endpoint
-     * @param operation the web operation
-     */
-    protected void registerReadMapping(RequestMappingInfo requestMappingInfo, ExposableWebEndpoint endpoint,
+	 * Registers a read mapping for the given request mapping information, endpoint, and
+	 * operation.
+	 * @param requestMappingInfo the request mapping information for the mapping
+	 * @param endpoint the exposable web endpoint
+	 * @param operation the web operation
+	 */
+	protected void registerReadMapping(RequestMappingInfo requestMappingInfo, ExposableWebEndpoint endpoint,
 			WebOperation operation) {
 		ReactiveWebOperation reactiveWebOperation = wrapReactiveWebOperation(endpoint, operation,
 				new ReactiveWebOperationAdapter(operation));
@@ -205,12 +204,11 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 	/**
-     * Creates a RequestMappingInfo object based on the given WebOperation.
-     * 
-     * @param operation the WebOperation object to create the RequestMappingInfo from
-     * @return the created RequestMappingInfo object
-     */
-    private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
+	 * Creates a RequestMappingInfo object based on the given WebOperation.
+	 * @param operation the WebOperation object to create the RequestMappingInfo from
+	 * @return the created RequestMappingInfo object
+	 */
+	private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
 		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 		String path = this.endpointMapping.createSubPath(predicate.getPath());
 		List<String> paths = new ArrayList<>();
@@ -229,11 +227,11 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 	/**
-     * Registers the links mapping for the endpoint.
-     * 
-     * @since 1.0.0
-     */
-    private void registerLinksMapping() {
+	 * Registers the links mapping for the endpoint.
+	 *
+	 * @since 1.0.0
+	 */
+	private void registerLinksMapping() {
 		String path = this.endpointMapping.getPath();
 		String linksPath = StringUtils.hasLength(path) ? path : "/";
 		String[] produces = StringUtils.toStringArray(this.endpointMediaTypes.getProduced());
@@ -247,48 +245,46 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 	/**
-     * Determines if the specified handler has a CORS configuration source.
-     * 
-     * @param handler the handler object
-     * @return {@code true} if the handler has a CORS configuration source, {@code false} otherwise
-     */
-    @Override
+	 * Determines if the specified handler has a CORS configuration source.
+	 * @param handler the handler object
+	 * @return {@code true} if the handler has a CORS configuration source, {@code false}
+	 * otherwise
+	 */
+	@Override
 	protected boolean hasCorsConfigurationSource(Object handler) {
 		return this.corsConfiguration != null;
 	}
 
 	/**
-     * Initializes the CORS configuration for the given handler, method, and mapping.
-     * 
-     * @param handler the handler object
-     * @param method the method object
-     * @param mapping the mapping information
-     * @return the CORS configuration
-     */
-    @Override
+	 * Initializes the CORS configuration for the given handler, method, and mapping.
+	 * @param handler the handler object
+	 * @param method the method object
+	 * @param mapping the mapping information
+	 * @return the CORS configuration
+	 */
+	@Override
 	protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mapping) {
 		return this.corsConfiguration;
 	}
 
 	/**
-     * Determines if the specified bean type is a handler.
-     * 
-     * @param beanType the bean type to check
-     * @return {@code true} if the bean type is a handler, {@code false} otherwise
-     */
-    @Override
+	 * Determines if the specified bean type is a handler.
+	 * @param beanType the bean type to check
+	 * @return {@code true} if the bean type is a handler, {@code false} otherwise
+	 */
+	@Override
 	protected boolean isHandler(Class<?> beanType) {
 		return false;
 	}
 
 	/**
-     * Retrieves the mapping information for a given method and handler type.
-     * 
-     * @param method the method to retrieve mapping information for
-     * @param handlerType the handler type to retrieve mapping information for
-     * @return the mapping information for the given method and handler type, or null if not found
-     */
-    @Override
+	 * Retrieves the mapping information for a given method and handler type.
+	 * @param method the method to retrieve mapping information for
+	 * @param handlerType the handler type to retrieve mapping information for
+	 * @return the mapping information for the given method and handler type, or null if
+	 * not found
+	 */
+	@Override
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
 		return null;
 	}
@@ -317,22 +313,20 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		private final OperationInvoker invoker;
 
 		/**
-         * Constructs a new ElasticSchedulerInvoker with the specified OperationInvoker.
-         * 
-         * @param invoker the OperationInvoker to be used by the ElasticSchedulerInvoker
-         */
-        public ElasticSchedulerInvoker(OperationInvoker invoker) {
+		 * Constructs a new ElasticSchedulerInvoker with the specified OperationInvoker.
+		 * @param invoker the OperationInvoker to be used by the ElasticSchedulerInvoker
+		 */
+		public ElasticSchedulerInvoker(OperationInvoker invoker) {
 			this.invoker = invoker;
 		}
 
 		/**
-         * Invokes the given context using the invoker and returns the result as a Mono.
-         * The invocation is performed on a bounded elastic scheduler.
-         *
-         * @param context the invocation context
-         * @return a Mono representing the result of the invocation
-         */
-        @Override
+		 * Invokes the given context using the invoker and returns the result as a Mono.
+		 * The invocation is performed on a bounded elastic scheduler.
+		 * @param context the invocation context
+		 * @return a Mono representing the result of the invocation
+		 */
+		@Override
 		public Object invoke(InvocationContext context) {
 			return Mono.fromCallable(() -> this.invoker.invoke(context)).subscribeOn(Schedulers.boundedElastic());
 		}
@@ -340,29 +334,28 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 	/**
-     * ExceptionCapturingInvoker class.
-     */
-    protected static final class ExceptionCapturingInvoker implements OperationInvoker {
+	 * ExceptionCapturingInvoker class.
+	 */
+	protected static final class ExceptionCapturingInvoker implements OperationInvoker {
 
 		private final OperationInvoker invoker;
 
 		/**
-         * Constructs a new ExceptionCapturingInvoker with the specified OperationInvoker.
-         * 
-         * @param invoker the OperationInvoker to be used by this ExceptionCapturingInvoker
-         */
-        public ExceptionCapturingInvoker(OperationInvoker invoker) {
+		 * Constructs a new ExceptionCapturingInvoker with the specified OperationInvoker.
+		 * @param invoker the OperationInvoker to be used by this
+		 * ExceptionCapturingInvoker
+		 */
+		public ExceptionCapturingInvoker(OperationInvoker invoker) {
 			this.invoker = invoker;
 		}
 
 		/**
-         * Invokes the given InvocationContext and captures any exceptions that occur.
-         * 
-         * @param context the InvocationContext to be invoked
-         * @return the result of invoking the InvocationContext
-         * @throws Exception if an exception occurs during invocation
-         */
-        @Override
+		 * Invokes the given InvocationContext and captures any exceptions that occur.
+		 * @param context the InvocationContext to be invoked
+		 * @return the result of invoking the InvocationContext
+		 * @throws Exception if an exception occurs during invocation
+		 */
+		@Override
 		public Object invoke(InvocationContext context) {
 			try {
 				return this.invoker.invoke(context);
@@ -409,23 +402,21 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		private final Supplier<Mono<? extends SecurityContext>> securityContextSupplier;
 
 		/**
-         * Constructs a new ReactiveWebOperationAdapter with the given WebOperation.
-         * 
-         * @param operation the WebOperation to be adapted
-         */
-        private ReactiveWebOperationAdapter(WebOperation operation) {
+		 * Constructs a new ReactiveWebOperationAdapter with the given WebOperation.
+		 * @param operation the WebOperation to be adapted
+		 */
+		private ReactiveWebOperationAdapter(WebOperation operation) {
 			this.operation = operation;
 			this.invoker = getInvoker(operation);
 			this.securityContextSupplier = getSecurityContextSupplier();
 		}
 
 		/**
-         * Returns an instance of OperationInvoker based on the given WebOperation.
-         * 
-         * @param operation the WebOperation to get the invoker for
-         * @return the OperationInvoker instance
-         */
-        private OperationInvoker getInvoker(WebOperation operation) {
+		 * Returns an instance of OperationInvoker based on the given WebOperation.
+		 * @param operation the WebOperation to get the invoker for
+		 * @return the OperationInvoker instance
+		 */
+		private OperationInvoker getInvoker(WebOperation operation) {
 			OperationInvoker invoker = operation::invoke;
 			if (operation.isBlocking()) {
 				return new ElasticSchedulerInvoker(invoker);
@@ -434,14 +425,14 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		/**
-         * Returns a supplier of Mono that provides a SecurityContext.
-         * If the ReactiveSecurityContextHolder class is present in the class loader,
-         * the supplier will return the SecurityContext from the ReactiveSecurityContextHolder.
-         * Otherwise, the supplier will return an empty SecurityContext.
-         *
-         * @return a supplier of Mono that provides a SecurityContext
-         */
-        private Supplier<Mono<? extends SecurityContext>> getSecurityContextSupplier() {
+		 * Returns a supplier of Mono that provides a SecurityContext. If the
+		 * ReactiveSecurityContextHolder class is present in the class loader, the
+		 * supplier will return the SecurityContext from the
+		 * ReactiveSecurityContextHolder. Otherwise, the supplier will return an empty
+		 * SecurityContext.
+		 * @return a supplier of Mono that provides a SecurityContext
+		 */
+		private Supplier<Mono<? extends SecurityContext>> getSecurityContextSupplier() {
 			if (ClassUtils.isPresent("org.springframework.security.core.context.ReactiveSecurityContextHolder",
 					getClass().getClassLoader())) {
 				return this::springSecurityContext;
@@ -450,36 +441,36 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		/**
-         * Retrieves the Spring Security context as a reactive Mono.
-         * 
-         * @return a Mono that emits the current Spring Security context as a ReactiveSecurityContext object
-         *         or emits an empty ReactiveSecurityContext if the context is empty
-         */
-        Mono<? extends SecurityContext> springSecurityContext() {
+		 * Retrieves the Spring Security context as a reactive Mono.
+		 * @return a Mono that emits the current Spring Security context as a
+		 * ReactiveSecurityContext object or emits an empty ReactiveSecurityContext if the
+		 * context is empty
+		 */
+		Mono<? extends SecurityContext> springSecurityContext() {
 			return ReactiveSecurityContextHolder.getContext()
 				.map((securityContext) -> new ReactiveSecurityContext(securityContext.getAuthentication()))
 				.switchIfEmpty(Mono.just(new ReactiveSecurityContext(null)));
 		}
 
 		/**
-         * Returns an empty Mono of SecurityContext.
-         * 
-         * @return an empty Mono of SecurityContext
-         */
-        Mono<SecurityContext> emptySecurityContext() {
+		 * Returns an empty Mono of SecurityContext.
+		 * @return an empty Mono of SecurityContext
+		 */
+		Mono<SecurityContext> emptySecurityContext() {
 			return Mono.just(SecurityContext.NONE);
 		}
 
 		/**
-         * Handles the incoming server web exchange and body map by resolving the operation arguments,
-         * security context, and producing the operation argument resolver. It then invokes the operation
-         * using the invocation context and handles the result by mapping it to a response entity.
-         *
-         * @param exchange The server web exchange containing the request and response.
-         * @param body The body map containing the request body.
-         * @return A Mono of ResponseEntity representing the response entity of the operation.
-         */
-        @Override
+		 * Handles the incoming server web exchange and body map by resolving the
+		 * operation arguments, security context, and producing the operation argument
+		 * resolver. It then invokes the operation using the invocation context and
+		 * handles the result by mapping it to a response entity.
+		 * @param exchange The server web exchange containing the request and response.
+		 * @param body The body map containing the request body.
+		 * @return A Mono of ResponseEntity representing the response entity of the
+		 * operation.
+		 */
+		@Override
 		public Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange, Map<String, String> body) {
 			Map<String, Object> arguments = getArguments(exchange, body);
 			OperationArgumentResolver serverNamespaceArgumentResolver = OperationArgumentResolver
@@ -495,13 +486,12 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		/**
-         * Retrieves the arguments for the given server web exchange and request body.
-         * 
-         * @param exchange The server web exchange.
-         * @param body The request body.
-         * @return A map containing the arguments.
-         */
-        private Map<String, Object> getArguments(ServerWebExchange exchange, Map<String, String> body) {
+		 * Retrieves the arguments for the given server web exchange and request body.
+		 * @param exchange The server web exchange.
+		 * @param body The request body.
+		 * @return A map containing the arguments.
+		 */
+		private Map<String, Object> getArguments(ServerWebExchange exchange, Map<String, String> body) {
 			Map<String, Object> arguments = new LinkedHashMap<>(getTemplateVariables(exchange));
 			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
 				.getMatchAllRemainingPathSegmentsVariable();
@@ -518,12 +508,12 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		/**
-         * Retrieves the remaining path segments from the given ServerWebExchange.
-         * 
-         * @param exchange the ServerWebExchange object representing the current HTTP request and response
-         * @return an Object containing the remaining path segments
-         */
-        private Object getRemainingPathSegments(ServerWebExchange exchange) {
+		 * Retrieves the remaining path segments from the given ServerWebExchange.
+		 * @param exchange the ServerWebExchange object representing the current HTTP
+		 * request and response
+		 * @return an Object containing the remaining path segments
+		 */
+		private Object getRemainingPathSegments(ServerWebExchange exchange) {
 			PathPattern pathPattern = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 			if (pathPattern.hasPatternSyntax()) {
 				String remainingSegments = pathPattern
@@ -535,12 +525,11 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		/**
-         * Tokenizes the given path value into segments.
-         * 
-         * @param value the path value to tokenize
-         * @return an array of path segments
-         */
-        private String[] tokenizePathSegments(String value) {
+		 * Tokenizes the given path value into segments.
+		 * @param value the path value to tokenize
+		 * @return an array of path segments
+		 */
+		private String[] tokenizePathSegments(String value) {
 			String[] segments = StringUtils.tokenizeToStringArray(value, PATH_SEPARATOR, false, true);
 			for (int i = 0; i < segments.length; i++) {
 				if (segments[i].contains("%")) {
@@ -551,23 +540,25 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		/**
-         * Retrieves the template variables from the given ServerWebExchange.
-         * 
-         * @param exchange the ServerWebExchange from which to retrieve the template variables
-         * @return a Map containing the template variables, where the key is the variable name and the value is the variable value
-         */
-        private Map<String, String> getTemplateVariables(ServerWebExchange exchange) {
+		 * Retrieves the template variables from the given ServerWebExchange.
+		 * @param exchange the ServerWebExchange from which to retrieve the template
+		 * variables
+		 * @return a Map containing the template variables, where the key is the variable
+		 * name and the value is the variable value
+		 */
+		private Map<String, String> getTemplateVariables(ServerWebExchange exchange) {
 			return exchange.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 		}
 
 		/**
-         * Handles the result of a reactive operation and returns a Mono of ResponseEntity<Object>.
-         * 
-         * @param result The result of the reactive operation.
-         * @param httpMethod The HTTP method used for the operation.
-         * @return A Mono of ResponseEntity<Object> representing the result of the operation.
-         */
-        private Mono<ResponseEntity<Object>> handleResult(Publisher<?> result, HttpMethod httpMethod) {
+		 * Handles the result of a reactive operation and returns a Mono of
+		 * ResponseEntity<Object>.
+		 * @param result The result of the reactive operation.
+		 * @param httpMethod The HTTP method used for the operation.
+		 * @return A Mono of ResponseEntity<Object> representing the result of the
+		 * operation.
+		 */
+		private Mono<ResponseEntity<Object>> handleResult(Publisher<?> result, HttpMethod httpMethod) {
 			if (result instanceof Flux) {
 				result = ((Flux<?>) result).collectList();
 			}
@@ -580,14 +571,15 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		/**
-         * Converts the given response object to a ResponseEntity object.
-         * If the response object is not an instance of WebEndpointResponse, it will be wrapped in a ResponseEntity with HttpStatus.OK.
-         * If the response object is an instance of WebEndpointResponse, it will be converted to a ResponseEntity with the appropriate status, content type, and body.
-         *
-         * @param response the response object to convert
-         * @return a ResponseEntity object representing the converted response
-         */
-        private ResponseEntity<Object> toResponseEntity(Object response) {
+		 * Converts the given response object to a ResponseEntity object. If the response
+		 * object is not an instance of WebEndpointResponse, it will be wrapped in a
+		 * ResponseEntity with HttpStatus.OK. If the response object is an instance of
+		 * WebEndpointResponse, it will be converted to a ResponseEntity with the
+		 * appropriate status, content type, and body.
+		 * @param response the response object to convert
+		 * @return a ResponseEntity object representing the converted response
+		 */
+		private ResponseEntity<Object> toResponseEntity(Object response) {
 			if (!(response instanceof WebEndpointResponse<?> webEndpointResponse)) {
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			}
@@ -599,11 +591,10 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		/**
-         * Returns a string representation of the Actuator web endpoint.
-         * 
-         * @return a string representation of the Actuator web endpoint
-         */
-        @Override
+		 * Returns a string representation of the Actuator web endpoint.
+		 * @return a string representation of the Actuator web endpoint
+		 */
+		@Override
 		public String toString() {
 			return "Actuator web endpoint '" + this.operation.getId() + "'";
 		}
@@ -618,22 +609,20 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		private final ReactiveWebOperation operation;
 
 		/**
-         * Constructs a new WriteOperationHandler with the specified ReactiveWebOperation.
-         * 
-         * @param operation the ReactiveWebOperation to be handled
-         */
-        WriteOperationHandler(ReactiveWebOperation operation) {
+		 * Constructs a new WriteOperationHandler with the specified ReactiveWebOperation.
+		 * @param operation the ReactiveWebOperation to be handled
+		 */
+		WriteOperationHandler(ReactiveWebOperation operation) {
 			this.operation = operation;
 		}
 
 		/**
-         * Handles the write operation for the server web exchange.
-         * 
-         * @param exchange the server web exchange
-         * @param body the request body as a map of string key-value pairs (optional)
-         * @return a publisher that emits a response entity object
-         */
-        @ResponseBody
+		 * Handles the write operation for the server web exchange.
+		 * @param exchange the server web exchange
+		 * @param body the request body as a map of string key-value pairs (optional)
+		 * @return a publisher that emits a response entity object
+		 */
+		@ResponseBody
 		@Reflective
 		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				@RequestBody(required = false) Map<String, String> body) {
@@ -641,11 +630,10 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		/**
-         * Returns a string representation of the WriteOperationHandler object.
-         * 
-         * @return a string representation of the WriteOperationHandler object
-         */
-        @Override
+		 * Returns a string representation of the WriteOperationHandler object.
+		 * @return a string representation of the WriteOperationHandler object
+		 */
+		@Override
 		public String toString() {
 			return this.operation.toString();
 		}
@@ -660,32 +648,30 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		private final ReactiveWebOperation operation;
 
 		/**
-         * Constructs a new ReadOperationHandler with the specified ReactiveWebOperation.
-         * 
-         * @param operation the ReactiveWebOperation to be used by the handler
-         */
-        ReadOperationHandler(ReactiveWebOperation operation) {
+		 * Constructs a new ReadOperationHandler with the specified ReactiveWebOperation.
+		 * @param operation the ReactiveWebOperation to be used by the handler
+		 */
+		ReadOperationHandler(ReactiveWebOperation operation) {
 			this.operation = operation;
 		}
 
 		/**
-         * Handles the server web exchange and returns a publisher of ResponseEntity objects.
-         * 
-         * @param exchange the server web exchange
-         * @return a publisher of ResponseEntity objects
-         */
-        @ResponseBody
+		 * Handles the server web exchange and returns a publisher of ResponseEntity
+		 * objects.
+		 * @param exchange the server web exchange
+		 * @return a publisher of ResponseEntity objects
+		 */
+		@ResponseBody
 		@Reflective
 		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange) {
 			return this.operation.handle(exchange, null);
 		}
 
 		/**
-         * Returns a string representation of the ReadOperationHandler object.
-         * 
-         * @return a string representation of the ReadOperationHandler object
-         */
-        @Override
+		 * Returns a string representation of the ReadOperationHandler object.
+		 * @return a string representation of the ReadOperationHandler object
+		 */
+		@Override
 		public String toString() {
 			return this.operation.toString();
 		}
@@ -693,36 +679,34 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 	/**
-     * WebFluxEndpointHandlerMethod class.
-     */
-    private static class WebFluxEndpointHandlerMethod extends HandlerMethod {
+	 * WebFluxEndpointHandlerMethod class.
+	 */
+	private static class WebFluxEndpointHandlerMethod extends HandlerMethod {
 
 		/**
-         * Constructs a new WebFluxEndpointHandlerMethod with the specified bean and method.
-         *
-         * @param bean   the object representing the bean that contains the method
-         * @param method the method to be invoked
-         */
-        WebFluxEndpointHandlerMethod(Object bean, Method method) {
+		 * Constructs a new WebFluxEndpointHandlerMethod with the specified bean and
+		 * method.
+		 * @param bean the object representing the bean that contains the method
+		 * @param method the method to be invoked
+		 */
+		WebFluxEndpointHandlerMethod(Object bean, Method method) {
 			super(bean, method);
 		}
 
 		/**
-         * Returns a string representation of the object.
-         * 
-         * @return a string representation of the object
-         */
-        @Override
+		 * Returns a string representation of the object.
+		 * @return a string representation of the object
+		 */
+		@Override
 		public String toString() {
 			return getBean().toString();
 		}
 
 		/**
-         * Creates a new {@link HandlerMethod} with a resolved bean.
-         * 
-         * @return the created {@link HandlerMethod} with a resolved bean
-         */
-        @Override
+		 * Creates a new {@link HandlerMethod} with a resolved bean.
+		 * @return the created {@link HandlerMethod} with a resolved bean
+		 */
+		@Override
 		public HandlerMethod createWithResolvedBean() {
 			HandlerMethod handlerMethod = super.createWithResolvedBean();
 			return new WebFluxEndpointHandlerMethod(handlerMethod.getBean(), handlerMethod.getMethod());
@@ -731,49 +715,46 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 	/**
-     * ReactiveSecurityContext class.
-     */
-    private static final class ReactiveSecurityContext implements SecurityContext {
+	 * ReactiveSecurityContext class.
+	 */
+	private static final class ReactiveSecurityContext implements SecurityContext {
 
 		private static final String ROLE_PREFIX = "ROLE_";
 
 		private final Authentication authentication;
 
 		/**
-         * Constructs a new ReactiveSecurityContext with the provided Authentication.
-         * 
-         * @param authentication the Authentication object representing the security context
-         */
-        ReactiveSecurityContext(Authentication authentication) {
+		 * Constructs a new ReactiveSecurityContext with the provided Authentication.
+		 * @param authentication the Authentication object representing the security
+		 * context
+		 */
+		ReactiveSecurityContext(Authentication authentication) {
 			this.authentication = authentication;
 		}
 
 		/**
-         * Returns the authentication object associated with the current security context.
-         *
-         * @return the authentication object
-         */
-        private Authentication getAuthentication() {
+		 * Returns the authentication object associated with the current security context.
+		 * @return the authentication object
+		 */
+		private Authentication getAuthentication() {
 			return this.authentication;
 		}
 
 		/**
-         * Returns the principal associated with this security context.
-         *
-         * @return the principal associated with this security context
-         */
-        @Override
+		 * Returns the principal associated with this security context.
+		 * @return the principal associated with this security context
+		 */
+		@Override
 		public Principal getPrincipal() {
 			return this.authentication;
 		}
 
 		/**
-         * Checks if the current user has the specified role.
-         * 
-         * @param role the role to check
-         * @return true if the user has the role, false otherwise
-         */
-        @Override
+		 * Checks if the current user has the specified role.
+		 * @param role the role to check
+		 * @return true if the user has the role, false otherwise
+		 */
+		@Override
 		public boolean isUserInRole(String role) {
 			String authority = (!role.startsWith(ROLE_PREFIX)) ? ROLE_PREFIX + role : role;
 			return AuthorityAuthorizationManager.hasAuthority(authority)
@@ -784,19 +765,19 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	}
 
 	/**
-     * AbstractWebFluxEndpointHandlerMappingRuntimeHints class.
-     */
-    static class AbstractWebFluxEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
+	 * AbstractWebFluxEndpointHandlerMappingRuntimeHints class.
+	 */
+	static class AbstractWebFluxEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
 
 		/**
-         * Registers the runtime hints for the specified WriteOperationHandler and ReadOperationHandler classes.
-         * 
-         * @param hints the runtime hints to register
-         * @param classLoader the class loader to use for reflective registration
-         */
-        @Override
+		 * Registers the runtime hints for the specified WriteOperationHandler and
+		 * ReadOperationHandler classes.
+		 * @param hints the runtime hints to register
+		 * @param classLoader the class loader to use for reflective registration
+		 */
+		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.reflectiveRegistrar.registerRuntimeHints(hints, WriteOperationHandler.class,
 					ReadOperationHandler.class);

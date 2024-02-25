@@ -52,12 +52,14 @@ class PropertiesMigrationReporter {
 	private final ConfigurableEnvironment environment;
 
 	/**
-     * Constructs a new PropertiesMigrationReporter with the given ConfigurationMetadataRepository and ConfigurableEnvironment.
-     * 
-     * @param metadataRepository the ConfigurationMetadataRepository used to retrieve all properties
-     * @param environment the ConfigurableEnvironment used to access the current environment
-     */
-    PropertiesMigrationReporter(ConfigurationMetadataRepository metadataRepository,
+	 * Constructs a new PropertiesMigrationReporter with the given
+	 * ConfigurationMetadataRepository and ConfigurableEnvironment.
+	 * @param metadataRepository the ConfigurationMetadataRepository used to retrieve all
+	 * properties
+	 * @param environment the ConfigurableEnvironment used to access the current
+	 * environment
+	 */
+	PropertiesMigrationReporter(ConfigurationMetadataRepository metadataRepository,
 			ConfigurableEnvironment environment) {
 		this.allProperties = Collections.unmodifiableMap(metadataRepository.getAllProperties());
 		this.environment = environment;
@@ -85,14 +87,16 @@ class PropertiesMigrationReporter {
 	}
 
 	/**
-     * Maps properties with replacement and generates a {@link PropertySource} based on the provided properties.
-     * 
-     * @param report the {@link PropertiesMigrationReport} to add the properties to
-     * @param name the name of the property source
-     * @param properties the list of {@link PropertyMigration} objects representing the properties to be mapped
-     * @return a {@link PropertySource} containing the mapped properties, or null if no properties were mapped
-     */
-    private PropertySource<?> mapPropertiesWithReplacement(PropertiesMigrationReport report, String name,
+	 * Maps properties with replacement and generates a {@link PropertySource} based on
+	 * the provided properties.
+	 * @param report the {@link PropertiesMigrationReport} to add the properties to
+	 * @param name the name of the property source
+	 * @param properties the list of {@link PropertyMigration} objects representing the
+	 * properties to be mapped
+	 * @return a {@link PropertySource} containing the mapped properties, or null if no
+	 * properties were mapped
+	 */
+	private PropertySource<?> mapPropertiesWithReplacement(PropertiesMigrationReport report, String name,
 			List<PropertyMigration> properties) {
 		report.add(name, properties);
 		List<PropertyMigration> renamed = properties.stream().filter(PropertyMigration::isCompatibleType).toList();
@@ -122,23 +126,22 @@ class PropertiesMigrationReporter {
 	}
 
 	/**
-     * Checks if the given property is of type Map.
-     * 
-     * @param property the ConfigurationMetadataProperty to be checked
-     * @return true if the property is of type Map, false otherwise
-     */
-    private boolean isMapType(ConfigurationMetadataProperty property) {
+	 * Checks if the given property is of type Map.
+	 * @param property the ConfigurationMetadataProperty to be checked
+	 * @return true if the property is of type Map, false otherwise
+	 */
+	private boolean isMapType(ConfigurationMetadataProperty property) {
 		String type = property.getType();
 		return type != null && type.startsWith(Map.class.getName());
 	}
 
 	/**
-     * Retrieves a map of matching properties based on the given filter.
-     * 
-     * @param filter the predicate used to filter the properties
-     * @return a map of matching properties, where the key is the property source name and the value is a list of property migrations
-     */
-    private Map<String, List<PropertyMigration>> getMatchingProperties(
+	 * Retrieves a map of matching properties based on the given filter.
+	 * @param filter the predicate used to filter the properties
+	 * @return a map of matching properties, where the key is the property source name and
+	 * the value is a list of property migrations
+	 */
+	private Map<String, List<PropertyMigration>> getMatchingProperties(
 			Predicate<ConfigurationMetadataProperty> filter) {
 		MultiValueMap<String, PropertyMigration> result = new LinkedMultiValueMap<>();
 		List<ConfigurationMetadataProperty> candidates = this.allProperties.values().stream().filter(filter).toList();
@@ -167,12 +170,13 @@ class PropertiesMigrationReporter {
 	}
 
 	/**
-     * Determines the replacement metadata for the given configuration metadata property.
-     * 
-     * @param metadata the configuration metadata property to determine the replacement for
-     * @return the replacement configuration metadata property, or null if no replacement is found
-     */
-    private ConfigurationMetadataProperty determineReplacementMetadata(ConfigurationMetadataProperty metadata) {
+	 * Determines the replacement metadata for the given configuration metadata property.
+	 * @param metadata the configuration metadata property to determine the replacement
+	 * for
+	 * @return the replacement configuration metadata property, or null if no replacement
+	 * is found
+	 */
+	private ConfigurationMetadataProperty determineReplacementMetadata(ConfigurationMetadataProperty metadata) {
 		String replacementId = metadata.getDeprecation().getReplacement();
 		if (StringUtils.hasText(replacementId)) {
 			ConfigurationMetadataProperty replacement = this.allProperties.get(replacementId);
@@ -185,12 +189,12 @@ class PropertiesMigrationReporter {
 	}
 
 	/**
-     * Detects if the given fullId represents a map value replacement.
-     * 
-     * @param fullId the fullId to check
-     * @return the ConfigurationMetadataProperty representing the map value replacement, or null if not found
-     */
-    private ConfigurationMetadataProperty detectMapValueReplacement(String fullId) {
+	 * Detects if the given fullId represents a map value replacement.
+	 * @param fullId the fullId to check
+	 * @return the ConfigurationMetadataProperty representing the map value replacement,
+	 * or null if not found
+	 */
+	private ConfigurationMetadataProperty detectMapValueReplacement(String fullId) {
 		int lastDot = fullId.lastIndexOf('.');
 		if (lastDot == -1) {
 			return null;
@@ -203,11 +207,10 @@ class PropertiesMigrationReporter {
 	}
 
 	/**
-     * Returns a map of property sources as key-value pairs.
-     * 
-     * @return a map containing property sources as key-value pairs
-     */
-    private Map<String, ConfigurationPropertySource> getPropertySourcesAsMap() {
+	 * Returns a map of property sources as key-value pairs.
+	 * @return a map containing property sources as key-value pairs
+	 */
+	private Map<String, ConfigurationPropertySource> getPropertySourcesAsMap() {
 		Map<String, ConfigurationPropertySource> map = new LinkedHashMap<>();
 		for (ConfigurationPropertySource source : ConfigurationPropertySources.get(this.environment)) {
 			map.put(determinePropertySourceName(source), source);
@@ -216,14 +219,15 @@ class PropertiesMigrationReporter {
 	}
 
 	/**
-     * Determines the name of the property source based on the given ConfigurationPropertySource.
-     * If the underlying source is an instance of PropertySource, the name of the PropertySource is returned.
-     * Otherwise, the string representation of the underlying source is returned.
-     *
-     * @param source the ConfigurationPropertySource to determine the name of the property source from
-     * @return the name of the property source
-     */
-    private String determinePropertySourceName(ConfigurationPropertySource source) {
+	 * Determines the name of the property source based on the given
+	 * ConfigurationPropertySource. If the underlying source is an instance of
+	 * PropertySource, the name of the PropertySource is returned. Otherwise, the string
+	 * representation of the underlying source is returned.
+	 * @param source the ConfigurationPropertySource to determine the name of the property
+	 * source from
+	 * @return the name of the property source
+	 */
+	private String determinePropertySourceName(ConfigurationPropertySource source) {
 		if (source.getUnderlyingSource() instanceof PropertySource) {
 			return ((PropertySource<?>) source.getUnderlyingSource()).getName();
 		}
@@ -239,22 +243,22 @@ class PropertiesMigrationReporter {
 		private final Set<String> accessedNames = new HashSet<>();
 
 		/**
-         * Constructs a new instance of the {@code NameTrackingPropertySource} class.
-         * 
-         * @param className the fully qualified name of the {@code NameTrackingPropertySource} class
-         */
-        NameTrackingPropertySource() {
+		 * Constructs a new instance of the {@code NameTrackingPropertySource} class.
+		 * @param className the fully qualified name of the
+		 * {@code NameTrackingPropertySource} class
+		 */
+		NameTrackingPropertySource() {
 			super(NameTrackingPropertySource.class.getName());
 		}
 
 		/**
-         * Checks if the given value is a placeholder that accesses the specified name.
-         * 
-         * @param value the value to check
-         * @param name the name to be accessed
-         * @return true if the value is a placeholder that accesses the name, false otherwise
-         */
-        boolean isPlaceholderThatAccessesName(Object value, String name) {
+		 * Checks if the given value is a placeholder that accesses the specified name.
+		 * @param value the value to check
+		 * @param name the name to be accessed
+		 * @return true if the value is a placeholder that accesses the name, false
+		 * otherwise
+		 */
+		boolean isPlaceholderThatAccessesName(Object value, String name) {
 			if (value instanceof String) {
 				this.accessedNames.clear();
 				PropertiesMigrationReporter.this.environment.resolvePlaceholders((String) value);
@@ -264,12 +268,11 @@ class PropertiesMigrationReporter {
 		}
 
 		/**
-         * Retrieves the value of the specified property by name.
-         * 
-         * @param name the name of the property to retrieve
-         * @return the value of the property
-         */
-        @Override
+		 * Retrieves the value of the specified property by name.
+		 * @param name the name of the property to retrieve
+		 * @return the value of the property
+		 */
+		@Override
 		public Object getProperty(String name) {
 			this.accessedNames.add(name);
 			return null;

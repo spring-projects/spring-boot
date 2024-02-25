@@ -103,21 +103,20 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private String uniqueName;
 
 	/**
-     * Sets the class loader to be used for loading the bean.
-     * 
-     * @param classLoader the class loader to be set
-     */
-    @Override
+	 * Sets the class loader to be used for loading the bean.
+	 * @param classLoader the class loader to be set
+	 */
+	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
 	/**
-     * This method is called after all properties have been set, and it initializes the embedded database connection if it is not already set.
-     * 
-     * @throws Exception if an error occurs during initialization
-     */
-    @Override
+	 * This method is called after all properties have been set, and it initializes the
+	 * embedded database connection if it is not already set.
+	 * @throws Exception if an error occurs during initialization
+	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (this.embeddedDatabaseConnection == null) {
 			this.embeddedDatabaseConnection = EmbeddedDatabaseConnection.get(this.classLoader);
@@ -139,56 +138,51 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	/**
-     * Returns a boolean value indicating whether the unique name should be generated.
-     * 
-     * @return true if the unique name should be generated, false otherwise
-     */
-    public boolean isGenerateUniqueName() {
+	 * Returns a boolean value indicating whether the unique name should be generated.
+	 * @return true if the unique name should be generated, false otherwise
+	 */
+	public boolean isGenerateUniqueName() {
 		return this.generateUniqueName;
 	}
 
 	/**
-     * Sets the flag indicating whether to generate a unique name for the data source.
-     * 
-     * @param generateUniqueName true if a unique name should be generated, false otherwise
-     */
-    public void setGenerateUniqueName(boolean generateUniqueName) {
+	 * Sets the flag indicating whether to generate a unique name for the data source.
+	 * @param generateUniqueName true if a unique name should be generated, false
+	 * otherwise
+	 */
+	public void setGenerateUniqueName(boolean generateUniqueName) {
 		this.generateUniqueName = generateUniqueName;
 	}
 
 	/**
-     * Returns the name of the DataSourceProperties object.
-     *
-     * @return the name of the DataSourceProperties object
-     */
-    public String getName() {
+	 * Returns the name of the DataSourceProperties object.
+	 * @return the name of the DataSourceProperties object
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-     * Sets the name of the data source.
-     * 
-     * @param name the name to set
-     */
-    public void setName(String name) {
+	 * Sets the name of the data source.
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-     * Returns the type of the data source.
-     * 
-     * @return the type of the data source
-     */
-    public Class<? extends DataSource> getType() {
+	 * Returns the type of the data source.
+	 * @return the type of the data source
+	 */
+	public Class<? extends DataSource> getType() {
 		return this.type;
 	}
 
 	/**
-     * Sets the type of the data source.
-     * 
-     * @param type the type of the data source
-     */
-    public void setType(Class<? extends DataSource> type) {
+	 * Sets the type of the data source.
+	 * @param type the type of the data source
+	 */
+	public void setType(Class<? extends DataSource> type) {
 		this.type = type;
 	}
 
@@ -202,11 +196,10 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	/**
-     * Sets the driver class name for the data source.
-     * 
-     * @param driverClassName the driver class name to be set
-     */
-    public void setDriverClassName(String driverClassName) {
+	 * Sets the driver class name for the data source.
+	 * @param driverClassName the driver class name to be set
+	 */
+	public void setDriverClassName(String driverClassName) {
 		this.driverClassName = driverClassName;
 	}
 
@@ -235,11 +228,10 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	/**
-     * Checks if the driver class is loadable.
-     * 
-     * @return {@code true} if the driver class is loadable, {@code false} otherwise
-     */
-    private boolean driverClassIsLoadable() {
+	 * Checks if the driver class is loadable.
+	 * @return {@code true} if the driver class is loadable, {@code false} otherwise
+	 */
+	private boolean driverClassIsLoadable() {
 		try {
 			ClassUtils.forName(this.driverClassName, null);
 			return true;
@@ -264,11 +256,10 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	/**
-     * Sets the URL for the data source.
-     * 
-     * @param url the URL to be set
-     */
-    public void setUrl(String url) {
+	 * Sets the URL for the data source.
+	 * @param url the URL to be set
+	 */
+	public void setUrl(String url) {
 		this.url = url;
 	}
 
@@ -321,11 +312,10 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	/**
-     * Sets the username for the data source.
-     * 
-     * @param username the username to set
-     */
-    public void setUsername(String username) {
+	 * Sets the username for the data source.
+	 * @param username the username to set
+	 */
+	public void setUsername(String username) {
 		this.username = username;
 	}
 
@@ -354,11 +344,10 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	/**
-     * Sets the password for the data source.
-     * 
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
+	 * Sets the password for the data source.
+	 * @param password the password to set
+	 */
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
@@ -378,11 +367,10 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	/**
-     * Returns the JNDI name of the data source.
-     *
-     * @return the JNDI name of the data source
-     */
-    public String getJndiName() {
+	 * Returns the JNDI name of the data source.
+	 * @return the JNDI name of the data source
+	 */
+	public String getJndiName() {
 		return this.jndiName;
 	}
 
@@ -397,47 +385,42 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	/**
-     * Returns the embedded database connection.
-     *
-     * @return the embedded database connection
-     */
-    public EmbeddedDatabaseConnection getEmbeddedDatabaseConnection() {
+	 * Returns the embedded database connection.
+	 * @return the embedded database connection
+	 */
+	public EmbeddedDatabaseConnection getEmbeddedDatabaseConnection() {
 		return this.embeddedDatabaseConnection;
 	}
 
 	/**
-     * Sets the embedded database connection for the DataSourceProperties.
-     * 
-     * @param embeddedDatabaseConnection the embedded database connection to be set
-     */
-    public void setEmbeddedDatabaseConnection(EmbeddedDatabaseConnection embeddedDatabaseConnection) {
+	 * Sets the embedded database connection for the DataSourceProperties.
+	 * @param embeddedDatabaseConnection the embedded database connection to be set
+	 */
+	public void setEmbeddedDatabaseConnection(EmbeddedDatabaseConnection embeddedDatabaseConnection) {
 		this.embeddedDatabaseConnection = embeddedDatabaseConnection;
 	}
 
 	/**
-     * Returns the ClassLoader used by this DataSourceProperties instance.
-     *
-     * @return the ClassLoader used by this DataSourceProperties instance
-     */
-    public ClassLoader getClassLoader() {
+	 * Returns the ClassLoader used by this DataSourceProperties instance.
+	 * @return the ClassLoader used by this DataSourceProperties instance
+	 */
+	public ClassLoader getClassLoader() {
 		return this.classLoader;
 	}
 
 	/**
-     * Returns the value of the Xa property.
-     *
-     * @return the value of the Xa property
-     */
-    public Xa getXa() {
+	 * Returns the value of the Xa property.
+	 * @return the value of the Xa property
+	 */
+	public Xa getXa() {
 		return this.xa;
 	}
 
 	/**
-     * Sets the Xa object for this DataSourceProperties.
-     * 
-     * @param xa the Xa object to be set
-     */
-    public void setXa(Xa xa) {
+	 * Sets the Xa object for this DataSourceProperties.
+	 * @param xa the Xa object to be set
+	 */
+	public void setXa(Xa xa) {
 		this.xa = xa;
 	}
 
@@ -457,60 +440,57 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		private Map<String, String> properties = new LinkedHashMap<>();
 
 		/**
-         * Returns the fully qualified class name of the data source.
-         *
-         * @return the data source class name
-         */
-        public String getDataSourceClassName() {
+		 * Returns the fully qualified class name of the data source.
+		 * @return the data source class name
+		 */
+		public String getDataSourceClassName() {
 			return this.dataSourceClassName;
 		}
 
 		/**
-         * Sets the data source class name.
-         * 
-         * @param dataSourceClassName the fully qualified class name of the data source
-         */
-        public void setDataSourceClassName(String dataSourceClassName) {
+		 * Sets the data source class name.
+		 * @param dataSourceClassName the fully qualified class name of the data source
+		 */
+		public void setDataSourceClassName(String dataSourceClassName) {
 			this.dataSourceClassName = dataSourceClassName;
 		}
 
 		/**
-         * Returns the properties of the Xa object.
-         * 
-         * @return a Map containing the properties of the Xa object, where the keys are Strings and the values are Strings
-         */
-        public Map<String, String> getProperties() {
+		 * Returns the properties of the Xa object.
+		 * @return a Map containing the properties of the Xa object, where the keys are
+		 * Strings and the values are Strings
+		 */
+		public Map<String, String> getProperties() {
 			return this.properties;
 		}
 
 		/**
-         * Sets the properties for the Xa class.
-         * 
-         * @param properties a map containing the properties to be set
-         */
-        public void setProperties(Map<String, String> properties) {
+		 * Sets the properties for the Xa class.
+		 * @param properties a map containing the properties to be set
+		 */
+		public void setProperties(Map<String, String> properties) {
 			this.properties = properties;
 		}
 
 	}
 
 	/**
-     * DataSourceBeanCreationException class.
-     */
-    static class DataSourceBeanCreationException extends BeanCreationException {
+	 * DataSourceBeanCreationException class.
+	 */
+	static class DataSourceBeanCreationException extends BeanCreationException {
 
 		private final DataSourceProperties properties;
 
 		private final EmbeddedDatabaseConnection connection;
 
 		/**
-         * Constructs a new DataSourceBeanCreationException with the specified detail message, DataSourceProperties, and EmbeddedDatabaseConnection.
-         * 
-         * @param message the detail message
-         * @param properties the DataSourceProperties object
-         * @param connection the EmbeddedDatabaseConnection object
-         */
-        DataSourceBeanCreationException(String message, DataSourceProperties properties,
+		 * Constructs a new DataSourceBeanCreationException with the specified detail
+		 * message, DataSourceProperties, and EmbeddedDatabaseConnection.
+		 * @param message the detail message
+		 * @param properties the DataSourceProperties object
+		 * @param connection the EmbeddedDatabaseConnection object
+		 */
+		DataSourceBeanCreationException(String message, DataSourceProperties properties,
 				EmbeddedDatabaseConnection connection) {
 			super(message);
 			this.properties = properties;
@@ -518,20 +498,18 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		}
 
 		/**
-         * Returns the properties of the data source.
-         *
-         * @return the properties of the data source
-         */
-        DataSourceProperties getProperties() {
+		 * Returns the properties of the data source.
+		 * @return the properties of the data source
+		 */
+		DataSourceProperties getProperties() {
 			return this.properties;
 		}
 
 		/**
-         * Returns the embedded database connection.
-         *
-         * @return the embedded database connection
-         */
-        EmbeddedDatabaseConnection getConnection() {
+		 * Returns the embedded database connection.
+		 * @return the embedded database connection
+		 */
+		EmbeddedDatabaseConnection getConnection() {
 			return this.connection;
 		}
 

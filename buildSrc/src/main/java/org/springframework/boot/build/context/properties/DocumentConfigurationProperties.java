@@ -43,50 +43,46 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	private File outputDir;
 
 	/**
-     * Returns the configuration property metadata.
-     * 
-     * @return The configuration property metadata.
-     */
-    @InputFiles
+	 * Returns the configuration property metadata.
+	 * @return The configuration property metadata.
+	 */
+	@InputFiles
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public FileCollection getConfigurationPropertyMetadata() {
 		return this.configurationPropertyMetadata;
 	}
 
 	/**
-     * Sets the configuration property metadata.
-     * 
-     * @param configurationPropertyMetadata the file collection containing the configuration property metadata
-     */
-    public void setConfigurationPropertyMetadata(FileCollection configurationPropertyMetadata) {
+	 * Sets the configuration property metadata.
+	 * @param configurationPropertyMetadata the file collection containing the
+	 * configuration property metadata
+	 */
+	public void setConfigurationPropertyMetadata(FileCollection configurationPropertyMetadata) {
 		this.configurationPropertyMetadata = configurationPropertyMetadata;
 	}
 
 	/**
-     * Returns the output directory for the document configuration properties.
-     *
-     * @return the output directory
-     */
-    @OutputDirectory
+	 * Returns the output directory for the document configuration properties.
+	 * @return the output directory
+	 */
+	@OutputDirectory
 	public File getOutputDir() {
 		return this.outputDir;
 	}
 
 	/**
-     * Sets the output directory for the document configuration properties.
-     * 
-     * @param outputDir the output directory to be set
-     */
-    public void setOutputDir(File outputDir) {
+	 * Sets the output directory for the document configuration properties.
+	 * @param outputDir the output directory to be set
+	 */
+	public void setOutputDir(File outputDir) {
 		this.outputDir = outputDir;
 	}
 
 	/**
-     * Generates documentation for the configuration properties.
-     *
-     * @throws IOException if an I/O error occurs while writing the documentation
-     */
-    @TaskAction
+	 * Generates documentation for the configuration properties.
+	 * @throws IOException if an I/O error occurs while writing the documentation
+	 */
+	@TaskAction
 	void documentConfigurationProperties() throws IOException {
 		Snippets snippets = new Snippets(this.configurationPropertyMetadata);
 		snippets.add("application-properties.core", "Core Properties", this::corePrefixes);
@@ -112,11 +108,10 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	}
 
 	/**
-     * Sets the core prefixes for the configuration.
-     * 
-     * @param config the configuration object
-     */
-    private void corePrefixes(Config config) {
+	 * Sets the core prefixes for the configuration.
+	 * @param config the configuration object
+	 */
+	private void corePrefixes(Config config) {
 		config.accept("debug");
 		config.accept("trace");
 		config.accept("logging");
@@ -145,40 +140,37 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	}
 
 	/**
-     * Caches the prefixes of the given configuration.
-     * 
-     * @param config the configuration to cache prefixes for
-     */
-    private void cachePrefixes(Config config) {
+	 * Caches the prefixes of the given configuration.
+	 * @param config the configuration to cache prefixes for
+	 */
+	private void cachePrefixes(Config config) {
 		config.accept("spring.cache");
 	}
 
 	/**
-     * This method accepts the prefixes "spring.mail" and "spring.sendgrid" from the given Config object.
-     * 
-     * @param config the Config object containing the prefixes to be accepted
-     */
-    private void mailPrefixes(Config config) {
+	 * This method accepts the prefixes "spring.mail" and "spring.sendgrid" from the given
+	 * Config object.
+	 * @param config the Config object containing the prefixes to be accepted
+	 */
+	private void mailPrefixes(Config config) {
 		config.accept("spring.mail");
 		config.accept("spring.sendgrid");
 	}
 
 	/**
-     * Sets the JSON prefixes for the configuration.
-     * 
-     * @param config the configuration object
-     */
-    private void jsonPrefixes(Config config) {
+	 * Sets the JSON prefixes for the configuration.
+	 * @param config the configuration object
+	 */
+	private void jsonPrefixes(Config config) {
 		config.accept("spring.jackson");
 		config.accept("spring.gson");
 	}
 
 	/**
-     * Sets the data prefixes for the configuration.
-     * 
-     * @param config the configuration object
-     */
-    private void dataPrefixes(Config config) {
+	 * Sets the data prefixes for the configuration.
+	 * @param config the configuration object
+	 */
+	private void dataPrefixes(Config config) {
 		config.accept("spring.couchbase");
 		config.accept("spring.cassandra");
 		config.accept("spring.elasticsearch");
@@ -206,32 +198,29 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	}
 
 	/**
-     * Sets the transaction prefixes for the configuration properties.
-     * 
-     * @param prefix the configuration prefix to accept
-     */
-    private void transactionPrefixes(Config prefix) {
+	 * Sets the transaction prefixes for the configuration properties.
+	 * @param prefix the configuration prefix to accept
+	 */
+	private void transactionPrefixes(Config prefix) {
 		prefix.accept("spring.jta");
 		prefix.accept("spring.transaction");
 	}
 
 	/**
-     * Migrates the data prefixes for the specified configuration.
-     * 
-     * @param prefix the configuration prefix to migrate
-     */
-    private void dataMigrationPrefixes(Config prefix) {
+	 * Migrates the data prefixes for the specified configuration.
+	 * @param prefix the configuration prefix to migrate
+	 */
+	private void dataMigrationPrefixes(Config prefix) {
 		prefix.accept("spring.flyway");
 		prefix.accept("spring.liquibase");
 		prefix.accept("spring.sql.init");
 	}
 
 	/**
-     * Sets the integration prefixes for the given configuration prefix.
-     * 
-     * @param prefix the configuration prefix to set the integration prefixes for
-     */
-    private void integrationPrefixes(Config prefix) {
+	 * Sets the integration prefixes for the given configuration prefix.
+	 * @param prefix the configuration prefix to set the integration prefixes for
+	 */
+	private void integrationPrefixes(Config prefix) {
 		prefix.accept("spring.activemq");
 		prefix.accept("spring.artemis");
 		prefix.accept("spring.batch");
@@ -245,11 +234,10 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	}
 
 	/**
-     * Sets the web prefixes for the configuration.
-     * 
-     * @param prefix the configuration prefix to accept
-     */
-    private void webPrefixes(Config prefix) {
+	 * Sets the web prefixes for the configuration.
+	 * @param prefix the configuration prefix to accept
+	 */
+	private void webPrefixes(Config prefix) {
 		prefix.accept("spring.graphql");
 		prefix.accept("spring.hateoas");
 		prefix.accept("spring.http");
@@ -264,11 +252,10 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	}
 
 	/**
-     * Sets the template prefixes for the specified configuration.
-     * 
-     * @param prefix the configuration to set the template prefixes for
-     */
-    private void templatePrefixes(Config prefix) {
+	 * Sets the template prefixes for the specified configuration.
+	 * @param prefix the configuration to set the template prefixes for
+	 */
+	private void templatePrefixes(Config prefix) {
 		prefix.accept("spring.freemarker");
 		prefix.accept("spring.groovy");
 		prefix.accept("spring.mustache");
@@ -277,75 +264,67 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	}
 
 	/**
-     * Sets the server prefixes for the configuration.
-     * 
-     * @param prefix the configuration prefix to be set
-     */
-    private void serverPrefixes(Config prefix) {
+	 * Sets the server prefixes for the configuration.
+	 * @param prefix the configuration prefix to be set
+	 */
+	private void serverPrefixes(Config prefix) {
 		prefix.accept("server");
 	}
 
 	/**
-     * Sets the security prefixes for the configuration properties.
-     * 
-     * @param prefix the configuration prefix to be set
-     */
-    private void securityPrefixes(Config prefix) {
+	 * Sets the security prefixes for the configuration properties.
+	 * @param prefix the configuration prefix to be set
+	 */
+	private void securityPrefixes(Config prefix) {
 		prefix.accept("spring.security");
 	}
 
 	/**
-     * Sets the RSocket prefixes for the DocumentConfigurationProperties.
-     * 
-     * @param prefix the Config object containing the RSocket prefixes
-     */
-    private void rsocketPrefixes(Config prefix) {
+	 * Sets the RSocket prefixes for the DocumentConfigurationProperties.
+	 * @param prefix the Config object containing the RSocket prefixes
+	 */
+	private void rsocketPrefixes(Config prefix) {
 		prefix.accept("spring.rsocket");
 	}
 
 	/**
-     * Sets the actuator prefixes for the DocumentConfigurationProperties.
-     * 
-     * @param prefix the Config object containing the actuator prefixes
-     */
-    private void actuatorPrefixes(Config prefix) {
+	 * Sets the actuator prefixes for the DocumentConfigurationProperties.
+	 * @param prefix the Config object containing the actuator prefixes
+	 */
+	private void actuatorPrefixes(Config prefix) {
 		prefix.accept("management");
 		prefix.accept("micrometer");
 	}
 
 	/**
-     * Sets the prefixes for Docker Compose configuration properties.
-     * 
-     * @param prefix the configuration prefix to be set
-     */
-    private void dockerComposePrefixes(Config prefix) {
+	 * Sets the prefixes for Docker Compose configuration properties.
+	 * @param prefix the configuration prefix to be set
+	 */
+	private void dockerComposePrefixes(Config prefix) {
 		prefix.accept("spring.docker.compose");
 	}
 
 	/**
-     * Sets the devtools prefixes for the DocumentConfigurationProperties.
-     * 
-     * @param prefix the Config object containing the devtools prefixes
-     */
-    private void devtoolsPrefixes(Config prefix) {
+	 * Sets the devtools prefixes for the DocumentConfigurationProperties.
+	 * @param prefix the Config object containing the devtools prefixes
+	 */
+	private void devtoolsPrefixes(Config prefix) {
 		prefix.accept("spring.devtools");
 	}
 
 	/**
-     * This method is used to test prefixes for the given configuration properties.
-     * 
-     * @param prefix The configuration prefix to be tested.
-     */
-    private void testingPrefixes(Config prefix) {
+	 * This method is used to test prefixes for the given configuration properties.
+	 * @param prefix The configuration prefix to be tested.
+	 */
+	private void testingPrefixes(Config prefix) {
 		prefix.accept("spring.test.");
 	}
 
 	/**
-     * Sets the prefixes for the testcontainers configuration properties.
-     * 
-     * @param prefix the configuration prefix to be set (e.g. "spring.testcontainers.")
-     */
-    private void testcontainersPrefixes(Config prefix) {
+	 * Sets the prefixes for the testcontainers configuration properties.
+	 * @param prefix the configuration prefix to be set (e.g. "spring.testcontainers.")
+	 */
+	private void testcontainersPrefixes(Config prefix) {
 		prefix.accept("spring.testcontainers.");
 	}
 

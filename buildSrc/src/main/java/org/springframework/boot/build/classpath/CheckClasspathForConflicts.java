@@ -55,30 +55,27 @@ public class CheckClasspathForConflicts extends DefaultTask {
 	private FileCollection classpath;
 
 	/**
-     * Sets the classpath for the CheckClasspathForConflicts class.
-     * 
-     * @param classpath the classpath to be set
-     */
-    public void setClasspath(FileCollection classpath) {
+	 * Sets the classpath for the CheckClasspathForConflicts class.
+	 * @param classpath the classpath to be set
+	 */
+	public void setClasspath(FileCollection classpath) {
 		this.classpath = classpath;
 	}
 
 	/**
-     * Returns the classpath of the CheckClasspathForConflicts class.
-     *
-     * @return the classpath of the CheckClasspathForConflicts class
-     */
-    @Classpath
+	 * Returns the classpath of the CheckClasspathForConflicts class.
+	 * @return the classpath of the CheckClasspathForConflicts class
+	 */
+	@Classpath
 	public FileCollection getClasspath() {
 		return this.classpath;
 	}
 
 	/**
-     * Checks for conflicts in the classpath.
-     * 
-     * @throws IOException if an I/O error occurs while reading the classpath
-     */
-    @TaskAction
+	 * Checks for conflicts in the classpath.
+	 * @throws IOException if an I/O error occurs while reading the classpath
+	 */
+	@TaskAction
 	public void checkForConflicts() throws IOException {
 		ClasspathContents classpathContents = new ClasspathContents();
 		for (File file : this.classpath) {
@@ -111,18 +108,17 @@ public class CheckClasspathForConflicts extends DefaultTask {
 	}
 
 	/**
-     * Adds a predicate to the list of ignores.
-     * 
-     * @param predicate the predicate to be added
-     */
-    public void ignore(Predicate<String> predicate) {
+	 * Adds a predicate to the list of ignores.
+	 * @param predicate the predicate to be added
+	 */
+	public void ignore(Predicate<String> predicate) {
 		this.ignores.add(predicate);
 	}
 
 	/**
-     * ClasspathContents class.
-     */
-    private static final class ClasspathContents {
+	 * ClasspathContents class.
+	 */
+	private static final class ClasspathContents {
 
 		private static final Set<String> IGNORED_NAMES = new HashSet<>(Arrays.asList("about.html", "changelog.txt",
 				"LICENSE", "license.txt", "module-info.class", "notice.txt", "readme.txt"));
@@ -130,22 +126,21 @@ public class CheckClasspathForConflicts extends DefaultTask {
 		private final Map<String, List<String>> classpathContents = new HashMap<>();
 
 		/**
-         * Adds a source to the classpath contents with the given name.
-         *
-         * @param name   the name of the classpath content
-         * @param source the source to be added
-         */
-        private void add(String name, String source) {
+		 * Adds a source to the classpath contents with the given name.
+		 * @param name the name of the classpath content
+		 * @param source the source to be added
+		 */
+		private void add(String name, String source) {
 			this.classpathContents.computeIfAbsent(name, (key) -> new ArrayList<>()).add(source);
 		}
 
 		/**
-         * Returns a map of conflicts in the classpath contents.
-         * 
-         * @param ignores a list of predicates to ignore certain conflicts
-         * @return a map where the keys are the conflicting classpath entries and the values are the conflicting files
-         */
-        private Map<String, List<String>> getConflicts(List<Predicate<String>> ignores) {
+		 * Returns a map of conflicts in the classpath contents.
+		 * @param ignores a list of predicates to ignore certain conflicts
+		 * @return a map where the keys are the conflicting classpath entries and the
+		 * values are the conflicting files
+		 */
+		private Map<String, List<String>> getConflicts(List<Predicate<String>> ignores) {
 			return this.classpathContents.entrySet()
 				.stream()
 				.filter((entry) -> entry.getValue().size() > 1)
@@ -154,13 +149,12 @@ public class CheckClasspathForConflicts extends DefaultTask {
 		}
 
 		/**
-         * Checks if a given name can conflict with other names.
-         * 
-         * @param name    the name to check for conflict
-         * @param ignores a list of predicates to ignore certain names
-         * @return true if the name can conflict, false otherwise
-         */
-        private boolean canConflict(String name, List<Predicate<String>> ignores) {
+		 * Checks if a given name can conflict with other names.
+		 * @param name the name to check for conflict
+		 * @param ignores a list of predicates to ignore certain names
+		 * @return true if the name can conflict, false otherwise
+		 */
+		private boolean canConflict(String name, List<Predicate<String>> ignores) {
 			if (name.startsWith("META-INF/")) {
 				return false;
 			}

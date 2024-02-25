@@ -154,12 +154,13 @@ class NestedJarFileResources implements Runnable {
 	}
 
 	/**
-     * Releases all resources used by the NestedJarFileResources class.
-     * This includes releasing the inflators, input streams, zip content, and zip content for the manifest.
-     * 
-     * @throws UncheckedIOException if an IOException occurs while releasing any of the resources
-     */
-    private void releaseAll() {
+	 * Releases all resources used by the NestedJarFileResources class. This includes
+	 * releasing the inflators, input streams, zip content, and zip content for the
+	 * manifest.
+	 * @throws UncheckedIOException if an IOException occurs while releasing any of the
+	 * resources
+	 */
+	private void releaseAll() {
 		IOException exceptionChain = null;
 		exceptionChain = releaseInflators(exceptionChain);
 		exceptionChain = releaseInputStreams(exceptionChain);
@@ -171,12 +172,11 @@ class NestedJarFileResources implements Runnable {
 	}
 
 	/**
-     * Releases the inflators and clears the inflater cache.
-     * 
-     * @param exceptionChain the exception chain to be returned
-     * @return the exception chain
-     */
-    private IOException releaseInflators(IOException exceptionChain) {
+	 * Releases the inflators and clears the inflater cache.
+	 * @param exceptionChain the exception chain to be returned
+	 * @return the exception chain
+	 */
+	private IOException releaseInflators(IOException exceptionChain) {
 		Deque<Inflater> inflaterCache = this.inflaterCache;
 		if (inflaterCache != null) {
 			try {
@@ -192,12 +192,12 @@ class NestedJarFileResources implements Runnable {
 	}
 
 	/**
-     * Releases all input streams associated with this NestedJarFileResources instance.
-     * 
-     * @param exceptionChain the exception chain to which any IOExceptions encountered during the closing of input streams will be added
-     * @return the updated exception chain with any new IOExceptions added
-     */
-    private IOException releaseInputStreams(IOException exceptionChain) {
+	 * Releases all input streams associated with this NestedJarFileResources instance.
+	 * @param exceptionChain the exception chain to which any IOExceptions encountered
+	 * during the closing of input streams will be added
+	 * @return the updated exception chain with any new IOExceptions added
+	 */
+	private IOException releaseInputStreams(IOException exceptionChain) {
 		synchronized (this.inputStreams) {
 			for (InputStream inputStream : List.copyOf(this.inputStreams)) {
 				try {
@@ -213,12 +213,11 @@ class NestedJarFileResources implements Runnable {
 	}
 
 	/**
-     * Releases the zip content and closes it.
-     * 
-     * @param exceptionChain the exception chain to add any caught IOExceptions to
-     * @return the updated exception chain
-     */
-    private IOException releaseZipContent(IOException exceptionChain) {
+	 * Releases the zip content and closes it.
+	 * @param exceptionChain the exception chain to add any caught IOExceptions to
+	 * @return the updated exception chain
+	 */
+	private IOException releaseZipContent(IOException exceptionChain) {
 		ZipContent zipContent = this.zipContent;
 		if (zipContent != null) {
 			try {
@@ -235,12 +234,11 @@ class NestedJarFileResources implements Runnable {
 	}
 
 	/**
-     * Releases the zip content for the manifest and closes it.
-     * 
-     * @param exceptionChain the exception chain to add any caught IOExceptions to
-     * @return the updated exception chain
-     */
-    private IOException releaseZipContentForManifest(IOException exceptionChain) {
+	 * Releases the zip content for the manifest and closes it.
+	 * @param exceptionChain the exception chain to add any caught IOExceptions to
+	 * @return the updated exception chain
+	 */
+	private IOException releaseZipContentForManifest(IOException exceptionChain) {
 		ZipContent zipContentForManifest = this.zipContentForManifest;
 		if (zipContentForManifest != null) {
 			try {
@@ -257,13 +255,12 @@ class NestedJarFileResources implements Runnable {
 	}
 
 	/**
-     * Adds the specified exception to the exception chain.
-     * 
-     * @param exceptionChain the exception chain to add the exception to
-     * @param ex the exception to be added to the chain
-     * @return the updated exception chain with the new exception added
-     */
-    private IOException addToExceptionChain(IOException exceptionChain, IOException ex) {
+	 * Adds the specified exception to the exception chain.
+	 * @param exceptionChain the exception chain to add the exception to
+	 * @param ex the exception to be added to the chain
+	 * @return the updated exception chain with the new exception added
+	 */
+	private IOException addToExceptionChain(IOException exceptionChain, IOException ex) {
 		if (exceptionChain != null) {
 			exceptionChain.addSuppressed(ex);
 			return exceptionChain;

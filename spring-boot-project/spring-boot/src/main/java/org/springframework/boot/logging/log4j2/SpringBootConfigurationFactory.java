@@ -47,23 +47,21 @@ public class SpringBootConfigurationFactory extends ConfigurationFactory {
 	private static final String[] TYPES = { ".springboot" };
 
 	/**
-     * Returns an array of supported types.
-     *
-     * @return the array of supported types
-     */
-    @Override
+	 * Returns an array of supported types.
+	 * @return the array of supported types
+	 */
+	@Override
 	protected String[] getSupportedTypes() {
 		return TYPES;
 	}
 
 	/**
-     * Returns the configuration for the logger context based on the given source.
-     * 
-     * @param loggerContext the logger context
-     * @param source the configuration source
-     * @return the configuration for the logger context
-     */
-    @Override
+	 * Returns the configuration for the logger context based on the given source.
+	 * @param loggerContext the logger context
+	 * @param source the configuration source
+	 * @return the configuration for the logger context
+	 */
+	@Override
 	public Configuration getConfiguration(LoggerContext loggerContext, ConfigurationSource source) {
 		if (source == null || source == ConfigurationSource.NULL_SOURCE) {
 			return null;

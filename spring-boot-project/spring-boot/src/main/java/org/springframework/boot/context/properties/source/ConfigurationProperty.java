@@ -43,26 +43,25 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 	private final Origin origin;
 
 	/**
-     * Constructs a new ConfigurationProperty with the specified name, value, and origin.
-     * 
-     * @param name the name of the configuration property
-     * @param value the value of the configuration property
-     * @param origin the origin of the configuration property
-     */
-    public ConfigurationProperty(ConfigurationPropertyName name, Object value, Origin origin) {
+	 * Constructs a new ConfigurationProperty with the specified name, value, and origin.
+	 * @param name the name of the configuration property
+	 * @param value the value of the configuration property
+	 * @param origin the origin of the configuration property
+	 */
+	public ConfigurationProperty(ConfigurationPropertyName name, Object value, Origin origin) {
 		this(null, name, value, origin);
 	}
 
 	/**
-     * Constructs a new ConfigurationProperty with the given source, name, value, and origin.
-     * 
-     * @param source the source of the configuration property
-     * @param name the name of the configuration property
-     * @param value the value of the configuration property
-     * @param origin the origin of the configuration property
-     * @throws IllegalArgumentException if the name or value is null
-     */
-    private ConfigurationProperty(ConfigurationPropertySource source, ConfigurationPropertyName name, Object value,
+	 * Constructs a new ConfigurationProperty with the given source, name, value, and
+	 * origin.
+	 * @param source the source of the configuration property
+	 * @param name the name of the configuration property
+	 * @param value the value of the configuration property
+	 * @param origin the origin of the configuration property
+	 * @throws IllegalArgumentException if the name or value is null
+	 */
+	private ConfigurationProperty(ConfigurationPropertySource source, ConfigurationPropertyName name, Object value,
 			Origin origin) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(value, "Value must not be null");
@@ -99,23 +98,21 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 	}
 
 	/**
-     * Returns the origin of the configuration property.
-     *
-     * @return the origin of the configuration property
-     */
-    @Override
+	 * Returns the origin of the configuration property.
+	 * @return the origin of the configuration property
+	 */
+	@Override
 	public Origin getOrigin() {
 		return this.origin;
 	}
 
 	/**
-     * Compares this ConfigurationProperty object to the specified object for equality.
-     * Returns true if the objects are equal, false otherwise.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this ConfigurationProperty object to the specified object for equality.
+	 * Returns true if the objects are equal, false otherwise.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -131,12 +128,12 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 	}
 
 	/**
-     * Returns a hash code value for the object. This method overrides the default implementation of the hashCode() method.
-     * The hash code is calculated based on the name and value of the ConfigurationProperty object.
-     *
-     * @return the hash code value for the object
-     */
-    @Override
+	 * Returns a hash code value for the object. This method overrides the default
+	 * implementation of the hashCode() method. The hash code is calculated based on the
+	 * name and value of the ConfigurationProperty object.
+	 * @return the hash code value for the object
+	 */
+	@Override
 	public int hashCode() {
 		int result = ObjectUtils.nullSafeHashCode(this.name);
 		result = 31 * result + ObjectUtils.nullSafeHashCode(this.value);
@@ -144,11 +141,10 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 	}
 
 	/**
-     * Returns a string representation of the object.
-     * 
-     * @return a string representation of the object
-     */
-    @Override
+	 * Returns a string representation of the object.
+	 * @return a string representation of the object
+	 */
+	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("name", this.name)
 			.append("value", this.value)
@@ -157,24 +153,25 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 	}
 
 	/**
-     * Compares this ConfigurationProperty object with the specified ConfigurationProperty object for order.
-     * 
-     * @param other the ConfigurationProperty object to be compared
-     * @return a negative integer, zero, or a positive integer as this ConfigurationProperty is less than, equal to, or greater than the specified ConfigurationProperty
-     */
-    @Override
+	 * Compares this ConfigurationProperty object with the specified ConfigurationProperty
+	 * object for order.
+	 * @param other the ConfigurationProperty object to be compared
+	 * @return a negative integer, zero, or a positive integer as this
+	 * ConfigurationProperty is less than, equal to, or greater than the specified
+	 * ConfigurationProperty
+	 */
+	@Override
 	public int compareTo(ConfigurationProperty other) {
 		return this.name.compareTo(other.name);
 	}
 
 	/**
-     * Creates a new ConfigurationProperty object with the specified name and value.
-     * 
-     * @param name the name of the configuration property
-     * @param value the value of the configuration property
-     * @return a new ConfigurationProperty object
-     */
-    static ConfigurationProperty of(ConfigurationPropertyName name, OriginTrackedValue value) {
+	 * Creates a new ConfigurationProperty object with the specified name and value.
+	 * @param name the name of the configuration property
+	 * @param value the value of the configuration property
+	 * @return a new ConfigurationProperty object
+	 */
+	static ConfigurationProperty of(ConfigurationPropertyName name, OriginTrackedValue value) {
 		if (value == null) {
 			return null;
 		}
@@ -182,15 +179,15 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 	}
 
 	/**
-     * Creates a new ConfigurationProperty object with the given source, name, value, and origin.
-     * 
-     * @param source the source of the configuration property
-     * @param name the name of the configuration property
-     * @param value the value of the configuration property
-     * @param origin the origin of the configuration property
-     * @return a new ConfigurationProperty object
-     */
-    static ConfigurationProperty of(ConfigurationPropertySource source, ConfigurationPropertyName name, Object value,
+	 * Creates a new ConfigurationProperty object with the given source, name, value, and
+	 * origin.
+	 * @param source the source of the configuration property
+	 * @param name the name of the configuration property
+	 * @param value the value of the configuration property
+	 * @param origin the origin of the configuration property
+	 * @return a new ConfigurationProperty object
+	 */
+	static ConfigurationProperty of(ConfigurationPropertySource source, ConfigurationPropertyName name, Object value,
 			Origin origin) {
 		if (value == null) {
 			return null;

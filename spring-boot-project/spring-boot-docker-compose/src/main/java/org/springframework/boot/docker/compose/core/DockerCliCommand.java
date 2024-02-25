@@ -45,27 +45,25 @@ abstract sealed class DockerCliCommand<R> {
 	private final List<String> command;
 
 	/**
-     * Constructs a new DockerCliCommand with the specified parameters.
-     * 
-     * @param type the type of the command
-     * @param responseType the class representing the response type
-     * @param listResponse true if the response is a list, false otherwise
-     * @param command the command to be executed
-     */
-    private DockerCliCommand(Type type, Class<?> responseType, boolean listResponse, String... command) {
+	 * Constructs a new DockerCliCommand with the specified parameters.
+	 * @param type the type of the command
+	 * @param responseType the class representing the response type
+	 * @param listResponse true if the response is a list, false otherwise
+	 * @param command the command to be executed
+	 */
+	private DockerCliCommand(Type type, Class<?> responseType, boolean listResponse, String... command) {
 		this(type, LogLevel.OFF, responseType, listResponse, command);
 	}
 
 	/**
-     * Creates a new instance of DockerCliCommand.
-     * 
-     * @param type the type of the command
-     * @param logLevel the log level for the command
-     * @param responseType the response type for the command
-     * @param listResponse indicates whether the response is a list
-     * @param command the command to be executed
-     */
-    private DockerCliCommand(Type type, LogLevel logLevel, Class<?> responseType, boolean listResponse,
+	 * Creates a new instance of DockerCliCommand.
+	 * @param type the type of the command
+	 * @param logLevel the log level for the command
+	 * @param responseType the response type for the command
+	 * @param listResponse indicates whether the response is a list
+	 * @param command the command to be executed
+	 */
+	private DockerCliCommand(Type type, LogLevel logLevel, Class<?> responseType, boolean listResponse,
 			String... command) {
 		this.type = type;
 		this.logLevel = logLevel;
@@ -75,40 +73,37 @@ abstract sealed class DockerCliCommand<R> {
 	}
 
 	/**
-     * Returns the type of the Docker CLI command.
-     *
-     * @return the type of the Docker CLI command
-     */
-    Type getType() {
+	 * Returns the type of the Docker CLI command.
+	 * @return the type of the Docker CLI command
+	 */
+	Type getType() {
 		return this.type;
 	}
 
 	/**
-     * Returns the log level of the Docker CLI command.
-     *
-     * @return the log level of the Docker CLI command
-     */
-    LogLevel getLogLevel() {
+	 * Returns the log level of the Docker CLI command.
+	 * @return the log level of the Docker CLI command
+	 */
+	LogLevel getLogLevel() {
 		return this.logLevel;
 	}
 
 	/**
-     * Returns the command list.
-     *
-     * @return the command list
-     */
-    List<String> getCommand() {
+	 * Returns the command list.
+	 * @return the command list
+	 */
+	List<String> getCommand() {
 		return this.command;
 	}
 
 	/**
-     * Deserializes the given JSON string into an object of type R.
-     * 
-     * @param json the JSON string to be deserialized
-     * @return the deserialized object of type R, or null if the responseType is Void.class
-     * @throws DockerJsonException if there is an error during deserialization
-     */
-    @SuppressWarnings("unchecked")
+	 * Deserializes the given JSON string into an object of type R.
+	 * @param json the JSON string to be deserialized
+	 * @return the deserialized object of type R, or null if the responseType is
+	 * Void.class
+	 * @throws DockerJsonException if there is an error during deserialization
+	 */
+	@SuppressWarnings("unchecked")
 	R deserialize(String json) {
 		if (this.responseType == Void.class) {
 			return null;
@@ -118,14 +113,14 @@ abstract sealed class DockerCliCommand<R> {
 	}
 
 	/**
-     * Compares this DockerCliCommand object to the specified object for equality.
-     * Returns true if the specified object is also a DockerCliCommand and all the
-     * fields of both objects are equal.
-     *
-     * @param obj the object to compare this DockerCliCommand against
-     * @return true if the given object represents a DockerCliCommand equivalent to this command, false otherwise
-     */
-    @Override
+	 * Compares this DockerCliCommand object to the specified object for equality. Returns
+	 * true if the specified object is also a DockerCliCommand and all the fields of both
+	 * objects are equal.
+	 * @param obj the object to compare this DockerCliCommand against
+	 * @return true if the given object represents a DockerCliCommand equivalent to this
+	 * command, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -142,34 +137,31 @@ abstract sealed class DockerCliCommand<R> {
 	}
 
 	/**
-     * Returns the hash code value for the DockerCliCommand object.
-     * 
-     * @return the hash code value for the DockerCliCommand object
-     */
-    @Override
+	 * Returns the hash code value for the DockerCliCommand object.
+	 * @return the hash code value for the DockerCliCommand object
+	 */
+	@Override
 	public int hashCode() {
 		return Objects.hash(this.type, this.responseType, this.listResponse, this.command);
 	}
 
 	/**
-     * Returns a string representation of the DockerCliCommand object.
-     * 
-     * @return a string representation of the DockerCliCommand object
-     */
-    @Override
+	 * Returns a string representation of the DockerCliCommand object.
+	 * @return a string representation of the DockerCliCommand object
+	 */
+	@Override
 	public String toString() {
 		return "DockerCliCommand [type=%s, responseType=%s, listResponse=%s, command=%s]".formatted(this.type,
 				this.responseType, this.listResponse, this.command);
 	}
 
 	/**
-     * Joins the given command and arguments into a single array of strings.
-     *
-     * @param command the collection of command strings
-     * @param args the collection of argument strings
-     * @return an array of strings containing the joined command and arguments
-     */
-    protected static String[] join(Collection<String> command, Collection<String> args) {
+	 * Joins the given command and arguments into a single array of strings.
+	 * @param command the collection of command strings
+	 * @param args the collection of argument strings
+	 * @return an array of strings containing the joined command and arguments
+	 */
+	protected static String[] join(Collection<String> command, Collection<String> args) {
 		List<String> result = new ArrayList<>(command);
 		result.addAll(args);
 		return result.toArray(new String[0]);
@@ -181,15 +173,17 @@ abstract sealed class DockerCliCommand<R> {
 	static final class Context extends DockerCliCommand<List<DockerCliContextResponse>> {
 
 		/**
-         * Constructor for Context class.
-         * 
-         * @param type the type of the context (in this case, Type.DOCKER)
-         * @param responseType the response type of the context (in this case, DockerCliContextResponse.class)
-         * @param isAsync boolean value indicating if the context is asynchronous or not
-         * @param command the command to be executed in the context (in this case, "context")
-         * @param args the arguments to be passed to the command (in this case, "ls", "--format={{ json . }}")
-         */
-        Context() {
+		 * Constructor for Context class.
+		 * @param type the type of the context (in this case, Type.DOCKER)
+		 * @param responseType the response type of the context (in this case,
+		 * DockerCliContextResponse.class)
+		 * @param isAsync boolean value indicating if the context is asynchronous or not
+		 * @param command the command to be executed in the context (in this case,
+		 * "context")
+		 * @param args the arguments to be passed to the command (in this case, "ls",
+		 * "--format={{ json . }}")
+		 */
+		Context() {
 			super(Type.DOCKER, DockerCliContextResponse.class, true, "context", "ls", "--format={{ json . }}");
 		}
 
@@ -201,13 +195,13 @@ abstract sealed class DockerCliCommand<R> {
 	static final class Inspect extends DockerCliCommand<List<DockerCliInspectResponse>> {
 
 		/**
-         * Inspects the Docker containers with the given IDs.
-         * 
-         * @param ids the collection of container IDs to inspect
-         * @throws DockerCliException if there is an error executing the Docker CLI command
-         * @return the Docker CLI inspect response containing the inspection results
-         */
-        Inspect(Collection<String> ids) {
+		 * Inspects the Docker containers with the given IDs.
+		 * @param ids the collection of container IDs to inspect
+		 * @throws DockerCliException if there is an error executing the Docker CLI
+		 * command
+		 * @return the Docker CLI inspect response containing the inspection results
+		 */
+		Inspect(Collection<String> ids) {
 			super(Type.DOCKER, DockerCliInspectResponse.class, true,
 					join(List.of("inspect", "--format={{ json . }}"), ids));
 		}
@@ -220,14 +214,14 @@ abstract sealed class DockerCliCommand<R> {
 	static final class ComposeConfig extends DockerCliCommand<DockerCliComposeConfigResponse> {
 
 		/**
-         * Creates a new instance of ComposeConfig.
-         * 
-         * @param type the type of the configuration
-         * @param responseType the response type for the configuration
-         * @param isListCommand true if the configuration is for a list command, false otherwise
-         * @param args the arguments for the configuration
-         */
-        ComposeConfig() {
+		 * Creates a new instance of ComposeConfig.
+		 * @param type the type of the configuration
+		 * @param responseType the response type for the configuration
+		 * @param isListCommand true if the configuration is for a list command, false
+		 * otherwise
+		 * @param args the arguments for the configuration
+		 */
+		ComposeConfig() {
 			super(Type.DOCKER_COMPOSE, DockerCliComposeConfigResponse.class, false, "config", "--format=json");
 		}
 
@@ -239,13 +233,12 @@ abstract sealed class DockerCliCommand<R> {
 	static final class ComposePs extends DockerCliCommand<List<DockerCliComposePsResponse>> {
 
 		/**
-         * Constructor for ComposePs class.
-         * Initializes the command type as Type.DOCKER_COMPOSE,
-         * the response type as DockerCliComposePsResponse.class,
-         * sets the command to be executed as "ps",
-         * and sets the format option to "--format=json".
-         */
-        ComposePs() {
+		 * Constructor for ComposePs class. Initializes the command type as
+		 * Type.DOCKER_COMPOSE, the response type as DockerCliComposePsResponse.class,
+		 * sets the command to be executed as "ps", and sets the format option to
+		 * "--format=json".
+		 */
+		ComposePs() {
 			super(Type.DOCKER_COMPOSE, DockerCliComposePsResponse.class, true, "ps", "--format=json");
 		}
 
@@ -257,11 +250,10 @@ abstract sealed class DockerCliCommand<R> {
 	static final class ComposeUp extends DockerCliCommand<Void> {
 
 		/**
-         * Creates a new instance of ComposeUp with the specified log level.
-         * 
-         * @param logLevel the log level to be used for logging
-         */
-        ComposeUp(LogLevel logLevel) {
+		 * Creates a new instance of ComposeUp with the specified log level.
+		 * @param logLevel the log level to be used for logging
+		 */
+		ComposeUp(LogLevel logLevel) {
 			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, "up", "--no-color", "--detach", "--wait");
 		}
 
@@ -273,11 +265,10 @@ abstract sealed class DockerCliCommand<R> {
 	static final class ComposeDown extends DockerCliCommand<Void> {
 
 		/**
-         * Shuts down the Docker Compose environment.
-         * 
-         * @param timeout the duration to wait for the shutdown process to complete
-         */
-        ComposeDown(Duration timeout) {
+		 * Shuts down the Docker Compose environment.
+		 * @param timeout the duration to wait for the shutdown process to complete
+		 */
+		ComposeDown(Duration timeout) {
 			super(Type.DOCKER_COMPOSE, Void.class, false, "down", "--timeout", Long.toString(timeout.toSeconds()));
 		}
 
@@ -289,11 +280,11 @@ abstract sealed class DockerCliCommand<R> {
 	static final class ComposeStart extends DockerCliCommand<Void> {
 
 		/**
-         * Constructs a new instance of the ComposeStart class with the specified log level.
-         * 
-         * @param logLevel the log level to be used for logging
-         */
-        ComposeStart(LogLevel logLevel) {
+		 * Constructs a new instance of the ComposeStart class with the specified log
+		 * level.
+		 * @param logLevel the log level to be used for logging
+		 */
+		ComposeStart(LogLevel logLevel) {
 			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, "start");
 		}
 
@@ -305,11 +296,10 @@ abstract sealed class DockerCliCommand<R> {
 	static final class ComposeStop extends DockerCliCommand<Void> {
 
 		/**
-         * Constructs a new ComposeStop command with the specified timeout.
-         * 
-         * @param timeout the duration after which the command will timeout
-         */
-        ComposeStop(Duration timeout) {
+		 * Constructs a new ComposeStop command with the specified timeout.
+		 * @param timeout the duration after which the command will timeout
+		 */
+		ComposeStop(Duration timeout) {
 			super(Type.DOCKER_COMPOSE, Void.class, false, "stop", "--timeout", Long.toString(timeout.toSeconds()));
 		}
 

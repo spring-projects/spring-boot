@@ -32,12 +32,12 @@ import org.slf4j.Logger;
 public class RootLogLevelConfigurator extends ContextAwareBase implements Configurator {
 
 	/**
-     * Configures the logger context by setting the log level of the root logger to INFO.
-     * 
-     * @param loggerContext the logger context to be configured
-     * @return the execution status indicating whether to invoke the next configurator if any
-     */
-    @Override
+	 * Configures the logger context by setting the log level of the root logger to INFO.
+	 * @param loggerContext the logger context to be configured
+	 * @return the execution status indicating whether to invoke the next configurator if
+	 * any
+	 */
+	@Override
 	public ExecutionStatus configure(LoggerContext loggerContext) {
 		loggerContext.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(Level.INFO);
 		return ExecutionStatus.INVOKE_NEXT_IF_ANY;

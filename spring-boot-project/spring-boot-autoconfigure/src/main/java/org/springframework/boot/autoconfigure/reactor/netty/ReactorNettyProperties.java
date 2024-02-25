@@ -35,20 +35,19 @@ public class ReactorNettyProperties {
 	private Duration shutdownQuietPeriod;
 
 	/**
-     * Returns the duration of the quiet period during the shutdown of the Reactor Netty server.
-     *
-     * @return the duration of the quiet period
-     */
-    public Duration getShutdownQuietPeriod() {
+	 * Returns the duration of the quiet period during the shutdown of the Reactor Netty
+	 * server.
+	 * @return the duration of the quiet period
+	 */
+	public Duration getShutdownQuietPeriod() {
 		return this.shutdownQuietPeriod;
 	}
 
 	/**
-     * Sets the quiet period for graceful shutdown.
-     * 
-     * @param shutdownQuietPeriod the duration of the quiet period
-     */
-    public void setShutdownQuietPeriod(Duration shutdownQuietPeriod) {
+	 * Sets the quiet period for graceful shutdown.
+	 * @param shutdownQuietPeriod the duration of the quiet period
+	 */
+	public void setShutdownQuietPeriod(Duration shutdownQuietPeriod) {
 		this.shutdownQuietPeriod = shutdownQuietPeriod;
 	}
 

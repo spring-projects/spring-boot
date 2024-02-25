@@ -27,11 +27,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class MyWebConfiguration {
 
 	/**
-     * Returns a WebMvcConfigurer object for testing purposes.
-     * 
-     * @return a WebMvcConfigurer object
-     */
-    @Bean
+	 * Returns a WebMvcConfigurer object for testing purposes.
+	 * @return a WebMvcConfigurer object
+	 */
+	@Bean
 	public WebMvcConfigurer testConfigurer() {
 		return new WebMvcConfigurer() {
 			// ...

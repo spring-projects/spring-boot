@@ -36,20 +36,22 @@ import org.springframework.context.annotation.Configuration;
 class OtlpTracingConfigurations {
 
 	/**
-     * ConnectionDetails class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * ConnectionDetails class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	static class ConnectionDetails {
 
 		/**
-         * Creates an instance of {@link OtlpTracingConnectionDetails} based on the provided {@link OtlpProperties}.
-         * This method is annotated with {@link Bean}, {@link ConditionalOnMissingBean}, and {@link ConditionalOnProperty}
-         * to ensure that it is only executed when the specified conditions are met.
-         *
-         * @param properties the {@link OtlpProperties} used to configure the connection details
-         * @return an instance of {@link OtlpTracingConnectionDetails} with the provided properties
-         */
-        @Bean
+		 * Creates an instance of {@link OtlpTracingConnectionDetails} based on the
+		 * provided {@link OtlpProperties}. This method is annotated with {@link Bean},
+		 * {@link ConditionalOnMissingBean}, and {@link ConditionalOnProperty} to ensure
+		 * that it is only executed when the specified conditions are met.
+		 * @param properties the {@link OtlpProperties} used to configure the connection
+		 * details
+		 * @return an instance of {@link OtlpTracingConnectionDetails} with the provided
+		 * properties
+		 */
+		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = "management.otlp.tracing", name = "endpoint")
 		OtlpTracingConnectionDetails otlpTracingConnectionDetails(OtlpProperties properties) {
@@ -64,20 +66,19 @@ class OtlpTracingConfigurations {
 			private final OtlpProperties properties;
 
 			/**
-             * Constructs a new instance of PropertiesOtlpTracingConnectionDetails with the specified properties.
-             * 
-             * @param properties the OTLP properties to be used for the connection details
-             */
-            PropertiesOtlpTracingConnectionDetails(OtlpProperties properties) {
+			 * Constructs a new instance of PropertiesOtlpTracingConnectionDetails with
+			 * the specified properties.
+			 * @param properties the OTLP properties to be used for the connection details
+			 */
+			PropertiesOtlpTracingConnectionDetails(OtlpProperties properties) {
 				this.properties = properties;
 			}
 
 			/**
-             * Returns the URL of the endpoint for the OTLP tracing connection.
-             * 
-             * @return the URL of the endpoint
-             */
-            @Override
+			 * Returns the URL of the endpoint for the OTLP tracing connection.
+			 * @return the URL of the endpoint
+			 */
+			@Override
 			public String getUrl() {
 				return this.properties.getEndpoint();
 			}
@@ -87,23 +88,28 @@ class OtlpTracingConfigurations {
 	}
 
 	/**
-     * Exporters class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * Exporters class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	static class Exporters {
 
 		/**
-         * Creates an instance of {@link OtlpHttpSpanExporter} if no bean of type {@link OtlpHttpSpanExporter} is already present
-         * and if a bean of type {@link OtlpTracingConnectionDetails} is present and tracing is enabled.
-         * 
-         * The method sets the endpoint, timeout, and compression properties of the exporter using the provided {@link OtlpProperties}
-         * and {@link OtlpTracingConnectionDetails}. It also adds any custom headers specified in the {@link OtlpProperties}.
-         * 
-         * @param properties The {@link OtlpProperties} containing the exporter configuration.
-         * @param connectionDetails The {@link OtlpTracingConnectionDetails} containing the connection details for the exporter.
-         * @return An instance of {@link OtlpHttpSpanExporter} configured with the provided properties and connection details.
-         */
-        @Bean
+		 * Creates an instance of {@link OtlpHttpSpanExporter} if no bean of type
+		 * {@link OtlpHttpSpanExporter} is already present and if a bean of type
+		 * {@link OtlpTracingConnectionDetails} is present and tracing is enabled.
+		 *
+		 * The method sets the endpoint, timeout, and compression properties of the
+		 * exporter using the provided {@link OtlpProperties} and
+		 * {@link OtlpTracingConnectionDetails}. It also adds any custom headers specified
+		 * in the {@link OtlpProperties}.
+		 * @param properties The {@link OtlpProperties} containing the exporter
+		 * configuration.
+		 * @param connectionDetails The {@link OtlpTracingConnectionDetails} containing
+		 * the connection details for the exporter.
+		 * @return An instance of {@link OtlpHttpSpanExporter} configured with the
+		 * provided properties and connection details.
+		 */
+		@Bean
 		@ConditionalOnMissingBean(value = OtlpHttpSpanExporter.class,
 				type = "io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter")
 		@ConditionalOnBean(OtlpTracingConnectionDetails.class)

@@ -38,11 +38,10 @@ public class ShutdownEndpoint implements ApplicationContextAware {
 	private ConfigurableApplicationContext context;
 
 	/**
-     * Initiates the shutdown process.
-     * 
-     * @return the shutdown descriptor indicating the status of the shutdown process
-     */
-    @WriteOperation
+	 * Initiates the shutdown process.
+	 * @return the shutdown descriptor indicating the status of the shutdown process
+	 */
+	@WriteOperation
 	public ShutdownDescriptor shutdown() {
 		if (this.context == null) {
 			return ShutdownDescriptor.NO_CONTEXT;
@@ -58,12 +57,13 @@ public class ShutdownEndpoint implements ApplicationContextAware {
 	}
 
 	/**
-     * Performs a shutdown operation.
-     * 
-     * This method puts the current thread to sleep for 500 milliseconds and then closes the context.
-     * If the sleep is interrupted, the current thread's interrupt status is set.
-     */
-    private void performShutdown() {
+	 * Performs a shutdown operation.
+	 *
+	 * This method puts the current thread to sleep for 500 milliseconds and then closes
+	 * the context. If the sleep is interrupted, the current thread's interrupt status is
+	 * set.
+	 */
+	private void performShutdown() {
 		try {
 			Thread.sleep(500L);
 		}
@@ -74,12 +74,11 @@ public class ShutdownEndpoint implements ApplicationContextAware {
 	}
 
 	/**
-     * Sets the application context for the ShutdownEndpoint.
-     * 
-     * @param context the application context to be set
-     * @throws BeansException if an error occurs while setting the application context
-     */
-    @Override
+	 * Sets the application context for the ShutdownEndpoint.
+	 * @param context the application context to be set
+	 * @throws BeansException if an error occurs while setting the application context
+	 */
+	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		if (context instanceof ConfigurableApplicationContext configurableContext) {
 			this.context = configurableContext;
@@ -98,20 +97,18 @@ public class ShutdownEndpoint implements ApplicationContextAware {
 		private final String message;
 
 		/**
-         * Constructs a new ShutdownDescriptor with the specified message.
-         * 
-         * @param message the message to be associated with the ShutdownDescriptor
-         */
-        ShutdownDescriptor(String message) {
+		 * Constructs a new ShutdownDescriptor with the specified message.
+		 * @param message the message to be associated with the ShutdownDescriptor
+		 */
+		ShutdownDescriptor(String message) {
 			this.message = message;
 		}
 
 		/**
-         * Returns the message associated with the ShutdownDescriptor object.
-         * 
-         * @return the message associated with the ShutdownDescriptor object
-         */
-        public String getMessage() {
+		 * Returns the message associated with the ShutdownDescriptor object.
+		 * @return the message associated with the ShutdownDescriptor object
+		 */
+		public String getMessage() {
 			return this.message;
 		}
 

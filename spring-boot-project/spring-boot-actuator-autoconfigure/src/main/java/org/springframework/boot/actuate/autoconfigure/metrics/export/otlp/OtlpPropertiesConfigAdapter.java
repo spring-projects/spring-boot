@@ -50,15 +50,16 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	private final Environment environment;
 
 	/**
-     * Constructs a new OtlpPropertiesConfigAdapter with the specified properties, openTelemetryProperties,
-     * connectionDetails, and environment.
-     * 
-     * @param properties the OtlpProperties object containing the OTLP properties
-     * @param openTelemetryProperties the OpenTelemetryProperties object containing the OpenTelemetry properties
-     * @param connectionDetails the OtlpMetricsConnectionDetails object containing the OTLP metrics connection details
-     * @param environment the Environment object containing the environment details
-     */
-    OtlpPropertiesConfigAdapter(OtlpProperties properties, OpenTelemetryProperties openTelemetryProperties,
+	 * Constructs a new OtlpPropertiesConfigAdapter with the specified properties,
+	 * openTelemetryProperties, connectionDetails, and environment.
+	 * @param properties the OtlpProperties object containing the OTLP properties
+	 * @param openTelemetryProperties the OpenTelemetryProperties object containing the
+	 * OpenTelemetry properties
+	 * @param connectionDetails the OtlpMetricsConnectionDetails object containing the
+	 * OTLP metrics connection details
+	 * @param environment the Environment object containing the environment details
+	 */
+	OtlpPropertiesConfigAdapter(OtlpProperties properties, OpenTelemetryProperties openTelemetryProperties,
 			OtlpMetricsConnectionDetails connectionDetails, Environment environment) {
 		super(properties);
 		this.connectionDetails = connectionDetails;
@@ -67,42 +68,38 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	}
 
 	/**
-     * Returns the prefix for the OTLP metrics export configuration properties.
-     *
-     * @return the prefix for the OTLP metrics export configuration properties
-     */
-    @Override
+	 * Returns the prefix for the OTLP metrics export configuration properties.
+	 * @return the prefix for the OTLP metrics export configuration properties
+	 */
+	@Override
 	public String prefix() {
 		return "management.otlp.metrics.export";
 	}
 
 	/**
-     * Returns the URL for the connection.
-     * 
-     * @return the URL for the connection
-     */
-    @Override
+	 * Returns the URL for the connection.
+	 * @return the URL for the connection
+	 */
+	@Override
 	public String url() {
 		return get((properties) -> this.connectionDetails.getUrl(), OtlpConfig.super::url);
 	}
 
 	/**
-     * Returns the aggregation temporality for the OTLP properties.
-     * 
-     * @return the aggregation temporality
-     */
-    @Override
+	 * Returns the aggregation temporality for the OTLP properties.
+	 * @return the aggregation temporality
+	 */
+	@Override
 	public AggregationTemporality aggregationTemporality() {
 		return get(OtlpProperties::getAggregationTemporality, OtlpConfig.super::aggregationTemporality);
 	}
 
 	/**
-     * Returns the resource attributes for the OpenTelemetry properties.
-     * 
-     * @return a map containing the resource attributes
-     * @deprecated This method is marked for removal and should not be used.
-     */
-    @Override
+	 * Returns the resource attributes for the OpenTelemetry properties.
+	 * @return a map containing the resource attributes
+	 * @deprecated This method is marked for removal and should not be used.
+	 */
+	@Override
 	@SuppressWarnings("removal")
 	public Map<String, String> resourceAttributes() {
 		Map<String, String> resourceAttributes = this.openTelemetryProperties.getResourceAttributes();
@@ -113,30 +110,27 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	}
 
 	/**
-     * Returns the name of the application.
-     * 
-     * @return the name of the application
-     */
-    private String getApplicationName() {
+	 * Returns the name of the application.
+	 * @return the name of the application
+	 */
+	private String getApplicationName() {
 		return this.environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
 	}
 
 	/**
-     * Returns the headers for the OTLP properties.
-     *
-     * @return a map containing the headers
-     */
-    @Override
+	 * Returns the headers for the OTLP properties.
+	 * @return a map containing the headers
+	 */
+	@Override
 	public Map<String, String> headers() {
 		return get(OtlpProperties::getHeaders, OtlpConfig.super::headers);
 	}
 
 	/**
-     * Returns the base time unit for the OTLP properties.
-     * 
-     * @return the base time unit
-     */
-    @Override
+	 * Returns the base time unit for the OTLP properties.
+	 * @return the base time unit
+	 */
+	@Override
 	public TimeUnit baseTimeUnit() {
 		return get(OtlpProperties::getBaseTimeUnit, OtlpConfig.super::baseTimeUnit);
 	}

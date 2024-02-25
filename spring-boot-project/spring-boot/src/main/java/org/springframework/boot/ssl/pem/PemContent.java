@@ -51,11 +51,10 @@ public final class PemContent {
 	private final String text;
 
 	/**
-     * Constructs a new PemContent object with the specified text.
-     * 
-     * @param text the text content of the PemContent object
-     */
-    private PemContent(String text) {
+	 * Constructs a new PemContent object with the specified text.
+	 * @param text the text content of the PemContent object
+	 */
+	private PemContent(String text) {
 		this.text = text;
 	}
 
@@ -89,12 +88,12 @@ public final class PemContent {
 	}
 
 	/**
-     * Compares this PemContent object to the specified object for equality.
-     * 
-     * @param obj the object to compare with
-     * @return true if the specified object is equal to this PemContent object, false otherwise
-     */
-    @Override
+	 * Compares this PemContent object to the specified object for equality.
+	 * @param obj the object to compare with
+	 * @return true if the specified object is equal to this PemContent object, false
+	 * otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -106,21 +105,19 @@ public final class PemContent {
 	}
 
 	/**
-     * Returns the hash code value for this PemContent object.
-     * 
-     * @return the hash code value for this object
-     */
-    @Override
+	 * Returns the hash code value for this PemContent object.
+	 * @return the hash code value for this object
+	 */
+	@Override
 	public int hashCode() {
 		return Objects.hash(this.text);
 	}
 
 	/**
-     * Returns the string representation of the PemContent object.
-     *
-     * @return the string representation of the PemContent object
-     */
-    @Override
+	 * Returns the string representation of the PemContent object.
+	 * @return the string representation of the PemContent object
+	 */
+	@Override
 	public String toString() {
 		return this.text;
 	}
@@ -161,14 +158,13 @@ public final class PemContent {
 	}
 
 	/**
-     * Loads the content from the specified URL.
-     * 
-     * @param url the URL from which to load the content
-     * @return the loaded PemContent
-     * @throws IOException if an I/O error occurs while loading the content
-     * @throws IllegalArgumentException if the url is null
-     */
-    private static PemContent load(URL url) throws IOException {
+	 * Loads the content from the specified URL.
+	 * @param url the URL from which to load the content
+	 * @return the loaded PemContent
+	 * @throws IOException if an I/O error occurs while loading the content
+	 * @throws IllegalArgumentException if the url is null
+	 */
+	private static PemContent load(URL url) throws IOException {
 		Assert.notNull(url, "Url must not be null");
 		try (InputStream in = url.openStream()) {
 			return load(in);
@@ -176,13 +172,12 @@ public final class PemContent {
 	}
 
 	/**
-     * Loads the content from the given input stream.
-     * 
-     * @param in the input stream to load the content from
-     * @return the loaded PemContent object
-     * @throws IOException if an I/O error occurs while reading the input stream
-     */
-    private static PemContent load(InputStream in) throws IOException {
+	 * Loads the content from the given input stream.
+	 * @param in the input stream to load the content from
+	 * @return the loaded PemContent object
+	 * @throws IOException if an I/O error occurs while reading the input stream
+	 */
+	private static PemContent load(InputStream in) throws IOException {
 		return of(StreamUtils.copyToString(in, StandardCharsets.UTF_8));
 	}
 

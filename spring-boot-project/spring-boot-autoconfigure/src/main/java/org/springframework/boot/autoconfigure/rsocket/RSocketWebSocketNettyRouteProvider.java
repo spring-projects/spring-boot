@@ -48,14 +48,14 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 	private final Consumer<Builder> serverSpecCustomizer;
 
 	/**
-     * Constructs a new RSocketWebSocketNettyRouteProvider with the specified parameters.
-     *
-     * @param mappingPath the mapping path for the WebSocket route
-     * @param socketAcceptor the socket acceptor for handling incoming connections
-     * @param serverSpecCustomizer a consumer to customize the server spec
-     * @param customizers a stream of RSocketServerCustomizer to customize the RSocket server
-     */
-    RSocketWebSocketNettyRouteProvider(String mappingPath, SocketAcceptor socketAcceptor,
+	 * Constructs a new RSocketWebSocketNettyRouteProvider with the specified parameters.
+	 * @param mappingPath the mapping path for the WebSocket route
+	 * @param socketAcceptor the socket acceptor for handling incoming connections
+	 * @param serverSpecCustomizer a consumer to customize the server spec
+	 * @param customizers a stream of RSocketServerCustomizer to customize the RSocket
+	 * server
+	 */
+	RSocketWebSocketNettyRouteProvider(String mappingPath, SocketAcceptor socketAcceptor,
 			Consumer<Builder> serverSpecCustomizer, Stream<RSocketServerCustomizer> customizers) {
 		this.mappingPath = mappingPath;
 		this.socketAcceptor = socketAcceptor;
@@ -64,12 +64,12 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 	}
 
 	/**
-     * Applies the RSocket server configuration to the provided HttpServerRoutes.
-     * 
-     * @param httpServerRoutes the HttpServerRoutes to apply the RSocket server configuration to
-     * @return the modified HttpServerRoutes with the RSocket server configuration applied
-     */
-    @Override
+	 * Applies the RSocket server configuration to the provided HttpServerRoutes.
+	 * @param httpServerRoutes the HttpServerRoutes to apply the RSocket server
+	 * configuration to
+	 * @return the modified HttpServerRoutes with the RSocket server configuration applied
+	 */
+	@Override
 	public HttpServerRoutes apply(HttpServerRoutes httpServerRoutes) {
 		RSocketServer server = RSocketServer.create(this.socketAcceptor);
 		this.customizers.forEach((customizer) -> customizer.customize(server));
@@ -79,11 +79,10 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 	}
 
 	/**
-     * Creates a WebsocketServerSpec object with the specified serverSpecCustomizer.
-     * 
-     * @return the created WebsocketServerSpec object
-     */
-    private WebsocketServerSpec createWebsocketServerSpec() {
+	 * Creates a WebsocketServerSpec object with the specified serverSpecCustomizer.
+	 * @return the created WebsocketServerSpec object
+	 */
+	private WebsocketServerSpec createWebsocketServerSpec() {
 		WebsocketServerSpec.Builder builder = WebsocketServerSpec.builder();
 		this.serverSpecCustomizer.accept(builder);
 		return builder.build();

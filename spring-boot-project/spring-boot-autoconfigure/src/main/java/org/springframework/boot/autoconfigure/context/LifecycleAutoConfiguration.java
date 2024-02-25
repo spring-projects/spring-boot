@@ -37,15 +37,15 @@ import org.springframework.context.support.DefaultLifecycleProcessor;
 public class LifecycleAutoConfiguration {
 
 	/**
-     * Creates a default lifecycle processor bean if it is missing in the application context.
-     * The lifecycle processor is responsible for managing the lifecycle of beans in the application.
-     * If a custom lifecycle processor bean is already present in the context, this method will not create a new one.
-     * The timeout per shutdown phase is set based on the provided properties.
-     *
-     * @param properties the lifecycle properties to configure the lifecycle processor
-     * @return the default lifecycle processor bean
-     */
-    @Bean(name = AbstractApplicationContext.LIFECYCLE_PROCESSOR_BEAN_NAME)
+	 * Creates a default lifecycle processor bean if it is missing in the application
+	 * context. The lifecycle processor is responsible for managing the lifecycle of beans
+	 * in the application. If a custom lifecycle processor bean is already present in the
+	 * context, this method will not create a new one. The timeout per shutdown phase is
+	 * set based on the provided properties.
+	 * @param properties the lifecycle properties to configure the lifecycle processor
+	 * @return the default lifecycle processor bean
+	 */
+	@Bean(name = AbstractApplicationContext.LIFECYCLE_PROCESSOR_BEAN_NAME)
 	@ConditionalOnMissingBean(name = AbstractApplicationContext.LIFECYCLE_PROCESSOR_BEAN_NAME,
 			search = SearchStrategy.CURRENT)
 	public DefaultLifecycleProcessor defaultLifecycleProcessor(LifecycleProperties properties) {

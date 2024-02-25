@@ -48,22 +48,20 @@ public class RandomValuePropertySourceEnvironmentPostProcessor implements Enviro
 	}
 
 	/**
-     * Returns the order in which this post-processor should be executed.
-     * 
-     * @return the order value
-     */
-    @Override
+	 * Returns the order in which this post-processor should be executed.
+	 * @return the order value
+	 */
+	@Override
 	public int getOrder() {
 		return ORDER;
 	}
 
 	/**
-     * Post-processes the environment by adding a RandomValuePropertySource to it.
-     * 
-     * @param environment the configurable environment
-     * @param application the Spring application
-     */
-    @Override
+	 * Post-processes the environment by adding a RandomValuePropertySource to it.
+	 * @param environment the configurable environment
+	 * @param application the Spring application
+	 */
+	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		RandomValuePropertySource.addToEnvironment(environment, this.logger);
 	}

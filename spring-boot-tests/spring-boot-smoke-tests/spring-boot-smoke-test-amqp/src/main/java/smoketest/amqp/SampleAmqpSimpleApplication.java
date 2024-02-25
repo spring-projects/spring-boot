@@ -38,54 +38,50 @@ public class SampleAmqpSimpleApplication {
 	private static final Log logger = LogFactory.getLog(SampleAmqpSimpleApplication.class);
 
 	/**
-     * Creates a new instance of the Sender class.
-     * 
-     * @return the newly created Sender object
-     */
-    @Bean
+	 * Creates a new instance of the Sender class.
+	 * @return the newly created Sender object
+	 */
+	@Bean
 	public Sender mySender() {
 		return new Sender();
 	}
 
 	/**
-     * Creates a new instance of the fooQueue.
-     * 
-     * @return the fooQueue instance
-     */
-    @Bean
+	 * Creates a new instance of the fooQueue.
+	 * @return the fooQueue instance
+	 */
+	@Bean
 	public Queue fooQueue() {
 		return new Queue("foo");
 	}
 
 	/**
-     * Process the given payload.
-     * 
-     * @param foo the payload to be processed
-     */
-    @RabbitHandler
+	 * Process the given payload.
+	 * @param foo the payload to be processed
+	 */
+	@RabbitHandler
 	public void process(@Payload String foo) {
 		logger.info(foo);
 	}
 
 	/**
-     * This method is a bean that returns an ApplicationRunner object.
-     * The ApplicationRunner object is responsible for sending a message using the provided Sender object.
-     * 
-     * @param sender The Sender object used to send the message.
-     * @return An ApplicationRunner object that sends a "Hello" message.
-     */
-    @Bean
+	 * This method is a bean that returns an ApplicationRunner object. The
+	 * ApplicationRunner object is responsible for sending a message using the provided
+	 * Sender object.
+	 * @param sender The Sender object used to send the message.
+	 * @return An ApplicationRunner object that sends a "Hello" message.
+	 */
+	@Bean
 	public ApplicationRunner runner(Sender sender) {
 		return (args) -> sender.send("Hello");
 	}
 
 	/**
-     * The main method is the entry point of the application.
-     * It starts the Spring application by running the SampleAmqpSimpleApplication class.
-     * 
-     * @param args the command line arguments passed to the application
-     */
-    public static void main(String[] args) {
+	 * The main method is the entry point of the application. It starts the Spring
+	 * application by running the SampleAmqpSimpleApplication class.
+	 * @param args the command line arguments passed to the application
+	 */
+	public static void main(String[] args) {
 		SpringApplication.run(SampleAmqpSimpleApplication.class, args);
 	}
 

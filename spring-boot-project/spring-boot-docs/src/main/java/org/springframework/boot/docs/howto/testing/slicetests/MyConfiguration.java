@@ -32,24 +32,23 @@ import org.springframework.security.web.SecurityFilterChain;
 public class MyConfiguration {
 
 	/**
-     * Configures the security filter chain for the HTTP requests.
-     * 
-     * @param http the HttpSecurity object used for configuring the security
-     * @return the configured SecurityFilterChain object
-     * @throws Exception if an error occurs during configuration
-     */
-    @Bean
+	 * Configures the security filter chain for the HTTP requests.
+	 * @param http the HttpSecurity object used for configuring the security
+	 * @return the configured SecurityFilterChain object
+	 * @throws Exception if an error occurs during configuration
+	 */
+	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 		return http.build();
 	}
 
 	/**
-     * Creates a second data source using the configuration properties specified in "app.datasource.second".
-     * 
-     * @return the second data source
-     */
-    @Bean
+	 * Creates a second data source using the configuration properties specified in
+	 * "app.datasource.second".
+	 * @return the second data source
+	 */
+	@Bean
 	@ConfigurationProperties("app.datasource.second")
 	public BasicDataSource secondDataSource() {
 		return DataSourceBuilder.create().type(BasicDataSource.class).build();

@@ -26,42 +26,38 @@ class RedisUrlSyntaxException extends RuntimeException {
 	private final String url;
 
 	/**
-     * Constructs a new RedisUrlSyntaxException with the specified URL and cause.
-     * 
-     * @param url the URL that caused the exception
-     * @param cause the exception that caused this exception to be thrown
-     */
-    RedisUrlSyntaxException(String url, Exception cause) {
+	 * Constructs a new RedisUrlSyntaxException with the specified URL and cause.
+	 * @param url the URL that caused the exception
+	 * @param cause the exception that caused this exception to be thrown
+	 */
+	RedisUrlSyntaxException(String url, Exception cause) {
 		super(buildMessage(url), cause);
 		this.url = url;
 	}
 
 	/**
-     * Constructs a new RedisUrlSyntaxException with the specified URL.
-     * 
-     * @param url the URL that caused the exception
-     */
-    RedisUrlSyntaxException(String url) {
+	 * Constructs a new RedisUrlSyntaxException with the specified URL.
+	 * @param url the URL that caused the exception
+	 */
+	RedisUrlSyntaxException(String url) {
 		super(buildMessage(url));
 		this.url = url;
 	}
 
 	/**
-     * Returns the URL associated with this RedisUrlSyntaxException.
-     *
-     * @return the URL associated with this RedisUrlSyntaxException
-     */
-    String getUrl() {
+	 * Returns the URL associated with this RedisUrlSyntaxException.
+	 * @return the URL associated with this RedisUrlSyntaxException
+	 */
+	String getUrl() {
 		return this.url;
 	}
 
 	/**
-     * Builds an error message for an invalid Redis URL.
-     * 
-     * @param url the invalid Redis URL
-     * @return the error message
-     */
-    private static String buildMessage(String url) {
+	 * Builds an error message for an invalid Redis URL.
+	 * @param url the invalid Redis URL
+	 * @return the error message
+	 */
+	private static String buildMessage(String url) {
 		return "Invalid Redis URL '" + url + "'";
 	}
 

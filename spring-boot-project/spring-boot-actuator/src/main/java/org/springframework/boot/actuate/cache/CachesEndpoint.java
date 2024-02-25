@@ -108,13 +108,14 @@ public class CachesEndpoint {
 	}
 
 	/**
-     * Retrieves a list of cache entries based on the provided cache name and cache manager name predicates.
-     * 
-     * @param cacheNamePredicate A predicate used to filter cache names.
-     * @param cacheManagerNamePredicate A predicate used to filter cache manager names.
-     * @return A list of CacheEntryDescriptor objects representing the cache entries that match the provided predicates.
-     */
-    private List<CacheEntryDescriptor> getCacheEntries(Predicate<String> cacheNamePredicate,
+	 * Retrieves a list of cache entries based on the provided cache name and cache
+	 * manager name predicates.
+	 * @param cacheNamePredicate A predicate used to filter cache names.
+	 * @param cacheManagerNamePredicate A predicate used to filter cache manager names.
+	 * @return A list of CacheEntryDescriptor objects representing the cache entries that
+	 * match the provided predicates.
+	 */
+	private List<CacheEntryDescriptor> getCacheEntries(Predicate<String> cacheNamePredicate,
 			Predicate<String> cacheManagerNamePredicate) {
 		return this.cacheManagers.keySet()
 			.stream()
@@ -124,13 +125,13 @@ public class CachesEndpoint {
 	}
 
 	/**
-     * Retrieves a list of cache entries based on the provided cache manager name and cache name predicate.
-     * 
-     * @param cacheManagerName the name of the cache manager
-     * @param cacheNamePredicate the predicate used to filter cache names
-     * @return a list of CacheEntryDescriptor objects representing the cache entries
-     */
-    private List<CacheEntryDescriptor> getCacheEntries(String cacheManagerName, Predicate<String> cacheNamePredicate) {
+	 * Retrieves a list of cache entries based on the provided cache manager name and
+	 * cache name predicate.
+	 * @param cacheManagerName the name of the cache manager
+	 * @param cacheNamePredicate the predicate used to filter cache names
+	 * @return a list of CacheEntryDescriptor objects representing the cache entries
+	 */
+	private List<CacheEntryDescriptor> getCacheEntries(String cacheManagerName, Predicate<String> cacheNamePredicate) {
 		CacheManager cacheManager = this.cacheManagers.get(cacheManagerName);
 		return cacheManager.getCacheNames()
 			.stream()
@@ -142,14 +143,14 @@ public class CachesEndpoint {
 	}
 
 	/**
-     * Extracts a unique cache entry from the given list of cache entries.
-     * 
-     * @param cache   the name of the cache
-     * @param entries the list of cache entry descriptors
-     * @return the unique cache entry descriptor, or null if the list is empty
-     * @throws NonUniqueCacheException if the list contains more than one cache entry with different cache managers
-     */
-    private CacheEntryDescriptor extractUniqueCacheEntry(String cache, List<CacheEntryDescriptor> entries) {
+	 * Extracts a unique cache entry from the given list of cache entries.
+	 * @param cache the name of the cache
+	 * @param entries the list of cache entry descriptors
+	 * @return the unique cache entry descriptor, or null if the list is empty
+	 * @throws NonUniqueCacheException if the list contains more than one cache entry with
+	 * different cache managers
+	 */
+	private CacheEntryDescriptor extractUniqueCacheEntry(String cache, List<CacheEntryDescriptor> entries) {
 		if (entries.size() > 1) {
 			throw new NonUniqueCacheException(cache,
 					entries.stream().map(CacheEntryDescriptor::getCacheManager).distinct().toList());
@@ -158,12 +159,11 @@ public class CachesEndpoint {
 	}
 
 	/**
-     * Clears the cache specified by the given cache entry descriptor.
-     * 
-     * @param entry the cache entry descriptor containing the cache name and cache manager
-     * @return true if the cache was successfully cleared, false otherwise
-     */
-    private boolean clearCache(CacheEntryDescriptor entry) {
+	 * Clears the cache specified by the given cache entry descriptor.
+	 * @param entry the cache entry descriptor containing the cache name and cache manager
+	 * @return true if the cache was successfully cleared, false otherwise
+	 */
+	private boolean clearCache(CacheEntryDescriptor entry) {
 		String cacheName = entry.getName();
 		String cacheManager = entry.getCacheManager();
 		Cache cache = this.cacheManagers.get(cacheManager).getCache(cacheName);
@@ -175,21 +175,19 @@ public class CachesEndpoint {
 	}
 
 	/**
-     * Returns a Predicate that checks if a given name matches the specified name.
-     * 
-     * @param name the name to match against
-     * @return a Predicate that checks if a given name matches the specified name
-     */
-    private Predicate<String> isNameMatch(String name) {
+	 * Returns a Predicate that checks if a given name matches the specified name.
+	 * @param name the name to match against
+	 * @return a Predicate that checks if a given name matches the specified name
+	 */
+	private Predicate<String> isNameMatch(String name) {
 		return (name != null) ? ((requested) -> requested.equals(name)) : matchAll();
 	}
 
 	/**
-     * Returns a Predicate that matches all strings.
-     *
-     * @return a Predicate that matches all strings
-     */
-    private Predicate<String> matchAll() {
+	 * Returns a Predicate that matches all strings.
+	 * @return a Predicate that matches all strings
+	 */
+	private Predicate<String> matchAll() {
 		return (name) -> true;
 	}
 
@@ -201,20 +199,19 @@ public class CachesEndpoint {
 		private final Map<String, CacheManagerDescriptor> cacheManagers;
 
 		/**
-         * Constructs a new CachesDescriptor object with the specified cache managers.
-         * 
-         * @param cacheManagers a Map containing the cache managers, where the key is the cache manager name and the value is the CacheManagerDescriptor object
-         */
-        public CachesDescriptor(Map<String, CacheManagerDescriptor> cacheManagers) {
+		 * Constructs a new CachesDescriptor object with the specified cache managers.
+		 * @param cacheManagers a Map containing the cache managers, where the key is the
+		 * cache manager name and the value is the CacheManagerDescriptor object
+		 */
+		public CachesDescriptor(Map<String, CacheManagerDescriptor> cacheManagers) {
 			this.cacheManagers = cacheManagers;
 		}
 
 		/**
-         * Returns a map of cache managers.
-         * 
-         * @return a map containing cache manager descriptors
-         */
-        public Map<String, CacheManagerDescriptor> getCacheManagers() {
+		 * Returns a map of cache managers.
+		 * @return a map containing cache manager descriptors
+		 */
+		public Map<String, CacheManagerDescriptor> getCacheManagers() {
 			return this.cacheManagers;
 		}
 
@@ -228,20 +225,19 @@ public class CachesEndpoint {
 		private final Map<String, CacheDescriptor> caches;
 
 		/**
-         * Constructs a new CacheManagerDescriptor with the specified caches.
-         *
-         * @param caches a map of cache names to cache descriptors
-         */
-        public CacheManagerDescriptor(Map<String, CacheDescriptor> caches) {
+		 * Constructs a new CacheManagerDescriptor with the specified caches.
+		 * @param caches a map of cache names to cache descriptors
+		 */
+		public CacheManagerDescriptor(Map<String, CacheDescriptor> caches) {
 			this.caches = caches;
 		}
 
 		/**
-         * Returns a map of caches in the cache manager.
-         *
-         * @return a map of caches, where the key is the cache name and the value is the cache descriptor
-         */
-        public Map<String, CacheDescriptor> getCaches() {
+		 * Returns a map of caches in the cache manager.
+		 * @return a map of caches, where the key is the cache name and the value is the
+		 * cache descriptor
+		 */
+		public Map<String, CacheDescriptor> getCaches() {
 			return this.caches;
 		}
 
@@ -255,11 +251,10 @@ public class CachesEndpoint {
 		private final String target;
 
 		/**
-         * Constructs a new CacheDescriptor with the specified target.
-         *
-         * @param target the target of the cache descriptor
-         */
-        public CacheDescriptor(String target) {
+		 * Constructs a new CacheDescriptor with the specified target.
+		 * @param target the target of the cache descriptor
+		 */
+		public CacheDescriptor(String target) {
 			this.target = target;
 		}
 
@@ -283,32 +278,30 @@ public class CachesEndpoint {
 		private final String cacheManager;
 
 		/**
-         * Constructs a new CacheEntryDescriptor object with the specified cache and cache manager.
-         * 
-         * @param cache the cache object to associate with the descriptor
-         * @param cacheManager the name of the cache manager
-         */
-        public CacheEntryDescriptor(Cache cache, String cacheManager) {
+		 * Constructs a new CacheEntryDescriptor object with the specified cache and cache
+		 * manager.
+		 * @param cache the cache object to associate with the descriptor
+		 * @param cacheManager the name of the cache manager
+		 */
+		public CacheEntryDescriptor(Cache cache, String cacheManager) {
 			super(cache.getNativeCache().getClass().getName());
 			this.name = cache.getName();
 			this.cacheManager = cacheManager;
 		}
 
 		/**
-         * Returns the name of the CacheEntryDescriptor.
-         *
-         * @return the name of the CacheEntryDescriptor
-         */
-        public String getName() {
+		 * Returns the name of the CacheEntryDescriptor.
+		 * @return the name of the CacheEntryDescriptor
+		 */
+		public String getName() {
 			return this.name;
 		}
 
 		/**
-         * Returns the cache manager associated with this CacheEntryDescriptor.
-         *
-         * @return the cache manager associated with this CacheEntryDescriptor
-         */
-        public String getCacheManager() {
+		 * Returns the cache manager associated with this CacheEntryDescriptor.
+		 * @return the cache manager associated with this CacheEntryDescriptor
+		 */
+		public String getCacheManager() {
 			return this.cacheManager;
 		}
 

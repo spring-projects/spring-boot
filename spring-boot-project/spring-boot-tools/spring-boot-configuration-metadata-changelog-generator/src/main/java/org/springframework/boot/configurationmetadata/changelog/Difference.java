@@ -33,13 +33,13 @@ record Difference(DifferenceType type, ConfigurationMetadataProperty oldProperty
 		ConfigurationMetadataProperty newProperty) {
 
 	/**
-     * Computes the difference between two ConfigurationMetadataProperty objects.
-     * 
-     * @param oldProperty the old ConfigurationMetadataProperty object
-     * @param newProperty the new ConfigurationMetadataProperty object
-     * @return a Difference object representing the difference between the two properties, or null if there is no difference
-     */
-    static Difference compute(ConfigurationMetadataProperty oldProperty, ConfigurationMetadataProperty newProperty) {
+	 * Computes the difference between two ConfigurationMetadataProperty objects.
+	 * @param oldProperty the old ConfigurationMetadataProperty object
+	 * @param newProperty the new ConfigurationMetadataProperty object
+	 * @return a Difference object representing the difference between the two properties,
+	 * or null if there is no difference
+	 */
+	static Difference compute(ConfigurationMetadataProperty oldProperty, ConfigurationMetadataProperty newProperty) {
 		if (newProperty == null) {
 			if (!(oldProperty.isDeprecated() && oldProperty.getDeprecation().getLevel() == Level.ERROR)) {
 				return new Difference(DifferenceType.DELETED, oldProperty, null);

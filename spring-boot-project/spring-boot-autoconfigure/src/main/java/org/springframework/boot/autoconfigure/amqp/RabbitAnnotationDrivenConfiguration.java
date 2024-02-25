@@ -56,14 +56,14 @@ class RabbitAnnotationDrivenConfiguration {
 	private final RabbitProperties properties;
 
 	/**
-     * Constructs a new RabbitAnnotationDrivenConfiguration with the specified parameters.
-     *
-     * @param messageConverter        the object provider for the message converter
-     * @param messageRecoverer        the object provider for the message recoverer
-     * @param retryTemplateCustomizers the object provider for the retry template customizers
-     * @param properties              the RabbitMQ properties
-     */
-    RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
+	 * Constructs a new RabbitAnnotationDrivenConfiguration with the specified parameters.
+	 * @param messageConverter the object provider for the message converter
+	 * @param messageRecoverer the object provider for the message recoverer
+	 * @param retryTemplateCustomizers the object provider for the retry template
+	 * customizers
+	 * @param properties the RabbitMQ properties
+	 */
+	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
 			ObjectProvider<MessageRecoverer> messageRecoverer,
 			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers, RabbitProperties properties) {
 		this.messageConverter = messageConverter;
@@ -73,14 +73,16 @@ class RabbitAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Creates a new instance of SimpleRabbitListenerContainerFactoryConfigurer.
-     * This method is annotated with @Bean, indicating that it is a Spring bean and should be managed by the Spring container.
-     * It is also annotated with @ConditionalOnMissingBean, which means that this bean will only be created if there is no existing bean of the same type in the container.
-     * Additionally, it is annotated with @ConditionalOnThreading(Threading.PLATFORM), which specifies that this bean should only be created if the threading model is set to PLATFORM.
-     * 
-     * @return the created SimpleRabbitListenerContainerFactoryConfigurer bean
-     */
-    @Bean
+	 * Creates a new instance of SimpleRabbitListenerContainerFactoryConfigurer. This
+	 * method is annotated with @Bean, indicating that it is a Spring bean and should be
+	 * managed by the Spring container. It is also annotated
+	 * with @ConditionalOnMissingBean, which means that this bean will only be created if
+	 * there is no existing bean of the same type in the container. Additionally, it is
+	 * annotated with @ConditionalOnThreading(Threading.PLATFORM), which specifies that
+	 * this bean should only be created if the threading model is set to PLATFORM.
+	 * @return the created SimpleRabbitListenerContainerFactoryConfigurer bean
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
 	SimpleRabbitListenerContainerFactoryConfigurer simpleRabbitListenerContainerFactoryConfigurer() {
@@ -88,11 +90,10 @@ class RabbitAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Configures the SimpleRabbitListenerContainerFactory for virtual threads.
-     * 
-     * @return The SimpleRabbitListenerContainerFactoryConfigurer for virtual threads.
-     */
-    @Bean(name = "simpleRabbitListenerContainerFactoryConfigurer")
+	 * Configures the SimpleRabbitListenerContainerFactory for virtual threads.
+	 * @return The SimpleRabbitListenerContainerFactoryConfigurer for virtual threads.
+	 */
+	@Bean(name = "simpleRabbitListenerContainerFactoryConfigurer")
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	SimpleRabbitListenerContainerFactoryConfigurer simpleRabbitListenerContainerFactoryConfigurerVirtualThreads() {
@@ -102,17 +103,19 @@ class RabbitAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Creates a SimpleRabbitListenerContainerFactory bean with the name "rabbitListenerContainerFactory".
-     * This bean is conditional on the absence of another bean with the same name.
-     * It is also conditional on the property "spring.rabbitmq.listener.type" having the value "simple",
-     * with a default value of "simple" if the property is missing.
-     * 
-     * @param configurer The SimpleRabbitListenerContainerFactoryConfigurer used to configure the factory.
-     * @param connectionFactory The ConnectionFactory used by the factory.
-     * @param simpleContainerCustomizer The ContainerCustomizer used to customize the SimpleMessageListenerContainer.
-     * @return The created SimpleRabbitListenerContainerFactory bean.
-     */
-    @Bean(name = "rabbitListenerContainerFactory")
+	 * Creates a SimpleRabbitListenerContainerFactory bean with the name
+	 * "rabbitListenerContainerFactory". This bean is conditional on the absence of
+	 * another bean with the same name. It is also conditional on the property
+	 * "spring.rabbitmq.listener.type" having the value "simple", with a default value of
+	 * "simple" if the property is missing.
+	 * @param configurer The SimpleRabbitListenerContainerFactoryConfigurer used to
+	 * configure the factory.
+	 * @param connectionFactory The ConnectionFactory used by the factory.
+	 * @param simpleContainerCustomizer The ContainerCustomizer used to customize the
+	 * SimpleMessageListenerContainer.
+	 * @return The created SimpleRabbitListenerContainerFactory bean.
+	 */
+	@Bean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "simple",
 			matchIfMissing = true)
@@ -126,14 +129,16 @@ class RabbitAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Creates a new instance of DirectRabbitListenerContainerFactoryConfigurer.
-     * This method is annotated with @Bean, indicating that it is a Spring bean that will be managed by the Spring container.
-     * It is also annotated with @ConditionalOnMissingBean, which means that this bean will only be created if there is no existing bean of the same type in the container.
-     * Additionally, it is annotated with @ConditionalOnThreading(Threading.PLATFORM), which specifies that this bean will only be created if the threading model is set to PLATFORM.
-     * 
-     * @return The created DirectRabbitListenerContainerFactoryConfigurer instance.
-     */
-    @Bean
+	 * Creates a new instance of DirectRabbitListenerContainerFactoryConfigurer. This
+	 * method is annotated with @Bean, indicating that it is a Spring bean that will be
+	 * managed by the Spring container. It is also annotated
+	 * with @ConditionalOnMissingBean, which means that this bean will only be created if
+	 * there is no existing bean of the same type in the container. Additionally, it is
+	 * annotated with @ConditionalOnThreading(Threading.PLATFORM), which specifies that
+	 * this bean will only be created if the threading model is set to PLATFORM.
+	 * @return The created DirectRabbitListenerContainerFactoryConfigurer instance.
+	 */
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
 	DirectRabbitListenerContainerFactoryConfigurer directRabbitListenerContainerFactoryConfigurer() {
@@ -141,15 +146,18 @@ class RabbitAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Configures the DirectRabbitListenerContainerFactoryConfigurer bean for virtual threads.
-     * This method is annotated with @Bean to indicate that it is a bean definition method.
-     * The name attribute is set to "directRabbitListenerContainerFactoryConfigurer" to specify the bean name.
-     * The method is annotated with @ConditionalOnMissingBean to indicate that it should only be executed if there is no existing bean of the same type.
-     * The method is also annotated with @ConditionalOnThreading(Threading.VIRTUAL) to specify that it should only be executed if the threading mode is set to virtual.
-     * 
-     * @return The configured DirectRabbitListenerContainerFactoryConfigurer bean for virtual threads.
-     */
-    @Bean(name = "directRabbitListenerContainerFactoryConfigurer")
+	 * Configures the DirectRabbitListenerContainerFactoryConfigurer bean for virtual
+	 * threads. This method is annotated with @Bean to indicate that it is a bean
+	 * definition method. The name attribute is set to
+	 * "directRabbitListenerContainerFactoryConfigurer" to specify the bean name. The
+	 * method is annotated with @ConditionalOnMissingBean to indicate that it should only
+	 * be executed if there is no existing bean of the same type. The method is also
+	 * annotated with @ConditionalOnThreading(Threading.VIRTUAL) to specify that it should
+	 * only be executed if the threading mode is set to virtual.
+	 * @return The configured DirectRabbitListenerContainerFactoryConfigurer bean for
+	 * virtual threads.
+	 */
+	@Bean(name = "directRabbitListenerContainerFactoryConfigurer")
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	DirectRabbitListenerContainerFactoryConfigurer directRabbitListenerContainerFactoryConfigurerVirtualThreads() {
@@ -159,15 +167,18 @@ class RabbitAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Creates a DirectRabbitListenerContainerFactory bean with the name "rabbitListenerContainerFactory".
-     * This bean is conditional on the absence of another bean with the same name and the property "spring.rabbitmq.listener.type" having the value "direct".
-     * 
-     * @param configurer The DirectRabbitListenerContainerFactoryConfigurer used to configure the factory.
-     * @param connectionFactory The ConnectionFactory used by the factory.
-     * @param directContainerCustomizer The ContainerCustomizer used to customize the DirectMessageListenerContainer.
-     * @return The created DirectRabbitListenerContainerFactory bean.
-     */
-    @Bean(name = "rabbitListenerContainerFactory")
+	 * Creates a DirectRabbitListenerContainerFactory bean with the name
+	 * "rabbitListenerContainerFactory". This bean is conditional on the absence of
+	 * another bean with the same name and the property "spring.rabbitmq.listener.type"
+	 * having the value "direct".
+	 * @param configurer The DirectRabbitListenerContainerFactoryConfigurer used to
+	 * configure the factory.
+	 * @param connectionFactory The ConnectionFactory used by the factory.
+	 * @param directContainerCustomizer The ContainerCustomizer used to customize the
+	 * DirectMessageListenerContainer.
+	 * @return The created DirectRabbitListenerContainerFactory bean.
+	 */
+	@Bean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "direct")
 	DirectRabbitListenerContainerFactory directRabbitListenerContainerFactory(
@@ -180,11 +191,11 @@ class RabbitAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Configures the SimpleRabbitListenerContainerFactoryConfigurer for the RabbitAnnotationDrivenConfiguration class.
-     * 
-     * @return The configured SimpleRabbitListenerContainerFactoryConfigurer object.
-     */
-    private SimpleRabbitListenerContainerFactoryConfigurer simpleListenerConfigurer() {
+	 * Configures the SimpleRabbitListenerContainerFactoryConfigurer for the
+	 * RabbitAnnotationDrivenConfiguration class.
+	 * @return The configured SimpleRabbitListenerContainerFactoryConfigurer object.
+	 */
+	private SimpleRabbitListenerContainerFactoryConfigurer simpleListenerConfigurer() {
 		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer(
 				this.properties);
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
@@ -194,11 +205,10 @@ class RabbitAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * Configures the DirectRabbitListenerContainerFactory.
-     * 
-     * @return The DirectRabbitListenerContainerFactoryConfigurer object.
-     */
-    private DirectRabbitListenerContainerFactoryConfigurer directListenerConfigurer() {
+	 * Configures the DirectRabbitListenerContainerFactory.
+	 * @return The DirectRabbitListenerContainerFactoryConfigurer object.
+	 */
+	private DirectRabbitListenerContainerFactoryConfigurer directListenerConfigurer() {
 		DirectRabbitListenerContainerFactoryConfigurer configurer = new DirectRabbitListenerContainerFactoryConfigurer(
 				this.properties);
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
@@ -208,9 +218,9 @@ class RabbitAnnotationDrivenConfiguration {
 	}
 
 	/**
-     * EnableRabbitConfiguration class.
-     */
-    @Configuration(proxyBeanMethods = false)
+	 * EnableRabbitConfiguration class.
+	 */
+	@Configuration(proxyBeanMethods = false)
 	@EnableRabbit
 	@ConditionalOnMissingBean(name = RabbitListenerConfigUtils.RABBIT_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	static class EnableRabbitConfiguration {

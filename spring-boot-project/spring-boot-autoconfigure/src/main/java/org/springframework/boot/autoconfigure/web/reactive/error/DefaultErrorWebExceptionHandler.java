@@ -108,12 +108,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	}
 
 	/**
-     * Returns the routing function for handling errors.
-     *
-     * @param errorAttributes the error attributes to be used
-     * @return the routing function for handling errors
-     */
-    @Override
+	 * Returns the routing function for handling errors.
+	 * @param errorAttributes the error attributes to be used
+	 * @return the routing function for handling errors
+	 */
+	@Override
 	protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
 		return route(acceptsTextHtml(), this::renderErrorView).andRoute(all(), this::renderErrorResponse);
 	}
@@ -135,12 +134,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	}
 
 	/**
-     * Retrieves data based on the given error status.
-     * 
-     * @param errorStatus the error status code
-     * @return a list of strings representing the data
-     */
-    private List<String> getData(int errorStatus) {
+	 * Retrieves data based on the given error status.
+	 * @param errorStatus the error status code
+	 * @return a list of strings representing the data
+	 */
+	private List<String> getData(int errorStatus) {
 		List<String> data = new ArrayList<>();
 		data.add("error/" + errorStatus);
 		HttpStatus.Series series = HttpStatus.Series.resolve(errorStatus);
@@ -164,13 +162,12 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	}
 
 	/**
-     * Returns the ErrorAttributeOptions based on the given ServerRequest and MediaType.
-     * 
-     * @param request the ServerRequest object representing the current request
-     * @param mediaType the MediaType object representing the requested media type
-     * @return the ErrorAttributeOptions object with the appropriate options set
-     */
-    protected ErrorAttributeOptions getErrorAttributeOptions(ServerRequest request, MediaType mediaType) {
+	 * Returns the ErrorAttributeOptions based on the given ServerRequest and MediaType.
+	 * @param request the ServerRequest object representing the current request
+	 * @param mediaType the MediaType object representing the requested media type
+	 * @return the ErrorAttributeOptions object with the appropriate options set
+	 */
+	protected ErrorAttributeOptions getErrorAttributeOptions(ServerRequest request, MediaType mediaType) {
 		ErrorAttributeOptions options = ErrorAttributeOptions.defaults();
 		if (this.errorProperties.isIncludeException()) {
 			options = options.including(Include.EXCEPTION);

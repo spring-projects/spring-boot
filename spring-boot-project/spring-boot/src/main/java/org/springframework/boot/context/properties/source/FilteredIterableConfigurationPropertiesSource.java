@@ -29,43 +29,44 @@ class FilteredIterableConfigurationPropertiesSource extends FilteredConfiguratio
 		implements IterableConfigurationPropertySource {
 
 	/**
-     * Constructs a new FilteredIterableConfigurationPropertiesSource with the specified source and filter.
-     *
-     * @param source the IterableConfigurationPropertySource to be filtered
-     * @param filter the Predicate used to filter the ConfigurationPropertyNames
-     */
-    FilteredIterableConfigurationPropertiesSource(IterableConfigurationPropertySource source,
+	 * Constructs a new FilteredIterableConfigurationPropertiesSource with the specified
+	 * source and filter.
+	 * @param source the IterableConfigurationPropertySource to be filtered
+	 * @param filter the Predicate used to filter the ConfigurationPropertyNames
+	 */
+	FilteredIterableConfigurationPropertiesSource(IterableConfigurationPropertySource source,
 			Predicate<ConfigurationPropertyName> filter) {
 		super(source, filter);
 	}
 
 	/**
-     * Returns a stream of ConfigurationPropertyName objects.
-     * 
-     * @return a stream of ConfigurationPropertyName objects
-     */
-    @Override
+	 * Returns a stream of ConfigurationPropertyName objects.
+	 * @return a stream of ConfigurationPropertyName objects
+	 */
+	@Override
 	public Stream<ConfigurationPropertyName> stream() {
 		return getSource().stream().filter(getFilter());
 	}
 
 	/**
-     * Returns the source of the configuration property as an IterableConfigurationPropertySource.
-     * 
-     * @return the source of the configuration property as an IterableConfigurationPropertySource
-     */
-    @Override
+	 * Returns the source of the configuration property as an
+	 * IterableConfigurationPropertySource.
+	 * @return the source of the configuration property as an
+	 * IterableConfigurationPropertySource
+	 */
+	@Override
 	protected IterableConfigurationPropertySource getSource() {
 		return (IterableConfigurationPropertySource) super.getSource();
 	}
 
 	/**
-     * Returns the state of whether this configuration property source contains a descendant of the specified configuration property name.
-     * 
-     * @param name the configuration property name to check for descendants
-     * @return the state of whether this configuration property source contains a descendant of the specified configuration property name
-     */
-    @Override
+	 * Returns the state of whether this configuration property source contains a
+	 * descendant of the specified configuration property name.
+	 * @param name the configuration property name to check for descendants
+	 * @return the state of whether this configuration property source contains a
+	 * descendant of the specified configuration property name
+	 */
+	@Override
 	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		return ConfigurationPropertyState.search(this, name::isAncestorOf);
 	}

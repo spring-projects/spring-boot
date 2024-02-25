@@ -36,12 +36,11 @@ class FileSnapshot {
 	private final long lastModified;
 
 	/**
-     * Constructs a new FileSnapshot object with the given file.
-     * 
-     * @param file the file to create a snapshot of
-     * @throws IllegalArgumentException if the file is null or if the file is a directory
-     */
-    FileSnapshot(File file) {
+	 * Constructs a new FileSnapshot object with the given file.
+	 * @param file the file to create a snapshot of
+	 * @throws IllegalArgumentException if the file is null or if the file is a directory
+	 */
+	FileSnapshot(File file) {
 		Assert.notNull(file, "File must not be null");
 		Assert.isTrue(file.isFile() || !file.exists(), "File must not be a directory");
 		this.file = file;
@@ -51,21 +50,19 @@ class FileSnapshot {
 	}
 
 	/**
-     * Returns the file associated with this FileSnapshot.
-     *
-     * @return the file associated with this FileSnapshot
-     */
-    File getFile() {
+	 * Returns the file associated with this FileSnapshot.
+	 * @return the file associated with this FileSnapshot
+	 */
+	File getFile() {
 		return this.file;
 	}
 
 	/**
-     * Compares this FileSnapshot object to the specified object for equality.
-     * 
-     * @param obj the object to compare to
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
+	 * Compares this FileSnapshot object to the specified object for equality.
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -84,13 +81,13 @@ class FileSnapshot {
 	}
 
 	/**
-     * Returns the hash code value for this FileSnapshot object.
-     * 
-     * The hash code is calculated based on the file path, existence status, length, and last modified timestamp of the file.
-     * 
-     * @return the hash code value for this FileSnapshot object
-     */
-    @Override
+	 * Returns the hash code value for this FileSnapshot object.
+	 *
+	 * The hash code is calculated based on the file path, existence status, length, and
+	 * last modified timestamp of the file.
+	 * @return the hash code value for this FileSnapshot object
+	 */
+	@Override
 	public int hashCode() {
 		int hashCode = this.file.hashCode();
 		hashCode = 31 * hashCode + Boolean.hashCode(this.exists);
@@ -100,11 +97,10 @@ class FileSnapshot {
 	}
 
 	/**
-     * Returns a string representation of the FileSnapshot object.
-     * 
-     * @return a string representation of the FileSnapshot object
-     */
-    @Override
+	 * Returns a string representation of the FileSnapshot object.
+	 * @return a string representation of the FileSnapshot object
+	 */
+	@Override
 	public String toString() {
 		return this.file.toString();
 	}

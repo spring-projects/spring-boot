@@ -44,53 +44,49 @@ final class SinglePublishedArtifact implements Buildable {
 	private PublishArtifact currentArtifact;
 
 	/**
-     * Creates a new instance of SinglePublishedArtifact with the specified configuration and artifact handler.
-     * 
-     * @param configuration the configuration for the artifact
-     * @param handler the handler for the artifact
-     */
-    SinglePublishedArtifact(Configuration configuration, ArtifactHandler handler) {
+	 * Creates a new instance of SinglePublishedArtifact with the specified configuration
+	 * and artifact handler.
+	 * @param configuration the configuration for the artifact
+	 * @param handler the handler for the artifact
+	 */
+	SinglePublishedArtifact(Configuration configuration, ArtifactHandler handler) {
 		this.configuration = configuration;
 		this.handler = handler;
 	}
 
 	/**
-     * Adds a war candidate to the list of candidates.
-     * 
-     * @param candidate the war candidate to be added
-     */
-    void addWarCandidate(TaskProvider<BootWar> candidate) {
+	 * Adds a war candidate to the list of candidates.
+	 * @param candidate the war candidate to be added
+	 */
+	void addWarCandidate(TaskProvider<BootWar> candidate) {
 		add(candidate);
 	}
 
 	/**
-     * Adds a candidate for a JAR file to be published.
-     * 
-     * @param candidate the candidate to be added
-     * @throws IllegalArgumentException if the current artifact is already set
-     */
-    void addJarCandidate(TaskProvider<BootJar> candidate) {
+	 * Adds a candidate for a JAR file to be published.
+	 * @param candidate the candidate to be added
+	 * @throws IllegalArgumentException if the current artifact is already set
+	 */
+	void addJarCandidate(TaskProvider<BootJar> candidate) {
 		if (this.currentArtifact == null) {
 			add(candidate);
 		}
 	}
 
 	/**
-     * Adds a new artifact to the configuration.
-     * 
-     * @param artifact the artifact to be added
-     */
-    private void add(TaskProvider<? extends Jar> artifact) {
+	 * Adds a new artifact to the configuration.
+	 * @param artifact the artifact to be added
+	 */
+	private void add(TaskProvider<? extends Jar> artifact) {
 		this.configuration.getArtifacts().remove(this.currentArtifact);
 		this.currentArtifact = this.handler.add(this.configuration.getName(), artifact);
 	}
 
 	/**
-     * Returns the build dependencies for the SinglePublishedArtifact.
-     * 
-     * @return the build dependencies for the SinglePublishedArtifact
-     */
-    @Override
+	 * Returns the build dependencies for the SinglePublishedArtifact.
+	 * @return the build dependencies for the SinglePublishedArtifact
+	 */
+	@Override
 	public TaskDependency getBuildDependencies() {
 		return this.configuration.getArtifacts().getBuildDependencies();
 	}

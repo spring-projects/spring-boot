@@ -30,11 +30,11 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 public class MyRedisCacheManagerConfiguration {
 
 	/**
-     * Customizes the RedisCacheManager builder by configuring cache configurations for cache1 and cache2.
-     * 
-     * @return the RedisCacheManagerBuilderCustomizer
-     */
-    @Bean
+	 * Customizes the RedisCacheManager builder by configuring cache configurations for
+	 * cache1 and cache2.
+	 * @return the RedisCacheManagerBuilderCustomizer
+	 */
+	@Bean
 	public RedisCacheManagerBuilderCustomizer myRedisCacheManagerBuilderCustomizer() {
 		// @formatter:off
 		return (builder) -> builder

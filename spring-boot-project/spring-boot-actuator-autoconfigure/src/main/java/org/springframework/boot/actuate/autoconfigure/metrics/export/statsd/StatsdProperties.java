@@ -88,182 +88,164 @@ public class StatsdProperties {
 	private boolean buffered = true;
 
 	/**
-     * Returns the current status of the enabled flag.
-     *
-     * @return true if the enabled flag is set to true, false otherwise.
-     */
-    public boolean isEnabled() {
+	 * Returns the current status of the enabled flag.
+	 * @return true if the enabled flag is set to true, false otherwise.
+	 */
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
 	/**
-     * Sets the enabled status of the StatsdProperties.
-     * 
-     * @param enabled the enabled status to be set
-     */
-    public void setEnabled(boolean enabled) {
+	 * Sets the enabled status of the StatsdProperties.
+	 * @param enabled the enabled status to be set
+	 */
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	/**
-     * Returns the flavor of the Statsd server.
-     * 
-     * @return the flavor of the Statsd server
-     */
-    public StatsdFlavor getFlavor() {
+	 * Returns the flavor of the Statsd server.
+	 * @return the flavor of the Statsd server
+	 */
+	public StatsdFlavor getFlavor() {
 		return this.flavor;
 	}
 
 	/**
-     * Sets the flavor of the Statsd client.
-     * 
-     * @param flavor the flavor to set
-     */
-    public void setFlavor(StatsdFlavor flavor) {
+	 * Sets the flavor of the Statsd client.
+	 * @param flavor the flavor to set
+	 */
+	public void setFlavor(StatsdFlavor flavor) {
 		this.flavor = flavor;
 	}
 
 	/**
-     * Returns the host value of the StatsdProperties object.
-     *
-     * @return the host value of the StatsdProperties object
-     */
-    public String getHost() {
+	 * Returns the host value of the StatsdProperties object.
+	 * @return the host value of the StatsdProperties object
+	 */
+	public String getHost() {
 		return this.host;
 	}
 
 	/**
-     * Sets the host for the StatsdProperties.
-     * 
-     * @param host the host to set
-     */
-    public void setHost(String host) {
+	 * Sets the host for the StatsdProperties.
+	 * @param host the host to set
+	 */
+	public void setHost(String host) {
 		this.host = host;
 	}
 
 	/**
-     * Returns the port number for the Statsd server.
-     *
-     * @return the port number for the Statsd server
-     */
-    public Integer getPort() {
+	 * Returns the port number for the Statsd server.
+	 * @return the port number for the Statsd server
+	 */
+	public Integer getPort() {
 		return this.port;
 	}
 
 	/**
-     * Sets the port for StatsdProperties.
-     * 
-     * @param port the port to be set
-     */
-    public void setPort(Integer port) {
+	 * Sets the port for StatsdProperties.
+	 * @param port the port to be set
+	 */
+	public void setPort(Integer port) {
 		this.port = port;
 	}
 
 	/**
-     * Returns the protocol used by the StatsdProperties.
-     *
-     * @return the protocol used by the StatsdProperties
-     */
-    public StatsdProtocol getProtocol() {
+	 * Returns the protocol used by the StatsdProperties.
+	 * @return the protocol used by the StatsdProperties
+	 */
+	public StatsdProtocol getProtocol() {
 		return this.protocol;
 	}
 
 	/**
-     * Sets the protocol for sending data to Statsd.
-     * 
-     * @param protocol the protocol to be set
-     */
-    public void setProtocol(StatsdProtocol protocol) {
+	 * Sets the protocol for sending data to Statsd.
+	 * @param protocol the protocol to be set
+	 */
+	public void setProtocol(StatsdProtocol protocol) {
 		this.protocol = protocol;
 	}
 
 	/**
-     * Returns the maximum packet length.
-     *
-     * @return the maximum packet length
-     */
-    public Integer getMaxPacketLength() {
+	 * Returns the maximum packet length.
+	 * @return the maximum packet length
+	 */
+	public Integer getMaxPacketLength() {
 		return this.maxPacketLength;
 	}
 
 	/**
-     * Sets the maximum packet length for StatsdProperties.
-     * 
-     * @param maxPacketLength the maximum packet length to be set
-     */
-    public void setMaxPacketLength(Integer maxPacketLength) {
+	 * Sets the maximum packet length for StatsdProperties.
+	 * @param maxPacketLength the maximum packet length to be set
+	 */
+	public void setMaxPacketLength(Integer maxPacketLength) {
 		this.maxPacketLength = maxPacketLength;
 	}
 
 	/**
-     * Returns the polling frequency for the StatsdProperties.
-     *
-     * @return the polling frequency as a Duration object
-     */
-    public Duration getPollingFrequency() {
+	 * Returns the polling frequency for the StatsdProperties.
+	 * @return the polling frequency as a Duration object
+	 */
+	public Duration getPollingFrequency() {
 		return this.pollingFrequency;
 	}
 
 	/**
-     * Sets the polling frequency for the StatsdProperties.
-     * 
-     * @param pollingFrequency the duration representing the polling frequency
-     */
-    public void setPollingFrequency(Duration pollingFrequency) {
+	 * Sets the polling frequency for the StatsdProperties.
+	 * @param pollingFrequency the duration representing the polling frequency
+	 */
+	public void setPollingFrequency(Duration pollingFrequency) {
 		this.pollingFrequency = pollingFrequency;
 	}
 
 	/**
-     * Returns the step duration.
-     *
-     * @return the step duration
-     */
-    public Duration getStep() {
+	 * Returns the step duration.
+	 * @return the step duration
+	 */
+	public Duration getStep() {
 		return this.step;
 	}
 
 	/**
-     * Sets the step duration for sending metrics to StatsD.
-     * 
-     * @param step the duration of the step
-     */
-    public void setStep(Duration step) {
+	 * Sets the step duration for sending metrics to StatsD.
+	 * @param step the duration of the step
+	 */
+	public void setStep(Duration step) {
 		this.step = step;
 	}
 
 	/**
-     * Returns the value of the publishUnchangedMeters property.
-     * 
-     * @return true if unchanged meters should be published, false otherwise
-     */
-    public boolean isPublishUnchangedMeters() {
+	 * Returns the value of the publishUnchangedMeters property.
+	 * @return true if unchanged meters should be published, false otherwise
+	 */
+	public boolean isPublishUnchangedMeters() {
 		return this.publishUnchangedMeters;
 	}
 
 	/**
-     * Sets the flag to determine whether unchanged meters should be published.
-     * 
-     * @param publishUnchangedMeters true if unchanged meters should be published, false otherwise
-     */
-    public void setPublishUnchangedMeters(boolean publishUnchangedMeters) {
+	 * Sets the flag to determine whether unchanged meters should be published.
+	 * @param publishUnchangedMeters true if unchanged meters should be published, false
+	 * otherwise
+	 */
+	public void setPublishUnchangedMeters(boolean publishUnchangedMeters) {
 		this.publishUnchangedMeters = publishUnchangedMeters;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the StatsdProperties object is buffered.
-     * 
-     * @return true if the StatsdProperties object is buffered, false otherwise
-     */
-    public boolean isBuffered() {
+	 * Returns a boolean value indicating whether the StatsdProperties object is buffered.
+	 * @return true if the StatsdProperties object is buffered, false otherwise
+	 */
+	public boolean isBuffered() {
 		return this.buffered;
 	}
 
 	/**
-     * Sets the value indicating whether the data should be buffered before sending to the StatsD server.
-     * 
-     * @param buffered true if the data should be buffered, false otherwise
-     */
-    public void setBuffered(boolean buffered) {
+	 * Sets the value indicating whether the data should be buffered before sending to the
+	 * StatsD server.
+	 * @param buffered true if the data should be buffered, false otherwise
+	 */
+	public void setBuffered(boolean buffered) {
 		this.buffered = buffered;
 	}
 

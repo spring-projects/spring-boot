@@ -29,19 +29,18 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 class EnversRevisionRepositoriesRegistrar extends JpaRepositoriesRegistrar {
 
 	/**
-     * Retrieves the configuration class for enabling JPA repositories.
-     * 
-     * @return The configuration class for enabling JPA repositories.
-     */
-    @Override
+	 * Retrieves the configuration class for enabling JPA repositories.
+	 * @return The configuration class for enabling JPA repositories.
+	 */
+	@Override
 	protected Class<?> getConfiguration() {
 		return EnableJpaRepositoriesConfiguration.class;
 	}
 
 	/**
-     * EnableJpaRepositoriesConfiguration class.
-     */
-    @EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
+	 * EnableJpaRepositoriesConfiguration class.
+	 */
+	@EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
 	private static final class EnableJpaRepositoriesConfiguration {
 
 	}

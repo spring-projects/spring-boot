@@ -74,171 +74,153 @@ class UndertowWebServerFactoryDelegate {
 	private boolean useForwardHeaders;
 
 	/**
-     * Set the customizers to be applied to the Undertow builder.
-     * 
-     * @param customizers the customizers to be applied
-     * @throws IllegalArgumentException if the customizers are null
-     */
-    void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
+	 * Set the customizers to be applied to the Undertow builder.
+	 * @param customizers the customizers to be applied
+	 * @throws IllegalArgumentException if the customizers are null
+	 */
+	void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.builderCustomizers = new LinkedHashSet<>(customizers);
 	}
 
 	/**
-     * Add customizers to the Undertow builder.
-     * 
-     * @param customizers the Undertow builder customizers to add (must not be null)
-     * @throws IllegalArgumentException if the customizers parameter is null
-     */
-    void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
+	 * Add customizers to the Undertow builder.
+	 * @param customizers the Undertow builder customizers to add (must not be null)
+	 * @throws IllegalArgumentException if the customizers parameter is null
+	 */
+	void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.builderCustomizers.addAll(Arrays.asList(customizers));
 	}
 
 	/**
-     * Get the collection of UndertowBuilderCustomizer objects.
-     *
-     * @return the collection of UndertowBuilderCustomizer objects
-     */
-    Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
+	 * Get the collection of UndertowBuilderCustomizer objects.
+	 * @return the collection of UndertowBuilderCustomizer objects
+	 */
+	Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
 		return this.builderCustomizers;
 	}
 
 	/**
-     * Sets the buffer size for the Undertow web server.
-     * 
-     * @param bufferSize the buffer size to be set
-     */
-    void setBufferSize(Integer bufferSize) {
+	 * Sets the buffer size for the Undertow web server.
+	 * @param bufferSize the buffer size to be set
+	 */
+	void setBufferSize(Integer bufferSize) {
 		this.bufferSize = bufferSize;
 	}
 
 	/**
-     * Sets the number of I/O threads to be used by the Undertow web server.
-     * 
-     * @param ioThreads the number of I/O threads
-     */
-    void setIoThreads(Integer ioThreads) {
+	 * Sets the number of I/O threads to be used by the Undertow web server.
+	 * @param ioThreads the number of I/O threads
+	 */
+	void setIoThreads(Integer ioThreads) {
 		this.ioThreads = ioThreads;
 	}
 
 	/**
-     * Sets the number of worker threads for the Undertow web server.
-     * 
-     * @param workerThreads the number of worker threads to set
-     */
-    void setWorkerThreads(Integer workerThreads) {
+	 * Sets the number of worker threads for the Undertow web server.
+	 * @param workerThreads the number of worker threads to set
+	 */
+	void setWorkerThreads(Integer workerThreads) {
 		this.workerThreads = workerThreads;
 	}
 
 	/**
-     * Sets whether to use direct buffers for the Undertow web server.
-     * 
-     * @param directBuffers
-     *            a boolean value indicating whether to use direct buffers
-     */
-    void setUseDirectBuffers(Boolean directBuffers) {
+	 * Sets whether to use direct buffers for the Undertow web server.
+	 * @param directBuffers a boolean value indicating whether to use direct buffers
+	 */
+	void setUseDirectBuffers(Boolean directBuffers) {
 		this.directBuffers = directBuffers;
 	}
 
 	/**
-     * Sets the directory where the access logs will be stored.
-     * 
-     * @param accessLogDirectory the directory where the access logs will be stored
-     */
-    void setAccessLogDirectory(File accessLogDirectory) {
+	 * Sets the directory where the access logs will be stored.
+	 * @param accessLogDirectory the directory where the access logs will be stored
+	 */
+	void setAccessLogDirectory(File accessLogDirectory) {
 		this.accessLogDirectory = accessLogDirectory;
 	}
 
 	/**
-     * Sets the access log pattern for the Undertow web server.
-     * 
-     * @param accessLogPattern the access log pattern to be set
-     */
-    void setAccessLogPattern(String accessLogPattern) {
+	 * Sets the access log pattern for the Undertow web server.
+	 * @param accessLogPattern the access log pattern to be set
+	 */
+	void setAccessLogPattern(String accessLogPattern) {
 		this.accessLogPattern = accessLogPattern;
 	}
 
 	/**
-     * Sets the prefix for the access log file name.
-     * 
-     * @param accessLogPrefix the prefix to be set for the access log file name
-     */
-    void setAccessLogPrefix(String accessLogPrefix) {
+	 * Sets the prefix for the access log file name.
+	 * @param accessLogPrefix the prefix to be set for the access log file name
+	 */
+	void setAccessLogPrefix(String accessLogPrefix) {
 		this.accessLogPrefix = accessLogPrefix;
 	}
 
 	/**
-     * Returns the access log prefix.
-     *
-     * @return the access log prefix
-     */
-    String getAccessLogPrefix() {
+	 * Returns the access log prefix.
+	 * @return the access log prefix
+	 */
+	String getAccessLogPrefix() {
 		return this.accessLogPrefix;
 	}
 
 	/**
-     * Sets the suffix for the access log file.
-     * 
-     * @param accessLogSuffix the suffix to be set for the access log file
-     */
-    void setAccessLogSuffix(String accessLogSuffix) {
+	 * Sets the suffix for the access log file.
+	 * @param accessLogSuffix the suffix to be set for the access log file
+	 */
+	void setAccessLogSuffix(String accessLogSuffix) {
 		this.accessLogSuffix = accessLogSuffix;
 	}
 
 	/**
-     * Sets whether access log is enabled for the Undertow web server.
-     * 
-     * @param accessLogEnabled true to enable access log, false otherwise
-     */
-    void setAccessLogEnabled(boolean accessLogEnabled) {
+	 * Sets whether access log is enabled for the Undertow web server.
+	 * @param accessLogEnabled true to enable access log, false otherwise
+	 */
+	void setAccessLogEnabled(boolean accessLogEnabled) {
 		this.accessLogEnabled = accessLogEnabled;
 	}
 
 	/**
-     * Returns a boolean value indicating whether the access log is enabled.
-     *
-     * @return {@code true} if the access log is enabled, {@code false} otherwise
-     */
-    boolean isAccessLogEnabled() {
+	 * Returns a boolean value indicating whether the access log is enabled.
+	 * @return {@code true} if the access log is enabled, {@code false} otherwise
+	 */
+	boolean isAccessLogEnabled() {
 		return this.accessLogEnabled;
 	}
 
 	/**
-     * Sets whether to rotate the access log files.
-     * 
-     * @param accessLogRotate true to enable access log rotation, false otherwise
-     */
-    void setAccessLogRotate(boolean accessLogRotate) {
+	 * Sets whether to rotate the access log files.
+	 * @param accessLogRotate true to enable access log rotation, false otherwise
+	 */
+	void setAccessLogRotate(boolean accessLogRotate) {
 		this.accessLogRotate = accessLogRotate;
 	}
 
 	/**
-     * Sets whether to use forward headers.
-     * 
-     * @param useForwardHeaders true to use forward headers, false otherwise
-     */
-    void setUseForwardHeaders(boolean useForwardHeaders) {
+	 * Sets whether to use forward headers.
+	 * @param useForwardHeaders true to use forward headers, false otherwise
+	 */
+	void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
 	}
 
 	/**
-     * Returns a boolean value indicating whether forward headers are being used.
-     *
-     * @return {@code true} if forward headers are being used, {@code false} otherwise
-     */
-    boolean isUseForwardHeaders() {
+	 * Returns a boolean value indicating whether forward headers are being used.
+	 * @return {@code true} if forward headers are being used, {@code false} otherwise
+	 */
+	boolean isUseForwardHeaders() {
 		return this.useForwardHeaders;
 	}
 
 	/**
-     * Creates a builder for configuring an Undertow web server based on the provided factory and SSL bundle supplier.
-     * 
-     * @param factory the factory used to configure the web server
-     * @param sslBundleSupplier the supplier for obtaining the SSL bundle
-     * @return the configured Undertow builder
-     */
-    Builder createBuilder(AbstractConfigurableWebServerFactory factory, Supplier<SslBundle> sslBundleSupplier) {
+	 * Creates a builder for configuring an Undertow web server based on the provided
+	 * factory and SSL bundle supplier.
+	 * @param factory the factory used to configure the web server
+	 * @param sslBundleSupplier the supplier for obtaining the SSL bundle
+	 * @return the configured Undertow builder
+	 */
+	Builder createBuilder(AbstractConfigurableWebServerFactory factory, Supplier<SslBundle> sslBundleSupplier) {
 		InetAddress address = factory.getAddress();
 		int port = factory.getPort();
 		Builder builder = Undertow.builder();
@@ -274,13 +256,14 @@ class UndertowWebServerFactoryDelegate {
 	}
 
 	/**
-     * Creates a list of HttpHandlerFactory objects based on the provided parameters.
-     * 
-     * @param webServerFactory The AbstractConfigurableWebServerFactory object used to configure the web server.
-     * @param initialHttpHandlerFactories An array of initial HttpHandlerFactory objects to include in the list.
-     * @return A list of HttpHandlerFactory objects.
-     */
-    List<HttpHandlerFactory> createHttpHandlerFactories(AbstractConfigurableWebServerFactory webServerFactory,
+	 * Creates a list of HttpHandlerFactory objects based on the provided parameters.
+	 * @param webServerFactory The AbstractConfigurableWebServerFactory object used to
+	 * configure the web server.
+	 * @param initialHttpHandlerFactories An array of initial HttpHandlerFactory objects
+	 * to include in the list.
+	 * @return A list of HttpHandlerFactory objects.
+	 */
+	List<HttpHandlerFactory> createHttpHandlerFactories(AbstractConfigurableWebServerFactory webServerFactory,
 			HttpHandlerFactory... initialHttpHandlerFactories) {
 		List<HttpHandlerFactory> factories = createHttpHandlerFactories(webServerFactory.getCompression(),
 				this.useForwardHeaders, webServerFactory.getServerHeader(), webServerFactory.getShutdown(),
@@ -293,16 +276,16 @@ class UndertowWebServerFactoryDelegate {
 	}
 
 	/**
-     * Creates a list of HttpHandlerFactory objects based on the provided parameters.
-     * 
-     * @param compression                the Compression object to enable compression
-     * @param useForwardHeaders          a boolean indicating whether to use forward headers
-     * @param serverHeader               the server header value to be set
-     * @param shutdown                   the Shutdown enum indicating the type of shutdown
-     * @param initialHttpHandlerFactories the initial HttpHandlerFactory objects to include in the list
-     * @return                           a list of HttpHandlerFactory objects
-     */
-    static List<HttpHandlerFactory> createHttpHandlerFactories(Compression compression, boolean useForwardHeaders,
+	 * Creates a list of HttpHandlerFactory objects based on the provided parameters.
+	 * @param compression the Compression object to enable compression
+	 * @param useForwardHeaders a boolean indicating whether to use forward headers
+	 * @param serverHeader the server header value to be set
+	 * @param shutdown the Shutdown enum indicating the type of shutdown
+	 * @param initialHttpHandlerFactories the initial HttpHandlerFactory objects to
+	 * include in the list
+	 * @return a list of HttpHandlerFactory objects
+	 */
+	static List<HttpHandlerFactory> createHttpHandlerFactories(Compression compression, boolean useForwardHeaders,
 			String serverHeader, Shutdown shutdown, HttpHandlerFactory... initialHttpHandlerFactories) {
 		List<HttpHandlerFactory> factories = new ArrayList<>(Arrays.asList(initialHttpHandlerFactories));
 		if (compression != null && compression.getEnabled()) {

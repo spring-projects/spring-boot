@@ -28,11 +28,10 @@ public class MyBean {
 	private final KafkaTemplate<String, String> kafkaTemplate;
 
 	/**
-     * Constructs a new instance of MyBean with the specified KafkaTemplate.
-     *
-     * @param kafkaTemplate the KafkaTemplate used for sending Kafka messages
-     */
-    public MyBean(KafkaTemplate<String, String> kafkaTemplate) {
+	 * Constructs a new instance of MyBean with the specified KafkaTemplate.
+	 * @param kafkaTemplate the KafkaTemplate used for sending Kafka messages
+	 */
+	public MyBean(KafkaTemplate<String, String> kafkaTemplate) {
 		this.kafkaTemplate = kafkaTemplate;
 	}
 
