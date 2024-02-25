@@ -10,9 +10,7 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jersey"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
 
-	if (JavaVersion.current().java9Compatible) {
-		runtimeOnly("jakarta.xml.bind:jakarta.xml.bind-api")
-	}
+	runtimeOnly("jakarta.xml.bind:jakarta.xml.bind-api")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }
