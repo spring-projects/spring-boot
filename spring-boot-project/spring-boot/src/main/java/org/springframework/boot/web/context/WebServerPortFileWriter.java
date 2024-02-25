@@ -82,7 +82,13 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 		}
 	}
 
-	@Override
+	/**
+     * This method is called when the web server is initialized.
+     * It creates a port file containing the port number of the web server.
+     * 
+     * @param event The WebServerInitializedEvent object representing the web server initialization event.
+     */
+    @Override
 	public void onApplicationEvent(WebServerInitializedEvent event) {
 		File portFile = getPortFile(event.getApplicationContext());
 		try {
@@ -123,14 +129,26 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 		return new File(this.file.getParentFile(), name);
 	}
 
-	private String getServerNamespace(ApplicationContext applicationContext) {
+	/**
+     * Returns the server namespace of the given application context.
+     * 
+     * @param applicationContext the application context to retrieve the server namespace from
+     * @return the server namespace if the application context is an instance of WebServerApplicationContext, otherwise null
+     */
+    private String getServerNamespace(ApplicationContext applicationContext) {
 		if (applicationContext instanceof WebServerApplicationContext webServerApplicationContext) {
 			return webServerApplicationContext.getServerNamespace();
 		}
 		return null;
 	}
 
-	private boolean isUpperCase(String name) {
+	/**
+     * Checks if all characters in the given string are uppercase.
+     * 
+     * @param name the string to be checked
+     * @return true if all characters are uppercase, false otherwise
+     */
+    private boolean isUpperCase(String name) {
 		for (int i = 0; i < name.length(); i++) {
 			if (Character.isLetter(name.charAt(i)) && !Character.isUpperCase(name.charAt(i))) {
 				return false;
@@ -139,7 +157,12 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 		return true;
 	}
 
-	private void createParentDirectory(File file) {
+	/**
+     * Creates the parent directory for the given file.
+     * 
+     * @param file the file for which the parent directory needs to be created
+     */
+    private void createParentDirectory(File file) {
 		File parent = file.getParentFile();
 		if (parent != null) {
 			parent.mkdirs();

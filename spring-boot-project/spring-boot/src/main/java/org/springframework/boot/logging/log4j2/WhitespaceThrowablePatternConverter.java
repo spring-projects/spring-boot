@@ -34,11 +34,23 @@ import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
 @ConverterKeys({ "wEx", "wThrowable", "wException" })
 public final class WhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
 
-	private WhitespaceThrowablePatternConverter(Configuration configuration, String[] options) {
+	/**
+     * Constructs a new WhitespaceThrowablePatternConverter with the specified configuration and options.
+     *
+     * @param configuration the configuration to be used
+     * @param options the options to be applied
+     */
+    private WhitespaceThrowablePatternConverter(Configuration configuration, String[] options) {
 		super("WhitespaceThrowable", "throwable", options, configuration);
 	}
 
-	@Override
+	/**
+     * Formats the log event by appending the separator from the options, the log event message, and the separator again if the log event has a thrown exception.
+     * 
+     * @param event the log event to be formatted
+     * @param buffer the StringBuilder to append the formatted log event to
+     */
+    @Override
 	public void format(LogEvent event, StringBuilder buffer) {
 		if (event.getThrown() != null) {
 			buffer.append(this.options.getSeparator());

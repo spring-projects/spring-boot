@@ -20,16 +20,29 @@ import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+/**
+ * SomeWebService class.
+ */
 @Service
 public class SomeWebService {
 
 	private final WebServiceTemplate webServiceTemplate;
 
-	public SomeWebService(WebServiceTemplateBuilder builder) {
+	/**
+     * Constructs a new SomeWebService with the provided WebServiceTemplateBuilder.
+     * 
+     * @param builder the WebServiceTemplateBuilder used to build the WebServiceTemplate
+     */
+    public SomeWebService(WebServiceTemplateBuilder builder) {
 		this.webServiceTemplate = builder.build();
 	}
 
-	public Response test() {
+	/**
+     * This method is used to test the web service by sending a request to the specified URL.
+     * 
+     * @return A Response object containing the response received from the web service.
+     */
+    public Response test() {
 		return (Response) this.webServiceTemplate.marshalSendAndReceive("https://example.com", new Request());
 	}
 

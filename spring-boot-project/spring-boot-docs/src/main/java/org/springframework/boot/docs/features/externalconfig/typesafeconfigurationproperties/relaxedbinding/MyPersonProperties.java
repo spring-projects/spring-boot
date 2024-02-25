@@ -18,16 +18,29 @@ package org.springframework.boot.docs.features.externalconfig.typesafeconfigurat
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * MyPersonProperties class.
+ */
 @ConfigurationProperties(prefix = "my.main-project.person")
 public class MyPersonProperties {
 
 	private String firstName;
 
-	public String getFirstName() {
+	/**
+     * Returns the first name of the person.
+     *
+     * @return the first name of the person
+     */
+    public String getFirstName() {
 		return this.firstName;
 	}
 
-	public void setFirstName(String firstName) {
+	/**
+     * Sets the first name of the person.
+     * 
+     * @param firstName the first name to be set
+     */
+    public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 

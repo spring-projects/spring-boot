@@ -53,7 +53,12 @@ public class ApplicationContextRunner extends
 		super(contextFactory, ApplicationContextRunner::new);
 	}
 
-	private ApplicationContextRunner(RunnerConfiguration<ConfigurableApplicationContext> runnerConfiguration) {
+	/**
+     * Constructs a new ApplicationContextRunner with the given runner configuration.
+     *
+     * @param runnerConfiguration the runner configuration for the ApplicationContextRunner
+     */
+    private ApplicationContextRunner(RunnerConfiguration<ConfigurableApplicationContext> runnerConfiguration) {
 		super(runnerConfiguration, ApplicationContextRunner::new);
 	}
 

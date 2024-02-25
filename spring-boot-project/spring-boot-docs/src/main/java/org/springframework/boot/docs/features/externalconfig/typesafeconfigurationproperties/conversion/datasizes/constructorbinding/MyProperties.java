@@ -22,6 +22,9 @@ import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
+/**
+ * MyProperties class.
+ */
 @ConfigurationProperties("my")
 public class MyProperties {
 
@@ -42,7 +45,12 @@ public class MyProperties {
 		return this.bufferSize;
 	}
 
-	public DataSize getSizeThreshold() {
+	/**
+     * Returns the size threshold for the data.
+     *
+     * @return the size threshold for the data
+     */
+    public DataSize getSizeThreshold() {
 		return this.sizeThreshold;
 	}
 	// @fold:off

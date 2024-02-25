@@ -22,9 +22,18 @@ import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcess
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
+/**
+ * ResourceRegisteringAotProcessor class.
+ */
 class ResourceRegisteringAotProcessor implements BeanFactoryInitializationAotProcessor {
 
-	@Override
+	/**
+     * This method is used to process ahead of time the bean factory initialization for the ResourceRegisteringAotProcessor class.
+     * 
+     * @param beanFactory The configurable listable bean factory.
+     * @return The BeanFactoryInitializationAotContribution object.
+     */
+    @Override
 	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
 		return new BeanFactoryInitializationAotContribution() {
 

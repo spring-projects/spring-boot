@@ -52,13 +52,38 @@ public class FreeMarkerAutoConfiguration {
 
 	private final FreeMarkerProperties properties;
 
-	public FreeMarkerAutoConfiguration(ApplicationContext applicationContext, FreeMarkerProperties properties) {
+	/**
+     * Constructs a new instance of the {@code FreeMarkerAutoConfiguration} class.
+     * 
+     * @param applicationContext the application context
+     * @param properties the FreeMarker properties
+     */
+    public FreeMarkerAutoConfiguration(ApplicationContext applicationContext, FreeMarkerProperties properties) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
 		checkTemplateLocationExists();
 	}
 
-	public void checkTemplateLocationExists() {
+	/**
+     * Checks if the template location exists.
+     * 
+     * This method checks if the template location exists by iterating through the list of template locations
+     * obtained from the {@link #getLocations()} method. If none of the locations exist, a warning message is logged.
+     * 
+     * The check is performed only if the logger is enabled for warning level and the property {@code checkTemplateLocation}
+     * is set to {@code true} in the configuration.
+     * 
+     * If no template locations are found, a warning message is logged indicating that no template locations were found.
+     * 
+     * @see #getLocations()
+     * @see TemplateLocation
+     * @see org.slf4j.Logger#isWarnEnabled()
+     * @see org.slf4j.Logger#warn(String)
+     * @see org.springframework.boot.autoconfigure.freemarker.FreeMarkerProperties#isCheckTemplateLocation()
+     * @see org.springframework.boot.autoconfigure.freemarker.FreeMarkerProperties#setCheckTemplateLocation(boolean)
+     * @see org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
+     */
+    public void checkTemplateLocationExists() {
 		if (logger.isWarnEnabled() && this.properties.isCheckTemplateLocation()) {
 			List<TemplateLocation> locations = getLocations();
 			if (locations.stream().noneMatch(this::locationExists)) {
@@ -70,7 +95,12 @@ public class FreeMarkerAutoConfiguration {
 		}
 	}
 
-	private List<TemplateLocation> getLocations() {
+	/**
+     * Retrieves the list of template locations.
+     * 
+     * @return The list of template locations.
+     */
+    private List<TemplateLocation> getLocations() {
 		List<TemplateLocation> locations = new ArrayList<>();
 		for (String templateLoaderPath : this.properties.getTemplateLoaderPath()) {
 			TemplateLocation location = new TemplateLocation(templateLoaderPath);
@@ -79,7 +109,13 @@ public class FreeMarkerAutoConfiguration {
 		return locations;
 	}
 
-	private boolean locationExists(TemplateLocation location) {
+	/**
+     * Checks if the specified template location exists.
+     * 
+     * @param location the template location to check
+     * @return true if the template location exists, false otherwise
+     */
+    private boolean locationExists(TemplateLocation location) {
 		return location.exists(this.applicationContext);
 	}
 

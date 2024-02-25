@@ -44,7 +44,13 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> im
 
 	private final Mode mode;
 
-	protected InfoPropertiesInfoContributor(T properties, Mode mode) {
+	/**
+     * Constructs a new InfoPropertiesInfoContributor with the specified properties and mode.
+     * 
+     * @param properties the properties to be used by the contributor
+     * @param mode the mode to be used by the contributor
+     */
+    protected InfoPropertiesInfoContributor(T properties, Mode mode) {
 		this.properties = properties;
 		this.mode = mode;
 	}

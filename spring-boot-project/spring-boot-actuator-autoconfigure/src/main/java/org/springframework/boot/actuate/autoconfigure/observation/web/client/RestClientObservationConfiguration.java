@@ -40,7 +40,15 @@ import org.springframework.web.client.RestClient;
 @ConditionalOnBean(RestClient.Builder.class)
 class RestClientObservationConfiguration {
 
-	@Bean
+	/**
+     * Creates a RestClientCustomizer bean that customizes the RestClient with observation capabilities.
+     * 
+     * @param observationRegistry the ObservationRegistry used to register observations
+     * @param customConvention an ObjectProvider for the custom ClientRequestObservationConvention, if available
+     * @param observationProperties the ObservationProperties used to configure the observation behavior
+     * @return the created RestClientCustomizer bean
+     */
+    @Bean
 	RestClientCustomizer observationRestClientCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties) {

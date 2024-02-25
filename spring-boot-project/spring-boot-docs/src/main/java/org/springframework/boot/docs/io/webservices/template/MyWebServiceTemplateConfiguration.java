@@ -25,10 +25,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.transport.WebServiceMessageSender;
 
+/**
+ * MyWebServiceTemplateConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyWebServiceTemplateConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link WebServiceTemplate} with custom configuration.
+     * 
+     * @param builder the {@link WebServiceTemplateBuilder} used to build the template
+     * @return the configured {@link WebServiceTemplate}
+     */
+    @Bean
 	public WebServiceTemplate webServiceTemplate(WebServiceTemplateBuilder builder) {
 		// @formatter:off
 		WebServiceMessageSender sender = new HttpWebServiceMessageSenderBuilder()

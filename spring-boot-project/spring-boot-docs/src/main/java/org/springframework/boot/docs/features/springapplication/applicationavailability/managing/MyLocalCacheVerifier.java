@@ -21,16 +21,29 @@ import org.springframework.boot.availability.LivenessState;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyLocalCacheVerifier class.
+ */
 @Component
 public class MyLocalCacheVerifier {
 
 	private final ApplicationEventPublisher eventPublisher;
 
-	public MyLocalCacheVerifier(ApplicationEventPublisher eventPublisher) {
+	/**
+     * Constructs a new MyLocalCacheVerifier with the specified ApplicationEventPublisher.
+     * 
+     * @param eventPublisher the ApplicationEventPublisher to be used by the MyLocalCacheVerifier
+     */
+    public MyLocalCacheVerifier(ApplicationEventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
 	}
 
-	public void checkLocalCache() {
+	/**
+     * Checks the local cache for any issues.
+     * 
+     * @throws CacheCompletelyBrokenException if the cache is completely broken
+     */
+    public void checkLocalCache() {
 		try {
 			// ...
 		}

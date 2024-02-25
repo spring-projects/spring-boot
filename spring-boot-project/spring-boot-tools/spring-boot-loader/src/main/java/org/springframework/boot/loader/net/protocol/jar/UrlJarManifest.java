@@ -36,11 +36,22 @@ class UrlJarManifest {
 
 	private volatile Object supplied;
 
-	UrlJarManifest(ManifestSupplier supplier) {
+	/**
+     * Constructs a new UrlJarManifest object with the specified ManifestSupplier.
+     * 
+     * @param supplier the supplier used to obtain the manifest for the URL JAR
+     */
+    UrlJarManifest(ManifestSupplier supplier) {
 		this.supplier = supplier;
 	}
 
-	Manifest get() throws IOException {
+	/**
+     * Retrieves the manifest from the URL jar file.
+     * 
+     * @return the manifest object if found, null otherwise
+     * @throws IOException if an I/O error occurs while retrieving the manifest
+     */
+    Manifest get() throws IOException {
 		Manifest manifest = supply();
 		if (manifest == null) {
 			return null;
@@ -51,7 +62,14 @@ class UrlJarManifest {
 		return copy;
 	}
 
-	Attributes getEntryAttributes(JarEntry entry) throws IOException {
+	/**
+     * Retrieves the attributes of a given JarEntry from the manifest.
+     * 
+     * @param entry The JarEntry for which to retrieve the attributes.
+     * @return The attributes of the given JarEntry, or null if the manifest is not available.
+     * @throws IOException If an I/O error occurs while retrieving the manifest.
+     */
+    Attributes getEntryAttributes(JarEntry entry) throws IOException {
 		Manifest manifest = supply();
 		if (manifest == null) {
 			return null;
@@ -60,11 +78,23 @@ class UrlJarManifest {
 		return cloneAttributes(attributes);
 	}
 
-	private Attributes cloneAttributes(Attributes attributes) {
+	/**
+     * Clones the given Attributes object.
+     * 
+     * @param attributes the Attributes object to be cloned
+     * @return a cloned copy of the Attributes object, or null if the input is null
+     */
+    private Attributes cloneAttributes(Attributes attributes) {
 		return (attributes != null) ? (Attributes) attributes.clone() : null;
 	}
 
-	private Manifest supply() throws IOException {
+	/**
+     * Retrieves the manifest of the URL jar.
+     * 
+     * @return The manifest of the URL jar, or null if no manifest is available.
+     * @throws IOException If an I/O error occurs while retrieving the manifest.
+     */
+    private Manifest supply() throws IOException {
 		Object supplied = this.supplied;
 		if (supplied == null) {
 			supplied = this.supplier.getManifest();

@@ -85,23 +85,58 @@ public abstract sealed class DebugLogger {
 	 */
 	private static final class DisabledDebugLogger extends DebugLogger {
 
-		@Override
+		/**
+         * Logs the specified message.
+         *
+         * @param message the message to be logged
+         */
+        @Override
 		public void log(String message) {
 		}
 
-		@Override
+		/**
+         * Logs a message with an argument.
+         *
+         * @param message the message to be logged
+         * @param arg1 the argument to be included in the log message
+         */
+        @Override
 		public void log(String message, Object arg1) {
 		}
 
-		@Override
+		/**
+         * Logs a message with two arguments.
+         *
+         * @param message the message to be logged
+         * @param arg1 the first argument
+         * @param arg2 the second argument
+         */
+        @Override
 		public void log(String message, Object arg1, Object arg2) {
 		}
 
-		@Override
+		/**
+         * Logs a message with three arguments.
+         *
+         * @param message the message to be logged
+         * @param arg1 the first argument
+         * @param arg2 the second argument
+         * @param arg3 the third argument
+         */
+        @Override
 		public void log(String message, Object arg1, Object arg2, Object arg3) {
 		}
 
-		@Override
+		/**
+         * Logs a message with four additional arguments.
+         *
+         * @param message the message to be logged
+         * @param arg1 the first argument
+         * @param arg2 the second argument
+         * @param arg3 the third argument
+         * @param arg4 the fourth argument
+         */
+        @Override
 		public void log(String message, Object arg1, Object arg2, Object arg3, Object arg4) {
 		}
 
@@ -114,36 +149,81 @@ public abstract sealed class DebugLogger {
 
 		private final String prefix;
 
-		SystemErrDebugLogger(Class<?> sourceClass) {
+		/**
+         * Constructs a new SystemErrDebugLogger object with the specified source class.
+         * 
+         * @param sourceClass the class from which the logger is being instantiated
+         */
+        SystemErrDebugLogger(Class<?> sourceClass) {
 			this.prefix = "LOADER: " + sourceClass + " : ";
 		}
 
-		@Override
+		/**
+         * Logs the specified message to the standard error output.
+         * 
+         * @param message the message to be logged
+         */
+        @Override
 		public void log(String message) {
 			print(message);
 		}
 
-		@Override
+		/**
+         * Logs a message with an argument to the standard error output stream.
+         * 
+         * @param message the message to be logged
+         * @param arg1 the argument to be formatted in the message
+         */
+        @Override
 		public void log(String message, Object arg1) {
 			print(message.formatted(arg1));
 		}
 
-		@Override
+		/**
+         * Logs a message with two arguments to the standard error output.
+         * 
+         * @param message the message to be logged
+         * @param arg1 the first argument to be formatted in the message
+         * @param arg2 the second argument to be formatted in the message
+         */
+        @Override
 		public void log(String message, Object arg1, Object arg2) {
 			print(message.formatted(arg1, arg2));
 		}
 
-		@Override
+		/**
+         * Logs a message with three arguments to the standard error output stream.
+         * 
+         * @param message the message to be logged
+         * @param arg1 the first argument to be formatted in the message
+         * @param arg2 the second argument to be formatted in the message
+         * @param arg3 the third argument to be formatted in the message
+         */
+        @Override
 		public void log(String message, Object arg1, Object arg2, Object arg3) {
 			print(message.formatted(arg1, arg2, arg3));
 		}
 
-		@Override
+		/**
+         * Logs a message with four arguments to the standard error output stream.
+         * 
+         * @param message the message to be logged
+         * @param arg1 the first argument to be formatted in the message
+         * @param arg2 the second argument to be formatted in the message
+         * @param arg3 the third argument to be formatted in the message
+         * @param arg4 the fourth argument to be formatted in the message
+         */
+        @Override
 		public void log(String message, Object arg1, Object arg2, Object arg3, Object arg4) {
 			print(message.formatted(arg1, arg2, arg3, arg4));
 		}
 
-		private void print(String message) {
+		/**
+         * Prints the specified message to the standard error stream with a prefix.
+         * 
+         * @param message the message to be printed
+         */
+        private void print(String message) {
 			System.err.println(this.prefix + message);
 		}
 

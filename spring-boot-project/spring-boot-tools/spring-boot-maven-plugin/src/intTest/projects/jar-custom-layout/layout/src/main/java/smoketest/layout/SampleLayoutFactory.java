@@ -21,26 +21,53 @@ import java.io.File;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.LayoutFactory;
 
+/**
+ * SampleLayoutFactory class.
+ */
 public class SampleLayoutFactory implements LayoutFactory {
 
 	private String name = "sample";
 
-	public SampleLayoutFactory() {
+	/**
+     * Constructs a new SampleLayoutFactory.
+     */
+    public SampleLayoutFactory() {
 	}
 
-	public SampleLayoutFactory(String name) {
+	/**
+     * Constructs a new SampleLayoutFactory with the specified name.
+     * 
+     * @param name the name of the SampleLayoutFactory
+     */
+    public SampleLayoutFactory(String name) {
 		this.name = name;
 	}
 
-	public void setName(String name) {
+	/**
+     * Sets the name of the SampleLayoutFactory.
+     * 
+     * @param name the name to be set for the SampleLayoutFactory
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 
-	public String getName() {
+	/**
+     * Returns the name of the SampleLayoutFactory.
+     *
+     * @return the name of the SampleLayoutFactory
+     */
+    public String getName() {
 		return this.name;
 	}
 
-	@Override
+	/**
+     * Returns the layout for the given source file.
+     * 
+     * @param source the source file for which the layout is to be obtained
+     * @return the layout object representing the layout for the source file
+     */
+    @Override
 	public Layout getLayout(File source) {
 		return new SampleLayout(this.name);
 	}

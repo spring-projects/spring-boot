@@ -49,13 +49,24 @@ public class ElasticsearchRestClientHealthIndicator extends AbstractHealthIndica
 
 	private final JsonParser jsonParser;
 
-	public ElasticsearchRestClientHealthIndicator(RestClient client) {
+	/**
+     * Constructs a new ElasticsearchRestClientHealthIndicator with the specified RestClient.
+     * 
+     * @param client the RestClient to be used for health checks
+     */
+    public ElasticsearchRestClientHealthIndicator(RestClient client) {
 		super("Elasticsearch health check failed");
 		this.client = client;
 		this.jsonParser = JsonParserFactory.getJsonParser();
 	}
 
-	@Override
+	/**
+     * Performs a health check on the Elasticsearch cluster.
+     * 
+     * @param builder the Health.Builder object used to build the health status
+     * @throws Exception if an error occurs during the health check
+     */
+    @Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Response response = this.client.performRequest(new Request("GET", "/_cluster/health/"));
 		StatusLine statusLine = response.getStatusLine();
@@ -70,7 +81,13 @@ public class ElasticsearchRestClientHealthIndicator extends AbstractHealthIndica
 		}
 	}
 
-	private void doHealthCheck(Health.Builder builder, String json) {
+	/**
+     * Performs a health check on the Elasticsearch REST client.
+     * 
+     * @param builder the Health.Builder object used to build the health status
+     * @param json the JSON response received from the Elasticsearch REST client
+     */
+    private void doHealthCheck(Health.Builder builder, String json) {
 		Map<String, Object> response = this.jsonParser.parseMap(json);
 		String status = (String) response.get("status");
 		if (RED_STATUS.equals(status)) {

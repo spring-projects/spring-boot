@@ -65,7 +65,10 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 
 	private boolean bufferContent = false;
 
-	public MockServerRestClientCustomizer() {
+	/**
+     * Constructs a new MockServerRestClientCustomizer with the default SimpleRequestExpectationManager.
+     */
+    public MockServerRestClientCustomizer() {
 		this(SimpleRequestExpectationManager::new);
 	}
 
@@ -100,7 +103,12 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 		this.bufferContent = bufferContent;
 	}
 
-	@Override
+	/**
+     * Customizes the RestClient.Builder by creating a MockRestServiceServer and a RequestExpectationManager.
+     * 
+     * @param restClientBuilder the RestClient.Builder to be customized
+     */
+    @Override
 	public void customize(RestClient.Builder restClientBuilder) {
 		RequestExpectationManager expectationManager = createExpectationManager();
 		MockRestServiceServerBuilder serverBuilder = MockRestServiceServer.bindTo(restClientBuilder);
@@ -112,11 +120,23 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 		this.servers.put(restClientBuilder, server);
 	}
 
-	protected RequestExpectationManager createExpectationManager() {
+	/**
+     * Creates a new instance of RequestExpectationManager using the expectationManagerSupplier.
+     * 
+     * @return the created RequestExpectationManager instance
+     */
+    protected RequestExpectationManager createExpectationManager() {
 		return this.expectationManagerSupplier.get();
 	}
 
-	public MockRestServiceServer getServer() {
+	/**
+     * Returns the MockRestServiceServer associated with this MockServerRestClientCustomizer.
+     * 
+     * @return the MockRestServiceServer
+     * @throws IllegalStateException if the MockServerRestClientCustomizer has not been bound to a RestClient
+     * @throws IllegalStateException if the MockServerRestClientCustomizer has been bound to more than one RestClient
+     */
+    public MockRestServiceServer getServer() {
 		Assert.state(!this.servers.isEmpty(), "Unable to return a single MockRestServiceServer since "
 				+ "MockServerRestClientCustomizer has not been bound to a RestClient");
 		Assert.state(this.servers.size() == 1, "Unable to return a single MockRestServiceServer since "
@@ -124,15 +144,31 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 		return this.servers.values().iterator().next();
 	}
 
-	public Map<RestClient.Builder, RequestExpectationManager> getExpectationManagers() {
+	/**
+     * Returns the map of RestClient builders and RequestExpectationManagers.
+     *
+     * @return the map of RestClient builders and RequestExpectationManagers
+     */
+    public Map<RestClient.Builder, RequestExpectationManager> getExpectationManagers() {
 		return this.expectationManagers;
 	}
 
-	public MockRestServiceServer getServer(RestClient.Builder restClientBuilder) {
+	/**
+     * Retrieves the MockRestServiceServer associated with the given RestClient.Builder.
+     * 
+     * @param restClientBuilder the RestClient.Builder for which to retrieve the MockRestServiceServer
+     * @return the MockRestServiceServer associated with the given RestClient.Builder
+     */
+    public MockRestServiceServer getServer(RestClient.Builder restClientBuilder) {
 		return this.servers.get(restClientBuilder);
 	}
 
-	public Map<RestClient.Builder, MockRestServiceServer> getServers() {
+	/**
+     * Returns an unmodifiable map of RestClient.Builder objects and their corresponding MockRestServiceServer objects.
+     * 
+     * @return an unmodifiable map of RestClient.Builder objects and their corresponding MockRestServiceServer objects
+     */
+    public Map<RestClient.Builder, MockRestServiceServer> getServers() {
 		return Collections.unmodifiableMap(this.servers);
 	}
 

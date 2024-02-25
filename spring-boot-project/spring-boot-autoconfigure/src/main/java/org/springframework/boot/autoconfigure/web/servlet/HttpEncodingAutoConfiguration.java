@@ -49,11 +49,23 @@ public class HttpEncodingAutoConfiguration {
 
 	private final Encoding properties;
 
-	public HttpEncodingAutoConfiguration(ServerProperties properties) {
+	/**
+     * Constructs a new HttpEncodingAutoConfiguration object with the specified ServerProperties.
+     * 
+     * @param properties the ServerProperties object containing the servlet encoding configuration
+     */
+    public HttpEncodingAutoConfiguration(ServerProperties properties) {
 		this.properties = properties.getServlet().getEncoding();
 	}
 
-	@Bean
+	/**
+     * Creates a character encoding filter bean if no other bean of the same type is present.
+     * The filter sets the encoding based on the configured charset in the properties.
+     * It also allows forcing the encoding for both request and response if configured to do so.
+     *
+     * @return the character encoding filter bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public CharacterEncodingFilter characterEncodingFilter() {
 		CharacterEncodingFilter filter = new OrderedCharacterEncodingFilter();
@@ -63,28 +75,51 @@ public class HttpEncodingAutoConfiguration {
 		return filter;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@code LocaleCharsetMappingsCustomizer} using the provided properties.
+     * 
+     * @return The created {@code LocaleCharsetMappingsCustomizer} instance.
+     */
+    @Bean
 	public LocaleCharsetMappingsCustomizer localeCharsetMappingsCustomizer() {
 		return new LocaleCharsetMappingsCustomizer(this.properties);
 	}
 
-	static class LocaleCharsetMappingsCustomizer
+	/**
+     * LocaleCharsetMappingsCustomizer class.
+     */
+    static class LocaleCharsetMappingsCustomizer
 			implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>, Ordered {
 
 		private final Encoding properties;
 
-		LocaleCharsetMappingsCustomizer(Encoding properties) {
+		/**
+         * Constructs a new LocaleCharsetMappingsCustomizer with the specified Encoding properties.
+         *
+         * @param properties the Encoding properties to be used for customizing locale charset mappings
+         */
+        LocaleCharsetMappingsCustomizer(Encoding properties) {
 			this.properties = properties;
 		}
 
-		@Override
+		/**
+         * Customize the ConfigurableServletWebServerFactory by setting the locale charset mappings.
+         * 
+         * @param factory the ConfigurableServletWebServerFactory to customize
+         */
+        @Override
 		public void customize(ConfigurableServletWebServerFactory factory) {
 			if (this.properties.getMapping() != null) {
 				factory.setLocaleCharsetMappings(this.properties.getMapping());
 			}
 		}
 
-		@Override
+		/**
+         * Returns the order in which this customizer should be applied.
+         * 
+         * @return the order value, with a lower value indicating higher priority
+         */
+        @Override
 		public int getOrder() {
 			return 0;
 		}

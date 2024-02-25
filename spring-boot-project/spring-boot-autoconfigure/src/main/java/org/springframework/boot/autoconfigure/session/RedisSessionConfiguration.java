@@ -56,13 +56,27 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisIn
 @EnableConfigurationProperties(RedisSessionProperties.class)
 class RedisSessionConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * DefaultRedisSessionConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository-type", havingValue = "default",
 			matchIfMissing = true)
 	@Import(RedisHttpSessionConfiguration.class)
 	static class DefaultRedisSessionConfiguration {
 
-		@Bean
+		/**
+         * Returns a SessionRepositoryCustomizer for RedisSessionRepository.
+         * This customizer sets various properties of the RedisSessionRepository based on the provided sessionProperties,
+         * redisSessionProperties, and serverProperties.
+         * 
+         * @param sessionProperties        the session properties
+         * @param redisSessionProperties   the Redis session properties
+         * @param serverProperties         the server properties
+         * @return                         the SessionRepositoryCustomizer for RedisSessionRepository
+         * @throws InvalidConfigurationPropertyValueException if the cleanup cron is provided but the repository type is not indexed
+         */
+        @Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
 		SessionRepositoryCustomizer<RedisSessionRepository> springBootSessionRepositoryCustomizer(
 				SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
@@ -86,12 +100,21 @@ class RedisSessionConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * IndexedRedisSessionConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository-type", havingValue = "indexed")
 	@Import(RedisIndexedHttpSessionConfiguration.class)
 	static class IndexedRedisSessionConfiguration {
 
-		@Bean
+		/**
+         * Configures the Redis action based on the Redis session properties.
+         * 
+         * @param redisSessionProperties the Redis session properties
+         * @return the configured Redis action
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
 			return switch (redisSessionProperties.getConfigureAction()) {
@@ -100,7 +123,15 @@ class RedisSessionConfiguration {
 			};
 		}
 
-		@Bean
+		/**
+         * Customizes the RedisIndexedSessionRepository bean with the provided session properties, Redis session properties, and server properties.
+         * 
+         * @param sessionProperties the session properties
+         * @param redisSessionProperties the Redis session properties
+         * @param serverProperties the server properties
+         * @return the customized RedisIndexedSessionRepository bean
+         */
+        @Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
 		SessionRepositoryCustomizer<RedisIndexedSessionRepository> springBootSessionRepositoryCustomizer(
 				SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,

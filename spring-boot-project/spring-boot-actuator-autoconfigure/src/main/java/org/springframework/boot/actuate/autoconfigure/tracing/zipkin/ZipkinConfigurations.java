@@ -46,19 +46,35 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 class ZipkinConfigurations {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * SenderConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@Import({ UrlConnectionSenderConfiguration.class, WebClientSenderConfiguration.class,
 			RestTemplateSenderConfiguration.class })
 	static class SenderConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * UrlConnectionSenderConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(URLConnectionSender.class)
 	@EnableConfigurationProperties(ZipkinProperties.class)
 	static class UrlConnectionSenderConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of URLConnectionSender if no other bean of type Sender is available.
+         * Uses the provided ZipkinProperties and ZipkinConnectionDetails to configure the sender.
+         * Sets the connect timeout and read timeout based on the properties.
+         * Sets the endpoint based on the connection details.
+         * 
+         * @param properties The ZipkinProperties used to configure the sender.
+         * @param connectionDetailsProvider The provider for ZipkinConnectionDetails.
+         * @return The created URLConnectionSender.
+         */
+        @Bean
 		@ConditionalOnMissingBean(Sender.class)
 		URLConnectionSender urlConnectionSender(ZipkinProperties properties,
 				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider) {
@@ -73,12 +89,23 @@ class ZipkinConfigurations {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * RestTemplateSenderConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(RestTemplate.class)
 	@EnableConfigurationProperties(ZipkinProperties.class)
 	static class RestTemplateSenderConfiguration {
 
-		@Bean
+		/**
+         * Creates a {@link ZipkinRestTemplateSender} bean if no other bean of type {@link Sender} is present.
+         * 
+         * @param properties the {@link ZipkinProperties} containing the configuration properties for Zipkin
+         * @param customizers the {@link ZipkinRestTemplateBuilderCustomizer} objects to customize the {@link RestTemplateBuilder}
+         * @param connectionDetailsProvider the {@link ZipkinConnectionDetails} provider to get the connection details for Zipkin
+         * @return the {@link ZipkinRestTemplateSender} bean
+         */
+        @Bean
 		@ConditionalOnMissingBean(Sender.class)
 		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties,
 				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers,
@@ -92,7 +119,14 @@ class ZipkinConfigurations {
 			return new ZipkinRestTemplateSender(connectionDetails.getSpanEndpoint(), restTemplateBuilder.build());
 		}
 
-		private RestTemplateBuilder applyCustomizers(RestTemplateBuilder restTemplateBuilder,
+		/**
+         * Applies customizers to the given RestTemplateBuilder.
+         * 
+         * @param restTemplateBuilder The RestTemplateBuilder to apply customizers to.
+         * @param customizers         ObjectProvider of ZipkinRestTemplateBuilderCustomizer to provide customizers.
+         * @return The RestTemplateBuilder with customizers applied.
+         */
+        private RestTemplateBuilder applyCustomizers(RestTemplateBuilder restTemplateBuilder,
 				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers) {
 			Iterable<ZipkinRestTemplateBuilderCustomizer> orderedCustomizers = () -> customizers.orderedStream()
 				.iterator();
@@ -105,12 +139,28 @@ class ZipkinConfigurations {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * WebClientSenderConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(WebClient.class)
 	@EnableConfigurationProperties(ZipkinProperties.class)
 	static class WebClientSenderConfiguration {
 
-		@Bean
+		/**
+         * Creates a ZipkinWebClientSender bean if no other bean of type Sender is present.
+         * Uses the provided ZipkinProperties, ZipkinWebClientBuilderCustomizer, and ZipkinConnectionDetails
+         * to configure and create a ZipkinWebClientSender instance.
+         * If no ZipkinConnectionDetails bean is available, it creates a new instance using the provided ZipkinProperties.
+         * Uses the WebClient.Builder to build a WebClient instance with customizations from the ZipkinWebClientBuilderCustomizer beans.
+         * Returns the created ZipkinWebClientSender with the configured span endpoint and timeouts.
+         *
+         * @param properties                the ZipkinProperties used for configuration
+         * @param customizers               the ZipkinWebClientBuilderCustomizer beans for customizing the WebClient.Builder
+         * @param connectionDetailsProvider the ZipkinConnectionDetails bean provider for retrieving the connection details
+         * @return the created ZipkinWebClientSender
+         */
+        @Bean
 		@ConditionalOnMissingBean(Sender.class)
 		ZipkinWebClientSender webClientSender(ZipkinProperties properties,
 				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers,
@@ -125,10 +175,30 @@ class ZipkinConfigurations {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ReporterConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	static class ReporterConfiguration {
 
-		@Bean
+		/**
+         * Creates an asynchronous reporter for spans.
+         * 
+         * This method is annotated with @Bean to indicate that it is a Spring bean.
+         * 
+         * It is also annotated with @ConditionalOnMissingBean(Reporter.class) to ensure that this bean is only created if there is no other bean of type Reporter already present in the application context.
+         * 
+         * Additionally, it is annotated with @ConditionalOnBean(Sender.class) to ensure that this bean is only created if there is a bean of type Sender already present in the application context.
+         * 
+         * The method takes a Sender object and a BytesEncoder object as parameters.
+         * 
+         * It returns an AsyncReporter object that is built using the provided Sender and BytesEncoder objects.
+         * 
+         * @param sender The Sender object used for sending spans.
+         * @param encoder The BytesEncoder object used for encoding spans.
+         * @return An AsyncReporter object for spans.
+         */
+        @Bean
 		@ConditionalOnMissingBean(Reporter.class)
 		@ConditionalOnBean(Sender.class)
 		AsyncReporter<Span> spanReporter(Sender sender, BytesEncoder<Span> encoder) {
@@ -137,11 +207,21 @@ class ZipkinConfigurations {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * BraveConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ZipkinSpanHandler.class)
 	static class BraveConfiguration {
 
-		@Bean
+		/**
+         * Creates a ZipkinSpanHandler bean if there is no existing bean of the same type, a bean of type Reporter<Span> exists,
+         * and tracing is enabled.
+         *
+         * @param spanReporter the reporter used to report spans
+         * @return the created ZipkinSpanHandler bean
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(Reporter.class)
 		@ConditionalOnEnabledTracing
@@ -151,11 +231,25 @@ class ZipkinConfigurations {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * OpenTelemetryConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ZipkinSpanExporter.class)
 	static class OpenTelemetryConfiguration {
 
-		@Bean
+		/**
+         * Creates a ZipkinSpanExporter with the provided encoder and sender.
+         * 
+         * @param encoder the encoder used to encode spans into bytes
+         * @param sender the sender used to send the encoded spans
+         * @return a ZipkinSpanExporter instance
+         * @throws IllegalArgumentException if either encoder or sender is null
+         * @see BytesEncoder
+         * @see Sender
+         * @see ZipkinSpanExporter
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(Sender.class)
 		@ConditionalOnEnabledTracing

@@ -70,39 +70,84 @@ public abstract class AbstractViewResolverProperties {
 	 */
 	private boolean checkTemplateLocation = true;
 
-	public void setEnabled(boolean enabled) {
+	/**
+     * Sets the enabled status of the view resolver.
+     * 
+     * @param enabled the enabled status to set
+     */
+    public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public boolean isEnabled() {
+	/**
+     * Returns the current status of the enabled property.
+     *
+     * @return {@code true} if the view resolver is enabled, {@code false} otherwise
+     */
+    public boolean isEnabled() {
 		return this.enabled;
 	}
 
-	public void setCheckTemplateLocation(boolean checkTemplateLocation) {
+	/**
+     * Sets the flag indicating whether to check the template location.
+     * 
+     * @param checkTemplateLocation the flag indicating whether to check the template location
+     */
+    public void setCheckTemplateLocation(boolean checkTemplateLocation) {
 		this.checkTemplateLocation = checkTemplateLocation;
 	}
 
-	public boolean isCheckTemplateLocation() {
+	/**
+     * Returns the value indicating whether to check the template location.
+     * 
+     * @return {@code true} if the template location should be checked, {@code false} otherwise
+     */
+    public boolean isCheckTemplateLocation() {
 		return this.checkTemplateLocation;
 	}
 
-	public String[] getViewNames() {
+	/**
+     * Returns an array of view names.
+     *
+     * @return the array of view names
+     */
+    public String[] getViewNames() {
 		return this.viewNames;
 	}
 
-	public void setViewNames(String[] viewNames) {
+	/**
+     * Sets the array of view names for this AbstractViewResolverProperties object.
+     * 
+     * @param viewNames the array of view names to be set
+     */
+    public void setViewNames(String[] viewNames) {
 		this.viewNames = viewNames;
 	}
 
-	public boolean isCache() {
+	/**
+     * Returns a boolean value indicating whether caching is enabled for this view resolver.
+     *
+     * @return {@code true} if caching is enabled, {@code false} otherwise
+     */
+    public boolean isCache() {
 		return this.cache;
 	}
 
-	public void setCache(boolean cache) {
+	/**
+     * Sets the value indicating whether caching is enabled for the view resolver.
+     * 
+     * @param cache the value indicating whether caching is enabled
+     */
+    public void setCache(boolean cache) {
 		this.cache = cache;
 	}
 
-	public MimeType getContentType() {
+	/**
+     * Returns the content type of the view resolver.
+     * 
+     * @return The content type as a MimeType object.
+     */
+    public MimeType getContentType() {
 		if (this.contentType.getCharset() == null) {
 			Map<String, String> parameters = new LinkedHashMap<>();
 			parameters.put("charset", this.charset.name());
@@ -112,19 +157,39 @@ public abstract class AbstractViewResolverProperties {
 		return this.contentType;
 	}
 
-	public void setContentType(MimeType contentType) {
+	/**
+     * Sets the content type for the view resolver.
+     * 
+     * @param contentType the MIME type to be set as the content type
+     */
+    public void setContentType(MimeType contentType) {
 		this.contentType = contentType;
 	}
 
-	public Charset getCharset() {
+	/**
+     * Returns the charset used by this view resolver.
+     *
+     * @return the charset used by this view resolver
+     */
+    public Charset getCharset() {
 		return this.charset;
 	}
 
-	public String getCharsetName() {
+	/**
+     * Returns the name of the character set used by this AbstractViewResolverProperties object.
+     * 
+     * @return the name of the character set, or null if no character set is set
+     */
+    public String getCharsetName() {
 		return (this.charset != null) ? this.charset.name() : null;
 	}
 
-	public void setCharset(Charset charset) {
+	/**
+     * Sets the character encoding to be used for rendering views.
+     * 
+     * @param charset the character encoding to be set
+     */
+    public void setCharset(Charset charset) {
 		this.charset = charset;
 	}
 

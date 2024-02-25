@@ -33,7 +33,13 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 class LiquibaseContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<JdbcDatabaseContainer<?>, LiquibaseConnectionDetails> {
 
-	@Override
+	/**
+     * Retrieves the connection details for the specified container connection source.
+     *
+     * @param source the container connection source
+     * @return the connection details for the container connection source
+     */
+    @Override
 	protected LiquibaseConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 		return new LiquibaseContainerConnectionDetails(source);
@@ -45,26 +51,51 @@ class LiquibaseContainerConnectionDetailsFactory
 	private static final class LiquibaseContainerConnectionDetails
 			extends ContainerConnectionDetails<JdbcDatabaseContainer<?>> implements LiquibaseConnectionDetails {
 
-		private LiquibaseContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
+		/**
+         * Constructs a new LiquibaseContainerConnectionDetails object with the specified ContainerConnectionSource.
+         *
+         * @param source the ContainerConnectionSource used to create the LiquibaseContainerConnectionDetails object
+         */
+        private LiquibaseContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 			super(source);
 		}
 
-		@Override
+		/**
+         * Returns the username of the container.
+         * 
+         * @return the username of the container
+         */
+        @Override
 		public String getUsername() {
 			return getContainer().getUsername();
 		}
 
-		@Override
+		/**
+         * Returns the password for the connection details of the Liquibase container.
+         *
+         * @return the password for the connection details
+         */
+        @Override
 		public String getPassword() {
 			return getContainer().getPassword();
 		}
 
-		@Override
+		/**
+         * Returns the JDBC URL for the connection.
+         * 
+         * @return the JDBC URL for the connection
+         */
+        @Override
 		public String getJdbcUrl() {
 			return getContainer().getJdbcUrl();
 		}
 
-		@Override
+		/**
+         * Returns the driver class name for the database connection.
+         * 
+         * @return the driver class name
+         */
+        @Override
 		public String getDriverClassName() {
 			return getContainer().getDriverClassName();
 		}

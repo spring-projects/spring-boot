@@ -66,7 +66,15 @@ public final class OAuth2ClientPropertiesMapper {
 		return clientRegistrations;
 	}
 
-	private static ClientRegistration getClientRegistration(String registrationId,
+	/**
+     * Retrieves the client registration based on the provided registration ID, properties, and providers.
+     * 
+     * @param registrationId The registration ID of the client.
+     * @param properties The properties of the client.
+     * @param providers The map of providers.
+     * @return The client registration.
+     */
+    private static ClientRegistration getClientRegistration(String registrationId,
 			OAuth2ClientProperties.Registration properties, Map<String, Provider> providers) {
 		Builder builder = getBuilderFromIssuerIfPossible(registrationId, properties.getProvider(), providers);
 		if (builder == null) {
@@ -87,7 +95,15 @@ public final class OAuth2ClientPropertiesMapper {
 		return builder.build();
 	}
 
-	private static Builder getBuilderFromIssuerIfPossible(String registrationId, String configuredProviderId,
+	/**
+     * Retrieves a builder from the given provider if possible.
+     * 
+     * @param registrationId the registration ID
+     * @param configuredProviderId the configured provider ID
+     * @param providers the map of providers
+     * @return the builder if found, otherwise null
+     */
+    private static Builder getBuilderFromIssuerIfPossible(String registrationId, String configuredProviderId,
 			Map<String, Provider> providers) {
 		String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
 		if (providers.containsKey(providerId)) {
@@ -101,7 +117,16 @@ public final class OAuth2ClientPropertiesMapper {
 		return null;
 	}
 
-	private static Builder getBuilder(String registrationId, String configuredProviderId,
+	/**
+     * Returns a Builder object based on the provided registrationId, configuredProviderId, and providers map.
+     * 
+     * @param registrationId the registration ID for the client
+     * @param configuredProviderId the configured provider ID for the client
+     * @param providers a map of provider IDs and their corresponding Provider objects
+     * @return a Builder object for the client
+     * @throws IllegalStateException if the provider is not found in the common providers or the providers map
+     */
+    private static Builder getBuilder(String registrationId, String configuredProviderId,
 			Map<String, Provider> providers) {
 		String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
 		CommonOAuth2Provider provider = getCommonProvider(providerId);
@@ -116,12 +141,26 @@ public final class OAuth2ClientPropertiesMapper {
 		return builder;
 	}
 
-	private static String getErrorMessage(String configuredProviderId, String registrationId) {
+	/**
+     * Returns the error message for the given configured provider ID and registration ID.
+     * 
+     * @param configuredProviderId the configured provider ID
+     * @param registrationId the registration ID
+     * @return the error message
+     */
+    private static String getErrorMessage(String configuredProviderId, String registrationId) {
 		return ((configuredProviderId != null) ? "Unknown provider ID '" + configuredProviderId + "'"
 				: "Provider ID must be specified for client registration '" + registrationId + "'");
 	}
 
-	private static Builder getBuilder(Builder builder, Provider provider) {
+	/**
+     * Retrieves the builder object and maps the properties from the provider object to the builder object.
+     * 
+     * @param builder the builder object to be mapped
+     * @param provider the provider object containing the properties to be mapped
+     * @return the builder object with the mapped properties
+     */
+    private static Builder getBuilder(Builder builder, Provider provider) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(provider::getAuthorizationUri).to(builder::authorizationUri);
 		map.from(provider::getTokenUri).to(builder::tokenUri);
@@ -134,7 +173,13 @@ public final class OAuth2ClientPropertiesMapper {
 		return builder;
 	}
 
-	private static CommonOAuth2Provider getCommonProvider(String providerId) {
+	/**
+     * Retrieves the CommonOAuth2Provider object for the given provider ID.
+     * 
+     * @param providerId the ID of the provider
+     * @return the CommonOAuth2Provider object for the given provider ID, or null if the conversion fails
+     */
+    private static CommonOAuth2Provider getCommonProvider(String providerId) {
 		try {
 			return ApplicationConversionService.getSharedInstance().convert(providerId, CommonOAuth2Provider.class);
 		}

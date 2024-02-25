@@ -27,7 +27,12 @@ import org.springframework.boot.actuate.endpoint.annotation.DiscovererEndpointFi
  */
 class ControllerEndpointFilter extends DiscovererEndpointFilter {
 
-	ControllerEndpointFilter() {
+	/**
+     * Constructs a new ControllerEndpointFilter with the specified ControllerEndpointDiscoverer.
+     * 
+     * @param discoverer the ControllerEndpointDiscoverer to be used by the filter
+     */
+    ControllerEndpointFilter() {
 		super(ControllerEndpointDiscoverer.class);
 	}
 

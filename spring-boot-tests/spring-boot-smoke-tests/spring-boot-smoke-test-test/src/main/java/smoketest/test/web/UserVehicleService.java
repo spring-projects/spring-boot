@@ -37,12 +37,27 @@ public class UserVehicleService {
 
 	private final VehicleDetailsService vehicleDetailsService;
 
-	public UserVehicleService(UserRepository userRepository, VehicleDetailsService vehicleDetailsService) {
+	/**
+     * Constructs a new UserVehicleService with the specified UserRepository and VehicleDetailsService.
+     * 
+     * @param userRepository the UserRepository to be used by the service
+     * @param vehicleDetailsService the VehicleDetailsService to be used by the service
+     */
+    public UserVehicleService(UserRepository userRepository, VehicleDetailsService vehicleDetailsService) {
 		this.userRepository = userRepository;
 		this.vehicleDetailsService = vehicleDetailsService;
 	}
 
-	public VehicleDetails getVehicleDetails(String username)
+	/**
+     * Retrieves the vehicle details for a given username.
+     * 
+     * @param username the username of the user
+     * @return the vehicle details for the user
+     * @throws UserNameNotFoundException if the username is not found in the user repository
+     * @throws VehicleIdentificationNumberNotFoundException if the vehicle identification number (VIN) is not found for the user
+     * @throws IllegalArgumentException if the username is null
+     */
+    public VehicleDetails getVehicleDetails(String username)
 			throws UserNameNotFoundException, VehicleIdentificationNumberNotFoundException {
 		Assert.notNull(username, "Username must not be null");
 		User user = this.userRepository.findByUsername(username);

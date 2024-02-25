@@ -21,15 +21,30 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
+/**
+ * SampleWebJspApplication class.
+ */
 @SpringBootApplication
 public class SampleWebJspApplication extends SpringBootServletInitializer {
 
-	@Override
+	/**
+     * Configures the Spring application builder.
+     * 
+     * @param application the Spring application builder
+     * @return the sources of the SampleWebJspApplication class
+     */
+    @Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(SampleWebJspApplication.class);
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by running the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleWebJspApplication.class, args);
 	}
 

@@ -54,11 +54,24 @@ final class PulsarPropertiesMapper {
 
 	private final PulsarProperties properties;
 
-	PulsarPropertiesMapper(PulsarProperties properties) {
+	/**
+     * Constructs a new PulsarPropertiesMapper with the specified PulsarProperties.
+     * 
+     * @param properties the PulsarProperties to be mapped
+     */
+    PulsarPropertiesMapper(PulsarProperties properties) {
 		this.properties = properties;
 	}
 
-	void customizeClientBuilder(ClientBuilder clientBuilder, PulsarConnectionDetails connectionDetails) {
+	/**
+     * Customizes the given {@link ClientBuilder} with the provided {@link PulsarConnectionDetails} and {@link PulsarProperties.Client}.
+     * 
+     * @param clientBuilder the {@link ClientBuilder} to customize
+     * @param connectionDetails the {@link PulsarConnectionDetails} to use for customization
+     * 
+     * @throws IllegalArgumentException if any of the provided arguments are null
+     */
+    void customizeClientBuilder(ClientBuilder clientBuilder, PulsarConnectionDetails connectionDetails) {
 		PulsarProperties.Client properties = this.properties.getClient();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(clientBuilder::connectionTimeout));
@@ -69,7 +82,15 @@ final class PulsarPropertiesMapper {
 				connectionDetails);
 	}
 
-	private void customizeServiceUrlProviderBuilder(Consumer<String> serviceUrlConsumer,
+	/**
+     * Customizes the service URL provider builder based on the provided properties and connection details.
+     * 
+     * @param serviceUrlConsumer           A consumer function to accept the service URL.
+     * @param serviceUrlProviderConsumer   A consumer function to accept the service URL provider.
+     * @param properties                   The Pulsar client properties.
+     * @param connectionDetails            The Pulsar connection details.
+     */
+    private void customizeServiceUrlProviderBuilder(Consumer<String> serviceUrlConsumer,
 			Consumer<ServiceUrlProvider> serviceUrlProviderConsumer, PulsarProperties.Client properties,
 			PulsarConnectionDetails connectionDetails) {
 		PulsarProperties.Failover failoverProperties = properties.getFailover();
@@ -91,7 +112,13 @@ final class PulsarPropertiesMapper {
 		serviceUrlProviderConsumer.accept(autoClusterFailoverBuilder.build());
 	}
 
-	private Map<String, Authentication> getSecondaryAuths(PulsarProperties.Failover properties) {
+	/**
+     * Retrieves the secondary authentications for failover clusters based on the provided properties.
+     * 
+     * @param properties the failover properties containing the backup clusters
+     * @return a map of service URLs to authentication instances for the secondary clusters
+     */
+    private Map<String, Authentication> getSecondaryAuths(PulsarProperties.Failover properties) {
 		Map<String, Authentication> secondaryAuths = new LinkedHashMap<>();
 		properties.getBackupClusters().forEach((backupCluster) -> {
 			PulsarProperties.Authentication authenticationProperties = backupCluster.getAuthentication();
@@ -108,7 +135,13 @@ final class PulsarPropertiesMapper {
 		return secondaryAuths;
 	}
 
-	void customizeAdminBuilder(PulsarAdminBuilder adminBuilder, PulsarConnectionDetails connectionDetails) {
+	/**
+     * Customizes the PulsarAdminBuilder with the provided connection details and properties.
+     * 
+     * @param adminBuilder The PulsarAdminBuilder to be customized.
+     * @param connectionDetails The PulsarConnectionDetails containing the admin URL.
+     */
+    void customizeAdminBuilder(PulsarAdminBuilder adminBuilder, PulsarConnectionDetails connectionDetails) {
 		PulsarProperties.Admin properties = this.properties.getAdmin();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(connectionDetails::getAdminUrl).to(adminBuilder::serviceHttpUrl);
@@ -118,7 +151,14 @@ final class PulsarPropertiesMapper {
 		customizeAuthentication(properties.getAuthentication(), adminBuilder::authentication);
 	}
 
-	private void customizeAuthentication(PulsarProperties.Authentication properties, AuthenticationConsumer action) {
+	/**
+     * Customizes the authentication for Pulsar based on the provided properties.
+     * 
+     * @param properties the authentication properties to be customized
+     * @param action the consumer function to apply the customization
+     * @throws IllegalStateException if unable to configure Pulsar authentication
+     */
+    private void customizeAuthentication(PulsarProperties.Authentication properties, AuthenticationConsumer action) {
 		String pluginClassName = properties.getPluginClassName();
 		if (StringUtils.hasText(pluginClassName)) {
 			try {
@@ -130,7 +170,15 @@ final class PulsarPropertiesMapper {
 		}
 	}
 
-	private String getAuthenticationParamsJson(Map<String, String> params) {
+	/**
+     * Generates a JSON string representation of the authentication parameters.
+     * The parameters are sorted alphabetically by key before being converted to JSON.
+     * 
+     * @param params a map of authentication parameters
+     * @return a JSON string representation of the authentication parameters
+     * @throws IllegalStateException if the authentication parameters cannot be converted to an encoded string
+     */
+    private String getAuthenticationParamsJson(Map<String, String> params) {
 		Map<String, String> sortedParams = new TreeMap<>(params);
 		try {
 			return sortedParams.entrySet()
@@ -143,7 +191,13 @@ final class PulsarPropertiesMapper {
 		}
 	}
 
-	<T> void customizeProducerBuilder(ProducerBuilder<T> producerBuilder) {
+	/**
+     * Customizes the given {@link ProducerBuilder} with the properties defined in {@link PulsarProperties}.
+     *
+     * @param producerBuilder the {@link ProducerBuilder} to be customized
+     * @param <T> the type of the producer
+     */
+    <T> void customizeProducerBuilder(ProducerBuilder<T> producerBuilder) {
 		PulsarProperties.Producer properties = this.properties.getProducer();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(producerBuilder::producerName);
@@ -157,7 +211,13 @@ final class PulsarPropertiesMapper {
 		map.from(properties::getAccessMode).to(producerBuilder::accessMode);
 	}
 
-	<T> void customizeConsumerBuilder(ConsumerBuilder<T> consumerBuilder) {
+	/**
+     * Customizes the ConsumerBuilder with the properties specified in the PulsarProperties.
+     * 
+     * @param consumerBuilder the ConsumerBuilder to be customized
+     * @param <T> the type of the ConsumerBuilder
+     */
+    <T> void customizeConsumerBuilder(ConsumerBuilder<T> consumerBuilder) {
 		PulsarProperties.Consumer properties = this.properties.getConsumer();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(consumerBuilder::consumerName);
@@ -170,7 +230,12 @@ final class PulsarPropertiesMapper {
 		customizeConsumerBuilderSubscription(consumerBuilder);
 	}
 
-	private void customizeConsumerBuilderSubscription(ConsumerBuilder<?> consumerBuilder) {
+	/**
+     * Customizes the subscription settings of the given consumer builder based on the properties defined in the PulsarProperties.
+     *
+     * @param consumerBuilder the consumer builder to customize
+     */
+    private void customizeConsumerBuilderSubscription(ConsumerBuilder<?> consumerBuilder) {
 		PulsarProperties.Consumer.Subscription properties = this.properties.getConsumer().getSubscription();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(consumerBuilder::subscriptionName);
@@ -180,25 +245,46 @@ final class PulsarPropertiesMapper {
 		map.from(properties::getType).to(consumerBuilder::subscriptionType);
 	}
 
-	void customizeContainerProperties(PulsarContainerProperties containerProperties) {
+	/**
+     * Customizes the properties of a Pulsar container.
+     * 
+     * @param containerProperties the PulsarContainerProperties object representing the container properties
+     */
+    void customizeContainerProperties(PulsarContainerProperties containerProperties) {
 		customizePulsarContainerConsumerSubscriptionProperties(containerProperties);
 		customizePulsarContainerListenerProperties(containerProperties);
 	}
 
-	private void customizePulsarContainerConsumerSubscriptionProperties(PulsarContainerProperties containerProperties) {
+	/**
+     * Customizes the Pulsar container consumer subscription properties.
+     * 
+     * @param containerProperties the Pulsar container properties to customize
+     */
+    private void customizePulsarContainerConsumerSubscriptionProperties(PulsarContainerProperties containerProperties) {
 		PulsarProperties.Consumer.Subscription properties = this.properties.getConsumer().getSubscription();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getType).to(containerProperties::setSubscriptionType);
 	}
 
-	private void customizePulsarContainerListenerProperties(PulsarContainerProperties containerProperties) {
+	/**
+     * Customizes the properties of the Pulsar container listener based on the provided container properties.
+     * 
+     * @param containerProperties The container properties to customize the listener properties with.
+     */
+    private void customizePulsarContainerListenerProperties(PulsarContainerProperties containerProperties) {
 		PulsarProperties.Listener properties = this.properties.getListener();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
 		map.from(properties::isObservationEnabled).to(containerProperties::setObservationEnabled);
 	}
 
-	<T> void customizeReaderBuilder(ReaderBuilder<T> readerBuilder) {
+	/**
+     * Customizes the provided {@link ReaderBuilder} with the properties defined in the {@link PulsarProperties.Reader}.
+     *
+     * @param readerBuilder the {@link ReaderBuilder} to be customized
+     * @param <T>           the type of the reader
+     */
+    <T> void customizeReaderBuilder(ReaderBuilder<T> readerBuilder) {
 		PulsarProperties.Reader properties = this.properties.getReader();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(readerBuilder::readerName);
@@ -208,13 +294,24 @@ final class PulsarPropertiesMapper {
 		map.from(properties::isReadCompacted).to(readerBuilder::readCompacted);
 	}
 
-	void customizeReaderContainerProperties(PulsarReaderContainerProperties readerContainerProperties) {
+	/**
+     * Customizes the properties of the Pulsar reader container.
+     * 
+     * @param readerContainerProperties the Pulsar reader container properties to be customized
+     */
+    void customizeReaderContainerProperties(PulsarReaderContainerProperties readerContainerProperties) {
 		PulsarProperties.Reader properties = this.properties.getReader();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getTopics).to(readerContainerProperties::setTopics);
 	}
 
-	private Consumer<Duration> timeoutProperty(BiConsumer<Integer, TimeUnit> setter) {
+	/**
+     * Sets the timeout property using the provided setter function.
+     * 
+     * @param setter the setter function to set the timeout property
+     * @return a Consumer function that accepts a Duration and sets the timeout property using the provided setter function
+     */
+    private Consumer<Duration> timeoutProperty(BiConsumer<Integer, TimeUnit> setter) {
 		return (duration) -> setter.accept((int) duration.toMillis(), TimeUnit.MILLISECONDS);
 	}
 

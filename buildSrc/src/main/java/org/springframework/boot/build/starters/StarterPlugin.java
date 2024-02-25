@@ -46,7 +46,18 @@ public class StarterPlugin implements Plugin<Project> {
 
 	private static final String JAR_TYPE = "dependencies-starter";
 
-	@Override
+	/**
+     * Applies the StarterPlugin to the given project.
+     * This plugin applies the DeployedPlugin, JavaLibraryPlugin, and ConventionsPlugin to the project.
+     * It creates a StarterMetadata task and sets its dependencies to the runtime classpath configuration.
+     * The StarterMetadata task generates a metadata file and saves it to the build directory.
+     * It also creates a starterMetadata configuration and adds the metadata file as an artifact.
+     * Additionally, it creates checks for classpath conflicts, unnecessary exclusions, and unconstrained direct dependencies.
+     * Finally, it configures the JAR manifest for the project.
+     *
+     * @param project The project to apply the plugin to.
+     */
+    @Override
 	public void apply(Project project) {
 		PluginContainer plugins = project.getPlugins();
 		plugins.apply(DeployedPlugin.class);
@@ -68,7 +79,13 @@ public class StarterPlugin implements Plugin<Project> {
 		configureJarManifest(project);
 	}
 
-	private void createClasspathConflictsCheck(Configuration classpath, Project project) {
+	/**
+     * Creates a task to check for classpath conflicts in the given configuration.
+     * 
+     * @param classpath The configuration to check for conflicts.
+     * @param project The project to which the task belongs.
+     */
+    private void createClasspathConflictsCheck(Configuration classpath, Project project) {
 		CheckClasspathForConflicts checkClasspathForConflicts = project.getTasks()
 			.create("check" + StringUtils.capitalize(classpath.getName() + "ForConflicts"),
 					CheckClasspathForConflicts.class);
@@ -76,7 +93,13 @@ public class StarterPlugin implements Plugin<Project> {
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForConflicts);
 	}
 
-	private void createUnnecessaryExclusionsCheck(Configuration classpath, Project project) {
+	/**
+     * Creates a check for unnecessary exclusions in the given classpath configuration and adds it to the project's tasks.
+     * 
+     * @param classpath The classpath configuration to check for unnecessary exclusions.
+     * @param project The project to add the check task to.
+     */
+    private void createUnnecessaryExclusionsCheck(Configuration classpath, Project project) {
 		CheckClasspathForUnnecessaryExclusions checkClasspathForUnnecessaryExclusions = project.getTasks()
 			.create("check" + StringUtils.capitalize(classpath.getName() + "ForUnnecessaryExclusions"),
 					CheckClasspathForUnnecessaryExclusions.class);
@@ -84,7 +107,13 @@ public class StarterPlugin implements Plugin<Project> {
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForUnnecessaryExclusions);
 	}
 
-	private void createUnconstrainedDirectDependenciesCheck(Configuration classpath, Project project) {
+	/**
+     * Creates a task to check for unconstrained direct dependencies in the classpath.
+     * 
+     * @param classpath The classpath to check.
+     * @param project The project to create the task in.
+     */
+    private void createUnconstrainedDirectDependenciesCheck(Configuration classpath, Project project) {
 		CheckClasspathForUnconstrainedDirectDependencies checkClasspathForUnconstrainedDirectDependencies = project
 			.getTasks()
 			.create("check" + StringUtils.capitalize(classpath.getName() + "ForUnconstrainedDirectDependencies"),
@@ -95,7 +124,12 @@ public class StarterPlugin implements Plugin<Project> {
 			.dependsOn(checkClasspathForUnconstrainedDirectDependencies);
 	}
 
-	private void configureJarManifest(Project project) {
+	/**
+     * Configures the JAR manifest for the project.
+     * 
+     * @param project the project to configure the JAR manifest for
+     */
+    private void configureJarManifest(Project project) {
 		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
 			jar.manifest((manifest) -> {
 				Map<String, Object> attributes = new TreeMap<>();

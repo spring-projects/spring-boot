@@ -44,12 +44,25 @@ public class OptionalLiveReloadServer implements InitializingBean {
 		this.server = server;
 	}
 
-	@Override
+	/**
+     * Starts the server after all properties have been set.
+     * 
+     * @throws Exception if an error occurs while starting the server
+     */
+    @Override
 	public void afterPropertiesSet() throws Exception {
 		startServer();
 	}
 
-	void startServer() {
+	/**
+     * Starts the LiveReload server.
+     * 
+     * If the server is not null, it attempts to start the server on the specified port.
+     * If the server is already started, it retrieves the current port.
+     * 
+     * @throws Exception if unable to start the LiveReload server
+     */
+    void startServer() {
 		if (this.server != null) {
 			try {
 				int port = this.server.getPort();

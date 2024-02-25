@@ -34,11 +34,25 @@ public class CachingOperationInvokerAdvisor implements OperationInvokerAdvisor {
 
 	private final Function<EndpointId, Long> endpointIdTimeToLive;
 
-	public CachingOperationInvokerAdvisor(Function<EndpointId, Long> endpointIdTimeToLive) {
+	/**
+     * Constructs a new CachingOperationInvokerAdvisor with the specified endpointIdTimeToLive function.
+     * 
+     * @param endpointIdTimeToLive the function that provides the time to live for each endpointId
+     */
+    public CachingOperationInvokerAdvisor(Function<EndpointId, Long> endpointIdTimeToLive) {
 		this.endpointIdTimeToLive = endpointIdTimeToLive;
 	}
 
-	@Override
+	/**
+     * Applies the caching operation invoker to the given endpoint and operation type if applicable.
+     * 
+     * @param endpointId    the ID of the endpoint
+     * @param operationType the type of the operation
+     * @param parameters    the operation parameters
+     * @param invoker       the original operation invoker
+     * @return the operation invoker, either the original one or a caching operation invoker
+     */
+    @Override
 	public OperationInvoker apply(EndpointId endpointId, OperationType operationType, OperationParameters parameters,
 			OperationInvoker invoker) {
 		if (operationType == OperationType.READ && CachingOperationInvoker.isApplicable(parameters)) {

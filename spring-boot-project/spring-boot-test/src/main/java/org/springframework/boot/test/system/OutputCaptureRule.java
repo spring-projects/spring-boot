@@ -57,7 +57,17 @@ public class OutputCaptureRule implements TestRule, CapturedOutput {
 
 	private final List<Matcher<? super String>> matchers = new ArrayList<>();
 
-	@Override
+	/**
+     * Applies the given statement to the description and evaluates it.
+     * This method captures the output of the statement and applies any matchers
+     * specified in the rule before evaluating the statement.
+     *
+     * @param base        the statement to be applied
+     * @param description the description of the test
+     * @return a new statement that captures the output and applies matchers
+     * @throws Throwable if an error occurs during evaluation
+     */
+    @Override
 	public Statement apply(Statement base, Description description) {
 		return new Statement() {
 			@Override
@@ -81,22 +91,42 @@ public class OutputCaptureRule implements TestRule, CapturedOutput {
 		};
 	}
 
-	@Override
+	/**
+     * Returns all the captured output.
+     *
+     * @return a string containing all the captured output
+     */
+    @Override
 	public String getAll() {
 		return this.delegate.getAll();
 	}
 
-	@Override
+	/**
+     * Returns the output captured by the delegate object.
+     *
+     * @return the captured output as a string
+     */
+    @Override
 	public String getOut() {
 		return this.delegate.getOut();
 	}
 
-	@Override
+	/**
+     * Returns the error output captured by the OutputCaptureRule.
+     *
+     * @return the error output captured by the OutputCaptureRule
+     */
+    @Override
 	public String getErr() {
 		return this.delegate.getErr();
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the object.
+     * 
+     * @return a string representation of the object
+     */
+    @Override
 	public String toString() {
 		return this.delegate.toString();
 	}

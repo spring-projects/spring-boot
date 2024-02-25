@@ -111,7 +111,12 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		return this.kind;
 	}
 
-	ConfigDataLocation getLocation() {
+	/**
+     * Returns the location of the configuration data.
+     *
+     * @return the location of the configuration data
+     */
+    ConfigDataLocation getLocation() {
 		return this.location;
 	}
 
@@ -168,7 +173,13 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		return this.configDataOptions.contains(option);
 	}
 
-	ConfigDataEnvironmentContributor withoutConfigDataOption(ConfigData.Option option) {
+	/**
+     * Returns a new instance of ConfigDataEnvironmentContributor with the specified ConfigData.Option removed.
+     *
+     * @param option the ConfigData.Option to be removed
+     * @return a new instance of ConfigDataEnvironmentContributor without the specified ConfigData.Option
+     */
+    ConfigDataEnvironmentContributor withoutConfigDataOption(ConfigData.Option option) {
 		return new ConfigDataEnvironmentContributor(this.kind, this.location, this.resource,
 				this.fromProfileSpecificImport, this.propertySource, this.configurationPropertySource, this.properties,
 				this.configDataOptions.without(option), this.children);
@@ -265,7 +276,12 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 				this.configDataOptions, updatedChildren);
 	}
 
-	private void moveProfileSpecific(Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children) {
+	/**
+     * Moves profile-specific children from the "before profile activation" phase to the "after profile activation" phase.
+     * 
+     * @param children a map containing the import phases and their corresponding list of ConfigDataEnvironmentContributors
+     */
+    private void moveProfileSpecific(Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children) {
 		List<ConfigDataEnvironmentContributor> before = children.get(ImportPhase.BEFORE_PROFILE_ACTIVATION);
 		if (!hasAnyProfileSpecificChildren(before)) {
 			return;
@@ -280,7 +296,14 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		children.put(ImportPhase.AFTER_PROFILE_ACTIVATION, updatedAfter);
 	}
 
-	private ConfigDataEnvironmentContributor moveProfileSpecificChildren(ConfigDataEnvironmentContributor contributor,
+	/**
+     * Moves profile-specific children from the given contributor to the removed list.
+     * 
+     * @param contributor the original contributor
+     * @param removed     the list to store the removed profile-specific children
+     * @return the updated contributor with profile-specific children removed
+     */
+    private ConfigDataEnvironmentContributor moveProfileSpecificChildren(ConfigDataEnvironmentContributor contributor,
 			List<ConfigDataEnvironmentContributor> removed) {
 		for (ImportPhase importPhase : ImportPhase.values()) {
 			List<ConfigDataEnvironmentContributor> children = contributor.getChildren(importPhase);
@@ -298,7 +321,13 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		return contributor;
 	}
 
-	private boolean hasAnyProfileSpecificChildren(List<ConfigDataEnvironmentContributor> contributors) {
+	/**
+     * Checks if any of the given contributors have profile-specific children.
+     * 
+     * @param contributors the list of contributors to check
+     * @return true if any contributor has profile-specific children, false otherwise
+     */
+    private boolean hasAnyProfileSpecificChildren(List<ConfigDataEnvironmentContributor> contributors) {
 		if (CollectionUtils.isEmpty(contributors)) {
 			return false;
 		}
@@ -340,14 +369,25 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 				this.configDataOptions, updatedChildren);
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the object.
+     * 
+     * @return a string representation of the object
+     */
+    @Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		buildToString("", builder);
 		return builder.toString();
 	}
 
-	private void buildToString(String prefix, StringBuilder builder) {
+	/**
+     * Builds a string representation of the ConfigDataEnvironmentContributor object.
+     * 
+     * @param prefix the prefix to be added to each line of the string representation
+     * @param builder the StringBuilder object to append the string representation to
+     */
+    private void buildToString(String prefix, StringBuilder builder) {
 		builder.append(prefix);
 		builder.append(this.kind);
 		builder.append(" ");
@@ -516,18 +556,37 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 
 		private ConfigDataEnvironmentContributor next;
 
-		private ContributorIterator() {
+		/**
+         * Constructs a new instance of ContributorIterator.
+         * Initializes the phase to ImportPhase.AFTER_PROFILE_ACTIVATION.
+         * Initializes the children iterator with the children of the specified phase.
+         * Initializes the current iterator to an empty iterator.
+         */
+        private ContributorIterator() {
 			this.phase = ImportPhase.AFTER_PROFILE_ACTIVATION;
 			this.children = getChildren(this.phase).iterator();
 			this.current = Collections.emptyIterator();
 		}
 
-		@Override
+		/**
+         * Returns true if there is another contributor available in the iterator.
+         * This method checks if there is a next contributor by calling the fetchIfNecessary() method.
+         * If the fetchIfNecessary() method returns a non-null value, it means there is a next contributor available.
+         * 
+         * @return true if there is another contributor available, false otherwise.
+         */
+        @Override
 		public boolean hasNext() {
 			return fetchIfNecessary() != null;
 		}
 
-		@Override
+		/**
+         * Returns the next ConfigDataEnvironmentContributor in the iteration.
+         * 
+         * @return the next ConfigDataEnvironmentContributor in the iteration
+         * @throws NoSuchElementException if there are no more elements in the iteration
+         */
+        @Override
 		public ConfigDataEnvironmentContributor next() {
 			ConfigDataEnvironmentContributor next = fetchIfNecessary();
 			if (next == null) {
@@ -537,7 +596,12 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 			return next;
 		}
 
-		private ConfigDataEnvironmentContributor fetchIfNecessary() {
+		/**
+         * Fetches the next ConfigDataEnvironmentContributor if necessary.
+         * 
+         * @return the next ConfigDataEnvironmentContributor if available, otherwise null
+         */
+        private ConfigDataEnvironmentContributor fetchIfNecessary() {
 			if (this.next != null) {
 				return this.next;
 			}

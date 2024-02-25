@@ -79,7 +79,13 @@ public class CachingOperationInvoker implements OperationInvoker {
 		return this.timeToLive;
 	}
 
-	@Override
+	/**
+     * Invokes the method with caching functionality.
+     * 
+     * @param context the invocation context
+     * @return the response from the method invocation
+     */
+    @Override
 	public Object invoke(InvocationContext context) {
 		if (hasInput(context)) {
 			return this.invoker.invoke(context);
@@ -98,14 +104,25 @@ public class CachingOperationInvoker implements OperationInvoker {
 		return cached.getResponse();
 	}
 
-	private CacheKey getCacheKey(InvocationContext context) {
+	/**
+     * Generates a cache key based on the provided invocation context.
+     * 
+     * @param context the invocation context
+     * @return the cache key generated from the invocation context
+     */
+    private CacheKey getCacheKey(InvocationContext context) {
 		ApiVersion contextApiVersion = context.resolveArgument(ApiVersion.class);
 		Principal principal = context.resolveArgument(Principal.class);
 		WebServerNamespace serverNamespace = context.resolveArgument(WebServerNamespace.class);
 		return new CacheKey(contextApiVersion, principal, serverNamespace);
 	}
 
-	private void cleanExpiredCachedResponses(long accessTime) {
+	/**
+     * Removes any expired cached responses based on the given access time and time to live.
+     * 
+     * @param accessTime the access time to compare with the cached response's last access time
+     */
+    private void cleanExpiredCachedResponses(long accessTime) {
 		try {
 			this.cachedResponses.entrySet().removeIf((entry) -> entry.getValue().isStale(accessTime, this.timeToLive));
 		}
@@ -114,7 +131,13 @@ public class CachingOperationInvoker implements OperationInvoker {
 		}
 	}
 
-	private boolean hasInput(InvocationContext context) {
+	/**
+     * Checks if the given InvocationContext has any input arguments.
+     *
+     * @param context the InvocationContext to check
+     * @return true if the InvocationContext has input arguments, false otherwise
+     */
+    private boolean hasInput(InvocationContext context) {
 		Map<String, Object> arguments = context.getArguments();
 		if (!ObjectUtils.isEmpty(arguments)) {
 			return arguments.values().stream().anyMatch(Objects::nonNull);
@@ -122,14 +145,27 @@ public class CachingOperationInvoker implements OperationInvoker {
 		return false;
 	}
 
-	private CachedResponse createCachedResponse(Object response, long accessTime) {
+	/**
+     * Creates a cached response object based on the given response and access time.
+     * 
+     * @param response The response object to be cached.
+     * @param accessTime The time at which the response was accessed.
+     * @return The created cached response object.
+     */
+    private CachedResponse createCachedResponse(Object response, long accessTime) {
 		if (IS_REACTOR_PRESENT) {
 			return new ReactiveCachedResponse(response, accessTime, this.timeToLive);
 		}
 		return new CachedResponse(response, accessTime);
 	}
 
-	static boolean isApplicable(OperationParameters parameters) {
+	/**
+     * Checks if the given OperationParameters are applicable for the caching operation.
+     * 
+     * @param parameters the OperationParameters to be checked
+     * @return true if all mandatory parameters have a valid type in the CacheKey, false otherwise
+     */
+    static boolean isApplicable(OperationParameters parameters) {
 		for (OperationParameter parameter : parameters) {
 			if (parameter.isMandatory() && !CacheKey.containsType(parameter.getType())) {
 				return false;
@@ -148,16 +184,34 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 		private final long creationTime;
 
-		CachedResponse(Object response, long creationTime) {
+		/**
+         * Constructs a new CachedResponse object with the specified response and creation time.
+         * 
+         * @param response the response object to be cached
+         * @param creationTime the time at which the response was created
+         */
+        CachedResponse(Object response, long creationTime) {
 			this.response = response;
 			this.creationTime = creationTime;
 		}
 
-		boolean isStale(long accessTime, long timeToLive) {
+		/**
+         * Checks if the cached response is stale based on the access time and time to live.
+         * 
+         * @param accessTime the time when the cached response was last accessed
+         * @param timeToLive the maximum time duration for which the cached response is considered fresh
+         * @return true if the cached response is stale, false otherwise
+         */
+        boolean isStale(long accessTime, long timeToLive) {
 			return (accessTime - this.creationTime) >= timeToLive;
 		}
 
-		Object getResponse() {
+		/**
+         * Returns the response object.
+         *
+         * @return the response object
+         */
+        Object getResponse() {
 			return this.response;
 		}
 
@@ -168,11 +222,25 @@ public class CachingOperationInvoker implements OperationInvoker {
 	 */
 	static class ReactiveCachedResponse extends CachedResponse {
 
-		ReactiveCachedResponse(Object response, long creationTime, long timeToLive) {
+		/**
+         * Constructs a new ReactiveCachedResponse object with the specified response, creation time, and time to live.
+         * 
+         * @param response the response object to be cached
+         * @param creationTime the time at which the response was created
+         * @param timeToLive the duration for which the response should be considered valid
+         */
+        ReactiveCachedResponse(Object response, long creationTime, long timeToLive) {
 			super(applyCaching(response, timeToLive), creationTime);
 		}
 
-		private static Object applyCaching(Object response, long timeToLive) {
+		/**
+         * Applies caching to the given response object.
+         * 
+         * @param response The response object to apply caching to.
+         * @param timeToLive The time to live for the cached response, in milliseconds.
+         * @return The response object with caching applied.
+         */
+        private static Object applyCaching(Object response, long timeToLive) {
 			if (response instanceof Mono) {
 				return ((Mono<?>) response).cache(Duration.ofMillis(timeToLive));
 			}
@@ -184,7 +252,10 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 	}
 
-	private static final class CacheKey {
+	/**
+     * CacheKey class.
+     */
+    private static final class CacheKey {
 
 		private static final Class<?>[] CACHEABLE_TYPES = new Class<?>[] { ApiVersion.class, SecurityContext.class,
 				WebServerNamespace.class };
@@ -195,17 +266,36 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 		private final WebServerNamespace serverNamespace;
 
-		private CacheKey(ApiVersion apiVersion, Principal principal, WebServerNamespace serverNamespace) {
+		/**
+         * Constructs a new CacheKey object with the specified API version, principal, and server namespace.
+         * 
+         * @param apiVersion the API version associated with the cache key
+         * @param principal the principal associated with the cache key
+         * @param serverNamespace the server namespace associated with the cache key
+         */
+        private CacheKey(ApiVersion apiVersion, Principal principal, WebServerNamespace serverNamespace) {
 			this.principal = principal;
 			this.apiVersion = apiVersion;
 			this.serverNamespace = serverNamespace;
 		}
 
-		static boolean containsType(Class<?> type) {
+		/**
+         * Checks if the given type is present in the array of cacheable types.
+         *
+         * @param type the type to check
+         * @return true if the type is present in the cacheable types array, false otherwise
+         */
+        static boolean containsType(Class<?> type) {
 			return Arrays.stream(CacheKey.CACHEABLE_TYPES).anyMatch((c) -> c.isAssignableFrom(type));
 		}
 
-		@Override
+		/**
+         * Compares this CacheKey object to the specified object for equality.
+         * 
+         * @param obj the object to compare to
+         * @return true if the specified object is equal to this CacheKey object, false otherwise
+         */
+        @Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -219,7 +309,12 @@ public class CachingOperationInvoker implements OperationInvoker {
 					&& ObjectUtils.nullSafeEquals(this.serverNamespace, other.serverNamespace);
 		}
 
-		@Override
+		/**
+         * Returns a hash code value for the object. This method is automatically generated by the IDE.
+         * 
+         * @return the hash code value for the object
+         */
+        @Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;

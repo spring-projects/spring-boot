@@ -52,7 +52,14 @@ class OperationMethodParameters implements OperationParameters {
 		this.operationParameters = getOperationParameters(parameters, parameterNames);
 	}
 
-	private List<OperationParameter> getOperationParameters(Parameter[] parameters, String[] names) {
+	/**
+     * Returns a list of operation parameters based on the given parameters and names.
+     * 
+     * @param parameters the array of parameters
+     * @param names the array of names
+     * @return a list of operation parameters
+     */
+    private List<OperationParameter> getOperationParameters(Parameter[] parameters, String[] names) {
 		List<OperationParameter> operationParameters = new ArrayList<>(parameters.length);
 		for (int i = 0; i < names.length; i++) {
 			operationParameters.add(new OperationMethodParameter(names[i], parameters[i]));
@@ -60,22 +67,43 @@ class OperationMethodParameters implements OperationParameters {
 		return Collections.unmodifiableList(operationParameters);
 	}
 
-	@Override
+	/**
+     * Returns the number of parameters in this operation method.
+     *
+     * @return the number of parameters
+     */
+    @Override
 	public int getParameterCount() {
 		return this.operationParameters.size();
 	}
 
-	@Override
+	/**
+     * Returns the OperationParameter at the specified index in this OperationMethodParameters.
+     *
+     * @param index the index of the OperationParameter to be returned
+     * @return the OperationParameter at the specified index
+     */
+    @Override
 	public OperationParameter get(int index) {
 		return this.operationParameters.get(index);
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the operation parameters in this OperationMethodParameters object.
+     *
+     * @return an iterator over the operation parameters in this OperationMethodParameters object
+     */
+    @Override
 	public Iterator<OperationParameter> iterator() {
 		return this.operationParameters.iterator();
 	}
 
-	@Override
+	/**
+     * Returns a sequential Stream with the operation parameters of this OperationMethodParameters object as its source.
+     *
+     * @return a sequential Stream of OperationParameter objects representing the operation parameters of this OperationMethodParameters object
+     */
+    @Override
 	public Stream<OperationParameter> stream() {
 		return this.operationParameters.stream();
 	}

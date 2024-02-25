@@ -54,11 +54,22 @@ import org.springframework.transaction.TransactionManager;
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceTransactionManagerAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * JdbcTransactionManagerConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	static class JdbcTransactionManagerConfiguration {
 
-		@Bean
+		/**
+         * Creates a {@link DataSourceTransactionManager} bean if no other bean of type {@link TransactionManager} is present.
+         * 
+         * @param environment the environment
+         * @param dataSource the data source
+         * @param transactionManagerCustomizers the transaction manager customizers
+         * @return the {@link DataSourceTransactionManager} bean
+         */
+        @Bean
 		@ConditionalOnMissingBean(TransactionManager.class)
 		DataSourceTransactionManager transactionManager(Environment environment, DataSource dataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
@@ -68,7 +79,14 @@ public class DataSourceTransactionManagerAutoConfiguration {
 			return transactionManager;
 		}
 
-		private DataSourceTransactionManager createTransactionManager(Environment environment, DataSource dataSource) {
+		/**
+         * Creates a transaction manager based on the provided environment and data source.
+         * 
+         * @param environment the environment containing the properties for configuration
+         * @param dataSource the data source to be used for transaction management
+         * @return the transaction manager instance
+         */
+        private DataSourceTransactionManager createTransactionManager(Environment environment, DataSource dataSource) {
 			return environment.getProperty("spring.dao.exceptiontranslation.enabled", Boolean.class, Boolean.TRUE)
 					? new JdbcTransactionManager(dataSource) : new DataSourceTransactionManager(dataSource);
 		}

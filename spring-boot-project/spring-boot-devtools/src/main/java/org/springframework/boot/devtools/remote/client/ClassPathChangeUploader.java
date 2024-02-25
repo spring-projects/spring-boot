@@ -75,7 +75,14 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 
 	private final ClientHttpRequestFactory requestFactory;
 
-	public ClassPathChangeUploader(String url, ClientHttpRequestFactory requestFactory) {
+	/**
+     * Constructs a new ClassPathChangeUploader with the specified URL and request factory.
+     * 
+     * @param url the URL to upload the file to
+     * @param requestFactory the request factory to use for creating HTTP requests
+     * @throws IllegalArgumentException if the URL is empty or malformed
+     */
+    public ClassPathChangeUploader(String url, ClientHttpRequestFactory requestFactory) {
 		Assert.hasLength(url, "URL must not be empty");
 		Assert.notNull(requestFactory, "RequestFactory must not be null");
 		try {
@@ -87,7 +94,15 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 		this.requestFactory = requestFactory;
 	}
 
-	@Override
+	/**
+     * This method is called when a ClassPathChangedEvent is triggered.
+     * It retrieves the ClassLoaderFiles from the event, serializes them into bytes,
+     * and performs an upload of the bytes.
+     * 
+     * @param event The ClassPathChangedEvent that triggered this method
+     * @throws IllegalStateException if an IOException occurs during the process
+     */
+    @Override
 	public void onApplicationEvent(ClassPathChangedEvent event) {
 		try {
 			ClassLoaderFiles classLoaderFiles = getClassLoaderFiles(event);
@@ -99,7 +114,14 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 		}
 	}
 
-	private void performUpload(byte[] bytes, ClassPathChangedEvent event) throws IOException {
+	/**
+     * Performs the upload of the given byte array to the specified URI.
+     * 
+     * @param bytes the byte array to be uploaded
+     * @param event the ClassPathChangedEvent associated with the upload
+     * @throws IOException if an I/O error occurs during the upload
+     */
+    private void performUpload(byte[] bytes, ClassPathChangedEvent event) throws IOException {
 		try {
 			while (true) {
 				try {
@@ -130,11 +152,23 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 		}
 	}
 
-	private void logUpload(ClassPathChangedEvent event) {
+	/**
+     * Logs the upload of a ClassPathChangedEvent.
+     * 
+     * @param event the ClassPathChangedEvent to be logged
+     */
+    private void logUpload(ClassPathChangedEvent event) {
 		logger.info(LogMessage.format("Uploading %s", event.overview()));
 	}
 
-	private byte[] serialize(ClassLoaderFiles classLoaderFiles) throws IOException {
+	/**
+     * Serializes the given ClassLoaderFiles object into a byte array.
+     * 
+     * @param classLoaderFiles the ClassLoaderFiles object to be serialized
+     * @return the byte array representation of the serialized object
+     * @throws IOException if an I/O error occurs during serialization
+     */
+    private byte[] serialize(ClassLoaderFiles classLoaderFiles) throws IOException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 		objectOutputStream.writeObject(classLoaderFiles);
@@ -142,7 +176,14 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 		return outputStream.toByteArray();
 	}
 
-	private ClassLoaderFiles getClassLoaderFiles(ClassPathChangedEvent event) throws IOException {
+	/**
+     * Retrieves the ClassLoaderFiles object containing the changed files from the given ClassPathChangedEvent.
+     * 
+     * @param event the ClassPathChangedEvent representing the changes in the classpath
+     * @return the ClassLoaderFiles object containing the changed files
+     * @throws IOException if an I/O error occurs while retrieving the files
+     */
+    private ClassLoaderFiles getClassLoaderFiles(ClassPathChangedEvent event) throws IOException {
 		ClassLoaderFiles files = new ClassLoaderFiles();
 		for (ChangedFiles changedFiles : event.getChangeSet()) {
 			String sourceDirectory = changedFiles.getSourceDirectory().getAbsolutePath();
@@ -153,7 +194,14 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 		return files;
 	}
 
-	private ClassLoaderFile asClassLoaderFile(ChangedFile changedFile) throws IOException {
+	/**
+     * Converts a ChangedFile object to a ClassLoaderFile object.
+     * 
+     * @param changedFile the ChangedFile object to be converted
+     * @return a ClassLoaderFile object representing the converted ChangedFile
+     * @throws IOException if an I/O error occurs while reading the file
+     */
+    private ClassLoaderFile asClassLoaderFile(ChangedFile changedFile) throws IOException {
 		ClassLoaderFile.Kind kind = TYPE_MAPPINGS.get(changedFile.getType());
 		byte[] bytes = (kind != Kind.DELETED) ? FileCopyUtils.copyToByteArray(changedFile.getFile()) : null;
 		long lastModified = (kind != Kind.DELETED) ? changedFile.getFile().lastModified() : System.currentTimeMillis();

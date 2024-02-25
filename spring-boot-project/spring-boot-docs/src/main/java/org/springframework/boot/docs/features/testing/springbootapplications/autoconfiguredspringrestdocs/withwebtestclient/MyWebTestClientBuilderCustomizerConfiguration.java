@@ -22,10 +22,18 @@ import org.springframework.context.annotation.Bean;
 
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
+/**
+ * MyWebTestClientBuilderCustomizerConfiguration class.
+ */
 @TestConfiguration(proxyBeanMethods = false)
 public class MyWebTestClientBuilderCustomizerConfiguration {
 
-	@Bean
+	/**
+     * Configures the REST documentation for the WebTestClient builder.
+     *
+     * @return the customizer for the WebTestClient builder
+     */
+    @Bean
 	public WebTestClientBuilderCustomizer restDocumentation() {
 		return (builder) -> builder.entityExchangeResultConsumer(document("{method-name}"));
 	}

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.mergingcomplextypes.list;
 
+/**
+ * MyPojo class.
+ */
 class MyPojo {
 
 }

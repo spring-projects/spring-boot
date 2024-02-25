@@ -24,10 +24,18 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyFilterConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyFilterConfiguration {
 
-	@Bean
+	/**
+     * Registers a filter for handling requests.
+     * 
+     * @return The filter registration bean for the configured filter.
+     */
+    @Bean
 	public FilterRegistrationBean<MyFilter> myFilter() {
 		FilterRegistrationBean<MyFilter> registration = new FilterRegistrationBean<>(new MyFilter());
 		// ...

@@ -30,11 +30,21 @@ public interface SnapshotStateRepository {
 	 */
 	SnapshotStateRepository NONE = new SnapshotStateRepository() {
 
-		@Override
+		/**
+     * Saves the state of an object.
+     * 
+     * @param state the object state to be saved
+     */
+    @Override
 		public void save(Object state) {
 		}
 
-		@Override
+		/**
+     * Restores the state of the SnapshotStateRepository.
+     * 
+     * @return The restored state of the SnapshotStateRepository.
+     */
+    @Override
 		public Object restore() {
 			return null;
 		}

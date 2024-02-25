@@ -16,15 +16,29 @@
 
 package smoketest.websocket.jetty.echo;
 
+/**
+ * DefaultEchoService class.
+ */
 public class DefaultEchoService implements EchoService {
 
 	private final String echoFormat;
 
-	public DefaultEchoService(String echoFormat) {
+	/**
+     * Constructs a new DefaultEchoService with the specified echo format.
+     * 
+     * @param echoFormat the format string used for echoing messages
+     */
+    public DefaultEchoService(String echoFormat) {
 		this.echoFormat = (echoFormat != null) ? echoFormat : "%s";
 	}
 
-	@Override
+	/**
+     * Returns the formatted message using the provided message and echo format.
+     *
+     * @param message the message to be formatted
+     * @return the formatted message
+     */
+    @Override
 	public String getMessage(String message) {
 		return String.format(this.echoFormat, message);
 	}

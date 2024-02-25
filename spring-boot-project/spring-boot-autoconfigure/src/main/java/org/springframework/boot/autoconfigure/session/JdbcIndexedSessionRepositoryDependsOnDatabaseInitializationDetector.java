@@ -33,7 +33,12 @@ import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 class JdbcIndexedSessionRepositoryDependsOnDatabaseInitializationDetector
 		extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector {
 
-	@Override
+	/**
+     * Returns a set of classes that the JdbcIndexedSessionRepository depends on for database initialization.
+     * 
+     * @return a set of classes that the JdbcIndexedSessionRepository depends on for database initialization
+     */
+    @Override
 	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
 		return Collections.singleton(JdbcIndexedSessionRepository.class);
 	}

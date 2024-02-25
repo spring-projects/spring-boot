@@ -26,6 +26,9 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * MyJmxTests class.
+ */
 @SpringBootTest(properties = "spring.jmx.enabled=true")
 @DirtiesContext
 class MyJmxTests {
@@ -33,7 +36,12 @@ class MyJmxTests {
 	@Autowired
 	private MBeanServer mBeanServer;
 
-	@Test
+	/**
+     * This is an example test method that verifies if the MBean server contains the "java.lang" domain.
+     * 
+     * @throws AssertionError if the "java.lang" domain is not found in the MBean server
+     */
+    @Test
 	void exampleTest() {
 		assertThat(this.mBeanServer.getDomains()).contains("java.lang");
 		// ...

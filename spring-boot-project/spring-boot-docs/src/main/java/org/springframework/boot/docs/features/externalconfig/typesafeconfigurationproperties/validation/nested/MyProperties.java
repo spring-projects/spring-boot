@@ -25,6 +25,9 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+/**
+ * MyProperties class.
+ */
 @ConfigurationProperties("my.service")
 @Validated
 public class MyProperties {
@@ -40,11 +43,21 @@ public class MyProperties {
 		return this.remoteAddress;
 	}
 
-	public void setRemoteAddress(InetAddress remoteAddress) {
+	/**
+     * Sets the remote address for the MyProperties class.
+     * 
+     * @param remoteAddress the InetAddress representing the remote address
+     */
+    public void setRemoteAddress(InetAddress remoteAddress) {
 		this.remoteAddress = remoteAddress;
 	}
 
-	public Security getSecurity() {
+	/**
+     * Returns the security object associated with this MyProperties instance.
+     *
+     * @return the security object
+     */
+    public Security getSecurity() {
 		return this.security;
 	}
 	// @fold:off
@@ -59,7 +72,12 @@ public class MyProperties {
 			return this.username;
 		}
 
-		public void setUsername(String username) {
+		/**
+         * Sets the username for the Security class.
+         * 
+         * @param username the username to be set
+         */
+        public void setUsername(String username) {
 			this.username = username;
 		}
 		// @fold:off

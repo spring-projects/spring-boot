@@ -47,12 +47,21 @@ import static org.springframework.security.config.Customizer.withDefaults;
  */
 class ReactiveOAuth2ClientConfigurations {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ReactiveClientRegistrationRepositoryConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@Conditional(ClientsConfiguredCondition.class)
 	@ConditionalOnMissingBean(ReactiveClientRegistrationRepository.class)
 	static class ReactiveClientRegistrationRepositoryConfiguration {
 
-		@Bean
+		/**
+         * Creates an in-memory reactive client registration repository based on the provided OAuth2 client properties.
+         *
+         * @param properties the OAuth2 client properties used to configure the client registrations
+         * @return the in-memory reactive client registration repository
+         */
+        @Bean
 		InMemoryReactiveClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
 			List<ClientRegistration> registrations = new ArrayList<>(
 					new OAuth2ClientPropertiesMapper(properties).asClientRegistrations().values());
@@ -61,29 +70,57 @@ class ReactiveOAuth2ClientConfigurations {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ReactiveOAuth2ClientConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(ReactiveClientRegistrationRepository.class)
 	static class ReactiveOAuth2ClientConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of {@link ReactiveOAuth2AuthorizedClientService} if no other bean of the same type is present.
+         * 
+         * @param clientRegistrationRepository the {@link ReactiveClientRegistrationRepository} used to retrieve client registrations
+         * @return the {@link ReactiveOAuth2AuthorizedClientService} instance
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		ReactiveOAuth2AuthorizedClientService authorizedClientService(
 				ReactiveClientRegistrationRepository clientRegistrationRepository) {
 			return new InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrationRepository);
 		}
 
-		@Bean
+		/**
+         * Creates a new instance of {@link ServerOAuth2AuthorizedClientRepository} if no other bean of the same type is present.
+         * This repository is responsible for managing the storage and retrieval of authorized OAuth2 clients for the server-side application.
+         * It uses the provided {@link ReactiveOAuth2AuthorizedClientService} to interact with the underlying storage.
+         *
+         * @param authorizedClientService the service used for interacting with the underlying storage
+         * @return the created instance of {@link ServerOAuth2AuthorizedClientRepository}
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		ServerOAuth2AuthorizedClientRepository authorizedClientRepository(
 				ReactiveOAuth2AuthorizedClientService authorizedClientService) {
 			return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(authorizedClientService);
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * SecurityWebFilterChainConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 		static class SecurityWebFilterChainConfiguration {
 
-			@Bean
+			/**
+             * Configures the Spring Security filter chain for handling security in a web application.
+             * This method is annotated with @Bean to indicate that it should be treated as a Spring bean and managed by the Spring container.
+             * It is also annotated with @ConditionalOnMissingBean to ensure that this configuration is only applied if there is no existing bean of the same type.
+             * 
+             * @param http the ServerHttpSecurity object used to configure the security filter chain
+             * @return the configured SecurityWebFilterChain object
+             */
+            @Bean
 			@ConditionalOnMissingBean
 			SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 				http.authorizeExchange((exchange) -> exchange.anyExchange().authenticated());

@@ -38,7 +38,15 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
 @ConditionalOnClass(PersistenceExceptionTranslationPostProcessor.class)
 public class PersistenceExceptionTranslationAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link PersistenceExceptionTranslationPostProcessor} if no other bean of the same type is present.
+     * This bean is conditionally created based on the property "spring.dao.exceptiontranslation.enabled" in the application's configuration.
+     * If the property is not present, the default value is true.
+     * 
+     * @param environment the environment object used to retrieve the property "spring.aop.proxy-target-class"
+     * @return a new instance of {@link PersistenceExceptionTranslationPostProcessor}
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "spring.dao.exceptiontranslation", name = "enabled", matchIfMissing = true)
 	public static PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor(

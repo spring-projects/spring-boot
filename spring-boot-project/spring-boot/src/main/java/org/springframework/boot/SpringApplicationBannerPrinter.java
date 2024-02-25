@@ -46,12 +46,26 @@ class SpringApplicationBannerPrinter {
 
 	private final Banner fallbackBanner;
 
-	SpringApplicationBannerPrinter(ResourceLoader resourceLoader, Banner fallbackBanner) {
+	/**
+     * Constructs a new SpringApplicationBannerPrinter with the specified resource loader and fallback banner.
+     *
+     * @param resourceLoader the resource loader to be used for loading the banner
+     * @param fallbackBanner the fallback banner to be used if the specified banner cannot be loaded
+     */
+    SpringApplicationBannerPrinter(ResourceLoader resourceLoader, Banner fallbackBanner) {
 		this.resourceLoader = resourceLoader;
 		this.fallbackBanner = fallbackBanner;
 	}
 
-	Banner print(Environment environment, Class<?> sourceClass, Log logger) {
+	/**
+     * Prints a banner based on the given environment, source class, and logger.
+     * 
+     * @param environment the environment to get the banner from
+     * @param sourceClass the class from which the banner is being printed
+     * @param logger the logger to use for logging information
+     * @return a PrintedBanner object representing the printed banner
+     */
+    Banner print(Environment environment, Class<?> sourceClass, Log logger) {
 		Banner banner = getBanner(environment);
 		try {
 			logger.info(createStringFromBanner(banner, environment, sourceClass));
@@ -62,13 +76,27 @@ class SpringApplicationBannerPrinter {
 		return new PrintedBanner(banner, sourceClass);
 	}
 
-	Banner print(Environment environment, Class<?> sourceClass, PrintStream out) {
+	/**
+     * Prints the banner for the given environment and source class.
+     * 
+     * @param environment the environment for which the banner is printed
+     * @param sourceClass the source class from which the banner is printed
+     * @param out the PrintStream to which the banner is printed
+     * @return a PrintedBanner object representing the printed banner
+     */
+    Banner print(Environment environment, Class<?> sourceClass, PrintStream out) {
 		Banner banner = getBanner(environment);
 		banner.printBanner(environment, sourceClass, out);
 		return new PrintedBanner(banner, sourceClass);
 	}
 
-	private Banner getBanner(Environment environment) {
+	/**
+     * Retrieves the banner for the given environment.
+     * 
+     * @param environment the environment for which to retrieve the banner
+     * @return the banner for the given environment
+     */
+    private Banner getBanner(Environment environment) {
 		Banner textBanner = getTextBanner(environment);
 		if (textBanner != null) {
 			return textBanner;
@@ -79,7 +107,13 @@ class SpringApplicationBannerPrinter {
 		return DEFAULT_BANNER;
 	}
 
-	private Banner getTextBanner(Environment environment) {
+	/**
+     * Retrieves the text banner based on the given environment.
+     * 
+     * @param environment the environment from which to retrieve the banner
+     * @return the text banner if it exists and is not related to Liquibase, null otherwise
+     */
+    private Banner getTextBanner(Environment environment) {
 		String location = environment.getProperty(BANNER_LOCATION_PROPERTY, DEFAULT_BANNER_LOCATION);
 		Resource resource = this.resourceLoader.getResource(location);
 		try {
@@ -93,7 +127,17 @@ class SpringApplicationBannerPrinter {
 		return null;
 	}
 
-	private String createStringFromBanner(Banner banner, Environment environment, Class<?> mainApplicationClass)
+	/**
+     * Creates a string representation of the banner by printing it to a ByteArrayOutputStream
+     * and converting it to a string using the specified charset.
+     * 
+     * @param banner the Banner object to print
+     * @param environment the Environment object containing the application's properties
+     * @param mainApplicationClass the main application class
+     * @return a string representation of the banner
+     * @throws UnsupportedEncodingException if the specified charset is not supported
+     */
+    private String createStringFromBanner(Banner banner, Environment environment, Class<?> mainApplicationClass)
 			throws UnsupportedEncodingException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		banner.printBanner(environment, mainApplicationClass, new PrintStream(baos));
@@ -111,12 +155,25 @@ class SpringApplicationBannerPrinter {
 
 		private final Class<?> sourceClass;
 
-		PrintedBanner(Banner banner, Class<?> sourceClass) {
+		/**
+         * Constructs a new PrintedBanner object with the specified Banner and sourceClass.
+         * 
+         * @param banner the Banner object to be used for printing
+         * @param sourceClass the Class object representing the source class
+         */
+        PrintedBanner(Banner banner, Class<?> sourceClass) {
 			this.banner = banner;
 			this.sourceClass = sourceClass;
 		}
 
-		@Override
+		/**
+         * Prints the banner using the specified environment, source class, and output stream.
+         * 
+         * @param environment the environment to use for printing the banner
+         * @param sourceClass the source class to use for printing the banner, or null to use the default source class
+         * @param out the output stream to print the banner to
+         */
+        @Override
 		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
 			sourceClass = (sourceClass != null) ? sourceClass : this.sourceClass;
 			this.banner.printBanner(environment, sourceClass, out);
@@ -124,9 +181,18 @@ class SpringApplicationBannerPrinter {
 
 	}
 
-	static class SpringApplicationBannerPrinterRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * SpringApplicationBannerPrinterRuntimeHints class.
+     */
+    static class SpringApplicationBannerPrinterRuntimeHints implements RuntimeHintsRegistrar {
 
-		@Override
+		/**
+         * Registers the hints for the runtime hints with the specified class loader.
+         * 
+         * @param hints the runtime hints to register
+         * @param classLoader the class loader to use for registration
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources().registerPattern(DEFAULT_BANNER_LOCATION);
 		}

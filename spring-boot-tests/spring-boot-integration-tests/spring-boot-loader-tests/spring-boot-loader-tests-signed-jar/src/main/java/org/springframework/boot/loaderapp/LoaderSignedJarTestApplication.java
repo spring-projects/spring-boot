@@ -23,10 +23,19 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * LoaderSignedJarTestApplication class.
+ */
 @SpringBootApplication
 public class LoaderSignedJarTestApplication {
 
-	public static void main(String[] args) throws Exception {
+	/**
+     * The main method of the LoaderSignedJarTestApplication class.
+     * 
+     * @param args an array of command-line arguments
+     * @throws Exception if an error occurs during execution
+     */
+    public static void main(String[] args) throws Exception {
 		Security.addProvider(new BouncyCastleProvider());
 		Cipher.getInstance("AES/CBC/PKCS5Padding","BC");
 		System.out.println("Legion of the Bouncy Castle");

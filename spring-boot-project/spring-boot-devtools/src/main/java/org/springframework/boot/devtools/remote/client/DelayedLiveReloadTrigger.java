@@ -59,7 +59,15 @@ class DelayedLiveReloadTrigger implements Runnable {
 
 	private long timeout = TIMEOUT;
 
-	DelayedLiveReloadTrigger(OptionalLiveReloadServer liveReloadServer, ClientHttpRequestFactory requestFactory,
+	/**
+     * Constructs a new DelayedLiveReloadTrigger with the specified LiveReloadServer, RequestFactory, and URL.
+     * 
+     * @param liveReloadServer the LiveReloadServer to use for triggering live reload
+     * @param requestFactory the RequestFactory to use for making HTTP requests
+     * @param url the URL to trigger live reload on
+     * @throws IllegalArgumentException if the LiveReloadServer is null, the RequestFactory is null, or the URL is empty
+     */
+    DelayedLiveReloadTrigger(OptionalLiveReloadServer liveReloadServer, ClientHttpRequestFactory requestFactory,
 			String url) {
 		Assert.notNull(liveReloadServer, "LiveReloadServer must not be null");
 		Assert.notNull(requestFactory, "RequestFactory must not be null");
@@ -74,13 +82,29 @@ class DelayedLiveReloadTrigger implements Runnable {
 		}
 	}
 
-	protected void setTimings(long shutdown, long sleep, long timeout) {
+	/**
+     * Sets the timings for the DelayedLiveReloadTrigger.
+     * 
+     * @param shutdown the time in milliseconds when the shutdown process should start
+     * @param sleep the time in milliseconds to sleep before starting the shutdown process
+     * @param timeout the time in milliseconds to wait for the shutdown process to complete before timing out
+     */
+    protected void setTimings(long shutdown, long sleep, long timeout) {
 		this.shutdownTime = shutdown;
 		this.sleepTime = sleep;
 		this.timeout = timeout;
 	}
 
-	@Override
+	/**
+     * This method is responsible for running the delayed live reload trigger.
+     * It waits for the specified shutdown time before starting the trigger.
+     * It then checks if the server is up and running within the specified timeout.
+     * If the server is not up within the timeout, the method returns.
+     * If the server is up, it triggers a live reload by calling the triggerReload() method of the liveReloadServer.
+     * 
+     * @throws InterruptedException if the thread is interrupted while sleeping
+     */
+    @Override
 	public void run() {
 		try {
 			Thread.sleep(this.shutdownTime);
@@ -100,7 +124,12 @@ class DelayedLiveReloadTrigger implements Runnable {
 		}
 	}
 
-	private boolean isUp() {
+	/**
+     * Checks if the server is up by sending a request and checking the response status code.
+     * 
+     * @return true if the server is up and returns a status code of HttpStatus.OK, false otherwise.
+     */
+    private boolean isUp() {
 		try {
 			ClientHttpRequest request = createRequest();
 			try (ClientHttpResponse response = request.execute()) {
@@ -112,7 +141,13 @@ class DelayedLiveReloadTrigger implements Runnable {
 		}
 	}
 
-	private ClientHttpRequest createRequest() throws IOException {
+	/**
+     * Creates a new ClientHttpRequest object for making a GET request.
+     * 
+     * @return the created ClientHttpRequest object
+     * @throws IOException if an I/O error occurs while creating the request
+     */
+    private ClientHttpRequest createRequest() throws IOException {
 		return this.requestFactory.createRequest(this.uri, HttpMethod.GET);
 	}
 

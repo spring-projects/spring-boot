@@ -25,12 +25,20 @@ import org.springframework.context.annotation.Bean;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 
+/**
+ * SampleTestNGApplication class.
+ */
 @SpringBootApplication
 public class SampleTestNGApplication {
 
 	private static final Log logger = LogFactory.getLog(SampleTestNGApplication.class);
 
-	@Bean
+	/**
+     * Creates a ServletContextListener that logs the initialization and destruction of the ServletContext.
+     * 
+     * @return the ServletContextListener instance
+     */
+    @Bean
 	protected ServletContextListener listener() {
 		return new ServletContextListener() {
 
@@ -47,7 +55,13 @@ public class SampleTestNGApplication {
 		};
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the execution of the SampleTestNGApplication class.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleTestNGApplication.class, args);
 	}
 

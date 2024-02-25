@@ -39,11 +39,24 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 
 	private final Trees trees;
 
-	public JavaCompilerFieldValuesParser(ProcessingEnvironment env) throws Exception {
+	/**
+     * Constructs a new JavaCompilerFieldValuesParser object with the specified ProcessingEnvironment.
+     * 
+     * @param env the ProcessingEnvironment used for parsing field values
+     * @throws Exception if an error occurs during initialization
+     */
+    public JavaCompilerFieldValuesParser(ProcessingEnvironment env) throws Exception {
 		this.trees = Trees.instance(env);
 	}
 
-	@Override
+	/**
+     * Retrieves the field values of a given TypeElement.
+     * 
+     * @param element the TypeElement for which to retrieve the field values
+     * @return a Map containing the field names as keys and their corresponding values as values
+     * @throws Exception if an error occurs while retrieving the field values
+     */
+    @Override
 	public Map<String, Object> getFieldValues(TypeElement element) throws Exception {
 		Tree tree = this.trees.getTree(element);
 		if (tree != null) {
@@ -149,7 +162,13 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 
 		private final Map<String, Object> staticFinals = new HashMap<>();
 
-		@Override
+		/**
+         * Visits a variable and collects its information.
+         * 
+         * @param variable the variable tree to visit
+         * @throws Exception if an error occurs during the visit
+         */
+        @Override
 		public void visitVariable(VariableTree variable) throws Exception {
 			Set<Modifier> flags = variable.getModifierFlags();
 			if (flags.contains(Modifier.STATIC) && flags.contains(Modifier.FINAL)) {
@@ -160,7 +179,14 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			}
 		}
 
-		private Object getValue(VariableTree variable) throws Exception {
+		/**
+         * Retrieves the value of a given variable.
+         * 
+         * @param variable the VariableTree object representing the variable
+         * @return the value of the variable
+         * @throws Exception if an error occurs while retrieving the value
+         */
+        private Object getValue(VariableTree variable) throws Exception {
 			ExpressionTree initializer = variable.getInitializer();
 			Class<?> wrapperType = WRAPPER_TYPES.get(variable.getType());
 			Object defaultValue = DEFAULT_TYPE_VALUES.get(wrapperType);
@@ -170,7 +196,15 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			return defaultValue;
 		}
 
-		private Object getValue(ExpressionTree expression, Object defaultValue) throws Exception {
+		/**
+         * Retrieves the value of an expression tree.
+         * 
+         * @param expression the expression tree to evaluate
+         * @param defaultValue the default value to return if the expression cannot be resolved
+         * @return the value of the expression tree, or the default value if it cannot be resolved
+         * @throws Exception if an error occurs during evaluation
+         */
+        private Object getValue(ExpressionTree expression, Object defaultValue) throws Exception {
 			Object literalValue = expression.getLiteralValue();
 			if (literalValue != null) {
 				return literalValue;
@@ -200,7 +234,14 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			return defaultValue;
 		}
 
-		private Object getFactoryValue(ExpressionTree expression, Object factoryValue) {
+		/**
+         * Retrieves the value from the factory based on the given expression tree and factory value.
+         * 
+         * @param expression the expression tree representing the value to be retrieved from the factory
+         * @param factoryValue the initial value from the factory
+         * @return the retrieved value from the factory based on the expression tree, or the initial factory value if no matching value is found
+         */
+        private Object getFactoryValue(ExpressionTree expression, Object factoryValue) {
 			Object durationValue = getFactoryValue(expression, factoryValue, DURATION_OF, DURATION_SUFFIX);
 			if (durationValue != null) {
 				return durationValue;
@@ -216,7 +257,16 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			return factoryValue;
 		}
 
-		private Object getFactoryValue(ExpressionTree expression, Object factoryValue, String prefix,
+		/**
+         * Retrieves the factory value based on the given expression, factory value, prefix, and suffix mapping.
+         * 
+         * @param expression the expression tree representing the instance
+         * @param factoryValue the value of the factory
+         * @param prefix the prefix used to identify the type in the instance string
+         * @param suffixMapping the mapping of types to their corresponding suffixes
+         * @return the factory value with the appropriate suffix, or null if no suffix is found
+         */
+        private Object getFactoryValue(ExpressionTree expression, Object factoryValue, String prefix,
 				Map<String, String> suffixMapping) {
 			Object instance = expression.getInstance();
 			if (instance != null && instance.toString().startsWith(prefix)) {
@@ -228,7 +278,12 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			return null;
 		}
 
-		Map<String, Object> getFieldValues() {
+		/**
+         * Returns the field values stored in a map.
+         *
+         * @return a map containing the field values
+         */
+        Map<String, Object> getFieldValues() {
 			return this.fieldValues;
 		}
 

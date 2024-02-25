@@ -84,24 +84,51 @@ public class EndpointLinksResolver {
 		return links;
 	}
 
-	private String normalizeRequestUrl(String requestUrl) {
+	/**
+     * Normalizes the request URL by removing any trailing slashes.
+     * 
+     * @param requestUrl the original request URL
+     * @return the normalized request URL
+     */
+    private String normalizeRequestUrl(String requestUrl) {
 		if (requestUrl.endsWith("/")) {
 			return requestUrl.substring(0, requestUrl.length() - 1);
 		}
 		return requestUrl;
 	}
 
-	private void collectLinks(Map<String, Link> links, ExposableWebEndpoint endpoint, String normalizedUrl) {
+	/**
+     * Collects the links for the given endpoint and adds them to the provided map.
+     * 
+     * @param links the map to store the collected links
+     * @param endpoint the exposable web endpoint
+     * @param normalizedUrl the normalized URL of the endpoint
+     */
+    private void collectLinks(Map<String, Link> links, ExposableWebEndpoint endpoint, String normalizedUrl) {
 		for (WebOperation operation : endpoint.getOperations()) {
 			links.put(operation.getId(), createLink(normalizedUrl, operation));
 		}
 	}
 
-	private Link createLink(String requestUrl, WebOperation operation) {
+	/**
+     * Creates a Link object based on the provided request URL and WebOperation.
+     * 
+     * @param requestUrl the URL of the request
+     * @param operation the WebOperation object representing the operation
+     * @return the created Link object
+     */
+    private Link createLink(String requestUrl, WebOperation operation) {
 		return createLink(requestUrl, operation.getRequestPredicate().getPath());
 	}
 
-	private Link createLink(String requestUrl, String path) {
+	/**
+     * Creates a new Link object by concatenating the requestUrl and path.
+     * 
+     * @param requestUrl the base URL of the request
+     * @param path the path to be appended to the requestUrl
+     * @return a new Link object with the concatenated URL
+     */
+    private Link createLink(String requestUrl, String path) {
 		return new Link(requestUrl + (path.startsWith("/") ? path : "/" + path));
 	}
 

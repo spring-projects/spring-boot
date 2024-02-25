@@ -45,7 +45,12 @@ public class DefaultCommandFactory implements CommandFactory {
 		DEFAULT_COMMANDS = Collections.unmodifiableList(defaultCommands);
 	}
 
-	@Override
+	/**
+     * Returns a collection of commands.
+     * 
+     * @return the collection of commands
+     */
+    @Override
 	public Collection<Command> getCommands() {
 		return DEFAULT_COMMANDS;
 	}

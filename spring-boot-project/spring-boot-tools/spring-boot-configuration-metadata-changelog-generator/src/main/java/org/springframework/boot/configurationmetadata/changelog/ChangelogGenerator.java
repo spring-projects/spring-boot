@@ -41,14 +41,33 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepos
  */
 public final class ChangelogGenerator {
 
-	private ChangelogGenerator() {
+	/**
+     * Private constructor for the ChangelogGenerator class.
+     */
+    private ChangelogGenerator() {
 	}
 
-	public static void main(String[] args) throws IOException {
+	/**
+     * Generates a Changelog file by reading the contents of a source file and writing it to a destination file.
+     * 
+     * @param sourceFile      the source file to read the contents from
+     * @param destinationFile the destination file to write the contents to
+     * @param changelogFile   the changelog file to generate
+     * @throws IOException    if an I/O error occurs while reading or writing the files
+     */
+    public static void main(String[] args) throws IOException {
 		generate(new File(args[0]), new File(args[1]), new File(args[2]));
 	}
 
-	private static void generate(File oldDir, File newDir, File out) throws IOException {
+	/**
+     * Generates a changelog for the configuration metadata between two versions.
+     * 
+     * @param oldDir The directory containing the old version of the configuration metadata.
+     * @param newDir The directory containing the new version of the configuration metadata.
+     * @param out The file to write the changelog to.
+     * @throws IOException If an I/O error occurs while reading or writing the files.
+     */
+    private static void generate(File oldDir, File newDir, File out) throws IOException {
 		String oldVersionNumber = oldDir.getName();
 		ConfigurationMetadataRepository oldMetadata = buildRepository(oldDir);
 		String newVersionNumber = newDir.getName();
@@ -60,7 +79,15 @@ public final class ChangelogGenerator {
 		System.out.println("%nConfiguration metadata changelog written to '%s'".formatted(out));
 	}
 
-	static ConfigurationMetadataRepository buildRepository(File directory) {
+	/**
+     * Builds a ConfigurationMetadataRepository by scanning the given directory for jar files
+     * and extracting the spring-configuration-metadata.json file from each jar file.
+     * 
+     * @param directory the directory to scan for jar files
+     * @return the built ConfigurationMetadataRepository
+     * @throws RuntimeException if an IOException occurs while reading the jar files
+     */
+    static ConfigurationMetadataRepository buildRepository(File directory) {
 		ConfigurationMetadataRepositoryJsonBuilder builder = ConfigurationMetadataRepositoryJsonBuilder.create();
 		for (File file : directory.listFiles()) {
 			try (JarFile jarFile = new JarFile(file)) {

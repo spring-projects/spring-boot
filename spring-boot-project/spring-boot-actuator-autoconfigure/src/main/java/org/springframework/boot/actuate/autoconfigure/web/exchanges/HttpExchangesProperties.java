@@ -37,7 +37,12 @@ public class HttpExchangesProperties {
 
 	private final Recording recording = new Recording();
 
-	public Recording getRecording() {
+	/**
+     * Returns the recording object associated with this HttpExchangesProperties instance.
+     *
+     * @return the recording object
+     */
+    public Recording getRecording() {
 		return this.recording;
 	}
 
@@ -55,11 +60,21 @@ public class HttpExchangesProperties {
 		 */
 		private Set<Include> include = new HashSet<>(Include.defaultIncludes());
 
-		public Set<Include> getInclude() {
+		/**
+         * Returns the set of includes for this recording.
+         *
+         * @return the set of includes for this recording
+         */
+        public Set<Include> getInclude() {
 			return this.include;
 		}
 
-		public void setInclude(Set<Include> include) {
+		/**
+         * Sets the include set for the recording.
+         * 
+         * @param include the set of includes to be set
+         */
+        public void setInclude(Set<Include> include) {
 			this.include = include;
 		}
 

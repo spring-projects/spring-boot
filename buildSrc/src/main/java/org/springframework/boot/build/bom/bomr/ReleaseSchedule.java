@@ -43,15 +43,30 @@ class ReleaseSchedule {
 
 	private final RestOperations rest;
 
-	ReleaseSchedule() {
+	/**
+     * Constructs a new ReleaseSchedule object with a default RestTemplate.
+     */
+    ReleaseSchedule() {
 		this(new RestTemplate());
 	}
 
-	ReleaseSchedule(RestOperations rest) {
+	/**
+     * Initializes a new instance of the ReleaseSchedule class.
+     * 
+     * @param rest the RestOperations object used for making RESTful API calls
+     */
+    ReleaseSchedule(RestOperations rest) {
 		this.rest = rest;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	/**
+     * Retrieves a map of releases between the specified start and end dates.
+     * 
+     * @param start the start date and time
+     * @param end the end date and time
+     * @return a map of releases grouped by library name
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 	Map<String, List<Release>> releasesBetween(OffsetDateTime start, OffsetDateTime end) {
 		ResponseEntity<List> response = this.rest
 			.getForEntity("https://calendar.spring.io/releases?start=" + start + "&end=" + end, List.class);
@@ -65,7 +80,13 @@ class ReleaseSchedule {
 		return releasesByLibrary;
 	}
 
-	private Release asRelease(Map<String, String> entry) {
+	/**
+     * Converts a map entry into a Release object.
+     * 
+     * @param entry the map entry containing the release information
+     * @return the Release object created from the map entry, or null if the title does not match the expected format
+     */
+    private Release asRelease(Map<String, String> entry) {
 		LocalDate due = LocalDate.parse(entry.get("start"));
 		String title = entry.get("title");
 		Matcher matcher = LIBRARY_AND_VERSION.matcher(title);
@@ -77,7 +98,10 @@ class ReleaseSchedule {
 		return new Release(library, DependencyVersion.parse(version), due);
 	}
 
-	static class Release {
+	/**
+     * Release class.
+     */
+    static class Release {
 
 		private final String libraryName;
 
@@ -85,21 +109,43 @@ class ReleaseSchedule {
 
 		private final LocalDate dueOn;
 
-		Release(String libraryName, DependencyVersion version, LocalDate dueOn) {
+		/**
+         * Creates a new release for a library with the specified name, version, and due date.
+         * 
+         * @param libraryName the name of the library
+         * @param version the version of the library
+         * @param dueOn the due date for the release
+         */
+        Release(String libraryName, DependencyVersion version, LocalDate dueOn) {
 			this.libraryName = libraryName;
 			this.version = version;
 			this.dueOn = dueOn;
 		}
 
-		String getLibraryName() {
+		/**
+         * Returns the name of the library.
+         *
+         * @return the name of the library
+         */
+        String getLibraryName() {
 			return this.libraryName;
 		}
 
-		DependencyVersion getVersion() {
+		/**
+         * Returns the version of the dependency.
+         *
+         * @return the version of the dependency
+         */
+        DependencyVersion getVersion() {
 			return this.version;
 		}
 
-		LocalDate getDueOn() {
+		/**
+         * Returns the due date of the release.
+         *
+         * @return the due date of the release
+         */
+        LocalDate getDueOn() {
 			return this.dueOn;
 		}
 

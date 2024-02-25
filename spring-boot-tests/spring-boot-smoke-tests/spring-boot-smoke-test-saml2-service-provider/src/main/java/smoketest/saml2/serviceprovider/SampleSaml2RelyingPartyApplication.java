@@ -19,10 +19,18 @@ package smoketest.saml2.serviceprovider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleSaml2RelyingPartyApplication class.
+ */
 @SpringBootApplication
 public class SampleSaml2RelyingPartyApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleSaml2RelyingPartyApplication class.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleSaml2RelyingPartyApplication.class);
 	}
 

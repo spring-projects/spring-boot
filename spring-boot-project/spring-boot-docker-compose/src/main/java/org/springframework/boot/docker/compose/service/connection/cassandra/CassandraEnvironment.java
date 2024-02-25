@@ -27,11 +27,22 @@ class CassandraEnvironment {
 
 	private final String datacenter;
 
-	CassandraEnvironment(Map<String, String> env) {
+	/**
+     * Constructs a new CassandraEnvironment object with the given environment variables.
+     * 
+     * @param env a map containing the environment variables
+     * @throws NullPointerException if the env parameter is null
+     */
+    CassandraEnvironment(Map<String, String> env) {
 		this.datacenter = env.getOrDefault("CASSANDRA_DC", env.getOrDefault("CASSANDRA_DATACENTER", "datacenter1"));
 	}
 
-	String getDatacenter() {
+	/**
+     * Returns the datacenter associated with the Cassandra environment.
+     *
+     * @return the datacenter
+     */
+    String getDatacenter() {
 		return this.datacenter;
 	}
 

@@ -23,10 +23,19 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyRestTemplateBuilderConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyRestTemplateBuilderConfiguration {
 
-	@Bean
+	/**
+     * Configures the RestTemplateBuilder with custom settings.
+     * 
+     * @param configurer the RestTemplateBuilderConfigurer used to configure the RestTemplateBuilder
+     * @return the configured RestTemplateBuilder
+     */
+    @Bean
 	public RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer configurer) {
 		return configurer.configure(new RestTemplateBuilder())
 			.setConnectTimeout(Duration.ofSeconds(5))

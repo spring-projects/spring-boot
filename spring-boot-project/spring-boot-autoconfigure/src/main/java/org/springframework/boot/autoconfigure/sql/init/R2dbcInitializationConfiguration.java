@@ -39,7 +39,14 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean({ SqlR2dbcScriptDatabaseInitializer.class, SqlDataSourceScriptDatabaseInitializer.class })
 class R2dbcInitializationConfiguration {
 
-	@Bean
+	/**
+     * Creates a {@link SqlR2dbcScriptDatabaseInitializer} bean.
+     *
+     * @param connectionFactory the {@link ConnectionFactory} to use for database connections
+     * @param properties the {@link SqlInitializationProperties} containing initialization properties
+     * @return the {@link SqlR2dbcScriptDatabaseInitializer} bean
+     */
+    @Bean
 	SqlR2dbcScriptDatabaseInitializer r2dbcScriptDatabaseInitializer(ConnectionFactory connectionFactory,
 			SqlInitializationProperties properties) {
 		return new SqlR2dbcScriptDatabaseInitializer(
@@ -47,7 +54,17 @@ class R2dbcInitializationConfiguration {
 				properties);
 	}
 
-	private static ConnectionFactory determineConnectionFactory(ConnectionFactory connectionFactory, String username,
+	/**
+     * Determines the appropriate ConnectionFactory based on the provided connectionFactory, username, and password.
+     * If both the username and password are provided, a new ConnectionFactory is derived from the provided connectionFactory
+     * with the specified username and password. Otherwise, the original connectionFactory is returned.
+     *
+     * @param connectionFactory The original ConnectionFactory.
+     * @param username The username for the new ConnectionFactory.
+     * @param password The password for the new ConnectionFactory.
+     * @return The appropriate ConnectionFactory based on the provided parameters.
+     */
+    private static ConnectionFactory determineConnectionFactory(ConnectionFactory connectionFactory, String username,
 			String password) {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 			return ConnectionFactoryBuilder.derivedFrom(connectionFactory)

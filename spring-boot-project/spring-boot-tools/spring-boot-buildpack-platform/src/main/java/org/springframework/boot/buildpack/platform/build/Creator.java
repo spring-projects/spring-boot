@@ -28,7 +28,12 @@ public class Creator {
 
 	private final String version;
 
-	Creator(String version) {
+	/**
+     * Constructor for the Creator class.
+     * 
+     * @param version the version of the software being created
+     */
+    Creator(String version) {
 		this.version = version;
 	}
 
@@ -58,7 +63,13 @@ public class Creator {
 		return new Creator(version);
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the Creator object.
+     * The string includes the name and version of the Creator.
+     *
+     * @return a string representation of the Creator object
+     */
+    @Override
 	public String toString() {
 		return getName() + " version " + getVersion();
 	}

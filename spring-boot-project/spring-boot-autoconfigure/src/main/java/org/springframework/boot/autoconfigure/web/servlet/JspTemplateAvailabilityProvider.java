@@ -34,7 +34,16 @@ import org.springframework.util.ClassUtils;
  */
 public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
-	@Override
+	/**
+     * Checks if a template is available for the given view.
+     * 
+     * @param view the view to check for template availability
+     * @param environment the environment in which the template is being checked
+     * @param classLoader the class loader to use for resource loading
+     * @param resourceLoader the resource loader to use for resource loading
+     * @return true if a template is available for the given view, false otherwise
+     */
+    @Override
 	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
 			ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", classLoader)) {
@@ -47,7 +56,14 @@ public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProv
 		return false;
 	}
 
-	private String getResourceName(String view, Environment environment) {
+	/**
+     * Returns the resource name for the given view.
+     * 
+     * @param view the view name
+     * @param environment the environment object
+     * @return the resource name for the given view
+     */
+    private String getResourceName(String view, Environment environment) {
 		String prefix = environment.getProperty("spring.mvc.view.prefix", WebMvcAutoConfiguration.DEFAULT_PREFIX);
 		String suffix = environment.getProperty("spring.mvc.view.suffix", WebMvcAutoConfiguration.DEFAULT_SUFFIX);
 		return prefix + view + suffix;

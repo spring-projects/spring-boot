@@ -42,7 +42,13 @@ public enum CloudPlatform {
 	 */
 	NONE {
 
-		@Override
+		/**
+     * Determines if the environment is detected.
+     * 
+     * @param environment the environment to check
+     * @return true if the environment is detected, false otherwise
+     */
+    @Override
 		public boolean isDetected(Environment environment) {
 			return false;
 		}
@@ -54,7 +60,13 @@ public enum CloudPlatform {
 	 */
 	CLOUD_FOUNDRY {
 
-		@Override
+		/**
+     * Checks if the given environment is detected as a cloud platform.
+     * 
+     * @param environment the environment to check
+     * @return true if the environment is detected as a cloud platform, false otherwise
+     */
+    @Override
 		public boolean isDetected(Environment environment) {
 			return environment.containsProperty("VCAP_APPLICATION") || environment.containsProperty("VCAP_SERVICES");
 		}
@@ -66,7 +78,13 @@ public enum CloudPlatform {
 	 */
 	HEROKU {
 
-		@Override
+		/**
+     * Checks if the environment is detected as a cloud platform.
+     * 
+     * @param environment the environment to check
+     * @return true if the environment is detected as a cloud platform, false otherwise
+     */
+    @Override
 		public boolean isDetected(Environment environment) {
 			return environment.containsProperty("DYNO");
 		}
@@ -78,7 +96,13 @@ public enum CloudPlatform {
 	 */
 	SAP {
 
-		@Override
+		/**
+     * Checks if the given environment is detected.
+     * 
+     * @param environment the environment to check
+     * @return true if the environment contains the property "HC_LANDSCAPE", false otherwise
+     */
+    @Override
 		public boolean isDetected(Environment environment) {
 			return environment.containsProperty("HC_LANDSCAPE");
 		}
@@ -91,7 +115,13 @@ public enum CloudPlatform {
 	 */
 	NOMAD {
 
-		@Override
+		/**
+     * Checks if the given environment contains the property "NOMAD_ALLOC_ID".
+     * 
+     * @param environment the environment to check
+     * @return true if the environment contains the property "NOMAD_ALLOC_ID", false otherwise
+     */
+    @Override
 		public boolean isDetected(Environment environment) {
 			return environment.containsProperty("NOMAD_ALLOC_ID");
 		}
@@ -111,7 +141,13 @@ public enum CloudPlatform {
 
 		private static final String SERVICE_PORT_SUFFIX = "_SERVICE_PORT";
 
-		@Override
+		/**
+     * Checks if the given environment is detected.
+     * 
+     * @param environment the environment to check
+     * @return true if the environment is detected, false otherwise
+     */
+    @Override
 		public boolean isDetected(Environment environment) {
 			if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
 				return isAutoDetected(configurableEnvironment);
@@ -119,7 +155,13 @@ public enum CloudPlatform {
 			return false;
 		}
 
-		private boolean isAutoDetected(ConfigurableEnvironment environment) {
+		/**
+     * Checks if the given environment is auto-detected.
+     * 
+     * @param environment the configurable environment to check
+     * @return true if the environment is auto-detected, false otherwise
+     */
+    private boolean isAutoDetected(ConfigurableEnvironment environment) {
 			PropertySource<?> environmentPropertySource = environment.getPropertySources()
 				.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
 			if (environmentPropertySource != null) {
@@ -134,7 +176,13 @@ public enum CloudPlatform {
 			return false;
 		}
 
-		private boolean isAutoDetected(EnumerablePropertySource<?> environmentPropertySource) {
+		/**
+     * Checks if the given environment property source is auto-detected.
+     * 
+     * @param environmentPropertySource the environment property source to check
+     * @return true if the property source is auto-detected, false otherwise
+     */
+    private boolean isAutoDetected(EnumerablePropertySource<?> environmentPropertySource) {
 			for (String propertyName : environmentPropertySource.getPropertyNames()) {
 				if (propertyName.endsWith(SERVICE_HOST_SUFFIX)) {
 					String serviceName = propertyName.substring(0,
@@ -157,7 +205,13 @@ public enum CloudPlatform {
 		private final List<String> azureEnvVariables = Arrays.asList("WEBSITE_SITE_NAME", "WEBSITE_INSTANCE_ID",
 				"WEBSITE_RESOURCE_GROUP", "WEBSITE_SKU");
 
-		@Override
+		/**
+     * Checks if all the Azure environment variables are detected in the given environment.
+     * 
+     * @param environment the environment to check for the presence of Azure environment variables
+     * @return true if all the Azure environment variables are detected, false otherwise
+     */
+    @Override
 		public boolean isDetected(Environment environment) {
 			return this.azureEnvVariables.stream().allMatch(environment::containsProperty);
 		}
@@ -198,7 +252,13 @@ public enum CloudPlatform {
 		return isEnforced(binder.bind(PROPERTY_NAME, String.class).orElse(null));
 	}
 
-	private boolean isEnforced(String platform) {
+	/**
+     * Checks if the specified platform is enforced.
+     * 
+     * @param platform the platform to check
+     * @return true if the platform is enforced, false otherwise
+     */
+    private boolean isEnforced(String platform) {
 		return name().equalsIgnoreCase(platform);
 	}
 

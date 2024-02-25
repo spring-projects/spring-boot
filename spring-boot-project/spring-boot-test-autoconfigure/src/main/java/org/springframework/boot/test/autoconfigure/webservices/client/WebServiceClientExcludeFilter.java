@@ -34,12 +34,22 @@ public final class WebServiceClientExcludeFilter
 
 	private final Class<?>[] components;
 
-	WebServiceClientExcludeFilter(Class<?> testClass) {
+	/**
+     * Constructs a new WebServiceClientExcludeFilter with the specified test class.
+     * 
+     * @param testClass the test class to be used for constructing the filter
+     */
+    WebServiceClientExcludeFilter(Class<?> testClass) {
 		super(testClass);
 		this.components = getAnnotation().getValue("components", Class[].class).orElseGet(() -> new Class<?>[0]);
 	}
 
-	@Override
+	/**
+     * Returns the set of component classes to be included.
+     *
+     * @return the set of component classes to be included
+     */
+    @Override
 	protected Set<Class<?>> getComponentIncludes() {
 		return new LinkedHashSet<>(Arrays.asList(this.components));
 	}

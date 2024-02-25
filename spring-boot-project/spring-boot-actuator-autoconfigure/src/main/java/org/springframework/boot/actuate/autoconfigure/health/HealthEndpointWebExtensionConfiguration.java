@@ -68,7 +68,15 @@ import org.springframework.web.servlet.DispatcherServlet;
 		exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
 class HealthEndpointWebExtensionConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link HealthEndpointWebExtension} if no other bean of the same type is present.
+     * 
+     * @param healthContributorRegistry the {@link HealthContributorRegistry} used to retrieve health contributors
+     * @param groups the {@link HealthEndpointGroups} used to group health contributors
+     * @param properties the {@link HealthEndpointProperties} used to configure the health endpoint
+     * @return a new instance of {@link HealthEndpointWebExtension}
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	HealthEndpointWebExtension healthEndpointWebExtension(HealthContributorRegistry healthContributorRegistry,
 			HealthEndpointGroups groups, HealthEndpointProperties properties) {
@@ -76,7 +84,14 @@ class HealthEndpointWebExtensionConfiguration {
 				properties.getLogging().getSlowIndicatorThreshold());
 	}
 
-	private static ExposableWebEndpoint getHealthEndpoint(WebEndpointsSupplier webEndpointsSupplier) {
+	/**
+     * Returns the health endpoint from the given WebEndpointsSupplier.
+     *
+     * @param webEndpointsSupplier the supplier of web endpoints
+     * @return the health endpoint
+     * @throws IllegalStateException if no endpoint with the specified id is found
+     */
+    private static ExposableWebEndpoint getHealthEndpoint(WebEndpointsSupplier webEndpointsSupplier) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 		return webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
@@ -85,11 +100,22 @@ class HealthEndpointWebExtensionConfiguration {
 					() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
 	}
 
-	@ConditionalOnBean(DispatcherServlet.class)
+	/**
+     * MvcAdditionalHealthEndpointPathsConfiguration class.
+     */
+    @ConditionalOnBean(DispatcherServlet.class)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 	static class MvcAdditionalHealthEndpointPathsConfiguration {
 
-		@Bean
+		/**
+         * Creates a new {@link AdditionalHealthEndpointPathsWebMvcHandlerMapping} bean
+         * for mapping additional health endpoint paths in a Spring MVC application.
+         *
+         * @param webEndpointsSupplier the supplier for web endpoints
+         * @param groups the health endpoint groups
+         * @return the {@link AdditionalHealthEndpointPathsWebMvcHandlerMapping} bean
+         */
+        @Bean
 		AdditionalHealthEndpointPathsWebMvcHandlerMapping healthEndpointWebMvcHandlerMapping(
 				WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
 			ExposableWebEndpoint health = getHealthEndpoint(webEndpointsSupplier);
@@ -99,38 +125,71 @@ class HealthEndpointWebExtensionConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * JerseyAdditionalHealthEndpointPathsConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 	static class JerseyAdditionalHealthEndpointPathsConfiguration {
 
-		@Bean
+		/**
+         * Creates and returns a JerseyAdditionalHealthEndpointPathsResourcesRegistrar bean.
+         * 
+         * @param webEndpointsSupplier The supplier for web endpoints.
+         * @param healthEndpointGroups The health endpoint groups.
+         * @return The JerseyAdditionalHealthEndpointPathsResourcesRegistrar bean.
+         */
+        @Bean
 		JerseyAdditionalHealthEndpointPathsResourcesRegistrar jerseyAdditionalHealthEndpointPathsResourcesRegistrar(
 				WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups healthEndpointGroups) {
 			ExposableWebEndpoint health = getHealthEndpoint(webEndpointsSupplier);
 			return new JerseyAdditionalHealthEndpointPathsResourcesRegistrar(health, healthEndpointGroups);
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * JerseyInfrastructureConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(ResourceConfig.class)
 		@EnableConfigurationProperties(JerseyProperties.class)
 		static class JerseyInfrastructureConfiguration {
 
-			@Bean
+			/**
+             * Creates a new instance of {@link JerseyApplicationPath} if no bean of type {@link JerseyApplicationPath} is already present.
+             * 
+             * @param properties the {@link JerseyProperties} instance containing the application path
+             * @param config the {@link ResourceConfig} instance containing the Jersey configuration
+             * @return a new instance of {@link JerseyApplicationPath} with the specified application path and configuration
+             */
+            @Bean
 			@ConditionalOnMissingBean(JerseyApplicationPath.class)
 			JerseyApplicationPath jerseyApplicationPath(JerseyProperties properties, ResourceConfig config) {
 				return new DefaultJerseyApplicationPath(properties.getApplicationPath(), config);
 			}
 
-			@Bean
+			/**
+             * Creates and configures a ResourceConfig object for the Jersey infrastructure.
+             * 
+             * @param resourceConfigCustomizers the object provider for ResourceConfigCustomizer instances
+             * @return the configured ResourceConfig object
+             */
+            @Bean
 			ResourceConfig resourceConfig(ObjectProvider<ResourceConfigCustomizer> resourceConfigCustomizers) {
 				ResourceConfig resourceConfig = new ResourceConfig();
 				resourceConfigCustomizers.orderedStream().forEach((customizer) -> customizer.customize(resourceConfig));
 				return resourceConfig;
 			}
 
-			@Bean
+			/**
+             * Registers the Jersey servlet with the specified application path and resource configuration.
+             * 
+             * @param jerseyApplicationPath the application path for the Jersey servlet
+             * @param resourceConfig the resource configuration for the Jersey servlet
+             * @return the servlet registration bean for the Jersey servlet
+             */
+            @Bean
 			ServletRegistrationBean<ServletContainer> jerseyServletRegistration(
 					JerseyApplicationPath jerseyApplicationPath, ResourceConfig resourceConfig) {
 				return new ServletRegistrationBean<>(new ServletContainer(resourceConfig),
@@ -141,24 +200,43 @@ class HealthEndpointWebExtensionConfiguration {
 
 	}
 
-	static class JerseyAdditionalHealthEndpointPathsResourcesRegistrar implements ResourceConfigCustomizer {
+	/**
+     * JerseyAdditionalHealthEndpointPathsResourcesRegistrar class.
+     */
+    static class JerseyAdditionalHealthEndpointPathsResourcesRegistrar implements ResourceConfigCustomizer {
 
 		private final ExposableWebEndpoint endpoint;
 
 		private final HealthEndpointGroups groups;
 
-		JerseyAdditionalHealthEndpointPathsResourcesRegistrar(ExposableWebEndpoint endpoint,
+		/**
+         * Constructs a new JerseyAdditionalHealthEndpointPathsResourcesRegistrar with the specified parameters.
+         *
+         * @param endpoint the ExposableWebEndpoint to register
+         * @param groups the HealthEndpointGroups to associate with the endpoint
+         */
+        JerseyAdditionalHealthEndpointPathsResourcesRegistrar(ExposableWebEndpoint endpoint,
 				HealthEndpointGroups groups) {
 			this.endpoint = endpoint;
 			this.groups = groups;
 		}
 
-		@Override
+		/**
+         * Customizes the given ResourceConfig object.
+         * 
+         * @param config the ResourceConfig object to be customized
+         */
+        @Override
 		public void customize(ResourceConfig config) {
 			register(config);
 		}
 
-		private void register(ResourceConfig config) {
+		/**
+         * Registers the additional health endpoint paths resources in the provided {@link ResourceConfig}.
+         * 
+         * @param config the {@link ResourceConfig} to register the resources in
+         */
+        private void register(ResourceConfig config) {
 			EndpointMapping mapping = new EndpointMapping("");
 			JerseyHealthEndpointAdditionalPathResourceFactory resourceFactory = new JerseyHealthEndpointAdditionalPathResourceFactory(
 					WebServerNamespace.SERVER, this.groups);
@@ -170,7 +248,13 @@ class HealthEndpointWebExtensionConfiguration {
 			register(endpointResources, config);
 		}
 
-		private void register(Collection<Resource> resources, ResourceConfig config) {
+		/**
+         * Registers a collection of resources with the given configuration.
+         * 
+         * @param resources the collection of resources to be registered
+         * @param config the resource configuration to register the resources with
+         */
+        private void register(Collection<Resource> resources, ResourceConfig config) {
 			config.registerResources(new HashSet<>(resources));
 		}
 

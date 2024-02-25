@@ -101,7 +101,13 @@ class MavenBuildOutputTimestamp {
 		}
 	}
 
-	private static boolean isNumeric(String str) {
+	/**
+     * Checks if a given string is numeric.
+     * 
+     * @param str the string to be checked
+     * @return true if the string is numeric, false otherwise
+     */
+    private static boolean isNumeric(String str) {
 		for (char c : str.toCharArray()) {
 			if (!Character.isDigit(c)) {
 				return false;

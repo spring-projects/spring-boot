@@ -33,22 +33,40 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerEndpoint(id = "exception")
 public class SampleRestControllerEndpointWithException {
 
-	@GetMapping("/")
+	/**
+     * This method handles the exception and throws a CustomException.
+     * 
+     * @return The exception message.
+     * @throws CustomException If an error occurs.
+     */
+    @GetMapping("/")
 	public String exception() {
 		throw new CustomException();
 	}
 
-	@RestControllerAdvice
+	/**
+     * CustomExceptionHandler class.
+     */
+    @RestControllerAdvice
 	static class CustomExceptionHandler {
 
-		@ExceptionHandler(CustomException.class)
+		/**
+         * Handles the CustomException and returns a ResponseEntity with a custom exception body and HTTP status code.
+         * 
+         * @param e the CustomException to be handled
+         * @return a ResponseEntity with a custom exception body and HTTP status code
+         */
+        @ExceptionHandler(CustomException.class)
 		ResponseEntity<String> handleCustomException(CustomException e) {
 			return new ResponseEntity<>("this is a custom exception body", HttpStatus.I_AM_A_TEAPOT);
 		}
 
 	}
 
-	static class CustomException extends RuntimeException {
+	/**
+     * CustomException class.
+     */
+    static class CustomException extends RuntimeException {
 
 	}
 

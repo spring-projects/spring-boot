@@ -29,31 +29,64 @@ class PropertiesKafkaConnectionDetails implements KafkaConnectionDetails {
 
 	private final KafkaProperties properties;
 
-	PropertiesKafkaConnectionDetails(KafkaProperties properties) {
+	/**
+     * Constructs a new instance of PropertiesKafkaConnectionDetails with the provided KafkaProperties.
+     *
+     * @param properties the KafkaProperties object containing the connection details
+     */
+    PropertiesKafkaConnectionDetails(KafkaProperties properties) {
 		this.properties = properties;
 	}
 
-	@Override
+	/**
+     * Returns the list of bootstrap servers for the Kafka connection.
+     *
+     * @return the list of bootstrap servers
+     */
+    @Override
 	public List<String> getBootstrapServers() {
 		return this.properties.getBootstrapServers();
 	}
 
-	@Override
+	/**
+     * Retrieves the list of consumer bootstrap servers.
+     * 
+     * @return the list of consumer bootstrap servers
+     */
+    @Override
 	public List<String> getConsumerBootstrapServers() {
 		return getServers(this.properties.getConsumer().getBootstrapServers());
 	}
 
-	@Override
+	/**
+     * Returns a list of producer bootstrap servers.
+     * 
+     * @return the list of producer bootstrap servers
+     */
+    @Override
 	public List<String> getProducerBootstrapServers() {
 		return getServers(this.properties.getProducer().getBootstrapServers());
 	}
 
-	@Override
+	/**
+     * Returns the list of bootstrap servers for the Kafka streams.
+     * 
+     * @return the list of bootstrap servers for the Kafka streams
+     */
+    @Override
 	public List<String> getStreamsBootstrapServers() {
 		return getServers(this.properties.getStreams().getBootstrapServers());
 	}
 
-	private List<String> getServers(List<String> servers) {
+	/**
+     * Retrieves the list of servers for the Kafka connection.
+     * If the provided list is not null, it returns the provided list.
+     * Otherwise, it retrieves the bootstrap servers.
+     *
+     * @param servers The list of servers to be used for the Kafka connection.
+     * @return The list of servers for the Kafka connection.
+     */
+    private List<String> getServers(List<String> servers) {
 		return (servers != null) ? servers : getBootstrapServers();
 	}
 

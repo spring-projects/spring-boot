@@ -27,16 +27,32 @@ public class VehicleIdentificationNumberNotFoundException extends RuntimeExcepti
 
 	private final VehicleIdentificationNumber vehicleIdentificationNumber;
 
-	public VehicleIdentificationNumberNotFoundException(VehicleIdentificationNumber vin) {
+	/**
+     * Constructs a new VehicleIdentificationNumberNotFoundException with the specified VIN.
+     * 
+     * @param vin the VehicleIdentificationNumber that caused the exception
+     */
+    public VehicleIdentificationNumberNotFoundException(VehicleIdentificationNumber vin) {
 		this(vin, null);
 	}
 
-	public VehicleIdentificationNumberNotFoundException(VehicleIdentificationNumber vin, Throwable cause) {
+	/**
+     * Constructs a new VehicleIdentificationNumberNotFoundException with the specified VIN and cause.
+     * 
+     * @param vin the VehicleIdentificationNumber that was not found
+     * @param cause the cause of the exception
+     */
+    public VehicleIdentificationNumberNotFoundException(VehicleIdentificationNumber vin, Throwable cause) {
 		super("Unable to find VehicleIdentificationNumber " + vin, cause);
 		this.vehicleIdentificationNumber = vin;
 	}
 
-	public VehicleIdentificationNumber getVehicleIdentificationNumber() {
+	/**
+     * Returns the VehicleIdentificationNumber associated with this exception.
+     *
+     * @return the VehicleIdentificationNumber associated with this exception
+     */
+    public VehicleIdentificationNumber getVehicleIdentificationNumber() {
 		return this.vehicleIdentificationNumber;
 	}
 

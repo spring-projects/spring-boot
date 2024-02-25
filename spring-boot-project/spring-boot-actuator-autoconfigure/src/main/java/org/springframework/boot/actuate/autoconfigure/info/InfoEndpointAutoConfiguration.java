@@ -35,7 +35,13 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnAvailableEndpoint(endpoint = InfoEndpoint.class)
 public class InfoEndpointAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates an instance of the {@link InfoEndpoint} class if no other bean of the same type is present.
+     * 
+     * @param infoContributors the object provider for {@link InfoContributor} instances
+     * @return an instance of {@link InfoEndpoint} with the provided {@link InfoContributor} instances
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public InfoEndpoint infoEndpoint(ObjectProvider<InfoContributor> infoContributors) {
 		return new InfoEndpoint(infoContributors.orderedStream().toList());

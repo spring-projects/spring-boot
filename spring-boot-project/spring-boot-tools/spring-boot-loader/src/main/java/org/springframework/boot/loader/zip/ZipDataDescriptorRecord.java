@@ -43,7 +43,14 @@ record ZipDataDescriptorRecord(boolean includeSignature, int crc32, int compress
 
 	private static final int SIGNATURE_SIZE = 4;
 
-	long size() {
+	/**
+     * Returns the size of the data in the ZipDataDescriptorRecord.
+     * If the signature is not included, only the data size is returned.
+     * If the signature is included, the data size plus the signature size is returned.
+     *
+     * @return the size of the data in the ZipDataDescriptorRecord
+     */
+    long size() {
 		return (!includeSignature()) ? DATA_SIZE : DATA_SIZE + SIGNATURE_SIZE;
 	}
 

@@ -71,17 +71,36 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
-	public DataSourceHealthContributorAutoConfiguration(
+	/**
+     * Constructs a new DataSourceHealthContributorAutoConfiguration object with the given metadataProviders.
+     * 
+     * @param metadataProviders the ObjectProvider of DataSourcePoolMetadataProvider instances
+     */
+    public DataSourceHealthContributorAutoConfiguration(
 			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
 		this.metadataProviders = metadataProviders.orderedStream().toList();
 	}
 
-	@Override
+	/**
+     * Sets up the {@link CompositeDataSourcePoolMetadataProvider} by initializing the {@link DataSourcePoolMetadataProvider}
+     * with the given list of metadata providers.
+     * 
+     * This method is called after all the properties have been set, allowing for any necessary initialization.
+     */
+    @Override
 	public void afterPropertiesSet() {
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(this.metadataProviders);
 	}
 
-	@Bean
+	/**
+     * Creates a {@link HealthContributor} for the database health check.
+     * This method is conditional on the absence of beans with names "dbHealthIndicator" and "dbHealthContributor".
+     * 
+     * @param dataSources                        a map of data sources
+     * @param dataSourceHealthIndicatorProperties the properties for the data source health indicator
+     * @return the created {@link HealthContributor} for the database health check
+     */
+    @Bean
 	@ConditionalOnMissingBean(name = { "dbHealthIndicator", "dbHealthContributor" })
 	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources,
 			DataSourceHealthIndicatorProperties dataSourceHealthIndicatorProperties) {
@@ -95,7 +114,14 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 		return createContributor(dataSources);
 	}
 
-	private HealthContributor createContributor(Map<String, DataSource> beans) {
+	/**
+     * Creates a HealthContributor based on the provided beans.
+     * 
+     * @param beans a map of beans with their corresponding names as keys
+     * @return a HealthContributor object
+     * @throws IllegalArgumentException if the beans map is empty
+     */
+    private HealthContributor createContributor(Map<String, DataSource> beans) {
 		Assert.notEmpty(beans, "Beans must not be empty");
 		if (beans.size() == 1) {
 			return createContributor(beans.values().iterator().next());
@@ -103,14 +129,29 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 		return CompositeHealthContributor.fromMap(beans, this::createContributor);
 	}
 
-	private HealthContributor createContributor(DataSource source) {
+	/**
+     * Creates a HealthContributor based on the provided DataSource source.
+     * If the source is an instance of AbstractRoutingDataSource, a RoutingDataSourceHealthContributor is created
+     * using the provided routingDataSource and createContributor method.
+     * Otherwise, a DataSourceHealthIndicator is created using the provided source and validation query.
+     *
+     * @param source the DataSource source to create the HealthContributor from
+     * @return the created HealthContributor
+     */
+    private HealthContributor createContributor(DataSource source) {
 		if (source instanceof AbstractRoutingDataSource routingDataSource) {
 			return new RoutingDataSourceHealthContributor(routingDataSource, this::createContributor);
 		}
 		return new DataSourceHealthIndicator(source, getValidationQuery(source));
 	}
 
-	private String getValidationQuery(DataSource source) {
+	/**
+     * Retrieves the validation query for the given DataSource.
+     * 
+     * @param source the DataSource to retrieve the validation query from
+     * @return the validation query, or null if not available
+     */
+    private String getValidationQuery(DataSource source) {
 		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(source);
 		return (poolMetadata != null) ? poolMetadata.getValidationQuery() : null;
 	}
@@ -126,7 +167,13 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 
 		private static final String UNNAMED_DATASOURCE_KEY = "unnamed";
 
-		RoutingDataSourceHealthContributor(AbstractRoutingDataSource routingDataSource,
+		/**
+         * Constructs a new RoutingDataSourceHealthContributor with the given AbstractRoutingDataSource and contributorFunction.
+         * 
+         * @param routingDataSource the AbstractRoutingDataSource used to retrieve the resolved data sources
+         * @param contributorFunction the function used to create the HealthContributor for each data source
+         */
+        RoutingDataSourceHealthContributor(AbstractRoutingDataSource routingDataSource,
 				Function<DataSource, HealthContributor> contributorFunction) {
 			Map<String, DataSource> routedDataSources = routingDataSource.getResolvedDataSources()
 				.entrySet()
@@ -136,12 +183,23 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 			this.delegate = CompositeHealthContributor.fromMap(routedDataSources, contributorFunction);
 		}
 
-		@Override
+		/**
+         * Returns the HealthContributor with the specified name.
+         *
+         * @param name the name of the HealthContributor to retrieve
+         * @return the HealthContributor with the specified name
+         */
+        @Override
 		public HealthContributor getContributor(String name) {
 			return this.delegate.getContributor(name);
 		}
 
-		@Override
+		/**
+         * Returns an iterator over the elements in this RoutingDataSourceHealthContributor.
+         *
+         * @return an iterator over the elements in this RoutingDataSourceHealthContributor
+         */
+        @Override
 		public Iterator<NamedContributor<HealthContributor>> iterator() {
 			return this.delegate.iterator();
 		}

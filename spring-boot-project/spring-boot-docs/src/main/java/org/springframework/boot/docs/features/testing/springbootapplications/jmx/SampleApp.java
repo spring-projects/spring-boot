@@ -20,6 +20,9 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 
+/**
+ * SampleApp class.
+ */
 @SpringBootConfiguration
 @ImportAutoConfiguration(JmxAutoConfiguration.class)
 public class SampleApp {

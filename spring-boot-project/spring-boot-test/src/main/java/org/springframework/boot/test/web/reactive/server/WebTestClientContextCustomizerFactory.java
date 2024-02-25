@@ -41,7 +41,14 @@ class WebTestClientContextCustomizerFactory implements ContextCustomizerFactory 
 		webClientPresent = ClassUtils.isPresent("org.springframework.web.reactive.function.client.WebClient", loader);
 	}
 
-	@Override
+	/**
+     * Creates a context customizer for the given test class and configuration attributes.
+     * 
+     * @param testClass the test class for which the context customizer is being created
+     * @param configAttributes the configuration attributes for the test class
+     * @return the context customizer if the test class is annotated with @SpringBootTest and WebClient is present, null otherwise
+     */
+    @Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,

@@ -43,17 +43,35 @@ public class NettyWebServerFactoryCustomizer
 
 	private final ServerProperties serverProperties;
 
-	public NettyWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
+	/**
+     * Constructs a new NettyWebServerFactoryCustomizer with the specified environment and server properties.
+     * 
+     * @param environment the environment used for customization
+     * @param serverProperties the server properties used for customization
+     */
+    public NettyWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
 		this.environment = environment;
 		this.serverProperties = serverProperties;
 	}
 
-	@Override
+	/**
+     * Returns the order value for this NettyWebServerFactoryCustomizer.
+     * The order determines the order in which the customizer is applied when multiple customizers are present.
+     * A lower value means higher precedence.
+     *
+     * @return the order value for this customizer
+     */
+    @Override
 	public int getOrder() {
 		return 0;
 	}
 
-	@Override
+	/**
+     * Customize the Netty Reactive Web Server Factory.
+     *
+     * @param factory the Netty Reactive Web Server Factory to customize
+     */
+    @Override
 	public void customize(NettyReactiveWebServerFactory factory) {
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -70,7 +88,12 @@ public class NettyWebServerFactoryCustomizer
 		customizeRequestDecoder(factory, map);
 	}
 
-	private boolean getOrDeduceUseForwardHeaders() {
+	/**
+     * Returns a boolean value indicating whether to use forward headers or deduce it based on the active cloud platform.
+     * 
+     * @return {@code true} if forward headers should be used, {@code false} otherwise
+     */
+    private boolean getOrDeduceUseForwardHeaders() {
 		if (this.serverProperties.getForwardHeadersStrategy() == null) {
 			CloudPlatform platform = CloudPlatform.getActive(this.environment);
 			return platform != null && platform.isUsingForwardHeaders();
@@ -78,12 +101,24 @@ public class NettyWebServerFactoryCustomizer
 		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
 	}
 
-	private void customizeConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {
+	/**
+     * Customizes the connection timeout of the Netty reactive web server factory.
+     * 
+     * @param factory           the Netty reactive web server factory to customize
+     * @param connectionTimeout the duration of the connection timeout
+     */
+    private void customizeConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {
 		factory.addServerCustomizers((httpServer) -> httpServer.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
 				(int) connectionTimeout.toMillis()));
 	}
 
-	private void customizeRequestDecoder(NettyReactiveWebServerFactory factory, PropertyMapper propertyMapper) {
+	/**
+     * Customizes the request decoder for the Netty reactive web server factory.
+     * 
+     * @param factory the Netty reactive web server factory
+     * @param propertyMapper the property mapper used for mapping server properties
+     */
+    private void customizeRequestDecoder(NettyReactiveWebServerFactory factory, PropertyMapper propertyMapper) {
 		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder((httpRequestDecoderSpec) -> {
 			propertyMapper.from(this.serverProperties.getMaxHttpRequestHeaderSize())
 				.to((maxHttpRequestHeader) -> httpRequestDecoderSpec
@@ -102,15 +137,33 @@ public class NettyWebServerFactoryCustomizer
 		}));
 	}
 
-	private void customizeIdleTimeout(NettyReactiveWebServerFactory factory, Duration idleTimeout) {
+	/**
+     * Customizes the idle timeout of the Netty reactive web server factory.
+     * 
+     * @param factory the Netty reactive web server factory to customize
+     * @param idleTimeout the duration of idle timeout
+     */
+    private void customizeIdleTimeout(NettyReactiveWebServerFactory factory, Duration idleTimeout) {
 		factory.addServerCustomizers((httpServer) -> httpServer.idleTimeout(idleTimeout));
 	}
 
-	private void customizeMaxKeepAliveRequests(NettyReactiveWebServerFactory factory, int maxKeepAliveRequests) {
+	/**
+     * Customizes the maximum number of keep-alive requests for the Netty reactive web server factory.
+     * 
+     * @param factory the Netty reactive web server factory to customize
+     * @param maxKeepAliveRequests the maximum number of keep-alive requests
+     */
+    private void customizeMaxKeepAliveRequests(NettyReactiveWebServerFactory factory, int maxKeepAliveRequests) {
 		factory.addServerCustomizers((httpServer) -> httpServer.maxKeepAliveRequests(maxKeepAliveRequests));
 	}
 
-	private void customizeHttp2MaxHeaderSize(NettyReactiveWebServerFactory factory, long size) {
+	/**
+     * Customizes the maximum header size for HTTP/2 requests in the given NettyReactiveWebServerFactory.
+     * 
+     * @param factory the NettyReactiveWebServerFactory to customize
+     * @param size the maximum header size to set
+     */
+    private void customizeHttp2MaxHeaderSize(NettyReactiveWebServerFactory factory, long size) {
 		factory.addServerCustomizers(
 				((httpServer) -> httpServer.http2Settings((settings) -> settings.maxHeaderListSize(size))));
 	}

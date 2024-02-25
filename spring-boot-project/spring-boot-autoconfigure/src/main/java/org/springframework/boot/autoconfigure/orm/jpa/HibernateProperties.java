@@ -53,15 +53,30 @@ public class HibernateProperties {
 	 */
 	private String ddlAuto;
 
-	public String getDdlAuto() {
+	/**
+     * Returns the value of the ddlAuto property.
+     * 
+     * @return the value of the ddlAuto property
+     */
+    public String getDdlAuto() {
 		return this.ddlAuto;
 	}
 
-	public void setDdlAuto(String ddlAuto) {
+	/**
+     * Sets the value of the ddlAuto property.
+     * 
+     * @param ddlAuto the value to set for ddlAuto
+     */
+    public void setDdlAuto(String ddlAuto) {
 		this.ddlAuto = ddlAuto;
 	}
 
-	public Naming getNaming() {
+	/**
+     * Returns the naming strategy used by the HibernateProperties.
+     *
+     * @return the naming strategy used by the HibernateProperties
+     */
+    public Naming getNaming() {
 		return this.naming;
 	}
 
@@ -80,7 +95,14 @@ public class HibernateProperties {
 		return getAdditionalProperties(jpaProperties, settings);
 	}
 
-	private Map<String, Object> getAdditionalProperties(Map<String, String> existing, HibernateSettings settings) {
+	/**
+     * Retrieves additional properties to be added to the existing properties map.
+     * 
+     * @param existing the existing properties map
+     * @param settings the Hibernate settings
+     * @return a map of additional properties
+     */
+    private Map<String, Object> getAdditionalProperties(Map<String, String> existing, HibernateSettings settings) {
 		Map<String, Object> result = new HashMap<>(existing);
 		applyScanner(result);
 		getNaming().applyNamingStrategies(result);
@@ -98,13 +120,27 @@ public class HibernateProperties {
 		return result;
 	}
 
-	private void applyScanner(Map<String, Object> result) {
+	/**
+     * Applies the scanner to the given result map.
+     * If the result map does not contain the scanner key and the disabled scanner class is present,
+     * the disabled scanner class is added to the result map.
+     *
+     * @param result the result map to apply the scanner to
+     */
+    private void applyScanner(Map<String, Object> result) {
 		if (!result.containsKey(AvailableSettings.SCANNER) && ClassUtils.isPresent(DISABLED_SCANNER_CLASS, null)) {
 			result.put(AvailableSettings.SCANNER, DISABLED_SCANNER_CLASS);
 		}
 	}
 
-	private String determineDdlAuto(Map<String, String> existing, Supplier<String> defaultDdlAuto) {
+	/**
+     * Determines the value of the "hibernate.hbm2ddl.auto" property based on the existing configuration and default value.
+     * 
+     * @param existing the existing configuration properties
+     * @param defaultDdlAuto a supplier for the default value of "hibernate.hbm2ddl.auto"
+     * @return the determined value of "hibernate.hbm2ddl.auto"
+     */
+    private String determineDdlAuto(Map<String, String> existing, Supplier<String> defaultDdlAuto) {
 		String ddlAuto = existing.get(AvailableSettings.HBM2DDL_AUTO);
 		if (ddlAuto != null) {
 			return ddlAuto;
@@ -118,7 +154,10 @@ public class HibernateProperties {
 		return defaultDdlAuto.get();
 	}
 
-	public static class Naming {
+	/**
+     * Naming class.
+     */
+    public static class Naming {
 
 		/**
 		 * Fully qualified name of the implicit naming strategy.
@@ -130,30 +169,63 @@ public class HibernateProperties {
 		 */
 		private String physicalStrategy;
 
-		public String getImplicitStrategy() {
+		/**
+         * Returns the implicit strategy used by the Naming class.
+         * 
+         * @return the implicit strategy used by the Naming class
+         */
+        public String getImplicitStrategy() {
 			return this.implicitStrategy;
 		}
 
-		public void setImplicitStrategy(String implicitStrategy) {
+		/**
+         * Sets the implicit strategy for the Naming class.
+         * 
+         * @param implicitStrategy the implicit strategy to be set
+         */
+        public void setImplicitStrategy(String implicitStrategy) {
 			this.implicitStrategy = implicitStrategy;
 		}
 
-		public String getPhysicalStrategy() {
+		/**
+         * Returns the physical strategy used by the Naming class.
+         * 
+         * @return the physical strategy used by the Naming class
+         */
+        public String getPhysicalStrategy() {
 			return this.physicalStrategy;
 		}
 
-		public void setPhysicalStrategy(String physicalStrategy) {
+		/**
+         * Sets the physical strategy for the Naming class.
+         * 
+         * @param physicalStrategy the physical strategy to be set
+         */
+        public void setPhysicalStrategy(String physicalStrategy) {
 			this.physicalStrategy = physicalStrategy;
 		}
 
-		private void applyNamingStrategies(Map<String, Object> properties) {
+		/**
+         * Applies the naming strategies to the given properties map.
+         * 
+         * @param properties the properties map to apply the naming strategies to
+         */
+        private void applyNamingStrategies(Map<String, Object> properties) {
 			applyNamingStrategy(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, this.implicitStrategy,
 					() -> SpringImplicitNamingStrategy.class.getName());
 			applyNamingStrategy(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, this.physicalStrategy,
 					() -> CamelCaseToUnderscoresNamingStrategy.class.getName());
 		}
 
-		private void applyNamingStrategy(Map<String, Object> properties, String key, Object strategy,
+		/**
+         * Applies a naming strategy to the given properties map.
+         * 
+         * @param properties the properties map to apply the naming strategy to
+         * @param key the key to associate with the naming strategy in the properties map
+         * @param strategy the naming strategy to apply
+         * @param defaultStrategy a supplier function that provides a default naming strategy if the given strategy is null
+         */
+        private void applyNamingStrategy(Map<String, Object> properties, String key, Object strategy,
 				Supplier<String> defaultStrategy) {
 			if (strategy != null) {
 				properties.put(key, strategy);

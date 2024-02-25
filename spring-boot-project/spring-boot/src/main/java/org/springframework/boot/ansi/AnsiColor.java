@@ -61,11 +61,21 @@ public enum AnsiColor implements AnsiElement {
 
 	private final String code;
 
-	AnsiColor(String code) {
+	/**
+     * Constructs a new AnsiColor object with the specified code.
+     * 
+     * @param code the ANSI color code to be used
+     */
+    AnsiColor(String code) {
 		this.code = code;
 	}
 
-	@Override
+	/**
+     * Returns the code of the AnsiColor object as a string representation.
+     *
+     * @return the code of the AnsiColor object
+     */
+    @Override
 	public String toString() {
 		return this.code;
 	}

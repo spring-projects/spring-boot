@@ -22,10 +22,18 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyComponent class.
+ */
 @Component
 public class MyComponent {
 
-	@SuppressWarnings("unused")
+	/**
+     * Constructs a new instance of MyComponent with the specified SslBundles.
+     * 
+     * @param sslBundles the SslBundles object containing SSL bundles
+     */
+    @SuppressWarnings("unused")
 	public MyComponent(SslBundles sslBundles) {
 		SslBundle sslBundle = sslBundles.getBundle("mybundle");
 		SSLContext sslContext = sslBundle.createSslContext();

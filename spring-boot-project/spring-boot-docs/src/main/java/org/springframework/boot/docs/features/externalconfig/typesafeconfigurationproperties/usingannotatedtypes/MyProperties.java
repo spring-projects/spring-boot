@@ -16,9 +16,17 @@
 
 package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.usingannotatedtypes;
 
+/**
+ * MyProperties class.
+ */
 class MyProperties {
 
-	Object getRemoteAddress() {
+	/**
+     * Returns the remote address associated with this object.
+     *
+     * @return the remote address, or null if not available
+     */
+    Object getRemoteAddress() {
 		return null;
 	}
 

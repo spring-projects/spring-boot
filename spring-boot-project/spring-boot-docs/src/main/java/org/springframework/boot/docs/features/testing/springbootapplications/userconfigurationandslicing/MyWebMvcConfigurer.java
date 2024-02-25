@@ -19,6 +19,9 @@ package org.springframework.boot.docs.features.testing.springbootapplications.us
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * MyWebMvcConfigurer class.
+ */
 @Component
 public class MyWebMvcConfigurer implements WebMvcConfigurer {
 

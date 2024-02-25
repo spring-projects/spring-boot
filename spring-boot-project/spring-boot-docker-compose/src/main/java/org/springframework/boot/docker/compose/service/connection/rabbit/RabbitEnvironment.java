@@ -32,16 +32,42 @@ class RabbitEnvironment {
 
 	private final String password;
 
-	RabbitEnvironment(Map<String, String> env) {
+	/**
+     * Constructs a RabbitEnvironment object with the provided environment variables.
+     * 
+     * @param env a Map containing the environment variables
+     * 
+     * The constructor initializes the username and password fields of the RabbitEnvironment object
+     * using the values from the environment variables. If the "RABBITMQ_DEFAULT_USER" variable is
+     * present, it is used as the username. Otherwise, if the "RABBITMQ_USERNAME" variable is present,
+     * it is used as the username. If neither of these variables are present, the default username is
+     * set to "guest".
+     * 
+     * Similarly, the constructor initializes the password field using the values from the environment
+     * variables. If the "RABBITMQ_DEFAULT_PASS" variable is present, it is used as the password.
+     * Otherwise, if the "RABBITMQ_PASSWORD" variable is present, it is used as the password. If neither
+     * of these variables are present, the default password is set to "guest".
+     */
+    RabbitEnvironment(Map<String, String> env) {
 		this.username = env.getOrDefault("RABBITMQ_DEFAULT_USER", env.getOrDefault("RABBITMQ_USERNAME", "guest"));
 		this.password = env.getOrDefault("RABBITMQ_DEFAULT_PASS", env.getOrDefault("RABBITMQ_PASSWORD", "guest"));
 	}
 
-	String getUsername() {
+	/**
+     * Returns the username associated with the RabbitEnvironment object.
+     *
+     * @return the username associated with the RabbitEnvironment object
+     */
+    String getUsername() {
 		return this.username;
 	}
 
-	String getPassword() {
+	/**
+     * Returns the password of the RabbitEnvironment.
+     *
+     * @return the password of the RabbitEnvironment
+     */
+    String getPassword() {
 		return this.password;
 	}
 

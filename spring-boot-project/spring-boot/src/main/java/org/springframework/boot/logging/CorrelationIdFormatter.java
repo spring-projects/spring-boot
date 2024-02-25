@@ -74,7 +74,12 @@ public final class CorrelationIdFormatter {
 
 	private final String blank;
 
-	private CorrelationIdFormatter(List<Part> parts) {
+	/**
+     * Constructs a new CorrelationIdFormatter with the given list of parts.
+     * 
+     * @param parts the list of parts to be used for formatting
+     */
+    private CorrelationIdFormatter(List<Part> parts) {
 		this.parts = parts;
 		this.blank = String.format("[%s] ", parts.stream().map(Part::blank).collect(Collectors.joining(" ")));
 	}
@@ -118,7 +123,12 @@ public final class CorrelationIdFormatter {
 		}
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the CorrelationIdFormatter object.
+     * 
+     * @return a string representation of the CorrelationIdFormatter object
+     */
+    @Override
 	public String toString() {
 		return this.parts.stream().map(Part::toString).collect(Collectors.joining(","));
 	}
@@ -169,7 +179,15 @@ public final class CorrelationIdFormatter {
 
 		private static final Pattern pattern = Pattern.compile("^(.+?)\\((\\d+)\\)$");
 
-		String resolve(UnaryOperator<String> resolver) {
+		/**
+     * Resolves the name using the provided resolver function and returns the resolved string.
+     * If the resolved string is null, returns a blank string.
+     * If the resolved string is shorter than the original name, pads it with spaces to match the length of the original name.
+     *
+     * @param resolver the function used to resolve the name
+     * @return the resolved and padded string
+     */
+    String resolve(UnaryOperator<String> resolver) {
 			String resolved = resolver.apply(name());
 			if (resolved == null) {
 				return blank();
@@ -178,16 +196,34 @@ public final class CorrelationIdFormatter {
 			return (padding <= 0) ? resolved : resolved + " ".repeat(padding);
 		}
 
-		String blank() {
+		/**
+     * Returns a string consisting of a specified number of blank spaces.
+     * 
+     * @return a string consisting of a specified number of blank spaces
+     */
+    String blank() {
 			return " ".repeat(this.length);
 		}
 
-		@Override
+		/**
+     * Returns a string representation of the CorrelationIdFormatter object.
+     * The string representation is in the format "name(length)".
+     *
+     * @return a string representation of the CorrelationIdFormatter object
+     */
+    @Override
 		public String toString() {
 			return "%s(%s)".formatted(name(), length());
 		}
 
-		static Part of(String part) {
+		/**
+     * Parses a string representation of a part and returns a Part object.
+     * 
+     * @param part the string representation of the part
+     * @return the Part object representing the parsed part
+     * @throws IllegalArgumentException if the part is invalid
+     */
+    static Part of(String part) {
 			Matcher matcher = pattern.matcher(part.trim());
 			Assert.state(matcher.matches(), () -> "Invalid specification part '%s'".formatted(part));
 			String name = matcher.group(1);

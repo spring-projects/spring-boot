@@ -22,10 +22,18 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * MyRedisConfiguration class.
+ */
 @TestConfiguration(proxyBeanMethods = false)
 public class MyRedisConfiguration {
 
-	@Bean
+	/**
+     * Creates a Redis container for the service connection.
+     * 
+     * @return the Redis container
+     */
+    @Bean
 	@ServiceConnection(name = "redis")
 	public GenericContainer<?> redisContainer() {
 		return new GenericContainer<>("redis:7");

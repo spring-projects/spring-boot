@@ -51,7 +51,12 @@ public class DelegatingApplicationContextInitializer
 
 	private int order = 0;
 
-	@Override
+	/**
+     * Initializes the configurable application context.
+     * 
+     * @param context the configurable application context to be initialized
+     */
+    @Override
 	public void initialize(ConfigurableApplicationContext context) {
 		ConfigurableEnvironment environment = context.getEnvironment();
 		List<Class<?>> initializerClasses = getInitializerClasses(environment);
@@ -60,7 +65,13 @@ public class DelegatingApplicationContextInitializer
 		}
 	}
 
-	private List<Class<?>> getInitializerClasses(ConfigurableEnvironment env) {
+	/**
+     * Retrieves a list of initializer classes based on the given environment.
+     * 
+     * @param env the configurable environment
+     * @return a list of initializer classes
+     */
+    private List<Class<?>> getInitializerClasses(ConfigurableEnvironment env) {
 		String classNames = env.getProperty(PROPERTY_NAME);
 		List<Class<?>> classes = new ArrayList<>();
 		if (StringUtils.hasLength(classNames)) {
@@ -71,7 +82,15 @@ public class DelegatingApplicationContextInitializer
 		return classes;
 	}
 
-	private Class<?> getInitializerClass(String className) throws LinkageError {
+	/**
+     * Retrieves the initializer class based on the provided class name.
+     * 
+     * @param className the name of the initializer class to retrieve
+     * @return the initializer class
+     * @throws LinkageError if there is an error with the class linkage
+     * @throws ApplicationContextException if the context initializer class fails to load
+     */
+    private Class<?> getInitializerClass(String className) throws LinkageError {
 		try {
 			Class<?> initializerClass = ClassUtils.forName(className, ClassUtils.getDefaultClassLoader());
 			Assert.isAssignable(ApplicationContextInitializer.class, initializerClass);
@@ -82,7 +101,13 @@ public class DelegatingApplicationContextInitializer
 		}
 	}
 
-	private void applyInitializerClasses(ConfigurableApplicationContext context, List<Class<?>> initializerClasses) {
+	/**
+     * Applies the given initializer classes to the specified application context.
+     * 
+     * @param context The configurable application context to apply the initializers to.
+     * @param initializerClasses The list of initializer classes to apply.
+     */
+    private void applyInitializerClasses(ConfigurableApplicationContext context, List<Class<?>> initializerClasses) {
 		Class<?> contextClass = context.getClass();
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		for (Class<?> initializerClass : initializerClasses) {
@@ -91,7 +116,15 @@ public class DelegatingApplicationContextInitializer
 		applyInitializers(context, initializers);
 	}
 
-	private ApplicationContextInitializer<?> instantiateInitializer(Class<?> contextClass, Class<?> initializerClass) {
+	/**
+     * Instantiates an ApplicationContextInitializer based on the provided context class and initializer class.
+     * 
+     * @param contextClass the class of the application context used by this context loader
+     * @param initializerClass the class of the context initializer to be instantiated
+     * @return the instantiated ApplicationContextInitializer
+     * @throws IllegalArgumentException if the generic parameter of the initializer class is not assignable from the context class
+     */
+    private ApplicationContextInitializer<?> instantiateInitializer(Class<?> contextClass, Class<?> initializerClass) {
 		Class<?> requireContextClass = GenericTypeResolver.resolveTypeArgument(initializerClass,
 				ApplicationContextInitializer.class);
 		Assert.isAssignable(requireContextClass, contextClass,
@@ -102,7 +135,15 @@ public class DelegatingApplicationContextInitializer
 		return (ApplicationContextInitializer<?>) BeanUtils.instantiateClass(initializerClass);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	/**
+     * Applies the initializers to the given configurable application context.
+     * The initializers are sorted using the AnnotationAwareOrderComparator.
+     * Each initializer is then initialized with the context.
+     *
+     * @param context      the configurable application context
+     * @param initializers the list of application context initializers
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 	private void applyInitializers(ConfigurableApplicationContext context,
 			List<ApplicationContextInitializer<?>> initializers) {
 		initializers.sort(new AnnotationAwareOrderComparator());
@@ -111,11 +152,21 @@ public class DelegatingApplicationContextInitializer
 		}
 	}
 
-	public void setOrder(int order) {
+	/**
+     * Sets the order of the DelegatingApplicationContextInitializer.
+     * 
+     * @param order the order value to set
+     */
+    public void setOrder(int order) {
 		this.order = order;
 	}
 
-	@Override
+	/**
+     * Returns the order value of this DelegatingApplicationContextInitializer.
+     * 
+     * @return the order value of this DelegatingApplicationContextInitializer
+     */
+    @Override
 	public int getOrder() {
 		return this.order;
 	}

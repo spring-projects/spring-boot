@@ -18,6 +18,9 @@ package smoketest.data.cassandra;
 
 import org.springframework.data.cassandra.repository.CassandraRepository;
 
+/**
+ * SampleRepository interface.
+ */
 interface SampleRepository extends CassandraRepository<SampleEntity, String> {
 
 }

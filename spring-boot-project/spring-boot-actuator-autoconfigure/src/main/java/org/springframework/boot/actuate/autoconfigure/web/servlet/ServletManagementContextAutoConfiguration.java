@@ -46,13 +46,25 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public class ServletManagementContextAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of the {@link ManagementContextFactory} for a servlet web application.
+     * This factory is used to configure the management context for a servlet-based web server.
+     * 
+     * @return The {@link ManagementContextFactory} instance for a servlet web application.
+     */
+    @Bean
 	public static ManagementContextFactory servletWebChildContextFactory() {
 		return new ManagementContextFactory(WebApplicationType.SERVLET, ServletWebServerFactory.class,
 				ServletWebServerFactoryAutoConfiguration.class);
 	}
 
-	@Bean
+	/**
+     * Creates a ManagementServletContext bean that returns the base path of the management endpoints.
+     * 
+     * @param properties the WebEndpointProperties object used to retrieve the base path
+     * @return a ManagementServletContext bean that returns the base path of the management endpoints
+     */
+    @Bean
 	public ManagementServletContext managementServletContext(WebEndpointProperties properties) {
 		return properties::getBasePath;
 	}
@@ -63,7 +75,13 @@ public class ServletManagementContextAutoConfiguration {
 	@ConditionalOnProperty(prefix = "management.server", name = "add-application-context-header", havingValue = "true")
 	protected static class ApplicationContextFilterConfiguration {
 
-		@Bean
+		/**
+         * Creates a new ApplicationContextHeaderFilter instance with the given ApplicationContext.
+         * 
+         * @param context the ApplicationContext to be used by the filter
+         * @return a new ApplicationContextHeaderFilter instance
+         */
+        @Bean
 		public ApplicationContextHeaderFilter applicationContextIdFilter(ApplicationContext context) {
 			return new ApplicationContextHeaderFilter(context);
 		}

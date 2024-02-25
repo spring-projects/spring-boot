@@ -44,12 +44,29 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 
 	private static final String LOMBOK_ACCESS_LEVEL_PUBLIC = "PUBLIC";
 
-	LombokPropertyDescriptor(TypeElement typeElement, ExecutableElement factoryMethod, VariableElement field,
+	/**
+     * Constructs a new {@code LombokPropertyDescriptor} with the specified parameters.
+     *
+     * @param typeElement the type element representing the class containing the property
+     * @param factoryMethod the factory method used to create instances of the class
+     * @param field the variable element representing the property field
+     * @param name the name of the property
+     * @param type the type of the property
+     * @param getter the getter method for the property
+     * @param setter the setter method for the property
+     */
+    LombokPropertyDescriptor(TypeElement typeElement, ExecutableElement factoryMethod, VariableElement field,
 			String name, TypeMirror type, ExecutableElement getter, ExecutableElement setter) {
 		super(typeElement, factoryMethod, field, name, type, field, getter, setter);
 	}
 
-	@Override
+	/**
+     * Checks if the property is valid for metadata generation.
+     * 
+     * @param env the metadata generation environment
+     * @return true if the property is valid, false otherwise
+     */
+    @Override
 	protected boolean isProperty(MetadataGenerationEnvironment env) {
 		if (!hasLombokPublicAccessor(env, true)) {
 			return false;
@@ -58,12 +75,24 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 		return !env.isExcluded(getType()) && (hasSetter(env) || isCollection);
 	}
 
-	@Override
+	/**
+     * Resolves the default value for the property.
+     * 
+     * @param environment the metadata generation environment
+     * @return the default value for the property
+     */
+    @Override
 	protected Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
 		return environment.getFieldDefaultValue(getOwnerElement(), getName());
 	}
 
-	@Override
+	/**
+     * Checks if the property is nested.
+     * 
+     * @param environment the metadata generation environment
+     * @return {@code true} if the property is nested, {@code false} otherwise
+     */
+    @Override
 	protected boolean isNested(MetadataGenerationEnvironment environment) {
 		if (!hasLombokPublicAccessor(environment, true)) {
 			return false;
@@ -71,14 +100,26 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 		return super.isNested(environment);
 	}
 
-	@Override
+	/**
+     * Resolves the deprecation status of the item associated with this property descriptor.
+     * 
+     * @param environment the metadata generation environment
+     * @return the item deprecation information, or null if the item is not deprecated
+     */
+    @Override
 	protected ItemDeprecation resolveItemDeprecation(MetadataGenerationEnvironment environment) {
 		boolean deprecated = environment.isDeprecated(getField()) || environment.isDeprecated(getGetter())
 				|| environment.isDeprecated(getFactoryMethod());
 		return deprecated ? environment.resolveItemDeprecation(getGetter()) : null;
 	}
 
-	private boolean hasSetter(MetadataGenerationEnvironment env) {
+	/**
+     * Checks if the property has a setter method or a non-final public field.
+     * 
+     * @param env the metadata generation environment
+     * @return {@code true} if the property has a setter method or a non-final public field, {@code false} otherwise
+     */
+    private boolean hasSetter(MetadataGenerationEnvironment env) {
 		boolean nonFinalPublicField = !getField().getModifiers().contains(Modifier.FINAL)
 				&& hasLombokPublicAccessor(env, false);
 		return getSetter() != null || nonFinalPublicField;
@@ -106,7 +147,14 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 				|| env.hasAnnotation(getOwnerElement(), LOMBOK_VALUE_ANNOTATION));
 	}
 
-	private boolean isAccessLevelPublic(MetadataGenerationEnvironment env, AnnotationMirror lombokAnnotation) {
+	/**
+     * Checks if the access level of a Lombok annotation is public.
+     * 
+     * @param env the metadata generation environment
+     * @param lombokAnnotation the Lombok annotation to check
+     * @return true if the access level is public, false otherwise
+     */
+    private boolean isAccessLevelPublic(MetadataGenerationEnvironment env, AnnotationMirror lombokAnnotation) {
 		Map<String, Object> values = env.getAnnotationElementValues(lombokAnnotation);
 		Object value = values.get("value");
 		return (value == null || value.toString().equals(LOMBOK_ACCESS_LEVEL_PUBLIC));

@@ -36,11 +36,22 @@ class Neo4jDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 	private static final String[] NEO4J_CONTAINER_NAMES = { "neo4j", "bitnami/neo4j" };
 
-	Neo4jDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new Neo4jDockerComposeConnectionDetailsFactory.
+     * 
+     * @param neo4jContainerNames the names of the Neo4j containers
+     */
+    Neo4jDockerComposeConnectionDetailsFactory() {
 		super(NEO4J_CONTAINER_NAMES);
 	}
 
-	@Override
+	/**
+     * Returns the connection details for a Neo4j Docker Compose connection.
+     * 
+     * @param source the Docker Compose connection source
+     * @return the Neo4j connection details
+     */
+    @Override
 	protected Neo4jConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new Neo4jDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -57,19 +68,34 @@ class Neo4jDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 		private final URI uri;
 
-		Neo4jDockerComposeConnectionDetails(RunningService service) {
+		/**
+         * Constructs a new Neo4jDockerComposeConnectionDetails object with the provided RunningService.
+         * 
+         * @param service the RunningService object representing the Neo4j Docker Compose service
+         */
+        Neo4jDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			Neo4jEnvironment neo4jEnvironment = new Neo4jEnvironment(service.env());
 			this.authToken = neo4jEnvironment.getAuthToken();
 			this.uri = URI.create("neo4j://%s:%d".formatted(service.host(), service.ports().get(BOLT_PORT)));
 		}
 
-		@Override
+		/**
+         * Returns the URI of the Neo4j Docker Compose connection.
+         *
+         * @return the URI of the connection
+         */
+        @Override
 		public URI getUri() {
 			return this.uri;
 		}
 
-		@Override
+		/**
+         * Returns the authentication token associated with this Neo4jDockerComposeConnectionDetails instance.
+         *
+         * @return the authentication token
+         */
+        @Override
 		public AuthToken getAuthToken() {
 			return this.authToken;
 		}

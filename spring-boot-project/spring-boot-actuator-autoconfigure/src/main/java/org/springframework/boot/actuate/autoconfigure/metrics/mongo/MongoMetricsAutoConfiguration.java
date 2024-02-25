@@ -50,25 +50,46 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnBean(MeterRegistry.class)
 public class MongoMetricsAutoConfiguration {
 
-	@ConditionalOnClass(MongoMetricsCommandListener.class)
+	/**
+     * MongoCommandMetricsConfiguration class.
+     */
+    @ConditionalOnClass(MongoMetricsCommandListener.class)
 	@ConditionalOnProperty(name = "management.metrics.mongo.command.enabled", havingValue = "true",
 			matchIfMissing = true)
 	static class MongoCommandMetricsConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of {@link MongoMetricsCommandListener} if no other bean of the same type is present in the application context.
+         * 
+         * @param meterRegistry the {@link MeterRegistry} used for collecting and reporting metrics
+         * @param mongoCommandTagsProvider the {@link MongoCommandTagsProvider} used for providing tags for MongoDB commands
+         * @return a new instance of {@link MongoMetricsCommandListener}
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		MongoMetricsCommandListener mongoMetricsCommandListener(MeterRegistry meterRegistry,
 				MongoCommandTagsProvider mongoCommandTagsProvider) {
 			return new MongoMetricsCommandListener(meterRegistry, mongoCommandTagsProvider);
 		}
 
-		@Bean
+		/**
+         * Creates a new instance of {@link MongoCommandTagsProvider} if no other bean of the same type is present in the application context.
+         * 
+         * @return the {@link MongoCommandTagsProvider} bean
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		MongoCommandTagsProvider mongoCommandTagsProvider() {
 			return new DefaultMongoCommandTagsProvider();
 		}
 
-		@Bean
+		/**
+         * Returns a customizer for the MongoClientSettingsBuilder that adds a command listener for MongoDB metrics.
+         *
+         * @param mongoMetricsCommandListener the command listener for MongoDB metrics
+         * @return the customizer for the MongoClientSettingsBuilder
+         */
+        @Bean
 		MongoClientSettingsBuilderCustomizer mongoMetricsCommandListenerClientSettingsBuilderCustomizer(
 				MongoMetricsCommandListener mongoMetricsCommandListener) {
 			return (clientSettingsBuilder) -> clientSettingsBuilder.addCommandListener(mongoMetricsCommandListener);
@@ -76,25 +97,47 @@ public class MongoMetricsAutoConfiguration {
 
 	}
 
-	@ConditionalOnClass(MongoMetricsConnectionPoolListener.class)
+	/**
+     * MongoConnectionPoolMetricsConfiguration class.
+     */
+    @ConditionalOnClass(MongoMetricsConnectionPoolListener.class)
 	@ConditionalOnProperty(name = "management.metrics.mongo.connectionpool.enabled", havingValue = "true",
 			matchIfMissing = true)
 	static class MongoConnectionPoolMetricsConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of {@link MongoMetricsConnectionPoolListener} if no other bean of the same type is present.
+         * This listener is responsible for collecting metrics related to the MongoDB connection pool.
+         *
+         * @param meterRegistry                the {@link MeterRegistry} used to register the metrics
+         * @param mongoConnectionPoolTagsProvider the {@link MongoConnectionPoolTagsProvider} used to provide tags for the metrics
+         * @return the {@link MongoMetricsConnectionPoolListener} instance
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		MongoMetricsConnectionPoolListener mongoMetricsConnectionPoolListener(MeterRegistry meterRegistry,
 				MongoConnectionPoolTagsProvider mongoConnectionPoolTagsProvider) {
 			return new MongoMetricsConnectionPoolListener(meterRegistry, mongoConnectionPoolTagsProvider);
 		}
 
-		@Bean
+		/**
+         * Creates a new instance of {@link MongoConnectionPoolTagsProvider} if no other bean of the same type is present in the application context.
+         * 
+         * @return the {@link MongoConnectionPoolTagsProvider} bean
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		MongoConnectionPoolTagsProvider mongoConnectionPoolTagsProvider() {
 			return new DefaultMongoConnectionPoolTagsProvider();
 		}
 
-		@Bean
+		/**
+         * Returns a customizer for MongoClientSettingsBuilder that adds a MongoMetricsConnectionPoolListener to the connection pool settings.
+         * 
+         * @param mongoMetricsConnectionPoolListener the MongoMetricsConnectionPoolListener to be added to the connection pool settings
+         * @return the customizer for MongoClientSettingsBuilder
+         */
+        @Bean
 		MongoClientSettingsBuilderCustomizer mongoMetricsConnectionPoolListenerClientSettingsBuilderCustomizer(
 				MongoMetricsConnectionPoolListener mongoMetricsConnectionPoolListener) {
 			return (clientSettingsBuilder) -> clientSettingsBuilder

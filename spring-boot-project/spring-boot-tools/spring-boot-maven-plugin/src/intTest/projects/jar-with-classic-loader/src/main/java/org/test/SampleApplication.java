@@ -16,9 +16,17 @@
 
 package org.test;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the SampleApplication class.
+     * 
+     * @param args the command line arguments passed to the program
+     */
+    public static void main(String[] args) {
 	}
 
 }

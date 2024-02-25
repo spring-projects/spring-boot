@@ -36,7 +36,15 @@ class ValidationExceptionFailureAnalyzer extends AbstractFailureAnalyzer<Validat
 	private static final String JAKARTA_MISSING_IMPLEMENTATION_MESSAGE = "Unable to create a "
 			+ "Configuration, because no Jakarta Bean Validation provider could be found";
 
-	@Override
+	/**
+     * Analyzes the failure caused by a ValidationException and returns a FailureAnalysis object.
+     * 
+     * @param rootFailure the root cause of the failure
+     * @param cause the ValidationException that caused the failure
+     * @return a FailureAnalysis object if the cause message starts with either JAVAX_MISSING_IMPLEMENTATION_MESSAGE
+     *         or JAKARTA_MISSING_IMPLEMENTATION_MESSAGE, otherwise null
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, ValidationException cause) {
 		if (cause.getMessage().startsWith(JAVAX_MISSING_IMPLEMENTATION_MESSAGE)
 				|| cause.getMessage().startsWith(JAKARTA_MISSING_IMPLEMENTATION_MESSAGE)) {

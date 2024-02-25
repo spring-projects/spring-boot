@@ -19,10 +19,19 @@ package smoketest.jetty;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleJettyApplication class.
+ */
 @SpringBootApplication
 public class SampleJettyApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Jetty server by running the SampleJettyApplication class.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleJettyApplication.class, args);
 	}
 

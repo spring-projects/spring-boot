@@ -154,13 +154,28 @@ class ConfigDataEnvironment {
 		this.contributors = createContributors(binder);
 	}
 
-	protected ConfigDataLocationResolvers createConfigDataLocationResolvers(DeferredLogFactory logFactory,
+	/**
+     * Creates a new instance of {@link ConfigDataLocationResolvers} with the given parameters.
+     *
+     * @param logFactory        the factory for creating deferred loggers
+     * @param bootstrapContext  the bootstrap context for the application
+     * @param binder            the binder for binding configuration properties
+     * @param resourceLoader    the resource loader for loading configuration resources
+     * @return a new instance of {@link ConfigDataLocationResolvers}
+     */
+    protected ConfigDataLocationResolvers createConfigDataLocationResolvers(DeferredLogFactory logFactory,
 			ConfigurableBootstrapContext bootstrapContext, Binder binder, ResourceLoader resourceLoader) {
 		return new ConfigDataLocationResolvers(logFactory, bootstrapContext, binder, resourceLoader,
 				SpringFactoriesLoader.forDefaultResourceLocation(resourceLoader.getClassLoader()));
 	}
 
-	private ConfigDataEnvironmentContributors createContributors(Binder binder) {
+	/**
+     * Creates and returns a list of config data environment contributors.
+     * 
+     * @param binder the binder object used for binding
+     * @return the created config data environment contributors
+     */
+    private ConfigDataEnvironmentContributors createContributors(Binder binder) {
 		this.logger.trace("Building config data environment contributors");
 		MutablePropertySources propertySources = this.environment.getPropertySources();
 		List<ConfigDataEnvironmentContributor> contributors = new ArrayList<>(propertySources.size() + 10);
@@ -183,16 +198,33 @@ class ConfigDataEnvironment {
 		return createContributors(contributors);
 	}
 
-	protected ConfigDataEnvironmentContributors createContributors(
+	/**
+     * Creates a new instance of ConfigDataEnvironmentContributors with the given list of contributors.
+     * 
+     * @param contributors the list of contributors to be added to the ConfigDataEnvironmentContributors
+     * @return a new instance of ConfigDataEnvironmentContributors
+     */
+    protected ConfigDataEnvironmentContributors createContributors(
 			List<ConfigDataEnvironmentContributor> contributors) {
 		return new ConfigDataEnvironmentContributors(this.logFactory, this.bootstrapContext, contributors);
 	}
 
-	ConfigDataEnvironmentContributors getContributors() {
+	/**
+     * Returns the contributors of the ConfigDataEnvironment.
+     *
+     * @return the contributors of the ConfigDataEnvironment
+     */
+    ConfigDataEnvironmentContributors getContributors() {
 		return this.contributors;
 	}
 
-	private List<ConfigDataEnvironmentContributor> getInitialImportContributors(Binder binder) {
+	/**
+     * Retrieves the initial import contributors for the ConfigDataEnvironment.
+     * 
+     * @param binder the binder used to bind the locations
+     * @return the list of initial import contributors
+     */
+    private List<ConfigDataEnvironmentContributor> getInitialImportContributors(Binder binder) {
 		List<ConfigDataEnvironmentContributor> initialContributors = new ArrayList<>();
 		addInitialImportContributors(initialContributors, bindLocations(binder, IMPORT_PROPERTY, EMPTY_LOCATIONS));
 		addInitialImportContributors(initialContributors,
@@ -202,18 +234,39 @@ class ConfigDataEnvironment {
 		return initialContributors;
 	}
 
-	private ConfigDataLocation[] bindLocations(Binder binder, String propertyName, ConfigDataLocation[] other) {
+	/**
+     * Binds the given property name to an array of ConfigDataLocation objects using the provided Binder.
+     * If the binding is successful, the bound array is returned. Otherwise, the provided 'other' array is returned.
+     *
+     * @param binder       the Binder to use for binding the property
+     * @param propertyName the name of the property to bind
+     * @param other        the array to return if the binding fails
+     * @return the bound array if successful, otherwise the provided 'other' array
+     */
+    private ConfigDataLocation[] bindLocations(Binder binder, String propertyName, ConfigDataLocation[] other) {
 		return binder.bind(propertyName, CONFIG_DATA_LOCATION_ARRAY).orElse(other);
 	}
 
-	private void addInitialImportContributors(List<ConfigDataEnvironmentContributor> initialContributors,
+	/**
+     * Adds initial import contributors to the given list based on the provided locations.
+     * 
+     * @param initialContributors the list of initial import contributors
+     * @param locations the array of config data locations
+     */
+    private void addInitialImportContributors(List<ConfigDataEnvironmentContributor> initialContributors,
 			ConfigDataLocation[] locations) {
 		for (int i = locations.length - 1; i >= 0; i--) {
 			initialContributors.add(createInitialImportContributor(locations[i]));
 		}
 	}
 
-	private ConfigDataEnvironmentContributor createInitialImportContributor(ConfigDataLocation location) {
+	/**
+     * Creates a ConfigDataEnvironmentContributor for the initial import of config data from the specified location.
+     * 
+     * @param location the location of the config data to be imported
+     * @return the ConfigDataEnvironmentContributor for the initial import
+     */
+    private ConfigDataEnvironmentContributor createInitialImportContributor(ConfigDataLocation location) {
 		this.logger.trace(LogMessage.format("Adding initial config data import from location '%s'", location));
 		return ConfigDataEnvironmentContributor.ofInitialImport(location);
 	}
@@ -236,7 +289,14 @@ class ConfigDataEnvironment {
 				importer.getOptionalLocations());
 	}
 
-	private ConfigDataEnvironmentContributors processInitial(ConfigDataEnvironmentContributors contributors,
+	/**
+     * Processes the initial config data environment contributors without activation context.
+     * 
+     * @param contributors the initial config data environment contributors
+     * @param importer the config data importer
+     * @return the processed config data environment contributors
+     */
+    private ConfigDataEnvironmentContributors processInitial(ConfigDataEnvironmentContributors contributors,
 			ConfigDataImporter importer) {
 		this.logger.trace("Processing initial config data environment contributors without activation context");
 		contributors = contributors.withProcessedImports(importer, null);
@@ -244,7 +304,15 @@ class ConfigDataEnvironment {
 		return contributors;
 	}
 
-	private ConfigDataActivationContext createActivationContext(Binder initialBinder) {
+	/**
+     * Creates a config data activation context from initial contributions.
+     * 
+     * @param initialBinder the initial binder containing the contributions
+     * @return the created config data activation context
+     * @throws InactiveConfigDataAccessException if the config data is inactive
+     * @throws BindException if there is an error in binding the contributions
+     */
+    private ConfigDataActivationContext createActivationContext(Binder initialBinder) {
 		this.logger.trace("Creating config data activation context from initial contributions");
 		try {
 			return new ConfigDataActivationContext(this.environment, initialBinder);
@@ -257,7 +325,15 @@ class ConfigDataEnvironment {
 		}
 	}
 
-	private ConfigDataEnvironmentContributors processWithoutProfiles(ConfigDataEnvironmentContributors contributors,
+	/**
+     * Processes the config data environment contributors without profiles.
+     * 
+     * @param contributors the config data environment contributors
+     * @param importer the config data importer
+     * @param activationContext the config data activation context
+     * @return the processed config data environment contributors
+     */
+    private ConfigDataEnvironmentContributors processWithoutProfiles(ConfigDataEnvironmentContributors contributors,
 			ConfigDataImporter importer, ConfigDataActivationContext activationContext) {
 		this.logger.trace("Processing config data environment contributors with initial activation context");
 		contributors = contributors.withProcessedImports(importer, activationContext);
@@ -265,7 +341,15 @@ class ConfigDataEnvironment {
 		return contributors;
 	}
 
-	private ConfigDataActivationContext withProfiles(ConfigDataEnvironmentContributors contributors,
+	/**
+     * Deduces profiles from the current config data environment contributors.
+     * 
+     * @param contributors      the config data environment contributors
+     * @param activationContext the activation context
+     * @return the activation context with profiles
+     * @throws InactiveConfigDataAccessException if the config data is inactive
+     */
+    private ConfigDataActivationContext withProfiles(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext) {
 		this.logger.trace("Deducing profiles from current config data environment contributors");
 		Binder binder = contributors.getBinder(activationContext,
@@ -285,7 +369,14 @@ class ConfigDataEnvironment {
 		}
 	}
 
-	private Collection<? extends String> getIncludedProfiles(ConfigDataEnvironmentContributors contributors,
+	/**
+     * Retrieves the collection of included profiles based on the given contributors and activation context.
+     * 
+     * @param contributors      the ConfigDataEnvironmentContributors to retrieve the included profiles from
+     * @param activationContext the ConfigDataActivationContext to determine the active profiles
+     * @return                  a Collection of included profiles
+     */
+    private Collection<? extends String> getIncludedProfiles(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext) {
 		PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
 				contributors, activationContext, null, true);
@@ -307,7 +398,15 @@ class ConfigDataEnvironment {
 		return result;
 	}
 
-	private ConfigDataEnvironmentContributors processWithProfiles(ConfigDataEnvironmentContributors contributors,
+	/**
+     * Processes the config data environment contributors with the given profile activation context.
+     * 
+     * @param contributors the config data environment contributors to process
+     * @param importer the config data importer
+     * @param activationContext the profile activation context
+     * @return the processed config data environment contributors
+     */
+    private ConfigDataEnvironmentContributors processWithProfiles(ConfigDataEnvironmentContributors contributors,
 			ConfigDataImporter importer, ConfigDataActivationContext activationContext) {
 		this.logger.trace("Processing config data environment contributors with profile activation context");
 		contributors = contributors.withProcessedImports(importer, activationContext);
@@ -315,14 +414,29 @@ class ConfigDataEnvironment {
 		return contributors;
 	}
 
-	private void registerBootstrapBinder(ConfigDataEnvironmentContributors contributors,
+	/**
+     * Registers a BootstrapBinder with the given contributors, activation context, and binder options.
+     * 
+     * @param contributors the ConfigDataEnvironmentContributors to get the binder from
+     * @param activationContext the ConfigDataActivationContext for the binder
+     * @param binderOptions the BinderOptions for the binder
+     */
+    private void registerBootstrapBinder(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext, BinderOption... binderOptions) {
 		this.bootstrapContext.register(Binder.class,
 				InstanceSupplier.from(() -> contributors.getBinder(activationContext, binderOptions))
 					.withScope(Scope.PROTOTYPE));
 	}
 
-	private void applyToEnvironment(ConfigDataEnvironmentContributors contributors,
+	/**
+     * Applies the given contributors, activation context, loaded locations, and optional locations to the environment.
+     * 
+     * @param contributors      the contributors to apply
+     * @param activationContext the activation context to use
+     * @param loadedLocations   the loaded locations
+     * @param optionalLocations the optional locations
+     */
+    private void applyToEnvironment(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext, Set<ConfigDataLocation> loadedLocations,
 			Set<ConfigDataLocation> optionalLocations) {
 		checkForInvalidProperties(contributors);
@@ -338,7 +452,14 @@ class ConfigDataEnvironment {
 		this.environmentUpdateListener.onSetProfiles(profiles);
 	}
 
-	private void applyContributor(ConfigDataEnvironmentContributors contributors,
+	/**
+     * Applies the config data environment contributions.
+     * 
+     * @param contributors the config data environment contributors
+     * @param activationContext the config data activation context
+     * @param propertySources the mutable property sources
+     */
+    private void applyContributor(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext, MutablePropertySources propertySources) {
 		this.logger.trace("Applying config data environment contributions");
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
@@ -359,13 +480,27 @@ class ConfigDataEnvironment {
 		}
 	}
 
-	private void checkForInvalidProperties(ConfigDataEnvironmentContributors contributors) {
+	/**
+     * Checks for invalid properties in the given list of ConfigDataEnvironmentContributors.
+     * 
+     * @param contributors the list of ConfigDataEnvironmentContributors to check
+     * @throws InvalidConfigDataPropertyException if an invalid property is found in any of the contributors
+     */
+    private void checkForInvalidProperties(ConfigDataEnvironmentContributors contributors) {
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
 			InvalidConfigDataPropertyException.throwIfPropertyFound(contributor);
 		}
 	}
 
-	private void checkMandatoryLocations(ConfigDataEnvironmentContributors contributors,
+	/**
+     * Checks for mandatory locations in the given contributors, activation context, loaded locations, and optional locations.
+     * 
+     * @param contributors       the contributors to check for mandatory locations
+     * @param activationContext  the activation context to determine if a contributor is active
+     * @param loadedLocations    the locations that have already been loaded
+     * @param optionalLocations  the optional locations
+     */
+    private void checkMandatoryLocations(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext, Set<ConfigDataLocation> loadedLocations,
 			Set<ConfigDataLocation> optionalLocations) {
 		Set<ConfigDataLocation> mandatoryLocations = new LinkedHashSet<>();
@@ -388,7 +523,13 @@ class ConfigDataEnvironment {
 		}
 	}
 
-	private Set<ConfigDataLocation> getMandatoryImports(ConfigDataEnvironmentContributor contributor) {
+	/**
+     * Retrieves the set of mandatory imports from the given ConfigDataEnvironmentContributor.
+     * 
+     * @param contributor the ConfigDataEnvironmentContributor to retrieve the imports from
+     * @return the set of mandatory ConfigDataLocation imports
+     */
+    private Set<ConfigDataLocation> getMandatoryImports(ConfigDataEnvironmentContributor contributor) {
 		List<ConfigDataLocation> imports = contributor.getImports();
 		Set<ConfigDataLocation> mandatoryLocations = new LinkedHashSet<>(imports.size());
 		for (ConfigDataLocation location : imports) {

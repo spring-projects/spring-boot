@@ -59,16 +59,33 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 		ENCODERS = Collections.unmodifiableMap(encoders);
 	}
 
-	public EncodePasswordCommand() {
+	/**
+     * Constructor for the EncodePasswordCommand class.
+     * 
+     * @param commandName The name of the command.
+     * @param commandDescription The description of the command.
+     * @param optionHandler The option handler for the command.
+     */
+    public EncodePasswordCommand() {
 		super("encodepassword", "Encode a password for use with Spring Security", new EncodePasswordOptionHandler());
 	}
 
-	@Override
+	/**
+     * Returns the usage help for the EncodePasswordCommand.
+     * 
+     * @return the usage help string in the format "[options] <password to encode>"
+     */
+    @Override
 	public String getUsageHelp() {
 		return "[options] <password to encode>";
 	}
 
-	@Override
+	/**
+     * Returns a collection of help examples for the getExamples() method.
+     *
+     * @return a collection of HelpExample objects representing different usage examples
+     */
+    @Override
 	public Collection<HelpExample> getExamples() {
 		List<HelpExample> examples = new ArrayList<>();
 		examples.add(new HelpExample("To encode a password with the default (bcrypt) encoder",
@@ -77,11 +94,21 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 		return examples;
 	}
 
-	private static final class EncodePasswordOptionHandler extends OptionHandler {
+	/**
+     * EncodePasswordOptionHandler class.
+     */
+    private static final class EncodePasswordOptionHandler extends OptionHandler {
 
 		private OptionSpec<String> algorithm;
 
-		@Override
+		/**
+         * Sets the options for encoding the password.
+         * 
+         * @param algorithm
+         *            The algorithm to use. Supported algorithms: algorithm, a. The default algorithm uses bcrypt.
+         * @return The EncodePasswordOptionHandler instance.
+         */
+        @Override
 		protected void options() {
 			this.algorithm = option(Arrays.asList("algorithm", "a"),
 					"The algorithm to use. Supported algorithms: "
@@ -91,7 +118,13 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 				.defaultsTo("default");
 		}
 
-		@Override
+		/**
+         * Executes the run method with the given options.
+         * 
+         * @param options the options provided to the method
+         * @return the exit status of the method
+         */
+        @Override
 		protected ExitStatus run(OptionSet options) {
 			if (options.nonOptionArguments().size() != 1) {
 				Log.error("A single password option must be provided");

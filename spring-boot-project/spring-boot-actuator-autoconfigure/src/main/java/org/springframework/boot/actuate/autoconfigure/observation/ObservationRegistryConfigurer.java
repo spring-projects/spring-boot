@@ -51,7 +51,18 @@ class ObservationRegistryConfigurer {
 
 	private final ObjectProvider<ObservationFilter> observationFilters;
 
-	ObservationRegistryConfigurer(ObjectProvider<ObservationRegistryCustomizer<?>> customizers,
+	/**
+     * Constructs a new ObservationRegistryConfigurer with the specified customizers, observation predicates,
+     * observation conventions, observation handlers, observation handler grouping, and observation filters.
+     *
+     * @param customizers the customizers to be applied to the observation registry
+     * @param observationPredicates the observation predicates to be used for filtering observations
+     * @param observationConventions the observation conventions to be applied to the observation registry
+     * @param observationHandlers the observation handlers to be registered with the observation registry
+     * @param observationHandlerGrouping the observation handler grouping to be used for grouping observation handlers
+     * @param observationFilters the observation filters to be applied to the observation registry
+     */
+    ObservationRegistryConfigurer(ObjectProvider<ObservationRegistryCustomizer<?>> customizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
@@ -65,7 +76,13 @@ class ObservationRegistryConfigurer {
 		this.observationFilters = observationFilters;
 	}
 
-	void configure(ObservationRegistry registry) {
+	/**
+     * Configures the ObservationRegistry by registering observation predicates, global observation conventions,
+     * handlers, filters, and applying customizations.
+     * 
+     * @param registry the ObservationRegistry to be configured
+     */
+    void configure(ObservationRegistry registry) {
 		registerObservationPredicates(registry);
 		registerGlobalObservationConventions(registry);
 		registerHandlers(registry);
@@ -73,31 +90,63 @@ class ObservationRegistryConfigurer {
 		customize(registry);
 	}
 
-	private void registerHandlers(ObservationRegistry registry) {
+	/**
+     * Registers the observation handlers with the given observation registry.
+     * 
+     * @param registry the observation registry to register the handlers with
+     */
+    private void registerHandlers(ObservationRegistry registry) {
 		this.observationHandlerGrouping.ifAvailable(
 				(grouping) -> grouping.apply(asOrderedList(this.observationHandlers), registry.observationConfig()));
 	}
 
-	private void registerObservationPredicates(ObservationRegistry registry) {
+	/**
+     * Registers the observation predicates in the given {@link ObservationRegistry}.
+     * 
+     * @param registry the {@link ObservationRegistry} to register the observation predicates in
+     */
+    private void registerObservationPredicates(ObservationRegistry registry) {
 		this.observationPredicates.orderedStream().forEach(registry.observationConfig()::observationPredicate);
 	}
 
-	private void registerGlobalObservationConventions(ObservationRegistry registry) {
+	/**
+     * Registers the global observation conventions in the provided {@link ObservationRegistry}.
+     * 
+     * @param registry the {@link ObservationRegistry} to register the observation conventions in
+     */
+    private void registerGlobalObservationConventions(ObservationRegistry registry) {
 		this.observationConventions.orderedStream().forEach(registry.observationConfig()::observationConvention);
 	}
 
-	private void registerFilters(ObservationRegistry registry) {
+	/**
+     * Registers the observation filters in the given observation registry.
+     * 
+     * @param registry the observation registry to register the filters in
+     */
+    private void registerFilters(ObservationRegistry registry) {
 		this.observationFilters.orderedStream().forEach(registry.observationConfig()::observationFilter);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Customizes the given ObservationRegistry by invoking the customize method of each registered customizer.
+     * 
+     * @param registry the ObservationRegistry to be customized
+     */
+    @SuppressWarnings("unchecked")
 	private void customize(ObservationRegistry registry) {
 		LambdaSafe.callbacks(ObservationRegistryCustomizer.class, asOrderedList(this.customizers), registry)
 			.withLogger(ObservationRegistryConfigurer.class)
 			.invoke((customizer) -> customizer.customize(registry));
 	}
 
-	private <T> List<T> asOrderedList(ObjectProvider<T> provider) {
+	/**
+     * Converts the given ObjectProvider into an ordered list.
+     * 
+     * @param provider the ObjectProvider to convert
+     * @return an ordered list containing the elements from the ObjectProvider
+     * @param <T> the type of elements in the ObjectProvider
+     */
+    private <T> List<T> asOrderedList(ObjectProvider<T> provider) {
 		return provider.orderedStream().toList();
 	}
 

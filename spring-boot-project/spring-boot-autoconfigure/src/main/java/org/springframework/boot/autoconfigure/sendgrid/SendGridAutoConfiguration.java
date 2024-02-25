@@ -44,7 +44,13 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(SendGridProperties.class)
 public class SendGridAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a SendGrid bean if no existing bean of type SendGridAPI is found.
+     * 
+     * @param properties the SendGridProperties object containing the API key and proxy configuration
+     * @return a SendGrid object with the specified API key and optional proxy configuration
+     */
+    @Bean
 	@ConditionalOnMissingBean(SendGridAPI.class)
 	public SendGrid sendGrid(SendGridProperties properties) {
 		if (properties.isProxyConfigured()) {

@@ -32,7 +32,12 @@ public class AnnotationProcessorPlugin implements Plugin<Project> {
 
 	private static final String JAR_TYPE = "annotation-processor";
 
-	@Override
+	/**
+     * Applies the plugin to the given project.
+     * 
+     * @param project the project to apply the plugin to
+     */
+    @Override
 	public void apply(Project project) {
 		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
 			jar.manifest((manifest) -> {

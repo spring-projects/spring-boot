@@ -18,9 +18,18 @@ package org.test;
 
 import java.util.Arrays;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args the command line arguments passed to the program
+     * @throws IllegalArgumentException if the active profile argument is missing or invalid
+     */
+    public static void main(String[] args) {
 		if (args.length < 1) {
 			throw new IllegalArgumentException("Missing active profile argument " + Arrays.toString(args));
 		}

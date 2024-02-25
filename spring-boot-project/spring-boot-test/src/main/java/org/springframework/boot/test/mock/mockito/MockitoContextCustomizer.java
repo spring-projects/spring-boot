@@ -33,11 +33,22 @@ class MockitoContextCustomizer implements ContextCustomizer {
 
 	private final Set<Definition> definitions;
 
-	MockitoContextCustomizer(Set<? extends Definition> definitions) {
+	/**
+     * Constructs a new MockitoContextCustomizer with the given set of definitions.
+     * 
+     * @param definitions the set of definitions to be used by the customizer
+     */
+    MockitoContextCustomizer(Set<? extends Definition> definitions) {
 		this.definitions = new LinkedHashSet<>(definitions);
 	}
 
-	@Override
+	/**
+     * Customize the application context by registering Mockito post processors.
+     * 
+     * @param context the configurable application context
+     * @param mergedContextConfiguration the merged context configuration
+     */
+    @Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
 		if (context instanceof BeanDefinitionRegistry registry) {
@@ -45,7 +56,13 @@ class MockitoContextCustomizer implements ContextCustomizer {
 		}
 	}
 
-	@Override
+	/**
+     * Compares this MockitoContextCustomizer object to the specified object.
+     * 
+     * @param obj the object to compare to
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -57,7 +74,13 @@ class MockitoContextCustomizer implements ContextCustomizer {
 		return this.definitions.equals(other.definitions);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this MockitoContextCustomizer object.
+     * The hash code is generated based on the hash code of the definitions field.
+     *
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return this.definitions.hashCode();
 	}

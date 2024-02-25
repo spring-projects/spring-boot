@@ -35,16 +35,32 @@ public class UnboundConfigurationPropertiesException extends RuntimeException {
 
 	private final Set<ConfigurationProperty> unboundProperties;
 
-	public UnboundConfigurationPropertiesException(Set<ConfigurationProperty> unboundProperties) {
+	/**
+     * Constructs a new UnboundConfigurationPropertiesException with the specified set of unbound properties.
+     * 
+     * @param unboundProperties the set of unbound properties
+     */
+    public UnboundConfigurationPropertiesException(Set<ConfigurationProperty> unboundProperties) {
 		super(buildMessage(unboundProperties));
 		this.unboundProperties = Collections.unmodifiableSet(unboundProperties);
 	}
 
-	public Set<ConfigurationProperty> getUnboundProperties() {
+	/**
+     * Returns a set of unbound configuration properties.
+     * 
+     * @return the set of unbound configuration properties
+     */
+    public Set<ConfigurationProperty> getUnboundProperties() {
 		return this.unboundProperties;
 	}
 
-	private static String buildMessage(Set<ConfigurationProperty> unboundProperties) {
+	/**
+     * Builds a message indicating the unbound properties.
+     * 
+     * @param unboundProperties the set of unbound properties
+     * @return the message indicating the unbound properties
+     */
+    private static String buildMessage(Set<ConfigurationProperty> unboundProperties) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("The elements [");
 		String message = unboundProperties.stream().map((p) -> p.getName().toString()).collect(Collectors.joining(","));

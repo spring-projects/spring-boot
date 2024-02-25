@@ -70,12 +70,24 @@ public enum JavaVersion {
 
 	private final boolean available;
 
-	JavaVersion(String name, Class<?> clazz, String methodName) {
+	/**
+     * Constructs a new JavaVersion object with the specified name, class, and method name.
+     * 
+     * @param name the name of the Java version
+     * @param clazz the class to check for the method
+     * @param methodName the name of the method to check for
+     */
+    JavaVersion(String name, Class<?> clazz, String methodName) {
 		this.name = name;
 		this.available = ClassUtils.hasMethod(clazz, methodName);
 	}
 
-	@Override
+	/**
+     * Returns the string representation of the object.
+     *
+     * @return the name of the object
+     */
+    @Override
 	public String toString() {
 		return this.name;
 	}

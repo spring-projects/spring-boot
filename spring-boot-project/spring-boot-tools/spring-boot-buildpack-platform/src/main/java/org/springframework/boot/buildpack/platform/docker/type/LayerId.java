@@ -34,7 +34,14 @@ public final class LayerId {
 
 	private final String hash;
 
-	private LayerId(String value, String algorithm, String hash) {
+	/**
+     * Constructs a new LayerId with the specified value, algorithm, and hash.
+     * 
+     * @param value the value of the LayerId
+     * @param algorithm the algorithm used to generate the LayerId
+     * @param hash the hash value of the LayerId
+     */
+    private LayerId(String value, String algorithm, String hash) {
 		this.value = value;
 		this.algorithm = algorithm;
 		this.hash = hash;
@@ -56,7 +63,13 @@ public final class LayerId {
 		return this.hash;
 	}
 
-	@Override
+	/**
+     * Compares this LayerId object to the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return true if the specified object is equal to this LayerId object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -67,12 +80,22 @@ public final class LayerId {
 		return this.value.equals(((LayerId) obj).value);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this LayerId object.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return this.value.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the LayerId object.
+     *
+     * @return the string representation of the LayerId object
+     */
+    @Override
 	public String toString() {
 		return this.value;
 	}

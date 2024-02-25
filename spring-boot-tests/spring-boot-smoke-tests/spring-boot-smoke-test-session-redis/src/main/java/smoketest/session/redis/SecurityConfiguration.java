@@ -33,7 +33,14 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration(proxyBeanMethods = false)
 class SecurityConfiguration {
 
-	@Bean
+	/**
+     * Configures the security filter chain for managing security in the application.
+     * 
+     * @param http the HttpSecurity object used for configuring security
+     * @return the SecurityFilterChain object representing the configured security filter chain
+     * @throws Exception if an error occurs during configuration
+     */
+    @Bean
 	SecurityFilterChain managementSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((requests) -> {
 			requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();

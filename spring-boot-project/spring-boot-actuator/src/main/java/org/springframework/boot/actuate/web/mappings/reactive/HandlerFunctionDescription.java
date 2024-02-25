@@ -28,17 +28,33 @@ public class HandlerFunctionDescription {
 
 	private final String className;
 
-	HandlerFunctionDescription(HandlerFunction<?> handlerFunction) {
+	/**
+     * Sets the class name of the given handler function.
+     * 
+     * @param handlerFunction the handler function to get the class name from
+     */
+    HandlerFunctionDescription(HandlerFunction<?> handlerFunction) {
 		this.className = getHandlerFunctionClassName(handlerFunction);
 	}
 
-	private static String getHandlerFunctionClassName(HandlerFunction<?> handlerFunction) {
+	/**
+     * Returns the class name of the given HandlerFunction.
+     * 
+     * @param handlerFunction the HandlerFunction to get the class name for
+     * @return the class name of the HandlerFunction
+     */
+    private static String getHandlerFunctionClassName(HandlerFunction<?> handlerFunction) {
 		Class<?> functionClass = handlerFunction.getClass();
 		String canonicalName = functionClass.getCanonicalName();
 		return (canonicalName != null) ? canonicalName : functionClass.getName();
 	}
 
-	public String getClassName() {
+	/**
+     * Returns the name of the class.
+     *
+     * @return the name of the class
+     */
+    public String getClassName() {
 		return this.className;
 	}
 

@@ -57,11 +57,28 @@ public class JmxAutoConfiguration {
 
 	private final JmxProperties properties;
 
-	public JmxAutoConfiguration(JmxProperties properties) {
+	/**
+     * Constructs a new JmxAutoConfiguration with the specified JmxProperties.
+     *
+     * @param properties the JmxProperties to be used for configuration
+     */
+    public JmxAutoConfiguration(JmxProperties properties) {
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Creates an instance of {@link AnnotationMBeanExporter} if no other bean of type {@link MBeanExporter} is present in the application context.
+     * The created exporter is configured with the provided {@link ObjectNamingStrategy} and {@link BeanFactory}.
+     * The exporter's registration policy is set based on the configuration properties.
+     * The exporter's naming strategy is set to the provided naming strategy.
+     * If a server bean name is specified in the configuration properties, the exporter's server is set to the MBeanServer bean with that name.
+     * The exporter's ensure unique runtime object names flag is set based on the configuration properties.
+     * 
+     * @param namingStrategy the object naming strategy to be used by the exporter
+     * @param beanFactory the bean factory to be used by the exporter
+     * @return the created {@link AnnotationMBeanExporter} instance
+     */
+    @Bean
 	@Primary
 	@ConditionalOnMissingBean(value = MBeanExporter.class, search = SearchStrategy.CURRENT)
 	public AnnotationMBeanExporter mbeanExporter(ObjectNamingStrategy namingStrategy, BeanFactory beanFactory) {
@@ -76,7 +93,14 @@ public class JmxAutoConfiguration {
 		return exporter;
 	}
 
-	@Bean
+	/**
+     * Creates an instance of {@link ParentAwareNamingStrategy} as the default {@link ObjectNamingStrategy} bean if no other bean of type {@link ObjectNamingStrategy} is present.
+     * 
+     * The {@link ParentAwareNamingStrategy} is initialized with an {@link AnnotationJmxAttributeSource} and configured with the default domain and unique runtime object names based on the properties.
+     * 
+     * @return the created {@link ParentAwareNamingStrategy} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(value = ObjectNamingStrategy.class, search = SearchStrategy.CURRENT)
 	public ParentAwareNamingStrategy objectNamingStrategy() {
 		ParentAwareNamingStrategy namingStrategy = new ParentAwareNamingStrategy(new AnnotationJmxAttributeSource());
@@ -88,7 +112,13 @@ public class JmxAutoConfiguration {
 		return namingStrategy;
 	}
 
-	@Bean
+	/**
+     * Creates and returns an instance of MBeanServer if it does not already exist.
+     * If an existing MBeanServer is found, it will be located and returned.
+     * 
+     * @return the MBeanServer instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public MBeanServer mbeanServer() {
 		MBeanServerFactoryBean factory = new MBeanServerFactoryBean();

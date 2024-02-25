@@ -38,27 +38,56 @@ class FilteredReactiveWebContextResource extends AbstractResource {
 
 	private final String path;
 
-	FilteredReactiveWebContextResource(String path) {
+	/**
+     * Constructs a new FilteredReactiveWebContextResource with the specified path.
+     *
+     * @param path the path of the resource
+     */
+    FilteredReactiveWebContextResource(String path) {
 		this.path = path;
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the resource exists.
+     *
+     * @return {@code true} if the resource exists, {@code false} otherwise
+     */
+    @Override
 	public boolean exists() {
 		return false;
 	}
 
-	@Override
+	/**
+     * Creates a new resource by resolving the given relative path against the current resource's path.
+     * 
+     * @param relativePath the relative path to resolve against the current resource's path
+     * @return the newly created resource
+     * @throws IOException if an I/O error occurs while creating the resource
+     */
+    @Override
 	public Resource createRelative(String relativePath) throws IOException {
 		String pathToUse = StringUtils.applyRelativePath(this.path, relativePath);
 		return new FilteredReactiveWebContextResource(pathToUse);
 	}
 
-	@Override
+	/**
+     * Returns the description of the ReactiveWebContext resource.
+     * 
+     * @return the description of the ReactiveWebContext resource
+     */
+    @Override
 	public String getDescription() {
 		return "ReactiveWebContext resource [" + this.path + "]";
 	}
 
-	@Override
+	/**
+     * Returns an input stream for reading the content of this resource.
+     *
+     * @return an input stream for reading the content of this resource
+     * @throws IOException if an I/O error occurs while opening the input stream
+     * @throws FileNotFoundException if the resource does not exist
+     */
+    @Override
 	public InputStream getInputStream() throws IOException {
 		throw new FileNotFoundException(getDescription() + " cannot be opened because it does not exist");
 	}

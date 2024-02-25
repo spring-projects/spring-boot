@@ -21,11 +21,20 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.PropertySource;
 
+/**
+ * SampleWarApplication class.
+ */
 @SpringBootApplication
 @PropertySource("WEB-INF/custom.properties")
 public class SampleWarApplication extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by calling the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleWarApplication.class, args);
 	}
 

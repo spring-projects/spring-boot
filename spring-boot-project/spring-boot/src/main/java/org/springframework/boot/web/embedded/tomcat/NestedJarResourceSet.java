@@ -55,7 +55,16 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 
 	private volatile Boolean multiRelease;
 
-	NestedJarResourceSet(URL url, WebResourceRoot root, String webAppMount, String internalPath)
+	/**
+     * Constructs a new NestedJarResourceSet with the specified URL, WebResourceRoot, webAppMount, and internalPath.
+     * 
+     * @param url the URL of the nested JAR file
+     * @param root the WebResourceRoot to which this resource set belongs
+     * @param webAppMount the mount point of the resource set within the web application
+     * @param internalPath the internal path within the nested JAR file
+     * @throws IllegalArgumentException if any of the parameters are invalid
+     */
+    NestedJarResourceSet(URL url, WebResourceRoot root, String webAppMount, String internalPath)
 			throws IllegalArgumentException {
 		this.url = url;
 		setRoot(root);
@@ -72,12 +81,28 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 		}
 	}
 
-	@Override
+	/**
+     * Creates a new WebResource object for the given JarEntry, webAppPath, and Manifest.
+     * 
+     * @param jarEntry The JarEntry object representing the entry in the JAR file.
+     * @param webAppPath The path of the resource within the web application.
+     * @param manifest The Manifest object associated with the JAR file.
+     * @return A new WebResource object representing the resource.
+     */
+    @Override
 	protected WebResource createArchiveResource(JarEntry jarEntry, String webAppPath, Manifest manifest) {
 		return new JarResource(this, webAppPath, getBaseUrlString(), jarEntry);
 	}
 
-	@Override
+	/**
+     * Initializes the internal state of the NestedJarResourceSet.
+     * This method is called during the initialization phase of the resource set's lifecycle.
+     * It establishes a connection to the JAR file and sets the manifest and base URL properties.
+     * If the connection does not use caches, the JAR file is closed after the necessary information is retrieved.
+     * 
+     * @throws LifecycleException if an error occurs during the initialization process
+     */
+    @Override
 	protected void initInternal() throws LifecycleException {
 		try {
 			JarURLConnection connection = connect();
@@ -96,7 +121,13 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 		}
 	}
 
-	@Override
+	/**
+     * Opens the JAR file associated with this NestedJarResourceSet.
+     * 
+     * @return the opened JarFile object
+     * @throws IOException if an I/O error occurs while opening the JAR file
+     */
+    @Override
 	protected JarFile openJarFile() throws IOException {
 		synchronized (this.archiveLock) {
 			if (this.archive == null) {
@@ -109,14 +140,25 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 		}
 	}
 
-	@Override
+	/**
+     * Decreases the usage count of the JAR file and closes it.
+     * This method is synchronized to ensure thread safety.
+     * 
+     * @throws IllegalStateException if the JAR file is already closed
+     */
+    @Override
 	protected void closeJarFile() {
 		synchronized (this.archiveLock) {
 			this.archiveUseCount--;
 		}
 	}
 
-	@Override
+	/**
+     * Returns whether this NestedJarResourceSet is a multi-release JAR.
+     * 
+     * @return true if this NestedJarResourceSet is a multi-release JAR, false otherwise
+     */
+    @Override
 	protected boolean isMultiRelease() {
 		if (this.multiRelease == null) {
 			synchronized (this.archiveLock) {
@@ -131,7 +173,14 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 		return this.multiRelease.booleanValue();
 	}
 
-	@Override
+	/**
+     * Performs garbage collection on the NestedJarResourceSet.
+     * This method is responsible for closing the archive if it is not being used and the useCaches flag is set to false.
+     * It also resets the archive and archiveEntries variables to null.
+     * 
+     * @throws IOException if an I/O error occurs while closing the archive
+     */
+    @Override
 	public void gc() {
 		synchronized (this.archiveLock) {
 			if (this.archive != null && this.archiveUseCount == 0) {
@@ -149,7 +198,14 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 		}
 	}
 
-	private JarURLConnection connect() throws IOException {
+	/**
+     * Connects to the URL and returns a JarURLConnection.
+     * 
+     * @return the JarURLConnection
+     * @throws IOException if an I/O error occurs while connecting to the URL
+     * @throws IllegalStateException if the URL does not return a JarURLConnection
+     */
+    private JarURLConnection connect() throws IOException {
 		URLConnection connection = this.url.openConnection();
 		ResourceUtils.useCachesIfNecessary(connection);
 		Assert.state(connection instanceof JarURLConnection,

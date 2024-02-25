@@ -42,15 +42,30 @@ public class DevToolsProperties {
 	@NestedConfigurationProperty
 	private final RemoteDevToolsProperties remote = new RemoteDevToolsProperties();
 
-	public Restart getRestart() {
+	/**
+     * Returns the restart object.
+     * 
+     * @return the restart object
+     */
+    public Restart getRestart() {
 		return this.restart;
 	}
 
-	public Livereload getLivereload() {
+	/**
+     * Returns the Livereload object associated with this DevToolsProperties instance.
+     *
+     * @return the Livereload object
+     */
+    public Livereload getLivereload() {
 		return this.livereload;
 	}
 
-	public RemoteDevToolsProperties getRemote() {
+	/**
+     * Returns the remote development tools properties.
+     *
+     * @return the remote development tools properties
+     */
+    public RemoteDevToolsProperties getRemote() {
 		return this.remote;
 	}
 
@@ -106,15 +121,30 @@ public class DevToolsProperties {
 		 */
 		private boolean logConditionEvaluationDelta = true;
 
-		public boolean isEnabled() {
+		/**
+         * Returns the current status of the enabled flag.
+         *
+         * @return true if the enabled flag is set, false otherwise.
+         */
+        public boolean isEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(boolean enabled) {
+		/**
+         * Sets the enabled status of the Restart object.
+         * 
+         * @param enabled the new enabled status to be set
+         */
+        public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
-		public String[] getAllExclude() {
+		/**
+         * Retrieves all exclude values.
+         * 
+         * @return an array of strings containing all exclude values
+         */
+        public String[] getAllExclude() {
 			List<String> allExclude = new ArrayList<>();
 			if (StringUtils.hasText(this.exclude)) {
 				allExclude.addAll(StringUtils.commaDelimitedListToSet(this.exclude));
@@ -125,59 +155,129 @@ public class DevToolsProperties {
 			return StringUtils.toStringArray(allExclude);
 		}
 
-		public String getExclude() {
+		/**
+         * Returns the value of the exclude property.
+         *
+         * @return the value of the exclude property
+         */
+        public String getExclude() {
 			return this.exclude;
 		}
 
-		public void setExclude(String exclude) {
+		/**
+         * Sets the exclude value for the Restart class.
+         * 
+         * @param exclude the exclude value to be set
+         */
+        public void setExclude(String exclude) {
 			this.exclude = exclude;
 		}
 
-		public String getAdditionalExclude() {
+		/**
+         * Returns the additional exclude value.
+         * 
+         * @return the additional exclude value
+         */
+        public String getAdditionalExclude() {
 			return this.additionalExclude;
 		}
 
-		public void setAdditionalExclude(String additionalExclude) {
+		/**
+         * Sets the additional exclude value.
+         * 
+         * @param additionalExclude the additional exclude value to be set
+         */
+        public void setAdditionalExclude(String additionalExclude) {
 			this.additionalExclude = additionalExclude;
 		}
 
-		public Duration getPollInterval() {
+		/**
+         * Returns the poll interval for restarting.
+         *
+         * @return the poll interval for restarting
+         */
+        public Duration getPollInterval() {
 			return this.pollInterval;
 		}
 
-		public void setPollInterval(Duration pollInterval) {
+		/**
+         * Sets the poll interval for restarting.
+         * 
+         * @param pollInterval the duration between each restart attempt
+         */
+        public void setPollInterval(Duration pollInterval) {
 			this.pollInterval = pollInterval;
 		}
 
-		public Duration getQuietPeriod() {
+		/**
+         * Returns the quiet period duration.
+         *
+         * @return the quiet period duration
+         */
+        public Duration getQuietPeriod() {
 			return this.quietPeriod;
 		}
 
-		public void setQuietPeriod(Duration quietPeriod) {
+		/**
+         * Sets the quiet period for restarting.
+         * 
+         * @param quietPeriod the duration of the quiet period
+         */
+        public void setQuietPeriod(Duration quietPeriod) {
 			this.quietPeriod = quietPeriod;
 		}
 
-		public String getTriggerFile() {
+		/**
+         * Returns the trigger file path.
+         * 
+         * @return the trigger file path
+         */
+        public String getTriggerFile() {
 			return this.triggerFile;
 		}
 
-		public void setTriggerFile(String triggerFile) {
+		/**
+         * Sets the trigger file for restarting the application.
+         * 
+         * @param triggerFile the path of the trigger file
+         */
+        public void setTriggerFile(String triggerFile) {
 			this.triggerFile = triggerFile;
 		}
 
-		public List<File> getAdditionalPaths() {
+		/**
+         * Returns the additional paths.
+         * 
+         * @return the additional paths as a List of File objects
+         */
+        public List<File> getAdditionalPaths() {
 			return this.additionalPaths;
 		}
 
-		public void setAdditionalPaths(List<File> additionalPaths) {
+		/**
+         * Sets the additional paths for the Restart class.
+         * 
+         * @param additionalPaths the list of additional paths to be set
+         */
+        public void setAdditionalPaths(List<File> additionalPaths) {
 			this.additionalPaths = additionalPaths;
 		}
 
-		public boolean isLogConditionEvaluationDelta() {
+		/**
+         * Returns the value of the logConditionEvaluationDelta field.
+         * 
+         * @return true if condition evaluation delta is logged, false otherwise
+         */
+        public boolean isLogConditionEvaluationDelta() {
 			return this.logConditionEvaluationDelta;
 		}
 
-		public void setLogConditionEvaluationDelta(boolean logConditionEvaluationDelta) {
+		/**
+         * Sets the flag to enable or disable logging of condition evaluation delta.
+         * 
+         * @param logConditionEvaluationDelta true to enable logging, false to disable logging
+         */
+        public void setLogConditionEvaluationDelta(boolean logConditionEvaluationDelta) {
 			this.logConditionEvaluationDelta = logConditionEvaluationDelta;
 		}
 
@@ -198,19 +298,39 @@ public class DevToolsProperties {
 		 */
 		private int port = 35729;
 
-		public boolean isEnabled() {
+		/**
+         * Returns the current status of the Livereload feature.
+         * 
+         * @return true if Livereload is enabled, false otherwise
+         */
+        public boolean isEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(boolean enabled) {
+		/**
+         * Sets the enabled status of Livereload.
+         * 
+         * @param enabled the enabled status to be set
+         */
+        public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
-		public int getPort() {
+		/**
+         * Returns the port number used by the Livereload server.
+         *
+         * @return the port number
+         */
+        public int getPort() {
 			return this.port;
 		}
 
-		public void setPort(int port) {
+		/**
+         * Sets the port number for the Livereload server.
+         * 
+         * @param port the port number to set
+         */
+        public void setPort(int port) {
 			this.port = port;
 		}
 

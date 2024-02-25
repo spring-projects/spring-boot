@@ -67,7 +67,13 @@ public class PlatformPlaceholderDatabaseDriverResolver {
 		this(placeholder, Collections.emptyMap());
 	}
 
-	private PlatformPlaceholderDatabaseDriverResolver(String placeholder, Map<DatabaseDriver, String> driverMappings) {
+	/**
+     * Constructs a new PlatformPlaceholderDatabaseDriverResolver with the specified placeholder and driver mappings.
+     * 
+     * @param placeholder the placeholder to be used for resolving the database driver
+     * @param driverMappings a map containing the database drivers and their corresponding placeholders
+     */
+    private PlatformPlaceholderDatabaseDriverResolver(String placeholder, Map<DatabaseDriver, String> driverMappings) {
 		this.placeholder = placeholder;
 		this.driverMappings = driverMappings;
 	}
@@ -110,7 +116,14 @@ public class PlatformPlaceholderDatabaseDriverResolver {
 		return resolveAll(() -> platform, values);
 	}
 
-	private List<String> resolveAll(Supplier<String> platformProvider, String... values) {
+	/**
+     * Resolves all the values in the given array by replacing the placeholder with the platform provided by the platformProvider.
+     * 
+     * @param platformProvider a supplier that provides the platform value
+     * @param values the array of values to be resolved
+     * @return a list of resolved values
+     */
+    private List<String> resolveAll(Supplier<String> platformProvider, String... values) {
 		if (ObjectUtils.isEmpty(values)) {
 			return Collections.emptyList();
 		}
@@ -128,13 +141,27 @@ public class PlatformPlaceholderDatabaseDriverResolver {
 		return Collections.unmodifiableList(resolved);
 	}
 
-	private String determinePlatform(DataSource dataSource) {
+	/**
+     * Determines the platform of the given data source.
+     * 
+     * @param dataSource the data source to determine the platform for
+     * @return the platform of the data source
+     * @throws IllegalStateException if the database type cannot be detected
+     */
+    private String determinePlatform(DataSource dataSource) {
 		DatabaseDriver databaseDriver = getDatabaseDriver(dataSource);
 		Assert.state(databaseDriver != DatabaseDriver.UNKNOWN, "Unable to detect database type");
 		return this.driverMappings.getOrDefault(databaseDriver, databaseDriver.getId());
 	}
 
-	DatabaseDriver getDatabaseDriver(DataSource dataSource) {
+	/**
+     * Retrieves the DatabaseDriver based on the provided DataSource.
+     * 
+     * @param dataSource the DataSource to retrieve the DatabaseDriver from
+     * @return the DatabaseDriver associated with the DataSource
+     * @throws IllegalStateException if failed to determine the DatabaseDriver
+     */
+    DatabaseDriver getDatabaseDriver(DataSource dataSource) {
 		try {
 			String productName = JdbcUtils.commonDatabaseName(
 					JdbcUtils.extractDatabaseMetaData(dataSource, DatabaseMetaData::getDatabaseProductName));

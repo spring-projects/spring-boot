@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.howto.actuator.maphealthindicatorstometrics;
 
+/**
+ * MetricsHealthMicrometerExport class.
+ */
 public class MetricsHealthMicrometerExport {
 
 }

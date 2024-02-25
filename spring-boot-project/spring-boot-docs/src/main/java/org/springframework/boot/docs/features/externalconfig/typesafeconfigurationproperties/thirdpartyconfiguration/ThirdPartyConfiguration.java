@@ -20,10 +20,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * ThirdPartyConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class ThirdPartyConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of AnotherComponent by reading the properties with the prefix "another" from the configuration.
+     * 
+     * @return a new instance of AnotherComponent
+     */
+    @Bean
 	@ConfigurationProperties(prefix = "another")
 	public AnotherComponent anotherComponent() {
 		return new AnotherComponent();

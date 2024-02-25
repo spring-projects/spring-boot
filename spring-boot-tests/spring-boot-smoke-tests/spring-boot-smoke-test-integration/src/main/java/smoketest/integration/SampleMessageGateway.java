@@ -18,6 +18,9 @@ package smoketest.integration;
 
 import org.springframework.integration.annotation.MessagingGateway;
 
+/**
+ * SampleMessageGateway interface.
+ */
 @MessagingGateway(defaultRequestChannel = "outputChannel")
 public interface SampleMessageGateway {
 

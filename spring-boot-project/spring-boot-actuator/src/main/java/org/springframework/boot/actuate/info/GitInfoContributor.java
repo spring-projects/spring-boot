@@ -38,20 +38,41 @@ import org.springframework.core.env.PropertySource;
 @ImportRuntimeHints(GitInfoContributorRuntimeHints.class)
 public class GitInfoContributor extends InfoPropertiesInfoContributor<GitProperties> {
 
-	public GitInfoContributor(GitProperties properties) {
+	/**
+     * Constructs a new GitInfoContributor with the specified GitProperties and default mode.
+     *
+     * @param properties the GitProperties object containing the Git information
+     */
+    public GitInfoContributor(GitProperties properties) {
 		this(properties, Mode.SIMPLE);
 	}
 
-	public GitInfoContributor(GitProperties properties, Mode mode) {
+	/**
+     * Constructs a new GitInfoContributor with the specified GitProperties and Mode.
+     * 
+     * @param properties the GitProperties object to use
+     * @param mode the Mode object to use
+     */
+    public GitInfoContributor(GitProperties properties, Mode mode) {
 		super(properties, mode);
 	}
 
-	@Override
+	/**
+     * Contributes Git information to the provided Info.Builder object.
+     * 
+     * @param builder the Info.Builder object to which the Git information is contributed
+     */
+    @Override
 	public void contribute(Info.Builder builder) {
 		builder.withDetail("git", generateContent());
 	}
 
-	@Override
+	/**
+     * Converts the GitInfoContributor's properties to a simple PropertySource.
+     * 
+     * @return the converted PropertySource
+     */
+    @Override
 	protected PropertySource<?> toSimplePropertySource() {
 		Properties props = new Properties();
 		copyIfSet(props, "branch");
@@ -74,11 +95,20 @@ public class GitInfoContributor extends InfoPropertiesInfoContributor<GitPropert
 		replaceValue(getNestedMap(content, "build"), "time", getProperties().getInstant("build.time"));
 	}
 
-	static class GitInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * GitInfoContributorRuntimeHints class.
+     */
+    static class GitInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
-		@Override
+		/**
+         * Registers the runtime hints for GitInfoContributor.
+         * 
+         * @param hints the runtime hints to be registered
+         * @param classLoader the class loader to be used for reflection
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), GitProperties.class);
 		}

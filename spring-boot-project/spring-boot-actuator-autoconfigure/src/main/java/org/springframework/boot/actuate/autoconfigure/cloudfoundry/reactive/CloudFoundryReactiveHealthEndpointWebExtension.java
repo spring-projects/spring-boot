@@ -42,16 +42,34 @@ public class CloudFoundryReactiveHealthEndpointWebExtension {
 
 	private final ReactiveHealthEndpointWebExtension delegate;
 
-	public CloudFoundryReactiveHealthEndpointWebExtension(ReactiveHealthEndpointWebExtension delegate) {
+	/**
+     * Constructs a new CloudFoundryReactiveHealthEndpointWebExtension with the specified delegate.
+     *
+     * @param delegate the ReactiveHealthEndpointWebExtension delegate
+     */
+    public CloudFoundryReactiveHealthEndpointWebExtension(ReactiveHealthEndpointWebExtension delegate) {
 		this.delegate = delegate;
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves the health status of the application.
+     *
+     * @param apiVersion the version of the API to use
+     * @return a Mono containing the health status of the application
+     */
+    @ReadOperation
 	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion) {
 		return this.delegate.health(apiVersion, null, SecurityContext.NONE, true);
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves the health status of the application.
+     *
+     * @param apiVersion The API version of the health endpoint.
+     * @param path The remaining path segments.
+     * @return A Mono containing the health status of the application.
+     */
+    @ReadOperation
 	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
 			@Selector(match = Match.ALL_REMAINING) String... path) {
 		return this.delegate.health(apiVersion, null, SecurityContext.NONE, true, path);

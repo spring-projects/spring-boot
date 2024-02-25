@@ -35,7 +35,12 @@ public class OrderedFormContentFilter extends FormContentFilter implements Order
 
 	private int order = DEFAULT_ORDER;
 
-	@Override
+	/**
+     * Returns the order value of this OrderedFormContentFilter.
+     *
+     * @return the order value of this OrderedFormContentFilter
+     */
+    @Override
 	public int getOrder() {
 		return this.order;
 	}

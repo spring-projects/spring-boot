@@ -34,20 +34,38 @@ public class OsInfoContributor implements InfoContributor {
 
 	private final OsInfo osInfo;
 
-	public OsInfoContributor() {
+	/**
+     * Constructs a new instance of the OsInfoContributor class.
+     * Initializes the osInfo object with a new instance of the OsInfo class.
+     */
+    public OsInfoContributor() {
 		this.osInfo = new OsInfo();
 	}
 
-	@Override
+	/**
+     * Contributes the operating system information to the provided Info.Builder object.
+     * 
+     * @param builder the Info.Builder object to which the operating system information is contributed
+     */
+    @Override
 	public void contribute(Info.Builder builder) {
 		builder.withDetail("os", this.osInfo);
 	}
 
-	static class OsInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * OsInfoContributorRuntimeHints class.
+     */
+    static class OsInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
-		@Override
+		/**
+         * Registers the runtime hints for the {@link OsInfo} class.
+         * 
+         * @param hints the runtime hints to be registered
+         * @param classLoader the class loader to be used for reflection
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), OsInfo.class);
 		}

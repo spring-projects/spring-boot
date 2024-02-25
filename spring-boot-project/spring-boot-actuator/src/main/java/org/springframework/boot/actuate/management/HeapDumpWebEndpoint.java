@@ -65,15 +65,31 @@ public class HeapDumpWebEndpoint {
 
 	private HeapDumper heapDumper;
 
-	public HeapDumpWebEndpoint() {
+	/**
+     * Constructs a new HeapDumpWebEndpoint with a specified timeout.
+     *
+     * @param timeout the timeout value in milliseconds
+     */
+    public HeapDumpWebEndpoint() {
 		this(TimeUnit.SECONDS.toMillis(10));
 	}
 
-	protected HeapDumpWebEndpoint(long timeout) {
+	/**
+     * Constructs a new HeapDumpWebEndpoint with the specified timeout.
+     *
+     * @param timeout the timeout value in milliseconds
+     */
+    protected HeapDumpWebEndpoint(long timeout) {
 		this.timeout = timeout;
 	}
 
-	@ReadOperation
+	/**
+     * Generates a heap dump and returns it as a resource.
+     *
+     * @param live a boolean value indicating whether to include only live objects in the heap dump
+     * @return a WebEndpointResponse containing the heap dump as a resource
+     */
+    @ReadOperation
 	public WebEndpointResponse<Resource> heapDump(@Nullable Boolean live) {
 		try {
 			if (this.lock.tryLock(this.timeout, TimeUnit.MILLISECONDS)) {
@@ -97,7 +113,15 @@ public class HeapDumpWebEndpoint {
 		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_TOO_MANY_REQUESTS);
 	}
 
-	private Resource dumpHeap(Boolean live) throws IOException, InterruptedException {
+	/**
+     * Dumps the heap and returns the resource containing the heap dump file.
+     * 
+     * @param live a boolean value indicating whether to include only live objects in the heap dump
+     * @return a Resource object representing the heap dump file
+     * @throws IOException if an I/O error occurs while dumping the heap
+     * @throws InterruptedException if the thread is interrupted while dumping the heap
+     */
+    private Resource dumpHeap(Boolean live) throws IOException, InterruptedException {
 		if (this.heapDumper == null) {
 			this.heapDumper = createHeapDumper();
 		}
@@ -150,7 +174,18 @@ public class HeapDumpWebEndpoint {
 
 		private final Method dumpHeapMethod;
 
-		@SuppressWarnings("unchecked")
+		/**
+         * Constructs a new instance of the HotSpotDiagnosticMXBeanHeapDumper class.
+         * 
+         * This constructor initializes the diagnosticMXBean and dumpHeapMethod fields.
+         * It attempts to resolve the class name "com.sun.management.HotSpotDiagnosticMXBean" using ClassUtils.resolveClassName.
+         * If successful, it retrieves the platform MXBean of type HotSpotDiagnosticMXBean using ManagementFactory.getPlatformMXBean.
+         * It also finds the dumpHeap method in the diagnosticMXBeanClass using ReflectionUtils.findMethod.
+         * 
+         * @throws HeapDumperUnavailableException if unable to locate HotSpotDiagnosticMXBean
+         * @since 1.0
+         */
+        @SuppressWarnings("unchecked")
 		protected HotSpotDiagnosticMXBeanHeapDumper() {
 			try {
 				Class<?> diagnosticMXBeanClass = ClassUtils
@@ -165,7 +200,14 @@ public class HeapDumpWebEndpoint {
 			}
 		}
 
-		@Override
+		/**
+         * Dumps the heap memory to a file.
+         * 
+         * @param live a boolean value indicating whether to dump only live objects or all objects
+         * @return the file containing the heap dump
+         * @throws IOException if an I/O error occurs while dumping the heap
+         */
+        @Override
 		public File dumpHeap(Boolean live) throws IOException {
 			File file = createTempFile();
 			ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean, file.getAbsolutePath(),
@@ -173,7 +215,14 @@ public class HeapDumpWebEndpoint {
 			return file;
 		}
 
-		private File createTempFile() throws IOException {
+		/**
+         * Creates a temporary file with a unique name based on the current date and time.
+         * The file name format is "heap-yyyy-MM-dd-HH-mm.hprof".
+         * 
+         * @return the created temporary file
+         * @throws IOException if an I/O error occurs while creating the file
+         */
+        private File createTempFile() throws IOException {
 			String date = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm").format(LocalDateTime.now());
 			File file = File.createTempFile("heap-" + date, ".hprof");
 			file.delete();
@@ -193,7 +242,21 @@ public class HeapDumpWebEndpoint {
 
 		private final Method dumpHeapMethod;
 
-		@SuppressWarnings("unchecked")
+		/**
+         * Constructs a new instance of the {@code OpenJ9DiagnosticsMXBeanHeapDumper} class.
+         * 
+         * This constructor initializes the {@code diagnosticMXBean} and {@code dumpHeapMethod} fields
+         * by resolving the class name "openj9.lang.management.OpenJ9DiagnosticsMXBean" and retrieving
+         * the platform MXBean instance using {@code ManagementFactory.getPlatformMXBean()}.
+         * 
+         * The {@code dumpHeapMethod} is also initialized by finding the method "triggerDumpToFile"
+         * in the {@code mxBeanClass} using {@code ReflectionUtils.findMethod()}.
+         * 
+         * @throws HeapDumperUnavailableException if unable to locate the {@code OpenJ9DiagnosticsMXBean}
+         * @see ManagementFactory#getPlatformMXBean(Class)
+         * @see ReflectionUtils#findMethod(Class, String, Class...)
+         */
+        @SuppressWarnings("unchecked")
 		private OpenJ9DiagnosticsMXBeanHeapDumper() {
 			try {
 				Class<?> mxBeanClass = ClassUtils.resolveClassName("openj9.lang.management.OpenJ9DiagnosticsMXBean",
@@ -207,7 +270,16 @@ public class HeapDumpWebEndpoint {
 			}
 		}
 
-		@Override
+		/**
+         * Dumps the heap to a file.
+         * 
+         * @param live a boolean value indicating whether to include only live objects in the heap dump
+         * @return a File object representing the heap dump file
+         * @throws IOException if an I/O error occurs while dumping the heap
+         * @throws InterruptedException if the thread is interrupted while dumping the heap
+         * @throws IllegalArgumentException if the live parameter is not null (OpenJ9DiagnosticsMXBean does not support live parameter)
+         */
+        @Override
 		public File dumpHeap(Boolean live) throws IOException, InterruptedException {
 			Assert.isNull(live, "OpenJ9DiagnosticsMXBean does not support live parameter when dumping the heap");
 			return new File(
@@ -221,21 +293,41 @@ public class HeapDumpWebEndpoint {
 	 */
 	protected static class HeapDumperUnavailableException extends RuntimeException {
 
-		public HeapDumperUnavailableException(String message, Throwable cause) {
+		/**
+         * Constructs a new HeapDumperUnavailableException with the specified detail message and cause.
+         *
+         * @param message the detail message (which is saved for later retrieval by the getMessage() method).
+         * @param cause the cause (which is saved for later retrieval by the getCause() method).
+         */
+        public HeapDumperUnavailableException(String message, Throwable cause) {
 			super(message, cause);
 		}
 
 	}
 
-	private static final class TemporaryFileSystemResource extends FileSystemResource {
+	/**
+     * TemporaryFileSystemResource class.
+     */
+    private static final class TemporaryFileSystemResource extends FileSystemResource {
 
 		private final Log logger = LogFactory.getLog(getClass());
 
-		private TemporaryFileSystemResource(File file) {
+		/**
+         * Constructs a new TemporaryFileSystemResource object with the specified file.
+         * 
+         * @param file the file to be used as the resource
+         */
+        private TemporaryFileSystemResource(File file) {
 			super(file);
 		}
 
-		@Override
+		/**
+         * Returns a readable byte channel for this resource.
+         * 
+         * @return a readable byte channel for this resource
+         * @throws IOException if an I/O error occurs
+         */
+        @Override
 		public ReadableByteChannel readableChannel() throws IOException {
 			ReadableByteChannel readableChannel = super.readableChannel();
 			return new ReadableByteChannel() {
@@ -258,7 +350,14 @@ public class HeapDumpWebEndpoint {
 			};
 		}
 
-		@Override
+		/**
+         * Returns an input stream for reading the contents of this resource.
+         * The input stream is wrapped in a FilterInputStream that overrides the close() method to also delete the underlying file.
+         * 
+         * @return an input stream for reading the contents of this resource
+         * @throws IOException if an I/O error occurs
+         */
+        @Override
 		public InputStream getInputStream() throws IOException {
 			return new FilterInputStream(super.getInputStream()) {
 
@@ -270,7 +369,13 @@ public class HeapDumpWebEndpoint {
 			};
 		}
 
-		private void closeThenDeleteFile(Closeable closeable) throws IOException {
+		/**
+         * Closes the given Closeable resource and then deletes the file associated with the resource.
+         * 
+         * @param closeable the Closeable resource to be closed
+         * @throws IOException if an I/O error occurs while closing the resource or deleting the file
+         */
+        private void closeThenDeleteFile(Closeable closeable) throws IOException {
 			try {
 				closeable.close();
 			}
@@ -279,7 +384,12 @@ public class HeapDumpWebEndpoint {
 			}
 		}
 
-		private void deleteFile() {
+		/**
+         * Deletes the file associated with this TemporaryFileSystemResource.
+         * 
+         * @throws IOException if an I/O error occurs while deleting the file
+         */
+        private void deleteFile() {
 			try {
 				Files.delete(getFile().toPath());
 			}
@@ -289,7 +399,12 @@ public class HeapDumpWebEndpoint {
 			}
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether this resource represents a file.
+         * 
+         * @return true if this resource represents a file, false otherwise
+         */
+        @Override
 		public boolean isFile() {
 			// Prevent zero-copy so we can delete the file on close
 			return false;

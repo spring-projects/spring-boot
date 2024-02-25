@@ -79,22 +79,46 @@ import org.springframework.core.io.ResourceLoader;
 @Import({ RabbitAnnotationDrivenConfiguration.class, RabbitStreamConfiguration.class })
 public class RabbitAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * RabbitConnectionFactoryCreator class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	protected static class RabbitConnectionFactoryCreator {
 
 		private final RabbitProperties properties;
 
-		protected RabbitConnectionFactoryCreator(RabbitProperties properties) {
+		/**
+         * Constructs a new RabbitConnectionFactoryCreator with the specified RabbitProperties.
+         *
+         * @param properties the RabbitProperties to be used by the RabbitConnectionFactoryCreator
+         */
+        protected RabbitConnectionFactoryCreator(RabbitProperties properties) {
 			this.properties = properties;
 		}
 
-		@Bean
+		/**
+         * Creates a RabbitConnectionDetails bean if no other bean of type RabbitConnectionDetails is present.
+         * 
+         * @return the RabbitConnectionDetails bean
+         */
+        @Bean
 		@ConditionalOnMissingBean(RabbitConnectionDetails.class)
 		RabbitConnectionDetails rabbitConnectionDetails() {
 			return new PropertiesRabbitConnectionDetails(this.properties);
 		}
 
-		@Bean
+		/**
+         * Creates a RabbitConnectionFactoryBeanConfigurer object with the given parameters.
+         * This method is annotated with @Bean and @ConditionalOnMissingBean, indicating that it will be used to create a bean if no other bean of the same type is present.
+         * 
+         * @param resourceLoader The resource loader used to load resources.
+         * @param connectionDetails The RabbitConnectionDetails object containing the connection details.
+         * @param credentialsProvider The CredentialsProvider object providing the credentials for the connection.
+         * @param credentialsRefreshService The CredentialsRefreshService object used to refresh the credentials.
+         * @param sslBundles The SslBundles object containing the SSL bundles for the connection.
+         * @return The RabbitConnectionFactoryBeanConfigurer object created with the given parameters.
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		RabbitConnectionFactoryBeanConfigurer rabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader,
 				RabbitConnectionDetails connectionDetails, ObjectProvider<CredentialsProvider> credentialsProvider,
@@ -107,7 +131,15 @@ public class RabbitAutoConfiguration {
 			return configurer;
 		}
 
-		@Bean
+		/**
+         * Configures the CachingConnectionFactory with the provided RabbitConnectionDetails and ConnectionNameStrategy.
+         * If a ConnectionNameStrategy is not provided, the default one will be used.
+         * 
+         * @param connectionDetails the RabbitConnectionDetails containing the connection details
+         * @param connectionNameStrategy the ConnectionNameStrategy to be used for generating connection names
+         * @return the CachingConnectionFactoryConfigurer configured with the provided details
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		CachingConnectionFactoryConfigurer rabbitConnectionFactoryConfigurer(RabbitConnectionDetails connectionDetails,
 				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy) {
@@ -117,7 +149,16 @@ public class RabbitAutoConfiguration {
 			return configurer;
 		}
 
-		@Bean
+		/**
+         * Creates a CachingConnectionFactory for RabbitMQ if no ConnectionFactory bean is present.
+         * 
+         * @param rabbitConnectionFactoryBeanConfigurer The RabbitConnectionFactoryBeanConfigurer used to configure the RabbitConnectionFactoryBean.
+         * @param rabbitCachingConnectionFactoryConfigurer The CachingConnectionFactoryConfigurer used to configure the CachingConnectionFactory.
+         * @param connectionFactoryCustomizers The ObjectProvider of ConnectionFactoryCustomizer used to customize the ConnectionFactory.
+         * @return The created CachingConnectionFactory.
+         * @throws Exception if an error occurs during the creation of the CachingConnectionFactory.
+         */
+        @Bean
 		@ConditionalOnMissingBean(ConnectionFactory.class)
 		CachingConnectionFactory rabbitConnectionFactory(
 				RabbitConnectionFactoryBeanConfigurer rabbitConnectionFactoryBeanConfigurer,
@@ -139,11 +180,24 @@ public class RabbitAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * RabbitTemplateConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@Import(RabbitConnectionFactoryCreator.class)
 	protected static class RabbitTemplateConfiguration {
 
-		@Bean
+		/**
+         * Configures the RabbitTemplate with the provided RabbitProperties, MessageConverter, and RabbitRetryTemplateCustomizer.
+         * If no MessageConverter is provided, the default one will be used.
+         * If no RabbitRetryTemplateCustomizer is provided, no customizations will be applied to the RetryTemplate.
+         * 
+         * @param properties The RabbitProperties to configure the RabbitTemplate.
+         * @param messageConverter The MessageConverter to be used by the RabbitTemplate. If not provided, the default one will be used.
+         * @param retryTemplateCustomizers The RabbitRetryTemplateCustomizer(s) to customize the RetryTemplate used by the RabbitTemplate. If not provided, no customizations will be applied.
+         * @return The configured RabbitTemplateConfigurer.
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		public RabbitTemplateConfigurer rabbitTemplateConfigurer(RabbitProperties properties,
 				ObjectProvider<MessageConverter> messageConverter,
@@ -154,7 +208,15 @@ public class RabbitAutoConfiguration {
 			return configurer;
 		}
 
-		@Bean
+		/**
+         * Creates a RabbitTemplate bean if there is a single candidate ConnectionFactory bean and no RabbitOperations bean is present.
+         * 
+         * @param configurer The RabbitTemplateConfigurer used to configure the RabbitTemplate.
+         * @param connectionFactory The ConnectionFactory used by the RabbitTemplate.
+         * @param customizers The ObjectProvider of RabbitTemplateCustomizer used to customize the RabbitTemplate.
+         * @return The RabbitTemplate bean.
+         */
+        @Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		@ConditionalOnMissingBean(RabbitOperations.class)
 		public RabbitTemplate rabbitTemplate(RabbitTemplateConfigurer configurer, ConnectionFactory connectionFactory,
@@ -165,7 +227,14 @@ public class RabbitAutoConfiguration {
 			return template;
 		}
 
-		@Bean
+		/**
+         * Creates an instance of AmqpAdmin if there is a single candidate for ConnectionFactory and the property "spring.rabbitmq.dynamic" is either not present or set to true.
+         * If an instance of AmqpAdmin is already present, this method will not be executed.
+         * 
+         * @param connectionFactory the ConnectionFactory to be used for creating the AmqpAdmin instance
+         * @return an instance of AmqpAdmin created using the provided ConnectionFactory
+         */
+        @Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
 		@ConditionalOnMissingBean
@@ -175,13 +244,22 @@ public class RabbitAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * MessagingTemplateConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(RabbitMessagingTemplate.class)
 	@ConditionalOnMissingBean(RabbitMessagingTemplate.class)
 	@Import(RabbitTemplateConfiguration.class)
 	protected static class MessagingTemplateConfiguration {
 
-		@Bean
+		/**
+         * Creates a RabbitMessagingTemplate bean if a single candidate RabbitTemplate bean is available.
+         * 
+         * @param rabbitTemplate the RabbitTemplate bean to be used by the RabbitMessagingTemplate
+         * @return the created RabbitMessagingTemplate bean
+         */
+        @Bean
 		@ConditionalOnSingleCandidate(RabbitTemplate.class)
 		public RabbitMessagingTemplate rabbitMessagingTemplate(RabbitTemplate rabbitTemplate) {
 			return new RabbitMessagingTemplate(rabbitTemplate);

@@ -40,7 +40,15 @@ public abstract class SpringBootCondition implements Condition {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-	@Override
+	/**
+     * Determines if a condition matches based on the given context and metadata.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return true if the condition matches, false otherwise
+     * @throws IllegalStateException if there is an error evaluating the condition
+     */
+    @Override
 	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String classOrMethodName = getClassOrMethodName(metadata);
 		try {
@@ -61,7 +69,13 @@ public abstract class SpringBootCondition implements Condition {
 		}
 	}
 
-	private String getName(AnnotatedTypeMetadata metadata) {
+	/**
+     * Returns the name of the annotated type metadata.
+     * 
+     * @param metadata the annotated type metadata
+     * @return the name of the annotated type metadata
+     */
+    private String getName(AnnotatedTypeMetadata metadata) {
 		if (metadata instanceof AnnotationMetadata annotationMetadata) {
 			return annotationMetadata.getClassName();
 		}
@@ -71,7 +85,13 @@ public abstract class SpringBootCondition implements Condition {
 		return metadata.toString();
 	}
 
-	private static String getClassOrMethodName(AnnotatedTypeMetadata metadata) {
+	/**
+     * Returns the name of the class or method based on the provided metadata.
+     * 
+     * @param metadata the metadata containing information about the annotated type
+     * @return the name of the class or method
+     */
+    private static String getClassOrMethodName(AnnotatedTypeMetadata metadata) {
 		if (metadata instanceof ClassMetadata classMetadata) {
 			return classMetadata.getClassName();
 		}
@@ -79,13 +99,26 @@ public abstract class SpringBootCondition implements Condition {
 		return methodMetadata.getDeclaringClassName() + "#" + methodMetadata.getMethodName();
 	}
 
-	protected final void logOutcome(String classOrMethodName, ConditionOutcome outcome) {
+	/**
+     * Logs the outcome of a condition evaluation.
+     * 
+     * @param classOrMethodName the name of the class or method being evaluated
+     * @param outcome the outcome of the condition evaluation
+     */
+    protected final void logOutcome(String classOrMethodName, ConditionOutcome outcome) {
 		if (this.logger.isTraceEnabled()) {
 			this.logger.trace(getLogMessage(classOrMethodName, outcome));
 		}
 	}
 
-	private StringBuilder getLogMessage(String classOrMethodName, ConditionOutcome outcome) {
+	/**
+     * Generates a log message for a condition outcome.
+     * 
+     * @param classOrMethodName the name of the class or method being checked
+     * @param outcome the outcome of the condition check
+     * @return a StringBuilder containing the log message
+     */
+    private StringBuilder getLogMessage(String classOrMethodName, ConditionOutcome outcome) {
 		StringBuilder message = new StringBuilder();
 		message.append("Condition ");
 		message.append(ClassUtils.getShortName(getClass()));
@@ -99,7 +132,14 @@ public abstract class SpringBootCondition implements Condition {
 		return message;
 	}
 
-	private void recordEvaluation(ConditionContext context, String classOrMethodName, ConditionOutcome outcome) {
+	/**
+     * Records the evaluation of a condition for a specific class or method.
+     * 
+     * @param context the condition context
+     * @param classOrMethodName the name of the class or method being evaluated
+     * @param outcome the outcome of the condition evaluation
+     */
+    private void recordEvaluation(ConditionContext context, String classOrMethodName, ConditionOutcome outcome) {
 		if (context.getBeanFactory() != null) {
 			ConditionEvaluationReport.get(context.getBeanFactory())
 				.recordConditionEvaluation(classOrMethodName, this, outcome);

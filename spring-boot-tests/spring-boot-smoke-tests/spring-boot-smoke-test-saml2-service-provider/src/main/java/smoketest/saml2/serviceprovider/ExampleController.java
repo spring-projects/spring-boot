@@ -21,10 +21,19 @@ import java.security.Principal;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * ExampleController class.
+ */
 @RestController
 public class ExampleController {
 
-	@RequestMapping("/")
+	/**
+     * Returns a greeting message with the name of the authenticated user.
+     * 
+     * @param principal the authenticated user's principal object
+     * @return a string containing the greeting message
+     */
+    @RequestMapping("/")
 	public String email(Principal principal) {
 		return "Hello " + principal.getName();
 	}

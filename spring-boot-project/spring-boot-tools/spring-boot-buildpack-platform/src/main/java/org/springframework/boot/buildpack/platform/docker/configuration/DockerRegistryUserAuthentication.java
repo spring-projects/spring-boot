@@ -37,7 +37,15 @@ class DockerRegistryUserAuthentication extends JsonEncodedDockerRegistryAuthenti
 	@JsonProperty
 	private final String email;
 
-	DockerRegistryUserAuthentication(String username, String password, String url, String email) {
+	/**
+     * Constructs a new DockerRegistryUserAuthentication object with the specified username, password, url, and email.
+     * 
+     * @param username the username for authentication
+     * @param password the password for authentication
+     * @param url the URL of the Docker registry
+     * @param email the email associated with the user
+     */
+    DockerRegistryUserAuthentication(String username, String password, String url, String email) {
 		this.username = username;
 		this.password = password;
 		this.url = url;
@@ -45,19 +53,39 @@ class DockerRegistryUserAuthentication extends JsonEncodedDockerRegistryAuthenti
 		createAuthHeader();
 	}
 
-	String getUsername() {
+	/**
+     * Returns the username associated with this DockerRegistryUserAuthentication instance.
+     *
+     * @return the username
+     */
+    String getUsername() {
 		return this.username;
 	}
 
-	String getPassword() {
+	/**
+     * Returns the password of the DockerRegistryUserAuthentication.
+     *
+     * @return the password of the DockerRegistryUserAuthentication
+     */
+    String getPassword() {
 		return this.password;
 	}
 
-	String getUrl() {
+	/**
+     * Returns the URL of the Docker registry.
+     *
+     * @return the URL of the Docker registry
+     */
+    String getUrl() {
 		return this.url;
 	}
 
-	String getEmail() {
+	/**
+     * Returns the email associated with the DockerRegistryUserAuthentication object.
+     *
+     * @return the email associated with the DockerRegistryUserAuthentication object
+     */
+    String getEmail() {
 		return this.email;
 	}
 

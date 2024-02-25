@@ -34,11 +34,25 @@ abstract class SpringBootApplicationClassFinder {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-	static String findSingleClass(File classesDirectory) throws MojoExecutionException {
+	/**
+     * Finds a single class in the specified classes directory.
+     * 
+     * @param classesDirectory the directory containing the classes
+     * @return the fully qualified name of the single class found
+     * @throws MojoExecutionException if an error occurs during the class search
+     */
+    static String findSingleClass(File classesDirectory) throws MojoExecutionException {
 		return findSingleClass(List.of(classesDirectory));
 	}
 
-	static String findSingleClass(List<File> classesDirectories) throws MojoExecutionException {
+	/**
+     * Finds a single main class in the given list of classes directories.
+     * 
+     * @param classesDirectories the list of directories containing the classes
+     * @return the fully qualified name of the main class
+     * @throws MojoExecutionException if unable to find a suitable main class
+     */
+    static String findSingleClass(List<File> classesDirectories) throws MojoExecutionException {
 		try {
 			for (File classesDirectory : classesDirectories) {
 				String mainClass = MainClassFinder.findSingleMainClass(classesDirectory,

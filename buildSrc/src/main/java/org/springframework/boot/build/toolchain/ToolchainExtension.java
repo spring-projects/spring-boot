@@ -34,22 +34,42 @@ public class ToolchainExtension {
 
 	private final JavaLanguageVersion javaVersion;
 
-	public ToolchainExtension(Project project) {
+	/**
+     * Constructs a new ToolchainExtension object.
+     * 
+     * @param project the Project object to initialize the extension with
+     */
+    public ToolchainExtension(Project project) {
 		this.maximumCompatibleJavaVersion = project.getObjects().property(JavaLanguageVersion.class);
 		this.testJvmArgs = project.getObjects().listProperty(String.class);
 		String toolchainVersion = (String) project.findProperty("toolchainVersion");
 		this.javaVersion = (toolchainVersion != null) ? JavaLanguageVersion.of(toolchainVersion) : null;
 	}
 
-	public Property<JavaLanguageVersion> getMaximumCompatibleJavaVersion() {
+	/**
+     * Returns the maximum compatible Java version for the toolchain.
+     *
+     * @return the maximum compatible Java version
+     */
+    public Property<JavaLanguageVersion> getMaximumCompatibleJavaVersion() {
 		return this.maximumCompatibleJavaVersion;
 	}
 
-	public ListProperty<String> getTestJvmArgs() {
+	/**
+     * Returns the list of test JVM arguments.
+     *
+     * @return the list of test JVM arguments
+     */
+    public ListProperty<String> getTestJvmArgs() {
 		return this.testJvmArgs;
 	}
 
-	JavaLanguageVersion getJavaVersion() {
+	/**
+     * Returns the Java language version used by the toolchain.
+     *
+     * @return the Java language version
+     */
+    JavaLanguageVersion getJavaVersion() {
 		return this.javaVersion;
 	}
 

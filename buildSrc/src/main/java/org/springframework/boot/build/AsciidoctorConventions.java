@@ -67,7 +67,14 @@ class AsciidoctorConventions {
 
 	private static final String EXTENSIONS_CONFIGURATION_NAME = "asciidoctorExtensions";
 
-	void apply(Project project) {
+	/**
+     * Applies the necessary conventions for Asciidoctor to the given project.
+     * This includes making all warnings fatal, upgrading the AsciidoctorJ version,
+     * creating the Asciidoctor extensions configuration, and configuring the Asciidoctor tasks.
+     *
+     * @param project the project to apply the conventions to
+     */
+    void apply(Project project) {
 		project.getPlugins().withType(AsciidoctorJPlugin.class, (asciidoctorPlugin) -> {
 			makeAllWarningsFatal(project);
 			upgradeAsciidoctorJVersion(project);
@@ -78,15 +85,30 @@ class AsciidoctorConventions {
 		});
 	}
 
-	private void makeAllWarningsFatal(Project project) {
+	/**
+     * Makes all warnings fatal for the given project.
+     * 
+     * @param project the project for which to make warnings fatal
+     */
+    private void makeAllWarningsFatal(Project project) {
 		project.getExtensions().getByType(AsciidoctorJExtension.class).fatalWarnings(".*");
 	}
 
-	private void upgradeAsciidoctorJVersion(Project project) {
+	/**
+     * Upgrades the version of AsciidoctorJ in the given project.
+     * 
+     * @param project the project to upgrade AsciidoctorJ version in
+     */
+    private void upgradeAsciidoctorJVersion(Project project) {
 		project.getExtensions().getByType(AsciidoctorJExtension.class).setVersion(ASCIIDOCTORJ_VERSION);
 	}
 
-	private void createAsciidoctorExtensionsConfiguration(Project project) {
+	/**
+     * Creates the Asciidoctor extensions configuration for the given project.
+     * 
+     * @param project the project for which the configuration is created
+     */
+    private void createAsciidoctorExtensionsConfiguration(Project project) {
 		project.getConfigurations().create(EXTENSIONS_CONFIGURATION_NAME, (configuration) -> {
 			project.getConfigurations()
 				.matching((candidate) -> "dependencyManagement".equals(candidate.getName()))
@@ -99,7 +121,13 @@ class AsciidoctorConventions {
 		});
 	}
 
-	private void configureAsciidoctorTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
+	/**
+     * Configures the given Asciidoctor task with the necessary attributes, options, and fork options.
+     * 
+     * @param project the project to configure the task for
+     * @param asciidoctorTask the Asciidoctor task to configure
+     */
+    private void configureAsciidoctorTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
 		asciidoctorTask.configurations(EXTENSIONS_CONFIGURATION_NAME);
 		configureCommonAttributes(project, asciidoctorTask);
 		configureOptions(asciidoctorTask);
@@ -113,7 +141,13 @@ class AsciidoctorConventions {
 		}
 	}
 
-	private void configureCommonAttributes(Project project, AbstractAsciidoctorTask asciidoctorTask) {
+	/**
+     * Configures common attributes for the given project and Asciidoctor task.
+     * 
+     * @param project The project to configure attributes for.
+     * @param asciidoctorTask The Asciidoctor task to configure attributes for.
+     */
+    private void configureCommonAttributes(Project project, AbstractAsciidoctorTask asciidoctorTask) {
 		ArtifactRelease artifacts = ArtifactRelease.forProject(project);
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("attribute-missing", "warn");
@@ -132,16 +166,34 @@ class AsciidoctorConventions {
 		}
 	}
 
-	private String determineGitHubTag(Project project) {
+	/**
+     * Determines the GitHub tag for the given project.
+     * 
+     * @param project the project for which to determine the GitHub tag
+     * @return the GitHub tag for the project
+     */
+    private String determineGitHubTag(Project project) {
 		String version = "v" + project.getVersion();
 		return (version.endsWith("-SNAPSHOT")) ? "main" : version;
 	}
 
-	private void configureOptions(AbstractAsciidoctorTask asciidoctorTask) {
+	/**
+     * Configures the options for the given {@link AbstractAsciidoctorTask}.
+     * 
+     * @param asciidoctorTask the {@link AbstractAsciidoctorTask} to configure options for
+     */
+    private void configureOptions(AbstractAsciidoctorTask asciidoctorTask) {
 		asciidoctorTask.options(Collections.singletonMap("doctype", "book"));
 	}
 
-	private Sync createSyncDocumentationSourceTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
+	/**
+     * Creates a Sync task for synchronizing the documentation source with the Asciidoctor task.
+     * 
+     * @param project The project object.
+     * @param asciidoctorTask The Asciidoctor task.
+     * @return The created Sync task.
+     */
+    private Sync createSyncDocumentationSourceTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
 		Sync syncDocumentationSource = project.getTasks()
 			.create("syncDocumentationSourceFor" + StringUtils.capitalize(asciidoctorTask.getName()), Sync.class);
 		File syncedSource = new File(project.getBuildDir(), "docs/src/" + asciidoctorTask.getName());

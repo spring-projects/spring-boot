@@ -44,27 +44,57 @@ public class ZipkinProperties {
 	 */
 	private Duration readTimeout = Duration.ofSeconds(10);
 
-	public String getEndpoint() {
+	/**
+     * Returns the endpoint of the Zipkin server.
+     *
+     * @return the endpoint of the Zipkin server
+     */
+    public String getEndpoint() {
 		return this.endpoint;
 	}
 
-	public void setEndpoint(String endpoint) {
+	/**
+     * Sets the endpoint for Zipkin.
+     * 
+     * @param endpoint the endpoint to set
+     */
+    public void setEndpoint(String endpoint) {
 		this.endpoint = endpoint;
 	}
 
-	public Duration getConnectTimeout() {
+	/**
+     * Returns the connect timeout duration.
+     *
+     * @return the connect timeout duration
+     */
+    public Duration getConnectTimeout() {
 		return this.connectTimeout;
 	}
 
-	public void setConnectTimeout(Duration connectTimeout) {
+	/**
+     * Sets the connect timeout for the Zipkin client.
+     * 
+     * @param connectTimeout the duration of the connect timeout
+     */
+    public void setConnectTimeout(Duration connectTimeout) {
 		this.connectTimeout = connectTimeout;
 	}
 
-	public Duration getReadTimeout() {
+	/**
+     * Returns the read timeout duration.
+     *
+     * @return the read timeout duration
+     */
+    public Duration getReadTimeout() {
 		return this.readTimeout;
 	}
 
-	public void setReadTimeout(Duration readTimeout) {
+	/**
+     * Sets the read timeout for the Zipkin client.
+     * 
+     * @param readTimeout the read timeout duration to be set
+     */
+    public void setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
 	}
 

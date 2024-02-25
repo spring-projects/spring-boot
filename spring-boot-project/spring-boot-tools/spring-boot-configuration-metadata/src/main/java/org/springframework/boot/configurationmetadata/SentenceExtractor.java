@@ -28,7 +28,13 @@ import java.util.stream.Collectors;
  */
 class SentenceExtractor {
 
-	String getFirstSentence(String text) {
+	/**
+     * Returns the first sentence from the given text.
+     * 
+     * @param text the text from which the first sentence is to be extracted
+     * @return the first sentence from the text, or null if the text is null
+     */
+    String getFirstSentence(String text) {
 		if (text == null) {
 			return null;
 		}
@@ -45,7 +51,13 @@ class SentenceExtractor {
 		}
 	}
 
-	private String removeSpaceBetweenLine(String text) {
+	/**
+     * Removes the spaces between lines in the given text.
+     * 
+     * @param text the text containing multiple lines
+     * @return the text with spaces between lines removed
+     */
+    private String removeSpaceBetweenLine(String text) {
 		String[] lines = text.split(System.lineSeparator());
 		return Arrays.stream(lines).map(String::trim).collect(Collectors.joining(" "));
 	}

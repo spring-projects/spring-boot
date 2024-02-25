@@ -46,24 +46,52 @@ public class OAuth2ClientProperties implements InitializingBean {
 	 */
 	private final Map<String, Registration> registration = new HashMap<>();
 
-	public Map<String, Provider> getProvider() {
+	/**
+     * Returns the map of providers.
+     * 
+     * @return the map of providers
+     */
+    public Map<String, Provider> getProvider() {
 		return this.provider;
 	}
 
-	public Map<String, Registration> getRegistration() {
+	/**
+     * Returns the registration map containing the OAuth2 client registrations.
+     *
+     * @return the registration map containing the OAuth2 client registrations
+     */
+    public Map<String, Registration> getRegistration() {
 		return this.registration;
 	}
 
-	@Override
+	/**
+     * This method is called after all bean properties have been set, and it is used to perform any necessary initialization tasks.
+     * It validates the properties of the OAuth2ClientProperties class.
+     */
+    @Override
 	public void afterPropertiesSet() {
 		validate();
 	}
 
-	public void validate() {
+	/**
+     * Validates the registration values in the OAuth2ClientProperties.
+     * 
+     * This method iterates over the registration values in the OAuth2ClientProperties and calls the validateRegistration method for each registration.
+     * 
+     * @see OAuth2ClientProperties#getRegistration()
+     * @see OAuth2ClientProperties#validateRegistration(OAuth2ClientRegistration)
+     */
+    public void validate() {
 		getRegistration().values().forEach(this::validateRegistration);
 	}
 
-	private void validateRegistration(Registration registration) {
+	/**
+     * Validates the registration by checking if the client id is empty.
+     *
+     * @param registration the registration to be validated
+     * @throws IllegalStateException if the client id is empty
+     */
+    private void validateRegistration(Registration registration) {
 		if (!StringUtils.hasText(registration.getClientId())) {
 			throw new IllegalStateException("Client id must not be empty.");
 		}
@@ -118,73 +146,156 @@ public class OAuth2ClientProperties implements InitializingBean {
 		 */
 		private String clientName;
 
-		public String getProvider() {
+		/**
+         * Returns the provider of the registration.
+         *
+         * @return the provider of the registration
+         */
+        public String getProvider() {
 			return this.provider;
 		}
 
-		public void setProvider(String provider) {
+		/**
+         * Sets the provider for the registration.
+         * 
+         * @param provider the provider to be set
+         */
+        public void setProvider(String provider) {
 			this.provider = provider;
 		}
 
-		public String getClientId() {
+		/**
+         * Returns the client ID associated with the registration.
+         *
+         * @return the client ID
+         */
+        public String getClientId() {
 			return this.clientId;
 		}
 
-		public void setClientId(String clientId) {
+		/**
+         * Sets the client ID for the registration.
+         * 
+         * @param clientId the client ID to be set
+         */
+        public void setClientId(String clientId) {
 			this.clientId = clientId;
 		}
 
-		public String getClientSecret() {
+		/**
+         * Returns the client secret.
+         * 
+         * @return the client secret
+         */
+        public String getClientSecret() {
 			return this.clientSecret;
 		}
 
-		public void setClientSecret(String clientSecret) {
+		/**
+         * Sets the client secret for the registration.
+         * 
+         * @param clientSecret the client secret to be set
+         */
+        public void setClientSecret(String clientSecret) {
 			this.clientSecret = clientSecret;
 		}
 
-		public String getClientAuthenticationMethod() {
+		/**
+         * Returns the client authentication method used by the registration.
+         * 
+         * @return the client authentication method
+         */
+        public String getClientAuthenticationMethod() {
 			return this.clientAuthenticationMethod;
 		}
 
-		public void setClientAuthenticationMethod(String clientAuthenticationMethod) {
+		/**
+         * Sets the client authentication method for the registration.
+         * 
+         * @param clientAuthenticationMethod the client authentication method to be set
+         */
+        public void setClientAuthenticationMethod(String clientAuthenticationMethod) {
 			this.clientAuthenticationMethod = clientAuthenticationMethod;
 		}
 
-		public String getAuthorizationGrantType() {
+		/**
+         * Returns the authorization grant type.
+         * 
+         * @return the authorization grant type
+         */
+        public String getAuthorizationGrantType() {
 			return this.authorizationGrantType;
 		}
 
-		public void setAuthorizationGrantType(String authorizationGrantType) {
+		/**
+         * Sets the authorization grant type for the registration.
+         * 
+         * @param authorizationGrantType the authorization grant type to be set
+         */
+        public void setAuthorizationGrantType(String authorizationGrantType) {
 			this.authorizationGrantType = authorizationGrantType;
 		}
 
-		public String getRedirectUri() {
+		/**
+         * Returns the redirect URI of the registration.
+         *
+         * @return the redirect URI of the registration
+         */
+        public String getRedirectUri() {
 			return this.redirectUri;
 		}
 
-		public void setRedirectUri(String redirectUri) {
+		/**
+         * Sets the redirect URI for the registration.
+         * 
+         * @param redirectUri the redirect URI to be set
+         */
+        public void setRedirectUri(String redirectUri) {
 			this.redirectUri = redirectUri;
 		}
 
-		public Set<String> getScope() {
+		/**
+         * Returns the scope of the registration.
+         * 
+         * @return the scope of the registration as a Set of Strings
+         */
+        public Set<String> getScope() {
 			return this.scope;
 		}
 
-		public void setScope(Set<String> scope) {
+		/**
+         * Sets the scope of the registration.
+         * 
+         * @param scope the set of strings representing the scope
+         */
+        public void setScope(Set<String> scope) {
 			this.scope = scope;
 		}
 
-		public String getClientName() {
+		/**
+         * Returns the name of the client.
+         * 
+         * @return the name of the client
+         */
+        public String getClientName() {
 			return this.clientName;
 		}
 
-		public void setClientName(String clientName) {
+		/**
+         * Sets the name of the client.
+         * 
+         * @param clientName the name of the client
+         */
+        public void setClientName(String clientName) {
 			this.clientName = clientName;
 		}
 
 	}
 
-	public static class Provider {
+	/**
+     * Provider class.
+     */
+    public static class Provider {
 
 		/**
 		 * Authorization URI for the provider.
@@ -223,59 +334,129 @@ public class OAuth2ClientProperties implements InitializingBean {
 		 */
 		private String issuerUri;
 
-		public String getAuthorizationUri() {
+		/**
+         * Returns the authorization URI.
+         *
+         * @return the authorization URI
+         */
+        public String getAuthorizationUri() {
 			return this.authorizationUri;
 		}
 
-		public void setAuthorizationUri(String authorizationUri) {
+		/**
+         * Sets the authorization URI for the Provider.
+         * 
+         * @param authorizationUri the authorization URI to be set
+         */
+        public void setAuthorizationUri(String authorizationUri) {
 			this.authorizationUri = authorizationUri;
 		}
 
-		public String getTokenUri() {
+		/**
+         * Returns the token URI of the Provider.
+         * 
+         * @return the token URI of the Provider
+         */
+        public String getTokenUri() {
 			return this.tokenUri;
 		}
 
-		public void setTokenUri(String tokenUri) {
+		/**
+         * Sets the token URI for the Provider.
+         * 
+         * @param tokenUri the token URI to be set
+         */
+        public void setTokenUri(String tokenUri) {
 			this.tokenUri = tokenUri;
 		}
 
-		public String getUserInfoUri() {
+		/**
+         * Returns the URI for retrieving user information.
+         * 
+         * @return the URI for retrieving user information
+         */
+        public String getUserInfoUri() {
 			return this.userInfoUri;
 		}
 
-		public void setUserInfoUri(String userInfoUri) {
+		/**
+         * Sets the URI for retrieving user information.
+         * 
+         * @param userInfoUri the URI for retrieving user information
+         */
+        public void setUserInfoUri(String userInfoUri) {
 			this.userInfoUri = userInfoUri;
 		}
 
-		public String getUserInfoAuthenticationMethod() {
+		/**
+         * Returns the authentication method used for user information.
+         * 
+         * @return the authentication method used for user information
+         */
+        public String getUserInfoAuthenticationMethod() {
 			return this.userInfoAuthenticationMethod;
 		}
 
-		public void setUserInfoAuthenticationMethod(String userInfoAuthenticationMethod) {
+		/**
+         * Sets the authentication method for user information.
+         * 
+         * @param userInfoAuthenticationMethod the authentication method to be set
+         */
+        public void setUserInfoAuthenticationMethod(String userInfoAuthenticationMethod) {
 			this.userInfoAuthenticationMethod = userInfoAuthenticationMethod;
 		}
 
-		public String getUserNameAttribute() {
+		/**
+         * Returns the value of the userNameAttribute property.
+         *
+         * @return the value of the userNameAttribute property
+         */
+        public String getUserNameAttribute() {
 			return this.userNameAttribute;
 		}
 
-		public void setUserNameAttribute(String userNameAttribute) {
+		/**
+         * Sets the user name attribute for the Provider.
+         * 
+         * @param userNameAttribute the user name attribute to be set
+         */
+        public void setUserNameAttribute(String userNameAttribute) {
 			this.userNameAttribute = userNameAttribute;
 		}
 
-		public String getJwkSetUri() {
+		/**
+         * Returns the URI of the JWK Set.
+         *
+         * @return the URI of the JWK Set
+         */
+        public String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
 
-		public void setJwkSetUri(String jwkSetUri) {
+		/**
+         * Sets the URI of the JSON Web Key (JWK) Set.
+         * 
+         * @param jwkSetUri the URI of the JWK Set
+         */
+        public void setJwkSetUri(String jwkSetUri) {
 			this.jwkSetUri = jwkSetUri;
 		}
 
-		public String getIssuerUri() {
+		/**
+         * Returns the issuer URI of the Provider.
+         * 
+         * @return the issuer URI of the Provider
+         */
+        public String getIssuerUri() {
 			return this.issuerUri;
 		}
 
-		public void setIssuerUri(String issuerUri) {
+		/**
+         * Sets the issuer URI for the provider.
+         * 
+         * @param issuerUri the issuer URI to be set
+         */
+        public void setIssuerUri(String issuerUri) {
 			this.issuerUri = issuerUri;
 		}
 

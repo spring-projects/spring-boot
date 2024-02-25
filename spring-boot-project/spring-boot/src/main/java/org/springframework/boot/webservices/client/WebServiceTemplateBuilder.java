@@ -76,7 +76,12 @@ public class WebServiceTemplateBuilder {
 
 	private final WebServiceMessageFactory messageFactory;
 
-	public WebServiceTemplateBuilder(WebServiceTemplateCustomizer... customizers) {
+	/**
+     * Constructs a new instance of WebServiceTemplateBuilder with the provided customizers.
+     *
+     * @param customizers the customizers to apply to the WebServiceTemplate
+     */
+    public WebServiceTemplateBuilder(WebServiceTemplateCustomizer... customizers) {
 		this.detectHttpMessageSender = true;
 		this.interceptors = null;
 		this.internalCustomizers = null;
@@ -89,7 +94,21 @@ public class WebServiceTemplateBuilder {
 		this.messageFactory = null;
 	}
 
-	private WebServiceTemplateBuilder(boolean detectHttpMessageSender, Set<ClientInterceptor> interceptors,
+	/**
+     * Constructs a new instance of the {@code WebServiceTemplateBuilder} class with the specified parameters.
+     *
+     * @param detectHttpMessageSender       a boolean indicating whether to detect the HTTP message sender
+     * @param interceptors                  a set of client interceptors to be applied
+     * @param internalCustomizers           a set of internal customizers for the web service template
+     * @param customizers                   a set of customizers for the web service template
+     * @param messageSenders                the web service message senders
+     * @param marshaller                    the marshaller for marshalling objects
+     * @param unmarshaller                  the unmarshaller for unmarshalling objects
+     * @param destinationProvider           the destination provider for obtaining the destination for the web service
+     * @param transformerFactoryClass       the class of the transformer factory to be used
+     * @param messageFactory                the web service message factory
+     */
+    private WebServiceTemplateBuilder(boolean detectHttpMessageSender, Set<ClientInterceptor> interceptors,
 			Set<WebServiceTemplateCustomizer> internalCustomizers, Set<WebServiceTemplateCustomizer> customizers,
 			WebServiceMessageSenders messageSenders, Marshaller marshaller, Unmarshaller unmarshaller,
 			DestinationProvider destinationProvider, Class<? extends TransformerFactory> transformerFactoryClass,
@@ -470,7 +489,13 @@ public class WebServiceTemplateBuilder {
 		return webServiceTemplate;
 	}
 
-	private void applyCustomizers(WebServiceTemplate webServiceTemplate,
+	/**
+     * Applies the given set of customizers to the provided WebServiceTemplate.
+     * 
+     * @param webServiceTemplate the WebServiceTemplate to apply the customizers to
+     * @param customizers the set of customizers to apply
+     */
+    private void applyCustomizers(WebServiceTemplate webServiceTemplate,
 			Set<WebServiceTemplateCustomizer> customizers) {
 		if (!CollectionUtils.isEmpty(customizers)) {
 			for (WebServiceTemplateCustomizer customizer : customizers) {
@@ -479,7 +504,13 @@ public class WebServiceTemplateBuilder {
 		}
 	}
 
-	private <T extends WebServiceTemplate> void configureMessageSenders(T webServiceTemplate) {
+	/**
+     * Configures the message senders for the given WebServiceTemplate.
+     * 
+     * @param webServiceTemplate the WebServiceTemplate to configure
+     * @param <T> the type of the WebServiceTemplate
+     */
+    private <T extends WebServiceTemplate> void configureMessageSenders(T webServiceTemplate) {
 		if (this.messageSenders.isOnlyAdditional() && this.detectHttpMessageSender) {
 			Set<WebServiceMessageSender> merged = append(this.messageSenders.getMessageSenders(),
 					new HttpWebServiceMessageSenderBuilder().build());
@@ -491,11 +522,29 @@ public class WebServiceTemplateBuilder {
 		}
 	}
 
-	private <T> Set<T> append(Set<T> set, T addition) {
+	/**
+     * Appends an element to a set.
+     *
+     * @param set      the set to append the element to
+     * @param addition the element to be appended to the set
+     * @param <T>      the type of elements in the set
+     * @return a new set with the element appended
+     */
+    private <T> Set<T> append(Set<T> set, T addition) {
 		return append(set, Collections.singleton(addition));
 	}
 
-	private static <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
+	/**
+     * Appends the specified collection of elements to the given set.
+     * 
+     * @param set       the set to append elements to (nullable)
+     * @param additions the collection of elements to append (nullable)
+     * @param <T>       the type of elements in the set and collection
+     * @return a new set containing the original set elements and the appended elements
+     * @throws UnsupportedOperationException if the set is unmodifiable
+     * @since version 1.0
+     */
+    private static <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
 		result.addAll((additions != null) ? additions : Collections.emptyList());
 		return Collections.unmodifiableSet(result);
@@ -511,28 +560,62 @@ public class WebServiceTemplateBuilder {
 
 		private final Set<WebServiceMessageSender> messageSenders;
 
-		private WebServiceMessageSenders() {
+		/**
+         * Constructs a new instance of the {@code WebServiceMessageSenders} class with the specified parameters.
+         *
+         * @param flag a boolean value indicating whether the instance should be created
+         * @param set a set of objects to be used in the construction of the instance
+         */
+        private WebServiceMessageSenders() {
 			this(true, Collections.emptySet());
 		}
 
-		private WebServiceMessageSenders(boolean onlyAdditional, Set<WebServiceMessageSender> messageSenders) {
+		/**
+         * Constructs a new instance of the WebServiceMessageSenders class.
+         * 
+         * @param onlyAdditional a boolean indicating whether only additional message senders should be included
+         * @param messageSenders a set of WebServiceMessageSender objects representing the message senders
+         */
+        private WebServiceMessageSenders(boolean onlyAdditional, Set<WebServiceMessageSender> messageSenders) {
 			this.onlyAdditional = onlyAdditional;
 			this.messageSenders = messageSenders;
 		}
 
-		boolean isOnlyAdditional() {
+		/**
+         * Returns a boolean value indicating if only additional information is present.
+         * 
+         * @return true if only additional information is present, false otherwise
+         */
+        boolean isOnlyAdditional() {
 			return this.onlyAdditional;
 		}
 
-		Set<WebServiceMessageSender> getMessageSenders() {
+		/**
+         * Returns the set of message senders used by this WebServiceMessageSenders instance.
+         *
+         * @return the set of message senders
+         */
+        Set<WebServiceMessageSender> getMessageSenders() {
 			return this.messageSenders;
 		}
 
-		WebServiceMessageSenders set(Collection<? extends WebServiceMessageSender> messageSenders) {
+		/**
+         * Sets the collection of {@link WebServiceMessageSender} instances.
+         * 
+         * @param messageSenders the collection of {@link WebServiceMessageSender} instances to set
+         * @return a new instance of {@link WebServiceMessageSenders} with the specified message senders
+         */
+        WebServiceMessageSenders set(Collection<? extends WebServiceMessageSender> messageSenders) {
 			return new WebServiceMessageSenders(false, new LinkedHashSet<>(messageSenders));
 		}
 
-		WebServiceMessageSenders add(Collection<? extends WebServiceMessageSender> messageSenders) {
+		/**
+         * Adds a collection of {@link WebServiceMessageSender} objects to the existing set of message senders.
+         * 
+         * @param messageSenders the collection of message senders to be added
+         * @return a new instance of {@link WebServiceMessageSenders} with the additional message senders
+         */
+        WebServiceMessageSenders add(Collection<? extends WebServiceMessageSender> messageSenders) {
 			return new WebServiceMessageSenders(this.onlyAdditional, append(this.messageSenders, messageSenders));
 		}
 
@@ -547,11 +630,21 @@ public class WebServiceTemplateBuilder {
 
 		private final boolean checkConnectionFault;
 
-		private CheckConnectionFaultCustomizer(boolean checkConnectionFault) {
+		/**
+         * Constructs a new CheckConnectionFaultCustomizer with the specified checkConnectionFault value.
+         * 
+         * @param checkConnectionFault the value indicating whether to check for connection faults
+         */
+        private CheckConnectionFaultCustomizer(boolean checkConnectionFault) {
 			this.checkConnectionFault = checkConnectionFault;
 		}
 
-		@Override
+		/**
+         * Sets the check connection for fault flag for the given WebServiceTemplate.
+         * 
+         * @param webServiceTemplate the WebServiceTemplate to customize
+         */
+        @Override
 		public void customize(WebServiceTemplate webServiceTemplate) {
 			webServiceTemplate.setCheckConnectionForFault(this.checkConnectionFault);
 		}
@@ -567,11 +660,21 @@ public class WebServiceTemplateBuilder {
 
 		private final boolean checkConnectionForError;
 
-		private CheckConnectionForErrorCustomizer(boolean checkConnectionForError) {
+		/**
+         * Constructs a new CheckConnectionForErrorCustomizer with the specified checkConnectionForError value.
+         * 
+         * @param checkConnectionForError the value indicating whether to check for connection errors
+         */
+        private CheckConnectionForErrorCustomizer(boolean checkConnectionForError) {
 			this.checkConnectionForError = checkConnectionForError;
 		}
 
-		@Override
+		/**
+         * Sets the checkConnectionForError property of the given WebServiceTemplate.
+         * 
+         * @param webServiceTemplate the WebServiceTemplate to customize
+         */
+        @Override
 		public void customize(WebServiceTemplate webServiceTemplate) {
 			webServiceTemplate.setCheckConnectionForError(this.checkConnectionForError);
 		}
@@ -587,11 +690,21 @@ public class WebServiceTemplateBuilder {
 
 		private final FaultMessageResolver faultMessageResolver;
 
-		private FaultMessageResolverCustomizer(FaultMessageResolver faultMessageResolver) {
+		/**
+         * Constructs a new FaultMessageResolverCustomizer with the specified FaultMessageResolver.
+         *
+         * @param faultMessageResolver the FaultMessageResolver to be set
+         */
+        private FaultMessageResolverCustomizer(FaultMessageResolver faultMessageResolver) {
 			this.faultMessageResolver = faultMessageResolver;
 		}
 
-		@Override
+		/**
+         * Customizes the given WebServiceTemplate by setting the fault message resolver.
+         * 
+         * @param webServiceTemplate the WebServiceTemplate to be customized
+         */
+        @Override
 		public void customize(WebServiceTemplate webServiceTemplate) {
 			webServiceTemplate.setFaultMessageResolver(this.faultMessageResolver);
 		}

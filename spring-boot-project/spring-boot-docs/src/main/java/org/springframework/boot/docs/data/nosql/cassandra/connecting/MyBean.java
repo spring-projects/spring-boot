@@ -19,12 +19,20 @@ package org.springframework.boot.docs.data.nosql.cassandra.connecting;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final CassandraTemplate template;
 
-	public MyBean(CassandraTemplate template) {
+	/**
+     * Constructs a new instance of MyBean with the specified CassandraTemplate.
+     *
+     * @param template the CassandraTemplate to be used for database operations
+     */
+    public MyBean(CassandraTemplate template) {
 		this.template = template;
 	}
 

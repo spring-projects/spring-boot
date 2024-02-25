@@ -31,14 +31,25 @@ import org.springframework.boot.availability.ReadinessState;
  */
 public class ReadinessStateHealthIndicator extends AvailabilityStateHealthIndicator {
 
-	public ReadinessStateHealthIndicator(ApplicationAvailability availability) {
+	/**
+     * Constructs a new ReadinessStateHealthIndicator with the given ApplicationAvailability.
+     * 
+     * @param availability the ApplicationAvailability to use for checking the readiness state
+     */
+    public ReadinessStateHealthIndicator(ApplicationAvailability availability) {
 		super(availability, ReadinessState.class, (statusMappings) -> {
 			statusMappings.add(ReadinessState.ACCEPTING_TRAFFIC, Status.UP);
 			statusMappings.add(ReadinessState.REFUSING_TRAFFIC, Status.OUT_OF_SERVICE);
 		});
 	}
 
-	@Override
+	/**
+     * Returns the state of the application's readiness based on the provided ApplicationAvailability object.
+     * 
+     * @param applicationAvailability the ApplicationAvailability object containing the availability state of the application
+     * @return the readiness state of the application
+     */
+    @Override
 	protected AvailabilityState getState(ApplicationAvailability applicationAvailability) {
 		return applicationAvailability.getReadinessState();
 	}

@@ -75,16 +75,32 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 		PROPERTY_SOURCE_LOADERS = Collections.unmodifiableSet(propertySourceLoaders);
 	}
 
-	public DevToolsHomePropertiesPostProcessor() {
+	/**
+     * Constructs a new DevToolsHomePropertiesPostProcessor with the default environment variables and system properties.
+     */
+    public DevToolsHomePropertiesPostProcessor() {
 		this(System.getenv(), System.getProperties());
 	}
 
-	DevToolsHomePropertiesPostProcessor(Map<String, String> environmentVariables, Properties systemProperties) {
+	/**
+     * Constructs a new DevToolsHomePropertiesPostProcessor with the specified environment variables and system properties.
+     * 
+     * @param environmentVariables the environment variables to be used by the post processor
+     * @param systemProperties the system properties to be used by the post processor
+     */
+    DevToolsHomePropertiesPostProcessor(Map<String, String> environmentVariables, Properties systemProperties) {
 		this.environmentVariables = environmentVariables;
 		this.systemProperties = systemProperties;
 	}
 
-	@Override
+	/**
+     * This method is used to post-process the environment and application for the DevToolsHomePropertiesPostProcessor class.
+     * It checks if DevTools should be enabled for the current thread and adds a property source to the environment if necessary.
+     * 
+     * @param environment The configurable environment to be processed.
+     * @param application The Spring application to be processed.
+     */
+    @Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread())) {
 			List<PropertySource<?>> propertySources = getPropertySources();
@@ -95,7 +111,12 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 		}
 	}
 
-	private List<PropertySource<?>> getPropertySources() {
+	/**
+     * Retrieves the list of property sources.
+     * 
+     * @return the list of property sources
+     */
+    private List<PropertySource<?>> getPropertySources() {
 		List<PropertySource<?>> propertySources = new ArrayList<>();
 		for (String fileName : FILE_NAMES) {
 			addPropertySource(propertySources, CONFIG_PATH + fileName, this::getPropertySourceName);
@@ -103,11 +124,24 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 		return propertySources;
 	}
 
-	private String getPropertySourceName(File file) {
+	/**
+     * Returns the name of the property source for the given file.
+     * 
+     * @param file the file for which to get the property source name
+     * @return the name of the property source in the format "devtools-local: [fileURI]"
+     */
+    private String getPropertySourceName(File file) {
 		return "devtools-local: [" + file.toURI() + "]";
 	}
 
-	private void addPropertySource(List<PropertySource<?>> propertySources, String fileName,
+	/**
+     * Adds a property source to the given list of property sources if the specified file exists and is a regular file.
+     * 
+     * @param propertySources the list of property sources to add the new property source to
+     * @param fileName the name of the file to create the property source from
+     * @param propertySourceNamer the function to generate the name for the property source
+     */
+    private void addPropertySource(List<PropertySource<?>> propertySources, String fileName,
 			Function<File, String> propertySourceNamer) {
 		File home = getHomeDirectory();
 		File file = (home != null) ? new File(home, fileName) : null;
@@ -117,7 +151,15 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 		}
 	}
 
-	private void addPropertySource(List<PropertySource<?>> propertySources, FileSystemResource resource,
+	/**
+     * Adds a property source to the given list of property sources.
+     * 
+     * @param propertySources the list of property sources to add to
+     * @param resource the file system resource to load the property source from
+     * @param propertySourceNamer the function to generate the name for the property source
+     * @throws IllegalStateException if unable to load the property source from the resource
+     */
+    private void addPropertySource(List<PropertySource<?>> propertySources, FileSystemResource resource,
 			Function<File, String> propertySourceNamer) {
 		try {
 			String name = propertySourceNamer.apply(resource.getFile());
@@ -132,18 +174,36 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 		}
 	}
 
-	private boolean canLoadFileExtension(PropertySourceLoader loader, String name) {
+	/**
+     * Checks if a given file extension can be loaded by the specified PropertySourceLoader.
+     * 
+     * @param loader the PropertySourceLoader to check
+     * @param name the name of the file to check
+     * @return true if the file extension can be loaded, false otherwise
+     */
+    private boolean canLoadFileExtension(PropertySourceLoader loader, String name) {
 		return Arrays.stream(loader.getFileExtensions())
 			.anyMatch((fileExtension) -> StringUtils.endsWithIgnoreCase(name, fileExtension));
 	}
 
-	protected File getHomeDirectory() {
+	/**
+     * Retrieves the home directory for the DevTools application.
+     * 
+     * @return The home directory as a File object.
+     */
+    protected File getHomeDirectory() {
 		return getHomeDirectory(() -> this.environmentVariables.get("SPRING_DEVTOOLS_HOME"),
 				() -> this.systemProperties.getProperty("spring.devtools.home"),
 				() -> this.systemProperties.getProperty("user.home"));
 	}
 
-	@SafeVarargs
+	/**
+     * Retrieves the home directory by evaluating a list of path suppliers.
+     * 
+     * @param pathSuppliers the suppliers of path strings
+     * @return the home directory as a File object, or null if no valid path is found
+     */
+    @SafeVarargs
 	private File getHomeDirectory(Supplier<String>... pathSuppliers) {
 		for (Supplier<String> pathSupplier : pathSuppliers) {
 			String path = pathSupplier.get();

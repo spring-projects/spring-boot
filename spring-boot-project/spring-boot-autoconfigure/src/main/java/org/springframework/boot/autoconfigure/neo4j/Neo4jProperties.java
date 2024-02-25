@@ -53,43 +53,91 @@ public class Neo4jProperties {
 
 	private final Security security = new Security();
 
-	public URI getUri() {
+	/**
+     * Returns the URI of the Neo4j database.
+     *
+     * @return the URI of the Neo4j database
+     */
+    public URI getUri() {
 		return this.uri;
 	}
 
-	public void setUri(URI uri) {
+	/**
+     * Sets the URI for the Neo4j database.
+     * 
+     * @param uri the URI to set
+     */
+    public void setUri(URI uri) {
 		this.uri = uri;
 	}
 
-	public Duration getConnectionTimeout() {
+	/**
+     * Returns the connection timeout duration.
+     *
+     * @return the connection timeout duration
+     */
+    public Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
-	public void setConnectionTimeout(Duration connectionTimeout) {
+	/**
+     * Sets the connection timeout for the Neo4j database.
+     * 
+     * @param connectionTimeout the duration of the connection timeout
+     */
+    public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
 
-	public Duration getMaxTransactionRetryTime() {
+	/**
+     * Returns the maximum transaction retry time.
+     *
+     * @return the maximum transaction retry time
+     */
+    public Duration getMaxTransactionRetryTime() {
 		return this.maxTransactionRetryTime;
 	}
 
-	public void setMaxTransactionRetryTime(Duration maxTransactionRetryTime) {
+	/**
+     * Sets the maximum transaction retry time.
+     * 
+     * @param maxTransactionRetryTime the maximum transaction retry time to set
+     */
+    public void setMaxTransactionRetryTime(Duration maxTransactionRetryTime) {
 		this.maxTransactionRetryTime = maxTransactionRetryTime;
 	}
 
-	public Authentication getAuthentication() {
+	/**
+     * Returns the authentication object associated with this Neo4jProperties instance.
+     *
+     * @return the authentication object
+     */
+    public Authentication getAuthentication() {
 		return this.authentication;
 	}
 
-	public Pool getPool() {
+	/**
+     * Returns the pool associated with this Neo4jProperties object.
+     *
+     * @return the pool associated with this Neo4jProperties object
+     */
+    public Pool getPool() {
 		return this.pool;
 	}
 
-	public Security getSecurity() {
+	/**
+     * Returns the security configuration of the Neo4jProperties.
+     *
+     * @return the security configuration of the Neo4jProperties
+     */
+    public Security getSecurity() {
 		return this.security;
 	}
 
-	public static class Authentication {
+	/**
+     * Authentication class.
+     */
+    public static class Authentication {
 
 		/**
 		 * Login user of the server.
@@ -112,41 +160,84 @@ public class Neo4jProperties {
 		 */
 		private String kerberosTicket;
 
-		public String getUsername() {
+		/**
+         * Returns the username associated with the Authentication object.
+         *
+         * @return the username
+         */
+        public String getUsername() {
 			return this.username;
 		}
 
-		public void setUsername(String username) {
+		/**
+         * Sets the username for authentication.
+         * 
+         * @param username the username to be set
+         */
+        public void setUsername(String username) {
 			this.username = username;
 		}
 
-		public String getPassword() {
+		/**
+         * Returns the password of the Authentication object.
+         *
+         * @return the password of the Authentication object
+         */
+        public String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		/**
+         * Sets the password for the user.
+         * 
+         * @param password the password to be set
+         */
+        public void setPassword(String password) {
 			this.password = password;
 		}
 
-		public String getRealm() {
+		/**
+         * Returns the realm of the authentication.
+         *
+         * @return the realm of the authentication
+         */
+        public String getRealm() {
 			return this.realm;
 		}
 
-		public void setRealm(String realm) {
+		/**
+         * Sets the realm for authentication.
+         * 
+         * @param realm the realm to be set
+         */
+        public void setRealm(String realm) {
 			this.realm = realm;
 		}
 
-		public String getKerberosTicket() {
+		/**
+         * Returns the Kerberos ticket associated with the authentication.
+         *
+         * @return the Kerberos ticket
+         */
+        public String getKerberosTicket() {
 			return this.kerberosTicket;
 		}
 
-		public void setKerberosTicket(String kerberosTicket) {
+		/**
+         * Sets the Kerberos ticket for authentication.
+         * 
+         * @param kerberosTicket the Kerberos ticket to be set
+         */
+        public void setKerberosTicket(String kerberosTicket) {
 			this.kerberosTicket = kerberosTicket;
 		}
 
 	}
 
-	public static class Pool {
+	/**
+     * Pool class.
+     */
+    public static class Pool {
 
 		/**
 		 * Whether to enable metrics.
@@ -181,57 +272,120 @@ public class Neo4jProperties {
 		 */
 		private Duration connectionAcquisitionTimeout = Duration.ofSeconds(60);
 
-		public boolean isLogLeakedSessions() {
+		/**
+         * Returns a boolean value indicating whether or not leaked sessions are logged.
+         * 
+         * @return true if leaked sessions are logged, false otherwise
+         */
+        public boolean isLogLeakedSessions() {
 			return this.logLeakedSessions;
 		}
 
-		public void setLogLeakedSessions(boolean logLeakedSessions) {
+		/**
+         * Sets the flag to enable or disable logging of leaked sessions.
+         * 
+         * @param logLeakedSessions true to enable logging of leaked sessions, false otherwise
+         */
+        public void setLogLeakedSessions(boolean logLeakedSessions) {
 			this.logLeakedSessions = logLeakedSessions;
 		}
 
-		public int getMaxConnectionPoolSize() {
+		/**
+         * Returns the maximum size of the connection pool.
+         *
+         * @return the maximum size of the connection pool
+         */
+        public int getMaxConnectionPoolSize() {
 			return this.maxConnectionPoolSize;
 		}
 
-		public void setMaxConnectionPoolSize(int maxConnectionPoolSize) {
+		/**
+         * Sets the maximum size of the connection pool.
+         * 
+         * @param maxConnectionPoolSize the maximum size of the connection pool
+         */
+        public void setMaxConnectionPoolSize(int maxConnectionPoolSize) {
 			this.maxConnectionPoolSize = maxConnectionPoolSize;
 		}
 
-		public Duration getIdleTimeBeforeConnectionTest() {
+		/**
+         * Returns the idle time before connection test.
+         * 
+         * @return the idle time before connection test
+         */
+        public Duration getIdleTimeBeforeConnectionTest() {
 			return this.idleTimeBeforeConnectionTest;
 		}
 
-		public void setIdleTimeBeforeConnectionTest(Duration idleTimeBeforeConnectionTest) {
+		/**
+         * Sets the idle time before connection test.
+         * 
+         * @param idleTimeBeforeConnectionTest the duration of idle time before connection test
+         */
+        public void setIdleTimeBeforeConnectionTest(Duration idleTimeBeforeConnectionTest) {
 			this.idleTimeBeforeConnectionTest = idleTimeBeforeConnectionTest;
 		}
 
-		public Duration getMaxConnectionLifetime() {
+		/**
+         * Returns the maximum lifetime of a connection in the pool.
+         *
+         * @return the maximum lifetime of a connection
+         */
+        public Duration getMaxConnectionLifetime() {
 			return this.maxConnectionLifetime;
 		}
 
-		public void setMaxConnectionLifetime(Duration maxConnectionLifetime) {
+		/**
+         * Sets the maximum lifetime of a connection in the pool.
+         * 
+         * @param maxConnectionLifetime the maximum lifetime of a connection
+         */
+        public void setMaxConnectionLifetime(Duration maxConnectionLifetime) {
 			this.maxConnectionLifetime = maxConnectionLifetime;
 		}
 
-		public Duration getConnectionAcquisitionTimeout() {
+		/**
+         * Returns the connection acquisition timeout.
+         * 
+         * @return the connection acquisition timeout
+         */
+        public Duration getConnectionAcquisitionTimeout() {
 			return this.connectionAcquisitionTimeout;
 		}
 
-		public void setConnectionAcquisitionTimeout(Duration connectionAcquisitionTimeout) {
+		/**
+         * Sets the timeout for acquiring a connection from the pool.
+         * 
+         * @param connectionAcquisitionTimeout the timeout duration for acquiring a connection
+         */
+        public void setConnectionAcquisitionTimeout(Duration connectionAcquisitionTimeout) {
 			this.connectionAcquisitionTimeout = connectionAcquisitionTimeout;
 		}
 
-		public boolean isMetricsEnabled() {
+		/**
+         * Returns a boolean value indicating whether metrics are enabled for the Pool.
+         * 
+         * @return true if metrics are enabled, false otherwise
+         */
+        public boolean isMetricsEnabled() {
 			return this.metricsEnabled;
 		}
 
-		public void setMetricsEnabled(boolean metricsEnabled) {
+		/**
+         * Sets whether metrics are enabled for the Pool.
+         * 
+         * @param metricsEnabled true if metrics are enabled, false otherwise
+         */
+        public void setMetricsEnabled(boolean metricsEnabled) {
 			this.metricsEnabled = metricsEnabled;
 		}
 
 	}
 
-	public static class Security {
+	/**
+     * Security class.
+     */
+    public static class Security {
 
 		/**
 		 * Whether the driver should use encrypted traffic.
@@ -253,35 +407,75 @@ public class Neo4jProperties {
 		 */
 		private boolean hostnameVerificationEnabled = true;
 
-		public boolean isEncrypted() {
+		/**
+         * Returns a boolean value indicating whether the data is encrypted.
+         *
+         * @return true if the data is encrypted, false otherwise.
+         */
+        public boolean isEncrypted() {
 			return this.encrypted;
 		}
 
-		public void setEncrypted(boolean encrypted) {
+		/**
+         * Sets the encrypted flag for the Security class.
+         * 
+         * @param encrypted true if the data is encrypted, false otherwise
+         */
+        public void setEncrypted(boolean encrypted) {
 			this.encrypted = encrypted;
 		}
 
-		public TrustStrategy getTrustStrategy() {
+		/**
+         * Returns the trust strategy used by the Security class.
+         *
+         * @return the trust strategy used by the Security class
+         */
+        public TrustStrategy getTrustStrategy() {
 			return this.trustStrategy;
 		}
 
-		public void setTrustStrategy(TrustStrategy trustStrategy) {
+		/**
+         * Sets the trust strategy for the security.
+         * 
+         * @param trustStrategy the trust strategy to be set
+         */
+        public void setTrustStrategy(TrustStrategy trustStrategy) {
 			this.trustStrategy = trustStrategy;
 		}
 
-		public File getCertFile() {
+		/**
+         * Returns the certificate file.
+         *
+         * @return the certificate file
+         */
+        public File getCertFile() {
 			return this.certFile;
 		}
 
-		public void setCertFile(File certFile) {
+		/**
+         * Sets the certificate file for the security class.
+         * 
+         * @param certFile the certificate file to be set
+         */
+        public void setCertFile(File certFile) {
 			this.certFile = certFile;
 		}
 
-		public boolean isHostnameVerificationEnabled() {
+		/**
+         * Returns the status of the hostname verification.
+         * 
+         * @return true if hostname verification is enabled, false otherwise.
+         */
+        public boolean isHostnameVerificationEnabled() {
 			return this.hostnameVerificationEnabled;
 		}
 
-		public void setHostnameVerificationEnabled(boolean hostnameVerificationEnabled) {
+		/**
+         * Sets the flag indicating whether hostname verification is enabled.
+         * 
+         * @param hostnameVerificationEnabled the flag indicating whether hostname verification is enabled
+         */
+        public void setHostnameVerificationEnabled(boolean hostnameVerificationEnabled) {
 			this.hostnameVerificationEnabled = hostnameVerificationEnabled;
 		}
 

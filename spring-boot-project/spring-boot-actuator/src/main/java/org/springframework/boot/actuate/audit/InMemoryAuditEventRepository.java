@@ -43,11 +43,19 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 
 	private volatile int tail = -1;
 
-	public InMemoryAuditEventRepository() {
+	/**
+     * Constructs a new InMemoryAuditEventRepository with the default capacity.
+     */
+    public InMemoryAuditEventRepository() {
 		this(DEFAULT_CAPACITY);
 	}
 
-	public InMemoryAuditEventRepository(int capacity) {
+	/**
+     * Constructs a new InMemoryAuditEventRepository with the specified capacity.
+     * 
+     * @param capacity the maximum number of AuditEvents that can be stored in the repository
+     */
+    public InMemoryAuditEventRepository(int capacity) {
 		this.events = new AuditEvent[capacity];
 	}
 
@@ -61,7 +69,12 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 		}
 	}
 
-	@Override
+	/**
+     * Adds an AuditEvent to the repository.
+     * 
+     * @param event the AuditEvent to be added (must not be null)
+     */
+    @Override
 	public void add(AuditEvent event) {
 		Assert.notNull(event, "AuditEvent must not be null");
 		synchronized (this.monitor) {
@@ -70,7 +83,15 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 		}
 	}
 
-	@Override
+	/**
+     * Finds audit events based on the given criteria.
+     * 
+     * @param principal the principal associated with the audit events
+     * @param after the minimum timestamp of the audit events
+     * @param type the type of the audit events
+     * @return a list of audit events that match the given criteria
+     */
+    @Override
 	public List<AuditEvent> find(String principal, Instant after, String type) {
 		LinkedList<AuditEvent> events = new LinkedList<>();
 		synchronized (this.monitor) {
@@ -84,7 +105,16 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 		return events;
 	}
 
-	private boolean isMatch(String principal, Instant after, String type, AuditEvent event) {
+	/**
+     * Checks if the given audit event matches the specified criteria.
+     * 
+     * @param principal the principal to match (null to ignore)
+     * @param after the timestamp to match (null to ignore)
+     * @param type the type to match (null to ignore)
+     * @param event the audit event to check
+     * @return true if the audit event matches the criteria, false otherwise
+     */
+    private boolean isMatch(String principal, Instant after, String type, AuditEvent event) {
 		boolean match = true;
 		match = match && (principal == null || event.getPrincipal().equals(principal));
 		match = match && (after == null || event.getTimestamp().isAfter(after));
@@ -92,7 +122,13 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 		return match;
 	}
 
-	private AuditEvent resolveTailEvent(int offset) {
+	/**
+     * Resolves the tail event from the InMemoryAuditEventRepository based on the given offset.
+     * 
+     * @param offset the offset value to determine the position of the tail event
+     * @return the tail event resolved from the repository
+     */
+    private AuditEvent resolveTailEvent(int offset) {
 		int index = ((this.tail + this.events.length - offset) % this.events.length);
 		return this.events[index];
 	}

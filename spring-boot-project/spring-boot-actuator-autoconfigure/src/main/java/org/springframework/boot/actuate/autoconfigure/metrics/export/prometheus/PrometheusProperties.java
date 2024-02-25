@@ -63,39 +63,84 @@ public class PrometheusProperties {
 	 */
 	private Duration step = Duration.ofMinutes(1);
 
-	public boolean isDescriptions() {
+	/**
+     * Returns the value indicating whether descriptions are enabled or not.
+     * 
+     * @return true if descriptions are enabled, false otherwise
+     */
+    public boolean isDescriptions() {
 		return this.descriptions;
 	}
 
-	public void setDescriptions(boolean descriptions) {
+	/**
+     * Sets the value of the descriptions property.
+     * 
+     * @param descriptions the new value for the descriptions property
+     */
+    public void setDescriptions(boolean descriptions) {
 		this.descriptions = descriptions;
 	}
 
-	public HistogramFlavor getHistogramFlavor() {
+	/**
+     * Returns the histogram flavor used by the PrometheusProperties class.
+     * 
+     * @return the histogram flavor used by the PrometheusProperties class
+     */
+    public HistogramFlavor getHistogramFlavor() {
 		return this.histogramFlavor;
 	}
 
-	public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
+	/**
+     * Sets the histogram flavor for the PrometheusProperties class.
+     * 
+     * @param histogramFlavor the histogram flavor to be set
+     */
+    public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
 		this.histogramFlavor = histogramFlavor;
 	}
 
-	public Duration getStep() {
+	/**
+     * Returns the step duration.
+     *
+     * @return the step duration
+     */
+    public Duration getStep() {
 		return this.step;
 	}
 
-	public void setStep(Duration step) {
+	/**
+     * Sets the step duration for data collection.
+     * 
+     * @param step the duration of each step in data collection
+     */
+    public void setStep(Duration step) {
 		this.step = step;
 	}
 
-	public boolean isEnabled() {
+	/**
+     * Returns the current status of the enabled flag.
+     *
+     * @return true if the enabled flag is set to true, false otherwise.
+     */
+    public boolean isEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	/**
+     * Sets the enabled status of the PrometheusProperties.
+     * 
+     * @param enabled the enabled status to be set
+     */
+    public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public Pushgateway getPushgateway() {
+	/**
+     * Returns the Pushgateway instance associated with this PrometheusProperties object.
+     *
+     * @return the Pushgateway instance
+     */
+    public Pushgateway getPushgateway() {
 		return this.pushgateway;
 	}
 
@@ -144,67 +189,147 @@ public class PrometheusProperties {
 		 */
 		private ShutdownOperation shutdownOperation = ShutdownOperation.NONE;
 
-		public Boolean getEnabled() {
+		/**
+         * Returns the value of the 'enabled' property.
+         *
+         * @return the value of the 'enabled' property
+         */
+        public Boolean getEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(Boolean enabled) {
+		/**
+         * Sets the enabled status of the Pushgateway.
+         * 
+         * @param enabled the enabled status to be set
+         */
+        public void setEnabled(Boolean enabled) {
 			this.enabled = enabled;
 		}
 
-		public String getBaseUrl() {
+		/**
+         * Returns the base URL of the Pushgateway.
+         *
+         * @return the base URL of the Pushgateway
+         */
+        public String getBaseUrl() {
 			return this.baseUrl;
 		}
 
-		public void setBaseUrl(String baseUrl) {
+		/**
+         * Sets the base URL for the Pushgateway.
+         * 
+         * @param baseUrl the base URL to be set
+         */
+        public void setBaseUrl(String baseUrl) {
 			this.baseUrl = baseUrl;
 		}
 
-		public String getUsername() {
+		/**
+         * Returns the username associated with the Pushgateway.
+         *
+         * @return the username associated with the Pushgateway
+         */
+        public String getUsername() {
 			return this.username;
 		}
 
-		public void setUsername(String username) {
+		/**
+         * Sets the username for authentication.
+         * 
+         * @param username the username to be set
+         */
+        public void setUsername(String username) {
 			this.username = username;
 		}
 
-		public String getPassword() {
+		/**
+         * Returns the password associated with the Pushgateway.
+         *
+         * @return the password associated with the Pushgateway
+         */
+        public String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		/**
+         * Sets the password for the Pushgateway.
+         * 
+         * @param password the password to be set
+         */
+        public void setPassword(String password) {
 			this.password = password;
 		}
 
-		public Duration getPushRate() {
+		/**
+         * Returns the push rate of the Pushgateway.
+         *
+         * @return the push rate of the Pushgateway
+         */
+        public Duration getPushRate() {
 			return this.pushRate;
 		}
 
-		public void setPushRate(Duration pushRate) {
+		/**
+         * Sets the push rate for the Pushgateway.
+         * 
+         * @param pushRate the duration representing the push rate
+         */
+        public void setPushRate(Duration pushRate) {
 			this.pushRate = pushRate;
 		}
 
-		public String getJob() {
+		/**
+         * Returns the job associated with the Pushgateway.
+         *
+         * @return the job associated with the Pushgateway
+         */
+        public String getJob() {
 			return this.job;
 		}
 
-		public void setJob(String job) {
+		/**
+         * Sets the job for the Pushgateway.
+         * 
+         * @param job the job to be set for the Pushgateway
+         */
+        public void setJob(String job) {
 			this.job = job;
 		}
 
-		public Map<String, String> getGroupingKey() {
+		/**
+         * Returns the grouping key of the Pushgateway.
+         * 
+         * @return the grouping key as a Map<String, String>
+         */
+        public Map<String, String> getGroupingKey() {
 			return this.groupingKey;
 		}
 
-		public void setGroupingKey(Map<String, String> groupingKey) {
+		/**
+         * Sets the grouping key for the Pushgateway.
+         * 
+         * @param groupingKey the grouping key to be set, represented as a Map of String keys and String values
+         */
+        public void setGroupingKey(Map<String, String> groupingKey) {
 			this.groupingKey = groupingKey;
 		}
 
-		public ShutdownOperation getShutdownOperation() {
+		/**
+         * Returns the shutdown operation associated with this Pushgateway.
+         *
+         * @return the shutdown operation associated with this Pushgateway
+         */
+        public ShutdownOperation getShutdownOperation() {
 			return this.shutdownOperation;
 		}
 
-		public void setShutdownOperation(ShutdownOperation shutdownOperation) {
+		/**
+         * Sets the shutdown operation for the Pushgateway.
+         * 
+         * @param shutdownOperation the shutdown operation to be set
+         */
+        public void setShutdownOperation(ShutdownOperation shutdownOperation) {
 			this.shutdownOperation = shutdownOperation;
 		}
 

@@ -67,11 +67,19 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public class WebSocketServletAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * TomcatWebSocketConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Tomcat.class, WsSci.class })
 	static class TomcatWebSocketConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of {@link TomcatWebSocketServletWebServerCustomizer} if no bean with the name "websocketServletWebServerCustomizer" is found.
+         * 
+         * @return the {@link TomcatWebSocketServletWebServerCustomizer} bean
+         */
+        @Bean
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
 		TomcatWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new TomcatWebSocketServletWebServerCustomizer();
@@ -79,17 +87,34 @@ public class WebSocketServletAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * JettyWebSocketConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JakartaWebSocketServletContainerInitializer.class)
 	static class JettyWebSocketConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of JettyWebSocketServletWebServerCustomizer if there is no existing bean with the name "websocketServletWebServerCustomizer".
+         * This customizer is used to configure the Jetty WebSocket servlet for the web server.
+         *
+         * @return the JettyWebSocketServletWebServerCustomizer instance
+         */
+        @Bean
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
 		JettyWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new JettyWebSocketServletWebServerCustomizer();
 		}
 
-		@Bean
+		/**
+         * Customizes the Jetty servlet web server factory to add a WebSocket upgrade filter.
+         * This method is conditionally executed based on the deployment not being a war deployment,
+         * and if there is no existing bean with the name "websocketUpgradeFilterWebServerCustomizer".
+         * The customizer is added with the lowest precedence.
+         *
+         * @return The web server factory customizer for the WebSocket upgrade filter.
+         */
+        @Bean
 		@ConditionalOnNotWarDeployment
 		@Order(Ordered.LOWEST_PRECEDENCE)
 		@ConditionalOnMissingBean(name = "websocketUpgradeFilterWebServerCustomizer")
@@ -106,11 +131,20 @@ public class WebSocketServletAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * UndertowWebSocketConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(io.undertow.websockets.jsr.Bootstrap.class)
 	static class UndertowWebSocketConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of UndertowWebSocketServletWebServerCustomizer if there is no existing bean with the name "websocketServletWebServerCustomizer".
+         * This customizer is used to configure the Undertow web server for WebSocket support.
+         *
+         * @return the UndertowWebSocketServletWebServerCustomizer instance
+         */
+        @Bean
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
 		UndertowWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new UndertowWebSocketServletWebServerCustomizer();

@@ -46,17 +46,33 @@ final class SpringProfileArbiter implements Arbiter {
 
 	private final Profiles profiles;
 
-	private SpringProfileArbiter(Environment environment, String[] profiles) {
+	/**
+     * Constructs a new SpringProfileArbiter with the specified environment and profiles.
+     * 
+     * @param environment the environment used to determine the active profiles
+     * @param profiles an array of profiles to be considered
+     */
+    private SpringProfileArbiter(Environment environment, String[] profiles) {
 		this.environment = environment;
 		this.profiles = Profiles.of(profiles);
 	}
 
-	@Override
+	/**
+     * Checks if the condition is met based on the environment and profiles.
+     * 
+     * @return true if the condition is met, false otherwise
+     */
+    @Override
 	public boolean isCondition() {
 		return (this.environment != null) && this.environment.acceptsProfiles(this.profiles);
 	}
 
-	@PluginBuilderFactory
+	/**
+     * Creates a new instance of the {@code Builder} class.
+     *
+     * @return a new instance of the {@code Builder} class
+     */
+    @PluginBuilderFactory
 	static Builder newBuilder() {
 		return new Builder();
 	}
@@ -77,7 +93,10 @@ final class SpringProfileArbiter implements Arbiter {
 		@PluginLoggerContext
 		private LoggerContext loggerContext;
 
-		private Builder() {
+		/**
+         * Private constructor for the Builder class.
+         */
+        private Builder() {
 		}
 
 		/**
@@ -91,7 +110,12 @@ final class SpringProfileArbiter implements Arbiter {
 			return this;
 		}
 
-		@Override
+		/**
+         * Builds a SpringProfileArbiter object based on the provided configuration.
+         * 
+         * @return the constructed SpringProfileArbiter object, or null if no Spring Environment is available
+         */
+        @Override
 		public SpringProfileArbiter build() {
 			Environment environment = Log4J2LoggingSystem.getEnvironment(this.loggerContext);
 			if (environment == null) {

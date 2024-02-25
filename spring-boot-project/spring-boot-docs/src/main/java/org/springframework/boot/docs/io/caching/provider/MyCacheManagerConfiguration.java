@@ -21,10 +21,18 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyCacheManagerConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyCacheManagerConfiguration {
 
-	@Bean
+	/**
+     * Configures the cache manager to disallow null values in the cache.
+     * 
+     * @return the cache manager customizer
+     */
+    @Bean
 	public CacheManagerCustomizer<ConcurrentMapCacheManager> cacheManagerCustomizer() {
 		return (cacheManager) -> cacheManager.setAllowNullValues(false);
 	}

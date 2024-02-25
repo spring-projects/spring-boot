@@ -24,6 +24,9 @@ import smoketest.data.jpa.domain.ReviewDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+/**
+ * HotelService interface.
+ */
 public interface HotelService {
 
 	Hotel getHotel(City city, String name);

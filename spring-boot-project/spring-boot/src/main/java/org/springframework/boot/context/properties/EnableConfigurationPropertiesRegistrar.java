@@ -41,7 +41,13 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 	private static final String METHOD_VALIDATION_EXCLUDE_FILTER_BEAN_NAME = Conventions
 		.getQualifiedAttributeName(EnableConfigurationPropertiesRegistrar.class, "methodValidationExcludeFilter");
 
-	@Override
+	/**
+     * Registers bean definitions for configuration properties.
+     * 
+     * @param metadata the annotation metadata
+     * @param registry the bean definition registry
+     */
+    @Override
 	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 		registerInfrastructureBeans(registry);
 		registerMethodValidationExcludeFilter(registry);
@@ -49,7 +55,13 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 		getTypes(metadata).forEach(beanRegistrar::register);
 	}
 
-	private Set<Class<?>> getTypes(AnnotationMetadata metadata) {
+	/**
+     * Retrieves the types of classes annotated with {@link EnableConfigurationProperties} from the given {@link AnnotationMetadata}.
+     * 
+     * @param metadata the {@link AnnotationMetadata} containing the annotations
+     * @return a {@link Set} of {@link Class} objects representing the types of classes annotated with {@link EnableConfigurationProperties}
+     */
+    private Set<Class<?>> getTypes(AnnotationMetadata metadata) {
 		return metadata.getAnnotations()
 			.stream(EnableConfigurationProperties.class)
 			.flatMap((annotation) -> Arrays.stream(annotation.getClassArray(MergedAnnotation.VALUE)))
@@ -57,12 +69,26 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 			.collect(Collectors.toSet());
 	}
 
-	static void registerInfrastructureBeans(BeanDefinitionRegistry registry) {
+	/**
+     * Registers the infrastructure beans required for configuration properties binding.
+     * 
+     * @param registry the bean definition registry to register the beans with
+     */
+    static void registerInfrastructureBeans(BeanDefinitionRegistry registry) {
 		ConfigurationPropertiesBindingPostProcessor.register(registry);
 		BoundConfigurationProperties.register(registry);
 	}
 
-	static void registerMethodValidationExcludeFilter(BeanDefinitionRegistry registry) {
+	/**
+     * Registers a method validation exclude filter in the given {@link BeanDefinitionRegistry}.
+     * If the filter is not already registered, a new {@link BeanDefinition} is created and registered.
+     * The filter is created using the {@link MethodValidationExcludeFilter} class and the "byAnnotation" constructor.
+     * The {@link ConfigurationProperties} class is used as a constructor argument.
+     * The role of the bean definition is set to {@link BeanDefinition.ROLE_INFRASTRUCTURE}.
+     * 
+     * @param registry the {@link BeanDefinitionRegistry} to register the filter in
+     */
+    static void registerMethodValidationExcludeFilter(BeanDefinitionRegistry registry) {
 		if (!registry.containsBeanDefinition(METHOD_VALIDATION_EXCLUDE_FILTER_BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
 				.rootBeanDefinition(MethodValidationExcludeFilter.class, "byAnnotation")

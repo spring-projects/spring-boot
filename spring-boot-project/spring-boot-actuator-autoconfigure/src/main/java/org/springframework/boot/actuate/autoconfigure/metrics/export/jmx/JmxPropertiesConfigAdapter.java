@@ -30,26 +30,52 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  */
 class JmxPropertiesConfigAdapter extends PropertiesConfigAdapter<JmxProperties> implements JmxConfig {
 
-	JmxPropertiesConfigAdapter(JmxProperties properties) {
+	/**
+     * Constructs a new JmxPropertiesConfigAdapter with the specified JmxProperties.
+     *
+     * @param properties the JmxProperties to be used by the adapter
+     */
+    JmxPropertiesConfigAdapter(JmxProperties properties) {
 		super(properties);
 	}
 
-	@Override
+	/**
+     * Returns the prefix for JMX metrics export configuration.
+     *
+     * @return the prefix for JMX metrics export configuration
+     */
+    @Override
 	public String prefix() {
 		return "management.jmx.metrics.export";
 	}
 
-	@Override
+	/**
+     * Retrieves the value associated with the specified key from the JmxPropertiesConfigAdapter.
+     *
+     * @param key the key whose associated value is to be retrieved
+     * @return the value to which the specified key is mapped, or null if the key is not found
+     */
+    @Override
 	public String get(String key) {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the domain of the JMX properties.
+     * 
+     * @return the domain of the JMX properties
+     */
+    @Override
 	public String domain() {
 		return get(JmxProperties::getDomain, JmxConfig.super::domain);
 	}
 
-	@Override
+	/**
+     * Returns the step duration for the JMX properties.
+     * 
+     * @return the step duration
+     */
+    @Override
 	public Duration step() {
 		return get(JmxProperties::getStep, JmxConfig.super::step);
 	}

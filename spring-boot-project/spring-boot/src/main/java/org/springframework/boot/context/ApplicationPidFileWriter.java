@@ -132,7 +132,17 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		this.triggerEventType = triggerEventType;
 	}
 
-	@Override
+	/**
+     * This method is called when an application event occurs.
+     * It checks if the event is of the specified trigger event type and if the 'created' flag is false.
+     * If both conditions are met, it attempts to write a PID file.
+     * If an exception occurs during the write operation, it handles the exception based on the 'failOnWriteError' flag.
+     * If 'failOnWriteError' is true, it throws an IllegalStateException with an error message.
+     * Otherwise, it logs a warning message with the error details.
+     * 
+     * @param event The application event that occurred
+     */
+    @Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
 		if (this.triggerEventType.isInstance(event) && created.compareAndSet(false, true)) {
 			try {
@@ -148,7 +158,13 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		}
 	}
 
-	private void writePidFile(SpringApplicationEvent event) throws IOException {
+	/**
+     * Writes the process ID to a file.
+     * 
+     * @param event the SpringApplicationEvent that triggered the method
+     * @throws IOException if an I/O error occurs while writing the file
+     */
+    private void writePidFile(SpringApplicationEvent event) throws IOException {
 		File pidFile = this.file;
 		String override = getProperty(event, FILE_PROPERTIES);
 		if (override != null) {
@@ -158,12 +174,25 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		pidFile.deleteOnExit();
 	}
 
-	private boolean failOnWriteError(SpringApplicationEvent event) {
+	/**
+     * Determines whether to fail on write error.
+     * 
+     * @param event the SpringApplicationEvent object
+     * @return true if the property value is "true", false otherwise
+     */
+    private boolean failOnWriteError(SpringApplicationEvent event) {
 		String value = getProperty(event, FAIL_ON_WRITE_ERROR_PROPERTIES);
 		return Boolean.parseBoolean(value);
 	}
 
-	private String getProperty(SpringApplicationEvent event, List<Property> candidates) {
+	/**
+     * Retrieves the value of a property from a list of candidates based on the given event.
+     * 
+     * @param event the SpringApplicationEvent object
+     * @param candidates the list of Property objects to search for the value
+     * @return the value of the property if found, otherwise null
+     */
+    private String getProperty(SpringApplicationEvent event, List<Property> candidates) {
 		for (Property candidate : candidates) {
 			String value = candidate.getValue(event);
 			if (value != null) {
@@ -173,11 +202,21 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		return null;
 	}
 
-	public void setOrder(int order) {
+	/**
+     * Sets the order in which the ApplicationPidFileWriter should be executed.
+     * 
+     * @param order the order value to set
+     */
+    public void setOrder(int order) {
 		this.order = order;
 	}
 
-	@Override
+	/**
+     * Returns the order value of this ApplicationPidFileWriter.
+     * 
+     * @return the order value
+     */
+    @Override
 	public int getOrder() {
 		return this.order;
 	}
@@ -207,12 +246,24 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 
 		private final String key;
 
-		SpringProperty(String prefix, String key) {
+		/**
+         * Constructs a new SpringProperty object with the specified prefix and key.
+         * 
+         * @param prefix the prefix to be used for the property
+         * @param key the key to be used for the property
+         */
+        SpringProperty(String prefix, String key) {
 			this.prefix = prefix;
 			this.key = key;
 		}
 
-		@Override
+		/**
+         * Retrieves the value of a property based on the given SpringApplicationEvent.
+         * 
+         * @param event The SpringApplicationEvent to retrieve the property value from.
+         * @return The value of the property, or null if the environment is null.
+         */
+        @Override
 		public String getValue(SpringApplicationEvent event) {
 			Environment environment = getEnvironment(event);
 			if (environment == null) {
@@ -221,7 +272,13 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 			return environment.getProperty(this.prefix + this.key);
 		}
 
-		private Environment getEnvironment(SpringApplicationEvent event) {
+		/**
+         * Returns the environment associated with the given SpringApplicationEvent.
+         * 
+         * @param event the SpringApplicationEvent
+         * @return the environment associated with the event, or null if the event is not of a supported type
+         */
+        private Environment getEnvironment(SpringApplicationEvent event) {
 			if (event instanceof ApplicationEnvironmentPreparedEvent environmentPreparedEvent) {
 				return environmentPreparedEvent.getEnvironment();
 			}
@@ -243,11 +300,22 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 
 		private final String[] properties;
 
-		SystemProperty(String name) {
+		/**
+         * Constructs a new SystemProperty object with the specified name.
+         * 
+         * @param name the name of the system property
+         */
+        SystemProperty(String name) {
 			this.properties = new String[] { name.toUpperCase(Locale.ENGLISH), name.toLowerCase(Locale.ENGLISH) };
 		}
 
-		@Override
+		/**
+         * Retrieves the value of the specified system property.
+         * 
+         * @param event the SpringApplicationEvent object
+         * @return the value of the system property
+         */
+        @Override
 		public String getValue(SpringApplicationEvent event) {
 			return SystemProperties.get(this.properties);
 		}

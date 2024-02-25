@@ -30,15 +30,31 @@ import org.apache.maven.artifact.Artifact;
  */
 public class ExcludeFilter extends DependencyFilter {
 
-	public ExcludeFilter(Exclude... excludes) {
+	/**
+     * Constructs a new ExcludeFilter with the specified Exclude objects.
+     * 
+     * @param excludes the Exclude objects to be used for filtering
+     */
+    public ExcludeFilter(Exclude... excludes) {
 		this(Arrays.asList(excludes));
 	}
 
-	public ExcludeFilter(List<Exclude> excludes) {
+	/**
+     * Constructs a new ExcludeFilter with the specified list of excludes.
+     * 
+     * @param excludes the list of excludes to be used by the filter
+     */
+    public ExcludeFilter(List<Exclude> excludes) {
 		super(excludes);
 	}
 
-	@Override
+	/**
+     * Filters the given artifact based on the filters defined in the ExcludeFilter class.
+     * 
+     * @param artifact The artifact to be filtered.
+     * @return {@code true} if the artifact matches any of the defined filters, {@code false} otherwise.
+     */
+    @Override
 	protected boolean filter(Artifact artifact) {
 		for (FilterableDependency dependency : getFilters()) {
 			if (equals(artifact, dependency)) {

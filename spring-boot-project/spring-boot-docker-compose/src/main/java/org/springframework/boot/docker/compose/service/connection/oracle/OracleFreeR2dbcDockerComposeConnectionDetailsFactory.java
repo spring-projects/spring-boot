@@ -27,7 +27,10 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  */
 class OracleFreeR2dbcDockerComposeConnectionDetailsFactory extends OracleR2dbcDockerComposeConnectionDetailsFactory {
 
-	protected OracleFreeR2dbcDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new OracleFreeR2dbcDockerComposeConnectionDetailsFactory with the default OracleContainer.FREE value.
+     */
+    protected OracleFreeR2dbcDockerComposeConnectionDetailsFactory() {
 		super(OracleContainer.FREE);
 	}
 

@@ -45,7 +45,12 @@ public class Compression {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	/**
+     * Sets the enabled status of the Compression class.
+     * 
+     * @param enabled the boolean value indicating whether compression is enabled or not
+     */
+    public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
@@ -57,15 +62,30 @@ public class Compression {
 		return this.mimeTypes;
 	}
 
-	public void setMimeTypes(String[] mimeTypes) {
+	/**
+     * Sets the MIME types for compression.
+     * 
+     * @param mimeTypes an array of strings representing the MIME types to be set
+     */
+    public void setMimeTypes(String[] mimeTypes) {
 		this.mimeTypes = mimeTypes;
 	}
 
-	public String[] getExcludedUserAgents() {
+	/**
+     * Returns an array of excluded user agents.
+     *
+     * @return the array of excluded user agents
+     */
+    public String[] getExcludedUserAgents() {
 		return this.excludedUserAgents;
 	}
 
-	public void setExcludedUserAgents(String[] excludedUserAgents) {
+	/**
+     * Sets the excluded user agents for compression.
+     * 
+     * @param excludedUserAgents an array of strings representing the user agents to be excluded from compression
+     */
+    public void setExcludedUserAgents(String[] excludedUserAgents) {
 		this.excludedUserAgents = excludedUserAgents;
 	}
 
@@ -78,7 +98,12 @@ public class Compression {
 		return this.minResponseSize;
 	}
 
-	public void setMinResponseSize(DataSize minSize) {
+	/**
+     * Sets the minimum response size for compression.
+     * 
+     * @param minSize the minimum response size to be set
+     */
+    public void setMinResponseSize(DataSize minSize) {
 		this.minResponseSize = minSize;
 	}
 

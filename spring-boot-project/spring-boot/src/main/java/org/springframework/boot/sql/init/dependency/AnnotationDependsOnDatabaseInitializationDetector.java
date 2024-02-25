@@ -29,7 +29,13 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  */
 class AnnotationDependsOnDatabaseInitializationDetector implements DependsOnDatabaseInitializationDetector {
 
-	@Override
+	/**
+     * Detects beans in the given bean factory that have the {@link DependsOnDatabaseInitialization} annotation.
+     * 
+     * @param beanFactory the bean factory to search for annotated beans
+     * @return a set of bean names that have the {@link DependsOnDatabaseInitialization} annotation
+     */
+    @Override
 	public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
 		Set<String> dependentBeans = new HashSet<>();
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {

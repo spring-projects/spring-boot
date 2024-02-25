@@ -331,7 +331,17 @@ public class Binder {
 		return bind(name, target, handler, true);
 	}
 
-	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, boolean create) {
+	/**
+     * Binds the given configuration property name to the specified target using the provided bind handler.
+     * 
+     * @param name the configuration property name to bind
+     * @param target the target to bind the configuration property to
+     * @param handler the bind handler to use for binding
+     * @param create a boolean indicating whether to create the target if it does not exist
+     * @return the bound configuration property value
+     * @throws IllegalArgumentException if the name or target is null
+     */
+    private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, boolean create) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(target, "Target must not be null");
 		handler = (handler != null) ? handler : this.defaultBindHandler;
@@ -339,7 +349,19 @@ public class Binder {
 		return bind(name, target, handler, context, false, create);
 	}
 
-	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, Context context,
+	/**
+     * Binds the given configuration property name to the specified target using the provided bind handler and context.
+     * 
+     * @param <T> the type of the target object
+     * @param name the configuration property name to bind
+     * @param target the target object to bind the configuration property to
+     * @param handler the bind handler to use for binding
+     * @param context the context for the binding operation
+     * @param allowRecursiveBinding flag indicating whether recursive binding is allowed
+     * @param create flag indicating whether to create the target object if it does not exist
+     * @return the bound object
+     */
+    private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, Context context,
 			boolean allowRecursiveBinding, boolean create) {
 		try {
 			Bindable<T> replacementTarget = handler.onStart(name, target, context);
@@ -355,7 +377,20 @@ public class Binder {
 		}
 	}
 
-	private <T> T handleBindResult(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
+	/**
+     * Handles the result of a binding operation.
+     * 
+     * @param <T> the type of the result
+     * @param name the name of the configuration property being bound
+     * @param target the bindable target object
+     * @param handler the bind handler
+     * @param context the binding context
+     * @param result the result of the binding operation
+     * @param create a flag indicating whether to create a new instance if the result is null
+     * @return the converted result
+     * @throws Exception if an error occurs during the binding operation
+     */
+    private <T> T handleBindResult(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
 			Context context, Object result, boolean create) throws Exception {
 		if (result != null) {
 			result = handler.onSuccess(name, target, context, result);
@@ -378,7 +413,19 @@ public class Binder {
 		return context.getConverter().convert(result, target);
 	}
 
-	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
+	/**
+     * Handles a binding error by invoking the appropriate handler and converting the result.
+     *
+     * @param name     the name of the configuration property
+     * @param target   the bindable target
+     * @param handler  the bind handler
+     * @param context  the binding context
+     * @param error    the exception that occurred during binding
+     * @param <T>      the type of the bindable target
+     * @return         the converted result after handling the error
+     * @throws BindException if the error cannot be handled or converted
+     */
+    private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
 			Context context, Exception error) {
 		try {
 			Object result = handler.onFailure(name, target, context, error);
@@ -392,7 +439,20 @@ public class Binder {
 		}
 	}
 
-	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
+	/**
+     * Binds the given configuration property name to the target object using the provided bind handler, context, and
+     * recursive binding flag.
+     *
+     * @param <T>                     the type of the target object
+     * @param name                    the configuration property name to bind
+     * @param target                  the target object to bind the configuration property to
+     * @param handler                 the bind handler to use during the binding process
+     * @param context                 the context for the binding process
+     * @param allowRecursiveBinding   flag indicating whether recursive binding is allowed
+     * @return                        the bound object, or null if the property is not found and the context depth is not 0
+     * @throws ConverterNotFoundException if a converter is not found for the property and recursive binding is not allowed
+     */
+    private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
 			Context context, boolean allowRecursiveBinding) {
 		ConfigurationProperty property = findProperty(name, target, context);
 		if (property == null && context.depth != 0 && containsNoDescendantOf(context.getSources(), name)) {
@@ -418,7 +478,14 @@ public class Binder {
 		return bindDataObject(name, target, handler, context, allowRecursiveBinding);
 	}
 
-	private AggregateBinder<?> getAggregateBinder(Bindable<?> target, Context context) {
+	/**
+     * Returns the appropriate AggregateBinder based on the type of the target Bindable and the provided context.
+     * 
+     * @param target the target Bindable object
+     * @param context the context object
+     * @return the appropriate AggregateBinder based on the type of the target Bindable and the provided context, or null if no appropriate binder is found
+     */
+    private AggregateBinder<?> getAggregateBinder(Bindable<?> target, Context context) {
 		Class<?> resolvedType = target.getType().resolve(Object.class);
 		if (Map.class.isAssignableFrom(resolvedType)) {
 			return new MapBinder(context);
@@ -432,7 +499,18 @@ public class Binder {
 		return null;
 	}
 
-	private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
+	/**
+     * Binds an aggregate configuration property to a target object using the provided binder and handler.
+     * 
+     * @param <T> the type of the target object
+     * @param name the name of the configuration property
+     * @param target the target object to bind the configuration property to
+     * @param handler the bind handler to use for binding
+     * @param context the context for the binding operation
+     * @param aggregateBinder the aggregate binder to use for binding
+     * @return the bound object
+     */
+    private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
 			Context context, AggregateBinder<?> aggregateBinder) {
 		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
 			boolean allowRecursiveBinding = aggregateBinder.isAllowRecursiveBinding(source);
@@ -442,7 +520,15 @@ public class Binder {
 		return context.withIncreasedDepth(() -> aggregateBinder.bind(name, target, elementBinder));
 	}
 
-	private <T> ConfigurationProperty findProperty(ConfigurationPropertyName name, Bindable<T> target,
+	/**
+     * Finds a configuration property with the given name and target bindable in the given context.
+     * 
+     * @param name the name of the configuration property
+     * @param target the target bindable
+     * @param context the context containing the configuration property sources
+     * @return the configuration property if found, or null if not found
+     */
+    private <T> ConfigurationProperty findProperty(ConfigurationPropertyName name, Bindable<T> target,
 			Context context) {
 		if (name.isEmpty() || target.hasBindRestriction(BindRestriction.NO_DIRECT_PROPERTY)) {
 			return null;
@@ -456,7 +542,16 @@ public class Binder {
 		return null;
 	}
 
-	private <T> Object bindProperty(Bindable<T> target, Context context, ConfigurationProperty property) {
+	/**
+     * Binds a property to a target object using the provided context and configuration property.
+     * 
+     * @param <T> the type of the property value
+     * @param target the target object to bind the property to
+     * @param context the context used for binding
+     * @param property the configuration property to bind
+     * @return the bound property value
+     */
+    private <T> Object bindProperty(Bindable<T> target, Context context, ConfigurationProperty property) {
 		context.setConfigurationProperty(property);
 		Object result = property.getValue();
 		result = this.placeholdersResolver.resolvePlaceholders(result);
@@ -464,7 +559,17 @@ public class Binder {
 		return result;
 	}
 
-	private Object bindDataObject(ConfigurationPropertyName name, Bindable<?> target, BindHandler handler,
+	/**
+     * Binds data to the specified target object using the given name, bind handler, context, and recursive binding flag.
+     * 
+     * @param name The configuration property name to bind data from.
+     * @param target The target object to bind data to.
+     * @param handler The bind handler to use for binding.
+     * @param context The context for the binding operation.
+     * @param allowRecursiveBinding Flag indicating whether recursive binding is allowed.
+     * @return The bound data object, or null if the target object is unbindable or recursive binding is not allowed.
+     */
+    private Object bindDataObject(ConfigurationPropertyName name, Bindable<?> target, BindHandler handler,
 			Context context, boolean allowRecursiveBinding) {
 		if (isUnbindableBean(name, target, context)) {
 			return null;
@@ -480,7 +585,14 @@ public class Binder {
 				(dataObjectBinder) -> dataObjectBinder.bind(name, target, context, propertyBinder)));
 	}
 
-	private Object fromDataObjectBinders(BindMethod bindMethod, Function<DataObjectBinder, Object> operation) {
+	/**
+     * Binds the given data object using the specified bind method and applies the provided operation on the data object binder.
+     * 
+     * @param bindMethod The bind method to be used for binding the data object.
+     * @param operation The operation to be applied on the data object binder.
+     * @return The result of the operation applied on the data object binder, or null if no result is found.
+     */
+    private Object fromDataObjectBinders(BindMethod bindMethod, Function<DataObjectBinder, Object> operation) {
 		return this.dataObjectBinders.get(bindMethod)
 			.stream()
 			.map(operation)
@@ -489,7 +601,15 @@ public class Binder {
 			.orElse(null);
 	}
 
-	private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target, Context context) {
+	/**
+     * Determines if a bean can be unbound based on the given configuration property name, target bindable, and context.
+     * 
+     * @param name the configuration property name
+     * @param target the target bindable
+     * @param context the context
+     * @return {@code true} if the bean can be unbound, {@code false} otherwise
+     */
+    private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target, Context context) {
 		for (ConfigurationPropertySource source : context.getSources()) {
 			if (source.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT) {
 				// We know there are properties to bind so we can't bypass anything
@@ -503,7 +623,14 @@ public class Binder {
 		return resolved.getName().startsWith("java.");
 	}
 
-	private boolean containsNoDescendantOf(Iterable<ConfigurationPropertySource> sources,
+	/**
+     * Checks if none of the given configuration property sources contain any descendant of the specified configuration property name.
+     * 
+     * @param sources the iterable collection of configuration property sources to check
+     * @param name the configuration property name to check for descendants
+     * @return {@code true} if none of the sources contain any descendant of the specified name, {@code false} otherwise
+     */
+    private boolean containsNoDescendantOf(Iterable<ConfigurationPropertySource> sources,
 			ConfigurationPropertyName name) {
 		for (ConfigurationPropertySource source : sources) {
 			if (source.containsDescendantOf(name) != ConfigurationPropertyState.ABSENT) {
@@ -555,15 +682,32 @@ public class Binder {
 
 		private ConfigurationProperty configurationProperty;
 
-		private void increaseDepth() {
+		/**
+         * Increases the depth of the context.
+         * This method increments the depth variable by 1.
+         */
+        private void increaseDepth() {
 			this.depth++;
 		}
 
-		private void decreaseDepth() {
+		/**
+         * Decreases the depth of the context.
+         * This method decrements the depth variable by 1.
+         */
+        private void decreaseDepth() {
 			this.depth--;
 		}
 
-		private <T> T withSource(ConfigurationPropertySource source, Supplier<T> supplier) {
+		/**
+         * Executes the given supplier function with the provided ConfigurationPropertySource.
+         * If the source is null, the supplier function is executed without any source.
+         * 
+         * @param source The ConfigurationPropertySource to be used during the execution of the supplier function.
+         * @param supplier The supplier function to be executed.
+         * @param <T> The type of the result returned by the supplier function.
+         * @return The result returned by the supplier function.
+         */
+        private <T> T withSource(ConfigurationPropertySource source, Supplier<T> supplier) {
 			if (source == null) {
 				return supplier.get();
 			}
@@ -577,7 +721,15 @@ public class Binder {
 			}
 		}
 
-		private <T> T withDataObject(Class<?> type, Supplier<T> supplier) {
+		/**
+         * Executes the given supplier function with a data object of the specified type.
+         * 
+         * @param type the class representing the type of the data object
+         * @param supplier the supplier function to be executed with the data object
+         * @param <T> the type of the data object
+         * @return the result of executing the supplier function
+         */
+        private <T> T withDataObject(Class<?> type, Supplier<T> supplier) {
 			this.dataObjectBindings.push(type);
 			try {
 				return withIncreasedDepth(supplier);
@@ -587,11 +739,24 @@ public class Binder {
 			}
 		}
 
-		private boolean isBindingDataObject(Class<?> type) {
+		/**
+         * Checks if the given class is a binding data object.
+         * 
+         * @param type the class to check
+         * @return true if the class is a binding data object, false otherwise
+         */
+        private boolean isBindingDataObject(Class<?> type) {
 			return this.dataObjectBindings.contains(type);
 		}
 
-		private <T> T withIncreasedDepth(Supplier<T> supplier) {
+		/**
+         * Increases the depth of the context and executes the provided supplier.
+         * 
+         * @param supplier the supplier to be executed
+         * @param <T> the type of the result returned by the supplier
+         * @return the result returned by the supplier
+         */
+        private <T> T withIncreasedDepth(Supplier<T> supplier) {
 			increaseDepth();
 			try {
 				return supplier.get();
@@ -601,45 +766,91 @@ public class Binder {
 			}
 		}
 
-		void setConfigurationProperty(ConfigurationProperty configurationProperty) {
+		/**
+         * Sets the configuration property for the context.
+         * 
+         * @param configurationProperty the configuration property to be set
+         */
+        void setConfigurationProperty(ConfigurationProperty configurationProperty) {
 			this.configurationProperty = configurationProperty;
 		}
 
-		void clearConfigurationProperty() {
+		/**
+         * Clears the configuration property by setting it to null.
+         */
+        void clearConfigurationProperty() {
 			this.configurationProperty = null;
 		}
 
-		void pushConstructorBoundTypes(Class<?> value) {
+		/**
+         * Pushes a constructor bound type onto the stack of constructor bindings.
+         * 
+         * @param value the class representing the constructor bound type to be pushed
+         */
+        void pushConstructorBoundTypes(Class<?> value) {
 			this.constructorBindings.push(value);
 		}
 
-		boolean isNestedConstructorBinding() {
+		/**
+         * Checks if there are any nested constructor bindings in the context.
+         * 
+         * @return {@code true} if there are nested constructor bindings, {@code false} otherwise.
+         */
+        boolean isNestedConstructorBinding() {
 			return !this.constructorBindings.isEmpty();
 		}
 
-		void popConstructorBoundTypes() {
+		/**
+         * Removes the top element from the constructor bindings stack.
+         */
+        void popConstructorBoundTypes() {
 			this.constructorBindings.pop();
 		}
 
-		PlaceholdersResolver getPlaceholdersResolver() {
+		/**
+         * Returns the placeholders resolver used by the binder.
+         * 
+         * @return the placeholders resolver
+         */
+        PlaceholdersResolver getPlaceholdersResolver() {
 			return Binder.this.placeholdersResolver;
 		}
 
-		BindConverter getConverter() {
+		/**
+         * Returns the BindConverter associated with the Binder instance.
+         * 
+         * @return the BindConverter associated with the Binder instance
+         */
+        BindConverter getConverter() {
 			return Binder.this.bindConverter;
 		}
 
-		@Override
+		/**
+         * Returns the Binder associated with this Context.
+         *
+         * @return the Binder associated with this Context
+         */
+        @Override
 		public Binder getBinder() {
 			return Binder.this;
 		}
 
-		@Override
+		/**
+         * Returns the depth of the context.
+         *
+         * @return the depth of the context
+         */
+        @Override
 		public int getDepth() {
 			return this.depth;
 		}
 
-		@Override
+		/**
+         * Returns an iterable of ConfigurationPropertySource objects.
+         * 
+         * @return an iterable of ConfigurationPropertySource objects
+         */
+        @Override
 		public Iterable<ConfigurationPropertySource> getSources() {
 			if (this.sourcePushCount > 0) {
 				return this.source;
@@ -647,7 +858,12 @@ public class Binder {
 			return Binder.this.sources;
 		}
 
-		@Override
+		/**
+         * Returns the configuration property associated with this context.
+         *
+         * @return the configuration property
+         */
+        @Override
 		public ConfigurationProperty getConfigurationProperty() {
 			return this.configurationProperty;
 		}

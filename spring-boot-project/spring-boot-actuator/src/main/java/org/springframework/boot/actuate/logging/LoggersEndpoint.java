@@ -70,7 +70,12 @@ public class LoggersEndpoint {
 		this.loggerGroups = loggerGroups;
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves the loggers descriptor.
+     * 
+     * @return The loggers descriptor containing information about the loggers, levels, and groups.
+     */
+    @ReadOperation
 	public LoggersDescriptor loggers() {
 		Collection<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
 		if (configurations == null) {
@@ -79,14 +84,26 @@ public class LoggersEndpoint {
 		return new LoggersDescriptor(getLevels(), getLoggers(configurations), getGroups());
 	}
 
-	private Map<String, GroupLoggerLevelsDescriptor> getGroups() {
+	/**
+     * Retrieves the groups of logger levels and their corresponding descriptors.
+     * 
+     * @return a map containing the groups of logger levels and their descriptors
+     */
+    private Map<String, GroupLoggerLevelsDescriptor> getGroups() {
 		Map<String, GroupLoggerLevelsDescriptor> groups = new LinkedHashMap<>();
 		this.loggerGroups.forEach((group) -> groups.put(group.getName(),
 				new GroupLoggerLevelsDescriptor(group.getConfiguredLevel(), group.getMembers())));
 		return groups;
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves the logger levels descriptor for the specified logger name.
+     * 
+     * @param name the name of the logger
+     * @return the logger levels descriptor for the specified logger name, or null if not found
+     * @throws IllegalArgumentException if the name is null
+     */
+    @ReadOperation
 	public LoggerLevelsDescriptor loggerLevels(@Selector String name) {
 		Assert.notNull(name, "Name must not be null");
 		LoggerGroup group = this.loggerGroups.get(name);
@@ -97,7 +114,15 @@ public class LoggersEndpoint {
 		return (configuration != null) ? new SingleLoggerLevelsDescriptor(configuration) : null;
 	}
 
-	@WriteOperation
+	/**
+     * Configures the log level for a specific logger.
+     * 
+     * @param name            the name of the logger
+     * @param configuredLevel the log level to be configured
+     * 
+     * @throws IllegalArgumentException if the name is empty
+     */
+    @WriteOperation
 	public void configureLogLevel(@Selector String name, @Nullable LogLevel configuredLevel) {
 		Assert.notNull(name, "Name must not be empty");
 		LoggerGroup group = this.loggerGroups.get(name);
@@ -108,12 +133,23 @@ public class LoggersEndpoint {
 		this.loggingSystem.setLogLevel(name, configuredLevel);
 	}
 
-	private NavigableSet<LogLevel> getLevels() {
+	/**
+     * Retrieves the supported log levels in descending order.
+     * 
+     * @return a navigable set of log levels in descending order
+     */
+    private NavigableSet<LogLevel> getLevels() {
 		Set<LogLevel> levels = this.loggingSystem.getSupportedLogLevels();
 		return new TreeSet<>(levels).descendingSet();
 	}
 
-	private Map<String, LoggerLevelsDescriptor> getLoggers(Collection<LoggerConfiguration> configurations) {
+	/**
+     * Retrieves the loggers and their levels based on the provided configurations.
+     * 
+     * @param configurations the collection of logger configurations
+     * @return a map containing the loggers and their levels
+     */
+    private Map<String, LoggerLevelsDescriptor> getLoggers(Collection<LoggerConfiguration> configurations) {
 		Map<String, LoggerLevelsDescriptor> loggers = new LinkedHashMap<>(configurations.size());
 		for (LoggerConfiguration configuration : configurations) {
 			loggers.put(configuration.getName(), new SingleLoggerLevelsDescriptor(configuration));
@@ -137,22 +173,44 @@ public class LoggersEndpoint {
 
 		private final Map<String, GroupLoggerLevelsDescriptor> groups;
 
-		public LoggersDescriptor(NavigableSet<LogLevel> levels, Map<String, LoggerLevelsDescriptor> loggers,
+		/**
+         * Constructs a new LoggersDescriptor with the specified levels, loggers, and groups.
+         * 
+         * @param levels the NavigableSet of LogLevel objects representing the available log levels
+         * @param loggers the Map of String to LoggerLevelsDescriptor objects representing the loggers and their associated log levels
+         * @param groups the Map of String to GroupLoggerLevelsDescriptor objects representing the logger groups and their associated log levels
+         */
+        public LoggersDescriptor(NavigableSet<LogLevel> levels, Map<String, LoggerLevelsDescriptor> loggers,
 				Map<String, GroupLoggerLevelsDescriptor> groups) {
 			this.levels = levels;
 			this.loggers = loggers;
 			this.groups = groups;
 		}
 
-		public NavigableSet<LogLevel> getLevels() {
+		/**
+         * Returns the NavigableSet of LogLevel objects.
+         *
+         * @return the NavigableSet of LogLevel objects
+         */
+        public NavigableSet<LogLevel> getLevels() {
 			return this.levels;
 		}
 
-		public Map<String, LoggerLevelsDescriptor> getLoggers() {
+		/**
+         * Returns a map of loggers and their corresponding levels.
+         * 
+         * @return a map containing loggers and their levels
+         */
+        public Map<String, LoggerLevelsDescriptor> getLoggers() {
 			return this.loggers;
 		}
 
-		public Map<String, GroupLoggerLevelsDescriptor> getGroups() {
+		/**
+         * Returns the map of group names to their corresponding GroupLoggerLevelsDescriptor objects.
+         *
+         * @return the map of group names to GroupLoggerLevelsDescriptor objects
+         */
+        public Map<String, GroupLoggerLevelsDescriptor> getGroups() {
 			return this.groups;
 		}
 
@@ -165,19 +223,40 @@ public class LoggersEndpoint {
 
 		private final String configuredLevel;
 
-		public LoggerLevelsDescriptor(LogLevel configuredLevel) {
+		/**
+         * Constructs a new LoggerLevelsDescriptor object with the specified configured level.
+         * 
+         * @param configuredLevel the configured log level for the logger
+         */
+        public LoggerLevelsDescriptor(LogLevel configuredLevel) {
 			this.configuredLevel = (configuredLevel != null) ? configuredLevel.name() : null;
 		}
 
-		LoggerLevelsDescriptor(LevelConfiguration directConfiguration) {
+		/**
+         * Constructs a new LoggerLevelsDescriptor with the specified direct configuration.
+         * 
+         * @param directConfiguration the direct configuration for the logger levels (can be null)
+         */
+        LoggerLevelsDescriptor(LevelConfiguration directConfiguration) {
 			this.configuredLevel = (directConfiguration != null) ? directConfiguration.getName() : null;
 		}
 
-		protected final String getName(LogLevel level) {
+		/**
+         * Returns the name of the given log level.
+         * 
+         * @param level the log level to get the name of
+         * @return the name of the log level, or null if the level is null
+         */
+        protected final String getName(LogLevel level) {
 			return (level != null) ? level.name() : null;
 		}
 
-		public String getConfiguredLevel() {
+		/**
+         * Returns the configured logging level.
+         * 
+         * @return the configured logging level
+         */
+        public String getConfiguredLevel() {
 			return this.configuredLevel;
 		}
 
@@ -190,12 +269,23 @@ public class LoggersEndpoint {
 
 		private final List<String> members;
 
-		public GroupLoggerLevelsDescriptor(LogLevel configuredLevel, List<String> members) {
+		/**
+         * Constructs a new GroupLoggerLevelsDescriptor with the specified configured level and list of members.
+         * 
+         * @param configuredLevel the configured log level for the group
+         * @param members the list of members in the group
+         */
+        public GroupLoggerLevelsDescriptor(LogLevel configuredLevel, List<String> members) {
 			super(configuredLevel);
 			this.members = members;
 		}
 
-		public List<String> getMembers() {
+		/**
+         * Returns the list of members in the group.
+         *
+         * @return the list of members in the group
+         */
+        public List<String> getMembers() {
 			return this.members;
 		}
 
@@ -208,12 +298,22 @@ public class LoggersEndpoint {
 
 		private final String effectiveLevel;
 
-		public SingleLoggerLevelsDescriptor(LoggerConfiguration configuration) {
+		/**
+         * Constructs a new SingleLoggerLevelsDescriptor object with the specified LoggerConfiguration.
+         * 
+         * @param configuration the LoggerConfiguration to use for constructing the SingleLoggerLevelsDescriptor
+         */
+        public SingleLoggerLevelsDescriptor(LoggerConfiguration configuration) {
 			super(configuration.getLevelConfiguration(ConfigurationScope.DIRECT));
 			this.effectiveLevel = configuration.getLevelConfiguration().getName();
 		}
 
-		public String getEffectiveLevel() {
+		/**
+         * Returns the effective logging level.
+         * 
+         * @return the effective logging level
+         */
+        public String getEffectiveLevel() {
 			return this.effectiveLevel;
 		}
 

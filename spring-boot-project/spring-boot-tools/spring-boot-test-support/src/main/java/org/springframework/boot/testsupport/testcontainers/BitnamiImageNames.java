@@ -44,7 +44,11 @@ public final class BitnamiImageNames {
 
 	private static final String REDIS_VERSION = "7.2.4";
 
-	private BitnamiImageNames() {
+	/**
+     * This is a private constructor for the BitnamiImageNames class.
+     * It is used to prevent the instantiation of objects of this class.
+     */
+    private BitnamiImageNames() {
 	}
 
 	/**

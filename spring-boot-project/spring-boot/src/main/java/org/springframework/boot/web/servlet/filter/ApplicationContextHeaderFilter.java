@@ -43,11 +43,25 @@ public class ApplicationContextHeaderFilter extends OncePerRequestFilter {
 
 	private final ApplicationContext applicationContext;
 
-	public ApplicationContextHeaderFilter(ApplicationContext context) {
+	/**
+     * Constructs a new ApplicationContextHeaderFilter with the specified ApplicationContext.
+     * 
+     * @param context the ApplicationContext to be set
+     */
+    public ApplicationContextHeaderFilter(ApplicationContext context) {
 		this.applicationContext = context;
 	}
 
-	@Override
+	/**
+     * Adds the application context ID as a header to the response and passes the request and response to the next filter in the chain.
+     * 
+     * @param request the HTTP servlet request
+     * @param response the HTTP servlet response
+     * @param filterChain the filter chain
+     * @throws ServletException if a servlet exception occurs
+     * @throws IOException if an I/O exception occurs
+     */
+    @Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		response.addHeader(HEADER_NAME, this.applicationContext.getId());

@@ -18,6 +18,9 @@ package org.springframework.boot.docs.features.externalconfig.typesafeconfigurat
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * SomeProperties class.
+ */
 @ConfigurationProperties("some.properties")
 public class SomeProperties {
 

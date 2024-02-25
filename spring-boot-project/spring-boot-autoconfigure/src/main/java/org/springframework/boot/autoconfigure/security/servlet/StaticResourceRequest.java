@@ -47,7 +47,11 @@ public final class StaticResourceRequest {
 
 	static final StaticResourceRequest INSTANCE = new StaticResourceRequest();
 
-	private StaticResourceRequest() {
+	/**
+     * Private constructor for the StaticResourceRequest class.
+     * This constructor is used to prevent the instantiation of the class.
+     */
+    private StaticResourceRequest() {
 	}
 
 	/**
@@ -101,7 +105,12 @@ public final class StaticResourceRequest {
 
 		private volatile RequestMatcher delegate;
 
-		private StaticResourceRequestMatcher(Set<StaticResourceLocation> locations) {
+		/**
+         * Constructs a new StaticResourceRequestMatcher with the specified set of static resource locations.
+         * 
+         * @param locations the set of static resource locations to be used for matching requests
+         */
+        private StaticResourceRequestMatcher(Set<StaticResourceLocation> locations) {
 			super(DispatcherServletPath.class);
 			this.locations = locations;
 		}
@@ -130,27 +139,57 @@ public final class StaticResourceRequest {
 			return new StaticResourceRequestMatcher(subset);
 		}
 
-		@Override
+		/**
+         * Initializes the StaticResourceRequestMatcher with the given dispatcherServletPath.
+         * 
+         * @param dispatcherServletPath the supplier of the DispatcherServletPath
+         */
+        @Override
 		protected void initialized(Supplier<DispatcherServletPath> dispatcherServletPath) {
 			this.delegate = new OrRequestMatcher(getDelegateMatchers(dispatcherServletPath.get()).toList());
 		}
 
-		private Stream<RequestMatcher> getDelegateMatchers(DispatcherServletPath dispatcherServletPath) {
+		/**
+         * Returns a stream of RequestMatchers based on the given DispatcherServletPath.
+         *
+         * @param dispatcherServletPath the DispatcherServletPath to generate RequestMatchers from
+         * @return a stream of RequestMatchers
+         */
+        private Stream<RequestMatcher> getDelegateMatchers(DispatcherServletPath dispatcherServletPath) {
 			return getPatterns(dispatcherServletPath).map(AntPathRequestMatcher::new);
 		}
 
-		private Stream<String> getPatterns(DispatcherServletPath dispatcherServletPath) {
+		/**
+         * Returns a stream of patterns for static resource locations based on the given dispatcher servlet path.
+         *
+         * @param dispatcherServletPath the dispatcher servlet path to be used for generating relative paths
+         * @return a stream of patterns for static resource locations
+         */
+        private Stream<String> getPatterns(DispatcherServletPath dispatcherServletPath) {
 			return this.locations.stream()
 				.flatMap(StaticResourceLocation::getPatterns)
 				.map(dispatcherServletPath::getRelativePath);
 		}
 
-		@Override
+		/**
+         * Determines whether to ignore the given WebApplicationContext based on its server namespace.
+         * 
+         * @param applicationContext the WebApplicationContext to check
+         * @return true if the WebApplicationContext should be ignored, false otherwise
+         */
+        @Override
 		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
 			return WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
 		}
 
-		@Override
+		/**
+         * Determines if the given HttpServletRequest matches the request pattern of this StaticResourceRequestMatcher.
+         * 
+         * @param request the HttpServletRequest to be matched
+         * @param context a Supplier providing the DispatcherServletPath context
+         * @return true if the request matches the pattern, false otherwise
+         */
+        @Override
 		protected boolean matches(HttpServletRequest request, Supplier<DispatcherServletPath> context) {
 			return this.delegate.matches(request);
 		}

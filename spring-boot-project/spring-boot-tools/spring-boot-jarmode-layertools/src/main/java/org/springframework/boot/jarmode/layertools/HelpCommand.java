@@ -32,18 +32,36 @@ class HelpCommand extends Command {
 
 	private final List<Command> commands;
 
-	HelpCommand(Context context, List<Command> commands) {
+	/**
+     * Constructs a new HelpCommand with the specified context and list of commands.
+     * 
+     * @param context the context in which the command is executed
+     * @param commands the list of commands available
+     */
+    HelpCommand(Context context, List<Command> commands) {
 		super("help", "Help about any command", Options.none(), Parameters.of("[<command]"));
 		this.context = context;
 		this.commands = commands;
 	}
 
-	@Override
+	/**
+     * Runs the HelpCommand with the given options and parameters.
+     * 
+     * @param options     a map of options for the HelpCommand
+     * @param parameters  a list of parameters for the HelpCommand
+     */
+    @Override
 	protected void run(Map<Option, String> options, List<String> parameters) {
 		run(System.out, parameters);
 	}
 
-	void run(PrintStream out, List<String> parameters) {
+	/**
+     * Runs the help command.
+     * 
+     * @param out the PrintStream to output the help information
+     * @param parameters the list of parameters passed to the help command
+     */
+    void run(PrintStream out, List<String> parameters) {
 		Command command = (!parameters.isEmpty()) ? Command.find(this.commands, parameters.get(0)) : null;
 		if (command != null) {
 			printCommandHelp(out, command);
@@ -52,7 +70,13 @@ class HelpCommand extends Command {
 		printUsageAndCommands(out);
 	}
 
-	private void printCommandHelp(PrintStream out, Command command) {
+	/**
+     * Prints the help information for a specific command.
+     * 
+     * @param out the output stream to print the help information to
+     * @param command the command to get the help information for
+     */
+    private void printCommandHelp(PrintStream out, Command command) {
 		out.println(command.getDescription());
 		out.println();
 		out.println("Usage:");
@@ -65,11 +89,24 @@ class HelpCommand extends Command {
 		}
 	}
 
-	private void printOptionSummary(PrintStream out, Option option, int padding) {
+	/**
+     * Prints the summary of an option.
+     *
+     * @param out the output stream to print the summary to
+     * @param option the option to print the summary for
+     * @param padding the padding for the option name and value description
+     */
+    private void printOptionSummary(PrintStream out, Option option, int padding) {
 		out.printf("  --%-" + padding + "s  %s%n", option.getNameAndValueDescription(), option.getDescription());
 	}
 
-	private String getUsage(Command command) {
+	/**
+     * Returns the usage string for the given command.
+     *
+     * @param command the command for which to generate the usage string
+     * @return the usage string for the given command
+     */
+    private String getUsage(Command command) {
 		StringBuilder usage = new StringBuilder();
 		usage.append(command.getName());
 		if (!command.getOptions().isEmpty()) {
@@ -79,7 +116,12 @@ class HelpCommand extends Command {
 		return usage.toString();
 	}
 
-	private void printUsageAndCommands(PrintStream out) {
+	/**
+     * Prints the usage and available commands.
+     * 
+     * @param out the PrintStream to output the usage and commands
+     */
+    private void printUsageAndCommands(PrintStream out) {
 		out.println("Usage:");
 		out.println("  " + getJavaCommand());
 		out.println();
@@ -89,15 +131,35 @@ class HelpCommand extends Command {
 		printCommandSummary(out, this, maxNameLength);
 	}
 
-	private int getMaxLength(int minimum, Stream<String> strings) {
+	/**
+     * Returns the maximum length of strings in the given stream, considering the minimum length as well.
+     *
+     * @param minimum the minimum length to consider
+     * @param strings the stream of strings to be evaluated
+     * @return the maximum length of strings in the stream, considering the minimum length
+     */
+    private int getMaxLength(int minimum, Stream<String> strings) {
 		return Math.max(minimum, strings.mapToInt(String::length).max().orElse(0));
 	}
 
-	private void printCommandSummary(PrintStream out, Command command, int padding) {
+	/**
+     * Prints the summary of a command.
+     *
+     * @param out     the output stream to print the summary to
+     * @param command the command to print the summary for
+     * @param padding the padding for formatting the output
+     */
+    private void printCommandSummary(PrintStream out, Command command, int padding) {
 		out.printf("  %-" + padding + "s  %s%n", command.getName(), command.getDescription());
 	}
 
-	private String getJavaCommand() {
+	/**
+     * Returns the command to execute the Java application.
+     * The command includes the necessary options and the name of the archive file.
+     * 
+     * @return the Java command to execute the application
+     */
+    private String getJavaCommand() {
 		return "java -Djarmode=layertools -jar " + this.context.getArchiveFile().getName();
 	}
 

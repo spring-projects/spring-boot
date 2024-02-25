@@ -54,11 +54,21 @@ public enum StaticResourceLocation {
 
 	private final String[] patterns;
 
-	StaticResourceLocation(String... patterns) {
+	/**
+     * Constructs a new StaticResourceLocation with the specified patterns.
+     * 
+     * @param patterns the patterns used to locate static resources
+     */
+    StaticResourceLocation(String... patterns) {
 		this.patterns = patterns;
 	}
 
-	public Stream<String> getPatterns() {
+	/**
+     * Returns a stream of patterns.
+     *
+     * @return a stream of patterns
+     */
+    public Stream<String> getPatterns() {
 		return Arrays.stream(this.patterns);
 	}
 

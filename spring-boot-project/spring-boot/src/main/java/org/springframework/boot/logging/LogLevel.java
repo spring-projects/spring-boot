@@ -42,7 +42,12 @@ public enum LogLevel {
 
 	private final LogMethod logMethod;
 
-	LogLevel(LogMethod logMethod) {
+	/**
+     * Sets the log method for the LogLevel class.
+     * 
+     * @param logMethod the log method to be set
+     */
+    LogLevel(LogMethod logMethod) {
 		this.logMethod = logMethod;
 	}
 

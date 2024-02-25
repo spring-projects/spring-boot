@@ -38,11 +38,21 @@ public class HelpExample {
 		this.example = example;
 	}
 
-	public String getDescription() {
+	/**
+     * Returns the description of the HelpExample object.
+     *
+     * @return the description of the HelpExample object
+     */
+    public String getDescription() {
 		return this.description;
 	}
 
-	public String getExample() {
+	/**
+     * Returns the example value.
+     *
+     * @return the example value
+     */
+    public String getExample() {
 		return this.example;
 	}
 

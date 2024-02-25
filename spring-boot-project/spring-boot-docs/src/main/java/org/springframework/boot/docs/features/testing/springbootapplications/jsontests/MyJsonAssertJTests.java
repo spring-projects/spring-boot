@@ -25,6 +25,9 @@ import org.springframework.boot.test.json.JacksonTester;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
+/**
+ * MyJsonAssertJTests class.
+ */
 @JsonTest
 class MyJsonAssertJTests {
 

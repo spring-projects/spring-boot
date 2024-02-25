@@ -70,18 +70,33 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	private final List<PropertyGenerator> propertyGenerators;
 
-	public AutoConfigureAnnotationProcessor() {
+	/**
+     * Constructs a new instance of the {@code AutoConfigureAnnotationProcessor} class.
+     * Initializes the {@code propertyGenerators} field with an unmodifiable list of property generators
+     * obtained from the {@code getPropertyGenerators} method.
+     */
+    public AutoConfigureAnnotationProcessor() {
 		this.propertyGenerators = Collections.unmodifiableList(getPropertyGenerators());
 	}
 
-	protected List<PropertyGenerator> getPropertyGenerators() {
+	/**
+     * Returns a list of property generators.
+     * 
+     * @return the list of property generators
+     */
+    protected List<PropertyGenerator> getPropertyGenerators() {
 		List<PropertyGenerator> generators = new ArrayList<>();
 		addConditionPropertyGenerators(generators);
 		addAutoConfigurePropertyGenerators(generators);
 		return generators;
 	}
 
-	private void addConditionPropertyGenerators(List<PropertyGenerator> generators) {
+	/**
+     * Adds condition property generators to the given list.
+     * 
+     * @param generators the list of property generators to add to
+     */
+    private void addConditionPropertyGenerators(List<PropertyGenerator> generators) {
 		String annotationPackage = "org.springframework.boot.autoconfigure.condition";
 		generators.add(PropertyGenerator.of(annotationPackage, "ConditionalOnClass")
 			.withAnnotation(new OnClassConditionValueExtractor()));
@@ -93,7 +108,12 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 			.withAnnotation(ValueExtractor.allFrom("type")));
 	}
 
-	private void addAutoConfigurePropertyGenerators(List<PropertyGenerator> generators) {
+	/**
+     * Adds auto-configure property generators to the given list.
+     *
+     * @param generators the list of property generators to add to
+     */
+    private void addAutoConfigurePropertyGenerators(List<PropertyGenerator> generators) {
 		String annotationPackage = "org.springframework.boot.autoconfigure";
 		generators.add(PropertyGenerator.of(annotationPackage, "AutoConfigureBefore", true)
 			.withAnnotation(ValueExtractor.allFrom("value", "name"))
@@ -105,12 +125,25 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 			.withAnnotation(ValueExtractor.allFrom("value")));
 	}
 
-	@Override
+	/**
+     * Returns the latest supported source version.
+     *
+     * @return the latest supported source version
+     */
+    @Override
 	public SourceVersion getSupportedSourceVersion() {
 		return SourceVersion.latestSupported();
 	}
 
-	@Override
+	/**
+     * Processes the annotations and generates properties for the specified generators.
+     * 
+     * @param annotations the set of annotations to process
+     * @param roundEnv the round environment
+     * @return false
+     * @throws IllegalStateException if failed to write metadata
+     */
+    @Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		for (PropertyGenerator generator : this.propertyGenerators) {
 			process(roundEnv, generator);
@@ -126,7 +159,13 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		return false;
 	}
 
-	private void process(RoundEnvironment roundEnv, PropertyGenerator generator) {
+	/**
+     * Processes the given round environment and property generator.
+     * 
+     * @param roundEnv the round environment to process
+     * @param generator the property generator to use
+     */
+    private void process(RoundEnvironment roundEnv, PropertyGenerator generator) {
 		for (String annotationName : generator.getSupportedAnnotations()) {
 			TypeElement annotationType = this.processingEnv.getElementUtils().getTypeElement(annotationName);
 			if (annotationType != null) {
@@ -137,7 +176,15 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		}
 	}
 
-	private void processElement(Element element, PropertyGenerator generator, String annotationName) {
+	/**
+     * Processes the given element by applying the specified property generator to the properties map.
+     * 
+     * @param element         the element to be processed
+     * @param generator       the property generator to be applied
+     * @param annotationName  the name of the annotation to be retrieved
+     * @throws IllegalStateException if an error occurs while processing the configuration meta-data
+     */
+    private void processElement(Element element, PropertyGenerator generator, String annotationName) {
 		try {
 			String qualifiedName = Elements.getQualifiedName(element);
 			AnnotationMirror annotation = getAnnotation(element, annotationName);
@@ -152,7 +199,14 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		}
 	}
 
-	private AnnotationMirror getAnnotation(Element element, String type) {
+	/**
+     * Retrieves the specified annotation mirror from the given element.
+     * 
+     * @param element the element from which to retrieve the annotation mirror
+     * @param type the fully qualified name of the annotation type
+     * @return the annotation mirror if found, null otherwise
+     */
+    private AnnotationMirror getAnnotation(Element element, String type) {
 		if (element != null) {
 			for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
 				if (type.equals(annotation.getAnnotationType().toString())) {
@@ -163,7 +217,15 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		return null;
 	}
 
-	private List<Object> getValues(PropertyGenerator generator, String annotationName, AnnotationMirror annotation) {
+	/**
+     * Retrieves the values associated with a specific annotation from the given annotation mirror.
+     * 
+     * @param generator the PropertyGenerator instance used for extracting values
+     * @param annotationName the name of the annotation to retrieve values from
+     * @param annotation the AnnotationMirror instance containing the values
+     * @return a List of Object values extracted from the annotation, or an empty List if no values are found
+     */
+    private List<Object> getValues(PropertyGenerator generator, String annotationName, AnnotationMirror annotation) {
 		ValueExtractor extractor = generator.getValueExtractor(annotationName);
 		if (extractor == null) {
 			return Collections.emptyList();
@@ -171,7 +233,12 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		return extractor.getValues(annotation);
 	}
 
-	private void writeProperties() throws IOException {
+	/**
+     * Writes the properties to a file.
+     *
+     * @throws IOException if an I/O error occurs while writing the properties
+     */
+    private void writeProperties() throws IOException {
 		if (!this.properties.isEmpty()) {
 			Filer filer = this.processingEnv.getFiler();
 			FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", PROPERTIES_PATH);
@@ -197,9 +264,18 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	}
 
-	private abstract static class AbstractValueExtractor implements ValueExtractor {
+	/**
+     * AbstractValueExtractor class.
+     */
+    private abstract static class AbstractValueExtractor implements ValueExtractor {
 
-		@SuppressWarnings("unchecked")
+		/**
+         * Extracts values from an AnnotationValue object.
+         * 
+         * @param annotationValue the AnnotationValue object to extract values from
+         * @return a Stream of extracted values
+         */
+        @SuppressWarnings("unchecked")
 		protected Stream<Object> extractValues(AnnotationValue annotationValue) {
 			if (annotationValue == null) {
 				return Stream.empty();
@@ -212,7 +288,13 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 			return Stream.of(extractValue(value));
 		}
 
-		private Object extractValue(Object value) {
+		/**
+         * Extracts the value from the given object.
+         * 
+         * @param value the object from which to extract the value
+         * @return the extracted value, or the original object if it cannot be extracted
+         */
+        private Object extractValue(Object value) {
 			if (value instanceof DeclaredType declaredType) {
 				return Elements.getQualifiedName(declaredType.asElement());
 			}
@@ -221,15 +303,29 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	}
 
-	private static class NamedValuesExtractor extends AbstractValueExtractor {
+	/**
+     * NamedValuesExtractor class.
+     */
+    private static class NamedValuesExtractor extends AbstractValueExtractor {
 
 		private final Set<String> names;
 
-		NamedValuesExtractor(String... names) {
+		/**
+         * Constructs a new NamedValuesExtractor object with the specified names.
+         * 
+         * @param names the names of the values to be extracted
+         */
+        NamedValuesExtractor(String... names) {
 			this.names = new HashSet<>(Arrays.asList(names));
 		}
 
-		@Override
+		/**
+         * Retrieves the values from the given annotation.
+         * 
+         * @param annotation the annotation mirror to extract values from
+         * @return a list of objects containing the extracted values
+         */
+        @Override
 		public List<Object> getValues(AnnotationMirror annotation) {
 			List<Object> result = new ArrayList<>();
 			annotation.getElementValues().forEach((key, value) -> {
@@ -242,9 +338,18 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	}
 
-	static class OnBeanConditionValueExtractor extends AbstractValueExtractor {
+	/**
+     * OnBeanConditionValueExtractor class.
+     */
+    static class OnBeanConditionValueExtractor extends AbstractValueExtractor {
 
-		@Override
+		/**
+         * Retrieves the values from the given annotation mirror.
+         * 
+         * @param annotation the annotation mirror to extract values from
+         * @return a list of objects representing the extracted values
+         */
+        @Override
 		public List<Object> getValues(AnnotationMirror annotation) {
 			Map<String, AnnotationValue> attributes = new LinkedHashMap<>();
 			annotation.getElementValues()
@@ -260,32 +365,63 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	}
 
-	static class OnClassConditionValueExtractor extends NamedValuesExtractor {
+	/**
+     * OnClassConditionValueExtractor class.
+     */
+    static class OnClassConditionValueExtractor extends NamedValuesExtractor {
 
-		OnClassConditionValueExtractor() {
+		/**
+         * Constructs a new OnClassConditionValueExtractor with the specified value and name.
+         */
+        OnClassConditionValueExtractor() {
 			super("value", "name");
 		}
 
-		@Override
+		/**
+         * Retrieves the values of the given annotation and sorts them in ascending order.
+         * 
+         * @param annotation the annotation mirror from which to retrieve the values
+         * @return a list of values sorted in ascending order
+         */
+        @Override
 		public List<Object> getValues(AnnotationMirror annotation) {
 			List<Object> values = super.getValues(annotation);
 			values.sort(this::compare);
 			return values;
 		}
 
-		private int compare(Object o1, Object o2) {
+		/**
+         * Compares two objects based on the following criteria:
+         * 1. Checks if the objects belong to the Spring class using the isSpringClass method.
+         * 2. If both objects belong to the Spring class, compares them based on their string representation in a case-insensitive manner.
+         * 3. If either object does not belong to the Spring class, compares them based on their string representation in a case-insensitive manner.
+         *
+         * @param o1 the first object to be compared
+         * @param o2 the second object to be compared
+         * @return a negative integer, zero, or a positive integer as the first object is less than, equal to, or greater than the second object
+         */
+        private int compare(Object o1, Object o2) {
 			return Comparator.comparing(this::isSpringClass)
 				.thenComparing(String.CASE_INSENSITIVE_ORDER)
 				.compare(o1.toString(), o2.toString());
 		}
 
-		private boolean isSpringClass(String type) {
+		/**
+         * Checks if the given type is a Spring class.
+         * 
+         * @param type the fully qualified name of the class to check
+         * @return true if the type is a Spring class, false otherwise
+         */
+        private boolean isSpringClass(String type) {
 			return type.startsWith("org.springframework");
 		}
 
 	}
 
-	static final class PropertyGenerator {
+	/**
+     * PropertyGenerator class.
+     */
+    static final class PropertyGenerator {
 
 		private final String annotationPackage;
 
@@ -295,7 +431,16 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 		private final Map<String, ValueExtractor> valueExtractors;
 
-		private PropertyGenerator(String annotationPackage, String propertyName, boolean omitEmptyValues,
+		/**
+         * Constructs a new PropertyGenerator with the specified annotation package, property name,
+         * omit empty values flag, and value extractors.
+         *
+         * @param annotationPackage the package name where the annotations are located
+         * @param propertyName the name of the property
+         * @param omitEmptyValues flag indicating whether to omit empty values
+         * @param valueExtractors the map of value extractors to be used
+         */
+        private PropertyGenerator(String annotationPackage, String propertyName, boolean omitEmptyValues,
 				Map<String, ValueExtractor> valueExtractors) {
 			this.annotationPackage = annotationPackage;
 			this.propertyName = propertyName;
@@ -303,33 +448,73 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 			this.valueExtractors = valueExtractors;
 		}
 
-		PropertyGenerator withAnnotation(ValueExtractor valueExtractor) {
+		/**
+         * Returns a new PropertyGenerator with the specified ValueExtractor annotation.
+         * 
+         * @param valueExtractor the ValueExtractor annotation to be used
+         * @return a new PropertyGenerator with the specified ValueExtractor annotation
+         */
+        PropertyGenerator withAnnotation(ValueExtractor valueExtractor) {
 			return withAnnotation(this.propertyName, valueExtractor);
 		}
 
-		PropertyGenerator withAnnotation(String name, ValueExtractor ValueExtractor) {
+		/**
+         * Adds a new value extractor to the property generator with the specified annotation name.
+         * 
+         * @param name The name of the annotation.
+         * @param valueExtractor The value extractor to be added.
+         * @return A new PropertyGenerator instance with the added value extractor.
+         */
+        PropertyGenerator withAnnotation(String name, ValueExtractor ValueExtractor) {
 			Map<String, ValueExtractor> valueExtractors = new LinkedHashMap<>(this.valueExtractors);
 			valueExtractors.put(this.annotationPackage + "." + name, ValueExtractor);
 			return new PropertyGenerator(this.annotationPackage, this.propertyName, this.omitEmptyValues,
 					valueExtractors);
 		}
 
-		Set<String> getSupportedAnnotations() {
+		/**
+         * Returns a set of supported annotations.
+         * 
+         * @return a set of supported annotations
+         */
+        Set<String> getSupportedAnnotations() {
 			return this.valueExtractors.keySet();
 		}
 
-		ValueExtractor getValueExtractor(String annotation) {
+		/**
+         * Returns the ValueExtractor associated with the given annotation.
+         * 
+         * @param annotation the annotation for which the ValueExtractor is to be retrieved
+         * @return the ValueExtractor associated with the given annotation, or null if not found
+         */
+        ValueExtractor getValueExtractor(String annotation) {
 			return this.valueExtractors.get(annotation);
 		}
 
-		void applyToProperties(Map<String, String> properties, String className, List<Object> annotationValues) {
+		/**
+         * Applies the given annotation values to the properties map.
+         * 
+         * @param properties the map of properties to apply the values to
+         * @param className the name of the class
+         * @param annotationValues the list of annotation values to apply
+         */
+        void applyToProperties(Map<String, String> properties, String className, List<Object> annotationValues) {
 			if (this.omitEmptyValues && annotationValues.isEmpty()) {
 				return;
 			}
 			mergeProperties(properties, className + "." + this.propertyName, toCommaDelimitedString(annotationValues));
 		}
 
-		private void mergeProperties(Map<String, String> properties, String key, String value) {
+		/**
+         * Merges the given key-value pair into the properties map.
+         * If the key does not exist in the map or its value is empty, the key-value pair is added as is.
+         * If the key exists and its value is not empty, the new value is appended to the existing value with a comma separator.
+         *
+         * @param properties the map of properties to merge into
+         * @param key the key of the property to merge
+         * @param value the value of the property to merge
+         */
+        private void mergeProperties(Map<String, String> properties, String key, String value) {
 			String existingKey = properties.get(key);
 			if (existingKey == null || existingKey.isEmpty()) {
 				properties.put(key, value);
@@ -339,7 +524,13 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 			}
 		}
 
-		private String toCommaDelimitedString(List<Object> list) {
+		/**
+         * Converts a list of objects to a comma-delimited string.
+         * 
+         * @param list the list of objects to be converted
+         * @return the comma-delimited string representation of the list
+         */
+        private String toCommaDelimitedString(List<Object> list) {
 			if (list.isEmpty()) {
 				return "";
 			}
@@ -351,11 +542,26 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 			return result.toString();
 		}
 
-		static PropertyGenerator of(String annotationPackage, String propertyName) {
+		/**
+         * Returns a PropertyGenerator object with the specified annotation package and property name.
+         * 
+         * @param annotationPackage the package name of the annotations to be generated
+         * @param propertyName the name of the property to be generated
+         * @return a PropertyGenerator object
+         */
+        static PropertyGenerator of(String annotationPackage, String propertyName) {
 			return of(annotationPackage, propertyName, false);
 		}
 
-		static PropertyGenerator of(String annotationPackage, String propertyName, boolean omitEmptyValues) {
+		/**
+         * Creates a new instance of PropertyGenerator with the specified parameters.
+         *
+         * @param annotationPackage the package name of the annotations to be generated
+         * @param propertyName the name of the property to be generated
+         * @param omitEmptyValues flag indicating whether to omit empty values or not
+         * @return a new instance of PropertyGenerator
+         */
+        static PropertyGenerator of(String annotationPackage, String propertyName, boolean omitEmptyValues) {
 			return new PropertyGenerator(annotationPackage, propertyName, omitEmptyValues, Collections.emptyMap());
 		}
 

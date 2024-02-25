@@ -27,7 +27,13 @@ import org.springframework.aot.hint.TypeReference;
  */
 class PropertySourceRuntimeHints implements RuntimeHintsRegistrar {
 
-	@Override
+	/**
+     * Registers hints for runtime property source.
+     * 
+     * @param hints the runtime hints
+     * @param classLoader the class loader
+     */
+    @Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		hints.reflection()
 			.registerTypeIfPresent(classLoader, "org.yaml.snakeyaml.Yaml",

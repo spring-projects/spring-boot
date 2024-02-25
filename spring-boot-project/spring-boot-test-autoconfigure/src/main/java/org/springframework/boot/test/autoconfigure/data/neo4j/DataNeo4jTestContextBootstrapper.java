@@ -27,7 +27,13 @@ import org.springframework.test.context.TestContextBootstrapper;
  */
 class DataNeo4jTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
-	@Override
+	/**
+     * Retrieves the properties specified in the {@link DataNeo4jTest} annotation for the given test class.
+     * 
+     * @param testClass the test class for which to retrieve the properties
+     * @return an array of properties specified in the {@link DataNeo4jTest} annotation, or null if the annotation is not present
+     */
+    @Override
 	protected String[] getProperties(Class<?> testClass) {
 		DataNeo4jTest dataNeo4jTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, DataNeo4jTest.class);
 		return (dataNeo4jTest != null) ? dataNeo4jTest.properties() : null;

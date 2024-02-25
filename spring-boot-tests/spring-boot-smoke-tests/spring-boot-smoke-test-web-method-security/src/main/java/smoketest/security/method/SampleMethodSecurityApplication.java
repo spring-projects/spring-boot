@@ -38,25 +38,49 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * SampleMethodSecurityApplication class.
+ */
 @SpringBootApplication
 @EnableMethodSecurity(securedEnabled = true)
 public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
-	@Override
+	/**
+     * Adds view controllers for the login and access pages.
+     * 
+     * @param registry the ViewControllerRegistry to register the view controllers with
+     */
+    @Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/login").setViewName("login");
 		registry.addViewController("/access").setViewName("access");
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It initializes and runs the SpringApplicationBuilder to start the SampleMethodSecurityApplication.
+     *
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		new SpringApplicationBuilder(SampleMethodSecurityApplication.class).run(args);
 	}
 
-	@Order(Ordered.HIGHEST_PRECEDENCE)
+	/**
+     * AuthenticationSecurity class.
+     */
+    @Order(Ordered.HIGHEST_PRECEDENCE)
 	@Configuration(proxyBeanMethods = false)
 	protected static class AuthenticationSecurity {
 
-		@SuppressWarnings("deprecation")
+		/**
+         * Creates an instance of InMemoryUserDetailsManager with two users: admin and user.
+         * The admin user has the roles ADMIN, USER, and ACTUATOR, while the user user has the role USER.
+         * 
+         * @return the InMemoryUserDetailsManager instance
+         * @deprecated This method uses the deprecated DefaultPasswordEncoder. It is recommended to use a more secure password encoder.
+         */
+        @SuppressWarnings("deprecation")
 		@Bean
 		public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
 			return new InMemoryUserDetailsManager(
@@ -70,10 +94,25 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ApplicationSecurity class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	protected static class ApplicationSecurity {
 
-		@Bean
+		/**
+         * Configures the security filter chain for the application.
+         * Disables CSRF protection.
+         * Configures authorization rules for HTTP requests.
+         * Enables HTTP basic authentication.
+         * Configures form login and sets the login page.
+         * Configures exception handling and sets the access denied page.
+         * 
+         * @param http the HttpSecurity object to configure
+         * @return the configured SecurityFilterChain
+         * @throws Exception if an error occurs during configuration
+         */
+        @Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.csrf((csrf) -> csrf.disable());
 			http.authorizeHttpRequests((requests) -> {
@@ -88,11 +127,21 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ActuatorSecurity class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@Order(1)
 	protected static class ActuatorSecurity {
 
-		@Bean
+		/**
+         * Configures the security filter chain for the Actuator endpoints.
+         * 
+         * @param http the HttpSecurity object to configure
+         * @return the configured SecurityFilterChain object
+         * @throws Exception if an error occurs during configuration
+         */
+        @Bean
 		SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
 			http.csrf((csrf) -> csrf.disable());
 			http.securityMatcher(EndpointRequest.toAnyEndpoint());
@@ -103,10 +152,20 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 	}
 
-	@Controller
+	/**
+     * HomeController class.
+     */
+    @Controller
 	protected static class HomeController {
 
-		@GetMapping("/")
+		/**
+         * Retrieves the home page.
+         * 
+         * @return the name of the home page
+         * 
+         * @secured Requires the user to have the "ROLE_ADMIN" role in order to access this method.
+         */
+        @GetMapping("/")
 		@Secured("ROLE_ADMIN")
 		public String home() {
 			return "home";

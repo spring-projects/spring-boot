@@ -77,7 +77,10 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 		TemplateEngineConfigurations.DefaultTemplateEngineConfiguration.class })
 public class ThymeleafAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * DefaultTemplateResolverConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
 	static class DefaultTemplateResolverConfiguration {
 
@@ -87,13 +90,32 @@ public class ThymeleafAutoConfiguration {
 
 		private final ApplicationContext applicationContext;
 
-		DefaultTemplateResolverConfiguration(ThymeleafProperties properties, ApplicationContext applicationContext) {
+		/**
+         * Constructs a new DefaultTemplateResolverConfiguration with the specified ThymeleafProperties and ApplicationContext.
+         * 
+         * @param properties the ThymeleafProperties to be used
+         * @param applicationContext the ApplicationContext to be used
+         */
+        DefaultTemplateResolverConfiguration(ThymeleafProperties properties, ApplicationContext applicationContext) {
 			this.properties = properties;
 			this.applicationContext = applicationContext;
 			checkTemplateLocationExists();
 		}
 
-		private void checkTemplateLocationExists() {
+		/**
+         * Checks if the template location exists.
+         * 
+         * This method checks if the template location exists based on the configuration properties.
+         * If the checkTemplateLocation property is set to true, it creates a TemplateLocation object
+         * using the prefix property from the configuration. It then checks if the location exists
+         * using the ApplicationContext. If the location does not exist, a warning message is logged.
+         * 
+         * @see TemplateLocation
+         * @see ApplicationContext
+         * @see Logger
+         * @see DefaultTemplateResolverConfiguration
+         */
+        private void checkTemplateLocationExists() {
 			boolean checkTemplateLocation = this.properties.isCheckTemplateLocation();
 			if (checkTemplateLocation) {
 				TemplateLocation location = new TemplateLocation(this.properties.getPrefix());
@@ -105,7 +127,16 @@ public class ThymeleafAutoConfiguration {
 			}
 		}
 
-		@Bean
+		/**
+         * Creates a default SpringResourceTemplateResolver bean.
+         * 
+         * This method initializes and configures a SpringResourceTemplateResolver bean with the default settings.
+         * The ApplicationContext and properties are used to set the necessary properties of the resolver.
+         * The prefix, suffix, mode, encoding, cache, order, and checkExistence properties are set based on the properties object.
+         * 
+         * @return the default SpringResourceTemplateResolver bean
+         */
+        @Bean
 		SpringResourceTemplateResolver defaultTemplateResolver() {
 			SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
 			resolver.setApplicationContext(this.applicationContext);
@@ -126,12 +157,21 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ThymeleafWebMvcConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafWebMvcConfiguration {
 
-		@Bean
+		/**
+         * Registers a {@link ResourceUrlEncodingFilter} as a filter bean if it is not already present.
+         * This filter is enabled only if the resource chain is enabled.
+         * 
+         * @return the {@link FilterRegistrationBean} for the {@link ResourceUrlEncodingFilter}
+         */
+        @Bean
 		@ConditionalOnEnabledResourceChain
 		@ConditionalOnMissingFilterBean(ResourceUrlEncodingFilter.class)
 		FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter() {
@@ -141,10 +181,20 @@ public class ThymeleafAutoConfiguration {
 			return registration;
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * ThymeleafViewResolverConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		static class ThymeleafViewResolverConfiguration {
 
-			@Bean
+			/**
+             * Creates a ThymeleafViewResolver bean if it is missing in the application context.
+             * 
+             * @param properties the ThymeleafProperties object containing the configuration properties
+             * @param templateEngine the SpringTemplateEngine object used for rendering templates
+             * @return the ThymeleafViewResolver bean
+             */
+            @Bean
 			@ConditionalOnMissingBean(name = "thymeleafViewResolver")
 			ThymeleafViewResolver thymeleafViewResolver(ThymeleafProperties properties,
 					SpringTemplateEngine templateEngine) {
@@ -164,7 +214,16 @@ public class ThymeleafAutoConfiguration {
 				return resolver;
 			}
 
-			private String appendCharset(MimeType type, String charset) {
+			/**
+             * Appends the specified charset to the given MimeType.
+             * If the MimeType already has a charset, the method returns the MimeType as a string.
+             * Otherwise, it creates a new MimeType with the specified charset and returns it as a string.
+             * 
+             * @param type the MimeType to append the charset to
+             * @param charset the charset to append
+             * @return the MimeType with the appended charset as a string
+             */
+            private String appendCharset(MimeType type, String charset) {
 				if (type.getCharset() != null) {
 					return type.toString();
 				}
@@ -178,12 +237,23 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ThymeleafWebFluxConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafWebFluxConfiguration {
 
-		@Bean
+		/**
+         * Creates a ThymeleafReactiveViewResolver bean if it is missing in the application context.
+         * This resolver acts as a fallback resolver (e.g. like a InternalResourceViewResolver) so it needs to have low precedence.
+         * 
+         * @param templateEngine the ISpringWebFluxTemplateEngine to be used by the resolver
+         * @param properties the ThymeleafProperties containing the configuration properties
+         * @return the ThymeleafReactiveViewResolver bean
+         */
+        @Bean
 		@ConditionalOnMissingBean(name = "thymeleafReactiveViewResolver")
 		ThymeleafReactiveViewResolver thymeleafViewResolver(ISpringWebFluxTemplateEngine templateEngine,
 				ThymeleafProperties properties) {
@@ -197,14 +267,26 @@ public class ThymeleafAutoConfiguration {
 			return resolver;
 		}
 
-		private void mapProperties(ThymeleafProperties properties, ThymeleafReactiveViewResolver resolver) {
+		/**
+         * Maps the properties of ThymeleafProperties to the ThymeleafReactiveViewResolver.
+         * 
+         * @param properties the ThymeleafProperties object containing the properties to be mapped
+         * @param resolver the ThymeleafReactiveViewResolver object to map the properties to
+         */
+        private void mapProperties(ThymeleafProperties properties, ThymeleafReactiveViewResolver resolver) {
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getEncoding).to(resolver::setDefaultCharset);
 			resolver.setExcludedViewNames(properties.getExcludedViewNames());
 			resolver.setViewNames(properties.getViewNames());
 		}
 
-		private void mapReactiveProperties(Reactive properties, ThymeleafReactiveViewResolver resolver) {
+		/**
+         * Maps the reactive properties to the ThymeleafReactiveViewResolver.
+         * 
+         * @param properties the reactive properties to be mapped
+         * @param resolver the ThymeleafReactiveViewResolver to map the properties to
+         */
+        private void mapReactiveProperties(Reactive properties, ThymeleafReactiveViewResolver resolver) {
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getMediaTypes).whenNonNull().to(resolver::setSupportedMediaTypes);
 			map.from(properties::getMaxChunkSize)
@@ -217,11 +299,19 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ThymeleafWebLayoutConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(LayoutDialect.class)
 	static class ThymeleafWebLayoutConfiguration {
 
-		@Bean
+		/**
+         * Returns a new instance of LayoutDialect if no other bean of type LayoutDialect is present in the application context.
+         * 
+         * @return a new instance of LayoutDialect
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		LayoutDialect layoutDialect() {
 			return new LayoutDialect();
@@ -229,11 +319,19 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * DataAttributeDialectConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(DataAttributeDialect.class)
 	static class DataAttributeDialectConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of {@link DataAttributeDialect} if no other bean of the same type is present.
+         * 
+         * @return the {@link DataAttributeDialect} bean
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		DataAttributeDialect dialect() {
 			return new DataAttributeDialect();
@@ -241,11 +339,20 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ThymeleafSecurityDialectConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ SpringSecurityDialect.class, CsrfToken.class })
 	static class ThymeleafSecurityDialectConfiguration {
 
-		@Bean
+		/**
+         * Returns a new instance of SpringSecurityDialect if no other bean of the same type is present.
+         * This dialect provides integration with Spring Security for Thymeleaf templates.
+         *
+         * @return a new instance of SpringSecurityDialect
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		SpringSecurityDialect securityDialect() {
 			return new SpringSecurityDialect();

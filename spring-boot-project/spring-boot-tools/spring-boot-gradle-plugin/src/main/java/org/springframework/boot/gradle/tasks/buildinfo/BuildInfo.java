@@ -46,7 +46,12 @@ public abstract class BuildInfo extends DefaultTask {
 
 	private final BuildInfoProperties properties;
 
-	public BuildInfo() {
+	/**
+     * Constructor for the BuildInfo class.
+     * Initializes the properties object with the specified excludes.
+     * Sets the destination directory to the build directory of the project.
+     */
+    public BuildInfo() {
 		this.properties = getProject().getObjects().newInstance(BuildInfoProperties.class, getExcludes());
 		getDestinationDir().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
 	}

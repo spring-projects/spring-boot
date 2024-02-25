@@ -18,6 +18,9 @@ package smoketest.hateoas.domain;
 
 import java.util.List;
 
+/**
+ * CustomerRepository interface.
+ */
 public interface CustomerRepository {
 
 	List<Customer> findAll();

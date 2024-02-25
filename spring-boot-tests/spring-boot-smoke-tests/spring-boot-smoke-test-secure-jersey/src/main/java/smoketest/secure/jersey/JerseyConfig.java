@@ -20,10 +20,16 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * JerseyConfig class.
+ */
 @Component
 public class JerseyConfig extends ResourceConfig {
 
-	public JerseyConfig() {
+	/**
+     * Registers the Endpoint and ReverseEndpoint classes in the JerseyConfig class.
+     */
+    public JerseyConfig() {
 		register(Endpoint.class);
 		register(ReverseEndpoint.class);
 	}

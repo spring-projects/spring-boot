@@ -43,7 +43,16 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 
 	private final String contextId;
 
-	DefaultEndpointObjectNameFactory(JmxEndpointProperties properties, JmxProperties jmxProperties,
+	/**
+     * Constructs a new DefaultEndpointObjectNameFactory with the specified properties, JMX properties,
+     * MBean server, and context ID.
+     * 
+     * @param properties the JMX endpoint properties
+     * @param jmxProperties the JMX properties
+     * @param mBeanServer the MBean server
+     * @param contextId the context ID
+     */
+    DefaultEndpointObjectNameFactory(JmxEndpointProperties properties, JmxProperties jmxProperties,
 			MBeanServer mBeanServer, String contextId) {
 		this.properties = properties;
 		this.jmxProperties = jmxProperties;
@@ -51,7 +60,14 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 		this.contextId = contextId;
 	}
 
-	@Override
+	/**
+     * Returns the ObjectName for the given ExposableJmxEndpoint.
+     * 
+     * @param endpoint the ExposableJmxEndpoint for which to generate the ObjectName
+     * @return the ObjectName for the given ExposableJmxEndpoint
+     * @throws MalformedObjectNameException if the generated ObjectName is malformed
+     */
+    @Override
 	public ObjectName getObjectName(ExposableJmxEndpoint endpoint) throws MalformedObjectNameException {
 		StringBuilder builder = new StringBuilder(determineDomain());
 		builder.append(":type=Endpoint");
@@ -68,7 +84,12 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 		return ObjectNameManager.getInstance(builder.toString());
 	}
 
-	private String determineDomain() {
+	/**
+     * Determines the domain for the endpoint object name.
+     * 
+     * @return the domain for the endpoint object name
+     */
+    private String determineDomain() {
 		if (StringUtils.hasText(this.properties.getDomain())) {
 			return this.properties.getDomain();
 		}
@@ -78,12 +99,24 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 		return "org.springframework.boot";
 	}
 
-	private boolean hasMBean(String baseObjectName) throws MalformedObjectNameException {
+	/**
+     * Checks if an MBean with the given base object name exists.
+     * 
+     * @param baseObjectName the base object name of the MBean
+     * @return true if an MBean with the given base object name exists, false otherwise
+     * @throws MalformedObjectNameException if the base object name is malformed
+     */
+    private boolean hasMBean(String baseObjectName) throws MalformedObjectNameException {
 		ObjectName query = new ObjectName(baseObjectName + ",*");
 		return !this.mBeanServer.queryNames(query, null).isEmpty();
 	}
 
-	private String getStaticNames() {
+	/**
+     * Returns a string representation of the static names in the properties.
+     * 
+     * @return a string representation of the static names, or an empty string if there are no static names
+     */
+    private String getStaticNames() {
 		if (this.properties.getStaticNames().isEmpty()) {
 			return "";
 		}

@@ -33,27 +33,58 @@ public class DispatcherHandlerMappingDetails {
 
 	private RequestMappingConditionsDescription requestMappingConditions;
 
-	public HandlerMethodDescription getHandlerMethod() {
+	/**
+     * Returns the handler method associated with this DispatcherHandlerMappingDetails.
+     *
+     * @return the handler method
+     */
+    public HandlerMethodDescription getHandlerMethod() {
 		return this.handlerMethod;
 	}
 
-	void setHandlerMethod(HandlerMethodDescription handlerMethod) {
+	/**
+     * Sets the handler method for this DispatcherHandlerMappingDetails.
+     * 
+     * @param handlerMethod the HandlerMethodDescription to set as the handler method
+     */
+    void setHandlerMethod(HandlerMethodDescription handlerMethod) {
 		this.handlerMethod = handlerMethod;
 	}
 
-	public HandlerFunctionDescription getHandlerFunction() {
+	/**
+     * Returns the HandlerFunctionDescription associated with this DispatcherHandlerMappingDetails.
+     *
+     * @return the HandlerFunctionDescription associated with this DispatcherHandlerMappingDetails
+     */
+    public HandlerFunctionDescription getHandlerFunction() {
 		return this.handlerFunction;
 	}
 
-	void setHandlerFunction(HandlerFunctionDescription handlerFunction) {
+	/**
+     * Sets the handler function for the DispatcherHandlerMappingDetails.
+     * 
+     * @param handlerFunction the HandlerFunctionDescription to be set
+     */
+    void setHandlerFunction(HandlerFunctionDescription handlerFunction) {
 		this.handlerFunction = handlerFunction;
 	}
 
-	public RequestMappingConditionsDescription getRequestMappingConditions() {
+	/**
+     * Returns the RequestMappingConditionsDescription object that represents the request mapping conditions
+     * for this DispatcherHandlerMappingDetails instance.
+     *
+     * @return the RequestMappingConditionsDescription object representing the request mapping conditions
+     */
+    public RequestMappingConditionsDescription getRequestMappingConditions() {
 		return this.requestMappingConditions;
 	}
 
-	void setRequestMappingConditions(RequestMappingConditionsDescription requestMappingConditions) {
+	/**
+     * Sets the request mapping conditions for this DispatcherHandlerMappingDetails.
+     * 
+     * @param requestMappingConditions the request mapping conditions to be set
+     */
+    void setRequestMappingConditions(RequestMappingConditionsDescription requestMappingConditions) {
 		this.requestMappingConditions = requestMappingConditions;
 	}
 

@@ -38,20 +38,42 @@ public class CheckClasspathForUnconstrainedDirectDependencies extends DefaultTas
 
 	private Configuration classpath;
 
-	public CheckClasspathForUnconstrainedDirectDependencies() {
+	/**
+     * Checks the classpath for unconstrained direct dependencies.
+     * 
+     * @return void
+     */
+    public CheckClasspathForUnconstrainedDirectDependencies() {
 		getOutputs().upToDateWhen((task) -> true);
 	}
 
-	@Classpath
+	/**
+     * Returns the classpath of the CheckClasspathForUnconstrainedDirectDependencies class.
+     *
+     * @return the classpath of the CheckClasspathForUnconstrainedDirectDependencies class
+     */
+    @Classpath
 	public FileCollection getClasspath() {
 		return this.classpath;
 	}
 
-	public void setClasspath(Configuration classpath) {
+	/**
+     * Sets the classpath for the CheckClasspathForUnconstrainedDirectDependencies class.
+     * 
+     * @param classpath the Configuration object representing the classpath to be set
+     */
+    public void setClasspath(Configuration classpath) {
 		this.classpath = classpath;
 	}
 
-	@TaskAction
+	/**
+     * Checks for unconstrained direct dependencies in the classpath.
+     * 
+     * This method retrieves the resolution result from the classpath and checks for any unconstrained direct dependencies.
+     * It collects the requested dependencies and constraints, and then removes the constraints from the unconstrained dependencies.
+     * If any unconstrained dependencies are found, a GradleException is thrown with the list of unconstrained dependencies.
+     */
+    @TaskAction
 	void checkForUnconstrainedDirectDependencies() {
 		ResolutionResult resolutionResult = this.classpath.getIncoming().getResolutionResult();
 		Set<? extends DependencyResult> dependencies = resolutionResult.getRoot().getDependencies();

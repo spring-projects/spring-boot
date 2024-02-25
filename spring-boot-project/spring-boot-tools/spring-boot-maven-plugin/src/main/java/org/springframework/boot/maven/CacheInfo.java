@@ -29,32 +29,69 @@ public class CacheInfo {
 
 	private Cache cache;
 
-	public CacheInfo() {
+	/**
+     * Constructs a new CacheInfo object.
+     */
+    public CacheInfo() {
 	}
 
-	private CacheInfo(Cache cache) {
+	/**
+     * Constructs a new CacheInfo object with the specified cache.
+     * 
+     * @param cache the cache to be associated with the CacheInfo object
+     */
+    private CacheInfo(Cache cache) {
 		this.cache = cache;
 	}
 
-	public void setVolume(VolumeCacheInfo info) {
+	/**
+     * Sets the volume cache information.
+     * 
+     * @param info the volume cache information to be set
+     * @throws IllegalStateException if the cache has already been configured
+     */
+    public void setVolume(VolumeCacheInfo info) {
 		Assert.state(this.cache == null, "Each image building cache can be configured only once");
 		this.cache = Cache.volume(info.getName());
 	}
 
-	public void setBind(BindCacheInfo info) {
+	/**
+     * Sets the bind cache information.
+     * 
+     * @param info the bind cache information to be set
+     * @throws IllegalStateException if the cache has already been configured
+     */
+    public void setBind(BindCacheInfo info) {
 		Assert.state(this.cache == null, "Each image building cache can be configured only once");
 		this.cache = Cache.bind(info.getSource());
 	}
 
-	Cache asCache() {
+	/**
+     * Returns the cache object.
+     *
+     * @return the cache object
+     */
+    Cache asCache() {
 		return this.cache;
 	}
 
-	static CacheInfo fromVolume(VolumeCacheInfo cacheInfo) {
+	/**
+     * Creates a new CacheInfo object from the provided VolumeCacheInfo object.
+     * 
+     * @param cacheInfo the VolumeCacheInfo object to create the CacheInfo object from
+     * @return a new CacheInfo object
+     */
+    static CacheInfo fromVolume(VolumeCacheInfo cacheInfo) {
 		return new CacheInfo(Cache.volume(cacheInfo.getName()));
 	}
 
-	static CacheInfo fromBind(BindCacheInfo cacheInfo) {
+	/**
+     * Creates a new CacheInfo object from the provided BindCacheInfo object.
+     * 
+     * @param cacheInfo the BindCacheInfo object to create the CacheInfo object from
+     * @return a new CacheInfo object with the source of the BindCacheInfo object bound to the Cache
+     */
+    static CacheInfo fromBind(BindCacheInfo cacheInfo) {
 		return new CacheInfo(Cache.bind(cacheInfo.getSource()));
 	}
 
@@ -65,18 +102,36 @@ public class CacheInfo {
 
 		private String name;
 
-		public VolumeCacheInfo() {
+		/**
+         * Constructs a new VolumeCacheInfo object.
+         */
+        public VolumeCacheInfo() {
 		}
 
-		VolumeCacheInfo(String name) {
+		/**
+         * Constructs a new VolumeCacheInfo object with the specified name.
+         * 
+         * @param name the name of the volume cache info
+         */
+        VolumeCacheInfo(String name) {
 			this.name = name;
 		}
 
-		public String getName() {
+		/**
+         * Returns the name of the VolumeCacheInfo object.
+         *
+         * @return the name of the VolumeCacheInfo object
+         */
+        public String getName() {
 			return this.name;
 		}
 
-		void setName(String name) {
+		/**
+         * Sets the name of the VolumeCacheInfo.
+         * 
+         * @param name the name to be set for the VolumeCacheInfo
+         */
+        void setName(String name) {
 			this.name = name;
 		}
 
@@ -89,18 +144,36 @@ public class CacheInfo {
 
 		private String source;
 
-		public BindCacheInfo() {
+		/**
+         * Constructs a new BindCacheInfo object.
+         */
+        public BindCacheInfo() {
 		}
 
-		BindCacheInfo(String name) {
+		/**
+         * Binds the cache information with the specified name.
+         * 
+         * @param name the name of the cache information to be bound
+         */
+        BindCacheInfo(String name) {
 			this.source = name;
 		}
 
-		public String getSource() {
+		/**
+         * Returns the source of the BindCacheInfo.
+         *
+         * @return the source of the BindCacheInfo
+         */
+        public String getSource() {
 			return this.source;
 		}
 
-		void setSource(String source) {
+		/**
+         * Sets the source of the BindCacheInfo.
+         * 
+         * @param source the source to set
+         */
+        void setSource(String source) {
 			this.source = source;
 		}
 

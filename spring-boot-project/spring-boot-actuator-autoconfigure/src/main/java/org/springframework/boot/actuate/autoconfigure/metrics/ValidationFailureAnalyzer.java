@@ -30,7 +30,14 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  */
 class ValidationFailureAnalyzer extends AbstractFailureAnalyzer<ValidationException> {
 
-	@Override
+	/**
+     * Analyzes the validation failure and generates a failure analysis report.
+     * 
+     * @param rootFailure the root cause of the failure
+     * @param cause the validation exception that occurred
+     * @return the failure analysis report
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, ValidationException cause) {
 		StringBuilder description = new StringBuilder(String.format("Invalid Micrometer configuration detected:%n"));
 		for (Invalid<?> failure : cause.getValidation().failures()) {

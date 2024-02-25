@@ -19,12 +19,20 @@ package smoketest.amqp;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Sender class.
+ */
 public class Sender {
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 
-	public void send(String message) {
+	/**
+     * Sends a message to the "foo" queue.
+     * 
+     * @param message the message to be sent
+     */
+    public void send(String message) {
 		this.rabbitTemplate.convertAndSend("foo", message);
 	}
 

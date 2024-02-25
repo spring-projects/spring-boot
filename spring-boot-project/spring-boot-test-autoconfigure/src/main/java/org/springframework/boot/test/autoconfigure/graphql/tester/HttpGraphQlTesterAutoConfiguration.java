@@ -39,7 +39,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 @ConditionalOnClass({ WebClient.class, WebTestClient.class, WebGraphQlTester.class })
 public class HttpGraphQlTesterAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a HttpGraphQlTester bean if a WebTestClient bean is present and no HttpGraphQlTester bean is already defined.
+     * 
+     * @param webTestClient the WebTestClient bean
+     * @param properties the GraphQlProperties bean
+     * @return the HttpGraphQlTester bean
+     */
+    @Bean
 	@ConditionalOnBean(WebTestClient.class)
 	@ConditionalOnMissingBean
 	public HttpGraphQlTester webTestClientGraphQlTester(WebTestClient webTestClient, GraphQlProperties properties) {

@@ -45,7 +45,13 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 
 	private int order = HIGHEST_PRECEDENCE;
 
-	@Override
+	/**
+     * This method is called when an application event is triggered.
+     * It handles different types of application events and performs corresponding actions.
+     * 
+     * @param event The application event that is triggered
+     */
+    @Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationStartingEvent startingEvent) {
 			onApplicationStartingEvent(startingEvent);
@@ -61,7 +67,15 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 		}
 	}
 
-	private void onApplicationStartingEvent(ApplicationStartingEvent event) {
+	/**
+     * Handles the ApplicationStartingEvent.
+     * 
+     * This method is called when the application is starting. It checks if restart is enabled or disabled based on the system property.
+     * If restart is enabled, it initializes the restart process using the DefaultRestartInitializer. If restart is disabled, it logs a message and disables the restart.
+     * 
+     * @param event The ApplicationStartingEvent object.
+     */
+    private void onApplicationStartingEvent(ApplicationStartingEvent event) {
 		// It's too early to use the Spring environment but we should still allow
 		// users to disable restart using a System property.
 		String enabled = System.getProperty(ENABLED_PROPERTY);
@@ -104,19 +118,41 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 		}
 	}
 
-	boolean implicitlyEnableRestart() {
+	/**
+     * Determines whether to implicitly enable restart based on the current thread's DevTools enablement.
+     * 
+     * @return {@code true} if restart should be implicitly enabled, {@code false} otherwise.
+     */
+    boolean implicitlyEnableRestart() {
 		return DevToolsEnablementDeducer.shouldEnable(Thread.currentThread());
 	}
 
-	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
+	/**
+     * This method is called when the ApplicationPreparedEvent is triggered.
+     * It prepares the Restarter instance by calling the prepare method with the application context obtained from the event.
+     * 
+     * @param event The ApplicationPreparedEvent object that triggered this method.
+     */
+    private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
 		Restarter.getInstance().prepare(event.getApplicationContext());
 	}
 
-	private void onApplicationFailedEvent(ApplicationFailedEvent event) {
+	/**
+     * This method is called when an application fails to start.
+     * It removes the application context from the Restarter instance.
+     * 
+     * @param event The ApplicationFailedEvent object containing information about the failed application
+     */
+    private void onApplicationFailedEvent(ApplicationFailedEvent event) {
 		Restarter.getInstance().remove(event.getApplicationContext());
 	}
 
-	@Override
+	/**
+     * Returns the order value of this RestartApplicationListener.
+     *
+     * @return the order value of this RestartApplicationListener
+     */
+    @Override
 	public int getOrder() {
 		return this.order;
 	}

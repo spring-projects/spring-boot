@@ -90,12 +90,23 @@ public interface Content {
 		Assert.notNull(supplier, "Supplier must not be null");
 		return new Content() {
 
-			@Override
+			/**
+     * Returns the size of the content.
+     *
+     * @return the size of the content
+     */
+    @Override
 			public int size() {
 				return size;
 			}
 
-			@Override
+			/**
+     * Writes the content to the specified output stream.
+     * 
+     * @param outputStream the output stream to write the content to
+     * @throws IOException if an I/O error occurs while writing the content
+     */
+    @Override
 			public void writeTo(OutputStream outputStream) throws IOException {
 				FileCopyUtils.copy(supplier.get(), outputStream);
 			}

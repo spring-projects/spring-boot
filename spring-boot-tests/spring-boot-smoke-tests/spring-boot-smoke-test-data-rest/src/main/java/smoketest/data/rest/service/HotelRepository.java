@@ -22,6 +22,9 @@ import smoketest.data.rest.domain.Hotel;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+/**
+ * HotelRepository interface.
+ */
 @RepositoryRestResource(collectionResourceRel = "hotels", path = "hotels")
 interface HotelRepository extends PagingAndSortingRepository<Hotel, Long> {
 

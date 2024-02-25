@@ -88,7 +88,13 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		this.rootArchive = rootArchive;
 	}
 
-	@Override
+	/**
+     * Finds the resource with the specified name.
+     * 
+     * @param name the name of the resource
+     * @return the URL object representing the resource, or null if the resource is not found
+     */
+    @Override
 	public URL findResource(String name) {
 		if (this.exploded) {
 			return super.findResource(name);
@@ -102,7 +108,18 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	@Override
+	/**
+     * Overrides the findResources method to handle resource searching in the class loader.
+     * If the class loader is exploded, it calls the super method to find the resources.
+     * Otherwise, it sets the useFastConnectionExceptions flag to true in the Handler class,
+     * and then calls the super method to find the resources using the fast connection exceptions.
+     * Finally, it sets the useFastConnectionExceptions flag back to false in the Handler class.
+     *
+     * @param name The name of the resource to be searched.
+     * @return An enumeration of URLs representing the resources found.
+     * @throws IOException If an I/O error occurs while searching for the resources.
+     */
+    @Override
 	public Enumeration<URL> findResources(String name) throws IOException {
 		if (this.exploded) {
 			return super.findResources(name);
@@ -116,7 +133,15 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	@Override
+	/**
+     * Loads the class with the specified name, optionally resolving it.
+     * 
+     * @param name    the name of the class to load
+     * @param resolve whether or not to resolve the class
+     * @return the loaded class
+     * @throws ClassNotFoundException if the class could not be found
+     */
+    @Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		if (name.startsWith("org.springframework.boot.loader.jarmode.")) {
 			try {
@@ -154,7 +179,14 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	private Class<?> loadClassInLaunchedClassLoader(String name) throws ClassNotFoundException {
+	/**
+     * Loads a class in the LaunchedURLClassLoader.
+     * 
+     * @param name the fully qualified name of the class to be loaded
+     * @return the loaded class
+     * @throws ClassNotFoundException if the class cannot be found
+     */
+    private Class<?> loadClassInLaunchedClassLoader(String name) throws ClassNotFoundException {
 		String internalName = name.replace('.', '/') + ".class";
 		InputStream inputStream = getParent().getResourceAsStream(internalName);
 		if (inputStream == null) {
@@ -212,7 +244,13 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	private void definePackage(String className, String packageName) {
+	/**
+     * Defines the package for a given class in a specified package name.
+     * 
+     * @param className   the fully qualified name of the class
+     * @param packageName the package name to define
+     */
+    private void definePackage(String className, String packageName) {
 		String packageEntryName = packageName.replace('.', '/') + "/";
 		String classEntryName = className.replace('.', '/') + ".class";
 		for (URL url : getURLs()) {
@@ -233,7 +271,16 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	@Override
+	/**
+     * Defines a package with the specified name, manifest, and URL.
+     * 
+     * @param name the name of the package
+     * @param man the manifest for the package
+     * @param url the URL for the package
+     * @return the defined package
+     * @throws IllegalArgumentException if the package name is invalid
+     */
+    @Override
 	protected Package definePackage(String name, Manifest man, URL url) throws IllegalArgumentException {
 		if (!this.exploded) {
 			return super.definePackage(name, man, url);
@@ -243,7 +290,21 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	@Override
+	/**
+     * Defines a package with the specified attributes.
+     * 
+     * @param name         the name of the package
+     * @param specTitle    the specification title of the package
+     * @param specVersion  the specification version of the package
+     * @param specVendor   the specification vendor of the package
+     * @param implTitle    the implementation title of the package
+     * @param implVersion  the implementation version of the package
+     * @param implVendor   the implementation vendor of the package
+     * @param sealBase     the URL used to seal the package, or null if not sealed
+     * @return the defined package
+     * @throws IllegalArgumentException if the package attributes are invalid
+     */
+    @Override
 	protected Package definePackage(String name, String specTitle, String specVersion, String specVendor,
 			String implTitle, String implVersion, String implVendor, URL sealBase) throws IllegalArgumentException {
 		if (!this.exploded) {
@@ -265,7 +326,13 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	private Manifest getManifest(Archive archive) {
+	/**
+     * Retrieves the manifest of the given archive.
+     * 
+     * @param archive the archive from which to retrieve the manifest
+     * @return the manifest of the archive, or null if the archive is null or an IOException occurs
+     */
+    private Manifest getManifest(Archive archive) {
 		try {
 			return (archive != null) ? archive.getManifest() : null;
 		}
@@ -274,7 +341,14 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	private <T> T doDefinePackage(DefinePackageCallType type, Supplier<T> call) {
+	/**
+     * Executes a define package call with the specified type and call supplier.
+     * 
+     * @param type the type of define package call
+     * @param call the supplier providing the call to be executed
+     * @return the result of the call
+     */
+    private <T> T doDefinePackage(DefinePackageCallType type, Supplier<T> call) {
 		DefinePackageCallType existingType = this.definePackageCallType;
 		try {
 			this.definePackageCallType = type;
@@ -306,22 +380,41 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	}
 
-	private void clearCache(URLConnection connection) throws IOException {
+	/**
+     * Clears the cache for the given URL connection.
+     * 
+     * @param connection the URL connection to clear the cache for
+     * @throws IOException if an I/O error occurs while clearing the cache
+     */
+    private void clearCache(URLConnection connection) throws IOException {
 		Object jarFile = ((JarURLConnection) connection).getJarFile();
 		if (jarFile instanceof org.springframework.boot.loader.jar.JarFile) {
 			((org.springframework.boot.loader.jar.JarFile) jarFile).clearCache();
 		}
 	}
 
-	private static class UseFastConnectionExceptionsEnumeration implements Enumeration<URL> {
+	/**
+     * UseFastConnectionExceptionsEnumeration class.
+     */
+    private static class UseFastConnectionExceptionsEnumeration implements Enumeration<URL> {
 
 		private final Enumeration<URL> delegate;
 
-		UseFastConnectionExceptionsEnumeration(Enumeration<URL> delegate) {
+		/**
+         * Constructs a new UseFastConnectionExceptionsEnumeration object with the specified delegate.
+         *
+         * @param delegate the enumeration of URLs to be used as the delegate
+         */
+        UseFastConnectionExceptionsEnumeration(Enumeration<URL> delegate) {
 			this.delegate = delegate;
 		}
 
-		@Override
+		/**
+         * Returns true if this enumeration contains more elements.
+         * 
+         * @return true if this enumeration contains more elements, false otherwise
+         */
+        @Override
 		public boolean hasMoreElements() {
 			Handler.setUseFastConnectionExceptions(true);
 			try {
@@ -333,7 +426,13 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 		}
 
-		@Override
+		/**
+         * Returns the next element in the enumeration.
+         * 
+         * @return the next element in the enumeration
+         * @throws FastConnectionException if a fast connection exception occurs
+         */
+        @Override
 		public URL nextElement() {
 			Handler.setUseFastConnectionExceptions(true);
 			try {

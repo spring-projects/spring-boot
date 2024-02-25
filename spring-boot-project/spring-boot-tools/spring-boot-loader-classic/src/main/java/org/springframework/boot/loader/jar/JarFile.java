@@ -125,7 +125,18 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		this(rootFile, pathFromRoot, data, null, type, null);
 	}
 
-	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarEntryFilter filter,
+	/**
+     * Constructs a new JarFile instance.
+     * 
+     * @param rootFile the RandomAccessDataFile representing the root file of the JAR
+     * @param pathFromRoot the path from the root file to the JAR file
+     * @param data the RandomAccessData representing the JAR file data
+     * @param filter the JarEntryFilter used to filter the JAR entries
+     * @param type the JarFileType indicating the type of JAR file
+     * @param manifestSupplier the Supplier used to supply the Manifest for the JAR file
+     * @throws IOException if an I/O error occurs while reading the JAR file
+     */
+    private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarEntryFilter filter,
 			JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
 		super(rootFile.getFile());
 		super.close();
@@ -161,7 +172,13 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		};
 	}
 
-	private CentralDirectoryVisitor centralDirectoryVisitor() {
+	/**
+     * Returns a CentralDirectoryVisitor object that can be used to visit the central directory of a JAR file.
+     * The visitor provides methods to handle the start of the visit, file header visit, and end of the visit.
+     * 
+     * @return a CentralDirectoryVisitor object
+     */
+    private CentralDirectoryVisitor centralDirectoryVisitor() {
 		return new CentralDirectoryVisitor() {
 
 			@Override
@@ -184,7 +201,13 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		};
 	}
 
-	JarFileWrapper getWrapper() throws IOException {
+	/**
+     * Returns the JarFileWrapper object associated with this JarFile.
+     * 
+     * @return the JarFileWrapper object
+     * @throws IOException if an I/O error occurs while creating the JarFileWrapper
+     */
+    JarFileWrapper getWrapper() throws IOException {
 		JarFileWrapper wrapper = this.wrapper;
 		if (wrapper == null) {
 			wrapper = new JarFileWrapper(this);
@@ -193,20 +216,41 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		return wrapper;
 	}
 
-	@Override
+	/**
+     * Returns the permission required to read the file associated with this JarFile.
+     * 
+     * @return the FilePermission object representing the permission required to read the file
+     */
+    @Override
 	Permission getPermission() {
 		return new FilePermission(this.rootFile.getFile().getPath(), READ_ACTION);
 	}
 
-	protected final RandomAccessDataFile getRootJarFile() {
+	/**
+     * Returns the root jar file associated with this JarFile object.
+     * 
+     * @return the root jar file
+     */
+    protected final RandomAccessDataFile getRootJarFile() {
 		return this.rootFile;
 	}
 
-	RandomAccessData getData() {
+	/**
+     * Retrieves the RandomAccessData object associated with this JarFile.
+     *
+     * @return the RandomAccessData object
+     */
+    RandomAccessData getData() {
 		return this.data;
 	}
 
-	@Override
+	/**
+     * Returns the manifest of this JarFile.
+     * 
+     * @return the manifest of this JarFile
+     * @throws IOException if an I/O error occurs while reading the manifest
+     */
+    @Override
 	public Manifest getManifest() throws IOException {
 		Manifest manifest = (this.manifest != null) ? this.manifest.get() : null;
 		if (manifest == null) {
@@ -221,12 +265,22 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		return manifest;
 	}
 
-	@Override
+	/**
+     * Returns an enumeration of the entries in this JarFile.
+     * 
+     * @return an enumeration of the entries in this JarFile
+     */
+    @Override
 	public Enumeration<java.util.jar.JarEntry> entries() {
 		return new JarEntryEnumeration(this.entries.iterator());
 	}
 
-	@Override
+	/**
+     * Returns a stream of JarEntry objects for this JarFile.
+     *
+     * @return a stream of JarEntry objects
+     */
+    @Override
 	public Stream<java.util.jar.JarEntry> stream() {
 		Spliterator<java.util.jar.JarEntry> spliterator = Spliterators.spliterator(iterator(), size(),
 				Spliterator.ORDERED | Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL);
@@ -244,31 +298,69 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		return (Iterator) this.entries.iterator(this::ensureOpen);
 	}
 
-	public JarEntry getJarEntry(CharSequence name) {
+	/**
+     * Returns the JarEntry object for the specified entry name.
+     * 
+     * @param name the name of the entry to retrieve
+     * @return the JarEntry object for the specified entry name, or null if not found
+     */
+    public JarEntry getJarEntry(CharSequence name) {
 		return this.entries.getEntry(name);
 	}
 
-	@Override
+	/**
+     * Returns a JarEntry object for the specified entry name.
+     * 
+     * @param name the name of the entry
+     * @return the JarEntry object for the specified entry name, or null if not found
+     */
+    @Override
 	public JarEntry getJarEntry(String name) {
 		return (JarEntry) getEntry(name);
 	}
 
-	public boolean containsEntry(String name) {
+	/**
+     * Checks if the JarFile contains an entry with the specified name.
+     * 
+     * @param name the name of the entry to check
+     * @return true if the JarFile contains an entry with the specified name, false otherwise
+     */
+    public boolean containsEntry(String name) {
 		return this.entries.containsEntry(name);
 	}
 
-	@Override
+	/**
+     * Returns a ZipEntry object for the specified entry name.
+     * 
+     * @param name the name of the entry
+     * @return the ZipEntry object for the specified entry name
+     * @throws IllegalStateException if the JarFile is not open
+     */
+    @Override
 	public ZipEntry getEntry(String name) {
 		ensureOpen();
 		return this.entries.getEntry(name);
 	}
 
-	@Override
+	/**
+     * Returns an input stream for reading the contents of this JarFile entry.
+     *
+     * @return an input stream for reading the contents of this JarFile entry
+     * @throws IOException if an I/O error occurs while creating the input stream
+     */
+    @Override
 	InputStream getInputStream() throws IOException {
 		return this.data.getInputStream();
 	}
 
-	@Override
+	/**
+     * Returns an input stream for reading the contents of the specified entry from this JarFile.
+     * 
+     * @param entry the entry to retrieve the input stream for
+     * @return an input stream for reading the contents of the specified entry
+     * @throws IOException if an I/O error occurs while retrieving the input stream
+     */
+    @Override
 	public synchronized InputStream getInputStream(ZipEntry entry) throws IOException {
 		ensureOpen();
 		if (entry instanceof JarEntry jarEntry) {
@@ -277,7 +369,14 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		return getInputStream((entry != null) ? entry.getName() : null);
 	}
 
-	InputStream getInputStream(String name) throws IOException {
+	/**
+     * Returns an input stream for reading the contents of the specified entry in this JAR file.
+     * 
+     * @param name the name of the entry
+     * @return an input stream for reading the contents of the specified entry
+     * @throws IOException if an I/O error occurs while creating the input stream
+     */
+    InputStream getInputStream(String name) throws IOException {
 		return this.entries.getInputStream(name);
 	}
 
@@ -306,14 +405,28 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		}
 	}
 
-	private JarFile createJarFileFromEntry(JarEntry entry) throws IOException {
+	/**
+     * Creates a new JarFile object from the given JarEntry.
+     * 
+     * @param entry the JarEntry to create the JarFile from
+     * @return a new JarFile object created from the given JarEntry
+     * @throws IOException if an I/O error occurs while creating the JarFile
+     */
+    private JarFile createJarFileFromEntry(JarEntry entry) throws IOException {
 		if (entry.isDirectory()) {
 			return createJarFileFromDirectoryEntry(entry);
 		}
 		return createJarFileFromFileEntry(entry);
 	}
 
-	private JarFile createJarFileFromDirectoryEntry(JarEntry entry) throws IOException {
+	/**
+     * Creates a JarFile object from a directory entry.
+     * 
+     * @param entry the JarEntry representing the directory entry
+     * @return a JarFile object representing the directory entry
+     * @throws IOException if an I/O error occurs while creating the JarFile
+     */
+    private JarFile createJarFileFromDirectoryEntry(JarEntry entry) throws IOException {
 		AsciiBytes name = entry.getAsciiBytesName();
 		JarEntryFilter filter = (candidate) -> {
 			if (candidate.startsWith(name) && !candidate.equals(name)) {
@@ -325,7 +438,15 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 				this.data, filter, JarFileType.NESTED_DIRECTORY, this.manifestSupplier);
 	}
 
-	private JarFile createJarFileFromFileEntry(JarEntry entry) throws IOException {
+	/**
+     * Creates a JarFile object from a given JarEntry.
+     * 
+     * @param entry the JarEntry to create the JarFile from
+     * @return the created JarFile object
+     * @throws IOException if an I/O error occurs while creating the JarFile
+     * @throws IllegalStateException if the entry is compressed and nested jar files must be stored without compression
+     */
+    private JarFile createJarFileFromFileEntry(JarEntry entry) throws IOException {
 		if (entry.getMethod() != ZipEntry.STORED) {
 			throw new IllegalStateException(
 					"Unable to open nested entry '" + entry.getName() + "'. It has been compressed and nested "
@@ -337,19 +458,37 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 				JarFileType.NESTED_JAR);
 	}
 
-	@Override
+	/**
+     * Returns the comment associated with this JarFile.
+     * 
+     * @return the comment associated with this JarFile
+     * @throws IllegalStateException if the JarFile is closed
+     */
+    @Override
 	public String getComment() {
 		ensureOpen();
 		return this.comment;
 	}
 
-	@Override
+	/**
+     * Returns the number of entries in this JarFile.
+     * 
+     * @return the number of entries in this JarFile
+     * @throws IllegalStateException if the JarFile is closed
+     */
+    @Override
 	public int size() {
 		ensureOpen();
 		return this.entries.getSize();
 	}
 
-	@Override
+	/**
+     * Closes the JarFile and releases any system resources associated with it.
+     * If the JarFile is already closed, this method has no effect.
+     * 
+     * @throws IOException if an I/O error occurs while closing the JarFile
+     */
+    @Override
 	public void close() throws IOException {
 		if (this.closed) {
 			return;
@@ -361,24 +500,46 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		this.closed = true;
 	}
 
-	private void ensureOpen() {
+	/**
+     * Ensures that the zip file is open.
+     * 
+     * @throws IllegalStateException if the zip file is closed
+     */
+    private void ensureOpen() {
 		if (this.closed) {
 			throw new IllegalStateException("zip file closed");
 		}
 	}
 
-	boolean isClosed() {
+	/**
+     * Returns a boolean value indicating whether the JarFile is closed or not.
+     * 
+     * @return true if the JarFile is closed, false otherwise
+     */
+    boolean isClosed() {
 		return this.closed;
 	}
 
-	String getUrlString() throws MalformedURLException {
+	/**
+     * Returns the URL string representation of the current URL.
+     * 
+     * @return the URL string representation
+     * @throws MalformedURLException if the URL is malformed
+     */
+    String getUrlString() throws MalformedURLException {
 		if (this.urlString == null) {
 			this.urlString = getUrl().toString();
 		}
 		return this.urlString;
 	}
 
-	@Override
+	/**
+     * Returns the URL of the Jar file.
+     * 
+     * @return the URL of the Jar file
+     * @throws MalformedURLException if the URL is malformed
+     */
+    @Override
 	public URL getUrl() throws MalformedURLException {
 		if (this.url == null) {
 			String file = this.rootFile.getFile().toURI() + this.pathFromRoot + "!/";
@@ -388,21 +549,44 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		return this.url;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the JarFile object.
+     * 
+     * @return the name of the JarFile object
+     */
+    @Override
 	public String toString() {
 		return getName();
 	}
 
-	@Override
+	/**
+     * Returns the name of the file represented by this JarFile object.
+     * The name is obtained by concatenating the root file name and the path from the root.
+     *
+     * @return the name of the file represented by this JarFile object
+     */
+    @Override
 	public String getName() {
 		return this.rootFile.getFile() + this.pathFromRoot;
 	}
 
-	boolean isSigned() {
+	/**
+     * Returns a boolean value indicating whether the JarFile is signed.
+     *
+     * @return true if the JarFile is signed, false otherwise
+     */
+    boolean isSigned() {
 		return this.signed;
 	}
 
-	JarEntryCertification getCertification(JarEntry entry) {
+	/**
+     * Retrieves the certification for the specified JarEntry.
+     * 
+     * @param entry the JarEntry for which to retrieve the certification
+     * @return the certification for the specified JarEntry
+     * @throws IllegalStateException if an IOException occurs while retrieving the certification
+     */
+    JarEntryCertification getCertification(JarEntry entry) {
 		try {
 			return this.entries.getCertification(entry);
 		}
@@ -411,15 +595,29 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		}
 	}
 
-	public void clearCache() {
+	/**
+     * Clears the cache of the JarFile.
+     * This method removes all entries from the cache.
+     */
+    public void clearCache() {
 		this.entries.clearCache();
 	}
 
-	protected String getPathFromRoot() {
+	/**
+     * Returns the path from the root directory of the JAR file.
+     *
+     * @return the path from the root directory of the JAR file
+     */
+    protected String getPathFromRoot() {
 		return this.pathFromRoot;
 	}
 
-	@Override
+	/**
+     * Returns the type of the Jar file.
+     *
+     * @return the type of the Jar file
+     */
+    @Override
 	JarFileType getType() {
 		return this.type;
 	}
@@ -457,16 +655,32 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 
 		private final Iterator<JarEntry> iterator;
 
-		JarEntryEnumeration(Iterator<JarEntry> iterator) {
+		/**
+         * Constructs a new JarEntryEnumeration object with the specified iterator.
+         * 
+         * @param iterator the iterator to be used for iterating over JarEntry objects
+         */
+        JarEntryEnumeration(Iterator<JarEntry> iterator) {
 			this.iterator = iterator;
 		}
 
-		@Override
+		/**
+         * Returns true if this enumeration contains more elements.
+         * 
+         * @return true if there are more elements, false otherwise
+         */
+        @Override
 		public boolean hasMoreElements() {
 			return this.iterator.hasNext();
 		}
 
-		@Override
+		/**
+         * Returns the next element in the enumeration.
+         *
+         * @return the next element in the enumeration
+         * @throws NoSuchElementException if there are no more elements in the enumeration
+         */
+        @Override
 		public java.util.jar.JarEntry nextElement() {
 			return this.iterator.next();
 		}

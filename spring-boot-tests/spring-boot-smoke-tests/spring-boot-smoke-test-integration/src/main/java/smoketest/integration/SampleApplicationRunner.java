@@ -20,16 +20,30 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+/**
+ * SampleApplicationRunner class.
+ */
 @Component
 public class SampleApplicationRunner implements ApplicationRunner {
 
 	private final SampleMessageGateway gateway;
 
-	public SampleApplicationRunner(SampleMessageGateway gateway) {
+	/**
+     * Constructs a new SampleApplicationRunner with the specified SampleMessageGateway.
+     * 
+     * @param gateway the SampleMessageGateway to be used by the SampleApplicationRunner
+     */
+    public SampleApplicationRunner(SampleMessageGateway gateway) {
 		this.gateway = gateway;
 	}
 
-	@Override
+	/**
+     * This method is used to run the application with the given arguments.
+     * 
+     * @param args The arguments passed to the application.
+     * @throws Exception If an error occurs while running the application.
+     */
+    @Override
 	public void run(ApplicationArguments args) throws Exception {
 		for (String arg : args.getNonOptionArgs()) {
 			this.gateway.echo(arg);

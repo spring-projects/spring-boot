@@ -72,7 +72,14 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		this.root = ConfigDataEnvironmentContributor.of(contributors);
 	}
 
-	private ConfigDataEnvironmentContributors(Log logger, ConfigurableBootstrapContext bootstrapContext,
+	/**
+     * Constructs a new instance of ConfigDataEnvironmentContributors with the specified logger, bootstrapContext, and root.
+     * 
+     * @param logger The logger to be used for logging.
+     * @param bootstrapContext The bootstrap context for configuring the application.
+     * @param root The root environment contributor.
+     */
+    private ConfigDataEnvironmentContributors(Log logger, ConfigurableBootstrapContext bootstrapContext,
 			ConfigDataEnvironmentContributor root) {
 		this.logger = logger;
 		this.bootstrapContext = bootstrapContext;
@@ -123,7 +130,13 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		}
 	}
 
-	private CharSequence getImportedMessage(Set<ConfigDataResolutionResult> results) {
+	/**
+     * Returns a message indicating the imported resources.
+     * 
+     * @param results the set of ConfigDataResolutionResult objects representing the imported resources
+     * @return a CharSequence containing the imported resources message
+     */
+    private CharSequence getImportedMessage(Set<ConfigDataResolutionResult> results) {
 		if (results.isEmpty()) {
 			return "Nothing imported";
 		}
@@ -133,11 +146,24 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		return message;
 	}
 
-	protected final ConfigurableBootstrapContext getBootstrapContext() {
+	/**
+     * Returns the bootstrap context associated with this ConfigDataEnvironmentContributors instance.
+     *
+     * @return the bootstrap context
+     */
+    protected final ConfigurableBootstrapContext getBootstrapContext() {
 		return this.bootstrapContext;
 	}
 
-	private ConfigDataEnvironmentContributor getNextToProcess(ConfigDataEnvironmentContributors contributors,
+	/**
+     * Returns the next ConfigDataEnvironmentContributor to process from the given list of contributors.
+     * 
+     * @param contributors     the list of ConfigDataEnvironmentContributors
+     * @param activationContext the ConfigDataActivationContext
+     * @param importPhase      the ImportPhase
+     * @return the next ConfigDataEnvironmentContributor to process, or null if none found
+     */
+    private ConfigDataEnvironmentContributor getNextToProcess(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext, ImportPhase importPhase) {
 		for (ConfigDataEnvironmentContributor contributor : contributors.getRoot()) {
 			if (contributor.getKind() == Kind.UNBOUND_IMPORT
@@ -148,12 +174,27 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		return null;
 	}
 
-	private boolean isActiveWithUnprocessedImports(ConfigDataActivationContext activationContext,
+	/**
+     * Checks if the given contributor is active with unprocessed imports.
+     * 
+     * @param activationContext the activation context for the configuration data
+     * @param importPhase the import phase for the configuration data
+     * @param contributor the environment contributor to check
+     * @return {@code true} if the contributor is active with unprocessed imports, {@code false} otherwise
+     */
+    private boolean isActiveWithUnprocessedImports(ConfigDataActivationContext activationContext,
 			ImportPhase importPhase, ConfigDataEnvironmentContributor contributor) {
 		return contributor.isActive(activationContext) && contributor.hasUnprocessedImports(importPhase);
 	}
 
-	private List<ConfigDataEnvironmentContributor> asContributors(
+	/**
+     * Converts the imported {@link ConfigDataResolutionResult} and {@link ConfigData} map into a list of {@link ConfigDataEnvironmentContributor}.
+     * Each {@link ConfigDataEnvironmentContributor} represents a resolved configuration data source.
+     * 
+     * @param imported the map of {@link ConfigDataResolutionResult} and {@link ConfigData} representing the imported configuration data
+     * @return the list of {@link ConfigDataEnvironmentContributor} representing the resolved configuration data sources
+     */
+    private List<ConfigDataEnvironmentContributor> asContributors(
 			Map<ConfigDataResolutionResult, ConfigData> imported) {
 		List<ConfigDataEnvironmentContributor> contributors = new ArrayList<>(imported.size() * 5);
 		imported.forEach((resolutionResult, data) -> {
@@ -203,12 +244,26 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		return getBinder(activationContext, filter, asBinderOptionsSet(options));
 	}
 
-	private Set<BinderOption> asBinderOptionsSet(BinderOption... options) {
+	/**
+     * Converts an array of BinderOption objects into a Set of BinderOption objects.
+     * 
+     * @param options the array of BinderOption objects to be converted
+     * @return a Set of BinderOption objects
+     */
+    private Set<BinderOption> asBinderOptionsSet(BinderOption... options) {
 		return ObjectUtils.isEmpty(options) ? EnumSet.noneOf(BinderOption.class)
 				: EnumSet.copyOf(Arrays.asList(options));
 	}
 
-	private Binder getBinder(ConfigDataActivationContext activationContext,
+	/**
+     * Returns a Binder object based on the provided activation context, filter, and options.
+     * 
+     * @param activationContext The activation context for the binder.
+     * @param filter The filter to apply to the environment contributors.
+     * @param options The set of options for the binder.
+     * @return A Binder object.
+     */
+    private Binder getBinder(ConfigDataActivationContext activationContext,
 			Predicate<ConfigDataEnvironmentContributor> filter, Set<BinderOption> options) {
 		boolean failOnInactiveSource = options.contains(BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
 		Iterable<ConfigurationPropertySource> sources = () -> getBinderSources(
@@ -219,7 +274,14 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		return new Binder(sources, placeholdersResolver, null, null, bindHandler);
 	}
 
-	private Iterator<ConfigurationPropertySource> getBinderSources(Predicate<ConfigDataEnvironmentContributor> filter) {
+	/**
+     * Returns an iterator of ConfigurationPropertySource objects obtained from the root contributors,
+     * filtered by the given predicate.
+     *
+     * @param filter the predicate used to filter the contributors
+     * @return an iterator of ConfigurationPropertySource objects
+     */
+    private Iterator<ConfigurationPropertySource> getBinderSources(Predicate<ConfigDataEnvironmentContributor> filter) {
 		return this.root.stream()
 			.filter(this::hasConfigurationPropertySource)
 			.filter(filter)
@@ -227,11 +289,22 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 			.iterator();
 	}
 
-	private boolean hasConfigurationPropertySource(ConfigDataEnvironmentContributor contributor) {
+	/**
+     * Checks if the given ConfigDataEnvironmentContributor has a configuration property source.
+     * 
+     * @param contributor the ConfigDataEnvironmentContributor to check
+     * @return true if the contributor has a configuration property source, false otherwise
+     */
+    private boolean hasConfigurationPropertySource(ConfigDataEnvironmentContributor contributor) {
 		return contributor.getConfigurationPropertySource() != null;
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the elements in this ConfigDataEnvironmentContributors object.
+     *
+     * @return an iterator over the elements in this ConfigDataEnvironmentContributors object
+     */
+    @Override
 	public Iterator<ConfigDataEnvironmentContributor> iterator() {
 		return this.root.iterator();
 	}
@@ -243,11 +316,21 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 
 		private final ConfigDataEnvironmentContributors contributors;
 
-		ContributorDataLoaderContext(ConfigDataEnvironmentContributors contributors) {
+		/**
+         * Constructs a new instance of ContributorDataLoaderContext with the specified ConfigDataEnvironmentContributors.
+         * 
+         * @param contributors the ConfigDataEnvironmentContributors to be used by the ContributorDataLoaderContext
+         */
+        ContributorDataLoaderContext(ConfigDataEnvironmentContributors contributors) {
 			this.contributors = contributors;
 		}
 
-		@Override
+		/**
+         * Returns the bootstrap context of the ContributorDataLoaderContext.
+         * 
+         * @return the bootstrap context of the ContributorDataLoaderContext
+         */
+        @Override
 		public ConfigurableBootstrapContext getBootstrapContext() {
 			return this.contributors.getBootstrapContext();
 		}
@@ -267,14 +350,27 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 
 		private volatile Binder binder;
 
-		ContributorConfigDataLocationResolverContext(ConfigDataEnvironmentContributors contributors,
+		/**
+         * Constructs a new instance of ContributorConfigDataLocationResolverContext.
+         * 
+         * @param contributors the ConfigDataEnvironmentContributors object
+         * @param contributor the ConfigDataEnvironmentContributor object
+         * @param activationContext the ConfigDataActivationContext object
+         */
+        ContributorConfigDataLocationResolverContext(ConfigDataEnvironmentContributors contributors,
 				ConfigDataEnvironmentContributor contributor, ConfigDataActivationContext activationContext) {
 			this.contributors = contributors;
 			this.contributor = contributor;
 			this.activationContext = activationContext;
 		}
 
-		@Override
+		/**
+         * Returns the binder associated with this ContributorConfigDataLocationResolverContext.
+         * If the binder is null, it retrieves the binder from the contributors using the activation context.
+         * 
+         * @return the binder associated with this ContributorConfigDataLocationResolverContext
+         */
+        @Override
 		public Binder getBinder() {
 			Binder binder = this.binder;
 			if (binder == null) {
@@ -284,27 +380,56 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 			return binder;
 		}
 
-		@Override
+		/**
+         * Returns the parent ConfigDataResource of this ContributorConfigDataLocationResolverContext.
+         * 
+         * @return the parent ConfigDataResource
+         */
+        @Override
 		public ConfigDataResource getParent() {
 			return this.contributor.getResource();
 		}
 
-		@Override
+		/**
+         * Returns the bootstrap context of the contributor.
+         *
+         * @return the bootstrap context of the contributor
+         */
+        @Override
 		public ConfigurableBootstrapContext getBootstrapContext() {
 			return this.contributors.getBootstrapContext();
 		}
 
 	}
 
-	private class InactiveSourceChecker implements BindHandler {
+	/**
+     * InactiveSourceChecker class.
+     */
+    private class InactiveSourceChecker implements BindHandler {
 
 		private final ConfigDataActivationContext activationContext;
 
-		InactiveSourceChecker(ConfigDataActivationContext activationContext) {
+		/**
+         * Constructs a new InactiveSourceChecker with the specified activation context.
+         * 
+         * @param activationContext the activation context to be used for checking inactive sources
+         */
+        InactiveSourceChecker(ConfigDataActivationContext activationContext) {
 			this.activationContext = activationContext;
 		}
 
-		@Override
+		/**
+         * This method is called when the binding process is successful. It checks if the given configuration property name is active
+         * for each ConfigDataEnvironmentContributor in the ConfigDataEnvironmentContributors list. If a contributor is not active,
+         * it throws an InactiveConfigDataAccessException if the property is found. Otherwise, it returns the result of the binding process.
+         * 
+         * @param name     the name of the configuration property
+         * @param target   the bindable target
+         * @param context  the bind context
+         * @param result   the result of the binding process
+         * @return         the result of the binding process
+         */
+        @Override
 		public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
 				Object result) {
 			for (ConfigDataEnvironmentContributor contributor : ConfigDataEnvironmentContributors.this) {

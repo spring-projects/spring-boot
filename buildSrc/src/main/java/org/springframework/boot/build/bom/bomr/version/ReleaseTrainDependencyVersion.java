@@ -39,14 +39,29 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 
 	private final String original;
 
-	private ReleaseTrainDependencyVersion(String releaseTrain, String type, int version, String original) {
+	/**
+     * Creates a new ReleaseTrainDependencyVersion object with the specified parameters.
+     * 
+     * @param releaseTrain the release train name
+     * @param type the type of dependency
+     * @param version the version number
+     * @param original the original version
+     */
+    private ReleaseTrainDependencyVersion(String releaseTrain, String type, int version, String original) {
 		this.releaseTrain = releaseTrain;
 		this.type = type;
 		this.version = version;
 		this.original = original;
 	}
 
-	@Override
+	/**
+     * Compares this ReleaseTrainDependencyVersion object with the specified object for order.
+     * 
+     * @param other the object to be compared
+     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object
+     * @throws IllegalArgumentException if the specified object is not an instance of ReleaseTrainDependencyVersion
+     */
+    @Override
 	public int compareTo(DependencyVersion other) {
 		if (!(other instanceof ReleaseTrainDependencyVersion otherReleaseTrain)) {
 			return -1;
@@ -62,7 +77,14 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 		return Integer.compare(this.version, otherReleaseTrain.version);
 	}
 
-	@Override
+	/**
+     * Checks if the given dependency version is an upgrade.
+     * 
+     * @param candidate The dependency version to check.
+     * @param movingToSnapshots Indicates whether the upgrade is moving to snapshots.
+     * @return {@code true} if the given dependency version is an upgrade, {@code false} otherwise.
+     */
+    @Override
 	public boolean isUpgrade(DependencyVersion candidate, boolean movingToSnapshots) {
 		if (candidate instanceof ReleaseTrainDependencyVersion candidateReleaseTrain) {
 			return isUpgrade(candidateReleaseTrain, movingToSnapshots);
@@ -70,7 +92,14 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 		return true;
 	}
 
-	private boolean isUpgrade(ReleaseTrainDependencyVersion candidate, boolean movingToSnapshots) {
+	/**
+     * Determines if the given ReleaseTrainDependencyVersion is an upgrade compared to the current instance.
+     * 
+     * @param candidate The ReleaseTrainDependencyVersion to compare with.
+     * @param movingToSnapshots Indicates if the upgrade is moving to snapshot versions.
+     * @return true if the given ReleaseTrainDependencyVersion is an upgrade, false otherwise.
+     */
+    private boolean isUpgrade(ReleaseTrainDependencyVersion candidate, boolean movingToSnapshots) {
 		int comparison = this.releaseTrain.compareTo(candidate.releaseTrain);
 		if (comparison != 0) {
 			return comparison < 0;
@@ -85,11 +114,22 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 		return Integer.compare(this.version, candidate.version) < 0;
 	}
 
-	private boolean isSnapshot() {
+	/**
+     * Checks if the version is a snapshot.
+     * 
+     * @return true if the version is a snapshot, false otherwise
+     */
+    private boolean isSnapshot() {
 		return "BUILD-SNAPSHOT".equals(this.type);
 	}
 
-	@Override
+	/**
+     * Checks if the current dependency version is a snapshot for the given candidate version.
+     * 
+     * @param candidate The dependency version to check against.
+     * @return True if the current version is a snapshot for the candidate version, false otherwise.
+     */
+    @Override
 	public boolean isSnapshotFor(DependencyVersion candidate) {
 		if (!isSnapshot() || !(candidate instanceof ReleaseTrainDependencyVersion candidateReleaseTrain)) {
 			return false;
@@ -97,17 +137,35 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 		return this.releaseTrain.equals(candidateReleaseTrain.releaseTrain);
 	}
 
-	@Override
+	/**
+     * Checks if the major version of this ReleaseTrainDependencyVersion is the same as the major version of the specified DependencyVersion.
+     * 
+     * @param other the DependencyVersion to compare with
+     * @return true if the major version is the same, false otherwise
+     */
+    @Override
 	public boolean isSameMajor(DependencyVersion other) {
 		return isSameReleaseTrain(other);
 	}
 
-	@Override
+	/**
+     * Checks if the given DependencyVersion object has the same minor version as this ReleaseTrainDependencyVersion object.
+     * 
+     * @param other the DependencyVersion object to compare with
+     * @return true if the given DependencyVersion object has the same minor version, false otherwise
+     */
+    @Override
 	public boolean isSameMinor(DependencyVersion other) {
 		return isSameReleaseTrain(other);
 	}
 
-	private boolean isSameReleaseTrain(DependencyVersion other) {
+	/**
+     * Checks if the given DependencyVersion is from the same release train as this ReleaseTrainDependencyVersion.
+     * 
+     * @param other the DependencyVersion to compare with
+     * @return true if the given DependencyVersion is from the same release train, false otherwise
+     */
+    private boolean isSameReleaseTrain(DependencyVersion other) {
 		if (other instanceof CalendarVersionDependencyVersion) {
 			return false;
 		}
@@ -117,7 +175,13 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 		return true;
 	}
 
-	@Override
+	/**
+     * Compares this ReleaseTrainDependencyVersion object with the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return true if the specified object is equal to this ReleaseTrainDependencyVersion object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -132,17 +196,33 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 		return this.original.equals(other.original);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this ReleaseTrainDependencyVersion object.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return this.original.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns the original string representation of the object.
+     *
+     * @return the original string representation of the object
+     */
+    @Override
 	public String toString() {
 		return this.original;
 	}
 
-	static ReleaseTrainDependencyVersion parse(String input) {
+	/**
+     * Parses the given input string to create a ReleaseTrainDependencyVersion object.
+     * 
+     * @param input the input string to be parsed
+     * @return a ReleaseTrainDependencyVersion object if the input string matches the version pattern, otherwise null
+     */
+    static ReleaseTrainDependencyVersion parse(String input) {
 		Matcher matcher = VERSION_PATTERN.matcher(input);
 		if (!matcher.matches()) {
 			return null;

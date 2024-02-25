@@ -18,6 +18,9 @@ package smoketest.actuator.noweb;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * ServiceProperties class.
+ */
 @ConfigurationProperties(prefix = "service", ignoreUnknownFields = false)
 public class ServiceProperties {
 
@@ -26,11 +29,21 @@ public class ServiceProperties {
 	 */
 	private String name = "World";
 
-	public String getName() {
+	/**
+     * Returns the name of the ServiceProperties object.
+     *
+     * @return the name of the ServiceProperties object
+     */
+    public String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	/**
+     * Sets the name of the service.
+     * 
+     * @param name the name to set
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 

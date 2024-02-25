@@ -28,7 +28,12 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
 @FunctionalInterface
 interface ClientHttpConnectorFactory<T extends ClientHttpConnector> {
 
-	default T createClientHttpConnector() {
+	/**
+ * Creates a default instance of the {@link ClientHttpConnector} interface.
+ * 
+ * @return a default instance of the {@link ClientHttpConnector} interface
+ */
+default T createClientHttpConnector() {
 		return createClientHttpConnector(null);
 	}
 

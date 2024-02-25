@@ -130,7 +130,14 @@ class BeanDefinitionLoader {
 		}
 	}
 
-	private void load(Object source) {
+	/**
+     * Loads the bean definition from the given source.
+     * 
+     * @param source the source object from which to load the bean definition
+     * @throws IllegalArgumentException if the source type is invalid
+     * @throws NullPointerException if the source is null
+     */
+    private void load(Object source) {
 		Assert.notNull(source, "Source must not be null");
 		if (source instanceof Class<?> clazz) {
 			load(clazz);
@@ -151,7 +158,12 @@ class BeanDefinitionLoader {
 		throw new IllegalArgumentException("Invalid source type " + source.getClass());
 	}
 
-	private void load(Class<?> source) {
+	/**
+     * Loads the bean definitions from the given source class.
+     * 
+     * @param source the source class from which to load the bean definitions
+     */
+    private void load(Class<?> source) {
 		if (isGroovyPresent() && GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
 			// Any GroovyLoaders added in beans{} DSL can contribute beans here
 			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source, GroovyBeanDefinitionSource.class);
@@ -162,7 +174,13 @@ class BeanDefinitionLoader {
 		}
 	}
 
-	private void load(Resource source) {
+	/**
+     * Loads the bean definitions from the given resource.
+     * 
+     * @param source the resource from which to load the bean definitions
+     * @throws BeanDefinitionStoreException if Groovy beans are being loaded without Groovy on the classpath
+     */
+    private void load(Resource source) {
 		if (source.getFilename().endsWith(".groovy")) {
 			if (this.groovyReader == null) {
 				throw new BeanDefinitionStoreException("Cannot load Groovy beans without Groovy on classpath");
@@ -174,11 +192,22 @@ class BeanDefinitionLoader {
 		}
 	}
 
-	private void load(Package source) {
+	/**
+     * Loads the specified package by scanning its name.
+     * 
+     * @param source the package to be loaded
+     */
+    private void load(Package source) {
 		this.scanner.scan(source.getName());
 	}
 
-	private void load(CharSequence source) {
+	/**
+     * Loads the specified source.
+     * 
+     * @param source the source to load
+     * @throws IllegalArgumentException if the source is invalid
+     */
+    private void load(CharSequence source) {
 		String resolvedSource = this.scanner.getEnvironment().resolvePlaceholders(source.toString());
 		// Attempt as a Class
 		try {
@@ -201,7 +230,13 @@ class BeanDefinitionLoader {
 		throw new IllegalArgumentException("Invalid source '" + resolvedSource + "'");
 	}
 
-	private boolean loadAsResources(String resolvedSource) {
+	/**
+     * Loads the specified resolved source as resources.
+     * 
+     * @param resolvedSource the resolved source to load as resources
+     * @return true if a load candidate is found, false otherwise
+     */
+    private boolean loadAsResources(String resolvedSource) {
 		boolean foundCandidate = false;
 		Resource[] resources = findResources(resolvedSource);
 		for (Resource resource : resources) {
@@ -213,11 +248,23 @@ class BeanDefinitionLoader {
 		return foundCandidate;
 	}
 
-	private boolean isGroovyPresent() {
+	/**
+     * Checks if the Groovy library is present.
+     * 
+     * @return true if the Groovy library is present, false otherwise
+     */
+    private boolean isGroovyPresent() {
 		return ClassUtils.isPresent("groovy.lang.MetaClass", null);
 	}
 
-	private Resource[] findResources(String source) {
+	/**
+     * Finds resources based on the given source.
+     * 
+     * @param source the source of the resources
+     * @return an array of resources found
+     * @throws IllegalStateException if there is an error reading the source
+     */
+    private Resource[] findResources(String source) {
 		ResourceLoader loader = (this.resourceLoader != null) ? this.resourceLoader
 				: new PathMatchingResourcePatternResolver();
 		try {
@@ -231,7 +278,13 @@ class BeanDefinitionLoader {
 		}
 	}
 
-	private boolean isLoadCandidate(Resource resource) {
+	/**
+     * Checks if the given resource is a valid candidate for loading.
+     * 
+     * @param resource the resource to be checked
+     * @return true if the resource is a valid candidate for loading, false otherwise
+     */
+    private boolean isLoadCandidate(Resource resource) {
 		if (resource == null || !resource.exists()) {
 			return false;
 		}
@@ -253,7 +306,13 @@ class BeanDefinitionLoader {
 		return true;
 	}
 
-	private Package findPackage(CharSequence source) {
+	/**
+     * Finds a package based on the given source.
+     * 
+     * @param source the source to find the package for
+     * @return the found package, or null if not found
+     */
+    private Package findPackage(CharSequence source) {
 		Package pkg = getClass().getClassLoader().getDefinedPackage(source.toString());
 		if (pkg != null) {
 			return pkg;
@@ -285,11 +344,23 @@ class BeanDefinitionLoader {
 		return !(type.isAnonymousClass() || isGroovyClosure(type) || hasNoConstructors(type));
 	}
 
-	private boolean isGroovyClosure(Class<?> type) {
+	/**
+     * Checks if the given class is a Groovy closure.
+     * 
+     * @param type the class to check
+     * @return true if the class is a Groovy closure, false otherwise
+     */
+    private boolean isGroovyClosure(Class<?> type) {
 		return GROOVY_CLOSURE_PATTERN.matcher(type.getName()).matches();
 	}
 
-	private boolean hasNoConstructors(Class<?> type) {
+	/**
+     * Checks if the given class has no constructors.
+     * 
+     * @param type the class to check
+     * @return {@code true} if the class has no constructors, {@code false} otherwise
+     */
+    private boolean hasNoConstructors(Class<?> type) {
 		Constructor<?>[] constructors = type.getDeclaredConstructors();
 		return ObjectUtils.isEmpty(constructors);
 	}
@@ -302,7 +373,12 @@ class BeanDefinitionLoader {
 
 		private final Set<String> classNames = new HashSet<>();
 
-		ClassExcludeFilter(Object... sources) {
+		/**
+         * Constructs a new ClassExcludeFilter object with the specified sources.
+         * 
+         * @param sources the sources to be used for filtering
+         */
+        ClassExcludeFilter(Object... sources) {
 			super(false, false);
 			for (Object source : sources) {
 				if (source instanceof Class<?>) {
@@ -311,7 +387,13 @@ class BeanDefinitionLoader {
 			}
 		}
 
-		@Override
+		/**
+         * Checks if the given class name matches any of the class names in the filter.
+         * 
+         * @param className the class name to be checked
+         * @return true if the class name matches any of the class names in the filter, false otherwise
+         */
+        @Override
 		protected boolean matchClassName(String className) {
 			return this.classNames.contains(className);
 		}

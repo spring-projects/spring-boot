@@ -24,6 +24,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+/**
+ * SampleController class.
+ */
 @Controller
 public class SampleController {
 
@@ -31,18 +34,35 @@ public class SampleController {
 
 	private final HttpHeaderService httpHeaderService;
 
-	public SampleController(HelloWorldService helloWorldService, HttpHeaderService httpHeaderService) {
+	/**
+     * Constructs a new SampleController with the specified HelloWorldService and HttpHeaderService.
+     * 
+     * @param helloWorldService the HelloWorldService to be used by the SampleController
+     * @param httpHeaderService the HttpHeaderService to be used by the SampleController
+     */
+    public SampleController(HelloWorldService helloWorldService, HttpHeaderService httpHeaderService) {
 		this.helloWorldService = helloWorldService;
 		this.httpHeaderService = httpHeaderService;
 	}
 
-	@GetMapping("/")
+	/**
+     * Retrieves the hello world message.
+     * 
+     * @return the hello world message
+     */
+    @GetMapping("/")
 	@ResponseBody
 	public String helloWorld() {
 		return this.helloWorldService.getHelloMessage();
 	}
 
-	@GetMapping("/max-http-response-header")
+	/**
+     * Retrieves the maximum HTTP response header value and adds it to the response header.
+     * 
+     * @param response the HttpServletResponse object used to add the header
+     * @return the hello message obtained from the HelloWorldService
+     */
+    @GetMapping("/max-http-response-header")
 	@ResponseBody
 	public String maxHttpResponseHeader(HttpServletResponse response) {
 		String headerValue = this.httpHeaderService.getHeaderValue();

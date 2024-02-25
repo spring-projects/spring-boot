@@ -21,6 +21,9 @@ import smoketest.jetty.util.StringUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * HttpHeaderService class.
+ */
 @Component
 public class HttpHeaderService {
 

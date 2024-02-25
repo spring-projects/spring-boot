@@ -42,11 +42,21 @@ class TokenValidator {
 
 	private Map<String, String> tokenKeys;
 
-	TokenValidator(CloudFoundrySecurityService cloudFoundrySecurityService) {
+	/**
+     * Constructs a new TokenValidator with the specified CloudFoundrySecurityService.
+     * 
+     * @param cloudFoundrySecurityService the CloudFoundrySecurityService to be used for token validation
+     */
+    TokenValidator(CloudFoundrySecurityService cloudFoundrySecurityService) {
 		this.securityService = cloudFoundrySecurityService;
 	}
 
-	void validate(Token token) {
+	/**
+     * Validates the given token.
+     * 
+     * @param token the token to be validated
+     */
+    void validate(Token token) {
 		validateAlgorithm(token);
 		validateKeyIdAndSignature(token);
 		validateExpiry(token);
@@ -54,7 +64,13 @@ class TokenValidator {
 		validateAudience(token);
 	}
 
-	private void validateAlgorithm(Token token) {
+	/**
+     * Validates the algorithm used for token signature.
+     * 
+     * @param token the token to be validated
+     * @throws CloudFoundryAuthorizationException if the algorithm is invalid or unsupported
+     */
+    private void validateAlgorithm(Token token) {
 		String algorithm = token.getSignatureAlgorithm();
 		if (algorithm == null) {
 			throw new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE, "Signing algorithm cannot be null");
@@ -65,7 +81,13 @@ class TokenValidator {
 		}
 	}
 
-	private void validateKeyIdAndSignature(Token token) {
+	/**
+     * Validates the key ID and signature of a token.
+     * 
+     * @param token The token to be validated.
+     * @throws CloudFoundryAuthorizationException If the key ID is invalid or the RSA signature does not match the content.
+     */
+    private void validateKeyIdAndSignature(Token token) {
 		String keyId = token.getKeyId();
 		if (this.tokenKeys == null || !hasValidKeyId(keyId)) {
 			this.tokenKeys = this.securityService.fetchTokenKeys();
@@ -81,11 +103,24 @@ class TokenValidator {
 		}
 	}
 
-	private boolean hasValidKeyId(String tokenKey) {
+	/**
+     * Checks if the given token key is a valid key ID.
+     * 
+     * @param tokenKey the token key to be checked
+     * @return true if the token key is a valid key ID, false otherwise
+     */
+    private boolean hasValidKeyId(String tokenKey) {
 		return this.tokenKeys.containsKey(tokenKey);
 	}
 
-	private boolean hasValidSignature(Token token, String key) {
+	/**
+     * Checks if the given token has a valid signature using the provided key.
+     * 
+     * @param token The token to be validated.
+     * @param key The key used to verify the token's signature.
+     * @return {@code true} if the token has a valid signature, {@code false} otherwise.
+     */
+    private boolean hasValidSignature(Token token, String key) {
 		try {
 			PublicKey publicKey = getPublicKey(key);
 			Signature signature = Signature.getInstance("SHA256withRSA");
@@ -98,7 +133,15 @@ class TokenValidator {
 		}
 	}
 
-	private PublicKey getPublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
+	/**
+     * Retrieves the public key from the given string representation.
+     * 
+     * @param key the string representation of the public key
+     * @return the PublicKey object representing the public key
+     * @throws NoSuchAlgorithmException if the specified algorithm is not available
+     * @throws InvalidKeySpecException if the provided key specification is invalid
+     */
+    private PublicKey getPublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		key = key.replace("-----BEGIN PUBLIC KEY-----\n", "");
 		key = key.replace("-----END PUBLIC KEY-----", "");
 		key = key.trim().replace("\n", "");
@@ -107,14 +150,26 @@ class TokenValidator {
 		return KeyFactory.getInstance("RSA").generatePublic(keySpec);
 	}
 
-	private void validateExpiry(Token token) {
+	/**
+     * Validates the expiry of a given token.
+     * 
+     * @param token the token to be validated
+     * @throws CloudFoundryAuthorizationException if the token has expired
+     */
+    private void validateExpiry(Token token) {
 		long currentTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
 		if (currentTime > token.getExpiry()) {
 			throw new CloudFoundryAuthorizationException(Reason.TOKEN_EXPIRED, "Token expired");
 		}
 	}
 
-	private void validateIssuer(Token token) {
+	/**
+     * Validates the issuer of the given token.
+     * 
+     * @param token The token to be validated.
+     * @throws CloudFoundryAuthorizationException If the token issuer does not match the expected issuer URI.
+     */
+    private void validateIssuer(Token token) {
 		String uaaUrl = this.securityService.getUaaUrl();
 		String issuerUri = String.format("%s/oauth/token", uaaUrl);
 		if (!issuerUri.equals(token.getIssuer())) {
@@ -123,7 +178,13 @@ class TokenValidator {
 		}
 	}
 
-	private void validateAudience(Token token) {
+	/**
+     * Validates the audience of the given token.
+     * 
+     * @param token the token to be validated
+     * @throws CloudFoundryAuthorizationException if the token does not have the required audience
+     */
+    private void validateAudience(Token token) {
 		if (!token.getScope().contains("actuator.read")) {
 			throw new CloudFoundryAuthorizationException(Reason.INVALID_AUDIENCE,
 					"Token does not have audience actuator");

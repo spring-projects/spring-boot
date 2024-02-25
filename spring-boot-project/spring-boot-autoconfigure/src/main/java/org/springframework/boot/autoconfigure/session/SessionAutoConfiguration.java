@@ -79,12 +79,23 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 @EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class, WebFluxProperties.class })
 public class SessionAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ServletSessionConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Import(SessionRepositoryFilterConfiguration.class)
 	static class ServletSessionConfiguration {
 
-		@Bean
+		/**
+         * Creates a default cookie serializer bean for the servlet session configuration.
+         * This bean is conditionally created based on the DefaultCookieSerializerCondition.
+         * 
+         * @param serverProperties The server properties.
+         * @param cookieSerializerCustomizers The customizers for the cookie serializer.
+         * @return The default cookie serializer bean.
+         */
+        @Bean
 		@Conditional(DefaultCookieSerializerCondition.class)
 		DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties,
 				ObjectProvider<DefaultCookieSerializerCustomizer> cookieSerializerCustomizers) {
@@ -102,11 +113,19 @@ public class SessionAutoConfiguration {
 			return cookieSerializer;
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * RememberMeServicesConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(RememberMeServices.class)
 		static class RememberMeServicesConfiguration {
 
-			@Bean
+			/**
+             * Customizes the cookie serializer for the RememberMeServices.
+             *
+             * @return the customizer for the cookie serializer
+             */
+            @Bean
 			DefaultCookieSerializerCustomizer rememberMeServicesCookieSerializerCustomizer() {
 				return (cookieSerializer) -> cookieSerializer
 					.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
@@ -114,7 +133,10 @@ public class SessionAutoConfiguration {
 
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * ServletSessionRepositoryConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(SessionRepository.class)
 		@Import({ RedisSessionConfiguration.class, JdbcSessionConfiguration.class, HazelcastSessionConfiguration.class,
 				MongoSessionConfiguration.class })
@@ -124,7 +146,10 @@ public class SessionAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ReactiveSessionConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@ConditionalOnMissingBean(ReactiveSessionRepository.class)
 	@Import({ RedisReactiveSessionConfiguration.class, MongoReactiveSessionConfiguration.class })
@@ -140,16 +165,27 @@ public class SessionAutoConfiguration {
 	 */
 	static class DefaultCookieSerializerCondition extends AnyNestedCondition {
 
-		DefaultCookieSerializerCondition() {
+		/**
+         * Constructs a new DefaultCookieSerializerCondition with the specified configuration phase.
+         * 
+         * @param configurationPhase the configuration phase for the condition
+         */
+        DefaultCookieSerializerCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnMissingBean({ HttpSessionIdResolver.class, CookieSerializer.class })
+		/**
+         * NoComponentsAvailable class.
+         */
+        @ConditionalOnMissingBean({ HttpSessionIdResolver.class, CookieSerializer.class })
 		static class NoComponentsAvailable {
 
 		}
 
-		@ConditionalOnBean(CookieHttpSessionIdResolver.class)
+		/**
+         * CookieHttpSessionIdResolverAvailable class.
+         */
+        @ConditionalOnBean(CookieHttpSessionIdResolver.class)
 		@ConditionalOnMissingBean(CookieSerializer.class)
 		static class CookieHttpSessionIdResolverAvailable {
 

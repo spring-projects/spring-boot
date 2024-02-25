@@ -37,7 +37,14 @@ class OnMetricsExportEnabledCondition extends SpringBootCondition {
 
 	private static final String DEFAULT_PROPERTY_NAME = "management.defaults.metrics.export.enabled";
 
-	@Override
+	/**
+     * Determines the outcome of the condition for the given context and metadata.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 			.fromMap(metadata.getAnnotationAttributes(ConditionalOnEnabledMetricsExport.class.getName()));
@@ -49,7 +56,14 @@ class OnMetricsExportEnabledCondition extends SpringBootCondition {
 		return getDefaultOutcome(context);
 	}
 
-	private ConditionOutcome getProductOutcome(ConditionContext context, String productName) {
+	/**
+     * Retrieves the outcome of the condition for the specified product name.
+     * 
+     * @param context The condition context.
+     * @param productName The name of the product.
+     * @return The condition outcome.
+     */
+    private ConditionOutcome getProductOutcome(ConditionContext context, String productName) {
 		Environment environment = context.getEnvironment();
 		String enabledProperty = PROPERTY_TEMPLATE.formatted(productName);
 		if (environment.containsProperty(enabledProperty)) {

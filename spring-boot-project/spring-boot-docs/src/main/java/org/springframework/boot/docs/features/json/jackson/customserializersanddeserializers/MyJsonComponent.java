@@ -29,12 +29,26 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import org.springframework.boot.jackson.JsonComponent;
 
+/**
+ * MyJsonComponent class.
+ */
 @JsonComponent
 public class MyJsonComponent {
 
-	public static class Serializer extends JsonSerializer<MyObject> {
+	/**
+     * Serializer class.
+     */
+    public static class Serializer extends JsonSerializer<MyObject> {
 
-		@Override
+		/**
+         * Serializes a MyObject instance into JSON format.
+         * 
+         * @param value       The MyObject instance to be serialized.
+         * @param jgen        The JsonGenerator used for writing JSON content.
+         * @param serializers The SerializerProvider used for accessing serializers.
+         * @throws IOException If an I/O error occurs during serialization.
+         */
+        @Override
 		public void serialize(MyObject value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
 			jgen.writeStartObject();
 			jgen.writeStringField("name", value.getName());
@@ -44,9 +58,20 @@ public class MyJsonComponent {
 
 	}
 
-	public static class Deserializer extends JsonDeserializer<MyObject> {
+	/**
+     * Deserializer class.
+     */
+    public static class Deserializer extends JsonDeserializer<MyObject> {
 
-		@Override
+		/**
+         * Deserializes a JSON object into a MyObject instance.
+         * 
+         * @param jsonParser The JSON parser used to read the JSON object.
+         * @param ctxt The deserialization context.
+         * @return A MyObject instance representing the deserialized JSON object.
+         * @throws IOException If an I/O error occurs while reading the JSON object.
+         */
+        @Override
 		public MyObject deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
 			ObjectCodec codec = jsonParser.getCodec();
 			JsonNode tree = codec.readTree(jsonParser);

@@ -23,10 +23,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.cache.CouchbaseCacheConfiguration;
 
+/**
+ * MyCouchbaseCacheManagerConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyCouchbaseCacheManagerConfiguration {
 
-	@Bean
+	/**
+     * Customizes the CouchbaseCacheManagerBuilder by adding cache configurations for cache1 and cache2.
+     * 
+     * @return the CouchbaseCacheManagerBuilderCustomizer
+     */
+    @Bean
 	public CouchbaseCacheManagerBuilderCustomizer myCouchbaseCacheManagerBuilderCustomizer() {
 		// @formatter:off
 		return (builder) -> builder

@@ -60,7 +60,13 @@ public class ZipFileTarArchive implements TarArchive {
 		this.owner = owner;
 	}
 
-	@Override
+	/**
+     * Writes the contents of a zip file to a tar archive.
+     * 
+     * @param outputStream the output stream to write the tar archive to
+     * @throws IOException if an I/O error occurs while writing the tar archive
+     */
+    @Override
 	public void writeTo(OutputStream outputStream) throws IOException {
 		TarArchiveOutputStream tar = new TarArchiveOutputStream(outputStream);
 		tar.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
@@ -74,7 +80,14 @@ public class ZipFileTarArchive implements TarArchive {
 		tar.finish();
 	}
 
-	private void assertArchiveHasEntries(File file) {
+	/**
+     * Asserts that the given file is a valid archive with entries.
+     * 
+     * @param file the file to be checked
+     * @throws IllegalStateException if the file is not readable
+     * @throws IllegalArgumentException if the file is not a valid archive
+     */
+    private void assertArchiveHasEntries(File file) {
 		try (ZipFile zipFile = new ZipFile(file)) {
 			Assert.state(zipFile.getEntries().hasMoreElements(), () -> "Archive file '" + file + "' is not valid");
 		}
@@ -83,7 +96,15 @@ public class ZipFileTarArchive implements TarArchive {
 		}
 	}
 
-	private void copy(ZipArchiveEntry zipEntry, InputStream zip, TarArchiveOutputStream tar) throws IOException {
+	/**
+     * Copies a ZipArchiveEntry from a ZipInputStream to a TarArchiveOutputStream.
+     * 
+     * @param zipEntry The ZipArchiveEntry to be copied.
+     * @param zip The InputStream of the Zip file.
+     * @param tar The TarArchiveOutputStream to copy the entry to.
+     * @throws IOException If an I/O error occurs during the copying process.
+     */
+    private void copy(ZipArchiveEntry zipEntry, InputStream zip, TarArchiveOutputStream tar) throws IOException {
 		TarArchiveEntry tarEntry = convert(zipEntry);
 		tar.putArchiveEntry(tarEntry);
 		if (tarEntry.isFile()) {
@@ -92,7 +113,13 @@ public class ZipFileTarArchive implements TarArchive {
 		tar.closeArchiveEntry();
 	}
 
-	private TarArchiveEntry convert(ZipArchiveEntry zipEntry) {
+	/**
+     * Converts a ZipArchiveEntry to a TarArchiveEntry.
+     * 
+     * @param zipEntry the ZipArchiveEntry to convert
+     * @return the converted TarArchiveEntry
+     */
+    private TarArchiveEntry convert(ZipArchiveEntry zipEntry) {
 		byte linkFlag = (zipEntry.isDirectory()) ? TarConstants.LF_DIR : TarConstants.LF_NORMAL;
 		TarArchiveEntry tarEntry = new TarArchiveEntry(zipEntry.getName(), linkFlag, true);
 		tarEntry.setUserId(this.owner.getUid());

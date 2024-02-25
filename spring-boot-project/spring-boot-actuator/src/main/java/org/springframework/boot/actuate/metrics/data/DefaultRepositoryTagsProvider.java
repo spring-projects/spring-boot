@@ -36,7 +36,13 @@ public class DefaultRepositoryTagsProvider implements RepositoryTagsProvider {
 
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
 
-	@Override
+	/**
+     * Returns the tags associated with the repository method invocation.
+     * 
+     * @param invocation the repository method invocation
+     * @return an iterable of tags
+     */
+    @Override
 	public Iterable<Tag> repositoryTags(RepositoryMethodInvocation invocation) {
 		Tags tags = Tags.empty();
 		tags = and(tags, invocation.getRepositoryInterface(), "repository", this::getSimpleClassName);
@@ -46,22 +52,56 @@ public class DefaultRepositoryTagsProvider implements RepositoryTagsProvider {
 		return tags;
 	}
 
-	private <T> Tags and(Tags tags, T instance, String key, Function<T, String> value) {
+	/**
+     * Combines the given tags with the specified instance, key, and value using the logical AND operator.
+     * 
+     * @param <T> the type of the instance
+     * @param tags the tags to be combined
+     * @param instance the instance to be tagged
+     * @param key the key of the tag
+     * @param value the function to extract the value of the tag from the instance
+     * @return the combined tags
+     */
+    private <T> Tags and(Tags tags, T instance, String key, Function<T, String> value) {
 		return and(tags, instance, key, value, null);
 	}
 
-	private <T> Tags and(Tags tags, T instance, String key, Function<T, String> value, Tag fallback) {
+	/**
+     * Combines the given tags with the specified instance, key, value, and fallback tag.
+     * 
+     * @param <T> the type of the instance
+     * @param tags the original tags
+     * @param instance the instance to retrieve the value from
+     * @param key the key for the tag
+     * @param value the function to retrieve the value from the instance
+     * @param fallback the fallback tag if the instance is null
+     * @return the combined tags
+     */
+    private <T> Tags and(Tags tags, T instance, String key, Function<T, String> value, Tag fallback) {
 		if (instance != null) {
 			return tags.and(key, value.apply(instance));
 		}
 		return (fallback != null) ? tags.and(fallback) : tags;
 	}
 
-	private String getExceptionName(Throwable error) {
+	/**
+     * Returns the name of the exception thrown by the given error.
+     *
+     * @param error the error for which to retrieve the exception name
+     * @return the name of the exception
+     */
+    private String getExceptionName(Throwable error) {
 		return getSimpleClassName(error.getClass());
 	}
 
-	private String getSimpleClassName(Class<?> type) {
+	/**
+     * Returns the simple class name of the given type.
+     * If the simple name is empty, the fully qualified name of the type is returned.
+     * 
+     * @param type the type for which to get the simple class name
+     * @return the simple class name of the given type
+     */
+    private String getSimpleClassName(Class<?> type) {
 		String simpleName = type.getSimpleName();
 		return (!StringUtils.hasText(simpleName)) ? type.getName() : simpleName;
 	}

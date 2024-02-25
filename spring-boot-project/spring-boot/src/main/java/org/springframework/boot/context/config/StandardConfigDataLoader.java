@@ -39,7 +39,16 @@ public class StandardConfigDataLoader implements ConfigDataLoader<StandardConfig
 
 	private static final PropertySourceOptions NON_PROFILE_SPECIFIC = PropertySourceOptions.ALWAYS_NONE;
 
-	@Override
+	/**
+     * Loads the configuration data from the given resource.
+     * 
+     * @param context the context for loading the configuration data
+     * @param resource the resource from which to load the configuration data
+     * @return the loaded configuration data
+     * @throws IOException if an I/O error occurs while loading the configuration data
+     * @throws ConfigDataNotFoundException if the configuration data is not found
+     */
+    @Override
 	public ConfigData load(ConfigDataLoaderContext context, StandardConfigDataResource resource)
 			throws IOException, ConfigDataNotFoundException {
 		if (resource.isEmptyDirectory()) {

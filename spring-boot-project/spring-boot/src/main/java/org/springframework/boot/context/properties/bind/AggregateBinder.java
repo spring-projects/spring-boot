@@ -33,7 +33,12 @@ abstract class AggregateBinder<T> {
 
 	private final Context context;
 
-	AggregateBinder(Context context) {
+	/**
+     * Constructs a new instance of the AggregateBinder class.
+     * 
+     * @param context the context in which the AggregateBinder is being created
+     */
+    AggregateBinder(Context context) {
 		this.context = context;
 	}
 
@@ -98,18 +103,33 @@ abstract class AggregateBinder<T> {
 
 		private T supplied;
 
-		public AggregateSupplier(Supplier<T> supplier) {
+		/**
+         * Constructs a new AggregateSupplier with the specified supplier.
+         * 
+         * @param supplier the supplier to be used by the AggregateSupplier
+         */
+        public AggregateSupplier(Supplier<T> supplier) {
 			this.supplier = supplier;
 		}
 
-		public T get() {
+		/**
+         * Retrieves the value from the supplier if it has not been previously supplied.
+         * 
+         * @return the value supplied by the supplier
+         */
+        public T get() {
 			if (this.supplied == null) {
 				this.supplied = this.supplier.get();
 			}
 			return this.supplied;
 		}
 
-		public boolean wasSupplied() {
+		/**
+         * Returns a boolean value indicating whether the supplier was supplied or not.
+         * 
+         * @return true if the supplier was supplied, false otherwise
+         */
+        public boolean wasSupplied() {
 			return this.supplied != null;
 		}
 

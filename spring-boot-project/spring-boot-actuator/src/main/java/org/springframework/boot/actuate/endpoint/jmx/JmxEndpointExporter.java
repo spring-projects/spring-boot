@@ -58,7 +58,16 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean, Be
 
 	private Collection<ObjectName> registered;
 
-	public JmxEndpointExporter(MBeanServer mBeanServer, EndpointObjectNameFactory objectNameFactory,
+	/**
+     * Creates a new instance of JmxEndpointExporter with the specified parameters.
+     *
+     * @param mBeanServer         the MBeanServer to use for exporting the endpoints
+     * @param objectNameFactory   the ObjectNameFactory to use for generating the ObjectName for each endpoint
+     * @param responseMapper      the JmxOperationResponseMapper to use for mapping operation responses
+     * @param endpoints           the collection of endpoints to be exported
+     * @throws IllegalArgumentException if any of the parameters is null
+     */
+    public JmxEndpointExporter(MBeanServer mBeanServer, EndpointObjectNameFactory objectNameFactory,
 			JmxOperationResponseMapper responseMapper, Collection<? extends ExposableJmxEndpoint> endpoints) {
 		Assert.notNull(mBeanServer, "MBeanServer must not be null");
 		Assert.notNull(objectNameFactory, "ObjectNameFactory must not be null");
@@ -70,26 +79,55 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean, Be
 		this.endpoints = Collections.unmodifiableCollection(endpoints);
 	}
 
-	@Override
+	/**
+     * Sets the class loader to be used for loading beans in the JmxEndpointExporter.
+     * 
+     * @param classLoader the class loader to be set
+     */
+    @Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
-	@Override
+	/**
+     * This method is called after all properties have been set for the JmxEndpointExporter class.
+     * It registers the JMX endpoint by calling the register() method.
+     */
+    @Override
 	public void afterPropertiesSet() {
 		this.registered = register();
 	}
 
-	@Override
+	/**
+     * This method is called when the JmxEndpointExporter is being destroyed.
+     * It unregisters the registered JMX beans.
+     *
+     * @throws Exception if an error occurs during the unregistration process
+     */
+    @Override
 	public void destroy() throws Exception {
 		unregister(this.registered);
 	}
 
-	private Collection<ObjectName> register() {
+	/**
+     * Registers all endpoints in the JmxEndpointExporter.
+     * 
+     * @return A collection of ObjectName representing the registered endpoints.
+     */
+    private Collection<ObjectName> register() {
 		return this.endpoints.stream().map(this::register).toList();
 	}
 
-	private ObjectName register(ExposableJmxEndpoint endpoint) {
+	/**
+     * Registers an ExposableJmxEndpoint with the MBean server.
+     * 
+     * @param endpoint the ExposableJmxEndpoint to register
+     * @return the ObjectName of the registered MBean
+     * @throws IllegalArgumentException if the endpoint is null
+     * @throws IllegalStateException if the ObjectName for the endpoint is invalid
+     * @throws MBeanExportException if the registration of the MBean fails
+     */
+    private ObjectName register(ExposableJmxEndpoint endpoint) {
 		Assert.notNull(endpoint, "Endpoint must not be null");
 		try {
 			ObjectName name = this.objectNameFactory.getObjectName(endpoint);
@@ -105,11 +143,22 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean, Be
 		}
 	}
 
-	private void unregister(Collection<ObjectName> objectNames) {
+	/**
+     * Unregisters the specified collection of object names from the JMX endpoint exporter.
+     *
+     * @param objectNames the collection of object names to unregister
+     */
+    private void unregister(Collection<ObjectName> objectNames) {
 		objectNames.forEach(this::unregister);
 	}
 
-	private void unregister(ObjectName objectName) {
+	/**
+     * Unregisters an MBean with the specified ObjectName from the JMX domain.
+     * 
+     * @param objectName the ObjectName of the MBean to unregister
+     * @throws JmxException if an error occurs while unregistering the MBean
+     */
+    private void unregister(ObjectName objectName) {
 		try {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Unregister endpoint with ObjectName '" + objectName + "' from the JMX domain");
@@ -124,7 +173,13 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean, Be
 		}
 	}
 
-	private String getEndpointDescription(ExposableJmxEndpoint endpoint) {
+	/**
+     * Returns the description of the specified JMX endpoint.
+     *
+     * @param endpoint the JMX endpoint to get the description for
+     * @return the description of the JMX endpoint
+     */
+    private String getEndpointDescription(ExposableJmxEndpoint endpoint) {
 		return "endpoint '" + endpoint.getEndpointId() + "'";
 	}
 

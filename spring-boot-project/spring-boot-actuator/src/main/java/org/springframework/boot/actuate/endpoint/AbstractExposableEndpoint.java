@@ -50,17 +50,32 @@ public abstract class AbstractExposableEndpoint<O extends Operation> implements 
 		this.operations = List.copyOf(operations);
 	}
 
-	@Override
+	/**
+     * Returns the endpoint ID.
+     *
+     * @return the endpoint ID
+     */
+    @Override
 	public EndpointId getEndpointId() {
 		return this.id;
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether this endpoint is enabled by default.
+     *
+     * @return {@code true} if this endpoint is enabled by default, {@code false} otherwise.
+     */
+    @Override
 	public boolean isEnableByDefault() {
 		return this.enabledByDefault;
 	}
 
-	@Override
+	/**
+     * Returns the collection of operations.
+     *
+     * @return the collection of operations
+     */
+    @Override
 	public Collection<O> getOperations() {
 		return this.operations;
 	}

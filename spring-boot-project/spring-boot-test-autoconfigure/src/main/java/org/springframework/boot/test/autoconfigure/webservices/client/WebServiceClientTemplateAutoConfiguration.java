@@ -39,7 +39,13 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @ConditionalOnBean(WebServiceTemplateBuilder.class)
 public class WebServiceClientTemplateAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link WebServiceTemplate} using the provided {@link WebServiceTemplateBuilder}.
+     * 
+     * @param builder the {@link WebServiceTemplateBuilder} used to build the {@link WebServiceTemplate}
+     * @return a new instance of {@link WebServiceTemplate}
+     */
+    @Bean
 	public WebServiceTemplate webServiceTemplate(WebServiceTemplateBuilder builder) {
 		return builder.build();
 	}

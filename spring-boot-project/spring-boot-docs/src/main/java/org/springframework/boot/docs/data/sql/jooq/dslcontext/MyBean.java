@@ -25,12 +25,20 @@ import org.springframework.stereotype.Component;
 
 import static org.springframework.boot.docs.data.sql.jooq.dslcontext.Tables.AUTHOR;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final DSLContext create;
 
-	public MyBean(DSLContext dslContext) {
+	/**
+     * Constructs a new instance of MyBean with the specified DSLContext.
+     * 
+     * @param dslContext the DSLContext to be used for creating the instance
+     */
+    public MyBean(DSLContext dslContext) {
 		this.create = dslContext;
 	}
 

@@ -41,11 +41,22 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 
 	private final AnnotationsPropertySource propertySource;
 
-	PropertyMappingContextCustomizer(AnnotationsPropertySource propertySource) {
+	/**
+     * Constructs a new PropertyMappingContextCustomizer with the specified AnnotationsPropertySource.
+     *
+     * @param propertySource the AnnotationsPropertySource to be used for property mapping
+     */
+    PropertyMappingContextCustomizer(AnnotationsPropertySource propertySource) {
 		this.propertySource = propertySource;
 	}
 
-	@Override
+	/**
+     * Customize the application context by adding a property source and registering a bean post processor.
+     * 
+     * @param context the configurable application context
+     * @param mergedContextConfiguration the merged context configuration
+     */
+    @Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
 		if (!this.propertySource.isEmpty()) {
@@ -56,13 +67,27 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 					new PropertyMappingCheckBeanPostProcessor());
 	}
 
-	@Override
+	/**
+     * Compares this PropertyMappingContextCustomizer object to the specified object. 
+     * The result is true if and only if the argument is not null and is of the same class as this object, 
+     * and the propertySource of both objects are equal.
+     * 
+     * @param obj the object to compare this PropertyMappingContextCustomizer against
+     * @return true if the given object represents a PropertyMappingContextCustomizer equivalent to this object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		return (obj != null) && (getClass() == obj.getClass())
 				&& this.propertySource.equals(((PropertyMappingContextCustomizer) obj).propertySource);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this PropertyMappingContextCustomizer object.
+     * The hash code is generated based on the hash code of the propertySource field.
+     *
+     * @return the hash code value for this PropertyMappingContextCustomizer object
+     */
+    @Override
 	public int hashCode() {
 		return this.propertySource.hashCode();
 	}
@@ -73,7 +98,17 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 	 */
 	static class PropertyMappingCheckBeanPostProcessor implements BeanPostProcessor {
 
-		@Override
+		/**
+         * This method is called before the initialization of a bean.
+         * It checks if the bean has both @Component and @PropertyMapping annotations.
+         * If both annotations are present, it throws an IllegalStateException.
+         * 
+         * @param bean The bean object being processed.
+         * @param beanName The name of the bean.
+         * @return The processed bean object.
+         * @throws BeansException If an error occurs during bean processing.
+         */
+        @Override
 		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			Class<?> beanClass = bean.getClass();
 			MergedAnnotations annotations = MergedAnnotations.from(beanClass, SearchStrategy.SUPERCLASS);
@@ -91,11 +126,23 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 			return bean;
 		}
 
-		private Class<?> getRoot(MergedAnnotation<?> annotation) {
+		/**
+         * Returns the root class type of the given merged annotation.
+         * 
+         * @param annotation the merged annotation
+         * @return the root class type of the merged annotation
+         */
+        private Class<?> getRoot(MergedAnnotation<?> annotation) {
 			return annotation.getRoot().getType();
 		}
 
-		private String getAnnotationsDescription(Set<Class<?>> annotations) {
+		/**
+         * Returns a description of the given set of annotations.
+         *
+         * @param annotations the set of annotations to describe
+         * @return a string representation of the annotations
+         */
+        private String getAnnotationsDescription(Set<Class<?>> annotations) {
 			StringBuilder result = new StringBuilder();
 			for (Class<?> annotation : annotations) {
 				if (!result.isEmpty()) {
@@ -107,7 +154,15 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 			return result.toString();
 		}
 
-		@Override
+		/**
+         * This method is called after the initialization of a bean. It is a hook for post-processing the bean instance.
+         * 
+         * @param bean The bean instance that has been initialized.
+         * @param beanName The name of the bean.
+         * @return The processed bean instance.
+         * @throws BeansException If any error occurs during the post-processing.
+         */
+        @Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			return bean;
 		}

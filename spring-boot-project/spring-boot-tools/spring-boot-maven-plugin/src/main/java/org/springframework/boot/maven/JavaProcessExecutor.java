@@ -45,24 +45,52 @@ class JavaProcessExecutor {
 
 	private final Consumer<RunProcess> runProcessCustomizer;
 
-	JavaProcessExecutor(MavenSession mavenSession, ToolchainManager toolchainManager) {
+	/**
+     * Constructs a new JavaProcessExecutor with the specified MavenSession and ToolchainManager.
+     * 
+     * @param mavenSession the MavenSession to be used by the JavaProcessExecutor
+     * @param toolchainManager the ToolchainManager to be used by the JavaProcessExecutor
+     */
+    JavaProcessExecutor(MavenSession mavenSession, ToolchainManager toolchainManager) {
 		this(mavenSession, toolchainManager, null);
 	}
 
-	private JavaProcessExecutor(MavenSession mavenSession, ToolchainManager toolchainManager,
+	/**
+     * Constructs a new JavaProcessExecutor with the specified MavenSession, ToolchainManager, and runProcessCustomizer.
+     * 
+     * @param mavenSession The MavenSession to be used by the JavaProcessExecutor.
+     * @param toolchainManager The ToolchainManager to be used by the JavaProcessExecutor.
+     * @param runProcessCustomizer The customizer function to be used by the JavaProcessExecutor for customizing the RunProcess object.
+     */
+    private JavaProcessExecutor(MavenSession mavenSession, ToolchainManager toolchainManager,
 			Consumer<RunProcess> runProcessCustomizer) {
 		this.mavenSession = mavenSession;
 		this.toolchainManager = toolchainManager;
 		this.runProcessCustomizer = runProcessCustomizer;
 	}
 
-	JavaProcessExecutor withRunProcessCustomizer(Consumer<RunProcess> customizer) {
+	/**
+     * Creates a new JavaProcessExecutor with the specified customizer.
+     * 
+     * @param customizer the customizer to be applied to the RunProcess object
+     * @return a new JavaProcessExecutor with the specified customizer
+     */
+    JavaProcessExecutor withRunProcessCustomizer(Consumer<RunProcess> customizer) {
 		Consumer<RunProcess> combinedCustomizer = (this.runProcessCustomizer != null)
 				? this.runProcessCustomizer.andThen(customizer) : customizer;
 		return new JavaProcessExecutor(this.mavenSession, this.toolchainManager, combinedCustomizer);
 	}
 
-	int run(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
+	/**
+     * Runs a process with the specified working directory, arguments, and environment variables.
+     * 
+     * @param workingDirectory the working directory for the process
+     * @param args the arguments to be passed to the process
+     * @param environmentVariables the environment variables to be set for the process
+     * @return the exit code of the process
+     * @throws MojoExecutionException if the process execution fails or if the process terminates with a non-zero exit code
+     */
+    int run(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
 			throws MojoExecutionException {
 		RunProcess runProcess = new RunProcess(workingDirectory, getJavaExecutable());
 		if (this.runProcessCustomizer != null) {
@@ -80,7 +108,16 @@ class JavaProcessExecutor {
 		}
 	}
 
-	RunProcess runAsync(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
+	/**
+     * Executes a process asynchronously.
+     * 
+     * @param workingDirectory The working directory for the process.
+     * @param args The arguments to be passed to the process.
+     * @param environmentVariables The environment variables for the process.
+     * @return The RunProcess object representing the running process.
+     * @throws MojoExecutionException If the process execution fails.
+     */
+    RunProcess runAsync(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
 			throws MojoExecutionException {
 		try {
 			RunProcess runProcess = new RunProcess(workingDirectory, getJavaExecutable());
@@ -92,11 +129,22 @@ class JavaProcessExecutor {
 		}
 	}
 
-	private boolean hasTerminatedSuccessfully(int exitCode) {
+	/**
+     * Checks if the process has terminated successfully based on the exit code.
+     * 
+     * @param exitCode the exit code of the process
+     * @return true if the process has terminated successfully, false otherwise
+     */
+    private boolean hasTerminatedSuccessfully(int exitCode) {
 		return (exitCode == 0 || exitCode == EXIT_CODE_SIGINT);
 	}
 
-	private String getJavaExecutable() {
+	/**
+     * Returns the path of the Java executable.
+     * 
+     * @return the path of the Java executable
+     */
+    private String getJavaExecutable() {
 		Toolchain toolchain = this.toolchainManager.getToolchainFromBuildContext("jdk", this.mavenSession);
 		String javaExecutable = (toolchain != null) ? toolchain.findTool("java") : null;
 		return (javaExecutable != null) ? javaExecutable : new JavaExecutable().toString();

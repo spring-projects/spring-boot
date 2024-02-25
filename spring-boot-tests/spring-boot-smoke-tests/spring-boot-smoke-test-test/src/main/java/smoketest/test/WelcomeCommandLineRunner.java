@@ -28,7 +28,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class WelcomeCommandLineRunner implements CommandLineRunner {
 
-	@Override
+	/**
+     * This method is the entry point of the application and is executed when the application starts.
+     * It prints a welcome message to the console.
+     *
+     * @param args The command line arguments passed to the application.
+     * @throws Exception If an error occurs during the execution of the method.
+     */
+    @Override
 	public void run(String... args) throws Exception {
 		System.out.println("***** WELCOME TO THE DEMO *****");
 	}

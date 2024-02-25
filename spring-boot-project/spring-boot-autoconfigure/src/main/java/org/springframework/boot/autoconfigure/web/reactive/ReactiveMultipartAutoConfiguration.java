@@ -49,7 +49,15 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 @EnableConfigurationProperties(ReactiveMultipartProperties.class)
 public class ReactiveMultipartAutoConfiguration {
 
-	@Bean
+	/**
+     * Returns a CodecCustomizer bean that configures the default part HTTP message reader with the provided properties.
+     * The customizer sets the maximum in-memory size, maximum headers size, maximum disk usage per part, maximum parts,
+     * file storage directory, and headers charset based on the values specified in the ReactiveMultipartProperties bean.
+     * 
+     * @param multipartProperties the ReactiveMultipartProperties bean containing the configuration properties for multipart handling
+     * @return the CodecCustomizer bean that configures the default part HTTP message reader
+     */
+    @Bean
 	@Order(0)
 	CodecCustomizer defaultPartHttpMessageReaderCustomizer(ReactiveMultipartProperties multipartProperties) {
 		return (configurer) -> configurer.defaultCodecs().configureDefaultCodec((codec) -> {
@@ -87,7 +95,14 @@ public class ReactiveMultipartAutoConfiguration {
 		});
 	}
 
-	private void configureFileStorageDirectory(DefaultPartHttpMessageReader defaultPartHttpMessageReader,
+	/**
+     * Configures the file storage directory for the DefaultPartHttpMessageReader.
+     * 
+     * @param defaultPartHttpMessageReader The DefaultPartHttpMessageReader to configure.
+     * @param fileStorageDirectory The directory to set as the file storage directory.
+     * @throws IllegalStateException if failed to configure the multipart file storage directory.
+     */
+    private void configureFileStorageDirectory(DefaultPartHttpMessageReader defaultPartHttpMessageReader,
 			Path fileStorageDirectory) {
 		try {
 			defaultPartHttpMessageReader.setFileStorageDirectory(fileStorageDirectory);

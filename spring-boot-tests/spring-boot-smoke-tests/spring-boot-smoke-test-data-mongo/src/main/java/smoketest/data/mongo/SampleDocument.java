@@ -18,6 +18,9 @@ package smoketest.data.mongo;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * SampleDocument class.
+ */
 @Document(collection = "exampleDocuments")
 public class SampleDocument {
 
@@ -25,19 +28,39 @@ public class SampleDocument {
 
 	private String text;
 
-	public String getId() {
+	/**
+     * Returns the ID of the object.
+     *
+     * @return the ID of the object
+     */
+    public String getId() {
 		return this.id;
 	}
 
-	public void setId(String id) {
+	/**
+     * Sets the ID of the object.
+     * 
+     * @param id the ID to be set
+     */
+    public void setId(String id) {
 		this.id = id;
 	}
 
-	public String getText() {
+	/**
+     * Returns the text of the SampleDocument.
+     *
+     * @return the text of the SampleDocument
+     */
+    public String getText() {
 		return this.text;
 	}
 
-	public void setText(String text) {
+	/**
+     * Sets the text of the SampleDocument.
+     * 
+     * @param text the text to be set
+     */
+    public void setText(String text) {
 		this.text = text;
 	}
 

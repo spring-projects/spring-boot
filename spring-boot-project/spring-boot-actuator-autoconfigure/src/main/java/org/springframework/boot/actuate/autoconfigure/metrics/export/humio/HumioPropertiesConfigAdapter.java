@@ -29,31 +29,67 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  */
 class HumioPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<HumioProperties> implements HumioConfig {
 
-	HumioPropertiesConfigAdapter(HumioProperties properties) {
+	/**
+     * Constructs a new HumioPropertiesConfigAdapter with the specified HumioProperties.
+     *
+     * @param properties the HumioProperties to be used for configuring the adapter
+     */
+    HumioPropertiesConfigAdapter(HumioProperties properties) {
 		super(properties);
 	}
 
-	@Override
+	/**
+     * Returns the prefix for the Humio metrics export configuration properties.
+     * The prefix is used to group the properties under a common namespace.
+     * 
+     * @return the prefix for the Humio metrics export configuration properties
+     */
+    @Override
 	public String prefix() {
 		return "management.humio.metrics.export";
 	}
 
-	@Override
+	/**
+     * Retrieves the value associated with the specified key from the HumioPropertiesConfigAdapter.
+     * 
+     * @param k the key whose associated value is to be retrieved
+     * @return the value to which the specified key is mapped, or null if the key is not found
+     */
+    @Override
 	public String get(String k) {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the URI for the Humio properties.
+     * 
+     * @return the URI for the Humio properties
+     */
+    @Override
 	public String uri() {
 		return get(HumioProperties::getUri, HumioConfig.super::uri);
 	}
 
-	@Override
+	/**
+     * Returns a map of tags.
+     *
+     * This method overrides the tags() method in the HumioConfig interface.
+     * It calls the get() method from the HumioProperties class to retrieve the tags,
+     * and if the tags are not available, it falls back to the tags() method in the HumioConfig interface.
+     *
+     * @return a map of tags
+     */
+    @Override
 	public Map<String, String> tags() {
 		return get(HumioProperties::getTags, HumioConfig.super::tags);
 	}
 
-	@Override
+	/**
+     * Returns the API token for accessing the Humio API.
+     * 
+     * @return the API token
+     */
+    @Override
 	public String apiToken() {
 		return get(HumioProperties::getApiToken, HumioConfig.super::apiToken);
 	}

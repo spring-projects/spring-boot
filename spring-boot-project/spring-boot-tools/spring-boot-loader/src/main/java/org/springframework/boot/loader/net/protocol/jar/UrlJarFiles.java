@@ -126,16 +126,31 @@ class UrlJarFiles {
 		return connection;
 	}
 
-	private URLConnection openConnection(JarFile jarFile) throws IOException {
+	/**
+     * Opens a connection to the specified JarFile.
+     * 
+     * @param jarFile the JarFile to open a connection to
+     * @return a URLConnection object representing the connection to the JarFile, or null if the JarFile is not found in the cache
+     * @throws IOException if an I/O error occurs while opening the connection
+     */
+    private URLConnection openConnection(JarFile jarFile) throws IOException {
 		URL url = this.cache.get(jarFile);
 		return (url != null) ? url.openConnection() : null;
 	}
 
-	private void onClose(JarFile jarFile) {
+	/**
+     * Removes the specified JarFile from the cache.
+     * 
+     * @param jarFile the JarFile to be removed from the cache
+     */
+    private void onClose(JarFile jarFile) {
 		this.cache.remove(jarFile);
 	}
 
-	void clearCache() {
+	/**
+     * Clears the cache of the UrlJarFiles class.
+     */
+    void clearCache() {
 		this.cache.clear();
 	}
 
@@ -205,7 +220,10 @@ class UrlJarFiles {
 			}
 		}
 
-		void clear() {
+		/**
+         * Clears the cache by removing all entries.
+         */
+        void clear() {
 			synchronized (this) {
 				this.jarFileToJarFileUrl.clear();
 				this.jarFileUrlToJarFile.clear();

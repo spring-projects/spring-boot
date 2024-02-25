@@ -20,13 +20,21 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Response class.
+ */
 @XmlRootElement(name = "response")
 @XmlAccessorType(XmlAccessType.FIELD)
 class Response {
 
 	private int status;
 
-	int getStatus() {
+	/**
+     * Returns the status of the response.
+     *
+     * @return the status of the response
+     */
+    int getStatus() {
 		return this.status;
 	}
 

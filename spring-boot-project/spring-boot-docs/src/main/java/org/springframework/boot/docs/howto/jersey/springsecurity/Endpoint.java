@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.howto.jersey.springsecurity;
 
+/**
+ * Endpoint class.
+ */
 class Endpoint {
 
 }

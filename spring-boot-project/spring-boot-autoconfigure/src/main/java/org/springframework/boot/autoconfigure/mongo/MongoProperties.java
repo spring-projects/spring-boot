@@ -117,122 +117,270 @@ public class MongoProperties {
 	 */
 	private Boolean autoIndexCreation;
 
-	public String getHost() {
+	/**
+     * Returns the host of the MongoProperties.
+     *
+     * @return the host of the MongoProperties
+     */
+    public String getHost() {
 		return this.host;
 	}
 
-	public void setHost(String host) {
+	/**
+     * Sets the host for the MongoDB connection.
+     * 
+     * @param host the host address or hostname to connect to
+     */
+    public void setHost(String host) {
 		this.host = host;
 	}
 
-	public String getDatabase() {
+	/**
+     * Returns the name of the database.
+     *
+     * @return the name of the database
+     */
+    public String getDatabase() {
 		return this.database;
 	}
 
-	public void setDatabase(String database) {
+	/**
+     * Sets the name of the database to be used.
+     * 
+     * @param database the name of the database
+     */
+    public void setDatabase(String database) {
 		this.database = database;
 	}
 
-	public String getAuthenticationDatabase() {
+	/**
+     * Returns the authentication database used for authentication.
+     * 
+     * @return the authentication database
+     */
+    public String getAuthenticationDatabase() {
 		return this.authenticationDatabase;
 	}
 
-	public void setAuthenticationDatabase(String authenticationDatabase) {
+	/**
+     * Sets the authentication database for the MongoDB connection.
+     * 
+     * @param authenticationDatabase the authentication database to be set
+     */
+    public void setAuthenticationDatabase(String authenticationDatabase) {
 		this.authenticationDatabase = authenticationDatabase;
 	}
 
-	public String getUsername() {
+	/**
+     * Returns the username associated with the MongoProperties object.
+     *
+     * @return the username
+     */
+    public String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	/**
+     * Sets the username for the MongoProperties.
+     * 
+     * @param username the username to set
+     */
+    public void setUsername(String username) {
 		this.username = username;
 	}
 
-	public char[] getPassword() {
+	/**
+     * Returns the password as a character array.
+     *
+     * @return the password as a character array
+     */
+    public char[] getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(char[] password) {
+	/**
+     * Sets the password for the MongoProperties.
+     * 
+     * @param password the password to be set
+     */
+    public void setPassword(char[] password) {
 		this.password = password;
 	}
 
-	public String getReplicaSetName() {
+	/**
+     * Returns the name of the replica set.
+     *
+     * @return the name of the replica set
+     */
+    public String getReplicaSetName() {
 		return this.replicaSetName;
 	}
 
-	public void setReplicaSetName(String replicaSetName) {
+	/**
+     * Sets the name of the replica set.
+     * 
+     * @param replicaSetName the name of the replica set
+     */
+    public void setReplicaSetName(String replicaSetName) {
 		this.replicaSetName = replicaSetName;
 	}
 
-	public Class<?> getFieldNamingStrategy() {
+	/**
+     * Returns the field naming strategy used by this MongoProperties instance.
+     *
+     * @return the field naming strategy used by this MongoProperties instance
+     */
+    public Class<?> getFieldNamingStrategy() {
 		return this.fieldNamingStrategy;
 	}
 
-	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
+	/**
+     * Sets the field naming strategy for the MongoProperties class.
+     * 
+     * @param fieldNamingStrategy the field naming strategy to be set
+     */
+    public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
 		this.fieldNamingStrategy = fieldNamingStrategy;
 	}
 
-	public UuidRepresentation getUuidRepresentation() {
+	/**
+     * Returns the UUID representation used by this MongoProperties instance.
+     *
+     * @return the UUID representation
+     */
+    public UuidRepresentation getUuidRepresentation() {
 		return this.uuidRepresentation;
 	}
 
-	public void setUuidRepresentation(UuidRepresentation uuidRepresentation) {
+	/**
+     * Sets the UUID representation for this MongoProperties object.
+     * 
+     * @param uuidRepresentation the UUID representation to be set
+     */
+    public void setUuidRepresentation(UuidRepresentation uuidRepresentation) {
 		this.uuidRepresentation = uuidRepresentation;
 	}
 
-	public String getUri() {
+	/**
+     * Returns the URI of the MongoProperties.
+     *
+     * @return the URI of the MongoProperties
+     */
+    public String getUri() {
 		return this.uri;
 	}
 
-	public String determineUri() {
+	/**
+     * Determines the URI for the MongoProperties object.
+     * If the uri is not null, returns the uri.
+     * Otherwise, returns the default URI.
+     *
+     * @return the determined URI
+     */
+    public String determineUri() {
 		return (this.uri != null) ? this.uri : DEFAULT_URI;
 	}
 
-	public void setUri(String uri) {
+	/**
+     * Sets the URI for the MongoProperties.
+     * 
+     * @param uri the URI to set
+     */
+    public void setUri(String uri) {
 		this.uri = uri;
 	}
 
-	public Integer getPort() {
+	/**
+     * Returns the port number.
+     *
+     * @return the port number
+     */
+    public Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(Integer port) {
+	/**
+     * Sets the port for the MongoDB connection.
+     * 
+     * @param port the port number to set
+     */
+    public void setPort(Integer port) {
 		this.port = port;
 	}
 
-	public Gridfs getGridfs() {
+	/**
+     * Returns the GridFS instance associated with this MongoProperties object.
+     *
+     * @return the GridFS instance
+     */
+    public Gridfs getGridfs() {
 		return this.gridfs;
 	}
 
-	public String getMongoClientDatabase() {
+	/**
+     * Returns the name of the MongoDB database to be used by the MongoClient.
+     * If the database name is already set, it will be returned.
+     * Otherwise, a new ConnectionString object will be created using the determined URI,
+     * and the database name from the ConnectionString will be returned.
+     *
+     * @return the name of the MongoDB database
+     */
+    public String getMongoClientDatabase() {
 		if (this.database != null) {
 			return this.database;
 		}
 		return new ConnectionString(determineUri()).getDatabase();
 	}
 
-	public Boolean isAutoIndexCreation() {
+	/**
+     * Returns the value indicating whether auto index creation is enabled.
+     * 
+     * @return true if auto index creation is enabled, false otherwise
+     */
+    public Boolean isAutoIndexCreation() {
 		return this.autoIndexCreation;
 	}
 
-	public void setAutoIndexCreation(Boolean autoIndexCreation) {
+	/**
+     * Sets the flag for auto index creation.
+     * 
+     * @param autoIndexCreation the flag indicating whether auto index creation is enabled or not
+     */
+    public void setAutoIndexCreation(Boolean autoIndexCreation) {
 		this.autoIndexCreation = autoIndexCreation;
 	}
 
-	public List<String> getAdditionalHosts() {
+	/**
+     * Returns the additional hosts for the MongoProperties.
+     *
+     * @return the additional hosts for the MongoProperties
+     */
+    public List<String> getAdditionalHosts() {
 		return this.additionalHosts;
 	}
 
-	public void setAdditionalHosts(List<String> additionalHosts) {
+	/**
+     * Sets the additional hosts for the MongoProperties.
+     * 
+     * @param additionalHosts the list of additional hosts to be set
+     */
+    public void setAdditionalHosts(List<String> additionalHosts) {
 		this.additionalHosts = additionalHosts;
 	}
 
-	public Ssl getSsl() {
+	/**
+     * Returns the SSL configuration for the MongoProperties.
+     *
+     * @return the SSL configuration for the MongoProperties
+     */
+    public Ssl getSsl() {
 		return this.ssl;
 	}
 
-	public static class Gridfs {
+	/**
+     * Gridfs class.
+     */
+    public static class Gridfs {
 
 		/**
 		 * GridFS database name.
@@ -244,25 +392,48 @@ public class MongoProperties {
 		 */
 		private String bucket;
 
-		public String getDatabase() {
+		/**
+         * Returns the name of the database associated with this Gridfs instance.
+         *
+         * @return the name of the database
+         */
+        public String getDatabase() {
 			return this.database;
 		}
 
-		public void setDatabase(String database) {
+		/**
+         * Sets the database for the Gridfs class.
+         * 
+         * @param database the name of the database to be set
+         */
+        public void setDatabase(String database) {
 			this.database = database;
 		}
 
-		public String getBucket() {
+		/**
+         * Returns the name of the bucket associated with this Gridfs instance.
+         *
+         * @return the name of the bucket
+         */
+        public String getBucket() {
 			return this.bucket;
 		}
 
-		public void setBucket(String bucket) {
+		/**
+         * Sets the bucket for the Gridfs class.
+         * 
+         * @param bucket the name of the bucket to be set
+         */
+        public void setBucket(String bucket) {
 			this.bucket = bucket;
 		}
 
 	}
 
-	public static class Ssl {
+	/**
+     * Ssl class.
+     */
+    public static class Ssl {
 
 		/**
 		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
@@ -275,19 +446,39 @@ public class MongoProperties {
 		 */
 		private String bundle;
 
-		public boolean isEnabled() {
+		/**
+         * Returns a boolean value indicating whether the SSL is enabled.
+         * 
+         * @return true if SSL is enabled, false otherwise
+         */
+        public boolean isEnabled() {
 			return (this.enabled != null) ? this.enabled : this.bundle != null;
 		}
 
-		public void setEnabled(boolean enabled) {
+		/**
+         * Sets the enabled status of the Ssl object.
+         * 
+         * @param enabled the boolean value indicating whether the Ssl object is enabled or not
+         */
+        public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
-		public String getBundle() {
+		/**
+         * Returns the bundle associated with this Ssl object.
+         * 
+         * @return the bundle associated with this Ssl object
+         */
+        public String getBundle() {
 			return this.bundle;
 		}
 
-		public void setBundle(String bundle) {
+		/**
+         * Sets the bundle for the Ssl class.
+         * 
+         * @param bundle the bundle to be set
+         */
+        public void setBundle(String bundle) {
 			this.bundle = bundle;
 		}
 

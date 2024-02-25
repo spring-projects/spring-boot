@@ -28,36 +28,71 @@ import org.apache.commons.dbcp2.BasicDataSource;
  */
 public class CommonsDbcp2DataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<BasicDataSource> {
 
-	public CommonsDbcp2DataSourcePoolMetadata(BasicDataSource dataSource) {
+	/**
+     * Constructs a new CommonsDbcp2DataSourcePoolMetadata object with the specified BasicDataSource.
+     * 
+     * @param dataSource the BasicDataSource object to be used for creating the pool metadata
+     */
+    public CommonsDbcp2DataSourcePoolMetadata(BasicDataSource dataSource) {
 		super(dataSource);
 	}
 
-	@Override
+	/**
+     * Returns the number of active connections in the data source.
+     *
+     * @return the number of active connections
+     */
+    @Override
 	public Integer getActive() {
 		return getDataSource().getNumActive();
 	}
 
-	@Override
+	/**
+     * Returns the number of idle connections in the data source pool.
+     * 
+     * @return the number of idle connections
+     */
+    @Override
 	public Integer getIdle() {
 		return getDataSource().getNumIdle();
 	}
 
-	@Override
+	/**
+     * Returns the maximum number of active connections that can be allocated from this data source.
+     * 
+     * @return the maximum number of active connections
+     */
+    @Override
 	public Integer getMax() {
 		return getDataSource().getMaxTotal();
 	}
 
-	@Override
+	/**
+     * Returns the minimum number of idle connections that should be maintained in the connection pool.
+     *
+     * @return the minimum number of idle connections
+     */
+    @Override
 	public Integer getMin() {
 		return getDataSource().getMinIdle();
 	}
 
-	@Override
+	/**
+     * Returns the validation query used by the data source.
+     * 
+     * @return the validation query used by the data source
+     */
+    @Override
 	public String getValidationQuery() {
 		return getDataSource().getValidationQuery();
 	}
 
-	@Override
+	/**
+     * Returns the default auto-commit behavior of the underlying data source.
+     * 
+     * @return the default auto-commit behavior
+     */
+    @Override
 	public Boolean getDefaultAutoCommit() {
 		return getDataSource().getDefaultAutoCommit();
 	}

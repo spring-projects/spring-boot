@@ -57,17 +57,32 @@ public final class RestClientTypeExcludeFilter extends StandardAnnotationCustomi
 
 	private final Class<?>[] components;
 
-	RestClientTypeExcludeFilter(Class<?> testClass) {
+	/**
+     * Constructs a new RestClientTypeExcludeFilter with the specified testClass.
+     * 
+     * @param testClass the test class to be used for filtering
+     */
+    RestClientTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 		this.components = getAnnotation().getValue("components", Class[].class).orElse(NO_COMPONENTS);
 	}
 
-	@Override
+	/**
+     * Returns the default includes for the RestClientTypeExcludeFilter class.
+     * 
+     * @return the set of classes to be included by default
+     */
+    @Override
 	protected Set<Class<?>> getDefaultIncludes() {
 		return DEFAULT_INCLUDES;
 	}
 
-	@Override
+	/**
+     * Returns the set of component classes to be included.
+     * 
+     * @return the set of component classes to be included
+     */
+    @Override
 	protected Set<Class<?>> getComponentIncludes() {
 		return new LinkedHashSet<>(Arrays.asList(this.components));
 	}

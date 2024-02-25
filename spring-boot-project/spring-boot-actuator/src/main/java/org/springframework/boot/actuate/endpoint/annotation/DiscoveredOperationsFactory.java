@@ -62,19 +62,41 @@ abstract class DiscoveredOperationsFactory<O extends Operation> {
 
 	private final Collection<OperationInvokerAdvisor> invokerAdvisors;
 
-	DiscoveredOperationsFactory(ParameterValueMapper parameterValueMapper,
+	/**
+     * Constructs a new DiscoveredOperationsFactory with the specified ParameterValueMapper and
+     * collection of OperationInvokerAdvisors.
+     * 
+     * @param parameterValueMapper the ParameterValueMapper used for mapping parameter values
+     * @param invokerAdvisors the collection of OperationInvokerAdvisors used for advising operation invokers
+     */
+    DiscoveredOperationsFactory(ParameterValueMapper parameterValueMapper,
 			Collection<OperationInvokerAdvisor> invokerAdvisors) {
 		this.parameterValueMapper = parameterValueMapper;
 		this.invokerAdvisors = invokerAdvisors;
 	}
 
-	Collection<O> createOperations(EndpointId id, Object target) {
+	/**
+     * Creates a collection of operations for the given endpoint ID and target object.
+     * 
+     * @param id the ID of the endpoint
+     * @param target the target object
+     * @return a collection of operations
+     */
+    Collection<O> createOperations(EndpointId id, Object target) {
 		return MethodIntrospector
 			.selectMethods(target.getClass(), (MetadataLookup<O>) (method) -> createOperation(id, target, method))
 			.values();
 	}
 
-	private O createOperation(EndpointId endpointId, Object target, Method method) {
+	/**
+     * Creates an operation based on the given endpoint ID, target object, and method.
+     * 
+     * @param endpointId the ID of the endpoint
+     * @param target the target object on which the method will be invoked
+     * @param method the method to be invoked
+     * @return the created operation, or null if no operation could be created
+     */
+    private O createOperation(EndpointId endpointId, Object target, Method method) {
 		return OPERATION_TYPES.entrySet()
 			.stream()
 			.map((entry) -> createOperation(endpointId, target, method, entry.getKey(), entry.getValue()))
@@ -83,7 +105,17 @@ abstract class DiscoveredOperationsFactory<O extends Operation> {
 			.orElse(null);
 	}
 
-	private O createOperation(EndpointId endpointId, Object target, Method method, OperationType operationType,
+	/**
+     * Creates an operation based on the provided parameters.
+     * 
+     * @param endpointId the ID of the endpoint
+     * @param target the target object on which the operation will be invoked
+     * @param method the method representing the operation
+     * @param operationType the type of the operation
+     * @param annotationType the type of annotation associated with the operation
+     * @return the created operation, or null if the annotation is not present
+     */
+    private O createOperation(EndpointId endpointId, Object target, Method method, OperationType operationType,
 			Class<? extends Annotation> annotationType) {
 		MergedAnnotation<?> annotation = MergedAnnotations.from(method).get(annotationType);
 		if (!annotation.isPresent()) {
@@ -96,7 +128,15 @@ abstract class DiscoveredOperationsFactory<O extends Operation> {
 		return createOperation(endpointId, operationMethod, invoker);
 	}
 
-	private OperationInvoker applyAdvisors(EndpointId endpointId, OperationMethod operationMethod,
+	/**
+     * Applies advisors to the given operation invoker.
+     * 
+     * @param endpointId the endpoint ID
+     * @param operationMethod the operation method
+     * @param invoker the operation invoker
+     * @return the operation invoker with advisors applied
+     */
+    private OperationInvoker applyAdvisors(EndpointId endpointId, OperationMethod operationMethod,
 			OperationInvoker invoker) {
 		if (this.invokerAdvisors != null) {
 			for (OperationInvokerAdvisor advisor : this.invokerAdvisors) {
@@ -107,7 +147,15 @@ abstract class DiscoveredOperationsFactory<O extends Operation> {
 		return invoker;
 	}
 
-	protected abstract O createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
+	/**
+     * Creates a new operation with the specified endpoint ID, operation method, and invoker.
+     *
+     * @param endpointId      the ID of the endpoint
+     * @param operationMethod the discovered operation method
+     * @param invoker         the operation invoker
+     * @return the created operation
+     */
+    protected abstract O createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
 			OperationInvoker invoker);
 
 }

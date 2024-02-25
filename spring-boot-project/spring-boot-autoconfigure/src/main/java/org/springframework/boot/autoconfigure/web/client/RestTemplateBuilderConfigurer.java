@@ -40,15 +40,30 @@ public final class RestTemplateBuilderConfigurer {
 
 	private List<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers;
 
-	void setHttpMessageConverters(HttpMessageConverters httpMessageConverters) {
+	/**
+     * Sets the HTTP message converters for the RestTemplateBuilderConfigurer.
+     * 
+     * @param httpMessageConverters the HTTP message converters to be set
+     */
+    void setHttpMessageConverters(HttpMessageConverters httpMessageConverters) {
 		this.httpMessageConverters = httpMessageConverters;
 	}
 
-	void setRestTemplateCustomizers(List<RestTemplateCustomizer> restTemplateCustomizers) {
+	/**
+     * Sets the list of RestTemplateCustomizers to be applied to the RestTemplateBuilder.
+     * 
+     * @param restTemplateCustomizers the list of RestTemplateCustomizers to be applied
+     */
+    void setRestTemplateCustomizers(List<RestTemplateCustomizer> restTemplateCustomizers) {
 		this.restTemplateCustomizers = restTemplateCustomizers;
 	}
 
-	void setRestTemplateRequestCustomizers(List<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers) {
+	/**
+     * Sets the list of RestTemplateRequestCustomizers to be applied to the RestTemplateBuilder.
+     * 
+     * @param restTemplateRequestCustomizers the list of RestTemplateRequestCustomizers to be set
+     */
+    void setRestTemplateRequestCustomizers(List<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers) {
 		this.restTemplateRequestCustomizers = restTemplateRequestCustomizers;
 	}
 
@@ -67,7 +82,16 @@ public final class RestTemplateBuilderConfigurer {
 		return builder;
 	}
 
-	private <T> RestTemplateBuilder addCustomizers(RestTemplateBuilder builder, List<T> customizers,
+	/**
+     * Adds customizers to the RestTemplateBuilder using the provided method.
+     * 
+     * @param builder the RestTemplateBuilder to add customizers to
+     * @param customizers the list of customizers to add
+     * @param method the method to apply to the RestTemplateBuilder and customizers
+     * @param <T> the type of the customizers
+     * @return the RestTemplateBuilder with the customizers added, or the original builder if the customizers list is empty
+     */
+    private <T> RestTemplateBuilder addCustomizers(RestTemplateBuilder builder, List<T> customizers,
 			BiFunction<RestTemplateBuilder, Collection<T>, RestTemplateBuilder> method) {
 		if (!ObjectUtils.isEmpty(customizers)) {
 			return method.apply(builder, customizers);

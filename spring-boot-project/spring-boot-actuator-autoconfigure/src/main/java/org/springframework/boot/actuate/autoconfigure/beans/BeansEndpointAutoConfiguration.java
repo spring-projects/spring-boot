@@ -34,7 +34,13 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnAvailableEndpoint(endpoint = BeansEndpoint.class)
 public class BeansEndpointAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of the {@link BeansEndpoint} class if no other bean of the same type is present in the application context.
+     * 
+     * @param applicationContext the {@link ConfigurableApplicationContext} to be used by the endpoint
+     * @return a new instance of the {@link BeansEndpoint} class
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public BeansEndpoint beansEndpoint(ConfigurableApplicationContext applicationContext) {
 		return new BeansEndpoint(applicationContext);

@@ -18,6 +18,9 @@ package smoketest.data.redis;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleRedisApplication class.
+ */
 @SpringBootApplication
 public class SampleRedisApplication {
 

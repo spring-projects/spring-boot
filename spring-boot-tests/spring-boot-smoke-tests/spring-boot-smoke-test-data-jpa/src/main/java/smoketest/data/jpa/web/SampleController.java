@@ -24,13 +24,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+/**
+ * SampleController class.
+ */
 @Controller
 public class SampleController {
 
 	@Autowired
 	private CityService cityService;
 
-	@GetMapping("/")
+	/**
+     * Returns the name of the city "Bath" in the UK.
+     * 
+     * @return the name of the city "Bath"
+     * 
+     * @since 1.0
+     */
+    @GetMapping("/")
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public String helloWorld() {

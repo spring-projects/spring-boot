@@ -34,30 +34,64 @@ public class LocalHostWebConnectionHtmlUnitDriver extends WebConnectionHtmlUnitD
 
 	private final Environment environment;
 
-	public LocalHostWebConnectionHtmlUnitDriver(Environment environment) {
+	/**
+     * Constructs a new LocalHostWebConnectionHtmlUnitDriver with the specified environment.
+     * 
+     * @param environment the environment to be used for the driver
+     * @throws IllegalArgumentException if the environment is null
+     */
+    public LocalHostWebConnectionHtmlUnitDriver(Environment environment) {
 		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;
 	}
 
-	public LocalHostWebConnectionHtmlUnitDriver(Environment environment, boolean enableJavascript) {
+	/**
+     * Constructs a new LocalHostWebConnectionHtmlUnitDriver with the specified environment and enableJavascript flag.
+     * 
+     * @param environment the environment to be used for the driver
+     * @param enableJavascript flag indicating whether JavaScript should be enabled or not
+     * @throws IllegalArgumentException if the environment is null
+     */
+    public LocalHostWebConnectionHtmlUnitDriver(Environment environment, boolean enableJavascript) {
 		super(enableJavascript);
 		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;
 	}
 
-	public LocalHostWebConnectionHtmlUnitDriver(Environment environment, BrowserVersion browserVersion) {
+	/**
+     * Constructs a new LocalHostWebConnectionHtmlUnitDriver with the specified environment and browser version.
+     * 
+     * @param environment the environment to be used for the web connection
+     * @param browserVersion the version of the browser to be used
+     * @throws IllegalArgumentException if the environment is null
+     */
+    public LocalHostWebConnectionHtmlUnitDriver(Environment environment, BrowserVersion browserVersion) {
 		super(browserVersion);
 		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;
 	}
 
-	public LocalHostWebConnectionHtmlUnitDriver(Environment environment, Capabilities capabilities) {
+	/**
+     * Constructs a new LocalHostWebConnectionHtmlUnitDriver with the specified environment and capabilities.
+     * 
+     * @param environment the environment to be used for the driver
+     * @param capabilities the capabilities to be used for the driver
+     * @throws IllegalArgumentException if the environment is null
+     */
+    public LocalHostWebConnectionHtmlUnitDriver(Environment environment, Capabilities capabilities) {
 		super(capabilities);
 		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;
 	}
 
-	@Override
+	/**
+     * Sends a GET request to the specified URL.
+     * If the URL starts with "/", it is assumed to be a relative path and the local server port is appended to it.
+     * The request is then sent using the super class's get method.
+     *
+     * @param url the URL to send the GET request to
+     */
+    @Override
 	public void get(String url) {
 		if (url.startsWith("/")) {
 			String port = this.environment.getProperty("local.server.port", "8080");

@@ -57,7 +57,13 @@ public abstract class Launcher {
 		}
 	}
 
-	private boolean hasLength(String jarMode) {
+	/**
+     * Checks if the given jar mode has a non-null and non-empty value.
+     * 
+     * @param jarMode the jar mode to be checked
+     * @return {@code true} if the jar mode has a non-null and non-empty value, {@code false} otherwise
+     */
+    private boolean hasLength(String jarMode) {
 		return (jarMode != null) && !jarMode.isEmpty();
 	}
 
@@ -71,7 +77,13 @@ public abstract class Launcher {
 		return createClassLoader(urls.toArray(new URL[0]));
 	}
 
-	private ClassLoader createClassLoader(URL[] urls) {
+	/**
+     * Creates a custom class loader with the given URLs.
+     * 
+     * @param urls the URLs to be used by the class loader
+     * @return the created class loader
+     */
+    private ClassLoader createClassLoader(URL[] urls) {
 		ClassLoader parent = getClass().getClassLoader();
 		return new LaunchedClassLoader(isExploded(), getArchive(), urls, parent);
 	}

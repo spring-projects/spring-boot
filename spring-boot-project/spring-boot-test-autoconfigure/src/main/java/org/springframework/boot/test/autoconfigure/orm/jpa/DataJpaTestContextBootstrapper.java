@@ -28,7 +28,13 @@ import org.springframework.test.context.TestContextBootstrapper;
  */
 class DataJpaTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
-	@Override
+	/**
+     * Retrieves the properties from the given test class.
+     * 
+     * @param testClass the test class to retrieve properties from
+     * @return an array of properties or null if no properties are found
+     */
+    @Override
 	protected String[] getProperties(Class<?> testClass) {
 		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
 			.get(DataJpaTest.class)

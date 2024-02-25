@@ -38,7 +38,13 @@ import org.springframework.util.ClassUtils;
  */
 class JacksonRuntimeHints implements RuntimeHintsRegistrar {
 
-	@Override
+	/**
+     * Registers hints for runtime serialization using Jackson library.
+     * 
+     * @param hints the runtime hints to register
+     * @param classLoader the class loader to use for checking class availability
+     */
+    @Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		if (!ClassUtils.isPresent("com.fasterxml.jackson.databind.ser.BasicSerializerFactory", classLoader)) {
 			return;
@@ -46,7 +52,12 @@ class JacksonRuntimeHints implements RuntimeHintsRegistrar {
 		registerSerializers(hints.reflection());
 	}
 
-	private void registerSerializers(ReflectionHints hints) {
+	/**
+     * Registers serializers for specified types using the given reflection hints.
+     * 
+     * @param hints the reflection hints to use for registration
+     */
+    private void registerSerializers(ReflectionHints hints) {
 		hints.registerTypes(TypeReference.listOf(AtomicBooleanSerializer.class, AtomicIntegerSerializer.class,
 				AtomicLongSerializer.class, FileSerializer.class, ClassSerializer.class, TokenBufferSerializer.class),
 				TypeHint.builtWith(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));

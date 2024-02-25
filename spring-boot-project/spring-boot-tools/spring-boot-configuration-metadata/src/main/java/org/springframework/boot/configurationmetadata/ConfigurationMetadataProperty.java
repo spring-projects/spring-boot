@@ -55,7 +55,12 @@ public class ConfigurationMetadataProperty implements Serializable {
 		return this.id;
 	}
 
-	public void setId(String id) {
+	/**
+     * Sets the ID of the ConfigurationMetadataProperty.
+     * 
+     * @param id the ID to set
+     */
+    public void setId(String id) {
 		this.id = id;
 	}
 
@@ -68,7 +73,12 @@ public class ConfigurationMetadataProperty implements Serializable {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	/**
+     * Sets the name of the ConfigurationMetadataProperty.
+     * 
+     * @param name the name to set
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 
@@ -90,7 +100,12 @@ public class ConfigurationMetadataProperty implements Serializable {
 		return this.type;
 	}
 
-	public void setType(String type) {
+	/**
+     * Sets the type of the configuration metadata property.
+     * 
+     * @param type the type to set
+     */
+    public void setType(String type) {
 		this.type = type;
 	}
 
@@ -103,7 +118,12 @@ public class ConfigurationMetadataProperty implements Serializable {
 		return this.description;
 	}
 
-	public void setDescription(String description) {
+	/**
+     * Sets the description of the configuration metadata property.
+     * 
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
 		this.description = description;
 	}
 
@@ -116,7 +136,12 @@ public class ConfigurationMetadataProperty implements Serializable {
 		return this.shortDescription;
 	}
 
-	public void setShortDescription(String shortDescription) {
+	/**
+     * Sets the short description of the configuration metadata property.
+     * 
+     * @param shortDescription the short description to be set
+     */
+    public void setShortDescription(String shortDescription) {
 		this.shortDescription = shortDescription;
 	}
 
@@ -128,7 +153,12 @@ public class ConfigurationMetadataProperty implements Serializable {
 		return this.defaultValue;
 	}
 
-	public void setDefaultValue(Object defaultValue) {
+	/**
+     * Sets the default value for this configuration metadata property.
+     * 
+     * @param defaultValue the default value to be set
+     */
+    public void setDefaultValue(Object defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 
@@ -149,7 +179,12 @@ public class ConfigurationMetadataProperty implements Serializable {
 		return this.deprecation;
 	}
 
-	public void setDeprecation(Deprecation deprecation) {
+	/**
+     * Sets the deprecation information for this ConfigurationMetadataProperty.
+     * 
+     * @param deprecation the deprecation information to be set
+     */
+    public void setDeprecation(Deprecation deprecation) {
 		this.deprecation = deprecation;
 	}
 

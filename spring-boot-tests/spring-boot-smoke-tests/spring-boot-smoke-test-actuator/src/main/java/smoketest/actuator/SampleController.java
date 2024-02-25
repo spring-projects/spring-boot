@@ -32,23 +32,42 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+/**
+ * SampleController class.
+ */
 @Controller
 @Description("A controller for handling requests for hello messages")
 public class SampleController {
 
 	private final HelloWorldService helloWorldService;
 
-	public SampleController(HelloWorldService helloWorldService) {
+	/**
+     * Constructs a new SampleController object with the specified HelloWorldService.
+     * 
+     * @param helloWorldService the HelloWorldService to be used by the SampleController
+     */
+    public SampleController(HelloWorldService helloWorldService) {
 		this.helloWorldService = helloWorldService;
 	}
 
-	@GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+	/**
+     * Retrieves a hello message.
+     * 
+     * @return A map containing a single key-value pair with the message.
+     */
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<String, String> hello() {
 		return Collections.singletonMap("message", this.helloWorldService.getHelloMessage());
 	}
 
-	@PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+	/**
+     * Handles POST requests to the root endpoint ("/") and produces JSON response.
+     * 
+     * @param message The validated message object received in the request body.
+     * @return A map containing the message value, title, and current date.
+     */
+    @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<String, Object> olleh(@Validated Message message) {
 		Map<String, Object> model = new LinkedHashMap<>();
@@ -58,22 +77,41 @@ public class SampleController {
 		return model;
 	}
 
-	@RequestMapping("/foo")
+	/**
+     * Handles the request mapping for "/foo" endpoint.
+     * 
+     * @return the response body as a String
+     * @throws IllegalArgumentException if there is a server error
+     */
+    @RequestMapping("/foo")
 	@ResponseBody
 	public String foo() {
 		throw new IllegalArgumentException("Server error");
 	}
 
-	protected static class Message {
+	/**
+     * Message class.
+     */
+    protected static class Message {
 
 		@NotBlank(message = "Message value cannot be empty")
 		private String value;
 
-		public String getValue() {
+		/**
+         * Returns the value of the Message object.
+         *
+         * @return the value of the Message object
+         */
+        public String getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		/**
+         * Sets the value of the message.
+         * 
+         * @param value the new value of the message
+         */
+        public void setValue(String value) {
 			this.value = value;
 		}
 

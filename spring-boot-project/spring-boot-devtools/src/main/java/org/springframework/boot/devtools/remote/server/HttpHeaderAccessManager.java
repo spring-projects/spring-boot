@@ -32,14 +32,27 @@ public class HttpHeaderAccessManager implements AccessManager {
 
 	private final String expectedSecret;
 
-	public HttpHeaderAccessManager(String headerName, String expectedSecret) {
+	/**
+     * Constructs a new HttpHeaderAccessManager with the specified header name and expected secret.
+     * 
+     * @param headerName the name of the header to be checked
+     * @param expectedSecret the expected secret value for the header
+     * @throws IllegalArgumentException if the headerName or expectedSecret is empty
+     */
+    public HttpHeaderAccessManager(String headerName, String expectedSecret) {
 		Assert.hasLength(headerName, "HeaderName must not be empty");
 		Assert.hasLength(expectedSecret, "ExpectedSecret must not be empty");
 		this.headerName = headerName;
 		this.expectedSecret = expectedSecret;
 	}
 
-	@Override
+	/**
+     * Checks if the provided secret in the request header matches the expected secret.
+     * 
+     * @param request the server HTTP request
+     * @return true if the provided secret matches the expected secret, false otherwise
+     */
+    @Override
 	public boolean isAllowed(ServerHttpRequest request) {
 		String providedSecret = request.getHeaders().getFirst(this.headerName);
 		return this.expectedSecret.equals(providedSecret);

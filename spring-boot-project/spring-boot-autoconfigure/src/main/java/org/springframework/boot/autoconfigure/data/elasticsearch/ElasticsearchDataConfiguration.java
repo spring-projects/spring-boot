@@ -50,16 +50,34 @@ import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMa
  */
 abstract class ElasticsearchDataConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * BaseConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
-		@Bean
+		/**
+         * Creates and returns an instance of ElasticsearchCustomConversions if no other bean of the same type is present.
+         * 
+         * @return the ElasticsearchCustomConversions instance
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		ElasticsearchCustomConversions elasticsearchCustomConversions() {
 			return new ElasticsearchCustomConversions(Collections.emptyList());
 		}
 
-		@Bean
+		/**
+         * Creates a SimpleElasticsearchMappingContext bean if no other bean of the same type is present in the application context.
+         * This method scans the application context for classes annotated with @Document and sets them as the initial entity set for the mapping context.
+         * It also sets the simple type holder from the provided ElasticsearchCustomConversions bean.
+         * 
+         * @param applicationContext The application context used for scanning classes.
+         * @param elasticsearchCustomConversions The ElasticsearchCustomConversions bean used for setting the simple type holder.
+         * @return The created SimpleElasticsearchMappingContext bean.
+         * @throws ClassNotFoundException If a class cannot be found during scanning.
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		SimpleElasticsearchMappingContext elasticsearchMappingContext(ApplicationContext applicationContext,
 				ElasticsearchCustomConversions elasticsearchCustomConversions) throws ClassNotFoundException {
@@ -69,7 +87,14 @@ abstract class ElasticsearchDataConfiguration {
 			return mappingContext;
 		}
 
-		@Bean
+		/**
+         * Returns an ElasticsearchConverter bean if no other bean of the same type is present.
+         * 
+         * @param mappingContext The SimpleElasticsearchMappingContext used by the ElasticsearchConverter.
+         * @param elasticsearchCustomConversions The ElasticsearchCustomConversions used by the ElasticsearchConverter.
+         * @return The ElasticsearchConverter bean.
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		ElasticsearchConverter elasticsearchConverter(SimpleElasticsearchMappingContext mappingContext,
 				ElasticsearchCustomConversions elasticsearchCustomConversions) {
@@ -80,11 +105,22 @@ abstract class ElasticsearchDataConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * JavaClientConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ElasticsearchClient.class)
 	static class JavaClientConfiguration {
 
-		@Bean
+		/**
+         * Creates an ElasticsearchTemplate bean if there is no existing bean of type ElasticsearchOperations with the name "elasticsearchTemplate".
+         * This method is conditionally executed only if there is a bean of type ElasticsearchClient.
+         * 
+         * @param client the ElasticsearchClient instance to be used by the ElasticsearchTemplate
+         * @param converter the ElasticsearchConverter instance to be used by the ElasticsearchTemplate
+         * @return the ElasticsearchTemplate bean
+         */
+        @Bean
 		@ConditionalOnMissingBean(value = ElasticsearchOperations.class, name = "elasticsearchTemplate")
 		@ConditionalOnBean(ElasticsearchClient.class)
 		ElasticsearchTemplate elasticsearchTemplate(ElasticsearchClient client, ElasticsearchConverter converter) {
@@ -93,10 +129,21 @@ abstract class ElasticsearchDataConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ReactiveRestClientConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	static class ReactiveRestClientConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of ReactiveElasticsearchTemplate if no other bean of type ReactiveElasticsearchOperations
+         * with the name "reactiveElasticsearchTemplate" is present and if a bean of type ReactiveElasticsearchClient is present.
+         * 
+         * @param client the ReactiveElasticsearchClient to be used by the ReactiveElasticsearchTemplate
+         * @param converter the ElasticsearchConverter to be used by the ReactiveElasticsearchTemplate
+         * @return a new instance of ReactiveElasticsearchTemplate
+         */
+        @Bean
 		@ConditionalOnMissingBean(value = ReactiveElasticsearchOperations.class, name = "reactiveElasticsearchTemplate")
 		@ConditionalOnBean(ReactiveElasticsearchClient.class)
 		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate(ReactiveElasticsearchClient client,

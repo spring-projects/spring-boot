@@ -53,35 +53,70 @@ public class WebEndpointProperties {
 
 	private final Discovery discovery = new Discovery();
 
-	public Exposure getExposure() {
+	/**
+     * Returns the exposure of the WebEndpointProperties.
+     *
+     * @return the exposure of the WebEndpointProperties
+     */
+    public Exposure getExposure() {
 		return this.exposure;
 	}
 
-	public String getBasePath() {
+	/**
+     * Returns the base path of the web endpoint.
+     *
+     * @return the base path of the web endpoint
+     */
+    public String getBasePath() {
 		return this.basePath;
 	}
 
-	public void setBasePath(String basePath) {
+	/**
+     * Sets the base path for the web endpoint.
+     * 
+     * @param basePath the base path to be set
+     * @throws IllegalArgumentException if the base path does not start with '/' or is not empty
+     */
+    public void setBasePath(String basePath) {
 		Assert.isTrue(basePath.isEmpty() || basePath.startsWith("/"), "Base path must start with '/' or be empty");
 		this.basePath = cleanBasePath(basePath);
 	}
 
-	private String cleanBasePath(String basePath) {
+	/**
+     * Cleans the base path by removing the trailing slash if present.
+     * 
+     * @param basePath the base path to be cleaned
+     * @return the cleaned base path
+     */
+    private String cleanBasePath(String basePath) {
 		if (StringUtils.hasText(basePath) && basePath.endsWith("/")) {
 			return basePath.substring(0, basePath.length() - 1);
 		}
 		return basePath;
 	}
 
-	public Map<String, String> getPathMapping() {
+	/**
+     * Returns the path mapping for the web endpoint.
+     * 
+     * @return the path mapping as a Map of String keys and String values
+     */
+    public Map<String, String> getPathMapping() {
 		return this.pathMapping;
 	}
 
-	public Discovery getDiscovery() {
+	/**
+     * Returns the Discovery object associated with this WebEndpointProperties instance.
+     *
+     * @return the Discovery object
+     */
+    public Discovery getDiscovery() {
 		return this.discovery;
 	}
 
-	public static class Exposure {
+	/**
+     * Exposure class.
+     */
+    public static class Exposure {
 
 		/**
 		 * Endpoint IDs that should be included or '*' for all.
@@ -93,36 +128,69 @@ public class WebEndpointProperties {
 		 */
 		private Set<String> exclude = new LinkedHashSet<>();
 
-		public Set<String> getInclude() {
+		/**
+         * Returns the set of strings representing the include values.
+         *
+         * @return the set of strings representing the include values
+         */
+        public Set<String> getInclude() {
 			return this.include;
 		}
 
-		public void setInclude(Set<String> include) {
+		/**
+         * Sets the include set.
+         * 
+         * @param include the set of strings to be included
+         */
+        public void setInclude(Set<String> include) {
 			this.include = include;
 		}
 
-		public Set<String> getExclude() {
+		/**
+         * Returns the set of excluded strings.
+         *
+         * @return the set of excluded strings
+         */
+        public Set<String> getExclude() {
 			return this.exclude;
 		}
 
-		public void setExclude(Set<String> exclude) {
+		/**
+         * Sets the set of strings to exclude.
+         * 
+         * @param exclude the set of strings to exclude
+         */
+        public void setExclude(Set<String> exclude) {
 			this.exclude = exclude;
 		}
 
 	}
 
-	public static class Discovery {
+	/**
+     * Discovery class.
+     */
+    public static class Discovery {
 
 		/**
 		 * Whether the discovery page is enabled.
 		 */
 		private boolean enabled = true;
 
-		public boolean isEnabled() {
+		/**
+         * Returns the current status of the enabled flag.
+         *
+         * @return true if the enabled flag is set to true, false otherwise.
+         */
+        public boolean isEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(boolean enabled) {
+		/**
+         * Sets the enabled status of the Discovery.
+         * 
+         * @param enabled the enabled status to be set
+         */
+        public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 

@@ -37,12 +37,23 @@ public class DockerComposeServicesReadyEvent extends ApplicationEvent {
 
 	private final List<RunningService> runningServices;
 
-	DockerComposeServicesReadyEvent(ApplicationContext source, List<RunningService> runningServices) {
+	/**
+     * Constructs a new DockerComposeServicesReadyEvent with the specified application context and list of running services.
+     *
+     * @param source the application context that published the event
+     * @param runningServices the list of running services
+     */
+    DockerComposeServicesReadyEvent(ApplicationContext source, List<RunningService> runningServices) {
 		super(source);
 		this.runningServices = runningServices;
 	}
 
-	@Override
+	/**
+     * Returns the source of the event, which is the ApplicationContext.
+     * 
+     * @return the ApplicationContext that is the source of the event
+     */
+    @Override
 	public ApplicationContext getSource() {
 		return (ApplicationContext) super.getSource();
 	}

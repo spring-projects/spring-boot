@@ -22,10 +22,18 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCusto
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyMeterRegistryConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyMeterRegistryConfiguration {
 
-	@Bean
+	/**
+     * Configures common tags for the MeterRegistry.
+     * 
+     * @return The MeterRegistryCustomizer that sets the common tags for the MeterRegistry.
+     */
+    @Bean
 	public MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
 		return (registry) -> registry.config().commonTags("region", "us-east-1");
 	}

@@ -26,7 +26,10 @@ import org.springframework.boot.actuate.endpoint.annotation.DiscovererEndpointFi
  */
 class ServletEndpointFilter extends DiscovererEndpointFilter {
 
-	ServletEndpointFilter() {
+	/**
+     * Constructs a new ServletEndpointFilter with the default ServletEndpointDiscoverer.
+     */
+    ServletEndpointFilter() {
 		super(ServletEndpointDiscoverer.class);
 	}
 

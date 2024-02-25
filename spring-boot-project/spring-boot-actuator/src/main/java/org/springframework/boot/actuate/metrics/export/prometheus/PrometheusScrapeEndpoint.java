@@ -48,11 +48,24 @@ public class PrometheusScrapeEndpoint {
 
 	private volatile int nextMetricsScrapeSize = 16;
 
-	public PrometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
+	/**
+     * Constructor for PrometheusScrapeEndpoint class.
+     * 
+     * @param collectorRegistry the CollectorRegistry object to be used for scraping metrics
+     */
+    public PrometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
 		this.collectorRegistry = collectorRegistry;
 	}
 
-	@ReadOperation(producesFrom = TextOutputFormat.class)
+	/**
+     * Scrapes the metrics from the collector registry and writes them in the specified format.
+     * 
+     * @param format The output format to use for writing the metrics.
+     * @param includedNames The set of metric names to include in the scrape. If null, all metrics will be included.
+     * @return A WebEndpointResponse containing the scraped metrics in the specified format.
+     * @throws IllegalStateException if writing the metrics fails.
+     */
+    @ReadOperation(producesFrom = TextOutputFormat.class)
 	public WebEndpointResponse<String> scrape(TextOutputFormat format, @Nullable Set<String> includedNames) {
 		try {
 			Writer writer = new StringWriter(this.nextMetricsScrapeSize);

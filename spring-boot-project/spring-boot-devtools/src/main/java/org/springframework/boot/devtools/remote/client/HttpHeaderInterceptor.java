@@ -50,7 +50,16 @@ public class HttpHeaderInterceptor implements ClientHttpRequestInterceptor {
 		this.value = value;
 	}
 
-	@Override
+	/**
+     * Intercepts the HTTP request and adds a header with the specified name and value.
+     * 
+     * @param request The HTTP request to be intercepted.
+     * @param body The body of the HTTP request.
+     * @param execution The execution of the HTTP request.
+     * @return The HTTP response from executing the intercepted request.
+     * @throws IOException If an I/O error occurs while executing the request.
+     */
+    @Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 			throws IOException {
 		request.getHeaders().add(this.name, this.value);

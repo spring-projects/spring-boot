@@ -19,9 +19,19 @@ package org.springframework.boot.docs.features.springapplication.fluentbuilderap
 import org.springframework.boot.Banner;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+/**
+ * MyApplication class.
+ */
 public class MyApplication {
 
-	public void hierarchyWithDisabledBanner(String[] args) {
+	/**
+     * This method creates a hierarchy with a disabled banner.
+     * It uses the SpringApplicationBuilder to configure the parent and child classes,
+     * sets the banner mode to OFF, and runs the application with the provided arguments.
+     * 
+     * @param args the command line arguments
+     */
+    public void hierarchyWithDisabledBanner(String[] args) {
 		// tag::code[]
 		new SpringApplicationBuilder().sources(Parent.class)
 			.child(Application.class)
@@ -30,11 +40,17 @@ public class MyApplication {
 		// end::code[]
 	}
 
-	static class Parent {
+	/**
+     * Parent class.
+     */
+    static class Parent {
 
 	}
 
-	static class Application {
+	/**
+     * Application class.
+     */
+    static class Application {
 
 	}
 

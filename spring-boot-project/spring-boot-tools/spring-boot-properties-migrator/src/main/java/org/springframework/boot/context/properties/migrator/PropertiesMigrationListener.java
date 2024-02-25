@@ -48,7 +48,15 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 
 	private boolean reported;
 
-	@Override
+	/**
+     * This method is called when an application event is triggered.
+     * It checks the type of the event and performs specific actions accordingly.
+     * If the event is an instance of ApplicationPreparedEvent, it calls the onApplicationPreparedEvent method.
+     * If the event is an instance of ApplicationReadyEvent or ApplicationFailedEvent, it logs a legacy properties report.
+     *
+     * @param event the application event that is triggered
+     */
+    @Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
 		if (event instanceof ApplicationPreparedEvent preparedEvent) {
 			onApplicationPreparedEvent(preparedEvent);
@@ -58,14 +66,28 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 		}
 	}
 
-	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
+	/**
+     * This method is called when the application is prepared.
+     * It loads the configuration metadata repository and creates a PropertiesMigrationReporter object.
+     * The reporter is used to generate a report of properties migration.
+     * 
+     * @param event The ApplicationPreparedEvent object representing the event.
+     *              It contains the application context and environment information.
+     */
+    private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
 		ConfigurationMetadataRepository repository = loadRepository();
 		PropertiesMigrationReporter reporter = new PropertiesMigrationReporter(repository,
 				event.getApplicationContext().getEnvironment());
 		this.report = reporter.getReport();
 	}
 
-	private ConfigurationMetadataRepository loadRepository() {
+	/**
+     * Loads the configuration metadata repository.
+     * 
+     * @return the loaded configuration metadata repository
+     * @throws IllegalStateException if failed to load metadata
+     */
+    private ConfigurationMetadataRepository loadRepository() {
 		try {
 			return loadRepository(ConfigurationMetadataRepositoryJsonBuilder.create());
 		}
@@ -74,7 +96,14 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 		}
 	}
 
-	private ConfigurationMetadataRepository loadRepository(ConfigurationMetadataRepositoryJsonBuilder builder)
+	/**
+     * Loads the configuration metadata repository using the provided builder.
+     * 
+     * @param builder the ConfigurationMetadataRepositoryJsonBuilder used to build the repository
+     * @return the loaded ConfigurationMetadataRepository
+     * @throws IOException if an I/O error occurs while loading the repository
+     */
+    private ConfigurationMetadataRepository loadRepository(ConfigurationMetadataRepositoryJsonBuilder builder)
 			throws IOException {
 		Resource[] resources = new PathMatchingResourcePatternResolver()
 			.getResources("classpath*:/META-INF/spring-configuration-metadata.json");
@@ -86,7 +115,15 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 		return builder.build();
 	}
 
-	private void logLegacyPropertiesReport() {
+	/**
+     * Logs the legacy properties report.
+     * 
+     * This method logs the warning and error reports from the legacy properties report.
+     * If the report is null or has already been reported, the method returns without doing anything.
+     * 
+     * @see PropertiesMigrationListener
+     */
+    private void logLegacyPropertiesReport() {
 		if (this.report == null || this.reported) {
 			return;
 		}

@@ -23,10 +23,22 @@ package org.springframework.boot.loader.jar;
  */
 final class Bytes {
 
-	private Bytes() {
+	/**
+     * This is a private constructor for the Bytes class.
+     * It is used to prevent the instantiation of the class.
+     */
+    private Bytes() {
 	}
 
-	static long littleEndianValue(byte[] bytes, int offset, int length) {
+	/**
+     * Converts a byte array to a little-endian long value.
+     * 
+     * @param bytes   the byte array to convert
+     * @param offset  the starting index in the byte array
+     * @param length  the number of bytes to consider
+     * @return        the little-endian long value
+     */
+    static long littleEndianValue(byte[] bytes, int offset, int length) {
 		long value = 0;
 		for (int i = length - 1; i >= 0; i--) {
 			value = ((value << 8) | (bytes[offset + i] & 0xFF));

@@ -70,51 +70,116 @@ final class Regex implements CharSequence {
 
 	private final String value;
 
-	private Regex(CharSequence value) {
+	/**
+     * Constructs a new Regex object with the specified value.
+     * 
+     * @param value the character sequence to be used as the value for the Regex object
+     */
+    private Regex(CharSequence value) {
 		this.value = value.toString();
 	}
 
-	private Regex oneOrMoreTimes() {
+	/**
+     * Returns a new Regex object that matches one or more occurrences of the current regex pattern.
+     *
+     * @return a new Regex object that matches one or more occurrences of the current regex pattern
+     */
+    private Regex oneOrMoreTimes() {
 		return new Regex(this.value + "+");
 	}
 
-	private Regex zeroOrOnce() {
+	/**
+     * Returns a new Regex object that matches zero or one occurrence of the current regex pattern.
+     * 
+     * @return a new Regex object that matches zero or one occurrence of the current regex pattern
+     */
+    private Regex zeroOrOnce() {
 		return new Regex(this.value + "?");
 	}
 
-	Pattern compile() {
+	/**
+     * Compiles the regular expression pattern with the given value.
+     * 
+     * @return the compiled Pattern object
+     */
+    Pattern compile() {
 		return Pattern.compile("^" + this.value + "$");
 	}
 
-	@Override
+	/**
+     * Returns the length of the value in the Regex class.
+     *
+     * @return the length of the value
+     */
+    @Override
 	public int length() {
 		return this.value.length();
 	}
 
-	@Override
+	/**
+     * Returns the character at the specified index in the string value.
+     *
+     * @param index the index of the character to be returned
+     * @return the character at the specified index
+     * @throws IndexOutOfBoundsException if the index is out of range (index < 0 || index >= length())
+     */
+    @Override
 	public char charAt(int index) {
 		return this.value.charAt(index);
 	}
 
-	@Override
+	/**
+     * Returns a new CharSequence that is a subsequence of this sequence.
+     *
+     * @param start the starting index, inclusive
+     * @param end the ending index, exclusive
+     * @return the specified subsequence
+     * @throws IndexOutOfBoundsException if {@code start} or {@code end} are negative,
+     *         if {@code end} is greater than {@code start}, or if {@code end} is greater
+     *         than the length of this sequence
+     */
+    @Override
 	public CharSequence subSequence(int start, int end) {
 		return this.value.subSequence(start, end);
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the object.
+     *
+     * @return the string representation of the object
+     */
+    @Override
 	public String toString() {
 		return this.value;
 	}
 
-	private static Regex of(CharSequence... expressions) {
+	/**
+     * Creates a regular expression pattern from the given character sequences.
+     * 
+     * @param expressions the character sequences to be combined into a regular expression pattern
+     * @return a regular expression pattern created from the given character sequences
+     */
+    private static Regex of(CharSequence... expressions) {
 		return new Regex(String.join("", expressions));
 	}
 
-	private static Regex oneOf(CharSequence... expressions) {
+	/**
+     * Creates a regular expression pattern that matches any of the given expressions.
+     * 
+     * @param expressions the expressions to match
+     * @return a regular expression pattern that matches any of the given expressions
+     */
+    private static Regex oneOf(CharSequence... expressions) {
 		return new Regex("(?:" + String.join("|", expressions) + ")");
 	}
 
-	private static Regex group(CharSequence... expressions) {
+	/**
+     * Creates a regular expression group using the provided expressions.
+     *
+     * @param expressions the expressions to be grouped
+     * @return a regular expression group
+     */
+    private static Regex group(CharSequence... expressions) {
 		return new Regex("(?:" + String.join("", expressions) + ")");
 	}
 

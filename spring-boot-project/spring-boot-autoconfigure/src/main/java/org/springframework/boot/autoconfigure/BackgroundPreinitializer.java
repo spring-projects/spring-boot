@@ -70,12 +70,27 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	private static final boolean ENABLED = !Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
 			&& Runtime.getRuntime().availableProcessors() > 1;
 
-	@Override
+	/**
+     * Returns the order of the method in the execution sequence.
+     * 
+     * @return the order of the method
+     */
+    @Override
 	public int getOrder() {
 		return LoggingApplicationListener.DEFAULT_ORDER + 1;
 	}
 
-	@Override
+	/**
+     * This method is called when an application event is triggered.
+     * It performs preinitialization if the application is enabled and not running in a native image.
+     * If the event is an ApplicationEnvironmentPreparedEvent and preinitialization has not started yet,
+     * it calls the performPreinitialization() method.
+     * If the event is an ApplicationReadyEvent or ApplicationFailedEvent and preinitialization has started,
+     * it waits for the preinitialization to complete.
+     * 
+     * @param event the application event that triggered this method
+     */
+    @Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
 		if (!ENABLED || NativeDetector.inNativeImage()) {
 			return;
@@ -95,7 +110,16 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 		}
 	}
 
-	private void performPreinitialization() {
+	/**
+     * Performs preinitialization tasks in a separate background thread.
+     * 
+     * This method creates a new thread and runs a series of preinitialization tasks in that thread. The tasks include initializing conversion service, validation, message converter, Jackson, charset, Tomcat, and JDK. If any of the tasks fail, the method continues to run the remaining tasks. The completion of preinitialization is signaled by a countdown latch.
+     * 
+     * If creating a new thread fails, such as in the case of Google App Engine where thread creation is prohibited, the preinitialization tasks are run on the main thread, resulting in slightly slower startup.
+     * 
+     * @throws Exception if an exception occurs while creating the background thread
+     */
+    private void performPreinitialization() {
 		try {
 			Thread thread = new Thread(new Runnable() {
 
@@ -141,7 +165,11 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	 */
 	private static final class MessageConverterInitializer implements Runnable {
 
-		@Override
+		/**
+         * This method is the entry point for running the MessageConverterInitializer class.
+         * It creates a new instance of the AllEncompassingFormHttpMessageConverter class.
+         */
+        @Override
 		public void run() {
 			new AllEncompassingFormHttpMessageConverter();
 		}
@@ -153,7 +181,11 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	 */
 	private static final class ValidationInitializer implements Runnable {
 
-		@Override
+		/**
+         * This method is used to run the validation process.
+         * It configures the default provider and builds the validator factory.
+         */
+        @Override
 		public void run() {
 			Configuration<?> configuration = Validation.byDefaultProvider().configure();
 			configuration.buildValidatorFactory().getValidator();
@@ -166,7 +198,13 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	 */
 	private static final class JacksonInitializer implements Runnable {
 
-		@Override
+		/**
+         * This method is used to initialize the Jackson ObjectMapper with JSON configuration.
+         * It uses the Jackson2ObjectMapperBuilder to build the ObjectMapper with JSON format.
+         * 
+         * @return void
+         */
+        @Override
 		public void run() {
 			Jackson2ObjectMapperBuilder.json().build();
 		}
@@ -178,25 +216,47 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	 */
 	private static final class ConversionServiceInitializer implements Runnable {
 
-		@Override
+		/**
+         * This method is the entry point for the program and is responsible for initializing the ConversionService.
+         * It creates a new instance of DefaultFormattingConversionService and sets it as the default ConversionService.
+         */
+        @Override
 		public void run() {
 			new DefaultFormattingConversionService();
 		}
 
 	}
 
-	private static final class CharsetInitializer implements Runnable {
+	/**
+     * CharsetInitializer class.
+     */
+    private static final class CharsetInitializer implements Runnable {
 
-		@Override
+		/**
+         * This method is the implementation of the run() method from the Runnable interface.
+         * It retrieves the name of the UTF-8 character set using the StandardCharsets class.
+         */
+        @Override
 		public void run() {
 			StandardCharsets.UTF_8.name();
 		}
 
 	}
 
-	private static final class TomcatInitializer implements Runnable {
+	/**
+     * TomcatInitializer class.
+     */
+    private static final class TomcatInitializer implements Runnable {
 
-		@Override
+		/**
+         * This method is the entry point for the TomcatInitializer class. It is responsible for initializing the necessary components for the Tomcat server.
+         * 
+         * The method creates a new instance of the Rfc6265CookieProcessor class and the NonLoginAuthenticator class. These components are essential for handling cookies and authentication in the Tomcat server.
+         * 
+         * @see Rfc6265CookieProcessor
+         * @see NonLoginAuthenticator
+         */
+        @Override
 		public void run() {
 			new Rfc6265CookieProcessor();
 			new NonLoginAuthenticator();
@@ -204,9 +264,16 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 
 	}
 
-	private static final class JdkInitializer implements Runnable {
+	/**
+     * JdkInitializer class.
+     */
+    private static final class JdkInitializer implements Runnable {
 
-		@Override
+		/**
+         * This method is used to run the JdkInitializer class.
+         * It sets the system default time zone to the current system's default time zone.
+         */
+        @Override
 		public void run() {
 			ZoneId.systemDefault();
 		}

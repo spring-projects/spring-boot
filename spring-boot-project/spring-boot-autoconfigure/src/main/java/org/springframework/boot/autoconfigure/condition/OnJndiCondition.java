@@ -37,7 +37,14 @@ import org.springframework.util.StringUtils;
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
 class OnJndiCondition extends SpringBootCondition {
 
-	@Override
+	/**
+     * Determines the match outcome for the ConditionalOnJndi condition.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 			.fromMap(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()));
@@ -51,7 +58,13 @@ class OnJndiCondition extends SpringBootCondition {
 		}
 	}
 
-	private ConditionOutcome getMatchOutcome(String[] locations) {
+	/**
+     * Determines the outcome of the match for the given JNDI locations.
+     * 
+     * @param locations the array of JNDI locations to check
+     * @return the ConditionOutcome indicating the match outcome
+     */
+    private ConditionOutcome getMatchOutcome(String[] locations) {
 		if (!isJndiAvailable()) {
 			return ConditionOutcome
 				.noMatch(ConditionMessage.forCondition(ConditionalOnJndi.class).notAvailable("JNDI environment"));
@@ -72,23 +85,47 @@ class OnJndiCondition extends SpringBootCondition {
 			.atAll());
 	}
 
-	protected boolean isJndiAvailable() {
+	/**
+     * Checks if the default JNDI environment is available.
+     * 
+     * @return true if the default JNDI environment is available, false otherwise.
+     */
+    protected boolean isJndiAvailable() {
 		return JndiLocatorDelegate.isDefaultJndiEnvironmentAvailable();
 	}
 
-	protected JndiLocator getJndiLocator(String[] locations) {
+	/**
+     * Returns a new instance of JndiLocator with the specified locations.
+     * 
+     * @param locations an array of String representing the JNDI locations
+     * @return a JndiLocator object
+     */
+    protected JndiLocator getJndiLocator(String[] locations) {
 		return new JndiLocator(locations);
 	}
 
-	protected static class JndiLocator extends JndiLocatorSupport {
+	/**
+     * JndiLocator class.
+     */
+    protected static class JndiLocator extends JndiLocatorSupport {
 
 		private final String[] locations;
 
-		public JndiLocator(String[] locations) {
+		/**
+         * Constructs a new JndiLocator with the specified array of locations.
+         *
+         * @param locations the array of locations to be used by the JndiLocator
+         */
+        public JndiLocator(String[] locations) {
 			this.locations = locations;
 		}
 
-		public String lookupFirstLocation() {
+		/**
+         * Looks up the first location in the list of locations.
+         * 
+         * @return The first location found, or null if no location is found.
+         */
+        public String lookupFirstLocation() {
 			for (String location : this.locations) {
 				try {
 					lookup(location);

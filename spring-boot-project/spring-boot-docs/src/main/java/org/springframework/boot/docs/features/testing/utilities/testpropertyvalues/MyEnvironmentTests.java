@@ -23,9 +23,15 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * MyEnvironmentTests class.
+ */
 class MyEnvironmentTests {
 
-	@Test
+	/**
+     * Test method to verify the functionality of property sources in the environment.
+     */
+    @Test
 	void testPropertySources() {
 		MockEnvironment environment = new MockEnvironment();
 		TestPropertyValues.of("org=Spring", "name=Boot").applyTo(environment);

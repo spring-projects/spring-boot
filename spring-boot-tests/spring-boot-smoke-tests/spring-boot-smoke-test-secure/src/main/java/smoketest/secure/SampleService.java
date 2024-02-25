@@ -20,20 +20,39 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+/**
+ * SampleService class.
+ */
 @Service
 public class SampleService {
 
-	@Secured("ROLE_USER")
+	/**
+     * This method is secured and can only be accessed by users with the "ROLE_USER" role.
+     * It returns a string "Hello Security".
+     *
+     * @return the string "Hello Security"
+     */
+    @Secured("ROLE_USER")
 	public String secure() {
 		return "Hello Security";
 	}
 
-	@PreAuthorize("true")
+	/**
+     * This method is authorized to be accessed by any user.
+     * 
+     * @return The string "Hello World"
+     */
+    @PreAuthorize("true")
 	public String authorized() {
 		return "Hello World";
 	}
 
-	@PreAuthorize("false")
+	/**
+     * This method is used to deny access and return a goodbye message.
+     * 
+     * @return A string representing the goodbye message.
+     */
+    @PreAuthorize("false")
 	public String denied() {
 		return "Goodbye World";
 	}

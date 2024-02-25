@@ -21,7 +21,13 @@ package org.test;
  */
 public class SampleApplication {
 
-	public static void main(String[] args) throws Exception {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args the command line arguments
+     * @throws Exception if an error occurs during execution
+     */
+    public static void main(String[] args) throws Exception {
 		System.out.println("Ooops, I haz been run");
 	}
 

@@ -54,11 +54,22 @@ import org.springframework.context.annotation.Condition;
  */
 public abstract class AllNestedConditions extends AbstractNestedCondition {
 
-	public AllNestedConditions(ConfigurationPhase configurationPhase) {
+	/**
+     * Constructs a new AllNestedConditions object with the specified configuration phase.
+     * 
+     * @param configurationPhase the configuration phase to be used
+     */
+    public AllNestedConditions(ConfigurationPhase configurationPhase) {
 		super(configurationPhase);
 	}
 
-	@Override
+	/**
+     * Returns the final match outcome based on the member match outcomes.
+     * 
+     * @param memberOutcomes the member match outcomes
+     * @return the final match outcome
+     */
+    @Override
 	protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 		boolean match = hasSameSize(memberOutcomes.getMatches(), memberOutcomes.getAll());
 		List<ConditionMessage> messages = new ArrayList<>();
@@ -71,7 +82,14 @@ public abstract class AllNestedConditions extends AbstractNestedCondition {
 		return new ConditionOutcome(match, ConditionMessage.of(messages));
 	}
 
-	private boolean hasSameSize(List<?> list1, List<?> list2) {
+	/**
+     * Checks if two lists have the same size.
+     * 
+     * @param list1 the first list to compare
+     * @param list2 the second list to compare
+     * @return true if the lists have the same size, false otherwise
+     */
+    private boolean hasSameSize(List<?> list1, List<?> list2) {
 		return list1.size() == list2.size();
 	}
 

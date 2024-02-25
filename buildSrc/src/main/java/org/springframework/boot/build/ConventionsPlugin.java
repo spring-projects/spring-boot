@@ -41,7 +41,14 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  */
 public class ConventionsPlugin implements Plugin<Project> {
 
-	@Override
+	/**
+     * Applies various conventions to the given project.
+     * This includes applying Java conventions, Maven publishing conventions,
+     * Asciidoctor conventions, Kotlin conventions, War conventions, and Eclipse conventions.
+     *
+     * @param project the project to apply the conventions to
+     */
+    @Override
 	public void apply(Project project) {
 		new JavaConventions().apply(project);
 		new MavenPublishingConventions().apply(project);

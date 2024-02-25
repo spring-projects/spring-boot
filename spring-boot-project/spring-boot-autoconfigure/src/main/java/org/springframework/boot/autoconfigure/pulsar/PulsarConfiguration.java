@@ -66,18 +66,35 @@ class PulsarConfiguration {
 
 	private final PulsarPropertiesMapper propertiesMapper;
 
-	PulsarConfiguration(PulsarProperties properties) {
+	/**
+     * Constructs a new PulsarConfiguration object with the provided PulsarProperties.
+     * 
+     * @param properties the PulsarProperties object containing the configuration properties for Pulsar
+     */
+    PulsarConfiguration(PulsarProperties properties) {
 		this.properties = properties;
 		this.propertiesMapper = new PulsarPropertiesMapper(properties);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link PropertiesPulsarConnectionDetails} if no bean of type {@link PulsarConnectionDetails} is present.
+     * 
+     * @return the {@link PropertiesPulsarConnectionDetails} instance
+     */
+    @Bean
 	@ConditionalOnMissingBean(PulsarConnectionDetails.class)
 	PropertiesPulsarConnectionDetails pulsarConnectionDetails() {
 		return new PropertiesPulsarConnectionDetails(this.properties);
 	}
 
-	@Bean
+	/**
+     * Creates a DefaultPulsarClientFactory bean if no other bean of type PulsarClientFactory is present.
+     * 
+     * @param connectionDetails the PulsarConnectionDetails object containing the connection details for the Pulsar client
+     * @param customizersProvider the ObjectProvider for PulsarClientBuilderCustomizer objects
+     * @return the DefaultPulsarClientFactory bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(PulsarClientFactory.class)
 	DefaultPulsarClientFactory pulsarClientFactory(PulsarConnectionDetails connectionDetails,
 			ObjectProvider<PulsarClientBuilderCustomizer> customizersProvider) {
@@ -89,18 +106,38 @@ class PulsarConfiguration {
 		return clientFactory;
 	}
 
-	private void applyClientBuilderCustomizers(List<PulsarClientBuilderCustomizer> customizers,
+	/**
+     * Applies the provided list of {@link PulsarClientBuilderCustomizer} to customize the {@link ClientBuilder}.
+     * 
+     * @param customizers the list of {@link PulsarClientBuilderCustomizer} to apply
+     * @param clientBuilder the {@link ClientBuilder} to be customized
+     */
+    private void applyClientBuilderCustomizers(List<PulsarClientBuilderCustomizer> customizers,
 			ClientBuilder clientBuilder) {
 		customizers.forEach((customizer) -> customizer.customize(clientBuilder));
 	}
 
-	@Bean
+	/**
+     * Creates a Pulsar client using the provided client factory.
+     * 
+     * @param clientFactory the Pulsar client factory used to create the client
+     * @return the Pulsar client
+     * @throws PulsarClientException if an error occurs while creating the client
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	PulsarClient pulsarClient(PulsarClientFactory clientFactory) throws PulsarClientException {
 		return clientFactory.createClient();
 	}
 
-	@Bean
+	/**
+     * Creates a PulsarAdministration bean if no other bean of the same type is present.
+     * 
+     * @param connectionDetails the PulsarConnectionDetails object containing the connection details for Pulsar
+     * @param pulsarAdminBuilderCustomizers the ObjectProvider for PulsarAdminBuilderCustomizer objects
+     * @return a PulsarAdministration object
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	PulsarAdministration pulsarAdministration(PulsarConnectionDetails connectionDetails,
 			ObjectProvider<PulsarAdminBuilderCustomizer> pulsarAdminBuilderCustomizers) {
@@ -110,12 +147,24 @@ class PulsarConfiguration {
 		return new PulsarAdministration((adminBuilder) -> applyAdminBuilderCustomizers(allCustomizers, adminBuilder));
 	}
 
-	private void applyAdminBuilderCustomizers(List<PulsarAdminBuilderCustomizer> customizers,
+	/**
+     * Applies the provided list of {@link PulsarAdminBuilderCustomizer} to customize the {@link PulsarAdminBuilder}.
+     * 
+     * @param customizers the list of {@link PulsarAdminBuilderCustomizer} to apply
+     * @param adminBuilder the {@link PulsarAdminBuilder} to customize
+     */
+    private void applyAdminBuilderCustomizers(List<PulsarAdminBuilderCustomizer> customizers,
 			PulsarAdminBuilder adminBuilder) {
 		customizers.forEach((customizer) -> customizer.customize(adminBuilder));
 	}
 
-	@Bean
+	/**
+     * Creates a DefaultSchemaResolver bean if no other bean of type SchemaResolver is present.
+     * 
+     * @param schemaResolverCustomizers ObjectProvider of SchemaResolverCustomizer instances
+     * @return DefaultSchemaResolver bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(SchemaResolver.class)
 	DefaultSchemaResolver pulsarSchemaResolver(ObjectProvider<SchemaResolverCustomizer<?>> schemaResolverCustomizers) {
 		DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
@@ -124,13 +173,26 @@ class PulsarConfiguration {
 		return schemaResolver;
 	}
 
-	private void addCustomSchemaMappings(DefaultSchemaResolver schemaResolver, List<TypeMapping> typeMappings) {
+	/**
+     * Adds custom schema mappings to the given schema resolver.
+     * 
+     * @param schemaResolver The schema resolver to add the custom schema mappings to.
+     * @param typeMappings The list of type mappings to add.
+     */
+    private void addCustomSchemaMappings(DefaultSchemaResolver schemaResolver, List<TypeMapping> typeMappings) {
 		if (typeMappings != null) {
 			typeMappings.forEach((typeMapping) -> addCustomSchemaMapping(schemaResolver, typeMapping));
 		}
 	}
 
-	private void addCustomSchemaMapping(DefaultSchemaResolver schemaResolver, TypeMapping typeMapping) {
+	/**
+     * Adds a custom schema mapping to the given schema resolver using the provided type mapping.
+     * 
+     * @param schemaResolver The schema resolver to add the custom schema mapping to.
+     * @param typeMapping The type mapping containing the schema information.
+     * @throws IllegalArgumentException if the schema cannot be resolved.
+     */
+    private void addCustomSchemaMapping(DefaultSchemaResolver schemaResolver, TypeMapping typeMapping) {
 		SchemaInfo schemaInfo = typeMapping.schemaInfo();
 		if (schemaInfo != null) {
 			Class<?> messageType = typeMapping.messageType();
@@ -141,14 +203,25 @@ class PulsarConfiguration {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Applies the customizers to the schema resolver.
+     * 
+     * @param customizers the list of schema resolver customizers
+     * @param schemaResolver the default schema resolver
+     */
+    @SuppressWarnings("unchecked")
 	private void applySchemaResolverCustomizers(List<SchemaResolverCustomizer<?>> customizers,
 			DefaultSchemaResolver schemaResolver) {
 		LambdaSafe.callbacks(SchemaResolverCustomizer.class, customizers, schemaResolver)
 			.invoke((customizer) -> customizer.customize(schemaResolver));
 	}
 
-	@Bean
+	/**
+     * Creates a default topic resolver bean if no other bean of type TopicResolver is present.
+     * 
+     * @return the default topic resolver bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(TopicResolver.class)
 	DefaultTopicResolver pulsarTopicResolver() {
 		DefaultTopicResolver topicResolver = new DefaultTopicResolver();
@@ -159,14 +232,31 @@ class PulsarConfiguration {
 		return topicResolver;
 	}
 
-	private void addCustomTopicMapping(DefaultTopicResolver topicResolver, TypeMapping typeMapping) {
+	/**
+     * Adds a custom topic mapping to the given topic resolver.
+     * 
+     * @param topicResolver The topic resolver to add the custom topic mapping to.
+     * @param typeMapping The type mapping containing the topic name and message type.
+     */
+    private void addCustomTopicMapping(DefaultTopicResolver topicResolver, TypeMapping typeMapping) {
 		String topicName = typeMapping.topicName();
 		if (topicName != null) {
 			topicResolver.addCustomTopicMapping(typeMapping.messageType(), topicName);
 		}
 	}
 
-	@Bean
+	/**
+     * Creates and returns an instance of {@link PulsarFunctionAdministration} if no other bean of the same type is present.
+     * The creation of this bean is conditional on the property "spring.pulsar.function.enabled" being set to "true".
+     * If the property is not present, the bean will be created by default.
+     * 
+     * @param pulsarAdministration The {@link PulsarAdministration} bean used for Pulsar administration operations.
+     * @param pulsarFunctions The {@link PulsarFunction} bean provider.
+     * @param pulsarSinks The {@link PulsarSink} bean provider.
+     * @param pulsarSources The {@link PulsarSource} bean provider.
+     * @return An instance of {@link PulsarFunctionAdministration}.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "spring.pulsar.function.enabled", havingValue = "true", matchIfMissing = true)
 	PulsarFunctionAdministration pulsarFunctionAdministration(PulsarAdministration pulsarAdministration,

@@ -139,14 +139,28 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		setOrder(-100);
 	}
 
-	@Override
+	/**
+     * Callback method that is invoked after all bean properties have been set.
+     * Initializes the builder configuration for the request mapping info.
+     * 
+     * @throws Exception if an error occurs during initialization
+     */
+    @Override
 	public void afterPropertiesSet() {
 		this.builderConfig = new RequestMappingInfo.BuilderConfiguration();
 		this.builderConfig.setPatternParser(getPatternParser());
 		super.afterPropertiesSet();
 	}
 
-	@Override
+	/**
+     * Initializes the handler methods for the web endpoints.
+     * 
+     * This method iterates through each {@link ExposableWebEndpoint} and its operations,
+     * and registers the mapping for each operation using the {@link #registerMappingForOperation(ExposableWebEndpoint, WebOperation)} method.
+     * 
+     * If the {@code shouldRegisterLinksMapping} flag is set to true, it also registers the links mapping using the {@link #registerLinksMapping()} method.
+     */
+    @Override
 	protected void initHandlerMethods() {
 		for (ExposableWebEndpoint endpoint : this.endpoints) {
 			for (WebOperation operation : endpoint.getOperations()) {
@@ -158,13 +172,26 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 	}
 
-	@Override
+	/**
+     * Creates a handler method for the given handler and method.
+     * 
+     * @param handler The handler object.
+     * @param method The method object.
+     * @return The created handler method.
+     */
+    @Override
 	protected HandlerMethod createHandlerMethod(Object handler, Method method) {
 		HandlerMethod handlerMethod = super.createHandlerMethod(handler, method);
 		return new WebMvcEndpointHandlerMethod(handlerMethod.getBean(), handlerMethod.getMethod());
 	}
 
-	private void registerMappingForOperation(ExposableWebEndpoint endpoint, WebOperation operation) {
+	/**
+     * Registers a mapping for the given operation on the specified endpoint.
+     * 
+     * @param endpoint the exposable web endpoint
+     * @param operation the web operation
+     */
+    private void registerMappingForOperation(ExposableWebEndpoint endpoint, WebOperation operation) {
 		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 		String path = predicate.getPath();
 		String matchAllRemainingPathSegmentsVariable = predicate.getMatchAllRemainingPathSegmentsVariable();
@@ -174,7 +201,15 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		registerMapping(endpoint, predicate, operation, path);
 	}
 
-	protected void registerMapping(ExposableWebEndpoint endpoint, WebOperationRequestPredicate predicate,
+	/**
+     * Registers a mapping for a web endpoint.
+     * 
+     * @param endpoint the exposable web endpoint
+     * @param predicate the web operation request predicate
+     * @param operation the web operation
+     * @param path the path for the mapping
+     */
+    protected void registerMapping(ExposableWebEndpoint endpoint, WebOperationRequestPredicate predicate,
 			WebOperation operation, String path) {
 		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint, operation,
 				new ServletWebOperationAdapter(operation));
@@ -195,7 +230,14 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		return servletWebOperation;
 	}
 
-	private RequestMappingInfo createRequestMappingInfo(WebOperationRequestPredicate predicate, String path) {
+	/**
+     * Creates a RequestMappingInfo object based on the given WebOperationRequestPredicate and path.
+     * 
+     * @param predicate the WebOperationRequestPredicate object representing the request predicate
+     * @param path the path for the request mapping
+     * @return the created RequestMappingInfo object
+     */
+    private RequestMappingInfo createRequestMappingInfo(WebOperationRequestPredicate predicate, String path) {
 		String subPath = this.endpointMapping.createSubPath(path);
 		List<String> paths = new ArrayList<>();
 		paths.add(subPath);
@@ -210,7 +252,19 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			.build();
 	}
 
-	private void registerLinksMapping() {
+	/**
+     * Registers the links mapping for the endpoint.
+     * 
+     * This method creates a mapping for the links path of the endpoint and registers it with the provided links handler.
+     * The mapping is configured to handle GET requests and produce the specified media types.
+     * 
+     * @see RequestMappingInfo
+     * @see RequestMethod
+     * @see LinksHandler
+     * @see HttpServletRequest
+     * @see HttpServletResponse
+     */
+    private void registerLinksMapping() {
 		String path = this.endpointMapping.getPath();
 		String linksPath = (StringUtils.hasLength(path)) ? this.endpointMapping.createSubPath("/") : "/";
 		RequestMappingInfo mapping = RequestMappingInfo.paths(linksPath)
@@ -223,27 +277,59 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				HttpServletRequest.class, HttpServletResponse.class));
 	}
 
-	@Override
+	/**
+     * Determines if the specified handler has a CORS configuration source.
+     * 
+     * @param handler the handler object
+     * @return true if the handler has a CORS configuration source, false otherwise
+     */
+    @Override
 	protected boolean hasCorsConfigurationSource(Object handler) {
 		return this.corsConfiguration != null;
 	}
 
-	@Override
+	/**
+     * Initializes the CORS configuration for the given handler, method, and mapping.
+     * 
+     * @param handler the handler object
+     * @param method the method object
+     * @param mapping the mapping information
+     * @return the CORS configuration
+     */
+    @Override
 	protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mapping) {
 		return this.corsConfiguration;
 	}
 
-	@Override
+	/**
+     * Determines if the specified bean type is a handler.
+     * 
+     * @param beanType the class of the bean to check
+     * @return {@code true} if the bean type is a handler, {@code false} otherwise
+     */
+    @Override
 	protected boolean isHandler(Class<?> beanType) {
 		return false;
 	}
 
-	@Override
+	/**
+     * Retrieves the mapping information for a given method and handler type.
+     * 
+     * @param method the method to retrieve mapping information for
+     * @param handlerType the handler type to retrieve mapping information for
+     * @return the mapping information for the given method and handler type, or null if not found
+     */
+    @Override
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
 		return null;
 	}
 
-	@Override
+	/**
+     * Extends the list of interceptors for this endpoint handler mapping.
+     * 
+     * @param interceptors the list of interceptors to be extended
+     */
+    @Override
 	protected void extendInterceptors(List<Object> interceptors) {
 		interceptors.add(new SkipPathExtensionContentNegotiation());
 	}
@@ -303,11 +389,24 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		private final WebOperation operation;
 
-		ServletWebOperationAdapter(WebOperation operation) {
+		/**
+         * Constructs a new ServletWebOperationAdapter with the specified WebOperation.
+         * 
+         * @param operation the WebOperation to be adapted
+         */
+        ServletWebOperationAdapter(WebOperation operation) {
 			this.operation = operation;
 		}
 
-		@Override
+		/**
+         * Handles the HTTP request and returns the result.
+         * 
+         * @param request The HttpServletRequest object representing the HTTP request.
+         * @param body The request body as a Map of key-value pairs. It is optional and can be null.
+         * @return The result of handling the request.
+         * @throws InvalidEndpointBadRequestException if the endpoint request is invalid.
+         */
+        @Override
 		public Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
 			HttpHeaders headers = new ServletServerHttpRequest(request).getHeaders();
 			Map<String, Object> arguments = getArguments(request, body);
@@ -331,12 +430,24 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			}
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the Actuator web endpoint.
+         * 
+         * @return a string representation of the Actuator web endpoint
+         */
+        @Override
 		public String toString() {
 			return "Actuator web endpoint '" + this.operation.getId() + "'";
 		}
 
-		private Map<String, Object> getArguments(HttpServletRequest request, Map<String, String> body) {
+		/**
+         * Retrieves the arguments from the HttpServletRequest and the request body.
+         * 
+         * @param request The HttpServletRequest object containing the request information.
+         * @param body The request body as a Map of key-value pairs.
+         * @return A Map of arguments extracted from the HttpServletRequest and the request body.
+         */
+        private Map<String, Object> getArguments(HttpServletRequest request, Map<String, String> body) {
 			Map<String, Object> arguments = new LinkedHashMap<>(getTemplateVariables(request));
 			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
 				.getMatchAllRemainingPathSegmentsVariable();
@@ -352,7 +463,14 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			return arguments;
 		}
 
-		private Object getRemainingPathSegments(HttpServletRequest request) {
+		/**
+         * Retrieves the remaining path segments from the given HttpServletRequest.
+         * 
+         * @param request the HttpServletRequest object from which to extract the remaining path segments
+         * @return an Object representing the remaining path segments
+         * @throws IllegalStateException if unable to extract the remaining path segments
+         */
+        private Object getRemainingPathSegments(HttpServletRequest request) {
 			String[] pathTokens = tokenize(request, HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, true);
 			String[] patternTokens = tokenize(request, HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, false);
 			int numberOfRemainingPathSegments = pathTokens.length - patternTokens.length + 1;
@@ -363,7 +481,15 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			return remainingPathSegments;
 		}
 
-		private String[] tokenize(HttpServletRequest request, String attributeName, boolean decode) {
+		/**
+         * Tokenizes the value of the specified attribute in the given HttpServletRequest.
+         * 
+         * @param request the HttpServletRequest object
+         * @param attributeName the name of the attribute to retrieve the value from
+         * @param decode true if the segments should be URI decoded, false otherwise
+         * @return an array of segments obtained by tokenizing the attribute value
+         */
+        private String[] tokenize(HttpServletRequest request, String attributeName, boolean decode) {
 			String value = (String) request.getAttribute(attributeName);
 			String[] segments = StringUtils.tokenizeToStringArray(value, PATH_SEPARATOR, false, true);
 			if (decode) {
@@ -376,12 +502,25 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			return segments;
 		}
 
-		@SuppressWarnings("unchecked")
+		/**
+         * Retrieves the template variables from the given HttpServletRequest object.
+         * 
+         * @param request the HttpServletRequest object from which to retrieve the template variables
+         * @return a Map containing the template variables, with the variable names as keys and their corresponding values as values
+         */
+        @SuppressWarnings("unchecked")
 		private Map<String, String> getTemplateVariables(HttpServletRequest request) {
 			return (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 		}
 
-		private Object handleResult(Object result, HttpMethod httpMethod) {
+		/**
+         * Handles the result of a web endpoint operation.
+         * 
+         * @param result     The result of the operation.
+         * @param httpMethod The HTTP method used for the operation.
+         * @return An object representing the result of the operation.
+         */
+        private Object handleResult(Object result, HttpMethod httpMethod) {
 			if (result == null) {
 				return new ResponseEntity<>(
 						(httpMethod != HttpMethod.GET) ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
@@ -396,16 +535,32 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				.body(convertIfNecessary(response.getBody()));
 		}
 
-		private Object convertIfNecessary(Object body) {
+		/**
+         * Converts the given object if necessary using the registered body converters.
+         * 
+         * @param body the object to be converted
+         * @return the converted object
+         */
+        private Object convertIfNecessary(Object body) {
 			for (Function<Object, Object> converter : BODY_CONVERTERS) {
 				body = converter.apply(body);
 			}
 			return body;
 		}
 
-		private static final class FluxBodyConverter implements Function<Object, Object> {
+		/**
+         * FluxBodyConverter class.
+         */
+        private static final class FluxBodyConverter implements Function<Object, Object> {
 
-			@Override
+			/**
+             * Converts the body of a request to a Flux if it is not already a Flux.
+             * If the body is already a Flux, it collects all elements into a List.
+             *
+             * @param body the body of the request
+             * @return the converted body as a Flux or a List of elements
+             */
+            @Override
 			public Object apply(Object body) {
 				if (!(body instanceof Flux)) {
 					return body;
@@ -424,17 +579,34 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		private final ServletWebOperation operation;
 
-		OperationHandler(ServletWebOperation operation) {
+		/**
+         * Constructs a new OperationHandler with the specified ServletWebOperation.
+         * 
+         * @param operation the ServletWebOperation to be handled
+         */
+        OperationHandler(ServletWebOperation operation) {
 			this.operation = operation;
 		}
 
-		@ResponseBody
+		/**
+         * Handles the HTTP request and returns the response.
+         * 
+         * @param request the HttpServletRequest object representing the HTTP request
+         * @param body the request body as a Map of key-value pairs (optional)
+         * @return the response object
+         */
+        @ResponseBody
 		@Reflective
 		Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(request, body);
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the OperationHandler object.
+         * 
+         * @return a string representation of the OperationHandler object
+         */
+        @Override
 		public String toString() {
 			return this.operation.toString();
 		}
@@ -446,16 +618,32 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	 */
 	private static class WebMvcEndpointHandlerMethod extends HandlerMethod {
 
-		WebMvcEndpointHandlerMethod(Object bean, Method method) {
+		/**
+         * Constructs a new WebMvcEndpointHandlerMethod with the specified bean and method.
+         *
+         * @param bean   the object representing the bean
+         * @param method the method to be invoked
+         */
+        WebMvcEndpointHandlerMethod(Object bean, Method method) {
 			super(bean, method);
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * 
+         * @return a string representation of the object
+         */
+        @Override
 		public String toString() {
 			return getBean().toString();
 		}
 
-		@Override
+		/**
+         * Creates a new instance of the {@link HandlerMethod} class with the resolved bean.
+         * 
+         * @return The new instance of the {@link HandlerMethod} class with the resolved bean.
+         */
+        @Override
 		public HandlerMethod createWithResolvedBean() {
 			return this;
 		}
@@ -468,37 +656,70 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	 */
 	private static class InvalidEndpointBadRequestException extends ResponseStatusException {
 
-		InvalidEndpointBadRequestException(InvalidEndpointRequestException cause) {
+		/**
+         * Constructs a new InvalidEndpointBadRequestException with the specified cause.
+         * 
+         * @param cause the cause of the exception, an instance of InvalidEndpointRequestException
+         */
+        InvalidEndpointBadRequestException(InvalidEndpointRequestException cause) {
 			super(HttpStatus.BAD_REQUEST, cause.getReason(), cause);
 		}
 
 	}
 
-	private static final class ServletSecurityContext implements SecurityContext {
+	/**
+     * ServletSecurityContext class.
+     */
+    private static final class ServletSecurityContext implements SecurityContext {
 
 		private final HttpServletRequest request;
 
-		private ServletSecurityContext(HttpServletRequest request) {
+		/**
+         * Constructs a new ServletSecurityContext object with the provided HttpServletRequest.
+         *
+         * @param request the HttpServletRequest object to be associated with the ServletSecurityContext
+         */
+        private ServletSecurityContext(HttpServletRequest request) {
 			this.request = request;
 		}
 
-		@Override
+		/**
+         * Returns the principal associated with the current request.
+         * 
+         * @return the principal associated with the current request
+         */
+        @Override
 		public Principal getPrincipal() {
 			return this.request.getUserPrincipal();
 		}
 
-		@Override
+		/**
+         * Returns a boolean indicating whether the current user is in the specified role.
+         * 
+         * @param role the role to check
+         * @return true if the current user is in the specified role, false otherwise
+         */
+        @Override
 		public boolean isUserInRole(String role) {
 			return this.request.isUserInRole(role);
 		}
 
 	}
 
-	static class AbstractWebMvcEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * AbstractWebMvcEndpointHandlerMappingRuntimeHints class.
+     */
+    static class AbstractWebMvcEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
 
-		@Override
+		/**
+         * Registers the runtime hints for the given {@link OperationHandler} class using the provided {@link RuntimeHints} and {@link ClassLoader}.
+         * 
+         * @param hints the {@link RuntimeHints} containing the hints to be registered
+         * @param classLoader the {@link ClassLoader} to be used for loading the {@link OperationHandler} class
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.reflectiveRegistrar.registerRuntimeHints(hints, OperationHandler.class);
 		}

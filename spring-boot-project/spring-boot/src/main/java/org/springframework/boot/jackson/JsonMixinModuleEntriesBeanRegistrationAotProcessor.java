@@ -43,7 +43,13 @@ import org.springframework.javapoet.CodeBlock;
  */
 class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistrationAotProcessor {
 
-	@Override
+	/**
+     * Processes the given registered bean ahead of time.
+     * 
+     * @param registeredBean the registered bean to process
+     * @return the bean registration AOT contribution
+     */
+    @Override
 	public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
 		if (registeredBean.getBeanClass().equals(JsonMixinModuleEntries.class)) {
 			return BeanRegistrationAotContribution
@@ -52,7 +58,10 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistra
 		return null;
 	}
 
-	static class AotContribution extends BeanRegistrationCodeFragmentsDecorator {
+	/**
+     * AotContribution class.
+     */
+    static class AotContribution extends BeanRegistrationCodeFragmentsDecorator {
 
 		private static final Class<?> BEAN_TYPE = JsonMixinModuleEntries.class;
 
@@ -60,18 +69,38 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistra
 
 		private final ClassLoader classLoader;
 
-		AotContribution(BeanRegistrationCodeFragments delegate, RegisteredBean registeredBean) {
+		/**
+         * Constructs a new AotContribution object with the specified delegate and registeredBean.
+         * 
+         * @param delegate the BeanRegistrationCodeFragments delegate
+         * @param registeredBean the RegisteredBean object
+         */
+        AotContribution(BeanRegistrationCodeFragments delegate, RegisteredBean registeredBean) {
 			super(delegate);
 			this.registeredBean = registeredBean;
 			this.classLoader = registeredBean.getBeanFactory().getBeanClassLoader();
 		}
 
-		@Override
+		/**
+         * Returns the target class name for the given registered bean.
+         *
+         * @param registeredBean the registered bean
+         * @return the target class name
+         */
+        @Override
 		public ClassName getTarget(RegisteredBean registeredBean) {
 			return ClassName.get(BEAN_TYPE);
 		}
 
-		@Override
+		/**
+         * Generates the code for the instance supplier of the registered bean.
+         * 
+         * @param generationContext The generation context.
+         * @param beanRegistrationCode The bean registration code.
+         * @param allowDirectSupplierShortcut Flag indicating whether direct supplier shortcut is allowed.
+         * @return The code block representing the instance supplier code.
+         */
+        @Override
 		public CodeBlock generateInstanceSupplierCode(GenerationContext generationContext,
 				BeanRegistrationCode beanRegistrationCode, boolean allowDirectSupplierShortcut) {
 			JsonMixinModuleEntries entries = this.registeredBean.getBeanFactory()
@@ -90,7 +119,17 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistra
 			return generatedMethod.toMethodReference().toCodeBlock();
 		}
 
-		private void addEntryCode(CodeBlock.Builder code, Class<?> type, Class<?> mixin) {
+		/**
+         * Adds an entry code to the given {@link CodeBlock.Builder} for the specified type and mixin.
+         * The access control for the types is determined using the lowest access control level between the type and mixin.
+         * If the access control level is public, the entry code is added using the type and mixin classes.
+         * Otherwise, the entry code is added using the fully qualified names of the type and mixin.
+         *
+         * @param code  the {@link CodeBlock.Builder} to add the entry code to
+         * @param type  the type class
+         * @param mixin the mixin class
+         */
+        private void addEntryCode(CodeBlock.Builder code, Class<?> type, Class<?> mixin) {
 			AccessControl accessForTypes = AccessControl.lowest(AccessControl.forClass(type),
 					AccessControl.forClass(mixin));
 			if (accessForTypes.isPublic()) {
@@ -101,7 +140,13 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistra
 			}
 		}
 
-		private void contributeHints(RuntimeHints runtimeHints, JsonMixinModuleEntries entries) {
+		/**
+         * Contributes hints to the runtime hints and registers reflection hints for the given mixins.
+         * 
+         * @param runtimeHints the runtime hints to contribute to
+         * @param entries the JSON mixin module entries
+         */
+        private void contributeHints(RuntimeHints runtimeHints, JsonMixinModuleEntries entries) {
 			Set<Class<?>> mixins = new LinkedHashSet<>();
 			entries.doWithEntry(this.classLoader, (type, mixin) -> mixins.add(mixin));
 			new BindingReflectionHintsRegistrar().registerReflectionHints(runtimeHints.reflection(),

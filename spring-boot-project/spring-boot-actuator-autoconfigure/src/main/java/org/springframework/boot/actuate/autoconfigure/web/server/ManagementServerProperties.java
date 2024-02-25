@@ -77,31 +77,68 @@ public class ManagementServerProperties {
 		this.port = port;
 	}
 
-	public InetAddress getAddress() {
+	/**
+     * Returns the InetAddress of the ManagementServerProperties.
+     *
+     * @return the InetAddress of the ManagementServerProperties
+     */
+    public InetAddress getAddress() {
 		return this.address;
 	}
 
-	public void setAddress(InetAddress address) {
+	/**
+     * Sets the address of the management server.
+     * 
+     * @param address the InetAddress representing the address of the management server
+     */
+    public void setAddress(InetAddress address) {
 		this.address = address;
 	}
 
-	public String getBasePath() {
+	/**
+     * Returns the base path of the Management Server.
+     *
+     * @return the base path of the Management Server
+     */
+    public String getBasePath() {
 		return this.basePath;
 	}
 
-	public void setBasePath(String basePath) {
+	/**
+     * Sets the base path for the Management Server.
+     * 
+     * @param basePath the new base path to be set
+     */
+    public void setBasePath(String basePath) {
 		this.basePath = cleanBasePath(basePath);
 	}
 
-	public Ssl getSsl() {
+	/**
+     * Returns the SSL configuration for the management server.
+     *
+     * @return the SSL configuration for the management server
+     */
+    public Ssl getSsl() {
 		return this.ssl;
 	}
 
-	public void setSsl(Ssl ssl) {
+	/**
+     * Sets the SSL configuration for the management server.
+     * 
+     * @param ssl the SSL configuration to be set
+     */
+    public void setSsl(Ssl ssl) {
 		this.ssl = ssl;
 	}
 
-	private String cleanBasePath(String basePath) {
+	/**
+     * Cleans the base path by removing leading and trailing whitespaces and ensuring it starts with a forward slash
+     * and does not end with a forward slash.
+     * 
+     * @param basePath the base path to be cleaned
+     * @return the cleaned base path
+     */
+    private String cleanBasePath(String basePath) {
 		String candidate = null;
 		if (StringUtils.hasLength(basePath)) {
 			candidate = basePath.strip();

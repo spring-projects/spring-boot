@@ -38,17 +38,36 @@ class BuildOwner implements Owner {
 
 	private final long gid;
 
-	BuildOwner(Map<String, String> env) {
+	/**
+     * Constructs a new BuildOwner object with the provided environment map.
+     * 
+     * @param env the environment map containing the user and group properties
+     */
+    BuildOwner(Map<String, String> env) {
 		this.uid = getValue(env, USER_PROPERTY_NAME);
 		this.gid = getValue(env, GROUP_PROPERTY_NAME);
 	}
 
-	BuildOwner(long uid, long gid) {
+	/**
+     * Constructs a new BuildOwner object with the specified user ID and group ID.
+     * 
+     * @param uid the user ID of the owner
+     * @param gid the group ID of the owner
+     */
+    BuildOwner(long uid, long gid) {
 		this.uid = uid;
 		this.gid = gid;
 	}
 
-	private long getValue(Map<String, String> env, String name) {
+	/**
+     * Retrieves the value associated with the given name from the provided environment map.
+     * 
+     * @param env the environment map containing the values
+     * @param name the name of the value to retrieve
+     * @return the value associated with the given name as a long
+     * @throws IllegalStateException if the value is missing or malformed
+     */
+    private long getValue(Map<String, String> env, String name) {
 		String value = env.get(name);
 		Assert.state(StringUtils.hasText(value),
 				() -> "Missing '" + name + "' value from the builder environment '" + env + "'");
@@ -61,17 +80,33 @@ class BuildOwner implements Owner {
 		}
 	}
 
-	@Override
+	/**
+     * Returns the unique identifier of the BuildOwner.
+     *
+     * @return the unique identifier of the BuildOwner
+     */
+    @Override
 	public long getUid() {
 		return this.uid;
 	}
 
-	@Override
+	/**
+     * Returns the GID (Group ID) of the BuildOwner.
+     *
+     * @return the GID (Group ID) of the BuildOwner
+     */
+    @Override
 	public long getGid() {
 		return this.gid;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the BuildOwner object.
+     * The string representation consists of the uid and gid separated by a forward slash.
+     *
+     * @return a string representation of the BuildOwner object
+     */
+    @Override
 	public String toString() {
 		return this.uid + "/" + this.gid;
 	}

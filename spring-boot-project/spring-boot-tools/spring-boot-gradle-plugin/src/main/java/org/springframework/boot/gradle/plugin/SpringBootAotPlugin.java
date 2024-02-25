@@ -74,7 +74,13 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 	 */
 	public static final String PROCESS_TEST_AOT_TASK_NAME = "processTestAot";
 
-	@Override
+	/**
+     * Applies the SpringBootAotPlugin to the given project.
+     * This plugin is responsible for configuring the project's source sets and registering AOT tasks.
+     * 
+     * @param project The project to apply the plugin to.
+     */
+    @Override
 	public void apply(Project project) {
 		PluginContainer plugins = project.getPlugins();
 		plugins.withType(JavaPlugin.class).all((javaPlugin) -> {
@@ -91,7 +97,15 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		});
 	}
 
-	private SourceSet configureSourceSet(Project project, String newSourceSetName, SourceSet existingSourceSet) {
+	/**
+     * Configures a new source set with the given name and existing source set.
+     * 
+     * @param project The project to configure the source set for.
+     * @param newSourceSetName The name of the new source set to create.
+     * @param existingSourceSet The existing source set to base the new source set on.
+     * @return The configured source set.
+     */
+    private SourceSet configureSourceSet(Project project, String newSourceSetName, SourceSet existingSourceSet) {
 		JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 		SourceSetContainer sourceSets = javaPluginExtension.getSourceSets();
 		return sourceSets.create(newSourceSetName, (sourceSet) -> {
@@ -105,18 +119,37 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		});
 	}
 
-	private void configureClassesAndResourcesLibraryElementsAttribute(Project project, AttributeContainer attributes) {
+	/**
+     * Configures the classes and resources library elements attribute for the given project and attribute container.
+     * 
+     * @param project    the project to configure
+     * @param attributes the attribute container to configure
+     */
+    private void configureClassesAndResourcesLibraryElementsAttribute(Project project, AttributeContainer attributes) {
 		LibraryElements classesAndResources = project.getObjects()
 			.named(LibraryElements.class, LibraryElements.CLASSES_AND_RESOURCES);
 		attributes.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, classesAndResources);
 	}
 
-	private void configureJavaRuntimeUsageAttribute(Project project, AttributeContainer attributes) {
+	/**
+     * Configures the usage attribute for the Java runtime in the given project.
+     * 
+     * @param project    the project to configure
+     * @param attributes the attribute container to add the usage attribute to
+     */
+    private void configureJavaRuntimeUsageAttribute(Project project, AttributeContainer attributes) {
 		Usage javaRuntime = project.getObjects().named(Usage.class, Usage.JAVA_RUNTIME);
 		attributes.attribute(Usage.USAGE_ATTRIBUTE, javaRuntime);
 	}
 
-	private void registerProcessAotTask(Project project, SourceSet aotSourceSet, SourceSet mainSourceSet) {
+	/**
+     * Registers the processAot task for the AOT source set in the SpringBootAotPlugin class.
+     * 
+     * @param project The project object.
+     * @param aotSourceSet The AOT source set.
+     * @param mainSourceSet The main source set.
+     */
+    private void registerProcessAotTask(Project project, SourceSet aotSourceSet, SourceSet mainSourceSet) {
 		TaskProvider<ResolveMainClassName> resolveMainClassName = project.getTasks()
 			.named(SpringBootPlugin.RESOLVE_MAIN_CLASS_NAME_TASK_NAME, ResolveMainClassName.class);
 		Configuration aotClasspath = createAotProcessingClasspath(project, PROCESS_AOT_TASK_NAME, mainSourceSet,
@@ -144,7 +177,15 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		configureDependsOn(project, aotSourceSet, processAot);
 	}
 
-	private void configureAotTask(Project project, SourceSet sourceSet, AbstractAot task,
+	/**
+     * Configures the Ahead-of-Time (AOT) task for the given project, source set, and task.
+     * 
+     * @param project The project to configure the AOT task for.
+     * @param sourceSet The source set to configure the AOT task for.
+     * @param task The AOT task to configure.
+     * @param resourcesOutput The output directory for the resources.
+     */
+    private void configureAotTask(Project project, SourceSet sourceSet, AbstractAot task,
 			Provider<Directory> resourcesOutput) {
 		task.getSourcesOutput()
 			.set(project.getLayout().getBuildDirectory().dir("generated/" + sourceSet.getName() + "Sources"));
@@ -156,13 +197,30 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		configureToolchainConvention(project, task);
 	}
 
-	private void configureToolchainConvention(Project project, AbstractAot aotTask) {
+	/**
+     * Configures the toolchain convention for the given project and AOT task.
+     * 
+     * @param project the project to configure the toolchain for
+     * @param aotTask the AOT task to configure the toolchain for
+     */
+    private void configureToolchainConvention(Project project, AbstractAot aotTask) {
 		JavaToolchainSpec toolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
 		JavaToolchainService toolchainService = project.getExtensions().getByType(JavaToolchainService.class);
 		aotTask.getJavaLauncher().convention(toolchainService.launcherFor(toolchain));
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	/**
+     * Creates the AOT processing classpath configuration for the specified project, task name, input source set,
+     * and development only configuration names.
+     *
+     * @param project The project to create the configuration for.
+     * @param taskName The name of the task.
+     * @param inputSourceSet The input source set.
+     * @param developmentOnlyConfigurationNames The set of development only configuration names.
+     * @return The created AOT processing classpath configuration.
+     * @throws IllegalStateException If the classpath cannot be resolved.
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 	private Configuration createAotProcessingClasspath(Project project, String taskName, SourceSet inputSourceSet,
 			Set<String> developmentOnlyConfigurationNames) {
 		Configuration base = project.getConfigurations()
@@ -187,20 +245,42 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		});
 	}
 
-	private Stream<Configuration> removeDevelopmentOnly(Set<Configuration> configurations,
+	/**
+     * Removes development-only configurations from the given set of configurations.
+     * 
+     * @param configurations                  the set of configurations to filter
+     * @param developmentOnlyConfigurationNames the set of development-only configuration names
+     * @return                                a stream of configurations without development-only configurations
+     */
+    private Stream<Configuration> removeDevelopmentOnly(Set<Configuration> configurations,
 			Set<String> developmentOnlyConfigurationNames) {
 		return configurations.stream()
 			.filter((configuration) -> !developmentOnlyConfigurationNames.contains(configuration.getName()));
 	}
 
-	private void configureDependsOn(Project project, SourceSet aotSourceSet,
+	/**
+     * Configures the dependency between the processResources task of the given source set and the provided processAot task.
+     * 
+     * @param project The project to configure.
+     * @param aotSourceSet The source set to configure.
+     * @param processAot The task provider for the processAot task.
+     */
+    private void configureDependsOn(Project project, SourceSet aotSourceSet,
 			TaskProvider<? extends AbstractAot> processAot) {
 		project.getTasks()
 			.named(aotSourceSet.getProcessResourcesTaskName())
 			.configure((processResources) -> processResources.dependsOn(processAot));
 	}
 
-	private void registerProcessTestAotTask(Project project, SourceSet mainSourceSet, SourceSet aotTestSourceSet,
+	/**
+     * Registers the processTestAot task for AOT processing in the SpringBootAotPlugin class.
+     * 
+     * @param project The project object representing the current Gradle project.
+     * @param mainSourceSet The main source set of the project.
+     * @param aotTestSourceSet The AOT test source set of the project.
+     * @param testSourceSet The test source set of the project.
+     */
+    private void registerProcessTestAotTask(Project project, SourceSet mainSourceSet, SourceSet aotTestSourceSet,
 			SourceSet testSourceSet) {
 		Configuration aotClasspath = createAotProcessingClasspath(project, PROCESS_TEST_AOT_TASK_NAME, testSourceSet,
 				Set.of(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME));
@@ -228,7 +308,13 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		configureDependsOn(project, aotTestSourceSet, processTestAot);
 	}
 
-	private void addJUnitPlatformLauncherDependency(Project project, Configuration configuration) {
+	/**
+     * Adds the JUnit Platform Launcher dependency to the specified project and configuration.
+     * 
+     * @param project the project to add the dependency to
+     * @param configuration the configuration to add the dependency to
+     */
+    private void addJUnitPlatformLauncherDependency(Project project, Configuration configuration) {
 		DependencyHandler dependencyHandler = project.getDependencies();
 		Dependency springBootDependencies = dependencyHandler
 			.create(dependencyHandler.platform(SpringBootPlugin.BOM_COORDINATES));

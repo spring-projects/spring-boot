@@ -35,7 +35,13 @@ import org.springframework.web.client.RestTemplate;
 @ConditionalOnProperty(prefix = "spring.test.webclient", name = "register-rest-template")
 public class WebClientRestTemplateAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a RestTemplate bean using the RestTemplateBuilder.
+     * 
+     * @param builder the RestTemplateBuilder used to build the RestTemplate bean
+     * @return the RestTemplate bean
+     */
+    @Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
 		return builder.build();
 	}

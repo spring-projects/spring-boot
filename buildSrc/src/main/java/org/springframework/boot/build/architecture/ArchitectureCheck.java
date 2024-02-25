@@ -68,7 +68,13 @@ public abstract class ArchitectureCheck extends DefaultTask {
 
 	private FileCollection classes;
 
-	public ArchitectureCheck() {
+	/**
+     * This method initializes the architecture check for the project.
+     * It sets the output directory convention to the build directory of the project.
+     * It adds various rules to be checked for the architecture of the project.
+     * The rule descriptions are set based on the rules added.
+     */
+    public ArchitectureCheck() {
 		getOutputDirectory().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
 		getRules().addAll(allPackagesShouldBeFreeOfTangles(),
 				allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization(),
@@ -79,7 +85,14 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));
 	}
 
-	@TaskAction
+	/**
+     * Checks the architecture of the project.
+     * 
+     * @throws IOException if an I/O error occurs while importing class files
+     * 
+     * @return void
+     */
+    @TaskAction
 	void checkArchitecture() throws IOException {
 		JavaClasses javaClasses = new ClassFileImporter()
 			.importPaths(this.classes.getFiles().stream().map(File::toPath).toList());
@@ -105,11 +118,27 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		}
 	}
 
-	private ArchRule allPackagesShouldBeFreeOfTangles() {
+	/**
+     * This method defines an architectural rule that checks if all packages in the project are free of tangles.
+     * A tangle occurs when there is a cyclic dependency between packages.
+     * The rule uses the ArchUnit library to define and enforce the architectural constraint.
+     * It uses the SlicesRuleDefinition to define slices of packages and checks if there are any cycles within them.
+     * 
+     * @return An ArchRule object representing the architectural rule.
+     */
+    private ArchRule allPackagesShouldBeFreeOfTangles() {
 		return SlicesRuleDefinition.slices().matching("(**)").should().beFreeOfCycles();
 	}
 
-	private ArchRule allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization() {
+	/**
+     * Returns an ArchRule that checks if all methods annotated with "@Bean" in the ArchitectureCheck class
+     * that have a raw return type assignable to "org.springframework.beans.factory.config.BeanPostProcessor"
+     * only have parameters that will not cause premature initialization.
+     * The methods should also be static.
+     * 
+     * @return the ArchRule for checking the above conditions
+     */
+    private ArchRule allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization() {
 		return ArchRuleDefinition.methods()
 			.that()
 			.areAnnotatedWith("org.springframework.context.annotation.Bean")
@@ -121,7 +150,12 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.allowEmptyShould(true);
 	}
 
-	private ArchCondition<JavaMethod> onlyHaveParametersThatWillNotCauseEagerInitialization() {
+	/**
+     * Returns an ArchCondition that checks if a JavaMethod only has parameters that will not cause eager initialization.
+     * 
+     * @return the ArchCondition that checks for parameters that will not cause eager initialization
+     */
+    private ArchCondition<JavaMethod> onlyHaveParametersThatWillNotCauseEagerInitialization() {
 		DescribedPredicate<CanBeAnnotated> notAnnotatedWithLazy = DescribedPredicate
 			.not(CanBeAnnotated.Predicates.annotatedWith("org.springframework.context.annotation.Lazy"));
 		DescribedPredicate<JavaClass> notOfASafeType = DescribedPredicate
@@ -145,7 +179,15 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		};
 	}
 
-	private ArchRule allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters() {
+	/**
+     * This method defines an architectural rule that enforces all methods annotated with
+     * "@Bean" in the Spring framework should be static and have no parameters. This rule
+     * specifically targets methods that have a return type assignable to
+     * "BeanFactoryPostProcessor" in the "org.springframework.beans.factory.config" package.
+     * 
+     * @return An ArchRule object representing the defined architectural rule.
+     */
+    private ArchRule allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters() {
 		return ArchRuleDefinition.methods()
 			.that()
 			.areAnnotatedWith("org.springframework.context.annotation.Bean")
@@ -158,7 +200,12 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.allowEmptyShould(true);
 	}
 
-	private ArchCondition<JavaMethod> haveNoParameters() {
+	/**
+     * Returns an ArchCondition that checks if a JavaMethod has no parameters.
+     *
+     * @return the ArchCondition that checks for no parameters
+     */
+    private ArchCondition<JavaMethod> haveNoParameters() {
 		return new ArchCondition<>("have no parameters") {
 
 			@Override
@@ -173,51 +220,102 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		};
 	}
 
-	private ArchRule noClassesShouldCallStepVerifierStepVerifyComplete() {
+	/**
+     * This method defines an ArchRule that enforces that no classes should call the method "verifyComplete()" from the "StepVerifier$Step" class.
+     * 
+     * The reason for this rule is that calling "verifyComplete()" can block indefinitely, and it is recommended to use "expectComplete().verify(Duration)" instead.
+     * 
+     * @return The ArchRule object that enforces the noClassesShouldCallStepVerifierStepVerifyComplete rule.
+     */
+    private ArchRule noClassesShouldCallStepVerifierStepVerifyComplete() {
 		return ArchRuleDefinition.noClasses()
 			.should()
 			.callMethod("reactor.test.StepVerifier$Step", "verifyComplete")
 			.because("it can block indefinitely and expectComplete().verify(Duration) should be used instead");
 	}
 
-	private ArchRule noClassesShouldConfigureDefaultStepVerifierTimeout() {
+	/**
+     * This method defines an architectural rule that states that no classes should configure the default timeout for StepVerifier.
+     * Instead, the expectComplete().verify(Duration) method should be used.
+     *
+     * @return An ArchRule object representing the architectural rule.
+     */
+    private ArchRule noClassesShouldConfigureDefaultStepVerifierTimeout() {
 		return ArchRuleDefinition.noClasses()
 			.should()
 			.callMethod("reactor.test.StepVerifier", "setDefaultTimeout", "java.time.Duration")
 			.because("expectComplete().verify(Duration) should be used instead");
 	}
 
-	private ArchRule noClassesShouldCallCollectorsToList() {
+	/**
+     * This method defines an architectural rule that states no classes should call the method Collectors.toList().
+     * Instead, the method java.util.stream.Stream.toList() should be used.
+     *
+     * @return An ArchRule object representing the defined architectural rule.
+     */
+    private ArchRule noClassesShouldCallCollectorsToList() {
 		return ArchRuleDefinition.noClasses()
 			.should()
 			.callMethod(Collectors.class, "toList")
 			.because("java.util.stream.Stream.toList() should be used instead");
 	}
 
-	private ArchRule noClassesShouldCallURLEncoderWithStringEncoding() {
+	/**
+     * This method defines an architectural rule that no classes should call the deprecated method URLEncoder.encode(String s, String encoding).
+     * Instead, the recommended method URLEncoder.encode(String s, Charset charset) should be used.
+     * 
+     * @return ArchRule - The architectural rule that no classes should call URLEncoder.encode(String s, String encoding).
+     * @since 1.0
+     * @see java.net.URLEncoder#encode(String s, Charset charset)
+     */
+    private ArchRule noClassesShouldCallURLEncoderWithStringEncoding() {
 		return ArchRuleDefinition.noClasses()
 			.should()
 			.callMethod(URLEncoder.class, "encode", String.class, String.class)
 			.because("java.net.URLEncoder.encode(String s, Charset charset) should be used instead");
 	}
 
-	private ArchRule noClassesShouldCallURLDecoderWithStringEncoding() {
+	/**
+     * This method defines an architectural rule that no classes should call the URLDecoder.decode() method with String encoding.
+     * Instead, the java.net.URLDecoder.decode(String s, Charset charset) method should be used.
+     * 
+     * @return An ArchRule object representing the architectural rule.
+     */
+    private ArchRule noClassesShouldCallURLDecoderWithStringEncoding() {
 		return ArchRuleDefinition.noClasses()
 			.should()
 			.callMethod(URLDecoder.class, "decode", String.class, String.class)
 			.because("java.net.URLDecoder.decode(String s, Charset charset) should be used instead");
 	}
 
-	public void setClasses(FileCollection classes) {
+	/**
+     * Sets the classes for the ArchitectureCheck.
+     * 
+     * @param classes the FileCollection containing the classes to be set
+     */
+    public void setClasses(FileCollection classes) {
 		this.classes = classes;
 	}
 
-	@Internal
+	/**
+     * Returns the collection of classes.
+     *
+     * @return the collection of classes
+     */
+    @Internal
 	public FileCollection getClasses() {
 		return this.classes;
 	}
 
-	@InputFiles
+	/**
+     * Returns the input classes as a file tree.
+     * 
+     * This method skips when the input is empty and ignores empty directories.
+     * The path sensitivity is set to relative.
+     * 
+     * @return the input classes as a file tree
+     */
+    @InputFiles
 	@SkipWhenEmpty
 	@IgnoreEmptyDirectories
 	@PathSensitive(PathSensitivity.RELATIVE)
@@ -225,18 +323,38 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		return this.classes.getAsFileTree();
 	}
 
-	@Optional
+	/**
+     * Returns the directory property for the resources directory.
+     *
+     * @return The directory property for the resources directory.
+     */
+    @Optional
 	@InputFiles
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public abstract DirectoryProperty getResourcesDirectory();
 
-	@OutputDirectory
+	/**
+     * Returns the output directory.
+     *
+     * @return the output directory
+     */
+    @OutputDirectory
 	public abstract DirectoryProperty getOutputDirectory();
 
-	@Internal
+	/**
+     * Returns the list of architectural rules.
+     *
+     * @return the list of architectural rules
+     */
+    @Internal
 	public abstract ListProperty<ArchRule> getRules();
 
-	@Input
+	/**
+     * Returns the descriptions of the rules.
+     *
+     * @return the descriptions of the rules
+     */
+    @Input
 	// The rules themselves can't be an input as they aren't serializable so we use their
 	// descriptions instead
 	abstract ListProperty<String> getRuleDescriptions();

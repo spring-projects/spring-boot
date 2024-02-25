@@ -34,25 +34,52 @@ class RunArguments {
 
 	private final Deque<String> args = new LinkedList<>();
 
-	RunArguments(String arguments) {
+	/**
+     * Constructs a new RunArguments object with the given arguments.
+     * 
+     * @param arguments the string representation of the arguments
+     */
+    RunArguments(String arguments) {
 		this(parseArgs(arguments));
 	}
 
-	RunArguments(String[] args) {
+	/**
+     * This method takes an array of arguments and adds them to the args list.
+     * 
+     * @param args the array of arguments to be added to the args list
+     */
+    RunArguments(String[] args) {
 		if (args != null) {
 			Arrays.stream(args).filter(Objects::nonNull).forEach(this.args::add);
 		}
 	}
 
-	Deque<String> getArgs() {
+	/**
+     * Returns the arguments stored in the deque.
+     *
+     * @return the arguments stored in the deque
+     */
+    Deque<String> getArgs() {
 		return this.args;
 	}
 
-	String[] asArray() {
+	/**
+     * Converts the list of arguments to an array of strings.
+     *
+     * @return an array of strings containing the arguments
+     */
+    String[] asArray() {
 		return this.args.toArray(new String[0]);
 	}
 
-	private static String[] parseArgs(String arguments) {
+	/**
+     * Parses the given arguments string and returns an array of parsed arguments.
+     * 
+     * @param arguments the arguments string to be parsed
+     * @return an array of parsed arguments
+     * @throws IllegalArgumentException if the arguments string is null or empty, or if parsing fails
+     */
+    private static String[] parseArgs(String arguments) {
 		if (arguments == null || arguments.trim().isEmpty()) {
 			return NO_ARGS;
 		}

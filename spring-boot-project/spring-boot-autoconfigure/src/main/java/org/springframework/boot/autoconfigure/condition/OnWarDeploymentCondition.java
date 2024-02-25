@@ -34,7 +34,14 @@ import org.springframework.web.context.WebApplicationContext;
  */
 class OnWarDeploymentCondition extends SpringBootCondition {
 
-	@Override
+	/**
+     * Determines the outcome of the condition for the @ConditionalOnWarDeployment annotation.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		boolean required = metadata.isAnnotated(ConditionalOnWarDeployment.class.getName());
 		ResourceLoader resourceLoader = context.getResourceLoader();

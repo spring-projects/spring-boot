@@ -52,32 +52,70 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 	 */
 	private final Endpoint endpoint = new Endpoint();
 
-	public String getIssuer() {
+	/**
+     * Returns the issuer of the OAuth2 authorization server.
+     *
+     * @return the issuer of the OAuth2 authorization server
+     */
+    public String getIssuer() {
 		return this.issuer;
 	}
 
-	public void setIssuer(String issuer) {
+	/**
+     * Sets the issuer for the OAuth2 authorization server.
+     * 
+     * @param issuer the issuer to set
+     */
+    public void setIssuer(String issuer) {
 		this.issuer = issuer;
 	}
 
-	public Map<String, Client> getClient() {
+	/**
+     * Returns the map of clients registered in the OAuth2 authorization server.
+     *
+     * @return the map of clients registered in the OAuth2 authorization server
+     */
+    public Map<String, Client> getClient() {
 		return this.client;
 	}
 
-	public Endpoint getEndpoint() {
+	/**
+     * Returns the endpoint of the OAuth2 authorization server.
+     *
+     * @return the endpoint of the OAuth2 authorization server
+     */
+    public Endpoint getEndpoint() {
 		return this.endpoint;
 	}
 
-	@Override
+	/**
+     * This method is called after all bean properties have been set and performs validation on the properties of the OAuth2AuthorizationServerProperties class.
+     * It ensures that all required properties are properly set and throws an exception if any property is missing or invalid.
+     */
+    @Override
 	public void afterPropertiesSet() {
 		validate();
 	}
 
-	public void validate() {
+	/**
+     * Validates all clients in the OAuth2 authorization server.
+     * 
+     * This method iterates over all clients in the authorization server and calls the {@link #validateClient(Client)} method
+     * to validate each client individually.
+     * 
+     * @see #validateClient(Client)
+     */
+    public void validate() {
 		getClient().values().forEach(this::validateClient);
 	}
 
-	private void validateClient(Client client) {
+	/**
+     * Validates the given client.
+     * 
+     * @param client the client to validate
+     * @throws IllegalStateException if the client id is empty, client authentication methods are empty, or authorization grant types are empty
+     */
+    private void validateClient(Client client) {
 		if (!StringUtils.hasText(client.getRegistration().getClientId())) {
 			throw new IllegalStateException("Client id must not be empty.");
 		}
@@ -135,63 +173,138 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		@NestedConfigurationProperty
 		private final OidcEndpoint oidc = new OidcEndpoint();
 
-		public String getAuthorizationUri() {
+		/**
+         * Returns the authorization URI.
+         *
+         * @return the authorization URI
+         */
+        public String getAuthorizationUri() {
 			return this.authorizationUri;
 		}
 
-		public void setAuthorizationUri(String authorizationUri) {
+		/**
+         * Sets the authorization URI for the endpoint.
+         * 
+         * @param authorizationUri the authorization URI to be set
+         */
+        public void setAuthorizationUri(String authorizationUri) {
 			this.authorizationUri = authorizationUri;
 		}
 
-		public String getDeviceAuthorizationUri() {
+		/**
+         * Returns the device authorization URI.
+         *
+         * @return the device authorization URI
+         */
+        public String getDeviceAuthorizationUri() {
 			return this.deviceAuthorizationUri;
 		}
 
-		public void setDeviceAuthorizationUri(String deviceAuthorizationUri) {
+		/**
+         * Sets the device authorization URI for this endpoint.
+         * 
+         * @param deviceAuthorizationUri the device authorization URI to be set
+         */
+        public void setDeviceAuthorizationUri(String deviceAuthorizationUri) {
 			this.deviceAuthorizationUri = deviceAuthorizationUri;
 		}
 
-		public String getDeviceVerificationUri() {
+		/**
+         * Returns the device verification URI.
+         * 
+         * @return the device verification URI
+         */
+        public String getDeviceVerificationUri() {
 			return this.deviceVerificationUri;
 		}
 
-		public void setDeviceVerificationUri(String deviceVerificationUri) {
+		/**
+         * Sets the device verification URI.
+         * 
+         * @param deviceVerificationUri the device verification URI to be set
+         */
+        public void setDeviceVerificationUri(String deviceVerificationUri) {
 			this.deviceVerificationUri = deviceVerificationUri;
 		}
 
-		public String getTokenUri() {
+		/**
+         * Returns the token URI of the endpoint.
+         * 
+         * @return the token URI of the endpoint
+         */
+        public String getTokenUri() {
 			return this.tokenUri;
 		}
 
-		public void setTokenUri(String tokenUri) {
+		/**
+         * Sets the token URI for the endpoint.
+         * 
+         * @param tokenUri the token URI to be set
+         */
+        public void setTokenUri(String tokenUri) {
 			this.tokenUri = tokenUri;
 		}
 
-		public String getJwkSetUri() {
+		/**
+         * Returns the URI of the JWK Set.
+         *
+         * @return the URI of the JWK Set
+         */
+        public String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
 
-		public void setJwkSetUri(String jwkSetUri) {
+		/**
+         * Sets the URI of the JWK Set.
+         * 
+         * @param jwkSetUri the URI of the JWK Set
+         */
+        public void setJwkSetUri(String jwkSetUri) {
 			this.jwkSetUri = jwkSetUri;
 		}
 
-		public String getTokenRevocationUri() {
+		/**
+         * Returns the token revocation URI.
+         * 
+         * @return the token revocation URI
+         */
+        public String getTokenRevocationUri() {
 			return this.tokenRevocationUri;
 		}
 
-		public void setTokenRevocationUri(String tokenRevocationUri) {
+		/**
+         * Sets the token revocation URI for the endpoint.
+         * 
+         * @param tokenRevocationUri the token revocation URI to be set
+         */
+        public void setTokenRevocationUri(String tokenRevocationUri) {
 			this.tokenRevocationUri = tokenRevocationUri;
 		}
 
-		public String getTokenIntrospectionUri() {
+		/**
+         * Returns the URI for token introspection.
+         * 
+         * @return the URI for token introspection
+         */
+        public String getTokenIntrospectionUri() {
 			return this.tokenIntrospectionUri;
 		}
 
-		public void setTokenIntrospectionUri(String tokenIntrospectionUri) {
+		/**
+         * Sets the URI for token introspection.
+         * 
+         * @param tokenIntrospectionUri the URI for token introspection
+         */
+        public void setTokenIntrospectionUri(String tokenIntrospectionUri) {
 			this.tokenIntrospectionUri = tokenIntrospectionUri;
 		}
 
-		public OidcEndpoint getOidc() {
+		/**
+         * Returns the OIDC endpoint.
+         *
+         * @return the OIDC endpoint
+         */
+        public OidcEndpoint getOidc() {
 			return this.oidc;
 		}
 
@@ -217,27 +330,57 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		 */
 		private String userInfoUri = "/userinfo";
 
-		public String getLogoutUri() {
+		/**
+         * Returns the logout URI for the OIDC endpoint.
+         * 
+         * @return the logout URI
+         */
+        public String getLogoutUri() {
 			return this.logoutUri;
 		}
 
-		public void setLogoutUri(String logoutUri) {
+		/**
+         * Sets the logout URI for the OIDC endpoint.
+         * 
+         * @param logoutUri the logout URI to be set
+         */
+        public void setLogoutUri(String logoutUri) {
 			this.logoutUri = logoutUri;
 		}
 
-		public String getClientRegistrationUri() {
+		/**
+         * Returns the client registration URI.
+         * 
+         * @return the client registration URI
+         */
+        public String getClientRegistrationUri() {
 			return this.clientRegistrationUri;
 		}
 
-		public void setClientRegistrationUri(String clientRegistrationUri) {
+		/**
+         * Sets the client registration URI for the OIDC endpoint.
+         * 
+         * @param clientRegistrationUri the client registration URI to be set
+         */
+        public void setClientRegistrationUri(String clientRegistrationUri) {
 			this.clientRegistrationUri = clientRegistrationUri;
 		}
 
-		public String getUserInfoUri() {
+		/**
+         * Returns the URI for retrieving user information.
+         * 
+         * @return the URI for retrieving user information
+         */
+        public String getUserInfoUri() {
 			return this.userInfoUri;
 		}
 
-		public void setUserInfoUri(String userInfoUri) {
+		/**
+         * Sets the URI for retrieving user information.
+         * 
+         * @param userInfoUri the URI for retrieving user information
+         */
+        public void setUserInfoUri(String userInfoUri) {
 			this.userInfoUri = userInfoUri;
 		}
 
@@ -283,43 +426,93 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		@NestedConfigurationProperty
 		private final Token token = new Token();
 
-		public Registration getRegistration() {
+		/**
+         * Returns the registration object associated with this client.
+         *
+         * @return the registration object
+         */
+        public Registration getRegistration() {
 			return this.registration;
 		}
 
-		public boolean isRequireProofKey() {
+		/**
+         * Returns a boolean value indicating whether a proof key is required.
+         * 
+         * @return true if a proof key is required, false otherwise
+         */
+        public boolean isRequireProofKey() {
 			return this.requireProofKey;
 		}
 
-		public void setRequireProofKey(boolean requireProofKey) {
+		/**
+         * Sets whether a proof key is required for authentication.
+         * 
+         * @param requireProofKey true if a proof key is required, false otherwise
+         */
+        public void setRequireProofKey(boolean requireProofKey) {
 			this.requireProofKey = requireProofKey;
 		}
 
-		public boolean isRequireAuthorizationConsent() {
+		/**
+         * Returns a boolean value indicating whether authorization consent is required.
+         * 
+         * @return true if authorization consent is required, false otherwise
+         */
+        public boolean isRequireAuthorizationConsent() {
 			return this.requireAuthorizationConsent;
 		}
 
-		public void setRequireAuthorizationConsent(boolean requireAuthorizationConsent) {
+		/**
+         * Sets whether authorization consent is required.
+         * 
+         * @param requireAuthorizationConsent true if authorization consent is required, false otherwise
+         */
+        public void setRequireAuthorizationConsent(boolean requireAuthorizationConsent) {
 			this.requireAuthorizationConsent = requireAuthorizationConsent;
 		}
 
-		public String getJwkSetUri() {
+		/**
+         * Returns the URI of the JWK Set.
+         *
+         * @return the URI of the JWK Set
+         */
+        public String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
 
-		public void setJwkSetUri(String jwkSetUri) {
+		/**
+         * Sets the URI of the JWK Set.
+         * 
+         * @param jwkSetUri the URI of the JWK Set
+         */
+        public void setJwkSetUri(String jwkSetUri) {
 			this.jwkSetUri = jwkSetUri;
 		}
 
-		public String getTokenEndpointAuthenticationSigningAlgorithm() {
+		/**
+         * Returns the token endpoint authentication signing algorithm used by the client.
+         * 
+         * @return the token endpoint authentication signing algorithm
+         */
+        public String getTokenEndpointAuthenticationSigningAlgorithm() {
 			return this.tokenEndpointAuthenticationSigningAlgorithm;
 		}
 
-		public void setTokenEndpointAuthenticationSigningAlgorithm(String tokenEndpointAuthenticationSigningAlgorithm) {
+		/**
+         * Sets the token endpoint authentication signing algorithm.
+         * 
+         * @param tokenEndpointAuthenticationSigningAlgorithm the signing algorithm to be used for token endpoint authentication
+         */
+        public void setTokenEndpointAuthenticationSigningAlgorithm(String tokenEndpointAuthenticationSigningAlgorithm) {
 			this.tokenEndpointAuthenticationSigningAlgorithm = tokenEndpointAuthenticationSigningAlgorithm;
 		}
 
-		public Token getToken() {
+		/**
+         * Returns the token associated with this client.
+         *
+         * @return the token associated with this client
+         */
+        public Token getToken() {
 			return this.token;
 		}
 
@@ -370,67 +563,147 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		 */
 		private Set<String> scopes = new HashSet<>();
 
-		public String getClientId() {
+		/**
+         * Returns the client ID associated with the registration.
+         *
+         * @return the client ID
+         */
+        public String getClientId() {
 			return this.clientId;
 		}
 
-		public void setClientId(String clientId) {
+		/**
+         * Sets the client ID for the registration.
+         * 
+         * @param clientId the client ID to be set
+         */
+        public void setClientId(String clientId) {
 			this.clientId = clientId;
 		}
 
-		public String getClientSecret() {
+		/**
+         * Returns the client secret.
+         * 
+         * @return the client secret
+         */
+        public String getClientSecret() {
 			return this.clientSecret;
 		}
 
-		public void setClientSecret(String clientSecret) {
+		/**
+         * Sets the client secret for the registration.
+         * 
+         * @param clientSecret the client secret to be set
+         */
+        public void setClientSecret(String clientSecret) {
 			this.clientSecret = clientSecret;
 		}
 
-		public String getClientName() {
+		/**
+         * Returns the name of the client.
+         * 
+         * @return the name of the client
+         */
+        public String getClientName() {
 			return this.clientName;
 		}
 
-		public void setClientName(String clientName) {
+		/**
+         * Sets the name of the client.
+         * 
+         * @param clientName the name of the client
+         */
+        public void setClientName(String clientName) {
 			this.clientName = clientName;
 		}
 
-		public Set<String> getClientAuthenticationMethods() {
+		/**
+         * Returns the set of client authentication methods supported by the Registration.
+         *
+         * @return the set of client authentication methods
+         */
+        public Set<String> getClientAuthenticationMethods() {
 			return this.clientAuthenticationMethods;
 		}
 
-		public void setClientAuthenticationMethods(Set<String> clientAuthenticationMethods) {
+		/**
+         * Sets the client authentication methods for the registration.
+         * 
+         * @param clientAuthenticationMethods the set of client authentication methods to be set
+         */
+        public void setClientAuthenticationMethods(Set<String> clientAuthenticationMethods) {
 			this.clientAuthenticationMethods = clientAuthenticationMethods;
 		}
 
-		public Set<String> getAuthorizationGrantTypes() {
+		/**
+         * Returns the set of authorization grant types supported by the registration.
+         *
+         * @return the set of authorization grant types
+         */
+        public Set<String> getAuthorizationGrantTypes() {
 			return this.authorizationGrantTypes;
 		}
 
-		public void setAuthorizationGrantTypes(Set<String> authorizationGrantTypes) {
+		/**
+         * Sets the authorization grant types for the registration.
+         * 
+         * @param authorizationGrantTypes the set of authorization grant types to be set
+         */
+        public void setAuthorizationGrantTypes(Set<String> authorizationGrantTypes) {
 			this.authorizationGrantTypes = authorizationGrantTypes;
 		}
 
-		public Set<String> getRedirectUris() {
+		/**
+         * Returns the set of redirect URIs for the registration.
+         *
+         * @return the set of redirect URIs
+         */
+        public Set<String> getRedirectUris() {
 			return this.redirectUris;
 		}
 
-		public void setRedirectUris(Set<String> redirectUris) {
+		/**
+         * Sets the redirect URIs for the registration.
+         * 
+         * @param redirectUris the set of redirect URIs to be set
+         */
+        public void setRedirectUris(Set<String> redirectUris) {
 			this.redirectUris = redirectUris;
 		}
 
-		public Set<String> getPostLogoutRedirectUris() {
+		/**
+         * Returns the set of post-logout redirect URIs.
+         *
+         * @return the set of post-logout redirect URIs
+         */
+        public Set<String> getPostLogoutRedirectUris() {
 			return this.postLogoutRedirectUris;
 		}
 
-		public void setPostLogoutRedirectUris(Set<String> postLogoutRedirectUris) {
+		/**
+         * Sets the post logout redirect URIs for the registration.
+         * 
+         * @param postLogoutRedirectUris the set of post logout redirect URIs to be set
+         */
+        public void setPostLogoutRedirectUris(Set<String> postLogoutRedirectUris) {
 			this.postLogoutRedirectUris = postLogoutRedirectUris;
 		}
 
-		public Set<String> getScopes() {
+		/**
+         * Returns the set of scopes associated with the registration.
+         *
+         * @return the set of scopes
+         */
+        public Set<String> getScopes() {
 			return this.scopes;
 		}
 
-		public void setScopes(Set<String> scopes) {
+		/**
+         * Sets the scopes for the registration.
+         * 
+         * @param scopes the set of scopes to be set
+         */
+        public void setScopes(Set<String> scopes) {
 			this.scopes = scopes;
 		}
 
@@ -477,59 +750,129 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		 */
 		private String idTokenSignatureAlgorithm = "RS256";
 
-		public Duration getAuthorizationCodeTimeToLive() {
+		/**
+         * Returns the time to live for an authorization code.
+         * 
+         * @return the time to live for an authorization code
+         */
+        public Duration getAuthorizationCodeTimeToLive() {
 			return this.authorizationCodeTimeToLive;
 		}
 
-		public void setAuthorizationCodeTimeToLive(Duration authorizationCodeTimeToLive) {
+		/**
+         * Sets the time to live for the authorization code.
+         * 
+         * @param authorizationCodeTimeToLive the duration for which the authorization code is valid
+         */
+        public void setAuthorizationCodeTimeToLive(Duration authorizationCodeTimeToLive) {
 			this.authorizationCodeTimeToLive = authorizationCodeTimeToLive;
 		}
 
-		public Duration getAccessTokenTimeToLive() {
+		/**
+         * Returns the time to live of the access token.
+         *
+         * @return the time to live of the access token
+         */
+        public Duration getAccessTokenTimeToLive() {
 			return this.accessTokenTimeToLive;
 		}
 
-		public void setAccessTokenTimeToLive(Duration accessTokenTimeToLive) {
+		/**
+         * Sets the time to live for the access token.
+         * 
+         * @param accessTokenTimeToLive the duration of time for which the access token is valid
+         */
+        public void setAccessTokenTimeToLive(Duration accessTokenTimeToLive) {
 			this.accessTokenTimeToLive = accessTokenTimeToLive;
 		}
 
-		public String getAccessTokenFormat() {
+		/**
+         * Returns the format of the access token.
+         * 
+         * @return the format of the access token
+         */
+        public String getAccessTokenFormat() {
 			return this.accessTokenFormat;
 		}
 
-		public void setAccessTokenFormat(String accessTokenFormat) {
+		/**
+         * Sets the format of the access token.
+         * 
+         * @param accessTokenFormat the format of the access token
+         */
+        public void setAccessTokenFormat(String accessTokenFormat) {
 			this.accessTokenFormat = accessTokenFormat;
 		}
 
-		public Duration getDeviceCodeTimeToLive() {
+		/**
+         * Returns the time to live for the device code.
+         *
+         * @return the time to live for the device code
+         */
+        public Duration getDeviceCodeTimeToLive() {
 			return this.deviceCodeTimeToLive;
 		}
 
-		public void setDeviceCodeTimeToLive(Duration deviceCodeTimeToLive) {
+		/**
+         * Sets the time to live for the device code.
+         * 
+         * @param deviceCodeTimeToLive the duration of time for the device code to live
+         */
+        public void setDeviceCodeTimeToLive(Duration deviceCodeTimeToLive) {
 			this.deviceCodeTimeToLive = deviceCodeTimeToLive;
 		}
 
-		public boolean isReuseRefreshTokens() {
+		/**
+         * Returns a boolean value indicating whether refresh tokens can be reused.
+         * 
+         * @return true if refresh tokens can be reused, false otherwise
+         */
+        public boolean isReuseRefreshTokens() {
 			return this.reuseRefreshTokens;
 		}
 
-		public void setReuseRefreshTokens(boolean reuseRefreshTokens) {
+		/**
+         * Sets whether to reuse refresh tokens.
+         * 
+         * @param reuseRefreshTokens true to reuse refresh tokens, false otherwise
+         */
+        public void setReuseRefreshTokens(boolean reuseRefreshTokens) {
 			this.reuseRefreshTokens = reuseRefreshTokens;
 		}
 
-		public Duration getRefreshTokenTimeToLive() {
+		/**
+         * Returns the time to live for the refresh token.
+         *
+         * @return the time to live for the refresh token
+         */
+        public Duration getRefreshTokenTimeToLive() {
 			return this.refreshTokenTimeToLive;
 		}
 
-		public void setRefreshTokenTimeToLive(Duration refreshTokenTimeToLive) {
+		/**
+         * Sets the time to live for the refresh token.
+         * 
+         * @param refreshTokenTimeToLive the duration of time for which the refresh token is valid
+         */
+        public void setRefreshTokenTimeToLive(Duration refreshTokenTimeToLive) {
 			this.refreshTokenTimeToLive = refreshTokenTimeToLive;
 		}
 
-		public String getIdTokenSignatureAlgorithm() {
+		/**
+         * Returns the signature algorithm used for the ID token.
+         * 
+         * @return the ID token signature algorithm
+         */
+        public String getIdTokenSignatureAlgorithm() {
 			return this.idTokenSignatureAlgorithm;
 		}
 
-		public void setIdTokenSignatureAlgorithm(String idTokenSignatureAlgorithm) {
+		/**
+         * Sets the signature algorithm for the ID token.
+         * 
+         * @param idTokenSignatureAlgorithm the signature algorithm to be set for the ID token
+         */
+        public void setIdTokenSignatureAlgorithm(String idTokenSignatureAlgorithm) {
 			this.idTokenSignatureAlgorithm = idTokenSignatureAlgorithm;
 		}
 

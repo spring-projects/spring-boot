@@ -49,7 +49,12 @@ public class Docker {
 		return this.host;
 	}
 
-	void setHost(String host) {
+	/**
+     * Sets the host for the Docker class.
+     * 
+     * @param host the host to be set
+     */
+    void setHost(String host) {
 		this.host = host;
 	}
 
@@ -61,7 +66,12 @@ public class Docker {
 		return this.context;
 	}
 
-	public void setContext(String context) {
+	/**
+     * Sets the context for the Docker class.
+     * 
+     * @param context the context to be set
+     */
+    public void setContext(String context) {
 		this.context = context;
 	}
 
@@ -73,7 +83,12 @@ public class Docker {
 		return this.tlsVerify;
 	}
 
-	void setTlsVerify(boolean tlsVerify) {
+	/**
+     * Sets the value of the tlsVerify property.
+     * 
+     * @param tlsVerify the new value for tlsVerify
+     */
+    void setTlsVerify(boolean tlsVerify) {
 		this.tlsVerify = tlsVerify;
 	}
 
@@ -86,7 +101,12 @@ public class Docker {
 		return this.certPath;
 	}
 
-	void setCertPath(String certPath) {
+	/**
+     * Sets the path of the certificate file.
+     * 
+     * @param certPath the path of the certificate file
+     */
+    void setCertPath(String certPath) {
 		this.certPath = certPath;
 	}
 
@@ -98,7 +118,12 @@ public class Docker {
 		return this.bindHostToBuilder;
 	}
 
-	void setBindHostToBuilder(boolean bindHostToBuilder) {
+	/**
+     * Sets the value of the bindHostToBuilder property.
+     * 
+     * @param bindHostToBuilder the new value for the bindHostToBuilder property
+     */
+    void setBindHostToBuilder(boolean bindHostToBuilder) {
 		this.bindHostToBuilder = bindHostToBuilder;
 	}
 
@@ -151,7 +176,14 @@ public class Docker {
 		return dockerConfiguration;
 	}
 
-	private DockerConfiguration customizeHost(DockerConfiguration dockerConfiguration) {
+	/**
+     * Customizes the Docker host configuration.
+     * 
+     * @param dockerConfiguration the Docker configuration to be customized
+     * @return the customized Docker configuration
+     * @throws IllegalArgumentException if both context and host are provided
+     */
+    private DockerConfiguration customizeHost(DockerConfiguration dockerConfiguration) {
 		if (this.context != null && this.host != null) {
 			throw new IllegalArgumentException(
 					"Invalid Docker configuration, either context or host can be provided but not both");
@@ -165,7 +197,14 @@ public class Docker {
 		return dockerConfiguration;
 	}
 
-	private DockerConfiguration customizeBuilderAuthentication(DockerConfiguration dockerConfiguration) {
+	/**
+     * Customizes the authentication configuration for the Docker builder registry.
+     * 
+     * @param dockerConfiguration the Docker configuration to customize
+     * @return the customized Docker configuration
+     * @throws IllegalArgumentException if the Docker builder registry configuration is invalid
+     */
+    private DockerConfiguration customizeBuilderAuthentication(DockerConfiguration dockerConfiguration) {
 		if (this.builderRegistry == null || this.builderRegistry.isEmpty()) {
 			return dockerConfiguration;
 		}
@@ -180,7 +219,14 @@ public class Docker {
 				"Invalid Docker builder registry configuration, either token or username/password must be provided");
 	}
 
-	private DockerConfiguration customizePublishAuthentication(DockerConfiguration dockerConfiguration) {
+	/**
+     * Customizes the authentication configuration for publishing Docker images.
+     * 
+     * @param dockerConfiguration the original Docker configuration
+     * @return the customized Docker configuration with the appropriate authentication settings
+     * @throws IllegalArgumentException if the Docker publish registry configuration is invalid
+     */
+    private DockerConfiguration customizePublishAuthentication(DockerConfiguration dockerConfiguration) {
 		if (this.publishRegistry == null || this.publishRegistry.isEmpty()) {
 			return dockerConfiguration.withEmptyPublishRegistryAuthentication();
 		}
@@ -210,17 +256,33 @@ public class Docker {
 
 		private String token;
 
-		public DockerRegistry() {
+		/**
+         * Constructs a new DockerRegistry object.
+         */
+        public DockerRegistry() {
 		}
 
-		public DockerRegistry(String username, String password, String url, String email) {
+		/**
+         * Constructs a new DockerRegistry object with the specified username, password, URL, and email.
+         * 
+         * @param username the username to authenticate with the Docker registry
+         * @param password the password to authenticate with the Docker registry
+         * @param url the URL of the Docker registry
+         * @param email the email associated with the Docker registry account
+         */
+        public DockerRegistry(String username, String password, String url, String email) {
 			this.username = username;
 			this.password = password;
 			this.url = url;
 			this.email = email;
 		}
 
-		public DockerRegistry(String token) {
+		/**
+         * Constructs a new DockerRegistry object with the specified token.
+         * 
+         * @param token the token to authenticate with the Docker registry
+         */
+        public DockerRegistry(String token) {
 			this.token = token;
 		}
 
@@ -232,7 +294,12 @@ public class Docker {
 			return this.username;
 		}
 
-		void setUsername(String username) {
+		/**
+         * Sets the username for the DockerRegistry.
+         * 
+         * @param username the username to be set
+         */
+        void setUsername(String username) {
 			this.username = username;
 		}
 
@@ -244,7 +311,12 @@ public class Docker {
 			return this.password;
 		}
 
-		void setPassword(String password) {
+		/**
+         * Sets the password for the DockerRegistry.
+         * 
+         * @param password the password to be set
+         */
+        void setPassword(String password) {
 			this.password = password;
 		}
 
@@ -256,7 +328,12 @@ public class Docker {
 			return this.email;
 		}
 
-		void setEmail(String email) {
+		/**
+         * Sets the email for the DockerRegistry.
+         * 
+         * @param email the email to be set for the DockerRegistry
+         */
+        void setEmail(String email) {
 			this.email = email;
 		}
 
@@ -268,7 +345,12 @@ public class Docker {
 			return this.url;
 		}
 
-		void setUrl(String url) {
+		/**
+         * Sets the URL of the Docker registry.
+         * 
+         * @param url the URL of the Docker registry
+         */
+        void setUrl(String url) {
 			this.url = url;
 		}
 
@@ -280,20 +362,40 @@ public class Docker {
 			return this.token;
 		}
 
-		void setToken(String token) {
+		/**
+         * Sets the token for the DockerRegistry.
+         * 
+         * @param token the token to be set
+         */
+        void setToken(String token) {
 			this.token = token;
 		}
 
-		boolean isEmpty() {
+		/**
+         * Checks if the DockerRegistry object is empty.
+         * 
+         * @return true if the DockerRegistry object is empty, false otherwise
+         */
+        boolean isEmpty() {
 			return this.username == null && this.password == null && this.url == null && this.email == null
 					&& this.token == null;
 		}
 
-		boolean hasTokenAuth() {
+		/**
+         * Checks if the DockerRegistry instance has a token authentication.
+         * 
+         * @return true if the DockerRegistry instance has a token authentication, false otherwise.
+         */
+        boolean hasTokenAuth() {
 			return this.token != null;
 		}
 
-		boolean hasUserAuth() {
+		/**
+         * Checks if the user has authentication credentials.
+         * 
+         * @return true if the user has authentication credentials, false otherwise
+         */
+        boolean hasUserAuth() {
 			return this.username != null && this.password != null;
 		}
 

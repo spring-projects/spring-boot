@@ -20,6 +20,9 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 
+/**
+ * MyEndpoint class.
+ */
 @Endpoint(id = "custom")
 public class MyEndpoint {
 

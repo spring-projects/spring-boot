@@ -19,16 +19,31 @@ package org.springframework.boot.docs.data.sql.jdbcclient;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final JdbcClient jdbcClient;
 
-	public MyBean(JdbcClient jdbcClient) {
+	/**
+     * Constructs a new instance of MyBean with the specified JdbcClient.
+     *
+     * @param jdbcClient the JdbcClient to be used by this MyBean
+     */
+    public MyBean(JdbcClient jdbcClient) {
 		this.jdbcClient = jdbcClient;
 	}
 
-	public void doSomething() {
+	/**
+     * Performs a specific action.
+     * 
+     * This method deletes all records from the customer table using the JDBC client.
+     * 
+     * @chomp:line this.jdbcClient ... 
+     */
+    public void doSomething() {
 		/* @chomp:line this.jdbcClient ... */ this.jdbcClient.sql("delete from customer").update();
 	}
 

@@ -33,12 +33,24 @@ public class JobExecutionExitCodeGenerator implements ApplicationListener<JobExe
 
 	private final List<JobExecution> executions = new CopyOnWriteArrayList<>();
 
-	@Override
+	/**
+     * This method is called when a JobExecutionEvent is triggered.
+     * It adds the JobExecution object from the event to the list of executions.
+     *
+     * @param event the JobExecutionEvent that is triggered
+     */
+    @Override
 	public void onApplicationEvent(JobExecutionEvent event) {
 		this.executions.add(event.getJobExecution());
 	}
 
-	@Override
+	/**
+     * Returns the exit code of the job execution.
+     * 
+     * @return the exit code of the job execution. If any of the executions have a status ordinal greater than 0, 
+     *         the highest ordinal value is returned. If all executions have a status ordinal of 0, 0 is returned.
+     */
+    @Override
 	public int getExitCode() {
 		for (JobExecution execution : this.executions) {
 			if (execution.getStatus().ordinal() > 0) {

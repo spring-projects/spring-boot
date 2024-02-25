@@ -19,10 +19,19 @@ package org.springframework.boot.docs.messaging.amqp.receiving;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
-	@RabbitListener(queues = "someQueue")
+	/**
+     * This method is a message listener for the "someQueue" queue.
+     * It processes the received message content.
+     *
+     * @param content the content of the message to be processed
+     */
+    @RabbitListener(queues = "someQueue")
 	public void processMessage(String content) {
 		// ...
 	}

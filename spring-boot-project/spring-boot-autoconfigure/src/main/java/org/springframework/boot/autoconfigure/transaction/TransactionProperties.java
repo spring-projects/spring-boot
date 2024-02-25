@@ -46,23 +46,48 @@ public class TransactionProperties implements TransactionManagerCustomizer<Abstr
 	 */
 	private Boolean rollbackOnCommitFailure;
 
-	public Duration getDefaultTimeout() {
+	/**
+     * Returns the default timeout duration.
+     *
+     * @return the default timeout duration
+     */
+    public Duration getDefaultTimeout() {
 		return this.defaultTimeout;
 	}
 
-	public void setDefaultTimeout(Duration defaultTimeout) {
+	/**
+     * Sets the default timeout for transactions.
+     * 
+     * @param defaultTimeout the default timeout duration for transactions
+     */
+    public void setDefaultTimeout(Duration defaultTimeout) {
 		this.defaultTimeout = defaultTimeout;
 	}
 
-	public Boolean getRollbackOnCommitFailure() {
+	/**
+     * Returns the value indicating whether a rollback should be performed on commit failure.
+     *
+     * @return {@code true} if a rollback should be performed on commit failure, {@code false} otherwise.
+     */
+    public Boolean getRollbackOnCommitFailure() {
 		return this.rollbackOnCommitFailure;
 	}
 
-	public void setRollbackOnCommitFailure(Boolean rollbackOnCommitFailure) {
+	/**
+     * Sets the flag indicating whether to rollback the transaction on commit failure.
+     * 
+     * @param rollbackOnCommitFailure the flag indicating whether to rollback the transaction on commit failure
+     */
+    public void setRollbackOnCommitFailure(Boolean rollbackOnCommitFailure) {
 		this.rollbackOnCommitFailure = rollbackOnCommitFailure;
 	}
 
-	@Override
+	/**
+     * Customizes the given AbstractPlatformTransactionManager with the configured properties.
+     * 
+     * @param transactionManager the AbstractPlatformTransactionManager to be customized
+     */
+    @Override
 	public void customize(AbstractPlatformTransactionManager transactionManager) {
 		if (this.defaultTimeout != null) {
 			transactionManager.setDefaultTimeout((int) this.defaultTimeout.getSeconds());

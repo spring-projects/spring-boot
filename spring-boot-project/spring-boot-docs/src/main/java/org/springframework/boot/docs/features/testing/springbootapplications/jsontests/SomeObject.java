@@ -16,9 +16,17 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.jsontests;
 
+/**
+ * SomeObject class.
+ */
 class SomeObject {
 
-	SomeObject(float value) {
+	/**
+     * Constructs a new SomeObject with the specified value.
+     *
+     * @param value the value to be assigned to the SomeObject
+     */
+    SomeObject(float value) {
 	}
 
 }

@@ -43,19 +43,40 @@ public class DiskSpaceHealthIndicatorProperties {
 	 */
 	private DataSize threshold = DataSize.ofMegabytes(10);
 
-	public File getPath() {
+	/**
+     * Returns the path of the file.
+     *
+     * @return the path of the file
+     */
+    public File getPath() {
 		return this.path;
 	}
 
-	public void setPath(File path) {
+	/**
+     * Sets the path for the DiskSpaceHealthIndicatorProperties.
+     * 
+     * @param path the file path to set
+     */
+    public void setPath(File path) {
 		this.path = path;
 	}
 
-	public DataSize getThreshold() {
+	/**
+     * Returns the threshold value for disk space.
+     *
+     * @return the threshold value for disk space
+     */
+    public DataSize getThreshold() {
 		return this.threshold;
 	}
 
-	public void setThreshold(DataSize threshold) {
+	/**
+     * Sets the threshold for disk space health indicator.
+     * 
+     * @param threshold the threshold value to be set
+     * @throws IllegalArgumentException if the threshold is negative
+     */
+    public void setThreshold(DataSize threshold) {
 		Assert.isTrue(!threshold.isNegative(), "threshold must be greater than or equal to 0");
 		this.threshold = threshold;
 	}

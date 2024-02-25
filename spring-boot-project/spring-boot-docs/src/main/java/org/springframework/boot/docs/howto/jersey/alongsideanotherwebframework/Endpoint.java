@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.howto.jersey.alongsideanotherwebframework;
 
+/**
+ * Endpoint class.
+ */
 class Endpoint {
 
 }

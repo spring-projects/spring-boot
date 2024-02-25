@@ -40,13 +40,23 @@ public class ImageConfig extends MappedObject {
 
 	private final Map<String, String> configEnv;
 
-	ImageConfig(JsonNode node) {
+	/**
+     * Constructs a new ImageConfig object with the provided JSON node.
+     * 
+     * @param node the JSON node containing the image configuration data
+     */
+    ImageConfig(JsonNode node) {
 		super(node, MethodHandles.lookup());
 		this.labels = extractLabels();
 		this.configEnv = parseConfigEnv();
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Extracts the labels from the ImageConfig object.
+     * 
+     * @return a Map containing the labels extracted from the ImageConfig object
+     */
+    @SuppressWarnings("unchecked")
 	private Map<String, String> extractLabels() {
 		Map<String, String> labels = valueAt("/Labels", Map.class);
 		if (labels == null) {
@@ -55,7 +65,16 @@ public class ImageConfig extends MappedObject {
 		return labels;
 	}
 
-	private Map<String, String> parseConfigEnv() {
+	/**
+     * Parses the configuration environment and returns a map of key-value pairs.
+     * The configuration environment is retrieved from the specified path "/Env".
+     * If the configuration environment is not found, an empty map is returned.
+     * 
+     * @return A map containing the parsed configuration environment.
+     *         The keys are the names of the environment variables, and the values are their corresponding values.
+     *         The map is unmodifiable.
+     */
+    private Map<String, String> parseConfigEnv() {
 		String[] entries = valueAt("/Env", String[].class);
 		if (entries == null) {
 			return Collections.emptyMap();
@@ -70,7 +89,12 @@ public class ImageConfig extends MappedObject {
 		return Collections.unmodifiableMap(env);
 	}
 
-	JsonNode getNodeCopy() {
+	/**
+     * Returns a deep copy of the JsonNode object.
+     *
+     * @return a deep copy of the JsonNode object
+     */
+    JsonNode getNodeCopy() {
 		return super.getNode().deepCopy();
 	}
 
@@ -109,11 +133,22 @@ public class ImageConfig extends MappedObject {
 
 		private final ObjectNode copy;
 
-		private Update(ImageConfig source) {
+		/**
+         * Updates the image configuration by making a deep copy of the source image configuration.
+         * 
+         * @param source the image configuration to be updated
+         */
+        private Update(ImageConfig source) {
 			this.copy = source.getNode().deepCopy();
 		}
 
-		private ImageConfig run(Consumer<Update> update) {
+		/**
+         * Runs the update function and returns a new ImageConfig object.
+         * 
+         * @param update the update function to be executed
+         * @return a new ImageConfig object with the updated values
+         */
+        private ImageConfig run(Consumer<Update> update) {
 			update.accept(this);
 			return new ImageConfig(this.copy);
 		}

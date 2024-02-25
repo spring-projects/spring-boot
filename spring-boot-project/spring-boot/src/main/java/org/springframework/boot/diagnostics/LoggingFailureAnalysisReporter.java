@@ -31,7 +31,12 @@ public final class LoggingFailureAnalysisReporter implements FailureAnalysisRepo
 
 	private static final Log logger = LogFactory.getLog(LoggingFailureAnalysisReporter.class);
 
-	@Override
+	/**
+     * Reports the failure analysis.
+     * 
+     * @param failureAnalysis the failure analysis object containing information about the failure
+     */
+    @Override
 	public void report(FailureAnalysis failureAnalysis) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Application failed to start due to an exception", failureAnalysis.getCause());
@@ -41,7 +46,13 @@ public final class LoggingFailureAnalysisReporter implements FailureAnalysisRepo
 		}
 	}
 
-	private String buildMessage(FailureAnalysis failureAnalysis) {
+	/**
+     * Builds a message for a failure analysis.
+     * 
+     * @param failureAnalysis the failure analysis object containing the description and action
+     * @return the built message as a string
+     */
+    private String buildMessage(FailureAnalysis failureAnalysis) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(String.format("%n%n"));
 		builder.append(String.format("***************************%n"));

@@ -93,7 +93,12 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 		this.taskExecutor = taskExecutor;
 	}
 
-	protected final RabbitProperties getRabbitProperties() {
+	/**
+     * Returns the RabbitProperties object used by this container factory configurer.
+     *
+     * @return the RabbitProperties object used by this container factory configurer
+     */
+    protected final RabbitProperties getRabbitProperties() {
 		return this.rabbitProperties;
 	}
 
@@ -106,7 +111,15 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	 */
 	public abstract void configure(T factory, ConnectionFactory connectionFactory);
 
-	protected void configure(T factory, ConnectionFactory connectionFactory,
+	/**
+     * Configures the Rabbit listener container factory with the provided connection factory and configuration.
+     * 
+     * @param factory the Rabbit listener container factory to configure
+     * @param connectionFactory the connection factory to set on the listener container factory
+     * @param configuration the Rabbit properties and container configuration to apply to the listener container factory
+     * @throws IllegalArgumentException if any of the parameters are null
+     */
+    protected void configure(T factory, ConnectionFactory connectionFactory,
 			RabbitProperties.AmqpContainer configuration) {
 		Assert.notNull(factory, "Factory must not be null");
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");

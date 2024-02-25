@@ -32,15 +32,38 @@ import jakarta.servlet.ServletResponse;
  */
 public class ExampleFilter implements Filter {
 
-	@Override
+	/**
+     * Initializes the filter.
+     * 
+     * @param filterConfig the filter configuration object
+     * @throws ServletException if an exception occurs during initialization
+     */
+    @Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
 
-	@Override
+	/**
+     * This method is called by the web container to indicate to a filter that it is being taken out of service.
+     * It is called after all filter methods have been completed.
+     * This method gives the filter an opportunity to clean up any resources that it is holding (for example, 
+     * memory, file handles, threads) and make sure that any persistent state is synchronized with the filter's current state in memory.
+     */
+    @Override
 	public void destroy() {
 	}
 
-	@Override
+	/**
+     * This method is used to filter the incoming requests and responses.
+     * It writes a "[" character to the response writer before passing the request and response to the next filter in the chain.
+     * After the request and response have been processed by the next filter, it writes a "]" character to the response writer.
+     *
+     * @param request  the ServletRequest object representing the incoming request
+     * @param response the ServletResponse object representing the outgoing response
+     * @param chain    the FilterChain object used to invoke the next filter in the chain
+     * @throws IOException      if an I/O error occurs during the filtering process
+     * @throws ServletException if a servlet-specific error occurs during the filtering process
+     */
+    @Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		response.getWriter().write("[");

@@ -23,6 +23,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleAopApplication class.
+ */
 @SpringBootApplication
 public class SampleAopApplication implements CommandLineRunner {
 
@@ -31,12 +34,24 @@ public class SampleAopApplication implements CommandLineRunner {
 	@Autowired
 	private HelloWorldService helloWorldService;
 
-	@Override
+	/**
+     * This method is the entry point of the application and is responsible for running the application.
+     * It prints the hello message obtained from the HelloWorldService.
+     *
+     * @param args The command line arguments passed to the application.
+     */
+    @Override
 	public void run(String... args) {
 		System.out.println(this.helloWorldService.getHelloMessage());
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring application by running the SampleAopApplication class.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleAopApplication.class, args);
 	}
 

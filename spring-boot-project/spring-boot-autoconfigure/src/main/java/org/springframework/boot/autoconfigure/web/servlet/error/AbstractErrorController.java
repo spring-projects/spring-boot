@@ -51,17 +51,35 @@ public abstract class AbstractErrorController implements ErrorController {
 
 	private final List<ErrorViewResolver> errorViewResolvers;
 
-	public AbstractErrorController(ErrorAttributes errorAttributes) {
+	/**
+     * Constructs a new AbstractErrorController with the specified ErrorAttributes and null ErrorViewResolver.
+     * 
+     * @param errorAttributes the ErrorAttributes object used to retrieve error information
+     */
+    public AbstractErrorController(ErrorAttributes errorAttributes) {
 		this(errorAttributes, null);
 	}
 
-	public AbstractErrorController(ErrorAttributes errorAttributes, List<ErrorViewResolver> errorViewResolvers) {
+	/**
+     * Constructs a new AbstractErrorController with the specified ErrorAttributes and ErrorViewResolvers.
+     * 
+     * @param errorAttributes the ErrorAttributes to be used for error handling
+     * @param errorViewResolvers the list of ErrorViewResolvers to be used for resolving error views
+     * @throws IllegalArgumentException if errorAttributes is null
+     */
+    public AbstractErrorController(ErrorAttributes errorAttributes, List<ErrorViewResolver> errorViewResolvers) {
 		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
 		this.errorAttributes = errorAttributes;
 		this.errorViewResolvers = sortErrorViewResolvers(errorViewResolvers);
 	}
 
-	private List<ErrorViewResolver> sortErrorViewResolvers(List<ErrorViewResolver> resolvers) {
+	/**
+     * Sorts the list of ErrorViewResolvers in ascending order based on their order value.
+     * 
+     * @param resolvers the list of ErrorViewResolvers to be sorted
+     * @return the sorted list of ErrorViewResolvers
+     */
+    private List<ErrorViewResolver> sortErrorViewResolvers(List<ErrorViewResolver> resolvers) {
 		List<ErrorViewResolver> sorted = new ArrayList<>();
 		if (resolvers != null) {
 			sorted.addAll(resolvers);
@@ -70,7 +88,14 @@ public abstract class AbstractErrorController implements ErrorController {
 		return sorted;
 	}
 
-	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, ErrorAttributeOptions options) {
+	/**
+     * Retrieves the error attributes for the given HttpServletRequest and ErrorAttributeOptions.
+     * 
+     * @param request The HttpServletRequest object.
+     * @param options The ErrorAttributeOptions object specifying the options for retrieving error attributes.
+     * @return A Map containing the error attributes.
+     */
+    protected Map<String, Object> getErrorAttributes(HttpServletRequest request, ErrorAttributeOptions options) {
 		WebRequest webRequest = new ServletWebRequest(request);
 		return this.errorAttributes.getErrorAttributes(webRequest, options);
 	}
@@ -112,7 +137,14 @@ public abstract class AbstractErrorController implements ErrorController {
 		return getBooleanParameter(request, "path");
 	}
 
-	protected boolean getBooleanParameter(HttpServletRequest request, String parameterName) {
+	/**
+     * Retrieves a boolean parameter from the given HttpServletRequest object.
+     * 
+     * @param request The HttpServletRequest object from which to retrieve the parameter.
+     * @param parameterName The name of the parameter to retrieve.
+     * @return The boolean value of the parameter. Returns false if the parameter is not found or is null. Returns true if the parameter is found and its value is not equal to "false" (case-insensitive).
+     */
+    protected boolean getBooleanParameter(HttpServletRequest request, String parameterName) {
 		String parameter = request.getParameter(parameterName);
 		if (parameter == null) {
 			return false;
@@ -120,7 +152,13 @@ public abstract class AbstractErrorController implements ErrorController {
 		return !"false".equalsIgnoreCase(parameter);
 	}
 
-	protected HttpStatus getStatus(HttpServletRequest request) {
+	/**
+     * Returns the HTTP status code of the given HttpServletRequest.
+     * 
+     * @param request the HttpServletRequest object
+     * @return the HttpStatus corresponding to the status code of the request, or HttpStatus.INTERNAL_SERVER_ERROR if the status code is not available or cannot be resolved
+     */
+    protected HttpStatus getStatus(HttpServletRequest request) {
 		Integer statusCode = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 		if (statusCode == null) {
 			return HttpStatus.INTERNAL_SERVER_ERROR;

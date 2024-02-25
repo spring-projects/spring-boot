@@ -26,10 +26,19 @@ import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 
+/**
+ * MyReactorNettyClientConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyReactorNettyClientConfiguration {
 
-	@Bean
+	/**
+     * Creates a ClientHttpConnector using ReactorNetty's HttpClient.
+     * 
+     * @param resourceFactory the ReactorResourceFactory used to create the HttpClient
+     * @return the ClientHttpConnector created using ReactorNetty's HttpClient
+     */
+    @Bean
 	ClientHttpConnector clientHttpConnector(ReactorResourceFactory resourceFactory) {
 		// @formatter:off
 		HttpClient httpClient = HttpClient.create(resourceFactory.getConnectionProvider())

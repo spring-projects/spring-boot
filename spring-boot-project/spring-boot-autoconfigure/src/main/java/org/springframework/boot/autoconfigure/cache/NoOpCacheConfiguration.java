@@ -33,7 +33,12 @@ import org.springframework.context.annotation.Configuration;
 @Conditional(CacheCondition.class)
 class NoOpCacheConfiguration {
 
-	@Bean
+	/**
+     * Returns a NoOpCacheManager instance.
+     * 
+     * @return a NoOpCacheManager instance
+     */
+    @Bean
 	NoOpCacheManager cacheManager() {
 		return new NoOpCacheManager();
 	}

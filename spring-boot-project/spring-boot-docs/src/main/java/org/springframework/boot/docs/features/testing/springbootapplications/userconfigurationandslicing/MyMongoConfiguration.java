@@ -19,6 +19,9 @@ package org.springframework.boot.docs.features.testing.springbootapplications.us
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
+/**
+ * MyMongoConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 @EnableMongoAuditing
 public class MyMongoConfiguration {

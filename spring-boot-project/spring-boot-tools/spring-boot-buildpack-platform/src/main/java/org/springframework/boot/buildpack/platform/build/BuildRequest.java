@@ -89,7 +89,13 @@ public class BuildRequest {
 
 	private final List<String> securityOptions;
 
-	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent) {
+	/**
+     * Creates a new BuildRequest object with the specified image reference name and application content.
+     * 
+     * @param name the image reference name for the build request (must not be null)
+     * @param applicationContent a function that provides the application content as a tar archive (must not be null)
+     */
+    BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(applicationContent, "ApplicationContent must not be null");
 		this.name = name.inTaggedForm();
@@ -114,7 +120,31 @@ public class BuildRequest {
 		this.securityOptions = null;
 	}
 
-	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent, ImageReference builder,
+	/**
+     * Creates a new BuildRequest object with the specified parameters.
+     *
+     * @param name                the reference name of the image to be built
+     * @param applicationContent  a function that returns the tar archive of the application content
+     * @param builder             the reference name of the builder image to be used
+     * @param runImage            the reference name of the runtime image to be used
+     * @param creator             the creator of the build request
+     * @param env                 a map of environment variables to be set during the build
+     * @param cleanCache          a flag indicating whether to clean the build cache before starting the build
+     * @param verboseLogging      a flag indicating whether to enable verbose logging during the build
+     * @param pullPolicy          the pull policy for the builder and runtime images
+     * @param publish             a flag indicating whether to publish the built image
+     * @param buildpacks          a list of buildpack references to be used during the build
+     * @param bindings            a list of bindings to be used during the build
+     * @param network             the network mode to be used during the build
+     * @param tags                a list of tags to be applied to the built image
+     * @param buildWorkspace      the cache for the build workspace
+     * @param buildCache          the cache for the build process
+     * @param launchCache         the cache for the launch process
+     * @param createdDate         the date and time when the build request was created
+     * @param applicationDirectory the directory where the application content is located
+     * @param securityOptions     a list of security options to be applied during the build
+     */
+    BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent, ImageReference builder,
 			ImageReference runImage, Creator creator, Map<String, String> env, boolean cleanCache,
 			boolean verboseLogging, PullPolicy pullPolicy, boolean publish, List<BuildpackReference> buildpacks,
 			List<Binding> bindings, String network, List<ImageReference> tags, Cache buildWorkspace, Cache buildCache,
@@ -398,7 +428,14 @@ public class BuildRequest {
 				parseCreatedDate(createdDate), this.applicationDirectory, this.securityOptions);
 	}
 
-	private Instant parseCreatedDate(String createdDate) {
+	/**
+     * Parses the given created date string and returns an Instant object representing the parsed date.
+     * 
+     * @param createdDate the string representation of the created date
+     * @return an Instant object representing the parsed date
+     * @throws IllegalArgumentException if the created date string cannot be parsed
+     */
+    private Instant parseCreatedDate(String createdDate) {
 		if ("now".equalsIgnoreCase(createdDate)) {
 			return Instant.now();
 		}
@@ -635,7 +672,13 @@ public class BuildRequest {
 		return new BuildRequest(name, applicationContent);
 	}
 
-	private static void assertJarFile(File jarFile) {
+	/**
+     * Asserts that the given jar file is valid.
+     * 
+     * @param jarFile the jar file to be validated
+     * @throws IllegalArgumentException if the jar file is null, does not exist, or is not a file
+     */
+    private static void assertJarFile(File jarFile) {
 		Assert.notNull(jarFile, "JarFile must not be null");
 		Assert.isTrue(jarFile.exists(), "JarFile must exist");
 		Assert.isTrue(jarFile.isFile(), "JarFile must be a file");

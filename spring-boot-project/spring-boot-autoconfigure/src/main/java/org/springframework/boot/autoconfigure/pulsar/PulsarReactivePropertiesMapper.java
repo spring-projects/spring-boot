@@ -36,11 +36,22 @@ final class PulsarReactivePropertiesMapper {
 
 	private final PulsarProperties properties;
 
-	PulsarReactivePropertiesMapper(PulsarProperties properties) {
+	/**
+     * Constructs a new PulsarReactivePropertiesMapper with the specified PulsarProperties.
+     *
+     * @param properties the PulsarProperties to be used by the mapper
+     */
+    PulsarReactivePropertiesMapper(PulsarProperties properties) {
 		this.properties = properties;
 	}
 
-	<T> void customizeMessageSenderBuilder(ReactiveMessageSenderBuilder<T> builder) {
+	/**
+     * Customizes the message sender builder with the provided properties.
+     *
+     * @param builder the reactive message sender builder to customize
+     * @param <T>     the type of the reactive message sender builder
+     */
+    <T> void customizeMessageSenderBuilder(ReactiveMessageSenderBuilder<T> builder) {
 		PulsarProperties.Producer properties = this.properties.getProducer();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(builder::producerName);
@@ -54,7 +65,13 @@ final class PulsarReactivePropertiesMapper {
 		map.from(properties::getAccessMode).to(builder::accessMode);
 	}
 
-	<T> void customizeMessageConsumerBuilder(ReactiveMessageConsumerBuilder<T> builder) {
+	/**
+     * Customizes the ReactiveMessageConsumerBuilder with the properties defined in the PulsarProperties.Consumer object.
+     * 
+     * @param builder the ReactiveMessageConsumerBuilder to be customized
+     * @param <T> the type of the message consumed by the builder
+     */
+    <T> void customizeMessageConsumerBuilder(ReactiveMessageConsumerBuilder<T> builder) {
 		PulsarProperties.Consumer properties = this.properties.getConsumer();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(builder::consumerName);
@@ -67,7 +84,13 @@ final class PulsarReactivePropertiesMapper {
 		customizerMessageConsumerBuilderSubscription(builder);
 	}
 
-	private <T> void customizerMessageConsumerBuilderSubscription(ReactiveMessageConsumerBuilder<T> builder) {
+	/**
+     * Customizes the message consumer builder subscription based on the provided properties.
+     *
+     * @param builder the reactive message consumer builder
+     * @param <T>     the type of the message
+     */
+    private <T> void customizerMessageConsumerBuilderSubscription(ReactiveMessageConsumerBuilder<T> builder) {
 		PulsarProperties.Consumer.Subscription properties = this.properties.getConsumer().getSubscription();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(builder::subscriptionName);
@@ -77,25 +100,47 @@ final class PulsarReactivePropertiesMapper {
 		map.from(properties::getType).to(builder::subscriptionType);
 	}
 
-	<T> void customizeContainerProperties(ReactivePulsarContainerProperties<T> containerProperties) {
+	/**
+     * Customizes the properties of a ReactivePulsarContainer.
+     * 
+     * @param containerProperties the properties of the ReactivePulsarContainer to be customized
+     * 
+     * @param <T> the type of the ReactivePulsarContainer
+     */
+    <T> void customizeContainerProperties(ReactivePulsarContainerProperties<T> containerProperties) {
 		customizePulsarContainerConsumerSubscriptionProperties(containerProperties);
 		customizePulsarContainerListenerProperties(containerProperties);
 	}
 
-	private void customizePulsarContainerConsumerSubscriptionProperties(
+	/**
+     * Customizes the subscription properties of the Pulsar container consumer based on the provided container properties.
+     * 
+     * @param containerProperties The container properties to customize.
+     */
+    private void customizePulsarContainerConsumerSubscriptionProperties(
 			ReactivePulsarContainerProperties<?> containerProperties) {
 		PulsarProperties.Consumer.Subscription properties = this.properties.getConsumer().getSubscription();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getType).to(containerProperties::setSubscriptionType);
 	}
 
-	private void customizePulsarContainerListenerProperties(ReactivePulsarContainerProperties<?> containerProperties) {
+	/**
+     * Customizes the properties of the Pulsar container listener based on the provided container properties.
+     * 
+     * @param containerProperties The container properties to customize the listener properties for.
+     */
+    private void customizePulsarContainerListenerProperties(ReactivePulsarContainerProperties<?> containerProperties) {
 		PulsarProperties.Listener properties = this.properties.getListener();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
 	}
 
-	void customizeMessageReaderBuilder(ReactiveMessageReaderBuilder<?> builder) {
+	/**
+     * Customizes the ReactiveMessageReaderBuilder with the properties specified in the PulsarProperties.Reader object.
+     * 
+     * @param builder the ReactiveMessageReaderBuilder to be customized
+     */
+    void customizeMessageReaderBuilder(ReactiveMessageReaderBuilder<?> builder) {
 		PulsarProperties.Reader properties = this.properties.getReader();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(builder::readerName);

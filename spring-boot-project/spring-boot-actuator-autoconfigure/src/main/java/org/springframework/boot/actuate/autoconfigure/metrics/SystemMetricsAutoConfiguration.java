@@ -47,25 +47,46 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(MetricsProperties.class)
 public class SystemMetricsAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of UptimeMetrics if no other bean of type UptimeMetrics is present.
+     * 
+     * @return the UptimeMetrics instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public UptimeMetrics uptimeMetrics() {
 		return new UptimeMetrics();
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of ProcessorMetrics if no other bean of the same type is present in the application context.
+     * 
+     * @return the created ProcessorMetrics instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public ProcessorMetrics processorMetrics() {
 		return new ProcessorMetrics();
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of FileDescriptorMetrics if no other bean of the same type is present.
+     * 
+     * @return the created FileDescriptorMetrics instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public FileDescriptorMetrics fileDescriptorMetrics() {
 		return new FileDescriptorMetrics();
 	}
 
-	@Bean
+	/**
+     * Creates a DiskSpaceMetricsBinder bean if no other bean of the same type is present.
+     * 
+     * @param properties the MetricsProperties object containing the configuration properties
+     * @return a DiskSpaceMetricsBinder object configured with the specified paths and empty tags
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public DiskSpaceMetricsBinder diskSpaceMetrics(MetricsProperties properties) {
 		List<File> paths = properties.getSystem().getDiskspace().getPaths();

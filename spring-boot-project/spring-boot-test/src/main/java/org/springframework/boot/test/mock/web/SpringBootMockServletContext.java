@@ -44,16 +44,37 @@ public class SpringBootMockServletContext extends MockServletContext {
 
 	private File emptyRootDirectory;
 
-	public SpringBootMockServletContext(String resourceBasePath) {
+	/**
+     * Constructs a new SpringBootMockServletContext with the specified resource base path.
+     * 
+     * @param resourceBasePath the base path for the resources in the servlet context
+     */
+    public SpringBootMockServletContext(String resourceBasePath) {
 		this(resourceBasePath, new FileSystemResourceLoader());
 	}
 
-	public SpringBootMockServletContext(String resourceBasePath, ResourceLoader resourceLoader) {
+	/**
+     * Constructs a new SpringBootMockServletContext with the specified resource base path and resource loader.
+     * 
+     * @param resourceBasePath the base path for the resources in the servlet context
+     * @param resourceLoader the resource loader used to load the resources
+     */
+    public SpringBootMockServletContext(String resourceBasePath, ResourceLoader resourceLoader) {
 		super(resourceBasePath, resourceLoader);
 		this.resourceLoader = resourceLoader;
 	}
 
-	@Override
+	/**
+     * Retrieves the resource location for the given path.
+     * If the path does not start with a "/", it is appended to the path.
+     * The resource location is determined by checking if the resource exists in the base path location,
+     * and if not, checking in the Spring Boot resource locations.
+     * If the resource is not found in any of the locations, the super class's getResourceLocation method is called.
+     *
+     * @param path the path of the resource
+     * @return the resource location if found, otherwise the result of the super class's getResourceLocation method
+     */
+    @Override
 	protected String getResourceLocation(String path) {
 		if (!path.startsWith("/")) {
 			path = "/" + path;
@@ -71,11 +92,23 @@ public class SpringBootMockServletContext extends MockServletContext {
 		return super.getResourceLocation(path);
 	}
 
-	protected final String getResourceBasePathLocation(String path) {
+	/**
+     * Returns the resource base path location for the specified path.
+     * 
+     * @param path the path of the resource
+     * @return the resource base path location
+     */
+    protected final String getResourceBasePathLocation(String path) {
 		return super.getResourceLocation(path);
 	}
 
-	private boolean exists(String resourceLocation) {
+	/**
+     * Checks if a resource exists at the specified location.
+     * 
+     * @param resourceLocation the location of the resource to check
+     * @return true if the resource exists, false otherwise
+     */
+    private boolean exists(String resourceLocation) {
 		try {
 			Resource resource = this.resourceLoader.getResource(resourceLocation);
 			return resource.exists();
@@ -85,7 +118,14 @@ public class SpringBootMockServletContext extends MockServletContext {
 		}
 	}
 
-	@Override
+	/**
+     * Retrieves the resource URL for the given path.
+     * 
+     * @param path the path of the resource
+     * @return the URL of the resource, or null if not found
+     * @throws MalformedURLException if the path is not a valid URL
+     */
+    @Override
 	public URL getResource(String path) throws MalformedURLException {
 		URL resource = super.getResource(path);
 		if (resource == null && "/".equals(path)) {

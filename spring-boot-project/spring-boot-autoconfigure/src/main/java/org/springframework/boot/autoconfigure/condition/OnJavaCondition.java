@@ -38,7 +38,14 @@ class OnJavaCondition extends SpringBootCondition {
 
 	private static final JavaVersion JVM_VERSION = JavaVersion.getJavaVersion();
 
-	@Override
+	/**
+     * Determines the match outcome for the conditional annotation @ConditionalOnJava.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnJava.class.getName());
 		Range range = (Range) attributes.get("range");
@@ -46,7 +53,15 @@ class OnJavaCondition extends SpringBootCondition {
 		return getMatchOutcome(range, JVM_VERSION, version);
 	}
 
-	protected ConditionOutcome getMatchOutcome(Range range, JavaVersion runningVersion, JavaVersion version) {
+	/**
+     * Returns the outcome of a match between the running Java version and the specified version range.
+     * 
+     * @param range the range of versions to match against
+     * @param runningVersion the running Java version
+     * @param version the specified version to match against
+     * @return the outcome of the match as a ConditionOutcome object
+     */
+    protected ConditionOutcome getMatchOutcome(Range range, JavaVersion runningVersion, JavaVersion version) {
 		boolean match = isWithin(runningVersion, range, version);
 		String expected = String.format((range != Range.EQUAL_OR_NEWER) ? "(older than %s)" : "(%s or newer)", version);
 		ConditionMessage message = ConditionMessage.forCondition(ConditionalOnJava.class, expected)

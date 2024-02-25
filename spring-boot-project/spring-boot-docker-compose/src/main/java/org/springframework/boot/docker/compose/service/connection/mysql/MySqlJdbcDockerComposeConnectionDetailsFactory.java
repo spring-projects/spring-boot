@@ -36,11 +36,22 @@ class MySqlJdbcDockerComposeConnectionDetailsFactory
 
 	private static final String[] MYSQL_CONTAINER_NAMES = { "mysql", "bitnami/mysql" };
 
-	protected MySqlJdbcDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new instance of the {@code MySqlJdbcDockerComposeConnectionDetailsFactory} class.
+     * 
+     * @param mysqlContainerNames an array of MySQL container names
+     */
+    protected MySqlJdbcDockerComposeConnectionDetailsFactory() {
 		super(MYSQL_CONTAINER_NAMES);
 	}
 
-	@Override
+	/**
+     * Returns the JDBC connection details for a Docker Compose connection.
+     * 
+     * @param source the Docker Compose connection source
+     * @return the JDBC connection details
+     */
+    @Override
 	protected JdbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new MySqlJdbcDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -57,23 +68,43 @@ class MySqlJdbcDockerComposeConnectionDetailsFactory
 
 		private final String jdbcUrl;
 
-		MySqlJdbcDockerComposeConnectionDetails(RunningService service) {
+		/**
+         * Constructs a new MySqlJdbcDockerComposeConnectionDetails object with the provided RunningService.
+         * 
+         * @param service the RunningService object representing the running service
+         */
+        MySqlJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new MySqlEnvironment(service.env());
 			this.jdbcUrl = jdbcUrlBuilder.build(service, this.environment.getDatabase());
 		}
 
-		@Override
+		/**
+         * Returns the username used for connecting to the MySQL database.
+         * 
+         * @return the username used for connecting to the MySQL database
+         */
+        @Override
 		public String getUsername() {
 			return this.environment.getUsername();
 		}
 
-		@Override
+		/**
+         * Returns the password for the MySQL JDBC connection.
+         * 
+         * @return the password for the MySQL JDBC connection
+         */
+        @Override
 		public String getPassword() {
 			return this.environment.getPassword();
 		}
 
-		@Override
+		/**
+         * Returns the JDBC URL for the MySQL database connection.
+         *
+         * @return the JDBC URL for the MySQL database connection
+         */
+        @Override
 		public String getJdbcUrl() {
 			return this.jdbcUrl;
 		}

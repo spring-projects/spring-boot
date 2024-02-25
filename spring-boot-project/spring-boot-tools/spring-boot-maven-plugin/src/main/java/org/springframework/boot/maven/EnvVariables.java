@@ -31,11 +31,22 @@ class EnvVariables {
 
 	private final Map<String, String> variables;
 
-	EnvVariables(Map<String, String> variables) {
+	/**
+     * Initializes the environment variables with the provided map of variables.
+     * 
+     * @param variables a map containing the environment variables as key-value pairs
+     */
+    EnvVariables(Map<String, String> variables) {
 		this.variables = parseEnvVariables(variables);
 	}
 
-	private static Map<String, String> parseEnvVariables(Map<String, String> args) {
+	/**
+     * Parses the environment variables from the given map of arguments.
+     * 
+     * @param args the map of arguments containing environment variables
+     * @return a map of parsed environment variables
+     */
+    private static Map<String, String> parseEnvVariables(Map<String, String> args) {
 		if (args == null || args.isEmpty()) {
 			return Collections.emptyMap();
 		}
@@ -48,15 +59,32 @@ class EnvVariables {
 		return result;
 	}
 
-	private static String getValue(String value) {
+	/**
+     * Returns the value of the specified variable.
+     * 
+     * @param value the value of the variable
+     * @return the value if it is not null, otherwise an empty string
+     */
+    private static String getValue(String value) {
 		return (value != null) ? value : "";
 	}
 
-	Map<String, String> asMap() {
+	/**
+     * Returns an unmodifiable map of the variables in the environment.
+     *
+     * @return an unmodifiable map of the variables in the environment
+     */
+    Map<String, String> asMap() {
 		return Collections.unmodifiableMap(this.variables);
 	}
 
-	String[] asArray() {
+	/**
+     * Converts the variables stored in the EnvVariables object into an array of strings.
+     * Each variable is represented as a key-value pair in the format "key=value".
+     * 
+     * @return an array of strings representing the variables
+     */
+    String[] asArray() {
 		List<String> args = new ArrayList<>(this.variables.size());
 		for (Map.Entry<String, String> arg : this.variables.entrySet()) {
 			args.add(arg.getKey() + "=" + arg.getValue());

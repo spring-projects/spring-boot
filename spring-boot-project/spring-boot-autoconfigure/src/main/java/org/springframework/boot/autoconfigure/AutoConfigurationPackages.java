@@ -102,7 +102,13 @@ public abstract class AutoConfigurationPackages {
 		}
 	}
 
-	private static void addBasePackages(BeanDefinition beanDefinition, String[] additionalBasePackages) {
+	/**
+     * Adds additional base packages to the existing base packages in the given BeanDefinition.
+     * 
+     * @param beanDefinition The BeanDefinition to add the base packages to.
+     * @param additionalBasePackages The additional base packages to be added.
+     */
+    private static void addBasePackages(BeanDefinition beanDefinition, String[] additionalBasePackages) {
 		ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
 		if (constructorArgumentValues.hasIndexedArgumentValue(0)) {
 			String[] existingPackages = (String[]) constructorArgumentValues.getIndexedArgumentValue(0, String[].class)
@@ -123,12 +129,24 @@ public abstract class AutoConfigurationPackages {
 	 */
 	static class Registrar implements ImportBeanDefinitionRegistrar, DeterminableImports {
 
-		@Override
+		/**
+         * Register bean definitions based on the provided annotation metadata and bean definition registry.
+         * 
+         * @param metadata the annotation metadata
+         * @param registry the bean definition registry
+         */
+        @Override
 		public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 			register(registry, new PackageImports(metadata).getPackageNames().toArray(new String[0]));
 		}
 
-		@Override
+		/**
+         * Determines the imports required for the given annotation metadata.
+         * 
+         * @param metadata the annotation metadata to determine imports for
+         * @return a set of objects representing the required imports
+         */
+        @Override
 		public Set<Object> determineImports(AnnotationMetadata metadata) {
 			return Collections.singleton(new PackageImports(metadata));
 		}
@@ -142,7 +160,12 @@ public abstract class AutoConfigurationPackages {
 
 		private final List<String> packageNames;
 
-		PackageImports(AnnotationMetadata metadata) {
+		/**
+         * Constructs a new PackageImports object by extracting the base package names from the provided AnnotationMetadata.
+         * 
+         * @param metadata the AnnotationMetadata object containing the annotation attributes
+         */
+        PackageImports(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
 			List<String> packageNames = new ArrayList<>(Arrays.asList(attributes.getStringArray("basePackages")));
@@ -155,11 +178,22 @@ public abstract class AutoConfigurationPackages {
 			this.packageNames = Collections.unmodifiableList(packageNames);
 		}
 
-		List<String> getPackageNames() {
+		/**
+         * Returns a list of package names.
+         * 
+         * @return the list of package names
+         */
+        List<String> getPackageNames() {
 			return this.packageNames;
 		}
 
-		@Override
+		/**
+         * Compares this PackageImports object to the specified object for equality.
+         * 
+         * @param obj the object to compare to
+         * @return true if the specified object is equal to this PackageImports object, false otherwise
+         */
+        @Override
 		public boolean equals(Object obj) {
 			if (obj == null || getClass() != obj.getClass()) {
 				return false;
@@ -167,12 +201,23 @@ public abstract class AutoConfigurationPackages {
 			return this.packageNames.equals(((PackageImports) obj).packageNames);
 		}
 
-		@Override
+		/**
+         * Returns the hash code value for the object. This method overrides the hashCode() method
+         * defined in the Object class.
+         *
+         * @return the hash code value for the object.
+         */
+        @Override
 		public int hashCode() {
 			return this.packageNames.hashCode();
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the PackageImports object.
+         * 
+         * @return a string representation of the PackageImports object
+         */
+        @Override
 		public String toString() {
 			return "Package Imports " + this.packageNames;
 		}
@@ -188,7 +233,12 @@ public abstract class AutoConfigurationPackages {
 
 		private boolean loggedBasePackageInfo;
 
-		BasePackages(String... names) {
+		/**
+         * Constructs a new BasePackages object with the provided package names.
+         * 
+         * @param names the package names to be added
+         */
+        BasePackages(String... names) {
 			List<String> packages = new ArrayList<>();
 			for (String name : names) {
 				if (StringUtils.hasText(name)) {
@@ -198,7 +248,12 @@ public abstract class AutoConfigurationPackages {
 			this.packages = packages;
 		}
 
-		List<String> get() {
+		/**
+         * Retrieves the list of packages.
+         * 
+         * @return The list of packages.
+         */
+        List<String> get() {
 			if (!this.loggedBasePackageInfo) {
 				if (this.packages.isEmpty()) {
 					if (logger.isWarnEnabled()) {

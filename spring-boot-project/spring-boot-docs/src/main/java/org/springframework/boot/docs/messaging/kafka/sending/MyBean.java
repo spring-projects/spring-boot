@@ -19,12 +19,20 @@ package org.springframework.boot.docs.messaging.kafka.sending;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final KafkaTemplate<String, String> kafkaTemplate;
 
-	public MyBean(KafkaTemplate<String, String> kafkaTemplate) {
+	/**
+     * Constructs a new instance of MyBean with the specified KafkaTemplate.
+     *
+     * @param kafkaTemplate the KafkaTemplate used for sending Kafka messages
+     */
+    public MyBean(KafkaTemplate<String, String> kafkaTemplate) {
 		this.kafkaTemplate = kafkaTemplate;
 	}
 

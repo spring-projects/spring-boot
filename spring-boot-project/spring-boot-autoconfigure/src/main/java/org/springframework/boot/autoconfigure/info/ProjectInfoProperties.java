@@ -36,11 +36,21 @@ public class ProjectInfoProperties {
 
 	private final Git git = new Git();
 
-	public Build getBuild() {
+	/**
+     * Returns the build object associated with this ProjectInfoProperties instance.
+     *
+     * @return the build object
+     */
+    public Build getBuild() {
 		return this.build;
 	}
 
-	public Git getGit() {
+	/**
+     * Returns the Git object associated with this ProjectInfoProperties instance.
+     *
+     * @return the Git object
+     */
+    public Git getGit() {
 		return this.git;
 	}
 
@@ -59,19 +69,39 @@ public class ProjectInfoProperties {
 		 */
 		private Charset encoding = StandardCharsets.UTF_8;
 
-		public Resource getLocation() {
+		/**
+         * Returns the location resource.
+         *
+         * @return the location resource
+         */
+        public Resource getLocation() {
 			return this.location;
 		}
 
-		public void setLocation(Resource location) {
+		/**
+         * Sets the location of the resource.
+         * 
+         * @param location the resource location to be set
+         */
+        public void setLocation(Resource location) {
 			this.location = location;
 		}
 
-		public Charset getEncoding() {
+		/**
+         * Returns the encoding used by the Build class.
+         * 
+         * @return the encoding used by the Build class
+         */
+        public Charset getEncoding() {
 			return this.encoding;
 		}
 
-		public void setEncoding(Charset encoding) {
+		/**
+         * Sets the encoding for the Build class.
+         * 
+         * @param encoding the encoding to be set
+         */
+        public void setEncoding(Charset encoding) {
 			this.encoding = encoding;
 		}
 
@@ -92,19 +122,39 @@ public class ProjectInfoProperties {
 		 */
 		private Charset encoding = StandardCharsets.UTF_8;
 
-		public Resource getLocation() {
+		/**
+         * Returns the location resource.
+         *
+         * @return the location resource
+         */
+        public Resource getLocation() {
 			return this.location;
 		}
 
-		public void setLocation(Resource location) {
+		/**
+         * Sets the location of the resource.
+         * 
+         * @param location the resource location to be set
+         */
+        public void setLocation(Resource location) {
 			this.location = location;
 		}
 
-		public Charset getEncoding() {
+		/**
+         * Returns the encoding used by the Git class.
+         * 
+         * @return the encoding used by the Git class
+         */
+        public Charset getEncoding() {
 			return this.encoding;
 		}
 
-		public void setEncoding(Charset encoding) {
+		/**
+         * Sets the encoding for the Git class.
+         * 
+         * @param encoding the encoding to be set
+         */
+        public void setEncoding(Charset encoding) {
 			this.encoding = encoding;
 		}
 

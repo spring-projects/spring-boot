@@ -16,22 +16,41 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.jsontests;
 
+/**
+ * VehicleDetails class.
+ */
 class VehicleDetails {
 
 	private final String make;
 
 	private final String model;
 
-	VehicleDetails(String make, String model) {
+	/**
+     * Constructs a new VehicleDetails object with the specified make and model.
+     * 
+     * @param make the make of the vehicle
+     * @param model the model of the vehicle
+     */
+    VehicleDetails(String make, String model) {
 		this.make = make;
 		this.model = model;
 	}
 
-	String getMake() {
+	/**
+     * Returns the make of the vehicle.
+     *
+     * @return the make of the vehicle
+     */
+    String getMake() {
 		return this.make;
 	}
 
-	String getModel() {
+	/**
+     * Returns the model of the vehicle.
+     *
+     * @return the model of the vehicle
+     */
+    String getModel() {
 		return this.model;
 	}
 

@@ -22,10 +22,18 @@ import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyHibernateConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyHibernateConfiguration {
 
-	@Bean
+	/**
+     * Returns a case-sensitive physical naming strategy that converts camel case names to underscores.
+     * 
+     * @return the case-sensitive physical naming strategy
+     */
+    @Bean
 	public CamelCaseToUnderscoresNamingStrategy caseSensitivePhysicalNamingStrategy() {
 		return new CamelCaseToUnderscoresNamingStrategy() {
 

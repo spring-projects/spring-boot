@@ -33,13 +33,28 @@ public class JavaExecutable {
 
 	private final File file;
 
-	public JavaExecutable() {
+	/**
+     * Constructs a new JavaExecutable object.
+     * 
+     * This constructor retrieves the Java home directory using the 'java.home' system property.
+     * It checks if the Java home directory is not empty using the StringUtils.hasLength() method.
+     * If the Java home directory is empty, an IllegalStateException is thrown with the message "Unable to find java executable due to missing 'java.home'".
+     * Otherwise, it calls the findInJavaHome() method to find the Java executable file within the Java home directory.
+     */
+    public JavaExecutable() {
 		String javaHome = System.getProperty("java.home");
 		Assert.state(StringUtils.hasLength(javaHome), "Unable to find java executable due to missing 'java.home'");
 		this.file = findInJavaHome(javaHome);
 	}
 
-	private File findInJavaHome(String javaHome) {
+	/**
+     * Finds the Java executable file in the specified Java home directory.
+     * 
+     * @param javaHome the path to the Java home directory
+     * @return the Java executable file
+     * @throws IllegalStateException if the Java executable file cannot be found in the specified Java home directory
+     */
+    private File findInJavaHome(String javaHome) {
 		File bin = new File(new File(javaHome), "bin");
 		File command = new File(bin, "java.exe");
 		command = command.exists() ? command : new File(bin, "java");
@@ -58,7 +73,13 @@ public class JavaExecutable {
 		return processBuilder;
 	}
 
-	@Override
+	/**
+     * Returns the canonical path of the file.
+     * 
+     * @return the canonical path of the file
+     * @throws IllegalStateException if an I/O error occurs
+     */
+    @Override
 	public String toString() {
 		try {
 			return this.file.getCanonicalPath();

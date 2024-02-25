@@ -53,16 +53,27 @@ public class MailSenderAutoConfiguration {
 	 */
 	static class MailSenderCondition extends AnyNestedCondition {
 
-		MailSenderCondition() {
+		/**
+         * Constructs a new MailSenderCondition with the specified configuration phase.
+         * 
+         * @param configurationPhase the configuration phase for the MailSenderCondition
+         */
+        MailSenderCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.mail", name = "host")
+		/**
+         * HostProperty class.
+         */
+        @ConditionalOnProperty(prefix = "spring.mail", name = "host")
 		static class HostProperty {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
+		/**
+         * JndiNameProperty class.
+         */
+        @ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
 		static class JndiNameProperty {
 
 		}

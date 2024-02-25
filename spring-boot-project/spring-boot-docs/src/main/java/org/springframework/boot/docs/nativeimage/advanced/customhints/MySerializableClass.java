@@ -18,6 +18,9 @@ package org.springframework.boot.docs.nativeimage.advanced.customhints;
 
 import java.io.Serializable;
 
+/**
+ * MySerializableClass class.
+ */
 class MySerializableClass implements Serializable {
 
 }

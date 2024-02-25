@@ -34,11 +34,21 @@ public class HazelcastProperties {
 	 */
 	private Resource config;
 
-	public Resource getConfig() {
+	/**
+     * Returns the configuration resource.
+     *
+     * @return the configuration resource
+     */
+    public Resource getConfig() {
 		return this.config;
 	}
 
-	public void setConfig(Resource config) {
+	/**
+     * Sets the configuration resource for HazelcastProperties.
+     * 
+     * @param config the configuration resource to be set
+     */
+    public void setConfig(Resource config) {
 		this.config = config;
 	}
 

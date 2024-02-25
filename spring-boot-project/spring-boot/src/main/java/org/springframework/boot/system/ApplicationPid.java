@@ -40,15 +40,30 @@ public class ApplicationPid {
 
 	private final String pid;
 
-	public ApplicationPid() {
+	/**
+     * Constructs a new ApplicationPid object.
+     * 
+     * This constructor initializes the pid field by calling the getPid() method.
+     */
+    public ApplicationPid() {
 		this.pid = getPid();
 	}
 
-	protected ApplicationPid(String pid) {
+	/**
+     * Constructs a new ApplicationPid object with the specified PID.
+     *
+     * @param pid the process ID (PID) of the application
+     */
+    protected ApplicationPid(String pid) {
 		this.pid = pid;
 	}
 
-	private String getPid() {
+	/**
+     * Returns the process ID (PID) of the current process.
+     * 
+     * @return the process ID (PID) as a string, or null if an error occurs
+     */
+    private String getPid() {
 		try {
 			return Long.toString(ProcessHandle.current().pid());
 		}
@@ -57,7 +72,13 @@ public class ApplicationPid {
 		}
 	}
 
-	@Override
+	/**
+     * Compares this ApplicationPid object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the specified object is equal to this ApplicationPid object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -68,12 +89,22 @@ public class ApplicationPid {
 		return false;
 	}
 
-	@Override
+	/**
+     * Returns a hash code value for the object. This method overrides the hashCode() method in the Object class.
+     * 
+     * @return the hash code value for the object
+     */
+    @Override
 	public int hashCode() {
 		return ObjectUtils.nullSafeHashCode(this.pid);
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the object.
+     * 
+     * @return the process ID if it is not null, otherwise returns "???"
+     */
+    @Override
 	public String toString() {
 		return (this.pid != null) ? this.pid : "???";
 	}
@@ -95,20 +126,39 @@ public class ApplicationPid {
 		}
 	}
 
-	private void createParentDirectory(File file) {
+	/**
+     * Creates the parent directory for the specified file.
+     * 
+     * @param file the file for which the parent directory needs to be created
+     */
+    private void createParentDirectory(File file) {
 		File parent = file.getParentFile();
 		if (parent != null) {
 			parent.mkdirs();
 		}
 	}
 
-	private void assertCanOverwrite(File file) throws IOException {
+	/**
+     * Asserts that the specified file can be overwritten.
+     * 
+     * @param file the file to be checked
+     * @throws IOException if an I/O error occurs
+     * @throws FileNotFoundException if the file cannot be written or if the POSIX file permissions do not allow writing
+     */
+    private void assertCanOverwrite(File file) throws IOException {
 		if (!file.canWrite() || !canWritePosixFile(file)) {
 			throw new FileNotFoundException(file + " (permission denied)");
 		}
 	}
 
-	private boolean canWritePosixFile(File file) throws IOException {
+	/**
+     * Checks if the specified file has write permissions for the current user.
+     * 
+     * @param file the file to check
+     * @return true if the file has write permissions, false otherwise
+     * @throws IOException if an I/O error occurs while checking the file permissions
+     */
+    private boolean canWritePosixFile(File file) throws IOException {
 		try {
 			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(file.toPath());
 			for (PosixFilePermission permission : WRITE_PERMISSIONS) {

@@ -18,6 +18,9 @@ package smoketest.data.cassandra;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleCassandraApplication class.
+ */
 @SpringBootApplication
 public class SampleCassandraApplication {
 

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.features.developingautoconfiguration.conditionannotations.classconditions;
 
+/**
+ * SomeService class.
+ */
 class SomeService {
 
 }

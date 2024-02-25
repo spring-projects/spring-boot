@@ -21,16 +21,29 @@ import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * MyCustomObservation class.
+ */
 @Component
 public class MyCustomObservation {
 
 	private final ObservationRegistry observationRegistry;
 
-	public MyCustomObservation(ObservationRegistry observationRegistry) {
+	/**
+     * Constructs a new instance of MyCustomObservation with the specified ObservationRegistry.
+     * 
+     * @param observationRegistry the ObservationRegistry to be used by this MyCustomObservation
+     */
+    public MyCustomObservation(ObservationRegistry observationRegistry) {
 		this.observationRegistry = observationRegistry;
 	}
 
-	public void doSomething() {
+	/**
+     * Performs the specified action and observes the execution using the Observation framework.
+     * 
+     * @throws Exception if an error occurs during the execution of the business logic.
+     */
+    public void doSomething() {
 		Observation.createNotStarted("doSomething", this.observationRegistry)
 			.lowCardinalityKeyValue("locale", "en-US")
 			.highCardinalityKeyValue("userId", "42")

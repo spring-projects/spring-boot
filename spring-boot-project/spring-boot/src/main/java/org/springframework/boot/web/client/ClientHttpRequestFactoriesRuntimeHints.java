@@ -43,14 +43,28 @@ import org.springframework.util.ReflectionUtils;
  */
 class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 
-	@Override
+	/**
+     * Registers hints for the runtime based on the provided hints and class loader.
+     * If the class "org.springframework.http.client.ClientHttpRequestFactory" is present in the class loader,
+     * it registers hints using reflection.
+     *
+     * @param hints       the runtime hints to register
+     * @param classLoader the class loader to use for checking the presence of the required class
+     */
+    @Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		if (ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestFactory", classLoader)) {
 			registerHints(hints.reflection(), classLoader);
 		}
 	}
 
-	private void registerHints(ReflectionHints hints, ClassLoader classLoader) {
+	/**
+     * Registers the reflection hints for the given {@link ReflectionHints} and {@link ClassLoader}.
+     * 
+     * @param hints the {@link ReflectionHints} to register the hints with
+     * @param classLoader the {@link ClassLoader} to use for loading classes
+     */
+    private void registerHints(ReflectionHints hints, ClassLoader classLoader) {
 		hints.registerField(findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory"));
 		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.APACHE_HTTP_CLIENT_CLASS, (typeHint) -> {
 			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.APACHE_HTTP_CLIENT_CLASS));
@@ -67,7 +81,15 @@ class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 		registerOkHttpHints(hints, classLoader);
 	}
 
-	@SuppressWarnings("removal")
+	/**
+     * Registers OkHttp hints for the given reflection hints and class loader.
+     *
+     * @param hints the reflection hints
+     * @param classLoader the class loader
+     * @deprecated This method has been deprecated since version 3.2.0 and will be removed in a future release.
+     * @since 3.2.0
+     */
+    @SuppressWarnings("removal")
 	@Deprecated(since = "3.2.0", forRemoval = true)
 	private void registerOkHttpHints(ReflectionHints hints, ClassLoader classLoader) {
 		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS, (typeHint) -> {
@@ -77,18 +99,39 @@ class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 
 	}
 
-	private void registerReflectionHints(ReflectionHints hints,
+	/**
+     * Registers reflection hints for the given {@link ReflectionHints} and {@link ClientHttpRequestFactory} type.
+     * 
+     * @param hints The {@link ReflectionHints} to register.
+     * @param requestFactoryType The {@link ClientHttpRequestFactory} type to register reflection hints for.
+     */
+    private void registerReflectionHints(ReflectionHints hints,
 			Class<? extends ClientHttpRequestFactory> requestFactoryType) {
 		registerReflectionHints(hints, requestFactoryType, int.class);
 	}
 
-	private void registerReflectionHints(ReflectionHints hints,
+	/**
+     * Registers reflection hints for the specified request factory type and read timeout type.
+     * 
+     * @param hints the reflection hints to register
+     * @param requestFactoryType the type of the client HTTP request factory
+     * @param readTimeoutType the type of the read timeout
+     */
+    private void registerReflectionHints(ReflectionHints hints,
 			Class<? extends ClientHttpRequestFactory> requestFactoryType, Class<?> readTimeoutType) {
 		registerMethod(hints, requestFactoryType, "setConnectTimeout", int.class);
 		registerMethod(hints, requestFactoryType, "setReadTimeout", readTimeoutType);
 	}
 
-	private void registerMethod(ReflectionHints hints, Class<? extends ClientHttpRequestFactory> requestFactoryType,
+	/**
+     * Registers a method with the given reflection hints, request factory type, method name, and parameter types.
+     * 
+     * @param hints the reflection hints to register the method with
+     * @param requestFactoryType the type of the client HTTP request factory
+     * @param methodName the name of the method to register
+     * @param parameterTypes the parameter types of the method to register
+     */
+    private void registerMethod(ReflectionHints hints, Class<? extends ClientHttpRequestFactory> requestFactoryType,
 			String methodName, Class<?>... parameterTypes) {
 		Method method = ReflectionUtils.findMethod(requestFactoryType, methodName, parameterTypes);
 		if (method != null) {
@@ -96,7 +139,15 @@ class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 		}
 	}
 
-	private Field findField(Class<?> type, String name) {
+	/**
+     * Finds a field with the given name in the specified class.
+     * 
+     * @param type the class in which to search for the field
+     * @param name the name of the field to find
+     * @return the found field
+     * @throws IllegalStateException if the field cannot be found
+     */
+    private Field findField(Class<?> type, String name) {
 		Field field = ReflectionUtils.findField(type, name);
 		Assert.state(field != null, () -> "Unable to find field '%s' on %s".formatted(type.getName(), name));
 		return field;

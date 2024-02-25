@@ -45,7 +45,12 @@ public enum AccessLevel {
 
 	private final List<String> ids;
 
-	AccessLevel(String... ids) {
+	/**
+     * Constructs a new AccessLevel object with the specified ids.
+     * 
+     * @param ids the ids to be assigned to the AccessLevel object
+     */
+    AccessLevel(String... ids) {
 		this.ids = Arrays.asList(ids);
 	}
 

@@ -42,13 +42,30 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 @Configuration(proxyBeanMethods = false)
 class MongoDataConfiguration {
 
-	@Bean
+	/**
+     * Returns the MongoManagedTypes object based on the ApplicationContext.
+     * This method is annotated with @Bean and @ConditionalOnMissingBean to ensure that it is only created if there is no existing bean of the same type.
+     * It uses the EntityScanner class to scan for classes annotated with @Document and returns a MongoManagedTypes object containing these classes.
+     *
+     * @param applicationContext The ApplicationContext object used for scanning classes.
+     * @return The MongoManagedTypes object containing the scanned classes.
+     * @throws ClassNotFoundException If any of the scanned classes cannot be found.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	static MongoManagedTypes mongoManagedTypes(ApplicationContext applicationContext) throws ClassNotFoundException {
 		return MongoManagedTypes.fromIterable(new EntityScanner(applicationContext).scan(Document.class));
 	}
 
-	@Bean
+	/**
+     * Creates a MongoMappingContext bean if it is missing.
+     * 
+     * @param properties     the MongoProperties object containing the MongoDB configuration properties
+     * @param conversions    the MongoCustomConversions object containing the custom conversions
+     * @param managedTypes   the MongoManagedTypes object containing the managed types
+     * @return               the MongoMappingContext bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	MongoMappingContext mongoMappingContext(MongoProperties properties, MongoCustomConversions conversions,
 			MongoManagedTypes managedTypes) {
@@ -64,7 +81,14 @@ class MongoDataConfiguration {
 		return context;
 	}
 
-	@Bean
+	/**
+     * Returns an instance of MongoCustomConversions.
+     * This method is annotated with @Bean and @ConditionalOnMissingBean, indicating that it is a bean definition and will only be created if there is no existing bean of the same type.
+     * The method creates a new instance of MongoCustomConversions with an empty list of conversions.
+     * 
+     * @return an instance of MongoCustomConversions
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	MongoCustomConversions mongoCustomConversions() {
 		return new MongoCustomConversions(Collections.emptyList());

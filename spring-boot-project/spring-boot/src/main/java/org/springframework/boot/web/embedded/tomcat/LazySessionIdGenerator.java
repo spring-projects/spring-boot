@@ -28,7 +28,13 @@ import org.apache.catalina.util.StandardSessionIdGenerator;
  */
 class LazySessionIdGenerator extends StandardSessionIdGenerator {
 
-	@Override
+	/**
+     * Starts the internal process of the LazySessionIdGenerator.
+     * This method sets the state of the LazySessionIdGenerator to STARTING.
+     *
+     * @throws LifecycleException if an error occurs during the start process
+     */
+    @Override
 	protected void startInternal() throws LifecycleException {
 		setState(LifecycleState.STARTING);
 	}

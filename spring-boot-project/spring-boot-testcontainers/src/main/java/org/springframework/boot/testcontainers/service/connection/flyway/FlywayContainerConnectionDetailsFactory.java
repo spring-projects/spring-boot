@@ -33,7 +33,13 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 class FlywayContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<JdbcDatabaseContainer<?>, FlywayConnectionDetails> {
 
-	@Override
+	/**
+     * Retrieves the connection details for the specified container connection source.
+     *
+     * @param source the container connection source
+     * @return the flyway connection details for the specified container connection source
+     */
+    @Override
 	protected FlywayConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 		return new FlywayContainerConnectionDetails(source);
@@ -45,26 +51,51 @@ class FlywayContainerConnectionDetailsFactory
 	private static final class FlywayContainerConnectionDetails
 			extends ContainerConnectionDetails<JdbcDatabaseContainer<?>> implements FlywayConnectionDetails {
 
-		private FlywayContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
+		/**
+         * Constructs a new FlywayContainerConnectionDetails object with the specified ContainerConnectionSource.
+         *
+         * @param source the ContainerConnectionSource used to create the FlywayContainerConnectionDetails object
+         */
+        private FlywayContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 			super(source);
 		}
 
-		@Override
+		/**
+         * Returns the username of the container associated with this connection details.
+         * 
+         * @return the username of the container
+         */
+        @Override
 		public String getUsername() {
 			return getContainer().getUsername();
 		}
 
-		@Override
+		/**
+         * Returns the password for the Flyway container connection details.
+         * 
+         * @return the password for the Flyway container connection details
+         */
+        @Override
 		public String getPassword() {
 			return getContainer().getPassword();
 		}
 
-		@Override
+		/**
+         * Returns the JDBC URL for the Flyway container connection.
+         * 
+         * @return the JDBC URL for the Flyway container connection
+         */
+        @Override
 		public String getJdbcUrl() {
 			return getContainer().getJdbcUrl();
 		}
 
-		@Override
+		/**
+         * Returns the driver class name used by the Flyway container connection details.
+         * 
+         * @return the driver class name
+         */
+        @Override
 		public String getDriverClassName() {
 			return getContainer().getDriverClassName();
 		}

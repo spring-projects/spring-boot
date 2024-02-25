@@ -53,12 +53,22 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		super(port);
 	}
 
-	@Override
+	/**
+     * Set the customizers to be applied to the Undertow builder.
+     * 
+     * @param customizers the customizers to apply
+     */
+    @Override
 	public void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
 		this.delegate.setBuilderCustomizers(customizers);
 	}
 
-	@Override
+	/**
+     * Add customizers to the Undertow builder.
+     *
+     * @param customizers the customizers to add
+     */
+    @Override
 	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
 		this.delegate.addBuilderCustomizers(customizers);
 	}
@@ -72,70 +82,141 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		return this.delegate.getBuilderCustomizers();
 	}
 
-	@Override
+	/**
+     * Sets the buffer size for the server.
+     * 
+     * @param bufferSize the buffer size to be set
+     */
+    @Override
 	public void setBufferSize(Integer bufferSize) {
 		this.delegate.setBufferSize(bufferSize);
 	}
 
-	@Override
+	/**
+     * Sets the number of I/O threads to be used by the server.
+     * 
+     * @param ioThreads the number of I/O threads
+     */
+    @Override
 	public void setIoThreads(Integer ioThreads) {
 		this.delegate.setIoThreads(ioThreads);
 	}
 
-	@Override
+	/**
+     * Sets the number of worker threads to be used by the server.
+     * 
+     * @param workerThreads the number of worker threads
+     */
+    @Override
 	public void setWorkerThreads(Integer workerThreads) {
 		this.delegate.setWorkerThreads(workerThreads);
 	}
 
-	@Override
+	/**
+     * Sets whether to use direct buffers for the underlying network I/O.
+     * 
+     * @param directBuffers a boolean value indicating whether to use direct buffers
+     */
+    @Override
 	public void setUseDirectBuffers(Boolean directBuffers) {
 		this.delegate.setUseDirectBuffers(directBuffers);
 	}
 
-	@Override
+	/**
+     * Sets whether to use forward headers.
+     * 
+     * @param useForwardHeaders true to use forward headers, false otherwise
+     */
+    @Override
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.delegate.setUseForwardHeaders(useForwardHeaders);
 	}
 
-	protected final boolean isUseForwardHeaders() {
+	/**
+     * Returns whether to use forward headers.
+     * 
+     * @return {@code true} if forward headers are used, {@code false} otherwise
+     */
+    protected final boolean isUseForwardHeaders() {
 		return this.delegate.isUseForwardHeaders();
 	}
 
-	@Override
+	/**
+     * Sets the directory where the access logs will be stored.
+     * 
+     * @param accessLogDirectory the directory where the access logs will be stored
+     */
+    @Override
 	public void setAccessLogDirectory(File accessLogDirectory) {
 		this.delegate.setAccessLogDirectory(accessLogDirectory);
 	}
 
-	@Override
+	/**
+     * Sets the access log pattern for the Undertow server.
+     * 
+     * @param accessLogPattern the access log pattern to be set
+     */
+    @Override
 	public void setAccessLogPattern(String accessLogPattern) {
 		this.delegate.setAccessLogPattern(accessLogPattern);
 	}
 
-	@Override
+	/**
+     * Sets the access log prefix for the Undertow server.
+     * 
+     * @param accessLogPrefix the access log prefix to set
+     */
+    @Override
 	public void setAccessLogPrefix(String accessLogPrefix) {
 		this.delegate.setAccessLogPrefix(accessLogPrefix);
 	}
 
-	@Override
+	/**
+     * Sets the suffix for the access log file.
+     * 
+     * @param accessLogSuffix the suffix for the access log file
+     */
+    @Override
 	public void setAccessLogSuffix(String accessLogSuffix) {
 		this.delegate.setAccessLogSuffix(accessLogSuffix);
 	}
 
-	public boolean isAccessLogEnabled() {
+	/**
+     * Returns a boolean value indicating whether the access log is enabled for this UndertowReactiveWebServerFactory instance.
+     *
+     * @return {@code true} if the access log is enabled, {@code false} otherwise
+     */
+    public boolean isAccessLogEnabled() {
 		return this.delegate.isAccessLogEnabled();
 	}
 
-	@Override
+	/**
+     * Sets whether access log is enabled for the server.
+     * 
+     * @param accessLogEnabled true if access log is enabled, false otherwise
+     */
+    @Override
 	public void setAccessLogEnabled(boolean accessLogEnabled) {
 		this.delegate.setAccessLogEnabled(accessLogEnabled);
 	}
 
-	@Override
+	/**
+     * Sets whether to rotate the access log.
+     * 
+     * @param accessLogRotate true to rotate the access log, false otherwise
+     */
+    @Override
 	public void setAccessLogRotate(boolean accessLogRotate) {
 		this.delegate.setAccessLogRotate(accessLogRotate);
 	}
 
-	@Override
+	/**
+     * Returns a WebServer instance for the given HttpHandler.
+     * 
+     * @param httpHandler the HttpHandler to be used by the WebServer
+     * @return a WebServer instance
+     */
+    @Override
 	public WebServer getWebServer(org.springframework.http.server.reactive.HttpHandler httpHandler) {
 		Undertow.Builder builder = this.delegate.createBuilder(this, this::getSslBundle);
 		List<HttpHandlerFactory> httpHandlerFactories = this.delegate.createHttpHandlerFactories(this,

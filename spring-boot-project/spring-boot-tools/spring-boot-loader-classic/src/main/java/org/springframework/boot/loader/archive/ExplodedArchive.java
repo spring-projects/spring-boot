@@ -77,17 +77,35 @@ public class ExplodedArchive implements Archive {
 		this.manifestFile = getManifestFile(root);
 	}
 
-	private File getManifestFile(File root) {
+	/**
+     * Returns the manifest file located in the specified root directory.
+     * 
+     * @param root the root directory where the manifest file is located
+     * @return the manifest file
+     */
+    private File getManifestFile(File root) {
 		File metaInf = new File(root, "META-INF");
 		return new File(metaInf, "MANIFEST.MF");
 	}
 
-	@Override
+	/**
+     * Returns the URL of the root directory of this ExplodedArchive.
+     * 
+     * @return the URL of the root directory
+     * @throws MalformedURLException if the URL is malformed
+     */
+    @Override
 	public URL getUrl() throws MalformedURLException {
 		return this.root.toURI().toURL();
 	}
 
-	@Override
+	/**
+     * Retrieves the manifest of the exploded archive.
+     * 
+     * @return The manifest of the exploded archive.
+     * @throws IOException If an I/O error occurs while reading the manifest file.
+     */
+    @Override
 	public Manifest getManifest() throws IOException {
 		if (this.manifest == null && this.manifestFile.exists()) {
 			try (FileInputStream inputStream = new FileInputStream(this.manifestFile)) {
@@ -97,28 +115,60 @@ public class ExplodedArchive implements Archive {
 		return this.manifest;
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the nested archives within this exploded archive.
+     * 
+     * @param searchFilter the filter used to search for specific entries within the nested archives
+     * @param includeFilter the filter used to include specific entries within the nested archives
+     * @return an iterator over the nested archives
+     * @throws IOException if an I/O error occurs while accessing the nested archives
+     */
+    @Override
 	public Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter) throws IOException {
 		return new ArchiveIterator(this.root, this.recursive, searchFilter, includeFilter);
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the entries in this ExplodedArchive.
+     * 
+     * @return an iterator over the entries in this ExplodedArchive
+     * 
+     * @deprecated This method is deprecated since version 2.3.10 and will not be removed.
+     *             Use {@link EntryIterator} instead.
+     */
+    @Override
 	@Deprecated(since = "2.3.10", forRemoval = false)
 	public Iterator<Entry> iterator() {
 		return new EntryIterator(this.root, this.recursive, null, null);
 	}
 
-	protected Archive getNestedArchive(Entry entry) {
+	/**
+     * Retrieves a nested archive from the given entry.
+     * 
+     * @param entry the entry from which to retrieve the nested archive
+     * @return the nested archive
+     */
+    protected Archive getNestedArchive(Entry entry) {
 		File file = ((FileEntry) entry).getFile();
 		return (file.isDirectory() ? new ExplodedArchive(file) : new SimpleJarFileArchive((FileEntry) entry));
 	}
 
-	@Override
+	/**
+     * Returns whether the archive is exploded.
+     *
+     * @return {@code true} if the archive is exploded, {@code false} otherwise.
+     */
+    @Override
 	public boolean isExploded() {
 		return true;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the object.
+     * 
+     * @return the URL as a string if available, or "exploded archive" if an exception occurs
+     */
+    @Override
 	public String toString() {
 		try {
 			return getUrl().toString();
@@ -149,7 +199,15 @@ public class ExplodedArchive implements Archive {
 
 		private final String rootUrl;
 
-		AbstractIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
+		/**
+         * Constructs a new AbstractIterator object with the specified parameters.
+         * 
+         * @param root the root directory or file from which to start iterating
+         * @param recursive true if the iteration should be recursive, false otherwise
+         * @param searchFilter the filter used to determine which entries to search for
+         * @param includeFilter the filter used to determine which entries to include in the iteration
+         */
+        AbstractIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
 			this.root = root;
 			this.rootUrl = this.root.toURI().getPath();
 			this.recursive = recursive;
@@ -159,12 +217,23 @@ public class ExplodedArchive implements Archive {
 			this.current = poll();
 		}
 
-		@Override
+		/**
+         * Returns true if there is a next element in the iterator, false otherwise.
+         * 
+         * @return true if there is a next element, false otherwise
+         */
+        @Override
 		public boolean hasNext() {
 			return this.current != null;
 		}
 
-		@Override
+		/**
+         * Returns the next element in the iteration.
+         *
+         * @throws NoSuchElementException if there are no more elements to iterate over
+         * @return the next element in the iteration
+         */
+        @Override
 		public T next() {
 			FileEntry entry = this.current;
 			if (entry == null) {
@@ -174,7 +243,12 @@ public class ExplodedArchive implements Archive {
 			return adapt(entry);
 		}
 
-		private FileEntry poll() {
+		/**
+         * Retrieves the next file entry from the stack.
+         * 
+         * @return The next file entry from the stack, or null if there are no more entries.
+         */
+        private FileEntry poll() {
 			while (!this.stack.isEmpty()) {
 				while (this.stack.peek().hasNext()) {
 					File file = this.stack.peek().next();
@@ -194,7 +268,14 @@ public class ExplodedArchive implements Archive {
 			return null;
 		}
 
-		private FileEntry getFileEntry(File file) {
+		/**
+         * Retrieves the FileEntry object for the given File.
+         * 
+         * @param file The File object for which to retrieve the FileEntry.
+         * @return The FileEntry object representing the given File.
+         * @throws IllegalStateException if the URL of the FileEntry cannot be created.
+         */
+        private FileEntry getFileEntry(File file) {
 			URI uri = file.toURI();
 			String name = uri.getPath().substring(this.rootUrl.length());
 			try {
@@ -205,13 +286,25 @@ public class ExplodedArchive implements Archive {
 			}
 		}
 
-		private boolean isListable(FileEntry entry) {
+		/**
+         * Checks if the given FileEntry is listable.
+         * 
+         * @param entry the FileEntry to check
+         * @return true if the entry is listable, false otherwise
+         */
+        private boolean isListable(FileEntry entry) {
 			return entry.isDirectory() && (this.recursive || entry.getFile().getParentFile().equals(this.root))
 					&& (this.searchFilter == null || this.searchFilter.matches(entry))
 					&& (this.includeFilter == null || !this.includeFilter.matches(entry));
 		}
 
-		private Iterator<File> listFiles(File file) {
+		/**
+         * Returns an iterator over the files in the specified directory.
+         * 
+         * @param file the directory to list files from
+         * @return an iterator over the files in the directory, or an empty iterator if the directory is empty or does not exist
+         */
+        private Iterator<File> listFiles(File file) {
 			File[] files = file.listFiles();
 			if (files == null) {
 				return Collections.emptyIterator();
@@ -220,35 +313,81 @@ public class ExplodedArchive implements Archive {
 			return Arrays.asList(files).iterator();
 		}
 
-		@Override
+		/**
+         * Removes the last element returned by the iterator. This operation is not supported and will always throw an
+         * UnsupportedOperationException.
+         *
+         * @throws UnsupportedOperationException if the remove operation is not supported
+         */
+        @Override
 		public void remove() {
 			throw new UnsupportedOperationException("remove");
 		}
 
-		protected abstract T adapt(FileEntry entry);
+		/**
+         * Adapts a FileEntry to a specific type T.
+         * 
+         * @param entry the FileEntry to be adapted
+         * @return the adapted object of type T
+         */
+        protected abstract T adapt(FileEntry entry);
 
 	}
 
-	private static class EntryIterator extends AbstractIterator<Entry> {
+	/**
+     * EntryIterator class.
+     */
+    private static class EntryIterator extends AbstractIterator<Entry> {
 
-		EntryIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
+		/**
+         * Constructs a new EntryIterator object with the specified parameters.
+         * 
+         * @param root the root directory or file from which to start iterating
+         * @param recursive true if the iteration should be recursive, false otherwise
+         * @param searchFilter the filter used to determine which entries to search for
+         * @param includeFilter the filter used to determine which entries to include in the iteration
+         */
+        EntryIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
 			super(root, recursive, searchFilter, includeFilter);
 		}
 
-		@Override
+		/**
+         * Adapts a FileEntry to an Entry.
+         * 
+         * @param entry the FileEntry to be adapted
+         * @return the adapted Entry
+         */
+        @Override
 		protected Entry adapt(FileEntry entry) {
 			return entry;
 		}
 
 	}
 
-	private static class ArchiveIterator extends AbstractIterator<Archive> {
+	/**
+     * ArchiveIterator class.
+     */
+    private static class ArchiveIterator extends AbstractIterator<Archive> {
 
-		ArchiveIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
+		/**
+         * Constructs a new ArchiveIterator object with the specified root directory, recursive flag, search filter, and include filter.
+         * 
+         * @param root the root directory from which to start iterating
+         * @param recursive a boolean flag indicating whether to iterate recursively through subdirectories
+         * @param searchFilter the filter used to determine which entries to search for
+         * @param includeFilter the filter used to determine which entries to include in the iteration
+         */
+        ArchiveIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
 			super(root, recursive, searchFilter, includeFilter);
 		}
 
-		@Override
+		/**
+         * Adapts a FileEntry to an Archive.
+         * 
+         * @param entry the FileEntry to be adapted
+         * @return the adapted Archive
+         */
+        @Override
 		protected Archive adapt(FileEntry entry) {
 			File file = entry.getFile();
 			return (file.isDirectory() ? new ExplodedArchive(file) : new SimpleJarFileArchive(entry));
@@ -267,27 +406,54 @@ public class ExplodedArchive implements Archive {
 
 		private final URL url;
 
-		FileEntry(String name, File file, URL url) {
+		/**
+         * Constructs a new FileEntry object with the specified name, file, and URL.
+         * 
+         * @param name the name of the file entry
+         * @param file the file associated with the file entry
+         * @param url the URL associated with the file entry
+         */
+        FileEntry(String name, File file, URL url) {
 			this.name = name;
 			this.file = file;
 			this.url = url;
 		}
 
-		File getFile() {
+		/**
+         * Returns the file associated with this FileEntry.
+         *
+         * @return the file associated with this FileEntry
+         */
+        File getFile() {
 			return this.file;
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the FileEntry object represents a directory.
+         * 
+         * @return true if the FileEntry object represents a directory, false otherwise.
+         */
+        @Override
 		public boolean isDirectory() {
 			return this.file.isDirectory();
 		}
 
-		@Override
+		/**
+         * Returns the name of the FileEntry.
+         *
+         * @return the name of the FileEntry
+         */
+        @Override
 		public String getName() {
 			return this.name;
 		}
 
-		URL getUrl() {
+		/**
+         * Returns the URL associated with this FileEntry.
+         *
+         * @return the URL associated with this FileEntry
+         */
+        URL getUrl() {
 			return this.url;
 		}
 
@@ -301,33 +467,71 @@ public class ExplodedArchive implements Archive {
 
 		private final URL url;
 
-		SimpleJarFileArchive(FileEntry file) {
+		/**
+         * Constructs a SimpleJarFileArchive object with the specified FileEntry.
+         * 
+         * @param file the FileEntry representing the file to be archived
+         */
+        SimpleJarFileArchive(FileEntry file) {
 			this.url = file.getUrl();
 		}
 
-		@Override
+		/**
+         * Returns the URL of the SimpleJarFileArchive.
+         *
+         * @return the URL of the SimpleJarFileArchive
+         * @throws MalformedURLException if the URL is malformed
+         */
+        @Override
 		public URL getUrl() throws MalformedURLException {
 			return this.url;
 		}
 
-		@Override
+		/**
+         * Retrieves the manifest file associated with this SimpleJarFileArchive.
+         * 
+         * @return The manifest file, or null if it does not exist.
+         * @throws IOException If an I/O error occurs while retrieving the manifest file.
+         */
+        @Override
 		public Manifest getManifest() throws IOException {
 			return null;
 		}
 
-		@Override
+		/**
+         * Returns an empty iterator of Archive objects representing nested archives within this SimpleJarFileArchive.
+         * 
+         * @param searchFilter the filter used to search for specific entries within the nested archives
+         * @param includeFilter the filter used to include specific entries within the nested archives
+         * @return an empty iterator of Archive objects
+         * @throws IOException if an I/O error occurs while accessing the nested archives
+         */
+        @Override
 		public Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter)
 				throws IOException {
 			return Collections.emptyIterator();
 		}
 
-		@Override
+		/**
+         * Returns an iterator over the entries in this SimpleJarFileArchive.
+         * 
+         * @return an iterator over the entries in this SimpleJarFileArchive
+         * 
+         * @deprecated This method has been deprecated since version 2.3.10 and will not be removed in future versions.
+         *             It is recommended to use an alternative method instead.
+         */
+        @Override
 		@Deprecated(since = "2.3.10", forRemoval = false)
 		public Iterator<Entry> iterator() {
 			return Collections.emptyIterator();
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * 
+         * @return the URL of the jar archive if available, otherwise returns "jar archive"
+         */
+        @Override
 		public String toString() {
 			try {
 				return getUrl().toString();

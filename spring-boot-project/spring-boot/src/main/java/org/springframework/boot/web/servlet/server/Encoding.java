@@ -64,47 +64,103 @@ public class Encoding {
 	 */
 	private Map<Locale, Charset> mapping;
 
-	public Charset getCharset() {
+	/**
+     * Returns the charset used by this Encoding object.
+     *
+     * @return the charset used by this Encoding object
+     */
+    public Charset getCharset() {
 		return this.charset;
 	}
 
-	public void setCharset(Charset charset) {
+	/**
+     * Sets the charset for encoding.
+     * 
+     * @param charset the charset to be set
+     */
+    public void setCharset(Charset charset) {
 		this.charset = charset;
 	}
 
-	public boolean isForce() {
+	/**
+     * Returns a boolean value indicating whether the encoding is forced.
+     * 
+     * @return {@code true} if the encoding is forced, {@code false} otherwise
+     */
+    public boolean isForce() {
 		return Boolean.TRUE.equals(this.force);
 	}
 
-	public void setForce(boolean force) {
+	/**
+     * Sets the force flag for encoding.
+     * 
+     * @param force the value to set for the force flag
+     */
+    public void setForce(boolean force) {
 		this.force = force;
 	}
 
-	public boolean isForceRequest() {
+	/**
+     * Returns a boolean value indicating whether the request is a force request.
+     * 
+     * @return {@code true} if the request is a force request, {@code false} otherwise
+     */
+    public boolean isForceRequest() {
 		return Boolean.TRUE.equals(this.forceRequest);
 	}
 
-	public void setForceRequest(boolean forceRequest) {
+	/**
+     * Sets the flag indicating whether to force a request.
+     * 
+     * @param forceRequest true to force a request, false otherwise
+     */
+    public void setForceRequest(boolean forceRequest) {
 		this.forceRequest = forceRequest;
 	}
 
-	public boolean isForceResponse() {
+	/**
+     * Returns a boolean value indicating whether the response should be forced.
+     * 
+     * @return {@code true} if the response should be forced, {@code false} otherwise
+     */
+    public boolean isForceResponse() {
 		return Boolean.TRUE.equals(this.forceResponse);
 	}
 
-	public void setForceResponse(boolean forceResponse) {
+	/**
+     * Sets the flag indicating whether to force a response.
+     * 
+     * @param forceResponse the flag indicating whether to force a response
+     */
+    public void setForceResponse(boolean forceResponse) {
 		this.forceResponse = forceResponse;
 	}
 
-	public Map<Locale, Charset> getMapping() {
+	/**
+     * Returns the mapping of Locales to Charsets.
+     *
+     * @return the mapping of Locales to Charsets
+     */
+    public Map<Locale, Charset> getMapping() {
 		return this.mapping;
 	}
 
-	public void setMapping(Map<Locale, Charset> mapping) {
+	/**
+     * Sets the mapping of Locales to Charsets.
+     * 
+     * @param mapping the mapping of Locales to Charsets
+     */
+    public void setMapping(Map<Locale, Charset> mapping) {
 		this.mapping = mapping;
 	}
 
-	public boolean shouldForce(Type type) {
+	/**
+     * Determines whether a force should be applied based on the given type.
+     * 
+     * @param type the type of the encoding
+     * @return true if a force should be applied, false otherwise
+     */
+    public boolean shouldForce(Type type) {
 		Boolean force = (type != Type.REQUEST) ? this.forceResponse : this.forceRequest;
 		if (force == null) {
 			force = this.force;

@@ -20,10 +20,22 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * ExampleController class.
+ */
 @RestController
 public class ExampleController {
 
-	@PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, "!application/xml" },
+	/**
+     * This method is used to handle POST requests to the root path ("/").
+     * It consumes JSON data and does not consume XML data.
+     * It produces plain text as the response.
+     * It requires the "X-Custom" header to have a value of "Foo".
+     * It requires the "a" parameter to not have a value of "alpha".
+     *
+     * @return The string "Hello World" as the response.
+     */
+    @PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, "!application/xml" },
 			produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo", params = "a!=alpha")
 	public String example() {
 		return "Hello World";

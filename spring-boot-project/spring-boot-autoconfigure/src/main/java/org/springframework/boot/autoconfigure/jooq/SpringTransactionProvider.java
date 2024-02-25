@@ -38,28 +38,54 @@ public class SpringTransactionProvider implements TransactionProvider {
 
 	private final PlatformTransactionManager transactionManager;
 
-	public SpringTransactionProvider(PlatformTransactionManager transactionManager) {
+	/**
+     * Constructs a new SpringTransactionProvider with the specified transaction manager.
+     * 
+     * @param transactionManager the platform transaction manager to be used
+     */
+    public SpringTransactionProvider(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
-	@Override
+	/**
+     * Begins a new transaction using the provided TransactionContext.
+     * 
+     * @param context the TransactionContext to use for the transaction
+     */
+    @Override
 	public void begin(TransactionContext context) {
 		TransactionDefinition definition = new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_NESTED);
 		TransactionStatus status = this.transactionManager.getTransaction(definition);
 		context.transaction(new SpringTransaction(status));
 	}
 
-	@Override
+	/**
+     * Commits the transaction using the provided transaction context.
+     * 
+     * @param ctx the transaction context
+     */
+    @Override
 	public void commit(TransactionContext ctx) {
 		this.transactionManager.commit(getTransactionStatus(ctx));
 	}
 
-	@Override
+	/**
+     * Rollbacks the transaction using the provided transaction context.
+     * 
+     * @param ctx the transaction context
+     */
+    @Override
 	public void rollback(TransactionContext ctx) {
 		this.transactionManager.rollback(getTransactionStatus(ctx));
 	}
 
-	private TransactionStatus getTransactionStatus(TransactionContext ctx) {
+	/**
+     * Retrieves the status of a transaction.
+     * 
+     * @param ctx the transaction context
+     * @return the transaction status
+     */
+    private TransactionStatus getTransactionStatus(TransactionContext ctx) {
 		SpringTransaction transaction = (SpringTransaction) ctx.transaction();
 		return transaction.getTxStatus();
 	}

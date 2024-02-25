@@ -70,7 +70,17 @@ abstract class HealthEndpointSupport<C, T> {
 		this.slowIndicatorLoggingThreshold = slowIndicatorLoggingThreshold;
 	}
 
-	HealthResult<T> getHealth(ApiVersion apiVersion, WebServerNamespace serverNamespace,
+	/**
+     * Retrieves the health result for the specified API version, web server namespace, security context, showAll flag, and path.
+     * 
+     * @param apiVersion The API version to retrieve the health result for.
+     * @param serverNamespace The web server namespace to retrieve the health result for.
+     * @param securityContext The security context to use for retrieving the health result.
+     * @param showAll A flag indicating whether to show all health information.
+     * @param path The path to retrieve the health result for.
+     * @return The health result for the specified parameters.
+     */
+    HealthResult<T> getHealth(ApiVersion apiVersion, WebServerNamespace serverNamespace,
 			SecurityContext securityContext, boolean showAll, String... path) {
 		if (path.length > 0) {
 			HealthEndpointGroup group = getHealthGroup(serverNamespace, path);
@@ -81,7 +91,14 @@ abstract class HealthEndpointSupport<C, T> {
 		return getHealth(apiVersion, this.groups.getPrimary(), securityContext, showAll, path, 0);
 	}
 
-	private HealthEndpointGroup getHealthGroup(WebServerNamespace serverNamespace, String... path) {
+	/**
+     * Retrieves the HealthEndpointGroup based on the provided serverNamespace and path.
+     * 
+     * @param serverNamespace The WebServerNamespace to retrieve the HealthEndpointGroup from.
+     * @param path            The path to retrieve the HealthEndpointGroup from.
+     * @return The HealthEndpointGroup associated with the provided serverNamespace and path, or null if not found.
+     */
+    private HealthEndpointGroup getHealthGroup(WebServerNamespace serverNamespace, String... path) {
 		if (this.groups.get(path[0]) != null) {
 			return this.groups.get(path[0]);
 		}
@@ -92,7 +109,20 @@ abstract class HealthEndpointSupport<C, T> {
 		return null;
 	}
 
-	private HealthResult<T> getHealth(ApiVersion apiVersion, HealthEndpointGroup group, SecurityContext securityContext,
+	/**
+     * Retrieves the health result for a specific API version, health endpoint group, security context,
+     * show all flag, path, and path offset.
+     *
+     * @param apiVersion       The API version.
+     * @param group            The health endpoint group.
+     * @param securityContext  The security context.
+     * @param showAll          The flag indicating whether to show all components.
+     * @param path             The path.
+     * @param pathOffset       The path offset.
+     * @param <T>              The type of health result.
+     * @return                 The health result.
+     */
+    private HealthResult<T> getHealth(ApiVersion apiVersion, HealthEndpointGroup group, SecurityContext securityContext,
 			boolean showAll, String[] path, int pathOffset) {
 		boolean showComponents = showAll || group.showComponents(securityContext);
 		boolean showDetails = showAll || group.showDetails(securityContext);
@@ -111,7 +141,14 @@ abstract class HealthEndpointSupport<C, T> {
 		return (health != null) ? new HealthResult<>(health, group) : null;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Retrieves the contributor object from the registry based on the given path.
+     * 
+     * @param path        the array of path elements
+     * @param pathOffset  the starting index in the path array
+     * @return            the contributor object if found, null otherwise
+     */
+    @SuppressWarnings("unchecked")
 	private Object getContributor(String[] path, int pathOffset) {
 		Object contributor = this.registry;
 		while (pathOffset < path.length) {
@@ -124,7 +161,14 @@ abstract class HealthEndpointSupport<C, T> {
 		return contributor;
 	}
 
-	private String getName(String[] path, int pathOffset) {
+	/**
+     * Returns the name of the file or directory specified by the given path array starting from the specified offset.
+     * 
+     * @param path The array of path elements.
+     * @param pathOffset The starting offset in the path array.
+     * @return The name of the file or directory.
+     */
+    private String getName(String[] path, int pathOffset) {
 		StringBuilder name = new StringBuilder();
 		while (pathOffset < path.length) {
 			name.append((!name.isEmpty()) ? "/" : "");
@@ -134,7 +178,19 @@ abstract class HealthEndpointSupport<C, T> {
 		return name.toString();
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Retrieves the contribution for a specific health endpoint.
+     * 
+     * @param apiVersion    the API version
+     * @param group         the health endpoint group
+     * @param name          the name of the health endpoint
+     * @param contributor   the contributor object
+     * @param showComponents   flag indicating whether to show components
+     * @param showDetails   flag indicating whether to show details
+     * @param groupNames    the set of group names
+     * @return the contribution for the specified health endpoint, or null if not found
+     */
+    @SuppressWarnings("unchecked")
 	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name, Object contributor,
 			boolean showComponents, boolean showDetails, Set<String> groupNames) {
 		if (contributor instanceof NamedContributors) {
@@ -147,7 +203,19 @@ abstract class HealthEndpointSupport<C, T> {
 		return null;
 	}
 
-	private T getAggregateContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name,
+	/**
+     * Retrieves the aggregate contribution for a specific health endpoint group and name.
+     * 
+     * @param apiVersion         The version of the API.
+     * @param group              The health endpoint group.
+     * @param name               The name of the health endpoint.
+     * @param namedContributors  The named contributors.
+     * @param showComponents     Flag indicating whether to show components.
+     * @param showDetails        Flag indicating whether to show details.
+     * @param groupNames         The set of group names.
+     * @return                   The aggregate contribution.
+     */
+    private T getAggregateContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name,
 			NamedContributors<C> namedContributors, boolean showComponents, boolean showDetails,
 			Set<String> groupNames) {
 		String prefix = (StringUtils.hasText(name)) ? name + "/" : "";
@@ -166,7 +234,15 @@ abstract class HealthEndpointSupport<C, T> {
 				groupNames);
 	}
 
-	private T getLoggedHealth(C contributor, String name, boolean showDetails) {
+	/**
+     * Retrieves the logged health status of a contributor.
+     * 
+     * @param contributor the contributor to retrieve the health status from
+     * @param name the name of the contributor (optional)
+     * @param showDetails flag indicating whether to show detailed health information
+     * @return the logged health status of the contributor
+     */
+    private T getLoggedHealth(C contributor, String name, boolean showDetails) {
 		Instant start = Instant.now();
 		try {
 			return getHealth(contributor, showDetails);
@@ -185,12 +261,39 @@ abstract class HealthEndpointSupport<C, T> {
 		}
 	}
 
-	protected abstract T getHealth(C contributor, boolean includeDetails);
+	/**
+     * Retrieves the health information for the specified contributor.
+     *
+     * @param contributor     the contributor for which to retrieve the health information
+     * @param includeDetails  flag indicating whether to include detailed health information
+     * @return the health information for the specified contributor
+     */
+    protected abstract T getHealth(C contributor, boolean includeDetails);
 
-	protected abstract T aggregateContributions(ApiVersion apiVersion, Map<String, T> contributions,
+	/**
+     * Aggregates the contributions from different components based on the provided API version.
+     *
+     * @param apiVersion       the API version to use for aggregation
+     * @param contributions    a map of component names to their respective contributions
+     * @param statusAggregator the status aggregator to use for aggregating the status of components
+     * @param showComponents   a flag indicating whether to include component details in the aggregation
+     * @param groupNames       a set of group names to filter the contributions by
+     * @return the aggregated contributions based on the provided parameters
+     */
+    protected abstract T aggregateContributions(ApiVersion apiVersion, Map<String, T> contributions,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames);
 
-	protected final CompositeHealth getCompositeHealth(ApiVersion apiVersion, Map<String, HealthComponent> components,
+	/**
+     * Returns a CompositeHealth object based on the provided parameters.
+     * 
+     * @param apiVersion      the version of the API
+     * @param components      a map of health components
+     * @param statusAggregator      the status aggregator used to calculate the aggregate status
+     * @param showComponents      a flag indicating whether to include individual health components in the result
+     * @param groupNames      a set of group names to filter the health components by
+     * @return a CompositeHealth object representing the composite health status
+     */
+    protected final CompositeHealth getCompositeHealth(ApiVersion apiVersion, Map<String, HealthComponent> components,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
 		Status status = statusAggregator
 			.getAggregateStatus(components.values().stream().map(this::getStatus).collect(Collectors.toSet()));
@@ -201,7 +304,13 @@ abstract class HealthEndpointSupport<C, T> {
 		return new CompositeHealth(apiVersion, status, instances);
 	}
 
-	private Status getStatus(HealthComponent component) {
+	/**
+     * Returns the status of the given HealthComponent.
+     * 
+     * @param component the HealthComponent to get the status from
+     * @return the status of the HealthComponent, or Status.UNKNOWN if the component is null
+     */
+    private Status getStatus(HealthComponent component) {
 		return (component != null) ? component.getStatus() : Status.UNKNOWN;
 	}
 
@@ -216,16 +325,32 @@ abstract class HealthEndpointSupport<C, T> {
 
 		private final HealthEndpointGroup group;
 
-		HealthResult(T health, HealthEndpointGroup group) {
+		/**
+         * Constructs a new HealthResult object with the specified health and group.
+         * 
+         * @param health the health status of the result
+         * @param group the group to which the health result belongs
+         */
+        HealthResult(T health, HealthEndpointGroup group) {
 			this.health = health;
 			this.group = group;
 		}
 
-		T getHealth() {
+		/**
+         * Returns the health value of the HealthResult object.
+         *
+         * @return the health value of the HealthResult object
+         */
+        T getHealth() {
 			return this.health;
 		}
 
-		HealthEndpointGroup getGroup() {
+		/**
+         * Returns the HealthEndpointGroup associated with this HealthResult.
+         *
+         * @return the HealthEndpointGroup associated with this HealthResult
+         */
+        HealthEndpointGroup getGroup() {
 			return this.group;
 		}
 

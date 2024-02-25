@@ -38,7 +38,13 @@ import org.gradle.plugins.ide.eclipse.model.Facet;
  */
 public class WarConventions {
 
-	void apply(Project project) {
+	/**
+     * Applies the necessary configurations for the given project to enable the Eclipse WTP plugin.
+     * This method is responsible for configuring the Eclipse WTP facet task and mapping the facets.
+     * 
+     * @param project The project to apply the configurations to.
+     */
+    void apply(Project project) {
 		project.getPlugins().withType(EclipseWtpPlugin.class, (wtp) -> {
 			project.getTasks().getByName(EclipseWtpPlugin.ECLIPSE_WTP_FACET_TASK_NAME).doFirst((task) -> {
 				EclipseModel eclipseModel = project.getExtensions().getByType(EclipseModel.class);
@@ -48,7 +54,13 @@ public class WarConventions {
 		});
 	}
 
-	private List<Facet> getFacets(Project project) {
+	/**
+     * Retrieves the facets for a given project.
+     * 
+     * @param project the project for which to retrieve the facets
+     * @return a list of facets
+     */
+    private List<Facet> getFacets(Project project) {
 		JavaVersion javaVersion = project.getExtensions().getByType(JavaPluginExtension.class).getSourceCompatibility();
 		List<Facet> facets = new ArrayList<>();
 		facets.add(new Facet(Facet.FacetType.fixed, "jst.web", null));

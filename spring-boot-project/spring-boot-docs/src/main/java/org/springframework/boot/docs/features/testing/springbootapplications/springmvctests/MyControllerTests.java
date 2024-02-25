@@ -29,6 +29,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * MyControllerTests class.
+ */
 @WebMvcTest(UserVehicleController.class)
 class MyControllerTests {
 
@@ -38,7 +41,12 @@ class MyControllerTests {
 	@MockBean
 	private UserVehicleService userVehicleService;
 
-	@Test
+	/**
+     * Test case to verify the functionality of the example method.
+     *
+     * @throws Exception if an error occurs during the test
+     */
+    @Test
 	void testExample() throws Exception {
 		// @formatter:off
 		given(this.userVehicleService.getVehicleDetails("sboot"))

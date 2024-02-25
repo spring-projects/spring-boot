@@ -32,21 +32,42 @@ class Neo4jHealthDetails {
 
 	private final ResultSummary summary;
 
-	Neo4jHealthDetails(Record record, ResultSummary summary) {
+	/**
+     * Constructs a new Neo4jHealthDetails object with the given record and summary.
+     * 
+     * @param record the record containing health details
+     * @param summary the summary of the health details
+     */
+    Neo4jHealthDetails(Record record, ResultSummary summary) {
 		this.version = record.get("version").asString();
 		this.edition = record.get("edition").asString();
 		this.summary = summary;
 	}
 
-	String getVersion() {
+	/**
+     * Returns the version of the Neo4jHealthDetails.
+     *
+     * @return the version of the Neo4jHealthDetails
+     */
+    String getVersion() {
 		return this.version;
 	}
 
-	String getEdition() {
+	/**
+     * Returns the edition of the Neo4j database.
+     * 
+     * @return the edition of the Neo4j database
+     */
+    String getEdition() {
 		return this.edition;
 	}
 
-	ResultSummary getSummary() {
+	/**
+     * Returns the summary of the result.
+     *
+     * @return the summary of the result
+     */
+    ResultSummary getSummary() {
 		return this.summary;
 	}
 

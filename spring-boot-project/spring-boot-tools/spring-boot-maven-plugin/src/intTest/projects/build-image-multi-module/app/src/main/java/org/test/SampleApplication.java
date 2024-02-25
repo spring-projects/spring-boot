@@ -18,9 +18,18 @@ package org.test;
 
 import org.test.SampleLibrary;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) throws Exception {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args the command line arguments
+     * @throws Exception if an error occurs
+     */
+    public static void main(String[] args) throws Exception {
 		System.out.println(SampleLibrary.getMessage());
 		synchronized (args) {
 			args.wait(); // Prevent exit"

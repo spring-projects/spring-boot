@@ -27,11 +27,21 @@ class PropertiesZipkinConnectionDetails implements ZipkinConnectionDetails {
 
 	private final ZipkinProperties properties;
 
-	PropertiesZipkinConnectionDetails(ZipkinProperties properties) {
+	/**
+     * Constructs a new instance of PropertiesZipkinConnectionDetails with the specified ZipkinProperties.
+     * 
+     * @param properties the ZipkinProperties to be used for the connection details
+     */
+    PropertiesZipkinConnectionDetails(ZipkinProperties properties) {
 		this.properties = properties;
 	}
 
-	@Override
+	/**
+     * Returns the endpoint of the Span in the Zipkin connection details.
+     *
+     * @return the endpoint of the Span
+     */
+    @Override
 	public String getSpanEndpoint() {
 		return this.properties.getEndpoint();
 	}

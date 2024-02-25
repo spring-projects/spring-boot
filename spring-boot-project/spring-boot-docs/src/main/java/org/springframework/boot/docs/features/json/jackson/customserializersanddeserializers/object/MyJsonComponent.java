@@ -29,12 +29,26 @@ import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.boot.jackson.JsonObjectSerializer;
 
+/**
+ * MyJsonComponent class.
+ */
 @JsonComponent
 public class MyJsonComponent {
 
-	public static class Serializer extends JsonObjectSerializer<MyObject> {
+	/**
+     * Serializer class.
+     */
+    public static class Serializer extends JsonObjectSerializer<MyObject> {
 
-		@Override
+		/**
+         * Serializes a MyObject instance into a JSON representation.
+         * 
+         * @param value    the MyObject instance to be serialized
+         * @param jgen     the JsonGenerator used for writing JSON content
+         * @param provider the SerializerProvider used for accessing serialization functionality
+         * @throws IOException if an I/O error occurs during serialization
+         */
+        @Override
 		protected void serializeObject(MyObject value, JsonGenerator jgen, SerializerProvider provider)
 				throws IOException {
 			jgen.writeStringField("name", value.getName());
@@ -43,9 +57,22 @@ public class MyJsonComponent {
 
 	}
 
-	public static class Deserializer extends JsonObjectDeserializer<MyObject> {
+	/**
+     * Deserializer class.
+     */
+    public static class Deserializer extends JsonObjectDeserializer<MyObject> {
 
-		@Override
+		/**
+         * Deserializes a JSON object into a MyObject instance.
+         * 
+         * @param jsonParser The JSON parser used for parsing the JSON data.
+         * @param context The deserialization context.
+         * @param codec The object codec used for reading JSON values.
+         * @param tree The JSON tree representing the object to be deserialized.
+         * @return A MyObject instance created from the deserialized JSON data.
+         * @throws IOException If an I/O error occurs during deserialization.
+         */
+        @Override
 		protected MyObject deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,
 				JsonNode tree) throws IOException {
 			String name = nullSafeValue(tree.get("name"), String.class);

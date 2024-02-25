@@ -18,16 +18,30 @@ package smoketest.parent;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * HelloWorldService class.
+ */
 @Component
 public class HelloWorldService {
 
 	private final ServiceProperties configuration;
 
-	public HelloWorldService(ServiceProperties configuration) {
+	/**
+     * Constructs a new HelloWorldService with the specified configuration.
+     * 
+     * @param configuration the service properties configuration
+     */
+    public HelloWorldService(ServiceProperties configuration) {
 		this.configuration = configuration;
 	}
 
-	public String getHelloMessage(String name) {
+	/**
+     * Returns a hello message for the given name.
+     * 
+     * @param name the name to include in the hello message
+     * @return the hello message
+     */
+    public String getHelloMessage(String name) {
 		return this.configuration.getGreeting() + " " + name;
 	}
 

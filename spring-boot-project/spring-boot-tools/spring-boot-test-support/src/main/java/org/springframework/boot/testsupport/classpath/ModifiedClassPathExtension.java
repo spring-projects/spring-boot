@@ -46,43 +46,106 @@ import org.springframework.util.CollectionUtils;
  */
 class ModifiedClassPathExtension implements InvocationInterceptor {
 
-	@Override
+	/**
+     * Intercepts the execution of a method before all methods.
+     *
+     * @param invocation         the invocation object representing the method being intercepted
+     * @param invocationContext  the reflective invocation context of the method being intercepted
+     * @param extensionContext   the extension context of the test being executed
+     * @throws Throwable        if an error occurs during interception
+     */
+    @Override
 	public void interceptBeforeAllMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
 		intercept(invocation, extensionContext);
 	}
 
-	@Override
+	/**
+     * Intercepts the execution of a method before each test method is invoked.
+     *
+     * @param invocation         the invocation object representing the method being invoked
+     * @param invocationContext  the reflective invocation context of the method being invoked
+     * @param extensionContext   the extension context of the test being executed
+     * @throws Throwable        if an error occurs during the interception
+     */
+    @Override
 	public void interceptBeforeEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
 		intercept(invocation, extensionContext);
 	}
 
-	@Override
+	/**
+     * This method is called after each test method is executed.
+     * It intercepts the method invocation and the extension context.
+     * 
+     * @param invocation The invocation object representing the method invocation.
+     * @param invocationContext The reflective invocation context of the method.
+     * @param extensionContext The extension context of the test.
+     * @throws Throwable if an error occurs during the interception.
+     */
+    @Override
 	public void interceptAfterEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
 		intercept(invocation, extensionContext);
 	}
 
-	@Override
+	/**
+     * Intercepts the execution of a method after all methods have been invoked.
+     * 
+     * @param invocation the invocation object representing the method call
+     * @param invocationContext the reflective invocation context of the method
+     * @param extensionContext the extension context of the test class or test method
+     * @throws Throwable if an error occurs during interception
+     */
+    @Override
 	public void interceptAfterAllMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
 		intercept(invocation, extensionContext);
 	}
 
-	@Override
+	/**
+     * Intercepts a test method invocation.
+     * 
+     * @param invocation          the invocation object representing the test method invocation
+     * @param invocationContext   the reflective invocation context of the test method
+     * @param extensionContext    the extension context of the test method
+     * @throws Throwable         if an error occurs during the interception
+     */
+    @Override
 	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
 			ExtensionContext extensionContext) throws Throwable {
 		interceptMethod(invocation, invocationContext, extensionContext);
 	}
 
-	@Override
+	/**
+     * Intercepts the test template method.
+     *
+     * @param invocation the invocation object
+     * @param invocationContext the reflective invocation context
+     * @param extensionContext the extension context
+     * @throws Throwable if an error occurs during interception
+     */
+    @Override
 	public void interceptTestTemplateMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
 		interceptMethod(invocation, invocationContext, extensionContext);
 	}
 
-	private void interceptMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
+	/**
+     * Intercepts a method invocation and performs necessary actions based on the extension context.
+     * If the classpath class loader has been modified, the invocation proceeds without any modifications.
+     * Otherwise, it checks if the test class and method require a modified classpath class loader.
+     * If a modified classpath class loader is not required, the invocation proceeds without any modifications.
+     * If a modified classpath class loader is required, it skips the invocation and sets the modified classpath class loader as the current thread's context class loader.
+     * It then runs the test using the modified classpath class loader.
+     * Finally, it restores the original context class loader.
+     *
+     * @param invocation          the invocation to be intercepted
+     * @param invocationContext   the reflective invocation context of the method
+     * @param extensionContext    the extension context of the test
+     * @throws Throwable if an error occurs during the interception or test execution
+     */
+    private void interceptMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
 			ExtensionContext extensionContext) throws Throwable {
 		if (isModifiedClassPathClassLoader(extensionContext)) {
 			invocation.proceed();
@@ -107,7 +170,13 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 		}
 	}
 
-	private void runTest(String testId) throws Throwable {
+	/**
+     * Runs a test with the given test ID.
+     * 
+     * @param testId the unique identifier of the test
+     * @throws Throwable if an error occurs during test execution
+     */
+    private void runTest(String testId) throws Throwable {
 		LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
 			.selectors(DiscoverySelectors.selectUniqueId(testId))
 			.build();
@@ -122,7 +191,16 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 		}
 	}
 
-	private void intercept(Invocation<Void> invocation, ExtensionContext extensionContext) throws Throwable {
+	/**
+     * Intercepts the invocation and checks if the class path class loader has been modified.
+     * If the class path class loader has been modified, the invocation proceeds.
+     * Otherwise, the invocation is skipped.
+     *
+     * @param invocation         the invocation to be intercepted
+     * @param extensionContext   the extension context
+     * @throws Throwable        if an error occurs during interception
+     */
+    private void intercept(Invocation<Void> invocation, ExtensionContext extensionContext) throws Throwable {
 		if (isModifiedClassPathClassLoader(extensionContext)) {
 			invocation.proceed();
 			return;
@@ -130,7 +208,13 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 		invocation.skip();
 	}
 
-	private boolean isModifiedClassPathClassLoader(ExtensionContext extensionContext) {
+	/**
+     * Checks if the class loader used by the test class is an instance of ModifiedClassPathClassLoader.
+     * 
+     * @param extensionContext the extension context of the test
+     * @return true if the class loader is an instance of ModifiedClassPathClassLoader, false otherwise
+     */
+    private boolean isModifiedClassPathClassLoader(ExtensionContext extensionContext) {
 		Class<?> testClass = extensionContext.getRequiredTestClass();
 		ClassLoader classLoader = testClass.getClassLoader();
 		return classLoader.getClass().getName().equals(ModifiedClassPathClassLoader.class.getName());

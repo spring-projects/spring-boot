@@ -85,7 +85,14 @@ public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 		this.lastModifiedTime = lastModifiedTime;
 	}
 
-	@Override
+	/**
+     * Writes the given entry to the archive.
+     * 
+     * @param entry The entry to be written.
+     * @param entryWriter The writer for the entry.
+     * @throws IOException If an I/O error occurs.
+     */
+    @Override
 	protected void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException {
 		JarArchiveEntry jarEntry = asJarArchiveEntry(entry);
 		if (this.lastModifiedTime != null) {
@@ -98,7 +105,14 @@ public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 		this.jarOutputStream.closeArchiveEntry();
 	}
 
-	private JarArchiveEntry asJarArchiveEntry(ZipEntry entry) throws ZipException {
+	/**
+     * Converts a ZipEntry object to a JarArchiveEntry object.
+     * 
+     * @param entry the ZipEntry object to be converted
+     * @return the converted JarArchiveEntry object
+     * @throws ZipException if an error occurs during the conversion
+     */
+    private JarArchiveEntry asJarArchiveEntry(ZipEntry entry) throws ZipException {
 		if (entry instanceof JarArchiveEntry jarArchiveEntry) {
 			return jarArchiveEntry;
 		}

@@ -29,11 +29,20 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
+/**
+ * MyUserDocumentationTests class.
+ */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestDocs
 class MyUserDocumentationTests {
 
-	@Test
+	/**
+     * Test method to list users.
+     * 
+     * @param documentationSpec the RequestSpecification for documentation
+     * @param port the local server port
+     */
+    @Test
 	void listUsers(@Autowired RequestSpecification documentationSpec, @LocalServerPort int port) {
 		// @formatter:off
 		given(documentationSpec)

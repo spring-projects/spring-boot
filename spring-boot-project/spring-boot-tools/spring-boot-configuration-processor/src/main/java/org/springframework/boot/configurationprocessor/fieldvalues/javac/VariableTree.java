@@ -28,24 +28,53 @@ import javax.lang.model.element.Modifier;
  */
 class VariableTree extends ReflectionWrapper {
 
-	VariableTree(Object instance) {
+	/**
+     * Constructs a new VariableTree object with the specified instance.
+     * 
+     * @param instance the instance of the object
+     */
+    VariableTree(Object instance) {
 		super("com.sun.source.tree.VariableTree", instance);
 	}
 
-	String getName() throws Exception {
+	/**
+     * Retrieves the name of the instance.
+     * 
+     * @return the name of the instance
+     * @throws Exception if an error occurs while retrieving the name
+     */
+    String getName() throws Exception {
 		return findMethod("getName").invoke(getInstance()).toString();
 	}
 
-	String getType() throws Exception {
+	/**
+     * Retrieves the type of the VariableTree instance.
+     * 
+     * @return the type of the VariableTree instance
+     * @throws Exception if an error occurs while retrieving the type
+     */
+    String getType() throws Exception {
 		return findMethod("getType").invoke(getInstance()).toString();
 	}
 
-	ExpressionTree getInitializer() throws Exception {
+	/**
+     * Retrieves the initializer expression of the VariableTree instance.
+     * 
+     * @return an ExpressionTree representing the initializer expression, or null if no initializer is found
+     * @throws Exception if an error occurs while retrieving the initializer
+     */
+    ExpressionTree getInitializer() throws Exception {
 		Object instance = findMethod("getInitializer").invoke(getInstance());
 		return (instance != null) ? new ExpressionTree(instance) : null;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Retrieves the set of modifier flags associated with this VariableTree instance.
+     * 
+     * @return the set of modifier flags
+     * @throws Exception if an error occurs while retrieving the modifier flags
+     */
+    @SuppressWarnings("unchecked")
 	Set<Modifier> getModifierFlags() throws Exception {
 		Object modifiers = findMethod("getModifiers").invoke(getInstance());
 		if (modifiers == null) {

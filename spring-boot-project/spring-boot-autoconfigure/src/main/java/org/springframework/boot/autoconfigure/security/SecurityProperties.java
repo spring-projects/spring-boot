@@ -64,15 +64,28 @@ public class SecurityProperties {
 
 	private final User user = new User();
 
-	public User getUser() {
+	/**
+     * Returns the User object associated with this SecurityProperties instance.
+     *
+     * @return the User object associated with this SecurityProperties instance
+     */
+    public User getUser() {
 		return this.user;
 	}
 
-	public Filter getFilter() {
+	/**
+     * Returns the filter associated with the SecurityProperties object.
+     *
+     * @return the filter associated with the SecurityProperties object
+     */
+    public Filter getFilter() {
 		return this.filter;
 	}
 
-	public static class Filter {
+	/**
+     * Filter class.
+     */
+    public static class Filter {
 
 		/**
 		 * Security filter chain order for Servlet-based web applications.
@@ -84,25 +97,48 @@ public class SecurityProperties {
 		 */
 		private Set<DispatcherType> dispatcherTypes = EnumSet.allOf(DispatcherType.class);
 
-		public int getOrder() {
+		/**
+         * Returns the order of the filter.
+         *
+         * @return the order of the filter
+         */
+        public int getOrder() {
 			return this.order;
 		}
 
-		public void setOrder(int order) {
+		/**
+         * Sets the order of the filter.
+         * 
+         * @param order the order of the filter
+         */
+        public void setOrder(int order) {
 			this.order = order;
 		}
 
-		public Set<DispatcherType> getDispatcherTypes() {
+		/**
+         * Returns the dispatcher types of this filter.
+         *
+         * @return the dispatcher types of this filter
+         */
+        public Set<DispatcherType> getDispatcherTypes() {
 			return this.dispatcherTypes;
 		}
 
-		public void setDispatcherTypes(Set<DispatcherType> dispatcherTypes) {
+		/**
+         * Sets the dispatcher types for this filter.
+         * 
+         * @param dispatcherTypes the set of dispatcher types to be set
+         */
+        public void setDispatcherTypes(Set<DispatcherType> dispatcherTypes) {
 			this.dispatcherTypes = dispatcherTypes;
 		}
 
 	}
 
-	public static class User {
+	/**
+     * User class.
+     */
+    public static class User {
 
 		/**
 		 * Default user name.
@@ -121,19 +157,39 @@ public class SecurityProperties {
 
 		private boolean passwordGenerated = true;
 
-		public String getName() {
+		/**
+         * Returns the name of the User.
+         *
+         * @return the name of the User
+         */
+        public String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		/**
+         * Sets the name of the user.
+         * 
+         * @param name the name to be set
+         */
+        public void setName(String name) {
 			this.name = name;
 		}
 
-		public String getPassword() {
+		/**
+         * Returns the password of the User.
+         *
+         * @return the password of the User
+         */
+        public String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		/**
+         * Sets the password for the user.
+         * 
+         * @param password the password to be set
+         */
+        public void setPassword(String password) {
 			if (!StringUtils.hasLength(password)) {
 				return;
 			}
@@ -141,15 +197,30 @@ public class SecurityProperties {
 			this.password = password;
 		}
 
-		public List<String> getRoles() {
+		/**
+         * Returns the list of roles associated with the user.
+         *
+         * @return the list of roles
+         */
+        public List<String> getRoles() {
 			return this.roles;
 		}
 
-		public void setRoles(List<String> roles) {
+		/**
+         * Sets the roles for the user.
+         * 
+         * @param roles the list of roles to be set
+         */
+        public void setRoles(List<String> roles) {
 			this.roles = new ArrayList<>(roles);
 		}
 
-		public boolean isPasswordGenerated() {
+		/**
+         * Returns a boolean value indicating whether a password has been generated for the user.
+         *
+         * @return true if a password has been generated, false otherwise
+         */
+        public boolean isPasswordGenerated() {
 			return this.passwordGenerated;
 		}
 

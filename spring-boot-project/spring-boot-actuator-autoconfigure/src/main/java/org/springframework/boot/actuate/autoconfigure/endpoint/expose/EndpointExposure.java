@@ -42,7 +42,12 @@ public enum EndpointExposure {
 
 	private final String[] defaultIncludes;
 
-	EndpointExposure(String... defaultIncludes) {
+	/**
+     * Sets the default includes for the endpoint exposure.
+     * 
+     * @param defaultIncludes the default includes to be set
+     */
+    EndpointExposure(String... defaultIncludes) {
 		this.defaultIncludes = defaultIncludes;
 	}
 

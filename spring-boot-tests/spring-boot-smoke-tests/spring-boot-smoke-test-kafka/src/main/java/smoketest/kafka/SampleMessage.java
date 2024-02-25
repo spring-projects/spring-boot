@@ -19,27 +19,51 @@ package smoketest.kafka;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * SampleMessage class.
+ */
 public class SampleMessage {
 
 	private final Integer id;
 
 	private final String message;
 
-	@JsonCreator
+	/**
+     * Constructs a new SampleMessage object with the specified id and message.
+     * 
+     * @param id the id of the SampleMessage
+     * @param message the message of the SampleMessage
+     */
+    @JsonCreator
 	public SampleMessage(@JsonProperty("id") Integer id, @JsonProperty("message") String message) {
 		this.id = id;
 		this.message = message;
 	}
 
-	public Integer getId() {
+	/**
+     * Returns the ID of the SampleMessage object.
+     *
+     * @return the ID of the SampleMessage object
+     */
+    public Integer getId() {
 		return this.id;
 	}
 
-	public String getMessage() {
+	/**
+     * Returns the message.
+     *
+     * @return the message
+     */
+    public String getMessage() {
 		return this.message;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the SampleMessage object.
+     * 
+     * @return a string representation of the SampleMessage object
+     */
+    @Override
 	public String toString() {
 		return "SampleMessage{id=" + this.id + ", message='" + this.message + "'}";
 	}

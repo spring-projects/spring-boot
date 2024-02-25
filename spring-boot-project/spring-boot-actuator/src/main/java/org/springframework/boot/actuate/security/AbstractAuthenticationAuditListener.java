@@ -36,16 +36,31 @@ public abstract class AbstractAuthenticationAuditListener
 
 	private ApplicationEventPublisher publisher;
 
-	@Override
+	/**
+     * Sets the application event publisher for this listener.
+     * 
+     * @param publisher the application event publisher to set
+     */
+    @Override
 	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
 		this.publisher = publisher;
 	}
 
-	protected ApplicationEventPublisher getPublisher() {
+	/**
+     * Returns the ApplicationEventPublisher used by this AbstractAuthenticationAuditListener.
+     *
+     * @return the ApplicationEventPublisher used by this AbstractAuthenticationAuditListener
+     */
+    protected ApplicationEventPublisher getPublisher() {
 		return this.publisher;
 	}
 
-	protected void publish(AuditEvent event) {
+	/**
+     * Publishes an audit event.
+     * 
+     * @param event the audit event to be published
+     */
+    protected void publish(AuditEvent event) {
 		if (getPublisher() != null) {
 			getPublisher().publishEvent(new AuditApplicationEvent(event));
 		}

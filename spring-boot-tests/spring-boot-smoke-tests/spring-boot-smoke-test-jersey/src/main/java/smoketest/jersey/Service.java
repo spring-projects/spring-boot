@@ -19,13 +19,21 @@ package smoketest.jersey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * Service class.
+ */
 @Component
 public class Service {
 
 	@Value("${message:World}")
 	private String msg;
 
-	public String message() {
+	/**
+     * Returns the message stored in the Service object.
+     *
+     * @return the message stored in the Service object.
+     */
+    public String message() {
 		return this.msg;
 	}
 

@@ -37,11 +37,21 @@ public class JooqProperties {
 	 */
 	private SQLDialect sqlDialect;
 
-	public SQLDialect getSqlDialect() {
+	/**
+     * Returns the SQL dialect used by this JooqProperties instance.
+     * 
+     * @return the SQL dialect
+     */
+    public SQLDialect getSqlDialect() {
 		return this.sqlDialect;
 	}
 
-	public void setSqlDialect(SQLDialect sqlDialect) {
+	/**
+     * Sets the SQL dialect to be used for generating SQL statements.
+     * 
+     * @param sqlDialect the SQL dialect to be set
+     */
+    public void setSqlDialect(SQLDialect sqlDialect) {
 		this.sqlDialect = sqlDialect;
 	}
 

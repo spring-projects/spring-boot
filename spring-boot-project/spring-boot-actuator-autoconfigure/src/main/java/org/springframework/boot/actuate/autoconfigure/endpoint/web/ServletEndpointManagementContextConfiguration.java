@@ -46,7 +46,13 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public class ServletEndpointManagementContextConfiguration {
 
-	@Bean
+	/**
+     * Creates a filter for including and excluding servlet endpoints based on the specified properties.
+     * 
+     * @param properties the web endpoint properties
+     * @return the include-exclude endpoint filter for servlet endpoints
+     */
+    @Bean
 	public IncludeExcludeEndpointFilter<ExposableServletEndpoint> servletExposeExcludePropertyEndpointFilter(
 			WebEndpointProperties properties) {
 		WebEndpointProperties.Exposure exposure = properties.getExposure();
@@ -54,11 +60,22 @@ public class ServletEndpointManagementContextConfiguration {
 				exposure.getExclude());
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * WebMvcServletEndpointManagementContextConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(DispatcherServlet.class)
 	public static class WebMvcServletEndpointManagementContextConfiguration {
 
-		@Bean
+		/**
+         * Registers servlet endpoints in the servlet context.
+         * 
+         * @param properties the web endpoint properties
+         * @param servletEndpointsSupplier the supplier for servlet endpoints
+         * @param dispatcherServletPath the dispatcher servlet path
+         * @return the servlet endpoint registrar
+         */
+        @Bean
 		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
 				ServletEndpointsSupplier servletEndpointsSupplier, DispatcherServletPath dispatcherServletPath) {
 			return new ServletEndpointRegistrar(dispatcherServletPath.getRelativePath(properties.getBasePath()),
@@ -67,12 +84,23 @@ public class ServletEndpointManagementContextConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * JerseyServletEndpointManagementContextConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
 	public static class JerseyServletEndpointManagementContextConfiguration {
 
-		@Bean
+		/**
+         * Registers the servlet endpoints for the Jersey application.
+         * 
+         * @param properties The web endpoint properties.
+         * @param servletEndpointsSupplier The supplier for servlet endpoints.
+         * @param jerseyApplicationPath The Jersey application path.
+         * @return The servlet endpoint registrar.
+         */
+        @Bean
 		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
 				ServletEndpointsSupplier servletEndpointsSupplier, JerseyApplicationPath jerseyApplicationPath) {
 			return new ServletEndpointRegistrar(jerseyApplicationPath.getRelativePath(properties.getBasePath()),

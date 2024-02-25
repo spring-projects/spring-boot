@@ -50,7 +50,15 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 
 	private static final List<MediaType> MEDIA_TYPES_ALL = Collections.singletonList(MediaType.ALL);
 
-	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
+	/**
+     * Constructs a new WelcomePageHandlerMapping with the specified parameters.
+     * 
+     * @param templateAvailabilityProviders the TemplateAvailabilityProviders used to resolve template availability
+     * @param applicationContext the ApplicationContext used to resolve resources and beans
+     * @param indexHtmlResource the Resource representing the index.html file
+     * @param staticPathPattern the pattern used to map static resources
+     */
+    WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
 			ApplicationContext applicationContext, Resource indexHtmlResource, String staticPathPattern) {
 		setOrder(2);
 		WelcomePage welcomePage = WelcomePage.resolve(templateAvailabilityProviders, applicationContext,
@@ -64,12 +72,25 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 		}
 	}
 
-	@Override
+	/**
+     * Determines the handler for the given HTTP request.
+     * 
+     * @param request the HttpServletRequest object representing the incoming request
+     * @return the handler object if the request accepts HTML text, otherwise null
+     * @throws Exception if an exception occurs while determining the handler
+     */
+    @Override
 	public Object getHandlerInternal(HttpServletRequest request) throws Exception {
 		return (!isHtmlTextAccepted(request)) ? null : super.getHandlerInternal(request);
 	}
 
-	private boolean isHtmlTextAccepted(HttpServletRequest request) {
+	/**
+     * Checks if the HTML text is accepted by the HttpServletRequest.
+     * 
+     * @param request the HttpServletRequest object
+     * @return true if the HTML text is accepted, false otherwise
+     */
+    private boolean isHtmlTextAccepted(HttpServletRequest request) {
 		for (MediaType mediaType : getAcceptedMediaTypes(request)) {
 			if (mediaType.includes(MediaType.TEXT_HTML)) {
 				return true;
@@ -78,7 +99,14 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 		return false;
 	}
 
-	private List<MediaType> getAcceptedMediaTypes(HttpServletRequest request) {
+	/**
+     * Retrieves the accepted media types from the request's Accept header.
+     * If the Accept header is not present or is invalid, assumes all media types are accepted.
+     * 
+     * @param request the HttpServletRequest object representing the current request
+     * @return a List of MediaType objects representing the accepted media types
+     */
+    private List<MediaType> getAcceptedMediaTypes(HttpServletRequest request) {
 		String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
 		if (StringUtils.hasText(acceptHeader)) {
 			try {

@@ -58,7 +58,14 @@ abstract class HttpClientTransport implements HttpTransport {
 
 	private final HttpHost host;
 
-	protected HttpClientTransport(HttpClient client, HttpHost host) {
+	/**
+     * Constructs a new instance of the HttpClientTransport class.
+     * 
+     * @param client the HttpClient object to be used for the transport
+     * @param host the HttpHost object representing the target host
+     * @throws IllegalArgumentException if either the client or host parameter is null
+     */
+    protected HttpClientTransport(HttpClient client, HttpHost host) {
 		Assert.notNull(client, "Client must not be null");
 		Assert.notNull(host, "Host must not be null");
 		this.client = client;
@@ -130,19 +137,42 @@ abstract class HttpClientTransport implements HttpTransport {
 		return execute(new HttpDelete(uri));
 	}
 
-	private Response execute(HttpUriRequestBase request, String contentType, IOConsumer<OutputStream> writer) {
+	/**
+     * Executes an HTTP request with the given request object, content type, and writer.
+     * 
+     * @param request the HTTP request object to be executed
+     * @param contentType the content type of the request body
+     * @param writer the consumer function that writes the request body to the output stream
+     * @return the HTTP response received from the server
+     */
+    private Response execute(HttpUriRequestBase request, String contentType, IOConsumer<OutputStream> writer) {
 		request.setEntity(new WritableHttpEntity(contentType, writer));
 		return execute(request);
 	}
 
-	private Response execute(HttpUriRequestBase request, String registryAuth) {
+	/**
+     * Executes an HTTP request with an optional registry authentication header.
+     * 
+     * @param request the HTTP request to be executed
+     * @param registryAuth the registry authentication header value
+     * @return the HTTP response
+     */
+    private Response execute(HttpUriRequestBase request, String registryAuth) {
 		if (StringUtils.hasText(registryAuth)) {
 			request.setHeader(REGISTRY_AUTH_HEADER, registryAuth);
 		}
 		return execute(request);
 	}
 
-	private Response execute(HttpUriRequest request) {
+	/**
+     * Executes an HTTP request and returns the response.
+     * 
+     * @param request the HTTP request to execute
+     * @return the HTTP response
+     * @throws DockerEngineException if the response status code is between 400 and 500 (inclusive)
+     * @throws DockerConnectionException if an I/O error or URI syntax error occurs
+     */
+    private Response execute(HttpUriRequest request) {
 		try {
 			ClassicHttpResponse response = this.client.executeOpen(this.host, request, null);
 			int statusCode = response.getCode();
@@ -161,7 +191,13 @@ abstract class HttpClientTransport implements HttpTransport {
 		}
 	}
 
-	private Errors getErrorsFromResponse(HttpEntity entity) {
+	/**
+     * Retrieves the Errors object from the given HttpEntity.
+     * 
+     * @param entity the HttpEntity from which to retrieve the Errors object
+     * @return the Errors object parsed from the HttpEntity, or null if an IOException occurs
+     */
+    private Errors getErrorsFromResponse(HttpEntity entity) {
 		try {
 			return SharedObjectMapper.get().readValue(entity.getContent(), Errors.class);
 		}
@@ -170,7 +206,13 @@ abstract class HttpClientTransport implements HttpTransport {
 		}
 	}
 
-	private Message getMessageFromResponse(HttpEntity entity) {
+	/**
+     * Retrieves a Message object from the given HttpEntity.
+     * 
+     * @param entity the HttpEntity from which to retrieve the Message object
+     * @return the Message object retrieved from the HttpEntity, or null if the HttpEntity is null or an error occurs
+     */
+    private Message getMessageFromResponse(HttpEntity entity) {
 		try {
 			return (entity.getContent() != null)
 					? SharedObjectMapper.get().readValue(entity.getContent(), Message.class) : null;
@@ -180,7 +222,12 @@ abstract class HttpClientTransport implements HttpTransport {
 		}
 	}
 
-	HttpHost getHost() {
+	/**
+     * Returns the HttpHost object representing the host of this HttpClientTransport.
+     *
+     * @return the HttpHost object representing the host of this HttpClientTransport
+     */
+    HttpHost getHost() {
 		return this.host;
 	}
 
@@ -191,17 +238,33 @@ abstract class HttpClientTransport implements HttpTransport {
 
 		private final IOConsumer<OutputStream> writer;
 
-		WritableHttpEntity(String contentType, IOConsumer<OutputStream> writer) {
+		/**
+         * Constructs a new WritableHttpEntity with the specified content type and writer.
+         * 
+         * @param contentType the content type of the entity
+         * @param writer the consumer function that writes the entity content to an output stream
+         */
+        WritableHttpEntity(String contentType, IOConsumer<OutputStream> writer) {
 			super(contentType, "UTF-8");
 			this.writer = writer;
 		}
 
-		@Override
+		/**
+         * Returns whether this entity is repeatable.
+         * 
+         * @return {@code true} if this entity is repeatable, {@code false} otherwise.
+         */
+        @Override
 		public boolean isRepeatable() {
 			return false;
 		}
 
-		@Override
+		/**
+         * Returns the content length of the HTTP entity.
+         * 
+         * @return the content length, or -1 if the content type is not "application/json"
+         */
+        @Override
 		public long getContentLength() {
 			if (this.getContentType() != null && this.getContentType().equals("application/json")) {
 				return calculateStringContentLength();
@@ -209,22 +272,44 @@ abstract class HttpClientTransport implements HttpTransport {
 			return -1;
 		}
 
-		@Override
+		/**
+         * Returns the content of this WritableHttpEntity as an InputStream.
+         *
+         * @return the content of this WritableHttpEntity as an InputStream
+         * @throws UnsupportedOperationException if the operation is not supported
+         */
+        @Override
 		public InputStream getContent() throws UnsupportedOperationException {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
+		/**
+         * Writes the content of this entity to the specified output stream.
+         *
+         * @param outputStream the output stream to write the content to
+         * @throws IOException if an I/O error occurs while writing the content
+         */
+        @Override
 		public void writeTo(OutputStream outputStream) throws IOException {
 			this.writer.accept(outputStream);
 		}
 
-		@Override
+		/**
+         * Returns whether the entity is streaming.
+         * 
+         * @return true if the entity is streaming, false otherwise
+         */
+        @Override
 		public boolean isStreaming() {
 			return true;
 		}
 
-		private int calculateStringContentLength() {
+		/**
+         * Calculates the length of the content in the string representation of the entity.
+         * 
+         * @return The length of the content in bytes, or -1 if an IOException occurs.
+         */
+        private int calculateStringContentLength() {
 			try {
 				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 				this.writer.accept(bytes);
@@ -235,7 +320,12 @@ abstract class HttpClientTransport implements HttpTransport {
 			}
 		}
 
-		@Override
+		/**
+         * Closes the WritableHttpEntity.
+         *
+         * @throws IOException if an I/O error occurs while closing the entity
+         */
+        @Override
 		public void close() throws IOException {
 		}
 
@@ -248,16 +338,32 @@ abstract class HttpClientTransport implements HttpTransport {
 
 		private final ClassicHttpResponse response;
 
-		HttpClientResponse(ClassicHttpResponse response) {
+		/**
+         * Constructs a new HttpClientResponse object with the given ClassicHttpResponse.
+         * 
+         * @param response the ClassicHttpResponse object representing the response received from the server
+         */
+        HttpClientResponse(ClassicHttpResponse response) {
 			this.response = response;
 		}
 
-		@Override
+		/**
+         * Returns the content of the response as an InputStream.
+         * 
+         * @return the content of the response as an InputStream
+         * @throws IOException if an I/O error occurs while getting the content
+         */
+        @Override
 		public InputStream getContent() throws IOException {
 			return this.response.getEntity().getContent();
 		}
 
-		@Override
+		/**
+         * Closes the HttpClientResponse and releases any system resources associated with it.
+         * 
+         * @throws IOException if an I/O error occurs while closing the response
+         */
+        @Override
 		public void close() throws IOException {
 			this.response.close();
 		}

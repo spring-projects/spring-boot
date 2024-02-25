@@ -52,7 +52,15 @@ import org.springframework.web.client.RestClient;
 @Conditional(NotReactiveWebApplicationCondition.class)
 public class RestClientAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a {@link HttpMessageConvertersRestClientCustomizer} bean if no other bean of the same type is present.
+     * This customizer is responsible for customizing the {@link HttpMessageConverters} used by the REST client.
+     * The customizer is assigned the lowest precedence to ensure it runs after other customizers.
+     *
+     * @param messageConverters the provider for the {@link HttpMessageConverters} bean
+     * @return the {@link HttpMessageConvertersRestClientCustomizer} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	HttpMessageConvertersRestClientCustomizer httpMessageConvertersRestClientCustomizer(
@@ -60,14 +68,27 @@ public class RestClientAutoConfiguration {
 		return new HttpMessageConvertersRestClientCustomizer(messageConverters.getIfUnique());
 	}
 
-	@Bean
+	/**
+     * Creates an instance of AutoConfiguredRestClientSsl if RestClientSsl bean is missing and SslBundles bean is present.
+     * 
+     * @param sslBundles the SslBundles bean used to configure the RestClientSsl
+     * @return an instance of AutoConfiguredRestClientSsl
+     */
+    @Bean
 	@ConditionalOnMissingBean(RestClientSsl.class)
 	@ConditionalOnBean(SslBundles.class)
 	AutoConfiguredRestClientSsl restClientSsl(SslBundles sslBundles) {
 		return new AutoConfiguredRestClientSsl(sslBundles);
 	}
 
-	@Bean
+	/**
+     * Creates a RestClientBuilderConfigurer bean if no other bean of the same type is present.
+     * This bean is responsible for configuring the RestClientBuilder with any customizations provided by RestClientCustomizer beans.
+     * 
+     * @param customizerProvider ObjectProvider of RestClientCustomizer beans
+     * @return the RestClientBuilderConfigurer bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	RestClientBuilderConfigurer restClientBuilderConfigurer(ObjectProvider<RestClientCustomizer> customizerProvider) {
 		RestClientBuilderConfigurer configurer = new RestClientBuilderConfigurer();
@@ -75,7 +96,16 @@ public class RestClientAutoConfiguration {
 		return configurer;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link RestClient.Builder} with the provided {@link RestClientBuilderConfigurer}.
+     * This method is annotated with {@link Bean} to indicate that it is a Spring bean.
+     * The scope of the bean is set to "prototype" using the {@link Scope} annotation.
+     * The {@link ConditionalOnMissingBean} annotation ensures that this bean is only created if there is no existing bean of the same type.
+     * 
+     * @param restClientBuilderConfigurer the {@link RestClientBuilderConfigurer} used to configure the {@link RestClient.Builder}
+     * @return a new instance of {@link RestClient.Builder} configured with the provided {@link RestClientBuilderConfigurer}
+     */
+    @Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
 	RestClient.Builder restClientBuilder(RestClientBuilderConfigurer restClientBuilderConfigurer) {

@@ -47,11 +47,21 @@ public class Cache {
 
 		private final String description;
 
-		Format(String description) {
+		/**
+     * Sets the description of the cache.
+     * 
+     * @param description the description to be set
+     */
+    Format(String description) {
 			this.description = description;
 		}
 
-		public String getDescription() {
+		/**
+     * Returns the description of the cache.
+     *
+     * @return the description of the cache
+     */
+    public String getDescription() {
 			return this.description;
 		}
 
@@ -59,7 +69,12 @@ public class Cache {
 
 	protected final Format format;
 
-	Cache(Format format) {
+	/**
+     * Constructs a new Cache object with the specified format.
+     * 
+     * @param format the format to be used by the Cache object
+     */
+    Cache(Format format) {
 		this.format = format;
 	}
 
@@ -109,7 +124,13 @@ public class Cache {
 		return new Bind(source);
 	}
 
-	@Override
+	/**
+     * Compares this Cache object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the specified object is equal to this Cache object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -121,7 +142,12 @@ public class Cache {
 		return Objects.equals(this.format, other.format);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for the Cache object.
+     * 
+     * @return the hash code value for the Cache object
+     */
+    @Override
 	public int hashCode() {
 		return ObjectUtils.nullSafeHashCode(this.format);
 	}
@@ -133,20 +159,43 @@ public class Cache {
 
 		private final VolumeName name;
 
-		Volume(VolumeName name) {
+		/**
+         * Constructs a new Volume object with the specified name.
+         * 
+         * @param name the name of the volume
+         */
+        Volume(VolumeName name) {
 			super(Format.VOLUME);
 			this.name = name;
 		}
 
-		public String getName() {
+		/**
+         * Returns the name of the Volume.
+         *
+         * @return the name of the Volume
+         */
+        public String getName() {
 			return this.name.toString();
 		}
 
-		public VolumeName getVolumeName() {
+		/**
+         * Returns the name of the volume.
+         *
+         * @return the name of the volume
+         */
+        public VolumeName getVolumeName() {
 			return this.name;
 		}
 
-		@Override
+		/**
+         * Compares this Volume object to the specified object for equality.
+         * Returns true if the specified object is also a Volume object and
+         * has the same name as this Volume object.
+         * 
+         * @param obj the object to compare with
+         * @return true if the objects are equal, false otherwise
+         */
+        @Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -161,14 +210,25 @@ public class Cache {
 			return Objects.equals(this.name, other.name);
 		}
 
-		@Override
+		/**
+         * Returns the hash code value for this Volume object.
+         * 
+         * @return the hash code value for this object
+         */
+        @Override
 		public int hashCode() {
 			int result = super.hashCode();
 			result = 31 * result + ObjectUtils.nullSafeHashCode(this.name);
 			return result;
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the Volume object.
+         * The string representation includes the format description and the name of the Volume.
+         *
+         * @return a string representation of the Volume object
+         */
+        @Override
 		public String toString() {
 			return this.format.getDescription() + " '" + this.name + "'";
 		}
@@ -182,16 +242,32 @@ public class Cache {
 
 		private final String source;
 
-		Bind(String source) {
+		/**
+         * Constructs a new Bind object with the specified source.
+         * 
+         * @param source the source string to bind
+         */
+        Bind(String source) {
 			super(Format.BIND);
 			this.source = source;
 		}
 
-		public String getSource() {
+		/**
+         * Returns the source of the Bind object.
+         * 
+         * @return the source of the Bind object
+         */
+        public String getSource() {
 			return this.source;
 		}
 
-		@Override
+		/**
+         * Compares this Bind object to the specified object for equality.
+         * 
+         * @param obj the object to compare to
+         * @return true if the objects are equal, false otherwise
+         */
+        @Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -206,14 +282,24 @@ public class Cache {
 			return Objects.equals(this.source, other.source);
 		}
 
-		@Override
+		/**
+         * Returns a hash code value for the object. This method overrides the hashCode() method in the superclass.
+         * 
+         * @return the hash code value for the object
+         */
+        @Override
 		public int hashCode() {
 			int result = super.hashCode();
 			result = 31 * result + ObjectUtils.nullSafeHashCode(this.source);
 			return result;
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the Bind object.
+         * 
+         * @return the description of the format followed by the source value enclosed in single quotes
+         */
+        @Override
 		public String toString() {
 			return this.format.getDescription() + " '" + this.source + "'";
 		}

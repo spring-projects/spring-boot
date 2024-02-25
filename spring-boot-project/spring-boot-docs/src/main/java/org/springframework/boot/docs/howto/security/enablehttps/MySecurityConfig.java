@@ -21,10 +21,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * MySecurityConfig class.
+ */
 @Configuration
 public class MySecurityConfig {
 
-	@Bean
+	/**
+     * Configures the security filter chain for the application.
+     * 
+     * @param http the HttpSecurity object to customize the application security
+     * @return the configured SecurityFilterChain object
+     * @throws Exception if an error occurs while configuring the security filter chain
+     */
+    @Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		// Customize the application security ...
 		http.requiresChannel((channel) -> channel.anyRequest().requiresSecure());

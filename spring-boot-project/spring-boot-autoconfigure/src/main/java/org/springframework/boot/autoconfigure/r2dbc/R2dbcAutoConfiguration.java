@@ -52,7 +52,13 @@ import org.springframework.util.StringUtils;
 		ConnectionFactoryConfigurations.GenericConfiguration.class, ConnectionFactoryDependentConfiguration.class })
 public class R2dbcAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link PropertiesR2dbcConnectionDetails} if no bean of type {@link R2dbcConnectionDetails} is present in the application context and if the property "spring.r2dbc.url" is defined.
+     * 
+     * @param properties the {@link R2dbcProperties} object containing the R2DBC configuration properties
+     * @return a new instance of {@link PropertiesR2dbcConnectionDetails} initialized with the provided {@link R2dbcProperties}
+     */
+    @Bean
 	@ConditionalOnMissingBean(R2dbcConnectionDetails.class)
 	@ConditionalOnProperty("spring.r2dbc.url")
 	PropertiesR2dbcConnectionDetails propertiesR2dbcConnectionDetails(R2dbcProperties properties) {
@@ -66,11 +72,21 @@ public class R2dbcAutoConfiguration {
 
 		private final R2dbcProperties properties;
 
-		PropertiesR2dbcConnectionDetails(R2dbcProperties properties) {
+		/**
+         * Constructs a new instance of PropertiesR2dbcConnectionDetails with the specified R2dbcProperties.
+         *
+         * @param properties the R2dbcProperties to be used for initializing the connection details
+         */
+        PropertiesR2dbcConnectionDetails(R2dbcProperties properties) {
 			this.properties = properties;
 		}
 
-		@Override
+		/**
+         * Returns the connection factory options based on the properties provided.
+         * 
+         * @return the connection factory options
+         */
+        @Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
 			ConnectionFactoryOptions urlOptions = ConnectionFactoryOptions.parse(this.properties.getUrl());
 			Builder optionsBuilder = urlOptions.mutate();
@@ -87,7 +103,17 @@ public class R2dbcAutoConfiguration {
 			return optionsBuilder.build();
 		}
 
-		private <T extends CharSequence> void configureIf(Builder optionsBuilder,
+		/**
+         * Configures the optionsBuilder with the specified option if the originalOptions does not already have the option.
+         * 
+         * @param optionsBuilder The builder to configure with the option.
+         * @param originalOptions The original options to check if the option already exists.
+         * @param option The option to configure.
+         * @param valueSupplier The supplier to provide the value for the option.
+         * @param setIf The predicate to determine if the value should be set for the option.
+         * @param <T> The type of the option value, which must extend CharSequence.
+         */
+        private <T extends CharSequence> void configureIf(Builder optionsBuilder,
 				ConnectionFactoryOptions originalOptions, Option<T> option, Supplier<T> valueSupplier,
 				Predicate<T> setIf) {
 			if (originalOptions.hasOption(option)) {
@@ -99,7 +125,16 @@ public class R2dbcAutoConfiguration {
 			}
 		}
 
-		private String determineDatabaseName(R2dbcProperties properties) {
+		/**
+         * Determines the database name based on the provided R2dbcProperties.
+         * If the generateUniqueName flag is set to true, it generates a unique name using the determineUniqueName method.
+         * If a name is provided in the properties, it returns that name.
+         * If neither condition is met, it returns null.
+         *
+         * @param properties The R2dbcProperties object containing the necessary information.
+         * @return The determined database name or null if no name is determined.
+         */
+        private String determineDatabaseName(R2dbcProperties properties) {
 			if (properties.isGenerateUniqueName()) {
 				return properties.determineUniqueName();
 			}

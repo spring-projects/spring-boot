@@ -35,19 +35,38 @@ public class MongoReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 
 	private final ReactiveMongoTemplate reactiveMongoTemplate;
 
-	public MongoReactiveHealthIndicator(ReactiveMongoTemplate reactiveMongoTemplate) {
+	/**
+     * Constructs a new MongoReactiveHealthIndicator with the specified ReactiveMongoTemplate.
+     * 
+     * @param reactiveMongoTemplate the ReactiveMongoTemplate to be used for health checks (must not be null)
+     * @throws IllegalArgumentException if the reactiveMongoTemplate is null
+     */
+    public MongoReactiveHealthIndicator(ReactiveMongoTemplate reactiveMongoTemplate) {
 		super("Mongo health check failed");
 		Assert.notNull(reactiveMongoTemplate, "ReactiveMongoTemplate must not be null");
 		this.reactiveMongoTemplate = reactiveMongoTemplate;
 	}
 
-	@Override
+	/**
+     * Performs a health check on the MongoDB server.
+     * 
+     * @param builder the Health.Builder object used to build the health status
+     * @return a Mono object representing the health status of the MongoDB server
+     */
+    @Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
 		Mono<Document> buildInfo = this.reactiveMongoTemplate.executeCommand("{ isMaster: 1 }");
 		return buildInfo.map((document) -> up(builder, document));
 	}
 
-	private Health up(Health.Builder builder, Document document) {
+	/**
+     * Updates the health status of the application based on the provided builder and document.
+     * 
+     * @param builder   the Health.Builder object used to update the health status
+     * @param document  the Document object containing the health information
+     * @return          the updated Health object
+     */
+    private Health up(Health.Builder builder, Document document) {
 		return builder.up().withDetail("maxWireVersion", document.getInteger("maxWireVersion")).build();
 	}
 

@@ -31,36 +31,71 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 public class StackdriverPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<StackdriverProperties>
 		implements StackdriverConfig {
 
-	public StackdriverPropertiesConfigAdapter(StackdriverProperties properties) {
+	/**
+     * Constructs a new StackdriverPropertiesConfigAdapter with the specified StackdriverProperties.
+     *
+     * @param properties the StackdriverProperties to be used for configuring the adapter
+     */
+    public StackdriverPropertiesConfigAdapter(StackdriverProperties properties) {
 		super(properties);
 	}
 
-	@Override
+	/**
+     * Returns the prefix for Stackdriver metrics export configuration.
+     * 
+     * @return the prefix for Stackdriver metrics export configuration
+     */
+    @Override
 	public String prefix() {
 		return "management.stackdriver.metrics.export";
 	}
 
-	@Override
+	/**
+     * Returns the project ID.
+     * 
+     * @return the project ID
+     */
+    @Override
 	public String projectId() {
 		return get(StackdriverProperties::getProjectId, StackdriverConfig.super::projectId);
 	}
 
-	@Override
+	/**
+     * Returns the resource type for Stackdriver.
+     * 
+     * @return the resource type
+     */
+    @Override
 	public String resourceType() {
 		return get(StackdriverProperties::getResourceType, StackdriverConfig.super::resourceType);
 	}
 
-	@Override
+	/**
+     * Returns the resource labels for Stackdriver.
+     * 
+     * @return a map containing the resource labels
+     */
+    @Override
 	public Map<String, String> resourceLabels() {
 		return get(StackdriverProperties::getResourceLabels, StackdriverConfig.super::resourceLabels);
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether to use semantic metric types.
+     * 
+     * @return true if semantic metric types should be used, false otherwise
+     */
+    @Override
 	public boolean useSemanticMetricTypes() {
 		return get(StackdriverProperties::isUseSemanticMetricTypes, StackdriverConfig.super::useSemanticMetricTypes);
 	}
 
-	@Override
+	/**
+     * Returns the metric type prefix.
+     *
+     * @return the metric type prefix
+     */
+    @Override
 	public String metricTypePrefix() {
 		return get(StackdriverProperties::getMetricTypePrefix, StackdriverConfig.super::metricTypePrefix);
 	}

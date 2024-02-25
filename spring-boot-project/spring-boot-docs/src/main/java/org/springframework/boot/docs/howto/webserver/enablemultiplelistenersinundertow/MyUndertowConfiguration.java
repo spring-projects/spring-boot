@@ -23,15 +23,30 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyUndertowConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyUndertowConfiguration {
 
-	@Bean
+	/**
+     * Customizes the Undertow servlet web server factory by adding a listener.
+     *
+     * @param factory the Undertow servlet web server factory to be customized
+     * @return the customized Undertow servlet web server factory
+     */
+    @Bean
 	public WebServerFactoryCustomizer<UndertowServletWebServerFactory> undertowListenerCustomizer() {
 		return (factory) -> factory.addBuilderCustomizers(this::addHttpListener);
 	}
 
-	private Builder addHttpListener(Builder builder) {
+	/**
+     * Adds an HTTP listener to the given builder with the specified port and address.
+     *
+     * @param builder the builder to add the HTTP listener to
+     * @return the updated builder with the HTTP listener added
+     */
+    private Builder addHttpListener(Builder builder) {
 		return builder.addHttpListener(8080, "0.0.0.0");
 	}
 

@@ -33,11 +33,24 @@ import org.springframework.beans.factory.ObjectProvider;
 class OracleUcpJdbcConnectionDetailsBeanPostProcessor
 		extends JdbcConnectionDetailsBeanPostProcessor<PoolDataSourceImpl> {
 
-	OracleUcpJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+	/**
+     * Constructs a new OracleUcpJdbcConnectionDetailsBeanPostProcessor with the specified connectionDetailsProvider.
+     * 
+     * @param connectionDetailsProvider the provider for the JdbcConnectionDetails
+     */
+    OracleUcpJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
 		super(PoolDataSourceImpl.class, connectionDetailsProvider);
 	}
 
-	@Override
+	/**
+     * Sets the URL, username, password, and connection factory class name of the given data source.
+     * 
+     * @param dataSource the data source to be processed
+     * @param connectionDetails the JDBC connection details containing the URL, username, password, and driver class name
+     * @return the processed data source
+     * @throws RuntimeException if failed to set the URL, username, or password of the data source
+     */
+    @Override
 	protected Object processDataSource(PoolDataSourceImpl dataSource, JdbcConnectionDetails connectionDetails) {
 		try {
 			dataSource.setURL(connectionDetails.getJdbcUrl());

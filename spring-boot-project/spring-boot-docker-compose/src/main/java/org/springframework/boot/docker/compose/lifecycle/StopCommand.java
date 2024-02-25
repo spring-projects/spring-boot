@@ -43,11 +43,22 @@ public enum StopCommand {
 
 	private final BiConsumer<DockerCompose, Duration> action;
 
-	StopCommand(BiConsumer<DockerCompose, Duration> action) {
+	/**
+     * Sets the action to be performed when the stop command is executed.
+     * 
+     * @param action the action to be performed, which takes a DockerCompose object and a Duration object as parameters
+     */
+    StopCommand(BiConsumer<DockerCompose, Duration> action) {
 		this.action = action;
 	}
 
-	void applyTo(DockerCompose dockerCompose, Duration timeout) {
+	/**
+     * Applies the specified action to the given DockerCompose instance with the specified timeout.
+     * 
+     * @param dockerCompose the DockerCompose instance to apply the action to
+     * @param timeout the duration to wait for the action to complete
+     */
+    void applyTo(DockerCompose dockerCompose, Duration timeout) {
 		this.action.accept(dockerCompose, timeout);
 	}
 

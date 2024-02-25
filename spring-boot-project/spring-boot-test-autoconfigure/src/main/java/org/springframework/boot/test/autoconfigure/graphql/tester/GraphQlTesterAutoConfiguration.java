@@ -44,7 +44,20 @@ import org.springframework.http.codec.json.Jackson2JsonEncoder;
 @ConditionalOnClass({ GraphQL.class, GraphQlTester.class })
 public class GraphQlTesterAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates an instance of {@link ExecutionGraphQlServiceTester} if an instance of {@link ExecutionGraphQlService} is present in the application context.
+     * If an instance of {@link ExecutionGraphQlService} is not present, this method will not be invoked.
+     * This method is annotated with {@link ConditionalOnBean} to ensure that it is only executed when an instance of {@link ExecutionGraphQlService} is available.
+     * This method is also annotated with {@link ConditionalOnMissingBean} to ensure that it is only executed when an instance of {@link ExecutionGraphQlServiceTester} is not already present in the application context.
+     * The method takes an instance of {@link ExecutionGraphQlService} and an {@link ObjectProvider} of {@link ObjectMapper} as parameters.
+     * The {@link ObjectProvider} is used to obtain an instance of {@link ObjectMapper} if it is available in the application context.
+     * The method returns an instance of {@link ExecutionGraphQlServiceTester} that is built using the provided {@link ExecutionGraphQlService} and {@link ObjectMapper}.
+     * The {@link ExecutionGraphQlServiceTester} is configured with an {@link Jackson2JsonEncoder} and an {@link Jackson2JsonDecoder} if an instance of {@link ObjectMapper} is available.
+     * The {@link Jackson2JsonEncoder} is configured with media types {@link MediaType#APPLICATION_GRAPHQL_RESPONSE}, {@link MediaType#APPLICATION_JSON}, and {@link MediaType#APPLICATION_GRAPHQL}.
+     * The {@link Jackson2JsonDecoder} is configured with media type {@link MediaType#APPLICATION_JSON}.
+     * This method is part of the {@link GraphQlTesterAutoConfiguration} class.
+     */
+    @Bean
 	@ConditionalOnBean(ExecutionGraphQlService.class)
 	@ConditionalOnMissingBean
 	@SuppressWarnings("removal")

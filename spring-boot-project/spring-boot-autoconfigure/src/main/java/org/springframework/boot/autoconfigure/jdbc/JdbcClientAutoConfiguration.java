@@ -38,7 +38,13 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 @Import(DatabaseInitializationDependencyConfigurer.class)
 public class JdbcClientAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a JdbcClient bean using the provided NamedParameterJdbcTemplate.
+     *
+     * @param jdbcTemplate the NamedParameterJdbcTemplate to be used by the JdbcClient
+     * @return the created JdbcClient bean
+     */
+    @Bean
 	JdbcClient jdbcClient(NamedParameterJdbcTemplate jdbcTemplate) {
 		return JdbcClient.create(jdbcTemplate);
 	}

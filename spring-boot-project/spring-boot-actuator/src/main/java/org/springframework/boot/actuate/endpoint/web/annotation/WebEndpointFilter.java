@@ -26,7 +26,12 @@ import org.springframework.boot.actuate.endpoint.annotation.DiscovererEndpointFi
  */
 class WebEndpointFilter extends DiscovererEndpointFilter {
 
-	WebEndpointFilter() {
+	/**
+     * Constructs a new WebEndpointFilter with the specified WebEndpointDiscoverer.
+     *
+     * @param discoverer the WebEndpointDiscoverer to be used by the filter
+     */
+    WebEndpointFilter() {
 		super(WebEndpointDiscoverer.class);
 	}
 

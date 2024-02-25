@@ -20,10 +20,16 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * MyJerseyConfig class.
+ */
 @Component
 public class MyJerseyConfig extends ResourceConfig {
 
-	public MyJerseyConfig() {
+	/**
+     * This method is used to register the MyEndpoint class in the Jersey configuration.
+     */
+    public MyJerseyConfig() {
 		register(MyEndpoint.class);
 	}
 

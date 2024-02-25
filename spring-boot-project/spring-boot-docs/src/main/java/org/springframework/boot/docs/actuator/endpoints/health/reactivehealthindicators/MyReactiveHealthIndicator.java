@@ -22,10 +22,18 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyReactiveHealthIndicator class.
+ */
 @Component
 public class MyReactiveHealthIndicator implements ReactiveHealthIndicator {
 
-	@Override
+	/**
+     * Returns the health status of the application.
+     *
+     * @return a Mono emitting the Health object representing the health status
+     */
+    @Override
 	public Mono<Health> health() {
 		// @formatter:off
 		return doHealthCheck().onErrorResume((exception) ->
@@ -33,7 +41,12 @@ public class MyReactiveHealthIndicator implements ReactiveHealthIndicator {
 		// @formatter:on
 	}
 
-	private Mono<Health> doHealthCheck() {
+	/**
+     * Performs a specific health check.
+     *
+     * @return a Mono emitting the health status
+     */
+    private Mono<Health> doHealthCheck() {
 		// perform some specific health check
 		return /**/ null;
 	}

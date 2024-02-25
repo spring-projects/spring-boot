@@ -32,22 +32,47 @@ import org.springframework.core.env.ConfigurableEnvironment;
  */
 class ServletWebServerApplicationContextFactory implements ApplicationContextFactory {
 
-	@Override
+	/**
+     * Returns the environment type based on the web application type.
+     * 
+     * @param webApplicationType the type of web application
+     * @return the environment type if the web application type is SERVLET, otherwise null
+     */
+    @Override
 	public Class<? extends ConfigurableEnvironment> getEnvironmentType(WebApplicationType webApplicationType) {
 		return (webApplicationType != WebApplicationType.SERVLET) ? null : ApplicationServletEnvironment.class;
 	}
 
-	@Override
+	/**
+     * Creates a configurable environment based on the specified web application type.
+     * 
+     * @param webApplicationType the type of web application
+     * @return a configurable environment if the web application type is SERVLET, otherwise null
+     */
+    @Override
 	public ConfigurableEnvironment createEnvironment(WebApplicationType webApplicationType) {
 		return (webApplicationType != WebApplicationType.SERVLET) ? null : new ApplicationServletEnvironment();
 	}
 
-	@Override
+	/**
+     * Create a new ConfigurableApplicationContext based on the specified WebApplicationType.
+     * 
+     * @param webApplicationType the type of web application
+     * @return the created ConfigurableApplicationContext, or null if the web application type is not SERVLET
+     */
+    @Override
 	public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
 		return (webApplicationType != WebApplicationType.SERVLET) ? null : createContext();
 	}
 
-	private ConfigurableApplicationContext createContext() {
+	/**
+     * Creates and returns a new ConfigurableApplicationContext based on the AotDetector's useGeneratedArtifacts() method.
+     * If useGeneratedArtifacts() returns false, an AnnotationConfigServletWebServerApplicationContext is created and returned.
+     * If useGeneratedArtifacts() returns true, a ServletWebServerApplicationContext is created and returned.
+     *
+     * @return a new ConfigurableApplicationContext based on the AotDetector's useGeneratedArtifacts() method
+     */
+    private ConfigurableApplicationContext createContext() {
 		if (!AotDetector.useGeneratedArtifacts()) {
 			return new AnnotationConfigServletWebServerApplicationContext();
 		}

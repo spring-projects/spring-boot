@@ -113,19 +113,44 @@ public class DockerApi {
 		this.volume = new VolumeApi();
 	}
 
-	private HttpTransport http() {
+	/**
+     * Returns the HttpTransport object used by the DockerApi class.
+     *
+     * @return the HttpTransport object used by the DockerApi class
+     */
+    private HttpTransport http() {
 		return this.http;
 	}
 
-	private JsonStream jsonStream() {
+	/**
+     * Returns the JSON stream associated with this DockerApi instance.
+     *
+     * @return the JSON stream
+     */
+    private JsonStream jsonStream() {
 		return this.jsonStream;
 	}
 
-	private URI buildUrl(String path, Collection<?> params) {
+	/**
+     * Builds a URL with the given path and parameters.
+     * 
+     * @param path   the path of the URL
+     * @param params the collection of parameters to be included in the URL
+     * @return the built URL as a URI object
+     */
+    private URI buildUrl(String path, Collection<?> params) {
 		return buildUrl(path, (params != null) ? params.toArray() : null);
 	}
 
-	private URI buildUrl(String path, Object... params) {
+	/**
+     * Builds a URL with the given path and parameters.
+     *
+     * @param path   the path of the URL
+     * @param params the parameters to be added to the URL
+     * @return the built URL
+     * @throws IllegalStateException if a URISyntaxException occurs
+     */
+    private URI buildUrl(String path, Object... params) {
 		try {
 			URIBuilder builder = new URIBuilder("/" + API_VERSION + path);
 			int param = 0;
@@ -155,7 +180,12 @@ public class DockerApi {
 		return this.container;
 	}
 
-	public VolumeApi volume() {
+	/**
+     * Returns the VolumeApi object associated with this DockerApi instance.
+     *
+     * @return the VolumeApi object
+     */
+    public VolumeApi volume() {
 		return this.volume;
 	}
 
@@ -164,7 +194,10 @@ public class DockerApi {
 	 */
 	public class ImageApi {
 
-		ImageApi() {
+		/**
+         * Constructs a new instance of the ImageApi class.
+         */
+        ImageApi() {
 		}
 
 		/**
@@ -335,7 +368,15 @@ public class DockerApi {
 			}
 		}
 
-		public void tag(ImageReference sourceReference, ImageReference targetReference) throws IOException {
+		/**
+         * Tags an image with the specified source and target references.
+         * 
+         * @param sourceReference the reference to the source image
+         * @param targetReference the reference to the target image
+         * @throws IOException if an I/O error occurs
+         * @throws IllegalArgumentException if either sourceReference or targetReference is null
+         */
+        public void tag(ImageReference sourceReference, ImageReference targetReference) throws IOException {
 			Assert.notNull(sourceReference, "SourceReference must not be null");
 			Assert.notNull(targetReference, "TargetReference must not be null");
 			String tag = targetReference.getTag();
@@ -345,7 +386,16 @@ public class DockerApi {
 			http().post(uri).close();
 		}
 
-		private ImageArchiveManifest getManifest(ImageReference reference, Path exportFile) throws IOException {
+		/**
+         * Retrieves the manifest for a given image reference from an export file.
+         * 
+         * @param reference   the image reference to retrieve the manifest for
+         * @param exportFile  the path to the export file containing the image data
+         * @return the ImageArchiveManifest object representing the manifest for the image
+         * @throws IOException if an I/O error occurs while reading the export file
+         * @throws IllegalArgumentException if the manifest is not found in the image
+         */
+        private ImageArchiveManifest getManifest(ImageReference reference, Path exportFile) throws IOException {
 			try (TarArchiveInputStream tar = new TarArchiveInputStream(new FileInputStream(exportFile.toFile()))) {
 				TarArchiveEntry entry = tar.getNextEntry();
 				while (entry != null) {
@@ -358,13 +408,27 @@ public class DockerApi {
 			throw new IllegalArgumentException("Manifest not found in image " + reference);
 		}
 
-		private ImageArchiveManifest readManifest(TarArchiveInputStream tar) throws IOException {
+		/**
+         * Reads the manifest file from the given TarArchiveInputStream and returns an ImageArchiveManifest object.
+         * 
+         * @param tar The TarArchiveInputStream from which to read the manifest file.
+         * @return The ImageArchiveManifest object representing the manifest file.
+         * @throws IOException If an I/O error occurs while reading the manifest file.
+         */
+        private ImageArchiveManifest readManifest(TarArchiveInputStream tar) throws IOException {
 			String manifestContent = new BufferedReader(new InputStreamReader(tar, StandardCharsets.UTF_8)).lines()
 				.collect(Collectors.joining());
 			return ImageArchiveManifest.of(new ByteArrayInputStream(manifestContent.getBytes(StandardCharsets.UTF_8)));
 		}
 
-		private Path copyToTemp(InputStream in) throws IOException {
+		/**
+         * Copies the contents of the given input stream to a temporary file and returns the path of the temporary file.
+         * 
+         * @param in the input stream to copy from
+         * @return the path of the temporary file
+         * @throws IOException if an I/O error occurs during the copy process
+         */
+        private Path copyToTemp(InputStream in) throws IOException {
 			Path path = Files.createTempFile("create-builder-scratch-", null);
 			try (OutputStream out = Files.newOutputStream(path)) {
 				StreamUtils.copy(in, out);
@@ -372,7 +436,14 @@ public class DockerApi {
 			return path;
 		}
 
-		private boolean manifestContainsLayerEntry(ImageArchiveManifest manifest, String layerId) {
+		/**
+         * Checks if the given ImageArchiveManifest contains a layer entry with the specified layerId.
+         * 
+         * @param manifest the ImageArchiveManifest to check
+         * @param layerId the layerId to search for
+         * @return true if the manifest contains a layer entry with the specified layerId, false otherwise
+         */
+        private boolean manifestContainsLayerEntry(ImageArchiveManifest manifest, String layerId) {
 			return manifest.getEntries().stream().anyMatch((content) -> content.getLayers().contains(layerId));
 		}
 
@@ -383,7 +454,10 @@ public class DockerApi {
 	 */
 	public class ContainerApi {
 
-		ContainerApi() {
+		/**
+         * Creates a new instance of ContainerApi.
+         */
+        ContainerApi() {
 		}
 
 		/**
@@ -403,7 +477,14 @@ public class DockerApi {
 			return containerReference;
 		}
 
-		private ContainerReference createContainer(ContainerConfig config) throws IOException {
+		/**
+         * Creates a container with the given configuration.
+         * 
+         * @param config the configuration for the container
+         * @return a reference to the created container
+         * @throws IOException if an I/O error occurs during the creation of the container
+         */
+        private ContainerReference createContainer(ContainerConfig config) throws IOException {
 			URI createUri = buildUrl("/containers/create");
 			try (Response response = http().post(createUri, "application/json", config::writeTo)) {
 				return ContainerReference
@@ -411,7 +492,14 @@ public class DockerApi {
 			}
 		}
 
-		private void uploadContainerContent(ContainerReference reference, ContainerContent content) throws IOException {
+		/**
+         * Uploads the content of a container to a specified destination path.
+         * 
+         * @param reference the reference to the container
+         * @param content the container content to be uploaded
+         * @throws IOException if an I/O error occurs during the upload process
+         */
+        private void uploadContainerContent(ContainerReference reference, ContainerContent content) throws IOException {
 			URI uri = buildUrl("/containers/" + reference + "/archive", "path", content.getDestinationPath());
 			http().put(uri, "application/x-tar", content.getArchive()::writeTo).close();
 		}
@@ -482,7 +570,10 @@ public class DockerApi {
 	 */
 	public class VolumeApi {
 
-		VolumeApi() {
+		/**
+         * This method is used to perform volume operations.
+         */
+        VolumeApi() {
 		}
 
 		/**
@@ -509,7 +600,13 @@ public class DockerApi {
 
 		private String digest;
 
-		@Override
+		/**
+         * This method is called when a progress update event occurs.
+         * It updates the digest status based on the event status.
+         * 
+         * @param event The progress update event
+         */
+        @Override
 		public void onUpdate(ProgressUpdateEvent event) {
 			String status = event.getStatus();
 			if (status != null && status.startsWith(PREFIX)) {
@@ -528,12 +625,22 @@ public class DockerApi {
 
 		private String stream;
 
-		@Override
+		/**
+         * Updates the stream with the provided image.
+         * 
+         * @param event the LoadImageUpdateEvent containing the updated stream
+         */
+        @Override
 		public void onUpdate(LoadImageUpdateEvent event) {
 			this.stream = event.getStream();
 		}
 
-		String getCapturedStream() {
+		/**
+         * Returns the captured stream.
+         *
+         * @return the captured stream
+         */
+        String getCapturedStream() {
 			return this.stream;
 		}
 
@@ -545,7 +652,14 @@ public class DockerApi {
 	 */
 	private static final class ErrorCaptureUpdateListener implements UpdateListener<PushImageUpdateEvent> {
 
-		@Override
+		/**
+         * This method is called when an image update event occurs.
+         * It checks if there is any error detail in the event and throws an exception if an error response is received.
+         * 
+         * @param event The PushImageUpdateEvent object representing the image update event.
+         * @throws IllegalStateException if an error response is received when pushing the image.
+         */
+        @Override
 		public void onUpdate(PushImageUpdateEvent event) {
 			Assert.state(event.getErrorDetail() == null,
 					() -> "Error response received when pushing image: " + event.getErrorDetail().getMessage());

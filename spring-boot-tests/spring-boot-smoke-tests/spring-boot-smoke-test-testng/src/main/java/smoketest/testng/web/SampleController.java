@@ -23,13 +23,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import smoketest.testng.service.HelloWorldService;
 
+/**
+ * SampleController class.
+ */
 @Controller
 public class SampleController {
 
 	@Autowired
 	private HelloWorldService helloWorldService;
 
-	@GetMapping("/")
+	/**
+     * Retrieves the hello world message.
+     * 
+     * @return the hello world message
+     */
+    @GetMapping("/")
 	@ResponseBody
 	public String helloWorld() {
 		return this.helloWorldService.getHelloMessage();

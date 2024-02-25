@@ -33,7 +33,13 @@ import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
  */
 public class SpringImplicitNamingStrategy extends ImplicitNamingStrategyJpaCompliantImpl {
 
-	@Override
+	/**
+     * Determines the join table name for an implicit join based on the given source.
+     * 
+     * @param source the source containing the necessary information for determining the join table name
+     * @return the join table name as an Identifier object
+     */
+    @Override
 	public Identifier determineJoinTableName(ImplicitJoinTableNameSource source) {
 		String name = source.getOwningPhysicalTableName() + "_"
 				+ source.getAssociationOwningAttributePath().getProperty();

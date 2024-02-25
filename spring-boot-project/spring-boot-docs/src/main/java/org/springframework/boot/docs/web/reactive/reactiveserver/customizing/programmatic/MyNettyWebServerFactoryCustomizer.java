@@ -22,10 +22,18 @@ import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyNettyWebServerFactoryCustomizer class.
+ */
 @Component
 public class MyNettyWebServerFactoryCustomizer implements WebServerFactoryCustomizer<NettyReactiveWebServerFactory> {
 
-	@Override
+	/**
+     * Customize the NettyReactiveWebServerFactory by adding a server customizer to set the idle timeout.
+     * 
+     * @param factory the NettyReactiveWebServerFactory to customize
+     */
+    @Override
 	public void customize(NettyReactiveWebServerFactory factory) {
 		factory.addServerCustomizers((server) -> server.idleTimeout(Duration.ofSeconds(20)));
 	}

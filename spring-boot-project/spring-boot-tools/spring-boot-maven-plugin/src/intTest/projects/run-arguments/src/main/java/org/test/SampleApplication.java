@@ -18,9 +18,18 @@ package org.test;
 
 import java.util.Arrays;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args The command line arguments passed to the program.
+     * @throws IllegalArgumentException If the required arguments are missing or invalid.
+     */
+    public static void main(String[] args) {
 		if (args.length < 2) {
 			throw new IllegalArgumentException("Missing arguments " + Arrays.toString(args));
 		}

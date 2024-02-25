@@ -21,10 +21,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 
+/**
+ * MyHttpMessageConvertersConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyHttpMessageConvertersConfiguration {
 
-	@Bean
+	/**
+     * Returns a custom set of HttpMessageConverters.
+     * 
+     * @return the custom HttpMessageConverters
+     */
+    @Bean
 	public HttpMessageConverters customConverters() {
 		HttpMessageConverter<?> additional = new AdditionalHttpMessageConverter();
 		HttpMessageConverter<?> another = new AnotherHttpMessageConverter();

@@ -28,11 +28,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * MyMockMvcTests class.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 class MyMockMvcTests {
 
-	@Test
+	/**
+     * Test method to test the functionality of the MockMvc.
+     * 
+     * @param mvc the MockMvc instance to be used for testing
+     * @throws Exception if an error occurs during the test
+     */
+    @Test
 	void testWithMockMvc(@Autowired MockMvc mvc) throws Exception {
 		mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Hello World"));
 	}

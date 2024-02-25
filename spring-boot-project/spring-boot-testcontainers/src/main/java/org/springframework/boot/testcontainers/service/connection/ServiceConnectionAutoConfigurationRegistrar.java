@@ -43,18 +43,35 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 
 	private final BeanFactory beanFactory;
 
-	ServiceConnectionAutoConfigurationRegistrar(BeanFactory beanFactory) {
+	/**
+     * Constructs a new instance of ServiceConnectionAutoConfigurationRegistrar with the specified bean factory.
+     *
+     * @param beanFactory the bean factory to be used for creating instances of ServiceConnectionAutoConfigurationRegistrar
+     */
+    ServiceConnectionAutoConfigurationRegistrar(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 	}
 
-	@Override
+	/**
+     * Register the bean definitions for the ServiceConnectionAutoConfigurationRegistrar.
+     * 
+     * @param importingClassMetadata the metadata of the importing class
+     * @param registry the bean definition registry
+     */
+    @Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
 			registerBeanDefinitions(listableBeanFactory, registry);
 		}
 	}
 
-	private void registerBeanDefinitions(ConfigurableListableBeanFactory beanFactory, BeanDefinitionRegistry registry) {
+	/**
+     * Registers bean definitions for ServiceConnectionAutoConfigurationRegistrar.
+     * 
+     * @param beanFactory the ConfigurableListableBeanFactory to register bean definitions with
+     * @param registry the BeanDefinitionRegistry to register bean definitions with
+     */
+    private void registerBeanDefinitions(ConfigurableListableBeanFactory beanFactory, BeanDefinitionRegistry registry) {
 		ConnectionDetailsRegistrar registrar = new ConnectionDetailsRegistrar(beanFactory,
 				new ConnectionDetailsFactories());
 		for (String beanName : beanFactory.getBeanNamesForType(Container.class)) {
@@ -66,7 +83,15 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		}
 	}
 
-	private Set<ServiceConnection> getAnnotations(ConfigurableListableBeanFactory beanFactory, String beanName,
+	/**
+     * Retrieves the annotations of type {@link ServiceConnection} for a given bean.
+     * 
+     * @param beanFactory      the bean factory to search for annotations
+     * @param beanName         the name of the bean
+     * @param beanDefinition   the definition of the bean
+     * @return                 a set of {@link ServiceConnection} annotations found on the bean
+     */
+    private Set<ServiceConnection> getAnnotations(ConfigurableListableBeanFactory beanFactory, String beanName,
 			BeanDefinition beanDefinition) {
 		Set<ServiceConnection> annotations = new LinkedHashSet<>();
 		annotations.addAll(beanFactory.findAllAnnotationsOnBean(beanName, ServiceConnection.class, false));
@@ -79,7 +104,14 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		return annotations;
 	}
 
-	private BeanDefinition getBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName) {
+	/**
+     * Retrieves the bean definition for the specified bean name from the given bean factory.
+     *
+     * @param beanFactory the configurable listable bean factory to retrieve the bean definition from
+     * @param beanName the name of the bean to retrieve the definition for
+     * @return the bean definition for the specified bean name, or null if the bean definition does not exist
+     */
+    private BeanDefinition getBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName) {
 		try {
 			return beanFactory.getBeanDefinition(beanName);
 		}
@@ -88,7 +120,17 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Creates a {@link ContainerConnectionSource} for the specified bean.
+     *
+     * @param beanFactory      the bean factory
+     * @param beanName         the name of the bean
+     * @param beanDefinition   the bean definition
+     * @param annotation       the service connection annotation
+     * @param <C>              the type of the container
+     * @return the created {@link ContainerConnectionSource}
+     */
+    @SuppressWarnings("unchecked")
 	private <C extends Container<?>> ContainerConnectionSource<C> createSource(
 			ConfigurableListableBeanFactory beanFactory, String beanName, BeanDefinition beanDefinition,
 			ServiceConnection annotation) {

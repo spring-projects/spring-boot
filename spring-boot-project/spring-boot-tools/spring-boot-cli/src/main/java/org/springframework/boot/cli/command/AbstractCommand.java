@@ -44,32 +44,62 @@ public abstract class AbstractCommand implements Command {
 		this.description = description;
 	}
 
-	@Override
+	/**
+     * Returns the name of the command.
+     *
+     * @return the name of the command
+     */
+    @Override
 	public String getName() {
 		return this.name;
 	}
 
-	@Override
+	/**
+     * Returns the description of the command.
+     *
+     * @return the description of the command
+     */
+    @Override
 	public String getDescription() {
 		return this.description;
 	}
 
-	@Override
+	/**
+     * Returns the usage help for this command.
+     * 
+     * @return the usage help for this command, or null if no usage help is available
+     */
+    @Override
 	public String getUsageHelp() {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the help information for this command.
+     *
+     * @return the help information for this command
+     */
+    @Override
 	public String getHelp() {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the help information for the options of this command.
+     *
+     * @return the collection of OptionHelp objects representing the help information for the options
+     */
+    @Override
 	public Collection<OptionHelp> getOptionsHelp() {
 		return Collections.emptyList();
 	}
 
-	@Override
+	/**
+     * Returns a collection of help examples for this command.
+     *
+     * @return a collection of help examples, or null if no examples are available
+     */
+    @Override
 	public Collection<HelpExample> getExamples() {
 		return null;
 	}

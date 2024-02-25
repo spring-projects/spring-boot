@@ -22,10 +22,18 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * MyContainersConfiguration class.
+ */
 @TestConfiguration(proxyBeanMethods = false)
 public class MyContainersConfiguration {
 
-	@Bean
+	/**
+     * Creates a Neo4jContainer with the specified version.
+     *
+     * @return the created Neo4jContainer
+     */
+    @Bean
 	@ServiceConnection
 	public Neo4jContainer<?> neo4jContainer() {
 		return new Neo4jContainer<>("neo4j:5");

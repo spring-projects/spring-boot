@@ -19,6 +19,9 @@ package org.springframework.boot.docs.features.externalconfig.typesafeconfigurat
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
+/**
+ * MyApplication class.
+ */
 @SpringBootApplication
 @ConfigurationPropertiesScan({ "com.example.app", "com.example.another" })
 public class MyApplication {

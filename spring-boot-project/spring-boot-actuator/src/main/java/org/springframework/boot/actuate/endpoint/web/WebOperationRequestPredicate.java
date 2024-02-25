@@ -65,12 +65,24 @@ public final class WebOperationRequestPredicate {
 		this.produces = produces;
 	}
 
-	private String extractCanonicalPath(String path) {
+	/**
+     * Extracts the canonical path from the given path by replacing any path variables with a wildcard character.
+     * 
+     * @param path the path to extract the canonical path from
+     * @return the canonical path with path variables replaced by a wildcard character
+     */
+    private String extractCanonicalPath(String path) {
 		Matcher matcher = PATH_VAR_PATTERN.matcher(path);
 		return matcher.replaceAll("$1*}");
 	}
 
-	private String extractMatchAllRemainingPathSegmentsVariable(String path) {
+	/**
+     * Extracts the value of the match all remaining path segments variable from the given path.
+     * 
+     * @param path the path to extract the variable from
+     * @return the value of the match all remaining path segments variable, or null if not found
+     */
+    private String extractMatchAllRemainingPathSegmentsVariable(String path) {
 		Matcher matcher = ALL_REMAINING_PATH_SEGMENTS_VAR_PATTERN.matcher(path);
 		return matcher.matches() ? matcher.group(1) : null;
 	}
@@ -117,7 +129,14 @@ public final class WebOperationRequestPredicate {
 		return Collections.unmodifiableCollection(this.produces);
 	}
 
-	@Override
+	/**
+     * Compares this WebOperationRequestPredicate to the specified object for equality.
+     * Returns true if the specified object is also a WebOperationRequestPredicate and all the fields are equal.
+     * 
+     * @param obj the object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -134,7 +153,13 @@ public final class WebOperationRequestPredicate {
 		return result;
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this WebOperationRequestPredicate object.
+     * The hash code is generated based on the consumes, httpMethod, canonicalPath, and produces properties.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -145,7 +170,12 @@ public final class WebOperationRequestPredicate {
 		return result;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the WebOperationRequestPredicate object.
+     * 
+     * @return the string representation of the WebOperationRequestPredicate object
+     */
+    @Override
 	public String toString() {
 		StringBuilder result = new StringBuilder(this.httpMethod + " to path '" + this.path + "'");
 		if (!CollectionUtils.isEmpty(this.consumes)) {

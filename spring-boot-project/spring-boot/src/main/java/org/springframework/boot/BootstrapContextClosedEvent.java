@@ -30,7 +30,13 @@ public class BootstrapContextClosedEvent extends ApplicationEvent {
 
 	private final ConfigurableApplicationContext applicationContext;
 
-	BootstrapContextClosedEvent(BootstrapContext source, ConfigurableApplicationContext applicationContext) {
+	/**
+     * Constructs a new BootstrapContextClosedEvent with the specified source and applicationContext.
+     *
+     * @param source the source of the event
+     * @param applicationContext the application context associated with the event
+     */
+    BootstrapContextClosedEvent(BootstrapContext source, ConfigurableApplicationContext applicationContext) {
 		super(source);
 		this.applicationContext = applicationContext;
 	}

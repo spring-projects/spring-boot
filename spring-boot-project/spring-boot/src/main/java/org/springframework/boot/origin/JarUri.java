@@ -33,12 +33,23 @@ final class JarUri {
 
 	private final String description;
 
-	private JarUri(String uri) {
+	/**
+     * Constructs a new JarUri object with the specified URI.
+     * 
+     * @param uri the URI of the jar file
+     */
+    private JarUri(String uri) {
 		this.uri = uri;
 		this.description = extractDescription(uri);
 	}
 
-	private String extractDescription(String uri) {
+	/**
+     * Extracts the description from the given URI.
+     * 
+     * @param uri the URI from which to extract the description
+     * @return the extracted description
+     */
+    private String extractDescription(String uri) {
 		uri = uri.substring(JAR_SCHEME.length());
 		int firstDotJar = uri.indexOf(JAR_EXTENSION);
 		String firstJar = getFilename(uri.substring(0, firstDotJar + JAR_EXTENSION.length()));
@@ -50,29 +61,64 @@ final class JarUri {
 		return firstJar + uri.substring(0, lastDotJar + JAR_EXTENSION.length());
 	}
 
-	private String getFilename(String string) {
+	/**
+     * Returns the filename from the given string.
+     * 
+     * @param string the input string containing the filename
+     * @return the filename extracted from the input string
+     */
+    private String getFilename(String string) {
 		int lastSlash = string.lastIndexOf('/');
 		return (lastSlash == -1) ? string : string.substring(lastSlash + 1);
 	}
 
-	String getDescription() {
+	/**
+     * Returns the description of the JarUri.
+     *
+     * @return the description of the JarUri
+     */
+    String getDescription() {
 		return this.description;
 	}
 
-	String getDescription(String existing) {
+	/**
+     * Returns the description of the existing string appended with the description of the JarUri object.
+     * 
+     * @param existing the existing string to be appended
+     * @return the concatenated string with the description
+     */
+    String getDescription(String existing) {
 		return existing + " from " + this.description;
 	}
 
-	@Override
+	/**
+     * Returns the string representation of the URI.
+     *
+     * @return the string representation of the URI
+     */
+    @Override
 	public String toString() {
 		return this.uri;
 	}
 
-	static JarUri from(URI uri) {
+	/**
+     * Creates a JarUri object from a given URI.
+     * 
+     * @param uri the URI to create the JarUri object from
+     * @return the JarUri object created from the given URI
+     */
+    static JarUri from(URI uri) {
 		return from(uri.toString());
 	}
 
-	static JarUri from(String uri) {
+	/**
+     * Creates a JarUri object from the given URI string.
+     * 
+     * @param uri the URI string to create the JarUri object from
+     * @return a JarUri object if the URI string starts with the JAR_SCHEME and contains the JAR_EXTENSION, 
+     *         otherwise returns null
+     */
+    static JarUri from(String uri) {
 		if (uri.startsWith(JAR_SCHEME) && uri.contains(JAR_EXTENSION)) {
 			return new JarUri(uri);
 		}

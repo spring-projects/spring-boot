@@ -19,6 +19,9 @@ package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 
+/**
+ * MyContainersConfiguration class.
+ */
 @TestConfiguration(proxyBeanMethods = false)
 @ImportTestcontainers(MyContainers.class)
 public class MyContainersConfiguration {

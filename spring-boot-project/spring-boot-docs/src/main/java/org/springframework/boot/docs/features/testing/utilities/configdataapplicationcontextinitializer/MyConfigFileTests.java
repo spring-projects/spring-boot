@@ -19,6 +19,9 @@ package org.springframework.boot.docs.features.testing.utilities.configdataappli
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.test.context.ContextConfiguration;
 
+/**
+ * MyConfigFileTests class.
+ */
 @ContextConfiguration(classes = Config.class, initializers = ConfigDataApplicationContextInitializer.class)
 class MyConfigFileTests {
 

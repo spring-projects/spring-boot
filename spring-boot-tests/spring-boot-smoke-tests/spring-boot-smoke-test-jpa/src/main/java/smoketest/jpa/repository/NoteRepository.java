@@ -20,6 +20,9 @@ import java.util.List;
 
 import smoketest.jpa.domain.Note;
 
+/**
+ * NoteRepository interface.
+ */
 public interface NoteRepository {
 
 	List<Note> findAll();

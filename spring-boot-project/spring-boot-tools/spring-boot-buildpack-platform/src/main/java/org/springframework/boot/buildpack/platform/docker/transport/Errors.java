@@ -34,12 +34,22 @@ public class Errors implements Iterable<Errors.Error> {
 
 	private final List<Error> errors;
 
-	@JsonCreator
+	/**
+     * Constructs a new Errors object with the specified list of errors.
+     * 
+     * @param errors the list of errors to be included in the Errors object
+     */
+    @JsonCreator
 	Errors(@JsonProperty("errors") List<Error> errors) {
 		this.errors = (errors != null) ? errors : Collections.emptyList();
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the errors in this Errors object.
+     *
+     * @return an iterator over the errors in this Errors object
+     */
+    @Override
 	public Iterator<Errors.Error> iterator() {
 		return this.errors.iterator();
 	}
@@ -60,7 +70,12 @@ public class Errors implements Iterable<Errors.Error> {
 		return this.errors.isEmpty();
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the errors.
+     * 
+     * @return a string representation of the errors
+     */
+    @Override
 	public String toString() {
 		return this.errors.toString();
 	}
@@ -74,7 +89,13 @@ public class Errors implements Iterable<Errors.Error> {
 
 		private final String message;
 
-		@JsonCreator
+		/**
+         * Constructs a new Error with the specified code and message.
+         *
+         * @param code    the error code
+         * @param message the error message
+         */
+        @JsonCreator
 		Error(String code, String message) {
 			this.code = code;
 			this.message = message;
@@ -96,7 +117,12 @@ public class Errors implements Iterable<Errors.Error> {
 			return this.message;
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the Error object.
+         * 
+         * @return the string representation of the Error object
+         */
+        @Override
 		public String toString() {
 			return this.code + ": " + this.message;
 		}

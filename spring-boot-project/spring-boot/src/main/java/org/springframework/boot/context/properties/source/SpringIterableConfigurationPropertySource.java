@@ -59,14 +59,29 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private volatile ConfigurationPropertyName[] configurationPropertyNames;
 
-	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource, PropertyMapper... mappers) {
+	/**
+     * Constructs a new SpringIterableConfigurationPropertySource with the given property source and mappers.
+     * 
+     * @param propertySource the underlying EnumerablePropertySource to be wrapped
+     * @param mappers        the PropertyMapper instances to be used for mapping properties
+     * @throws IllegalArgumentException if the propertySource is not an EnumerablePropertySource
+     */
+    SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource, PropertyMapper... mappers) {
 		super(propertySource, mappers);
 		assertEnumerablePropertySource();
 		this.ancestorOfCheck = getAncestorOfCheck(mappers);
 		this.cache = new SoftReferenceConfigurationPropertyCache<>(isImmutablePropertySource());
 	}
 
-	private BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> getAncestorOfCheck(
+	/**
+     * Returns a {@code BiPredicate} that checks if a given {@code ConfigurationPropertyName} is an ancestor of another
+     * {@code ConfigurationPropertyName} based on the provided {@code PropertyMapper} array.
+     *
+     * @param mappers the array of {@code PropertyMapper} objects used to determine the ancestor relationship
+     * @return a {@code BiPredicate} that checks if a given {@code ConfigurationPropertyName} is an ancestor of another
+     * {@code ConfigurationPropertyName}
+     */
+    private BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> getAncestorOfCheck(
 			PropertyMapper[] mappers) {
 		BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> ancestorOfCheck = mappers[0]
 			.getAncestorOfCheck();
@@ -76,7 +91,12 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return ancestorOfCheck;
 	}
 
-	private void assertEnumerablePropertySource() {
+	/**
+     * Asserts that the property source is fully enumerable.
+     * 
+     * @throws IllegalArgumentException if the property source is not fully enumerable
+     */
+    private void assertEnumerablePropertySource() {
 		if (getPropertySource() instanceof MapPropertySource mapSource) {
 			try {
 				mapSource.getSource().size();
@@ -87,12 +107,23 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		}
 	}
 
-	@Override
+	/**
+     * Returns the caching configuration property.
+     *
+     * @return the caching configuration property
+     */
+    @Override
 	public ConfigurationPropertyCaching getCaching() {
 		return this.cache;
 	}
 
-	@Override
+	/**
+     * Retrieves the configuration property with the given name from this configuration property source.
+     * 
+     * @param name the name of the configuration property to retrieve
+     * @return the configuration property with the given name, or null if not found
+     */
+    @Override
 	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		if (name == null) {
 			return null;
@@ -111,18 +142,34 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns a stream of ConfigurationPropertyName objects.
+     * 
+     * @return a stream of ConfigurationPropertyName objects
+     */
+    @Override
 	public Stream<ConfigurationPropertyName> stream() {
 		ConfigurationPropertyName[] names = getConfigurationPropertyNames();
 		return Arrays.stream(names).filter(Objects::nonNull);
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the configuration property names in this configuration property source.
+     *
+     * @return an iterator over the configuration property names
+     */
+    @Override
 	public Iterator<ConfigurationPropertyName> iterator() {
 		return new ConfigurationPropertyNamesIterator(getConfigurationPropertyNames());
 	}
 
-	@Override
+	/**
+     * Determines if the configuration property source contains a descendant of the specified name.
+     * 
+     * @param name the name of the configuration property
+     * @return the state of the configuration property (PRESENT, ABSENT, or UNKNOWN)
+     */
+    @Override
 	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		ConfigurationPropertyState result = super.containsDescendantOf(name);
 		if (result != ConfigurationPropertyState.UNKNOWN) {
@@ -140,7 +187,21 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return ConfigurationPropertyState.ABSENT;
 	}
 
-	private ConfigurationPropertyName[] getConfigurationPropertyNames() {
+	/**
+     * Returns an array of ConfigurationPropertyName objects representing the names of the configuration properties
+     * available in this SpringIterableConfigurationPropertySource.
+     * 
+     * If the property source is not immutable, the method retrieves the property names from the mappings and returns
+     * the corresponding ConfigurationPropertyName objects.
+     * 
+     * If the property source is immutable, the method checks if the configuration property names have already been
+     * retrieved and stored in the configurationPropertyNames field. If not, it retrieves the property names from the
+     * mappings and stores the corresponding ConfigurationPropertyName objects in the configurationPropertyNames field.
+     * 
+     * @return an array of ConfigurationPropertyName objects representing the names of the configuration properties
+     *         available in this SpringIterableConfigurationPropertySource
+     */
+    private ConfigurationPropertyName[] getConfigurationPropertyNames() {
 		if (!isImmutablePropertySource()) {
 			return getMappings().getConfigurationPropertyNames(getPropertySource().getPropertyNames());
 		}
@@ -153,21 +214,43 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return configurationPropertyNames;
 	}
 
-	private Mappings getMappings() {
+	/**
+     * Retrieves the mappings from the cache.
+     * 
+     * @return The mappings stored in the cache.
+     */
+    private Mappings getMappings() {
 		return this.cache.get(this::createMappings, this::updateMappings);
 	}
 
-	private Mappings createMappings() {
+	/**
+     * Creates a new instance of {@link Mappings} using the provided mappers, 
+     * immutable property source flag, and ancestor of check flag.
+     * 
+     * @return the created {@link Mappings} instance
+     */
+    private Mappings createMappings() {
 		return new Mappings(getMappers(), isImmutablePropertySource(),
 				this.ancestorOfCheck == PropertyMapper.DEFAULT_ANCESTOR_OF_CHECK);
 	}
 
-	private Mappings updateMappings(Mappings mappings) {
+	/**
+     * Updates the mappings in the given {@link Mappings} object using the property names from the property source.
+     * 
+     * @param mappings the {@link Mappings} object to update
+     * @return the updated {@link Mappings} object
+     */
+    private Mappings updateMappings(Mappings mappings) {
 		mappings.updateMappings(getPropertySource()::getPropertyNames);
 		return mappings;
 	}
 
-	private boolean isImmutablePropertySource() {
+	/**
+     * Checks if the property source is immutable.
+     * 
+     * @return true if the property source is immutable, false otherwise
+     */
+    private boolean isImmutablePropertySource() {
 		EnumerablePropertySource<?> source = getPropertySource();
 		if (source instanceof OriginLookup) {
 			return ((OriginLookup<?>) source).isImmutable();
@@ -178,12 +261,20 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return false;
 	}
 
-	@Override
+	/**
+     * Returns the property source as an EnumerablePropertySource.
+     * 
+     * @return the property source as an EnumerablePropertySource
+     */
+    @Override
 	protected EnumerablePropertySource<?> getPropertySource() {
 		return (EnumerablePropertySource<?>) super.getPropertySource();
 	}
 
-	private static class Mappings {
+	/**
+     * Mappings class.
+     */
+    private static class Mappings {
 
 		private static final ConfigurationPropertyName[] EMPTY_NAMES_ARRAY = {};
 
@@ -203,13 +294,26 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private volatile String[] lastUpdated;
 
-		Mappings(PropertyMapper[] mappers, boolean immutable, boolean trackDescendants) {
+		/**
+         * Constructs a new instance of Mappings with the specified property mappers, immutability flag, and descendant tracking flag.
+         * 
+         * @param mappers the array of property mappers to be used for mapping properties
+         * @param immutable the flag indicating whether the mappings should be immutable
+         * @param trackDescendants the flag indicating whether descendant mappings should be tracked
+         */
+        Mappings(PropertyMapper[] mappers, boolean immutable, boolean trackDescendants) {
 			this.mappers = mappers;
 			this.immutable = immutable;
 			this.trackDescendants = trackDescendants;
 		}
 
-		void updateMappings(Supplier<String[]> propertyNames) {
+		/**
+         * Updates the mappings of the Mappings class using the provided property names.
+         * 
+         * @param propertyNames a Supplier that provides an array of property names
+         * @throws ConcurrentModificationException if the mappings are being modified concurrently
+         */
+        void updateMappings(Supplier<String[]> propertyNames) {
 			if (this.mappings == null || !this.immutable) {
 				int count = 0;
 				while (true) {
@@ -226,7 +330,12 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			}
 		}
 
-		private void updateMappings(String[] propertyNames) {
+		/**
+         * Updates the mappings based on the given property names.
+         * 
+         * @param propertyNames the array of property names to update the mappings with
+         */
+        private void updateMappings(String[] propertyNames) {
 			String[] lastUpdated = this.lastUpdated;
 			if (lastUpdated != null && Arrays.equals(lastUpdated, propertyNames)) {
 				return;
@@ -258,11 +367,26 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 					? reverseMappings.values().toArray(new ConfigurationPropertyName[0]) : null;
 		}
 
-		private <K, V> Map<K, V> cloneOrCreate(Map<K, V> source, int size) {
+		/**
+         * Creates a clone of the given source map or creates a new map with the specified size.
+         * 
+         * @param <K> the type of keys maintained by the map
+         * @param <V> the type of mapped values
+         * @param source the source map to clone, can be null
+         * @param size the initial size of the new map if source is null
+         * @return a new map that is a clone of the source map if it is not null, otherwise a new map with the specified size
+         */
+        private <K, V> Map<K, V> cloneOrCreate(Map<K, V> source, int size) {
 			return (source != null) ? new LinkedHashMap<>(source) : new LinkedHashMap<>(size);
 		}
 
-		private void addParents(Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> descendants,
+		/**
+         * Adds the parents of a given configuration property name to a map of descendants.
+         * 
+         * @param descendants the map of descendants to add the parents to
+         * @param name the configuration property name to add the parents for
+         */
+        private void addParents(Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> descendants,
 				ConfigurationPropertyName name) {
 			ConfigurationPropertyName parent = name;
 			while (!parent.isEmpty()) {
@@ -271,15 +395,36 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			}
 		}
 
-		private <K, T> void add(Map<K, Set<T>> map, K key, T value) {
+		/**
+         * Adds a value to the set associated with the specified key in the given map.
+         *
+         * @param <K>   the type of keys maintained by the map
+         * @param <T>   the type of values in the set
+         * @param map   the map to add the value to
+         * @param key   the key to associate the value with
+         * @param value the value to be added
+         */
+        private <K, T> void add(Map<K, Set<T>> map, K key, T value) {
 			map.computeIfAbsent(key, (k) -> new HashSet<>()).add(value);
 		}
 
-		Set<String> getMapped(ConfigurationPropertyName configurationPropertyName) {
+		/**
+         * Retrieves the set of mapped strings associated with the given configuration property name.
+         * 
+         * @param configurationPropertyName the configuration property name to retrieve the mappings for
+         * @return the set of mapped strings for the given configuration property name, or an empty set if no mappings are found
+         */
+        Set<String> getMapped(ConfigurationPropertyName configurationPropertyName) {
 			return this.mappings.getOrDefault(configurationPropertyName, Collections.emptySet());
 		}
 
-		ConfigurationPropertyName[] getConfigurationPropertyNames(String[] propertyNames) {
+		/**
+         * Retrieves the ConfigurationPropertyName objects corresponding to the given property names.
+         * 
+         * @param propertyNames an array of property names
+         * @return an array of ConfigurationPropertyName objects
+         */
+        ConfigurationPropertyName[] getConfigurationPropertyNames(String[] propertyNames) {
 			ConfigurationPropertyName[] names = this.configurationPropertyNames;
 			if (names != null) {
 				return names;
@@ -295,7 +440,14 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return names;
 		}
 
-		ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name,
+		/**
+         * Determines the state of a configuration property based on its name and a custom ancestor check.
+         * 
+         * @param name The name of the configuration property.
+         * @param ancestorOfCheck The custom ancestor check to determine if the property is a descendant of another property.
+         * @return The state of the configuration property.
+         */
+        ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name,
 				BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> ancestorOfCheck) {
 			if (name.isEmpty() && !this.descendants.isEmpty()) {
 				return ConfigurationPropertyState.PRESENT;
@@ -320,17 +472,35 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private int index = 0;
 
-		ConfigurationPropertyNamesIterator(ConfigurationPropertyName[] names) {
+		/**
+         * Constructs a new ConfigurationPropertyNamesIterator with the specified array of ConfigurationPropertyName objects.
+         * 
+         * @param names the array of ConfigurationPropertyName objects to iterate over
+         */
+        ConfigurationPropertyNamesIterator(ConfigurationPropertyName[] names) {
 			this.names = names;
 		}
 
-		@Override
+		/**
+         * Returns true if there is at least one more element in the iteration, 
+         * false otherwise.
+         * 
+         * @return true if there is at least one more element in the iteration, 
+         *         false otherwise
+         */
+        @Override
 		public boolean hasNext() {
 			skipNulls();
 			return this.index < this.names.length;
 		}
 
-		@Override
+		/**
+         * Returns the next ConfigurationPropertyName in the iteration.
+         * 
+         * @throws NoSuchElementException if there are no more elements in the iteration
+         * @return the next ConfigurationPropertyName in the iteration
+         */
+        @Override
 		public ConfigurationPropertyName next() {
 			skipNulls();
 			if (this.index >= this.names.length) {
@@ -339,7 +509,12 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return this.names[this.index++];
 		}
 
-		private void skipNulls() {
+		/**
+         * Skips over any null values in the names array.
+         * 
+         * @return void
+         */
+        private void skipNulls() {
 			while (this.index < this.names.length) {
 				if (this.names[this.index] != null) {
 					return;

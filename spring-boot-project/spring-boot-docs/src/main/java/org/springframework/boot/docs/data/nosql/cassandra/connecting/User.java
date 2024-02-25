@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.data.nosql.cassandra.connecting;
 
+/**
+ * User class.
+ */
 class User {
 
 }

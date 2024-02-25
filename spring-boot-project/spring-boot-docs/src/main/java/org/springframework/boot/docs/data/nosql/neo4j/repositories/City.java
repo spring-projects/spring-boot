@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.data.nosql.neo4j.repositories;
 
+/**
+ * City class.
+ */
 public class City {
 
 }

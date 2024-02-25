@@ -75,11 +75,27 @@ class EphemeralBuilder {
 		});
 	}
 
-	private void updateMetadata(BuilderMetadata.Update update) {
+	/**
+     * Updates the metadata of the EphemeralBuilder with the provided update.
+     * 
+     * @param update the update containing the new metadata values
+     */
+    private void updateMetadata(BuilderMetadata.Update update) {
 		update.withCreatedBy(this.creator.getName(), this.creator.getVersion());
 	}
 
-	private Layer getEnvLayer(Map<String, String> env) throws IOException {
+	/**
+     * Returns a Layer object representing the environment variables specified in the given map.
+     * The Layer object is created by iterating over the entries in the map and creating a file
+     * for each entry in the "/platform/env/" directory of the layer layout. The name of each file
+     * is constructed by appending the key of the entry to the "/platform/env/" directory path.
+     * The content of each file is set to the value of the entry, or an empty string if the value is null.
+     * 
+     * @param env the map containing the environment variables
+     * @return a Layer object representing the environment variables
+     * @throws IOException if an I/O error occurs while creating the Layer object
+     */
+    private Layer getEnvLayer(Map<String, String> env) throws IOException {
 		return Layer.of((layout) -> {
 			for (Map.Entry<String, String> entry : env.entrySet()) {
 				String name = "/platform/env/" + entry.getKey();
@@ -121,7 +137,12 @@ class EphemeralBuilder {
 		return this.archive;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the tag in the archive.
+     * 
+     * @return the string representation of the tag in the archive
+     */
+    @Override
 	public String toString() {
 		return this.archive.getTag().toString();
 	}

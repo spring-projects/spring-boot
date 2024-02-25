@@ -40,11 +40,22 @@ class DynamicPropertySourceMethodsImporter {
 
 	private final Environment environment;
 
-	DynamicPropertySourceMethodsImporter(Environment environment) {
+	/**
+     * Constructs a new DynamicPropertySourceMethodsImporter with the specified environment.
+     *
+     * @param environment the environment to be used by the importer
+     */
+    DynamicPropertySourceMethodsImporter(Environment environment) {
 		this.environment = environment;
 	}
 
-	void registerDynamicPropertySources(BeanDefinitionRegistry beanDefinitionRegistry, Class<?> definitionClass) {
+	/**
+     * Registers dynamic property sources for the given bean definition registry and definition class.
+     * 
+     * @param beanDefinitionRegistry the bean definition registry to register the dynamic property sources with
+     * @param definitionClass the class containing the dynamic property source methods
+     */
+    void registerDynamicPropertySources(BeanDefinitionRegistry beanDefinitionRegistry, Class<?> definitionClass) {
 		Set<Method> methods = MethodIntrospector.selectMethods(definitionClass, this::isAnnotated);
 		if (methods.isEmpty()) {
 			return;
@@ -58,11 +69,23 @@ class DynamicPropertySourceMethodsImporter {
 		});
 	}
 
-	private boolean isAnnotated(Method method) {
+	/**
+     * Checks if the given method is annotated with {@link DynamicPropertySource}.
+     * 
+     * @param method the method to check
+     * @return {@code true} if the method is annotated with {@link DynamicPropertySource}, {@code false} otherwise
+     */
+    private boolean isAnnotated(Method method) {
 		return MergedAnnotations.from(method).isPresent(DynamicPropertySource.class);
 	}
 
-	private void assertValid(Method method) {
+	/**
+     * Asserts the validity of a given method for use as a dynamic property source.
+     * 
+     * @param method the method to be validated
+     * @throws IllegalStateException if the method is not static or does not accept a single DynamicPropertyRegistry argument
+     */
+    private void assertValid(Method method) {
 		Assert.state(Modifier.isStatic(method.getModifiers()),
 				() -> "@DynamicPropertySource method '" + method.getName() + "' must be static");
 		Class<?>[] types = method.getParameterTypes();

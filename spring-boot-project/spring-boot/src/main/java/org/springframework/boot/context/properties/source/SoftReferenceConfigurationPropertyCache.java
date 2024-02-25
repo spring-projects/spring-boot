@@ -41,26 +41,46 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 
 	private volatile Instant lastAccessed = now();
 
-	SoftReferenceConfigurationPropertyCache(boolean neverExpire) {
+	/**
+     * Constructs a new SoftReferenceConfigurationPropertyCache with the specified expiration setting.
+     * 
+     * @param neverExpire true if the cache should never expire, false otherwise
+     */
+    SoftReferenceConfigurationPropertyCache(boolean neverExpire) {
 		this.neverExpire = neverExpire;
 	}
 
-	@Override
+	/**
+     * Enables the SoftReferenceConfigurationPropertyCache.
+     * Sets the time to live for the cache to unlimited.
+     */
+    @Override
 	public void enable() {
 		this.timeToLive = UNLIMITED;
 	}
 
-	@Override
+	/**
+     * Disables the SoftReferenceConfigurationPropertyCache by setting the timeToLive to null.
+     */
+    @Override
 	public void disable() {
 		this.timeToLive = null;
 	}
 
-	@Override
+	/**
+     * Sets the time to live for the cache entries.
+     * 
+     * @param timeToLive the time to live duration for the cache entries
+     */
+    @Override
 	public void setTimeToLive(Duration timeToLive) {
 		this.timeToLive = (timeToLive == null || timeToLive.isZero()) ? null : timeToLive;
 	}
 
-	@Override
+	/**
+     * Clears the SoftReferenceConfigurationPropertyCache by setting the lastAccessed property to null.
+     */
+    @Override
 	public void clear() {
 		this.lastAccessed = null;
 	}
@@ -87,7 +107,12 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 		return value;
 	}
 
-	private boolean hasExpired() {
+	/**
+     * Checks if the SoftReferenceConfigurationPropertyCache has expired.
+     * 
+     * @return true if the cache has expired, false otherwise
+     */
+    private boolean hasExpired() {
 		if (this.neverExpire) {
 			return false;
 		}
@@ -99,15 +124,31 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 		return !UNLIMITED.equals(timeToLive) && now().isAfter(lastAccessed.plus(timeToLive));
 	}
 
-	protected Instant now() {
+	/**
+     * Returns the current instant.
+     *
+     * @return the current instant
+     */
+    protected Instant now() {
 		return Instant.now();
 	}
 
-	protected T getValue() {
+	/**
+     * Returns the value stored in the SoftReferenceConfigurationPropertyCache.
+     * 
+     * @return the value stored in the SoftReferenceConfigurationPropertyCache
+     */
+    protected T getValue() {
 		return this.value.get();
 	}
 
-	protected void setValue(T value) {
+	/**
+     * Sets the value of the SoftReferenceConfigurationPropertyCache.
+     * 
+     * @param value the value to be set
+     * @param <T> the type of the value
+     */
+    protected void setValue(T value) {
 		this.value = new SoftReference<>(value);
 	}
 

@@ -21,10 +21,19 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * HelloRestController class.
+ */
 @RestController
 public class HelloRestController {
 
-	@GetMapping("/")
+	/**
+     * Retrieves the unique identifier of the current session.
+     * 
+     * @param session the HttpSession object representing the current session
+     * @return a String value representing the unique identifier of the session
+     */
+    @GetMapping("/")
 	String uid(HttpSession session) {
 		return session.getId();
 	}

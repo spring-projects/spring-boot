@@ -86,11 +86,52 @@ public class GraphQlAutoConfiguration {
 
 	private final ListableBeanFactory beanFactory;
 
-	public GraphQlAutoConfiguration(ListableBeanFactory beanFactory) {
+	/**
+     * Constructs a new instance of GraphQlAutoConfiguration with the specified beanFactory.
+     *
+     * @param beanFactory the ListableBeanFactory to be used for dependency injection
+     */
+    public GraphQlAutoConfiguration(ListableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 	}
 
-	@Bean
+	/**
+     * Creates a bean of type GraphQlSource if no other bean of the same type is present.
+     * 
+     * This method uses the provided resourcePatternResolver, properties, exceptionResolvers,
+     * subscriptionExceptionResolvers, instrumentations, wiringConfigurers, sourceCustomizers,
+     * and typeDefinitionConfigurers to configure and build the GraphQlSource bean.
+     * 
+     * The schemaLocations are resolved using the resourcePatternResolver and the resolved
+     * schemaResources are used to build the schema for the GraphQlSource.
+     * 
+     * The exceptionResolvers, subscriptionExceptionResolvers, and instrumentations are ordered
+     * and added to the GraphQlSource builder.
+     * 
+     * If the inspection is enabled in the properties, the schema mappings are logged.
+     * 
+     * If the introspection is disabled in the properties, the enableIntrospection method is
+     * used to configure the runtime wiring.
+     * 
+     * The ConnectionTypeDefinitionConfigurer is added to the GraphQlSource builder to configure
+     * the type definitions.
+     * 
+     * The wiringConfigurers and sourceCustomizers are ordered and used to configure the runtime
+     * wiring and customize the GraphQlSource builder respectively.
+     * 
+     * @param resourcePatternResolver The resource pattern resolver used to resolve the schema
+     *                                locations.
+     * @param properties              The GraphQlProperties used to configure the GraphQlSource.
+     * @param exceptionResolvers      The exception resolvers used to handle data fetcher exceptions.
+     * @param subscriptionExceptionResolvers The exception resolvers used to handle subscription exceptions.
+     * @param instrumentations        The instrumentations used to instrument the GraphQL execution.
+     * @param wiringConfigurers       The runtime wiring configurers used to configure the runtime wiring.
+     * @param sourceCustomizers       The source customizers used to customize the GraphQlSource builder.
+     * @param typeDefinitionConfigurers The type definition configurers used to configure the type definitions.
+     * 
+     * @return The created GraphQlSource bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public GraphQlSource graphQlSource(ResourcePatternResolver resourcePatternResolver, GraphQlProperties properties,
 			ObjectProvider<DataFetcherExceptionResolver> exceptionResolvers,
@@ -119,11 +160,25 @@ public class GraphQlAutoConfiguration {
 		return builder.build();
 	}
 
-	private Builder enableIntrospection(Builder wiring) {
+	/**
+     * Enables introspection for the given GraphQL builder.
+     * 
+     * @param wiring the GraphQL builder to enable introspection for
+     * @return the GraphQL builder with introspection enabled
+     */
+    private Builder enableIntrospection(Builder wiring) {
 		return wiring.fieldVisibility(NoIntrospectionGraphqlFieldVisibility.NO_INTROSPECTION_FIELD_VISIBILITY);
 	}
 
-	private Resource[] resolveSchemaResources(ResourcePatternResolver resolver, String[] locations,
+	/**
+     * Resolves the schema resources based on the given locations and extensions.
+     * 
+     * @param resolver the resource pattern resolver
+     * @param locations the locations of the schema resources
+     * @param extensions the file extensions of the schema resources
+     * @return an array of resolved schema resources
+     */
+    private Resource[] resolveSchemaResources(ResourcePatternResolver resolver, String[] locations,
 			String[] extensions) {
 		List<Resource> resources = new ArrayList<>();
 		for (String location : locations) {
@@ -134,7 +189,14 @@ public class GraphQlAutoConfiguration {
 		return resources.toArray(new Resource[0]);
 	}
 
-	private List<Resource> resolveSchemaResources(ResourcePatternResolver resolver, String pattern) {
+	/**
+     * Resolves the schema resources using the given resource pattern resolver and pattern.
+     * 
+     * @param resolver the resource pattern resolver to use
+     * @param pattern the pattern to match the schema resources
+     * @return a list of resolved schema resources
+     */
+    private List<Resource> resolveSchemaResources(ResourcePatternResolver resolver, String pattern) {
 		try {
 			return Arrays.asList(resolver.getResources(pattern));
 		}
@@ -144,13 +206,25 @@ public class GraphQlAutoConfiguration {
 		}
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of BatchLoaderRegistry if no other bean of type BatchLoaderRegistry is present in the application context.
+     * 
+     * @return the BatchLoaderRegistry instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public BatchLoaderRegistry batchLoaderRegistry() {
 		return new DefaultBatchLoaderRegistry();
 	}
 
-	@Bean
+	/**
+     * Creates an instance of ExecutionGraphQlService if no other bean of the same type is present.
+     * 
+     * @param graphQlSource The GraphQlSource used by the service.
+     * @param batchLoaderRegistry The BatchLoaderRegistry used by the service.
+     * @return An instance of ExecutionGraphQlService.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public ExecutionGraphQlService executionGraphQlService(GraphQlSource graphQlSource,
 			BatchLoaderRegistry batchLoaderRegistry) {
@@ -159,7 +233,14 @@ public class GraphQlAutoConfiguration {
 		return service;
 	}
 
-	@Bean
+	/**
+     * Creates and configures an instance of {@link AnnotatedControllerConfigurer}.
+     * This bean is conditional on the absence of another bean of the same type.
+     * 
+     * @param executorProvider The provider for the {@link Executor} bean.
+     * @return The configured instance of {@link AnnotatedControllerConfigurer}.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public AnnotatedControllerConfigurer annotatedControllerConfigurer(
 			@Qualifier(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME) ObjectProvider<Executor> executorProvider) {
@@ -170,23 +251,47 @@ public class GraphQlAutoConfiguration {
 		return controllerConfigurer;
 	}
 
-	@Bean
+	/**
+     * Returns the DataFetcherExceptionResolver obtained from the provided AnnotatedControllerConfigurer.
+     * 
+     * @param annotatedControllerConfigurer the AnnotatedControllerConfigurer used to obtain the DataFetcherExceptionResolver
+     * @return the DataFetcherExceptionResolver obtained from the AnnotatedControllerConfigurer
+     */
+    @Bean
 	DataFetcherExceptionResolver annotatedControllerConfigurerDataFetcherExceptionResolver(
 			AnnotatedControllerConfigurer annotatedControllerConfigurer) {
 		return annotatedControllerConfigurer.getExceptionResolver();
 	}
 
-	@ConditionalOnClass(ScrollPosition.class)
+	/**
+     * GraphQlDataAutoConfiguration class.
+     */
+    @ConditionalOnClass(ScrollPosition.class)
 	@Configuration(proxyBeanMethods = false)
 	static class GraphQlDataAutoConfiguration {
 
-		@Bean
+		/**
+         * Returns the encoding cursor strategy for the GraphQL data auto-configuration.
+         * This method is annotated with @Bean to indicate that it is a bean definition method.
+         * It is also annotated with @ConditionalOnMissingBean to specify that this bean should only be created if there is no existing bean of the same type.
+         * The encoding cursor strategy is used to determine the cursor strategy for pagination using scroll positions.
+         * The cursor strategy is created using the ScrollPositionCursorStrategy and the base64 cursor encoder.
+         *
+         * @return the encoding cursor strategy for the GraphQL data auto-configuration
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		EncodingCursorStrategy<ScrollPosition> cursorStrategy() {
 			return CursorStrategy.withEncoder(new ScrollPositionCursorStrategy(), CursorEncoder.base64());
 		}
 
-		@Bean
+		/**
+         * Customizes the GraphQlSourceBuilder with a cursor strategy.
+         * 
+         * @param cursorStrategy The cursor strategy to be used.
+         * @return The customizer for the GraphQlSourceBuilder.
+         */
+        @Bean
 		@SuppressWarnings("unchecked")
 		GraphQlSourceBuilderCustomizer cursorStrategyCustomizer(CursorStrategy<?> cursorStrategy) {
 			if (cursorStrategy.supports(ScrollPosition.class)) {
@@ -202,9 +307,18 @@ public class GraphQlAutoConfiguration {
 
 	}
 
-	static class GraphQlResourcesRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * GraphQlResourcesRuntimeHints class.
+     */
+    static class GraphQlResourcesRuntimeHints implements RuntimeHintsRegistrar {
 
-		@Override
+		/**
+         * Registers the GraphQL schema files as resources for the runtime hints.
+         * 
+         * @param hints the runtime hints object
+         * @param classLoader the class loader to load the resources
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources().registerPattern("graphql/*.graphqls").registerPattern("graphql/*.gqls");
 		}

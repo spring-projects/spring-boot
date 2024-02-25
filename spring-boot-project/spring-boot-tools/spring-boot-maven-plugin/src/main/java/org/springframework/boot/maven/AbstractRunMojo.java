@@ -200,7 +200,13 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	@Parameter(property = "spring-boot.run.skip", defaultValue = "false")
 	private boolean skip;
 
-	@Override
+	/**
+     * Executes the run command.
+     * 
+     * @throws MojoExecutionException if an error occurs during execution
+     * @throws MojoFailureException if the execution fails
+     */
+    @Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
 			getLog().debug("skipping run as per configuration.");
@@ -209,7 +215,13 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		run(determineMainClass());
 	}
 
-	private String determineMainClass() throws MojoExecutionException {
+	/**
+     * Determines the main class to be executed.
+     * 
+     * @return The main class to be executed.
+     * @throws MojoExecutionException If an error occurs while determining the main class.
+     */
+    private String determineMainClass() throws MojoExecutionException {
 		if (this.mainClass != null) {
 			return this.mainClass;
 		}
@@ -227,9 +239,21 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return List.of(this.classesDirectory);
 	}
 
-	protected abstract boolean isUseTestClasspath();
+	/**
+     * Returns a boolean value indicating whether the test classpath should be used.
+     *
+     * @return {@code true} if the test classpath should be used, {@code false} otherwise.
+     */
+    protected abstract boolean isUseTestClasspath();
 
-	private void run(String startClassName) throws MojoExecutionException, MojoFailureException {
+	/**
+     * Runs the specified start class using the provided arguments.
+     * 
+     * @param startClassName the fully qualified name of the start class
+     * @throws MojoExecutionException if an error occurs during execution
+     * @throws MojoFailureException if the execution fails
+     */
+    private void run(String startClassName) throws MojoExecutionException, MojoFailureException {
 		List<String> args = new ArrayList<>();
 		addAgents(args);
 		addJvmArgs(args);
@@ -274,13 +298,24 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return new EnvVariables(this.environmentVariables);
 	}
 
-	private void addArgs(List<String> args) {
+	/**
+     * Adds the application arguments to the given list of arguments.
+     * 
+     * @param args the list of arguments to which the application arguments will be added
+     */
+    private void addArgs(List<String> args) {
 		RunArguments applicationArguments = resolveApplicationArguments();
 		Collections.addAll(args, applicationArguments.asArray());
 		logArguments("Application argument", applicationArguments.asArray());
 	}
 
-	private Map<String, String> determineEnvironmentVariables() {
+	/**
+     * Determines the environment variables by resolving them using the {@link EnvVariables} class.
+     * Logs the environment variables as an array using the {@link #logArguments(String, String[])} method.
+     * 
+     * @return a {@link Map} containing the environment variables as key-value pairs
+     */
+    private Map<String, String> determineEnvironmentVariables() {
 		EnvVariables envVariables = resolveEnvVariables();
 		logArguments("Environment variable", envVariables.asArray());
 		return envVariables.asMap();
@@ -304,13 +339,23 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return new RunArguments(stringBuilder.toString());
 	}
 
-	private void addJvmArgs(List<String> args) {
+	/**
+     * Adds JVM arguments to the given list of arguments.
+     * 
+     * @param args the list of arguments to which the JVM arguments will be added
+     */
+    private void addJvmArgs(List<String> args) {
 		RunArguments jvmArguments = resolveJvmArguments();
 		Collections.addAll(args, jvmArguments.asArray());
 		logArguments("JVM argument", jvmArguments.asArray());
 	}
 
-	private void addAgents(List<String> args) {
+	/**
+     * Adds agents to the list of arguments.
+     * 
+     * @param args the list of arguments to add agents to
+     */
+    private void addAgents(List<String> args) {
 		if (this.agents != null) {
 			if (getLog().isInfoEnabled()) {
 				getLog().info("Attaching agents: " + Arrays.asList(this.agents));
@@ -324,7 +369,12 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addActiveProfileArgument(RunArguments arguments) {
+	/**
+     * Adds the active profile argument to the RunArguments object.
+     * 
+     * @param arguments the RunArguments object to add the active profile argument to
+     */
+    private void addActiveProfileArgument(RunArguments arguments) {
 		if (this.profiles.length > 0) {
 			StringBuilder arg = new StringBuilder("--spring.profiles.active=");
 			for (int i = 0; i < this.profiles.length; i++) {
@@ -338,7 +388,13 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addClasspath(List<String> args) throws MojoExecutionException {
+	/**
+     * Adds the classpath to the list of arguments.
+     * 
+     * @param args the list of arguments to add the classpath to
+     * @throws MojoExecutionException if there is an error building the classpath
+     */
+    private void addClasspath(List<String> args) throws MojoExecutionException {
 		try {
 			StringBuilder classpath = new StringBuilder();
 			for (URL ele : getClassPathUrls()) {
@@ -358,7 +414,13 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	protected URL[] getClassPathUrls() throws MojoExecutionException {
+	/**
+     * Returns an array of URLs representing the classpath for the current project.
+     * 
+     * @return an array of URLs representing the classpath
+     * @throws MojoExecutionException if there is an error building the classpath
+     */
+    protected URL[] getClassPathUrls() throws MojoExecutionException {
 		try {
 			List<URL> urls = new ArrayList<>();
 			addAdditionalClasspathLocations(urls);
@@ -372,7 +434,13 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	@SuppressWarnings("removal")
+	/**
+     * Adds additional classpath locations to the list of URLs.
+     * 
+     * @param urls the list of URLs to add the additional classpath locations to
+     * @throws MalformedURLException if the URL is malformed
+     */
+    @SuppressWarnings("removal")
 	private void addAdditionalClasspathLocations(List<URL> urls) throws MalformedURLException {
 		Assert.state(ObjectUtils.isEmpty(this.directories) || ObjectUtils.isEmpty(this.additionalClasspathElements),
 				"Either additionalClasspathElements or directories (deprecated) should be set, not both");
@@ -385,7 +453,13 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addResources(List<URL> urls) throws IOException {
+	/**
+     * Adds the resources to the list of URLs.
+     * 
+     * @param urls the list of URLs to add the resources to
+     * @throws IOException if an I/O error occurs
+     */
+    private void addResources(List<URL> urls) throws IOException {
 		if (this.addResources) {
 			for (Resource resource : this.project.getResources()) {
 				File directory = new File(resource.getDirectory());
@@ -397,13 +471,26 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addProjectClasses(List<URL> urls) throws MalformedURLException {
+	/**
+     * Adds the project classes to the list of URLs.
+     * 
+     * @param urls the list of URLs to add the project classes to
+     * @throws MalformedURLException if there is an error converting the file path to a URL
+     */
+    private void addProjectClasses(List<URL> urls) throws MalformedURLException {
 		for (File classesDirectory : getClassesDirectories()) {
 			urls.add(classesDirectory.toURI().toURL());
 		}
 	}
 
-	private void addDependencies(List<URL> urls) throws MalformedURLException, MojoExecutionException {
+	/**
+     * Adds the dependencies to the given list of URLs.
+     * 
+     * @param urls the list of URLs to add the dependencies to
+     * @throws MalformedURLException if a URL is malformed
+     * @throws MojoExecutionException if an error occurs during execution of the Mojo
+     */
+    private void addDependencies(List<URL> urls) throws MalformedURLException, MojoExecutionException {
 		Set<Artifact> artifacts = (isUseTestClasspath()) ? filterDependencies(this.project.getArtifacts())
 				: filterDependencies(this.project.getArtifacts(), new ExcludeTestScopeArtifactFilter());
 		for (Artifact artifact : artifacts) {
@@ -413,7 +500,13 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void logArguments(String name, String[] args) {
+	/**
+     * Logs the arguments passed to the method.
+     * 
+     * @param name The name of the argument.
+     * @param args The array of arguments.
+     */
+    private void logArguments(String name, String[] args) {
 		if (getLog().isDebugEnabled()) {
 			String message = (args.length == 1) ? name + ": " : name + "s: ";
 			getLog().debug(Arrays.stream(args).collect(Collectors.joining(" ", message, "")));
@@ -425,7 +518,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	static class SystemPropertyFormatter {
 
-		static String format(String key, String value) {
+		/**
+         * Formats a system property key-value pair into a command line argument format.
+         * 
+         * @param key   the key of the system property
+         * @param value the value of the system property
+         * @return the formatted command line argument
+         */
+        static String format(String key, String value) {
 			if (key == null) {
 				return "";
 			}

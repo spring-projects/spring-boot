@@ -311,7 +311,12 @@ public abstract class AbstractJsonMarshalTester<T> {
 		return new ObjectContent<>(this.type, object);
 	}
 
-	private void closeQuietly(Closeable closeable) {
+	/**
+     * Closes the given Closeable object quietly, without throwing any IOException.
+     * 
+     * @param closeable the Closeable object to be closed
+     */
+    private void closeQuietly(Closeable closeable) {
 		try {
 			closeable.close();
 		}
@@ -320,7 +325,12 @@ public abstract class AbstractJsonMarshalTester<T> {
 		}
 	}
 
-	private void verify() {
+	/**
+     * Verifies that the JsonMarshalTester is properly initialized.
+     * 
+     * @throws IllegalStateException if the resourceLoadClass or type is null
+     */
+    private void verify() {
 		Assert.state(this.resourceLoadClass != null, "Uninitialized JsonMarshalTester (ResourceLoadClass is null)");
 		Assert.state(this.type != null, "Uninitialized JsonMarshalTester (Type is null)");
 	}
@@ -366,26 +376,53 @@ public abstract class AbstractJsonMarshalTester<T> {
 
 		private final Class<?> testerClass;
 
-		@SuppressWarnings("rawtypes")
+		/**
+         * Constructs a new FieldInitializer with the specified tester class.
+         * 
+         * @param testerClass the class of the tester to be used for field initialization
+         * @throws IllegalArgumentException if the testerClass is null
+         */
+        @SuppressWarnings("rawtypes")
 		protected FieldInitializer(Class<? extends AbstractJsonMarshalTester> testerClass) {
 			Assert.notNull(testerClass, "TesterClass must not be null");
 			this.testerClass = testerClass;
 		}
 
-		public void initFields(Object testInstance, M marshaller) {
+		/**
+         * Initializes the fields of the given test instance using the provided marshaller.
+         * 
+         * @param testInstance the test instance whose fields need to be initialized (must not be null)
+         * @param marshaller the marshaller used to initialize the fields (must not be null)
+         * @throws IllegalArgumentException if either testInstance or marshaller is null
+         */
+        public void initFields(Object testInstance, M marshaller) {
 			Assert.notNull(testInstance, "TestInstance must not be null");
 			Assert.notNull(marshaller, "Marshaller must not be null");
 			initFields(testInstance, () -> marshaller);
 		}
 
-		public void initFields(Object testInstance, final ObjectFactory<M> marshaller) {
+		/**
+         * Initializes the fields of the given test instance using the provided marshaller.
+         * 
+         * @param testInstance the test instance whose fields need to be initialized
+         * @param marshaller the marshaller used to initialize the fields
+         * @throws IllegalArgumentException if the testInstance or marshaller is null
+         */
+        public void initFields(Object testInstance, final ObjectFactory<M> marshaller) {
 			Assert.notNull(testInstance, "TestInstance must not be null");
 			Assert.notNull(marshaller, "Marshaller must not be null");
 			ReflectionUtils.doWithFields(testInstance.getClass(),
 					(field) -> doWithField(field, testInstance, marshaller));
 		}
 
-		protected void doWithField(Field field, Object test, ObjectFactory<M> marshaller) {
+		/**
+         * Performs an operation on a field.
+         * 
+         * @param field the field to perform the operation on
+         * @param test the object on which the field is being operated
+         * @param marshaller the object factory for creating marshaller objects
+         */
+        protected void doWithField(Field field, Object test, ObjectFactory<M> marshaller) {
 			if (this.testerClass.isAssignableFrom(field.getType())) {
 				ReflectionUtils.makeAccessible(field);
 				Object existingValue = ReflectionUtils.getField(field, test);
@@ -395,12 +432,28 @@ public abstract class AbstractJsonMarshalTester<T> {
 			}
 		}
 
-		private void setupField(Field field, Object test, ObjectFactory<M> marshaller) {
+		/**
+         * Sets up the given field with the provided test object and marshaller.
+         * 
+         * @param field the field to be set up
+         * @param test the test object to be used
+         * @param marshaller the marshaller object to be used
+         * @param <M> the type of the marshaller object
+         */
+        private void setupField(Field field, Object test, ObjectFactory<M> marshaller) {
 			ResolvableType type = ResolvableType.forField(field).getGeneric();
 			ReflectionUtils.setField(field, test, createTester(test.getClass(), type, marshaller.getObject()));
 		}
 
-		protected abstract AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass,
+		/**
+         * Creates an instance of {@link AbstractJsonMarshalTester} for testing JSON marshalling and unmarshalling.
+         * 
+         * @param resourceLoadClass the class used for loading resources
+         * @param type the {@link ResolvableType} representing the type of object to be marshalled/unmarshalled
+         * @param marshaller the marshaller implementation to be used for marshalling/unmarshalling
+         * @return an instance of {@link AbstractJsonMarshalTester} for testing JSON marshalling and unmarshalling
+         */
+        protected abstract AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass,
 				ResolvableType type, M marshaller);
 
 	}

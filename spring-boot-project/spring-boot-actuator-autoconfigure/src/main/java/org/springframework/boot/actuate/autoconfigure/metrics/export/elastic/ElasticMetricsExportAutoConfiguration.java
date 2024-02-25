@@ -52,11 +52,29 @@ public class ElasticMetricsExportAutoConfiguration {
 
 	private final ElasticProperties properties;
 
-	public ElasticMetricsExportAutoConfiguration(ElasticProperties properties) {
+	/**
+     * Constructs a new instance of ElasticMetricsExportAutoConfiguration with the specified ElasticProperties.
+     *
+     * @param properties the ElasticProperties to be used for configuration
+     */
+    public ElasticMetricsExportAutoConfiguration(ElasticProperties properties) {
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Creates an instance of ElasticConfig if no other bean of the same type is present.
+     * 
+     * This method checks for mutually exclusive configuration properties and throws an exception if multiple non-null values are found.
+     * 
+     * The first check is for the "api-key-credentials" and "user-name" properties. If both properties have non-null values, an exception is thrown.
+     * 
+     * The second check is for the "api-key-credentials" and "password" properties. If both properties have non-null values, an exception is thrown.
+     * 
+     * Finally, an instance of ElasticPropertiesConfigAdapter is created using the properties provided.
+     * 
+     * @return an instance of ElasticConfig
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public ElasticConfig elasticConfig() {
 		MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
@@ -70,7 +88,14 @@ public class ElasticMetricsExportAutoConfiguration {
 		return new ElasticPropertiesConfigAdapter(this.properties);
 	}
 
-	@Bean
+	/**
+     * Creates an instance of ElasticMeterRegistry if no other bean of the same type is present.
+     * 
+     * @param elasticConfig The ElasticConfig object containing the configuration for the ElasticMeterRegistry.
+     * @param clock The Clock object used for timekeeping.
+     * @return An instance of ElasticMeterRegistry.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public ElasticMeterRegistry elasticMeterRegistry(ElasticConfig elasticConfig, Clock clock) {
 		return ElasticMeterRegistry.builder(elasticConfig)

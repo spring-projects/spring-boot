@@ -92,20 +92,41 @@ public class GraphQlWebFluxAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(GraphQlWebFluxAutoConfiguration.class);
 
-	@Bean
+	/**
+     * Creates a new instance of {@link GraphQlHttpHandler} if no other bean of the same type is present.
+     * 
+     * @param webGraphQlHandler the {@link WebGraphQlHandler} to be used by the {@link GraphQlHttpHandler}
+     * @return the created {@link GraphQlHttpHandler}
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public GraphQlHttpHandler graphQlHttpHandler(WebGraphQlHandler webGraphQlHandler) {
 		return new GraphQlHttpHandler(webGraphQlHandler);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link WebGraphQlHandler} if there is no existing bean of the same type.
+     * 
+     * @param service the {@link ExecutionGraphQlService} to be used by the handler
+     * @param interceptors the {@link WebGraphQlInterceptor} objects to be used by the handler
+     * @return a new instance of {@link WebGraphQlHandler}
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
 			ObjectProvider<WebGraphQlInterceptor> interceptors) {
 		return WebGraphQlHandler.builder(service).interceptors(interceptors.orderedStream().toList()).build();
 	}
 
-	@Bean
+	/**
+     * Creates a RouterFunction for handling GraphQL requests.
+     *
+     * @param httpHandler the GraphQlHttpHandler to handle the GraphQL requests
+     * @param graphQlSource the GraphQlSource containing the GraphQL schema and resolvers
+     * @param properties the GraphQlProperties containing the configuration properties
+     * @return the RouterFunction for handling GraphQL requests
+     */
+    @Bean
 	@Order(0)
 	public RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler httpHandler,
 			GraphQlSource graphQlSource, GraphQlProperties properties) {
@@ -125,27 +146,52 @@ public class GraphQlWebFluxAutoConfiguration {
 		return builder.build();
 	}
 
-	private Mono<ServerResponse> onlyAllowPost(ServerRequest request) {
+	/**
+     * Returns a Mono of ServerResponse with a status of METHOD_NOT_ALLOWED and headers that only allow POST requests.
+     * 
+     * @param request the ServerRequest object representing the incoming request
+     * @return a Mono of ServerResponse with the appropriate status and headers
+     */
+    private Mono<ServerResponse> onlyAllowPost(ServerRequest request) {
 		return ServerResponse.status(HttpStatus.METHOD_NOT_ALLOWED).headers(this::onlyAllowPost).build();
 	}
 
-	private void onlyAllowPost(HttpHeaders headers) {
+	/**
+     * Sets the allowed HTTP methods to only include POST.
+     *
+     * @param headers the HttpHeaders object to modify
+     */
+    private void onlyAllowPost(HttpHeaders headers) {
 		headers.setAllow(Collections.singleton(HttpMethod.POST));
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * GraphQlEndpointCorsConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	public static class GraphQlEndpointCorsConfiguration implements WebFluxConfigurer {
 
 		final GraphQlProperties graphQlProperties;
 
 		final GraphQlCorsProperties corsProperties;
 
-		public GraphQlEndpointCorsConfiguration(GraphQlProperties graphQlProps, GraphQlCorsProperties corsProps) {
+		/**
+         * Constructs a new GraphQlEndpointCorsConfiguration with the specified GraphQlProperties and GraphQlCorsProperties.
+         * 
+         * @param graphQlProps the GraphQlProperties to be used for configuring the GraphQL endpoint
+         * @param corsProps the GraphQlCorsProperties to be used for configuring the CORS settings of the GraphQL endpoint
+         */
+        public GraphQlEndpointCorsConfiguration(GraphQlProperties graphQlProps, GraphQlCorsProperties corsProps) {
 			this.graphQlProperties = graphQlProps;
 			this.corsProperties = corsProps;
 		}
 
-		@Override
+		/**
+         * Adds CORS mappings to the provided CorsRegistry.
+         * 
+         * @param registry the CorsRegistry to add the CORS mappings to
+         */
+        @Override
 		public void addCorsMappings(CorsRegistry registry) {
 			CorsConfiguration configuration = this.corsProperties.toCorsConfiguration();
 			if (configuration != null) {
@@ -155,11 +201,22 @@ public class GraphQlWebFluxAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * WebSocketConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.graphql.websocket", name = "path")
 	public static class WebSocketConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of the GraphQlWebSocketHandler bean if no other bean of the same type exists.
+         * 
+         * @param webGraphQlHandler The WebGraphQlHandler bean to be used by the GraphQlWebSocketHandler.
+         * @param properties The GraphQlProperties bean containing the configuration properties.
+         * @param configurer The ServerCodecConfigurer bean used for configuring the server codec.
+         * @return The newly created GraphQlWebSocketHandler bean.
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		public GraphQlWebSocketHandler graphQlWebSocketHandler(WebGraphQlHandler webGraphQlHandler,
 				GraphQlProperties properties, ServerCodecConfigurer configurer) {
@@ -167,7 +224,14 @@ public class GraphQlWebFluxAutoConfiguration {
 					properties.getWebsocket().getConnectionInitTimeout());
 		}
 
-		@Bean
+		/**
+         * Creates a WebSocket endpoint for the GraphQL API.
+         * 
+         * @param graphQlWebSocketHandler The handler for the GraphQL WebSocket endpoint.
+         * @param properties              The properties for the GraphQL configuration.
+         * @return                        The handler mapping for the GraphQL WebSocket endpoint.
+         */
+        @Bean
 		public HandlerMapping graphQlWebSocketEndpoint(GraphQlWebSocketHandler graphQlWebSocketHandler,
 				GraphQlProperties properties) {
 			String path = properties.getWebsocket().getPath();
@@ -181,9 +245,18 @@ public class GraphQlWebFluxAutoConfiguration {
 
 	}
 
-	static class GraphiQlResourceHints implements RuntimeHintsRegistrar {
+	/**
+     * GraphiQlResourceHints class.
+     */
+    static class GraphiQlResourceHints implements RuntimeHintsRegistrar {
 
-		@Override
+		/**
+         * Registers the hints for GraphiQL resources.
+         * 
+         * @param hints the runtime hints for GraphiQL resources
+         * @param classLoader the class loader to use for loading resources
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources().registerPattern("graphiql/index.html");
 		}

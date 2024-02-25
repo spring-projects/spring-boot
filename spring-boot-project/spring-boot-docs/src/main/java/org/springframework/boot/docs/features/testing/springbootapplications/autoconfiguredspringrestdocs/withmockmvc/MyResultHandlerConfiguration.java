@@ -21,10 +21,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 
+/**
+ * MyResultHandlerConfiguration class.
+ */
 @TestConfiguration(proxyBeanMethods = false)
 public class MyResultHandlerConfiguration {
 
-	@Bean
+	/**
+     * Returns a RestDocumentationResultHandler that is used to generate documentation in the
+     * JavaDoc style.
+     *
+     * @return the RestDocumentationResultHandler
+     */
+    @Bean
 	public RestDocumentationResultHandler restDocumentation() {
 		return MockMvcRestDocumentation.document("{method-name}");
 	}

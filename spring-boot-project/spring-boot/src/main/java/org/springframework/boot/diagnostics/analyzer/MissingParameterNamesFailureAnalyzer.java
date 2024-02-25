@@ -45,7 +45,13 @@ class MissingParameterNamesFailureAnalyzer implements FailureAnalyzer {
 			(See https://github.com/spring-projects/spring-framework/wiki/Upgrading-to-Spring-Framework-6.x#parameter-name-retention)
 							""";
 
-	@Override
+	/**
+     * Analyzes the given failure to determine if it is a missing parameter names failure.
+     * 
+     * @param failure the Throwable object representing the failure
+     * @return a FailureAnalysis object containing the analysis result
+     */
+    @Override
 	public FailureAnalysis analyze(Throwable failure) {
 		return analyzeForMissingParameters(failure);
 	}
@@ -59,7 +65,15 @@ class MissingParameterNamesFailureAnalyzer implements FailureAnalyzer {
 		return analyzeForMissingParameters(failure, failure, new HashSet<>());
 	}
 
-	private static FailureAnalysis analyzeForMissingParameters(Throwable rootFailure, Throwable cause,
+	/**
+     * Analyzes the given throwable for missing parameters and returns a FailureAnalysis object if found.
+     * 
+     * @param rootFailure the root throwable
+     * @param cause the cause throwable
+     * @param seen a set of throwables that have already been analyzed to avoid infinite recursion
+     * @return a FailureAnalysis object if missing parameters are found, null otherwise
+     */
+    private static FailureAnalysis analyzeForMissingParameters(Throwable rootFailure, Throwable cause,
 			Set<Throwable> seen) {
 		if (cause != null && seen.add(cause)) {
 			if (isSpringParametersException(cause)) {
@@ -79,21 +93,46 @@ class MissingParameterNamesFailureAnalyzer implements FailureAnalyzer {
 		return null;
 	}
 
-	private static boolean isSpringParametersException(Throwable failure) {
+	/**
+     * Checks if the given failure is a Spring Parameters Exception.
+     * 
+     * @param failure the Throwable object representing the failure
+     * @return true if the failure is a Spring Parameters Exception, false otherwise
+     */
+    private static boolean isSpringParametersException(Throwable failure) {
 		String message = failure.getMessage();
 		return message != null && message.contains(USE_PARAMETERS_MESSAGE) && isSpringException(failure);
 	}
 
-	private static boolean isSpringException(Throwable failure) {
+	/**
+     * Checks if the given Throwable is a Spring exception.
+     * 
+     * @param failure the Throwable to check
+     * @return true if the Throwable is a Spring exception, false otherwise
+     */
+    private static boolean isSpringException(Throwable failure) {
 		StackTraceElement[] elements = failure.getStackTrace();
 		return elements.length > 0 && isSpringClass(elements[0].getClassName());
 	}
 
-	private static boolean isSpringClass(String className) {
+	/**
+     * Checks if the given class name belongs to the Spring framework.
+     * 
+     * @param className the name of the class to be checked
+     * @return true if the class belongs to the Spring framework, false otherwise
+     */
+    private static boolean isSpringClass(String className) {
 		return className != null && className.startsWith("org.springframework.");
 	}
 
-	private static FailureAnalysis getAnalysis(Throwable rootFailure, Throwable cause) {
+	/**
+     * Returns a FailureAnalysis object containing the analysis of the given root failure and cause.
+     *
+     * @param rootFailure The root failure that occurred.
+     * @param cause The cause of the failure.
+     * @return A FailureAnalysis object containing the analysis.
+     */
+    private static FailureAnalysis getAnalysis(Throwable rootFailure, Throwable cause) {
 		StringBuilder description = new StringBuilder(String.format("%s:%n", cause.getMessage()));
 		if (rootFailure != cause) {
 			description.append(String.format("%n    Resulting Failure: %s", getExceptionTypeAndMessage(rootFailure)));
@@ -101,12 +140,23 @@ class MissingParameterNamesFailureAnalyzer implements FailureAnalyzer {
 		return new FailureAnalysis(description.toString(), ACTION, rootFailure);
 	}
 
-	private static String getExceptionTypeAndMessage(Throwable ex) {
+	/**
+     * Returns the exception type and message of the given Throwable object.
+     * 
+     * @param ex the Throwable object to get the exception type and message from
+     * @return a String representing the exception type and message in the format "exceptionType: message"
+     */
+    private static String getExceptionTypeAndMessage(Throwable ex) {
 		String message = ex.getMessage();
 		return ex.getClass().getName() + (StringUtils.hasText(message) ? ": " + message : "");
 	}
 
-	static void appendPossibility(StringBuilder description) {
+	/**
+     * Appends a possibility to the given description.
+     * 
+     * @param description the StringBuilder object to append the possibility to
+     */
+    static void appendPossibility(StringBuilder description) {
 		if (!description.toString().endsWith(System.lineSeparator())) {
 			description.append("%n".formatted());
 		}

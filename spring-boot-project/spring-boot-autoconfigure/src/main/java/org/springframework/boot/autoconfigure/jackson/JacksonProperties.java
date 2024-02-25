@@ -119,87 +119,192 @@ public class JacksonProperties {
 
 	private final Datatype datatype = new Datatype();
 
-	public String getDateFormat() {
+	/**
+     * Returns the date format used by the JacksonProperties class.
+     *
+     * @return the date format
+     */
+    public String getDateFormat() {
 		return this.dateFormat;
 	}
 
-	public void setDateFormat(String dateFormat) {
+	/**
+     * Sets the date format for the JacksonProperties class.
+     * 
+     * @param dateFormat the desired date format to be set
+     */
+    public void setDateFormat(String dateFormat) {
 		this.dateFormat = dateFormat;
 	}
 
-	public String getPropertyNamingStrategy() {
+	/**
+     * Returns the property naming strategy used by this JacksonProperties object.
+     * 
+     * @return the property naming strategy
+     */
+    public String getPropertyNamingStrategy() {
 		return this.propertyNamingStrategy;
 	}
 
-	public void setPropertyNamingStrategy(String propertyNamingStrategy) {
+	/**
+     * Sets the property naming strategy for the JacksonProperties class.
+     * 
+     * @param propertyNamingStrategy the property naming strategy to be set
+     */
+    public void setPropertyNamingStrategy(String propertyNamingStrategy) {
 		this.propertyNamingStrategy = propertyNamingStrategy;
 	}
 
-	public Map<PropertyAccessor, JsonAutoDetect.Visibility> getVisibility() {
+	/**
+     * Returns the visibility settings for the property accessors.
+     * 
+     * @return a map containing the visibility settings for the property accessors
+     */
+    public Map<PropertyAccessor, JsonAutoDetect.Visibility> getVisibility() {
 		return this.visibility;
 	}
 
-	public Map<SerializationFeature, Boolean> getSerialization() {
+	/**
+     * Returns the serialization configuration settings.
+     *
+     * @return a map containing the serialization features and their corresponding boolean values
+     */
+    public Map<SerializationFeature, Boolean> getSerialization() {
 		return this.serialization;
 	}
 
-	public Map<DeserializationFeature, Boolean> getDeserialization() {
+	/**
+     * Returns the map of deserialization features and their corresponding boolean values.
+     *
+     * @return the map of deserialization features and their corresponding boolean values
+     */
+    public Map<DeserializationFeature, Boolean> getDeserialization() {
 		return this.deserialization;
 	}
 
-	public Map<MapperFeature, Boolean> getMapper() {
+	/**
+     * Returns the mapper configuration settings as a map.
+     * 
+     * @return the mapper configuration settings as a map
+     */
+    public Map<MapperFeature, Boolean> getMapper() {
 		return this.mapper;
 	}
 
-	public Map<JsonParser.Feature, Boolean> getParser() {
+	/**
+     * Returns the parser configuration settings as a map of JSON parser features and their corresponding boolean values.
+     *
+     * @return the map of JSON parser features and their corresponding boolean values
+     */
+    public Map<JsonParser.Feature, Boolean> getParser() {
 		return this.parser;
 	}
 
-	public Map<JsonGenerator.Feature, Boolean> getGenerator() {
+	/**
+     * Returns the map of JSON generator features and their corresponding boolean values.
+     *
+     * @return the map of JSON generator features and their corresponding boolean values
+     */
+    public Map<JsonGenerator.Feature, Boolean> getGenerator() {
 		return this.generator;
 	}
 
-	public JsonInclude.Include getDefaultPropertyInclusion() {
+	/**
+     * Returns the default property inclusion setting for JSON serialization.
+     * 
+     * @return the default property inclusion setting
+     */
+    public JsonInclude.Include getDefaultPropertyInclusion() {
 		return this.defaultPropertyInclusion;
 	}
 
-	public void setDefaultPropertyInclusion(JsonInclude.Include defaultPropertyInclusion) {
+	/**
+     * Sets the default property inclusion for JSON serialization.
+     * 
+     * @param defaultPropertyInclusion the default property inclusion to be set
+     */
+    public void setDefaultPropertyInclusion(JsonInclude.Include defaultPropertyInclusion) {
 		this.defaultPropertyInclusion = defaultPropertyInclusion;
 	}
 
-	public Boolean getDefaultLeniency() {
+	/**
+     * Returns the default leniency value.
+     * 
+     * @return the default leniency value
+     */
+    public Boolean getDefaultLeniency() {
 		return this.defaultLeniency;
 	}
 
-	public void setDefaultLeniency(Boolean defaultLeniency) {
+	/**
+     * Sets the default leniency for the JacksonProperties class.
+     * 
+     * @param defaultLeniency the default leniency value to be set
+     */
+    public void setDefaultLeniency(Boolean defaultLeniency) {
 		this.defaultLeniency = defaultLeniency;
 	}
 
-	public ConstructorDetectorStrategy getConstructorDetector() {
+	/**
+     * Returns the constructor detector strategy used by this JacksonProperties instance.
+     *
+     * @return the constructor detector strategy
+     */
+    public ConstructorDetectorStrategy getConstructorDetector() {
 		return this.constructorDetector;
 	}
 
-	public void setConstructorDetector(ConstructorDetectorStrategy constructorDetector) {
+	/**
+     * Sets the constructor detector strategy for the JacksonProperties class.
+     * 
+     * @param constructorDetector the constructor detector strategy to be set
+     */
+    public void setConstructorDetector(ConstructorDetectorStrategy constructorDetector) {
 		this.constructorDetector = constructorDetector;
 	}
 
-	public TimeZone getTimeZone() {
+	/**
+     * Returns the time zone associated with this JacksonProperties object.
+     *
+     * @return the time zone
+     */
+    public TimeZone getTimeZone() {
 		return this.timeZone;
 	}
 
-	public void setTimeZone(TimeZone timeZone) {
+	/**
+     * Sets the time zone for the JacksonProperties class.
+     * 
+     * @param timeZone the time zone to be set
+     */
+    public void setTimeZone(TimeZone timeZone) {
 		this.timeZone = timeZone;
 	}
 
-	public Locale getLocale() {
+	/**
+     * Returns the locale of the JacksonProperties object.
+     *
+     * @return the locale of the JacksonProperties object
+     */
+    public Locale getLocale() {
 		return this.locale;
 	}
 
-	public void setLocale(Locale locale) {
+	/**
+     * Sets the locale for the JacksonProperties class.
+     * 
+     * @param locale the locale to be set
+     */
+    public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
 
-	public Datatype getDatatype() {
+	/**
+     * Returns the datatype of the JacksonProperties object.
+     *
+     * @return the datatype of the JacksonProperties object
+     */
+    public Datatype getDatatype() {
 		return this.datatype;
 	}
 
@@ -228,7 +333,10 @@ public class JacksonProperties {
 
 	}
 
-	public static class Datatype {
+	/**
+     * Datatype class.
+     */
+    public static class Datatype {
 
 		/**
 		 * Jackson on/off features for enums.
@@ -240,11 +348,21 @@ public class JacksonProperties {
 		 */
 		private final Map<JsonNodeFeature, Boolean> jsonNode = new EnumMap<>(JsonNodeFeature.class);
 
-		public Map<EnumFeature, Boolean> getEnum() {
+		/**
+         * Returns a map of enum features and their corresponding boolean values.
+         * 
+         * @return a map of enum features and their corresponding boolean values
+         */
+        public Map<EnumFeature, Boolean> getEnum() {
 			return this.enumFeatures;
 		}
 
-		public Map<JsonNodeFeature, Boolean> getJsonNode() {
+		/**
+         * Retrieves the JSON node map.
+         * 
+         * @return the JSON node map
+         */
+        public Map<JsonNodeFeature, Boolean> getJsonNode() {
 			return this.jsonNode;
 		}
 

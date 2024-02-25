@@ -33,7 +33,12 @@ public final class ErrorAttributeOptions {
 
 	private final Set<Include> includes;
 
-	private ErrorAttributeOptions(Set<Include> includes) {
+	/**
+     * Constructs a new ErrorAttributeOptions object with the specified set of includes.
+     * 
+     * @param includes the set of includes to be set for this ErrorAttributeOptions object
+     */
+    private ErrorAttributeOptions(Set<Include> includes) {
 		this.includes = includes;
 	}
 
@@ -79,7 +84,12 @@ public final class ErrorAttributeOptions {
 		return new ErrorAttributeOptions(Collections.unmodifiableSet(updated));
 	}
 
-	private EnumSet<Include> copyIncludes() {
+	/**
+     * Returns a copy of the includes set.
+     * 
+     * @return a copy of the includes set
+     */
+    private EnumSet<Include> copyIncludes() {
 		return (this.includes.isEmpty()) ? EnumSet.noneOf(Include.class) : EnumSet.copyOf(this.includes);
 	}
 

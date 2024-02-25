@@ -36,7 +36,11 @@ import org.gradle.work.DisableCachingByDefault;
 @DisableCachingByDefault(because = "Application should always run")
 public abstract class BootRun extends JavaExec {
 
-	public BootRun() {
+	/**
+     * Sets the optimized launch flag for the BootRun task.
+     * By default, the optimized launch is enabled.
+     */
+    public BootRun() {
 		getOptimizedLaunch().convention(true);
 	}
 
@@ -62,7 +66,13 @@ public abstract class BootRun extends JavaExec {
 		setClasspath(getProject().files(srcDirs, getClasspath()).filter((file) -> !file.equals(resourcesDir)));
 	}
 
-	@Override
+	/**
+     * Executes the method.
+     * If the optimized launch is enabled, sets the JVM arguments and adds the "-XX:TieredStopAtLevel=1" argument.
+     * Checks if the console is available and records it in the environment for AnsiOutput to detect later.
+     * Calls the superclass's exec() method.
+     */
+    @Override
 	public void exec() {
 		if (getOptimizedLaunch().get()) {
 			setJvmArgs(getJvmArgs());

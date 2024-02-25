@@ -79,12 +79,28 @@ public class JsonbTester<T> extends AbstractJsonMarshalTester<T> {
 		this.jsonb = jsonb;
 	}
 
-	@Override
+	/**
+     * Writes the given object to JSON using the JSON-B library.
+     * 
+     * @param value the object to be written to JSON
+     * @param type the ResolvableType representing the type of the object
+     * @return the JSON representation of the object
+     * @throws IOException if an I/O error occurs during the JSON serialization process
+     */
+    @Override
 	protected String writeObject(T value, ResolvableType type) throws IOException {
 		return this.jsonb.toJson(value, type.getType());
 	}
 
-	@Override
+	/**
+     * Reads an object from a Reader using the JSON-B library.
+     * 
+     * @param reader The Reader to read the object from.
+     * @param type The ResolvableType representing the type of the object to be read.
+     * @return The object read from the Reader.
+     * @throws IOException If an I/O error occurs while reading from the Reader.
+     */
+    @Override
 	protected T readObject(Reader reader, ResolvableType type) throws IOException {
 		return this.jsonb.fromJson(reader, type.getType());
 	}
@@ -114,11 +130,24 @@ public class JsonbTester<T> extends AbstractJsonMarshalTester<T> {
 	 */
 	private static class JsonbFieldInitializer extends FieldInitializer<Jsonb> {
 
-		protected JsonbFieldInitializer() {
+		/**
+         * Constructs a new JsonbFieldInitializer.
+         * 
+         * @param tester the JsonbTester instance to be used
+         */
+        protected JsonbFieldInitializer() {
 			super(JsonbTester.class);
 		}
 
-		@Override
+		/**
+         * Creates a tester for JSON marshalling using the Jsonb marshaller.
+         * 
+         * @param resourceLoadClass the class used for resource loading
+         * @param type the ResolvableType of the object being marshalled
+         * @param marshaller the Jsonb marshaller used for marshalling
+         * @return the created JsonbTester
+         */
+        @Override
 		protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type,
 				Jsonb marshaller) {
 			return new JsonbTester<>(resourceLoadClass, type, marshaller);

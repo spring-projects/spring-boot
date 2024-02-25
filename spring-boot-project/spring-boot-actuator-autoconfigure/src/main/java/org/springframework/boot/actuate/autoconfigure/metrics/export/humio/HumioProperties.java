@@ -56,37 +56,77 @@ public class HumioProperties extends StepRegistryProperties {
 	 */
 	private String uri = "https://cloud.humio.com";
 
-	public String getApiToken() {
+	/**
+     * Returns the API token.
+     *
+     * @return the API token
+     */
+    public String getApiToken() {
 		return this.apiToken;
 	}
 
-	public void setApiToken(String apiToken) {
+	/**
+     * Sets the API token for authentication.
+     * 
+     * @param apiToken the API token to set
+     */
+    public void setApiToken(String apiToken) {
 		this.apiToken = apiToken;
 	}
 
-	@Override
+	/**
+     * Returns the connect timeout duration.
+     *
+     * @return the connect timeout duration
+     */
+    @Override
 	public Duration getConnectTimeout() {
 		return this.connectTimeout;
 	}
 
-	@Override
+	/**
+     * Sets the connection timeout for the HumioProperties class.
+     * 
+     * @param connectTimeout the duration of the connection timeout
+     */
+    @Override
 	public void setConnectTimeout(Duration connectTimeout) {
 		this.connectTimeout = connectTimeout;
 	}
 
-	public Map<String, String> getTags() {
+	/**
+     * Returns the tags associated with the HumioProperties object.
+     * 
+     * @return a Map containing the tags as key-value pairs
+     */
+    public Map<String, String> getTags() {
 		return this.tags;
 	}
 
-	public void setTags(Map<String, String> tags) {
+	/**
+     * Sets the tags for the HumioProperties.
+     * 
+     * @param tags the tags to be set for the HumioProperties
+     */
+    public void setTags(Map<String, String> tags) {
 		this.tags = tags;
 	}
 
-	public String getUri() {
+	/**
+     * Returns the URI of the HumioProperties object.
+     *
+     * @return the URI of the HumioProperties object
+     */
+    public String getUri() {
 		return this.uri;
 	}
 
-	public void setUri(String uri) {
+	/**
+     * Sets the URI for the HumioProperties.
+     * 
+     * @param uri the URI to be set
+     */
+    public void setUri(String uri) {
 		this.uri = uri;
 	}
 

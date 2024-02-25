@@ -34,11 +34,24 @@ class SpringFactoriesEnvironmentPostProcessorsFactory implements EnvironmentPost
 
 	private final SpringFactoriesLoader loader;
 
-	SpringFactoriesEnvironmentPostProcessorsFactory(SpringFactoriesLoader loader) {
+	/**
+     * Constructs a new instance of SpringFactoriesEnvironmentPostProcessorsFactory with the specified SpringFactoriesLoader.
+     *
+     * @param loader the SpringFactoriesLoader to be used by the factory
+     */
+    SpringFactoriesEnvironmentPostProcessorsFactory(SpringFactoriesLoader loader) {
 		this.loader = loader;
 	}
 
-	@Override
+	/**
+     * Retrieves the list of environment post processors to be applied during the
+     * initialization of the Spring application context.
+     *
+     * @param logFactory         the deferred log factory used for logging
+     * @param bootstrapContext   the configurable bootstrap context
+     * @return                   the list of environment post processors
+     */
+    @Override
 	public List<EnvironmentPostProcessor> getEnvironmentPostProcessors(DeferredLogFactory logFactory,
 			ConfigurableBootstrapContext bootstrapContext) {
 		ArgumentResolver argumentResolver = ArgumentResolver.of(DeferredLogFactory.class, logFactory);

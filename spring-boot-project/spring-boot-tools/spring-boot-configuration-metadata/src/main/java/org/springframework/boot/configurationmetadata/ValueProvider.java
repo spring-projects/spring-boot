@@ -45,7 +45,12 @@ public class ValueProvider implements Serializable {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	/**
+     * Sets the name of the ValueProvider.
+     * 
+     * @param name the name to be set
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 
@@ -57,7 +62,12 @@ public class ValueProvider implements Serializable {
 		return this.parameters;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the ValueProvider object.
+     *
+     * @return a string representation of the ValueProvider object
+     */
+    @Override
 	public String toString() {
 		return "ValueProvider{name='" + this.name + ", parameters=" + this.parameters + '}';
 	}

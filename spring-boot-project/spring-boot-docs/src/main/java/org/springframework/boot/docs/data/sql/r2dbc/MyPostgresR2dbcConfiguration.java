@@ -25,10 +25,18 @@ import org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryOptionsBuil
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyPostgresR2dbcConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyPostgresR2dbcConfiguration {
 
-	@Bean
+	/**
+     * Customizes the Postgres connection factory options.
+     * 
+     * @return the connection factory options builder customizer
+     */
+    @Bean
 	public ConnectionFactoryOptionsBuilderCustomizer postgresCustomizer() {
 		Map<String, String> options = new HashMap<>();
 		options.put("lock_timeout", "30s");

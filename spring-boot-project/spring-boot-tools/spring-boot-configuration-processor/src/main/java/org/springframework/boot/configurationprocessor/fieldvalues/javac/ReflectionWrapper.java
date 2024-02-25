@@ -30,29 +30,66 @@ class ReflectionWrapper {
 
 	private final Object instance;
 
-	ReflectionWrapper(String type, Object instance) {
+	/**
+     * Constructs a new ReflectionWrapper object with the specified type and instance.
+     * 
+     * @param type the fully qualified name of the type to be used for casting the instance
+     * @param instance the object instance to be wrapped
+     */
+    ReflectionWrapper(String type, Object instance) {
 		this.type = findClass(instance.getClass().getClassLoader(), type);
 		this.instance = this.type.cast(instance);
 	}
 
-	protected final Object getInstance() {
+	/**
+     * Returns the instance of the ReflectionWrapper class.
+     *
+     * @return the instance of the ReflectionWrapper class
+     */
+    protected final Object getInstance() {
 		return this.instance;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the object.
+     * 
+     * @return a string representation of the object
+     */
+    @Override
 	public String toString() {
 		return this.instance.toString();
 	}
 
-	protected Class<?> findClass(String name) {
+	/**
+     * Finds and returns the class with the specified name.
+     * 
+     * @param name the name of the class to find
+     * @return the class with the specified name, or null if not found
+     */
+    protected Class<?> findClass(String name) {
 		return findClass(getInstance().getClass().getClassLoader(), name);
 	}
 
-	protected Method findMethod(String name, Class<?>... parameterTypes) {
+	/**
+     * Finds a method with the specified name and parameter types in the current class.
+     * 
+     * @param name the name of the method to find
+     * @param parameterTypes the parameter types of the method to find
+     * @return the found method, or null if no such method exists
+     */
+    protected Method findMethod(String name, Class<?>... parameterTypes) {
 		return findMethod(this.type, name, parameterTypes);
 	}
 
-	protected static Class<?> findClass(ClassLoader classLoader, String name) {
+	/**
+     * Finds and returns the class with the specified name using the given class loader.
+     * 
+     * @param classLoader the class loader to use for finding the class
+     * @param name the fully qualified name of the class to find
+     * @return the class object representing the found class
+     * @throws IllegalStateException if the class is not found
+     */
+    protected static Class<?> findClass(ClassLoader classLoader, String name) {
 		try {
 			return Class.forName(name, false, classLoader);
 		}
@@ -61,7 +98,16 @@ class ReflectionWrapper {
 		}
 	}
 
-	protected static Method findMethod(Class<?> type, String name, Class<?>... parameterTypes) {
+	/**
+     * Finds a method with the specified name and parameter types in the given class.
+     *
+     * @param type            the class in which to search for the method
+     * @param name            the name of the method to find
+     * @param parameterTypes  the parameter types of the method to find
+     * @return the found method
+     * @throws IllegalStateException if an exception occurs while finding the method
+     */
+    protected static Method findMethod(Class<?> type, String name, Class<?>... parameterTypes) {
 		try {
 			return type.getMethod(name, parameterTypes);
 		}

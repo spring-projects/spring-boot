@@ -62,16 +62,33 @@ class Context {
 		this.relativeDir = deduceRelativeDir(archiveFile.getParentFile(), this.workingDir);
 	}
 
-	private boolean isExistingFile(File archiveFile) {
+	/**
+     * Checks if the given file is an existing file.
+     * 
+     * @param archiveFile the file to be checked
+     * @return true if the file exists and is a regular file, false otherwise
+     */
+    private boolean isExistingFile(File archiveFile) {
 		return archiveFile != null && archiveFile.isFile() && archiveFile.exists();
 	}
 
-	private boolean isJarOrWar(File jarFile) {
+	/**
+     * Checks if the given file is a JAR or WAR file.
+     * 
+     * @param jarFile the file to be checked
+     * @return true if the file is a JAR or WAR file, false otherwise
+     */
+    private boolean isJarOrWar(File jarFile) {
 		String name = jarFile.getName().toLowerCase();
 		return name.endsWith(".jar") || name.endsWith(".war");
 	}
 
-	private static File getSourceArchiveFile() {
+	/**
+     * Returns the source archive file for the Context class.
+     * 
+     * @return the source archive file, or null if it cannot be found
+     */
+    private static File getSourceArchiveFile() {
 		try {
 			ProtectionDomain domain = Context.class.getProtectionDomain();
 			CodeSource codeSource = (domain != null) ? domain.getCodeSource() : null;
@@ -87,7 +104,15 @@ class Context {
 		}
 	}
 
-	private static File findSource(URL location) throws IOException, URISyntaxException {
+	/**
+     * Finds the source file for the given URL location.
+     * 
+     * @param location the URL location to find the source file for
+     * @return the source file for the given URL location
+     * @throws IOException if an I/O error occurs while opening the connection
+     * @throws URISyntaxException if the URL location is not a valid URI
+     */
+    private static File findSource(URL location) throws IOException, URISyntaxException {
 		URLConnection connection = location.openConnection();
 		if (connection instanceof JarURLConnection jarURLConnection) {
 			return getRootJarFile(jarURLConnection.getJarFile());
@@ -95,7 +120,13 @@ class Context {
 		return new File(location.toURI());
 	}
 
-	private static File getRootJarFile(JarFile jarFile) {
+	/**
+     * Returns the root JAR file associated with the given {@link JarFile}.
+     * 
+     * @param jarFile the {@link JarFile} object
+     * @return the root JAR file
+     */
+    private static File getRootJarFile(JarFile jarFile) {
 		String name = jarFile.getName();
 		int separator = name.indexOf("!/");
 		if (separator > 0) {
@@ -104,7 +135,16 @@ class Context {
 		return new File(name);
 	}
 
-	private String deduceRelativeDir(File sourceDirectory, File workingDir) {
+	/**
+     * Deduces the relative directory path between the source directory and the working directory.
+     * 
+     * @param sourceDirectory The source directory to deduce the relative path from.
+     * @param workingDir The working directory to deduce the relative path to.
+     * @return The relative directory path between the source directory and the working directory,
+     *         or null if the source directory is the same as the working directory or if the source
+     *         directory is not a subdirectory of the working directory.
+     */
+    private String deduceRelativeDir(File sourceDirectory, File workingDir) {
 		String sourcePath = sourceDirectory.getAbsolutePath();
 		String workingPath = workingDir.getAbsolutePath();
 		if (sourcePath.equals(workingPath) || !sourcePath.startsWith(workingPath)) {

@@ -50,33 +50,67 @@ class CompositePropagationFactory extends Propagation.Factory {
 
 	private final CompositePropagation propagation;
 
-	CompositePropagationFactory(Collection<Factory> injectorFactories, Collection<Factory> extractorFactories) {
+	/**
+     * Constructs a new CompositePropagationFactory with the specified injectorFactories and extractorFactories.
+     * 
+     * @param injectorFactories the collection of factories used for creating injectors
+     * @param extractorFactories the collection of factories used for creating extractors
+     */
+    CompositePropagationFactory(Collection<Factory> injectorFactories, Collection<Factory> extractorFactories) {
 		this.injectors = new PropagationFactories(injectorFactories);
 		this.extractors = new PropagationFactories(extractorFactories);
 		this.propagation = new CompositePropagation(this.injectors, this.extractors);
 	}
 
-	Stream<Factory> getInjectors() {
+	/**
+     * Returns a stream of Factory objects representing the injectors in this CompositePropagationFactory.
+     *
+     * @return a stream of Factory objects representing the injectors in this CompositePropagationFactory
+     */
+    Stream<Factory> getInjectors() {
 		return this.injectors.stream();
 	}
 
-	@Override
+	/**
+     * Returns true if both the injectors and extractors support join operations.
+     * 
+     * @return true if both the injectors and extractors support join operations, false otherwise
+     */
+    @Override
 	public boolean supportsJoin() {
 		return this.injectors.supportsJoin() && this.extractors.supportsJoin();
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether a 128-bit trace ID is required.
+     * 
+     * @return {@code true} if a 128-bit trace ID is required, {@code false} otherwise.
+     */
+    @Override
 	public boolean requires128BitTraceId() {
 		return this.injectors.requires128BitTraceId() || this.extractors.requires128BitTraceId();
 	}
 
-	@Override
+	/**
+     * Creates a new instance of Propagation using the specified key factory.
+     * 
+     * @param keyFactory the key factory used to create keys for the Propagation
+     * @return a new instance of Propagation
+     * @deprecated This method is deprecated and may be removed in future versions. Use StringPropagationAdapter.create() instead.
+     */
+    @Override
 	@SuppressWarnings("deprecation")
 	public <K> Propagation<K> create(Propagation.KeyFactory<K> keyFactory) {
 		return StringPropagationAdapter.create(this.propagation, keyFactory);
 	}
 
-	@Override
+	/**
+     * Decorates the given TraceContext with the injectors and extractors provided by this CompositePropagationFactory.
+     * 
+     * @param context the TraceContext to be decorated
+     * @return the decorated TraceContext
+     */
+    @Override
 	public TraceContext decorate(TraceContext context) {
 		return Stream.concat(this.injectors.stream(), this.extractors.stream())
 			.map((factory) -> factory.decorate(context))
@@ -127,12 +161,26 @@ class CompositePropagationFactory extends Propagation.Factory {
 
 		private final LocalBaggageFields localFields;
 
-		PropagationFactoryMapper(BaggageManager baggageManager, LocalBaggageFields localFields) {
+		/**
+         * Constructs a new PropagationFactoryMapper with the specified BaggageManager and LocalBaggageFields.
+         * 
+         * @param baggageManager the BaggageManager to be used by the PropagationFactoryMapper
+         * @param localFields the LocalBaggageFields to be used by the PropagationFactoryMapper, or null if none
+         */
+        PropagationFactoryMapper(BaggageManager baggageManager, LocalBaggageFields localFields) {
 			this.baggageManager = baggageManager;
 			this.localFields = (localFields != null) ? localFields : LocalBaggageFields.empty();
 		}
 
-		Propagation.Factory map(PropagationType type) {
+		/**
+         * Maps the given PropagationType to the corresponding Propagation.Factory implementation.
+         * 
+         * @param type the PropagationType to be mapped
+         * @return the Propagation.Factory implementation based on the given PropagationType
+         * 
+         * @throws IllegalArgumentException if the given PropagationType is not supported
+         */
+        Propagation.Factory map(PropagationType type) {
 			return switch (type) {
 				case B3 -> b3Single();
 				case B3_MULTI -> b3Multi();
@@ -176,23 +224,48 @@ class CompositePropagationFactory extends Propagation.Factory {
 
 		private final List<Propagation.Factory> factories;
 
-		PropagationFactories(Collection<Factory> factories) {
+		/**
+         * Constructs a new instance of PropagationFactories with the specified collection of factories.
+         * 
+         * @param factories the collection of factories to be used
+         */
+        PropagationFactories(Collection<Factory> factories) {
 			this.factories = List.copyOf(factories);
 		}
 
-		boolean requires128BitTraceId() {
+		/**
+         * Returns true if any of the propagation factories in the stream requires a 128-bit trace ID.
+         *
+         * @return true if any of the propagation factories requires a 128-bit trace ID, false otherwise
+         */
+        boolean requires128BitTraceId() {
 			return stream().anyMatch(Propagation.Factory::requires128BitTraceId);
 		}
 
-		boolean supportsJoin() {
+		/**
+         * Returns true if all propagation factories in the stream support join, false otherwise.
+         *
+         * @return true if all propagation factories support join, false otherwise
+         */
+        boolean supportsJoin() {
 			return stream().allMatch(Propagation.Factory::supportsJoin);
 		}
 
-		List<Propagation<String>> get() {
+		/**
+         * Retrieves a list of Propagation objects using the Factory class.
+         *
+         * @return a list of Propagation objects
+         */
+        List<Propagation<String>> get() {
 			return stream().map(Factory::get).toList();
 		}
 
-		Stream<Factory> stream() {
+		/**
+         * Returns a sequential Stream with the elements of the factories collection.
+         *
+         * @return a sequential Stream of Factory elements
+         */
+        Stream<Factory> stream() {
 			return this.factories.stream();
 		}
 
@@ -209,29 +282,60 @@ class CompositePropagationFactory extends Propagation.Factory {
 
 		private final List<String> keys;
 
-		CompositePropagation(PropagationFactories injectorFactories, PropagationFactories extractorFactories) {
+		/**
+         * Constructs a new CompositePropagation object with the given injector and extractor factories.
+         * 
+         * @param injectorFactories the factories used to create injectors for propagating values
+         * @param extractorFactories the factories used to create extractors for retrieving values
+         */
+        CompositePropagation(PropagationFactories injectorFactories, PropagationFactories extractorFactories) {
 			this.injectors = injectorFactories.get();
 			this.extractors = extractorFactories.get();
 			this.keys = Stream.concat(keys(this.injectors), keys(this.extractors)).distinct().toList();
 		}
 
-		private Stream<String> keys(List<Propagation<String>> propagations) {
+		/**
+         * Returns a stream of keys from the given list of propagations.
+         *
+         * @param propagations the list of propagations
+         * @return a stream of keys
+         */
+        private Stream<String> keys(List<Propagation<String>> propagations) {
 			return propagations.stream().flatMap((propagation) -> propagation.keys().stream());
 		}
 
-		@Override
+		/**
+         * Returns a list of keys.
+         *
+         * @return the list of keys
+         */
+        @Override
 		public List<String> keys() {
 			return this.keys;
 		}
 
-		@Override
+		/**
+         * Returns a {@link TraceContext.Injector} that injects trace context into a request using the provided setter.
+         *
+         * @param setter the setter to use for injecting trace context into the request
+         * @param <R> the type of the request
+         * @return the injector for injecting trace context into the request
+         */
+        @Override
 		public <R> TraceContext.Injector<R> injector(Setter<R, String> setter) {
 			return (traceContext, request) -> this.injectors.stream()
 				.map((propagation) -> propagation.injector(setter))
 				.forEach((injector) -> injector.inject(traceContext, request));
 		}
 
-		@Override
+		/**
+         * Returns a TraceContext.Extractor that extracts trace context from the given request using the provided getter.
+         *
+         * @param getter the getter function to extract trace context from the request
+         * @param <R> the type of the request
+         * @return a TraceContext.Extractor that extracts trace context from the request
+         */
+        @Override
 		public <R> TraceContext.Extractor<R> extractor(Getter<R, String> getter) {
 			return (request) -> this.extractors.stream()
 				.map((propagation) -> propagation.extractor(getter))

@@ -42,7 +42,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 public class JettyServerCustomizerConfig {
 
-	@Bean
+	/**
+     * Returns a JettyServerCustomizer that customizes the Jetty server.
+     * The customizer adds an alias check to the server's handler and sets the URI compliance to legacy for all connectors.
+     *
+     * @return the JettyServerCustomizer
+     */
+    @Bean
 	public JettyServerCustomizer jettyServerCustomizer() {
 		return (server) -> {
 			ContextHandler handler = (ContextHandler) server.getHandler();

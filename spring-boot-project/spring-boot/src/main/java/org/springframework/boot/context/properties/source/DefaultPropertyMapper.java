@@ -39,10 +39,19 @@ final class DefaultPropertyMapper implements PropertyMapper {
 
 	private LastMapping<String, ConfigurationPropertyName> lastMappedPropertyName;
 
-	private DefaultPropertyMapper() {
+	/**
+     * Constructs a new DefaultPropertyMapper.
+     */
+    private DefaultPropertyMapper() {
 	}
 
-	@Override
+	/**
+     * Maps a ConfigurationPropertyName to a List of Strings.
+     * 
+     * @param configurationPropertyName the ConfigurationPropertyName to be mapped
+     * @return a List of Strings representing the mapping of the ConfigurationPropertyName
+     */
+    @Override
 	public List<String> map(ConfigurationPropertyName configurationPropertyName) {
 		// Use a local copy in case another thread changes things
 		LastMapping<ConfigurationPropertyName, List<String>> last = this.lastMappedConfigurationPropertyName;
@@ -55,7 +64,13 @@ final class DefaultPropertyMapper implements PropertyMapper {
 		return mapping;
 	}
 
-	@Override
+	/**
+     * Maps the given property source name to a ConfigurationPropertyName.
+     * 
+     * @param propertySourceName the name of the property source to be mapped
+     * @return the mapped ConfigurationPropertyName
+     */
+    @Override
 	public ConfigurationPropertyName map(String propertySourceName) {
 		// Use a local copy in case another thread changes things
 		LastMapping<String, ConfigurationPropertyName> last = this.lastMappedPropertyName;
@@ -67,7 +82,13 @@ final class DefaultPropertyMapper implements PropertyMapper {
 		return mapping;
 	}
 
-	private ConfigurationPropertyName tryMap(String propertySourceName) {
+	/**
+     * Tries to map the given property source name to a ConfigurationPropertyName object.
+     * 
+     * @param propertySourceName the name of the property source
+     * @return the mapped ConfigurationPropertyName object, or ConfigurationPropertyName.EMPTY if mapping fails
+     */
+    private ConfigurationPropertyName tryMap(String propertySourceName) {
 		try {
 			ConfigurationPropertyName convertedName = ConfigurationPropertyName.adapt(propertySourceName, '.');
 			if (!convertedName.isEmpty()) {
@@ -80,22 +101,42 @@ final class DefaultPropertyMapper implements PropertyMapper {
 		return ConfigurationPropertyName.EMPTY;
 	}
 
-	private static class LastMapping<T, M> {
+	/**
+     * LastMapping class.
+     */
+    private static class LastMapping<T, M> {
 
 		private final T from;
 
 		private final M mapping;
 
-		LastMapping(T from, M mapping) {
+		/**
+         * Constructs a new LastMapping object with the specified 'from' and 'mapping' values.
+         * 
+         * @param from the value of type T representing the 'from' value
+         * @param mapping the value of type M representing the 'mapping' value
+         */
+        LastMapping(T from, M mapping) {
 			this.from = from;
 			this.mapping = mapping;
 		}
 
-		boolean isFrom(T from) {
+		/**
+         * Checks if the given object is equal to the 'from' property of this LastMapping object.
+         * 
+         * @param from the object to compare with the 'from' property
+         * @return true if the given object is equal to the 'from' property, false otherwise
+         */
+        boolean isFrom(T from) {
 			return ObjectUtils.nullSafeEquals(from, this.from);
 		}
 
-		M getMapping() {
+		/**
+         * Retrieves the mapping object.
+         *
+         * @return the mapping object
+         */
+        M getMapping() {
 			return this.mapping;
 		}
 

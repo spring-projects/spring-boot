@@ -18,9 +18,18 @@ package org.test;
 
 import org.joda.time.LocalDate;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the SampleApplication class.
+     * It prints the simple name of the LocalDate class.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		System.out.println(LocalDate.class.getSimpleName());
 	}
 

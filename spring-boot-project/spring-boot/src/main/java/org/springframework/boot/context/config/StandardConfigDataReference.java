@@ -58,35 +58,77 @@ class StandardConfigDataReference {
 		this.propertySourceLoader = propertySourceLoader;
 	}
 
-	ConfigDataLocation getConfigDataLocation() {
+	/**
+     * Returns the location of the configuration data.
+     *
+     * @return the location of the configuration data
+     */
+    ConfigDataLocation getConfigDataLocation() {
 		return this.configDataLocation;
 	}
 
-	String getResourceLocation() {
+	/**
+     * Returns the resource location of the StandardConfigDataReference.
+     * 
+     * @return the resource location of the StandardConfigDataReference
+     */
+    String getResourceLocation() {
 		return this.resourceLocation;
 	}
 
-	boolean isMandatoryDirectory() {
+	/**
+     * Checks if the directory is mandatory.
+     * 
+     * @return true if the directory is mandatory, false otherwise
+     */
+    boolean isMandatoryDirectory() {
 		return !this.configDataLocation.isOptional() && this.directory != null;
 	}
 
-	String getDirectory() {
+	/**
+     * Returns the directory path associated with this StandardConfigDataReference object.
+     *
+     * @return the directory path
+     */
+    String getDirectory() {
 		return this.directory;
 	}
 
-	String getProfile() {
+	/**
+     * Returns the profile of the StandardConfigDataReference.
+     *
+     * @return the profile of the StandardConfigDataReference
+     */
+    String getProfile() {
 		return this.profile;
 	}
 
-	boolean isSkippable() {
+	/**
+     * Checks if the configuration data reference is skippable.
+     * 
+     * @return true if the configuration data location is optional, or if the directory or profile is not null; false otherwise.
+     */
+    boolean isSkippable() {
 		return this.configDataLocation.isOptional() || this.directory != null || this.profile != null;
 	}
 
-	PropertySourceLoader getPropertySourceLoader() {
+	/**
+     * Returns the property source loader used by this StandardConfigDataReference.
+     *
+     * @return the property source loader
+     */
+    PropertySourceLoader getPropertySourceLoader() {
 		return this.propertySourceLoader;
 	}
 
-	@Override
+	/**
+     * Compares this StandardConfigDataReference object to the specified object for equality.
+     * Returns true if the specified object is also a StandardConfigDataReference and their resourceLocation properties are equal.
+     * 
+     * @param obj the object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -98,12 +140,22 @@ class StandardConfigDataReference {
 		return this.resourceLocation.equals(other.resourceLocation);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this StandardConfigDataReference object.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return this.resourceLocation.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns the string representation of the resource location.
+     *
+     * @return the resource location as a string
+     */
+    @Override
 	public String toString() {
 		return this.resourceLocation;
 	}

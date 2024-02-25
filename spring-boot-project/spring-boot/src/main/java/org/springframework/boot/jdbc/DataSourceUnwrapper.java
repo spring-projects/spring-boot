@@ -38,7 +38,10 @@ public final class DataSourceUnwrapper {
 	private static final boolean DELEGATING_DATA_SOURCE_PRESENT = ClassUtils.isPresent(
 			"org.springframework.jdbc.datasource.DelegatingDataSource", DataSourceUnwrapper.class.getClassLoader());
 
-	private DataSourceUnwrapper() {
+	/**
+     * Private constructor for the DataSourceUnwrapper class.
+     */
+    private DataSourceUnwrapper() {
 	}
 
 	/**
@@ -90,7 +93,15 @@ public final class DataSourceUnwrapper {
 		return unwrap(dataSource, target, target);
 	}
 
-	private static <S> S safeUnwrap(Wrapper wrapper, Class<S> target) {
+	/**
+     * Safely unwraps the given wrapper object to the specified target class.
+     * 
+     * @param wrapper the wrapper object to be unwrapped
+     * @param target the target class to unwrap the wrapper object to
+     * @param <S> the type of the target class
+     * @return the unwrapped object of the target class, or null if unwrapping fails
+     */
+    private static <S> S safeUnwrap(Wrapper wrapper, Class<S> target) {
 		try {
 			if (target.isInterface() && wrapper.isWrapperFor(target)) {
 				return wrapper.unwrap(target);
@@ -102,9 +113,18 @@ public final class DataSourceUnwrapper {
 		return null;
 	}
 
-	private static final class DelegatingDataSourceUnwrapper {
+	/**
+     * DelegatingDataSourceUnwrapper class.
+     */
+    private static final class DelegatingDataSourceUnwrapper {
 
-		private static DataSource getTargetDataSource(DataSource dataSource) {
+		/**
+         * Retrieves the target DataSource from a given DataSource object.
+         * 
+         * @param dataSource the DataSource object to retrieve the target DataSource from
+         * @return the target DataSource if the given DataSource is an instance of DelegatingDataSource, otherwise null
+         */
+        private static DataSource getTargetDataSource(DataSource dataSource) {
 			if (dataSource instanceof DelegatingDataSource delegatingDataSource) {
 				return delegatingDataSource.getTargetDataSource();
 			}

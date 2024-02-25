@@ -29,21 +29,43 @@ final class Dependency {
 
 	private final String description;
 
-	Dependency(String id, String name, String description) {
+	/**
+     * Creates a new Dependency object with the specified id, name, and description.
+     * 
+     * @param id          the id of the dependency
+     * @param name        the name of the dependency
+     * @param description the description of the dependency
+     */
+    Dependency(String id, String name, String description) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 	}
 
-	String getId() {
+	/**
+     * Returns the ID of the Dependency object.
+     *
+     * @return the ID of the Dependency object
+     */
+    String getId() {
 		return this.id;
 	}
 
-	String getName() {
+	/**
+     * Returns the name of the Dependency object.
+     *
+     * @return the name of the Dependency object
+     */
+    String getName() {
 		return this.name;
 	}
 
-	String getDescription() {
+	/**
+     * Returns the description of the Dependency.
+     *
+     * @return the description of the Dependency
+     */
+    String getDescription() {
 		return this.description;
 	}
 

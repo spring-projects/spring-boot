@@ -46,7 +46,14 @@ import org.springframework.context.annotation.Import;
 @Import({ ActiveMQXAConnectionFactoryConfiguration.class, ActiveMQConnectionFactoryConfiguration.class })
 public class ActiveMQAutoConfiguration {
 
-	@Bean
+	/**
+     * Generates an ActiveMQConnectionDetails bean if no bean of type ActiveMQConnectionDetails is already present.
+     * Uses the ActiveMQProperties to create a new instance of PropertiesActiveMQConnectionDetails.
+     * 
+     * @param properties the ActiveMQProperties object containing the necessary properties for creating the connection details
+     * @return an instance of ActiveMQConnectionDetails
+     */
+    @Bean
 	@ConditionalOnMissingBean(ActiveMQConnectionDetails.class)
 	ActiveMQConnectionDetails activemqConnectionDetails(ActiveMQProperties properties) {
 		return new PropertiesActiveMQConnectionDetails(properties);
@@ -59,21 +66,41 @@ public class ActiveMQAutoConfiguration {
 
 		private final ActiveMQProperties properties;
 
-		PropertiesActiveMQConnectionDetails(ActiveMQProperties properties) {
+		/**
+         * Constructs a new instance of PropertiesActiveMQConnectionDetails with the specified ActiveMQProperties.
+         *
+         * @param properties the ActiveMQProperties to be used for configuring the connection details
+         */
+        PropertiesActiveMQConnectionDetails(ActiveMQProperties properties) {
 			this.properties = properties;
 		}
 
-		@Override
+		/**
+         * Returns the broker URL determined by the properties.
+         * 
+         * @return the broker URL
+         */
+        @Override
 		public String getBrokerUrl() {
 			return this.properties.determineBrokerUrl();
 		}
 
-		@Override
+		/**
+         * Returns the user associated with the activeMQ connection details.
+         *
+         * @return the user associated with the activeMQ connection details
+         */
+        @Override
 		public String getUser() {
 			return this.properties.getUser();
 		}
 
-		@Override
+		/**
+         * Returns the password for the ActiveMQ connection.
+         * 
+         * @return the password for the ActiveMQ connection
+         */
+        @Override
 		public String getPassword() {
 			return this.properties.getPassword();
 		}

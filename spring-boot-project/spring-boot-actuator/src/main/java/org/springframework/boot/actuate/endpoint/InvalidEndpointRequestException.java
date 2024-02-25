@@ -26,12 +26,25 @@ public class InvalidEndpointRequestException extends RuntimeException {
 
 	private final String reason;
 
-	public InvalidEndpointRequestException(String message, String reason) {
+	/**
+     * Constructs a new InvalidEndpointRequestException with the specified message and reason.
+     * 
+     * @param message the detail message for the exception
+     * @param reason the reason for the invalid endpoint request
+     */
+    public InvalidEndpointRequestException(String message, String reason) {
 		super(message);
 		this.reason = reason;
 	}
 
-	public InvalidEndpointRequestException(String message, String reason, Throwable cause) {
+	/**
+     * Constructs a new InvalidEndpointRequestException with the specified detail message, reason, and cause.
+     *
+     * @param message the detail message (which is saved for later retrieval by the getMessage() method)
+     * @param reason the reason for the invalid endpoint request
+     * @param cause the cause (which is saved for later retrieval by the getCause() method)
+     */
+    public InvalidEndpointRequestException(String message, String reason, Throwable cause) {
 		super(message, cause);
 		this.reason = reason;
 	}

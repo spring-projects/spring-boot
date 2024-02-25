@@ -23,10 +23,18 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * MyContainersConfiguration class.
+ */
 @TestConfiguration(proxyBeanMethods = false)
 public class MyContainersConfiguration {
 
-	@Bean
+	/**
+     * Creates a MongoDBContainer bean with the specified Docker image.
+     * 
+     * @return the MongoDBContainer bean
+     */
+    @Bean
 	@RestartScope
 	@ServiceConnection
 	public MongoDBContainer mongoDbContainer() {

@@ -35,57 +35,113 @@ public class WavefrontPropertiesConfigAdapter
 
 	private final WavefrontProperties properties;
 
-	public WavefrontPropertiesConfigAdapter(WavefrontProperties properties) {
+	/**
+     * Constructs a new WavefrontPropertiesConfigAdapter with the given WavefrontProperties.
+     * 
+     * @param properties the WavefrontProperties object containing the configuration properties
+     */
+    public WavefrontPropertiesConfigAdapter(WavefrontProperties properties) {
 		super(properties.getMetrics().getExport());
 		this.properties = properties;
 	}
 
-	@Override
+	/**
+     * Returns the prefix for the Wavefront metrics export configuration properties.
+     *
+     * @return the prefix for the Wavefront metrics export configuration properties
+     */
+    @Override
 	public String prefix() {
 		return "management.wavefront.metrics.export";
 	}
 
-	@Override
+	/**
+     * Returns the URI of the effective properties.
+     *
+     * @return the URI of the effective properties
+     */
+    @Override
 	public String uri() {
 		return this.properties.getEffectiveUri().toString();
 	}
 
-	@Override
+	/**
+     * Returns the source of the Wavefront properties configuration.
+     * 
+     * @return the source of the Wavefront properties configuration
+     */
+    @Override
 	public String source() {
 		return this.properties.getSourceOrDefault();
 	}
 
-	@Override
+	/**
+     * Returns the batch size for sending data.
+     *
+     * @return the batch size for sending data
+     */
+    @Override
 	public int batchSize() {
 		return this.properties.getSender().getBatchSize();
 	}
 
-	@Override
+	/**
+     * Returns the API token from the properties configuration.
+     *
+     * @return the API token
+     * @throws IllegalStateException if the API token is not found in the properties configuration
+     */
+    @Override
 	public String apiToken() {
 		return this.properties.getApiTokenOrThrow();
 	}
 
-	@Override
+	/**
+     * Returns the global prefix for the Wavefront configuration.
+     * 
+     * @return the global prefix
+     */
+    @Override
 	public String globalPrefix() {
 		return get(Export::getGlobalPrefix, WavefrontConfig.super::globalPrefix);
 	}
 
-	@Override
+	/**
+     * Returns the value of the 'reportMinuteDistribution' property.
+     *
+     * @return the value of the 'reportMinuteDistribution' property
+     */
+    @Override
 	public boolean reportMinuteDistribution() {
 		return get(Export::isReportMinuteDistribution, WavefrontConfig.super::reportMinuteDistribution);
 	}
 
-	@Override
+	/**
+     * Returns the value of the reportHourDistribution property.
+     *
+     * @return {@code true} if the reportHourDistribution property is enabled, {@code false} otherwise.
+     */
+    @Override
 	public boolean reportHourDistribution() {
 		return get(Export::isReportHourDistribution, WavefrontConfig.super::reportHourDistribution);
 	}
 
-	@Override
+	/**
+     * Returns the value of the 'reportDayDistribution' property.
+     *
+     * @return the value of the 'reportDayDistribution' property
+     */
+    @Override
 	public boolean reportDayDistribution() {
 		return get(Export::isReportDayDistribution, WavefrontConfig.super::reportDayDistribution);
 	}
 
-	@Override
+	/**
+     * Returns the API token type for the Wavefront API.
+     *
+     * @return the API token type
+     */
+    @Override
 	public Type apiTokenType() {
 		return this.properties.getWavefrontApiTokenType();
 	}

@@ -46,7 +46,14 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(LogFileWebEndpointProperties.class)
 public class LogFileWebEndpointAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a LogFileWebEndpoint bean if there is no existing bean of the same type and if the LogFileCondition is met.
+     * 
+     * @param logFile the provider for the LogFile bean
+     * @param properties the properties for the LogFileWebEndpoint
+     * @return the created LogFileWebEndpoint bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@Conditional(LogFileCondition.class)
 	public LogFileWebEndpoint logFileWebEndpoint(ObjectProvider<LogFile> logFile,
@@ -54,9 +61,19 @@ public class LogFileWebEndpointAutoConfiguration {
 		return new LogFileWebEndpoint(logFile.getIfAvailable(), properties.getExternalFile());
 	}
 
-	private static final class LogFileCondition extends SpringBootCondition {
+	/**
+     * LogFileCondition class.
+     */
+    private static final class LogFileCondition extends SpringBootCondition {
 
-		@Override
+		/**
+         * Determines the match outcome for the LogFileCondition.
+         * 
+         * @param context the condition context
+         * @param metadata the annotated type metadata
+         * @return the condition outcome
+         */
+        @Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
 			String config = getLogFileConfig(environment, LogFile.FILE_NAME_PROPERTY);
@@ -75,7 +92,14 @@ public class LogFileWebEndpointAutoConfiguration {
 			return ConditionOutcome.noMatch(message.didNotFind("logging file").atAll());
 		}
 
-		private String getLogFileConfig(Environment environment, String configName) {
+		/**
+         * Retrieves the log file configuration based on the provided environment and config name.
+         * 
+         * @param environment the environment object used to resolve placeholders
+         * @param configName the name of the log file configuration
+         * @return the resolved log file configuration value
+         */
+        private String getLogFileConfig(Environment environment, String configName) {
 			return environment.resolvePlaceholders("${" + configName + ":}");
 		}
 

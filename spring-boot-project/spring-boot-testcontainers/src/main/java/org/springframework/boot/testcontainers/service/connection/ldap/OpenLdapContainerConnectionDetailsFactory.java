@@ -38,23 +38,51 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 class OpenLdapContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<Container<?>, LdapConnectionDetails> {
 
-	OpenLdapContainerConnectionDetailsFactory() {
+	/**
+     * Constructs a new OpenLdapContainerConnectionDetailsFactory with the specified image name.
+     * 
+     * @param imageName the name of the Docker image to use for the OpenLDAP container
+     */
+    OpenLdapContainerConnectionDetailsFactory() {
 		super("osixia/openldap");
 	}
 
-	@Override
+	/**
+     * Returns the LDAP connection details for the specified container connection source.
+     *
+     * @param source the container connection source
+     * @return the LDAP connection details
+     */
+    @Override
 	protected LdapConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 		return new OpenLdapContainerConnectionDetails(source);
 	}
 
-	private static final class OpenLdapContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
+	/**
+     * OpenLdapContainerConnectionDetails class.
+     */
+    private static final class OpenLdapContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
 			implements LdapConnectionDetails {
 
-		private OpenLdapContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		/**
+         * Constructs a new OpenLdapContainerConnectionDetails object with the specified ContainerConnectionSource.
+         *
+         * @param source the ContainerConnectionSource used to create the OpenLdapContainerConnectionDetails object
+         */
+        private OpenLdapContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 
-		@Override
+		/**
+         * Returns an array of URLs for connecting to the LDAP server.
+         * The URLs are generated based on the environment variables of the container.
+         * If the LDAP_TLS environment variable is set to true, the URLs will use LDAPS protocol and the LDAPS_PORT environment variable.
+         * Otherwise, the URLs will use LDAP protocol and the LDAP_PORT environment variable.
+         * The host and port are obtained from the OpenLdapContainer instance.
+         *
+         * @return an array of URLs for connecting to the LDAP server
+         */
+        @Override
 		public String[] getUrls() {
 			Map<String, String> env = getContainer().getEnvMap();
 			boolean usesTls = Boolean.parseBoolean(env.getOrDefault("LDAP_TLS", "true"));
@@ -63,7 +91,12 @@ class OpenLdapContainerConnectionDetailsFactory
 					getContainer().getMappedPort(Integer.parseInt(ldapPort))) };
 		}
 
-		@Override
+		/**
+         * Returns the base DN (Distinguished Name) for the LDAP connection.
+         * 
+         * @return the base DN for the LDAP connection
+         */
+        @Override
 		public String getBase() {
 			Map<String, String> env = getContainer().getEnvMap();
 			if (env.containsKey("LDAP_BASE_DN")) {
@@ -74,12 +107,25 @@ class OpenLdapContainerConnectionDetailsFactory
 				.collect(Collectors.joining(","));
 		}
 
-		@Override
+		/**
+         * Returns the username for the OpenLdapContainerConnectionDetails.
+         * The username is formatted as "cn=admin,%s", where %s is replaced with the base.
+         *
+         * @return the username for the OpenLdapContainerConnectionDetails
+         */
+        @Override
 		public String getUsername() {
 			return "cn=admin,%s".formatted(getBase());
 		}
 
-		@Override
+		/**
+         * Returns the password for the LDAP admin.
+         * If the "LDAP_ADMIN_PASSWORD" environment variable is set, it will be returned.
+         * Otherwise, the default password "admin" will be returned.
+         *
+         * @return the password for the LDAP admin
+         */
+        @Override
 		public String getPassword() {
 			return getContainer().getEnvMap().getOrDefault("LDAP_ADMIN_PASSWORD", "admin");
 		}

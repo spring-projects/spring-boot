@@ -52,7 +52,13 @@ import org.springframework.web.context.WebApplicationContext;
  */
 class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 
-	@Override
+	/**
+     * Customizes the application context for the HttpGraphQlTester.
+     * 
+     * @param context the configurable application context
+     * @param mergedConfig the merged context configuration
+     */
+    @Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 		if (AotDetector.useGeneratedArtifacts()) {
 			return;
@@ -64,39 +70,80 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 		}
 	}
 
-	private void registerHttpGraphQlTester(ConfigurableApplicationContext context) {
+	/**
+     * Registers the HttpGraphQlTester in the given ConfigurableApplicationContext.
+     * 
+     * @param context the ConfigurableApplicationContext to register the HttpGraphQlTester in
+     */
+    private void registerHttpGraphQlTester(ConfigurableApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			registerHttpGraphQlTester((BeanDefinitionRegistry) beanFactory);
 		}
 	}
 
-	private void registerHttpGraphQlTester(BeanDefinitionRegistry registry) {
+	/**
+     * Registers the HttpGraphQlTesterRegistrar bean definition in the given registry.
+     * This method is responsible for creating and configuring the HttpGraphQlTesterRegistrar bean,
+     * and registering it in the provided BeanDefinitionRegistry.
+     * 
+     * @param registry the BeanDefinitionRegistry in which to register the HttpGraphQlTesterRegistrar bean definition
+     */
+    private void registerHttpGraphQlTester(BeanDefinitionRegistry registry) {
 		RootBeanDefinition definition = new RootBeanDefinition(HttpGraphQlTesterRegistrar.class);
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		registry.registerBeanDefinition(HttpGraphQlTesterRegistrar.class.getName(), definition);
 	}
 
-	@Override
+	/**
+     * Compares this object with the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return {@code true} if the specified object is of the same class as this object, {@code false} otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		return (obj != null) && (obj.getClass() == getClass());
 	}
 
-	@Override
+	/**
+     * Returns a hash code value for the object. This method overrides the default implementation of the hashCode() method.
+     *
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return getClass().hashCode();
 	}
 
-	static class HttpGraphQlTesterRegistrar implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
+	/**
+     * HttpGraphQlTesterRegistrar class.
+     */
+    static class HttpGraphQlTesterRegistrar implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
 
 		private BeanFactory beanFactory;
 
-		@Override
+		/**
+         * Sets the bean factory for this HttpGraphQlTesterRegistrar.
+         * 
+         * @param beanFactory the bean factory to be set
+         * @throws BeansException if an error occurs while setting the bean factory
+         */
+        @Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 			this.beanFactory = beanFactory;
 		}
 
-		@Override
+		/**
+         * This method is called to post-process the bean definition registry.
+         * It checks if the AotDetector is using generated artifacts. If so, it returns.
+         * Otherwise, it checks if there are any bean names for the HttpGraphQlTester class in the bean factory.
+         * If there are none, it registers a new bean definition for the HttpGraphQlTester class using the HttpGraphQlTesterFactory.
+         * 
+         * @param registry the bean definition registry to post-process
+         * @throws BeansException if an error occurs during the post-processing
+         */
+        @Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			if (AotDetector.useGeneratedArtifacts()) {
 				return;
@@ -108,19 +155,34 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 			}
 		}
 
-		@Override
+		/**
+         * Post-process the given bean factory.
+         *
+         * @param beanFactory the bean factory to post-process
+         * @throws BeansException if an error occurs during post-processing
+         */
+        @Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
 		}
 
-		@Override
+		/**
+         * Returns the order of this HttpGraphQlTesterRegistrar bean in the ApplicationContext.
+         * The order is set to be one less than the lowest precedence value, ensuring that this bean is registered last.
+         *
+         * @return the order of this HttpGraphQlTesterRegistrar bean
+         */
+        @Override
 		public int getOrder() {
 			return Ordered.LOWEST_PRECEDENCE - 1;
 		}
 
 	}
 
-	public static class HttpGraphQlTesterFactory implements FactoryBean<HttpGraphQlTester>, ApplicationContextAware {
+	/**
+     * HttpGraphQlTesterFactory class.
+     */
+    public static class HttpGraphQlTesterFactory implements FactoryBean<HttpGraphQlTester>, ApplicationContextAware {
 
 		private static final String SERVLET_APPLICATION_CONTEXT_CLASS = "org.springframework.web.context.WebApplicationContext";
 
@@ -130,22 +192,44 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 		private HttpGraphQlTester object;
 
-		@Override
+		/**
+         * Sets the application context for this HttpGraphQlTesterFactory.
+         * 
+         * @param applicationContext the application context to be set
+         * @throws BeansException if an error occurs while setting the application context
+         */
+        @Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			this.applicationContext = applicationContext;
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the HttpGraphQlTesterFactory is a singleton.
+         *
+         * @return true if the HttpGraphQlTesterFactory is a singleton, false otherwise.
+         */
+        @Override
 		public boolean isSingleton() {
 			return true;
 		}
 
-		@Override
+		/**
+         * Returns the type of object that is created by this factory method.
+         * 
+         * @return the type of object created by this factory method, which is HttpGraphQlTester class.
+         */
+        @Override
 		public Class<?> getObjectType() {
 			return HttpGraphQlTester.class;
 		}
 
-		@Override
+		/**
+         * Retrieves the HttpGraphQlTester object.
+         * 
+         * @return The HttpGraphQlTester object.
+         * @throws Exception if an error occurs while creating the HttpGraphQlTester object.
+         */
+        @Override
 		public HttpGraphQlTester getObject() throws Exception {
 			if (this.object == null) {
 				this.object = createGraphQlTester();
@@ -153,7 +237,12 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 			return this.object;
 		}
 
-		private HttpGraphQlTester createGraphQlTester() {
+		/**
+         * Creates a new instance of HttpGraphQlTester.
+         * 
+         * @return the newly created HttpGraphQlTester instance
+         */
+        private HttpGraphQlTester createGraphQlTester() {
 			WebTestClient webTestClient = this.applicationContext.getBean(WebTestClient.class);
 			boolean sslEnabled = isSslEnabled(this.applicationContext);
 			String port = this.applicationContext.getEnvironment().getProperty("local.server.port", "8080");
@@ -161,21 +250,43 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 			return HttpGraphQlTester.create(mutatedWebClient);
 		}
 
-		private String getBaseUrl(boolean sslEnabled, String port) {
+		/**
+         * Returns the base URL for the HTTP server.
+         * 
+         * @param sslEnabled a boolean indicating whether SSL is enabled or not
+         * @param port the port number for the server
+         * @return the base URL for the server
+         */
+        private String getBaseUrl(boolean sslEnabled, String port) {
 			String basePath = deduceBasePath();
 			return (sslEnabled ? "https" : "http") + "://localhost:" + port + basePath;
 		}
 
-		private String deduceBasePath() {
+		/**
+         * Deduces the base path for the GraphQL endpoint by combining the server base path and the configured GraphQL path.
+         * 
+         * @return the deduced base path for the GraphQL endpoint
+         */
+        private String deduceBasePath() {
 			return deduceServerBasePath() + findConfiguredGraphQlPath();
 		}
 
-		private String findConfiguredGraphQlPath() {
+		/**
+         * Returns the configured GraphQL path.
+         * 
+         * @return the configured GraphQL path, or "/graphql" if not configured
+         */
+        private String findConfiguredGraphQlPath() {
 			String configuredPath = this.applicationContext.getEnvironment().getProperty("spring.graphql.path");
 			return StringUtils.hasText(configuredPath) ? configuredPath : "/graphql";
 		}
 
-		private String deduceServerBasePath() {
+		/**
+         * Deduces the server base path based on the web application type.
+         * 
+         * @return The server base path.
+         */
+        private String deduceServerBasePath() {
 			String serverBasePath = "";
 			WebApplicationType webApplicationType = deduceFromApplicationContext(this.applicationContext.getClass());
 			if (webApplicationType == WebApplicationType.REACTIVE) {
@@ -188,7 +299,13 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 			return (serverBasePath != null) ? serverBasePath : "";
 		}
 
-		static WebApplicationType deduceFromApplicationContext(Class<?> applicationContextClass) {
+		/**
+         * Deduces the web application type based on the given application context class.
+         * 
+         * @param applicationContextClass the class of the application context
+         * @return the deduced web application type
+         */
+        static WebApplicationType deduceFromApplicationContext(Class<?> applicationContextClass) {
 			if (isAssignable(SERVLET_APPLICATION_CONTEXT_CLASS, applicationContextClass)) {
 				return WebApplicationType.SERVLET;
 			}
@@ -198,7 +315,14 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 			return WebApplicationType.NONE;
 		}
 
-		private static boolean isAssignable(String target, Class<?> type) {
+		/**
+         * Checks if the given target class name is assignable from the specified type.
+         *
+         * @param target the target class name to check
+         * @param type the type to check against
+         * @return {@code true} if the target class is assignable from the specified type, {@code false} otherwise
+         */
+        private static boolean isAssignable(String target, Class<?> type) {
 			try {
 				return ClassUtils.resolveClassName(target, null).isAssignableFrom(type);
 			}
@@ -207,7 +331,13 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 			}
 		}
 
-		private boolean isSslEnabled(ApplicationContext context) {
+		/**
+         * Checks if SSL is enabled for the web server factory in the given application context.
+         * 
+         * @param context the application context
+         * @return true if SSL is enabled, false otherwise
+         */
+        private boolean isSslEnabled(ApplicationContext context) {
 			try {
 				AbstractConfigurableWebServerFactory webServerFactory = context
 					.getBean(AbstractConfigurableWebServerFactory.class);

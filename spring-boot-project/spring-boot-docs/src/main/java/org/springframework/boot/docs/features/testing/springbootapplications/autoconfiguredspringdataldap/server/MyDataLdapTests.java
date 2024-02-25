@@ -19,6 +19,9 @@ package org.springframework.boot.docs.features.testing.springbootapplications.au
 import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
 
+/**
+ * MyDataLdapTests class.
+ */
 @DataLdapTest(excludeAutoConfiguration = EmbeddedLdapAutoConfiguration.class)
 class MyDataLdapTests {
 

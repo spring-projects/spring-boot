@@ -30,12 +30,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 class ErrorPageFilterConfiguration {
 
-	@Bean
+	/**
+     * Creates and returns an instance of the ErrorPageFilter.
+     * 
+     * @return the ErrorPageFilter instance
+     */
+    @Bean
 	ErrorPageFilter errorPageFilter() {
 		return new ErrorPageFilter();
 	}
 
-	@Bean
+	/**
+     * Registers the ErrorPageFilter with the specified filter.
+     * 
+     * @param filter The ErrorPageFilter to be registered.
+     * @return The FilterRegistrationBean for the registered ErrorPageFilter.
+     */
+    @Bean
 	FilterRegistrationBean<ErrorPageFilter> errorPageFilterRegistration(ErrorPageFilter filter) {
 		FilterRegistrationBean<ErrorPageFilter> registration = new FilterRegistrationBean<>(filter);
 		registration.setOrder(filter.getOrder());

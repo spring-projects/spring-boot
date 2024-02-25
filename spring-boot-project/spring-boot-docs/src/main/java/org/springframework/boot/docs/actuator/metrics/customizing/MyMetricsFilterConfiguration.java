@@ -21,10 +21,18 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyMetricsFilterConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyMetricsFilterConfiguration {
 
-	@Bean
+	/**
+     * Returns a MeterFilter that renames the "mytag.region" tag to "mytag.area" for the "com.example" metric.
+     *
+     * @return the MeterFilter that renames the "mytag.region" tag to "mytag.area" for the "com.example" metric
+     */
+    @Bean
 	public MeterFilter renameRegionTagMeterFilter() {
 		return MeterFilter.renameTag("com.example", "mytag.region", "mytag.area");
 	}

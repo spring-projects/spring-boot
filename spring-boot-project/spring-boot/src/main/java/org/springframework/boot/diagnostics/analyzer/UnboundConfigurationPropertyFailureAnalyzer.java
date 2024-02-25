@@ -31,13 +31,27 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 class UnboundConfigurationPropertyFailureAnalyzer
 		extends AbstractFailureAnalyzer<UnboundConfigurationPropertiesException> {
 
-	@Override
+	/**
+     * Analyzes the failure caused by an unbound configuration property exception.
+     * 
+     * @param rootFailure the root cause of the failure
+     * @param cause the unbound configuration property exception
+     * @return the failure analysis result
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, UnboundConfigurationPropertiesException cause) {
 		BindException exception = findCause(rootFailure, BindException.class);
 		return analyzeUnboundConfigurationPropertiesException(exception, cause);
 	}
 
-	private FailureAnalysis analyzeUnboundConfigurationPropertiesException(BindException cause,
+	/**
+     * Analyzes an UnboundConfigurationPropertiesException caused by a BindException.
+     * 
+     * @param cause the BindException that caused the unbound configuration properties exception
+     * @param exception the UnboundConfigurationPropertiesException to be analyzed
+     * @return a FailureAnalysis object containing the analysis result
+     */
+    private FailureAnalysis analyzeUnboundConfigurationPropertiesException(BindException cause,
 			UnboundConfigurationPropertiesException exception) {
 		StringBuilder description = new StringBuilder(
 				String.format("Binding to target %s failed:%n", cause.getTarget()));
@@ -48,7 +62,13 @@ class UnboundConfigurationPropertyFailureAnalyzer
 		return getFailureAnalysis(description, cause);
 	}
 
-	private void buildDescription(StringBuilder description, ConfigurationProperty property) {
+	/**
+     * Builds the description for a configuration property.
+     * 
+     * @param description the StringBuilder object to append the description to
+     * @param property the ConfigurationProperty object to build the description for
+     */
+    private void buildDescription(StringBuilder description, ConfigurationProperty property) {
 		if (property != null) {
 			description.append(String.format("%n    Property: %s", property.getName()));
 			description.append(String.format("%n    Value: \"%s\"", property.getValue()));
@@ -56,7 +76,14 @@ class UnboundConfigurationPropertyFailureAnalyzer
 		}
 	}
 
-	private FailureAnalysis getFailureAnalysis(Object description, BindException cause) {
+	/**
+     * Returns a FailureAnalysis object based on the provided description and BindException cause.
+     * 
+     * @param description the description of the failure
+     * @param cause the BindException that caused the failure
+     * @return a FailureAnalysis object representing the failure analysis
+     */
+    private FailureAnalysis getFailureAnalysis(Object description, BindException cause) {
 		return new FailureAnalysis(description.toString(), "Update your application's configuration", cause);
 	}
 

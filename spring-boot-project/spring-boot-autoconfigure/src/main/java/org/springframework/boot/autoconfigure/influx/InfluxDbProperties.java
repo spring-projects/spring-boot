@@ -48,33 +48,74 @@ public class InfluxDbProperties {
 	 */
 	private String password;
 
-	@DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration",
+	/**
+     * Returns the URL of the InfluxDB server.
+     * 
+     * @return the URL of the InfluxDB server
+     * 
+     * @deprecated the new InfluxDb Java client provides Spring Boot integration
+     *             and this property is no longer needed. Starting from version 3.2.0,
+     *             it is recommended to use the new client for InfluxDB integration.
+     */
+    @DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration",
 			since = "3.2.0")
 	public String getUrl() {
 		return this.url;
 	}
 
-	public void setUrl(String url) {
+	/**
+     * Sets the URL for the InfluxDB connection.
+     * 
+     * @param url the URL to set
+     */
+    public void setUrl(String url) {
 		this.url = url;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration",
+	/**
+     * Returns the user for connecting to the InfluxDB server.
+     * 
+     * @return the user for connecting to the InfluxDB server
+     * 
+     * @deprecated the new InfluxDb Java client provides Spring Boot integration
+     *             since version 3.2.0. Use the new client for connecting to the
+     *             InfluxDB server instead.
+     */
+    @DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration",
 			since = "3.2.0")
 	public String getUser() {
 		return this.user;
 	}
 
-	public void setUser(String user) {
+	/**
+     * Sets the user for the InfluxDbProperties.
+     * 
+     * @param user the user to set
+     */
+    public void setUser(String user) {
 		this.user = user;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration",
+	/**
+     * Retrieves the password for connecting to the InfluxDB server.
+     * 
+     * @return the password for connecting to the InfluxDB server
+     * 
+     * @deprecated the new InfluxDb Java client provides Spring Boot integration
+     *             and this property is no longer needed since version 3.2.0
+     */
+    @DeprecatedConfigurationProperty(reason = "the new InfluxDb Java client provides Spring Boot integration",
 			since = "3.2.0")
 	public String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	/**
+     * Sets the password for the InfluxDB connection.
+     * 
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
 		this.password = password;
 	}
 

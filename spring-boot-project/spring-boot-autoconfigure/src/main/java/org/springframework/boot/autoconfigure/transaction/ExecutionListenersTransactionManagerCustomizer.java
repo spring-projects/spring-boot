@@ -33,11 +33,21 @@ class ExecutionListenersTransactionManagerCustomizer
 
 	private final List<TransactionExecutionListener> listeners;
 
-	ExecutionListenersTransactionManagerCustomizer(List<TransactionExecutionListener> listeners) {
+	/**
+     * Constructs a new instance of ExecutionListenersTransactionManagerCustomizer with the specified list of transaction execution listeners.
+     *
+     * @param listeners the list of transaction execution listeners to be set
+     */
+    ExecutionListenersTransactionManagerCustomizer(List<TransactionExecutionListener> listeners) {
 		this.listeners = listeners;
 	}
 
-	@Override
+	/**
+     * Customizes the given ConfigurableTransactionManager by adding the listeners specified in the listeners list.
+     *
+     * @param transactionManager the ConfigurableTransactionManager to be customized
+     */
+    @Override
 	public void customize(ConfigurableTransactionManager transactionManager) {
 		this.listeners.forEach(transactionManager::addListener);
 	}

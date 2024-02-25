@@ -46,11 +46,24 @@ import org.springframework.context.annotation.Bean;
 public class JmsHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<JmsHealthIndicator, ConnectionFactory> {
 
-	public JmsHealthContributorAutoConfiguration() {
+	/**
+     * Constructs a new JmsHealthContributorAutoConfiguration.
+     * 
+     * This constructor initializes the JmsHealthContributorAutoConfiguration by calling the super constructor with the JmsHealthIndicator class as the argument.
+     * 
+     * @see JmsHealthIndicator
+     */
+    public JmsHealthContributorAutoConfiguration() {
 		super(JmsHealthIndicator::new);
 	}
 
-	@Bean
+	/**
+     * Creates a JMS health contributor if no existing bean with the names "jmsHealthIndicator" and "jmsHealthContributor" is found.
+     * 
+     * @param connectionFactories a map of connection factories
+     * @return the JMS health contributor
+     */
+    @Bean
 	@ConditionalOnMissingBean(name = { "jmsHealthIndicator", "jmsHealthContributor" })
 	public HealthContributor jmsHealthContributor(Map<String, ConnectionFactory> connectionFactories) {
 		return createContributor(connectionFactories);

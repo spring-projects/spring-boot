@@ -34,7 +34,13 @@ import org.springframework.util.StringUtils;
  */
 class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionRegistrar {
 
-	@Override
+	/**
+     * Registers bean definitions for RestDocumentationContextProviderRegistrar.
+     * 
+     * @param importingClassMetadata the metadata of the importing class
+     * @param registry the bean definition registry
+     */
+    @Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Map<String, Object> annotationAttributes = importingClassMetadata
 			.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());

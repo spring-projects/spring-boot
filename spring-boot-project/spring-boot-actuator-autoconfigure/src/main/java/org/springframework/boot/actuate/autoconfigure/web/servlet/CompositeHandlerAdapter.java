@@ -41,16 +41,36 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 
 	private List<HandlerAdapter> adapters;
 
-	CompositeHandlerAdapter(ListableBeanFactory beanFactory) {
+	/**
+     * Constructs a new CompositeHandlerAdapter with the specified ListableBeanFactory.
+     *
+     * @param beanFactory the ListableBeanFactory to be used by the CompositeHandlerAdapter
+     */
+    CompositeHandlerAdapter(ListableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 	}
 
-	@Override
+	/**
+     * Determines if the given handler is supported by this CompositeHandlerAdapter.
+     * 
+     * @param handler the handler to check for support
+     * @return true if the handler is supported, false otherwise
+     */
+    @Override
 	public boolean supports(Object handler) {
 		return getAdapter(handler).isPresent();
 	}
 
-	@Override
+	/**
+     * Handles the incoming HTTP request.
+     * 
+     * @param request  the HttpServletRequest object representing the incoming request
+     * @param response the HttpServletResponse object representing the response to be sent
+     * @param handler  the Object representing the handler for the request
+     * @return a ModelAndView object representing the view and model for the response
+     * @throws Exception if an error occurs while handling the request
+     */
+    @Override
 	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		Optional<HandlerAdapter> adapter = getAdapter(handler);
@@ -60,7 +80,19 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the last modified timestamp for the given HttpServletRequest and handler.
+     * 
+     * @param request the HttpServletRequest object
+     * @param handler the handler object
+     * @return the last modified timestamp, or 0L if not available
+     * 
+     * @deprecated This method has been deprecated since version 2.4.9 and may be removed in a future release. 
+     *             It is recommended to use an alternative method instead.
+     * 
+     * @SuppressWarnings("deprecation") This annotation suppresses deprecation warnings for this method.
+     */
+    @Override
 	@Deprecated(since = "2.4.9", forRemoval = false)
 	@SuppressWarnings("deprecation")
 	public long getLastModified(HttpServletRequest request, Object handler) {
@@ -68,14 +100,25 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 		return adapter.map((handlerAdapter) -> handlerAdapter.getLastModified(request, handler)).orElse(0L);
 	}
 
-	private Optional<HandlerAdapter> getAdapter(Object handler) {
+	/**
+     * Retrieves the appropriate HandlerAdapter for the given handler object.
+     * 
+     * @param handler the handler object for which the adapter is to be retrieved
+     * @return an Optional containing the HandlerAdapter if found, or an empty Optional if not found
+     */
+    private Optional<HandlerAdapter> getAdapter(Object handler) {
 		if (this.adapters == null) {
 			this.adapters = extractAdapters();
 		}
 		return this.adapters.stream().filter((a) -> a.supports(handler)).findFirst();
 	}
 
-	private List<HandlerAdapter> extractAdapters() {
+	/**
+     * Extracts the list of HandlerAdapters from the bean factory and sorts them based on their order.
+     * 
+     * @return the sorted list of HandlerAdapters
+     */
+    private List<HandlerAdapter> extractAdapters() {
 		List<HandlerAdapter> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerAdapter.class).values());
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);

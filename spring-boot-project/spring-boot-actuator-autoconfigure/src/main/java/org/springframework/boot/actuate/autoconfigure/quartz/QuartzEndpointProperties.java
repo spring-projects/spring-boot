@@ -43,15 +43,30 @@ public class QuartzEndpointProperties {
 	 */
 	private final Set<String> roles = new HashSet<>();
 
-	public Show getShowValues() {
+	/**
+     * Returns the show values of the QuartzEndpointProperties.
+     *
+     * @return the show values of the QuartzEndpointProperties
+     */
+    public Show getShowValues() {
 		return this.showValues;
 	}
 
-	public void setShowValues(Show showValues) {
+	/**
+     * Sets the showValues property of the QuartzEndpointProperties class.
+     * 
+     * @param showValues the Show object to set as the showValues property
+     */
+    public void setShowValues(Show showValues) {
 		this.showValues = showValues;
 	}
 
-	public Set<String> getRoles() {
+	/**
+     * Returns the set of roles associated with the QuartzEndpointProperties.
+     *
+     * @return the set of roles associated with the QuartzEndpointProperties
+     */
+    public Set<String> getRoles() {
 		return this.roles;
 	}
 

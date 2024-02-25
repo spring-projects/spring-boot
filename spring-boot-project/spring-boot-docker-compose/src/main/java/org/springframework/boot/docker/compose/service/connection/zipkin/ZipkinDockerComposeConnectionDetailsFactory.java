@@ -34,12 +34,25 @@ class ZipkinDockerComposeConnectionDetailsFactory
 
 	private static final int ZIPKIN_PORT = 9411;
 
-	ZipkinDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new ZipkinDockerComposeConnectionDetailsFactory.
+     * 
+     * This constructor initializes the factory with the necessary parameters to connect to Zipkin
+     * using Docker Compose. It sets the Docker image name to "openzipkin/zipkin" and the Spring Boot
+     * auto-configuration class to "org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration".
+     */
+    ZipkinDockerComposeConnectionDetailsFactory() {
 		super("openzipkin/zipkin",
 				"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration");
 	}
 
-	@Override
+	/**
+     * Retrieves the connection details for a Docker Compose connection based on the provided source.
+     * 
+     * @param source the source of the Docker Compose connection
+     * @return the connection details for the Docker Compose connection
+     */
+    @Override
 	protected ZipkinConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new ZipkinDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -54,13 +67,24 @@ class ZipkinDockerComposeConnectionDetailsFactory
 
 		private final int port;
 
-		ZipkinDockerComposeConnectionDetails(RunningService source) {
+		/**
+         * Constructs a new ZipkinDockerComposeConnectionDetails object based on the provided RunningService object.
+         * 
+         * @param source the RunningService object to create the connection details from
+         */
+        ZipkinDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
 			this.port = source.ports().get(ZIPKIN_PORT);
 		}
 
-		@Override
+		/**
+         * Returns the endpoint URL for sending spans to the Zipkin server.
+         * The URL is constructed using the host and port specified in the connection details.
+         *
+         * @return the endpoint URL for sending spans
+         */
+        @Override
 		public String getSpanEndpoint() {
 			return "http://" + this.host + ":" + this.port + "/api/v2/spans";
 		}

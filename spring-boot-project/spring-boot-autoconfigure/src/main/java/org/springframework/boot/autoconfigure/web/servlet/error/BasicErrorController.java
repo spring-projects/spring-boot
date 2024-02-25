@@ -82,7 +82,14 @@ public class BasicErrorController extends AbstractErrorController {
 		this.errorProperties = errorProperties;
 	}
 
-	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
+	/**
+     * Handles the error and returns a ModelAndView object with the error information in HTML format.
+     * 
+     * @param request  the HttpServletRequest object representing the current request
+     * @param response  the HttpServletResponse object representing the current response
+     * @return a ModelAndView object containing the error information in HTML format
+     */
+    @RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
 	public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
 		HttpStatus status = getStatus(request);
 		Map<String, Object> model = Collections
@@ -92,7 +99,13 @@ public class BasicErrorController extends AbstractErrorController {
 		return (modelAndView != null) ? modelAndView : new ModelAndView("error", model);
 	}
 
-	@RequestMapping
+	/**
+     * Handles error requests and returns a ResponseEntity with the appropriate status code and error attributes.
+     * 
+     * @param request the HttpServletRequest object representing the error request
+     * @return a ResponseEntity containing the error attributes and status code
+     */
+    @RequestMapping
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
 		HttpStatus status = getStatus(request);
 		if (status == HttpStatus.NO_CONTENT) {
@@ -102,13 +115,26 @@ public class BasicErrorController extends AbstractErrorController {
 		return new ResponseEntity<>(body, status);
 	}
 
-	@ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+	/**
+     * Handles HttpMediaTypeNotAcceptableException and returns a ResponseEntity with the appropriate status code.
+     * 
+     * @param request the HttpServletRequest object representing the current request
+     * @return a ResponseEntity with the appropriate status code
+     */
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
 	public ResponseEntity<String> mediaTypeNotAcceptable(HttpServletRequest request) {
 		HttpStatus status = getStatus(request);
 		return ResponseEntity.status(status).build();
 	}
 
-	protected ErrorAttributeOptions getErrorAttributeOptions(HttpServletRequest request, MediaType mediaType) {
+	/**
+     * Returns the ErrorAttributeOptions based on the provided HttpServletRequest and MediaType.
+     * 
+     * @param request The HttpServletRequest object.
+     * @param mediaType The MediaType object.
+     * @return The ErrorAttributeOptions object.
+     */
+    protected ErrorAttributeOptions getErrorAttributeOptions(HttpServletRequest request, MediaType mediaType) {
 		ErrorAttributeOptions options = ErrorAttributeOptions.defaults();
 		if (this.errorProperties.isIncludeException()) {
 			options = options.including(Include.EXCEPTION);

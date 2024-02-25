@@ -40,12 +40,24 @@ public enum TextOutputFormat implements Producible<TextOutputFormat> {
 	 */
 	CONTENT_TYPE_004(TextFormat.CONTENT_TYPE_004) {
 
-		@Override
+		/**
+     * Writes the given metric family samples to the provided writer using the TextFormat version 0.0.4 format.
+     * 
+     * @param writer The writer to write the metric family samples to.
+     * @param samples The enumeration of metric family samples to be written.
+     * @throws IOException If an I/O error occurs while writing the metric family samples.
+     */
+    @Override
 		void write(Writer writer, Enumeration<MetricFamilySamples> samples) throws IOException {
 			TextFormat.write004(writer, samples);
 		}
 
-		@Override
+		/**
+     * Returns true if this method is the default method.
+     * 
+     * @return true if this method is the default method, false otherwise
+     */
+    @Override
 		public boolean isDefault() {
 			return true;
 		}
@@ -57,7 +69,14 @@ public enum TextOutputFormat implements Producible<TextOutputFormat> {
 	 */
 	CONTENT_TYPE_OPENMETRICS_100(TextFormat.CONTENT_TYPE_OPENMETRICS_100) {
 
-		@Override
+		/**
+     * Writes the given metric samples to the provided writer in OpenMetrics 1.0.0 format.
+     *
+     * @param writer  the writer to write the metric samples to
+     * @param samples the enumeration of metric family samples to be written
+     * @throws IOException if an I/O error occurs while writing the metric samples
+     */
+    @Override
 		void write(Writer writer, Enumeration<MetricFamilySamples> samples) throws IOException {
 			TextFormat.writeOpenMetrics100(writer, samples);
 		}
@@ -66,15 +85,32 @@ public enum TextOutputFormat implements Producible<TextOutputFormat> {
 
 	private final MimeType mimeType;
 
-	TextOutputFormat(String mimeType) {
+	/**
+     * Constructs a new TextOutputFormat with the specified MIME type.
+     * 
+     * @param mimeType the MIME type of the output format
+     */
+    TextOutputFormat(String mimeType) {
 		this.mimeType = MimeTypeUtils.parseMimeType(mimeType);
 	}
 
-	@Override
+	/**
+     * Returns the MIME type produced by this TextOutputFormat.
+     *
+     * @return the MIME type produced by this TextOutputFormat
+     */
+    @Override
 	public MimeType getProducedMimeType() {
 		return this.mimeType;
 	}
 
-	abstract void write(Writer writer, Enumeration<MetricFamilySamples> samples) throws IOException;
+	/**
+     * Writes the given metric family samples to the provided writer.
+     *
+     * @param writer The writer to write the metric family samples to.
+     * @param samples The enumeration of metric family samples to be written.
+     * @throws IOException If an I/O error occurs while writing the samples.
+     */
+    abstract void write(Writer writer, Enumeration<MetricFamilySamples> samples) throws IOException;
 
 }

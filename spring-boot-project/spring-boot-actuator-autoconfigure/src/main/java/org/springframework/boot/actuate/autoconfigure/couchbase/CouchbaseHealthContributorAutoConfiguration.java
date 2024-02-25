@@ -49,11 +49,21 @@ import org.springframework.context.annotation.Bean;
 public class CouchbaseHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<CouchbaseHealthIndicator, Cluster> {
 
-	public CouchbaseHealthContributorAutoConfiguration() {
+	/**
+     * Constructs a new instance of CouchbaseHealthContributorAutoConfiguration.
+     * This constructor calls the superclass constructor with the CouchbaseHealthIndicator class as the argument.
+     */
+    public CouchbaseHealthContributorAutoConfiguration() {
 		super(CouchbaseHealthIndicator::new);
 	}
 
-	@Bean
+	/**
+     * Creates a Couchbase health contributor if no existing bean with the names "couchbaseHealthIndicator" and "couchbaseHealthContributor" is found.
+     * 
+     * @param clusters a map of Couchbase clusters
+     * @return the Couchbase health contributor
+     */
+    @Bean
 	@ConditionalOnMissingBean(name = { "couchbaseHealthIndicator", "couchbaseHealthContributor" })
 	public HealthContributor couchbaseHealthContributor(Map<String, Cluster> clusters) {
 		return createContributor(clusters);

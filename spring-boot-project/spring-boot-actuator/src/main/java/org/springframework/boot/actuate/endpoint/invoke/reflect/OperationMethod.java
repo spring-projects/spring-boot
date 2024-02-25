@@ -79,7 +79,12 @@ public class OperationMethod {
 		return this.operationParameters;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the OperationMethod object.
+     * 
+     * @return a string representation of the OperationMethod object
+     */
+    @Override
 	public String toString() {
 		return "Operation " + this.operationType.name().toLowerCase(Locale.ENGLISH) + " method " + this.method;
 	}

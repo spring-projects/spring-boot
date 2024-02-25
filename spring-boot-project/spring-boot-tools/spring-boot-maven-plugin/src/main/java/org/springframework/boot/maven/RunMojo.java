@@ -58,7 +58,12 @@ public class RunMojo extends AbstractRunMojo {
 	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
 	private Boolean useTestClasspath;
 
-	@Override
+	/**
+     * Resolves the JVM arguments for the run goal.
+     * 
+     * @return the resolved JVM arguments
+     */
+    @Override
 	protected RunArguments resolveJvmArguments() {
 		RunArguments jvmArguments = super.resolveJvmArguments();
 		if (this.optimizedLaunch) {
@@ -67,7 +72,17 @@ public class RunMojo extends AbstractRunMojo {
 		return jvmArguments;
 	}
 
-	@Override
+	/**
+     * Runs the specified Java process using the given executor, working directory, arguments, and environment variables.
+     * 
+     * @param processExecutor The Java process executor to use for running the process.
+     * @param workingDirectory The working directory for the process.
+     * @param args The arguments to pass to the process.
+     * @param environmentVariables The environment variables to set for the process.
+     * @throws MojoExecutionException If an error occurs during the execution of the Mojo.
+     * @throws MojoFailureException If the Mojo fails.
+     */
+    @Override
 	protected void run(JavaProcessExecutor processExecutor, File workingDirectory, List<String> args,
 			Map<String, String> environmentVariables) throws MojoExecutionException, MojoFailureException {
 		processExecutor
@@ -76,20 +91,36 @@ public class RunMojo extends AbstractRunMojo {
 			.run(workingDirectory, args, environmentVariables);
 	}
 
-	@Override
+	/**
+     * Returns the value of the flag indicating whether to use the test classpath.
+     *
+     * @return {@code true} if the test classpath should be used, {@code false} otherwise.
+     */
+    @Override
 	protected boolean isUseTestClasspath() {
 		return this.useTestClasspath;
 	}
 
-	private static final class RunProcessKiller implements Runnable {
+	/**
+     * RunProcessKiller class.
+     */
+    private static final class RunProcessKiller implements Runnable {
 
 		private final RunProcess runProcess;
 
-		private RunProcessKiller(RunProcess runProcess) {
+		/**
+         * Initializes a new instance of the RunProcessKiller class.
+         * 
+         * @param runProcess the RunProcess object to be killed
+         */
+        private RunProcessKiller(RunProcess runProcess) {
 			this.runProcess = runProcess;
 		}
 
-		@Override
+		/**
+         * This method is used to kill the running process.
+         */
+        @Override
 		public void run() {
 			this.runProcess.kill();
 		}

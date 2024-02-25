@@ -37,20 +37,42 @@ public class JarModeLibrary extends Library {
 	 */
 	public static final JarModeLibrary LAYER_TOOLS = new JarModeLibrary("spring-boot-jarmode-layertools");
 
-	JarModeLibrary(String artifactId) {
+	/**
+     * Constructs a new JarModeLibrary object with the specified artifactId.
+     * 
+     * @param artifactId the artifactId of the library
+     */
+    JarModeLibrary(String artifactId) {
 		this(createCoordinates(artifactId));
 	}
 
-	public JarModeLibrary(LibraryCoordinates coordinates) {
+	/**
+     * Constructs a new JarModeLibrary with the specified coordinates.
+     * 
+     * @param coordinates the coordinates of the library
+     */
+    public JarModeLibrary(LibraryCoordinates coordinates) {
 		super(getJarName(coordinates), null, LibraryScope.RUNTIME, coordinates, false, false, true);
 	}
 
-	private static LibraryCoordinates createCoordinates(String artifactId) {
+	/**
+     * Creates the library coordinates for the given artifact ID.
+     * 
+     * @param artifactId the artifact ID of the library
+     * @return the library coordinates
+     */
+    private static LibraryCoordinates createCoordinates(String artifactId) {
 		String version = JarModeLibrary.class.getPackage().getImplementationVersion();
 		return LibraryCoordinates.of("org.springframework.boot", artifactId, version);
 	}
 
-	private static String getJarName(LibraryCoordinates coordinates) {
+	/**
+     * Returns the name of the JAR file for the given library coordinates.
+     * 
+     * @param coordinates the library coordinates
+     * @return the name of the JAR file
+     */
+    private static String getJarName(LibraryCoordinates coordinates) {
 		String version = coordinates.getVersion();
 		StringBuilder jarName = new StringBuilder(coordinates.getArtifactId());
 		if (StringUtils.hasText(version)) {
@@ -61,7 +83,13 @@ public class JarModeLibrary extends Library {
 		return jarName.toString();
 	}
 
-	@Override
+	/**
+     * Opens an input stream to the jar file for the current artifact.
+     * 
+     * @return the input stream to the jar file
+     * @throws IOException if an I/O error occurs while opening the stream
+     */
+    @Override
 	public InputStream openStream() throws IOException {
 		String path = "META-INF/jarmode/" + getCoordinates().getArtifactId() + ".jar";
 		URL resource = getClass().getClassLoader().getResource(path);
@@ -69,12 +97,24 @@ public class JarModeLibrary extends Library {
 		return resource.openStream();
 	}
 
-	@Override
+	/**
+     * Returns the last modified timestamp of the file.
+     *
+     * @return the last modified timestamp of the file
+     */
+    @Override
 	long getLastModified() {
 		return 0L;
 	}
 
-	@Override
+	/**
+     * Returns the file associated with the JarModeLibrary.
+     * 
+     * @throws UnsupportedOperationException if unable to access the jar mode library file
+     * 
+     * @return the file associated with the JarModeLibrary
+     */
+    @Override
 	public File getFile() {
 		throw new UnsupportedOperationException("Unable to access jar mode library file");
 	}

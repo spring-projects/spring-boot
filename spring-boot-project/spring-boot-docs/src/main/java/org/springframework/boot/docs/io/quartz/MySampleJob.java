@@ -21,6 +21,9 @@ import org.quartz.JobExecutionException;
 
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
+/**
+ * MySampleJob class.
+ */
 public class MySampleJob extends QuartzJobBean {
 
 	// @fold:on // fields ...
@@ -40,7 +43,13 @@ public class MySampleJob extends QuartzJobBean {
 		this.name = name;
 	}
 
-	@Override
+	/**
+     * Executes the job by calling the someMethod of the myService object with the fire time and name parameters.
+     * 
+     * @param context the JobExecutionContext object containing information about the job execution
+     * @throws JobExecutionException if there is an error executing the job
+     */
+    @Override
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 		this.myService.someMethod(context.getFireTime(), this.name);
 	}

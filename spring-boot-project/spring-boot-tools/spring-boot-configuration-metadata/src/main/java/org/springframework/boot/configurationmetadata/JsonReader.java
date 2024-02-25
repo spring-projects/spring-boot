@@ -39,7 +39,16 @@ class JsonReader {
 
 	private final SentenceExtractor sentenceExtractor = new SentenceExtractor();
 
-	RawConfigurationMetadata read(InputStream in, Charset charset) throws IOException {
+	/**
+     * Reads the raw configuration metadata from the given input stream using the specified character set.
+     * 
+     * @param in the input stream to read from
+     * @param charset the character set to use for decoding the input stream
+     * @return the raw configuration metadata
+     * @throws IOException if an I/O error occurs while reading the input stream
+     * @throws IllegalStateException if an exception other than IOException or RuntimeException occurs
+     */
+    RawConfigurationMetadata read(InputStream in, Charset charset) throws IOException {
 		try {
 			JSONObject json = readJson(in, charset);
 			List<ConfigurationMetadataSource> groups = parseAllSources(json);
@@ -58,7 +67,14 @@ class JsonReader {
 		}
 	}
 
-	private List<ConfigurationMetadataSource> parseAllSources(JSONObject root) throws Exception {
+	/**
+     * Parses all sources from the given JSON object.
+     * 
+     * @param root The root JSON object containing the sources.
+     * @return A list of ConfigurationMetadataSource objects parsed from the JSON.
+     * @throws Exception If an error occurs during parsing.
+     */
+    private List<ConfigurationMetadataSource> parseAllSources(JSONObject root) throws Exception {
 		List<ConfigurationMetadataSource> result = new ArrayList<>();
 		if (!root.has("groups")) {
 			return result;
@@ -71,7 +87,14 @@ class JsonReader {
 		return result;
 	}
 
-	private List<ConfigurationMetadataItem> parseAllItems(JSONObject root) throws Exception {
+	/**
+     * Parses all items from a JSON object and returns a list of ConfigurationMetadataItem objects.
+     * 
+     * @param root The JSON object to parse.
+     * @return A list of ConfigurationMetadataItem objects parsed from the JSON object.
+     * @throws Exception If an error occurs during parsing.
+     */
+    private List<ConfigurationMetadataItem> parseAllItems(JSONObject root) throws Exception {
 		List<ConfigurationMetadataItem> result = new ArrayList<>();
 		if (!root.has("properties")) {
 			return result;
@@ -84,7 +107,14 @@ class JsonReader {
 		return result;
 	}
 
-	private List<ConfigurationMetadataHint> parseAllHints(JSONObject root) throws Exception {
+	/**
+     * Parses all hints from a JSON object.
+     * 
+     * @param root The JSON object to parse hints from.
+     * @return A list of ConfigurationMetadataHint objects parsed from the JSON object.
+     * @throws Exception If an error occurs during parsing.
+     */
+    private List<ConfigurationMetadataHint> parseAllHints(JSONObject root) throws Exception {
 		List<ConfigurationMetadataHint> result = new ArrayList<>();
 		if (!root.has("hints")) {
 			return result;
@@ -97,7 +127,14 @@ class JsonReader {
 		return result;
 	}
 
-	private ConfigurationMetadataSource parseSource(JSONObject json) throws Exception {
+	/**
+     * Parses the given JSON object and creates a ConfigurationMetadataSource object.
+     * 
+     * @param json the JSON object to parse
+     * @return the parsed ConfigurationMetadataSource object
+     * @throws Exception if an error occurs during parsing
+     */
+    private ConfigurationMetadataSource parseSource(JSONObject json) throws Exception {
 		ConfigurationMetadataSource source = new ConfigurationMetadataSource();
 		source.setGroupId(json.getString("name"));
 		source.setType(json.optString("type", null));
@@ -109,7 +146,14 @@ class JsonReader {
 		return source;
 	}
 
-	private ConfigurationMetadataItem parseItem(JSONObject json) throws Exception {
+	/**
+     * Parses a JSON object and returns a ConfigurationMetadataItem.
+     * 
+     * @param json The JSON object to parse.
+     * @return The parsed ConfigurationMetadataItem.
+     * @throws Exception If an error occurs during parsing.
+     */
+    private ConfigurationMetadataItem parseItem(JSONObject json) throws Exception {
 		ConfigurationMetadataItem item = new ConfigurationMetadataItem();
 		item.setId(json.getString("name"));
 		item.setType(json.optString("type", null));
@@ -123,7 +167,14 @@ class JsonReader {
 		return item;
 	}
 
-	private ConfigurationMetadataHint parseHint(JSONObject json) throws Exception {
+	/**
+     * Parses a JSON object into a ConfigurationMetadataHint object.
+     * 
+     * @param json the JSON object to parse
+     * @return the parsed ConfigurationMetadataHint object
+     * @throws Exception if an error occurs during parsing
+     */
+    private ConfigurationMetadataHint parseHint(JSONObject json) throws Exception {
 		ConfigurationMetadataHint hint = new ConfigurationMetadataHint();
 		hint.setId(json.getString("name"));
 		if (json.has("values")) {
@@ -158,7 +209,14 @@ class JsonReader {
 		return hint;
 	}
 
-	private Deprecation parseDeprecation(JSONObject object) throws Exception {
+	/**
+     * Parses the deprecation information from the given JSON object.
+     * 
+     * @param object the JSON object containing the deprecation information
+     * @return the parsed deprecation object
+     * @throws Exception if an error occurs during parsing
+     */
+    private Deprecation parseDeprecation(JSONObject object) throws Exception {
 		if (object.has("deprecation")) {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			Deprecation deprecation = new Deprecation();
@@ -172,7 +230,13 @@ class JsonReader {
 		return object.optBoolean("deprecated") ? new Deprecation() : null;
 	}
 
-	private Deprecation.Level parseDeprecationLevel(String value) {
+	/**
+     * Parses the given value and returns the corresponding Deprecation.Level.
+     * 
+     * @param value the value to be parsed
+     * @return the Deprecation.Level corresponding to the parsed value, or the default Deprecation.Level.WARNING if the value is null or cannot be parsed
+     */
+    private Deprecation.Level parseDeprecationLevel(String value) {
 		if (value != null) {
 			try {
 				return Deprecation.Level.valueOf(value.toUpperCase(Locale.ENGLISH));
@@ -184,7 +248,14 @@ class JsonReader {
 		return Deprecation.Level.WARNING;
 	}
 
-	private Object readItemValue(Object value) throws Exception {
+	/**
+     * Reads the value of an item in a JSON object or array.
+     * 
+     * @param value the value of the item to be read
+     * @return the value of the item, or an array of values if the item is a JSON array
+     * @throws Exception if an error occurs during the reading process
+     */
+    private Object readItemValue(Object value) throws Exception {
 		if (value instanceof JSONArray array) {
 			Object[] content = new Object[array.length()];
 			for (int i = 0; i < array.length(); i++) {
@@ -195,7 +266,15 @@ class JsonReader {
 		return value;
 	}
 
-	private JSONObject readJson(InputStream in, Charset charset) throws Exception {
+	/**
+     * Reads a JSON object from an input stream using the specified character set.
+     * 
+     * @param in the input stream to read from
+     * @param charset the character set to use for decoding the input stream
+     * @return the JSON object read from the input stream
+     * @throws Exception if an error occurs while reading the input stream or parsing the JSON object
+     */
+    private JSONObject readJson(InputStream in, Charset charset) throws Exception {
 		try (in) {
 			StringBuilder out = new StringBuilder();
 			InputStreamReader reader = new InputStreamReader(in, charset);

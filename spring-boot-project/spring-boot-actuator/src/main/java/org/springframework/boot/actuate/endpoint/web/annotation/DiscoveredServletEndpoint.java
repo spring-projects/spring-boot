@@ -38,7 +38,18 @@ class DiscoveredServletEndpoint extends AbstractDiscoveredEndpoint<Operation> im
 
 	private final EndpointServlet endpointServlet;
 
-	DiscoveredServletEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id, String rootPath,
+	/**
+     * Constructs a new DiscoveredServletEndpoint with the specified parameters.
+     *
+     * @param discoverer the EndpointDiscoverer used to discover the endpoint
+     * @param endpointBean the bean representing the endpoint
+     * @param id the ID of the endpoint
+     * @param rootPath the root path of the endpoint
+     * @param enabledByDefault whether the endpoint is enabled by default
+     * @throws IllegalArgumentException if the endpoint bean is not a Supplier or if it supplies null
+     * @throws IllegalArgumentException if the supplied object is not an EndpointServlet
+     */
+    DiscoveredServletEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id, String rootPath,
 			boolean enabledByDefault) {
 		super(discoverer, endpointBean, id, enabledByDefault, Collections.emptyList());
 		String beanType = endpointBean.getClass().getName();
@@ -52,12 +63,22 @@ class DiscoveredServletEndpoint extends AbstractDiscoveredEndpoint<Operation> im
 		this.rootPath = rootPath;
 	}
 
-	@Override
+	/**
+     * Returns the root path of the DiscoveredServletEndpoint.
+     *
+     * @return the root path of the DiscoveredServletEndpoint
+     */
+    @Override
 	public String getRootPath() {
 		return this.rootPath;
 	}
 
-	@Override
+	/**
+     * Returns the EndpointServlet associated with this DiscoveredServletEndpoint.
+     * 
+     * @return the EndpointServlet associated with this DiscoveredServletEndpoint
+     */
+    @Override
 	public EndpointServlet getEndpointServlet() {
 		return this.endpointServlet;
 	}

@@ -38,7 +38,12 @@ public enum TestcontainersStartup {
 	 */
 	SEQUENTIAL {
 
-		@Override
+		/**
+     * Starts a collection of startable objects.
+     *
+     * @param startables a collection of objects that implement the Startable interface
+     */
+    @Override
 		void start(Collection<? extends Startable> startables) {
 			startables.forEach(Startable::start);
 		}
@@ -50,7 +55,12 @@ public enum TestcontainersStartup {
 	 */
 	PARALLEL {
 
-		@Override
+		/**
+     * Starts a collection of startable objects.
+     *
+     * @param startables the collection of startable objects to start
+     */
+    @Override
 		void start(Collection<? extends Startable> startables) {
 			Startables.deepStart(startables).join();
 		}
@@ -63,13 +73,32 @@ public enum TestcontainersStartup {
 	 */
 	public static final String PROPERTY = "spring.testcontainers.beans.startup";
 
-	abstract void start(Collection<? extends Startable> startables);
+	/**
+     * Starts a collection of startable objects.
+     *
+     * @param startables a collection of objects that implement the Startable interface
+     * @throws NullPointerException if the startables collection is null
+     */
+    abstract void start(Collection<? extends Startable> startables);
 
-	static TestcontainersStartup get(ConfigurableEnvironment environment) {
+	/**
+     * Retrieves a TestcontainersStartup instance based on the provided ConfigurableEnvironment.
+     * 
+     * @param environment the ConfigurableEnvironment to retrieve the TestcontainersStartup instance from
+     * @return the TestcontainersStartup instance based on the provided ConfigurableEnvironment
+     */
+    static TestcontainersStartup get(ConfigurableEnvironment environment) {
 		return get((environment != null) ? environment.getProperty(PROPERTY) : null);
 	}
 
-	private static TestcontainersStartup get(String value) {
+	/**
+     * Retrieves the TestcontainersStartup enum constant based on the provided value.
+     *
+     * @param value the value to match against the enum constants
+     * @return the TestcontainersStartup enum constant that matches the provided value
+     * @throws IllegalArgumentException if the provided value does not match any of the enum constants
+     */
+    private static TestcontainersStartup get(String value) {
 		if (value == null) {
 			return SEQUENTIAL;
 		}
@@ -82,7 +111,13 @@ public enum TestcontainersStartup {
 		throw new IllegalArgumentException("Unknown '%s' property value '%s'".formatted(PROPERTY, value));
 	}
 
-	private static String getCanonicalName(String name) {
+	/**
+     * Returns the canonical name of a given name.
+     * 
+     * @param name the name to get the canonical name for
+     * @return the canonical name of the given name
+     */
+    private static String getCanonicalName(String name) {
 		StringBuilder canonicalName = new StringBuilder(name.length());
 		name.chars()
 			.filter(Character::isLetterOrDigit)

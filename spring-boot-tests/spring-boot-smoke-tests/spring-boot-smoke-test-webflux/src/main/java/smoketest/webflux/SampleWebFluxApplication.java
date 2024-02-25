@@ -26,16 +26,30 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
+/**
+ * SampleWebFluxApplication class.
+ */
 @SpringBootApplication
 public class SampleWebFluxApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleWebFluxApplication class.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication application = new SpringApplication(SampleWebFluxApplication.class);
 		application.setApplicationStartup(new BufferingApplicationStartup(1024));
 		application.run(args);
 	}
 
-	@Bean
+	/**
+     * Creates a router function for handling HTTP POST requests to the "/echo" endpoint.
+     * 
+     * @param echoHandler the handler responsible for processing the echo request
+     * @return the router function for handling the echo request
+     */
+    @Bean
 	public RouterFunction<ServerResponse> monoRouterFunction(EchoHandler echoHandler) {
 		return route(POST("/echo"), echoHandler::echo);
 	}

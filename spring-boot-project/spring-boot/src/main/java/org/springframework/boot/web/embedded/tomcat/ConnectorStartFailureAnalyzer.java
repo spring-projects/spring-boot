@@ -26,7 +26,14 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  */
 class ConnectorStartFailureAnalyzer extends AbstractFailureAnalyzer<ConnectorStartFailedException> {
 
-	@Override
+	/**
+     * Analyzes the failure of the Tomcat connector to start.
+     * 
+     * @param rootFailure the root cause of the failure
+     * @param cause the specific exception that caused the failure
+     * @return a FailureAnalysis object containing information about the failure
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, ConnectorStartFailedException cause) {
 		return new FailureAnalysis(
 				"The Tomcat connector configured to listen on port " + cause.getPort()

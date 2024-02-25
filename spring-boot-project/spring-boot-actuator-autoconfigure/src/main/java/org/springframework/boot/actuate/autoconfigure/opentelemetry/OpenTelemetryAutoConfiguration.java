@@ -55,7 +55,16 @@ public class OpenTelemetryAutoConfiguration {
 
 	private static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_NAME = AttributeKey.stringKey("service.name");
 
-	@Bean
+	/**
+     * Creates an instance of OpenTelemetrySdk if no other bean of type OpenTelemetry is present.
+     * 
+     * @param tracerProvider   ObjectProvider of SdkTracerProvider to be used for creating the tracer provider.
+     * @param propagators      ObjectProvider of ContextPropagators to be used for creating the propagators.
+     * @param loggerProvider   ObjectProvider of SdkLoggerProvider to be used for creating the logger provider.
+     * @param meterProvider    ObjectProvider of SdkMeterProvider to be used for creating the meter provider.
+     * @return                 An instance of OpenTelemetrySdk.
+     */
+    @Bean
 	@ConditionalOnMissingBean(OpenTelemetry.class)
 	OpenTelemetrySdk openTelemetry(ObjectProvider<SdkTracerProvider> tracerProvider,
 			ObjectProvider<ContextPropagators> propagators, ObjectProvider<SdkLoggerProvider> loggerProvider,
@@ -68,7 +77,15 @@ public class OpenTelemetryAutoConfiguration {
 		return builder.build();
 	}
 
-	@Bean
+	/**
+     * Creates a {@link Resource} object for OpenTelemetry based on the provided environment and properties.
+     * If a bean of type {@link Resource} is already present in the application context, this method will not be executed.
+     * 
+     * @param environment the {@link Environment} object containing the application's environment properties
+     * @param properties the {@link OpenTelemetryProperties} object containing the OpenTelemetry properties
+     * @return a {@link Resource} object representing the OpenTelemetry resource
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	Resource openTelemetryResource(Environment environment, OpenTelemetryProperties properties) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
@@ -77,7 +94,13 @@ public class OpenTelemetryAutoConfiguration {
 			.merge(toResource(properties));
 	}
 
-	private static Resource toResource(OpenTelemetryProperties properties) {
+	/**
+     * Converts the given OpenTelemetryProperties object to a Resource object.
+     * 
+     * @param properties the OpenTelemetryProperties object to convert
+     * @return the converted Resource object
+     */
+    private static Resource toResource(OpenTelemetryProperties properties) {
 		ResourceBuilder builder = Resource.builder();
 		properties.getResourceAttributes().forEach(builder::put);
 		return builder.build();

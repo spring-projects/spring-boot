@@ -34,7 +34,12 @@ public class JdbcProperties {
 
 	private final Template template = new Template();
 
-	public Template getTemplate() {
+	/**
+     * Returns the template associated with this JdbcProperties object.
+     *
+     * @return the template associated with this JdbcProperties object
+     */
+    public Template getTemplate() {
 		return this.template;
 	}
 
@@ -61,27 +66,57 @@ public class JdbcProperties {
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration queryTimeout;
 
-		public int getFetchSize() {
+		/**
+         * Returns the fetch size.
+         * 
+         * @return the fetch size
+         */
+        public int getFetchSize() {
 			return this.fetchSize;
 		}
 
-		public void setFetchSize(int fetchSize) {
+		/**
+         * Sets the fetch size for retrieving data from a database.
+         * 
+         * @param fetchSize the fetch size to be set
+         */
+        public void setFetchSize(int fetchSize) {
 			this.fetchSize = fetchSize;
 		}
 
-		public int getMaxRows() {
+		/**
+         * Returns the maximum number of rows.
+         *
+         * @return the maximum number of rows
+         */
+        public int getMaxRows() {
 			return this.maxRows;
 		}
 
-		public void setMaxRows(int maxRows) {
+		/**
+         * Sets the maximum number of rows for the template.
+         * 
+         * @param maxRows the maximum number of rows to be set
+         */
+        public void setMaxRows(int maxRows) {
 			this.maxRows = maxRows;
 		}
 
-		public Duration getQueryTimeout() {
+		/**
+         * Returns the query timeout duration.
+         * 
+         * @return the query timeout duration
+         */
+        public Duration getQueryTimeout() {
 			return this.queryTimeout;
 		}
 
-		public void setQueryTimeout(Duration queryTimeout) {
+		/**
+         * Sets the query timeout for the Template.
+         * 
+         * @param queryTimeout the duration of the query timeout
+         */
+        public void setQueryTimeout(Duration queryTimeout) {
 			this.queryTimeout = queryTimeout;
 		}
 

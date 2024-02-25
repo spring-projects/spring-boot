@@ -40,11 +40,22 @@ class PropertySourcesDeducer {
 
 	private final ApplicationContext applicationContext;
 
-	PropertySourcesDeducer(ApplicationContext applicationContext) {
+	/**
+     * Constructs a new PropertySourcesDeducer with the specified ApplicationContext.
+     *
+     * @param applicationContext the ApplicationContext to be used for property source deduction
+     */
+    PropertySourcesDeducer(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 
-	PropertySources getPropertySources() {
+	/**
+     * Retrieves the property sources used by the application.
+     * 
+     * @return The property sources used by the application.
+     * @throws IllegalStateException if unable to obtain property sources from PropertySourcesPlaceholderConfigurer or Environment.
+     */
+    PropertySources getPropertySources() {
 		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
 		if (configurer != null) {
 			return configurer.getAppliedPropertySources();
@@ -55,7 +66,12 @@ class PropertySourcesDeducer {
 		return sources;
 	}
 
-	private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
+	/**
+     * Retrieves the single instance of PropertySourcesPlaceholderConfigurer from the ApplicationContext.
+     * 
+     * @return The single instance of PropertySourcesPlaceholderConfigurer, or null if none or multiple instances are found.
+     */
+    private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
 		// Take care not to cause early instantiation of all FactoryBeans
 		Map<String, PropertySourcesPlaceholderConfigurer> beans = this.applicationContext
 			.getBeansOfType(PropertySourcesPlaceholderConfigurer.class, false, false);
@@ -69,7 +85,12 @@ class PropertySourcesDeducer {
 		return null;
 	}
 
-	private MutablePropertySources extractEnvironmentPropertySources() {
+	/**
+     * Extracts the property sources from the environment.
+     * 
+     * @return the property sources if the environment is a ConfigurableEnvironment, null otherwise
+     */
+    private MutablePropertySources extractEnvironmentPropertySources() {
 		Environment environment = this.applicationContext.getEnvironment();
 		if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
 			return configurableEnvironment.getPropertySources();

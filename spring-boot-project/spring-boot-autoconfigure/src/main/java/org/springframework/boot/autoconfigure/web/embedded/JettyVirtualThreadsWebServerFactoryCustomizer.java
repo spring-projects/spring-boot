@@ -36,11 +36,22 @@ public class JettyVirtualThreadsWebServerFactoryCustomizer
 
 	private final ServerProperties serverProperties;
 
-	public JettyVirtualThreadsWebServerFactoryCustomizer(ServerProperties serverProperties) {
+	/**
+     * Constructs a new JettyVirtualThreadsWebServerFactoryCustomizer with the specified ServerProperties.
+     *
+     * @param serverProperties the ServerProperties to be used by the customizer
+     */
+    public JettyVirtualThreadsWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		this.serverProperties = serverProperties;
 	}
 
-	@Override
+	/**
+     * Customize the Jetty web server factory to enable virtual threads.
+     * 
+     * @param factory the configurable Jetty web server factory
+     * @throws IllegalStateException if virtual threads are not supported
+     */
+    @Override
 	public void customize(ConfigurableJettyWebServerFactory factory) {
 		Assert.state(VirtualThreads.areSupported(), "Virtual threads are not supported");
 		QueuedThreadPool threadPool = JettyThreadPool.create(this.serverProperties.getJetty().getThreads());
@@ -48,7 +59,13 @@ public class JettyVirtualThreadsWebServerFactoryCustomizer
 		factory.setThreadPool(threadPool);
 	}
 
-	@Override
+	/**
+     * Returns the order of this customizer.
+     * The order is determined by adding 1 to the order of the JettyWebServerFactoryCustomizer.
+     *
+     * @return the order of this customizer
+     */
+    @Override
 	public int getOrder() {
 		return JettyWebServerFactoryCustomizer.ORDER + 1;
 	}

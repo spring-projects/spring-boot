@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.io.validation;
 
+/**
+ * Author class.
+ */
 class Author {
 
 }

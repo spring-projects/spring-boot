@@ -51,7 +51,15 @@ public class ConversionServiceParameterValueMapper implements ParameterValueMapp
 		this.conversionService = conversionService;
 	}
 
-	@Override
+	/**
+     * Maps the given parameter value to the specified operation parameter type.
+     * 
+     * @param parameter the operation parameter
+     * @param value the parameter value to be mapped
+     * @return the mapped parameter value
+     * @throws ParameterMappingException if an error occurs during parameter mapping
+     */
+    @Override
 	public Object mapParameterValue(OperationParameter parameter, Object value) throws ParameterMappingException {
 		try {
 			return this.conversionService.convert(value, parameter.getType());

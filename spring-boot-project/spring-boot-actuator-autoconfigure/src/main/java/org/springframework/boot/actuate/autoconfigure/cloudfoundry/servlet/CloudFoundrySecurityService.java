@@ -47,7 +47,15 @@ class CloudFoundrySecurityService {
 
 	private String uaaUrl;
 
-	CloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder, String cloudControllerUrl,
+	/**
+     * Constructs a new instance of the CloudFoundrySecurityService class.
+     * 
+     * @param restTemplateBuilder The RestTemplateBuilder used to build the RestTemplate for making HTTP requests.
+     * @param cloudControllerUrl The URL of the Cloud Controller.
+     * @param skipSslValidation Flag indicating whether SSL validation should be skipped.
+     * @throws IllegalArgumentException if restTemplateBuilder or cloudControllerUrl is null.
+     */
+    CloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder, String cloudControllerUrl,
 			boolean skipSslValidation) {
 		Assert.notNull(restTemplateBuilder, "RestTemplateBuilder must not be null");
 		Assert.notNull(cloudControllerUrl, "CloudControllerUrl must not be null");
@@ -86,7 +94,14 @@ class CloudFoundrySecurityService {
 		}
 	}
 
-	private URI getPermissionsUri(String applicationId) {
+	/**
+     * Returns the URI for retrieving permissions for a specific application.
+     *
+     * @param applicationId the ID of the application
+     * @return the URI for retrieving permissions
+     * @throws IllegalStateException if the URI syntax is invalid
+     */
+    private URI getPermissionsUri(String applicationId) {
 		try {
 			return new URI(this.cloudControllerUrl + "/v2/apps/" + applicationId + "/permissions");
 		}
@@ -108,7 +123,13 @@ class CloudFoundrySecurityService {
 		}
 	}
 
-	private Map<String, String> extractTokenKeys(Map<?, ?> response) {
+	/**
+     * Extracts token keys from the given response map.
+     * 
+     * @param response the response map containing token keys
+     * @return a map of token keys with kid as the key and value as the value
+     */
+    private Map<String, String> extractTokenKeys(Map<?, ?> response) {
 		Map<String, String> tokenKeys = new HashMap<>();
 		for (Object key : (List<?>) response.get("keys")) {
 			Map<?, ?> tokenKey = (Map<?, ?>) key;

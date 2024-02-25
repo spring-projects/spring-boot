@@ -46,7 +46,10 @@ final class CertificateParser {
 
 	private static final Pattern PATTERN = Pattern.compile(HEADER + BASE64_TEXT + FOOTER, Pattern.CASE_INSENSITIVE);
 
-	private CertificateParser() {
+	/**
+     * Private constructor for the CertificateParser class.
+     */
+    private CertificateParser() {
 	}
 
 	/**
@@ -63,7 +66,13 @@ final class CertificateParser {
 		return certificates.toArray(new X509Certificate[0]);
 	}
 
-	private static CertificateFactory getCertificateFactory() {
+	/**
+     * Returns the X.509 certificate factory.
+     * 
+     * @return the X.509 certificate factory
+     * @throws IllegalStateException if unable to get X.509 certificate factory
+     */
+    private static CertificateFactory getCertificateFactory() {
 		try {
 			return CertificateFactory.getInstance("X.509");
 		}
@@ -72,7 +81,16 @@ final class CertificateParser {
 		}
 	}
 
-	private static void readCertificates(Path path, CertificateFactory factory, Consumer<X509Certificate> consumer) {
+	/**
+     * Reads certificates from a file specified by the given path using the provided CertificateFactory.
+     * The certificates are then passed to the consumer for further processing.
+     *
+     * @param path     the path to the file containing the certificates
+     * @param factory  the CertificateFactory used to generate X509Certificates
+     * @param consumer the consumer to accept the X509Certificates
+     * @throws IllegalStateException if there is an error reading the certificates from the file
+     */
+    private static void readCertificates(Path path, CertificateFactory factory, Consumer<X509Certificate> consumer) {
 		try {
 			String text = Files.readString(path);
 			Matcher matcher = PATTERN.matcher(text);
@@ -90,7 +108,13 @@ final class CertificateParser {
 		}
 	}
 
-	private static byte[] decodeBase64(String content) {
+	/**
+     * Decodes a Base64 encoded string into a byte array.
+     * 
+     * @param content the Base64 encoded string to decode
+     * @return the decoded byte array
+     */
+    private static byte[] decodeBase64(String content) {
 		byte[] bytes = content.replaceAll("\r", "").replaceAll("\n", "").getBytes();
 		return Base64.getDecoder().decode(bytes);
 	}

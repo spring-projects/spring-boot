@@ -51,17 +51,36 @@ public class DatadogMetricsExportAutoConfiguration {
 
 	private final DatadogProperties properties;
 
-	public DatadogMetricsExportAutoConfiguration(DatadogProperties properties) {
+	/**
+     * Constructs a new {@code DatadogMetricsExportAutoConfiguration} with the specified {@code properties}.
+     *
+     * @param properties the properties used for configuring the Datadog metrics export
+     */
+    public DatadogMetricsExportAutoConfiguration(DatadogProperties properties) {
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link DatadogConfig} if no other bean of the same type is present.
+     * This method is annotated with {@link ConditionalOnMissingBean} to ensure that it is only executed
+     * if there is no other bean of type {@link DatadogConfig} already defined.
+     * 
+     * @return a new instance of {@link DatadogConfig} created using the properties defined in {@link DatadogPropertiesConfigAdapter}
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public DatadogConfig datadogConfig() {
 		return new DatadogPropertiesConfigAdapter(this.properties);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of DatadogMeterRegistry if no other bean of the same type is present.
+     * 
+     * @param datadogConfig The configuration for Datadog.
+     * @param clock The clock used for measuring time.
+     * @return A new instance of DatadogMeterRegistry.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig, Clock clock) {
 		return DatadogMeterRegistry.builder(datadogConfig)

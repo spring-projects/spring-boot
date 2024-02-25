@@ -61,7 +61,12 @@ public class DataSourceScriptDatabaseInitializer extends AbstractScriptDatabaseI
 		return this.dataSource;
 	}
 
-	@Override
+	/**
+     * Determines if the datasource is an embedded database.
+     * 
+     * @return true if the datasource is an embedded database, false otherwise
+     */
+    @Override
 	protected boolean isEmbeddedDatabase() {
 		try {
 			return EmbeddedDatabaseConnection.isEmbedded(this.dataSource);
@@ -72,7 +77,12 @@ public class DataSourceScriptDatabaseInitializer extends AbstractScriptDatabaseI
 		}
 	}
 
-	@Override
+	/**
+     * Runs the given scripts on the database.
+     * 
+     * @param scripts the scripts to be executed
+     */
+    @Override
 	protected void runScripts(Scripts scripts) {
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		populator.setContinueOnError(scripts.isContinueOnError());

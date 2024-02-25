@@ -30,16 +30,32 @@ class ArtemisEnvironment {
 
 	private final String password;
 
-	ArtemisEnvironment(Map<String, String> env) {
+	/**
+     * Constructs a new ArtemisEnvironment object with the provided environment variables.
+     * 
+     * @param env a Map containing the environment variables
+     * @throws NullPointerException if the environment variables are null
+     */
+    ArtemisEnvironment(Map<String, String> env) {
 		this.user = env.get("ARTEMIS_USER");
 		this.password = env.get("ARTEMIS_PASSWORD");
 	}
 
-	String getUser() {
+	/**
+     * Returns the user associated with the ArtemisEnvironment object.
+     *
+     * @return the user associated with the ArtemisEnvironment object
+     */
+    String getUser() {
 		return this.user;
 	}
 
-	String getPassword() {
+	/**
+     * Returns the password of the ArtemisEnvironment.
+     *
+     * @return the password of the ArtemisEnvironment
+     */
+    String getPassword() {
 		return this.password;
 	}
 

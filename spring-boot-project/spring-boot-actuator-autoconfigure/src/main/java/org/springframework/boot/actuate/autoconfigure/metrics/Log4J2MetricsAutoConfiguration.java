@@ -46,15 +46,30 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @Conditional(Log4JCoreLoggerContextCondition.class)
 public class Log4J2MetricsAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of Log4j2Metrics if no other bean of the same type is present.
+     * 
+     * @return the Log4j2Metrics instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public Log4j2Metrics log4j2Metrics() {
 		return new Log4j2Metrics();
 	}
 
-	static class Log4JCoreLoggerContextCondition extends SpringBootCondition {
+	/**
+     * Log4JCoreLoggerContextCondition class.
+     */
+    static class Log4JCoreLoggerContextCondition extends SpringBootCondition {
 
-		@Override
+		/**
+         * Determines the match outcome for the Log4JCoreLoggerContextCondition.
+         * 
+         * @param context the condition context
+         * @param metadata the annotated type metadata
+         * @return the condition outcome
+         */
+        @Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			LoggerContext loggerContext = LogManager.getContext(false);
 			try {

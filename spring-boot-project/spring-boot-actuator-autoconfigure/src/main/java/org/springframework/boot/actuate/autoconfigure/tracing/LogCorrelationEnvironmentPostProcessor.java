@@ -36,7 +36,13 @@ import org.springframework.util.ClassUtils;
  */
 class LogCorrelationEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
-	@Override
+	/**
+     * Post-processes the environment by adding a LogCorrelationPropertySource if the Tracer class from Micrometer is present in the application's class loader.
+     * 
+     * @param environment the configurable environment
+     * @param application the Spring application
+     */
+    @Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (ClassUtils.isPresent("io.micrometer.tracing.Tracer", application.getClassLoader())) {
 			environment.getPropertySources().addLast(new LogCorrelationPropertySource(this, environment));
@@ -52,17 +58,34 @@ class LogCorrelationEnvironmentPostProcessor implements EnvironmentPostProcessor
 
 		private final Environment environment;
 
-		LogCorrelationPropertySource(Object source, Environment environment) {
+		/**
+         * Constructs a new LogCorrelationPropertySource with the specified source and environment.
+         * 
+         * @param source the source object for the property source
+         * @param environment the environment object for the property source
+         */
+        LogCorrelationPropertySource(Object source, Environment environment) {
 			super(NAME, source);
 			this.environment = environment;
 		}
 
-		@Override
+		/**
+         * Returns an array of property names.
+         *
+         * @return the array of property names
+         */
+        @Override
 		public String[] getPropertyNames() {
 			return new String[] { LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY };
 		}
 
-		@Override
+		/**
+         * Retrieves the value of a property with the given name.
+         * 
+         * @param name the name of the property to retrieve
+         * @return the value of the property, or null if the property does not exist
+         */
+        @Override
 		public Object getProperty(String name) {
 			if (name.equals(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY)) {
 				return this.environment.getProperty("management.tracing.enabled", Boolean.class, Boolean.TRUE);

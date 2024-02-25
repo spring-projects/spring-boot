@@ -34,7 +34,13 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(ReactorProperties.class)
 public class ReactorAutoConfiguration {
 
-	ReactorAutoConfiguration(ReactorProperties properties) {
+	/**
+     * Configures the Reactor auto-configuration based on the provided properties.
+     * If the context propagation mode is set to AUTO, enables automatic context propagation using Reactor Hooks.
+     *
+     * @param properties the Reactor properties to be used for configuration
+     */
+    ReactorAutoConfiguration(ReactorProperties properties) {
 		if (properties.getContextPropagation() == ReactorProperties.ContextPropagationMode.AUTO) {
 			Hooks.enableAutomaticContextPropagation();
 		}

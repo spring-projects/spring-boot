@@ -88,7 +88,15 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		this.templateAvailabilityProviders = new TemplateAvailabilityProviders(applicationContext);
 	}
 
-	DefaultErrorViewResolver(ApplicationContext applicationContext, Resources resourceProperties,
+	/**
+     * Constructs a new DefaultErrorViewResolver with the specified ApplicationContext, Resources, and TemplateAvailabilityProviders.
+     * 
+     * @param applicationContext the ApplicationContext to be used by the resolver (must not be null)
+     * @param resourceProperties the Resources to be used by the resolver (must not be null)
+     * @param templateAvailabilityProviders the TemplateAvailabilityProviders to be used by the resolver
+     * @throws IllegalArgumentException if any of the parameters are null
+     */
+    DefaultErrorViewResolver(ApplicationContext applicationContext, Resources resourceProperties,
 			TemplateAvailabilityProviders templateAvailabilityProviders) {
 		Assert.notNull(applicationContext, "ApplicationContext must not be null");
 		Assert.notNull(resourceProperties, "Resources must not be null");
@@ -97,7 +105,15 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		this.templateAvailabilityProviders = templateAvailabilityProviders;
 	}
 
-	@Override
+	/**
+     * Resolves the error view for the given HTTP status and model.
+     * 
+     * @param request The HttpServletRequest object.
+     * @param status The HttpStatus object representing the HTTP status.
+     * @param model A Map containing the model attributes.
+     * @return A ModelAndView object representing the resolved error view, or null if no error view is found.
+     */
+    @Override
 	public ModelAndView resolveErrorView(HttpServletRequest request, HttpStatus status, Map<String, Object> model) {
 		ModelAndView modelAndView = resolve(String.valueOf(status.value()), model);
 		if (modelAndView == null && SERIES_VIEWS.containsKey(status.series())) {
@@ -106,7 +122,16 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		return modelAndView;
 	}
 
-	private ModelAndView resolve(String viewName, Map<String, Object> model) {
+	/**
+     * Resolves the error view based on the given view name and model.
+     * If an error view is available for the given view name, it is returned as a ModelAndView.
+     * Otherwise, it tries to resolve the error view as a resource.
+     *
+     * @param viewName The name of the error view to resolve.
+     * @param model The model to be passed to the error view.
+     * @return A ModelAndView object representing the resolved error view, or null if no error view is available.
+     */
+    private ModelAndView resolve(String viewName, Map<String, Object> model) {
 		String errorViewName = "error/" + viewName;
 		TemplateAvailabilityProvider provider = this.templateAvailabilityProviders.getProvider(errorViewName,
 				this.applicationContext);
@@ -116,7 +141,14 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		return resolveResource(errorViewName, model);
 	}
 
-	private ModelAndView resolveResource(String viewName, Map<String, Object> model) {
+	/**
+     * Resolves a resource view for the given view name and model.
+     * 
+     * @param viewName the name of the view to resolve
+     * @param model the model to be passed to the view
+     * @return a ModelAndView object representing the resolved resource view, or null if no resource view was found
+     */
+    private ModelAndView resolveResource(String viewName, Map<String, Object> model) {
 		for (String location : this.resources.getStaticLocations()) {
 			try {
 				Resource resource = this.applicationContext.getResource(location);
@@ -132,12 +164,22 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the order value of this DefaultErrorViewResolver.
+     * 
+     * @return the order value of this DefaultErrorViewResolver
+     */
+    @Override
 	public int getOrder() {
 		return this.order;
 	}
 
-	public void setOrder(int order) {
+	/**
+     * Sets the order of the error view resolver.
+     * 
+     * @param order the order to set
+     */
+    public void setOrder(int order) {
 		this.order = order;
 	}
 
@@ -148,16 +190,34 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 
 		private final Resource resource;
 
-		HtmlResourceView(Resource resource) {
+		/**
+         * Constructs a new HtmlResourceView with the specified resource.
+         * 
+         * @param resource the resource to be used by the view
+         */
+        HtmlResourceView(Resource resource) {
 			this.resource = resource;
 		}
 
-		@Override
+		/**
+         * Returns the content type of the HTML resource view.
+         * 
+         * @return the content type of the HTML resource view
+         */
+        @Override
 		public String getContentType() {
 			return MediaType.TEXT_HTML_VALUE;
 		}
 
-		@Override
+		/**
+         * Render the HTML resource view.
+         * 
+         * @param model the model containing the data to be rendered
+         * @param request the current HTTP servlet request
+         * @param response the current HTTP servlet response
+         * @throws Exception if an error occurs during rendering
+         */
+        @Override
 		public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
 				throws Exception {
 			response.setContentType(getContentType());

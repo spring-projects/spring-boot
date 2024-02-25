@@ -36,11 +36,22 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 class RedisContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<Container<?>, RedisConnectionDetails> {
 
-	RedisContainerConnectionDetailsFactory() {
+	/**
+     * Constructs a new RedisContainerConnectionDetailsFactory object.
+     * 
+     * @param name the name of the Redis container
+     */
+    RedisContainerConnectionDetailsFactory() {
 		super("redis");
 	}
 
-	@Override
+	/**
+     * Returns the Redis connection details for the specified container connection source.
+     * 
+     * @param source the container connection source
+     * @return the Redis connection details
+     */
+    @Override
 	public RedisConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 		return new RedisContainerConnectionDetails(source);
 	}
@@ -51,11 +62,22 @@ class RedisContainerConnectionDetailsFactory
 	private static final class RedisContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
 			implements RedisConnectionDetails {
 
-		private RedisContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		/**
+         * Constructs a new RedisContainerConnectionDetails object with the specified ContainerConnectionSource.
+         * 
+         * @param source the ContainerConnectionSource used to create the RedisContainerConnectionDetails object
+         */
+        private RedisContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 
-		@Override
+		/**
+         * Returns a Standalone instance representing the connection details of the Redis container.
+         * The Standalone instance contains the host and the first mapped port of the container.
+         *
+         * @return a Standalone instance representing the connection details of the Redis container
+         */
+        @Override
 		public Standalone getStandalone() {
 			return Standalone.of(getContainer().getHost(), getContainer().getFirstMappedPort());
 		}

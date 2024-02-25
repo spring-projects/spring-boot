@@ -19,10 +19,19 @@ package smoketest.oauth2.resource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleOauth2ResourceServerApplication class.
+ */
 @SpringBootApplication
 public class SampleOauth2ResourceServerApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by running the SpringApplication.run() method.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleOauth2ResourceServerApplication.class);
 	}
 

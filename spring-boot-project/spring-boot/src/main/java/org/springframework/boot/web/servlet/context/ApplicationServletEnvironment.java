@@ -30,17 +30,33 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  */
 class ApplicationServletEnvironment extends StandardServletEnvironment {
 
-	@Override
+	/**
+     * Retrieves the value of the active profiles property.
+     * 
+     * @return the value of the active profiles property, or null if not available
+     */
+    @Override
 	protected String doGetActiveProfilesProperty() {
 		return null;
 	}
 
-	@Override
+	/**
+     * Retrieves the value of the default profiles property.
+     * 
+     * @return the value of the default profiles property, which is null in this case
+     */
+    @Override
 	protected String doGetDefaultProfilesProperty() {
 		return null;
 	}
 
-	@Override
+	/**
+     * Creates a ConfigurablePropertyResolver using the given MutablePropertySources.
+     * 
+     * @param propertySources the MutablePropertySources to use
+     * @return the created ConfigurablePropertyResolver
+     */
+    @Override
 	protected ConfigurablePropertyResolver createPropertyResolver(MutablePropertySources propertySources) {
 		return ConfigurationPropertySources.createPropertyResolver(propertySources);
 	}

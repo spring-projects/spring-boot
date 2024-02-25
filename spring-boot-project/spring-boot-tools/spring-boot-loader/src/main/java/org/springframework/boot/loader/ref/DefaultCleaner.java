@@ -32,7 +32,14 @@ class DefaultCleaner implements Cleaner {
 
 	private final java.lang.ref.Cleaner cleaner = java.lang.ref.Cleaner.create();
 
-	@Override
+	/**
+     * Registers an object and an associated cleanup action with the cleaner.
+     * 
+     * @param obj the object to be registered
+     * @param action the cleanup action to be performed when the object is cleaned
+     * @return a Cleanable object representing the registered object and cleanup action
+     */
+    @Override
 	public Cleanable register(Object obj, Runnable action) {
 		Cleanable cleanable = (action != null) ? this.cleaner.register(obj, action) : null;
 		if (tracker != null) {

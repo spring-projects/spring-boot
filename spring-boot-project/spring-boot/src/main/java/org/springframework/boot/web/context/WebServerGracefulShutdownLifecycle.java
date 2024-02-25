@@ -46,28 +46,53 @@ public final class WebServerGracefulShutdownLifecycle implements SmartLifecycle 
 		this.webServer = webServer;
 	}
 
-	@Override
+	/**
+     * Starts the web server.
+     * 
+     * This method sets the running flag to true, indicating that the web server is running.
+     */
+    @Override
 	public void start() {
 		this.running = true;
 	}
 
-	@Override
+	/**
+     * Stops the web server gracefully.
+     * 
+     * @throws UnsupportedOperationException if stop is invoked directly
+     */
+    @Override
 	public void stop() {
 		throw new UnsupportedOperationException("Stop must not be invoked directly");
 	}
 
-	@Override
+	/**
+     * Stops the web server gracefully.
+     * 
+     * @param callback the callback to be executed after the web server is shut down
+     */
+    @Override
 	public void stop(Runnable callback) {
 		this.running = false;
 		this.webServer.shutDownGracefully((result) -> callback.run());
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the web server is currently running.
+     *
+     * @return {@code true} if the web server is running, {@code false} otherwise.
+     */
+    @Override
 	public boolean isRunning() {
 		return this.running;
 	}
 
-	@Override
+	/**
+     * Returns the phase of the lifecycle component.
+     *
+     * @return The phase of the lifecycle component.
+     */
+    @Override
 	public int getPhase() {
 		return SMART_LIFECYCLE_PHASE;
 	}

@@ -31,41 +31,85 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 public class NewRelicPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<NewRelicProperties>
 		implements NewRelicConfig {
 
-	public NewRelicPropertiesConfigAdapter(NewRelicProperties properties) {
+	/**
+     * Constructs a new NewRelicPropertiesConfigAdapter with the specified NewRelicProperties.
+     * 
+     * @param properties the NewRelicProperties to be used for configuration
+     */
+    public NewRelicPropertiesConfigAdapter(NewRelicProperties properties) {
 		super(properties);
 	}
 
-	@Override
+	/**
+     * Returns the prefix for exporting New Relic metrics.
+     * The prefix is used to configure the property "management.newrelic.metrics.export".
+     *
+     * @return the prefix for exporting New Relic metrics
+     */
+    @Override
 	public String prefix() {
 		return "management.newrelic.metrics.export";
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the meter name event type is enabled.
+     * 
+     * @return {@code true} if the meter name event type is enabled, {@code false} otherwise
+     */
+    @Override
 	public boolean meterNameEventTypeEnabled() {
 		return get(NewRelicProperties::isMeterNameEventTypeEnabled, NewRelicConfig.super::meterNameEventTypeEnabled);
 	}
 
-	@Override
+	/**
+     * Returns the event type for New Relic.
+     * 
+     * @return the event type
+     */
+    @Override
 	public String eventType() {
 		return get(NewRelicProperties::getEventType, NewRelicConfig.super::eventType);
 	}
 
-	@Override
+	/**
+     * Returns the client provider type for New Relic.
+     * 
+     * @return the client provider type
+     */
+    @Override
 	public ClientProviderType clientProviderType() {
 		return get(NewRelicProperties::getClientProviderType, NewRelicConfig.super::clientProviderType);
 	}
 
-	@Override
+	/**
+     * Returns the API key for New Relic.
+     * 
+     * @return the API key for New Relic
+     */
+    @Override
 	public String apiKey() {
 		return get(NewRelicProperties::getApiKey, NewRelicConfig.super::apiKey);
 	}
 
-	@Override
+	/**
+     * Returns the account ID for New Relic.
+     * 
+     * @return the account ID
+     */
+    @Override
 	public String accountId() {
 		return get(NewRelicProperties::getAccountId, NewRelicConfig.super::accountId);
 	}
 
-	@Override
+	/**
+     * Returns the URI value from the NewRelicPropertiesConfigAdapter class.
+     * If the URI value is not present in the NewRelicPropertiesConfigAdapter class,
+     * it falls back to the default URI value provided by the NewRelicConfig interface.
+     *
+     * @return the URI value from the NewRelicPropertiesConfigAdapter class,
+     *         or the default URI value from the NewRelicConfig interface if not present
+     */
+    @Override
 	public String uri() {
 		return get(NewRelicProperties::getUri, NewRelicConfig.super::uri);
 	}

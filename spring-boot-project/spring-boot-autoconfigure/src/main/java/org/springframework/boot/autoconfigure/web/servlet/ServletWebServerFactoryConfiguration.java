@@ -60,12 +60,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 class ServletWebServerFactoryConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * EmbeddedTomcat class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, Tomcat.class, UpgradeProtocol.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
 	static class EmbeddedTomcat {
 
-		@Bean
+		/**
+         * Creates a TomcatServletWebServerFactory with the provided customizers.
+         * 
+         * @param connectorCustomizers The customizers for Tomcat connectors.
+         * @param contextCustomizers The customizers for Tomcat contexts.
+         * @param protocolHandlerCustomizers The customizers for Tomcat protocol handlers.
+         * @return A TomcatServletWebServerFactory with the provided customizers.
+         */
+        @Bean
 		TomcatServletWebServerFactory tomcatServletWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
 				ObjectProvider<TomcatContextCustomizer> contextCustomizers,
@@ -87,7 +98,13 @@ class ServletWebServerFactoryConfiguration {
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
 	static class EmbeddedJetty {
 
-		@Bean
+		/**
+         * Creates and configures a JettyServletWebServerFactory with the provided JettyServerCustomizers.
+         * 
+         * @param serverCustomizers the JettyServerCustomizers to be applied to the Jetty server
+         * @return the configured JettyServletWebServerFactory
+         */
+        @Bean
 		JettyServletWebServerFactory jettyServletWebServerFactory(
 				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
@@ -105,7 +122,14 @@ class ServletWebServerFactoryConfiguration {
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
 	static class EmbeddedUndertow {
 
-		@Bean
+		/**
+         * Creates an instance of UndertowServletWebServerFactory with the provided deploymentInfoCustomizers and builderCustomizers.
+         * 
+         * @param deploymentInfoCustomizers ObjectProvider of UndertowDeploymentInfoCustomizer instances
+         * @param builderCustomizers ObjectProvider of UndertowBuilderCustomizer instances
+         * @return UndertowServletWebServerFactory instance
+         */
+        @Bean
 		UndertowServletWebServerFactory undertowServletWebServerFactory(
 				ObjectProvider<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers,
 				ObjectProvider<UndertowBuilderCustomizer> builderCustomizers) {
@@ -115,7 +139,13 @@ class ServletWebServerFactoryConfiguration {
 			return factory;
 		}
 
-		@Bean
+		/**
+         * Creates a customizer for the UndertowServletWebServerFactory.
+         * 
+         * @param serverProperties the server properties to be used
+         * @return the UndertowServletWebServerFactoryCustomizer instance
+         */
+        @Bean
 		UndertowServletWebServerFactoryCustomizer undertowServletWebServerFactoryCustomizer(
 				ServerProperties serverProperties) {
 			return new UndertowServletWebServerFactoryCustomizer(serverProperties);

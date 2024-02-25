@@ -32,11 +32,21 @@ public class UndertowServletWebServerFactoryCustomizer
 
 	private final ServerProperties serverProperties;
 
-	public UndertowServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
+	/**
+     * Constructs a new UndertowServletWebServerFactoryCustomizer with the specified ServerProperties.
+     *
+     * @param serverProperties the ServerProperties to be used by the customizer
+     */
+    public UndertowServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		this.serverProperties = serverProperties;
 	}
 
-	@Override
+	/**
+     * Customize the UndertowServletWebServerFactory.
+     * 
+     * @param factory the UndertowServletWebServerFactory to customize
+     */
+    @Override
 	public void customize(UndertowServletWebServerFactory factory) {
 		factory.setEagerFilterInit(this.serverProperties.getUndertow().isEagerFilterInit());
 		factory.setPreservePathOnForward(this.serverProperties.getUndertow().isPreservePathOnForward());

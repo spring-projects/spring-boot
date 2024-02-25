@@ -47,20 +47,40 @@ public class HealthEndpointProperties extends HealthProperties {
 
 	private final Logging logging = new Logging();
 
-	@Override
+	/**
+     * Returns the details of the show.
+     *
+     * @return the details of the show
+     */
+    @Override
 	public Show getShowDetails() {
 		return this.showDetails;
 	}
 
-	public void setShowDetails(Show showDetails) {
+	/**
+     * Sets the show details for the HealthEndpointProperties.
+     * 
+     * @param showDetails the show details to be set
+     */
+    public void setShowDetails(Show showDetails) {
 		this.showDetails = showDetails;
 	}
 
-	public Map<String, Group> getGroup() {
+	/**
+     * Returns the map of groups.
+     *
+     * @return the map of groups
+     */
+    public Map<String, Group> getGroup() {
 		return this.group;
 	}
 
-	public Logging getLogging() {
+	/**
+     * Returns the logging configuration for the HealthEndpointProperties.
+     *
+     * @return the logging configuration for the HealthEndpointProperties
+     */
+    public Logging getLogging() {
 		return this.logging;
 	}
 
@@ -97,36 +117,76 @@ public class HealthEndpointProperties extends HealthProperties {
 		 */
 		private String additionalPath;
 
-		public Set<String> getInclude() {
+		/**
+         * Returns the set of strings representing the include values.
+         *
+         * @return the set of strings representing the include values
+         */
+        public Set<String> getInclude() {
 			return this.include;
 		}
 
-		public void setInclude(Set<String> include) {
+		/**
+         * Sets the include set for the Group.
+         * 
+         * @param include the set of strings to be included in the Group
+         */
+        public void setInclude(Set<String> include) {
 			this.include = include;
 		}
 
-		public Set<String> getExclude() {
+		/**
+         * Returns the set of excluded strings.
+         *
+         * @return the set of excluded strings
+         */
+        public Set<String> getExclude() {
 			return this.exclude;
 		}
 
-		public void setExclude(Set<String> exclude) {
+		/**
+         * Sets the set of strings to exclude.
+         * 
+         * @param exclude the set of strings to exclude
+         */
+        public void setExclude(Set<String> exclude) {
 			this.exclude = exclude;
 		}
 
-		@Override
+		/**
+         * Returns the details of the show.
+         *
+         * @return the details of the show
+         */
+        @Override
 		public Show getShowDetails() {
 			return this.showDetails;
 		}
 
-		public void setShowDetails(Show showDetails) {
+		/**
+         * Sets the show details for the group.
+         * 
+         * @param showDetails the show details to be set
+         */
+        public void setShowDetails(Show showDetails) {
 			this.showDetails = showDetails;
 		}
 
-		public String getAdditionalPath() {
+		/**
+         * Returns the additional path of the Group.
+         * 
+         * @return the additional path of the Group
+         */
+        public String getAdditionalPath() {
 			return this.additionalPath;
 		}
 
-		public void setAdditionalPath(String additionalPath) {
+		/**
+         * Sets the additional path for the Group.
+         * 
+         * @param additionalPath the additional path to be set
+         */
+        public void setAdditionalPath(String additionalPath) {
 			this.additionalPath = additionalPath;
 		}
 
@@ -142,11 +202,21 @@ public class HealthEndpointProperties extends HealthProperties {
 		 */
 		private Duration slowIndicatorThreshold = Duration.ofSeconds(10);
 
-		public Duration getSlowIndicatorThreshold() {
+		/**
+         * Returns the slow indicator threshold.
+         * 
+         * @return the slow indicator threshold
+         */
+        public Duration getSlowIndicatorThreshold() {
 			return this.slowIndicatorThreshold;
 		}
 
-		public void setSlowIndicatorThreshold(Duration slowIndicatorThreshold) {
+		/**
+         * Sets the threshold for the slow indicator.
+         * 
+         * @param slowIndicatorThreshold the threshold duration for the slow indicator
+         */
+        public void setSlowIndicatorThreshold(Duration slowIndicatorThreshold) {
 			this.slowIndicatorThreshold = slowIndicatorThreshold;
 		}
 

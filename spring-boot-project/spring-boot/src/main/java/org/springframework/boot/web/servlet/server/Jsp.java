@@ -41,7 +41,11 @@ public class Jsp {
 	 */
 	private boolean registered = true;
 
-	public Jsp() {
+	/**
+     * Constructor for Jsp class.
+     * Initializes the development parameter to false.
+     */
+    public Jsp() {
 		this.initParameters.put("development", "false");
 	}
 
@@ -55,7 +59,12 @@ public class Jsp {
 		return this.className;
 	}
 
-	public void setClassName(String className) {
+	/**
+     * Sets the class name for the Jsp.
+     * 
+     * @param className the class name to be set
+     */
+    public void setClassName(String className) {
 		this.className = className;
 	}
 
@@ -67,7 +76,12 @@ public class Jsp {
 		return this.initParameters;
 	}
 
-	public void setInitParameters(Map<String, String> initParameters) {
+	/**
+     * Sets the initial parameters for the Jsp class.
+     * 
+     * @param initParameters a Map containing the initial parameters to be set
+     */
+    public void setInitParameters(Map<String, String> initParameters) {
 		this.initParameters = initParameters;
 	}
 
@@ -79,7 +93,12 @@ public class Jsp {
 		return this.registered;
 	}
 
-	public void setRegistered(boolean registered) {
+	/**
+     * Sets the registered status of the Jsp.
+     * 
+     * @param registered the registered status to set
+     */
+    public void setRegistered(boolean registered) {
 		this.registered = registered;
 	}
 

@@ -39,12 +39,23 @@ public class MailSenderValidatorAutoConfiguration {
 
 	private final JavaMailSenderImpl mailSender;
 
-	public MailSenderValidatorAutoConfiguration(JavaMailSenderImpl mailSender) {
+	/**
+     * Constructs a new MailSenderValidatorAutoConfiguration with the specified JavaMailSenderImpl.
+     * 
+     * @param mailSender the JavaMailSenderImpl to be used for sending mails
+     */
+    public MailSenderValidatorAutoConfiguration(JavaMailSenderImpl mailSender) {
 		this.mailSender = mailSender;
 		validateConnection();
 	}
 
-	public void validateConnection() {
+	/**
+     * Validates the connection to the mail server.
+     * 
+     * @throws IllegalStateException if the mail server is not available
+     * @throws MessagingException if an error occurs while testing the connection
+     */
+    public void validateConnection() {
 		try {
 			this.mailSender.testConnection();
 		}

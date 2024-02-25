@@ -32,6 +32,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ * CustomerController class.
+ */
 @Controller
 @RequestMapping("/customers")
 @ExposesResourceFor(Customer.class)
@@ -41,19 +44,36 @@ public class CustomerController {
 
 	private final EntityLinks entityLinks;
 
-	public CustomerController(CustomerRepository repository, EntityLinks entityLinks) {
+	/**
+     * Constructs a new CustomerController with the specified CustomerRepository and EntityLinks.
+     * 
+     * @param repository the CustomerRepository used for accessing customer data
+     * @param entityLinks the EntityLinks used for generating links to related entities
+     */
+    public CustomerController(CustomerRepository repository, EntityLinks entityLinks) {
 		this.repository = repository;
 		this.entityLinks = entityLinks;
 	}
 
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	/**
+     * Retrieves a list of customers.
+     * 
+     * @return The HTTP entity containing the collection of customers.
+     */
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	HttpEntity<CollectionModel<Customer>> showCustomers() {
 		CollectionModel<Customer> resources = CollectionModel.of(this.repository.findAll());
 		resources.add(this.entityLinks.linkToCollectionResource(Customer.class));
 		return new ResponseEntity<>(resources, HttpStatus.OK);
 	}
 
-	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	/**
+     * Retrieves a specific customer by their ID.
+     * 
+     * @param id the ID of the customer to retrieve
+     * @return the HTTP entity containing the customer resource
+     */
+    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	HttpEntity<EntityModel<Customer>> showCustomer(@PathVariable Long id) {
 		EntityModel<Customer> resource = EntityModel.of(this.repository.findOne(id));
 		resource.add(this.entityLinks.linkToItemResource(Customer.class, id));

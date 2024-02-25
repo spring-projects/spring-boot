@@ -43,7 +43,10 @@ public final class ConfigurationPropertySources {
 	 */
 	private static final String ATTACHED_PROPERTY_SOURCE_NAME = "configurationProperties";
 
-	private ConfigurationPropertySources() {
+	/**
+     * Private constructor for the ConfigurationPropertySources class.
+     */
+    private ConfigurationPropertySources() {
 	}
 
 	/**
@@ -95,12 +98,25 @@ public final class ConfigurationPropertySources {
 		sources.addFirst(attached);
 	}
 
-	private static boolean isUsingSources(PropertySource<?> attached, MutablePropertySources sources) {
+	/**
+     * Checks if the given property source is using the provided mutable property sources.
+     * 
+     * @param attached the property source to check
+     * @param sources the mutable property sources to compare against
+     * @return true if the property source is using the mutable property sources, false otherwise
+     */
+    private static boolean isUsingSources(PropertySource<?> attached, MutablePropertySources sources) {
 		return attached instanceof ConfigurationPropertySourcesPropertySource
 				&& ((SpringConfigurationPropertySources) attached.getSource()).isUsingSources(sources);
 	}
 
-	static PropertySource<?> getAttached(MutablePropertySources sources) {
+	/**
+     * Retrieves the attached property source from the given mutable property sources.
+     * 
+     * @param sources the mutable property sources to search in
+     * @return the attached property source if found, or null if not found or if the sources parameter is null
+     */
+    static PropertySource<?> getAttached(MutablePropertySources sources) {
 		return (sources != null) ? sources.get(ATTACHED_PROPERTY_SOURCE_NAME) : null;
 	}
 
@@ -152,20 +168,40 @@ public final class ConfigurationPropertySources {
 		return new SpringConfigurationPropertySources(sources);
 	}
 
-	private static Stream<PropertySource<?>> streamPropertySources(PropertySources sources) {
+	/**
+     * Returns a stream of flattened and included property sources from the given {@code PropertySources}.
+     *
+     * @param sources the {@code PropertySources} to stream
+     * @return a stream of flattened and included property sources
+     */
+    private static Stream<PropertySource<?>> streamPropertySources(PropertySources sources) {
 		return sources.stream()
 			.flatMap(ConfigurationPropertySources::flatten)
 			.filter(ConfigurationPropertySources::isIncluded);
 	}
 
-	private static Stream<PropertySource<?>> flatten(PropertySource<?> source) {
+	/**
+     * Flattens a given PropertySource into a Stream of PropertySource objects.
+     * If the source is an instance of ConfigurableEnvironment, it will extract and stream all the PropertySources
+     * from the ConfigurableEnvironment. Otherwise, it will return a Stream containing only the given PropertySource.
+     *
+     * @param source the PropertySource to be flattened
+     * @return a Stream of PropertySource objects
+     */
+    private static Stream<PropertySource<?>> flatten(PropertySource<?> source) {
 		if (source.getSource() instanceof ConfigurableEnvironment configurableEnvironment) {
 			return streamPropertySources(configurableEnvironment.getPropertySources());
 		}
 		return Stream.of(source);
 	}
 
-	private static boolean isIncluded(PropertySource<?> source) {
+	/**
+     * Checks if the given PropertySource is included.
+     * 
+     * @param source the PropertySource to check
+     * @return true if the PropertySource is included, false otherwise
+     */
+    private static boolean isIncluded(PropertySource<?> source) {
 		return !(source instanceof StubPropertySource)
 				&& !(source instanceof ConfigurationPropertySourcesPropertySource);
 	}

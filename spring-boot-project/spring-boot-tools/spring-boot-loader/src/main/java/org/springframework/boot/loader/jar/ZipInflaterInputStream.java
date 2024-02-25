@@ -35,24 +35,53 @@ abstract class ZipInflaterInputStream extends InflaterInputStream {
 
 	private boolean extraBytesWritten;
 
-	ZipInflaterInputStream(InputStream inputStream, Inflater inflater, int size) {
+	/**
+     * Constructs a new ZipInflaterInputStream with the specified input stream, inflater, and size.
+     * 
+     * @param inputStream the input stream to be read from
+     * @param inflater the inflater to be used for decompression
+     * @param size the size of the input stream
+     */
+    ZipInflaterInputStream(InputStream inputStream, Inflater inflater, int size) {
 		super(inputStream, inflater, getInflaterBufferSize(size));
 		this.available = size;
 	}
 
-	private static int getInflaterBufferSize(long size) {
+	/**
+     * Returns the buffer size for the inflater based on the given size.
+     * 
+     * @param size the size of the buffer
+     * @return the buffer size for the inflater
+     */
+    private static int getInflaterBufferSize(long size) {
 		size += 2; // inflater likes some space
 		size = (size > 65536) ? 8192 : size;
 		size = (size <= 0) ? 4096 : size;
 		return (int) size;
 	}
 
-	@Override
+	/**
+     * Returns the number of bytes that can be read from the current input stream without blocking.
+     * 
+     * @return the number of bytes that can be read from the current input stream without blocking,
+     *         or -1 if the number of bytes is unknown.
+     * @throws IOException if an I/O error occurs.
+     */
+    @Override
 	public int available() throws IOException {
 		return (this.available >= 0) ? this.available : super.available();
 	}
 
-	@Override
+	/**
+     * Reads up to len bytes of data from the input stream into an array of bytes.
+     * 
+     * @param b   the buffer into which the data is read.
+     * @param off the start offset in the destination array b.
+     * @param len the maximum number of bytes to read.
+     * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the stream has been reached.
+     * @throws IOException if an I/O error occurs.
+     */
+    @Override
 	public int read(byte[] b, int off, int len) throws IOException {
 		int result = super.read(b, off, len);
 		if (result != -1) {
@@ -61,7 +90,12 @@ abstract class ZipInflaterInputStream extends InflaterInputStream {
 		return result;
 	}
 
-	@Override
+	/**
+     * Fills the input buffer with more data to be decompressed.
+     * 
+     * @throws IOException if an I/O error occurs.
+     */
+    @Override
 	protected void fill() throws IOException {
 		try {
 			super.fill();

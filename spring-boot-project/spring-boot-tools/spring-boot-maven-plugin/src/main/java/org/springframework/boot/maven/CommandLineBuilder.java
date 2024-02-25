@@ -40,22 +40,45 @@ final class CommandLineBuilder {
 
 	private final List<String> arguments = new ArrayList<>();
 
-	private CommandLineBuilder(String mainClass) {
+	/**
+     * Constructs a new CommandLineBuilder with the specified main class.
+     *
+     * @param mainClass the main class to be executed
+     */
+    private CommandLineBuilder(String mainClass) {
 		this.mainClass = mainClass;
 	}
 
-	static CommandLineBuilder forMainClass(String mainClass) {
+	/**
+     * Creates a new instance of CommandLineBuilder for the specified main class.
+     * 
+     * @param mainClass the fully qualified name of the main class
+     * @return a new instance of CommandLineBuilder
+     */
+    static CommandLineBuilder forMainClass(String mainClass) {
 		return new CommandLineBuilder(mainClass);
 	}
 
-	CommandLineBuilder withJvmArguments(String... jvmArguments) {
+	/**
+     * Adds JVM arguments to the command line builder.
+     * 
+     * @param jvmArguments the JVM arguments to be added
+     * @return the updated CommandLineBuilder object
+     */
+    CommandLineBuilder withJvmArguments(String... jvmArguments) {
 		if (jvmArguments != null) {
 			this.options.addAll(Arrays.stream(jvmArguments).filter(Objects::nonNull).toList());
 		}
 		return this;
 	}
 
-	CommandLineBuilder withSystemProperties(Map<String, String> systemProperties) {
+	/**
+     * Adds system properties to the command line builder.
+     * 
+     * @param systemProperties a map of system properties to be added
+     * @return the updated command line builder
+     */
+    CommandLineBuilder withSystemProperties(Map<String, String> systemProperties) {
 		if (systemProperties != null) {
 			systemProperties.entrySet()
 				.stream()
@@ -65,19 +88,36 @@ final class CommandLineBuilder {
 		return this;
 	}
 
-	CommandLineBuilder withClasspath(URL... elements) {
+	/**
+     * Adds the specified elements to the classpath.
+     * 
+     * @param elements the URLs representing the elements to be added to the classpath
+     * @return the CommandLineBuilder instance with the added classpath elements
+     */
+    CommandLineBuilder withClasspath(URL... elements) {
 		this.classpathElements.addAll(Arrays.asList(elements));
 		return this;
 	}
 
-	CommandLineBuilder withArguments(String... arguments) {
+	/**
+     * Adds the specified arguments to the command line builder.
+     * 
+     * @param arguments the arguments to be added to the command line builder
+     * @return the updated command line builder
+     */
+    CommandLineBuilder withArguments(String... arguments) {
 		if (arguments != null) {
 			this.arguments.addAll(Arrays.stream(arguments).filter(Objects::nonNull).toList());
 		}
 		return this;
 	}
 
-	List<String> build() {
+	/**
+     * Builds the command line for executing a Java program.
+     * 
+     * @return the command line as a list of strings
+     */
+    List<String> build() {
 		List<String> commandLine = new ArrayList<>();
 		if (!this.options.isEmpty()) {
 			commandLine.addAll(this.options);
@@ -93,9 +133,18 @@ final class CommandLineBuilder {
 		return commandLine;
 	}
 
-	static class ClasspathBuilder {
+	/**
+     * ClasspathBuilder class.
+     */
+    static class ClasspathBuilder {
 
-		static String build(List<URL> classpathElements) {
+		/**
+         * Builds a classpath string from a list of classpath elements.
+         * 
+         * @param classpathElements the list of classpath elements to build the classpath from
+         * @return the classpath string
+         */
+        static String build(List<URL> classpathElements) {
 			StringBuilder classpath = new StringBuilder();
 			for (URL element : classpathElements) {
 				if (!classpath.isEmpty()) {
@@ -106,7 +155,14 @@ final class CommandLineBuilder {
 			return classpath.toString();
 		}
 
-		private static File toFile(URL element) {
+		/**
+         * Converts a URL element to a File object.
+         * 
+         * @param element the URL element to be converted
+         * @return the corresponding File object
+         * @throws IllegalArgumentException if the URL element is not a valid URI
+         */
+        private static File toFile(URL element) {
 			try {
 				return new File(element.toURI());
 			}
@@ -122,7 +178,14 @@ final class CommandLineBuilder {
 	 */
 	private static final class SystemPropertyFormatter {
 
-		static String format(String key, String value) {
+		/**
+         * Formats a system property key-value pair into a command line argument format.
+         * 
+         * @param key   the key of the system property
+         * @param value the value of the system property
+         * @return the formatted command line argument
+         */
+        static String format(String key, String value) {
 			if (key == null) {
 				return "";
 			}

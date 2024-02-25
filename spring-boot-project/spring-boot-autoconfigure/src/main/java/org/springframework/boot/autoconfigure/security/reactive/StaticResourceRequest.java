@@ -42,7 +42,11 @@ public final class StaticResourceRequest {
 
 	static final StaticResourceRequest INSTANCE = new StaticResourceRequest();
 
-	private StaticResourceRequest() {
+	/**
+     * Private constructor for the StaticResourceRequest class.
+     * This constructor is used to prevent the instantiation of the class.
+     */
+    private StaticResourceRequest() {
 	}
 
 	/**
@@ -93,7 +97,12 @@ public final class StaticResourceRequest {
 
 		private final Set<StaticResourceLocation> locations;
 
-		private StaticResourceServerWebExchange(Set<StaticResourceLocation> locations) {
+		/**
+         * Constructs a new StaticResourceServerWebExchange with the specified set of locations.
+         *
+         * @param locations the set of static resource locations to be used by the server
+         */
+        private StaticResourceServerWebExchange(Set<StaticResourceLocation> locations) {
 			this.locations = locations;
 		}
 
@@ -121,16 +130,32 @@ public final class StaticResourceRequest {
 			return new StaticResourceServerWebExchange(subset);
 		}
 
-		private Stream<String> getPatterns() {
+		/**
+         * Returns a stream of patterns for static resource locations.
+         *
+         * @return a stream of patterns for static resource locations
+         */
+        private Stream<String> getPatterns() {
 			return this.locations.stream().flatMap(StaticResourceLocation::getPatterns);
 		}
 
-		@Override
+		/**
+         * Determines if the given ServerWebExchange matches any of the delegate matchers.
+         *
+         * @param exchange the ServerWebExchange to be matched
+         * @return a Mono emitting a MatchResult indicating if the exchange matches any of the delegate matchers
+         */
+        @Override
 		public Mono<MatchResult> matches(ServerWebExchange exchange) {
 			return new OrServerWebExchangeMatcher(getDelegateMatchers().toList()).matches(exchange);
 		}
 
-		private Stream<ServerWebExchangeMatcher> getDelegateMatchers() {
+		/**
+         * Returns a stream of delegate matchers for the server web exchange.
+         *
+         * @return a stream of delegate matchers
+         */
+        private Stream<ServerWebExchangeMatcher> getDelegateMatchers() {
 			return getPatterns().map(PathPatternParserServerWebExchangeMatcher::new);
 		}
 

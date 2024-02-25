@@ -24,10 +24,19 @@ package org.springframework.boot.loader.launch;
  */
 public final class PropertiesLauncher {
 
-	private PropertiesLauncher() {
+	/**
+     * Private constructor for the PropertiesLauncher class.
+     */
+    private PropertiesLauncher() {
 	}
 
-	public static void main(String[] args) throws Exception {
+	/**
+     * The main method of the PropertiesLauncher class.
+     * 
+     * @param args the command line arguments passed to the main method
+     * @throws Exception if an error occurs during the execution of the main method
+     */
+    public static void main(String[] args) throws Exception {
 		org.springframework.boot.loader.PropertiesLauncher.main(args);
 	}
 

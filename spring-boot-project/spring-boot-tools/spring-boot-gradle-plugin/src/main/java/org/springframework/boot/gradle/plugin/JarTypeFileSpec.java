@@ -35,7 +35,13 @@ class JarTypeFileSpec implements Spec<File> {
 
 	private static final Set<String> EXCLUDED_JAR_TYPES = Collections.singleton("dependencies-starter");
 
-	@Override
+	/**
+     * Checks if the given file is satisfied by the specified criteria.
+     * 
+     * @param file the file to be checked
+     * @return true if the file is satisfied by the criteria, false otherwise
+     */
+    @Override
 	public boolean isSatisfiedBy(File file) {
 		try (JarFile jar = new JarFile(file)) {
 			String jarType = jar.getManifest().getMainAttributes().getValue("Spring-Boot-Jar-Type");

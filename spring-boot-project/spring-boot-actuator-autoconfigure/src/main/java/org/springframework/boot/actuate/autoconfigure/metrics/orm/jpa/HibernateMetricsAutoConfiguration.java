@@ -57,23 +57,47 @@ public class HibernateMetricsAutoConfiguration implements SmartInitializingSingl
 
 	private final MeterRegistry meterRegistry;
 
-	public HibernateMetricsAutoConfiguration(Map<String, EntityManagerFactory> entityManagerFactories,
+	/**
+     * Constructs a new HibernateMetricsAutoConfiguration with the specified entityManagerFactories and meterRegistry.
+     * 
+     * @param entityManagerFactories a map of entity manager factories
+     * @param meterRegistry the meter registry to be used for metrics
+     */
+    public HibernateMetricsAutoConfiguration(Map<String, EntityManagerFactory> entityManagerFactories,
 			MeterRegistry meterRegistry) {
 		this.entityManagerFactories = entityManagerFactories;
 		this.meterRegistry = meterRegistry;
 	}
 
-	@Override
+	/**
+     * Binds the EntityManagerFactories to the MeterRegistry after all singletons have been instantiated.
+     * 
+     * @since 1.0
+     */
+    @Override
 	public void afterSingletonsInstantiated() {
 		bindEntityManagerFactoriesToRegistry(this.entityManagerFactories, this.meterRegistry);
 	}
 
-	public void bindEntityManagerFactoriesToRegistry(Map<String, EntityManagerFactory> entityManagerFactories,
+	/**
+     * Binds the provided EntityManagerFactories to the given MeterRegistry.
+     * 
+     * @param entityManagerFactories a map of EntityManagerFactory instances, where the key is the name of the factory
+     * @param registry the MeterRegistry to bind the EntityManagerFactories to
+     */
+    public void bindEntityManagerFactoriesToRegistry(Map<String, EntityManagerFactory> entityManagerFactories,
 			MeterRegistry registry) {
 		entityManagerFactories.forEach((name, factory) -> bindEntityManagerFactoryToRegistry(name, factory, registry));
 	}
 
-	private void bindEntityManagerFactoryToRegistry(String beanName, EntityManagerFactory entityManagerFactory,
+	/**
+     * Binds the EntityManagerFactory to the MeterRegistry by creating a HibernateMetrics instance and binding it to the registry.
+     * 
+     * @param beanName the name of the bean associated with the EntityManagerFactory
+     * @param entityManagerFactory the EntityManagerFactory to bind
+     * @param registry the MeterRegistry to bind the HibernateMetrics instance to
+     */
+    private void bindEntityManagerFactoryToRegistry(String beanName, EntityManagerFactory entityManagerFactory,
 			MeterRegistry registry) {
 		String entityManagerFactoryName = getEntityManagerFactoryName(beanName);
 		try {

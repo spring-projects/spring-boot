@@ -28,7 +28,13 @@ public class SampleApplication {
 
 	private static final Object lock = new Object();
 
-	public static void main(String[] args) throws Exception {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args an array of command-line arguments
+     * @throws Exception if an error occurs during execution
+     */
+    public static void main(String[] args) throws Exception {
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 		ObjectName name = new ObjectName(
 				"org.springframework.boot:type=Admin,name=SpringApplication");
@@ -59,19 +65,32 @@ public class SampleApplication {
 
 	}
 
-	static final class SpringApplicationAdmin implements SpringApplicationAdminMXBean {
+	/**
+     * SpringApplicationAdmin class.
+     */
+    static final class SpringApplicationAdmin implements SpringApplicationAdminMXBean {
 
 		private boolean ready;
 
 		private boolean shutdownInvoked;
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the application is ready.
+         * 
+         * @return {@code true} if the application is ready, {@code false} otherwise.
+         */
+        @Override
 		public boolean isReady() {
 			System.out.println("isReady: " + this.ready);
 			return this.ready;
 		}
 
-		@Override
+		/**
+         * Shuts down the application.
+         * 
+         * This method sets the 'shutdownInvoked' flag to true and prints a message indicating that a shutdown has been requested.
+         */
+        @Override
 		public void shutdown() {
 			this.shutdownInvoked = true;
 			System.out.println("Shutdown requested");

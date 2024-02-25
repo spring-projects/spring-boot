@@ -40,7 +40,15 @@ import org.springframework.web.client.RestTemplate;
 @ConditionalOnBean(RestTemplateBuilder.class)
 class RestTemplateObservationConfiguration {
 
-	@Bean
+	/**
+     * Creates an instance of ObservationRestTemplateCustomizer with the provided dependencies.
+     * 
+     * @param observationRegistry The ObservationRegistry used for registering observations.
+     * @param customConvention The custom ClientRequestObservationConvention, if available.
+     * @param observationProperties The ObservationProperties used for configuring observations.
+     * @return An instance of ObservationRestTemplateCustomizer.
+     */
+    @Bean
 	ObservationRestTemplateCustomizer observationRestTemplateCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties) {

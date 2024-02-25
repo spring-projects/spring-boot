@@ -23,6 +23,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
+/**
+ * CacheManagerCheck class.
+ */
 @Component
 public class CacheManagerCheck implements CommandLineRunner {
 
@@ -30,11 +33,23 @@ public class CacheManagerCheck implements CommandLineRunner {
 
 	private final CacheManager cacheManager;
 
-	public CacheManagerCheck(CacheManager cacheManager) {
+	/**
+     * Initializes a new instance of the CacheManagerCheck class.
+     * 
+     * @param cacheManager the cache manager to be checked
+     */
+    public CacheManagerCheck(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
 	}
 
-	@Override
+	/**
+     * This method is used to run the cache manager check.
+     * It logs the cache manager class name.
+     * 
+     * @param strings The input strings.
+     * @throws Exception If an exception occurs.
+     */
+    @Override
 	public void run(String... strings) throws Exception {
 		logger.info("\n\n=========================================================\nUsing cache manager: "
 				+ this.cacheManager.getClass().getName() + "\n"

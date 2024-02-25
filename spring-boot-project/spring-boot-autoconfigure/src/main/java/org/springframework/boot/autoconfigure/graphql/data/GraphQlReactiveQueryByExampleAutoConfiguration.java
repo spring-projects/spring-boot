@@ -49,7 +49,13 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 @ConditionalOnBean(GraphQlSource.class)
 public class GraphQlReactiveQueryByExampleAutoConfiguration {
 
-	@Bean
+	/**
+     * Customizes the GraphQL source builder to register the ReactiveQueryByExampleExecutor for handling query by example operations.
+     * 
+     * @param reactiveExecutors the providers of ReactiveQueryByExampleExecutor instances
+     * @return the customizer for the GraphQL source builder
+     */
+    @Bean
 	public GraphQlSourceBuilderCustomizer reactiveQueryByExampleRegistrar(
 			ObjectProvider<ReactiveQueryByExampleExecutor<?>> reactiveExecutors) {
 		RuntimeWiringConfigurer configurer = QueryByExampleDataFetcher

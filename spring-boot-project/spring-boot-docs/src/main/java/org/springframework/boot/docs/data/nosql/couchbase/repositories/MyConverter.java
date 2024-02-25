@@ -18,9 +18,18 @@ package org.springframework.boot.docs.data.nosql.couchbase.repositories;
 
 import org.springframework.core.convert.converter.Converter;
 
+/**
+ * MyConverter class.
+ */
 class MyConverter implements Converter<CouchbaseProperties, Boolean> {
 
-	@Override
+	/**
+     * Converts a CouchbaseProperties object to a Boolean value.
+     * 
+     * @param value the CouchbaseProperties object to be converted
+     * @return true if the conversion is successful, false otherwise
+     */
+    @Override
 	public Boolean convert(CouchbaseProperties value) {
 		return true;
 	}

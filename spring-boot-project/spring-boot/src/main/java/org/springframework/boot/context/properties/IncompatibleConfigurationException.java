@@ -31,12 +31,22 @@ public class IncompatibleConfigurationException extends RuntimeException {
 
 	private final List<String> incompatibleKeys;
 
-	public IncompatibleConfigurationException(String... incompatibleKeys) {
+	/**
+     * Constructs a new IncompatibleConfigurationException with the specified incompatible keys.
+     * 
+     * @param incompatibleKeys the incompatible keys that have incompatible values
+     */
+    public IncompatibleConfigurationException(String... incompatibleKeys) {
 		super("The following configuration properties have incompatible values: " + Arrays.toString(incompatibleKeys));
 		this.incompatibleKeys = Arrays.asList(incompatibleKeys);
 	}
 
-	public Collection<String> getIncompatibleKeys() {
+	/**
+     * Returns a collection of incompatible keys.
+     *
+     * @return the collection of incompatible keys
+     */
+    public Collection<String> getIncompatibleKeys() {
 		return this.incompatibleKeys;
 	}
 

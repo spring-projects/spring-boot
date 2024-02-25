@@ -64,11 +64,21 @@ public class JerseyServerMetricsAutoConfiguration {
 
 	private final ObservationProperties observationProperties;
 
-	public JerseyServerMetricsAutoConfiguration(ObservationProperties observationProperties) {
+	/**
+     * Constructs a new instance of JerseyServerMetricsAutoConfiguration with the specified ObservationProperties.
+     *
+     * @param observationProperties the ObservationProperties to be used by the configuration
+     */
+    public JerseyServerMetricsAutoConfiguration(ObservationProperties observationProperties) {
 		this.observationProperties = observationProperties;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link DefaultJerseyTagsProvider} if no other bean of type {@link JerseyTagsProvider} or {@link io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider} is present.
+     * 
+     * @return the created {@link DefaultJerseyTagsProvider} instance
+     */
+    @Bean
 	@SuppressWarnings("deprecation")
 	@ConditionalOnMissingBean({ JerseyTagsProvider.class,
 			io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider.class })
@@ -76,7 +86,15 @@ public class JerseyServerMetricsAutoConfiguration {
 		return new DefaultJerseyTagsProvider();
 	}
 
-	@Bean
+	/**
+     * Returns a customizer for configuring the Jersey server metrics.
+     * 
+     * @param meterRegistry The MeterRegistry used for collecting metrics.
+     * @param tagsProvider The JerseyTagsProvider used for providing tags for metrics.
+     * @param micrometerTagsProvider The micrometerTagsProvider used for providing tags for metrics.
+     * @return The ResourceConfigCustomizer for configuring the Jersey server metrics.
+     */
+    @Bean
 	@SuppressWarnings("deprecation")
 	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(MeterRegistry meterRegistry,
 			ObjectProvider<JerseyTagsProvider> tagsProvider,
@@ -87,7 +105,15 @@ public class JerseyServerMetricsAutoConfiguration {
 				metricName, true, new AnnotationUtilsAnnotationFinder()));
 	}
 
-	@Bean
+	/**
+     * Returns a MeterFilter bean that filters metrics based on the maximum number of URI tags allowed.
+     * The maximum number of URI tags is obtained from the metricsProperties.
+     * If the maximum number of URI tags is reached, a logging message is generated.
+     * 
+     * @param metricsProperties the MetricsProperties bean used to obtain the maximum number of URI tags
+     * @return the MeterFilter bean that filters metrics based on the maximum number of URI tags
+     */
+    @Bean
 	@Order(0)
 	public MeterFilter jerseyMetricsUriTagFilter(MetricsProperties metricsProperties) {
 		String metricName = this.observationProperties.getHttp().getServer().getRequests().getName();
@@ -102,29 +128,57 @@ public class JerseyServerMetricsAutoConfiguration {
 	 */
 	private static final class AnnotationUtilsAnnotationFinder implements AnnotationFinder {
 
-		@Override
+		/**
+         * Finds the specified annotation on the given annotated element.
+         * 
+         * @param annotatedElement the annotated element to search for the annotation on
+         * @param annotationType the type of annotation to find
+         * @return the found annotation, or null if not found
+         * @throws IllegalArgumentException if the annotated element or annotation type is null
+         */
+        @Override
 		public <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
 			return AnnotationUtils.findAnnotation(annotatedElement, annotationType);
 		}
 
 	}
 
-	@SuppressWarnings("deprecation")
+	/**
+     * JerseyTagsProviderAdapter class.
+     */
+    @SuppressWarnings("deprecation")
 	static final class JerseyTagsProviderAdapter implements JerseyTagsProvider {
 
 		private final io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider delegate;
 
-		private JerseyTagsProviderAdapter(
+		/**
+         * Constructs a new JerseyTagsProviderAdapter with the specified delegate.
+         *
+         * @param delegate the delegate JerseyTagsProvider to be used
+         */
+        private JerseyTagsProviderAdapter(
 				io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider delegate) {
 			this.delegate = delegate;
 		}
 
-		@Override
+		/**
+         * Returns an iterable collection of tags for the given HTTP request event.
+         *
+         * @param event the HTTP request event
+         * @return an iterable collection of tags
+         */
+        @Override
 		public Iterable<Tag> httpRequestTags(RequestEvent event) {
 			return this.delegate.httpRequestTags(event);
 		}
 
-		@Override
+		/**
+         * Returns the tags associated with a long HTTP request event.
+         * 
+         * @param event the HTTP request event
+         * @return an iterable collection of tags
+         */
+        @Override
 		public Iterable<Tag> httpLongRequestTags(RequestEvent event) {
 			return this.delegate.httpLongRequestTags(event);
 		}

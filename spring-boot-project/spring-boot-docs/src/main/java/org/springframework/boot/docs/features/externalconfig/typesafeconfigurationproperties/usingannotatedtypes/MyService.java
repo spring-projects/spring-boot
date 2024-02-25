@@ -18,16 +18,32 @@ package org.springframework.boot.docs.features.externalconfig.typesafeconfigurat
 
 import org.springframework.stereotype.Service;
 
+/**
+ * MyService class.
+ */
 @Service
 public class MyService {
 
 	private final MyProperties properties;
 
-	public MyService(MyProperties properties) {
+	/**
+     * Constructs a new instance of MyService with the specified properties.
+     * 
+     * @param properties the properties to be used by the service
+     */
+    public MyService(MyProperties properties) {
 		this.properties = properties;
 	}
 
-	public void openConnection() {
+	/**
+     * Opens a connection to the remote server.
+     * 
+     * This method creates a new instance of the Server class using the remote address specified in the properties.
+     * It then starts the server, allowing it to accept incoming connections.
+     * 
+     * @throws IOException if an I/O error occurs while opening the connection.
+     */
+    public void openConnection() {
 		Server server = new Server(this.properties.getRemoteAddress());
 		server.start();
 		// ...

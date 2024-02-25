@@ -62,7 +62,16 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		this.updatedFiles = updatedFiles;
 	}
 
-	@Override
+	/**
+     * Returns an enumeration of URLs representing the resources with the given name.
+     * This method overrides the getResources() method in the parent class and ensures
+     * that duplicates are not included in the returned enumeration.
+     * 
+     * @param name the name of the resource
+     * @return an enumeration of URLs representing the resources with the given name
+     * @throws IOException if an I/O error occurs while getting the resources
+     */
+    @Override
 	public Enumeration<URL> getResources(String name) throws IOException {
 		// Use the parent since we're shadowing resource and we don't want duplicates
 		Enumeration<URL> resources = getParent().getResources(name);
@@ -79,7 +88,18 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		return resources;
 	}
 
-	@Override
+	/**
+     * Returns a URL object for reading the specified resource.
+     * 
+     * This method first checks if the resource has been marked as deleted in the updatedFiles map. If it has been marked as deleted, 
+     * it returns null indicating that the resource does not exist. Otherwise, it attempts to find the resource using the findResource() 
+     * method. If the resource is found, it returns the URL object representing the resource. If the resource is not found, it delegates 
+     * the call to the parent class loader's getResource() method.
+     * 
+     * @param name the name of the resource
+     * @return a URL object for reading the specified resource, or null if the resource does not exist
+     */
+    @Override
 	public URL getResource(String name) {
 		ClassLoaderFile file = this.updatedFiles.getFile(name);
 		if (file != null && file.getKind() == Kind.DELETED) {
@@ -92,7 +112,14 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		return getParent().getResource(name);
 	}
 
-	@Override
+	/**
+     * Finds the resource with the specified name.
+     * 
+     * @param name the name of the resource
+     * @return the URL object representing the resource, or null if the resource is not found or has been deleted
+     * @see java.lang.ClassLoader#findResource(java.lang.String)
+     */
+    @Override
 	public URL findResource(String name) {
 		final ClassLoaderFile file = this.updatedFiles.getFile(name);
 		if (file == null) {
@@ -104,7 +131,15 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		return createFileUrl(name, file);
 	}
 
-	@Override
+	/**
+     * Loads the class with the specified name.
+     * 
+     * @param name    the fully qualified name of the class to be loaded
+     * @param resolve a boolean indicating whether or not to resolve the class
+     * @return the loaded class
+     * @throws ClassNotFoundException if the class could not be found
+     */
+    @Override
 	public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		String path = name.replace('.', '/').concat(".class");
 		ClassLoaderFile file = this.updatedFiles.getFile(path);
@@ -128,7 +163,14 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		}
 	}
 
-	@Override
+	/**
+     * Finds and loads the class with the specified name.
+     * 
+     * @param name the fully qualified name of the class to be found
+     * @return the loaded class
+     * @throws ClassNotFoundException if the class with the specified name is not found
+     */
+    @Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
 		String path = name.replace('.', '/').concat(".class");
 		final ClassLoaderFile file = this.updatedFiles.getFile(path);
@@ -142,17 +184,38 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		return defineClass(name, bytes, 0, bytes.length);
 	}
 
-	@Override
+	/**
+     * Defines and returns a new class with the specified name, byte code, and protection domain.
+     * 
+     * @param name the fully qualified name of the class
+     * @param b the byte code of the class
+     * @param protectionDomain the protection domain of the class
+     * @return the newly defined class
+     */
+    @Override
 	public Class<?> publicDefineClass(String name, byte[] b, ProtectionDomain protectionDomain) {
 		return defineClass(name, b, 0, b.length, protectionDomain);
 	}
 
-	@Override
+	/**
+     * Returns the original class loader that was used to load the RestartClassLoader class.
+     * 
+     * @return the original class loader
+     */
+    @Override
 	public ClassLoader getOriginalClassLoader() {
 		return getParent();
 	}
 
-	private URL createFileUrl(String name, ClassLoaderFile file) {
+	/**
+     * Creates a URL for a file with the given name and ClassLoaderFile.
+     * 
+     * @param name the name of the file
+     * @param file the ClassLoaderFile representing the file
+     * @return the URL for the file
+     * @throws IllegalStateException if the URL is malformed
+     */
+    private URL createFileUrl(String name, ClassLoaderFile file) {
 		try {
 			return new URL("reloaded", null, -1, "/" + name, new ClassLoaderFileURLStreamHandler(file));
 		}
@@ -161,7 +224,13 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		}
 	}
 
-	@Override
+	/**
+     * Checks if the given class is reloadable.
+     * 
+     * @param classType the class to check
+     * @return true if the class is reloadable, false otherwise
+     */
+    @Override
 	public boolean isClassReloadable(Class<?> classType) {
 		return (classType.getClassLoader() instanceof RestartClassLoader);
 	}
@@ -175,17 +244,35 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 
 		private final Enumeration<E> enumeration;
 
-		CompoundEnumeration(E firstElement, Enumeration<E> enumeration) {
+		/**
+         * Constructs a new CompoundEnumeration object with the specified first element and enumeration.
+         * 
+         * @param firstElement the first element of the compound enumeration
+         * @param enumeration the enumeration to be combined with the first element
+         */
+        CompoundEnumeration(E firstElement, Enumeration<E> enumeration) {
 			this.firstElement = firstElement;
 			this.enumeration = enumeration;
 		}
 
-		@Override
+		/**
+         * Returns true if this CompoundEnumeration object contains more elements.
+         * 
+         * @return true if this CompoundEnumeration object contains more elements, false otherwise
+         */
+        @Override
 		public boolean hasMoreElements() {
 			return (this.firstElement != null || this.enumeration.hasMoreElements());
 		}
 
-		@Override
+		/**
+         * Returns the next element in the enumeration.
+         * If the first element is not null, it returns the first element and sets it to null.
+         * Otherwise, it returns the next element from the underlying enumeration.
+         *
+         * @return the next element in the enumeration
+         */
+        @Override
 		public E nextElement() {
 			if (this.firstElement == null) {
 				return this.enumeration.nextElement();

@@ -66,7 +66,14 @@ public class SessionsEndpoint {
 		this.indexedSessionRepository = indexedSessionRepository;
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves the sessions associated with a given username.
+     * 
+     * @param username the username for which to retrieve the sessions
+     * @return a SessionsDescriptor object containing the sessions associated with the username
+     *         or null if the indexedSessionRepository is not available
+     */
+    @ReadOperation
 	public SessionsDescriptor sessionsForUsername(String username) {
 		if (this.indexedSessionRepository == null) {
 			return null;
@@ -75,7 +82,13 @@ public class SessionsEndpoint {
 		return new SessionsDescriptor(sessions);
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves the session with the specified session ID.
+     * 
+     * @param sessionId the ID of the session to retrieve
+     * @return the session descriptor for the specified session ID, or null if the session does not exist
+     */
+    @ReadOperation
 	public SessionDescriptor getSession(@Selector String sessionId) {
 		Session session = this.sessionRepository.findById(sessionId);
 		if (session == null) {
@@ -84,7 +97,12 @@ public class SessionsEndpoint {
 		return new SessionDescriptor(session);
 	}
 
-	@DeleteOperation
+	/**
+     * Deletes a session with the specified session ID.
+     * 
+     * @param sessionId the ID of the session to be deleted
+     */
+    @DeleteOperation
 	public void deleteSession(@Selector String sessionId) {
 		this.sessionRepository.deleteById(sessionId);
 	}

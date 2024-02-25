@@ -24,6 +24,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * MyRepositoryTests class.
+ */
 @DataJpaTest
 class MyRepositoryTests {
 
@@ -33,7 +36,10 @@ class MyRepositoryTests {
 	@Autowired
 	private UserRepository repository;
 
-	@Test
+	/**
+     * Test case to verify the functionality of the example method.
+     */
+    @Test
 	void testExample() {
 		this.entityManager.persist(new User("sboot", "1234"));
 		User user = this.repository.findByUsername("sboot");

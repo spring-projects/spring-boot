@@ -21,11 +21,24 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
+/**
+ * MyTests class.
+ */
 @SpringBootTest
 @Import(MyTestsConfiguration.class)
 class MyTests {
 
-	@Test
+	/**
+     * This is an example test method.
+     * 
+     * @param None
+     * @return None
+     * 
+     * @throws None
+     * 
+     * @since 1.0
+     */
+    @Test
 	void exampleTest() {
 		// ...
 	}

@@ -43,7 +43,13 @@ class DisabledIfProcessUnavailableCondition implements ExecutionCondition {
 
 	private static final boolean MAC_OS = System.getProperty("os.name").toLowerCase().contains("mac");
 
-	@Override
+	/**
+     * Evaluates the execution condition for the test method.
+     * 
+     * @param context the extension context
+     * @return the result of the condition evaluation
+     */
+    @Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
 		List<String[]> commands = new ArrayList<>();
 		context.getTestClass().map(this::getAnnotationValue).orElse(Stream.empty()).forEach(commands::add);
@@ -57,13 +63,25 @@ class DisabledIfProcessUnavailableCondition implements ExecutionCondition {
 		}
 	}
 
-	private Stream<String[]> getAnnotationValue(AnnotatedElement testElement) {
+	/**
+     * Retrieves the value of the annotation "DisabledIfProcessUnavailable" from the given annotated element.
+     * 
+     * @param testElement the annotated element from which to retrieve the annotation value
+     * @return a stream of string arrays representing the values of the "DisabledIfProcessUnavailable" annotation
+     */
+    private Stream<String[]> getAnnotationValue(AnnotatedElement testElement) {
 		return MergedAnnotations.from(testElement, SearchStrategy.TYPE_HIERARCHY)
 			.stream(DisabledIfProcessUnavailable.class)
 			.map((annotation) -> annotation.getStringArray(MergedAnnotation.VALUE));
 	}
 
-	private void check(String[] command) {
+	/**
+     * Checks if a process is available and can be executed.
+     * 
+     * @param command the command to execute as an array of strings
+     * @throws RuntimeException if unable to start the process
+     */
+    private void check(String[] command) {
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
 		try {
 			Process process = processBuilder.start();

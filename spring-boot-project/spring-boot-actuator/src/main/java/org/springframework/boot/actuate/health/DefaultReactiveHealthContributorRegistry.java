@@ -28,14 +28,28 @@ import java.util.function.Function;
 public class DefaultReactiveHealthContributorRegistry extends DefaultContributorRegistry<ReactiveHealthContributor>
 		implements ReactiveHealthContributorRegistry {
 
-	public DefaultReactiveHealthContributorRegistry() {
+	/**
+     * Constructs a new DefaultReactiveHealthContributorRegistry.
+     */
+    public DefaultReactiveHealthContributorRegistry() {
 	}
 
-	public DefaultReactiveHealthContributorRegistry(Map<String, ReactiveHealthContributor> contributors) {
+	/**
+     * Constructs a new DefaultReactiveHealthContributorRegistry with the specified contributors.
+     *
+     * @param contributors a map of contributors where the key is the name of the contributor and the value is the ReactiveHealthContributor instance
+     */
+    public DefaultReactiveHealthContributorRegistry(Map<String, ReactiveHealthContributor> contributors) {
 		super(contributors);
 	}
 
-	public DefaultReactiveHealthContributorRegistry(Map<String, ReactiveHealthContributor> contributors,
+	/**
+     * Constructs a new DefaultReactiveHealthContributorRegistry with the specified contributors and name factory.
+     * 
+     * @param contributors the map of contributors to be registered in the registry
+     * @param nameFactory the function used to generate names for the contributors
+     */
+    public DefaultReactiveHealthContributorRegistry(Map<String, ReactiveHealthContributor> contributors,
 			Function<String, String> nameFactory) {
 		super(contributors, nameFactory);
 	}

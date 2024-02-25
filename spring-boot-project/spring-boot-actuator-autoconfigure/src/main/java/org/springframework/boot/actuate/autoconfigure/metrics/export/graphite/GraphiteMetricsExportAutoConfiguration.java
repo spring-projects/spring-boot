@@ -47,13 +47,27 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(GraphiteProperties.class)
 public class GraphiteMetricsExportAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a GraphiteConfig bean if no other bean of the same type is present.
+     * Uses the provided GraphiteProperties to create a GraphitePropertiesConfigAdapter.
+     * 
+     * @param graphiteProperties the GraphiteProperties used to create the GraphiteConfig bean
+     * @return the created GraphiteConfig bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public GraphiteConfig graphiteConfig(GraphiteProperties graphiteProperties) {
 		return new GraphitePropertiesConfigAdapter(graphiteProperties);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of GraphiteMeterRegistry if no other bean of the same type is present.
+     * 
+     * @param graphiteConfig the configuration for Graphite
+     * @param clock the clock used for measuring time
+     * @return a new instance of GraphiteMeterRegistry
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig graphiteConfig, Clock clock) {
 		return new GraphiteMeterRegistry(graphiteConfig, clock);

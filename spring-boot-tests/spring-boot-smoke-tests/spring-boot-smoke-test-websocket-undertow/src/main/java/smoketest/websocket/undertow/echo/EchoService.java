@@ -16,6 +16,9 @@
 
 package smoketest.websocket.undertow.echo;
 
+/**
+ * EchoService interface.
+ */
 public interface EchoService {
 
 	String getMessage(String message);

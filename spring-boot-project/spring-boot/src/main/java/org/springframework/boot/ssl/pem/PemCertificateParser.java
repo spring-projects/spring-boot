@@ -46,7 +46,10 @@ final class PemCertificateParser {
 
 	private static final Pattern PATTERN = Pattern.compile(HEADER + BASE64_TEXT + FOOTER, Pattern.CASE_INSENSITIVE);
 
-	private PemCertificateParser() {
+	/**
+     * Private constructor for the PemCertificateParser class.
+     */
+    private PemCertificateParser() {
 	}
 
 	/**
@@ -65,7 +68,13 @@ final class PemCertificateParser {
 		return List.copyOf(certs);
 	}
 
-	private static CertificateFactory getCertificateFactory() {
+	/**
+     * Returns the X.509 certificate factory.
+     * 
+     * @return the X.509 certificate factory
+     * @throws IllegalStateException if unable to get X.509 certificate factory
+     */
+    private static CertificateFactory getCertificateFactory() {
 		try {
 			return CertificateFactory.getInstance("X.509");
 		}
@@ -74,7 +83,15 @@ final class PemCertificateParser {
 		}
 	}
 
-	private static void readCertificates(String text, CertificateFactory factory, Consumer<X509Certificate> consumer) {
+	/**
+     * Reads certificates from a given text using a specified CertificateFactory and applies a consumer function to each certificate.
+     * 
+     * @param text the text containing the certificates
+     * @param factory the CertificateFactory used to generate X509Certificates
+     * @param consumer the consumer function to apply to each X509Certificate
+     * @throws IllegalStateException if there is an error reading the certificate
+     */
+    private static void readCertificates(String text, CertificateFactory factory, Consumer<X509Certificate> consumer) {
 		try {
 			Matcher matcher = PATTERN.matcher(text);
 			while (matcher.find()) {
@@ -91,7 +108,13 @@ final class PemCertificateParser {
 		}
 	}
 
-	private static byte[] decodeBase64(String content) {
+	/**
+     * Decodes a Base64 encoded string into a byte array.
+     * 
+     * @param content the Base64 encoded string to decode
+     * @return the decoded byte array
+     */
+    private static byte[] decodeBase64(String content) {
 		byte[] bytes = content.replaceAll("\r", "").replaceAll("\n", "").getBytes();
 		return Base64.getDecoder().decode(bytes);
 	}

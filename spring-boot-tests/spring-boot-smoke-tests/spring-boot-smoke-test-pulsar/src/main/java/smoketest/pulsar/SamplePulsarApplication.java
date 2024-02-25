@@ -19,10 +19,19 @@ package smoketest.pulsar;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SamplePulsarApplication class.
+ */
 @SpringBootApplication
 public class SamplePulsarApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the SamplePulsarApplication class.
+     * It is responsible for starting the application by running the SpringApplication.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SamplePulsarApplication.class, args);
 	}
 

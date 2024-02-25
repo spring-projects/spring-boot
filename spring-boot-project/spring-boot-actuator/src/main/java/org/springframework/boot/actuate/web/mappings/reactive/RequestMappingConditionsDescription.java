@@ -47,7 +47,12 @@ public class RequestMappingConditionsDescription {
 
 	private final List<MediaTypeExpressionDescription> produces;
 
-	RequestMappingConditionsDescription(RequestMappingInfo requestMapping) {
+	/**
+     * Constructs a new RequestMappingConditionsDescription object based on the given RequestMappingInfo.
+     * 
+     * @param requestMapping the RequestMappingInfo object to extract conditions from
+     */
+    RequestMappingConditionsDescription(RequestMappingInfo requestMapping) {
 		this.consumes = requestMapping.getConsumesCondition()
 			.getExpressions()
 			.stream()
@@ -76,27 +81,57 @@ public class RequestMappingConditionsDescription {
 			.toList();
 	}
 
-	public List<MediaTypeExpressionDescription> getConsumes() {
+	/**
+     * Returns the list of media type expressions that specify the media types that can be consumed by the request.
+     *
+     * @return the list of media type expressions that specify the media types that can be consumed by the request
+     */
+    public List<MediaTypeExpressionDescription> getConsumes() {
 		return this.consumes;
 	}
 
-	public List<NameValueExpressionDescription> getHeaders() {
+	/**
+     * Returns the list of headers associated with this RequestMappingConditionsDescription object.
+     *
+     * @return the list of headers
+     */
+    public List<NameValueExpressionDescription> getHeaders() {
 		return this.headers;
 	}
 
-	public Set<RequestMethod> getMethods() {
+	/**
+     * Returns the set of request methods associated with this RequestMappingConditionsDescription.
+     *
+     * @return the set of request methods
+     */
+    public Set<RequestMethod> getMethods() {
 		return this.methods;
 	}
 
-	public List<NameValueExpressionDescription> getParams() {
+	/**
+     * Returns the list of NameValueExpressionDescription objects representing the parameters.
+     *
+     * @return the list of parameters
+     */
+    public List<NameValueExpressionDescription> getParams() {
 		return this.params;
 	}
 
-	public Set<String> getPatterns() {
+	/**
+     * Returns the set of patterns associated with this RequestMappingConditionsDescription.
+     *
+     * @return the set of patterns
+     */
+    public Set<String> getPatterns() {
 		return this.patterns;
 	}
 
-	public List<MediaTypeExpressionDescription> getProduces() {
+	/**
+     * Returns the list of media type expression descriptions for the produces condition.
+     *
+     * @return the list of media type expression descriptions for the produces condition
+     */
+    public List<MediaTypeExpressionDescription> getProduces() {
 		return this.produces;
 	}
 
@@ -109,16 +144,31 @@ public class RequestMappingConditionsDescription {
 
 		private final boolean negated;
 
-		MediaTypeExpressionDescription(MediaTypeExpression expression) {
+		/**
+         * Constructs a new MediaTypeExpressionDescription object based on the provided MediaTypeExpression.
+         * 
+         * @param expression the MediaTypeExpression to be used for constructing the object
+         */
+        MediaTypeExpressionDescription(MediaTypeExpression expression) {
 			this.mediaType = expression.getMediaType().toString();
 			this.negated = expression.isNegated();
 		}
 
-		public String getMediaType() {
+		/**
+         * Returns the media type of the MediaTypeExpressionDescription.
+         *
+         * @return the media type of the MediaTypeExpressionDescription
+         */
+        public String getMediaType() {
 			return this.mediaType;
 		}
 
-		public boolean isNegated() {
+		/**
+         * Returns a boolean value indicating whether the MediaTypeExpressionDescription is negated.
+         *
+         * @return true if the MediaTypeExpressionDescription is negated, false otherwise
+         */
+        public boolean isNegated() {
 			return this.negated;
 		}
 
@@ -135,21 +185,41 @@ public class RequestMappingConditionsDescription {
 
 		private final boolean negated;
 
-		NameValueExpressionDescription(NameValueExpression<?> expression) {
+		/**
+         * Constructs a new NameValueExpressionDescription object based on the provided NameValueExpression.
+         * 
+         * @param expression the NameValueExpression to be used for constructing the NameValueExpressionDescription
+         */
+        NameValueExpressionDescription(NameValueExpression<?> expression) {
 			this.name = expression.getName();
 			this.value = expression.getValue();
 			this.negated = expression.isNegated();
 		}
 
-		public String getName() {
+		/**
+         * Returns the name of the NameValueExpressionDescription object.
+         *
+         * @return the name of the NameValueExpressionDescription object
+         */
+        public String getName() {
 			return this.name;
 		}
 
-		public Object getValue() {
+		/**
+         * Returns the value of the NameValueExpressionDescription object.
+         *
+         * @return the value of the NameValueExpressionDescription object
+         */
+        public Object getValue() {
 			return this.value;
 		}
 
-		public boolean isNegated() {
+		/**
+         * Returns a boolean value indicating whether the expression is negated.
+         *
+         * @return true if the expression is negated, false otherwise.
+         */
+        public boolean isNegated() {
 			return this.negated;
 		}
 

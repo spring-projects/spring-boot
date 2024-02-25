@@ -24,10 +24,19 @@ package org.springframework.boot.loader.launch;
  */
 public final class WarLauncher {
 
-	private WarLauncher() {
+	/**
+     * Private constructor for the WarLauncher class.
+     */
+    private WarLauncher() {
 	}
 
-	public static void main(String[] args) throws Exception {
+	/**
+     * The main method for the WarLauncher class.
+     * 
+     * @param args the command line arguments
+     * @throws Exception if an error occurs during execution
+     */
+    public static void main(String[] args) throws Exception {
 		org.springframework.boot.loader.WarLauncher.main(args);
 	}
 

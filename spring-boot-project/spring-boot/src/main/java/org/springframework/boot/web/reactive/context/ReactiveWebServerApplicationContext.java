@@ -60,7 +60,13 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		super(beanFactory);
 	}
 
-	@Override
+	/**
+     * Refreshes the application context.
+     * 
+     * @throws BeansException if an error occurs during bean initialization or configuration
+     * @throws IllegalStateException if the application context has already been refreshed
+     */
+    @Override
 	public final void refresh() throws BeansException, IllegalStateException {
 		try {
 			super.refresh();
@@ -74,7 +80,15 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		}
 	}
 
-	@Override
+	/**
+     * This method is called when the application context is refreshed.
+     * It overrides the onRefresh() method from the parent class.
+     * It creates a web server for handling reactive requests.
+     * If an exception occurs while creating the web server, an ApplicationContextException is thrown.
+     * 
+     * @throws ApplicationContextException if unable to start the reactive web server
+     */
+    @Override
 	protected void onRefresh() {
 		super.onRefresh();
 		try {
@@ -85,7 +99,18 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		}
 	}
 
-	private void createWebServer() {
+	/**
+     * Creates a web server for the application.
+     * 
+     * This method initializes the web server manager and registers the necessary
+     * lifecycle beans for graceful shutdown and start/stop of the web server.
+     * 
+     * @throws IllegalStateException if the web server manager is already created
+     * @see WebServerManager
+     * @see WebServerGracefulShutdownLifecycle
+     * @see WebServerStartStopLifecycle
+     */
+    private void createWebServer() {
 		WebServerManager serverManager = this.serverManager;
 		if (serverManager == null) {
 			StartupStep createWebServer = getApplicationStartup().start("spring.boot.webserver.create");
@@ -103,7 +128,14 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		initPropertySources();
 	}
 
-	protected String getWebServerFactoryBeanName() {
+	/**
+     * Returns the name of the bean that implements the ReactiveWebServerFactory interface.
+     * 
+     * @return the name of the ReactiveWebServerFactory bean
+     * @throws MissingWebServerFactoryBeanException if no bean implementing ReactiveWebServerFactory is found
+     * @throws ApplicationContextException if multiple beans implementing ReactiveWebServerFactory are found
+     */
+    protected String getWebServerFactoryBeanName() {
 		// Use bean names so that we don't consider the hierarchy
 		String[] beanNames = getBeanFactory().getBeanNamesForType(ReactiveWebServerFactory.class);
 		if (beanNames.length == 0) {
@@ -117,7 +149,13 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		return beanNames[0];
 	}
 
-	protected ReactiveWebServerFactory getWebServerFactory(String factoryBeanName) {
+	/**
+     * Retrieves the ReactiveWebServerFactory bean with the specified factory bean name from the bean factory.
+     * 
+     * @param factoryBeanName the name of the factory bean
+     * @return the ReactiveWebServerFactory bean
+     */
+    protected ReactiveWebServerFactory getWebServerFactory(String factoryBeanName) {
 		return getBeanFactory().getBean(factoryBeanName, ReactiveWebServerFactory.class);
 	}
 
@@ -141,7 +179,13 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		return getBeanFactory().getBean(beanNames[0], HttpHandler.class);
 	}
 
-	@Override
+	/**
+     * Closes the ReactiveWebServerApplicationContext.
+     * 
+     * This method first checks if the application context is active. If it is active, it publishes an AvailabilityChangeEvent with the ReadinessState set to REFUSING_TRAFFIC. 
+     * Then, it calls the superclass's doClose() method to perform the actual closing of the application context.
+     */
+    @Override
 	protected void doClose() {
 		if (isActive()) {
 			AvailabilityChangeEvent.publish(this, ReadinessState.REFUSING_TRAFFIC);
@@ -160,12 +204,22 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		return (serverManager != null) ? serverManager.getWebServer() : null;
 	}
 
-	@Override
+	/**
+     * Returns the server namespace.
+     *
+     * @return the server namespace
+     */
+    @Override
 	public String getServerNamespace() {
 		return this.serverNamespace;
 	}
 
-	@Override
+	/**
+     * Sets the server namespace for this ReactiveWebServerApplicationContext.
+     * 
+     * @param serverNamespace the server namespace to set
+     */
+    @Override
 	public void setServerNamespace(String serverNamespace) {
 		this.serverNamespace = serverNamespace;
 	}

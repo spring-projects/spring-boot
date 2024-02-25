@@ -43,7 +43,12 @@ final class BuildpackMetadata extends MappedObject {
 
 	private final String homepage;
 
-	private BuildpackMetadata(JsonNode node) {
+	/**
+     * Constructs a new BuildpackMetadata object using the provided JSON node.
+     * 
+     * @param node the JSON node containing the buildpack metadata
+     */
+    private BuildpackMetadata(JsonNode node) {
 		super(node, MethodHandles.lookup());
 		this.id = valueAt("/id", String.class);
 		this.version = valueAt("/version", String.class);

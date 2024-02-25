@@ -27,7 +27,13 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  */
 class OracleXeR2dbcDockerComposeConnectionDetailsFactory extends OracleR2dbcDockerComposeConnectionDetailsFactory {
 
-	protected OracleXeR2dbcDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new OracleXeR2dbcDockerComposeConnectionDetailsFactory.
+     * 
+     * This constructor initializes the factory by calling the superclass constructor with the OracleContainer.XE parameter.
+     * The OracleContainer.XE parameter specifies the Oracle container to be used for the connection details.
+     */
+    protected OracleXeR2dbcDockerComposeConnectionDetailsFactory() {
 		super(OracleContainer.XE);
 	}
 

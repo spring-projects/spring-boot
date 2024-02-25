@@ -65,7 +65,13 @@ import org.springframework.util.StringUtils;
  */
 public class DatabaseInitializationDependencyConfigurer implements ImportBeanDefinitionRegistrar {
 
-	@Override
+	/**
+     * Registers the bean definitions for the DatabaseInitializationDependencyConfigurer class.
+     * 
+     * @param importingClassMetadata the metadata of the importing class
+     * @param registry the bean definition registry
+     */
+    @Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		String name = DependsOnDatabaseInitializationPostProcessor.class.getName();
 		if (!registry.containsBeanDefinition(name)) {
@@ -84,17 +90,37 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 
 		private Environment environment;
 
-		@Override
+		/**
+         * Sets the environment for the DependsOnDatabaseInitializationPostProcessor.
+         * 
+         * @param environment the environment to set
+         */
+        @Override
 		public void setEnvironment(Environment environment) {
 			this.environment = environment;
 		}
 
-		@Override
+		/**
+         * Returns the order value for this DependsOnDatabaseInitializationPostProcessor.
+         * 
+         * The order value determines the order in which the post-processor is applied
+         * when multiple post-processors are registered. A lower value means higher priority.
+         * 
+         * @return the order value for this post-processor
+         */
+        @Override
 		public int getOrder() {
 			return 0;
 		}
 
-		@Override
+		/**
+         * This method is called to post-process the bean factory after it has been initialized.
+         * It detects the initializer bean names and sets the dependencies between them and the previous initializer bean names batch.
+         * It also sets the dependencies between the bean definitions and the initializer bean names.
+         * 
+         * @param beanFactory The configurable listable bean factory to be processed.
+         */
+        @Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 			if (AotDetector.useGeneratedArtifacts()) {
 				return;
@@ -118,7 +144,14 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			}
 		}
 
-		private String[] merge(String[] source, Set<String> additional) {
+		/**
+         * Merges the given source array with the additional set of strings.
+         * 
+         * @param source the source array of strings to be merged
+         * @param additional the additional set of strings to be merged with the source array
+         * @return the merged array of strings
+         */
+        private String[] merge(String[] source, Set<String> additional) {
 			if (CollectionUtils.isEmpty(additional)) {
 				return source;
 			}
@@ -127,7 +160,13 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			return StringUtils.toStringArray(result);
 		}
 
-		private InitializerBeanNames detectInitializerBeanNames(ConfigurableListableBeanFactory beanFactory) {
+		/**
+         * Detects the names of initializer beans in the given bean factory using the provided detectors.
+         * 
+         * @param beanFactory the configurable listable bean factory
+         * @return the initializer bean names
+         */
+        private InitializerBeanNames detectInitializerBeanNames(ConfigurableListableBeanFactory beanFactory) {
 			List<DatabaseInitializerDetector> detectors = getDetectors(beanFactory, DatabaseInitializerDetector.class);
 			InitializerBeanNames initializerBeanNames = new InitializerBeanNames();
 			for (DatabaseInitializerDetector detector : detectors) {
@@ -144,7 +183,13 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			return initializerBeanNames;
 		}
 
-		private Collection<String> detectDependsOnInitializationBeanNames(ConfigurableListableBeanFactory beanFactory) {
+		/**
+         * Detects the bean names that depend on database initialization.
+         * 
+         * @param beanFactory the configurable listable bean factory
+         * @return the collection of bean names that depend on database initialization
+         */
+        private Collection<String> detectDependsOnInitializationBeanNames(ConfigurableListableBeanFactory beanFactory) {
 			List<DependsOnDatabaseInitializationDetector> detectors = getDetectors(beanFactory,
 					DependsOnDatabaseInitializationDetector.class);
 			Set<String> beanNames = new HashSet<>();
@@ -154,13 +199,29 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			return beanNames;
 		}
 
-		private <T> List<T> getDetectors(ConfigurableListableBeanFactory beanFactory, Class<T> type) {
+		/**
+         * Retrieves a list of detectors of the specified type from the given bean factory.
+         * 
+         * @param beanFactory the bean factory to retrieve the detectors from
+         * @param type the type of detectors to retrieve
+         * @param <T> the type of detectors
+         * @return a list of detectors of the specified type
+         */
+        private <T> List<T> getDetectors(ConfigurableListableBeanFactory beanFactory, Class<T> type) {
 			ArgumentResolver argumentResolver = ArgumentResolver.of(Environment.class, this.environment);
 			return SpringFactoriesLoader.forDefaultResourceLocation(beanFactory.getBeanClassLoader())
 				.load(type, argumentResolver);
 		}
 
-		private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
+		/**
+         * Retrieves the bean definition for the specified bean name from the given bean factory.
+         * 
+         * @param beanName the name of the bean
+         * @param beanFactory the bean factory to retrieve the bean definition from
+         * @return the bean definition for the specified bean name
+         * @throws NoSuchBeanDefinitionException if the bean definition cannot be found in the bean factory
+         */
+        private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
 			try {
 				return beanFactory.getBeanDefinition(beanName);
 			}
@@ -173,26 +234,50 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			}
 		}
 
-		static class InitializerBeanNames {
+		/**
+         * InitializerBeanNames class.
+         */
+        static class InitializerBeanNames {
 
 			private final Map<DatabaseInitializerDetector, Set<String>> byDetectorBeanNames = new LinkedHashMap<>();
 
 			private final Set<String> beanNames = new LinkedHashSet<>();
 
-			private void detected(DatabaseInitializerDetector detector, String beanName) {
+			/**
+             * Adds the specified bean name to the set of bean names and associates it with the given detector.
+             * 
+             * @param detector the DatabaseInitializerDetector object
+             * @param beanName the name of the bean to be added
+             */
+            private void detected(DatabaseInitializerDetector detector, String beanName) {
 				this.byDetectorBeanNames.computeIfAbsent(detector, (key) -> new LinkedHashSet<>()).add(beanName);
 				this.beanNames.add(beanName);
 			}
 
-			private boolean isEmpty() {
+			/**
+             * Checks if the list of bean names is empty.
+             * 
+             * @return true if the list of bean names is empty, false otherwise.
+             */
+            private boolean isEmpty() {
 				return this.beanNames.isEmpty();
 			}
 
-			private Iterable<Set<String>> batchedBeanNames() {
+			/**
+             * Returns an iterable of sets of bean names, where each set represents a batch of bean names.
+             * 
+             * @return an iterable of sets of bean names
+             */
+            private Iterable<Set<String>> batchedBeanNames() {
 				return this.byDetectorBeanNames.values();
 			}
 
-			private Set<String> beanNames() {
+			/**
+             * Returns an unmodifiable set of bean names.
+             * 
+             * @return an unmodifiable set of bean names
+             */
+            private Set<String> beanNames() {
 				return Collections.unmodifiableSet(this.beanNames);
 			}
 

@@ -38,7 +38,14 @@ class OnManagementPortCondition extends SpringBootCondition {
 
 	private static final String CLASS_NAME_WEB_APPLICATION_CONTEXT = "org.springframework.web.context.WebApplicationContext";
 
-	@Override
+	/**
+     * Determines the match outcome for the condition based on the context and metadata.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("Management Port");
 		if (!isWebApplicationContext(context)) {
@@ -55,7 +62,13 @@ class OnManagementPortCondition extends SpringBootCondition {
 			.because("actual port type (" + actualType + ") did not match required type (" + requiredType + ")"));
 	}
 
-	private boolean isWebApplicationContext(ConditionContext context) {
+	/**
+     * Determines if the given context is a web application context.
+     * 
+     * @param context the condition context
+     * @return true if the context is a web application context, false otherwise
+     */
+    private boolean isWebApplicationContext(ConditionContext context) {
 		ResourceLoader resourceLoader = context.getResourceLoader();
 		if (resourceLoader instanceof ConfigurableReactiveWebApplicationContext) {
 			return true;

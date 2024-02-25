@@ -51,18 +51,36 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 
 	private final ResourceLoader resourceLoader;
 
-	ConfigurationPropertiesScanRegistrar(Environment environment, ResourceLoader resourceLoader) {
+	/**
+     * Constructs a new ConfigurationPropertiesScanRegistrar with the specified environment and resource loader.
+     * 
+     * @param environment the environment used for configuration properties scanning
+     * @param resourceLoader the resource loader used for loading resources
+     */
+    ConfigurationPropertiesScanRegistrar(Environment environment, ResourceLoader resourceLoader) {
 		this.environment = environment;
 		this.resourceLoader = resourceLoader;
 	}
 
-	@Override
+	/**
+     * Registers bean definitions for configuration properties scanning.
+     * 
+     * @param importingClassMetadata the metadata of the importing class
+     * @param registry the bean definition registry
+     */
+    @Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Set<String> packagesToScan = getPackagesToScan(importingClassMetadata);
 		scan(registry, packagesToScan);
 	}
 
-	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
+	/**
+     * Retrieves the packages to scan based on the provided metadata.
+     * 
+     * @param metadata the annotation metadata
+     * @return a set of packages to scan
+     */
+    private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 		AnnotationAttributes attributes = AnnotationAttributes
 			.fromMap(metadata.getAnnotationAttributes(ConfigurationPropertiesScan.class.getName()));
 		String[] basePackages = attributes.getStringArray("basePackages");
@@ -78,7 +96,14 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 		return packagesToScan;
 	}
 
-	private void scan(BeanDefinitionRegistry registry, Set<String> packages) {
+	/**
+     * Scans the specified packages for bean definitions annotated with {@code @ConfigurationProperties}
+     * and registers them in the given {@link BeanDefinitionRegistry}.
+     *
+     * @param registry the {@link BeanDefinitionRegistry} to register the scanned bean definitions
+     * @param packages the set of packages to scan for bean definitions
+     */
+    private void scan(BeanDefinitionRegistry registry, Set<String> packages) {
 		ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(registry);
 		ClassPathScanningCandidateComponentProvider scanner = getScanner(registry);
 		for (String basePackage : packages) {
@@ -88,7 +113,14 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 		}
 	}
 
-	private ClassPathScanningCandidateComponentProvider getScanner(BeanDefinitionRegistry registry) {
+	/**
+     * Returns a ClassPathScanningCandidateComponentProvider configured with the necessary filters and settings
+     * for scanning and identifying classes annotated with @ConfigurationProperties.
+     * 
+     * @param registry the BeanDefinitionRegistry to be used by the TypeExcludeFilter
+     * @return a configured ClassPathScanningCandidateComponentProvider
+     */
+    private ClassPathScanningCandidateComponentProvider getScanner(BeanDefinitionRegistry registry) {
 		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
 		scanner.setEnvironment(this.environment);
 		scanner.setResourceLoader(this.resourceLoader);
@@ -99,7 +131,14 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 		return scanner;
 	}
 
-	private void register(ConfigurationPropertiesBeanRegistrar registrar, String className) throws LinkageError {
+	/**
+     * Registers a ConfigurationPropertiesBeanRegistrar with the given class name.
+     * 
+     * @param registrar the ConfigurationPropertiesBeanRegistrar to register
+     * @param className the name of the class to register
+     * @throws LinkageError if there is a linkage error
+     */
+    private void register(ConfigurationPropertiesBeanRegistrar registrar, String className) throws LinkageError {
 		try {
 			register(registrar, ClassUtils.forName(className, null));
 		}
@@ -108,13 +147,25 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 		}
 	}
 
-	private void register(ConfigurationPropertiesBeanRegistrar registrar, Class<?> type) {
+	/**
+     * Registers a ConfigurationPropertiesBeanRegistrar with the specified type.
+     * 
+     * @param registrar the ConfigurationPropertiesBeanRegistrar to register
+     * @param type the type to register
+     */
+    private void register(ConfigurationPropertiesBeanRegistrar registrar, Class<?> type) {
 		if (!isComponent(type)) {
 			registrar.register(type);
 		}
 	}
 
-	private boolean isComponent(Class<?> type) {
+	/**
+     * Checks if the given type is annotated with the {@link Component} annotation.
+     *
+     * @param type the type to check
+     * @return {@code true} if the type is annotated with {@link Component}, {@code false} otherwise
+     */
+    private boolean isComponent(Class<?> type) {
 		return MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(Component.class);
 	}
 

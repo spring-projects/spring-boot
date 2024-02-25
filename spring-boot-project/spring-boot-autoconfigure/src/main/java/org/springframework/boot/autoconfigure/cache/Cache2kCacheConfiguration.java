@@ -43,7 +43,15 @@ import org.springframework.util.CollectionUtils;
 @Conditional(CacheCondition.class)
 class Cache2kCacheConfiguration {
 
-	@Bean
+	/**
+     * Creates a CacheManager bean using the Cache2k library.
+     * 
+     * @param cacheProperties The properties for configuring the cache.
+     * @param customizers The customizers for configuring the cache manager.
+     * @param cache2kBuilderCustomizers The customizers for configuring the cache builder.
+     * @return The CacheManager bean.
+     */
+    @Bean
 	SpringCache2kCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
 			ObjectProvider<Cache2kBuilderCustomizer> cache2kBuilderCustomizers) {
 		SpringCache2kCacheManager cacheManager = new SpringCache2kCacheManager();
@@ -55,7 +63,13 @@ class Cache2kCacheConfiguration {
 		return customizers.customize(cacheManager);
 	}
 
-	private Function<Cache2kBuilder<?, ?>, Cache2kBuilder<?, ?>> configureDefaults(
+	/**
+     * Configures the default settings for a Cache2kBuilder.
+     * 
+     * @param cache2kBuilderCustomizers The customizers to apply to the Cache2kBuilder.
+     * @return The configured Cache2kBuilder.
+     */
+    private Function<Cache2kBuilder<?, ?>, Cache2kBuilder<?, ?>> configureDefaults(
 			ObjectProvider<Cache2kBuilderCustomizer> cache2kBuilderCustomizers) {
 		return (builder) -> {
 			cache2kBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));

@@ -21,10 +21,20 @@ import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyCommandTagsProviderConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyCommandTagsProviderConfiguration {
 
-	@Bean
+	/**
+     * Returns a custom implementation of the MongoCommandTagsProvider interface.
+     * This method is annotated with @Bean, indicating that it is a Spring bean and will be managed by the Spring container.
+     * The returned CustomCommandTagsProvider object will be used to provide custom command tags for MongoDB commands.
+     *
+     * @return a CustomCommandTagsProvider object that implements the MongoCommandTagsProvider interface
+     */
+    @Bean
 	public MongoCommandTagsProvider customCommandTagsProvider() {
 		return new CustomCommandTagsProvider();
 	}

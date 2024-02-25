@@ -33,11 +33,22 @@ class StackId {
 
 	private final String value;
 
-	StackId(String value) {
+	/**
+     * Constructs a new StackId object with the specified value.
+     *
+     * @param value the value to be assigned to the StackId object
+     */
+    StackId(String value) {
 		this.value = value;
 	}
 
-	@Override
+	/**
+     * Compares this StackId object to the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return true if the specified object is equal to this StackId object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -48,12 +59,22 @@ class StackId {
 		return this.value.equals(((StackId) obj).value);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this StackId object.
+     * 
+     * @return the hash code value for this StackId object
+     */
+    @Override
 	public int hashCode() {
 		return this.value.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the StackId object.
+     * 
+     * @return the string value of the StackId object
+     */
+    @Override
 	public String toString() {
 		return this.value;
 	}

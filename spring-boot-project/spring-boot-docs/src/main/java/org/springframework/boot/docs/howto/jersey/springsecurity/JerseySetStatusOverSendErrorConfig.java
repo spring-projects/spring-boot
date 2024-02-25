@@ -22,10 +22,16 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * JerseySetStatusOverSendErrorConfig class.
+ */
 @Component
 public class JerseySetStatusOverSendErrorConfig extends ResourceConfig {
 
-	public JerseySetStatusOverSendErrorConfig() {
+	/**
+     * Registers the Endpoint class and sets the property "jersey.config.server.response.setStatusOverSendError" to true.
+     */
+    public JerseySetStatusOverSendErrorConfig() {
 		register(Endpoint.class);
 		setProperties(Collections.singletonMap("jersey.config.server.response.setStatusOverSendError", true));
 	}

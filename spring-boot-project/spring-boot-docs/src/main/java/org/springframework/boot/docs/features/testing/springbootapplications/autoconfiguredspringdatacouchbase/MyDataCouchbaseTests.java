@@ -19,6 +19,9 @@ package org.springframework.boot.docs.features.testing.springbootapplications.au
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.couchbase.DataCouchbaseTest;
 
+/**
+ * MyDataCouchbaseTests class.
+ */
 @DataCouchbaseTest
 class MyDataCouchbaseTests {
 

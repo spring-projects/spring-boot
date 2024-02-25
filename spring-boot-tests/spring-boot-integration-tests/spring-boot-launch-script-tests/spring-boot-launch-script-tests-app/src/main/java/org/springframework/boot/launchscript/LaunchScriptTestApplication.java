@@ -30,9 +30,18 @@ import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 
+/**
+ * LaunchScriptTestApplication class.
+ */
 public class LaunchScriptTestApplication {
 
-	public static void main(String[] args) throws LifecycleException {
+	/**
+     * The main method of the LaunchScriptTestApplication class.
+     * 
+     * @param args an array of command-line arguments
+     * @throws LifecycleException if an error occurs during the lifecycle of the application
+     */
+    public static void main(String[] args) throws LifecycleException {
 		System.out.println("Starting " + LaunchScriptTestApplication.class.getSimpleName() + " (" + findSource() + ")");
 		Tomcat tomcat = new Tomcat();
 		tomcat.getConnector().setPort(getPort(args));
@@ -50,7 +59,12 @@ public class LaunchScriptTestApplication {
 		tomcat.start();
 	}
 
-	private static URL findSource() {
+	/**
+     * Finds the source URL of the LaunchScriptTestApplication class.
+     * 
+     * @return the source URL of the LaunchScriptTestApplication class, or null if not found
+     */
+    private static URL findSource() {
 		try {
 			ProtectionDomain domain = LaunchScriptTestApplication.class.getProtectionDomain();
 			CodeSource codeSource = (domain != null) ? domain.getCodeSource() : null;
@@ -61,17 +75,36 @@ public class LaunchScriptTestApplication {
 		return null;
 	}
 
-	private static int getPort(String[] args) {
+	/**
+     * Returns the port number to be used for the server.
+     * 
+     * @param args the command line arguments
+     * @return the port number
+     */
+    private static int getPort(String[] args) {
 		String port = getProperty(args, "server.port");
 		return (port != null) ? Integer.parseInt(port) : 8080;
 	}
 
-	private static String getContextPath(String[] args) {
+	/**
+     * Returns the context path of the server servlet.
+     * 
+     * @param args the command line arguments
+     * @return the context path if it is set, otherwise an empty string
+     */
+    private static String getContextPath(String[] args) {
 		String contextPath = getProperty(args, "server.servlet.context-path");
 		return (contextPath != null) ? contextPath : "";
 	}
 
-	private static String getProperty(String[] args, String property) {
+	/**
+     * Retrieves the value of a specified property from the system properties or command line arguments.
+     * 
+     * @param args     the command line arguments
+     * @param property the name of the property to retrieve
+     * @return the value of the property, or null if not found
+     */
+    private static String getProperty(String[] args, String property) {
 		String value = System.getProperty(property);
 		if (value != null) {
 			return value;

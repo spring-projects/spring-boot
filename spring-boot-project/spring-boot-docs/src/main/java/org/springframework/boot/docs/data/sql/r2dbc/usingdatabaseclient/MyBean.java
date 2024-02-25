@@ -23,12 +23,20 @@ import reactor.core.publisher.Flux;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final DatabaseClient databaseClient;
 
-	public MyBean(DatabaseClient databaseClient) {
+	/**
+     * Constructs a new instance of MyBean with the specified DatabaseClient.
+     *
+     * @param databaseClient the DatabaseClient to be used by MyBean
+     */
+    public MyBean(DatabaseClient databaseClient) {
 		this.databaseClient = databaseClient;
 	}
 

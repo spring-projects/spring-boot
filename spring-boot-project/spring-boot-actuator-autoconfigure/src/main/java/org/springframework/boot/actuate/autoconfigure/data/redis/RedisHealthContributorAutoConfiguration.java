@@ -47,11 +47,22 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 public class RedisHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<RedisHealthIndicator, RedisConnectionFactory> {
 
-	RedisHealthContributorAutoConfiguration() {
+	/**
+     * Constructs a new RedisHealthContributorAutoConfiguration with a RedisHealthIndicator.
+     * 
+     * @param redisHealthIndicator the RedisHealthIndicator to be used by the auto configuration
+     */
+    RedisHealthContributorAutoConfiguration() {
 		super(RedisHealthIndicator::new);
 	}
 
-	@Bean
+	/**
+     * Creates a RedisHealthContributor bean if no bean with the names "redisHealthIndicator" and "redisHealthContributor" is present.
+     * 
+     * @param redisConnectionFactories a map of Redis connection factories
+     * @return the RedisHealthContributor bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(name = { "redisHealthIndicator", "redisHealthContributor" })
 	public HealthContributor redisHealthContributor(Map<String, RedisConnectionFactory> redisConnectionFactories) {
 		return createContributor(redisConnectionFactories);

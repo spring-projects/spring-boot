@@ -57,7 +57,12 @@ public final class WebApplicationContextRunner extends
 		super(contextFactory, WebApplicationContextRunner::new);
 	}
 
-	private WebApplicationContextRunner(RunnerConfiguration<ConfigurableWebApplicationContext> configuration) {
+	/**
+     * Creates a new instance of WebApplicationContextRunner.
+     * 
+     * @param configuration the configuration for the runner
+     */
+    private WebApplicationContextRunner(RunnerConfiguration<ConfigurableWebApplicationContext> configuration) {
 		super(configuration, WebApplicationContextRunner::new);
 	}
 

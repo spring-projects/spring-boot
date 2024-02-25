@@ -18,6 +18,9 @@ package org.springframework.boot.docs.features.testing.springbootapplications.au
 
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Request class.
+ */
 @XmlRootElement(name = "request")
 class Request {
 

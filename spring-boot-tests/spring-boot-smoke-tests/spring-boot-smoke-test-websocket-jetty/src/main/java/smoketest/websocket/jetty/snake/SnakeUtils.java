@@ -19,6 +19,9 @@ package smoketest.websocket.jetty.snake;
 import java.awt.Color;
 import java.util.Random;
 
+/**
+ * SnakeUtils class.
+ */
 public final class SnakeUtils {
 
 	/**
@@ -38,10 +41,18 @@ public final class SnakeUtils {
 
 	private static final Random random = new Random();
 
-	private SnakeUtils() {
+	/**
+     * Private constructor for the SnakeUtils class.
+     */
+    private SnakeUtils() {
 	}
 
-	public static String getRandomHexColor() {
+	/**
+     * Generates a random hexadecimal color code.
+     * 
+     * @return a string representing a random hexadecimal color code
+     */
+    public static String getRandomHexColor() {
 		float hue = random.nextFloat();
 		// sat between 0.1 and 0.3
 		float saturation = (random.nextInt(2000) + 1000) / 10000f;
@@ -50,13 +61,24 @@ public final class SnakeUtils {
 		return '#' + Integer.toHexString((color.getRGB() & 0xffffff) | 0x1000000).substring(1);
 	}
 
-	public static Location getRandomLocation() {
+	/**
+     * Generates a random location within the playfield.
+     * 
+     * @return a Location object representing the random location
+     */
+    public static Location getRandomLocation() {
 		int x = roundByGridSize(random.nextInt(PLAYFIELD_WIDTH));
 		int y = roundByGridSize(random.nextInt(PLAYFIELD_HEIGHT));
 		return new Location(x, y);
 	}
 
-	private static int roundByGridSize(int value) {
+	/**
+     * Rounds the given value to the nearest multiple of the grid size.
+     * 
+     * @param value the value to be rounded
+     * @return the rounded value
+     */
+    private static int roundByGridSize(int value) {
 		value = value + (GRID_SIZE / 2);
 		value = value / GRID_SIZE;
 		value = value * GRID_SIZE;

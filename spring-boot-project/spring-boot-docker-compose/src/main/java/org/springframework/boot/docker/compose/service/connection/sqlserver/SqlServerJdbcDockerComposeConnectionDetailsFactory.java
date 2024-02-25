@@ -31,11 +31,22 @@ import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBu
 class SqlServerJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	protected SqlServerJdbcDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new instance of the {@code SqlServerJdbcDockerComposeConnectionDetailsFactory} class with the specified Docker image name.
+     * 
+     * @param dockerImageName the name of the Docker image for the SQL Server server
+     */
+    protected SqlServerJdbcDockerComposeConnectionDetailsFactory() {
 		super("mssql/server");
 	}
 
-	@Override
+	/**
+     * Returns the JDBC connection details for a Docker Compose connection source.
+     * 
+     * @param source the Docker Compose connection source
+     * @return the JDBC connection details
+     */
+    @Override
 	protected JdbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new SqlServerJdbcDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -53,13 +64,24 @@ class SqlServerJdbcDockerComposeConnectionDetailsFactory
 
 		private final String jdbcUrl;
 
-		SqlServerJdbcDockerComposeConnectionDetails(RunningService service) {
+		/**
+         * Constructs a new SqlServerJdbcDockerComposeConnectionDetails object with the provided RunningService.
+         * 
+         * @param service the RunningService object representing the running service
+         */
+        SqlServerJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new SqlServerEnvironment(service.env());
 			this.jdbcUrl = disableEncryptionIfNecessary(jdbcUrlBuilder.build(service, ""));
 		}
 
-		private String disableEncryptionIfNecessary(String jdbcUrl) {
+		/**
+         * Disables encryption in the JDBC URL if necessary.
+         * 
+         * @param jdbcUrl the JDBC URL to check and modify if necessary
+         * @return the modified JDBC URL with encryption disabled if necessary
+         */
+        private String disableEncryptionIfNecessary(String jdbcUrl) {
 			if (jdbcUrl.contains(";encrypt=false;")) {
 				return jdbcUrl;
 			}
@@ -71,17 +93,32 @@ class SqlServerJdbcDockerComposeConnectionDetailsFactory
 			return jdbcUrlBuilder.toString();
 		}
 
-		@Override
+		/**
+         * Returns the username used for connecting to the SQL Server database.
+         * 
+         * @return the username used for connecting to the SQL Server database
+         */
+        @Override
 		public String getUsername() {
 			return this.environment.getUsername();
 		}
 
-		@Override
+		/**
+         * Returns the password for the SQL Server JDBC Docker Compose connection.
+         * 
+         * @return the password for the connection
+         */
+        @Override
 		public String getPassword() {
 			return this.environment.getPassword();
 		}
 
-		@Override
+		/**
+         * Returns the JDBC URL for the SQL Server connection.
+         *
+         * @return the JDBC URL for the SQL Server connection
+         */
+        @Override
 		public String getJdbcUrl() {
 			return this.jdbcUrl;
 		}

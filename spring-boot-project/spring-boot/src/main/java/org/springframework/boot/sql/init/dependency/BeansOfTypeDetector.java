@@ -32,11 +32,22 @@ class BeansOfTypeDetector {
 
 	private final Set<Class<?>> types;
 
-	BeansOfTypeDetector(Set<Class<?>> types) {
+	/**
+     * Constructs a new BeansOfTypeDetector with the specified set of types.
+     *
+     * @param types the set of types to be used for detection
+     */
+    BeansOfTypeDetector(Set<Class<?>> types) {
 		this.types = types;
 	}
 
-	Set<String> detect(ListableBeanFactory beanFactory) {
+	/**
+     * Detects the bean names of the specified types in the given bean factory.
+     * 
+     * @param beanFactory the bean factory to search for bean names
+     * @return a set of bean names of the specified types found in the bean factory
+     */
+    Set<String> detect(ListableBeanFactory beanFactory) {
 		Set<String> beanNames = new HashSet<>();
 		for (Class<?> type : this.types) {
 			try {

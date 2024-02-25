@@ -16,6 +16,9 @@
 
 package smoketest.data.jpa.domain;
 
+/**
+ * HotelSummary interface.
+ */
 public interface HotelSummary {
 
 	City getCity();

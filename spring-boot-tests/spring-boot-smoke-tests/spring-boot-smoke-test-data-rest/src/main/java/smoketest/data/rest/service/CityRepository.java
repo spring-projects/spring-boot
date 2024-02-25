@@ -24,6 +24,9 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+/**
+ * CityRepository interface.
+ */
 @RepositoryRestResource(collectionResourceRel = "cities", path = "cities")
 interface CityRepository extends PagingAndSortingRepository<City, Long> {
 

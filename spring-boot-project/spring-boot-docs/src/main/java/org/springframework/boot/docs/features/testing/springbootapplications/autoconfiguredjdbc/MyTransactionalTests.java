@@ -20,6 +20,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * MyTransactionalTests class.
+ */
 @JdbcTest
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 class MyTransactionalTests {

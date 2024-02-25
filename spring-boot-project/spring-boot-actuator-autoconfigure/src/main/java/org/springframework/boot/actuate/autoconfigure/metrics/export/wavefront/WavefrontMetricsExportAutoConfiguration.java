@@ -62,13 +62,28 @@ import org.springframework.context.annotation.Import;
 @Import(WavefrontSenderConfiguration.class)
 public class WavefrontMetricsExportAutoConfiguration {
 
-	@Bean
+	/**
+     * Generates a WavefrontConfig bean if no other bean of the same type is present.
+     * Uses the provided WavefrontProperties to create a WavefrontPropertiesConfigAdapter.
+     *
+     * @param properties The WavefrontProperties used to create the WavefrontConfig bean.
+     * @return The WavefrontConfig bean created using the provided properties.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public WavefrontConfig wavefrontConfig(WavefrontProperties properties) {
 		return new WavefrontPropertiesConfigAdapter(properties);
 	}
 
-	@Bean
+	/**
+     * Creates a WavefrontMeterRegistry bean if there is no existing bean of the same type and a WavefrontSender bean is present.
+     * 
+     * @param wavefrontConfig the WavefrontConfig bean used for configuring the WavefrontMeterRegistry
+     * @param clock the Clock bean used for providing the current time
+     * @param wavefrontSender the WavefrontSender bean used for sending metrics to Wavefront
+     * @return the created WavefrontMeterRegistry bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(WavefrontSender.class)
 	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig wavefrontConfig, Clock clock,
@@ -76,7 +91,14 @@ public class WavefrontMetricsExportAutoConfiguration {
 		return WavefrontMeterRegistry.builder(wavefrontConfig).clock(clock).wavefrontSender(wavefrontSender).build();
 	}
 
-	@Bean
+	/**
+     * Returns a MeterRegistryCustomizer for WavefrontMeterRegistry, customized with common tags from the provided
+     * wavefrontApplicationTags. This method is conditionally executed only if an instance of ApplicationTags is present.
+     *
+     * @param wavefrontApplicationTags The ApplicationTags instance containing the wavefront application tags.
+     * @return The MeterRegistryCustomizer for WavefrontMeterRegistry with common tags configured.
+     */
+    @Bean
 	@ConditionalOnBean(ApplicationTags.class)
 	MeterRegistryCustomizer<WavefrontMeterRegistry> wavefrontApplicationTagsCustomizer(
 			ApplicationTags wavefrontApplicationTags) {
@@ -84,7 +106,13 @@ public class WavefrontMetricsExportAutoConfiguration {
 		return (registry) -> registry.config().commonTags(commonTags);
 	}
 
-	private Tag asTag(Map.Entry<String, String> entry) {
+	/**
+     * Converts a Map.Entry object to a Tag object.
+     *
+     * @param entry the Map.Entry object to be converted
+     * @return the converted Tag object
+     */
+    private Tag asTag(Map.Entry<String, String> entry) {
 		return Tag.of(entry.getKey(), entry.getValue());
 	}
 

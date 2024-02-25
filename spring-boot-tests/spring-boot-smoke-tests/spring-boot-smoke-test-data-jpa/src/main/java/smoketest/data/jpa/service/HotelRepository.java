@@ -28,6 +28,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 
+/**
+ * HotelRepository interface.
+ */
 interface HotelRepository extends Repository<Hotel, Long> {
 
 	Hotel findByCityAndName(City city, String name);

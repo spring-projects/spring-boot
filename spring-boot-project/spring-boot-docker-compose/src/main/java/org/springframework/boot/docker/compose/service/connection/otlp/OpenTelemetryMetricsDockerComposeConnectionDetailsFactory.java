@@ -32,30 +32,55 @@ class OpenTelemetryMetricsDockerComposeConnectionDetailsFactory
 
 	private static final int OTLP_PORT = 4318;
 
-	OpenTelemetryMetricsDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new instance of the OpenTelemetryMetricsDockerComposeConnectionDetailsFactory class.
+     * 
+     * @param imageName the name of the Docker image to use for the OpenTelemetry Collector
+     * @param autoConfigClassName the fully qualified class name of the auto-configuration class for exporting metrics to OTLP
+     */
+    OpenTelemetryMetricsDockerComposeConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
 				"org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration");
 	}
 
-	@Override
+	/**
+     * Returns the connection details for a Docker Compose source.
+     *
+     * @param source the Docker Compose connection source
+     * @return the connection details for the Docker Compose source
+     */
+    @Override
 	protected OtlpMetricsConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new OpenTelemetryMetricsDockerComposeConnectionDetails(source.getRunningService());
 	}
 
-	private static final class OpenTelemetryMetricsDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+	/**
+     * OpenTelemetryMetricsDockerComposeConnectionDetails class.
+     */
+    private static final class OpenTelemetryMetricsDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements OtlpMetricsConnectionDetails {
 
 		private final String host;
 
 		private final int port;
 
-		private OpenTelemetryMetricsDockerComposeConnectionDetails(RunningService source) {
+		/**
+         * Constructs a new OpenTelemetryMetricsDockerComposeConnectionDetails object with the provided RunningService source.
+         * 
+         * @param source the RunningService object representing the source of the connection details
+         */
+        private OpenTelemetryMetricsDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
 			this.port = source.ports().get(OTLP_PORT);
 		}
 
-		@Override
+		/**
+         * Returns the URL for the metrics endpoint.
+         *
+         * @return the URL for the metrics endpoint
+         */
+        @Override
 		public String getUrl() {
 			return "http://%s:%d/v1/metrics".formatted(this.host, this.port);
 		}

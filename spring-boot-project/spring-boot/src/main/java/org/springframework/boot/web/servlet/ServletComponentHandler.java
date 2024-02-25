@@ -39,16 +39,33 @@ abstract class ServletComponentHandler {
 
 	private final TypeFilter typeFilter;
 
-	protected ServletComponentHandler(Class<? extends Annotation> annotationType) {
+	/**
+     * Constructs a new ServletComponentHandler with the specified annotation type.
+     * 
+     * @param annotationType the class object representing the annotation type
+     */
+    protected ServletComponentHandler(Class<? extends Annotation> annotationType) {
 		this.typeFilter = new AnnotationTypeFilter(annotationType);
 		this.annotationType = annotationType;
 	}
 
-	TypeFilter getTypeFilter() {
+	/**
+     * Returns the type filter used by the ServletComponentHandler.
+     *
+     * @return the type filter used by the ServletComponentHandler
+     */
+    TypeFilter getTypeFilter() {
 		return this.typeFilter;
 	}
 
-	protected String[] extractUrlPatterns(Map<String, Object> attributes) {
+	/**
+     * Extracts the URL patterns from the given attributes map.
+     * 
+     * @param attributes the attributes map containing the URL patterns
+     * @return the extracted URL patterns
+     * @throws IllegalStateException if both the "urlPatterns" and "value" attributes are present
+     */
+    protected String[] extractUrlPatterns(Map<String, Object> attributes) {
 		String[] value = (String[]) attributes.get("value");
 		String[] urlPatterns = (String[]) attributes.get("urlPatterns");
 		if (urlPatterns.length > 0) {
@@ -58,7 +75,13 @@ abstract class ServletComponentHandler {
 		return value;
 	}
 
-	protected final Map<String, String> extractInitParameters(Map<String, Object> attributes) {
+	/**
+     * Extracts the initialization parameters from the given attributes map.
+     * 
+     * @param attributes the attributes map containing the initialization parameters
+     * @return a map of initialization parameters with their corresponding values
+     */
+    protected final Map<String, String> extractInitParameters(Map<String, Object> attributes) {
 		Map<String, String> initParameters = new HashMap<>();
 		for (AnnotationAttributes initParam : (AnnotationAttributes[]) attributes.get("initParams")) {
 			String name = (String) initParam.get("name");
@@ -68,7 +91,13 @@ abstract class ServletComponentHandler {
 		return initParameters;
 	}
 
-	void handle(AnnotatedBeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
+	/**
+     * Handles the given annotated bean definition by retrieving the annotation attributes and performing the necessary actions.
+     * 
+     * @param beanDefinition the annotated bean definition to handle
+     * @param registry the bean definition registry
+     */
+    void handle(AnnotatedBeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
 		Map<String, Object> attributes = beanDefinition.getMetadata()
 			.getAnnotationAttributes(this.annotationType.getName());
 		if (attributes != null) {
@@ -76,7 +105,21 @@ abstract class ServletComponentHandler {
 		}
 	}
 
-	protected abstract void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
+	/**
+     * Handles the processing of a servlet component.
+     * 
+     * This method is responsible for handling the attributes, annotated bean definition, and bean definition registry
+     * associated with a servlet component. The implementation of this method should perform the necessary operations
+     * required for processing the servlet component.
+     * 
+     * @param attributes
+     *            a map containing the attributes associated with the servlet component
+     * @param beanDefinition
+     *            the annotated bean definition representing the servlet component
+     * @param registry
+     *            the bean definition registry used for registering the servlet component
+     */
+    protected abstract void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry);
 
 }

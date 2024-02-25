@@ -46,11 +46,22 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 public class MongoHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<MongoHealthIndicator, MongoTemplate> {
 
-	public MongoHealthContributorAutoConfiguration() {
+	/**
+     * Constructs a new MongoHealthContributorAutoConfiguration.
+     * 
+     * @param mongoHealthIndicator the MongoHealthIndicator to be used by the auto configuration
+     */
+    public MongoHealthContributorAutoConfiguration() {
 		super(MongoHealthIndicator::new);
 	}
 
-	@Bean
+	/**
+     * Creates a {@link HealthContributor} for MongoDB if no existing bean with the names "mongoHealthIndicator" and "mongoHealthContributor" is found.
+     * 
+     * @param mongoTemplates a map of {@link MongoTemplate} instances
+     * @return the created {@link HealthContributor} for MongoDB
+     */
+    @Bean
 	@ConditionalOnMissingBean(name = { "mongoHealthIndicator", "mongoHealthContributor" })
 	public HealthContributor mongoHealthContributor(Map<String, MongoTemplate> mongoTemplates) {
 		return createContributor(mongoTemplates);

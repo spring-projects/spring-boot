@@ -37,7 +37,14 @@ import org.springframework.core.type.ClassMetadata;
  */
 class CacheCondition extends SpringBootCondition {
 
-	@Override
+	/**
+     * Determines the match outcome for the cache condition.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String sourceClass = "";
 		if (metadata instanceof ClassMetadata classMetadata) {

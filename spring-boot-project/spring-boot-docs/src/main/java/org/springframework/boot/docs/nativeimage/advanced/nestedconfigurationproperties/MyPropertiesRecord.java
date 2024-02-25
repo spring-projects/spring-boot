@@ -19,6 +19,9 @@ package org.springframework.boot.docs.nativeimage.advanced.nestedconfigurationpr
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+/**
+ * MyPropertiesRecord record.
+ */
 @ConfigurationProperties(prefix = "my.properties")
 public record MyPropertiesRecord(String name, @NestedConfigurationProperty Nested nested) {
 

@@ -20,6 +20,9 @@ import java.util.List;
 
 import smoketest.jpa.domain.Tag;
 
+/**
+ * TagRepository interface.
+ */
 public interface TagRepository {
 
 	List<Tag> findAll();

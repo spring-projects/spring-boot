@@ -27,7 +27,12 @@ import org.springframework.boot.actuate.endpoint.annotation.DiscovererEndpointFi
  */
 class CloudFoundryEndpointFilter extends DiscovererEndpointFilter {
 
-	protected CloudFoundryEndpointFilter() {
+	/**
+     * Creates a new instance of the {@code CloudFoundryEndpointFilter} class.
+     * 
+     * This constructor calls the superclass constructor with the {@code CloudFoundryWebEndpointDiscoverer} class as the argument.
+     */
+    protected CloudFoundryEndpointFilter() {
 		super(CloudFoundryWebEndpointDiscoverer.class);
 	}
 

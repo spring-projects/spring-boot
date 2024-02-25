@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.web.servlet.springmvc.errorhandling;
 
+/**
+ * MyException class.
+ */
 class MyException extends RuntimeException {
 
 }

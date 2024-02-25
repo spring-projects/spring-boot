@@ -64,7 +64,18 @@ import org.springframework.web.servlet.DispatcherServlet;
 @EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
 public class WebMvcObservationAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a {@link FilterRegistrationBean} for the {@link ServerHttpObservationFilter} if no other bean of the same type is present.
+     * This filter is responsible for observing server-side HTTP requests and registering them with the provided {@link ObservationRegistry}.
+     * The filter is configured with the provided {@link ServerRequestObservationConvention} or a default convention if none is provided.
+     * The filter is registered with the highest precedence plus one, and is configured to handle both synchronous and asynchronous requests.
+     *
+     * @param registry the {@link ObservationRegistry} used to register observed requests
+     * @param customConvention an {@link ObjectProvider} for a custom {@link ServerRequestObservationConvention}, if available
+     * @param observationProperties the {@link ObservationProperties} used to configure the observation
+     * @return the created {@link FilterRegistrationBean} for the {@link ServerHttpObservationFilter}
+     */
+    @Bean
 	@ConditionalOnMissingFilterBean
 	public FilterRegistrationBean<ServerHttpObservationFilter> webMvcObservationFilter(ObservationRegistry registry,
 			ObjectProvider<ServerRequestObservationConvention> customConvention,
@@ -79,12 +90,22 @@ public class WebMvcObservationAutoConfiguration {
 		return registration;
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * MeterFilterConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(MeterRegistry.class)
 	@ConditionalOnBean(MeterRegistry.class)
 	static class MeterFilterConfiguration {
 
-		@Bean
+		/**
+         * Creates a MeterFilter for filtering metrics based on the maximum number of URI tags allowed.
+         * 
+         * @param observationProperties the observation properties containing the configuration for HTTP server requests
+         * @param metricsProperties the metrics properties containing the configuration for web server metrics
+         * @return the created MeterFilter
+         */
+        @Bean
 		@Order(0)
 		MeterFilter metricsHttpServerUriTagFilter(ObservationProperties observationProperties,
 				MetricsProperties metricsProperties) {

@@ -63,12 +63,23 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 		this.charset = charset;
 	}
 
-	@Override
+	/**
+     * Returns the required view class for this MustacheViewResolver.
+     * 
+     * @return the required view class, which is MustacheView
+     */
+    @Override
 	protected Class<?> requiredViewClass() {
 		return MustacheView.class;
 	}
 
-	@Override
+	/**
+     * Creates a new instance of {@link MustacheView} with the specified view name.
+     * 
+     * @param viewName the name of the view to be created
+     * @return the created {@link MustacheView} instance
+     */
+    @Override
 	protected AbstractUrlBasedView createView(String viewName) {
 		MustacheView view = (MustacheView) super.createView(viewName);
 		view.setCompiler(this.compiler);
@@ -76,7 +87,14 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 		return view;
 	}
 
-	@Override
+	/**
+     * Instantiates the view based on the view class.
+     * If the view class is MustacheView, it creates a new instance of MustacheView.
+     * Otherwise, it calls the super method to instantiate the view.
+     *
+     * @return the instantiated view
+     */
+    @Override
 	protected AbstractUrlBasedView instantiateView() {
 		return (getViewClass() == MustacheView.class) ? new MustacheView() : super.instantiateView();
 	}

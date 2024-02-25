@@ -984,7 +984,16 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		return Assertions.assertThat(extractingJsonPathValue(expression, args, Map.class, "a map"));
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Extracts the value from a JSON path expression and returns it.
+     * 
+     * @param expression the JSON path expression to evaluate
+     * @param args the arguments to be used in the expression
+     * @param type the expected type of the value
+     * @param expectedDescription the description of the expected value
+     * @return the extracted value
+     */
+    @SuppressWarnings("unchecked")
 	private <T> T extractingJsonPathValue(CharSequence expression, Object[] args, Class<T> type,
 			String expectedDescription) {
 		JsonPathValue value = new JsonPathValue(expression, args);
@@ -994,7 +1003,16 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		return (T) value.getValue(false);
 	}
 
-	private JSONCompareResult compare(CharSequence expectedJson, JSONCompareMode compareMode) {
+	/**
+     * Compares the expected JSON with the actual JSON using the specified compare mode.
+     * 
+     * @param expectedJson the expected JSON as a CharSequence
+     * @param compareMode the compare mode to use for the comparison
+     * @return the result of the JSON comparison
+     * @throws IllegalStateException if an exception occurs during the comparison
+     * @throws RuntimeException if a runtime exception occurs during the comparison
+     */
+    private JSONCompareResult compare(CharSequence expectedJson, JSONCompareMode compareMode) {
 		if (this.actual == null) {
 			return compareForNull(expectedJson);
 		}
@@ -1010,7 +1028,17 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		}
 	}
 
-	private JSONCompareResult compare(CharSequence expectedJson, JSONComparator comparator) {
+	/**
+     * Compares the expected JSON with the actual JSON using the provided JSONComparator.
+     * If the actual JSON is null, it compares the expected JSON with null.
+     * 
+     * @param expectedJson the expected JSON to compare
+     * @param comparator the JSONComparator to use for comparison
+     * @return a JSONCompareResult object representing the comparison result
+     * @throws IllegalStateException if an exception occurs during the comparison process
+     * @throws RuntimeException if a runtime exception occurs during the comparison process
+     */
+    private JSONCompareResult compare(CharSequence expectedJson, JSONComparator comparator) {
 		if (this.actual == null) {
 			return compareForNull(expectedJson);
 		}
@@ -1026,7 +1054,13 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		}
 	}
 
-	private JSONCompareResult compareForNull(CharSequence expectedJson) {
+	/**
+     * Compares the given JSON string for null value.
+     * 
+     * @param expectedJson the JSON string to be compared
+     * @return the result of the comparison
+     */
+    private JSONCompareResult compareForNull(CharSequence expectedJson) {
 		JSONCompareResult result = new JSONCompareResult();
 		result.passed();
 		if (expectedJson != null) {
@@ -1035,14 +1069,26 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		return result;
 	}
 
-	private JsonContentAssert assertNotFailed(JSONCompareResult result) {
+	/**
+     * Asserts that the JSON comparison result has not failed.
+     * 
+     * @param result the JSON comparison result
+     * @return the JsonContentAssert object
+     */
+    private JsonContentAssert assertNotFailed(JSONCompareResult result) {
 		if (result.failed()) {
 			failWithMessage("JSON Comparison failure: %s", result.getMessage());
 		}
 		return this;
 	}
 
-	private JsonContentAssert assertNotPassed(JSONCompareResult result) {
+	/**
+     * Asserts that the JSON comparison result has not passed.
+     * 
+     * @param result the JSON comparison result to be checked
+     * @return the JsonContentAssert object for method chaining
+     */
+    private JsonContentAssert assertNotPassed(JSONCompareResult result) {
 		if (result.passed()) {
 			failWithMessage("JSON Comparison failure: %s", result.getMessage());
 		}
@@ -1058,21 +1104,37 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 
 		private final JsonPath jsonPath;
 
-		JsonPathValue(CharSequence expression, Object... args) {
+		/**
+         * Constructs a new JsonPathValue object with the given expression and arguments.
+         * 
+         * @param expression the JSONPath expression to be used
+         * @param args the arguments to be used in the expression
+         * @throws IllegalArgumentException if the expression is null or empty
+         */
+        JsonPathValue(CharSequence expression, Object... args) {
 			org.springframework.util.Assert.hasText((expression != null) ? expression.toString() : null,
 					"expression must not be null or empty");
 			this.expression = String.format(expression.toString(), args);
 			this.jsonPath = JsonPath.compile(this.expression);
 		}
 
-		void assertHasEmptyValue() {
+		/**
+         * Asserts that the value returned by {@link #getValue(boolean)} is empty or the result of {@link #isIndefiniteAndEmpty()} is true.
+         * If the value is not empty or indefinite and empty, the method will fail with a message indicating the expected value to be empty.
+         */
+        void assertHasEmptyValue() {
 			if (ObjectUtils.isEmpty(getValue(false)) || isIndefiniteAndEmpty()) {
 				return;
 			}
 			failWithMessage(getExpectedValueMessage("an empty value"));
 		}
 
-		void assertDoesNotHaveEmptyValue() {
+		/**
+         * Asserts that the value returned by {@link #getValue(boolean)} does not have an empty value.
+         * If the value is not empty, the method returns without any action.
+         * If the value is empty, the method fails with a message indicating the expected value to be non-empty.
+         */
+        void assertDoesNotHaveEmptyValue() {
 			if (!ObjectUtils.isEmpty(getValue(false))) {
 				return;
 			}
@@ -1080,7 +1142,12 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 
 		}
 
-		void assertHasPath() {
+		/**
+         * Asserts that the JSON path exists.
+         * 
+         * @throws PathNotFoundException if the JSON path is not found
+         */
+        void assertHasPath() {
 			try {
 				read();
 			}
@@ -1089,7 +1156,12 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 			}
 		}
 
-		void assertDoesNotHavePath() {
+		/**
+         * Asserts that the JSON path does not exist.
+         * 
+         * @throws PathNotFoundException if the JSON path exists
+         */
+        void assertDoesNotHavePath() {
 			try {
 				read();
 				failWithMessage("Expecting no JSON path \"%s\"", this.expression);
@@ -1099,7 +1171,14 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 			}
 		}
 
-		void assertHasValue(Class<?> type, String expectedDescription) {
+		/**
+         * Asserts that the value obtained from a JSON path expression has a non-null value and matches the expected type.
+         * 
+         * @param type                the expected type of the value
+         * @param expectedDescription a description of the expected value
+         * @throws AssertionError if the value is null or empty, or if it does not match the expected type
+         */
+        void assertHasValue(Class<?> type, String expectedDescription) {
 			Object value = getValue(true);
 			if (value == null || isIndefiniteAndEmpty()) {
 				failWithNoValueMessage();
@@ -1109,26 +1188,55 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 			}
 		}
 
-		void assertDoesNotHaveValue() {
+		/**
+         * Asserts that the JsonPathValue does not have a value.
+         * 
+         * If the value returned by getValue() is null or if isIndefiniteAndEmpty() returns true,
+         * the assertion passes. Otherwise, the method fails with a message indicating that
+         * the expected value is "no value".
+         */
+        void assertDoesNotHaveValue() {
 			if (getValue(false) == null || isIndefiniteAndEmpty()) {
 				return;
 			}
 			failWithMessage(getExpectedValueMessage("no value"));
 		}
 
-		private boolean isIndefiniteAndEmpty() {
+		/**
+         * Checks if the JsonPathValue is indefinite and empty.
+         * 
+         * @return true if the JsonPathValue is indefinite and empty, false otherwise
+         */
+        private boolean isIndefiniteAndEmpty() {
 			return !isDefinite() && isEmpty();
 		}
 
-		private boolean isDefinite() {
+		/**
+         * Checks if the JSON path is definite.
+         * 
+         * @return true if the JSON path is definite, false otherwise.
+         */
+        private boolean isDefinite() {
 			return this.jsonPath.isDefinite();
 		}
 
-		private boolean isEmpty() {
+		/**
+         * Checks if the value of the JsonPath is empty.
+         * 
+         * @return true if the value is empty, false otherwise
+         */
+        private boolean isEmpty() {
 			return ObjectUtils.isEmpty(getValue(false));
 		}
 
-		Object getValue(boolean required) {
+		/**
+         * Retrieves the value of an object.
+         * 
+         * @param required a boolean indicating whether the value is required or not
+         * @return the value of the object
+         * @throws Exception if an error occurs while reading the value
+         */
+        Object getValue(boolean required) {
 			try {
 				return read();
 			}
@@ -1140,16 +1248,32 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 			}
 		}
 
-		private void failWithNoValueMessage() {
+		/**
+         * Fails with a message indicating that there is no value at the specified JSON path.
+         * 
+         * @param expression the JSON path expression
+         */
+        private void failWithNoValueMessage() {
 			failWithMessage("No value at JSON path \"%s\"", this.expression);
 		}
 
-		private Object read() {
+		/**
+         * Reads the JSON content and returns the result as an Object.
+         * 
+         * @return the result of reading the JSON content as an Object
+         */
+        private Object read() {
 			CharSequence json = JsonContentAssert.this.actual;
 			return this.jsonPath.read((json != null) ? json.toString() : null, JsonContentAssert.this.configuration);
 		}
 
-		private String getExpectedValueMessage(String expectedDescription) {
+		/**
+         * Returns a message indicating the expected value at a JSON path.
+         * 
+         * @param expectedDescription the description of the expected value
+         * @return the message indicating the expected value
+         */
+        private String getExpectedValueMessage(String expectedDescription) {
 			return String.format("Expected %s at JSON path \"%s\" but found: %s", expectedDescription, this.expression,
 					ObjectUtils.nullSafeToString(StringUtils.quoteIfString(getValue(false))));
 		}

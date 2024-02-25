@@ -16,6 +16,9 @@
 
 package smoketest.profile.service;
 
+/**
+ * MessageService interface.
+ */
 public interface MessageService {
 
 	String getMessage();

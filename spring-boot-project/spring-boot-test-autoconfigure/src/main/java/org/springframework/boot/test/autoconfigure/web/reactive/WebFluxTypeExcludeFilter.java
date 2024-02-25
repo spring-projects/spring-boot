@@ -79,12 +79,24 @@ public final class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizab
 
 	private final Class<?>[] controllers;
 
-	WebFluxTypeExcludeFilter(Class<?> testClass) {
+	/**
+     * Constructs a new WebFluxTypeExcludeFilter with the specified testClass.
+     *
+     * @param testClass the test class to be used for constructing the filter
+     */
+    WebFluxTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 		this.controllers = getAnnotation().getValue("controllers", Class[].class).orElse(NO_CONTROLLERS);
 	}
 
-	@Override
+	/**
+     * Returns the default set of classes to include in the filter.
+     * If the controllers are not empty, it returns the default includes and controllers.
+     * Otherwise, it returns the default includes.
+     *
+     * @return the default set of classes to include in the filter
+     */
+    @Override
 	protected Set<Class<?>> getDefaultIncludes() {
 		if (ObjectUtils.isEmpty(this.controllers)) {
 			return DEFAULT_INCLUDES_AND_CONTROLLER;
@@ -92,7 +104,12 @@ public final class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizab
 		return DEFAULT_INCLUDES;
 	}
 
-	@Override
+	/**
+     * Returns the set of component classes to be included.
+     * 
+     * @return the set of component classes to be included
+     */
+    @Override
 	protected Set<Class<?>> getComponentIncludes() {
 		return new LinkedHashSet<>(Arrays.asList(this.controllers));
 	}

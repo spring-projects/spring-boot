@@ -36,7 +36,10 @@ final class KeyStoreFactory {
 
 	private static final char[] NO_PASSWORD = {};
 
-	private KeyStoreFactory() {
+	/**
+     * Private constructor for the KeyStoreFactory class.
+     */
+    private KeyStoreFactory() {
 	}
 
 	/**
@@ -65,21 +68,45 @@ final class KeyStoreFactory {
 		}
 	}
 
-	private static KeyStore getKeyStore()
+	/**
+     * Retrieves the default KeyStore instance.
+     * 
+     * @return the default KeyStore instance
+     * @throws KeyStoreException if there is an error accessing the KeyStore
+     * @throws IOException if there is an error reading the KeyStore
+     * @throws NoSuchAlgorithmException if the specified algorithm is not available
+     * @throws CertificateException if there is an error with the certificate
+     */
+    private static KeyStore getKeyStore()
 			throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 		keyStore.load(null);
 		return keyStore;
 	}
 
-	private static PrivateKey getPrivateKey(Path path) {
+	/**
+     * Retrieves the private key from the specified file path.
+     * 
+     * @param path the path to the private key file
+     * @return the private key if the file exists and is valid, otherwise null
+     */
+    private static PrivateKey getPrivateKey(Path path) {
 		if (path != null && Files.exists(path)) {
 			return PrivateKeyParser.parse(path);
 		}
 		return null;
 	}
 
-	private static void addCertificates(KeyStore keyStore, X509Certificate[] certificates, PrivateKey privateKey,
+	/**
+     * Adds certificates to the specified KeyStore.
+     * 
+     * @param keyStore     the KeyStore to which the certificates will be added
+     * @param certificates an array of X509Certificates to be added to the KeyStore
+     * @param privateKey   the PrivateKey associated with the certificates, or null if no private key is available
+     * @param alias        the alias to be used for the certificates in the KeyStore
+     * @throws KeyStoreException if an error occurs while adding the certificates to the KeyStore
+     */
+    private static void addCertificates(KeyStore keyStore, X509Certificate[] certificates, PrivateKey privateKey,
 			String alias) throws KeyStoreException {
 		if (privateKey != null) {
 			keyStore.setKeyEntry(alias, privateKey, NO_PASSWORD, certificates);

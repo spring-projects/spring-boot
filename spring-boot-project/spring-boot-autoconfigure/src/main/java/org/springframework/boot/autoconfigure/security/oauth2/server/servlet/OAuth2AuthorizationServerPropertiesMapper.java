@@ -42,11 +42,21 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 
 	private final OAuth2AuthorizationServerProperties properties;
 
-	OAuth2AuthorizationServerPropertiesMapper(OAuth2AuthorizationServerProperties properties) {
+	/**
+     * Constructs a new OAuth2AuthorizationServerPropertiesMapper with the specified properties.
+     *
+     * @param properties the OAuth2AuthorizationServerProperties to be used by the mapper
+     */
+    OAuth2AuthorizationServerPropertiesMapper(OAuth2AuthorizationServerProperties properties) {
 		this.properties = properties;
 	}
 
-	AuthorizationServerSettings asAuthorizationServerSettings() {
+	/**
+     * Converts the OAuth2AuthorizationServerProperties to AuthorizationServerSettings.
+     * 
+     * @return The converted AuthorizationServerSettings object.
+     */
+    AuthorizationServerSettings asAuthorizationServerSettings() {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		OAuth2AuthorizationServerProperties.Endpoint endpoint = this.properties.getEndpoint();
 		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = endpoint.getOidc();
@@ -65,14 +75,26 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		return builder.build();
 	}
 
-	List<RegisteredClient> asRegisteredClients() {
+	/**
+     * Retrieves a list of registered clients from the OAuth2AuthorizationServerPropertiesMapper.
+     * 
+     * @return A list of RegisteredClient objects representing the registered clients.
+     */
+    List<RegisteredClient> asRegisteredClients() {
 		List<RegisteredClient> registeredClients = new ArrayList<>();
 		this.properties.getClient()
 			.forEach((registrationId, client) -> registeredClients.add(getRegisteredClient(registrationId, client)));
 		return registeredClients;
 	}
 
-	private RegisteredClient getRegisteredClient(String registrationId, Client client) {
+	/**
+     * Retrieves a registered client based on the provided registration ID and client.
+     *
+     * @param registrationId The registration ID of the client.
+     * @param client The client object containing the registration details.
+     * @return The registered client object.
+     */
+    private RegisteredClient getRegisteredClient(String registrationId, Client client) {
 		Registration registration = client.getRegistration();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		RegisteredClient.Builder builder = RegisteredClient.withId(registrationId);
@@ -96,7 +118,14 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		return builder.build();
 	}
 
-	private ClientSettings getClientSettings(Client client, PropertyMapper map) {
+	/**
+     * Retrieves the client settings for the given client using the provided property mapper.
+     *
+     * @param client The client for which to retrieve the settings.
+     * @param map The property mapper used to map the client properties to the builder.
+     * @return The client settings for the given client.
+     */
+    private ClientSettings getClientSettings(Client client, PropertyMapper map) {
 		ClientSettings.Builder builder = ClientSettings.builder();
 		map.from(client::isRequireProofKey).to(builder::requireProofKey);
 		map.from(client::isRequireAuthorizationConsent).to(builder::requireAuthorizationConsent);
@@ -107,7 +136,14 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		return builder.build();
 	}
 
-	private TokenSettings getTokenSettings(Client client, PropertyMapper map) {
+	/**
+     * Retrieves the token settings for a given client and property mapper.
+     *
+     * @param client The client for which to retrieve the token settings.
+     * @param map The property mapper used to map the token settings.
+     * @return The token settings for the specified client.
+     */
+    private TokenSettings getTokenSettings(Client client, PropertyMapper map) {
 		OAuth2AuthorizationServerProperties.Token token = client.getToken();
 		TokenSettings.Builder builder = TokenSettings.builder();
 		map.from(token::getAuthorizationCodeTimeToLive).to(builder::authorizationCodeTimeToLive);
@@ -122,7 +158,13 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		return builder.build();
 	}
 
-	private JwsAlgorithm jwsAlgorithm(String signingAlgorithm) {
+	/**
+     * Returns the JwsAlgorithm based on the provided signing algorithm.
+     * 
+     * @param signingAlgorithm the signing algorithm to be used
+     * @return the JwsAlgorithm corresponding to the signing algorithm
+     */
+    private JwsAlgorithm jwsAlgorithm(String signingAlgorithm) {
 		String name = signingAlgorithm.toUpperCase();
 		JwsAlgorithm jwsAlgorithm = SignatureAlgorithm.from(name);
 		if (jwsAlgorithm == null) {
@@ -131,7 +173,13 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		return jwsAlgorithm;
 	}
 
-	private SignatureAlgorithm signatureAlgorithm(String signatureAlgorithm) {
+	/**
+     * Returns the SignatureAlgorithm enum value corresponding to the given signature algorithm string.
+     * 
+     * @param signatureAlgorithm the signature algorithm string
+     * @return the SignatureAlgorithm enum value
+     */
+    private SignatureAlgorithm signatureAlgorithm(String signatureAlgorithm) {
 		return SignatureAlgorithm.from(signatureAlgorithm.toUpperCase());
 	}
 

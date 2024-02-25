@@ -67,23 +67,50 @@ public class WebEndpointAutoConfiguration {
 
 	private final WebEndpointProperties properties;
 
-	public WebEndpointAutoConfiguration(ApplicationContext applicationContext, WebEndpointProperties properties) {
+	/**
+     * Constructs a new instance of the {@code WebEndpointAutoConfiguration} class.
+     * 
+     * @param applicationContext the application context
+     * @param properties the web endpoint properties
+     */
+    public WebEndpointAutoConfiguration(ApplicationContext applicationContext, WebEndpointProperties properties) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Returns a new instance of {@link PathMapper} configured with the provided path mapping.
+     * 
+     * @return a new instance of {@link PathMapper}
+     */
+    @Bean
 	public PathMapper webEndpointPathMapper() {
 		return new MappingWebEndpointPathMapper(this.properties.getPathMapping());
 	}
 
-	@Bean
+	/**
+     * Returns the default EndpointMediaTypes if no bean of type EndpointMediaTypes is found.
+     * 
+     * @return the default EndpointMediaTypes
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public EndpointMediaTypes endpointMediaTypes() {
 		return EndpointMediaTypes.DEFAULT;
 	}
 
-	@Bean
+	/**
+     * Creates a {@link WebEndpointDiscoverer} bean if no other bean of type {@link WebEndpointsSupplier} is present.
+     * This bean is responsible for discovering and exposing web endpoints.
+     *
+     * @param parameterValueMapper   the {@link ParameterValueMapper} used to map parameter values
+     * @param endpointMediaTypes     the {@link EndpointMediaTypes} used to determine the media types supported by the endpoints
+     * @param endpointPathMappers    the {@link PathMapper}s used to map endpoint paths
+     * @param invokerAdvisors        the {@link OperationInvokerAdvisor}s used to advise the operation invokers
+     * @param filters                the {@link EndpointFilter}s used to filter the discovered endpoints
+     * @return the {@link WebEndpointDiscoverer} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(WebEndpointsSupplier.class)
 	public WebEndpointDiscoverer webEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
 			EndpointMediaTypes endpointMediaTypes, ObjectProvider<PathMapper> endpointPathMappers,
@@ -94,7 +121,14 @@ public class WebEndpointAutoConfiguration {
 				filters.orderedStream().toList());
 	}
 
-	@Bean
+	/**
+     * Creates a {@link ControllerEndpointDiscoverer} bean if no other bean of type {@link ControllerEndpointsSupplier} is present.
+     * 
+     * @param endpointPathMappers an {@link ObjectProvider} of {@link PathMapper} instances used for mapping endpoint paths
+     * @param filters an {@link ObjectProvider} of {@link EndpointFilter} instances used for filtering controller endpoints
+     * @return a {@link ControllerEndpointDiscoverer} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(ControllerEndpointsSupplier.class)
 	public ControllerEndpointDiscoverer controllerEndpointDiscoverer(ObjectProvider<PathMapper> endpointPathMappers,
 			ObjectProvider<Collection<EndpointFilter<ExposableControllerEndpoint>>> filters) {
@@ -102,31 +136,58 @@ public class WebEndpointAutoConfiguration {
 				filters.getIfAvailable(Collections::emptyList));
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link PathMappedEndpoints} with the specified base path and endpoint suppliers.
+     * 
+     * @param endpointSuppliers the collection of endpoint suppliers
+     * @return a new instance of {@link PathMappedEndpoints}
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public PathMappedEndpoints pathMappedEndpoints(Collection<EndpointsSupplier<?>> endpointSuppliers) {
 		return new PathMappedEndpoints(this.properties.getBasePath(), endpointSuppliers);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link IncludeExcludeEndpointFilter} for filtering web endpoints based on inclusion and exclusion patterns.
+     * 
+     * @return the created {@link IncludeExcludeEndpointFilter} instance
+     */
+    @Bean
 	public IncludeExcludeEndpointFilter<ExposableWebEndpoint> webExposeExcludePropertyEndpointFilter() {
 		WebEndpointProperties.Exposure exposure = this.properties.getExposure();
 		return new IncludeExcludeEndpointFilter<>(ExposableWebEndpoint.class, exposure.getInclude(),
 				exposure.getExclude(), EndpointExposure.WEB.getDefaultIncludes());
 	}
 
-	@Bean
+	/**
+     * Creates a new {@link IncludeExcludeEndpointFilter} for {@link ExposableControllerEndpoint} endpoints based on the configured exposure properties.
+     * 
+     * @return The created {@link IncludeExcludeEndpointFilter}.
+     */
+    @Bean
 	public IncludeExcludeEndpointFilter<ExposableControllerEndpoint> controllerExposeExcludePropertyEndpointFilter() {
 		WebEndpointProperties.Exposure exposure = this.properties.getExposure();
 		return new IncludeExcludeEndpointFilter<>(ExposableControllerEndpoint.class, exposure.getInclude(),
 				exposure.getExclude());
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * WebEndpointServletConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	static class WebEndpointServletConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of {@link ServletEndpointDiscoverer} if no bean of type {@link ServletEndpointsSupplier} is present.
+         * 
+         * @param applicationContext the application context
+         * @param endpointPathMappers the endpoint path mappers
+         * @param filters the endpoint filters
+         * @return the servlet endpoint discoverer
+         */
+        @Bean
 		@ConditionalOnMissingBean(ServletEndpointsSupplier.class)
 		ServletEndpointDiscoverer servletEndpointDiscoverer(ApplicationContext applicationContext,
 				ObjectProvider<PathMapper> endpointPathMappers,

@@ -65,7 +65,17 @@ public class TestSliceMetadata extends DefaultTask {
 
 	private File outputFile;
 
-	public TestSliceMetadata() {
+	/**
+     * This method is used to test the slice metadata.
+     * It sets the input directory to the resources directory of the source set's output.
+     * The path sensitivity is set to RELATIVE.
+     * The property name is set to "resources".
+     * It depends on the process resources task of the source set.
+     * It sets the input files to the classes directories of the source set's output.
+     * The path sensitivity is set to RELATIVE.
+     * The property name is set to "classes".
+     */
+    public TestSliceMetadata() {
 		getInputs().dir((Callable<File>) () -> this.sourceSet.getOutput().getResourcesDir())
 			.withPathSensitivity(PathSensitivity.RELATIVE)
 			.withPropertyName("resources");
@@ -75,16 +85,31 @@ public class TestSliceMetadata extends DefaultTask {
 			.withPropertyName("classes");
 	}
 
-	public void setSourceSet(SourceSet sourceSet) {
+	/**
+     * Sets the source set for the TestSliceMetadata.
+     * 
+     * @param sourceSet the source set to be set
+     */
+    public void setSourceSet(SourceSet sourceSet) {
 		this.sourceSet = sourceSet;
 	}
 
-	@OutputFile
+	/**
+     * Returns the output file.
+     *
+     * @return the output file
+     */
+    @OutputFile
 	public File getOutputFile() {
 		return this.outputFile;
 	}
 
-	public void setOutputFile(File outputFile) {
+	/**
+     * Sets the output file for the TestSliceMetadata.
+     * 
+     * @param outputFile the output file to be set
+     */
+    public void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
 		Configuration testSliceMetadata = getProject().getConfigurations().maybeCreate("testSliceMetadata");
 		getProject().getArtifacts()
@@ -92,7 +117,14 @@ public class TestSliceMetadata extends DefaultTask {
 					(artifact) -> artifact.builtBy(this));
 	}
 
-	@TaskAction
+	/**
+     * This method is used to document the test slices.
+     * It reads the test slices from a properties file and stores them in the output file.
+     * If the output file's parent directory does not exist, it creates the directory.
+     * 
+     * @throws IOException if there is an error reading or writing the files
+     */
+    @TaskAction
 	void documentTestSlices() throws IOException {
 		Properties testSlices = readTestSlices();
 		getOutputFile().getParentFile().mkdirs();
@@ -101,7 +133,13 @@ public class TestSliceMetadata extends DefaultTask {
 		}
 	}
 
-	private Properties readTestSlices() throws IOException {
+	/**
+     * Reads the test slices from the source set's runtime classpath and returns them as properties.
+     * 
+     * @return the test slices as properties
+     * @throws IOException if an I/O error occurs while reading the test slices
+     */
+    private Properties readTestSlices() throws IOException {
 		Properties testSlices = CollectionFactory.createSortedProperties(true);
 		try (URLClassLoader classLoader = new URLClassLoader(
 				StreamSupport.stream(this.sourceSet.getRuntimeClasspath().spliterator(), false)
@@ -145,7 +183,13 @@ public class TestSliceMetadata extends DefaultTask {
 		}
 	}
 
-	private List<String> removeComments(List<String> lines) {
+	/**
+     * Removes comments from a list of lines.
+     * 
+     * @param lines the list of lines containing comments
+     * @return a new list of lines without comments
+     */
+    private List<String> removeComments(List<String> lines) {
 		List<String> result = new ArrayList<>();
 		for (String line : lines) {
 			int commentIndex = line.indexOf('#');
@@ -160,7 +204,14 @@ public class TestSliceMetadata extends DefaultTask {
 		return result;
 	}
 
-	private URL toURL(File file) {
+	/**
+     * Converts a File object to a URL object.
+     * 
+     * @param file the File object to be converted
+     * @return the URL object representing the file's location
+     * @throws RuntimeException if the file's URI cannot be converted to a URL
+     */
+    private URL toURL(File file) {
 		try {
 			return file.toURI().toURL();
 		}
@@ -169,7 +220,14 @@ public class TestSliceMetadata extends DefaultTask {
 		}
 	}
 
-	private Properties readSpringFactories(File file) throws IOException {
+	/**
+     * Reads the Spring factories from the given file.
+     * 
+     * @param file the file to read the Spring factories from
+     * @return the properties containing the Spring factories
+     * @throws IOException if an I/O error occurs while reading the file
+     */
+    private Properties readSpringFactories(File file) throws IOException {
 		Properties springFactories = new Properties();
 		try (Reader in = new FileReader(file)) {
 			springFactories.load(in);
@@ -177,7 +235,16 @@ public class TestSliceMetadata extends DefaultTask {
 		return springFactories;
 	}
 
-	private void addTestSlices(Properties testSlices, File classesDir, MetadataReaderFactory metadataReaderFactory,
+	/**
+     * Adds test slices to the provided properties.
+     * 
+     * @param testSlices            the properties to add the test slices to
+     * @param classesDir            the directory containing the test classes
+     * @param metadataReaderFactory the factory for creating metadata readers
+     * @param springFactories       the properties containing the spring factories
+     * @throws IOException if an I/O error occurs while walking the classes directory
+     */
+    private void addTestSlices(Properties testSlices, File classesDir, MetadataReaderFactory metadataReaderFactory,
 			Properties springFactories) throws IOException {
 		try (Stream<Path> classes = Files.walk(classesDir.toPath())) {
 			classes.filter((path) -> path.toString().endsWith("Test.class"))
@@ -188,7 +255,15 @@ public class TestSliceMetadata extends DefaultTask {
 
 	}
 
-	private MetadataReader getMetadataReader(Path path, MetadataReaderFactory metadataReaderFactory) {
+	/**
+     * Retrieves the metadata reader for the given file path using the provided metadata reader factory.
+     * 
+     * @param path The path of the file for which the metadata reader is to be retrieved.
+     * @param metadataReaderFactory The metadata reader factory used to create the metadata reader.
+     * @return The metadata reader for the given file path.
+     * @throws RuntimeException if an I/O error occurs while retrieving the metadata reader.
+     */
+    private MetadataReader getMetadataReader(Path path, MetadataReaderFactory metadataReaderFactory) {
 		try {
 			return metadataReaderFactory.getMetadataReader(new FileSystemResource(path));
 		}
@@ -197,13 +272,27 @@ public class TestSliceMetadata extends DefaultTask {
 		}
 	}
 
-	private void addTestSlice(Properties testSlices, Properties springFactories, MetadataReader metadataReader) {
+	/**
+     * Adds a test slice to the given test slices properties.
+     * 
+     * @param testSlices the properties object to add the test slice to
+     * @param springFactories the properties object containing the spring factories
+     * @param metadataReader the metadata reader for the test slice
+     */
+    private void addTestSlice(Properties testSlices, Properties springFactories, MetadataReader metadataReader) {
 		testSlices.setProperty(metadataReader.getClassMetadata().getClassName(),
 				StringUtils.collectionToCommaDelimitedString(
 						getImportedAutoConfiguration(springFactories, metadataReader.getAnnotationMetadata())));
 	}
 
-	private SortedSet<String> getImportedAutoConfiguration(Properties springFactories,
+	/**
+     * Retrieves the imported auto-configuration classes based on the provided Spring factories and annotation metadata.
+     * 
+     * @param springFactories The Spring factories properties.
+     * @param annotationMetadata The annotation metadata.
+     * @return A sorted set of imported auto-configuration classes.
+     */
+    private SortedSet<String> getImportedAutoConfiguration(Properties springFactories,
 			AnnotationMetadata annotationMetadata) {
 		Stream<String> importers = findMetaImporters(annotationMetadata);
 		if (annotationMetadata.isAnnotated("org.springframework.boot.autoconfigure.ImportAutoConfiguration")) {
@@ -214,13 +303,26 @@ public class TestSliceMetadata extends DefaultTask {
 			.collect(Collectors.toCollection(TreeSet::new));
 	}
 
-	private Stream<String> findMetaImporters(AnnotationMetadata annotationMetadata) {
+	/**
+     * Finds the meta importers for the given annotation metadata.
+     * 
+     * @param annotationMetadata the annotation metadata to find meta importers for
+     * @return a stream of meta importers as strings
+     */
+    private Stream<String> findMetaImporters(AnnotationMetadata annotationMetadata) {
 		return annotationMetadata.getAnnotationTypes()
 			.stream()
 			.filter((annotationType) -> isAutoConfigurationImporter(annotationType, annotationMetadata));
 	}
 
-	private boolean isAutoConfigurationImporter(String annotationType, AnnotationMetadata metadata) {
+	/**
+     * Checks if the given annotation type is an auto configuration importer.
+     * 
+     * @param annotationType the annotation type to check
+     * @param metadata the annotation metadata
+     * @return true if the annotation type is an auto configuration importer, false otherwise
+     */
+    private boolean isAutoConfigurationImporter(String annotationType, AnnotationMetadata metadata) {
 		return metadata.getMetaAnnotationTypes(annotationType)
 			.contains("org.springframework.boot.autoconfigure.ImportAutoConfiguration");
 	}

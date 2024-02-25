@@ -38,7 +38,17 @@ public class DockerEngineException extends RuntimeException {
 
 	private final Message responseMessage;
 
-	public DockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
+	/**
+     * Constructs a new DockerEngineException with the specified parameters.
+     * 
+     * @param host            the host where the exception occurred
+     * @param uri             the URI that caused the exception
+     * @param statusCode      the status code of the response
+     * @param reasonPhrase    the reason phrase of the response
+     * @param errors          the errors associated with the response
+     * @param responseMessage the response message
+     */
+    public DockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
 			Message responseMessage) {
 		super(buildMessage(host, uri, statusCode, reasonPhrase, errors, responseMessage));
 		this.statusCode = statusCode;
@@ -81,7 +91,19 @@ public class DockerEngineException extends RuntimeException {
 		return this.responseMessage;
 	}
 
-	private static String buildMessage(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
+	/**
+     * Builds an error message for a failed Docker API call.
+     * 
+     * @param host           the host of the Docker API
+     * @param uri            the URI of the Docker API call
+     * @param statusCode     the status code of the failed API call
+     * @param reasonPhrase   the reason phrase of the failed API call
+     * @param errors         the errors associated with the failed API call
+     * @param responseMessage the response message of the failed API call
+     * @return the error message
+     * @throws IllegalArgumentException if any of the parameters are null
+     */
+    private static String buildMessage(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
 			Message responseMessage) {
 		Assert.notNull(host, "Host must not be null");
 		Assert.notNull(uri, "URI must not be null");

@@ -36,17 +36,33 @@ class RecordableServerHttpResponse implements RecordableHttpResponse {
 
 	private final Map<String, List<String>> headers;
 
-	RecordableServerHttpResponse(ServerHttpResponse response) {
+	/**
+     * Constructs a new RecordableServerHttpResponse object based on the provided ServerHttpResponse.
+     * 
+     * @param response the ServerHttpResponse object to be used for constructing the RecordableServerHttpResponse
+     * @throws IllegalArgumentException if the response object is null
+     */
+    RecordableServerHttpResponse(ServerHttpResponse response) {
 		this.status = (response.getStatusCode() != null) ? response.getStatusCode().value() : HttpStatus.OK.value();
 		this.headers = new LinkedHashMap<>(response.getHeaders());
 	}
 
-	@Override
+	/**
+     * Returns the status code of the server HTTP response.
+     *
+     * @return the status code of the server HTTP response
+     */
+    @Override
 	public int getStatus() {
 		return this.status;
 	}
 
-	@Override
+	/**
+     * Returns the headers of the server HTTP response.
+     * 
+     * @return the headers of the server HTTP response as a map, where each key represents a header name and each value represents a list of header values
+     */
+    @Override
 	public Map<String, List<String>> getHeaders() {
 		return this.headers;
 	}

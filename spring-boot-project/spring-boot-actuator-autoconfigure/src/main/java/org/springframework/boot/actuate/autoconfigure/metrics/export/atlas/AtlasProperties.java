@@ -113,123 +113,273 @@ public class AtlasProperties {
 	 */
 	private String evalUri = "http://localhost:7101/lwc/api/v1/evaluate";
 
-	public Duration getStep() {
+	/**
+     * Returns the step duration.
+     *
+     * @return the step duration
+     */
+    public Duration getStep() {
 		return this.step;
 	}
 
-	public void setStep(Duration step) {
+	/**
+     * Sets the step duration for the AtlasProperties.
+     * 
+     * @param step the step duration to be set
+     */
+    public void setStep(Duration step) {
 		this.step = step;
 	}
 
-	public boolean isEnabled() {
+	/**
+     * Returns the current status of the enabled flag.
+     *
+     * @return true if the enabled flag is set to true, false otherwise.
+     */
+    public boolean isEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	/**
+     * Sets the enabled status of the AtlasProperties.
+     * 
+     * @param enabled the enabled status to be set
+     */
+    public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public Duration getConnectTimeout() {
+	/**
+     * Returns the connect timeout duration.
+     *
+     * @return the connect timeout duration
+     */
+    public Duration getConnectTimeout() {
 		return this.connectTimeout;
 	}
 
-	public void setConnectTimeout(Duration connectTimeout) {
+	/**
+     * Sets the connection timeout for the AtlasProperties class.
+     * 
+     * @param connectTimeout the duration of the connection timeout
+     */
+    public void setConnectTimeout(Duration connectTimeout) {
 		this.connectTimeout = connectTimeout;
 	}
 
-	public Duration getReadTimeout() {
+	/**
+     * Returns the read timeout duration.
+     *
+     * @return the read timeout duration
+     */
+    public Duration getReadTimeout() {
 		return this.readTimeout;
 	}
 
-	public void setReadTimeout(Duration readTimeout) {
+	/**
+     * Sets the read timeout for the connection.
+     * 
+     * @param readTimeout the duration of the read timeout
+     */
+    public void setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
 	}
 
-	public Integer getNumThreads() {
+	/**
+     * Returns the number of threads.
+     *
+     * @return the number of threads
+     */
+    public Integer getNumThreads() {
 		return this.numThreads;
 	}
 
-	public void setNumThreads(Integer numThreads) {
+	/**
+     * Sets the number of threads to be used.
+     * 
+     * @param numThreads the number of threads to be set
+     */
+    public void setNumThreads(Integer numThreads) {
 		this.numThreads = numThreads;
 	}
 
-	public Integer getBatchSize() {
+	/**
+     * Returns the batch size.
+     *
+     * @return the batch size
+     */
+    public Integer getBatchSize() {
 		return this.batchSize;
 	}
 
-	public void setBatchSize(Integer batchSize) {
+	/**
+     * Sets the batch size for processing data.
+     * 
+     * @param batchSize the batch size to be set
+     */
+    public void setBatchSize(Integer batchSize) {
 		this.batchSize = batchSize;
 	}
 
-	public String getUri() {
+	/**
+     * Returns the URI of the AtlasProperties object.
+     *
+     * @return the URI of the AtlasProperties object
+     */
+    public String getUri() {
 		return this.uri;
 	}
 
-	public void setUri(String uri) {
+	/**
+     * Sets the URI for the AtlasProperties class.
+     * 
+     * @param uri the URI to be set
+     */
+    public void setUri(String uri) {
 		this.uri = uri;
 	}
 
-	public Duration getMeterTimeToLive() {
+	/**
+     * Returns the time to live for the meter in the AtlasProperties class.
+     *
+     * @return the time to live for the meter
+     */
+    public Duration getMeterTimeToLive() {
 		return this.meterTimeToLive;
 	}
 
-	public void setMeterTimeToLive(Duration meterTimeToLive) {
+	/**
+     * Sets the time to live for the meter.
+     * 
+     * @param meterTimeToLive the time to live for the meter
+     */
+    public void setMeterTimeToLive(Duration meterTimeToLive) {
 		this.meterTimeToLive = meterTimeToLive;
 	}
 
-	public boolean isLwcEnabled() {
+	/**
+     * Returns a boolean value indicating whether LWC (Lightning Web Components) is enabled.
+     * 
+     * @return true if LWC is enabled, false otherwise
+     */
+    public boolean isLwcEnabled() {
 		return this.lwcEnabled;
 	}
 
-	public void setLwcEnabled(boolean lwcEnabled) {
+	/**
+     * Sets the LWC enabled flag.
+     * 
+     * @param lwcEnabled the value indicating whether LWC is enabled or not
+     */
+    public void setLwcEnabled(boolean lwcEnabled) {
 		this.lwcEnabled = lwcEnabled;
 	}
 
-	public Duration getLwcStep() {
+	/**
+     * Returns the LWC step duration.
+     * 
+     * @return the LWC step duration
+     */
+    public Duration getLwcStep() {
 		return this.lwcStep;
 	}
 
-	public void setLwcStep(Duration lwcStep) {
+	/**
+     * Sets the duration of the LWC step.
+     * 
+     * @param lwcStep the duration of the LWC step to be set
+     */
+    public void setLwcStep(Duration lwcStep) {
 		this.lwcStep = lwcStep;
 	}
 
-	public boolean isLwcIgnorePublishStep() {
+	/**
+     * Returns the value of the lwcIgnorePublishStep property.
+     * 
+     * @return true if the lwcIgnorePublishStep property is set to true, false otherwise.
+     */
+    public boolean isLwcIgnorePublishStep() {
 		return this.lwcIgnorePublishStep;
 	}
 
-	public void setLwcIgnorePublishStep(boolean lwcIgnorePublishStep) {
+	/**
+     * Sets the flag to ignore the publish step for LWC.
+     * 
+     * @param lwcIgnorePublishStep the flag indicating whether to ignore the publish step for LWC
+     */
+    public void setLwcIgnorePublishStep(boolean lwcIgnorePublishStep) {
 		this.lwcIgnorePublishStep = lwcIgnorePublishStep;
 	}
 
-	public Duration getConfigRefreshFrequency() {
+	/**
+     * Returns the refresh frequency of the configuration.
+     *
+     * @return the refresh frequency of the configuration
+     */
+    public Duration getConfigRefreshFrequency() {
 		return this.configRefreshFrequency;
 	}
 
-	public void setConfigRefreshFrequency(Duration configRefreshFrequency) {
+	/**
+     * Sets the refresh frequency for the configuration.
+     * 
+     * @param configRefreshFrequency the refresh frequency for the configuration
+     */
+    public void setConfigRefreshFrequency(Duration configRefreshFrequency) {
 		this.configRefreshFrequency = configRefreshFrequency;
 	}
 
-	public Duration getConfigTimeToLive() {
+	/**
+     * Returns the time to live for the configuration.
+     *
+     * @return the time to live for the configuration
+     */
+    public Duration getConfigTimeToLive() {
 		return this.configTimeToLive;
 	}
 
-	public void setConfigTimeToLive(Duration configTimeToLive) {
+	/**
+     * Sets the time to live for the configuration.
+     * 
+     * @param configTimeToLive the time to live for the configuration
+     */
+    public void setConfigTimeToLive(Duration configTimeToLive) {
 		this.configTimeToLive = configTimeToLive;
 	}
 
-	public String getConfigUri() {
+	/**
+     * Returns the configuration URI.
+     *
+     * @return the configuration URI
+     */
+    public String getConfigUri() {
 		return this.configUri;
 	}
 
-	public void setConfigUri(String configUri) {
+	/**
+     * Sets the configuration URI for AtlasProperties.
+     * 
+     * @param configUri the configuration URI to be set
+     */
+    public void setConfigUri(String configUri) {
 		this.configUri = configUri;
 	}
 
-	public String getEvalUri() {
+	/**
+     * Returns the evaluation URI.
+     *
+     * @return the evaluation URI
+     */
+    public String getEvalUri() {
 		return this.evalUri;
 	}
 
-	public void setEvalUri(String evalUri) {
+	/**
+     * Sets the evaluation URI for the AtlasProperties class.
+     * 
+     * @param evalUri the evaluation URI to be set
+     */
+    public void setEvalUri(String evalUri) {
 		this.evalUri = evalUri;
 	}
 

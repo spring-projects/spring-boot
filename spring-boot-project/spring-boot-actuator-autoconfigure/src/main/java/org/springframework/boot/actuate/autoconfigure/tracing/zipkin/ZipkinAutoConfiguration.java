@@ -50,13 +50,28 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties(ZipkinProperties.class)
 public class ZipkinAutoConfiguration {
 
-	@Bean
+	/**
+     * Generates a {@link PropertiesZipkinConnectionDetails} bean if there is no existing bean of type {@link ZipkinConnectionDetails}.
+     * Uses the provided {@link ZipkinProperties} to create the connection details.
+     *
+     * @param properties The {@link ZipkinProperties} used to create the connection details.
+     * @return The generated {@link PropertiesZipkinConnectionDetails} bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean(ZipkinConnectionDetails.class)
 	PropertiesZipkinConnectionDetails zipkinConnectionDetails(ZipkinProperties properties) {
 		return new PropertiesZipkinConnectionDetails(properties);
 	}
 
-	@Bean
+	/**
+     * Returns a {@link BytesEncoder} for encoding {@link Span} objects into JSON format.
+     * This method is annotated with {@link ConditionalOnMissingBean} to ensure that it is only
+     * executed if no other bean of type {@link BytesEncoder<Span>} is present in the application context.
+     * The returned {@link BytesEncoder} is configured to use JSON_V2 format for encoding spans.
+     *
+     * @return a {@link BytesEncoder} for encoding {@link Span} objects into JSON format
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public BytesEncoder<Span> spanBytesEncoder() {
 		return SpanBytesEncoder.JSON_V2;

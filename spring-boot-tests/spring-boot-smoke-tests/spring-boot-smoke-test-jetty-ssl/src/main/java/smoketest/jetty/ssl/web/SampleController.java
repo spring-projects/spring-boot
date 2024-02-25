@@ -19,10 +19,18 @@ package smoketest.jetty.ssl.web;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * SampleController class.
+ */
 @RestController
 public class SampleController {
 
-	@GetMapping("/")
+	/**
+     * Returns a greeting message "Hello World".
+     * 
+     * @return the greeting message "Hello World"
+     */
+    @GetMapping("/")
 	public String helloWorld() {
 		return "Hello World";
 	}

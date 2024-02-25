@@ -48,13 +48,24 @@ class TomcatEmbeddedContext extends StandardContext {
 
 	private MimeMappings mimeMappings;
 
-	@Override
+	/**
+     * Loads the specified containers on startup.
+     * 
+     * @param children an array of containers to be loaded
+     * @return true if the containers were successfully loaded, false otherwise
+     */
+    @Override
 	public boolean loadOnStartup(Container[] children) {
 		// deferred until later (see deferredLoadOnStartup)
 		return true;
 	}
 
-	@Override
+	/**
+     * Sets the manager for this TomcatEmbeddedContext.
+     * 
+     * @param manager the manager to be set
+     */
+    @Override
 	public void setManager(Manager manager) {
 		if (manager instanceof ManagerBase) {
 			manager.setSessionIdGenerator(new LazySessionIdGenerator());
@@ -62,12 +73,32 @@ class TomcatEmbeddedContext extends StandardContext {
 		super.setManager(manager);
 	}
 
-	void deferredLoadOnStartup() {
+	/**
+     * Loads the specified wrappers on startup in a deferred manner.
+     * This method is called during the startup process of the TomcatEmbeddedContext class.
+     * It uses the class loader of the current thread context to load the wrappers.
+     * 
+     * @see TomcatEmbeddedContext
+     * @see #getLoader()
+     * @see #getClassLoader()
+     * @see #findChildren()
+     * @see #getLoadOnStartupWrappers(List)
+     * @see #load(Object)
+     */
+    void deferredLoadOnStartup() {
 		doWithThreadContextClassLoader(getLoader().getClassLoader(),
 				() -> getLoadOnStartupWrappers(findChildren()).forEach(this::load));
 	}
 
-	private Stream<Wrapper> getLoadOnStartupWrappers(Container[] children) {
+	/**
+     * Returns a stream of Wrapper objects representing the children Containers with a non-negative load-on-startup value,
+     * grouped by their load-on-startup value in ascending order.
+     *
+     * @param children an array of Container objects representing the children of the current Container
+     * @return a Stream of Wrapper objects representing the children Containers with a non-negative load-on-startup value,
+     *         grouped by their load-on-startup value in ascending order
+     */
+    private Stream<Wrapper> getLoadOnStartupWrappers(Container[] children) {
 		Map<Integer, List<Wrapper>> grouped = new TreeMap<>();
 		for (Container child : children) {
 			Wrapper wrapper = (Wrapper) child;
@@ -79,7 +110,13 @@ class TomcatEmbeddedContext extends StandardContext {
 		return grouped.values().stream().flatMap(List::stream);
 	}
 
-	private void load(Wrapper wrapper) {
+	/**
+     * Loads the given wrapper.
+     * 
+     * @param wrapper the wrapper to be loaded
+     * @throws WebServerException if an exception occurs while loading the wrapper and the computedFailCtxIfServletStartFails flag is set
+     */
+    private void load(Wrapper wrapper) {
 		try {
 			wrapper.load();
 		}
@@ -114,19 +151,39 @@ class TomcatEmbeddedContext extends StandardContext {
 		}
 	}
 
-	void setStarter(TomcatStarter starter) {
+	/**
+     * Sets the TomcatStarter for this TomcatEmbeddedContext.
+     * 
+     * @param starter the TomcatStarter to set
+     */
+    void setStarter(TomcatStarter starter) {
 		this.starter = starter;
 	}
 
-	TomcatStarter getStarter() {
+	/**
+     * Returns the starter object associated with this TomcatEmbeddedContext.
+     *
+     * @return the starter object associated with this TomcatEmbeddedContext
+     */
+    TomcatStarter getStarter() {
 		return this.starter;
 	}
 
-	void setMimeMappings(MimeMappings mimeMappings) {
+	/**
+     * Sets the MIME mappings for this TomcatEmbeddedContext.
+     * 
+     * @param mimeMappings the MIME mappings to be set
+     */
+    void setMimeMappings(MimeMappings mimeMappings) {
 		this.mimeMappings = mimeMappings;
 	}
 
-	@Override
+	/**
+     * Returns an array of all the MIME mappings found in the TomcatEmbeddedContext, including the ones inherited from the superclass.
+     * 
+     * @return an array of strings representing the MIME mappings
+     */
+    @Override
 	public String[] findMimeMappings() {
 		List<String> mappings = new ArrayList<>();
 		mappings.addAll(Arrays.asList(super.findMimeMappings()));
@@ -136,7 +193,13 @@ class TomcatEmbeddedContext extends StandardContext {
 		return mappings.toArray(String[]::new);
 	}
 
-	@Override
+	/**
+     * Finds the MIME mapping for a given file extension.
+     * 
+     * @param extension the file extension for which to find the MIME mapping
+     * @return the MIME mapping for the given file extension, or null if not found
+     */
+    @Override
 	public String findMimeMapping(String extension) {
 		String mimeMapping = super.findMimeMapping(extension);
 		if (mimeMapping != null) {

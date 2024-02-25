@@ -63,7 +63,13 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(RelyingPartyRegistrationRepository.class)
 class Saml2RelyingPartyRegistrationConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of RelyingPartyRegistrationRepository based on the provided Saml2RelyingPartyProperties.
+     * 
+     * @param properties the Saml2RelyingPartyProperties containing the configuration for the relying party registrations
+     * @return a new instance of RelyingPartyRegistrationRepository
+     */
+    @Bean
 	RelyingPartyRegistrationRepository relyingPartyRegistrationRepository(Saml2RelyingPartyProperties properties) {
 		List<RelyingPartyRegistration> registrations = properties.getRegistration()
 			.entrySet()
@@ -73,11 +79,24 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		return new InMemoryRelyingPartyRegistrationRepository(registrations);
 	}
 
-	private RelyingPartyRegistration asRegistration(Map.Entry<String, Registration> entry) {
+	/**
+     * Converts a Map.Entry object containing a key-value pair of String and Registration into a RelyingPartyRegistration object.
+     * 
+     * @param entry the Map.Entry object containing the key-value pair
+     * @return the converted RelyingPartyRegistration object
+     */
+    private RelyingPartyRegistration asRegistration(Map.Entry<String, Registration> entry) {
 		return asRegistration(entry.getKey(), entry.getValue());
 	}
 
-	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
+	/**
+     * Converts the given registration properties into a {@link RelyingPartyRegistration} object.
+     * 
+     * @param id the registration ID
+     * @param properties the registration properties
+     * @return the converted {@link RelyingPartyRegistration} object
+     */
+    private RelyingPartyRegistration asRegistration(String id, Registration properties) {
 		boolean usingMetadata = StringUtils.hasText(properties.getAssertingparty().getMetadataUri());
 		Builder builder = (!usingMetadata) ? RelyingPartyRegistration.withRegistrationId(id)
 				: createBuilderUsingMetadata(properties.getAssertingparty()).registrationId(id);
@@ -112,7 +131,14 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		return registration;
 	}
 
-	private RelyingPartyRegistration.Builder createBuilderUsingMetadata(AssertingParty properties) {
+	/**
+     * Creates a RelyingPartyRegistration.Builder using the metadata provided by the AssertingParty.
+     * 
+     * @param properties The AssertingParty properties containing the required metadata.
+     * @return The RelyingPartyRegistration.Builder created using the metadata.
+     * @throws IllegalStateException If no relying party with the specified Entity ID is found.
+     */
+    private RelyingPartyRegistration.Builder createBuilderUsingMetadata(AssertingParty properties) {
 		String requiredEntityId = properties.getEntityId();
 		Collection<Builder> candidates = RelyingPartyRegistrations
 			.collectionFromMetadataLocation(properties.getMetadataUri());
@@ -124,13 +150,25 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		throw new IllegalStateException("No relying party with Entity ID '" + requiredEntityId + "' found");
 	}
 
-	private Object getEntityId(RelyingPartyRegistration.Builder candidate) {
+	/**
+     * Retrieves the entity ID from the provided RelyingPartyRegistration.Builder object.
+     * 
+     * @param candidate the RelyingPartyRegistration.Builder object to extract the entity ID from
+     * @return the entity ID as an Object
+     */
+    private Object getEntityId(RelyingPartyRegistration.Builder candidate) {
 		String[] result = new String[1];
 		candidate.assertingPartyDetails((builder) -> result[0] = builder.build().getEntityId());
 		return result[0];
 	}
 
-	private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(AssertingParty assertingParty) {
+	/**
+     * Maps the properties of an AssertingParty object to an AssertingPartyDetails.Builder object.
+     * 
+     * @param assertingParty the AssertingParty object to be mapped
+     * @return a Consumer function that maps the properties of the AssertingParty object to the AssertingPartyDetails.Builder object
+     */
+    private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(AssertingParty assertingParty) {
 		return (details) -> {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(assertingParty::getEntityId).to(details::entityId);
@@ -143,32 +181,66 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		};
 	}
 
-	private void validateSigningCredentials(Registration properties, boolean signRequest) {
+	/**
+     * Validates the signing credentials for the given registration properties.
+     * 
+     * @param properties the registration properties
+     * @param signRequest flag indicating whether the authentication requests require signing
+     * 
+     * @throws IllegalArgumentException if signRequest is true and the signing credentials are empty
+     */
+    private void validateSigningCredentials(Registration properties, boolean signRequest) {
 		if (signRequest) {
 			Assert.state(!properties.getSigning().getCredentials().isEmpty(),
 					"Signing credentials must not be empty when authentication requests require signing.");
 		}
 	}
 
-	private Saml2X509Credential asSigningCredential(Signing.Credential properties) {
+	/**
+     * Returns a Saml2X509Credential object as a signing credential.
+     * 
+     * @param properties the Signing.Credential object containing the private key and certificate locations
+     * @return a Saml2X509Credential object configured as a signing credential
+     */
+    private Saml2X509Credential asSigningCredential(Signing.Credential properties) {
 		RSAPrivateKey privateKey = readPrivateKey(properties.getPrivateKeyLocation());
 		X509Certificate certificate = readCertificate(properties.getCertificateLocation());
 		return new Saml2X509Credential(privateKey, certificate, Saml2X509CredentialType.SIGNING);
 	}
 
-	private Saml2X509Credential asDecryptionCredential(Decryption.Credential properties) {
+	/**
+     * Returns a Saml2X509Credential object for decryption based on the provided properties.
+     *
+     * @param properties The Decryption.Credential object containing the private key and certificate locations.
+     * @return A Saml2X509Credential object for decryption.
+     */
+    private Saml2X509Credential asDecryptionCredential(Decryption.Credential properties) {
 		RSAPrivateKey privateKey = readPrivateKey(properties.getPrivateKeyLocation());
 		X509Certificate certificate = readCertificate(properties.getCertificateLocation());
 		return new Saml2X509Credential(privateKey, certificate, Saml2X509CredentialType.DECRYPTION);
 	}
 
-	private Saml2X509Credential asVerificationCredential(Verification.Credential properties) {
+	/**
+     * Converts the given Verification.Credential properties into a Saml2X509Credential object for verification purposes.
+     * 
+     * @param properties the Verification.Credential properties containing the certificate location
+     * @return the Saml2X509Credential object for verification
+     */
+    private Saml2X509Credential asVerificationCredential(Verification.Credential properties) {
 		X509Certificate certificate = readCertificate(properties.getCertificateLocation());
 		return new Saml2X509Credential(certificate, Saml2X509Credential.Saml2X509CredentialType.ENCRYPTION,
 				Saml2X509Credential.Saml2X509CredentialType.VERIFICATION);
 	}
 
-	private RSAPrivateKey readPrivateKey(Resource location) {
+	/**
+     * Reads a private key from the specified resource location.
+     *
+     * @param location the resource location of the private key
+     * @return the RSAPrivateKey object representing the private key
+     * @throws IllegalArgumentException if the private key location is not specified or does not exist,
+     *                                  or if an error occurs while reading the private key
+     */
+    private RSAPrivateKey readPrivateKey(Resource location) {
 		Assert.state(location != null, "No private key location specified");
 		Assert.state(location.exists(), () -> "Private key location '" + location + "' does not exist");
 		try (InputStream inputStream = location.getInputStream()) {
@@ -179,7 +251,14 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		}
 	}
 
-	private X509Certificate readCertificate(Resource location) {
+	/**
+     * Reads an X509Certificate from the specified resource location.
+     *
+     * @param location the resource location of the certificate
+     * @return the X509Certificate read from the location
+     * @throws IllegalArgumentException if the location is null or does not exist, or if an error occurs while reading the certificate
+     */
+    private X509Certificate readCertificate(Resource location) {
 		Assert.state(location != null, "No certificate location specified");
 		Assert.state(location.exists(), () -> "Certificate  location '" + location + "' does not exist");
 		try (InputStream inputStream = location.getInputStream()) {

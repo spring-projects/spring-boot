@@ -20,16 +20,30 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+/**
+ * GreetingController class.
+ */
 @Controller
 public class GreetingController {
 
 	private final GreetingService greetingService;
 
-	public GreetingController(GreetingService greetingService) {
+	/**
+     * Constructs a new GreetingController with the specified GreetingService.
+     * 
+     * @param greetingService the GreetingService to be used by the controller
+     */
+    public GreetingController(GreetingService greetingService) {
 		this.greetingService = greetingService;
 	}
 
-	@QueryMapping
+	/**
+     * Retrieves a greeting message for the given name.
+     *
+     * @param name the name to greet
+     * @return the greeting message
+     */
+    @QueryMapping
 	public String greeting(@Argument String name) {
 		return this.greetingService.greet(name);
 	}

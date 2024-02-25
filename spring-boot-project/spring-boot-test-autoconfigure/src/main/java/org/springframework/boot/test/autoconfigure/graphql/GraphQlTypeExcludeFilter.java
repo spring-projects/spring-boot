@@ -79,12 +79,24 @@ public class GraphQlTypeExcludeFilter extends StandardAnnotationCustomizableType
 
 	private final Class<?>[] controllers;
 
-	GraphQlTypeExcludeFilter(Class<?> testClass) {
+	/**
+     * Constructs a new GraphQlTypeExcludeFilter with the specified testClass.
+     * 
+     * @param testClass the class to be used for filtering GraphQL types
+     */
+    GraphQlTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 		this.controllers = getAnnotation().getValue("controllers", Class[].class).orElse(NO_CONTROLLERS);
 	}
 
-	@Override
+	/**
+     * Returns the default set of classes to include in the GraphQL type scanning process.
+     * If the controllers list is empty, the default includes and controllers will be returned.
+     * Otherwise, only the default includes will be returned.
+     *
+     * @return the set of classes to include in the GraphQL type scanning process
+     */
+    @Override
 	protected Set<Class<?>> getDefaultIncludes() {
 		if (ObjectUtils.isEmpty(this.controllers)) {
 			return DEFAULT_INCLUDES_AND_CONTROLLER;
@@ -92,7 +104,12 @@ public class GraphQlTypeExcludeFilter extends StandardAnnotationCustomizableType
 		return DEFAULT_INCLUDES;
 	}
 
-	@Override
+	/**
+     * Returns the set of component classes to be included.
+     * 
+     * @return the set of component classes to be included
+     */
+    @Override
 	protected Set<Class<?>> getComponentIncludes() {
 		return new LinkedHashSet<>(Arrays.asList(this.controllers));
 	}

@@ -19,10 +19,18 @@ package sample.app;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * SampleController class.
+ */
 @RestController
 public class SampleController {
 
-	@GetMapping("/")
+	/**
+     * Returns a greeting message.
+     * 
+     * @return the greeting message "Hello World"
+     */
+    @GetMapping("/")
 	public String hello() {
 		return "Hello World";
 	}

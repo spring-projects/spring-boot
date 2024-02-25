@@ -62,23 +62,48 @@ public class MetadataCollector {
 		this.typeUtils = new TypeUtils(processingEnvironment);
 	}
 
-	public void processing(RoundEnvironment roundEnv) {
+	/**
+     * This method is responsible for processing the elements in the given RoundEnvironment.
+     * It iterates through each element in the round environment and marks it as processed.
+     *
+     * @param roundEnv the RoundEnvironment containing the elements to be processed
+     */
+    public void processing(RoundEnvironment roundEnv) {
 		for (Element element : roundEnv.getRootElements()) {
 			markAsProcessed(element);
 		}
 	}
 
-	private void markAsProcessed(Element element) {
+	/**
+     * Marks the given element as processed.
+     * 
+     * @param element the element to be marked as processed
+     */
+    private void markAsProcessed(Element element) {
 		if (element instanceof TypeElement) {
 			this.processedSourceTypes.add(this.typeUtils.getQualifiedName(element));
 		}
 	}
 
-	public void add(ItemMetadata metadata) {
+	/**
+     * Adds an item metadata to the metadataItems list.
+     * 
+     * @param metadata the item metadata to be added
+     */
+    public void add(ItemMetadata metadata) {
 		this.metadataItems.add(metadata);
 	}
 
-	public void add(ItemMetadata metadata, Consumer<ItemMetadata> onConflict) {
+	/**
+     * Adds an item metadata to the collector.
+     * 
+     * @param metadata the item metadata to be added
+     * @param onConflict the consumer to be executed when a conflict occurs
+     *                   with an existing item metadata
+     * 
+     * @throws NullPointerException if the metadata is null
+     */
+    public void add(ItemMetadata metadata, Consumer<ItemMetadata> onConflict) {
 		ItemMetadata existing = find(metadata.getName());
 		if (existing != null) {
 			onConflict.accept(existing);
@@ -87,7 +112,13 @@ public class MetadataCollector {
 		add(metadata);
 	}
 
-	public boolean addIfAbsent(ItemMetadata metadata) {
+	/**
+     * Adds the given ItemMetadata to the MetadataCollector if it does not already exist.
+     * 
+     * @param metadata the ItemMetadata to be added
+     * @return true if the ItemMetadata was added successfully, false if it already exists
+     */
+    public boolean addIfAbsent(ItemMetadata metadata) {
 		ItemMetadata existing = find(metadata.getName());
 		if (existing != null) {
 			return false;
@@ -96,7 +127,14 @@ public class MetadataCollector {
 		return true;
 	}
 
-	public boolean hasSimilarGroup(ItemMetadata metadata) {
+	/**
+     * Checks if the given ItemMetadata has a similar group in the MetadataCollector.
+     * 
+     * @param metadata the ItemMetadata to check
+     * @return true if a similar group exists, false otherwise
+     * @throws IllegalStateException if the given metadata is not of type GROUP
+     */
+    public boolean hasSimilarGroup(ItemMetadata metadata) {
 		if (!metadata.isOfItemType(ItemMetadata.ItemType.GROUP)) {
 			throw new IllegalStateException("item " + metadata + " must be a group");
 		}
@@ -109,7 +147,12 @@ public class MetadataCollector {
 		return false;
 	}
 
-	public ConfigurationMetadata getMetadata() {
+	/**
+     * Retrieves the metadata for the configuration.
+     * 
+     * @return The configuration metadata.
+     */
+    public ConfigurationMetadata getMetadata() {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		for (ItemMetadata item : this.metadataItems) {
 			metadata.add(item);
@@ -125,23 +168,47 @@ public class MetadataCollector {
 		return metadata;
 	}
 
-	private ItemMetadata find(String name) {
+	/**
+     * Finds an ItemMetadata object with the given name.
+     * 
+     * @param name the name of the ItemMetadata object to find
+     * @return the found ItemMetadata object, or null if not found
+     */
+    private ItemMetadata find(String name) {
 		return this.metadataItems.stream()
 			.filter((candidate) -> name.equals(candidate.getName()))
 			.findFirst()
 			.orElse(null);
 	}
 
-	private boolean shouldBeMerged(ItemMetadata itemMetadata) {
+	/**
+     * Determines whether the given item should be merged based on its metadata.
+     * 
+     * @param itemMetadata the metadata of the item to be checked
+     * @return true if the item should be merged, false otherwise
+     */
+    private boolean shouldBeMerged(ItemMetadata itemMetadata) {
 		String sourceType = itemMetadata.getSourceType();
 		return (sourceType != null && !deletedInCurrentBuild(sourceType) && !processedInCurrentBuild(sourceType));
 	}
 
-	private boolean deletedInCurrentBuild(String sourceType) {
+	/**
+     * Checks if the given source type has been deleted in the current build.
+     * 
+     * @param sourceType the source type to check
+     * @return {@code true} if the source type has been deleted in the current build, {@code false} otherwise
+     */
+    private boolean deletedInCurrentBuild(String sourceType) {
 		return this.processingEnvironment.getElementUtils().getTypeElement(sourceType.replace('$', '.')) == null;
 	}
 
-	private boolean processedInCurrentBuild(String sourceType) {
+	/**
+     * Checks if the given source type has been processed in the current build.
+     * 
+     * @param sourceType the source type to check
+     * @return true if the source type has been processed in the current build, false otherwise
+     */
+    private boolean processedInCurrentBuild(String sourceType) {
 		return this.processedSourceTypes.contains(sourceType);
 	}
 

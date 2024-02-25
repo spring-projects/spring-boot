@@ -43,17 +43,35 @@ public class InspectedContent implements Content {
 
 	private final Object content;
 
-	InspectedContent(int size, Object content) {
+	/**
+     * Constructs a new InspectedContent object with the specified size and content.
+     * 
+     * @param size the size of the content
+     * @param content the content to be inspected
+     */
+    InspectedContent(int size, Object content) {
 		this.size = size;
 		this.content = content;
 	}
 
-	@Override
+	/**
+     * Returns the size of the InspectedContent.
+     *
+     * @return the size of the InspectedContent
+     */
+    @Override
 	public int size() {
 		return this.size;
 	}
 
-	@Override
+	/**
+     * Writes the content of the InspectedContent object to the specified OutputStream.
+     * 
+     * @param outputStream the OutputStream to write the content to
+     * @throws IOException if an I/O error occurs while writing the content
+     * @throws IllegalStateException if the content type is unknown
+     */
+    @Override
 	public void writeTo(OutputStream outputStream) throws IOException {
 		if (this.content instanceof byte[] bytes) {
 			FileCopyUtils.copy(bytes, outputStream);
@@ -141,18 +159,38 @@ public class InspectedContent implements Content {
 
 		private final byte[] singleByteBuffer = new byte[0];
 
-		private InspectingOutputStream(Inspector[] inspectors) {
+		/**
+         * Constructs a new InspectingOutputStream with the given array of inspectors.
+         * 
+         * @param inspectors the array of inspectors to be used for inspecting the output stream
+         */
+        private InspectingOutputStream(Inspector[] inspectors) {
 			this.inspectors = inspectors;
 			this.delegate = new ByteArrayOutputStream();
 		}
 
-		@Override
+		/**
+         * Writes a single byte to the output stream.
+         * 
+         * @param b the byte to be written
+         * @throws IOException if an I/O error occurs
+         */
+        @Override
 		public void write(int b) throws IOException {
 			this.singleByteBuffer[0] = (byte) (b & 0xFF);
 			write(this.singleByteBuffer);
 		}
 
-		@Override
+		/**
+         * Writes a portion of an array of bytes to the underlying output stream. The number of bytes written is equal to the
+         * length parameter. The bytes to be written are the bytes from the array starting at offset off to the length len.
+         * 
+         * @param b   the data.
+         * @param off the start offset in the data.
+         * @param len the number of bytes to write.
+         * @throws IOException if an I/O error occurs.
+         */
+        @Override
 		public void write(byte[] b, int off, int len) throws IOException {
 			int size = len - off;
 			if (this.tempFile == null && (this.size + size) > MEMORY_LIMIT) {
@@ -165,18 +203,36 @@ public class InspectedContent implements Content {
 			this.size += size;
 		}
 
-		private void convertToTempFile() throws IOException {
+		/**
+         * Converts the content of the delegate ByteArrayOutputStream to a temporary file.
+         * 
+         * @throws IOException if an I/O error occurs while creating the temporary file or copying the content
+         */
+        private void convertToTempFile() throws IOException {
 			this.tempFile = File.createTempFile("buildpack", ".tmp");
 			byte[] bytes = ((ByteArrayOutputStream) this.delegate).toByteArray();
 			this.delegate = new FileOutputStream(this.tempFile);
 			StreamUtils.copy(bytes, this.delegate);
 		}
 
-		private Object getContent() {
+		/**
+         * Returns the content of the InspectingOutputStream.
+         * 
+         * If a temporary file has been set, the content of the temporary file is returned.
+         * Otherwise, if the delegate is an instance of ByteArrayOutputStream, the content of the ByteArrayOutputStream is returned as a byte array.
+         * 
+         * @return the content of the InspectingOutputStream
+         */
+        private Object getContent() {
 			return (this.tempFile != null) ? this.tempFile : ((ByteArrayOutputStream) this.delegate).toByteArray();
 		}
 
-		private int getSize() {
+		/**
+         * Returns the size of the InspectingOutputStream.
+         *
+         * @return the size of the InspectingOutputStream
+         */
+        private int getSize() {
 			return this.size;
 		}
 

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.web.servlet.springmvc.messageconverters;
 
+/**
+ * AnotherHttpMessageConverter class.
+ */
 class AnotherHttpMessageConverter extends AdditionalHttpMessageConverter {
 
 }

@@ -16,6 +16,9 @@
 
 package smoketest.groovytemplates;
 
+/**
+ * MessageRepository interface.
+ */
 public interface MessageRepository {
 
 	Iterable<Message> findAll();

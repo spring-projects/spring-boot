@@ -53,12 +53,25 @@ class ServiceReadinessChecks {
 
 	private final TcpConnectServiceReadinessCheck check;
 
-	ServiceReadinessChecks(DockerComposeProperties.Readiness properties) {
+	/**
+     * Constructs a new ServiceReadinessChecks object with the specified DockerComposeProperties.Readiness properties.
+     * 
+     * @param properties the DockerComposeProperties.Readiness properties to use for the checks
+     */
+    ServiceReadinessChecks(DockerComposeProperties.Readiness properties) {
 		this(properties, Clock.systemUTC(), ServiceReadinessChecks::sleep,
 				new TcpConnectServiceReadinessCheck(properties.getTcp()));
 	}
 
-	ServiceReadinessChecks(DockerComposeProperties.Readiness properties, Clock clock, Consumer<Duration> sleep,
+	/**
+     * Performs service readiness checks using the provided properties, clock, sleep function, and TCP connect readiness check.
+     * 
+     * @param properties the Docker Compose readiness properties
+     * @param clock the clock used for timing
+     * @param sleep the function used for sleeping
+     * @param check the TCP connect readiness check
+     */
+    ServiceReadinessChecks(DockerComposeProperties.Readiness properties, Clock clock, Consumer<Duration> sleep,
 			TcpConnectServiceReadinessCheck check) {
 		this.clock = clock;
 		this.sleep = sleep;
@@ -86,7 +99,13 @@ class ServiceReadinessChecks {
 		}
 	}
 
-	private List<ServiceNotReadyException> check(List<RunningService> runningServices) {
+	/**
+     * Checks the readiness of a list of running services.
+     * 
+     * @param runningServices the list of running services to check
+     * @return a list of ServiceNotReadyException if any service is not ready, otherwise an empty list
+     */
+    private List<ServiceNotReadyException> check(List<RunningService> runningServices) {
 		List<ServiceNotReadyException> exceptions = null;
 		for (RunningService service : runningServices) {
 			if (isDisabled(service)) {
@@ -106,11 +125,24 @@ class ServiceReadinessChecks {
 		return (exceptions != null) ? exceptions : Collections.emptyList();
 	}
 
-	private boolean isDisabled(RunningService service) {
+	/**
+     * Checks if a running service is disabled.
+     * 
+     * @param service the running service to check
+     * @return true if the service is disabled, false otherwise
+     */
+    private boolean isDisabled(RunningService service) {
 		return service.labels().containsKey(DISABLE_LABEL);
 	}
 
-	private static void sleep(Duration duration) {
+	/**
+     * Suspends the execution of the current thread for the specified duration.
+     * 
+     * @param duration the duration to sleep for
+     * @throws IllegalArgumentException if the duration is negative
+     * @throws InterruptedException if the current thread is interrupted while sleeping
+     */
+    private static void sleep(Duration duration) {
 		try {
 			Thread.sleep(duration.toMillis());
 		}

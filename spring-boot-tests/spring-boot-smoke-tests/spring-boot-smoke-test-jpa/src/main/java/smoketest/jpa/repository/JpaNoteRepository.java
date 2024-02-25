@@ -24,13 +24,21 @@ import smoketest.jpa.domain.Note;
 
 import org.springframework.stereotype.Repository;
 
+/**
+ * JpaNoteRepository class.
+ */
 @Repository
 class JpaNoteRepository implements NoteRepository {
 
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@Override
+	/**
+     * Retrieves all notes from the database.
+     *
+     * @return a list of Note objects representing all the notes in the database.
+     */
+    @Override
 	public List<Note> findAll() {
 		return this.entityManager.createQuery("SELECT n FROM Note n", Note.class).getResultList();
 	}

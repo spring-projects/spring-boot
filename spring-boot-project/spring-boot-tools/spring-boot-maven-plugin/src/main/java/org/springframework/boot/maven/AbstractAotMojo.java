@@ -105,7 +105,13 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		return this.session;
 	}
 
-	@Override
+	/**
+     * Executes the AOT process.
+     * 
+     * @throws MojoExecutionException if an error occurs during the execution of the AOT process.
+     * @throws MojoFailureException if the AOT process fails.
+     */
+    @Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
 			getLog().debug("Skipping AOT execution as per configuration");
@@ -119,9 +125,22 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	protected abstract void executeAot() throws Exception;
+	/**
+     * Executes the Ahead-of-Time (AOT) compilation process.
+     *
+     * @throws Exception if an error occurs during the AOT compilation process.
+     */
+    protected abstract void executeAot() throws Exception;
 
-	protected void generateAotAssets(URL[] classPath, String processorClassName, String... arguments) throws Exception {
+	/**
+     * Generates Ahead-of-Time (AOT) assets using the specified classpath, processor class name, and arguments.
+     * 
+     * @param classPath The classpath URLs to be used for AOT generation.
+     * @param processorClassName The fully qualified name of the processor class to be used for AOT generation.
+     * @param arguments Additional arguments to be passed to the AOT generation process.
+     * @throws Exception if an error occurs during AOT generation.
+     */
+    protected void generateAotAssets(URL[] classPath, String processorClassName, String... arguments) throws Exception {
 		List<String> command = CommandLineBuilder.forMainClass(processorClassName)
 			.withSystemProperties(this.systemPropertyVariables)
 			.withJvmArguments(new RunArguments(this.jvmArguments).asArray())
@@ -135,7 +154,16 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		processExecutor.run(this.project.getBasedir(), command, Collections.emptyMap());
 	}
 
-	protected final void compileSourceFiles(URL[] classPath, File sourcesDirectory, File outputDirectory)
+	/**
+     * Compiles the source files located in the specified sources directory and outputs the compiled
+     * classes to the specified output directory.
+     *
+     * @param classPath         the classpath URLs to be used during compilation
+     * @param sourcesDirectory the directory containing the source files to be compiled
+     * @param outputDirectory  the directory where the compiled classes will be outputted
+     * @throws Exception if an error occurs during the compilation process
+     */
+    protected final void compileSourceFiles(URL[] classPath, File sourcesDirectory, File outputDirectory)
 			throws Exception {
 		List<Path> sourceFiles;
 		try (Stream<Path> pathStream = Files.walk(sourcesDirectory.toPath())) {
@@ -180,7 +208,15 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	protected final URL[] getClassPath(File[] directories, ArtifactsFilter... artifactFilters)
+	/**
+     * Returns the class path URLs for the specified directories and artifact filters.
+     * 
+     * @param directories the directories to include in the class path
+     * @param artifactFilters the artifact filters to apply
+     * @return an array of class path URLs
+     * @throws MojoExecutionException if an error occurs while getting the class path URLs
+     */
+    protected final URL[] getClassPath(File[] directories, ArtifactsFilter... artifactFilters)
 			throws MojoExecutionException {
 		List<URL> urls = new ArrayList<>();
 		Arrays.stream(directories).map(this::toURL).forEach(urls::add);
@@ -188,7 +224,14 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		return urls.toArray(URL[]::new);
 	}
 
-	protected final void copyAll(Path from, Path to) throws IOException {
+	/**
+     * Copies all files from the specified source directory to the specified target directory.
+     * 
+     * @param from the source directory path
+     * @param to the target directory path
+     * @throws IOException if an I/O error occurs during the copying process
+     */
+    protected final void copyAll(Path from, Path to) throws IOException {
 		if (!Files.exists(from)) {
 			return;
 		}
@@ -212,7 +255,12 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 
 		private final StringBuilder message = new StringBuilder();
 
-		@Override
+		/**
+         * Reports a diagnostic message.
+         * 
+         * @param diagnostic the diagnostic to be reported
+         */
+        @Override
 		public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
 			if (diagnostic.getKind() == Diagnostic.Kind.ERROR) {
 				this.message.append("\n");
@@ -226,11 +274,21 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 			}
 		}
 
-		boolean hasReportedErrors() {
+		/**
+         * Checks if there are any reported errors.
+         * 
+         * @return true if there are reported errors, false otherwise.
+         */
+        boolean hasReportedErrors() {
 			return !this.message.isEmpty();
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the message.
+         *
+         * @return the string representation of the message
+         */
+        @Override
 		public String toString() {
 			return this.message.toString();
 		}

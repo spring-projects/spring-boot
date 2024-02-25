@@ -53,7 +53,13 @@ public class CachingConnectionFactoryConfigurer extends AbstractConnectionFactor
 		super(properties, connectionDetails);
 	}
 
-	@Override
+	/**
+     * Configures the CachingConnectionFactory with the provided RabbitProperties.
+     * 
+     * @param connectionFactory the CachingConnectionFactory to configure
+     * @param rabbitProperties the RabbitProperties containing the configuration values
+     */
+    @Override
 	public void configure(CachingConnectionFactory connectionFactory, RabbitProperties rabbitProperties) {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(rabbitProperties::isPublisherReturns).to(connectionFactory::setPublisherReturns);

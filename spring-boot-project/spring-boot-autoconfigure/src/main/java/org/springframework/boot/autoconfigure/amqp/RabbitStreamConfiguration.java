@@ -50,7 +50,18 @@ import org.springframework.rabbit.stream.support.converter.StreamMessageConverte
 @ConditionalOnClass(StreamRabbitListenerContainerFactory.class)
 class RabbitStreamConfiguration {
 
-	@Bean(name = "rabbitListenerContainerFactory")
+	/**
+     * Creates a RabbitListenerContainerFactory bean for stream type listeners.
+     * This factory is conditionally created only if there is no existing bean with the same name.
+     * It is also conditionally created based on the property "spring.rabbitmq.listener.type" having the value "stream".
+     * 
+     * @param rabbitStreamEnvironment The environment for RabbitMQ stream.
+     * @param properties The RabbitMQ properties.
+     * @param consumerCustomizer The customizer for the consumer.
+     * @param containerCustomizer The customizer for the container.
+     * @return The created StreamRabbitListenerContainerFactory bean.
+     */
+    @Bean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "stream")
 	StreamRabbitListenerContainerFactory streamRabbitListenerContainerFactory(Environment rabbitStreamEnvironment,
@@ -66,7 +77,14 @@ class RabbitStreamConfiguration {
 		return factory;
 	}
 
-	@Bean(name = "rabbitStreamEnvironment")
+	/**
+     * Creates and configures the RabbitStreamEnvironment bean.
+     * 
+     * @param properties the RabbitProperties object containing the RabbitMQ configuration properties
+     * @param customizers the ObjectProvider of EnvironmentBuilderCustomizer objects for customizing the environment builder
+     * @return the RabbitStreamEnvironment bean
+     */
+    @Bean(name = "rabbitStreamEnvironment")
 	@ConditionalOnMissingBean(name = "rabbitStreamEnvironment")
 	Environment rabbitStreamEnvironment(RabbitProperties properties,
 			ObjectProvider<EnvironmentBuilderCustomizer> customizers) {
@@ -75,7 +93,17 @@ class RabbitStreamConfiguration {
 		return builder.build();
 	}
 
-	@Bean
+	/**
+     * Creates a RabbitStreamTemplateConfigurer bean if there is no existing bean of the same type.
+     * This configurer is responsible for configuring the RabbitStreamTemplate with the necessary properties.
+     * 
+     * @param properties The RabbitProperties object containing the RabbitMQ configuration properties.
+     * @param messageConverter The MessageConverter object used for converting messages.
+     * @param streamMessageConverter The StreamMessageConverter object used for converting stream messages.
+     * @param producerCustomizer The ProducerCustomizer object used for customizing the producer.
+     * @return The RabbitStreamTemplateConfigurer bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	RabbitStreamTemplateConfigurer rabbitStreamTemplateConfigurer(RabbitProperties properties,
 			ObjectProvider<MessageConverter> messageConverter,
@@ -88,7 +116,16 @@ class RabbitStreamConfiguration {
 		return configurer;
 	}
 
-	@Bean
+	/**
+     * Creates a RabbitStreamTemplate bean if there is no existing bean of type RabbitStreamOperations.
+     * The creation of the bean is conditional on the presence of the property "spring.rabbitmq.stream.name".
+     * 
+     * @param rabbitStreamEnvironment the environment for RabbitMQ stream
+     * @param properties the RabbitMQ properties
+     * @param configurer the RabbitStreamTemplateConfigurer
+     * @return the RabbitStreamTemplate bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(RabbitStreamOperations.class)
 	@ConditionalOnProperty(prefix = "spring.rabbitmq.stream", name = "name")
 	RabbitStreamTemplate rabbitStreamTemplate(Environment rabbitStreamEnvironment, RabbitProperties properties,
@@ -99,7 +136,14 @@ class RabbitStreamConfiguration {
 		return template;
 	}
 
-	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties) {
+	/**
+     * Configures the RabbitMQ environment builder with the provided RabbitProperties.
+     * 
+     * @param builder the RabbitMQ environment builder to configure
+     * @param properties the RabbitProperties containing the configuration values
+     * @return the configured RabbitMQ environment builder
+     */
+    static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties) {
 		builder.lazyInitialization(true);
 		RabbitProperties.Stream stream = properties.getStream();
 		PropertyMapper map = PropertyMapper.get();
@@ -114,7 +158,14 @@ class RabbitStreamConfiguration {
 		return builder;
 	}
 
-	private static Function<String, String> withFallback(Supplier<String> fallback) {
+	/**
+     * Returns a Function that takes a String value and returns it if it is not null,
+     * otherwise returns the value obtained from the provided fallback Supplier.
+     *
+     * @param fallback the Supplier used to obtain the fallback value if the input value is null
+     * @return a Function that performs the fallback logic
+     */
+    private static Function<String, String> withFallback(Supplier<String> fallback) {
 		return (value) -> (value != null) ? value : fallback.get();
 	}
 

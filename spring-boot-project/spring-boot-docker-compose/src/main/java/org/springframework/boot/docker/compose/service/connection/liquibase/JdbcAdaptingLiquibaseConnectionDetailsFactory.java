@@ -29,7 +29,13 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 class JdbcAdaptingLiquibaseConnectionDetailsFactory
 		implements ConnectionDetailsFactory<JdbcConnectionDetails, LiquibaseConnectionDetails> {
 
-	@Override
+	/**
+     * Returns the LiquibaseConnectionDetails object based on the provided JdbcConnectionDetails.
+     * 
+     * @param input the JdbcConnectionDetails object containing the connection details
+     * @return the LiquibaseConnectionDetails object with the same connection details as the input
+     */
+    @Override
 	public LiquibaseConnectionDetails getConnectionDetails(JdbcConnectionDetails input) {
 		return new LiquibaseConnectionDetails() {
 

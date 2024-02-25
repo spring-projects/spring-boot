@@ -24,17 +24,35 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+/**
+ * MyDataSourceConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyDataSourceConfiguration {
 
-	@Bean
+	/**
+     * Returns the DataSourceProperties object for the application's data source.
+     * This method is annotated with @Bean and @Primary to indicate that it is a bean
+     * and should be used as the primary data source configuration.
+     * The @ConfigurationProperties annotation is used to bind the properties from the
+     * "app.datasource" prefix in the application's configuration file to the DataSourceProperties object.
+     * 
+     * @return the DataSourceProperties object for the application's data source
+     */
+    @Bean
 	@Primary
 	@ConfigurationProperties("app.datasource")
 	public DataSourceProperties dataSourceProperties() {
 		return new DataSourceProperties();
 	}
 
-	@Bean
+	/**
+     * Creates a HikariDataSource using the provided DataSourceProperties.
+     * 
+     * @param properties the DataSourceProperties used to configure the data source
+     * @return a HikariDataSource configured with the provided properties
+     */
+    @Bean
 	@ConfigurationProperties("app.datasource.configuration")
 	public HikariDataSource dataSource(DataSourceProperties properties) {
 		return properties.initializeDataSourceBuilder().type(HikariDataSource.class).build();

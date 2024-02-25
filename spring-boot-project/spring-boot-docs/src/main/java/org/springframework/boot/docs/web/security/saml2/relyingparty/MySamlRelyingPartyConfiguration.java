@@ -23,10 +23,20 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * MySamlRelyingPartyConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MySamlRelyingPartyConfiguration {
 
-	@Bean
+	/**
+     * Configures the security filter chain for the SAML relying party.
+     * 
+     * @param http the HttpSecurity object to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
+    @Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 		http.saml2Login(withDefaults());

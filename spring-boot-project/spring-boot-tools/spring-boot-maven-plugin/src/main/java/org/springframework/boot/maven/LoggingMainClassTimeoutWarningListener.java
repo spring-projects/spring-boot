@@ -31,11 +31,22 @@ class LoggingMainClassTimeoutWarningListener implements MainClassTimeoutWarningL
 
 	private final Supplier<Log> log;
 
-	LoggingMainClassTimeoutWarningListener(Supplier<Log> log) {
+	/**
+     * Constructs a new LoggingMainClassTimeoutWarningListener with the specified log supplier.
+     * 
+     * @param log the supplier of the log to be used for logging
+     */
+    LoggingMainClassTimeoutWarningListener(Supplier<Log> log) {
 		this.log = log;
 	}
 
-	@Override
+	/**
+     * Handles the timeout warning for searching the main-class.
+     * 
+     * @param duration the duration of the timeout in milliseconds
+     * @param mainMethod the name of the main method being searched
+     */
+    @Override
 	public void handleTimeoutWarning(long duration, String mainMethod) {
 		this.log.get()
 			.warn("Searching for the main-class is taking some time, "

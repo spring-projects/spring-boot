@@ -47,13 +47,27 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(JmxProperties.class)
 public class JmxMetricsExportAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a JmxConfig bean if no other bean of type JmxConfig is present in the application context.
+     * Uses the provided JmxProperties to create a JmxPropertiesConfigAdapter.
+     *
+     * @param jmxProperties the JmxProperties object used to configure the JmxConfig bean
+     * @return a JmxConfig bean created using the JmxPropertiesConfigAdapter
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public JmxConfig jmxConfig(JmxProperties jmxProperties) {
 		return new JmxPropertiesConfigAdapter(jmxProperties);
 	}
 
-	@Bean
+	/**
+     * Creates a JmxMeterRegistry bean if there is no existing bean of the same type.
+     * 
+     * @param jmxConfig the JmxConfig object used for configuring the JmxMeterRegistry
+     * @param clock the Clock object used for measuring time
+     * @return a new instance of JmxMeterRegistry
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public JmxMeterRegistry jmxMeterRegistry(JmxConfig jmxConfig, Clock clock) {
 		return new JmxMeterRegistry(jmxConfig, clock);

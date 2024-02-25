@@ -44,14 +44,27 @@ class LayerResolver {
 
 	private final Spec<FileCopyDetails> librarySpec;
 
-	LayerResolver(ResolvedDependencies resolvedDependencies, LayeredSpec layeredConfiguration,
+	/**
+     * Constructs a new LayerResolver with the specified resolved dependencies, layered configuration, and library specification.
+     * 
+     * @param resolvedDependencies the resolved dependencies for the layer resolver
+     * @param layeredConfiguration the layered configuration for the layer resolver
+     * @param librarySpec the library specification for the layer resolver
+     */
+    LayerResolver(ResolvedDependencies resolvedDependencies, LayeredSpec layeredConfiguration,
 			Spec<FileCopyDetails> librarySpec) {
 		this.resolvedDependencies = resolvedDependencies;
 		this.layeredConfiguration = layeredConfiguration;
 		this.librarySpec = librarySpec;
 	}
 
-	Layer getLayer(FileCopyDetails details) {
+	/**
+     * Returns the layer for the given file copy details.
+     * 
+     * @param details the file copy details
+     * @return the layer for the given file copy details, or null if an unsupported operation occurs
+     */
+    Layer getLayer(FileCopyDetails details) {
 		try {
 			if (this.librarySpec.isSatisfiedBy(details)) {
 				return getLayer(asLibrary(details));
@@ -63,19 +76,42 @@ class LayerResolver {
 		}
 	}
 
-	Layer getLayer(Library library) {
+	/**
+     * Retrieves the layer associated with the given library from the layered configuration.
+     * 
+     * @param library the library for which to retrieve the layer
+     * @return the layer associated with the given library
+     */
+    Layer getLayer(Library library) {
 		return this.layeredConfiguration.asLayers().getLayer(library);
 	}
 
-	Layer getLayer(String applicationResource) {
+	/**
+     * Retrieves the layer associated with the given application resource.
+     * 
+     * @param applicationResource the application resource for which to retrieve the layer
+     * @return the layer associated with the application resource
+     */
+    Layer getLayer(String applicationResource) {
 		return this.layeredConfiguration.asLayers().getLayer(applicationResource);
 	}
 
-	Iterable<Layer> getLayers() {
+	/**
+     * Returns an iterable of layers in the LayerResolver's layered configuration.
+     *
+     * @return an iterable of layers in the LayerResolver's layered configuration
+     */
+    Iterable<Layer> getLayers() {
 		return this.layeredConfiguration.asLayers();
 	}
 
-	private Library asLibrary(FileCopyDetails details) {
+	/**
+     * Creates a Library object based on the given FileCopyDetails.
+     * 
+     * @param details the FileCopyDetails containing the file information
+     * @return a Library object representing the file as a library
+     */
+    private Library asLibrary(FileCopyDetails details) {
 		File file = details.getFile();
 		DependencyDescriptor dependency = this.resolvedDependencies.find(file);
 		if (dependency == null) {

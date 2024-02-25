@@ -66,53 +66,109 @@ public class MetricsProperties {
 
 	private final Distribution distribution = new Distribution();
 
-	public boolean isUseGlobalRegistry() {
+	/**
+     * Returns a boolean value indicating whether the global registry is being used.
+     * 
+     * @return true if the global registry is being used, false otherwise
+     */
+    public boolean isUseGlobalRegistry() {
 		return this.useGlobalRegistry;
 	}
 
-	public void setUseGlobalRegistry(boolean useGlobalRegistry) {
+	/**
+     * Sets whether to use the global registry for metrics.
+     * 
+     * @param useGlobalRegistry true to use the global registry, false otherwise
+     */
+    public void setUseGlobalRegistry(boolean useGlobalRegistry) {
 		this.useGlobalRegistry = useGlobalRegistry;
 	}
 
-	public Map<String, Boolean> getEnable() {
+	/**
+     * Returns a map of enable values.
+     *
+     * @return a map containing enable values
+     */
+    public Map<String, Boolean> getEnable() {
 		return this.enable;
 	}
 
-	public Map<String, String> getTags() {
+	/**
+     * Returns the tags associated with the MetricsProperties object.
+     * 
+     * @return a Map containing the tags as key-value pairs
+     */
+    public Map<String, String> getTags() {
 		return this.tags;
 	}
 
-	public Web getWeb() {
+	/**
+     * Returns the Web object associated with this MetricsProperties instance.
+     *
+     * @return the Web object
+     */
+    public Web getWeb() {
 		return this.web;
 	}
 
-	public Data getData() {
+	/**
+     * Returns the data object.
+     *
+     * @return the data object
+     */
+    public Data getData() {
 		return this.data;
 	}
 
-	public System getSystem() {
+	/**
+     * Returns the system object associated with this MetricsProperties instance.
+     *
+     * @return the system object
+     */
+    public System getSystem() {
 		return this.system;
 	}
 
-	public Distribution getDistribution() {
+	/**
+     * Returns the distribution of the MetricsProperties.
+     *
+     * @return the distribution of the MetricsProperties
+     */
+    public Distribution getDistribution() {
 		return this.distribution;
 	}
 
-	public static class Web {
+	/**
+     * Web class.
+     */
+    public static class Web {
 
 		private final Client client = new Client();
 
 		private final Server server = new Server();
 
-		public Client getClient() {
+		/**
+         * Returns the client associated with this Web instance.
+         *
+         * @return the client associated with this Web instance
+         */
+        public Client getClient() {
 			return this.client;
 		}
 
-		public Server getServer() {
+		/**
+         * Returns the server object associated with this Web class.
+         *
+         * @return the server object
+         */
+        public Server getServer() {
 			return this.server;
 		}
 
-		public static class Client {
+		/**
+         * Client class.
+         */
+        public static class Client {
 
 			/**
 			 * Maximum number of unique URI tag values allowed. After the max number of
@@ -121,17 +177,30 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
-			public int getMaxUriTags() {
+			/**
+             * Returns the maximum number of URI tags.
+             *
+             * @return the maximum number of URI tags
+             */
+            public int getMaxUriTags() {
 				return this.maxUriTags;
 			}
 
-			public void setMaxUriTags(int maxUriTags) {
+			/**
+             * Sets the maximum number of URI tags.
+             * 
+             * @param maxUriTags the maximum number of URI tags to be set
+             */
+            public void setMaxUriTags(int maxUriTags) {
 				this.maxUriTags = maxUriTags;
 			}
 
 		}
 
-		public static class Server {
+		/**
+         * Server class.
+         */
+        public static class Server {
 
 			/**
 			 * Maximum number of unique URI tag values allowed. After the max number of
@@ -140,11 +209,21 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
-			public int getMaxUriTags() {
+			/**
+             * Returns the maximum number of URI tags.
+             *
+             * @return the maximum number of URI tags
+             */
+            public int getMaxUriTags() {
 				return this.maxUriTags;
 			}
 
-			public void setMaxUriTags(int maxUriTags) {
+			/**
+             * Sets the maximum number of URI tags.
+             * 
+             * @param maxUriTags the maximum number of URI tags to be set
+             */
+            public void setMaxUriTags(int maxUriTags) {
 				this.maxUriTags = maxUriTags;
 			}
 
@@ -152,15 +231,26 @@ public class MetricsProperties {
 
 	}
 
-	public static class Data {
+	/**
+     * Data class.
+     */
+    public static class Data {
 
 		private final Repository repository = new Repository();
 
-		public Repository getRepository() {
+		/**
+         * Returns the repository associated with this Data object.
+         *
+         * @return the repository associated with this Data object
+         */
+        public Repository getRepository() {
 			return this.repository;
 		}
 
-		public static class Repository {
+		/**
+         * Repository class.
+         */
+        public static class Repository {
 
 			/**
 			 * Name of the metric for sent requests.
@@ -173,15 +263,30 @@ public class MetricsProperties {
 			@NestedConfigurationProperty
 			private final AutoTimeProperties autotime = new AutoTimeProperties();
 
-			public String getMetricName() {
+			/**
+             * Returns the metric name.
+             *
+             * @return the metric name
+             */
+            public String getMetricName() {
 				return this.metricName;
 			}
 
-			public void setMetricName(String metricName) {
+			/**
+             * Sets the metric name for the repository.
+             * 
+             * @param metricName the metric name to be set
+             */
+            public void setMetricName(String metricName) {
 				this.metricName = metricName;
 			}
 
-			public AutoTimeProperties getAutotime() {
+			/**
+             * Returns the AutoTimeProperties object associated with this Repository.
+             *
+             * @return the AutoTimeProperties object associated with this Repository
+             */
+            public AutoTimeProperties getAutotime() {
 				return this.autotime;
 			}
 
@@ -189,26 +294,47 @@ public class MetricsProperties {
 
 	}
 
-	public static class System {
+	/**
+     * System class.
+     */
+    public static class System {
 
 		private final Diskspace diskspace = new Diskspace();
 
-		public Diskspace getDiskspace() {
+		/**
+         * Returns the diskspace object associated with the system.
+         *
+         * @return the diskspace object associated with the system
+         */
+        public Diskspace getDiskspace() {
 			return this.diskspace;
 		}
 
-		public static class Diskspace {
+		/**
+         * Diskspace class.
+         */
+        public static class Diskspace {
 
 			/**
 			 * Comma-separated list of paths to report disk metrics for.
 			 */
 			private List<File> paths = new ArrayList<>(Collections.singletonList(new File(".")));
 
-			public List<File> getPaths() {
+			/**
+             * Returns a list of File objects representing the paths.
+             *
+             * @return a list of File objects representing the paths
+             */
+            public List<File> getPaths() {
 				return this.paths;
 			}
 
-			public void setPaths(List<File> paths) {
+			/**
+             * Sets the paths for the Diskspace object.
+             * 
+             * @param paths the list of File objects representing the paths to be set
+             */
+            public void setPaths(List<File> paths) {
 				this.paths = paths;
 			}
 
@@ -216,7 +342,10 @@ public class MetricsProperties {
 
 	}
 
-	public static class Distribution {
+	/**
+     * Distribution class.
+     */
+    public static class Distribution {
 
 		/**
 		 * Whether meter IDs starting with the specified name should publish percentile
@@ -271,31 +400,67 @@ public class MetricsProperties {
 		 */
 		private final Map<String, Integer> bufferLength = new LinkedHashMap<>();
 
-		public Map<String, Boolean> getPercentilesHistogram() {
+		/**
+         * Returns the percentiles histogram of the distribution.
+         * 
+         * @return a Map containing the percentiles histogram, where the keys are the percentiles and the values are booleans indicating if the percentile is present in the histogram
+         */
+        public Map<String, Boolean> getPercentilesHistogram() {
 			return this.percentilesHistogram;
 		}
 
-		public Map<String, double[]> getPercentiles() {
+		/**
+         * Returns the map of percentiles.
+         * 
+         * @return the map of percentiles, where the keys are strings representing the percentile names
+         *         and the values are arrays of doubles representing the percentile values
+         */
+        public Map<String, double[]> getPercentiles() {
 			return this.percentiles;
 		}
 
-		public Map<String, ServiceLevelObjectiveBoundary[]> getSlo() {
+		/**
+         * Returns the Service Level Objective boundaries.
+         * 
+         * @return a Map containing the Service Level Objective boundaries
+         */
+        public Map<String, ServiceLevelObjectiveBoundary[]> getSlo() {
 			return this.slo;
 		}
 
-		public Map<String, String> getMinimumExpectedValue() {
+		/**
+         * Returns the minimum expected value as a map of key-value pairs.
+         *
+         * @return the minimum expected value as a map
+         */
+        public Map<String, String> getMinimumExpectedValue() {
 			return this.minimumExpectedValue;
 		}
 
-		public Map<String, String> getMaximumExpectedValue() {
+		/**
+         * Returns the maximum expected value.
+         * 
+         * @return the maximum expected value as a Map of String keys and String values
+         */
+        public Map<String, String> getMaximumExpectedValue() {
 			return this.maximumExpectedValue;
 		}
 
-		public Map<String, Duration> getExpiry() {
+		/**
+         * Returns the expiry map, which contains the expiration durations for different items.
+         *
+         * @return the expiry map, where the keys are the item names and the values are the corresponding expiration durations
+         */
+        public Map<String, Duration> getExpiry() {
 			return this.expiry;
 		}
 
-		public Map<String, Integer> getBufferLength() {
+		/**
+         * Returns the buffer length as a map of string keys and integer values.
+         *
+         * @return the buffer length as a map of string keys and integer values
+         */
+        public Map<String, Integer> getBufferLength() {
 			return this.bufferLength;
 		}
 

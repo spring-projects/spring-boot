@@ -52,17 +52,35 @@ public class RepositoryMetricsAutoConfiguration {
 
 	private final MetricsProperties properties;
 
-	public RepositoryMetricsAutoConfiguration(MetricsProperties properties) {
+	/**
+     * Constructs a new instance of RepositoryMetricsAutoConfiguration with the specified MetricsProperties.
+     *
+     * @param properties the MetricsProperties to be used by the auto configuration
+     */
+    public RepositoryMetricsAutoConfiguration(MetricsProperties properties) {
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link DefaultRepositoryTagsProvider} if no other bean of type {@link RepositoryTagsProvider} is present.
+     * 
+     * @return the {@link DefaultRepositoryTagsProvider} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(RepositoryTagsProvider.class)
 	public DefaultRepositoryTagsProvider repositoryTagsProvider() {
 		return new DefaultRepositoryTagsProvider();
 	}
 
-	@Bean
+	/**
+     * Creates a MetricsRepositoryMethodInvocationListener bean if no other bean of the same type is present.
+     * This listener is responsible for tracking method invocations on repository interfaces and reporting metrics.
+     * 
+     * @param registry The provider for the MeterRegistry bean, used for reporting metrics.
+     * @param tagsProvider The provider for the RepositoryTagsProvider bean, used for providing tags for metrics.
+     * @return The MetricsRepositoryMethodInvocationListener bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public MetricsRepositoryMethodInvocationListener metricsRepositoryMethodInvocationListener(
 			ObjectProvider<MeterRegistry> registry, RepositoryTagsProvider tagsProvider) {
@@ -71,7 +89,13 @@ public class RepositoryMetricsAutoConfiguration {
 				properties.getMetricName(), new PropertiesAutoTimer(properties.getAutotime()));
 	}
 
-	@Bean
+	/**
+     * Creates a MetricsRepositoryMethodInvocationListenerBeanPostProcessor bean.
+     * 
+     * @param metricsRepositoryMethodInvocationListener the MetricsRepositoryMethodInvocationListener object provider
+     * @return the MetricsRepositoryMethodInvocationListenerBeanPostProcessor bean
+     */
+    @Bean
 	public static MetricsRepositoryMethodInvocationListenerBeanPostProcessor metricsRepositoryMethodInvocationListenerBeanPostProcessor(
 			ObjectProvider<MetricsRepositoryMethodInvocationListener> metricsRepositoryMethodInvocationListener) {
 		return new MetricsRepositoryMethodInvocationListenerBeanPostProcessor(

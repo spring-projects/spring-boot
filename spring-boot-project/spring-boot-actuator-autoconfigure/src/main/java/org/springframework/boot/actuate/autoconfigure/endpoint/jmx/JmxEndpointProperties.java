@@ -44,23 +44,46 @@ public class JmxEndpointProperties {
 	 */
 	private final Properties staticNames = new Properties();
 
-	public Exposure getExposure() {
+	/**
+     * Returns the exposure of the JmxEndpointProperties.
+     *
+     * @return the exposure of the JmxEndpointProperties
+     */
+    public Exposure getExposure() {
 		return this.exposure;
 	}
 
-	public String getDomain() {
+	/**
+     * Returns the domain of the JMX endpoint.
+     *
+     * @return the domain of the JMX endpoint
+     */
+    public String getDomain() {
 		return this.domain;
 	}
 
-	public void setDomain(String domain) {
+	/**
+     * Sets the domain for the JMX endpoint.
+     * 
+     * @param domain the domain to set
+     */
+    public void setDomain(String domain) {
 		this.domain = domain;
 	}
 
-	public Properties getStaticNames() {
+	/**
+     * Returns the staticNames property of the JmxEndpointProperties class.
+     * 
+     * @return the staticNames property
+     */
+    public Properties getStaticNames() {
 		return this.staticNames;
 	}
 
-	public static class Exposure {
+	/**
+     * Exposure class.
+     */
+    public static class Exposure {
 
 		/**
 		 * Endpoint IDs that should be included or '*' for all.
@@ -72,19 +95,39 @@ public class JmxEndpointProperties {
 		 */
 		private Set<String> exclude = new LinkedHashSet<>();
 
-		public Set<String> getInclude() {
+		/**
+         * Returns the set of strings representing the include values.
+         *
+         * @return the set of strings representing the include values
+         */
+        public Set<String> getInclude() {
 			return this.include;
 		}
 
-		public void setInclude(Set<String> include) {
+		/**
+         * Sets the include set.
+         * 
+         * @param include the set of strings to be included
+         */
+        public void setInclude(Set<String> include) {
 			this.include = include;
 		}
 
-		public Set<String> getExclude() {
+		/**
+         * Returns the set of excluded strings.
+         *
+         * @return the set of excluded strings
+         */
+        public Set<String> getExclude() {
 			return this.exclude;
 		}
 
-		public void setExclude(Set<String> exclude) {
+		/**
+         * Sets the set of strings to exclude.
+         * 
+         * @param exclude the set of strings to exclude
+         */
+        public void setExclude(Set<String> exclude) {
 			this.exclude = exclude;
 		}
 

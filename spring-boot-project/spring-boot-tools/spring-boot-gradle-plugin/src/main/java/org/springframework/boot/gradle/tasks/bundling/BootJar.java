@@ -90,26 +90,52 @@ public abstract class BootJar extends Jar implements BootArchive {
 		this.resolvedDependencies = new ResolvedDependencies(project);
 	}
 
-	private void configureBootInfSpec(CopySpec bootInfSpec) {
+	/**
+     * Configures the bootInfSpec CopySpec for the BootJar class.
+     * 
+     * @param bootInfSpec the CopySpec to be configured
+     */
+    private void configureBootInfSpec(CopySpec bootInfSpec) {
 		bootInfSpec.into("classes", fromCallTo(this::classpathDirectories));
 		bootInfSpec.into("lib", fromCallTo(this::classpathFiles)).eachFile(this.support::excludeNonZipFiles);
 		this.support.moveModuleInfoToRoot(bootInfSpec);
 		moveMetaInfToRoot(bootInfSpec);
 	}
 
-	private Iterable<File> classpathDirectories() {
+	/**
+     * Returns an iterable of directories in the classpath.
+     *
+     * @return an iterable of directories in the classpath
+     */
+    private Iterable<File> classpathDirectories() {
 		return classpathEntries(File::isDirectory);
 	}
 
-	private Iterable<File> classpathFiles() {
+	/**
+     * Returns an iterable collection of files in the classpath.
+     *
+     * @return an iterable collection of files in the classpath
+     */
+    private Iterable<File> classpathFiles() {
 		return classpathEntries(File::isFile);
 	}
 
-	private Iterable<File> classpathEntries(Spec<File> filter) {
+	/**
+     * Returns an iterable of classpath entries that match the given filter.
+     *
+     * @param filter the filter to apply on classpath entries
+     * @return an iterable of classpath entries that match the given filter
+     */
+    private Iterable<File> classpathEntries(Spec<File> filter) {
 		return (this.classpath != null) ? this.classpath.filter(filter) : Collections.emptyList();
 	}
 
-	private void moveMetaInfToRoot(CopySpec spec) {
+	/**
+     * Moves all files in the META-INF directory to the root directory, excluding specific files and directories.
+     * 
+     * @param spec the CopySpec object containing the files to be moved
+     */
+    private void moveMetaInfToRoot(CopySpec spec) {
 		spec.eachFile((file) -> {
 			String path = file.getRelativeSourcePath().getPathString();
 			if (path.startsWith("META-INF/") && !path.equals("META-INF/aop.xml") && !path.endsWith(".kotlin_module")
@@ -119,17 +145,44 @@ public abstract class BootJar extends Jar implements BootArchive {
 		});
 	}
 
-	@Override
+	/**
+     * Sets the resolved artifacts for the BootJar.
+     * 
+     * @param resolvedArtifacts the resolved artifacts to set
+     */
+    @Override
 	public void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts) {
 		this.resolvedDependencies.resolvedArtifacts(resolvedArtifacts);
 	}
 
-	@Nested
+	/**
+     * Returns the resolved dependencies of the BootJar.
+     *
+     * @return the resolved dependencies of the BootJar
+     */
+    @Nested
 	ResolvedDependencies getResolvedDependencies() {
 		return this.resolvedDependencies;
 	}
 
-	@Override
+	/**
+     * Copies the necessary files and directories for the boot jar.
+     * Configures the manifest with the specified parameters.
+     * 
+     * @see BootJar#configureManifest(Manifest, String, String, String, String, String, int, String, String)
+     * @see BootJar#getManifest()
+     * @see BootJar#getMainClass()
+     * @see BootJar#CLASSES_DIRECTORY
+     * @see BootJar#LIB_DIRECTORY
+     * @see BootJar#CLASSPATH_INDEX
+     * @see BootJar#LAYERS_INDEX
+     * @see BootJar#isLayeredDisabled()
+     * @see BootJar#getTargetJavaVersion()
+     * @see BootJar#projectName
+     * @see BootJar#projectVersion
+     * @see BootJar#copy()
+     */
+    @Override
 	public void copy() {
 		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY,
 				CLASSPATH_INDEX, (isLayeredDisabled()) ? null : LAYERS_INDEX,
@@ -137,11 +190,21 @@ public abstract class BootJar extends Jar implements BootArchive {
 		super.copy();
 	}
 
-	private boolean isLayeredDisabled() {
+	/**
+     * Returns a boolean value indicating whether the layered feature is disabled.
+     * 
+     * @return {@code true} if the layered feature is disabled, {@code false} otherwise
+     */
+    private boolean isLayeredDisabled() {
 		return !getLayered().getEnabled().get();
 	}
 
-	@Override
+	/**
+     * Creates a copy action for the BootJar.
+     * 
+     * @return the created CopyAction
+     */
+    @Override
 	protected CopyAction createCopyAction() {
 		LoaderImplementation loaderImplementation = getLoaderImplementation().getOrElse(LoaderImplementation.DEFAULT);
 		if (!isLayeredDisabled()) {
@@ -153,27 +216,52 @@ public abstract class BootJar extends Jar implements BootArchive {
 		return this.support.createCopyAction(this, this.resolvedDependencies, loaderImplementation, true);
 	}
 
-	@Override
+	/**
+     * Specifies that certain files matching the given patterns should be unpacked from the resulting boot jar.
+     * 
+     * @param patterns the patterns of files to be unpacked
+     */
+    @Override
 	public void requiresUnpack(String... patterns) {
 		this.support.requiresUnpack(patterns);
 	}
 
-	@Override
+	/**
+     * Sets the specification for files that require unpacking in the boot jar.
+     * 
+     * @param spec the specification for files that require unpacking
+     */
+    @Override
 	public void requiresUnpack(Spec<FileTreeElement> spec) {
 		this.support.requiresUnpack(spec);
 	}
 
-	@Override
+	/**
+     * Returns the launch script configuration for the BootJar.
+     * 
+     * @return the launch script configuration
+     */
+    @Override
 	public LaunchScriptConfiguration getLaunchScript() {
 		return this.support.getLaunchScript();
 	}
 
-	@Override
+	/**
+     * Launches the script if necessary.
+     * This method enables the launch script if it is not already enabled.
+     */
+    @Override
 	public void launchScript() {
 		enableLaunchScriptIfNecessary();
 	}
 
-	@Override
+	/**
+     * Launches a script with the given configuration.
+     * 
+     * @param action the action to be executed for launching the script
+     * @see LaunchScriptConfiguration
+     */
+    @Override
 	public void launchScript(Action<LaunchScriptConfiguration> action) {
 		action.execute(enableLaunchScriptIfNecessary());
 	}
@@ -197,24 +285,44 @@ public abstract class BootJar extends Jar implements BootArchive {
 		action.execute(this.layered);
 	}
 
-	@Override
+	/**
+     * Returns the classpath of the BootJar.
+     *
+     * @return the classpath of the BootJar
+     */
+    @Override
 	public FileCollection getClasspath() {
 		return this.classpath;
 	}
 
-	@Override
+	/**
+     * Sets the classpath for the BootJar task.
+     * 
+     * @param classpath The classpath to be set for the BootJar task.
+     */
+    @Override
 	public void classpath(Object... classpath) {
 		FileCollection existingClasspath = this.classpath;
 		this.classpath = getProject().files((existingClasspath != null) ? existingClasspath : Collections.emptyList(),
 				classpath);
 	}
 
-	@Override
+	/**
+     * Sets the classpath for the BootJar.
+     * 
+     * @param classpath the classpath to be set
+     */
+    @Override
 	public void setClasspath(Object classpath) {
 		this.classpath = getProject().files(classpath);
 	}
 
-	@Override
+	/**
+     * Sets the classpath for the BootJar.
+     * 
+     * @param classpath the classpath to be set
+     */
+    @Override
 	public void setClasspath(FileCollection classpath) {
 		this.classpath = getProject().files(classpath);
 	}
@@ -270,7 +378,12 @@ public abstract class BootJar extends Jar implements BootArchive {
 		return path.startsWith(LIB_DIRECTORY);
 	}
 
-	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
+	/**
+     * Enables the launch script if it is necessary.
+     * 
+     * @return The launch script configuration.
+     */
+    private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
 		LaunchScriptConfiguration launchScript = this.support.getLaunchScript();
 		if (launchScript == null) {
 			launchScript = new LaunchScriptConfiguration(this);
@@ -299,18 +412,36 @@ public abstract class BootJar extends Jar implements BootArchive {
 		return callable;
 	}
 
-	private final class LibrarySpec implements Spec<FileCopyDetails> {
+	/**
+     * LibrarySpec class.
+     */
+    private final class LibrarySpec implements Spec<FileCopyDetails> {
 
-		@Override
+		/**
+         * Checks if the given file copy details satisfy the condition of being a library.
+         * 
+         * @param details the file copy details to be checked
+         * @return true if the file copy details represent a library, false otherwise
+         */
+        @Override
 		public boolean isSatisfiedBy(FileCopyDetails details) {
 			return isLibrary(details);
 		}
 
 	}
 
-	private final class ZipCompressionResolver implements Function<FileCopyDetails, ZipCompression> {
+	/**
+     * ZipCompressionResolver class.
+     */
+    private final class ZipCompressionResolver implements Function<FileCopyDetails, ZipCompression> {
 
-		@Override
+		/**
+         * Resolves the appropriate ZipCompression for the given FileCopyDetails.
+         * 
+         * @param details the FileCopyDetails to resolve the ZipCompression for
+         * @return the resolved ZipCompression
+         */
+        @Override
 		public ZipCompression apply(FileCopyDetails details) {
 			return resolveZipCompression(details);
 		}

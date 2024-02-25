@@ -22,10 +22,18 @@ import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.stereotype.Component;
 
+/**
+ * ExampleInfoContributor class.
+ */
 @Component
 public class ExampleInfoContributor implements InfoContributor {
 
-	@Override
+	/**
+     * Contributes additional information to the provided Info.Builder object.
+     * 
+     * @param builder the Info.Builder object to which the additional information is contributed
+     */
+    @Override
 	public void contribute(Info.Builder builder) {
 		builder.withDetail("example", Collections.singletonMap("someKey", "someValue"));
 	}

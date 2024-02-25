@@ -19,10 +19,19 @@ package smoketest.oauth2.server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleOAuth2AuthorizationServerApplication class.
+ */
 @SpringBootApplication
 public class SampleOAuth2AuthorizationServerApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleOAuth2AuthorizationServerApplication class.
+     * This method is responsible for running the application.
+     * 
+     * @param args The command line arguments passed to the application.
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleOAuth2AuthorizationServerApplication.class);
 	}
 

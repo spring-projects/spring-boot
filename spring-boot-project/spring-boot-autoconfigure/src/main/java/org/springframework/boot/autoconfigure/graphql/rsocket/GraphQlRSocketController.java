@@ -25,21 +25,41 @@ import org.springframework.graphql.server.GraphQlRSocketHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
+/**
+ * GraphQlRSocketController class.
+ */
 @Controller
 class GraphQlRSocketController {
 
 	private final GraphQlRSocketHandler handler;
 
-	GraphQlRSocketController(GraphQlRSocketHandler handler) {
+	/**
+     * Constructs a new GraphQlRSocketController with the specified GraphQlRSocketHandler.
+     * 
+     * @param handler the GraphQlRSocketHandler to be used by the controller
+     */
+    GraphQlRSocketController(GraphQlRSocketHandler handler) {
 		this.handler = handler;
 	}
 
-	@MessageMapping("${spring.graphql.rsocket.mapping}")
+	/**
+     * Handles the incoming payload and returns a Mono of Map containing the response.
+     *
+     * @param payload the incoming payload to be handled
+     * @return a Mono of Map containing the response
+     */
+    @MessageMapping("${spring.graphql.rsocket.mapping}")
 	Mono<Map<String, Object>> handle(Map<String, Object> payload) {
 		return this.handler.handle(payload);
 	}
 
-	@MessageMapping("${spring.graphql.rsocket.mapping}")
+	/**
+     * Handles the subscription request for the given payload.
+     *
+     * @param payload the payload containing the subscription request
+     * @return a Flux of Map objects representing the subscription response
+     */
+    @MessageMapping("${spring.graphql.rsocket.mapping}")
 	Flux<Map<String, Object>> handleSubscription(Map<String, Object> payload) {
 		return this.handler.handleSubscription(payload);
 	}

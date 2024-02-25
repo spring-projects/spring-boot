@@ -19,10 +19,18 @@ package org.springframework.boot.docs.messaging.jms.receiving;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
-	@JmsListener(destination = "someQueue")
+	/**
+     * This method is a message listener that processes messages from the "someQueue" destination.
+     * 
+     * @param content the content of the message to be processed
+     */
+    @JmsListener(destination = "someQueue")
 	public void processMessage(String content) {
 		// ...
 	}

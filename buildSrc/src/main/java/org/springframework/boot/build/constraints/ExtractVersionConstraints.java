@@ -57,13 +57,24 @@ public class ExtractVersionConstraints extends DefaultTask {
 
 	private final List<String> projectPaths = new ArrayList<>();
 
-	public ExtractVersionConstraints() {
+	/**
+     * Extracts version constraints from the project's dependencies.
+     * 
+     * This method creates a new configuration and processes the metadata details of all components in the project's dependencies.
+     * The version constraints are extracted and stored in the configuration for further use.
+     */
+    public ExtractVersionConstraints() {
 		DependencyHandler dependencies = getProject().getDependencies();
 		this.configuration = getProject().getConfigurations().create(getName());
 		dependencies.getComponents().all(this::processMetadataDetails);
 	}
 
-	public void enforcedPlatform(String projectPath) {
+	/**
+     * Adds the enforced platform for the specified project path.
+     * 
+     * @param projectPath the path of the project
+     */
+    public void enforcedPlatform(String projectPath) {
 		this.configuration.getDependencies()
 			.add(getProject().getDependencies()
 				.enforcedPlatform(
@@ -71,22 +82,46 @@ public class ExtractVersionConstraints extends DefaultTask {
 		this.projectPaths.add(projectPath);
 	}
 
-	@Internal
+	/**
+     * Returns an unmodifiable map of version constraints.
+     *
+     * @return the version constraints as an unmodifiable map
+     */
+    @Internal
 	public Map<String, String> getVersionConstraints() {
 		return Collections.unmodifiableMap(this.versionConstraints);
 	}
 
-	@Internal
+	/**
+     * Returns the set of constrained versions.
+     *
+     * @return the set of constrained versions
+     */
+    @Internal
 	public Set<ConstrainedVersion> getConstrainedVersions() {
 		return this.constrainedVersions;
 	}
 
-	@Internal
+	/**
+     * Returns the set of version properties.
+     *
+     * @return the set of version properties
+     */
+    @Internal
 	public Set<VersionProperty> getVersionProperties() {
 		return this.versionProperties;
 	}
 
-	@TaskAction
+	/**
+     * Extracts version constraints from the project's configurations.
+     * Resolves the project's configuration before extracting the version constraints.
+     * Iterates through each project path and extracts version properties.
+     * Retrieves the dependency constraints from the "apiElements" configuration of each project.
+     * Stores the version constraints in a map, using the group and name of the constraint as the key,
+     * and the string representation of the version constraint as the value.
+     * Adds each version constraint to a list of constrained versions.
+     */
+    @TaskAction
 	void extractVersionConstraints() {
 		this.configuration.resolve();
 		for (String projectPath : this.projectPaths) {
@@ -103,7 +138,12 @@ public class ExtractVersionConstraints extends DefaultTask {
 		}
 	}
 
-	private void extractVersionProperties(String projectPath) {
+	/**
+     * Extracts the version properties from the specified project path.
+     * 
+     * @param projectPath the path of the project to extract version properties from
+     */
+    private void extractVersionProperties(String projectPath) {
 		Object bom = getProject().project(projectPath).getExtensions().getByName("bom");
 		BomExtension bomExtension = (BomExtension) bom;
 		for (Library lib : bomExtension.getLibraries()) {
@@ -114,7 +154,12 @@ public class ExtractVersionConstraints extends DefaultTask {
 		}
 	}
 
-	private void processMetadataDetails(ComponentMetadataDetails details) {
+	/**
+     * Processes the metadata details of a component.
+     * 
+     * @param details the component metadata details to be processed
+     */
+    private void processMetadataDetails(ComponentMetadataDetails details) {
 		details.allVariants((variantMetadata) -> variantMetadata.withDependencyConstraints((dependencyConstraints) -> {
 			for (DependencyConstraintMetadata constraint : dependencyConstraints) {
 				this.versionConstraints.put(constraint.getGroup() + ":" + constraint.getName(),
@@ -125,7 +170,10 @@ public class ExtractVersionConstraints extends DefaultTask {
 		}));
 	}
 
-	public static final class ConstrainedVersion implements Comparable<ConstrainedVersion>, Serializable {
+	/**
+     * ConstrainedVersion class.
+     */
+    public static final class ConstrainedVersion implements Comparable<ConstrainedVersion>, Serializable {
 
 		private final String group;
 
@@ -133,25 +181,54 @@ public class ExtractVersionConstraints extends DefaultTask {
 
 		private final String version;
 
-		private ConstrainedVersion(String group, String artifact, String version) {
+		/**
+         * Constructs a new instance of the ConstrainedVersion class with the specified group, artifact, and version.
+         * 
+         * @param group the group of the version
+         * @param artifact the artifact of the version
+         * @param version the version string
+         */
+        private ConstrainedVersion(String group, String artifact, String version) {
 			this.group = group;
 			this.artifact = artifact;
 			this.version = version;
 		}
 
-		public String getGroup() {
+		/**
+         * Returns the group of the ConstrainedVersion object.
+         * 
+         * @return the group of the ConstrainedVersion object
+         */
+        public String getGroup() {
 			return this.group;
 		}
 
-		public String getArtifact() {
+		/**
+         * Returns the artifact of the ConstrainedVersion.
+         *
+         * @return the artifact of the ConstrainedVersion
+         */
+        public String getArtifact() {
 			return this.artifact;
 		}
 
-		public String getVersion() {
+		/**
+         * Returns the version of the ConstrainedVersion object.
+         *
+         * @return the version of the ConstrainedVersion object
+         */
+        public String getVersion() {
 			return this.version;
 		}
 
-		@Override
+		/**
+         * Compares this ConstrainedVersion object with the specified ConstrainedVersion object for order.
+         * 
+         * @param other the ConstrainedVersion object to be compared
+         * @return a negative integer, zero, or a positive integer as this ConstrainedVersion object is less than, equal to, or greater than the specified ConstrainedVersion object
+         * @throws NullPointerException if the specified ConstrainedVersion object is null
+         */
+        @Override
 		public int compareTo(ConstrainedVersion other) {
 			int groupComparison = this.group.compareTo(other.group);
 			if (groupComparison != 0) {
@@ -162,26 +239,52 @@ public class ExtractVersionConstraints extends DefaultTask {
 
 	}
 
-	public static final class VersionProperty implements Comparable<VersionProperty>, Serializable {
+	/**
+     * VersionProperty class.
+     */
+    public static final class VersionProperty implements Comparable<VersionProperty>, Serializable {
 
 		private final String libraryName;
 
 		private final String versionProperty;
 
-		public VersionProperty(String libraryName, String versionProperty) {
+		/**
+         * Constructs a new VersionProperty object with the specified library name and version property.
+         * 
+         * @param libraryName the name of the library
+         * @param versionProperty the version property of the library
+         */
+        public VersionProperty(String libraryName, String versionProperty) {
 			this.libraryName = libraryName;
 			this.versionProperty = versionProperty;
 		}
 
-		public String getLibraryName() {
+		/**
+         * Returns the name of the library.
+         *
+         * @return the name of the library
+         */
+        public String getLibraryName() {
 			return this.libraryName;
 		}
 
-		public String getVersionProperty() {
+		/**
+         * Returns the version property.
+         *
+         * @return the version property
+         */
+        public String getVersionProperty() {
 			return this.versionProperty;
 		}
 
-		@Override
+		/**
+         * Compares this VersionProperty object with the specified VersionProperty object for order.
+         * 
+         * @param other the VersionProperty object to be compared
+         * @return a negative integer, zero, or a positive integer as this VersionProperty object is less than, equal to, or greater than the specified VersionProperty object
+         * @throws NullPointerException if the specified VersionProperty object is null
+         */
+        @Override
 		public int compareTo(VersionProperty other) {
 			int groupComparison = this.libraryName.compareToIgnoreCase(other.libraryName);
 			if (groupComparison != 0) {

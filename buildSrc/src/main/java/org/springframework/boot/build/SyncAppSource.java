@@ -39,7 +39,13 @@ public class SyncAppSource extends DefaultTask {
 
 	private final Property<String> pluginVersion;
 
-	public SyncAppSource() {
+	/**
+     * Initializes a new instance of the SyncAppSource class.
+     * 
+     * This method sets up the source and destination directories for the synchronization process.
+     * It also sets the plugin version property to the current project version.
+     */
+    public SyncAppSource() {
 		ObjectFactory objects = getProject().getObjects();
 		this.sourceDirectory = objects.directoryProperty();
 		this.destinationDirectory = objects.directoryProperty();
@@ -47,7 +53,11 @@ public class SyncAppSource extends DefaultTask {
 			.convention(getProject().provider(() -> getProject().getVersion().toString()));
 	}
 
-	@TaskAction
+	/**
+     * Synchronizes the application sources by copying files from the source directory to the destination directory.
+     * Filters the copied files to replace the version of the "org.springframework.boot" dependency with the current project version.
+     */
+    @TaskAction
 	void syncAppSources() {
 		getProject().sync((copySpec) -> {
 			copySpec.from(this.sourceDirectory);
@@ -57,17 +67,32 @@ public class SyncAppSource extends DefaultTask {
 		});
 	}
 
-	@InputDirectory
+	/**
+     * Returns the source directory for the SyncApp.
+     *
+     * @return the source directory
+     */
+    @InputDirectory
 	public DirectoryProperty getSourceDirectory() {
 		return this.sourceDirectory;
 	}
 
-	@OutputDirectory
+	/**
+     * Returns the destination directory where the output should be stored.
+     *
+     * @return The destination directory.
+     */
+    @OutputDirectory
 	public DirectoryProperty getDestinationDirectory() {
 		return this.destinationDirectory;
 	}
 
-	@Input
+	/**
+     * Returns the plugin version property.
+     *
+     * @return the plugin version property
+     */
+    @Input
 	public Property<String> getPluginVersion() {
 		return this.pluginVersion;
 	}

@@ -16,16 +16,35 @@
 
 package org.springframework.boot.docs.features.json.jackson.customserializersanddeserializers;
 
+/**
+ * MyObject class.
+ */
 class MyObject {
 
-	MyObject(String name, int age) {
+	/**
+     * Constructs a new MyObject with the specified name and age.
+     *
+     * @param name the name of the object
+     * @param age the age of the object
+     */
+    MyObject(String name, int age) {
 	}
 
-	String getName() {
+	/**
+     * Returns the name of the object.
+     *
+     * @return the name of the object, or null if the name is not set
+     */
+    String getName() {
 		return null;
 	}
 
-	Integer getAge() {
+	/**
+     * Returns the age of the object.
+     *
+     * @return the age of the object, or null if the age is not available
+     */
+    Integer getAge() {
 		return null;
 
 	}

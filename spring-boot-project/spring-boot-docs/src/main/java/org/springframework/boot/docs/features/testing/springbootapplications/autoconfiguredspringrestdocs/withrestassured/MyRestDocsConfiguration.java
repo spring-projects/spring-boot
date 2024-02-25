@@ -21,10 +21,19 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
 import org.springframework.restdocs.templates.TemplateFormats;
 
+/**
+ * MyRestDocsConfiguration class.
+ */
 @TestConfiguration(proxyBeanMethods = false)
 public class MyRestDocsConfiguration implements RestDocsRestAssuredConfigurationCustomizer {
 
-	@Override
+	/**
+     * Customize the RestAssuredRestDocumentationConfigurer.
+     * This method sets the template format to markdown.
+     *
+     * @param configurer The RestAssuredRestDocumentationConfigurer to customize.
+     */
+    @Override
 	public void customize(RestAssuredRestDocumentationConfigurer configurer) {
 		configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
 	}

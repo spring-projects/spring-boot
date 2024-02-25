@@ -27,7 +27,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  */
 public class PullImageUpdateEvent extends ImageProgressUpdateEvent {
 
-	@JsonCreator
+	/**
+     * Constructs a new PullImageUpdateEvent with the specified id, status, progressDetail, and progress.
+     * 
+     * @param id the id of the event
+     * @param status the status of the event
+     * @param progressDetail the progress detail of the event
+     * @param progress the progress of the event
+     */
+    @JsonCreator
 	public PullImageUpdateEvent(String id, String status, ProgressDetail progressDetail, String progress) {
 		super(id, status, progressDetail, progress);
 	}

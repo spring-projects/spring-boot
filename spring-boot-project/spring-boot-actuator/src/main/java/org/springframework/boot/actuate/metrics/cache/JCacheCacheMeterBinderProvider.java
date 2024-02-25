@@ -30,7 +30,14 @@ import org.springframework.cache.jcache.JCacheCache;
  */
 public class JCacheCacheMeterBinderProvider implements CacheMeterBinderProvider<JCacheCache> {
 
-	@Override
+	/**
+     * Returns a MeterBinder for the given JCacheCache and tags.
+     *
+     * @param cache the JCacheCache to create a MeterBinder for
+     * @param tags the tags to associate with the MeterBinder
+     * @return a MeterBinder for the given JCacheCache and tags
+     */
+    @Override
 	public MeterBinder getMeterBinder(JCacheCache cache, Iterable<Tag> tags) {
 		return new JCacheMetrics<>(cache.getNativeCache(), tags);
 	}

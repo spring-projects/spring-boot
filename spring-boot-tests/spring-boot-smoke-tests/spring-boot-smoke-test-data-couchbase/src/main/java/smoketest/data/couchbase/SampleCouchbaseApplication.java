@@ -18,6 +18,9 @@ package smoketest.data.couchbase;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleCouchbaseApplication class.
+ */
 @SpringBootApplication
 public class SampleCouchbaseApplication {
 

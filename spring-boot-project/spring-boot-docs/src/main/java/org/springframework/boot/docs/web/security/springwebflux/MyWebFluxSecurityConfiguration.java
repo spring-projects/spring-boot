@@ -24,10 +24,19 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * MyWebFluxSecurityConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyWebFluxSecurityConfiguration {
 
-	@Bean
+	/**
+     * Configures the security filter chain for the Spring WebFlux application.
+     * 
+     * @param http the ServerHttpSecurity object used to configure the security filter chain
+     * @return the configured SecurityWebFilterChain object
+     */
+    @Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 		http.authorizeExchange((exchange) -> {
 			exchange.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();

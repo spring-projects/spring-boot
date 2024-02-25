@@ -37,19 +37,40 @@ public class AuditEventsEndpoint {
 
 	private final AuditEventRepository auditEventRepository;
 
-	public AuditEventsEndpoint(AuditEventRepository auditEventRepository) {
+	/**
+     * Constructs a new AuditEventsEndpoint with the specified AuditEventRepository.
+     * 
+     * @param auditEventRepository the AuditEventRepository to be used by the endpoint (must not be null)
+     * @throws IllegalArgumentException if the auditEventRepository is null
+     */
+    public AuditEventsEndpoint(AuditEventRepository auditEventRepository) {
 		Assert.notNull(auditEventRepository, "AuditEventRepository must not be null");
 		this.auditEventRepository = auditEventRepository;
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves a list of audit events based on the specified parameters.
+     *
+     * @param principal The principal associated with the audit events (optional).
+     * @param after     The date and time after which the audit events occurred (optional).
+     * @param type      The type of audit events to retrieve (optional).
+     * @return An AuditEventsDescriptor object containing the retrieved audit events.
+     */
+    @ReadOperation
 	public AuditEventsDescriptor events(@Nullable String principal, @Nullable OffsetDateTime after,
 			@Nullable String type) {
 		List<AuditEvent> events = this.auditEventRepository.find(principal, getInstant(after), type);
 		return new AuditEventsDescriptor(events);
 	}
 
-	private Instant getInstant(OffsetDateTime offsetDateTime) {
+	/**
+     * Converts the given OffsetDateTime object to an Instant object.
+     * 
+     * @param offsetDateTime the OffsetDateTime object to be converted
+     * @return the Instant object representing the same point on the time-line as the given OffsetDateTime,
+     *         or null if the given OffsetDateTime is null
+     */
+    private Instant getInstant(OffsetDateTime offsetDateTime) {
 		return (offsetDateTime != null) ? offsetDateTime.toInstant() : null;
 	}
 
@@ -60,11 +81,21 @@ public class AuditEventsEndpoint {
 
 		private final List<AuditEvent> events;
 
-		private AuditEventsDescriptor(List<AuditEvent> events) {
+		/**
+         * Constructs a new AuditEventsDescriptor with the specified list of audit events.
+         * 
+         * @param events the list of audit events
+         */
+        private AuditEventsDescriptor(List<AuditEvent> events) {
 			this.events = events;
 		}
 
-		public List<AuditEvent> getEvents() {
+		/**
+         * Returns the list of AuditEvent objects.
+         *
+         * @return the list of AuditEvent objects
+         */
+        public List<AuditEvent> getEvents() {
 			return this.events;
 		}
 

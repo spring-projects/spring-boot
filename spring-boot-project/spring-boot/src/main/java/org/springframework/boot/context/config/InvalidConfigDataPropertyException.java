@@ -64,7 +64,16 @@ public class InvalidConfigDataPropertyException extends ConfigDataException {
 
 	private final ConfigDataResource location;
 
-	InvalidConfigDataPropertyException(ConfigurationProperty property, boolean profileSpecific,
+	/**
+     * Constructs a new InvalidConfigDataPropertyException with the specified property, profileSpecific,
+     * replacement, and location.
+     *
+     * @param property the ConfigurationProperty that caused the exception
+     * @param profileSpecific a boolean indicating if the property is profile-specific
+     * @param replacement the ConfigurationPropertyName that should be used as a replacement
+     * @param location the ConfigDataResource where the invalid property was found
+     */
+    InvalidConfigDataPropertyException(ConfigurationProperty property, boolean profileSpecific,
 			ConfigurationPropertyName replacement, ConfigDataResource location) {
 		super(getMessage(property, profileSpecific, replacement, location), null);
 		this.property = property;
@@ -125,7 +134,16 @@ public class InvalidConfigDataPropertyException extends ConfigDataException {
 		}
 	}
 
-	private static String getMessage(ConfigurationProperty property, boolean profileSpecific,
+	/**
+     * Returns the error message for an invalid configuration property.
+     * 
+     * @param property the invalid configuration property
+     * @param profileSpecific true if the property is in a profile specific resource, false otherwise
+     * @param replacement the replacement configuration property name, null if no replacement is needed
+     * @param location the location from which the property is imported, null if not imported
+     * @return the error message
+     */
+    private static String getMessage(ConfigurationProperty property, boolean profileSpecific,
 			ConfigurationPropertyName replacement, ConfigDataResource location) {
 		StringBuilder message = new StringBuilder("Property '");
 		message.append(property.getName());

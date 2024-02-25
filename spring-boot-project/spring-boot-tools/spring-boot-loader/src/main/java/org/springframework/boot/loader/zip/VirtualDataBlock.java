@@ -63,12 +63,26 @@ class VirtualDataBlock implements DataBlock {
 		this.size = size;
 	}
 
-	@Override
+	/**
+     * Returns the size of the VirtualDataBlock.
+     *
+     * @return the size of the VirtualDataBlock
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
 	public long size() throws IOException {
 		return this.size;
 	}
 
-	@Override
+	/**
+     * Reads bytes from the VirtualDataBlock into the specified ByteBuffer at the given position.
+     * 
+     * @param dst The ByteBuffer to read the bytes into.
+     * @param pos The position in the VirtualDataBlock to start reading from.
+     * @return The total number of bytes read into the ByteBuffer, or -1 if the position is out of range.
+     * @throws IOException If an I/O error occurs.
+     */
+    @Override
 	public int read(ByteBuffer dst, long pos) throws IOException {
 		if (pos < 0 || pos >= this.size) {
 			return -1;

@@ -16,6 +16,9 @@
 
 package smoketest.websocket.tomcat.snake;
 
+/**
+ * Direction enum.
+ */
 public enum Direction {
 
 	NONE, NORTH, SOUTH, EAST, WEST

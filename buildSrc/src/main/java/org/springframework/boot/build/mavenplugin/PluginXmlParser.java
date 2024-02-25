@@ -42,11 +42,22 @@ class PluginXmlParser {
 
 	private final XPath xpath;
 
-	PluginXmlParser() {
+	/**
+     * Constructs a new PluginXmlParser object.
+     * Initializes the XPath object using the XPathFactory.
+     */
+    PluginXmlParser() {
 		this.xpath = XPathFactory.newInstance().newXPath();
 	}
 
-	Plugin parse(File pluginXml) {
+	/**
+     * Parses the given plugin XML file and returns a Plugin object.
+     * 
+     * @param pluginXml the plugin XML file to parse
+     * @return the parsed Plugin object
+     * @throws RuntimeException if an error occurs during parsing
+     */
+    Plugin parse(File pluginXml) {
 		try {
 			Node root = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(pluginXml);
 			List<Mojo> mojos = parseMojos(root);
@@ -58,12 +69,27 @@ class PluginXmlParser {
 		}
 	}
 
-	private String textAt(String path, Node source) throws XPathExpressionException {
+	/**
+     * Retrieves the text content at the specified XPath path from the given XML node.
+     * 
+     * @param path   the XPath path to the desired text content
+     * @param source the XML node from which to retrieve the text content
+     * @return the text content at the specified XPath path, or null if it is empty
+     * @throws XPathExpressionException if an error occurs while evaluating the XPath expression
+     */
+    private String textAt(String path, Node source) throws XPathExpressionException {
 		String text = this.xpath.evaluate(path + "/text()", source);
 		return text.isEmpty() ? null : text;
 	}
 
-	private List<Mojo> parseMojos(Node plugin) throws XPathExpressionException {
+	/**
+     * Parses the mojos from the given plugin node.
+     * 
+     * @param plugin the plugin node to parse mojos from
+     * @return a list of Mojo objects parsed from the plugin node
+     * @throws XPathExpressionException if there is an error in the XPath expression
+     */
+    private List<Mojo> parseMojos(Node plugin) throws XPathExpressionException {
 		List<Mojo> mojos = new ArrayList<>();
 		for (Node mojoNode : nodesAt("//plugin/mojos/mojo", plugin)) {
 			mojos.add(new Mojo(textAt("goal", mojoNode), format(textAt("description", mojoNode)),
@@ -72,11 +98,26 @@ class PluginXmlParser {
 		return mojos;
 	}
 
-	private Iterable<Node> nodesAt(String path, Node source) throws XPathExpressionException {
+	/**
+     * Returns an iterable collection of nodes at the specified path from the given source node.
+     * 
+     * @param path the XPath expression specifying the path to the desired nodes
+     * @param source the node from which to start the search
+     * @return an iterable collection of nodes at the specified path
+     * @throws XPathExpressionException if an error occurs while evaluating the XPath expression
+     */
+    private Iterable<Node> nodesAt(String path, Node source) throws XPathExpressionException {
 		return IterableNodeList.of((NodeList) this.xpath.evaluate(path, source, XPathConstants.NODESET));
 	}
 
-	private List<Parameter> parseParameters(Node mojoNode) throws XPathExpressionException {
+	/**
+     * Parses the parameters from the given Mojo node.
+     * 
+     * @param mojoNode the Mojo node to parse
+     * @return a list of Parameter objects representing the parsed parameters
+     * @throws XPathExpressionException if there is an error in the XPath expression
+     */
+    private List<Parameter> parseParameters(Node mojoNode) throws XPathExpressionException {
 		Map<String, String> defaultValues = new HashMap<>();
 		Map<String, String> userProperties = new HashMap<>();
 		for (Node parameterConfigurationNode : nodesAt("configuration/*", mojoNode)) {
@@ -97,7 +138,16 @@ class PluginXmlParser {
 		return parameters;
 	}
 
-	private Parameter parseParameter(Node parameterNode, Map<String, String> defaultValues,
+	/**
+     * Parses a parameter node and returns a Parameter object.
+     * 
+     * @param parameterNode   the node representing the parameter
+     * @param defaultValues   a map of default values for parameters
+     * @param userProperties  a map of user properties for parameters
+     * @return                the parsed Parameter object
+     * @throws XPathExpressionException if there is an error in the XPath expression
+     */
+    private Parameter parseParameter(Node parameterNode, Map<String, String> defaultValues,
 			Map<String, String> userProperties) throws XPathExpressionException {
 		String description = textAt("description", parameterNode);
 		return new Parameter(textAt("name", parameterNode), textAt("type", parameterNode),
@@ -106,11 +156,25 @@ class PluginXmlParser {
 				userProperties.get(textAt("name", parameterNode)), textAt("since", parameterNode));
 	}
 
-	private boolean booleanAt(String path, Node node) throws XPathExpressionException {
+	/**
+     * Returns the boolean value at the specified XPath expression in the given XML node.
+     * 
+     * @param path the XPath expression to evaluate
+     * @param node the XML node to search in
+     * @return the boolean value at the specified XPath expression
+     * @throws XPathExpressionException if an error occurs while evaluating the XPath expression
+     */
+    private boolean booleanAt(String path, Node node) throws XPathExpressionException {
 		return Boolean.parseBoolean(textAt(path, node));
 	}
 
-	private String format(String input) {
+	/**
+     * Formats the input string by replacing certain HTML tags and special characters with their corresponding representations.
+     * 
+     * @param input the string to be formatted
+     * @return the formatted string
+     */
+    private String format(String input) {
 		return input.replace("<code>", "`")
 			.replace("</code>", "`")
 			.replace("&lt;", "<")
@@ -124,19 +188,38 @@ class PluginXmlParser {
 			.replaceAll("<a href=.\"(.*?)\".>(.*?)</a>", "$1[$2]");
 	}
 
-	private static final class IterableNodeList implements Iterable<Node> {
+	/**
+     * IterableNodeList class.
+     */
+    private static final class IterableNodeList implements Iterable<Node> {
 
 		private final NodeList nodeList;
 
-		private IterableNodeList(NodeList nodeList) {
+		/**
+         * Constructs a new IterableNodeList object with the specified NodeList.
+         * 
+         * @param nodeList the NodeList to be used for iteration
+         */
+        private IterableNodeList(NodeList nodeList) {
 			this.nodeList = nodeList;
 		}
 
-		private static Iterable<Node> of(NodeList nodeList) {
+		/**
+         * Returns an Iterable of Nodes from the given NodeList.
+         *
+         * @param nodeList the NodeList to convert to an Iterable
+         * @return an Iterable of Nodes
+         */
+        private static Iterable<Node> of(NodeList nodeList) {
 			return new IterableNodeList(nodeList);
 		}
 
-		@Override
+		/**
+         * Returns an iterator over the elements in this IterableNodeList in proper sequence.
+         *
+         * @return an iterator over the elements in this IterableNodeList in proper sequence
+         */
+        @Override
 		public Iterator<Node> iterator() {
 
 			return new Iterator<>() {
@@ -158,7 +241,10 @@ class PluginXmlParser {
 
 	}
 
-	static final class Plugin {
+	/**
+     * Plugin class.
+     */
+    static final class Plugin {
 
 		private final String groupId;
 
@@ -170,7 +256,16 @@ class PluginXmlParser {
 
 		private final List<Mojo> mojos;
 
-		private Plugin(String groupId, String artifactId, String version, String goalPrefix, List<Mojo> mojos) {
+		/**
+         * Constructs a new Plugin with the specified parameters.
+         *
+         * @param groupId the group ID of the plugin
+         * @param artifactId the artifact ID of the plugin
+         * @param version the version of the plugin
+         * @param goalPrefix the goal prefix of the plugin
+         * @param mojos the list of mojos associated with the plugin
+         */
+        private Plugin(String groupId, String artifactId, String version, String goalPrefix, List<Mojo> mojos) {
 			this.groupId = groupId;
 			this.artifactId = artifactId;
 			this.version = version;
@@ -178,29 +273,57 @@ class PluginXmlParser {
 			this.mojos = mojos;
 		}
 
-		String getGroupId() {
+		/**
+         * Returns the group ID of the plugin.
+         *
+         * @return the group ID of the plugin
+         */
+        String getGroupId() {
 			return this.groupId;
 		}
 
-		String getArtifactId() {
+		/**
+         * Returns the artifact ID of the plugin.
+         *
+         * @return the artifact ID of the plugin
+         */
+        String getArtifactId() {
 			return this.artifactId;
 		}
 
-		String getVersion() {
+		/**
+         * Returns the version of the plugin.
+         *
+         * @return the version of the plugin
+         */
+        String getVersion() {
 			return this.version;
 		}
 
-		String getGoalPrefix() {
+		/**
+         * Returns the goal prefix.
+         * 
+         * @return the goal prefix
+         */
+        String getGoalPrefix() {
 			return this.goalPrefix;
 		}
 
-		List<Mojo> getMojos() {
+		/**
+         * Returns the list of Mojo objects.
+         *
+         * @return the list of Mojo objects
+         */
+        List<Mojo> getMojos() {
 			return this.mojos;
 		}
 
 	}
 
-	static final class Mojo {
+	/**
+     * Mojo class.
+     */
+    static final class Mojo {
 
 		private final String goal;
 
@@ -208,27 +331,52 @@ class PluginXmlParser {
 
 		private final List<Parameter> parameters;
 
-		private Mojo(String goal, String description, List<Parameter> parameters) {
+		/**
+         * Constructs a new Mojo with the specified goal, description, and parameters.
+         * 
+         * @param goal the goal of the Mojo
+         * @param description the description of the Mojo
+         * @param parameters the list of parameters for the Mojo
+         */
+        private Mojo(String goal, String description, List<Parameter> parameters) {
 			this.goal = goal;
 			this.description = description;
 			this.parameters = parameters;
 		}
 
-		String getGoal() {
+		/**
+         * Returns the goal of the Mojo.
+         *
+         * @return the goal of the Mojo
+         */
+        String getGoal() {
 			return this.goal;
 		}
 
-		String getDescription() {
+		/**
+         * Returns the description of the Mojo.
+         *
+         * @return the description of the Mojo
+         */
+        String getDescription() {
 			return this.description;
 		}
 
-		List<Parameter> getParameters() {
+		/**
+         * Retrieves the list of parameters.
+         *
+         * @return the list of parameters
+         */
+        List<Parameter> getParameters() {
 			return this.parameters;
 		}
 
 	}
 
-	static final class Parameter {
+	/**
+     * Parameter class.
+     */
+    static final class Parameter {
 
 		private final String name;
 
@@ -246,7 +394,19 @@ class PluginXmlParser {
 
 		private final String since;
 
-		private Parameter(String name, String type, boolean required, boolean editable, String description,
+		/**
+         * Constructs a new Parameter with the specified attributes.
+         *
+         * @param name the name of the parameter
+         * @param type the type of the parameter
+         * @param required indicates if the parameter is required
+         * @param editable indicates if the parameter is editable
+         * @param description the description of the parameter
+         * @param defaultValue the default value of the parameter
+         * @param userProperty the user property of the parameter
+         * @param since the version since the parameter is available
+         */
+        private Parameter(String name, String type, boolean required, boolean editable, String description,
 				String defaultValue, String userProperty, String since) {
 			this.name = name;
 			this.type = type;
@@ -258,35 +418,75 @@ class PluginXmlParser {
 			this.since = since;
 		}
 
-		String getName() {
+		/**
+         * Returns the name of the Parameter.
+         *
+         * @return the name of the Parameter
+         */
+        String getName() {
 			return this.name;
 		}
 
-		String getType() {
+		/**
+         * Returns the type of the parameter.
+         * 
+         * @return the type of the parameter
+         */
+        String getType() {
 			return this.type;
 		}
 
-		boolean isRequired() {
+		/**
+         * Returns a boolean value indicating if the parameter is required.
+         *
+         * @return true if the parameter is required, false otherwise
+         */
+        boolean isRequired() {
 			return this.required;
 		}
 
-		boolean isEditable() {
+		/**
+         * Returns a boolean value indicating whether the parameter is editable.
+         * 
+         * @return true if the parameter is editable, false otherwise
+         */
+        boolean isEditable() {
 			return this.editable;
 		}
 
-		String getDescription() {
+		/**
+         * Returns the description of the Parameter.
+         *
+         * @return the description of the Parameter
+         */
+        String getDescription() {
 			return this.description;
 		}
 
-		String getDefaultValue() {
+		/**
+         * Returns the default value of the parameter.
+         *
+         * @return the default value of the parameter
+         */
+        String getDefaultValue() {
 			return this.defaultValue;
 		}
 
-		String getUserProperty() {
+		/**
+         * Returns the value of the userProperty.
+         *
+         * @return the value of the userProperty
+         */
+        String getUserProperty() {
 			return this.userProperty;
 		}
 
-		String getSince() {
+		/**
+         * Returns the value of the "since" parameter.
+         *
+         * @return the value of the "since" parameter
+         */
+        String getSince() {
 			return this.since;
 		}
 

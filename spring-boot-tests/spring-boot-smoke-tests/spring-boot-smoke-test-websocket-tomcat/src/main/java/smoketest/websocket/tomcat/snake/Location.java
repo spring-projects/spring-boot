@@ -16,6 +16,9 @@
 
 package smoketest.websocket.tomcat.snake;
 
+/**
+ * Location class.
+ */
 public class Location {
 
 	/**
@@ -28,12 +31,24 @@ public class Location {
 	 */
 	public int y;
 
-	public Location(int x, int y) {
+	/**
+     * Constructs a new Location object with the specified x and y coordinates.
+     *
+     * @param x the x coordinate of the location
+     * @param y the y coordinate of the location
+     */
+    public Location(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
 
-	public Location getAdjacentLocation(Direction direction) {
+	/**
+     * Returns the adjacent location in the specified direction.
+     * 
+     * @param direction the direction to move towards
+     * @return the adjacent location in the specified direction
+     */
+    public Location getAdjacentLocation(Direction direction) {
 		return switch (direction) {
 			case NORTH -> new Location(this.x, this.y - SnakeUtils.GRID_SIZE);
 			case SOUTH -> new Location(this.x, this.y + SnakeUtils.GRID_SIZE);
@@ -43,7 +58,13 @@ public class Location {
 		};
 	}
 
-	@Override
+	/**
+     * Compares this Location object to the specified object for equality.
+     * 
+     * @param o the object to compare to
+     * @return true if the specified object is equal to this Location object, false otherwise
+     */
+    @Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -58,7 +79,12 @@ public class Location {
 		return this.y == location.y;
 	}
 
-	@Override
+	/**
+     * Returns a hash code value for the object. This method overrides the default implementation of the hashCode() method.
+     *
+     * @return the hash code value for the object
+     */
+    @Override
 	public int hashCode() {
 		int result = this.x;
 		result = 31 * result + this.y;

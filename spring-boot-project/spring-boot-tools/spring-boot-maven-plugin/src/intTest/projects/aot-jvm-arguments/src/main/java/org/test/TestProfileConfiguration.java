@@ -20,11 +20,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+/**
+ * TestProfileConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 @Profile("abc")
 class TestProfileConfiguration {
 
-	@Bean
+	/**
+     * This method is used to return the string "abc".
+     * 
+     * @return The string "abc".
+     */
+    @Bean
 	public String abc() {
 		return "abc";
 	}

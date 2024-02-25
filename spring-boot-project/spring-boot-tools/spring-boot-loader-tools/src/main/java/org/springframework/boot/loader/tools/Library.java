@@ -128,7 +128,12 @@ public class Library {
 		return this.unpackRequired;
 	}
 
-	long getLastModified() {
+	/**
+     * Returns the last modified timestamp of the file.
+     *
+     * @return the last modified timestamp of the file
+     */
+    long getLastModified() {
 		return this.file.lastModified();
 	}
 

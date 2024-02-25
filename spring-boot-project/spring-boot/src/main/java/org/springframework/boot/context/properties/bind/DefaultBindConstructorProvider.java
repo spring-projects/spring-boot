@@ -37,7 +37,14 @@ import org.springframework.util.ClassUtils;
  */
 class DefaultBindConstructorProvider implements BindConstructorProvider {
 
-	@Override
+	/**
+     * Returns the bind constructor for the given bindable object.
+     * 
+     * @param bindable                  the bindable object
+     * @param isNestedConstructorBinding true if the bindable object is a nested constructor binding, false otherwise
+     * @return                          the bind constructor, or null if not found
+     */
+    @Override
 	public Constructor<?> getBindConstructor(Bindable<?> bindable, boolean isNestedConstructorBinding) {
 		Constructors constructors = Constructors.getConstructors(bindable.getType().resolve(),
 				isNestedConstructorBinding);
@@ -50,7 +57,14 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 		return constructors.getBind();
 	}
 
-	@Override
+	/**
+     * Returns the bind constructor for the given type.
+     * 
+     * @param type the type for which to retrieve the bind constructor
+     * @param isNestedConstructorBinding true if the constructor is a nested constructor binding, false otherwise
+     * @return the bind constructor for the given type
+     */
+    @Override
 	public Constructor<?> getBindConstructor(Class<?> type, boolean isNestedConstructorBinding) {
 		Constructors constructors = Constructors.getConstructors(type, isNestedConstructorBinding);
 		return constructors.getBind();
@@ -71,7 +85,15 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 
 		private final boolean immutableType;
 
-		private Constructors(boolean hasAutowired, Constructor<?> bind, boolean deducedBindConstructor,
+		/**
+         * Constructs a new instance of the Constructors class.
+         * 
+         * @param hasAutowired              a boolean indicating whether the class has autowired dependencies
+         * @param bind                      the constructor to bind to the class
+         * @param deducedBindConstructor    a boolean indicating whether the bind constructor was deduced
+         * @param immutableType             a boolean indicating whether the class is of immutable type
+         */
+        private Constructors(boolean hasAutowired, Constructor<?> bind, boolean deducedBindConstructor,
 				boolean immutableType) {
 			this.hasAutowired = hasAutowired;
 			this.bind = bind;
@@ -79,23 +101,50 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			this.immutableType = immutableType;
 		}
 
-		boolean hasAutowired() {
+		/**
+         * Returns a boolean value indicating whether the object has been autowired.
+         *
+         * @return true if the object has been autowired, false otherwise
+         */
+        boolean hasAutowired() {
 			return this.hasAutowired;
 		}
 
-		Constructor<?> getBind() {
+		/**
+         * Returns the bind constructor.
+         *
+         * @return the bind constructor
+         */
+        Constructor<?> getBind() {
 			return this.bind;
 		}
 
-		boolean isDeducedBindConstructor() {
+		/**
+         * Returns a boolean value indicating whether the bind constructor is deduced.
+         *
+         * @return {@code true} if the bind constructor is deduced, {@code false} otherwise.
+         */
+        boolean isDeducedBindConstructor() {
 			return this.deducedBindConstructor;
 		}
 
-		boolean isImmutableType() {
+		/**
+         * Returns a boolean value indicating whether the type is immutable or not.
+         *
+         * @return true if the type is immutable, false otherwise.
+         */
+        boolean isImmutableType() {
 			return this.immutableType;
 		}
 
-		static Constructors getConstructors(Class<?> type, boolean isNestedConstructorBinding) {
+		/**
+         * Retrieves the constructors for a given class, considering the specified parameters.
+         * 
+         * @param type the class for which to retrieve the constructors
+         * @param isNestedConstructorBinding flag indicating whether the constructor binding is nested
+         * @return the constructors for the given class
+         */
+        static Constructors getConstructors(Class<?> type, boolean isNestedConstructorBinding) {
 			if (type == null) {
 				return NONE;
 			}
@@ -120,7 +169,13 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			return new Constructors(hasAutowiredConstructor, bind, deducedBindConstructor, immutableType);
 		}
 
-		private static boolean isAutowiredPresent(Class<?> type) {
+		/**
+         * Checks if the given class or any of its superclasses have the {@code Autowired} annotation present on any of its constructors.
+         * 
+         * @param type the class to check
+         * @return {@code true} if the {@code Autowired} annotation is present on any constructor, {@code false} otherwise
+         */
+        private static boolean isAutowiredPresent(Class<?> type) {
 			if (Stream.of(type.getDeclaredConstructors())
 				.map(MergedAnnotations::from)
 				.anyMatch((annotations) -> annotations.isPresent(Autowired.class))) {
@@ -130,7 +185,13 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			return (userClass != type) && isAutowiredPresent(userClass);
 		}
 
-		private static Constructor<?>[] getCandidateConstructors(Class<?> type) {
+		/**
+         * Returns an array of candidate constructors for the given type.
+         * 
+         * @param type the class for which to retrieve the constructors
+         * @return an array of candidate constructors
+         */
+        private static Constructor<?>[] getCandidateConstructors(Class<?> type) {
 			if (isInnerClass(type)) {
 				return new Constructor<?>[0];
 			}
@@ -139,7 +200,13 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				.toArray(Constructor[]::new);
 		}
 
-		private static boolean isInnerClass(Class<?> type) {
+		/**
+         * Checks if the given class is an inner class.
+         * 
+         * @param type the class to check
+         * @return true if the class is an inner class, false otherwise
+         */
+        private static boolean isInnerClass(Class<?> type) {
 			try {
 				return type.getDeclaredField("this$0").isSynthetic();
 			}
@@ -148,11 +215,23 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			}
 		}
 
-		private static boolean isNonSynthetic(Constructor<?> constructor) {
+		/**
+         * Checks if a constructor is non-synthetic.
+         * 
+         * @param constructor the constructor to check
+         * @return true if the constructor is non-synthetic, false otherwise
+         */
+        private static boolean isNonSynthetic(Constructor<?> constructor) {
 			return !constructor.isSynthetic();
 		}
 
-		private static MergedAnnotations[] getAnnotations(Constructor<?>[] candidates) {
+		/**
+         * Retrieves the merged annotations for an array of constructors.
+         * 
+         * @param candidates the array of constructors to retrieve annotations from
+         * @return an array of merged annotations for each constructor
+         */
+        private static MergedAnnotations[] getAnnotations(Constructor<?>[] candidates) {
 			MergedAnnotations[] candidateAnnotations = new MergedAnnotations[candidates.length];
 			for (int i = 0; i < candidates.length; i++) {
 				candidateAnnotations[i] = MergedAnnotations.from(candidates[i], SearchStrategy.SUPERCLASS);
@@ -160,7 +239,17 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			return candidateAnnotations;
 		}
 
-		private static Constructor<?> getConstructorBindingAnnotated(Class<?> type, Constructor<?>[] candidates,
+		/**
+         * Returns the constructor annotated with {@link ConstructorBinding} from the given array of candidate constructors.
+         * 
+         * @param type the class type
+         * @param candidates the array of candidate constructors
+         * @param mergedAnnotations the array of merged annotations for each candidate constructor
+         * @return the constructor annotated with {@link ConstructorBinding}, or null if none found
+         * @throws IllegalStateException if the class type declares {@link ConstructorBinding} on a no-args constructor
+         * @throws IllegalStateException if the class type has more than one constructor annotated with {@link ConstructorBinding}
+         */
+        private static Constructor<?> getConstructorBindingAnnotated(Class<?> type, Constructor<?>[] candidates,
 				MergedAnnotations[] mergedAnnotations) {
 			Constructor<?> result = null;
 			for (int i = 0; i < candidates.length; i++) {
@@ -176,7 +265,14 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 
 		}
 
-		private static Constructor<?> deduceBindConstructor(Class<?> type, Constructor<?>[] candidates) {
+		/**
+         * Deduces the bind constructor for the given type from the provided candidates.
+         * 
+         * @param type       the type for which to deduce the bind constructor
+         * @param candidates the array of constructor candidates
+         * @return the deduced bind constructor, or null if none found
+         */
+        private static Constructor<?> deduceBindConstructor(Class<?> type, Constructor<?>[] candidates) {
 			if (candidates.length == 1 && candidates[0].getParameterCount() > 0) {
 				if (type.isMemberClass() && Modifier.isPrivate(candidates[0].getModifiers())) {
 					return null;
@@ -195,11 +291,23 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			return (result != null && result.getParameterCount() > 0) ? result : null;
 		}
 
-		private static boolean isKotlinType(Class<?> type) {
+		/**
+         * Checks if the given type is a Kotlin type.
+         * 
+         * @param type the type to be checked
+         * @return {@code true} if the type is a Kotlin type, {@code false} otherwise
+         */
+        private static boolean isKotlinType(Class<?> type) {
 			return KotlinDetector.isKotlinPresent() && KotlinDetector.isKotlinType(type);
 		}
 
-		private static Constructor<?> deduceKotlinBindConstructor(Class<?> type) {
+		/**
+         * Deduces the Kotlin bind constructor for the given type.
+         * 
+         * @param type the class for which to deduce the bind constructor
+         * @return the bind constructor if found, otherwise null
+         */
+        private static Constructor<?> deduceKotlinBindConstructor(Class<?> type) {
 			Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
 			if (primaryConstructor != null && primaryConstructor.getParameterCount() > 0) {
 				return primaryConstructor;

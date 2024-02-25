@@ -34,7 +34,14 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 class OnRepositoryTypeCondition extends SpringBootCondition {
 
-	@Override
+	/**
+     * Determines the outcome of the condition for the @ConditionalOnRepositoryType annotation.
+     * 
+     * @param context   the condition context
+     * @param metadata  the annotated type metadata
+     * @return          the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnRepositoryType.class.getName(),
 				true);
@@ -49,7 +56,14 @@ class OnRepositoryTypeCondition extends SpringBootCondition {
 				+ ") did not match required type (" + requiredType.name() + ")"));
 	}
 
-	private RepositoryType getTypeProperty(Environment environment, String store) {
+	/**
+     * Returns the type property of the repository based on the given environment and store.
+     * 
+     * @param environment the environment object containing the properties
+     * @param store the store name for which the type property is required
+     * @return the repository type property
+     */
+    private RepositoryType getTypeProperty(Environment environment, String store) {
 		return RepositoryType
 			.valueOf(environment.getProperty(String.format("spring.data.%s.repositories.type", store), "auto")
 				.toUpperCase(Locale.ENGLISH));

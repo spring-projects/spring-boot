@@ -37,11 +37,22 @@ public class AuditListener extends AbstractAuditListener {
 
 	private final AuditEventRepository auditEventRepository;
 
-	public AuditListener(AuditEventRepository auditEventRepository) {
+	/**
+     * Constructs a new AuditListener with the specified AuditEventRepository.
+     * 
+     * @param auditEventRepository the repository to store audit events
+     */
+    public AuditListener(AuditEventRepository auditEventRepository) {
 		this.auditEventRepository = auditEventRepository;
 	}
 
-	@Override
+	/**
+     * This method is called when an audit event occurs.
+     * It logs the event if the logger is in debug mode and adds the event to the audit event repository.
+     *
+     * @param event The audit event that occurred.
+     */
+    @Override
 	protected void onAuditEvent(AuditEvent event) {
 		if (logger.isDebugEnabled()) {
 			logger.debug(event);

@@ -22,18 +22,39 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+/**
+ * MyUserHandler class.
+ */
 @Component
 public class MyUserHandler {
 
-	public Mono<ServerResponse> getUser(ServerRequest request) {
+	/**
+     * Retrieves a user based on the provided request.
+     *
+     * @param request the server request containing the necessary information to retrieve the user
+     * @return a Mono of ServerResponse indicating the success or failure of the operation
+     */
+    public Mono<ServerResponse> getUser(ServerRequest request) {
 		/**/ return ServerResponse.ok().build();
 	}
 
-	public Mono<ServerResponse> getUserCustomers(ServerRequest request) {
+	/**
+     * Retrieves the customers associated with a user.
+     *
+     * @param request the server request object
+     * @return a Mono of ServerResponse indicating the success of the operation
+     */
+    public Mono<ServerResponse> getUserCustomers(ServerRequest request) {
 		/**/ return ServerResponse.ok().build();
 	}
 
-	public Mono<ServerResponse> deleteUser(ServerRequest request) {
+	/**
+     * Deletes a user.
+     *
+     * @param request the server request
+     * @return a Mono of ServerResponse indicating the success of the operation
+     */
+    public Mono<ServerResponse> deleteUser(ServerRequest request) {
 		/**/ return ServerResponse.ok().build();
 	}
 

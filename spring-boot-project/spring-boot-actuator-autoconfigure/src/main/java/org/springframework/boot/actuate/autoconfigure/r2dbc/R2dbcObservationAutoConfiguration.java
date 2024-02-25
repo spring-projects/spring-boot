@@ -46,7 +46,19 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(R2dbcObservationProperties.class)
 public class R2dbcObservationAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a ConnectionFactoryDecorator bean that decorates the provided ConnectionFactory with an ObservationProxyExecutionListener.
+     * The ObservationProxyExecutionListener captures and logs database query observations.
+     * The ObservationRegistry bean is required for this decorator to be created.
+     * The QueryObservationConvention and QueryParametersTagProvider beans are optional and can be used to customize the behavior of the ObservationProxyExecutionListener.
+     * 
+     * @param properties The R2dbcObservationProperties bean that holds the configuration properties for database query observations.
+     * @param observationRegistry The ObservationRegistry bean that is used to register and manage database query observations.
+     * @param queryObservationConvention The QueryObservationConvention bean that provides the convention for observing queries.
+     * @param queryParametersTagProvider The QueryParametersTagProvider bean that provides the tags for query parameters.
+     * @return The decorated ConnectionFactory with the ObservationProxyExecutionListener.
+     */
+    @Bean
 	@ConditionalOnBean(ObservationRegistry.class)
 	ConnectionFactoryDecorator connectionFactoryDecorator(R2dbcObservationProperties properties,
 			ObservationRegistry observationRegistry,
@@ -63,7 +75,13 @@ public class R2dbcObservationAutoConfiguration {
 		};
 	}
 
-	private HostAndPort extractHostAndPort(ConnectionFactory connectionFactory) {
+	/**
+     * Extracts the host and port from the given ConnectionFactory.
+     *
+     * @param connectionFactory the ConnectionFactory to extract the host and port from
+     * @return the extracted HostAndPort object containing the host and port information, or an empty HostAndPort object if the extraction fails
+     */
+    private HostAndPort extractHostAndPort(ConnectionFactory connectionFactory) {
 		OptionsCapableConnectionFactory optionsCapableConnectionFactory = OptionsCapableConnectionFactory
 			.unwrapFrom(connectionFactory);
 		if (optionsCapableConnectionFactory == null) {
@@ -79,7 +97,12 @@ public class R2dbcObservationAutoConfiguration {
 	}
 
 	private record HostAndPort(String host, Integer port) {
-		static HostAndPort empty() {
+		/**
+     * Creates a new instance of {@link HostAndPort} with null values for host and port.
+     *
+     * @return a new instance of {@link HostAndPort} with null values for host and port
+     */
+    static HostAndPort empty() {
 			return new HostAndPort(null, null);
 		}
 	}

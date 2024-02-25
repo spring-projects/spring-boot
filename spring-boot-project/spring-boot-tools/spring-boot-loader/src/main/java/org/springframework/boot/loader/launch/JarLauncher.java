@@ -29,24 +29,54 @@ package org.springframework.boot.loader.launch;
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
-	public JarLauncher() throws Exception {
+	/**
+     * Constructs a new JarLauncher object.
+     *
+     * @throws Exception if an error occurs during the construction of the JarLauncher object.
+     */
+    public JarLauncher() throws Exception {
 	}
 
-	protected JarLauncher(Archive archive) throws Exception {
+	/**
+     * Constructs a new JarLauncher object with the specified Archive.
+     * 
+     * @param archive the Archive object representing the JAR file to be launched
+     * @throws Exception if an error occurs during the construction of the JarLauncher object
+     */
+    protected JarLauncher(Archive archive) throws Exception {
 		super(archive);
 	}
 
-	@Override
+	/**
+     * Determines if the given entry is included on the classpath.
+     * 
+     * @param entry the entry to check
+     * @return true if the entry is included on the classpath, false otherwise
+     */
+    @Override
 	protected boolean isIncludedOnClassPath(Archive.Entry entry) {
 		return isLibraryFileOrClassesDirectory(entry);
 	}
 
-	@Override
+	/**
+     * Returns the entry path prefix for the JarLauncher class.
+     * This method is used to specify the prefix for the entry path in the JAR file.
+     * The default prefix is "BOOT-INF/".
+     *
+     * @return The entry path prefix as a String.
+     */
+    @Override
 	protected String getEntryPathPrefix() {
 		return "BOOT-INF/";
 	}
 
-	static boolean isLibraryFileOrClassesDirectory(Archive.Entry entry) {
+	/**
+     * Determines whether the given Archive.Entry is a library file or classes directory.
+     * 
+     * @param entry the Archive.Entry to be checked
+     * @return true if the entry is a classes directory or a library file, false otherwise
+     */
+    static boolean isLibraryFileOrClassesDirectory(Archive.Entry entry) {
 		String name = entry.name();
 		if (entry.isDirectory()) {
 			return name.equals("BOOT-INF/classes/");
@@ -54,7 +84,14 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 		return name.startsWith("BOOT-INF/lib/");
 	}
 
-	public static void main(String[] args) throws Exception {
+	/**
+     * The main method is the entry point of the application.
+     * It launches the JarLauncher by creating a new instance and calling the launch method.
+     *
+     * @param args the command line arguments passed to the application
+     * @throws Exception if an error occurs during the execution of the launch method
+     */
+    public static void main(String[] args) throws Exception {
 		new JarLauncher().launch(args);
 	}
 

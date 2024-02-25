@@ -56,12 +56,22 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	private final Resource resource;
 
-	OriginTrackedYamlLoader(Resource resource) {
+	/**
+     * Constructs a new OriginTrackedYamlLoader with the specified resource.
+     * 
+     * @param resource the resource to be loaded
+     */
+    OriginTrackedYamlLoader(Resource resource) {
 		this.resource = resource;
 		setResources(resource);
 	}
 
-	@Override
+	/**
+     * Creates a Yaml object with customized loader options.
+     * 
+     * @return the created Yaml object
+     */
+    @Override
 	protected Yaml createYaml() {
 		LoaderOptions loaderOptions = new LoaderOptions();
 		loaderOptions.setAllowDuplicateKeys(false);
@@ -71,7 +81,13 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		return createYaml(loaderOptions);
 	}
 
-	private Yaml createYaml(LoaderOptions loaderOptions) {
+	/**
+     * Creates a new instance of Yaml with the specified LoaderOptions.
+     * 
+     * @param loaderOptions the LoaderOptions to be used for creating the Yaml instance
+     * @return a new instance of Yaml
+     */
+    private Yaml createYaml(LoaderOptions loaderOptions) {
 		BaseConstructor constructor = new OriginTrackingConstructor(loaderOptions);
 		DumperOptions dumperOptions = new DumperOptions();
 		Representer representer = new Representer(dumperOptions);
@@ -79,7 +95,12 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
 
-	List<Map<String, Object>> load() {
+	/**
+     * Loads the YAML file and returns a list of flattened maps.
+     * 
+     * @return a list of maps containing the flattened YAML data
+     */
+    List<Map<String, Object>> load() {
 		List<Map<String, Object>> result = new ArrayList<>();
 		process((properties, map) -> result.add(getFlattenedMap(map)));
 		return result;
@@ -90,11 +111,24 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	 */
 	private class OriginTrackingConstructor extends SafeConstructor {
 
-		OriginTrackingConstructor(LoaderOptions loadingConfig) {
+		/**
+         * Constructs a new OriginTrackingConstructor object with the specified loading configuration.
+         * 
+         * @param loadingConfig the loading configuration for the OriginTrackingConstructor
+         */
+        OriginTrackingConstructor(LoaderOptions loadingConfig) {
 			super(loadingConfig);
 		}
 
-		@Override
+		/**
+         * Retrieves the data from the superclass and checks if it is an instance of CharSequence.
+         * If it is, it checks if the CharSequence is empty and returns null if it is.
+         * Otherwise, it returns the data.
+         *
+         * @return the retrieved data, or null if it is an empty CharSequence
+         * @throws NoSuchElementException if the data cannot be retrieved
+         */
+        @Override
 		public Object getData() throws NoSuchElementException {
 			Object data = super.getData();
 			if (data instanceof CharSequence charSequence && charSequence.isEmpty()) {
@@ -103,7 +137,13 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 			return data;
 		}
 
-		@Override
+		/**
+         * Constructs an object based on the given node.
+         * 
+         * @param node the node to construct the object from
+         * @return the constructed object
+         */
+        @Override
 		protected Object constructObject(Node node) {
 			if (node instanceof CollectionNode && ((CollectionNode<?>) node).getValue().isEmpty()) {
 				return constructTrackedObject(node, super.constructObject(node));
@@ -119,22 +159,46 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 			return super.constructObject(node);
 		}
 
-		private void replaceMappingNodeKeys(MappingNode node) {
+		/**
+         * Replaces the keys of the given MappingNode with the corresponding values.
+         * 
+         * @param node the MappingNode whose keys need to be replaced
+         */
+        private void replaceMappingNodeKeys(MappingNode node) {
 			List<NodeTuple> newValue = new ArrayList<>();
 			node.getValue().stream().map(KeyScalarNode::get).forEach(newValue::add);
 			node.setValue(newValue);
 		}
 
-		private Object constructTrackedObject(Node node, Object value) {
+		/**
+         * Constructs a tracked object with the given node and value.
+         * 
+         * @param node the node associated with the tracked object
+         * @param value the value of the tracked object
+         * @return the constructed tracked object
+         */
+        private Object constructTrackedObject(Node node, Object value) {
 			Origin origin = getOrigin(node);
 			return OriginTrackedValue.of(getValue(value), origin);
 		}
 
-		private Object getValue(Object value) {
+		/**
+         * Returns the value if it is not null, otherwise returns an empty string.
+         *
+         * @param value the value to be checked
+         * @return the value if not null, otherwise an empty string
+         */
+        private Object getValue(Object value) {
 			return (value != null) ? value : "";
 		}
 
-		private Origin getOrigin(Node node) {
+		/**
+         * Returns the origin of the given node.
+         * 
+         * @param node the node for which to get the origin
+         * @return the origin of the node
+         */
+        private Origin getOrigin(Node node) {
 			Mark mark = node.getStartMark();
 			Location location = new Location(mark.getLine(), mark.getColumn());
 			return new TextResourceOrigin(OriginTrackedYamlLoader.this.resource, location);
@@ -147,17 +211,36 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	 */
 	private static class KeyScalarNode extends ScalarNode {
 
-		KeyScalarNode(ScalarNode node) {
+		/**
+         * Constructs a new KeyScalarNode object by copying the properties of the provided ScalarNode.
+         * 
+         * @param node the ScalarNode to be copied
+         */
+        KeyScalarNode(ScalarNode node) {
 			super(node.getTag(), node.getValue(), node.getStartMark(), node.getEndMark(), node.getScalarStyle());
 		}
 
-		static NodeTuple get(NodeTuple nodeTuple) {
+		/**
+         * Returns a new NodeTuple with the key node converted to a KeyScalarNode.
+         * 
+         * @param nodeTuple the original NodeTuple
+         * @return a new NodeTuple with the key node converted to a KeyScalarNode
+         */
+        static NodeTuple get(NodeTuple nodeTuple) {
 			Node keyNode = nodeTuple.getKeyNode();
 			Node valueNode = nodeTuple.getValueNode();
 			return new NodeTuple(KeyScalarNode.get(keyNode), valueNode);
 		}
 
-		private static Node get(Node node) {
+		/**
+         * Returns a new Node object based on the given Node.
+         * If the given Node is an instance of ScalarNode, it creates a new KeyScalarNode object based on it.
+         * Otherwise, it returns the given Node as is.
+         *
+         * @param node the Node object to be processed
+         * @return a new Node object based on the given Node
+         */
+        private static Node get(Node node) {
 			if (node instanceof ScalarNode scalarNode) {
 				return new KeyScalarNode(scalarNode);
 			}
@@ -171,7 +254,15 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	 */
 	private static final class NoTimestampResolver extends Resolver {
 
-		@Override
+		/**
+         * Adds an implicit resolver for a specific tag with a given regular expression pattern, first match, and limit.
+         * 
+         * @param tag     the tag to add the implicit resolver for
+         * @param regexp  the regular expression pattern to match
+         * @param first   the first match to consider
+         * @param limit   the maximum number of matches to consider
+         */
+        @Override
 		public void addImplicitResolver(Tag tag, Pattern regexp, String first, int limit) {
 			if (tag == Tag.TIMESTAMP) {
 				return;

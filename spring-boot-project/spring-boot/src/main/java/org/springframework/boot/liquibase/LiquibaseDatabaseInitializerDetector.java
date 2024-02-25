@@ -31,7 +31,12 @@ import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
  */
 class LiquibaseDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
 
-	@Override
+	/**
+     * Returns the set of bean types for the database initializer.
+     * 
+     * @return the set of bean types for the database initializer
+     */
+    @Override
 	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		return Collections.singleton(SpringLiquibase.class);
 	}

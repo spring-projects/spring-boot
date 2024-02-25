@@ -20,10 +20,18 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyTomcatWebServerCustomizer class.
+ */
 @Component
 public class MyTomcatWebServerCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
-	@Override
+	/**
+     * Customizes the TomcatServletWebServerFactory.
+     * 
+     * @param factory the TomcatServletWebServerFactory to be customized
+     */
+    @Override
 	public void customize(TomcatServletWebServerFactory factory) {
 		// customize the factory here
 	}

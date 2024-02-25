@@ -34,11 +34,22 @@ public final class VolumeName {
 
 	private final String value;
 
-	private VolumeName(String value) {
+	/**
+     * Constructs a new VolumeName object with the specified value.
+     *
+     * @param value the value of the volume name
+     */
+    private VolumeName(String value) {
 		this.value = value;
 	}
 
-	@Override
+	/**
+     * Compares this VolumeName object to the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return true if the specified object is equal to this VolumeName object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -49,12 +60,22 @@ public final class VolumeName {
 		return this.value.equals(((VolumeName) obj).value);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this VolumeName object.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return this.value.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns the string representation of the VolumeName object.
+     *
+     * @return the string representation of the VolumeName object
+     */
+    @Override
 	public String toString() {
 		return this.value;
 	}
@@ -113,7 +134,15 @@ public final class VolumeName {
 		return of(prefix + getDigest(nameExtractor.apply(source), digestLength) + suffix);
 	}
 
-	private static String getDigest(String name, int length) {
+	/**
+     * Returns the SHA-256 digest of the given name as a hexadecimal string.
+     * 
+     * @param name   the name to calculate the digest for
+     * @param length the desired length of the hexadecimal string
+     * @return the SHA-256 digest of the name as a hexadecimal string
+     * @throws IllegalStateException if the SHA-256 algorithm is not available
+     */
+    private static String getDigest(String name, int length) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("sha-256");
 			return asHexString(digest.digest(name.getBytes(StandardCharsets.UTF_8)), length);
@@ -123,7 +152,15 @@ public final class VolumeName {
 		}
 	}
 
-	private static String asHexString(byte[] digest, int digestLength) {
+	/**
+     * Converts a byte array to a hexadecimal string representation.
+     * 
+     * @param digest the byte array to convert
+     * @param digestLength the length of the digest to convert
+     * @return the hexadecimal string representation of the digest
+     * @throws IllegalArgumentException if the digestLength is greater than the length of the digest
+     */
+    private static String asHexString(byte[] digest, int digestLength) {
 		Assert.isTrue(digestLength <= digest.length,
 				() -> "DigestLength must be less than or equal to " + digest.length);
 		return HexFormat.of().formatHex(digest, 0, digestLength);

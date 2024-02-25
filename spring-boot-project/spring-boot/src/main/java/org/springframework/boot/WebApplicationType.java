@@ -57,7 +57,12 @@ public enum WebApplicationType {
 
 	private static final String JERSEY_INDICATOR_CLASS = "org.glassfish.jersey.servlet.ServletContainer";
 
-	static WebApplicationType deduceFromClasspath() {
+	/**
+     * Deduces the type of web application based on the classpath.
+     * 
+     * @return the deduced web application type
+     */
+    static WebApplicationType deduceFromClasspath() {
 		if (ClassUtils.isPresent(WEBFLUX_INDICATOR_CLASS, null) && !ClassUtils.isPresent(WEBMVC_INDICATOR_CLASS, null)
 				&& !ClassUtils.isPresent(JERSEY_INDICATOR_CLASS, null)) {
 			return WebApplicationType.REACTIVE;
@@ -70,9 +75,18 @@ public enum WebApplicationType {
 		return WebApplicationType.SERVLET;
 	}
 
-	static class WebApplicationTypeRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * WebApplicationTypeRuntimeHints class.
+     */
+    static class WebApplicationTypeRuntimeHints implements RuntimeHintsRegistrar {
 
-		@Override
+		/**
+         * Registers the runtime hints for the specified class loader.
+         * 
+         * @param hints the runtime hints to register
+         * @param classLoader the class loader to use for loading classes
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			for (String servletIndicatorClass : SERVLET_INDICATOR_CLASSES) {
 				registerTypeIfPresent(servletIndicatorClass, classLoader, hints);
@@ -82,7 +96,14 @@ public enum WebApplicationType {
 			registerTypeIfPresent(WEBMVC_INDICATOR_CLASS, classLoader, hints);
 		}
 
-		private void registerTypeIfPresent(String typeName, ClassLoader classLoader, RuntimeHints hints) {
+		/**
+         * Registers a type if it is present in the specified class loader.
+         * 
+         * @param typeName the name of the type to register
+         * @param classLoader the class loader to check for the type
+         * @param hints the runtime hints to use for registration
+         */
+        private void registerTypeIfPresent(String typeName, ClassLoader classLoader, RuntimeHints hints) {
 			if (ClassUtils.isPresent(typeName, classLoader)) {
 				hints.reflection().registerType(TypeReference.of(typeName));
 			}

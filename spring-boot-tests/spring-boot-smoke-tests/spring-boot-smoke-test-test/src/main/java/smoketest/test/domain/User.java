@@ -42,25 +42,53 @@ public class User {
 
 	private VehicleIdentificationNumber vin;
 
-	protected User() {
+	/**
+     * Constructs a new User object.
+     * 
+     * This constructor is protected to prevent direct instantiation of User objects.
+     * It is intended to be used by subclasses of User for object creation.
+     */
+    protected User() {
 	}
 
-	public User(String username, VehicleIdentificationNumber vin) {
+	/**
+     * Constructs a new User object with the specified username and VehicleIdentificationNumber.
+     * 
+     * @param username the username of the user (must not be empty)
+     * @param vin the VehicleIdentificationNumber of the user (must not be null)
+     * @throws IllegalArgumentException if the username is empty or the vin is null
+     */
+    public User(String username, VehicleIdentificationNumber vin) {
 		Assert.hasLength(username, "Username must not be empty");
 		Assert.notNull(vin, "VIN must not be null");
 		this.username = username;
 		this.vin = vin;
 	}
 
-	public Long getId() {
+	/**
+     * Returns the ID of the User.
+     *
+     * @return the ID of the User
+     */
+    public Long getId() {
 		return this.id;
 	}
 
-	public String getUsername() {
+	/**
+     * Returns the username of the User.
+     *
+     * @return the username of the User
+     */
+    public String getUsername() {
 		return this.username;
 	}
 
-	public VehicleIdentificationNumber getVin() {
+	/**
+     * Returns the Vehicle Identification Number (VIN) of the User.
+     *
+     * @return the VIN of the User
+     */
+    public VehicleIdentificationNumber getVin() {
 		return this.vin;
 	}
 

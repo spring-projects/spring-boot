@@ -45,10 +45,20 @@ import org.springframework.util.SystemPropertyUtils;
  */
 public final class SpringCli {
 
-	private SpringCli() {
+	/**
+     * Private constructor for the SpringCli class.
+     */
+    private SpringCli() {
 	}
 
-	public static void main(String... args) {
+	/**
+     * The main method of the SpringCli class.
+     * 
+     * This method is the entry point of the Spring CLI application. It initializes the necessary configurations, sets the system property for headless mode, and initializes the Logback logging framework. It creates a CommandRunner instance and adds various commands to it, such as HelpCommand, ShellCommand, and HintCommand. It also sets the option commands and hidden commands for the runner. Finally, it runs the command runner and handles any errors that occur. If the exit code is non-zero, the application exits with that code.
+     * 
+     * @param args The command line arguments passed to the application.
+     */
+    public static void main(String... args) {
 		System.setProperty("java.awt.headless", Boolean.toString(true));
 		LogbackInitializer.initialize();
 
@@ -68,18 +78,35 @@ public final class SpringCli {
 		}
 	}
 
-	private static void addServiceLoaderCommands(CommandRunner runner) {
+	/**
+     * Adds commands from all the implementations of CommandFactory found using ServiceLoader.
+     * 
+     * @param runner the CommandRunner to add the commands to
+     */
+    private static void addServiceLoaderCommands(CommandRunner runner) {
 		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class);
 		for (CommandFactory factory : factories) {
 			runner.addCommands(factory.getCommands());
 		}
 	}
 
-	private static URLClassLoader createExtendedClassLoader(CommandRunner runner) {
+	/**
+     * Creates an extended class loader using the provided CommandRunner.
+     * 
+     * @param runner the CommandRunner to be used for the class loader
+     * @return the created URLClassLoader
+     */
+    private static URLClassLoader createExtendedClassLoader(CommandRunner runner) {
 		return new URLClassLoader(getExtensionURLs(), runner.getClass().getClassLoader());
 	}
 
-	private static URL[] getExtensionURLs() {
+	/**
+     * Retrieves the URLs of the extension JAR files located in the "ext" directory of the Spring home directory.
+     * 
+     * @return an array of URLs representing the extension JAR files
+     * @throws IllegalStateException if a file URL cannot be created for a JAR file
+     */
+    private static URL[] getExtensionURLs() {
 		List<URL> urls = new ArrayList<>();
 		String home = SystemPropertyUtils.resolvePlaceholders("${spring.home:${SPRING_HOME:.}}");
 		File extDirectory = new File(new File(home, "lib"), "ext");

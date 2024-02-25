@@ -16,9 +16,17 @@
 
 package org.test;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		if (isClassPresent("org.apache.log4j.Logger")) {
 			throw new IllegalStateException("Log4j was present and should not");
 		}
@@ -28,7 +36,13 @@ public class SampleApplication {
 		System.out.println("I haz been run");
 	}
 
-	private static boolean isClassPresent(String className) {
+	/**
+     * Checks if a class is present in the classpath.
+     * 
+     * @param className the name of the class to check
+     * @return true if the class is present, false otherwise
+     */
+    private static boolean isClassPresent(String className) {
 
 		try {
 			ClassLoader classLoader = SampleApplication.class.getClassLoader();

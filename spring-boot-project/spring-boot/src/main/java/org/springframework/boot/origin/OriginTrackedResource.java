@@ -56,86 +56,181 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 		this.origin = origin;
 	}
 
-	@Override
+	/**
+     * Returns an input stream for reading the contents of this OriginTrackedResource.
+     * 
+     * @return an input stream for reading the contents of this OriginTrackedResource
+     * @throws IOException if an I/O error occurs while opening the input stream
+     */
+    @Override
 	public InputStream getInputStream() throws IOException {
 		return getResource().getInputStream();
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the resource exists.
+     * 
+     * @return {@code true} if the resource exists, {@code false} otherwise.
+     */
+    @Override
 	public boolean exists() {
 		return getResource().exists();
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the resource is readable.
+     * 
+     * @return true if the resource is readable, false otherwise
+     */
+    @Override
 	public boolean isReadable() {
 		return getResource().isReadable();
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the resource is open.
+     * 
+     * @return {@code true} if the resource is open, {@code false} otherwise.
+     */
+    @Override
 	public boolean isOpen() {
 		return getResource().isOpen();
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the resource is a file.
+     * 
+     * @return true if the resource is a file, false otherwise
+     */
+    @Override
 	public boolean isFile() {
 		return getResource().isFile();
 	}
 
-	@Override
+	/**
+     * Returns the URL of the resource.
+     * 
+     * @return the URL of the resource
+     * @throws IOException if an I/O error occurs while getting the URL
+     */
+    @Override
 	public URL getURL() throws IOException {
 		return getResource().getURL();
 	}
 
-	@Override
+	/**
+     * Returns the URI of the resource.
+     *
+     * @return the URI of the resource
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
 	public URI getURI() throws IOException {
 		return getResource().getURI();
 	}
 
-	@Override
+	/**
+     * Returns the file associated with this OriginTrackedResource.
+     * 
+     * @return the file associated with this OriginTrackedResource
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
 	public File getFile() throws IOException {
 		return getResource().getFile();
 	}
 
-	@Override
+	/**
+     * Returns a readable byte channel for this OriginTrackedResource.
+     *
+     * @return the readable byte channel for this OriginTrackedResource
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
 	public ReadableByteChannel readableChannel() throws IOException {
 		return getResource().readableChannel();
 	}
 
-	@Override
+	/**
+     * Returns the content length of the resource.
+     *
+     * @return the content length of the resource
+     * @throws IOException if an I/O error occurs while retrieving the content length
+     */
+    @Override
 	public long contentLength() throws IOException {
 		return getResource().contentLength();
 	}
 
-	@Override
+	/**
+     * Returns the last modified timestamp of the resource.
+     *
+     * @return the last modified timestamp of the resource
+     * @throws IOException if an I/O error occurs while retrieving the last modified timestamp
+     */
+    @Override
 	public long lastModified() throws IOException {
 		return getResource().lastModified();
 	}
 
-	@Override
+	/**
+     * Creates a new resource by appending the specified relative path to the current resource's path.
+     * 
+     * @param relativePath the relative path to append
+     * @return the newly created resource
+     * @throws IOException if an I/O error occurs while creating the resource
+     */
+    @Override
 	public Resource createRelative(String relativePath) throws IOException {
 		return getResource().createRelative(relativePath);
 	}
 
-	@Override
+	/**
+     * Returns the filename of the resource.
+     * 
+     * @return the filename of the resource
+     */
+    @Override
 	public String getFilename() {
 		return getResource().getFilename();
 	}
 
-	@Override
+	/**
+     * Returns the description of the resource.
+     * 
+     * @return the description of the resource
+     */
+    @Override
 	public String getDescription() {
 		return getResource().getDescription();
 	}
 
-	public Resource getResource() {
+	/**
+     * Returns the resource associated with this OriginTrackedResource.
+     *
+     * @return the resource associated with this OriginTrackedResource
+     */
+    public Resource getResource() {
 		return this.resource;
 	}
 
-	@Override
+	/**
+     * Returns the origin of the OriginTrackedResource.
+     *
+     * @return the origin of the OriginTrackedResource
+     */
+    @Override
 	public Origin getOrigin() {
 		return this.origin;
 	}
 
-	@Override
+	/**
+     * Compares this OriginTrackedResource with the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return true if the specified object is equal to this OriginTrackedResource, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -147,7 +242,13 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 		return this.resource.equals(other) && ObjectUtils.nullSafeEquals(this.origin, other.origin);
 	}
 
-	@Override
+	/**
+     * Returns a hash code value for the object. This method overrides the default implementation of the {@code hashCode()} method.
+     * The hash code is calculated based on the hash code of the resource and the origin.
+     * 
+     * @return the hash code value for the object
+     */
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = this.resource.hashCode();
@@ -155,7 +256,12 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 		return result;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the OriginTrackedResource object.
+     * 
+     * @return a string representation of the OriginTrackedResource object
+     */
+    @Override
 	public String toString() {
 		return this.resource.toString();
 	}
@@ -199,12 +305,23 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 			super(resource, origin);
 		}
 
-		@Override
+		/**
+         * Returns the resource as a writable resource.
+         * 
+         * @return the resource as a writable resource
+         */
+        @Override
 		public WritableResource getResource() {
 			return (WritableResource) super.getResource();
 		}
 
-		@Override
+		/**
+         * Returns the output stream for writing to the resource.
+         *
+         * @return the output stream for writing to the resource
+         * @throws IOException if an I/O error occurs
+         */
+        @Override
 		public OutputStream getOutputStream() throws IOException {
 			return getResource().getOutputStream();
 		}

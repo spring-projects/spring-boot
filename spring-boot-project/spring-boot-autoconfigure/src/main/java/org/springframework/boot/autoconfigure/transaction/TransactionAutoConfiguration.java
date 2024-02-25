@@ -46,18 +46,34 @@ import org.springframework.transaction.support.TransactionTemplate;
 @ConditionalOnClass(PlatformTransactionManager.class)
 public class TransactionAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a TransactionalOperator bean if no other bean of the same type is present in the application context.
+     * The bean is conditionally created only if a single candidate of type ReactiveTransactionManager is available.
+     * 
+     * @param transactionManager the ReactiveTransactionManager bean to be used for creating the TransactionalOperator
+     * @return the TransactionalOperator bean created using the provided ReactiveTransactionManager
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnSingleCandidate(ReactiveTransactionManager.class)
 	public TransactionalOperator transactionalOperator(ReactiveTransactionManager transactionManager) {
 		return TransactionalOperator.create(transactionManager);
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * TransactionTemplateConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(PlatformTransactionManager.class)
 	public static class TransactionTemplateConfiguration {
 
-		@Bean
+		/**
+         * Creates a new TransactionTemplate bean if no other bean of type TransactionOperations is present.
+         * 
+         * @param transactionManager the PlatformTransactionManager to be used by the TransactionTemplate
+         * @return a new TransactionTemplate instance
+         */
+        @Bean
 		@ConditionalOnMissingBean(TransactionOperations.class)
 		public TransactionTemplate transactionTemplate(PlatformTransactionManager transactionManager) {
 			return new TransactionTemplate(transactionManager);
@@ -65,19 +81,28 @@ public class TransactionAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * EnableTransactionManagementConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(TransactionManager.class)
 	@ConditionalOnMissingBean(AbstractTransactionManagementConfiguration.class)
 	public static class EnableTransactionManagementConfiguration {
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * JdkDynamicAutoProxyConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@EnableTransactionManagement(proxyTargetClass = false)
 		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false")
 		public static class JdkDynamicAutoProxyConfiguration {
 
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * CglibAutoProxyConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@EnableTransactionManagement(proxyTargetClass = true)
 		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true",
 				matchIfMissing = true)
@@ -87,11 +112,20 @@ public class TransactionAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * AspectJTransactionManagementConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(AbstractTransactionAspect.class)
 	static class AspectJTransactionManagementConfiguration {
 
-		@Bean
+		/**
+         * Returns a LazyInitializationExcludeFilter for the AbstractTransactionAspect class.
+         * This filter is used to exclude the AbstractTransactionAspect class from being eagerly initialized.
+         *
+         * @return the LazyInitializationExcludeFilter for the AbstractTransactionAspect class
+         */
+        @Bean
 		static LazyInitializationExcludeFilter eagerTransactionAspect() {
 			return LazyInitializationExcludeFilter.forBeanTypes(AbstractTransactionAspect.class);
 		}

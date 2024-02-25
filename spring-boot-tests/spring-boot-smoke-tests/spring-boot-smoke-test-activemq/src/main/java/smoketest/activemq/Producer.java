@@ -23,6 +23,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * Producer class.
+ */
 @Component
 public class Producer implements CommandLineRunner {
 
@@ -32,13 +35,24 @@ public class Producer implements CommandLineRunner {
 	@Autowired
 	private Queue queue;
 
-	@Override
+	/**
+     * This method is used to run the producer and send a sample message to the queue.
+     * 
+     * @param args the command line arguments
+     * @throws Exception if an error occurs while sending the message
+     */
+    @Override
 	public void run(String... args) throws Exception {
 		send("Sample message");
 		System.out.println("Message was sent to the Queue");
 	}
 
-	public void send(String msg) {
+	/**
+     * Sends a message to the specified queue.
+     * 
+     * @param msg the message to be sent
+     */
+    public void send(String msg) {
 		this.jmsMessagingTemplate.convertAndSend(this.queue, msg);
 	}
 

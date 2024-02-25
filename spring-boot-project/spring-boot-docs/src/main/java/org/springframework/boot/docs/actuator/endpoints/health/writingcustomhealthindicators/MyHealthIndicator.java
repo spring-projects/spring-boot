@@ -20,10 +20,18 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyHealthIndicator class.
+ */
 @Component
 public class MyHealthIndicator implements HealthIndicator {
 
-	@Override
+	/**
+     * Returns the health status of the application.
+     * 
+     * @return the health status of the application
+     */
+    @Override
 	public Health health() {
 		int errorCode = check();
 		if (errorCode != 0) {
@@ -32,7 +40,12 @@ public class MyHealthIndicator implements HealthIndicator {
 		return Health.up().build();
 	}
 
-	private int check() {
+	/**
+     * Performs a specific health check.
+     * 
+     * @return the result of the health check
+     */
+    private int check() {
 		// perform some specific health check
 		return /**/ 0;
 	}

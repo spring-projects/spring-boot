@@ -21,16 +21,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 
+/**
+ * MyService class.
+ */
 @Service
 public class MyService {
 
 	private final WebServiceTemplate webServiceTemplate;
 
-	public MyService(WebServiceTemplateBuilder webServiceTemplateBuilder) {
+	/**
+     * Constructs a new instance of MyService with the provided WebServiceTemplateBuilder.
+     * 
+     * @param webServiceTemplateBuilder the builder used to create the WebServiceTemplate
+     */
+    public MyService(WebServiceTemplateBuilder webServiceTemplateBuilder) {
 		this.webServiceTemplate = webServiceTemplateBuilder.build();
 	}
 
-	public SomeResponse someWsCall(SomeRequest detailsReq) {
+	/**
+     * Makes a web service call with the given request details and returns the response.
+     *
+     * @param detailsReq the request details for the web service call
+     * @return the response received from the web service
+     */
+    public SomeResponse someWsCall(SomeRequest detailsReq) {
 		return (SomeResponse) this.webServiceTemplate.marshalSendAndReceive(detailsReq,
 				new SoapActionCallback("https://ws.example.com/action"));
 	}

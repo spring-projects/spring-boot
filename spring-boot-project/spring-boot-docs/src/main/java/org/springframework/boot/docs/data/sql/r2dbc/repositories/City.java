@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.data.sql.r2dbc.repositories;
 
+/**
+ * City class.
+ */
 public class City {
 
 }

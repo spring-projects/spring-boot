@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.howto.testing.withspringsecurity;
 
+/**
+ * UserController class.
+ */
 class UserController {
 
 }

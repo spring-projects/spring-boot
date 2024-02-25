@@ -27,7 +27,10 @@ package org.springframework.boot;
  */
 public final class SpringBootVersion {
 
-	private SpringBootVersion() {
+	/**
+     * Private constructor for the SpringBootVersion class.
+     */
+    private SpringBootVersion() {
 	}
 
 	/**

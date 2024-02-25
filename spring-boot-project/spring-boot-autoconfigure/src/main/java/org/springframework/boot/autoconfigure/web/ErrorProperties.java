@@ -62,55 +62,120 @@ public class ErrorProperties {
 
 	private final Whitelabel whitelabel = new Whitelabel();
 
-	public String getPath() {
+	/**
+     * Returns the path of the ErrorProperties object.
+     *
+     * @return the path of the ErrorProperties object
+     */
+    public String getPath() {
 		return this.path;
 	}
 
-	public void setPath(String path) {
+	/**
+     * Sets the path for the ErrorProperties object.
+     * 
+     * @param path the path to be set
+     */
+    public void setPath(String path) {
 		this.path = path;
 	}
 
-	public boolean isIncludeException() {
+	/**
+     * Returns a boolean value indicating whether the exception should be included.
+     * 
+     * @return true if the exception should be included, false otherwise
+     */
+    public boolean isIncludeException() {
 		return this.includeException;
 	}
 
-	public void setIncludeException(boolean includeException) {
+	/**
+     * Sets whether to include the exception in the error properties.
+     * 
+     * @param includeException true to include the exception, false otherwise
+     */
+    public void setIncludeException(boolean includeException) {
 		this.includeException = includeException;
 	}
 
-	public IncludeAttribute getIncludeStacktrace() {
+	/**
+     * Returns the IncludeAttribute object representing whether the stacktrace should be included in the error response.
+     *
+     * @return the IncludeAttribute object representing whether the stacktrace should be included in the error response
+     */
+    public IncludeAttribute getIncludeStacktrace() {
 		return this.includeStacktrace;
 	}
 
-	public void setIncludeStacktrace(IncludeAttribute includeStacktrace) {
+	/**
+     * Sets the includeStacktrace attribute.
+     * 
+     * @param includeStacktrace the includeStacktrace attribute to be set
+     */
+    public void setIncludeStacktrace(IncludeAttribute includeStacktrace) {
 		this.includeStacktrace = includeStacktrace;
 	}
 
-	public IncludeAttribute getIncludeMessage() {
+	/**
+     * Returns the IncludeAttribute object representing the include message.
+     *
+     * @return the IncludeAttribute object representing the include message
+     */
+    public IncludeAttribute getIncludeMessage() {
 		return this.includeMessage;
 	}
 
-	public void setIncludeMessage(IncludeAttribute includeMessage) {
+	/**
+     * Sets the includeMessage attribute.
+     * 
+     * @param includeMessage the includeMessage attribute to be set
+     */
+    public void setIncludeMessage(IncludeAttribute includeMessage) {
 		this.includeMessage = includeMessage;
 	}
 
-	public IncludeAttribute getIncludeBindingErrors() {
+	/**
+     * Returns the includeBindingErrors attribute.
+     *
+     * @return the includeBindingErrors attribute
+     */
+    public IncludeAttribute getIncludeBindingErrors() {
 		return this.includeBindingErrors;
 	}
 
-	public void setIncludeBindingErrors(IncludeAttribute includeBindingErrors) {
+	/**
+     * Sets the includeBindingErrors attribute.
+     * 
+     * @param includeBindingErrors the includeBindingErrors to set
+     */
+    public void setIncludeBindingErrors(IncludeAttribute includeBindingErrors) {
 		this.includeBindingErrors = includeBindingErrors;
 	}
 
-	public IncludeAttribute getIncludePath() {
+	/**
+     * Returns the include path attribute.
+     *
+     * @return the include path attribute
+     */
+    public IncludeAttribute getIncludePath() {
 		return this.includePath;
 	}
 
-	public void setIncludePath(IncludeAttribute includePath) {
+	/**
+     * Sets the include path for the ErrorProperties class.
+     * 
+     * @param includePath the include path to be set
+     */
+    public void setIncludePath(IncludeAttribute includePath) {
 		this.includePath = includePath;
 	}
 
-	public Whitelabel getWhitelabel() {
+	/**
+     * Returns the Whitelabel object associated with this ErrorProperties instance.
+     *
+     * @return the Whitelabel object
+     */
+    public Whitelabel getWhitelabel() {
 		return this.whitelabel;
 	}
 
@@ -158,7 +223,10 @@ public class ErrorProperties {
 
 	}
 
-	public static class Whitelabel {
+	/**
+     * Whitelabel class.
+     */
+    public static class Whitelabel {
 
 		/**
 		 * Whether to enable the default error page displayed in browsers in case of a
@@ -166,11 +234,21 @@ public class ErrorProperties {
 		 */
 		private boolean enabled = true;
 
-		public boolean isEnabled() {
+		/**
+         * Returns the current status of the enabled flag.
+         *
+         * @return true if the enabled flag is set, false otherwise.
+         */
+        public boolean isEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(boolean enabled) {
+		/**
+         * Sets the enabled status of the Whitelabel.
+         * 
+         * @param enabled the enabled status to be set
+         */
+        public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 

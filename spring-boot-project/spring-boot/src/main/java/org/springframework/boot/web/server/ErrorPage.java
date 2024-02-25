@@ -34,19 +34,36 @@ public class ErrorPage {
 
 	private final String path;
 
-	public ErrorPage(String path) {
+	/**
+     * Constructs a new ErrorPage object with the specified path.
+     * 
+     * @param path the path of the error page
+     */
+    public ErrorPage(String path) {
 		this.status = null;
 		this.exception = null;
 		this.path = path;
 	}
 
-	public ErrorPage(HttpStatus status, String path) {
+	/**
+     * Constructs a new ErrorPage with the specified HttpStatus and path.
+     *
+     * @param status the HttpStatus representing the error status
+     * @param path the path of the error page
+     */
+    public ErrorPage(HttpStatus status, String path) {
 		this.status = status;
 		this.exception = null;
 		this.path = path;
 	}
 
-	public ErrorPage(Class<? extends Throwable> exception, String path) {
+	/**
+     * Constructs a new ErrorPage with the specified exception and path.
+     * 
+     * @param exception the class of the exception to be handled by this error page
+     * @param path the path to the error page
+     */
+    public ErrorPage(Class<? extends Throwable> exception, String path) {
 		this.status = null;
 		this.exception = exception;
 		this.path = path;
@@ -104,7 +121,13 @@ public class ErrorPage {
 		return (this.status == null && this.exception == null);
 	}
 
-	@Override
+	/**
+     * Compares this ErrorPage object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the specified object is equal to this ErrorPage object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -119,7 +142,14 @@ public class ErrorPage {
 		return false;
 	}
 
-	@Override
+	/**
+     * Returns a hash code value for the ErrorPage object.
+     * 
+     * The hash code is calculated based on the exception name, path, and status code of the ErrorPage.
+     * 
+     * @return the hash code value for the ErrorPage object
+     */
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

@@ -33,21 +33,41 @@ public class HandlerMethodDescription {
 
 	private final String descriptor;
 
-	public HandlerMethodDescription(HandlerMethod handlerMethod) {
+	/**
+     * Constructs a new HandlerMethodDescription object based on the provided HandlerMethod.
+     * 
+     * @param handlerMethod the HandlerMethod to extract information from
+     */
+    public HandlerMethodDescription(HandlerMethod handlerMethod) {
 		this.name = handlerMethod.getMethod().getName();
 		this.className = handlerMethod.getMethod().getDeclaringClass().getCanonicalName();
 		this.descriptor = Type.getMethodDescriptor(handlerMethod.getMethod());
 	}
 
-	public String getName() {
+	/**
+     * Returns the name of the HandlerMethodDescription.
+     *
+     * @return the name of the HandlerMethodDescription
+     */
+    public String getName() {
 		return this.name;
 	}
 
-	public String getDescriptor() {
+	/**
+     * Returns the descriptor of the HandlerMethodDescription.
+     *
+     * @return the descriptor of the HandlerMethodDescription
+     */
+    public String getDescriptor() {
 		return this.descriptor;
 	}
 
-	public String getClassName() {
+	/**
+     * Returns the name of the class.
+     *
+     * @return the name of the class
+     */
+    public String getClassName() {
 		return this.className;
 	}
 

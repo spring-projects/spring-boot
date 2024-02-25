@@ -31,26 +31,52 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  */
 public class SimplePropertiesConfigAdapter extends PropertiesConfigAdapter<SimpleProperties> implements SimpleConfig {
 
-	public SimplePropertiesConfigAdapter(SimpleProperties properties) {
+	/**
+     * Constructs a new SimplePropertiesConfigAdapter with the specified SimpleProperties.
+     * 
+     * @param properties the SimpleProperties object to be used for configuration
+     */
+    public SimplePropertiesConfigAdapter(SimpleProperties properties) {
 		super(properties);
 	}
 
-	@Override
+	/**
+     * Returns the prefix for the management simple metrics export configuration.
+     * 
+     * @return the prefix for the management simple metrics export configuration
+     */
+    @Override
 	public String prefix() {
 		return "management.simple.metrics.export";
 	}
 
-	@Override
+	/**
+     * Retrieves the value associated with the specified key from the properties configuration.
+     * 
+     * @param k the key whose associated value is to be retrieved
+     * @return the value to which the specified key is mapped, or null if the key is not found
+     */
+    @Override
 	public String get(String k) {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the step duration.
+     * 
+     * @return the step duration
+     */
+    @Override
 	public Duration step() {
 		return get(SimpleProperties::getStep, SimpleConfig.super::step);
 	}
 
-	@Override
+	/**
+     * Returns the counting mode.
+     * 
+     * @return the counting mode
+     */
+    @Override
 	public CountingMode mode() {
 		return get(SimpleProperties::getMode, SimpleConfig.super::mode);
 	}

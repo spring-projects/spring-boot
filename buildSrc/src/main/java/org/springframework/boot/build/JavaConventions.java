@@ -109,7 +109,14 @@ class JavaConventions {
 
 	private static final String SOURCE_AND_TARGET_COMPATIBILITY = "17";
 
-	void apply(Project project) {
+	/**
+     * Applies various conventions and configurations to the given project.
+     * This includes applying plugins, configuring formatting, conventions for Java, Javadoc, tests, JAR manifest,
+     * dependency management, toolchain, and prohibited dependency checks.
+     *
+     * @param project the project to apply the conventions to
+     */
+    void apply(Project project) {
 		project.getPlugins().withType(JavaBasePlugin.class, (java) -> {
 			project.getPlugins().apply(TestFailuresPlugin.class);
 			project.getPlugins().apply(ArchitecturePlugin.class);
@@ -124,7 +131,12 @@ class JavaConventions {
 		});
 	}
 
-	private void configureJarManifestConventions(Project project) {
+	/**
+     * Configures the JAR manifest conventions for the project.
+     * 
+     * @param project The project to configure.
+     */
+    private void configureJarManifestConventions(Project project) {
 		ExtractResources extractLegalResources = project.getTasks()
 			.create("extractLegalResources", ExtractResources.class);
 		extractLegalResources.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
@@ -152,7 +164,16 @@ class JavaConventions {
 		}));
 	}
 
-	private String determineImplementationTitle(Project project, Set<String> sourceJarTaskNames,
+	/**
+     * Determines the implementation title for a project based on the given parameters.
+     * 
+     * @param project The project for which the implementation title is determined.
+     * @param sourceJarTaskNames The set of source JAR task names.
+     * @param javadocJarTaskNames The set of Javadoc JAR task names.
+     * @param jar The JAR object for which the implementation title is determined.
+     * @return The implementation title for the project.
+     */
+    private String determineImplementationTitle(Project project, Set<String> sourceJarTaskNames,
 			Set<String> javadocJarTaskNames, Jar jar) {
 		if (sourceJarTaskNames.contains(jar.getName())) {
 			return "Source for " + project.getName();
@@ -163,7 +184,16 @@ class JavaConventions {
 		return project.getDescription();
 	}
 
-	private void configureTestConventions(Project project) {
+	/**
+     * Configures the test conventions for the given project.
+     * This method sets up the necessary configurations for running tests using JUnit Platform.
+     * It also sets the maximum heap size for the tests to 1024M.
+     * Additionally, it ensures that the Checkstyle and CheckFormat tasks are run before the tests.
+     * The method also configures test retries and predictive test selection for the tests.
+     * 
+     * @param project the project for which the test conventions are being configured
+     */
+    private void configureTestConventions(Project project) {
 		project.getTasks().withType(Test.class, (test) -> {
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
@@ -177,17 +207,32 @@ class JavaConventions {
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
 	}
 
-	private void configureTestRetries(Test test) {
+	/**
+     * Configures the test retries for the given test.
+     * 
+     * @param test the test to configure the retries for
+     */
+    private void configureTestRetries(Test test) {
 		TestRetryExtension testRetry = test.getExtensions().getByType(TestRetryExtension.class);
 		testRetry.getFailOnPassedAfterRetry().set(false);
 		testRetry.getMaxRetries().set(isCi() ? 3 : 0);
 	}
 
-	private boolean isCi() {
+	/**
+     * Checks if the current environment is a continuous integration (CI) environment.
+     * 
+     * @return true if the current environment is a CI environment, false otherwise.
+     */
+    private boolean isCi() {
 		return Boolean.parseBoolean(System.getenv("CI"));
 	}
 
-	private void configurePredictiveTestSelection(Test test) {
+	/**
+     * Configures the predictive test selection for the given test.
+     * 
+     * @param test The test to configure predictive test selection for.
+     */
+    private void configurePredictiveTestSelection(Test test) {
 		if (isPredictiveTestSelectionEnabled()) {
 			PredictiveTestSelectionExtension predictiveTestSelection = test.getExtensions()
 				.getByType(PredictiveTestSelectionExtension.class);
@@ -195,11 +240,21 @@ class JavaConventions {
 		}
 	}
 
-	private boolean isPredictiveTestSelectionEnabled() {
+	/**
+     * Returns a boolean value indicating whether predictive test selection is enabled.
+     * 
+     * @return {@code true} if predictive test selection is enabled, {@code false} otherwise.
+     */
+    private boolean isPredictiveTestSelectionEnabled() {
 		return Boolean.parseBoolean(System.getenv("ENABLE_PREDICTIVE_TEST_SELECTION"));
 	}
 
-	private void configureJavadocConventions(Project project) {
+	/**
+     * Configures the Javadoc conventions for the given project.
+     * 
+     * @param project the project to configure
+     */
+    private void configureJavadocConventions(Project project) {
 		project.getTasks().withType(Javadoc.class, (javadoc) -> {
 			CoreJavadocOptions options = (CoreJavadocOptions) javadoc.getOptions();
 			options.source("17");
@@ -208,7 +263,17 @@ class JavaConventions {
 		});
 	}
 
-	private void configureJavaConventions(Project project) {
+	/**
+     * Configures the Java conventions for the project.
+     * If the project does not have the property "toolchainVersion", sets the source compatibility to the default compatibility.
+     * Sets the encoding to UTF-8 for JavaCompile tasks.
+     * Adds the "-parameters" compiler argument if it is not already present.
+     * If the project has the property "toolchainVersion", sets the source and target compatibility to the default compatibility.
+     * If building with Java 17, adds additional compiler arguments for warnings and linting.
+     *
+     * @param project the project to configure the Java conventions for
+     */
+    private void configureJavaConventions(Project project) {
 		if (!project.hasProperty("toolchainVersion")) {
 			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 			javaPluginExtension.setSourceCompatibility(JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY));
@@ -230,11 +295,22 @@ class JavaConventions {
 		});
 	}
 
-	private boolean buildingWithJava17(Project project) {
+	/**
+     * Checks if the given project is built with Java 17.
+     * 
+     * @param project the project to check
+     * @return {@code true} if the project is built with Java 17, {@code false} otherwise
+     */
+    private boolean buildingWithJava17(Project project) {
 		return !project.hasProperty("toolchainVersion") && JavaVersion.current() == JavaVersion.VERSION_17;
 	}
 
-	private void configureSpringJavaFormat(Project project) {
+	/**
+     * Configures the Spring Java Format for the given project.
+     * 
+     * @param project the project to configure
+     */
+    private void configureSpringJavaFormat(Project project) {
 		project.getPlugins().apply(SpringJavaFormatPlugin.class);
 		project.getTasks().withType(Format.class, (Format) -> Format.setEncoding("UTF-8"));
 		project.getPlugins().apply(CheckstylePlugin.class);
@@ -249,7 +325,12 @@ class JavaConventions {
 			.add(project.getDependencies().create("io.spring.javaformat:spring-javaformat-checkstyle:" + version));
 	}
 
-	private void configureDependencyManagement(Project project) {
+	/**
+     * Configures the dependency management for the given project.
+     * 
+     * @param project the project to configure the dependency management for
+     */
+    private void configureDependencyManagement(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
 		Configuration dependencyManagement = configurations.create("dependencyManagement", (configuration) -> {
 			configuration.setVisible(false);
@@ -271,17 +352,33 @@ class JavaConventions {
 						.extendsFrom(dependencyManagement));
 	}
 
-	private void configureToolchain(Project project) {
+	/**
+     * Configures the toolchain for the given project.
+     * 
+     * @param project the project to configure the toolchain for
+     */
+    private void configureToolchain(Project project) {
 		project.getPlugins().apply(ToolchainPlugin.class);
 	}
 
-	private void configureProhibitedDependencyChecks(Project project) {
+	/**
+     * Configures prohibited dependency checks for the given project.
+     * 
+     * @param project the project to configure prohibited dependency checks for
+     */
+    private void configureProhibitedDependencyChecks(Project project) {
 		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
 		sourceSets.all((sourceSet) -> createProhibitedDependenciesChecks(project,
 				sourceSet.getCompileClasspathConfigurationName(), sourceSet.getRuntimeClasspathConfigurationName()));
 	}
 
-	private void createProhibitedDependenciesChecks(Project project, String... configurationNames) {
+	/**
+     * Creates prohibited dependencies checks for the specified project and configuration names.
+     * 
+     * @param project The project for which the prohibited dependencies checks are created.
+     * @param configurationNames The names of the configurations for which the prohibited dependencies checks are created.
+     */
+    private void createProhibitedDependenciesChecks(Project project, String... configurationNames) {
 		ConfigurationContainer configurations = project.getConfigurations();
 		for (String configurationName : configurationNames) {
 			Configuration configuration = configurations.getByName(configurationName);
@@ -289,7 +386,13 @@ class JavaConventions {
 		}
 	}
 
-	private void createProhibitedDependenciesCheck(Configuration classpath, Project project) {
+	/**
+     * Creates a task to check for prohibited dependencies in the given classpath configuration.
+     * 
+     * @param classpath The classpath configuration to check for prohibited dependencies.
+     * @param project The project in which the task will be created.
+     */
+    private void createProhibitedDependenciesCheck(Configuration classpath, Project project) {
 		CheckClasspathForProhibitedDependencies checkClasspathForProhibitedDependencies = project.getTasks()
 			.create("check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
 					CheckClasspathForProhibitedDependencies.class);

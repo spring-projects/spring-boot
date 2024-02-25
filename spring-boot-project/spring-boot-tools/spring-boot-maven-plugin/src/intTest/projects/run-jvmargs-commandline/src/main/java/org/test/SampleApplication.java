@@ -16,9 +16,19 @@
 
 package org.test;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args the command line arguments
+     * 
+     * @throws IllegalStateException if the value of the "foo" system property does not match "value-from-cmd"
+     */
+    public static void main(String[] args) {
 		String foo = System.getProperty("foo");
 		if (!"value-from-cmd".equals(foo)) {
 			throw new IllegalStateException("foo system property mismatch (got [" + foo + "]");

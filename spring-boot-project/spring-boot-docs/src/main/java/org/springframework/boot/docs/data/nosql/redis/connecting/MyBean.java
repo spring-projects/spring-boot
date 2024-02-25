@@ -19,12 +19,20 @@ package org.springframework.boot.docs.data.nosql.redis.connecting;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final StringRedisTemplate template;
 
-	public MyBean(StringRedisTemplate template) {
+	/**
+     * Constructs a new instance of MyBean with the specified StringRedisTemplate.
+     *
+     * @param template the StringRedisTemplate to be used by the MyBean instance
+     */
+    public MyBean(StringRedisTemplate template) {
 		this.template = template;
 	}
 

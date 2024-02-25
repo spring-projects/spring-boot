@@ -51,7 +51,14 @@ public class HttpStatusHandler implements Handler {
 		this.status = status;
 	}
 
-	@Override
+	/**
+     * Handles the server HTTP request and sets the status code of the server HTTP response.
+     * 
+     * @param request the server HTTP request to be handled
+     * @param response the server HTTP response to be modified
+     * @throws IOException if an I/O error occurs while handling the request or modifying the response
+     */
+    @Override
 	public void handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		response.setStatusCode(this.status);
 	}

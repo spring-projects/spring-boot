@@ -63,14 +63,27 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 				filters);
 	}
 
-	@Override
+	/**
+     * Determines if the given extension bean type should be exposed as an extension type.
+     * Regular health endpoint extensions are filtered out so that a Cloud Foundry version can replace them.
+     * 
+     * @param extensionBeanType the extension bean type to check
+     * @return true if the extension type should be exposed, false otherwise
+     */
+    @Override
 	protected boolean isExtensionTypeExposed(Class<?> extensionBeanType) {
 		// Filter regular health endpoint extensions so a CF version can replace them
 		return !isHealthEndpointExtension(extensionBeanType)
 				|| isCloudFoundryHealthEndpointExtension(extensionBeanType);
 	}
 
-	private boolean isHealthEndpointExtension(Class<?> extensionBeanType) {
+	/**
+     * Checks if the given extension bean type is a health endpoint extension.
+     * 
+     * @param extensionBeanType the extension bean type to check
+     * @return true if the extension bean type is a health endpoint extension, false otherwise
+     */
+    private boolean isHealthEndpointExtension(Class<?> extensionBeanType) {
 		return MergedAnnotations.from(extensionBeanType)
 			.get(EndpointWebExtension.class)
 			.getValue("endpoint", Class.class)
@@ -78,13 +91,28 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 			.orElse(false);
 	}
 
-	private boolean isCloudFoundryHealthEndpointExtension(Class<?> extensionBeanType) {
+	/**
+     * Checks if the given extension bean type is a Cloud Foundry health endpoint extension.
+     * 
+     * @param extensionBeanType the class of the extension bean
+     * @return {@code true} if the extension bean type is a Cloud Foundry health endpoint extension, {@code false} otherwise
+     */
+    private boolean isCloudFoundryHealthEndpointExtension(Class<?> extensionBeanType) {
 		return MergedAnnotations.from(extensionBeanType).isPresent(EndpointCloudFoundryExtension.class);
 	}
 
-	static class CloudFoundryWebEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * CloudFoundryWebEndpointDiscovererRuntimeHints class.
+     */
+    static class CloudFoundryWebEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
 
-		@Override
+		/**
+         * Registers hints for the CloudFoundryWebEndpointDiscovererRuntimeHints class.
+         * 
+         * @param hints The RuntimeHints object containing the hints to be registered.
+         * @param classLoader The ClassLoader to be used for reflection.
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.reflection()
 				.registerType(CloudFoundryEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);

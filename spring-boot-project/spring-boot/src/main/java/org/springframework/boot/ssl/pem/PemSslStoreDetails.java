@@ -141,11 +141,22 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 				privateKeyPassword);
 	}
 
-	boolean isEmpty() {
+	/**
+     * Checks if the PemSslStoreDetails object is empty.
+     * 
+     * @return true if the object is empty, false otherwise
+     */
+    boolean isEmpty() {
 		return isEmpty(this.type) && isEmpty(this.certificates) && isEmpty(this.privateKey);
 	}
 
-	private boolean isEmpty(String value) {
+	/**
+     * Checks if the given value is empty.
+     * 
+     * @param value the value to be checked
+     * @return {@code true} if the value is empty, {@code false} otherwise
+     */
+    private boolean isEmpty(String value) {
 		return !StringUtils.hasText(value);
 	}
 

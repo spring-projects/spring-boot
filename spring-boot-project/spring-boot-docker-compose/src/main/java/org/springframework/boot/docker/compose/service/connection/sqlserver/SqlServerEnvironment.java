@@ -32,22 +32,44 @@ class SqlServerEnvironment {
 
 	private final String password;
 
-	SqlServerEnvironment(Map<String, String> env) {
+	/**
+     * Constructs a new SqlServerEnvironment object with the provided environment variables.
+     * 
+     * @param env a map containing the environment variables
+     */
+    SqlServerEnvironment(Map<String, String> env) {
 		this.password = extractPassword(env);
 	}
 
-	private String extractPassword(Map<String, String> env) {
+	/**
+     * Extracts the password from the environment variables.
+     * 
+     * @param env the map of environment variables
+     * @return the extracted password
+     * @throws IllegalStateException if no MSSQL password is found
+     */
+    private String extractPassword(Map<String, String> env) {
 		String password = env.get("MSSQL_SA_PASSWORD");
 		password = (password != null) ? password : env.get("SA_PASSWORD");
 		Assert.state(StringUtils.hasLength(password), "No MSSQL password found");
 		return password;
 	}
 
-	String getUsername() {
+	/**
+     * Returns the username associated with the SqlServerEnvironment object.
+     *
+     * @return the username
+     */
+    String getUsername() {
 		return this.username;
 	}
 
-	String getPassword() {
+	/**
+     * Returns the password used for authentication in the SQL Server environment.
+     *
+     * @return the password used for authentication
+     */
+    String getPassword() {
 		return this.password;
 	}
 

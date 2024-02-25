@@ -25,13 +25,21 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+/**
+ * MySecurityTests class.
+ */
 @WebMvcTest(UserController.class)
 class MySecurityTests {
 
 	@Autowired
 	private MockMvc mvc;
 
-	@Test
+	/**
+     * Test case to verify that a protected URL can be accessed by a user with the role "ADMIN".
+     * 
+     * @throws Exception if an error occurs during the test
+     */
+    @Test
 	@WithMockUser(roles = "ADMIN")
 	void requestProtectedUrlWithUser() throws Exception {
 		this.mvc.perform(get("/"));

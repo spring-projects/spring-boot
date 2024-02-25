@@ -40,13 +40,29 @@ abstract class JdbcConnectionDetailsBeanPostProcessor<T> implements BeanPostProc
 
 	private final ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider;
 
-	JdbcConnectionDetailsBeanPostProcessor(Class<T> dataSourceClass,
+	/**
+     * Constructs a new JdbcConnectionDetailsBeanPostProcessor with the specified dataSourceClass and connectionDetailsProvider.
+     * 
+     * @param dataSourceClass the class of the data source to be used
+     * @param connectionDetailsProvider the provider for obtaining the JDBC connection details
+     */
+    JdbcConnectionDetailsBeanPostProcessor(Class<T> dataSourceClass,
 			ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
 		this.dataSourceClass = dataSourceClass;
 		this.connectionDetailsProvider = connectionDetailsProvider;
 	}
 
-	@Override
+	/**
+     * This method is called before the initialization of a bean. It checks if the bean is an instance of the dataSourceClass
+     * and if the beanName is "dataSource". If both conditions are met, it retrieves the connection details from the connectionDetailsProvider
+     * and if the connectionDetails is not an instance of PropertiesJdbcConnectionDetails, it processes the dataSource bean using the connectionDetails.
+     * 
+     * @param bean the bean object being processed
+     * @param beanName the name of the bean being processed
+     * @return the processed bean object or the original bean object if no processing is required
+     * @throws BeansException if an error occurs during the bean processing
+     */
+    @Override
 	@SuppressWarnings("unchecked")
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (this.dataSourceClass.isAssignableFrom(bean.getClass()) && "dataSource".equals(beanName)) {
@@ -58,9 +74,23 @@ abstract class JdbcConnectionDetailsBeanPostProcessor<T> implements BeanPostProc
 		return bean;
 	}
 
-	protected abstract Object processDataSource(T dataSource, JdbcConnectionDetails connectionDetails);
+	/**
+     * Processes the given data source using the provided JDBC connection details.
+     *
+     * @param dataSource        the data source to be processed
+     * @param connectionDetails the JDBC connection details to be used
+     * @return the processed object
+     */
+    protected abstract Object processDataSource(T dataSource, JdbcConnectionDetails connectionDetails);
 
-	@Override
+	/**
+     * Returns the order in which this bean post-processor should be executed.
+     * This method runs after the ConfigurationPropertiesBindingPostProcessor.
+     * The order is determined by adding 2 to the highest precedence value.
+     *
+     * @return the order of execution for this bean post-processor
+     */
+    @Override
 	public int getOrder() {
 		// Runs after ConfigurationPropertiesBindingPostProcessor
 		return Ordered.HIGHEST_PRECEDENCE + 2;

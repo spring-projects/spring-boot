@@ -39,7 +39,13 @@ public final class Info {
 
 	private final Map<String, Object> details;
 
-	private Info(Builder builder) {
+	/**
+     * Constructs a new Info object with the provided content.
+     * 
+     * @param builder the builder object used to construct the Info object
+     * @throws NullPointerException if the builder is null
+     */
+    private Info(Builder builder) {
 		Map<String, Object> content = new LinkedHashMap<>(builder.content);
 		this.details = Collections.unmodifiableMap(content);
 	}
@@ -53,11 +59,25 @@ public final class Info {
 		return this.details;
 	}
 
-	public Object get(String id) {
+	/**
+     * Retrieves the object associated with the specified ID.
+     * 
+     * @param id the ID of the object to retrieve
+     * @return the object associated with the specified ID, or null if not found
+     */
+    public Object get(String id) {
 		return this.details.get(id);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Retrieves the value associated with the specified ID and casts it to the specified type.
+     * 
+     * @param id   the ID of the value to retrieve
+     * @param type the class representing the type to cast the value to
+     * @return the value associated with the ID, casted to the specified type
+     * @throws IllegalStateException if the retrieved value is not of the required type
+     */
+    @SuppressWarnings("unchecked")
 	public <T> T get(String id, Class<T> type) {
 		Object value = get(id);
 		if (value != null && type != null && !type.isInstance(value)) {
@@ -66,7 +86,13 @@ public final class Info {
 		return (T) value;
 	}
 
-	@Override
+	/**
+     * Compares this Info object with the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return true if the specified object is equal to this Info object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -77,12 +103,22 @@ public final class Info {
 		return false;
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this object.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return this.details.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the object.
+     * 
+     * @return a string representation of the object
+     */
+    @Override
 	public String toString() {
 		return getDetails().toString();
 	}
@@ -94,7 +130,11 @@ public final class Info {
 
 		private final Map<String, Object> content;
 
-		public Builder() {
+		/**
+         * Constructs a new Builder object.
+         * Initializes the content field with a new instance of LinkedHashMap.
+         */
+        public Builder() {
 			this.content = new LinkedHashMap<>();
 		}
 

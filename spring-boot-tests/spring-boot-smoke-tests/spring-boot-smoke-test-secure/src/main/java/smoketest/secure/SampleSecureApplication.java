@@ -26,6 +26,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+/**
+ * SampleSecureApplication class.
+ */
 @EnableAutoConfiguration
 @ComponentScan
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -34,7 +37,14 @@ public class SampleSecureApplication implements CommandLineRunner {
 	@Autowired
 	private SampleService service;
 
-	@Override
+	/**
+     * This method is the entry point of the application. It sets the authentication context with a username and role, 
+     * and then calls the secure method of the service. Finally, it clears the authentication context.
+     * 
+     * @param args The command line arguments passed to the application.
+     * @throws Exception If an error occurs during the execution of the method.
+     */
+    @Override
 	public void run(String... args) throws Exception {
 		SecurityContextHolder.getContext()
 			.setAuthentication(new UsernamePasswordAuthenticationToken("user", "N/A",
@@ -47,7 +57,13 @@ public class SampleSecureApplication implements CommandLineRunner {
 		}
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application with debug mode enabled.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleSecureApplication.class, "--debug");
 	}
 

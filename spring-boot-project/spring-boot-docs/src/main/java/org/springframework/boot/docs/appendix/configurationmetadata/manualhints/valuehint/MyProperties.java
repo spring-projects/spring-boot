@@ -20,6 +20,9 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * MyProperties class.
+ */
 @ConfigurationProperties("my")
 public class MyProperties {
 
@@ -30,7 +33,12 @@ public class MyProperties {
 		return this.contexts;
 	}
 
-	public void setContexts(Map<String, Integer> contexts) {
+	/**
+     * Sets the contexts for the MyProperties object.
+     * 
+     * @param contexts a Map containing the contexts to be set
+     */
+    public void setContexts(Map<String, Integer> contexts) {
 		this.contexts = contexts;
 	}
 	// @fold:off

@@ -35,23 +35,49 @@ final class DelimitedStringToArrayConverter implements ConditionalGenericConvert
 
 	private final ConversionService conversionService;
 
-	DelimitedStringToArrayConverter(ConversionService conversionService) {
+	/**
+     * Constructs a new DelimitedStringToArrayConverter with the specified ConversionService.
+     * 
+     * @param conversionService the ConversionService to be used for converting the delimited string to an array
+     * @throws IllegalArgumentException if the conversionService is null
+     */
+    DelimitedStringToArrayConverter(ConversionService conversionService) {
 		Assert.notNull(conversionService, "ConversionService must not be null");
 		this.conversionService = conversionService;
 	}
 
-	@Override
+	/**
+     * Returns a set of convertible types for the DelimitedStringToArrayConverter class.
+     * 
+     * @return a set containing a single ConvertiblePair object representing the conversion from String to Object[].
+     */
+    @Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(String.class, Object[].class));
 	}
 
-	@Override
+	/**
+     * Determines if the source type can be converted to the target type.
+     * 
+     * @param sourceType the TypeDescriptor of the source type
+     * @param targetType the TypeDescriptor of the target type
+     * @return true if the source type can be converted to the target type, false otherwise
+     */
+    @Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return targetType.getElementTypeDescriptor() == null
 				|| this.conversionService.canConvert(sourceType, targetType.getElementTypeDescriptor());
 	}
 
-	@Override
+	/**
+     * Converts a delimited string to an array.
+     * 
+     * @param source the source object to be converted
+     * @param sourceType the TypeDescriptor of the source object
+     * @param targetType the TypeDescriptor of the target object
+     * @return the converted object
+     */
+    @Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
@@ -59,7 +85,15 @@ final class DelimitedStringToArrayConverter implements ConditionalGenericConvert
 		return convert((String) source, sourceType, targetType);
 	}
 
-	private Object convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	/**
+     * Converts a delimited string to an array of objects.
+     * 
+     * @param source the source string to be converted
+     * @param sourceType the type descriptor of the source string
+     * @param targetType the type descriptor of the target array
+     * @return the converted array of objects
+     */
+    private Object convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		Delimiter delimiter = targetType.getAnnotation(Delimiter.class);
 		String[] elements = getElements(source, (delimiter != null) ? delimiter.value() : ",");
 		TypeDescriptor elementDescriptor = targetType.getElementTypeDescriptor();
@@ -72,7 +106,14 @@ final class DelimitedStringToArrayConverter implements ConditionalGenericConvert
 		return target;
 	}
 
-	private String[] getElements(String source, String delimiter) {
+	/**
+     * Converts a delimited string into an array of elements.
+     * 
+     * @param source the source string to be converted
+     * @param delimiter the delimiter used to separate the elements in the source string
+     * @return an array of elements extracted from the source string
+     */
+    private String[] getElements(String source, String delimiter) {
 		return StringUtils.delimitedListToStringArray(source, Delimiter.NONE.equals(delimiter) ? null : delimiter);
 	}
 

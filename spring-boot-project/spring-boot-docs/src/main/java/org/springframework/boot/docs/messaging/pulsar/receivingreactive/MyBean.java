@@ -21,10 +21,19 @@ import reactor.core.publisher.Mono;
 import org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
-	@ReactivePulsarListener(topics = "someTopic")
+	/**
+     * Process the message received from the "someTopic" topic.
+     *
+     * @param content the content of the message
+     * @return a Mono representing the completion of the processing
+     */
+    @ReactivePulsarListener(topics = "someTopic")
 	public Mono<Void> processMessage(String content) {
 		// ...
 		return Mono.empty();

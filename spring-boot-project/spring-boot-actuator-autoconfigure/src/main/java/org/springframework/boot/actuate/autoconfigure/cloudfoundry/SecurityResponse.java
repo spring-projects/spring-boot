@@ -30,24 +30,50 @@ public class SecurityResponse {
 
 	private final String message;
 
-	public SecurityResponse(HttpStatus status) {
+	/**
+     * Constructs a new SecurityResponse object with the specified HttpStatus status.
+     * 
+     * @param status the HttpStatus status to be set for the SecurityResponse object
+     */
+    public SecurityResponse(HttpStatus status) {
 		this(status, null);
 	}
 
-	public SecurityResponse(HttpStatus status, String message) {
+	/**
+     * Constructs a new SecurityResponse object with the specified HTTP status and message.
+     * 
+     * @param status the HTTP status of the response
+     * @param message the message associated with the response
+     */
+    public SecurityResponse(HttpStatus status, String message) {
 		this.status = status;
 		this.message = message;
 	}
 
-	public HttpStatus getStatus() {
+	/**
+     * Returns the HTTP status of the security response.
+     *
+     * @return the HTTP status of the security response
+     */
+    public HttpStatus getStatus() {
 		return this.status;
 	}
 
-	public String getMessage() {
+	/**
+     * Returns the message of the SecurityResponse object.
+     *
+     * @return the message of the SecurityResponse object
+     */
+    public String getMessage() {
 		return this.message;
 	}
 
-	public static SecurityResponse success() {
+	/**
+     * Creates a new SecurityResponse object with a success status code.
+     * 
+     * @return a new SecurityResponse object with a success status code
+     */
+    public static SecurityResponse success() {
 		return new SecurityResponse(HttpStatus.OK);
 	}
 

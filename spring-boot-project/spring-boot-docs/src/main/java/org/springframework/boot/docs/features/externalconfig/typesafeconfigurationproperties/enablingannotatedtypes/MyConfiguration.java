@@ -19,6 +19,9 @@ package org.springframework.boot.docs.features.externalconfig.typesafeconfigurat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(SomeProperties.class)
 public class MyConfiguration {

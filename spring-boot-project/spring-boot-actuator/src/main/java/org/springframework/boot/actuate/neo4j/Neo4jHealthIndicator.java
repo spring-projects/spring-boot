@@ -65,13 +65,23 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 
 	private final Neo4jHealthDetailsHandler healthDetailsHandler;
 
-	public Neo4jHealthIndicator(Driver driver) {
+	/**
+     * Constructs a new Neo4jHealthIndicator with the specified driver.
+     * 
+     * @param driver the Neo4j driver to be used for health checks
+     */
+    public Neo4jHealthIndicator(Driver driver) {
 		super("Neo4j health check failed");
 		this.driver = driver;
 		this.healthDetailsHandler = new Neo4jHealthDetailsHandler();
 	}
 
-	@Override
+	/**
+     * Performs a health check on the Neo4j database.
+     * 
+     * @param builder the Health.Builder object used to build the health status
+     */
+    @Override
 	protected void doHealthCheck(Health.Builder builder) {
 		try {
 			try {
@@ -88,7 +98,12 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 		}
 	}
 
-	private void runHealthCheckQuery(Health.Builder builder) {
+	/**
+     * Runs a health check query on the Neo4j database.
+     * 
+     * @param builder the Health.Builder object to add health details to
+     */
+    private void runHealthCheckQuery(Health.Builder builder) {
 		// We use WRITE here to make sure UP is returned for a server that supports
 		// all possible workloads
 		try (Session session = this.driver.session(DEFAULT_SESSION_CONFIG)) {

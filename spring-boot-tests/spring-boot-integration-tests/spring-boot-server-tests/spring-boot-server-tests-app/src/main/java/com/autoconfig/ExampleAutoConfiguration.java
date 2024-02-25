@@ -30,10 +30,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 
+/**
+ * ExampleAutoConfiguration class.
+ */
 @AutoConfiguration
 public class ExampleAutoConfiguration {
 
-	@Bean
+	/**
+     * Registers a servlet for handling requests when the application is deployed as a WAR file.
+     * This method is conditionally executed based on the presence of the @ConditionalOnWarDeployment annotation.
+     * The servlet is registered with the specified URL mapping "/conditionalOnWar".
+     *
+     * @return the ServletRegistrationBean instance for the registered servlet
+     */
+    @Bean
 	@ConditionalOnWarDeployment
 	public ServletRegistrationBean<TestServlet> onWarTestServlet() {
 		ServletRegistrationBean<TestServlet> registration = new ServletRegistrationBean<>(new TestServlet());
@@ -41,16 +51,35 @@ public class ExampleAutoConfiguration {
 		return registration;
 	}
 
-	@Bean
+	/**
+     * Registers the TestServlet with the servlet container.
+     * 
+     * @return the ServletRegistrationBean<TestServlet> object representing the registration of the TestServlet
+     */
+    @Bean
 	public ServletRegistrationBean<TestServlet> testServlet() {
 		ServletRegistrationBean<TestServlet> registration = new ServletRegistrationBean<>(new TestServlet());
 		registration.addUrlMappings("/always");
 		return registration;
 	}
 
-	static class TestServlet extends HttpServlet {
+	/**
+     * TestServlet class.
+     */
+    static class TestServlet extends HttpServlet {
 
-		@Override
+		/**
+         * This method is used to handle HTTP GET requests.
+         * It sets the content type of the response to JSON and writes a JSON object to the response writer.
+         * The JSON object contains a key-value pair with "hello" as the key and "world" as the value.
+         * Finally, it flushes the response buffer.
+         *
+         * @param req  the HttpServletRequest object representing the request
+         * @param resp the HttpServletResponse object representing the response
+         * @throws ServletException if there is a servlet-related problem
+         * @throws IOException      if there is an I/O problem
+         */
+        @Override
 		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 			resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
 			resp.getWriter().println("{\"hello\":\"world\"}");

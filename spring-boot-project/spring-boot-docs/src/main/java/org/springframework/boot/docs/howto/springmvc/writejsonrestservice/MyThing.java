@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.howto.springmvc.writejsonrestservice;
 
+/**
+ * MyThing class.
+ */
 public class MyThing {
 
 }

@@ -33,15 +33,32 @@ class CalendarVersionDependencyVersion extends ArtifactVersionDependencyVersion 
 
 	private static final Pattern CALENDAR_VERSION_PATTERN = Pattern.compile("\\d{4}\\.\\d+\\.\\d+(-.+)?");
 
-	protected CalendarVersionDependencyVersion(ArtifactVersion artifactVersion) {
+	/**
+     * Constructs a new instance of the CalendarVersionDependencyVersion class with the specified artifact version.
+     * 
+     * @param artifactVersion the artifact version to be used for the calendar version dependency
+     */
+    protected CalendarVersionDependencyVersion(ArtifactVersion artifactVersion) {
 		super(artifactVersion);
 	}
 
-	protected CalendarVersionDependencyVersion(ArtifactVersion artifactVersion, ComparableVersion comparableVersion) {
+	/**
+     * Constructs a new CalendarVersionDependencyVersion with the specified artifact version and comparable version.
+     * 
+     * @param artifactVersion the artifact version of the dependency
+     * @param comparableVersion the comparable version of the dependency
+     */
+    protected CalendarVersionDependencyVersion(ArtifactVersion artifactVersion, ComparableVersion comparableVersion) {
 		super(artifactVersion, comparableVersion);
 	}
 
-	static CalendarVersionDependencyVersion parse(String version) {
+	/**
+     * Parses the given version string and returns a CalendarVersionDependencyVersion object.
+     * 
+     * @param version the version string to parse
+     * @return a CalendarVersionDependencyVersion object if the version string is valid, null otherwise
+     */
+    static CalendarVersionDependencyVersion parse(String version) {
 		if (!CALENDAR_VERSION_PATTERN.matcher(version).matches()) {
 			return null;
 		}

@@ -37,7 +37,10 @@ import org.springframework.web.context.WebApplicationContext;
  */
 public final class PathRequest {
 
-	private PathRequest() {
+	/**
+     * Private constructor for the PathRequest class.
+     */
+    private PathRequest() {
 	}
 
 	/**
@@ -67,21 +70,46 @@ public final class PathRequest {
 
 		private volatile RequestMatcher delegate;
 
-		private H2ConsoleRequestMatcher() {
+		/**
+         * Constructs a new H2ConsoleRequestMatcher.
+         * 
+         * This constructor is private and can only be accessed within the H2ConsoleRequestMatcher class.
+         * 
+         * @param properties the H2ConsoleProperties object used to configure the H2 console
+         */
+        private H2ConsoleRequestMatcher() {
 			super(H2ConsoleProperties.class);
 		}
 
-		@Override
+		/**
+         * Determines whether to ignore the given WebApplicationContext based on its server namespace.
+         * 
+         * @param applicationContext the WebApplicationContext to be checked
+         * @return true if the given WebApplicationContext should be ignored, false otherwise
+         */
+        @Override
 		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
 			return WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
 		}
 
-		@Override
+		/**
+         * Initializes the H2ConsoleRequestMatcher with the given H2ConsoleProperties supplier.
+         * 
+         * @param h2ConsoleProperties the supplier for H2ConsoleProperties
+         */
+        @Override
 		protected void initialized(Supplier<H2ConsoleProperties> h2ConsoleProperties) {
 			this.delegate = new AntPathRequestMatcher(h2ConsoleProperties.get().getPath() + "/**");
 		}
 
-		@Override
+		/**
+         * Determines if the given HttpServletRequest matches the H2ConsoleRequestMatcher.
+         * 
+         * @param request the HttpServletRequest to be matched
+         * @param context a Supplier of H2ConsoleProperties for the current context
+         * @return true if the request matches the H2ConsoleRequestMatcher, false otherwise
+         */
+        @Override
 		protected boolean matches(HttpServletRequest request, Supplier<H2ConsoleProperties> context) {
 			return this.delegate.matches(request);
 		}

@@ -81,7 +81,13 @@ public final class ChangedFile {
 		return fileName.substring(directoryName.length() + 1);
 	}
 
-	@Override
+	/**
+     * Compares this ChangedFile object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -95,12 +101,22 @@ public final class ChangedFile {
 		return super.equals(obj);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this ChangedFile object.
+     * 
+     * @return the hash code value for this ChangedFile object
+     */
+    @Override
 	public int hashCode() {
 		return this.file.hashCode() * 31 + this.type.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the ChangedFile object.
+     * 
+     * @return the string representation of the ChangedFile object, which includes the file name and type
+     */
+    @Override
 	public String toString() {
 		return this.file + " (" + this.type + ")";
 	}

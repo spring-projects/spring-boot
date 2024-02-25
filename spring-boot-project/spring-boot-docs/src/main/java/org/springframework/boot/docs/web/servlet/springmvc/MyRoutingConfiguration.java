@@ -26,12 +26,21 @@ import org.springframework.web.servlet.function.ServerResponse;
 import static org.springframework.web.servlet.function.RequestPredicates.accept;
 import static org.springframework.web.servlet.function.RouterFunctions.route;
 
+/**
+ * MyRoutingConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyRoutingConfiguration {
 
 	private static final RequestPredicate ACCEPT_JSON = accept(MediaType.APPLICATION_JSON);
 
-	@Bean
+	/**
+     * Returns a RouterFunction that handles HTTP requests for user-related operations.
+     * 
+     * @param userHandler the handler class that handles user-related operations
+     * @return a RouterFunction that handles HTTP requests for user-related operations
+     */
+    @Bean
 	public RouterFunction<ServerResponse> routerFunction(MyUserHandler userHandler) {
 		// @formatter:off
 		return route()

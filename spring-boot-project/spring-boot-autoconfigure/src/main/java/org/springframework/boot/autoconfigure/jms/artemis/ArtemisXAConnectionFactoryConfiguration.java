@@ -41,7 +41,17 @@ import org.springframework.context.annotation.Primary;
 @ConditionalOnBean(XAConnectionFactoryWrapper.class)
 class ArtemisXAConnectionFactoryConfiguration {
 
-	@Primary
+	/**
+     * Creates a JMS ConnectionFactory bean with the given names "jmsConnectionFactory" and "xaJmsConnectionFactory".
+     * 
+     * @param beanFactory         the ListableBeanFactory used for bean lookup
+     * @param properties          the ArtemisProperties containing the configuration properties
+     * @param connectionDetails   the ArtemisConnectionDetails containing the connection details
+     * @param wrapper             the XAConnectionFactoryWrapper used for wrapping the ConnectionFactory
+     * @return                    the created JMS ConnectionFactory bean
+     * @throws Exception          if an error occurs during the creation of the ConnectionFactory
+     */
+    @Primary
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
 	ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
 			ArtemisConnectionDetails connectionDetails, XAConnectionFactoryWrapper wrapper) throws Exception {
@@ -50,7 +60,15 @@ class ArtemisXAConnectionFactoryConfiguration {
 				.createConnectionFactory(ActiveMQXAConnectionFactory.class));
 	}
 
-	@Bean
+	/**
+     * Creates an ActiveMQXAConnectionFactory bean using the provided bean factory, Artemis properties, and connection details.
+     * 
+     * @param beanFactory the bean factory used to create the connection factory
+     * @param properties the Artemis properties used to configure the connection factory
+     * @param connectionDetails the connection details used to establish the connection
+     * @return an ActiveMQXAConnectionFactory bean
+     */
+    @Bean
 	ActiveMQXAConnectionFactory nonXaJmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
 			ArtemisConnectionDetails connectionDetails) {
 		return new ArtemisConnectionFactoryFactory(beanFactory, properties, connectionDetails)

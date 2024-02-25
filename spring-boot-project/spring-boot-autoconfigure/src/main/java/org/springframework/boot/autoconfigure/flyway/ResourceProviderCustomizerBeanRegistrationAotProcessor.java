@@ -36,7 +36,16 @@ import org.springframework.javapoet.CodeBlock;
  */
 class ResourceProviderCustomizerBeanRegistrationAotProcessor implements BeanRegistrationAotProcessor {
 
-	@Override
+	/**
+     * Processes the given registered bean ahead of time and returns a BeanRegistrationAotContribution.
+     * If the bean class is ResourceProviderCustomizer, it creates a new AotContribution with the provided code fragments
+     * and the registered bean, and returns it as a BeanRegistrationAotContribution.
+     * If the bean class is not ResourceProviderCustomizer, it returns null.
+     *
+     * @param registeredBean the registered bean to process ahead of time
+     * @return the BeanRegistrationAotContribution for the processed bean, or null if the bean class is not ResourceProviderCustomizer
+     */
+    @Override
 	public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
 		if (registeredBean.getBeanClass().equals(ResourceProviderCustomizer.class)) {
 			return BeanRegistrationAotContribution
@@ -45,16 +54,33 @@ class ResourceProviderCustomizerBeanRegistrationAotProcessor implements BeanRegi
 		return null;
 	}
 
-	private static class AotContribution extends BeanRegistrationCodeFragmentsDecorator {
+	/**
+     * AotContribution class.
+     */
+    private static class AotContribution extends BeanRegistrationCodeFragmentsDecorator {
 
 		private final RegisteredBean registeredBean;
 
-		protected AotContribution(BeanRegistrationCodeFragments delegate, RegisteredBean registeredBean) {
+		/**
+         * Constructs a new AotContribution object with the specified delegate and registeredBean.
+         * 
+         * @param delegate the BeanRegistrationCodeFragments delegate to be used
+         * @param registeredBean the RegisteredBean object to be used
+         */
+        protected AotContribution(BeanRegistrationCodeFragments delegate, RegisteredBean registeredBean) {
 			super(delegate);
 			this.registeredBean = registeredBean;
 		}
 
-		@Override
+		/**
+         * Generates the code for the instance supplier method.
+         * 
+         * @param generationContext The generation context.
+         * @param beanRegistrationCode The bean registration code.
+         * @param allowDirectSupplierShortcut Flag to allow direct supplier shortcut.
+         * @return The code block for the instance supplier method.
+         */
+        @Override
 		public CodeBlock generateInstanceSupplierCode(GenerationContext generationContext,
 				BeanRegistrationCode beanRegistrationCode, boolean allowDirectSupplierShortcut) {
 			GeneratedMethod generatedMethod = beanRegistrationCode.getMethods().add("getInstance", (method) -> {

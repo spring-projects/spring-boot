@@ -36,15 +36,28 @@ public class BatchProperties {
 
 	private final Jdbc jdbc = new Jdbc();
 
-	public Job getJob() {
+	/**
+     * Returns the job associated with this BatchProperties object.
+     *
+     * @return the job associated with this BatchProperties object
+     */
+    public Job getJob() {
 		return this.job;
 	}
 
-	public Jdbc getJdbc() {
+	/**
+     * Returns the Jdbc object associated with this BatchProperties instance.
+     *
+     * @return the Jdbc object
+     */
+    public Jdbc getJdbc() {
 		return this.jdbc;
 	}
 
-	public static class Job {
+	/**
+     * Job class.
+     */
+    public static class Job {
 
 		/**
 		 * Job name to execute on startup. Must be specified if multiple Jobs are found in
@@ -52,17 +65,30 @@ public class BatchProperties {
 		 */
 		private String name = "";
 
-		public String getName() {
+		/**
+         * Returns the name of the Job.
+         *
+         * @return the name of the Job
+         */
+        public String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		/**
+         * Sets the name of the job.
+         * 
+         * @param name the name of the job
+         */
+        public void setName(String name) {
 			this.name = name;
 		}
 
 	}
 
-	public static class Jdbc {
+	/**
+     * Jdbc class.
+     */
+    public static class Jdbc {
 
 		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 				+ "batch/core/schema-@@platform@@.sql";
@@ -93,43 +119,93 @@ public class BatchProperties {
 		 */
 		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
 
-		public Isolation getIsolationLevelForCreate() {
+		/**
+         * Returns the isolation level for create operations.
+         * 
+         * @return the isolation level for create operations
+         */
+        public Isolation getIsolationLevelForCreate() {
 			return this.isolationLevelForCreate;
 		}
 
-		public void setIsolationLevelForCreate(Isolation isolationLevelForCreate) {
+		/**
+         * Sets the isolation level for creating a new object.
+         * 
+         * @param isolationLevelForCreate the isolation level to be set
+         */
+        public void setIsolationLevelForCreate(Isolation isolationLevelForCreate) {
 			this.isolationLevelForCreate = isolationLevelForCreate;
 		}
 
-		public String getSchema() {
+		/**
+         * Returns the schema of the Jdbc object.
+         *
+         * @return the schema of the Jdbc object
+         */
+        public String getSchema() {
 			return this.schema;
 		}
 
-		public void setSchema(String schema) {
+		/**
+         * Sets the schema for the JDBC connection.
+         * 
+         * @param schema the name of the schema to be set
+         */
+        public void setSchema(String schema) {
 			this.schema = schema;
 		}
 
-		public String getPlatform() {
+		/**
+         * Returns the platform of the JDBC connection.
+         * 
+         * @return the platform of the JDBC connection
+         */
+        public String getPlatform() {
 			return this.platform;
 		}
 
-		public void setPlatform(String platform) {
+		/**
+         * Sets the platform for the JDBC connection.
+         * 
+         * @param platform the platform to be set
+         */
+        public void setPlatform(String platform) {
 			this.platform = platform;
 		}
 
-		public String getTablePrefix() {
+		/**
+         * Returns the table prefix used in the JDBC class.
+         * 
+         * @return the table prefix
+         */
+        public String getTablePrefix() {
 			return this.tablePrefix;
 		}
 
-		public void setTablePrefix(String tablePrefix) {
+		/**
+         * Sets the table prefix for the JDBC class.
+         * 
+         * @param tablePrefix the table prefix to be set
+         */
+        public void setTablePrefix(String tablePrefix) {
 			this.tablePrefix = tablePrefix;
 		}
 
-		public DatabaseInitializationMode getInitializeSchema() {
+		/**
+         * Returns the initialization mode for the database schema.
+         * 
+         * @return the initialization mode for the database schema
+         */
+        public DatabaseInitializationMode getInitializeSchema() {
 			return this.initializeSchema;
 		}
 
-		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
+		/**
+         * Sets the mode for initializing the database schema.
+         * 
+         * @param initializeSchema the mode for initializing the database schema
+         */
+        public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 			this.initializeSchema = initializeSchema;
 		}
 

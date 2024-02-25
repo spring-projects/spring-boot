@@ -96,7 +96,22 @@ public final class ZipContent implements Closeable {
 
 	private SoftReference<Map<Class<?>, Object>> info;
 
-	private ZipContent(Source source, Kind kind, FileChannelDataBlock data, long centralDirectoryPos, long commentPos,
+	/**
+     * Constructs a new ZipContent object with the specified parameters.
+     * 
+     * @param source the source of the zip content
+     * @param kind the kind of the zip content
+     * @param data the data block of the zip content
+     * @param centralDirectoryPos the position of the central directory in the zip content
+     * @param commentPos the position of the comment in the zip content
+     * @param commentLength the length of the comment in the zip content
+     * @param lookupIndexes the lookup indexes of the zip content
+     * @param nameHashLookups the name hash lookups of the zip content
+     * @param relativeCentralDirectoryOffsetLookups the relative central directory offset lookups of the zip content
+     * @param nameOffsetLookups the name offset lookups of the zip content
+     * @param hasJarSignatureFile indicates if the zip content has a JAR signature file
+     */
+    private ZipContent(Source source, Kind kind, FileChannelDataBlock data, long centralDirectoryPos, long commentPos,
 			long commentLength, int[] lookupIndexes, int[] nameHashLookups, int[] relativeCentralDirectoryOffsetLookups,
 			NameOffsetLookups nameOffsetLookups, boolean hasJarSignatureFile) {
 		this.source = source;
@@ -143,7 +158,13 @@ public final class ZipContent implements Closeable {
 		return (!this.nameOffsetLookups.hasAnyEnabled()) ? this.data : getVirtualData();
 	}
 
-	private CloseableDataBlock getVirtualData() throws IOException {
+	/**
+     * Retrieves the virtual data block.
+     * 
+     * @return The virtual data block.
+     * @throws IOException If an I/O error occurs.
+     */
+    private CloseableDataBlock getVirtualData() throws IOException {
 		CloseableDataBlock virtualData = (this.virtualData != null) ? this.virtualData.get() : null;
 		if (virtualData != null) {
 			return virtualData;
@@ -153,7 +174,13 @@ public final class ZipContent implements Closeable {
 		return virtualData;
 	}
 
-	private CloseableDataBlock createVirtualData() throws IOException {
+	/**
+     * Creates a virtual data block for the ZipContent.
+     * 
+     * @return a CloseableDataBlock representing the virtual data block
+     * @throws IOException if an I/O error occurs while creating the virtual data block
+     */
+    private CloseableDataBlock createVirtualData() throws IOException {
 		int size = size();
 		NameOffsetLookups nameOffsetLookups = this.nameOffsetLookups.emptyCopy();
 		ZipCentralDirectoryFileHeaderRecord[] centralRecords = new ZipCentralDirectoryFileHeaderRecord[size];
@@ -256,7 +283,15 @@ public final class ZipContent implements Closeable {
 		return new Entry(lookupIndex, centralRecord);
 	}
 
-	private ZipCentralDirectoryFileHeaderRecord loadZipCentralDirectoryFileHeaderRecord(long pos) {
+	/**
+     * Loads the ZipCentralDirectoryFileHeaderRecord from the specified position in the data.
+     *
+     * @param pos the position in the data to load the record from
+     * @return the loaded ZipCentralDirectoryFileHeaderRecord
+     * @throws IllegalStateException if the Zip content is closed
+     * @throws UncheckedIOException if an IOException occurs while loading the record
+     */
+    private ZipCentralDirectoryFileHeaderRecord loadZipCentralDirectoryFileHeaderRecord(long pos) {
 		try {
 			return ZipCentralDirectoryFileHeaderRecord.load(this.data, pos);
 		}
@@ -268,14 +303,27 @@ public final class ZipContent implements Closeable {
 		}
 	}
 
-	private int nameHash(CharSequence namePrefix, CharSequence name) {
+	/**
+     * Calculates the hash value for a given name by combining the hash values of the name prefix and the name itself.
+     * 
+     * @param namePrefix the prefix of the name (can be null)
+     * @param name the name to calculate the hash value for
+     * @return the calculated hash value for the name
+     */
+    private int nameHash(CharSequence namePrefix, CharSequence name) {
 		int nameHash = 0;
 		nameHash = (namePrefix != null) ? ZipString.hash(nameHash, namePrefix, false) : nameHash;
 		nameHash = ZipString.hash(nameHash, name, true);
 		return nameHash;
 	}
 
-	private int getFirstLookupIndex(int nameHash) {
+	/**
+     * Returns the index of the first occurrence of the specified name hash in the nameHashLookups array.
+     * 
+     * @param nameHash the name hash to search for
+     * @return the index of the first occurrence of the specified name hash, or -1 if not found
+     */
+    private int getFirstLookupIndex(int nameHash) {
 		int lookupIndex = Arrays.binarySearch(this.nameHashLookups, 0, this.nameHashLookups.length, nameHash);
 		if (lookupIndex < 0) {
 			return -1;
@@ -286,11 +334,27 @@ public final class ZipContent implements Closeable {
 		return lookupIndex;
 	}
 
-	private long getCentralDirectoryFileHeaderRecordPos(int lookupIndex) {
+	/**
+     * Returns the position of the central directory file header record based on the given lookup index.
+     * 
+     * @param lookupIndex the index used to lookup the relative central directory offset
+     * @return the position of the central directory file header record
+     */
+    private long getCentralDirectoryFileHeaderRecordPos(int lookupIndex) {
 		return this.centralDirectoryPos + this.relativeCentralDirectoryOffsetLookups[lookupIndex];
 	}
 
-	private boolean hasName(int lookupIndex, ZipCentralDirectoryFileHeaderRecord centralRecord, long pos,
+	/**
+     * Checks if the given name exists in the zip file at the specified lookup index.
+     * 
+     * @param lookupIndex the index of the lookup
+     * @param centralRecord the central directory file header record
+     * @param pos the position in the zip file
+     * @param namePrefix the prefix of the name to match (can be null)
+     * @param name the name to match
+     * @return true if the name exists, false otherwise
+     */
+    private boolean hasName(int lookupIndex, ZipCentralDirectoryFileHeaderRecord centralRecord, long pos,
 			CharSequence namePrefix, CharSequence name) {
 		int offset = this.nameOffsetLookups.get(lookupIndex);
 		pos += ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + offset;
@@ -345,7 +409,12 @@ public final class ZipContent implements Closeable {
 		this.data.close();
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the ZipContent object.
+     * 
+     * @return a string representation of the ZipContent object
+     */
+    @Override
 	public String toString() {
 		return this.source.toString();
 	}
@@ -373,7 +442,14 @@ public final class ZipContent implements Closeable {
 		return open(new Source(path.toAbsolutePath(), nestedEntryName));
 	}
 
-	private static ZipContent open(Source source) throws IOException {
+	/**
+     * Opens the zip content from the given source.
+     * 
+     * @param source the source from which to load the zip content
+     * @return the opened zip content
+     * @throws IOException if an I/O error occurs while opening the zip content
+     */
+    private static ZipContent open(Source source) throws IOException {
 		ZipContent zipContent = cache.get(source);
 		if (zipContent != null) {
 			debug.log("Opening existing cached zip content for %s", zipContent);
@@ -432,7 +508,14 @@ public final class ZipContent implements Closeable {
 			return this.nestedEntryName != null;
 		}
 
-		@Override
+		/**
+     * Returns a string representation of the ZipContent object.
+     * If the object is not nested, it returns the path as a string.
+     * If the object is nested, it returns the path followed by the nested entry name enclosed in square brackets.
+     *
+     * @return a string representation of the ZipContent object
+     */
+    @Override
 		public String toString() {
 			return (!isNested()) ? path().toString() : path() + "[" + nestedEntryName() + "]";
 		}
@@ -463,7 +546,16 @@ public final class ZipContent implements Closeable {
 
 		private int cursor;
 
-		private Loader(Source source, Entry directoryEntry, FileChannelDataBlock data, long centralDirectoryPos,
+		/**
+         * Constructs a new Loader object with the given parameters.
+         * 
+         * @param source the source object used for loading data
+         * @param directoryEntry the directory entry object representing the directory
+         * @param data the data block containing file channel data
+         * @param centralDirectoryPos the position of the central directory
+         * @param maxSize the maximum size of the loader
+         */
+        private Loader(Source source, Entry directoryEntry, FileChannelDataBlock data, long centralDirectoryPos,
 				int maxSize) {
 			this.source = source;
 			this.data = data;
@@ -475,7 +567,15 @@ public final class ZipContent implements Closeable {
 					? new NameOffsetLookups(directoryEntry.getName().length(), maxSize) : NameOffsetLookups.NONE;
 		}
 
-		private void add(ZipCentralDirectoryFileHeaderRecord centralRecord, long pos, boolean enableNameOffset)
+		/**
+         * Adds a ZipCentralDirectoryFileHeaderRecord to the loader.
+         * 
+         * @param centralRecord The ZipCentralDirectoryFileHeaderRecord to be added.
+         * @param pos The position of the record in the file.
+         * @param enableNameOffset Flag indicating whether to enable name offset.
+         * @throws IOException If an I/O error occurs.
+         */
+        private void add(ZipCentralDirectoryFileHeaderRecord centralRecord, long pos, boolean enableNameOffset)
 				throws IOException {
 			int nameOffset = this.nameOffsetLookups.enable(this.cursor, enableNameOffset);
 			int hash = ZipString.hash(this.buffer, this.data,
@@ -487,7 +587,16 @@ public final class ZipContent implements Closeable {
 			this.cursor++;
 		}
 
-		private ZipContent finish(Kind kind, long commentPos, long commentLength, boolean hasJarSignatureFile) {
+		/**
+         * Finishes the creation of a ZipContent object.
+         * 
+         * @param kind                  The kind of ZipContent.
+         * @param commentPos            The position of the comment in the Zip file.
+         * @param commentLength         The length of the comment in the Zip file.
+         * @param hasJarSignatureFile   Indicates if the Zip file has a JAR signature file.
+         * @return                      The created ZipContent object.
+         */
+        private ZipContent finish(Kind kind, long commentPos, long commentLength, boolean hasJarSignatureFile) {
 			if (this.cursor != this.nameHashLookups.length) {
 				this.nameHashLookups = Arrays.copyOf(this.nameHashLookups, this.cursor);
 				this.relativeCentralDirectoryOffsetLookups = Arrays.copyOf(this.relativeCentralDirectoryOffsetLookups,
@@ -504,7 +613,13 @@ public final class ZipContent implements Closeable {
 					this.nameOffsetLookups, hasJarSignatureFile);
 		}
 
-		private void sort(int left, int right) {
+		/**
+         * Sorts the array using the Quick sort algorithm.
+         * 
+         * @param left  the starting index of the array to be sorted
+         * @param right the ending index of the array to be sorted
+         */
+        private void sort(int left, int right) {
 			// Quick sort algorithm, uses nameHashCode as the source but sorts all arrays
 			if (left < right) {
 				int pivot = this.nameHashLookups[left + (right - left) / 2];
@@ -532,20 +647,40 @@ public final class ZipContent implements Closeable {
 			}
 		}
 
-		private void swap(int i, int j) {
+		/**
+         * Swaps the elements at the specified indices in the index, nameHashLookups, relativeCentralDirectoryOffsetLookups, and nameOffsetLookups arrays.
+         * 
+         * @param i the index of the first element to be swapped
+         * @param j the index of the second element to be swapped
+         */
+        private void swap(int i, int j) {
 			swap(this.index, i, j);
 			swap(this.nameHashLookups, i, j);
 			swap(this.relativeCentralDirectoryOffsetLookups, i, j);
 			this.nameOffsetLookups.swap(i, j);
 		}
 
-		private static void swap(int[] array, int i, int j) {
+		/**
+         * Swaps the elements at the specified indices in the given array.
+         *
+         * @param array the array in which the elements should be swapped
+         * @param i the index of the first element to be swapped
+         * @param j the index of the second element to be swapped
+         */
+        private static void swap(int[] array, int i, int j) {
 			int temp = array[i];
 			array[i] = array[j];
 			array[j] = temp;
 		}
 
-		static ZipContent load(Source source) throws IOException {
+		/**
+         * Loads the content from the given source.
+         * 
+         * @param source the source from which to load the content
+         * @return the loaded ZipContent
+         * @throws IOException if an I/O error occurs while loading the content
+         */
+        static ZipContent load(Source source) throws IOException {
 			if (!source.isNested()) {
 				return loadNonNested(source);
 			}
@@ -559,12 +694,27 @@ public final class ZipContent implements Closeable {
 			}
 		}
 
-		private static ZipContent loadNonNested(Source source) throws IOException {
+		/**
+         * Loads a non-nested zip file from the given source.
+         * 
+         * @param source the source of the zip file
+         * @return the loaded zip content
+         * @throws IOException if an I/O error occurs while loading the zip file
+         */
+        private static ZipContent loadNonNested(Source source) throws IOException {
 			debug.log("Loading non-nested zip '%s'", source.path());
 			return openAndLoad(source, Kind.ZIP, new FileChannelDataBlock(source.path()));
 		}
 
-		private static ZipContent loadNestedZip(Source source, Entry entry) throws IOException {
+		/**
+         * Loads a nested zip file from the given source and entry.
+         * 
+         * @param source the source of the nested zip file
+         * @param entry the entry representing the nested zip file in the container zip
+         * @return the loaded zip content
+         * @throws IOException if an I/O error occurs while loading the nested zip file
+         */
+        private static ZipContent loadNestedZip(Source source, Entry entry) throws IOException {
 			if (entry.centralRecord.compressionMethod() != ZipEntry.STORED) {
 				throw new IOException("Nested entry '%s' in container zip '%s' must not be compressed"
 					.formatted(source.nestedEntryName(), source.path()));
@@ -573,7 +723,17 @@ public final class ZipContent implements Closeable {
 			return openAndLoad(source, Kind.NESTED_ZIP, entry.getContent());
 		}
 
-		private static ZipContent openAndLoad(Source source, Kind kind, FileChannelDataBlock data) throws IOException {
+		/**
+         * Opens and loads the content from the specified source, kind, and data block.
+         * 
+         * @param source the source of the content
+         * @param kind the kind of content
+         * @param data the data block containing the content
+         * @return the loaded ZipContent object
+         * @throws IOException if an I/O error occurs while opening or loading the content
+         * @throws RuntimeException if a runtime exception occurs while opening or loading the content
+         */
+        private static ZipContent openAndLoad(Source source, Kind kind, FileChannelDataBlock data) throws IOException {
 			try {
 				data.open();
 				return loadContent(source, kind, data);
@@ -584,7 +744,16 @@ public final class ZipContent implements Closeable {
 			}
 		}
 
-		private static ZipContent loadContent(Source source, Kind kind, FileChannelDataBlock data) throws IOException {
+		/**
+         * Loads the content of a ZIP file from the given source, kind, and data block.
+         * 
+         * @param source The source of the ZIP file.
+         * @param kind The kind of the ZIP file.
+         * @param data The data block containing the ZIP file.
+         * @return The loaded ZIP content.
+         * @throws IOException If an I/O error occurs while loading the ZIP content.
+         */
+        private static ZipContent loadContent(Source source, Kind kind, FileChannelDataBlock data) throws IOException {
 			ZipEndOfCentralDirectoryRecord.Located locatedEocd = ZipEndOfCentralDirectoryRecord.load(data);
 			ZipEndOfCentralDirectoryRecord eocd = locatedEocd.endOfCentralDirectoryRecord();
 			long eocdPos = locatedEocd.pos();
@@ -643,7 +812,14 @@ public final class ZipContent implements Closeable {
 			return actualOffsetToStartOfCentralDirectory - specifiedOffsetToStartOfCentralDirectory;
 		}
 
-		private static long getSizeOfCentralDirectoryAndEndRecords(ZipEndOfCentralDirectoryRecord eocd,
+		/**
+         * Calculates the size of the central directory and end records in a ZIP file.
+         * 
+         * @param eocd The end of central directory record.
+         * @param zip64Eocd The ZIP64 end of central directory record.
+         * @return The size of the central directory and end records.
+         */
+        private static long getSizeOfCentralDirectoryAndEndRecords(ZipEndOfCentralDirectoryRecord eocd,
 				Zip64EndOfCentralDirectoryRecord zip64Eocd) {
 			long result = 0;
 			result += eocd.size();
@@ -655,7 +831,17 @@ public final class ZipContent implements Closeable {
 			return result;
 		}
 
-		private static ZipContent loadNestedDirectory(Source source, ZipContent zip, Entry directoryEntry)
+		/**
+         * Loads a nested directory entry from a source into a zip content.
+         * 
+         * @param source          the source of the nested directory entry
+         * @param zip             the zip content to load the nested directory entry into
+         * @param directoryEntry  the directory entry to load
+         * @return                the loaded zip content with the nested directory entry
+         * @throws IOException    if an I/O error occurs during loading
+         * @throws IllegalArgumentException if the nested entry name does not end with '/'
+         */
+        private static ZipContent loadNestedDirectory(Source source, ZipContent zip, Entry directoryEntry)
 				throws IOException {
 			debug.log("Loading nested directory entry '%s' from '%s'", source.nestedEntryName(), source.path());
 			if (!source.nestedEntryName().endsWith("/")) {
@@ -794,7 +980,13 @@ public final class ZipContent implements Closeable {
 			return content;
 		}
 
-		private FileChannelDataBlock getContent() throws IOException {
+		/**
+         * Retrieves the content of the file channel data block.
+         * 
+         * @return The file channel data block content.
+         * @throws IOException If an I/O error occurs.
+         */
+        private FileChannelDataBlock getContent() throws IOException {
 			FileChannelDataBlock content = this.content;
 			if (content == null) {
 				int pos = this.centralRecord.offsetToLocalHeader();
@@ -808,7 +1000,13 @@ public final class ZipContent implements Closeable {
 			return content;
 		}
 
-		private void checkNotZip64Extended(int value) throws IOException {
+		/**
+         * Checks if the given value is equal to 0xFFFFFFFF, which indicates that Zip64 extended information extra fields are not supported.
+         * 
+         * @param value the value to check
+         * @throws IOException if Zip64 extended information extra fields are not supported
+         */
+        private void checkNotZip64Extended(int value) throws IOException {
 			if (value == 0xFFFFFFFF) {
 				throw new IOException("Zip64 extended information extra fields are not supported");
 			}

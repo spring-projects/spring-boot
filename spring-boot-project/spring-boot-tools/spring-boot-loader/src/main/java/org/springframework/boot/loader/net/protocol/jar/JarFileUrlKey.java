@@ -31,7 +31,10 @@ final class JarFileUrlKey {
 
 	private static volatile SoftReference<Map<URL, String>> cache;
 
-	private JarFileUrlKey() {
+	/**
+     * Private constructor for the JarFileUrlKey class.
+     */
+    private JarFileUrlKey() {
 	}
 
 	/**
@@ -48,7 +51,13 @@ final class JarFileUrlKey {
 		return cache.computeIfAbsent(url, JarFileUrlKey::create);
 	}
 
-	private static String create(URL url) {
+	/**
+     * Creates a string representation of the given URL.
+     * 
+     * @param url the URL to create the string representation for
+     * @return the string representation of the URL
+     */
+    private static String create(URL url) {
 		StringBuilder value = new StringBuilder();
 		String protocol = url.getProtocol();
 		String host = url.getHost();
@@ -67,7 +76,10 @@ final class JarFileUrlKey {
 		return value.toString();
 	}
 
-	static void clearCache() {
+	/**
+     * Clears the cache by setting it to null.
+     */
+    static void clearCache() {
 		cache = null;
 	}
 

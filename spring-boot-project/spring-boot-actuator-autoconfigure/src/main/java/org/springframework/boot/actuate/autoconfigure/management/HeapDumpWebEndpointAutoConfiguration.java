@@ -33,7 +33,13 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnAvailableEndpoint(endpoint = HeapDumpWebEndpoint.class)
 public class HeapDumpWebEndpointAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link HeapDumpWebEndpoint} if no other bean of the same type is present.
+     * This endpoint allows users to trigger a heap dump of the running JVM.
+     * 
+     * @return the {@link HeapDumpWebEndpoint} instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public HeapDumpWebEndpoint heapDumpWebEndpoint() {
 		return new HeapDumpWebEndpoint();

@@ -46,20 +46,42 @@ import org.springframework.util.Assert;
  */
 public class InitCommand extends OptionParsingCommand {
 
-	public InitCommand() {
+	/**
+     * Constructs a new InitCommand object.
+     * 
+     * This constructor initializes the InitCommand object by creating a new InitOptionHandler object
+     * with a new InitializrService object as its parameter. The InitOptionHandler is then passed as a
+     * parameter to the superclass constructor.
+     */
+    public InitCommand() {
 		this(new InitOptionHandler(new InitializrService()));
 	}
 
-	public InitCommand(InitOptionHandler handler) {
+	/**
+     * Constructs a new InitCommand object with the specified InitOptionHandler.
+     * 
+     * @param handler the InitOptionHandler to handle the initialization options
+     */
+    public InitCommand(InitOptionHandler handler) {
 		super("init", "Initialize a new project using Spring Initializr (start.spring.io)", handler);
 	}
 
-	@Override
+	/**
+     * Returns the usage help for the InitCommand.
+     * 
+     * @return the usage help string in the format "[options] [location]"
+     */
+    @Override
 	public String getUsageHelp() {
 		return "[options] [location]";
 	}
 
-	@Override
+	/**
+     * Returns a collection of help examples for the getExamples() method.
+     *
+     * @return a collection of HelpExample objects representing different usage examples
+     */
+    @Override
 	public Collection<HelpExample> getExamples() {
 		List<HelpExample> examples = new ArrayList<>();
 		examples.add(new HelpExample("To list all the capabilities of the service", "spring init --list"));
@@ -130,13 +152,25 @@ public class InitCommand extends OptionParsingCommand {
 
 		private OptionSpec<Void> force;
 
-		InitOptionHandler(InitializrService initializrService) {
+		/**
+         * Initializes the option handler with the given initializr service.
+         * 
+         * @param initializrService the initializr service to be used
+         */
+        InitOptionHandler(InitializrService initializrService) {
 			super(InitOptionHandler::processArgument);
 			this.serviceCapabilitiesReport = new ServiceCapabilitiesReportGenerator(initializrService);
 			this.projectGenerator = new ProjectGenerator(initializrService);
 		}
 
-		@Override
+		/**
+         * This method is used to set the options for the InitOptionHandler class.
+         * It sets the target URL of the service to use, and also provides the option to list the capabilities of the service.
+         * The target URL is a required argument and is set to the default service URL if not provided.
+         * The listCapabilities option is used to discover the dependencies and types available.
+         * This method also calls the projectGenerationOptions() and otherOptions() methods to set additional options.
+         */
+        @Override
 		protected void options() {
 			this.target = option(Arrays.asList("target"), "URL of the service to use").withRequiredArg()
 				.defaultsTo(ProjectGenerationRequest.DEFAULT_SERVICE_URL);
@@ -147,7 +181,42 @@ public class InitCommand extends OptionParsingCommand {
 			otherOptions();
 		}
 
-		private void projectGenerationOptions() {
+		/**
+         * Sets up the project generation options.
+         * 
+         * This method initializes the various options for generating a project. These options include the group ID, artifact ID,
+         * version, name, description, package name, type, packaging, build system, format, Java version, language, Spring Boot version,
+         * and dependencies.
+         * 
+         * The group ID option is used to specify the project coordinates, which is typically in the format 'org.test'.
+         * 
+         * The artifact ID option is used to specify the project coordinates and infer the archive name, which is typically in the format 'test'.
+         * 
+         * The version option is used to specify the project version, which is typically in the format '0.0.1-SNAPSHOT'.
+         * 
+         * The name option is used to specify the project name and infer the application name.
+         * 
+         * The description option is used to specify the project description.
+         * 
+         * The package name option is used to specify the package name.
+         * 
+         * The type option is used to specify the project type. This option is not normally needed if the --build and/or --format options are used.
+         * 
+         * The packaging option is used to specify the project packaging, which is typically in the format 'jar'.
+         * 
+         * The build option is used to specify the build system to use, which is typically 'maven' or 'gradle'. The default value is 'maven'.
+         * 
+         * The format option is used to specify the format of the generated content. This option can be 'build' for a build file or 'project' for a project archive. The default value is 'project'.
+         * 
+         * The Java version option is used to specify the language level, which is typically '1.8'.
+         * 
+         * The language option is used to specify the programming language, which is typically 'java'.
+         * 
+         * The Spring Boot version option is used to specify the Spring Boot version, which is typically '1.2.0.RELEASE'.
+         * 
+         * The dependencies option is used to specify a comma-separated list of dependency identifiers to include in the generated project.
+         */
+        private void projectGenerationOptions() {
 			this.groupId = option(Arrays.asList("group-id", "g"), "Project coordinates (for example 'org.test')")
 				.withRequiredArg();
 			this.artifactId = option(Arrays.asList("artifact-id", "a"),
@@ -182,13 +251,27 @@ public class InitCommand extends OptionParsingCommand {
 				.withRequiredArg();
 		}
 
-		private void otherOptions() {
+		/**
+         * Sets up other options for the InitOptionHandler class.
+         * This method initializes the 'extract' and 'force' options.
+         * The 'extract' option is used to extract the project archive.
+         * It is inferred if a location is specified without an extension.
+         * The 'force' option is used to force overwrite of existing files.
+         */
+        private void otherOptions() {
 			this.extract = option(Arrays.asList("extract", "x"),
 					"Extract the project archive. Inferred if a location is specified without an extension");
 			this.force = option(Arrays.asList("force", "f"), "Force overwrite of existing files");
 		}
 
-		@Override
+		/**
+         * Executes the run method with the given options.
+         * 
+         * @param options the options provided by the user
+         * @return the exit status of the execution
+         * @throws Exception if an error occurs during execution
+         */
+        @Override
 		protected ExitStatus run(OptionSet options) throws Exception {
 			try {
 				if (options.has(this.listCapabilities)) {
@@ -209,16 +292,34 @@ public class InitCommand extends OptionParsingCommand {
 			}
 		}
 
-		private void generateReport(OptionSet options) throws IOException {
+		/**
+         * Generates a report based on the given options.
+         * 
+         * @param options the options to generate the report with
+         * @throws IOException if an I/O error occurs while generating the report
+         */
+        private void generateReport(OptionSet options) throws IOException {
 			Log.info(this.serviceCapabilitiesReport.generate(options.valueOf(this.target)));
 		}
 
-		protected void generateProject(OptionSet options) throws IOException {
+		/**
+         * Generates a project based on the provided options.
+         * 
+         * @param options the options for project generation
+         * @throws IOException if an I/O error occurs during project generation
+         */
+        protected void generateProject(OptionSet options) throws IOException {
 			ProjectGenerationRequest request = createProjectGenerationRequest(options);
 			this.projectGenerator.generateProject(request, options.has(this.force));
 		}
 
-		protected ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
+		/**
+         * Creates a ProjectGenerationRequest object based on the provided options.
+         * 
+         * @param options the OptionSet containing the command line options
+         * @return the created ProjectGenerationRequest object
+         */
+        protected ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
 			List<?> nonOptionArguments = new ArrayList<Object>(options.nonOptionArguments());
 			Assert.isTrue(nonOptionArguments.size() <= 1, "Only the target location may be specified");
 			ProjectGenerationRequest request = new ProjectGenerationRequest();
@@ -272,7 +373,15 @@ public class InitCommand extends OptionParsingCommand {
 			return request;
 		}
 
-		private static String processArgument(String argument) {
+		/**
+         * Processes the given argument by checking if it matches any of the options in the CAMEL_CASE_OPTIONS map.
+         * If a match is found, the corresponding value is appended to the argument and returned.
+         * If no match is found, the original argument is returned.
+         *
+         * @param argument the argument to be processed
+         * @return the processed argument with the corresponding value appended, if a match is found; otherwise, the original argument
+         */
+        private static String processArgument(String argument) {
 			for (Map.Entry<String, String> entry : CAMEL_CASE_OPTIONS.entrySet()) {
 				String name = entry.getKey();
 				if (argument.startsWith(name + " ") || argument.startsWith(name + "=")) {

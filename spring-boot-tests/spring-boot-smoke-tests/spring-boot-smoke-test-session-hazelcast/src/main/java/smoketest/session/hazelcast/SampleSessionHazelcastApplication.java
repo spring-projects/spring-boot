@@ -19,10 +19,19 @@ package smoketest.session.hazelcast;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleSessionHazelcastApplication class.
+ */
 @SpringBootApplication
 public class SampleSessionHazelcastApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by running the SpringApplication.run() method.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleSessionHazelcastApplication.class);
 	}
 

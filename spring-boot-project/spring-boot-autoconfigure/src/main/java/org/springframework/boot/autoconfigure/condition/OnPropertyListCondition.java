@@ -53,7 +53,14 @@ public class OnPropertyListCondition extends SpringBootCondition {
 		this.messageBuilder = messageBuilder;
 	}
 
-	@Override
+	/**
+     * Determines the match outcome for the condition based on the specified property name and environment.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		BindResult<?> property = Binder.get(context.getEnvironment()).bind(this.propertyName, STRING_LIST);
 		ConditionMessage.Builder messageBuilder = this.messageBuilder.get();

@@ -32,7 +32,16 @@ public class ProcessInfo {
 
 	private final String owner;
 
-	public ProcessInfo() {
+	/**
+     * Constructs a new ProcessInfo object.
+     * 
+     * This constructor retrieves information about the current process, such as the process ID (PID), 
+     * the parent process ID (PPID), and the owner of the process. The PID is obtained from the current 
+     * process handle, while the PPID is obtained from the parent process handle. If the parent process 
+     * handle is not available, the PPID is set to -1. The owner of the process is obtained from the 
+     * process information.
+     */
+    public ProcessInfo() {
 		ProcessHandle process = ProcessHandle.current();
 		this.pid = process.pid();
 		this.parentPid = process.parent().map(ProcessHandle::pid).orElse(-1L);
@@ -50,15 +59,30 @@ public class ProcessInfo {
 		return runtime.availableProcessors();
 	}
 
-	public long getPid() {
+	/**
+     * Returns the process ID (PID) of the ProcessInfo object.
+     *
+     * @return the process ID (PID) of the ProcessInfo object
+     */
+    public long getPid() {
 		return this.pid;
 	}
 
-	public long getParentPid() {
+	/**
+     * Returns the parent process ID of the current process.
+     *
+     * @return the parent process ID
+     */
+    public long getParentPid() {
 		return this.parentPid;
 	}
 
-	public String getOwner() {
+	/**
+     * Returns the owner of the process.
+     *
+     * @return the owner of the process
+     */
+    public String getOwner() {
 		return this.owner;
 	}
 

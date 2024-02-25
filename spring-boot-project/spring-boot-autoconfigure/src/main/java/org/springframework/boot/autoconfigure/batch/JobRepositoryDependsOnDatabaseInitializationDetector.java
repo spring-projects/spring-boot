@@ -32,7 +32,12 @@ import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializat
 class JobRepositoryDependsOnDatabaseInitializationDetector
 		extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector {
 
-	@Override
+	/**
+     * Returns a set of classes that the JobRepository depends on for database initialization.
+     * 
+     * @return a set of classes that the JobRepository depends on for database initialization
+     */
+    @Override
 	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
 		return Collections.singleton(JobRepository.class);
 	}

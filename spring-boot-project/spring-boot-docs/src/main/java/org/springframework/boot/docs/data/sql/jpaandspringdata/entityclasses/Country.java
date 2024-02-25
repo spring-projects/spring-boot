@@ -24,6 +24,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import org.hibernate.envers.Audited;
 
+/**
+ * Country class.
+ */
 @Entity
 public class Country implements Serializable {
 
@@ -35,19 +38,39 @@ public class Country implements Serializable {
 	@Column(nullable = false)
 	private String name;
 
-	public Long getId() {
+	/**
+     * Returns the ID of the country.
+     *
+     * @return the ID of the country
+     */
+    public Long getId() {
 		return this.id;
 	}
 
-	public void setId(Long id) {
+	/**
+     * Sets the ID of the country.
+     * 
+     * @param id the ID to set
+     */
+    public void setId(Long id) {
 		this.id = id;
 	}
 
-	public String getName() {
+	/**
+     * Returns the name of the country.
+     *
+     * @return the name of the country
+     */
+    public String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	/**
+     * Sets the name of the country.
+     * 
+     * @param name the name of the country
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 

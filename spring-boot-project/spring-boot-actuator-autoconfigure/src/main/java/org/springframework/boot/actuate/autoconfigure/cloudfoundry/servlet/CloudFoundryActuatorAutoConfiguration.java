@@ -88,7 +88,14 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	private static final String BASE_PATH = "/cloudfoundryapplication";
 
-	@Bean
+	/**
+     * Creates a CloudFoundryHealthEndpointWebExtension bean if there is no existing bean of the same type.
+     * This bean is conditional on the availability of the HealthEndpoint and HealthEndpointWebExtension beans.
+     * 
+     * @param healthEndpointWebExtension The HealthEndpointWebExtension bean to be used by the CloudFoundryHealthEndpointWebExtension bean.
+     * @return The CloudFoundryHealthEndpointWebExtension bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
 	@ConditionalOnBean({ HealthEndpoint.class, HealthEndpointWebExtension.class })
@@ -97,7 +104,16 @@ public class CloudFoundryActuatorAutoConfiguration {
 		return new CloudFoundryHealthEndpointWebExtension(healthEndpointWebExtension);
 	}
 
-	@Bean
+	/**
+     * Creates a CloudFoundryInfoEndpointWebExtension bean if there is no existing bean of the same type.
+     * This bean is conditional on the availability of the InfoEndpoint and GitProperties beans.
+     * It is also conditional on the availability of the endpoint itself.
+     * 
+     * @param properties the GitProperties bean
+     * @param infoContributors the InfoContributor bean provider
+     * @return the CloudFoundryInfoEndpointWebExtension bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
 	@ConditionalOnBean({ InfoEndpoint.class, GitProperties.class })
@@ -110,7 +126,18 @@ public class CloudFoundryActuatorAutoConfiguration {
 		return new CloudFoundryInfoEndpointWebExtension(new InfoEndpoint(contributors));
 	}
 
-	@Bean
+	/**
+     * Creates a {@link CloudFoundryWebEndpointServletHandlerMapping} bean for mapping Cloud Foundry web endpoints.
+     * 
+     * @param parameterMapper the {@link ParameterValueMapper} used for mapping parameter values
+     * @param endpointMediaTypes the {@link EndpointMediaTypes} used for determining media types
+     * @param restTemplateBuilder the {@link RestTemplateBuilder} used for building REST templates
+     * @param servletEndpointsSupplier the {@link ServletEndpointsSupplier} used for supplying servlet endpoints
+     * @param controllerEndpointsSupplier the {@link ControllerEndpointsSupplier} used for supplying controller endpoints
+     * @param applicationContext the {@link ApplicationContext} used for accessing the application context
+     * @return the {@link CloudFoundryWebEndpointServletHandlerMapping} bean
+     */
+    @Bean
 	public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
 			ParameterValueMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
 			RestTemplateBuilder restTemplateBuilder, ServletEndpointsSupplier servletEndpointsSupplier,
@@ -128,7 +155,18 @@ public class CloudFoundryActuatorAutoConfiguration {
 				endpointMediaTypes, getCorsConfiguration(), securityInterceptor, allEndpoints);
 	}
 
-	private CloudFoundrySecurityInterceptor getSecurityInterceptor(RestTemplateBuilder restTemplateBuilder,
+	/**
+     * Returns a CloudFoundrySecurityInterceptor object.
+     * 
+     * This method creates a CloudFoundrySecurityInterceptor object by initializing the necessary dependencies such as
+     * CloudFoundrySecurityService, TokenValidator, and the application ID. The CloudFoundrySecurityInterceptor is used
+     * to intercept and validate security tokens in Cloud Foundry environments.
+     * 
+     * @param restTemplateBuilder The RestTemplateBuilder object used to build RestTemplate instances.
+     * @param environment The Environment object used to access application properties.
+     * @return A CloudFoundrySecurityInterceptor object.
+     */
+    private CloudFoundrySecurityInterceptor getSecurityInterceptor(RestTemplateBuilder restTemplateBuilder,
 			Environment environment) {
 		CloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(restTemplateBuilder,
 				environment);
@@ -137,7 +175,14 @@ public class CloudFoundryActuatorAutoConfiguration {
 				environment.getProperty("vcap.application.application_id"));
 	}
 
-	private CloudFoundrySecurityService getCloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
+	/**
+     * Returns an instance of CloudFoundrySecurityService.
+     * 
+     * @param restTemplateBuilder The RestTemplateBuilder used to build the RestTemplate.
+     * @param environment The Environment object used to retrieve properties.
+     * @return An instance of CloudFoundrySecurityService if the cloudControllerUrl property is not null, otherwise null.
+     */
+    private CloudFoundrySecurityService getCloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
 			Environment environment) {
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
 		boolean skipSslValidation = environment.getProperty("management.cloudfoundry.skip-ssl-validation",
@@ -146,7 +191,12 @@ public class CloudFoundryActuatorAutoConfiguration {
 				? new CloudFoundrySecurityService(restTemplateBuilder, cloudControllerUrl, skipSslValidation) : null;
 	}
 
-	private CorsConfiguration getCorsConfiguration() {
+	/**
+     * Returns the CORS configuration for Cloud Foundry Actuator Auto Configuration.
+     * 
+     * @return the CORS configuration
+     */
+    private CorsConfiguration getCorsConfiguration() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
 		corsConfiguration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
@@ -164,7 +214,14 @@ public class CloudFoundryActuatorAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	public static class IgnoredCloudFoundryPathsWebSecurityConfiguration {
 
-		@Bean
+		/**
+         * Creates an instance of IgnoredCloudFoundryPathsWebSecurityCustomizer with the provided CloudFoundryWebEndpointServletHandlerMapping.
+         * This customizer is used to ignore specific paths in Cloud Foundry when configuring web security.
+         *
+         * @param handlerMapping The CloudFoundryWebEndpointServletHandlerMapping used to map Cloud Foundry endpoints.
+         * @return The IgnoredCloudFoundryPathsWebSecurityCustomizer instance.
+         */
+        @Bean
 		IgnoredCloudFoundryPathsWebSecurityCustomizer ignoreCloudFoundryPathsWebSecurityCustomizer(
 				CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
 			return new IgnoredCloudFoundryPathsWebSecurityCustomizer(handlerMapping);
@@ -172,16 +229,29 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	}
 
-	@Order(SecurityProperties.IGNORED_ORDER)
+	/**
+     * IgnoredCloudFoundryPathsWebSecurityCustomizer class.
+     */
+    @Order(SecurityProperties.IGNORED_ORDER)
 	static class IgnoredCloudFoundryPathsWebSecurityCustomizer implements WebSecurityCustomizer {
 
 		private final PathMappedEndpoints pathMappedEndpoints;
 
-		IgnoredCloudFoundryPathsWebSecurityCustomizer(CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
+		/**
+         * Constructs a new IgnoredCloudFoundryPathsWebSecurityCustomizer with the specified CloudFoundryWebEndpointServletHandlerMapping.
+         * 
+         * @param handlerMapping the CloudFoundryWebEndpointServletHandlerMapping used to retrieve all endpoints
+         */
+        IgnoredCloudFoundryPathsWebSecurityCustomizer(CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
 			this.pathMappedEndpoints = new PathMappedEndpoints(BASE_PATH, handlerMapping::getAllEndpoints);
 		}
 
-		@Override
+		/**
+         * Customizes the web security configuration to ignore certain paths in Cloud Foundry.
+         * 
+         * @param web the WebSecurity object to be customized
+         */
+        @Override
 		public void customize(WebSecurity web) {
 			List<RequestMatcher> requestMatchers = new ArrayList<>();
 			this.pathMappedEndpoints.getAllPaths()

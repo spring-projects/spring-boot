@@ -16,6 +16,9 @@
 
 package smoketest.hateoas.domain;
 
+/**
+ * Customer class.
+ */
 public class Customer {
 
 	private final Long id;
@@ -24,21 +27,43 @@ public class Customer {
 
 	private final String lastName;
 
-	public Customer(Long id, String firstName, String lastName) {
+	/**
+     * Constructs a new Customer object with the specified id, first name, and last name.
+     *
+     * @param id the unique identifier for the customer
+     * @param firstName the first name of the customer
+     * @param lastName the last name of the customer
+     */
+    public Customer(Long id, String firstName, String lastName) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
 
-	public Long getId() {
+	/**
+     * Returns the ID of the customer.
+     *
+     * @return the ID of the customer
+     */
+    public Long getId() {
 		return this.id;
 	}
 
-	public String getFirstName() {
+	/**
+     * Returns the first name of the customer.
+     *
+     * @return the first name of the customer
+     */
+    public String getFirstName() {
 		return this.firstName;
 	}
 
-	public String getLastName() {
+	/**
+     * Returns the last name of the customer.
+     *
+     * @return the last name of the customer
+     */
+    public String getLastName() {
 		return this.lastName;
 	}
 

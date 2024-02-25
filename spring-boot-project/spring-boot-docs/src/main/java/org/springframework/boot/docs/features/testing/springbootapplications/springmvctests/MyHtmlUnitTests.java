@@ -27,6 +27,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
+/**
+ * MyHtmlUnitTests class.
+ */
 @WebMvcTest(UserVehicleController.class)
 class MyHtmlUnitTests {
 
@@ -36,7 +39,12 @@ class MyHtmlUnitTests {
 	@MockBean
 	private UserVehicleService userVehicleService;
 
-	@Test
+	/**
+     * Test case to verify the behavior of the example method.
+     *
+     * @throws Exception if an error occurs during the test
+     */
+    @Test
 	void testExample() throws Exception {
 		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
 		HtmlPage page = this.webClient.getPage("/sboot/vehicle.html");

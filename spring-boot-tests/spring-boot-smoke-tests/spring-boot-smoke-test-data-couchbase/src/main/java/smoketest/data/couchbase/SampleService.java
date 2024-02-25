@@ -19,16 +19,30 @@ package smoketest.data.couchbase;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.stereotype.Service;
 
+/**
+ * SampleService class.
+ */
 @Service
 public class SampleService {
 
 	private final CouchbaseTemplate couchbaseTemplate;
 
-	public SampleService(CouchbaseTemplate couchbaseTemplate) {
+	/**
+     * Constructs a new SampleService with the specified CouchbaseTemplate.
+     * 
+     * @param couchbaseTemplate the CouchbaseTemplate to be used by the SampleService
+     */
+    public SampleService(CouchbaseTemplate couchbaseTemplate) {
 		this.couchbaseTemplate = couchbaseTemplate;
 	}
 
-	public SampleDocument findById(String id) {
+	/**
+     * Retrieves a SampleDocument object by its ID.
+     * 
+     * @param id The ID of the SampleDocument to retrieve.
+     * @return The SampleDocument object with the specified ID, or null if not found.
+     */
+    public SampleDocument findById(String id) {
 		return this.couchbaseTemplate.findById(SampleDocument.class).one(id);
 	}
 

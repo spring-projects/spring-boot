@@ -32,7 +32,14 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 class InvalidConfigurationPropertyNameFailureAnalyzer
 		extends AbstractFailureAnalyzer<InvalidConfigurationPropertyNameException> {
 
-	@Override
+	/**
+     * Analyzes the failure caused by an InvalidConfigurationPropertyNameException and returns a FailureAnalysis object.
+     * 
+     * @param rootFailure The root cause of the failure.
+     * @param cause The InvalidConfigurationPropertyNameException that caused the failure.
+     * @return A FailureAnalysis object containing the analysis of the failure.
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, InvalidConfigurationPropertyNameException cause) {
 		BeanCreationException exception = findCause(rootFailure, BeanCreationException.class);
 		String action = String.format("Modify '%s' so that it conforms to the canonical names requirements.",
@@ -40,7 +47,14 @@ class InvalidConfigurationPropertyNameFailureAnalyzer
 		return new FailureAnalysis(buildDescription(cause, exception), action, cause);
 	}
 
-	private String buildDescription(InvalidConfigurationPropertyNameException cause, BeanCreationException exception) {
+	/**
+     * Builds a description for an InvalidConfigurationPropertyNameException and BeanCreationException.
+     * 
+     * @param cause the InvalidConfigurationPropertyNameException that occurred
+     * @param exception the BeanCreationException that occurred (optional)
+     * @return the description of the exception
+     */
+    private String buildDescription(InvalidConfigurationPropertyNameException cause, BeanCreationException exception) {
 		StringBuilder description = new StringBuilder(
 				String.format("Configuration property name '%s' is not valid:%n", cause.getName()));
 		String invalid = cause.getInvalidCharacters().stream().map(this::quote).collect(Collectors.joining(", "));
@@ -53,7 +67,13 @@ class InvalidConfigurationPropertyNameFailureAnalyzer
 		return description.toString();
 	}
 
-	private String quote(Character c) {
+	/**
+     * Returns a string representation of the given character enclosed in single quotes.
+     * 
+     * @param c the character to be quoted
+     * @return the quoted string representation of the character
+     */
+    private String quote(Character c) {
 		return "'" + c + "'";
 	}
 

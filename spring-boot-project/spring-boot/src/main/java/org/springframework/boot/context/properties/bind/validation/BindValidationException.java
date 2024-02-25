@@ -31,7 +31,13 @@ public class BindValidationException extends RuntimeException {
 
 	private final ValidationErrors validationErrors;
 
-	BindValidationException(ValidationErrors validationErrors) {
+	/**
+     * Constructs a new BindValidationException with the specified validation errors.
+     * 
+     * @param validationErrors the validation errors associated with the exception
+     * @throws IllegalArgumentException if the validationErrors parameter is null
+     */
+    BindValidationException(ValidationErrors validationErrors) {
 		super(getMessage(validationErrors));
 		Assert.notNull(validationErrors, "ValidationErrors must not be null");
 		this.validationErrors = validationErrors;
@@ -45,7 +51,13 @@ public class BindValidationException extends RuntimeException {
 		return this.validationErrors;
 	}
 
-	private static String getMessage(ValidationErrors errors) {
+	/**
+     * Returns a message containing the binding validation errors.
+     * 
+     * @param errors the validation errors to be included in the message
+     * @return a string message containing the binding validation errors
+     */
+    private static String getMessage(ValidationErrors errors) {
 		StringBuilder message = new StringBuilder("Binding validation errors");
 		if (errors != null) {
 			message.append(" on ").append(errors.getName());

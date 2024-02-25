@@ -20,25 +20,47 @@ import java.io.Serializable;
 
 import org.springframework.util.Assert;
 
+/**
+ * CitySearchCriteria class.
+ */
 public class CitySearchCriteria implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String name;
 
-	public CitySearchCriteria() {
+	/**
+     * Constructs a new CitySearchCriteria object.
+     */
+    public CitySearchCriteria() {
 	}
 
-	public CitySearchCriteria(String name) {
+	/**
+     * Constructs a new CitySearchCriteria object with the specified name.
+     * 
+     * @param name the name of the city to search for
+     * @throws IllegalArgumentException if the name is null
+     */
+    public CitySearchCriteria(String name) {
 		Assert.notNull(name, "Name must not be null");
 		this.name = name;
 	}
 
-	public String getName() {
+	/**
+     * Returns the name of the CitySearchCriteria object.
+     *
+     * @return the name of the CitySearchCriteria object
+     */
+    public String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	/**
+     * Sets the name of the city search criteria.
+     * 
+     * @param name the name of the city
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 

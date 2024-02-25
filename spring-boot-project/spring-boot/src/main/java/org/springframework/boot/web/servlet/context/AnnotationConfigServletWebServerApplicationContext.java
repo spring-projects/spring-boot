@@ -189,13 +189,22 @@ public class AnnotationConfigServletWebServerApplicationContext extends ServletW
 		this.basePackages = basePackages;
 	}
 
-	@Override
+	/**
+     * Prepare the refresh process.
+     * This method clears the cache of the scanner and calls the super class's prepareRefresh method.
+     */
+    @Override
 	protected void prepareRefresh() {
 		this.scanner.clearCache();
 		super.prepareRefresh();
 	}
 
-	@Override
+	/**
+     * Post-processes the bean factory after it has been initialized.
+     * 
+     * @param beanFactory the bean factory to be post-processed
+     */
+    @Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		super.postProcessBeanFactory(beanFactory);
 		if (this.basePackages != null && this.basePackages.length > 0) {

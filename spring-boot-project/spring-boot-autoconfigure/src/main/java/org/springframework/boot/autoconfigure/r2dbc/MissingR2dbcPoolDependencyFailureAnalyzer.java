@@ -27,7 +27,14 @@ import org.springframework.boot.diagnostics.FailureAnalyzer;
  */
 class MissingR2dbcPoolDependencyFailureAnalyzer extends AbstractFailureAnalyzer<MissingR2dbcPoolDependencyException> {
 
-	@Override
+	/**
+     * Analyzes the failure caused by a missing R2DBC pool dependency.
+     * 
+     * @param rootFailure the root failure that caused the exception
+     * @param cause the MissingR2dbcPoolDependencyException that was thrown
+     * @return a FailureAnalysis object containing the analysis result
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, MissingR2dbcPoolDependencyException cause) {
 		return new FailureAnalysis(cause.getMessage(),
 				"Update your application's build to depend on io.r2dbc:r2dbc-pool or your application's configuration "

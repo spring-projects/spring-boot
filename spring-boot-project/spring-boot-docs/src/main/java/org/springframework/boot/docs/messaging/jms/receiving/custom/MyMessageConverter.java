@@ -23,14 +23,34 @@ import jakarta.jms.Session;
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.jms.support.converter.MessageConverter;
 
+/**
+ * MyMessageConverter class.
+ */
 class MyMessageConverter implements MessageConverter {
 
-	@Override
+	/**
+     * Converts the given object to a JMS Message.
+     * 
+     * @param object the object to be converted
+     * @param session the JMS session
+     * @return the converted JMS Message
+     * @throws JMSException if an error occurs during the conversion
+     * @throws MessageConversionException if the object cannot be converted to a JMS Message
+     */
+    @Override
 	public Message toMessage(Object object, Session session) throws JMSException, MessageConversionException {
 		return null;
 	}
 
-	@Override
+	/**
+     * Converts a JMS Message to an Object.
+     * 
+     * @param message the JMS Message to convert
+     * @return the converted Object, or null if conversion is not possible
+     * @throws JMSException if an error occurs while converting the message
+     * @throws MessageConversionException if the message cannot be converted to an Object
+     */
+    @Override
 	public Object fromMessage(Message message) throws JMSException, MessageConversionException {
 		return null;
 	}

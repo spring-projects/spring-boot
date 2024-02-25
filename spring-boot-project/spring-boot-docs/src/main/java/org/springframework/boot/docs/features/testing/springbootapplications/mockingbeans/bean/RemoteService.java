@@ -16,9 +16,17 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.mockingbeans.bean;
 
+/**
+ * RemoteService class.
+ */
 class RemoteService {
 
-	Object getValue() {
+	/**
+     * Retrieves the value from the remote service.
+     *
+     * @return the value retrieved from the remote service, or null if no value is available
+     */
+    Object getValue() {
 		return null;
 	}
 

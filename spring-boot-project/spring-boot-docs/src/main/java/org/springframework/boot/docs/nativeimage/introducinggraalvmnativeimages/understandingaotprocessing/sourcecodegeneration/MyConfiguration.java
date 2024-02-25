@@ -19,10 +19,18 @@ package org.springframework.boot.docs.nativeimage.introducinggraalvmnativeimages
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyConfiguration {
 
-	@Bean
+	/**
+     * Creates and returns a new instance of MyBean.
+     * 
+     * @return a new instance of MyBean
+     */
+    @Bean
 	public MyBean myBean() {
 		return new MyBean();
 	}

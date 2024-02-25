@@ -119,7 +119,12 @@ public final class ConditionEvaluationReport {
 		return Collections.unmodifiableMap(this.outcomes);
 	}
 
-	private void addNoMatchOutcomeToAncestors(String source) {
+	/**
+     * Adds a no match outcome to the ancestors of the given source.
+     * 
+     * @param source the source to add the no match outcome to its ancestors
+     */
+    private void addNoMatchOutcomeToAncestors(String source) {
 		String prefix = source + "$";
 		this.outcomes.forEach((candidateSource, sourceOutcomes) -> {
 			if (candidateSource.startsWith(prefix)) {
@@ -189,13 +194,26 @@ public final class ConditionEvaluationReport {
 		}
 	}
 
-	private static void locateParent(BeanFactory beanFactory, ConditionEvaluationReport report) {
+	/**
+     * Locates the parent bean factory in the given bean factory and sets it in the condition evaluation report.
+     * 
+     * @param beanFactory the bean factory to search for the parent bean factory
+     * @param report the condition evaluation report to set the parent bean factory in
+     */
+    private static void locateParent(BeanFactory beanFactory, ConditionEvaluationReport report) {
 		if (beanFactory != null && report.parent == null && beanFactory.containsBean(BEAN_NAME)) {
 			report.parent = beanFactory.getBean(BEAN_NAME, ConditionEvaluationReport.class);
 		}
 	}
 
-	public ConditionEvaluationReport getDelta(ConditionEvaluationReport previousReport) {
+	/**
+     * Returns the delta between the current ConditionEvaluationReport and the previous ConditionEvaluationReport.
+     * The delta includes any changes in outcomes, exclusions, and unconditional classes.
+     * 
+     * @param previousReport The previous ConditionEvaluationReport to compare against.
+     * @return The delta ConditionEvaluationReport.
+     */
+    public ConditionEvaluationReport getDelta(ConditionEvaluationReport previousReport) {
 		ConditionEvaluationReport delta = new ConditionEvaluationReport();
 		this.outcomes.forEach((source, sourceOutcomes) -> {
 			ConditionAndOutcomes previous = previousReport.outcomes.get(source);
@@ -220,7 +238,13 @@ public final class ConditionEvaluationReport {
 
 		private final Set<ConditionAndOutcome> outcomes = new LinkedHashSet<>();
 
-		public void add(Condition condition, ConditionOutcome outcome) {
+		/**
+         * Adds a new condition and outcome pair to the list of outcomes.
+         * 
+         * @param condition the condition to be evaluated
+         * @param outcome the outcome associated with the condition
+         */
+        public void add(Condition condition, ConditionOutcome outcome) {
 			this.outcomes.add(new ConditionAndOutcome(condition, outcome));
 		}
 
@@ -237,7 +261,12 @@ public final class ConditionEvaluationReport {
 			return true;
 		}
 
-		@Override
+		/**
+         * Returns an iterator over the elements in this set of ConditionAndOutcome objects.
+         *
+         * @return an iterator over the elements in this set of ConditionAndOutcome objects
+         */
+        @Override
 		public Iterator<ConditionAndOutcome> iterator() {
 			return Collections.unmodifiableSet(this.outcomes).iterator();
 		}
@@ -253,20 +282,42 @@ public final class ConditionEvaluationReport {
 
 		private final ConditionOutcome outcome;
 
-		public ConditionAndOutcome(Condition condition, ConditionOutcome outcome) {
+		/**
+         * Constructs a new ConditionAndOutcome object with the specified condition and outcome.
+         * 
+         * @param condition the condition to be associated with the object
+         * @param outcome the outcome to be associated with the object
+         */
+        public ConditionAndOutcome(Condition condition, ConditionOutcome outcome) {
 			this.condition = condition;
 			this.outcome = outcome;
 		}
 
-		public Condition getCondition() {
+		/**
+         * Returns the condition of the object.
+         *
+         * @return the condition of the object
+         */
+        public Condition getCondition() {
 			return this.condition;
 		}
 
-		public ConditionOutcome getOutcome() {
+		/**
+         * Returns the outcome of the condition.
+         *
+         * @return the outcome of the condition
+         */
+        public ConditionOutcome getOutcome() {
 			return this.outcome;
 		}
 
-		@Override
+		/**
+         * Compares this ConditionAndOutcome object to the specified object for equality.
+         * 
+         * @param obj the object to compare to
+         * @return true if the objects are equal, false otherwise
+         */
+        @Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -279,21 +330,43 @@ public final class ConditionEvaluationReport {
 					&& ObjectUtils.nullSafeEquals(this.outcome, other.outcome));
 		}
 
-		@Override
+		/**
+         * Returns the hash code value for this ConditionAndOutcome object.
+         * The hash code is calculated based on the class of the condition and the outcome.
+         *
+         * @return the hash code value for this ConditionAndOutcome object
+         */
+        @Override
 		public int hashCode() {
 			return this.condition.getClass().hashCode() * 31 + this.outcome.hashCode();
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the ConditionAndOutcome object.
+         * 
+         * @return the string representation of the ConditionAndOutcome object, which includes the class of the condition and the outcome
+         */
+        @Override
 		public String toString() {
 			return this.condition.getClass() + " " + this.outcome;
 		}
 
 	}
 
-	private static final class AncestorsMatchedCondition implements Condition {
+	/**
+     * AncestorsMatchedCondition class.
+     */
+    private static final class AncestorsMatchedCondition implements Condition {
 
-		@Override
+		/**
+         * Determines if the given condition matches the specified context and annotated type metadata.
+         *
+         * @param context the condition context
+         * @param metadata the annotated type metadata
+         * @return {@code true} if the condition matches, {@code false} otherwise
+         * @throws UnsupportedOperationException if the method is not supported
+         */
+        @Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			throw new UnsupportedOperationException();
 		}

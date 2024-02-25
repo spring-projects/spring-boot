@@ -40,7 +40,13 @@ public class UnboundElementsSourceFilter implements Function<ConfigurationProper
 		.unmodifiableSet(new HashSet<>(Arrays.asList(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)));
 
-	@Override
+	/**
+     * Applies the filter to the given ConfigurationPropertySource.
+     * 
+     * @param configurationPropertySource the ConfigurationPropertySource to apply the filter to
+     * @return true if the filter should be applied, false otherwise
+     */
+    @Override
 	public Boolean apply(ConfigurationPropertySource configurationPropertySource) {
 		Object underlyingSource = configurationPropertySource.getUnderlyingSource();
 		if (underlyingSource instanceof PropertySource) {

@@ -42,13 +42,24 @@ import org.springframework.integration.graph.IntegrationGraphServer;
 @ConditionalOnAvailableEndpoint(endpoint = IntegrationGraphEndpoint.class)
 public class IntegrationGraphEndpointAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates an instance of IntegrationGraphEndpoint if no other bean of the same type is present.
+     * 
+     * @param integrationGraphServer the IntegrationGraphServer instance to be used by the IntegrationGraphEndpoint
+     * @return the IntegrationGraphEndpoint instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public IntegrationGraphEndpoint integrationGraphEndpoint(IntegrationGraphServer integrationGraphServer) {
 		return new IntegrationGraphEndpoint(integrationGraphServer);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of IntegrationGraphServer if no other bean of the same type is present.
+     * 
+     * @return the IntegrationGraphServer instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public IntegrationGraphServer integrationGraphServer() {
 		return new IntegrationGraphServer();

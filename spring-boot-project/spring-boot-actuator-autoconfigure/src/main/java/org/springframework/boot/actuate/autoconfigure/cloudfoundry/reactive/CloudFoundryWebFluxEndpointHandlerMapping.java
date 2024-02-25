@@ -67,7 +67,17 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 
 	private final Collection<ExposableEndpoint<?>> allEndpoints;
 
-	CloudFoundryWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
+	/**
+     * Constructs a new CloudFoundryWebFluxEndpointHandlerMapping with the specified parameters.
+     *
+     * @param endpointMapping        the endpoint mapping strategy to use
+     * @param endpoints              the collection of exposable web endpoints
+     * @param endpointMediaTypes     the media types supported by the endpoints
+     * @param corsConfiguration      the CORS configuration for the endpoints
+     * @param securityInterceptor    the security interceptor for Cloud Foundry
+     * @param allEndpoints           the collection of all endpoints
+     */
+    CloudFoundryWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			CorsConfiguration corsConfiguration, CloudFoundrySecurityInterceptor securityInterceptor,
 			Collection<ExposableEndpoint<?>> allEndpoints) {
@@ -77,24 +87,51 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 		this.securityInterceptor = securityInterceptor;
 	}
 
-	@Override
+	/**
+     * Wraps the given ReactiveWebOperation with a SecureReactiveWebOperation, applying the specified security interceptor.
+     * 
+     * @param endpoint The ExposableWebEndpoint associated with the operation.
+     * @param operation The WebOperation to be wrapped.
+     * @param reactiveWebOperation The ReactiveWebOperation to be wrapped.
+     * @return The wrapped ReactiveWebOperation.
+     */
+    @Override
 	protected ReactiveWebOperation wrapReactiveWebOperation(ExposableWebEndpoint endpoint, WebOperation operation,
 			ReactiveWebOperation reactiveWebOperation) {
 		return new SecureReactiveWebOperation(reactiveWebOperation, this.securityInterceptor, endpoint.getEndpointId());
 	}
 
-	@Override
+	/**
+     * Returns the LinksHandler for CloudFoundryWebFluxEndpointHandlerMapping.
+     * 
+     * @return the LinksHandler for CloudFoundryWebFluxEndpointHandlerMapping
+     */
+    @Override
 	protected LinksHandler getLinksHandler() {
 		return new CloudFoundryLinksHandler();
 	}
 
-	Collection<ExposableEndpoint<?>> getAllEndpoints() {
+	/**
+     * Returns a collection of all the exposable endpoints.
+     *
+     * @return a collection of exposable endpoints
+     */
+    Collection<ExposableEndpoint<?>> getAllEndpoints() {
 		return this.allEndpoints;
 	}
 
-	class CloudFoundryLinksHandler implements LinksHandler {
+	/**
+     * CloudFoundryLinksHandler class.
+     */
+    class CloudFoundryLinksHandler implements LinksHandler {
 
-		@Override
+		/**
+         * Retrieves the links for the given ServerWebExchange.
+         * 
+         * @param exchange the ServerWebExchange object representing the current HTTP request
+         * @return a Publisher object that emits a ResponseEntity containing the links
+         */
+        @Override
 		@Reflective
 		public Publisher<ResponseEntity<Object>> links(ServerWebExchange exchange) {
 			ServerHttpRequest request = exchange.getRequest();
@@ -111,7 +148,14 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 				});
 		}
 
-		private Map<String, Link> getAccessibleLinks(AccessLevel accessLevel, Map<String, Link> links) {
+		/**
+         * Returns a map of accessible links based on the given access level and links map.
+         * 
+         * @param accessLevel the access level to determine which links are accessible
+         * @param links the map of links to filter
+         * @return a map of accessible links
+         */
+        private Map<String, Link> getAccessibleLinks(AccessLevel accessLevel, Map<String, Link> links) {
 			if (accessLevel == null) {
 				return new LinkedHashMap<>();
 			}
@@ -121,7 +165,12 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * 
+         * @return a string representation of the object
+         */
+        @Override
 		public String toString() {
 			return "Actuator root web endpoint";
 		}
@@ -139,20 +188,44 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 
 		private final EndpointId endpointId;
 
-		SecureReactiveWebOperation(ReactiveWebOperation delegate, CloudFoundrySecurityInterceptor securityInterceptor,
+		/**
+         * Constructs a new SecureReactiveWebOperation with the specified delegate, security interceptor, and endpoint ID.
+         * 
+         * @param delegate the delegate ReactiveWebOperation to be secured
+         * @param securityInterceptor the CloudFoundrySecurityInterceptor used for securing the operation
+         * @param endpointId the ID of the endpoint being secured
+         */
+        SecureReactiveWebOperation(ReactiveWebOperation delegate, CloudFoundrySecurityInterceptor securityInterceptor,
 				EndpointId endpointId) {
 			this.delegate = delegate;
 			this.securityInterceptor = securityInterceptor;
 			this.endpointId = endpointId;
 		}
 
-		@Override
+		/**
+         * Handles the server web exchange and the request body.
+         * 
+         * @param exchange The server web exchange object.
+         * @param body The request body as a map of key-value pairs.
+         * @return A Mono object representing the response entity.
+         */
+        @Override
 		public Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange, Map<String, String> body) {
 			return this.securityInterceptor.preHandle(exchange, this.endpointId.toLowerCaseString())
 				.flatMap((securityResponse) -> flatMapResponse(exchange, body, securityResponse));
 		}
 
-		private Mono<ResponseEntity<Object>> flatMapResponse(ServerWebExchange exchange, Map<String, String> body,
+		/**
+         * This method flat maps the response based on the security response status.
+         * If the security response status is not HttpStatus.OK, it returns a ResponseEntity with the security response status.
+         * Otherwise, it delegates the handling of the request to the delegate.
+         *
+         * @param exchange The ServerWebExchange object representing the current server exchange.
+         * @param body The request body as a Map of String key-value pairs.
+         * @param securityResponse The SecurityResponse object representing the security response.
+         * @return A Mono of ResponseEntity<Object> representing the flat mapped response.
+         */
+        private Mono<ResponseEntity<Object>> flatMapResponse(ServerWebExchange exchange, Map<String, String> body,
 				SecurityResponse securityResponse) {
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 				return Mono.just(new ResponseEntity<>(securityResponse.getStatus()));
@@ -162,13 +235,22 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 
 	}
 
-	static class CloudFoundryWebFluxEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * CloudFoundryWebFluxEndpointHandlerMappingRuntimeHints class.
+     */
+    static class CloudFoundryWebFluxEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
-		@Override
+		/**
+         * Registers the runtime hints for the CloudFoundryWebFluxEndpointHandlerMappingRuntimeHints class.
+         * 
+         * @param hints The runtime hints to be registered.
+         * @param classLoader The class loader to be used for reflection.
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.reflectiveRegistrar.registerRuntimeHints(hints, CloudFoundryLinksHandler.class);
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);

@@ -38,11 +38,21 @@ import static org.springframework.security.config.Customizer.withDefaults;
  */
 class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * OpaqueTokenIntrospectionClientConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveOpaqueTokenIntrospector.class)
 	static class OpaqueTokenIntrospectionClientConfiguration {
 
-		@Bean
+		/**
+         * Creates a bean for the SpringReactiveOpaqueTokenIntrospector class.
+         * This bean is conditional on the presence of the property "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri".
+         * 
+         * @param properties The OAuth2ResourceServerProperties object containing the configuration properties.
+         * @return The SpringReactiveOpaqueTokenIntrospector bean.
+         */
+        @Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri")
 		SpringReactiveOpaqueTokenIntrospector opaqueTokenIntrospector(OAuth2ResourceServerProperties properties) {
 			OAuth2ResourceServerProperties.Opaquetoken opaqueToken = properties.getOpaquetoken();
@@ -52,11 +62,20 @@ class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * WebSecurityConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(SecurityWebFilterChain.class)
 	static class WebSecurityConfiguration {
 
-		@Bean
+		/**
+         * Configures the Spring Security filter chain for the web application.
+         * 
+         * @param http the ServerHttpSecurity object used to configure the security filters
+         * @return the configured SecurityWebFilterChain object
+         */
+        @Bean
 		@ConditionalOnBean(ReactiveOpaqueTokenIntrospector.class)
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());

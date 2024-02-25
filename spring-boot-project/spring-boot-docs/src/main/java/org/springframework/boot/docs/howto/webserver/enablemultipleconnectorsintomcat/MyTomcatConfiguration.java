@@ -23,15 +23,28 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyTomcatConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyTomcatConfiguration {
 
-	@Bean
+	/**
+     * Customizes the Tomcat servlet web server factory by adding an additional Tomcat connector.
+     * 
+     * @return The customizer for the Tomcat servlet web server factory.
+     */
+    @Bean
 	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> connectorCustomizer() {
 		return (tomcat) -> tomcat.addAdditionalTomcatConnectors(createConnector());
 	}
 
-	private Connector createConnector() {
+	/**
+     * Creates a new Connector object with the specified protocol and port.
+     * 
+     * @return the created Connector object
+     */
+    private Connector createConnector() {
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 		connector.setPort(8081);
 		return connector;

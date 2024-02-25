@@ -48,19 +48,38 @@ class HazelcastClientConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.client.config";
 
-	private static HazelcastInstance getHazelcastInstance(ClientConfig config) {
+	/**
+     * Returns a HazelcastInstance based on the provided ClientConfig.
+     * If the config has an instance name, it will try to get or create a HazelcastClient with that instance name.
+     * Otherwise, it will create a new HazelcastClient with the provided config.
+     *
+     * @param config the ClientConfig to use for creating the HazelcastInstance
+     * @return the HazelcastInstance based on the provided config
+     */
+    private static HazelcastInstance getHazelcastInstance(ClientConfig config) {
 		if (StringUtils.hasText(config.getInstanceName())) {
 			return HazelcastClient.getOrCreateHazelcastClient(config);
 		}
 		return HazelcastClient.newHazelcastClient(config);
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * HazelcastClientConfigFileConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ClientConfig.class)
 	@Conditional(HazelcastClientConfigAvailableCondition.class)
 	static class HazelcastClientConfigFileConfiguration {
 
-		@Bean
+		/**
+         * Creates and returns a HazelcastInstance using the provided HazelcastProperties and ResourceLoader.
+         * 
+         * @param properties the HazelcastProperties used to resolve the configuration location
+         * @param resourceLoader the ResourceLoader used to load the configuration file
+         * @return the created HazelcastInstance
+         * @throws IOException if an I/O error occurs while loading the configuration file
+         */
+        @Bean
 		HazelcastInstance hazelcastInstance(HazelcastProperties properties, ResourceLoader resourceLoader)
 				throws IOException {
 			Resource configLocation = properties.resolveConfigLocation();
@@ -69,7 +88,14 @@ class HazelcastClientConfiguration {
 			return getHazelcastInstance(config);
 		}
 
-		private ClientConfig loadClientConfig(Resource configLocation) throws IOException {
+		/**
+         * Loads the client configuration from the specified resource location.
+         * 
+         * @param configLocation the resource location of the client configuration file
+         * @return the loaded client configuration
+         * @throws IOException if an I/O error occurs while reading the configuration file
+         */
+        private ClientConfig loadClientConfig(Resource configLocation) throws IOException {
 			URL configUrl = configLocation.getURL();
 			String configFileName = configUrl.getPath();
 			if (configFileName.endsWith(".yaml") || configFileName.endsWith(".yml")) {
@@ -80,11 +106,20 @@ class HazelcastClientConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * HazelcastClientConfigConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(ClientConfig.class)
 	static class HazelcastClientConfigConfiguration {
 
-		@Bean
+		/**
+         * Creates and returns a HazelcastInstance using the provided ClientConfig.
+         *
+         * @param config the ClientConfig object used to configure the HazelcastInstance
+         * @return the created HazelcastInstance
+         */
+        @Bean
 		HazelcastInstance hazelcastInstance(ClientConfig config) {
 			return getHazelcastInstance(config);
 		}

@@ -45,14 +45,29 @@ final class WelcomePageRouterFunctionFactory {
 
 	private final boolean welcomePageTemplateExists;
 
-	WelcomePageRouterFunctionFactory(TemplateAvailabilityProviders templateAvailabilityProviders,
+	/**
+     * Constructs a new WelcomePageRouterFunctionFactory with the specified parameters.
+     * 
+     * @param templateAvailabilityProviders the TemplateAvailabilityProviders used to check the availability of templates
+     * @param applicationContext the ApplicationContext used to retrieve resources and beans
+     * @param staticLocations the array of static resource locations
+     * @param staticPathPattern the pattern used to match static resource paths
+     */
+    WelcomePageRouterFunctionFactory(TemplateAvailabilityProviders templateAvailabilityProviders,
 			ApplicationContext applicationContext, String[] staticLocations, String staticPathPattern) {
 		this.staticPathPattern = staticPathPattern;
 		this.welcomePage = getWelcomePage(applicationContext, staticLocations);
 		this.welcomePageTemplateExists = welcomeTemplateExists(templateAvailabilityProviders, applicationContext);
 	}
 
-	private Resource getWelcomePage(ResourceLoader resourceLoader, String[] staticLocations) {
+	/**
+     * Retrieves the welcome page resource from the specified static locations.
+     * 
+     * @param resourceLoader the resource loader used to load the resources
+     * @param staticLocations the array of static locations to search for the welcome page
+     * @return the welcome page resource if found, otherwise null
+     */
+    private Resource getWelcomePage(ResourceLoader resourceLoader, String[] staticLocations) {
 		return Arrays.stream(staticLocations)
 			.map((location) -> getIndexHtml(resourceLoader, location))
 			.filter(this::isReadable)
@@ -60,11 +75,24 @@ final class WelcomePageRouterFunctionFactory {
 			.orElse(null);
 	}
 
-	private Resource getIndexHtml(ResourceLoader resourceLoader, String location) {
+	/**
+     * Retrieves the index.html resource from the specified location.
+     *
+     * @param resourceLoader the resource loader used to load the resource
+     * @param location the location of the resource
+     * @return the index.html resource
+     */
+    private Resource getIndexHtml(ResourceLoader resourceLoader, String location) {
 		return resourceLoader.getResource(location + "index.html");
 	}
 
-	private boolean isReadable(Resource resource) {
+	/**
+     * Checks if the given resource is readable.
+     * 
+     * @param resource the resource to be checked
+     * @return true if the resource exists and is readable, false otherwise
+     */
+    private boolean isReadable(Resource resource) {
 		try {
 			return resource.exists() && (resource.getURL() != null);
 		}
@@ -73,12 +101,24 @@ final class WelcomePageRouterFunctionFactory {
 		}
 	}
 
-	private boolean welcomeTemplateExists(TemplateAvailabilityProviders templateAvailabilityProviders,
+	/**
+     * Checks if the welcome template exists.
+     * 
+     * @param templateAvailabilityProviders the template availability providers
+     * @param applicationContext the application context
+     * @return true if the welcome template exists, false otherwise
+     */
+    private boolean welcomeTemplateExists(TemplateAvailabilityProviders templateAvailabilityProviders,
 			ApplicationContext applicationContext) {
 		return templateAvailabilityProviders.getProvider("index", applicationContext) != null;
 	}
 
-	RouterFunction<ServerResponse> createRouterFunction() {
+	/**
+     * Creates a RouterFunction that handles requests for the welcome page.
+     * 
+     * @return the RouterFunction<ServerResponse> that handles requests for the welcome page
+     */
+    RouterFunction<ServerResponse> createRouterFunction() {
 		if (this.welcomePage != null && "/**".equals(this.staticPathPattern)) {
 			return RouterFunctions.route(GET("/").and(accept(MediaType.TEXT_HTML)),
 					(req) -> ServerResponse.ok().contentType(MediaType.TEXT_HTML).bodyValue(this.welcomePage));

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdatajpa.withoutdb;
 
+/**
+ * UserRepository interface.
+ */
 interface UserRepository {
 
 	User findByUsername(String username);

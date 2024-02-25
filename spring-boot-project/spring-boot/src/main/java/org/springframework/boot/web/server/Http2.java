@@ -34,7 +34,12 @@ public class Http2 {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	/**
+     * Sets the enabled status of the Http2 class.
+     * 
+     * @param enabled the enabled status to be set
+     */
+    public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 

@@ -65,7 +65,14 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 
 	private static final String ERROR_INTERNAL_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
 
-	@Override
+	/**
+     * Retrieves the error attributes for a given server request and error attribute options.
+     * 
+     * @param request The server request for which to retrieve the error attributes.
+     * @param options The error attribute options specifying which attributes to include.
+     * @return A map of error attributes.
+     */
+    @Override
 	public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 		Map<String, Object> errorAttributes = getErrorAttributes(request, options.isIncluded(Include.STACK_TRACE));
 		if (!options.isIncluded(Include.EXCEPTION)) {
@@ -86,7 +93,14 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		return errorAttributes;
 	}
 
-	private Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
+	/**
+     * Returns a map of error attributes for the given server request.
+     * 
+     * @param request The server request for which to retrieve error attributes.
+     * @param includeStackTrace Whether to include the stack trace in the error attributes.
+     * @return A map of error attributes.
+     */
+    private Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
 		errorAttributes.put("path", request.requestPath().value());
@@ -103,7 +117,14 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		return errorAttributes;
 	}
 
-	private HttpStatus determineHttpStatus(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
+	/**
+     * Determines the HTTP status code to be returned based on the given error and response status annotation.
+     * 
+     * @param error The throwable error that occurred.
+     * @param responseStatusAnnotation The merged annotation containing the response status information.
+     * @return The determined HTTP status code.
+     */
+    private HttpStatus determineHttpStatus(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
 		if (error instanceof ResponseStatusException responseStatusException) {
 			HttpStatus httpStatus = HttpStatus.resolve(responseStatusException.getStatusCode().value());
 			if (httpStatus != null) {
@@ -113,7 +134,14 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		return responseStatusAnnotation.getValue("code", HttpStatus.class).orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	private String determineMessage(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
+	/**
+     * Determines the appropriate error message based on the given error and response status annotation.
+     * 
+     * @param error The error object.
+     * @param responseStatusAnnotation The response status annotation.
+     * @return The determined error message.
+     */
+    private String determineMessage(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
 		if (error instanceof BindingResult) {
 			return error.getMessage();
 		}
@@ -127,21 +155,40 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		return (error.getMessage() != null) ? error.getMessage() : "";
 	}
 
-	private Throwable determineException(Throwable error) {
+	/**
+     * Determines the exception to be handled.
+     * 
+     * @param error the error to be determined
+     * @return the determined exception
+     */
+    private Throwable determineException(Throwable error) {
 		if (error instanceof ResponseStatusException) {
 			return (error.getCause() != null) ? error.getCause() : error;
 		}
 		return error;
 	}
 
-	private void addStackTrace(Map<String, Object> errorAttributes, Throwable error) {
+	/**
+     * Adds the stack trace of the given error to the error attributes map.
+     * 
+     * @param errorAttributes the map to store the error attributes
+     * @param error the error for which the stack trace needs to be added
+     */
+    private void addStackTrace(Map<String, Object> errorAttributes, Throwable error) {
 		StringWriter stackTrace = new StringWriter();
 		error.printStackTrace(new PrintWriter(stackTrace));
 		stackTrace.flush();
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 
-	private void handleException(Map<String, Object> errorAttributes, Throwable error, boolean includeStackTrace) {
+	/**
+     * Handles an exception by populating the error attributes map with relevant information.
+     * 
+     * @param errorAttributes The map to populate with error attributes.
+     * @param error The throwable error that occurred.
+     * @param includeStackTrace Flag indicating whether to include the stack trace in the error attributes.
+     */
+    private void handleException(Map<String, Object> errorAttributes, Throwable error, boolean includeStackTrace) {
 		errorAttributes.put("exception", error.getClass().getName());
 		if (includeStackTrace) {
 			addStackTrace(errorAttributes, error);
@@ -153,14 +200,27 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		}
 	}
 
-	@Override
+	/**
+     * Retrieves the error associated with the given server request.
+     * 
+     * @param request the server request
+     * @return the error as a Throwable object
+     * @throws IllegalStateException if the exception attribute is missing in the ServerWebExchange
+     */
+    @Override
 	public Throwable getError(ServerRequest request) {
 		Optional<Object> error = request.attribute(ERROR_INTERNAL_ATTRIBUTE);
 		return (Throwable) error
 			.orElseThrow(() -> new IllegalStateException("Missing exception attribute in ServerWebExchange"));
 	}
 
-	@Override
+	/**
+     * Stores the error information in the given ServerWebExchange.
+     * 
+     * @param error    the Throwable object representing the error
+     * @param exchange the ServerWebExchange object to store the error information in
+     */
+    @Override
 	public void storeErrorInformation(Throwable error, ServerWebExchange exchange) {
 		exchange.getAttributes().putIfAbsent(ERROR_INTERNAL_ATTRIBUTE, error);
 	}

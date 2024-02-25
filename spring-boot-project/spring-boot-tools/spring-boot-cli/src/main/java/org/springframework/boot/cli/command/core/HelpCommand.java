@@ -42,22 +42,42 @@ public class HelpCommand extends AbstractCommand {
 
 	private final CommandRunner commandRunner;
 
-	public HelpCommand(CommandRunner commandRunner) {
+	/**
+     * Constructs a new HelpCommand with the specified CommandRunner.
+     * 
+     * @param commandRunner the CommandRunner to be used for executing commands
+     */
+    public HelpCommand(CommandRunner commandRunner) {
 		super("help", "Get help on commands");
 		this.commandRunner = commandRunner;
 	}
 
-	@Override
+	/**
+     * Returns the usage help for the command.
+     *
+     * @return the usage help for the command
+     */
+    @Override
 	public String getUsageHelp() {
 		return "command";
 	}
 
-	@Override
+	/**
+     * Returns the help message for the HelpCommand.
+     *
+     * @return the help message for the HelpCommand
+     */
+    @Override
 	public String getHelp() {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns a collection of OptionHelp objects that provide information about the available options and their usage.
+     * 
+     * @return a collection of OptionHelp objects
+     */
+    @Override
 	public Collection<OptionHelp> getOptionsHelp() {
 		List<OptionHelp> help = new ArrayList<>();
 		for (Command command : this.commandRunner) {
@@ -80,11 +100,26 @@ public class HelpCommand extends AbstractCommand {
 		return help;
 	}
 
-	private boolean isHelpShown(Command command) {
+	/**
+     * Checks if the help is shown for a given command.
+     * 
+     * @param command the command to check
+     * @return {@code true} if the help is not shown for the command, {@code false} otherwise
+     */
+    private boolean isHelpShown(Command command) {
 		return !(command instanceof HelpCommand) && !(command instanceof HintCommand);
 	}
 
-	@Override
+	/**
+     * Runs the help command with the given arguments.
+     *
+     * @param args the command line arguments
+     * @return the exit status of the command
+     * @throws Exception if an error occurs while running the command
+     * @throws NoHelpCommandArgumentsException if no arguments are provided
+     * @throws NoSuchCommandException if the specified command does not exist
+     */
+    @Override
 	public ExitStatus run(String... args) throws Exception {
 		if (args.length == 0) {
 			throw new NoHelpCommandArgumentsException();

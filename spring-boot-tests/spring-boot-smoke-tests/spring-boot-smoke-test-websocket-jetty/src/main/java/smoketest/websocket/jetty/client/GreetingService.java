@@ -16,6 +16,9 @@
 
 package smoketest.websocket.jetty.client;
 
+/**
+ * GreetingService interface.
+ */
 public interface GreetingService {
 
 	String getGreeting();

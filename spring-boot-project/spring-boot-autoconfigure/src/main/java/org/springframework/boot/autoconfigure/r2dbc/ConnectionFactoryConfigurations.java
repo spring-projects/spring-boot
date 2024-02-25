@@ -59,7 +59,20 @@ import org.springframework.util.StringUtils;
  */
 abstract class ConnectionFactoryConfigurations {
 
-	protected static ConnectionFactory createConnectionFactory(R2dbcProperties properties,
+	/**
+     * Creates a connection factory with the given properties, connection details, class loader,
+     * options customizers, and decorators.
+     *
+     * @param properties the R2dbcProperties object containing the connection properties
+     * @param connectionDetails the R2dbcConnectionDetails object containing the connection details
+     * @param classLoader the ClassLoader to use for loading classes
+     * @param optionsCustomizers the list of ConnectionFactoryOptionsBuilderCustomizer objects to customize the options
+     * @param decorators the list of ConnectionFactoryDecorator objects to decorate the connection factory
+     * @return the created ConnectionFactory object
+     * @throws MissingR2dbcPoolDependencyException if the R2DBC pool dependency is missing
+     * @throws IllegalStateException if an error occurs while creating the connection factory
+     */
+    protected static ConnectionFactory createConnectionFactory(R2dbcProperties properties,
 			R2dbcConnectionDetails connectionDetails, ClassLoader classLoader,
 			List<ConnectionFactoryOptionsBuilderCustomizer> optionsCustomizers,
 			List<ConnectionFactoryDecorator> decorators) {
@@ -85,16 +98,33 @@ abstract class ConnectionFactoryConfigurations {
 		}
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * PoolConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@Conditional(PooledConnectionFactoryCondition.class)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	static class PoolConfiguration {
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * PooledConnectionFactoryConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(ConnectionPool.class)
 		static class PooledConnectionFactoryConfiguration {
 
-			@Bean(destroyMethod = "dispose")
+			/**
+             * Creates a connection pool using the provided R2dbcProperties, connectionDetails, resourceLoader,
+             * customizers, and decorators.
+             *
+             * @param properties the R2dbcProperties containing the pool configuration
+             * @param connectionDetails the R2dbcConnectionDetails for establishing the connection
+             * @param resourceLoader the ResourceLoader for loading resources
+             * @param customizers the customizers for customizing the ConnectionFactoryOptionsBuilder
+             * @param decorators the decorators for decorating the ConnectionFactory
+             * @return a ConnectionPool instance
+             */
+            @Bean(destroyMethod = "dispose")
 			ConnectionPool connectionFactory(R2dbcProperties properties,
 					ObjectProvider<R2dbcConnectionDetails> connectionDetails, ResourceLoader resourceLoader,
 					ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers,
@@ -122,13 +152,27 @@ abstract class ConnectionFactoryConfigurations {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * GenericConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.r2dbc.pool", value = "enabled", havingValue = "false",
 			matchIfMissing = true)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	static class GenericConfiguration {
 
-		@Bean
+		/**
+         * Creates a ConnectionFactory bean using the provided R2dbcProperties, connectionDetails, resourceLoader,
+         * customizers, and decorators.
+         *
+         * @param properties The R2dbcProperties object containing the configuration properties for the ConnectionFactory.
+         * @param connectionDetails The R2dbcConnectionDetails object containing the connection details for the ConnectionFactory.
+         * @param resourceLoader The ResourceLoader object used to load resources.
+         * @param customizers The ObjectProvider of ConnectionFactoryOptionsBuilderCustomizer objects used to customize the ConnectionFactory options.
+         * @param decorators The ObjectProvider of ConnectionFactoryDecorator objects used to decorate the ConnectionFactory.
+         * @return The created ConnectionFactory bean.
+         */
+        @Bean
 		ConnectionFactory connectionFactory(R2dbcProperties properties,
 				ObjectProvider<R2dbcConnectionDetails> connectionDetails, ResourceLoader resourceLoader,
 				ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers,
@@ -149,7 +193,14 @@ abstract class ConnectionFactoryConfigurations {
 	 */
 	static class PooledConnectionFactoryCondition extends SpringBootCondition {
 
-		@Override
+		/**
+         * Determines the match outcome for the PooledConnectionFactoryCondition.
+         * 
+         * @param context the condition context
+         * @param metadata the annotated type metadata
+         * @return the condition outcome
+         */
+        @Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			BindResult<Pool> pool = Binder.get(context.getEnvironment())
 				.bind("spring.r2dbc.pool", Bindable.of(Pool.class));
@@ -168,7 +219,13 @@ abstract class ConnectionFactoryConfigurations {
 			return ConditionOutcome.noMatch("Property-based pooling is disabled");
 		}
 
-		private boolean hasPoolUrl(Environment environment) {
+		/**
+         * Checks if the given environment has a pool URL.
+         * 
+         * @param environment the environment to check
+         * @return true if the environment has a pool URL, false otherwise
+         */
+        private boolean hasPoolUrl(Environment environment) {
 			String url = environment.getProperty("spring.r2dbc.url");
 			return StringUtils.hasText(url) && url.contains(":pool:");
 		}

@@ -43,7 +43,15 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @ConditionalOnAvailableEndpoint(endpoint = LoggersEndpoint.class)
 public class LoggersEndpointAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a LoggersEndpoint bean if a LoggingSystem bean is present and the OnEnabledLoggingSystemCondition is met.
+     * If a LoggersEndpoint bean is already present, this method will not be called.
+     * 
+     * @param loggingSystem The LoggingSystem bean used by the LoggersEndpoint.
+     * @param springBootLoggerGroups An ObjectProvider for the LoggerGroups bean used by the LoggersEndpoint.
+     * @return The LoggersEndpoint bean.
+     */
+    @Bean
 	@ConditionalOnBean(LoggingSystem.class)
 	@Conditional(OnEnabledLoggingSystemCondition.class)
 	@ConditionalOnMissingBean
@@ -52,9 +60,19 @@ public class LoggersEndpointAutoConfiguration {
 		return new LoggersEndpoint(loggingSystem, springBootLoggerGroups.getIfAvailable(LoggerGroups::new));
 	}
 
-	static class OnEnabledLoggingSystemCondition extends SpringBootCondition {
+	/**
+     * OnEnabledLoggingSystemCondition class.
+     */
+    static class OnEnabledLoggingSystemCondition extends SpringBootCondition {
 
-		@Override
+		/**
+         * Determines the match outcome for the condition based on the logging system configuration.
+         * 
+         * @param context the condition context
+         * @param metadata the annotated type metadata
+         * @return the condition outcome indicating whether the logging system is enabled or not
+         */
+        @Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Logging System");
 			String loggingSystem = System.getProperty(LoggingSystem.SYSTEM_PROPERTY);

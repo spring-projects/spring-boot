@@ -21,15 +21,28 @@ import java.util.concurrent.Callable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * SampleController class.
+ */
 @RestController
 public class SampleController {
 
-	@GetMapping("/")
+	/**
+     * Returns a greeting message "Hello World".
+     * 
+     * @return the greeting message "Hello World"
+     */
+    @GetMapping("/")
 	public String helloWorld() {
 		return "Hello World";
 	}
 
-	@GetMapping("/async")
+	/**
+     * Retrieves a string asynchronously that says "Hello World".
+     *
+     * @return a {@link java.util.concurrent.Callable} that returns the string "async: Hello World"
+     */
+    @GetMapping("/async")
 	public Callable<String> helloWorldAsync() {
 		return () -> "async: Hello World";
 	}

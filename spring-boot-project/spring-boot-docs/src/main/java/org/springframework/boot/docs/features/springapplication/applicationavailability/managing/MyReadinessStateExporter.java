@@ -21,10 +21,18 @@ import org.springframework.boot.availability.ReadinessState;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyReadinessStateExporter class.
+ */
 @Component
 public class MyReadinessStateExporter {
 
-	@EventListener
+	/**
+     * Listens for state change events and performs actions accordingly.
+     * 
+     * @param event The event containing the new readiness state.
+     */
+    @EventListener
 	public void onStateChange(AvailabilityChangeEvent<ReadinessState> event) {
 		switch (event.getState()) {
 			case ACCEPTING_TRAFFIC -> {

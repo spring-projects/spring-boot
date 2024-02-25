@@ -94,7 +94,14 @@ public class DefaultPropertiesPropertySource extends MapPropertySource {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Merges the given source map with the existing property sources, if possible.
+     * 
+     * @param source the source map to be merged
+     * @param sources the mutable property sources
+     * @param resultingSource the resulting source map after merging
+     */
+    @SuppressWarnings("unchecked")
 	private static void mergeIfPossible(Map<String, Object> source, MutablePropertySources sources,
 			Map<String, Object> resultingSource) {
 		PropertySource<?> existingSource = sources.get(NAME);

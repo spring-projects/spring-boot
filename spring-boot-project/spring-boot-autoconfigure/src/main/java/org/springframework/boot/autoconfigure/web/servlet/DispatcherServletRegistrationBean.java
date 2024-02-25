@@ -47,17 +47,34 @@ public class DispatcherServletRegistrationBean extends ServletRegistrationBean<D
 		super.addUrlMappings(getServletUrlMapping());
 	}
 
-	@Override
+	/**
+     * Returns the path of the DispatcherServletRegistrationBean.
+     *
+     * @return the path of the DispatcherServletRegistrationBean
+     */
+    @Override
 	public String getPath() {
 		return this.path;
 	}
 
-	@Override
+	/**
+     * Sets the URL mappings for the DispatcherServlet registration.
+     * 
+     * @param urlMappings the collection of URL mappings to be set
+     * @throws UnsupportedOperationException if attempting to change the URL mapping on a DispatcherServlet registration
+     */
+    @Override
 	public void setUrlMappings(Collection<String> urlMappings) {
 		throw new UnsupportedOperationException("URL Mapping cannot be changed on a DispatcherServlet registration");
 	}
 
-	@Override
+	/**
+     * Adds URL mappings to the DispatcherServlet registration.
+     * 
+     * @param urlMappings the URL mappings to be added
+     * @throws UnsupportedOperationException if URL mapping cannot be changed on a DispatcherServlet registration
+     */
+    @Override
 	public void addUrlMappings(String... urlMappings) {
 		throw new UnsupportedOperationException("URL Mapping cannot be changed on a DispatcherServlet registration");
 	}

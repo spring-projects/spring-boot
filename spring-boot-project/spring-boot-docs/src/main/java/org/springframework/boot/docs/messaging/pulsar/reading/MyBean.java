@@ -19,10 +19,18 @@ package org.springframework.boot.docs.messaging.pulsar.reading;
 import org.springframework.pulsar.annotation.PulsarReader;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
-	@PulsarReader(topics = "someTopic", startMessageId = "earliest")
+	/**
+     * Process a message with the given content.
+     * 
+     * @param content the content of the message to be processed
+     */
+    @PulsarReader(topics = "someTopic", startMessageId = "earliest")
 	public void processMessage(String content) {
 		// ...
 	}

@@ -19,10 +19,18 @@ package smoketest.webflux;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * WelcomeController class.
+ */
 @RestController
 public class WelcomeController {
 
-	@GetMapping("/")
+	/**
+     * This method is used to display a welcome message.
+     * 
+     * @return The welcome message "Hello World".
+     */
+    @GetMapping("/")
 	public String welcome() {
 		return "Hello World";
 	}

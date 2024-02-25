@@ -44,18 +44,37 @@ class ExtractCommand extends Command {
 
 	private final Layers layers;
 
-	ExtractCommand(Context context) {
+	/**
+     * Constructs a new ExtractCommand object with the given context and layers.
+     * 
+     * @param context the context in which the command is executed
+     * @param layers the layers to be used for extraction
+     */
+    ExtractCommand(Context context) {
 		this(context, Layers.get(context));
 	}
 
-	ExtractCommand(Context context, Layers layers) {
+	/**
+     * Extracts layers from the jar for image creation.
+     * 
+     * @param context the context object
+     * @param layers the layers object
+     */
+    ExtractCommand(Context context, Layers layers) {
 		super("extract", "Extracts layers from the jar for image creation", Options.of(DESTINATION_OPTION),
 				Parameters.of("[<layer>...]"));
 		this.context = context;
 		this.layers = layers;
 	}
 
-	@Override
+	/**
+     * Runs the extract command with the given options and parameters.
+     * 
+     * @param options     a map of options for the extract command
+     * @param parameters  a list of parameters for the extract command
+     * @throws IllegalStateException if an error occurs during the extraction process
+     */
+    @Override
 	protected void run(Map<Option, String> options, List<String> parameters) {
 		try {
 			File destination = options.containsKey(DESTINATION_OPTION) ? new File(options.get(DESTINATION_OPTION))
@@ -85,7 +104,15 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private void write(ZipInputStream zip, ZipEntry entry, File destination) throws IOException {
+	/**
+     * Writes the contents of a ZipEntry from a ZipInputStream to a specified destination file.
+     * 
+     * @param zip the ZipInputStream containing the ZipEntry
+     * @param entry the ZipEntry to be written
+     * @param destination the destination file to write the ZipEntry to
+     * @throws IOException if an I/O error occurs while writing the ZipEntry
+     */
+    private void write(ZipInputStream zip, ZipEntry entry, File destination) throws IOException {
 		String canonicalOutputPath = destination.getCanonicalPath() + File.separator;
 		File file = new File(destination, entry.getName());
 		String canonicalEntryPath = file.getCanonicalPath();
@@ -106,11 +133,23 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private void mkParentDirs(File file) throws IOException {
+	/**
+     * Creates the parent directories for the given file.
+     * 
+     * @param file the file for which to create the parent directories
+     * @throws IOException if an I/O error occurs while creating the directories
+     */
+    private void mkParentDirs(File file) throws IOException {
 		mkDirs(file.getParentFile());
 	}
 
-	private void mkDirs(File file) throws IOException {
+	/**
+     * Creates directories for the given file if they do not exist.
+     * 
+     * @param file the file for which directories need to be created
+     * @throws IOException if unable to create the directories
+     */
+    private void mkDirs(File file) throws IOException {
 		if (!file.exists() && !file.mkdirs()) {
 			throw new IOException("Unable to create directory " + file);
 		}

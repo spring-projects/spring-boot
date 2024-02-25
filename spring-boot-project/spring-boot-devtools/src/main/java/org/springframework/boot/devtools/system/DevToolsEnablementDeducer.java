@@ -43,7 +43,10 @@ public final class DevToolsEnablementDeducer {
 		SKIPPED_STACK_ELEMENTS = Collections.unmodifiableSet(skipped);
 	}
 
-	private DevToolsEnablementDeducer() {
+	/**
+     * Constructs a new DevToolsEnablementDeducer.
+     */
+    private DevToolsEnablementDeducer() {
 	}
 
 	/**
@@ -65,7 +68,13 @@ public final class DevToolsEnablementDeducer {
 		return true;
 	}
 
-	private static boolean isSkippedStackElement(StackTraceElement element) {
+	/**
+     * Checks if a given stack trace element should be skipped.
+     * 
+     * @param element the stack trace element to check
+     * @return true if the stack trace element should be skipped, false otherwise
+     */
+    private static boolean isSkippedStackElement(StackTraceElement element) {
 		for (String skipped : SKIPPED_STACK_ELEMENTS) {
 			if (element.getClassName().startsWith(skipped)) {
 				return true;

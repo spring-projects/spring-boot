@@ -60,43 +60,93 @@ public class StackdriverProperties extends StepRegistryProperties {
 	 */
 	private String metricTypePrefix = "custom.googleapis.com/";
 
-	public String getProjectId() {
+	/**
+     * Returns the project ID.
+     *
+     * @return the project ID
+     */
+    public String getProjectId() {
 		return this.projectId;
 	}
 
-	public void setProjectId(String projectId) {
+	/**
+     * Sets the project ID for Stackdriver.
+     * 
+     * @param projectId the project ID to be set
+     */
+    public void setProjectId(String projectId) {
 		this.projectId = projectId;
 	}
 
-	public String getResourceType() {
+	/**
+     * Returns the resource type of the StackdriverProperties object.
+     * 
+     * @return the resource type of the StackdriverProperties object
+     */
+    public String getResourceType() {
 		return this.resourceType;
 	}
 
-	public void setResourceType(String resourceType) {
+	/**
+     * Sets the resource type for Stackdriver.
+     * 
+     * @param resourceType the resource type to be set
+     */
+    public void setResourceType(String resourceType) {
 		this.resourceType = resourceType;
 	}
 
-	public Map<String, String> getResourceLabels() {
+	/**
+     * Returns the resource labels associated with the Stackdriver properties.
+     * 
+     * @return a Map containing the resource labels as key-value pairs
+     */
+    public Map<String, String> getResourceLabels() {
 		return this.resourceLabels;
 	}
 
-	public void setResourceLabels(Map<String, String> resourceLabels) {
+	/**
+     * Sets the resource labels for the StackdriverProperties.
+     * 
+     * @param resourceLabels the resource labels to be set
+     */
+    public void setResourceLabels(Map<String, String> resourceLabels) {
 		this.resourceLabels = resourceLabels;
 	}
 
-	public boolean isUseSemanticMetricTypes() {
+	/**
+     * Returns the value of the flag indicating whether to use semantic metric types.
+     * 
+     * @return true if semantic metric types are to be used, false otherwise
+     */
+    public boolean isUseSemanticMetricTypes() {
 		return this.useSemanticMetricTypes;
 	}
 
-	public void setUseSemanticMetricTypes(boolean useSemanticMetricTypes) {
+	/**
+     * Sets whether to use semantic metric types.
+     * 
+     * @param useSemanticMetricTypes true to use semantic metric types, false otherwise
+     */
+    public void setUseSemanticMetricTypes(boolean useSemanticMetricTypes) {
 		this.useSemanticMetricTypes = useSemanticMetricTypes;
 	}
 
-	public String getMetricTypePrefix() {
+	/**
+     * Returns the metric type prefix.
+     * 
+     * @return the metric type prefix
+     */
+    public String getMetricTypePrefix() {
 		return this.metricTypePrefix;
 	}
 
-	public void setMetricTypePrefix(String metricTypePrefix) {
+	/**
+     * Sets the metric type prefix for Stackdriver.
+     * 
+     * @param metricTypePrefix the metric type prefix to be set
+     */
+    public void setMetricTypePrefix(String metricTypePrefix) {
 		this.metricTypePrefix = metricTypePrefix;
 	}
 

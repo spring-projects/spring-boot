@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdatacouchbase;
 
+/**
+ * SomeRepository interface.
+ */
 interface SomeRepository {
 
 }

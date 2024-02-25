@@ -49,7 +49,13 @@ class DataSourceBuilderRuntimeHints implements RuntimeHintsRegistrar {
 		TYPE_NAMES = Collections.unmodifiableList(typeNames);
 	}
 
-	@Override
+	/**
+     * Registers hints for runtime hints with the given class loader.
+     * 
+     * @param hints       the runtime hints to register
+     * @param classLoader the class loader to use for registering the hints
+     */
+    @Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		for (String typeName : TYPE_NAMES) {
 			hints.reflection()

@@ -72,7 +72,13 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		}
 	}
 
-	@Override
+	/**
+     * Post-processes the environment and application for DevTools property defaults.
+     * 
+     * @param environment the configurable environment
+     * @param application the Spring application
+     */
+    @Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread()) && isLocalApplication(environment)) {
 			if (canAddProperties(environment)) {
@@ -88,18 +94,35 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		}
 	}
 
-	private boolean isLocalApplication(ConfigurableEnvironment environment) {
+	/**
+     * Checks if the application is running locally or remotely based on the presence of the "remoteUrl" property in the environment.
+     * 
+     * @param environment the configurable environment
+     * @return true if the application is running locally, false otherwise
+     */
+    private boolean isLocalApplication(ConfigurableEnvironment environment) {
 		return environment.getPropertySources().get("remoteUrl") == null;
 	}
 
-	private boolean canAddProperties(Environment environment) {
+	/**
+     * Determines if properties can be added to the given environment.
+     * 
+     * @param environment the environment to check
+     * @return true if properties can be added, false otherwise
+     */
+    private boolean canAddProperties(Environment environment) {
 		if (environment.getProperty(ENABLED, Boolean.class, true)) {
 			return isRestarterInitialized() || isRemoteRestartEnabled(environment);
 		}
 		return false;
 	}
 
-	private boolean isRestarterInitialized() {
+	/**
+     * Checks if the Restarter is initialized.
+     * 
+     * @return true if the Restarter is initialized, false otherwise
+     */
+    private boolean isRestarterInitialized() {
 		try {
 			Restarter restarter = Restarter.getInstance();
 			return (restarter != null && restarter.getInitialUrls() != null);
@@ -109,11 +132,23 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		}
 	}
 
-	private boolean isRemoteRestartEnabled(Environment environment) {
+	/**
+     * Checks if remote restart is enabled for the given environment.
+     * 
+     * @param environment the environment to check
+     * @return {@code true} if remote restart is enabled, {@code false} otherwise
+     */
+    private boolean isRemoteRestartEnabled(Environment environment) {
 		return environment.containsProperty("spring.devtools.remote.secret");
 	}
 
-	private boolean isWebApplication(Environment environment) {
+	/**
+     * Determines if the given environment is a web application.
+     * 
+     * @param environment the environment to check
+     * @return true if the environment is a web application, false otherwise
+     */
+    private boolean isWebApplication(Environment environment) {
 		for (String candidate : WEB_ENVIRONMENT_CLASSES) {
 			Class<?> environmentClass = resolveClassName(candidate, environment.getClass().getClassLoader());
 			if (environmentClass != null && environmentClass.isInstance(environment)) {
@@ -123,7 +158,14 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		return false;
 	}
 
-	private Class<?> resolveClassName(String candidate, ClassLoader classLoader) {
+	/**
+     * Resolves the class name using the provided candidate and class loader.
+     * 
+     * @param candidate the class name to be resolved
+     * @param classLoader the class loader to be used for resolving the class name
+     * @return the resolved class object, or null if the class name cannot be resolved
+     */
+    private Class<?> resolveClassName(String candidate, ClassLoader classLoader) {
 		try {
 			return ClassUtils.resolveClassName(candidate, classLoader);
 		}
@@ -132,7 +174,13 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		}
 	}
 
-	private static Map<String, Object> loadDefaultProperties() {
+	/**
+     * Loads the default properties from the "devtools-property-defaults.properties" file.
+     * 
+     * @return a map containing the loaded properties
+     * @throws RuntimeException if the "devtools-property-defaults.properties" file does not exist or fails to load
+     */
+    private static Map<String, Object> loadDefaultProperties() {
 		Properties properties = new Properties();
 		try (InputStream stream = DevToolsPropertyDefaultsPostProcessor.class
 			.getResourceAsStream("devtools-property-defaults.properties")) {

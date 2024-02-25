@@ -73,7 +73,14 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	 */
 	public static final String CHECK_SPRING_CONFIGURATION_METADATA_TASK_NAME = "checkSpringConfigurationMetadata";
 
-	@Override
+	/**
+     * Applies the ConfigurationPropertiesPlugin to the given project.
+     * This plugin is responsible for configuring the project to support configuration properties.
+     * It applies the necessary configurations and tasks to enable the use of configuration properties in the project.
+     * 
+     * @param project the project to apply the plugin to
+     */
+    @Override
 	public void apply(Project project) {
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			configureConfigurationPropertiesAnnotationProcessor(project);
@@ -85,7 +92,12 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 		});
 	}
 
-	private void configureConfigurationPropertiesAnnotationProcessor(Project project) {
+	/**
+     * Configures the annotation processor for configuration properties.
+     * 
+     * @param project the project to configure
+     */
+    private void configureConfigurationPropertiesAnnotationProcessor(Project project) {
 		Configuration annotationProcessors = project.getConfigurations()
 			.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
 		annotationProcessors.getDependencies()
@@ -95,7 +107,12 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 		project.getPlugins().apply(ProcessedAnnotationsPlugin.class);
 	}
 
-	private void disableIncrementalCompilation(Project project) {
+	/**
+     * Disables incremental compilation for the specified project.
+     * 
+     * @param project the project for which incremental compilation should be disabled
+     */
+    private void disableIncrementalCompilation(Project project) {
 		SourceSet mainSourceSet = project.getExtensions()
 			.getByType(JavaPluginExtension.class)
 			.getSourceSets()
@@ -105,7 +122,12 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 			.configure((compileJava) -> compileJava.getOptions().setIncremental(false));
 	}
 
-	private void addMetadataArtifact(Project project) {
+	/**
+     * Adds metadata artifact to the project.
+     * 
+     * @param project The project to add the metadata artifact to.
+     */
+    private void addMetadataArtifact(Project project) {
 		SourceSet mainSourceSet = project.getExtensions()
 			.getByType(JavaPluginExtension.class)
 			.getSourceSets()
@@ -120,7 +142,14 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 						.builtBy(evaluatedProject.getTasks().getByName(mainSourceSet.getClassesTaskName()))));
 	}
 
-	private void configureAdditionalMetadataLocationsCompilerArgument(Project project) {
+	/**
+     * Configures the additional metadata locations compiler argument for the project.
+     * This argument is used by the Spring Boot configuration processor to specify additional
+     * locations where metadata should be generated.
+     * 
+     * @param project the project to configure
+     */
+    private void configureAdditionalMetadataLocationsCompilerArgument(Project project) {
 		JavaCompile compileJava = project.getTasks()
 			.withType(JavaCompile.class)
 			.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME);
@@ -143,7 +172,12 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 						.collect(Collectors.toSet())));
 	}
 
-	private void registerCheckAdditionalMetadataTask(Project project) {
+	/**
+     * Registers a task to check additional metadata for Spring configuration.
+     * 
+     * @param project the project to register the task with
+     */
+    private void registerCheckAdditionalMetadataTask(Project project) {
 		TaskProvider<CheckAdditionalSpringConfigurationMetadata> checkConfigurationMetadata = project.getTasks()
 			.register(CHECK_ADDITIONAL_SPRING_CONFIGURATION_METADATA_TASK_NAME,
 					CheckAdditionalSpringConfigurationMetadata.class);
@@ -164,7 +198,12 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 			.configure((check) -> check.dependsOn(checkConfigurationMetadata));
 	}
 
-	private void registerCheckMetadataTask(Project project) {
+	/**
+     * Registers a task to check the metadata of the Spring configuration.
+     * 
+     * @param project The project to register the task with.
+     */
+    private void registerCheckMetadataTask(Project project) {
 		TaskProvider<CheckSpringConfigurationMetadata> checkConfigurationMetadata = project.getTasks()
 			.register(CHECK_SPRING_CONFIGURATION_METADATA_TASK_NAME, CheckSpringConfigurationMetadata.class);
 		checkConfigurationMetadata.configure((check) -> {

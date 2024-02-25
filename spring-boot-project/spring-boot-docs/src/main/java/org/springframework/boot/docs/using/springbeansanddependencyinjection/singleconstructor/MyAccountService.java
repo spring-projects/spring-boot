@@ -18,13 +18,21 @@ package org.springframework.boot.docs.using.springbeansanddependencyinjection.si
 
 import org.springframework.stereotype.Service;
 
+/**
+ * MyAccountService class.
+ */
 @Service
 public class MyAccountService implements AccountService {
 
 	@SuppressWarnings("unused")
 	private final RiskAssessor riskAssessor;
 
-	public MyAccountService(RiskAssessor riskAssessor) {
+	/**
+     * Constructs a new instance of MyAccountService with the specified RiskAssessor.
+     * 
+     * @param riskAssessor the RiskAssessor to be used by the MyAccountService
+     */
+    public MyAccountService(RiskAssessor riskAssessor) {
 		this.riskAssessor = riskAssessor;
 	}
 

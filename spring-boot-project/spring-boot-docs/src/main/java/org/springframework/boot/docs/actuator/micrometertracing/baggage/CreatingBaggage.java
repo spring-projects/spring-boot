@@ -21,16 +21,29 @@ import io.micrometer.tracing.Tracer;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * CreatingBaggage class.
+ */
 @Component
 class CreatingBaggage {
 
 	private final Tracer tracer;
 
-	CreatingBaggage(Tracer tracer) {
+	/**
+     * Creates a new instance of the CreatingBaggage class.
+     * 
+     * @param tracer the Tracer object used for tracing baggage
+     */
+    CreatingBaggage(Tracer tracer) {
 		this.tracer = tracer;
 	}
 
-	void doSomething() {
+	/**
+     * Performs the specified business logic with a created baggage in scope.
+     * 
+     * @throws Exception if an error occurs during the execution of the business logic.
+     */
+    void doSomething() {
 		try (BaggageInScope scope = this.tracer.createBaggageInScope("baggage1", "value1")) {
 			// Business logic
 		}

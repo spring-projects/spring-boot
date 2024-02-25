@@ -39,7 +39,12 @@ final class MetaInfVersionsInfo {
 
 	private final String[] directories;
 
-	private MetaInfVersionsInfo(Set<Integer> versions) {
+	/**
+     * Constructs a new MetaInfVersionsInfo object with the given set of versions.
+     * 
+     * @param versions the set of versions to be used
+     */
+    private MetaInfVersionsInfo(Set<Integer> versions) {
 		this.versions = versions.stream().mapToInt(Integer::intValue).toArray();
 		this.directories = versions.stream().map((version) -> META_INF_VERSIONS + version + "/").toArray(String[]::new);
 	}

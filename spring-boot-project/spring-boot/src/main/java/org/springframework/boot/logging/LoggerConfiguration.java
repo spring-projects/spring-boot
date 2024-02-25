@@ -114,7 +114,15 @@ public final class LoggerConfiguration {
 		return (scope != ConfigurationScope.DIRECT) ? this.inheritedLevelConfiguration : this.levelConfiguration;
 	}
 
-	@Override
+	/**
+     * Compares this LoggerConfiguration object to the specified object for equality.
+     * Returns true if the specified object is also a LoggerConfiguration object and
+     * all the corresponding fields have the same values, otherwise returns false.
+     * 
+     * @param obj the object to compare this LoggerConfiguration against
+     * @return true if the given object is equal to this LoggerConfiguration, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -128,12 +136,23 @@ public final class LoggerConfiguration {
 				&& ObjectUtils.nullSafeEquals(this.inheritedLevelConfiguration, other.inheritedLevelConfiguration);
 	}
 
-	@Override
+	/**
+     * Returns a hash code value for the object. This method overrides the default implementation of the hashCode() method.
+     * The hash code is calculated based on the name, levelConfiguration, and inheritedLevelConfiguration properties of the LoggerConfiguration object.
+     *
+     * @return the hash code value for the object
+     */
+    @Override
 	public int hashCode() {
 		return Objects.hash(this.name, this.levelConfiguration, this.inheritedLevelConfiguration);
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the LoggerConfiguration object.
+     * 
+     * @return a string representation of the LoggerConfiguration object
+     */
+    @Override
 	public String toString() {
 		return "LoggerConfiguration [name=" + this.name + ", levelConfiguration=" + this.levelConfiguration
 				+ ", inheritedLevelConfiguration=" + this.inheritedLevelConfiguration + "]";
@@ -171,7 +190,13 @@ public final class LoggerConfiguration {
 
 		private final LogLevel logLevel;
 
-		private LevelConfiguration(String name, LogLevel logLevel) {
+		/**
+         * Constructs a new LevelConfiguration object with the specified name and log level.
+         * 
+         * @param name the name of the level configuration
+         * @param logLevel the log level of the level configuration
+         */
+        private LevelConfiguration(String name, LogLevel logLevel) {
 			this.name = name;
 			this.logLevel = logLevel;
 		}
@@ -202,7 +227,15 @@ public final class LoggerConfiguration {
 			return this.logLevel == null;
 		}
 
-		@Override
+		/**
+         * Compares this LevelConfiguration object to the specified object for equality.
+         * Returns true if the specified object is also a LevelConfiguration object and
+         * has the same logLevel and name as this object.
+         *
+         * @param obj the object to compare with
+         * @return true if the objects are equal, false otherwise
+         */
+        @Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -214,12 +247,23 @@ public final class LoggerConfiguration {
 			return this.logLevel == other.logLevel && ObjectUtils.nullSafeEquals(this.name, other.name);
 		}
 
-		@Override
+		/**
+         * Returns a hash code value for the object. This method overrides the default implementation of the {@code hashCode()} method.
+         * The hash code is computed based on the log level and name of the level configuration.
+         *
+         * @return the hash code value for the object
+         */
+        @Override
 		public int hashCode() {
 			return Objects.hash(this.logLevel, this.name);
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the LevelConfiguration object.
+         * 
+         * @return a string representation of the LevelConfiguration object
+         */
+        @Override
 		public String toString() {
 			return "LevelConfiguration [name=" + this.name + ", logLevel=" + this.logLevel + "]";
 		}

@@ -61,13 +61,27 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	@ConditionalOnClass({ Tomcat.class, UpgradeProtocol.class })
 	public static class TomcatWebServerFactoryCustomizerConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of TomcatWebServerFactoryCustomizer.
+         * 
+         * @param environment      the environment object
+         * @param serverProperties the server properties object
+         * @return the TomcatWebServerFactoryCustomizer instance
+         */
+        @Bean
 		public TomcatWebServerFactoryCustomizer tomcatWebServerFactoryCustomizer(Environment environment,
 				ServerProperties serverProperties) {
 			return new TomcatWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
-		@Bean
+		/**
+         * Creates a customizer for the TomcatVirtualThreadsWebServerFactory.
+         * This customizer is only applied if the threading mode is set to virtual.
+         * It configures the TomcatVirtualThreadsWebServerFactory with the necessary protocol handler customizer.
+         *
+         * @return The TomcatVirtualThreadsWebServerFactoryCustomizer instance.
+         */
+        @Bean
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		TomcatVirtualThreadsWebServerFactoryCustomizer tomcatVirtualThreadsProtocolHandlerCustomizer() {
 			return new TomcatVirtualThreadsWebServerFactoryCustomizer();
@@ -82,13 +96,27 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	@ConditionalOnClass({ Server.class, Loader.class, WebAppContext.class })
 	public static class JettyWebServerFactoryCustomizerConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of JettyWebServerFactoryCustomizer.
+         * 
+         * @param environment the environment object
+         * @param serverProperties the server properties object
+         * @return the JettyWebServerFactoryCustomizer instance
+         */
+        @Bean
 		public JettyWebServerFactoryCustomizer jettyWebServerFactoryCustomizer(Environment environment,
 				ServerProperties serverProperties) {
 			return new JettyWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
-		@Bean
+		/**
+         * Creates a JettyVirtualThreadsWebServerFactoryCustomizer bean if the threading mode is set to virtual.
+         * This customizer is responsible for configuring the Jetty web server factory with virtual threads.
+         *
+         * @param serverProperties the server properties bean used for customization
+         * @return the JettyVirtualThreadsWebServerFactoryCustomizer bean
+         */
+        @Bean
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		JettyVirtualThreadsWebServerFactoryCustomizer jettyVirtualThreadsWebServerFactoryCustomizer(
 				ServerProperties serverProperties) {
@@ -104,13 +132,26 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	@ConditionalOnClass({ Undertow.class, SslClientAuthMode.class })
 	public static class UndertowWebServerFactoryCustomizerConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of UndertowWebServerFactoryCustomizer with the specified environment and server properties.
+         * 
+         * @param environment the environment object used to access application properties and profiles
+         * @param serverProperties the server properties object used to configure the Undertow web server factory
+         * @return a new instance of UndertowWebServerFactoryCustomizer
+         */
+        @Bean
 		public UndertowWebServerFactoryCustomizer undertowWebServerFactoryCustomizer(Environment environment,
 				ServerProperties serverProperties) {
 			return new UndertowWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
-		@Bean
+		/**
+         * Returns an UndertowDeploymentInfoCustomizer bean that is conditionally created based on the threading type.
+         * If the threading type is set to VIRTUAL, the bean is created and configured with a VirtualThreadTaskExecutor.
+         * 
+         * @return the UndertowDeploymentInfoCustomizer bean
+         */
+        @Bean
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		UndertowDeploymentInfoCustomizer virtualThreadsUndertowDeploymentInfoCustomizer() {
 			return (deploymentInfo) -> deploymentInfo.setExecutor(new VirtualThreadTaskExecutor("undertow-"));
@@ -125,7 +166,14 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	@ConditionalOnClass(HttpServer.class)
 	public static class NettyWebServerFactoryCustomizerConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of {@link NettyWebServerFactoryCustomizer} with the given environment and server properties.
+         * 
+         * @param environment the environment object used to access application properties
+         * @param serverProperties the server properties object used to configure the web server
+         * @return a new instance of {@link NettyWebServerFactoryCustomizer}
+         */
+        @Bean
 		public NettyWebServerFactoryCustomizer nettyWebServerFactoryCustomizer(Environment environment,
 				ServerProperties serverProperties) {
 			return new NettyWebServerFactoryCustomizer(environment, serverProperties);

@@ -72,7 +72,14 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 		LEVELS = Collections.unmodifiableMap(ansiLevels);
 	}
 
-	@Override
+	/**
+     * Transforms the input string with ANSI color codes based on the logging event.
+     * 
+     * @param event the logging event
+     * @param in the input string to be transformed
+     * @return the transformed string with ANSI color codes
+     */
+    @Override
 	protected String transform(ILoggingEvent event, String in) {
 		AnsiElement element = ELEMENTS.get(getFirstOption());
 		if (element == null) {
@@ -83,7 +90,14 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 		return toAnsiString(in, element);
 	}
 
-	protected String toAnsiString(String in, AnsiElement element) {
+	/**
+     * Converts a given string to ANSI format using the specified ANSI element.
+     * 
+     * @param in the string to be converted to ANSI format
+     * @param element the ANSI element to be applied to the string
+     * @return the converted string in ANSI format
+     */
+    protected String toAnsiString(String in, AnsiElement element) {
 		return AnsiOutput.toString(element, in);
 	}
 

@@ -55,7 +55,17 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
 @Import({ DatabaseInitializationDependencyConfigurer.class, JdbcHttpSessionConfiguration.class })
 class JdbcSessionConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link JdbcSessionDataSourceScriptDatabaseInitializer} if no bean of type 
+     * {@link JdbcSessionDataSourceScriptDatabaseInitializer} is already present in the application context and 
+     * if the {@link OnJdbcSessionDatasourceInitializationCondition} is satisfied.
+     * 
+     * @param sessionDataSource an {@link ObjectProvider} of {@link DataSource} for the session
+     * @param dataSource an {@link ObjectProvider} of {@link DataSource}
+     * @param properties the {@link JdbcSessionProperties} for the initialization
+     * @return a new instance of {@link JdbcSessionDataSourceScriptDatabaseInitializer} if the conditions are met
+     */
+    @Bean
 	@ConditionalOnMissingBean(JdbcSessionDataSourceScriptDatabaseInitializer.class)
 	@Conditional(OnJdbcSessionDatasourceInitializationCondition.class)
 	JdbcSessionDataSourceScriptDatabaseInitializer jdbcSessionDataSourceScriptDatabaseInitializer(
@@ -65,7 +75,15 @@ class JdbcSessionConfiguration {
 		return new JdbcSessionDataSourceScriptDatabaseInitializer(dataSourceToInitialize, properties);
 	}
 
-	@Bean
+	/**
+     * Customizes the JdbcIndexedSessionRepository with the provided session properties, JDBC session properties, and server properties.
+     * 
+     * @param sessionProperties the session properties
+     * @param jdbcSessionProperties the JDBC session properties
+     * @param serverProperties the server properties
+     * @return the session repository customizer
+     */
+    @Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SessionRepositoryCustomizer<JdbcIndexedSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties,
@@ -81,9 +99,18 @@ class JdbcSessionConfiguration {
 		};
 	}
 
-	static class OnJdbcSessionDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
+	/**
+     * OnJdbcSessionDatasourceInitializationCondition class.
+     */
+    static class OnJdbcSessionDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
 
-		OnJdbcSessionDatasourceInitializationCondition() {
+		/**
+         * Constructs a new OnJdbcSessionDatasourceInitializationCondition with the specified name and property key.
+         * 
+         * @param name the name of the condition
+         * @param propertyKey the property key to check for initialization
+         */
+        OnJdbcSessionDatasourceInitializationCondition() {
 			super("Jdbc Session", "spring.session.jdbc.initialize-schema");
 		}
 

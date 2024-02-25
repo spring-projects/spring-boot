@@ -35,7 +35,13 @@ public class LibraryContentFilter implements ContentFilter<Library> {
 
 	private final Pattern pattern;
 
-	public LibraryContentFilter(String coordinatesPattern) {
+	/**
+     * Constructs a new LibraryContentFilter with the specified coordinates pattern.
+     * 
+     * @param coordinatesPattern the pattern used to filter library content based on coordinates
+     * @throws IllegalArgumentException if the coordinatesPattern is empty
+     */
+    public LibraryContentFilter(String coordinatesPattern) {
 		Assert.hasText(coordinatesPattern, "CoordinatesPattern must not be empty");
 		StringBuilder regex = new StringBuilder();
 		for (int i = 0; i < coordinatesPattern.length(); i++) {
@@ -53,7 +59,13 @@ public class LibraryContentFilter implements ContentFilter<Library> {
 		this.pattern = Pattern.compile(regex.toString());
 	}
 
-	@Override
+	/**
+     * Determines if a given library matches the specified pattern.
+     * 
+     * @param library the library to be checked
+     * @return true if the library matches the pattern, false otherwise
+     */
+    @Override
 	public boolean matches(Library library) {
 		return this.pattern.matcher(LibraryCoordinates.toStandardNotationString(library.getCoordinates())).matches();
 	}

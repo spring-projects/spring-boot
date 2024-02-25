@@ -22,11 +22,21 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * MyOAuthClientConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 public class MyOAuthClientConfiguration {
 
-	@Bean
+	/**
+     * Configures the security filter chain for OAuth client authentication.
+     * 
+     * @param http the HttpSecurity object to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
+    @Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		// @formatter:off
 		http

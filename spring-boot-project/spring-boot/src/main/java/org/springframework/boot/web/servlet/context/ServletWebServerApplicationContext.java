@@ -140,7 +140,13 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		registerWebApplicationScopes();
 	}
 
-	@Override
+	/**
+     * Refresh the application context, initializing and refreshing all components.
+     * 
+     * @throws BeansException       if an error occurs during bean initialization or refresh
+     * @throws IllegalStateException if the context has already been refreshed or is in an illegal state
+     */
+    @Override
 	public final void refresh() throws BeansException, IllegalStateException {
 		try {
 			super.refresh();
@@ -155,7 +161,13 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		}
 	}
 
-	@Override
+	/**
+     * Called when the application context is refreshed.
+     * This method is responsible for creating the web server.
+     * 
+     * @throws ApplicationContextException if unable to start the web server
+     */
+    @Override
 	protected void onRefresh() {
 		super.onRefresh();
 		try {
@@ -166,7 +178,16 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		}
 	}
 
-	@Override
+	/**
+     * Closes the servlet web server application context.
+     * 
+     * This method first checks if the application context is active. If it is active, it publishes an availability change event with the readiness state set to REFUSING_TRAFFIC.
+     * 
+     * After that, it calls the superclass's doClose() method to perform the default closing operations.
+     * 
+     * Then, it destroys the web server if it exists.
+     */
+    @Override
 	protected void doClose() {
 		if (isActive()) {
 			AvailabilityChangeEvent.publish(this, ReadinessState.REFUSING_TRAFFIC);
@@ -178,7 +199,14 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		}
 	}
 
-	private void createWebServer() {
+	/**
+     * Creates a web server for the application.
+     * 
+     * This method checks if a web server and servlet context have already been created. If not, it starts the process of creating a web server by calling the appropriate factory. It then registers the necessary lifecycle beans for graceful shutdown and start/stop. If a servlet context is already available, it initializes it using the self initializer. Finally, it initializes the property sources.
+     * 
+     * @throws ApplicationContextException if the servlet context cannot be initialized
+     */
+    private void createWebServer() {
 		WebServer webServer = this.webServer;
 		ServletContext servletContext = getServletContext();
 		if (webServer == null && servletContext == null) {
@@ -233,7 +261,13 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		return this::selfInitialize;
 	}
 
-	private void selfInitialize(ServletContext servletContext) throws ServletException {
+	/**
+     * Initializes the ServletWebServerApplicationContext.
+     * 
+     * @param servletContext the ServletContext object
+     * @throws ServletException if an error occurs during initialization
+     */
+    private void selfInitialize(ServletContext servletContext) throws ServletException {
 		prepareWebApplicationContext(servletContext);
 		registerApplicationScope(servletContext);
 		WebApplicationContextUtils.registerEnvironmentBeans(getBeanFactory(), servletContext);
@@ -242,14 +276,24 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		}
 	}
 
-	private void registerApplicationScope(ServletContext servletContext) {
+	/**
+     * Registers the application scope for the given servlet context.
+     * 
+     * @param servletContext the servlet context to register the application scope with
+     */
+    private void registerApplicationScope(ServletContext servletContext) {
 		ServletContextScope appScope = new ServletContextScope(servletContext);
 		getBeanFactory().registerScope(WebApplicationContext.SCOPE_APPLICATION, appScope);
 		// Register as ServletContext attribute, for ContextCleanupListener to detect it.
 		servletContext.setAttribute(ServletContextScope.class.getName(), appScope);
 	}
 
-	private void registerWebApplicationScopes() {
+	/**
+     * Registers the web application scopes.
+     * This method initializes the existing web application scopes, registers them with the bean factory,
+     * and restores any previously existing scopes.
+     */
+    private void registerWebApplicationScopes() {
 		ExistingWebApplicationScopes existingScopes = new ExistingWebApplicationScopes(getBeanFactory());
 		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory());
 		existingScopes.restore();
@@ -303,7 +347,13 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		}
 	}
 
-	@Override
+	/**
+     * Retrieves a resource by its path.
+     * 
+     * @param path the path of the resource
+     * @return the resource object
+     */
+    @Override
 	protected Resource getResourceByPath(String path) {
 		if (getServletContext() == null) {
 			return new ClassPathContextResource(path, getClassLoader());
@@ -311,22 +361,42 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		return new ServletContextResource(getServletContext(), path);
 	}
 
-	@Override
+	/**
+     * Returns the server namespace.
+     *
+     * @return the server namespace
+     */
+    @Override
 	public String getServerNamespace() {
 		return this.serverNamespace;
 	}
 
-	@Override
+	/**
+     * Sets the server namespace for this ServletWebServerApplicationContext.
+     * 
+     * @param serverNamespace the server namespace to set
+     */
+    @Override
 	public void setServerNamespace(String serverNamespace) {
 		this.serverNamespace = serverNamespace;
 	}
 
-	@Override
+	/**
+     * Sets the ServletConfig for this ServletWebServerApplicationContext.
+     * 
+     * @param servletConfig the ServletConfig to be set
+     */
+    @Override
 	public void setServletConfig(ServletConfig servletConfig) {
 		this.servletConfig = servletConfig;
 	}
 
-	@Override
+	/**
+     * Returns the ServletConfig object associated with this ServletWebServerApplicationContext.
+     *
+     * @return the ServletConfig object associated with this ServletWebServerApplicationContext
+     */
+    @Override
 	public ServletConfig getServletConfig() {
 		return this.servletConfig;
 	}
@@ -361,7 +431,12 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 		private final Map<String, Scope> scopes = new HashMap<>();
 
-		public ExistingWebApplicationScopes(ConfigurableListableBeanFactory beanFactory) {
+		/**
+         * Initializes the ExistingWebApplicationScopes object with the provided ConfigurableListableBeanFactory.
+         * 
+         * @param beanFactory The ConfigurableListableBeanFactory used to retrieve the registered scopes.
+         */
+        public ExistingWebApplicationScopes(ConfigurableListableBeanFactory beanFactory) {
 			this.beanFactory = beanFactory;
 			for (String scopeName : SCOPES) {
 				Scope scope = beanFactory.getRegisteredScope(scopeName);
@@ -371,7 +446,18 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			}
 		}
 
-		public void restore() {
+		/**
+         * Restores the user-defined scopes.
+         * 
+         * This method iterates over the scopes map and registers each scope with the bean factory.
+         * 
+         * @see ExistingWebApplicationScopes#scopes
+         * @see ExistingWebApplicationScopes#beanFactory
+         * @see org.slf4j.Logger#isInfoEnabled()
+         * @see org.slf4j.Logger#info(String)
+         * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#registerScope(String, org.springframework.beans.factory.config.Scope)
+         */
+        public void restore() {
 			this.scopes.forEach((key, value) -> {
 				if (logger.isInfoEnabled()) {
 					logger.info("Restoring user defined scope " + key);

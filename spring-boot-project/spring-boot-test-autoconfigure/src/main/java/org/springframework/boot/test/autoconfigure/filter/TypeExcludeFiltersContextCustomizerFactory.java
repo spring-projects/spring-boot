@@ -40,7 +40,17 @@ class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFac
 
 	private static final Class<?>[] NO_FILTERS = {};
 
-	@Override
+	/**
+     * {@inheritDoc}
+     * 
+     * Creates a custom context customizer for the given test class and configuration attributes.
+     * If AOT detection is enabled, returns null.
+     * 
+     * @param testClass the test class for which the context customizer is created
+     * @param configurationAttributes the configuration attributes for the test class
+     * @return the created context customizer or null if AOT detection is enabled or no type exclude filters are found
+     */
+    @Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
 		if (AotDetector.useGeneratedArtifacts()) {
@@ -55,7 +65,14 @@ class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFac
 		return createContextCustomizer(descriptor.getRootDeclaringClass(), filterClasses);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Creates a context customizer for the given test class and filter classes.
+     *
+     * @param testClass     the test class for which the context customizer is created
+     * @param filterClasses the filter classes to be used for type exclusion
+     * @return the created context customizer
+     */
+    @SuppressWarnings("unchecked")
 	private ContextCustomizer createContextCustomizer(Class<?> testClass, Class<?>[] filterClasses) {
 		return new TypeExcludeFiltersContextCustomizer(testClass,
 				new LinkedHashSet<>(Arrays.asList((Class<? extends TypeExcludeFilter>[]) filterClasses)));

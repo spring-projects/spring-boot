@@ -20,6 +20,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+/**
+ * GoodbyeWorldService class.
+ */
 @Component
 @Profile("goodbye")
 public class GoodbyeWorldService implements MessageService {
@@ -27,7 +30,12 @@ public class GoodbyeWorldService implements MessageService {
 	@Value("${test.name:World}")
 	private String name;
 
-	@Override
+	/**
+     * Returns a goodbye message with the name of the person.
+     *
+     * @return the goodbye message
+     */
+    @Override
 	public String getMessage() {
 		return "Goodbye " + this.name;
 	}

@@ -32,7 +32,10 @@ public final class Handlers {
 
 	private static final String PACKAGE = Handlers.class.getPackageName();
 
-	private Handlers() {
+	/**
+     * Constructs a new instance of the Handlers class.
+     */
+    private Handlers() {
 	}
 
 	/**

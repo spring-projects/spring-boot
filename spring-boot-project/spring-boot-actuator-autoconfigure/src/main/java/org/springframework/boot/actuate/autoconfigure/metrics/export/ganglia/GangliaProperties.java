@@ -70,59 +70,129 @@ public class GangliaProperties {
 	 */
 	private Integer port = 8649;
 
-	public boolean isEnabled() {
+	/**
+     * Returns the current status of the enabled flag.
+     *
+     * @return true if the enabled flag is set to true, false otherwise.
+     */
+    public boolean isEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	/**
+     * Sets the enabled status of the GangliaProperties.
+     * 
+     * @param enabled the enabled status to be set
+     */
+    public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public Duration getStep() {
+	/**
+     * Returns the step duration.
+     *
+     * @return the step duration
+     */
+    public Duration getStep() {
 		return this.step;
 	}
 
-	public void setStep(Duration step) {
+	/**
+     * Sets the step duration for GangliaProperties.
+     * 
+     * @param step the step duration to be set
+     */
+    public void setStep(Duration step) {
 		this.step = step;
 	}
 
-	public TimeUnit getDurationUnits() {
+	/**
+     * Returns the duration units used in the GangliaProperties class.
+     * 
+     * @return the duration units used in the GangliaProperties class
+     */
+    public TimeUnit getDurationUnits() {
 		return this.durationUnits;
 	}
 
-	public void setDurationUnits(TimeUnit durationUnits) {
+	/**
+     * Sets the duration units for the GangliaProperties.
+     * 
+     * @param durationUnits the duration units to be set
+     */
+    public void setDurationUnits(TimeUnit durationUnits) {
 		this.durationUnits = durationUnits;
 	}
 
-	public GMetric.UDPAddressingMode getAddressingMode() {
+	/**
+     * Returns the addressing mode used for UDP communication in Ganglia.
+     *
+     * @return the addressing mode used for UDP communication
+     */
+    public GMetric.UDPAddressingMode getAddressingMode() {
 		return this.addressingMode;
 	}
 
-	public void setAddressingMode(GMetric.UDPAddressingMode addressingMode) {
+	/**
+     * Sets the addressing mode for the GMetric UDP connection.
+     * 
+     * @param addressingMode the addressing mode to be set
+     */
+    public void setAddressingMode(GMetric.UDPAddressingMode addressingMode) {
 		this.addressingMode = addressingMode;
 	}
 
-	public Integer getTimeToLive() {
+	/**
+     * Returns the time to live value.
+     *
+     * @return the time to live value
+     */
+    public Integer getTimeToLive() {
 		return this.timeToLive;
 	}
 
-	public void setTimeToLive(Integer timeToLive) {
+	/**
+     * Sets the time to live for the GangliaProperties.
+     * 
+     * @param timeToLive the time to live value to be set
+     */
+    public void setTimeToLive(Integer timeToLive) {
 		this.timeToLive = timeToLive;
 	}
 
-	public String getHost() {
+	/**
+     * Returns the host value.
+     *
+     * @return the host value
+     */
+    public String getHost() {
 		return this.host;
 	}
 
-	public void setHost(String host) {
+	/**
+     * Sets the host for the GangliaProperties.
+     * 
+     * @param host the host to be set
+     */
+    public void setHost(String host) {
 		this.host = host;
 	}
 
-	public Integer getPort() {
+	/**
+     * Returns the port number.
+     *
+     * @return the port number
+     */
+    public Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(Integer port) {
+	/**
+     * Sets the port number for the GangliaProperties.
+     * 
+     * @param port the port number to be set
+     */
+    public void setPort(Integer port) {
 		this.port = port;
 	}
 

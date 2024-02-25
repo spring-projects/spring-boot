@@ -43,13 +43,27 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnAvailableEndpoint(endpoint = CachesEndpoint.class)
 public class CachesEndpointAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link CachesEndpoint} if no other bean of the same type is present.
+     * 
+     * @param cacheManagers a map of cache managers
+     * @return a new instance of {@link CachesEndpoint}
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public CachesEndpoint cachesEndpoint(Map<String, CacheManager> cacheManagers) {
 		return new CachesEndpoint(cacheManagers);
 	}
 
-	@Bean
+	/**
+     * Creates a {@link CachesEndpointWebExtension} bean if there is no existing bean of the same type.
+     * This bean is conditional on the presence of a {@link CachesEndpoint} bean and the availability of the
+     * {@link CachesEndpoint} endpoint with web and Cloud Foundry exposure.
+     *
+     * @param cachesEndpoint the {@link CachesEndpoint} bean to be used by the {@link CachesEndpointWebExtension}
+     * @return the created {@link CachesEndpointWebExtension} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(CachesEndpoint.class)
 	@ConditionalOnAvailableEndpoint(exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })

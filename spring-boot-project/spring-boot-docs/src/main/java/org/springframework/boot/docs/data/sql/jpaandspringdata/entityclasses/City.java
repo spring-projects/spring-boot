@@ -23,6 +23,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
+/**
+ * City class.
+ */
 @Entity
 public class City implements Serializable {
 
@@ -43,16 +46,32 @@ public class City implements Serializable {
 		// this one is protected since it should not be used directly
 	}
 
-	public City(String name, String state) {
+	/**
+     * Constructs a new City object with the specified name and state.
+     * 
+     * @param name the name of the city
+     * @param state the state in which the city is located
+     */
+    public City(String name, String state) {
 		this.name = name;
 		this.state = state;
 	}
 
-	public String getName() {
+	/**
+     * Returns the name of the city.
+     *
+     * @return the name of the city
+     */
+    public String getName() {
 		return this.name;
 	}
 
-	public String getState() {
+	/**
+     * Returns the state of the city.
+     * 
+     * @return the state of the city
+     */
+    public String getState() {
 		return this.state;
 	}
 

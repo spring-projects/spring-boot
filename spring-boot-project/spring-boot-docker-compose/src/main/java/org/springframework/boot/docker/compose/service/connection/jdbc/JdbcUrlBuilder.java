@@ -66,7 +66,15 @@ public class JdbcUrlBuilder {
 		return urlFor(service, database);
 	}
 
-	private String urlFor(RunningService service, String database) {
+	/**
+     * Generates a JDBC URL for the given RunningService and database.
+     * 
+     * @param service   the RunningService to generate the URL for (must not be null)
+     * @param database  the name of the database to connect to (optional)
+     * @return          the generated JDBC URL
+     * @throws IllegalArgumentException if the service is null
+     */
+    private String urlFor(RunningService service, String database) {
 		Assert.notNull(service, "Service must not be null");
 		String parameters = getParameters(service);
 		StringBuilder url = new StringBuilder("jdbc:%s://%s:%d".formatted(this.driverProtocol, service.host(),
@@ -79,7 +87,13 @@ public class JdbcUrlBuilder {
 		return url.toString();
 	}
 
-	private String getParameters(RunningService service) {
+	/**
+     * Returns the parameters of the given RunningService.
+     * 
+     * @param service the RunningService object to retrieve the parameters from
+     * @return a String representing the parameters of the RunningService, or an empty String if no parameters are found
+     */
+    private String getParameters(RunningService service) {
 		String parameters = service.labels().get(PARAMETERS_LABEL);
 		return (StringUtils.hasLength(parameters)) ? "?" + parameters : "";
 	}

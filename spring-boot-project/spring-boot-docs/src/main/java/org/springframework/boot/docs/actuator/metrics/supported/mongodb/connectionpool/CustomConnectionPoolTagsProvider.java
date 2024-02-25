@@ -20,9 +20,18 @@ import com.mongodb.event.ConnectionPoolCreatedEvent;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
 
+/**
+ * CustomConnectionPoolTagsProvider class.
+ */
 public class CustomConnectionPoolTagsProvider implements MongoConnectionPoolTagsProvider {
 
-	@Override
+	/**
+     * Returns an empty list of tags for the connection pool created event.
+     * 
+     * @param event the connection pool created event
+     * @return an empty list of tags
+     */
+    @Override
 	public Iterable<Tag> connectionPoolTags(ConnectionPoolCreatedEvent event) {
 		return java.util.Collections.emptyList();
 	}

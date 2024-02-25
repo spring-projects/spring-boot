@@ -36,18 +36,37 @@ class SpringEnvironmentLookup implements LoggerContextAware, StrLookup {
 
 	private volatile Environment environment;
 
-	@Override
+	/**
+     * Looks up a value in the Spring environment using the given key.
+     * 
+     * @param event the log event
+     * @param key the key to lookup
+     * @return the value associated with the key in the Spring environment
+     */
+    @Override
 	public String lookup(LogEvent event, String key) {
 		return lookup(key);
 	}
 
-	@Override
+	/**
+     * Looks up the value of a property based on the given key.
+     * 
+     * @param key the key of the property to lookup
+     * @return the value of the property, or null if not found
+     * @throws IllegalStateException if the Spring Environment is not available
+     */
+    @Override
 	public String lookup(String key) {
 		Assert.state(this.environment != null, "Unable to obtain Spring Environment from LoggerContext");
 		return this.environment.getProperty(key);
 	}
 
-	@Override
+	/**
+     * Sets the logger context for the SpringEnvironmentLookup class.
+     * 
+     * @param loggerContext the logger context to be set
+     */
+    @Override
 	public void setLoggerContext(LoggerContext loggerContext) {
 		this.environment = Log4J2LoggingSystem.getEnvironment(loggerContext);
 	}

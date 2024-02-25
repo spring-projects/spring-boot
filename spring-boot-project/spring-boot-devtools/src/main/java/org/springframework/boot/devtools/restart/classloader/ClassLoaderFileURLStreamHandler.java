@@ -33,31 +33,67 @@ public class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 
 	private final ClassLoaderFile file;
 
-	public ClassLoaderFileURLStreamHandler(ClassLoaderFile file) {
+	/**
+     * Constructs a new ClassLoaderFileURLStreamHandler with the specified ClassLoaderFile.
+     * 
+     * @param file the ClassLoaderFile to be used by this ClassLoaderFileURLStreamHandler
+     */
+    public ClassLoaderFileURLStreamHandler(ClassLoaderFile file) {
 		this.file = file;
 	}
 
-	@Override
+	/**
+     * Opens a connection to the specified URL.
+     *
+     * @param url the URL to open a connection to
+     * @return a URLConnection object representing the connection to the specified URL
+     * @throws IOException if an I/O error occurs while opening the connection
+     */
+    @Override
 	protected URLConnection openConnection(URL url) throws IOException {
 		return new Connection(url);
 	}
 
-	private class Connection extends URLConnection {
+	/**
+     * Connection class.
+     */
+    private class Connection extends URLConnection {
 
-		Connection(URL url) {
+		/**
+         * Constructs a new Connection object with the specified URL.
+         *
+         * @param url the URL to establish the connection with
+         */
+        Connection(URL url) {
 			super(url);
 		}
 
-		@Override
+		/**
+         * Connects to the server.
+         *
+         * @throws IOException if an I/O error occurs while connecting.
+         */
+        @Override
 		public void connect() throws IOException {
 		}
 
-		@Override
+		/**
+         * Returns an input stream for reading the contents of the file associated with this connection.
+         * 
+         * @return an input stream for reading the contents of the file
+         * @throws IOException if an I/O error occurs while creating the input stream
+         */
+        @Override
 		public InputStream getInputStream() throws IOException {
 			return new ByteArrayInputStream(ClassLoaderFileURLStreamHandler.this.file.getContents());
 		}
 
-		@Override
+		/**
+         * Returns the last modified timestamp of the file associated with this Connection.
+         *
+         * @return the last modified timestamp of the file
+         */
+        @Override
 		public long getLastModified() {
 			return ClassLoaderFileURLStreamHandler.this.file.getLastModified();
 		}

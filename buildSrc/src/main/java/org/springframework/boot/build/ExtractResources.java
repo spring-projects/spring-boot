@@ -52,34 +52,69 @@ public class ExtractResources extends DefaultTask {
 
 	private List<String> resourceNames = new ArrayList<>();
 
-	public ExtractResources() {
+	/**
+     * Initializes the destination directory for extracting resources.
+     */
+    public ExtractResources() {
 		this.destinationDirectory = getProject().getObjects().directoryProperty();
 	}
 
-	@Input
+	/**
+     * Returns the list of resource names.
+     *
+     * @return the list of resource names
+     */
+    @Input
 	public List<String> getResourceNames() {
 		return this.resourceNames;
 	}
 
-	public void setResourcesNames(List<String> resourceNames) {
+	/**
+     * Sets the names of the resources.
+     * 
+     * @param resourceNames the list of resource names to be set
+     */
+    public void setResourcesNames(List<String> resourceNames) {
 		this.resourceNames = resourceNames;
 	}
 
-	@OutputDirectory
+	/**
+     * Returns the destination directory where the extracted resources will be stored.
+     *
+     * @return The destination directory.
+     */
+    @OutputDirectory
 	public DirectoryProperty getDestinationDirectory() {
 		return this.destinationDirectory;
 	}
 
-	public void property(String name, String value) {
+	/**
+     * Sets the value of a property with the given name.
+     * 
+     * @param name the name of the property
+     * @param value the value to be set for the property
+     */
+    public void property(String name, String value) {
 		this.properties.put(name, value);
 	}
 
-	@Input
+	/**
+     * Returns the properties of the ExtractResources object.
+     *
+     * @return a Map containing the properties of the ExtractResources object
+     */
+    @Input
 	public Map<String, String> getProperties() {
 		return this.properties;
 	}
 
-	@TaskAction
+	/**
+     * Extracts the resources specified in the resourceNames list and copies them to the destination directory.
+     * 
+     * @throws IOException if an I/O error occurs while reading or writing the resources
+     * @throws GradleException if a resource does not exist
+     */
+    @TaskAction
 	void extractResources() throws IOException {
 		for (String resourceName : this.resourceNames) {
 			InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(resourceName);

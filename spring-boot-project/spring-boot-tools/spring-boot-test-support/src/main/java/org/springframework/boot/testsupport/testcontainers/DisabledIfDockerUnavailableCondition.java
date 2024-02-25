@@ -34,7 +34,13 @@ class DisabledIfDockerUnavailableCondition implements ExecutionCondition {
 
 	private static final ConditionEvaluationResult ENABLED = ConditionEvaluationResult.enabled("Docker available");
 
-	@Override
+	/**
+     * Evaluates the execution condition for the Docker availability.
+     * 
+     * @param context the extension context
+     * @return the condition evaluation result
+     */
+    @Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
 		String originalSilenceValue = System.getProperty(SILENCE_PROPERTY);
 		try {

@@ -21,6 +21,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;
 
+/**
+ * CityRepository interface.
+ */
 public interface CityRepository extends Repository<City, Long> {
 
 	Page<City> findAll(Pageable pageable);

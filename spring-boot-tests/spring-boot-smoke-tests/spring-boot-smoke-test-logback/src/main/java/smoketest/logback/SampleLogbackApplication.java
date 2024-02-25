@@ -23,18 +23,31 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleLogbackApplication class.
+ */
 @SpringBootApplication
 public class SampleLogbackApplication {
 
 	private static final Logger logger = LoggerFactory.getLogger(SampleLogbackApplication.class);
 
-	@PostConstruct
+	/**
+     * This method is annotated with @PostConstruct and is used to log debug and trace messages.
+     * It logs a sample debug message and a sample trace message using the logger.
+     */
+    @PostConstruct
 	public void logSomething() {
 		logger.debug("Sample Debug Message");
 		logger.trace("Sample Trace Message");
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring application and closes it after execution.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleLogbackApplication.class, args).close();
 	}
 

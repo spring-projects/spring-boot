@@ -34,18 +34,35 @@ class CompositeResourceManager implements ResourceManager {
 
 	private final List<ResourceManager> resourceManagers;
 
-	CompositeResourceManager(ResourceManager... resourceManagers) {
+	/**
+     * Constructs a new CompositeResourceManager with the given resource managers.
+     * 
+     * @param resourceManagers the resource managers to be included in the composite resource manager
+     */
+    CompositeResourceManager(ResourceManager... resourceManagers) {
 		this.resourceManagers = Arrays.asList(resourceManagers);
 	}
 
-	@Override
+	/**
+     * Closes all the resource managers in the composite resource manager.
+     * 
+     * @throws IOException if an I/O error occurs while closing the resource managers
+     */
+    @Override
 	public void close() throws IOException {
 		for (ResourceManager resourceManager : this.resourceManagers) {
 			resourceManager.close();
 		}
 	}
 
-	@Override
+	/**
+     * Retrieves a resource from the composite resource managers.
+     * 
+     * @param path the path of the resource to retrieve
+     * @return the resource if found, null otherwise
+     * @throws IOException if an I/O error occurs while retrieving the resource
+     */
+    @Override
 	public Resource getResource(String path) throws IOException {
 		for (ResourceManager resourceManager : this.resourceManagers) {
 			Resource resource = resourceManager.getResource(path);
@@ -56,17 +73,34 @@ class CompositeResourceManager implements ResourceManager {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns whether the CompositeResourceManager supports resource change listeners.
+     * 
+     * @return {@code false} as the CompositeResourceManager does not support resource change listeners.
+     */
+    @Override
 	public boolean isResourceChangeListenerSupported() {
 		return false;
 	}
 
-	@Override
+	/**
+     * Registers a resource change listener.
+     *
+     * @param listener the resource change listener to register
+     * @throws UnsupportedOperationException if resource change listener is not supported
+     */
+    @Override
 	public void registerResourceChangeListener(ResourceChangeListener listener) {
 		throw UndertowMessages.MESSAGES.resourceChangeListenerNotSupported();
 	}
 
-	@Override
+	/**
+     * Removes the specified resource change listener from this CompositeResourceManager.
+     * 
+     * @param listener the resource change listener to be removed
+     * @throws UnsupportedOperationException if resource change listener is not supported
+     */
+    @Override
 	public void removeResourceChangeListener(ResourceChangeListener listener) {
 		throw UndertowMessages.MESSAGES.resourceChangeListenerNotSupported();
 	}

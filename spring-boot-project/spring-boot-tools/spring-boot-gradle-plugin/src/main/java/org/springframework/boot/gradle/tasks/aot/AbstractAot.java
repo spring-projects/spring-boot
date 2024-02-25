@@ -46,7 +46,11 @@ public abstract class AbstractAot extends JavaExec {
 
 	private final Property<String> artifactId;
 
-	protected AbstractAot() {
+	/**
+     * Constructor for the AbstractAot class.
+     * Initializes the sourcesDir, resourcesDir, classesDir, groupId, and artifactId properties.
+     */
+    protected AbstractAot() {
 		this.sourcesDir = getProject().getObjects().directoryProperty();
 		this.resourcesDir = getProject().getObjects().directoryProperty();
 		this.classesDir = getProject().getObjects().directoryProperty();
@@ -99,7 +103,12 @@ public abstract class AbstractAot extends JavaExec {
 		return this.classesDir;
 	}
 
-	List<String> processorArgs() {
+	/**
+     * Returns a list of processor arguments.
+     * 
+     * @return the list of processor arguments
+     */
+    List<String> processorArgs() {
 		List<String> args = new ArrayList<>();
 		args.add(getSourcesOutput().getAsFile().get().getAbsolutePath());
 		args.add(getResourcesOutput().getAsFile().get().getAbsolutePath());

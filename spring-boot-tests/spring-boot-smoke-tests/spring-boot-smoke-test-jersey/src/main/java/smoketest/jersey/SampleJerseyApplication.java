@@ -21,10 +21,18 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
+/**
+ * SampleJerseyApplication class.
+ */
 @SpringBootApplication
 public class SampleJerseyApplication extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleJerseyApplication class.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		new SampleJerseyApplication()
 			.configure(new SpringApplicationBuilder(SampleJerseyApplication.class)
 				.applicationStartup(new BufferingApplicationStartup(2048)))

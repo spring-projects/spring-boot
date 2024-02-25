@@ -20,10 +20,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
+/**
+ * MyWebSocketConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyWebSocketConfiguration {
 
-	@Bean
+	/**
+     * Initializes and configures the ServerEndpointExporter.
+     * 
+     * @return the ServerEndpointExporter instance
+     */
+    @Bean
 	public ServerEndpointExporter serverEndpointExporter() {
 		return new ServerEndpointExporter();
 	}

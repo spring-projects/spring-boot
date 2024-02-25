@@ -58,7 +58,17 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 
 	private final Supplier<C> containerSupplier;
 
-	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType, String containerImageName,
+	/**
+     * Constructs a new ContainerConnectionSource with the specified parameters.
+     *
+     * @param beanNameSuffix the suffix to be appended to the bean name
+     * @param origin the origin of the container connection
+     * @param containerType the type of the container
+     * @param containerImageName the name of the container image
+     * @param annotation the merged annotation containing service connection details
+     * @param containerSupplier the supplier for creating container instances
+     */
+    ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType, String containerImageName,
 			MergedAnnotation<ServiceConnection> annotation, Supplier<C> containerSupplier) {
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
@@ -68,7 +78,17 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		this.containerSupplier = containerSupplier;
 	}
 
-	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType, String containerImageName,
+	/**
+     * Constructs a new ContainerConnectionSource with the specified parameters.
+     * 
+     * @param beanNameSuffix the suffix to be appended to the bean name
+     * @param origin the origin of the container connection
+     * @param containerType the type of the container
+     * @param containerImageName the name of the container image
+     * @param annotation the service connection annotation
+     * @param containerSupplier the supplier for creating the container
+     */
+    ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType, String containerImageName,
 			ServiceConnection annotation, Supplier<C> containerSupplier) {
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
@@ -78,7 +98,14 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		this.containerSupplier = containerSupplier;
 	}
 
-	private static String getOrDeduceConnectionName(String connectionName, String containerImageName) {
+	/**
+     * Returns the connection name if provided, otherwise deduces the connection name from the container image name.
+     * 
+     * @param connectionName the connection name
+     * @param containerImageName the container image name
+     * @return the connection name if provided, otherwise the repository name from the container image name
+     */
+    private static String getOrDeduceConnectionName(String connectionName, String containerImageName) {
 		if (StringUtils.hasText(connectionName)) {
 			return connectionName;
 		}
@@ -90,7 +117,15 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		return null;
 	}
 
-	boolean accepts(String requiredConnectionName, Class<?> requiredContainerType,
+	/**
+     * Determines if the given connection is accepted based on the required connection name, container type, and connection details type.
+     * 
+     * @param requiredConnectionName The required connection name.
+     * @param requiredContainerType The required container type.
+     * @param requiredConnectionDetailsType The required connection details type.
+     * @return {@code true} if the connection is accepted, {@code false} otherwise.
+     */
+    boolean accepts(String requiredConnectionName, Class<?> requiredContainerType,
 			Class<?> requiredConnectionDetailsType) {
 		if (StringUtils.hasText(requiredConnectionName)
 				&& !requiredConnectionName.equalsIgnoreCase(this.connectionName)) {
@@ -119,28 +154,59 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		return true;
 	}
 
-	String getBeanNameSuffix() {
+	/**
+     * Returns the suffix used for the bean name.
+     *
+     * @return the bean name suffix
+     */
+    String getBeanNameSuffix() {
 		return this.beanNameSuffix;
 	}
 
-	@Override
+	/**
+     * Returns the origin of the ContainerConnectionSource.
+     *
+     * @return the origin of the ContainerConnectionSource
+     */
+    @Override
 	public Origin getOrigin() {
 		return this.origin;
 	}
 
-	String getConnectionName() {
+	/**
+     * Returns the name of the connection.
+     *
+     * @return the name of the connection
+     */
+    String getConnectionName() {
 		return this.connectionName;
 	}
 
-	Supplier<C> getContainerSupplier() {
+	/**
+     * Returns the supplier of the container.
+     *
+     * @return the supplier of the container
+     */
+    Supplier<C> getContainerSupplier() {
 		return this.containerSupplier;
 	}
 
-	Set<Class<?>> getConnectionDetailsTypes() {
+	/**
+     * Returns the types of connection details available in the container.
+     *
+     * @return the types of connection details available in the container
+     */
+    Set<Class<?>> getConnectionDetailsTypes() {
 		return this.connectionDetailsTypes;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the {@code ContainerConnectionSource} object.
+     * The string representation is in the format of "@ServiceConnection source for {origin}".
+     *
+     * @return a string representation of the {@code ContainerConnectionSource} object
+     */
+    @Override
 	public String toString() {
 		return "@ServiceConnection source for %s".formatted(this.origin);
 	}

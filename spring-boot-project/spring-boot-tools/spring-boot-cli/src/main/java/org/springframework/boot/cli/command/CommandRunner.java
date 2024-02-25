@@ -119,11 +119,24 @@ public class CommandRunner implements Iterable<Command> {
 		return isCommandInstanceOf(command, this.optionCommandClasses);
 	}
 
-	private boolean isHiddenCommand(Command command) {
+	/**
+     * Checks if the given command is a hidden command.
+     * 
+     * @param command the command to check
+     * @return true if the command is a hidden command, false otherwise
+     */
+    private boolean isHiddenCommand(Command command) {
 		return isCommandInstanceOf(command, this.hiddenCommandClasses);
 	}
 
-	private boolean isCommandInstanceOf(Command command, Class<?>[] commandClasses) {
+	/**
+     * Checks if the given command is an instance of any of the specified command classes.
+     * 
+     * @param command         the command to check
+     * @param commandClasses  the array of command classes to compare against
+     * @return                true if the command is an instance of any of the command classes, false otherwise
+     */
+    private boolean isCommandInstanceOf(Command command, Class<?>[] commandClasses) {
 		for (Class<?> commandClass : commandClasses) {
 			if (commandClass.isInstance(command)) {
 				return true;
@@ -132,12 +145,22 @@ public class CommandRunner implements Iterable<Command> {
 		return false;
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the commands in this CommandRunner.
+     *
+     * @return an iterator over the commands in this CommandRunner
+     */
+    @Override
 	public Iterator<Command> iterator() {
 		return getCommands().iterator();
 	}
 
-	protected final List<Command> getCommands() {
+	/**
+     * Returns an unmodifiable list of commands.
+     * 
+     * @return the unmodifiable list of commands
+     */
+    protected final List<Command> getCommands() {
 		return Collections.unmodifiableList(this.commands);
 	}
 
@@ -184,7 +207,13 @@ public class CommandRunner implements Iterable<Command> {
 		}
 	}
 
-	private String[] removeDebugFlags(String[] args) {
+	/**
+     * Removes debug flags from the given array of arguments.
+     * 
+     * @param args the array of arguments
+     * @return the modified array of arguments with debug flags removed
+     */
+    private String[] removeDebugFlags(String[] args) {
 		List<String> rtn = new ArrayList<>(args.length);
 		boolean appArgsDetected = false;
 		for (String arg : args) {
@@ -237,7 +266,14 @@ public class CommandRunner implements Iterable<Command> {
 	protected void afterRun(Command command) {
 	}
 
-	private int handleError(boolean debug, Exception ex) {
+	/**
+     * Handles an exception thrown during command execution.
+     * 
+     * @param debug a boolean indicating whether debug mode is enabled
+     * @param ex the exception that was thrown
+     * @return an integer representing the error code
+     */
+    private int handleError(boolean debug, Exception ex) {
 		Set<CommandException.Option> options = NO_EXCEPTION_OPTIONS;
 		if (ex instanceof CommandException commandException) {
 			options = commandException.getOptions();
@@ -258,12 +294,23 @@ public class CommandRunner implements Iterable<Command> {
 		return 1;
 	}
 
-	protected boolean errorMessage(String message) {
+	/**
+     * Logs an error message and returns a boolean value indicating if the message is not null.
+     * 
+     * @param message the error message to be logged
+     * @return true if the message is not null, false otherwise
+     */
+    protected boolean errorMessage(String message) {
 		Log.error((message != null) ? message : "Unexpected error");
 		return message != null;
 	}
 
-	protected void showUsage() {
+	/**
+     * Displays the usage information for the command runner.
+     * This method prints the available commands, their usage help, and descriptions.
+     * It also displays common options and provides a way to get more information on a specific command.
+     */
+    protected void showUsage() {
 		Log.infoPrint("usage: " + this.name);
 		for (Command command : this.commands) {
 			if (isOptionCommand(command)) {
@@ -291,7 +338,12 @@ public class CommandRunner implements Iterable<Command> {
 		Log.info("See '" + this.name + "help <command>' for more information on a specific command.");
 	}
 
-	protected void printStackTrace(Exception ex) {
+	/**
+     * Prints the stack trace of the given exception.
+     * 
+     * @param ex the exception whose stack trace needs to be printed
+     */
+    protected void printStackTrace(Exception ex) {
 		Log.error("");
 		Log.error(ex);
 		Log.error("");

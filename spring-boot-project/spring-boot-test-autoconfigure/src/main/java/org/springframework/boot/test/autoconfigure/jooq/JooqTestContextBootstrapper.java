@@ -27,7 +27,13 @@ import org.springframework.test.context.TestContextBootstrapper;
  */
 class JooqTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
-	@Override
+	/**
+     * Retrieves the properties specified in the {@link JooqTest} annotation for the given test class.
+     * 
+     * @param testClass the test class for which to retrieve the properties
+     * @return an array of properties specified in the {@link JooqTest} annotation, or null if the annotation is not present
+     */
+    @Override
 	protected String[] getProperties(Class<?> testClass) {
 		JooqTest jooqTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, JooqTest.class);
 		return (jooqTest != null) ? jooqTest.properties() : null;

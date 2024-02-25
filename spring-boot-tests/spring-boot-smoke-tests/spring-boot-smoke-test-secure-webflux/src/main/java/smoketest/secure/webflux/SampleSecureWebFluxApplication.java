@@ -25,14 +25,29 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
+/**
+ * SampleSecureWebFluxApplication class.
+ */
 @SpringBootApplication
 public class SampleSecureWebFluxApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by running the SpringApplication.run() method.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleSecureWebFluxApplication.class);
 	}
 
-	@Bean
+	/**
+     * Creates a router function for handling HTTP POST requests to the "/echo" endpoint.
+     * 
+     * @param echoHandler the handler responsible for processing the echo request
+     * @return the router function for handling the echo request
+     */
+    @Bean
 	public RouterFunction<ServerResponse> monoRouterFunction(EchoHandler echoHandler) {
 		return route(POST("/echo"), echoHandler::echo);
 	}

@@ -23,10 +23,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ * ExampleController class.
+ */
 @Controller
 public class ExampleController {
 
-	@GetMapping("/")
+	/**
+     * This method is used to handle the GET request for the home page ("/").
+     * It populates the model with the necessary attributes and returns the view name "home".
+     * 
+     * @param model - The map object used to store the attributes for the view
+     * @return The view name "home"
+     */
+    @GetMapping("/")
 	public String home(Map<String, Object> model) {
 		model.put("message", "Hello World");
 		model.put("title", "Hello Home");
@@ -34,7 +44,13 @@ public class ExampleController {
 		return "home";
 	}
 
-	@RequestMapping("/foo")
+	/**
+     * Handles the request mapping for "/foo" endpoint.
+     * 
+     * @return the response string
+     * @throws RuntimeException if an expected exception occurs in the controller
+     */
+    @RequestMapping("/foo")
 	public String foo() {
 		throw new RuntimeException("Expected exception in controller");
 	}

@@ -20,11 +20,20 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+/**
+ * CountryRepository class.
+ */
 @Component
 @CacheConfig(cacheNames = "countries")
 public class CountryRepository {
 
-	@Cacheable
+	/**
+     * Retrieves a country by its code.
+     * 
+     * @param code the code of the country to retrieve
+     * @return the country with the specified code
+     */
+    @Cacheable
 	public Country findByCode(String code) {
 		System.out.println("---> Loading country with code '" + code + "'");
 		return new Country(code);

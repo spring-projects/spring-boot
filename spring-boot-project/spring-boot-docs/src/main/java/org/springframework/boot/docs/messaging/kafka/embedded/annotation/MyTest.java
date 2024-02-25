@@ -19,6 +19,9 @@ package org.springframework.boot.docs.messaging.kafka.embedded.annotation;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 
+/**
+ * MyTest class.
+ */
 @SpringBootTest
 @EmbeddedKafka(topics = "someTopic", bootstrapServersProperty = "spring.kafka.bootstrap-servers")
 class MyTest {

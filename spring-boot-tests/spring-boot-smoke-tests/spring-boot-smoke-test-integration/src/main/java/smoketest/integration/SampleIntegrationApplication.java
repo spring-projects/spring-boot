@@ -28,40 +28,74 @@ import org.springframework.integration.dsl.SourcePollingChannelAdapterSpec;
 import org.springframework.integration.file.FileReadingMessageSource;
 import org.springframework.integration.file.FileWritingMessageHandler;
 
+/**
+ * SampleIntegrationApplication class.
+ */
 @SpringBootApplication
 public class SampleIntegrationApplication {
 
 	private final ServiceProperties serviceProperties;
 
-	public SampleIntegrationApplication(ServiceProperties serviceProperties) {
+	/**
+     * Constructs a new SampleIntegrationApplication with the specified ServiceProperties.
+     * 
+     * @param serviceProperties the ServiceProperties to be used by the SampleIntegrationApplication
+     */
+    public SampleIntegrationApplication(ServiceProperties serviceProperties) {
 		this.serviceProperties = serviceProperties;
 	}
 
-	@Bean
+	/**
+     * Creates a FileReadingMessageSource object for reading files from the specified directory.
+     * 
+     * @return the FileReadingMessageSource object configured with the input directory
+     */
+    @Bean
 	public FileReadingMessageSource fileReader() {
 		FileReadingMessageSource reader = new FileReadingMessageSource();
 		reader.setDirectory(this.serviceProperties.getInputDir());
 		return reader;
 	}
 
-	@Bean
+	/**
+     * Creates a new DirectChannel object.
+     * 
+     * @return the newly created DirectChannel object
+     */
+    @Bean
 	public DirectChannel inputChannel() {
 		return new DirectChannel();
 	}
 
-	@Bean
+	/**
+     * Creates a new DirectChannel object.
+     * 
+     * @return the newly created DirectChannel object
+     */
+    @Bean
 	public DirectChannel outputChannel() {
 		return new DirectChannel();
 	}
 
-	@Bean
+	/**
+     * Creates a FileWritingMessageHandler bean.
+     * 
+     * @return the created FileWritingMessageHandler bean
+     */
+    @Bean
 	public FileWritingMessageHandler fileWriter() {
 		FileWritingMessageHandler writer = new FileWritingMessageHandler(this.serviceProperties.getOutputDir());
 		writer.setExpectReply(false);
 		return writer;
 	}
 
-	@Bean
+	/**
+     * Creates an integration flow for processing files using a sample endpoint.
+     * 
+     * @param endpoint the sample endpoint to be used for handling the files
+     * @return the integration flow for processing files
+     */
+    @Bean
 	public IntegrationFlow integrationFlow(SampleEndpoint endpoint) {
 		return IntegrationFlow.from(fileReader(), new FixedRatePoller())
 			.channel(inputChannel())
@@ -71,13 +105,27 @@ public class SampleIntegrationApplication {
 			.get();
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by calling the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleIntegrationApplication.class, args);
 	}
 
-	private static final class FixedRatePoller implements Consumer<SourcePollingChannelAdapterSpec> {
+	/**
+     * FixedRatePoller class.
+     */
+    private static final class FixedRatePoller implements Consumer<SourcePollingChannelAdapterSpec> {
 
-		@Override
+		/**
+         * Sets the polling configuration for the SourcePollingChannelAdapterSpec.
+         * 
+         * @param spec the SourcePollingChannelAdapterSpec to configure
+         */
+        @Override
 		public void accept(SourcePollingChannelAdapterSpec spec) {
 			spec.poller(Pollers.fixedRate(500));
 		}

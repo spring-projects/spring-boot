@@ -45,7 +45,13 @@ public enum LifecycleManagement {
 
 	private final boolean stop;
 
-	LifecycleManagement(boolean start, boolean stop) {
+	/**
+     * This method is used to manage the lifecycle of a system.
+     * 
+     * @param start a boolean value indicating whether to start the system
+     * @param stop a boolean value indicating whether to stop the system
+     */
+    LifecycleManagement(boolean start, boolean stop) {
 		this.start = start;
 		this.stop = stop;
 	}

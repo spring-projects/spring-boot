@@ -20,18 +20,32 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * InMemoryMessageRepository class.
+ */
 public class InMemoryMessageRepository implements MessageRepository {
 
 	private static final AtomicLong counter = new AtomicLong();
 
 	private final ConcurrentMap<Long, Message> messages = new ConcurrentHashMap<>();
 
-	@Override
+	/**
+     * Returns an iterable collection of all messages in the repository.
+     *
+     * @return an iterable collection of all messages
+     */
+    @Override
 	public Iterable<Message> findAll() {
 		return this.messages.values();
 	}
 
-	@Override
+	/**
+     * Saves a message in the repository.
+     * 
+     * @param message the message to be saved
+     * @return the saved message
+     */
+    @Override
 	public Message save(Message message) {
 		Long id = message.getId();
 		if (id == null) {
@@ -42,7 +56,13 @@ public class InMemoryMessageRepository implements MessageRepository {
 		return message;
 	}
 
-	@Override
+	/**
+     * Retrieves a message from the in-memory message repository based on its ID.
+     * 
+     * @param id the ID of the message to be retrieved
+     * @return the message with the specified ID, or null if no message is found
+     */
+    @Override
 	public Message findMessage(Long id) {
 		return this.messages.get(id);
 	}

@@ -50,7 +50,14 @@ public class CommandCompleter extends StringsCompleter {
 
 	private final ConsoleReader console;
 
-	public CommandCompleter(ConsoleReader consoleReader, ArgumentDelimiter argumentDelimiter,
+	/**
+     * Constructs a CommandCompleter object.
+     * 
+     * @param consoleReader      the ConsoleReader object used for reading user input
+     * @param argumentDelimiter  the ArgumentDelimiter object used for delimiting arguments
+     * @param commands           an Iterable of Command objects representing the available commands
+     */
+    public CommandCompleter(ConsoleReader consoleReader, ArgumentDelimiter argumentDelimiter,
 			Iterable<Command> commands) {
 		this.console = consoleReader;
 		List<String> names = new ArrayList<>();
@@ -70,7 +77,15 @@ public class CommandCompleter extends StringsCompleter {
 		getStrings().addAll(names);
 	}
 
-	@Override
+	/**
+     * Completes the given buffer at the specified cursor position with a list of candidates.
+     * 
+     * @param buffer     the input buffer
+     * @param cursor     the cursor position
+     * @param candidates the list of candidates to be completed
+     * @return the index of the completed candidate
+     */
+    @Override
 	public int complete(String buffer, int cursor, List<CharSequence> candidates) {
 		int completionIndex = super.complete(buffer, cursor, candidates);
 		int spaceIndex = buffer.indexOf(' ');
@@ -93,7 +108,12 @@ public class CommandCompleter extends StringsCompleter {
 		return completionIndex;
 	}
 
-	private void printUsage(Command command) {
+	/**
+     * Prints the usage information for a given command.
+     * 
+     * @param command the command for which to print the usage information
+     */
+    private void printUsage(Command command) {
 		try {
 			int maxOptionsLength = 0;
 			List<OptionHelpLine> optionHelpLines = new ArrayList<>();
@@ -126,16 +146,31 @@ public class CommandCompleter extends StringsCompleter {
 
 		private final String usage;
 
-		OptionHelpLine(OptionHelp optionHelp) {
+		/**
+         * Creates a new OptionHelpLine object with the provided OptionHelp.
+         * 
+         * @param optionHelp the OptionHelp object containing the options and usage help
+         */
+        OptionHelpLine(OptionHelp optionHelp) {
 			this.options = String.join(", ", optionHelp.getOptions());
 			this.usage = optionHelp.getUsageHelp();
 		}
 
-		String getOptions() {
+		/**
+         * Returns the options of the OptionHelpLine.
+         *
+         * @return the options of the OptionHelpLine
+         */
+        String getOptions() {
 			return this.options;
 		}
 
-		String getUsage() {
+		/**
+         * Returns the usage of the OptionHelpLine.
+         *
+         * @return the usage of the OptionHelpLine
+         */
+        String getUsage() {
 			return this.usage;
 		}
 

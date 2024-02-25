@@ -41,7 +41,13 @@ import org.springframework.web.context.WebApplicationContext;
 @ImportRuntimeHints(FiltersMappingDescriptionProviderRuntimeHints.class)
 public class FiltersMappingDescriptionProvider implements MappingDescriptionProvider {
 
-	@Override
+	/**
+     * Returns a list of {@link FilterRegistrationMappingDescription} objects that describe the mappings of filters in the given application context.
+     * 
+     * @param context the application context to describe the filter mappings for
+     * @return a list of {@link FilterRegistrationMappingDescription} objects representing the filter mappings
+     */
+    @Override
 	public List<FilterRegistrationMappingDescription> describeMappings(ApplicationContext context) {
 		if (context instanceof WebApplicationContext webApplicationContext) {
 			return webApplicationContext.getServletContext()
@@ -54,16 +60,30 @@ public class FiltersMappingDescriptionProvider implements MappingDescriptionProv
 		return Collections.emptyList();
 	}
 
-	@Override
+	/**
+     * Returns the mapping name for the servlet filters.
+     * 
+     * @return the mapping name for the servlet filters
+     */
+    @Override
 	public String getMappingName() {
 		return "servletFilters";
 	}
 
-	static class FiltersMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * FiltersMappingDescriptionProviderRuntimeHints class.
+     */
+    static class FiltersMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
-		@Override
+		/**
+         * Registers the runtime hints for FiltersMappingDescriptionProvider.
+         * 
+         * @param hints the runtime hints to be registered
+         * @param classLoader the class loader to be used for reflection
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(),
 					FilterRegistrationMappingDescription.class);

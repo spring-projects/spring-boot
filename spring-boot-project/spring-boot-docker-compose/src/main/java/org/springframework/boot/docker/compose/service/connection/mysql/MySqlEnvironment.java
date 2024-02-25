@@ -37,13 +37,27 @@ class MySqlEnvironment {
 
 	private final String database;
 
-	MySqlEnvironment(Map<String, String> env) {
+	/**
+     * Constructs a new MySqlEnvironment object with the provided environment variables.
+     * 
+     * @param env a map containing the environment variables
+     * @throws NullPointerException if the env parameter is null
+     */
+    MySqlEnvironment(Map<String, String> env) {
 		this.username = env.getOrDefault("MYSQL_USER", "root");
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);
 	}
 
-	private String extractPassword(Map<String, String> env) {
+	/**
+     * Extracts the password from the given environment variables.
+     * 
+     * @param env the environment variables
+     * @return the extracted password
+     * @throws IllegalStateException if MYSQL_RANDOM_ROOT_PASSWORD is present
+     * @throws IllegalStateException if no MySQL password is found and empty passwords are not allowed
+     */
+    private String extractPassword(Map<String, String> env) {
 		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD"), "MYSQL_RANDOM_ROOT_PASSWORD is not supported");
 		boolean allowEmpty = env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD") || env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("MYSQL_PASSWORD");
@@ -52,21 +66,43 @@ class MySqlEnvironment {
 		return (password != null) ? password : "";
 	}
 
-	private String extractDatabase(Map<String, String> env) {
+	/**
+     * Extracts the database name from the environment variables.
+     * 
+     * @param env the map of environment variables
+     * @return the database name
+     * @throws IllegalStateException if no MYSQL_DATABASE is defined
+     */
+    private String extractDatabase(Map<String, String> env) {
 		String database = env.get("MYSQL_DATABASE");
 		Assert.state(database != null, "No MYSQL_DATABASE defined");
 		return database;
 	}
 
-	String getUsername() {
+	/**
+     * Returns the username associated with the current MySqlEnvironment instance.
+     *
+     * @return the username
+     */
+    String getUsername() {
 		return this.username;
 	}
 
-	String getPassword() {
+	/**
+     * Retrieves the password associated with the current MySqlEnvironment instance.
+     *
+     * @return the password as a String
+     */
+    String getPassword() {
 		return this.password;
 	}
 
-	String getDatabase() {
+	/**
+     * Returns the name of the database.
+     *
+     * @return the name of the database
+     */
+    String getDatabase() {
 		return this.database;
 	}
 

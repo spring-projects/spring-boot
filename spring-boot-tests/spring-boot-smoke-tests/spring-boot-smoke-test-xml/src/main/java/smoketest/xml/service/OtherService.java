@@ -16,9 +16,17 @@
 
 package smoketest.xml.service;
 
+/**
+ * OtherService class.
+ */
 public class OtherService {
 
-	public String getMessage() {
+	/**
+     * Returns the message "Hello Other World".
+     * 
+     * @return the message "Hello Other World"
+     */
+    public String getMessage() {
 		return "Hello Other World";
 	}
 

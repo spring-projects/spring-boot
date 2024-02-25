@@ -38,27 +38,61 @@ public final class ArtifactRelease {
 
 	private final String type;
 
-	private ArtifactRelease(String type) {
+	/**
+     * Constructs a new ArtifactRelease with the specified type.
+     * 
+     * @param type the type of the artifact release
+     */
+    private ArtifactRelease(String type) {
 		this.type = type;
 	}
 
-	public String getType() {
+	/**
+     * Returns the type of the artifact release.
+     * 
+     * @return the type of the artifact release
+     */
+    public String getType() {
 		return this.type;
 	}
 
-	public String getDownloadRepo() {
+	/**
+     * Returns the download repository for the artifact release.
+     * If the release is a stable release, it returns the Maven repository.
+     * If the release is a snapshot release, it returns the Spring repository with the specified type.
+     *
+     * @return the download repository for the artifact release
+     */
+    public String getDownloadRepo() {
 		return (this.isRelease()) ? MAVEN_REPO : String.format(SPRING_REPO, this.getType());
 	}
 
-	public boolean isRelease() {
+	/**
+     * Checks if the artifact is a release.
+     * 
+     * @return true if the artifact is a release, false otherwise.
+     */
+    public boolean isRelease() {
 		return RELEASE.equals(this.type);
 	}
 
-	public static ArtifactRelease forProject(Project project) {
+	/**
+     * Creates an ArtifactRelease object for the given Project.
+     * 
+     * @param project the Project for which the ArtifactRelease is being created
+     * @return the created ArtifactRelease object
+     */
+    public static ArtifactRelease forProject(Project project) {
 		return new ArtifactRelease(determineReleaseType(project));
 	}
 
-	private static String determineReleaseType(Project project) {
+	/**
+     * Determines the release type of a project based on its version.
+     * 
+     * @param project the project to determine the release type for
+     * @return the release type of the project (RELEASE, MILESTONE, or SNAPSHOT)
+     */
+    private static String determineReleaseType(Project project) {
 		String version = project.getVersion().toString();
 		int modifierIndex = version.lastIndexOf('-');
 		if (modifierIndex == -1) {

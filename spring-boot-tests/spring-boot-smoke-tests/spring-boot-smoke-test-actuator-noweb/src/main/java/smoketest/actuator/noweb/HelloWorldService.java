@@ -18,16 +18,29 @@ package smoketest.actuator.noweb;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * HelloWorldService class.
+ */
 @Component
 public class HelloWorldService {
 
 	private final ServiceProperties configuration;
 
-	public HelloWorldService(ServiceProperties configuration) {
+	/**
+     * Constructs a new HelloWorldService with the specified configuration.
+     * 
+     * @param configuration the service properties configuration
+     */
+    public HelloWorldService(ServiceProperties configuration) {
 		this.configuration = configuration;
 	}
 
-	public String getHelloMessage() {
+	/**
+     * Returns a hello message.
+     * 
+     * @return the hello message
+     */
+    public String getHelloMessage() {
 		return "Hello " + this.configuration.getName();
 	}
 

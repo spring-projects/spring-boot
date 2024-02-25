@@ -20,6 +20,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+/**
+ * MyRepositoryTests class.
+ */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class MyRepositoryTests {

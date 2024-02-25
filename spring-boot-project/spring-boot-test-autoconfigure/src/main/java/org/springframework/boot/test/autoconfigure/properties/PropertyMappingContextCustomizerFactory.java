@@ -31,7 +31,14 @@ import org.springframework.test.context.ContextCustomizerFactory;
  */
 class PropertyMappingContextCustomizerFactory implements ContextCustomizerFactory {
 
-	@Override
+	/**
+     * Creates a context customizer for the given test class and configuration attributes.
+     * 
+     * @param testClass the test class for which the context customizer is created
+     * @param configurationAttributes the configuration attributes for the test class
+     * @return the created context customizer
+     */
+    @Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
 		AnnotationsPropertySource propertySource = new AnnotationsPropertySource(testClass);

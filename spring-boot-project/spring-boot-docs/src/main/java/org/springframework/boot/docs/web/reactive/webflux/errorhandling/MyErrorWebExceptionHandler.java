@@ -32,26 +32,56 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.function.server.ServerResponse.BodyBuilder;
 
+/**
+ * MyErrorWebExceptionHandler class.
+ */
 @Component
 public class MyErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
 
-	public MyErrorWebExceptionHandler(ErrorAttributes errorAttributes, WebProperties webProperties,
+	/**
+     * Constructs a new MyErrorWebExceptionHandler with the specified errorAttributes, webProperties,
+     * applicationContext, and serverCodecConfigurer.
+     * 
+     * @param errorAttributes the ErrorAttributes object used to retrieve error information
+     * @param webProperties the WebProperties object containing web-related properties
+     * @param applicationContext the ApplicationContext object used to access application context
+     * @param serverCodecConfigurer the ServerCodecConfigurer object used to configure server codecs
+     */
+    public MyErrorWebExceptionHandler(ErrorAttributes errorAttributes, WebProperties webProperties,
 			ApplicationContext applicationContext, ServerCodecConfigurer serverCodecConfigurer) {
 		super(errorAttributes, webProperties.getResources(), applicationContext);
 		setMessageReaders(serverCodecConfigurer.getReaders());
 		setMessageWriters(serverCodecConfigurer.getWriters());
 	}
 
-	@Override
+	/**
+     * Returns the routing function for handling errors.
+     *
+     * @param errorAttributes the error attributes to be used
+     * @return the router function for handling errors
+     */
+    @Override
 	protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
 		return RouterFunctions.route(this::acceptsXml, this::handleErrorAsXml);
 	}
 
-	private boolean acceptsXml(ServerRequest request) {
+	/**
+     * Checks if the given server request accepts XML media type.
+     * 
+     * @param request the server request to check
+     * @return true if the server request accepts XML media type, false otherwise
+     */
+    private boolean acceptsXml(ServerRequest request) {
 		return request.headers().accept().contains(MediaType.APPLICATION_XML);
 	}
 
-	public Mono<ServerResponse> handleErrorAsXml(ServerRequest request) {
+	/**
+     * Handles the error and returns the error response as XML format.
+     *
+     * @param request the server request object
+     * @return a Mono of ServerResponse representing the error response in XML format
+     */
+    public Mono<ServerResponse> handleErrorAsXml(ServerRequest request) {
 		BodyBuilder builder = ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR);
 		// ... additional builder calls
 		return builder.build();

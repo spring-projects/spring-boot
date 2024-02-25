@@ -34,17 +34,36 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  */
 class DefaultApplicationContextFactory implements ApplicationContextFactory {
 
-	@Override
+	/**
+     * Returns the environment type for the given web application type.
+     *
+     * @param webApplicationType the web application type
+     * @return the environment type
+     */
+    @Override
 	public Class<? extends ConfigurableEnvironment> getEnvironmentType(WebApplicationType webApplicationType) {
 		return getFromSpringFactories(webApplicationType, ApplicationContextFactory::getEnvironmentType, null);
 	}
 
-	@Override
+	/**
+     * Creates a configurable environment for the specified web application type.
+     *
+     * @param webApplicationType the type of web application
+     * @return the created configurable environment
+     */
+    @Override
 	public ConfigurableEnvironment createEnvironment(WebApplicationType webApplicationType) {
 		return getFromSpringFactories(webApplicationType, ApplicationContextFactory::createEnvironment, null);
 	}
 
-	@Override
+	/**
+     * Creates a ConfigurableApplicationContext based on the specified WebApplicationType.
+     * 
+     * @param webApplicationType the type of web application
+     * @return the created ConfigurableApplicationContext
+     * @throws IllegalStateException if unable to create a default ApplicationContext instance
+     */
+    @Override
 	public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
 		try {
 			return getFromSpringFactories(webApplicationType, ApplicationContextFactory::create,
@@ -56,14 +75,30 @@ class DefaultApplicationContextFactory implements ApplicationContextFactory {
 		}
 	}
 
-	private ConfigurableApplicationContext createDefaultApplicationContext() {
+	/**
+     * Creates a default application context based on the AOT detection.
+     * If AOT detection is disabled, it creates an AnnotationConfigApplicationContext.
+     * If AOT detection is enabled, it creates a GenericApplicationContext.
+     *
+     * @return the created ConfigurableApplicationContext
+     */
+    private ConfigurableApplicationContext createDefaultApplicationContext() {
 		if (!AotDetector.useGeneratedArtifacts()) {
 			return new AnnotationConfigApplicationContext();
 		}
 		return new GenericApplicationContext();
 	}
 
-	private <T> T getFromSpringFactories(WebApplicationType webApplicationType,
+	/**
+     * Retrieves an instance from the Spring factories based on the provided web application type.
+     * 
+     * @param webApplicationType The type of the web application
+     * @param action The action to be performed on the ApplicationContextFactory
+     * @param defaultResult The default result to be returned if no matching instance is found
+     * @param <T> The type of the instance to be retrieved
+     * @return The retrieved instance from the Spring factories or the default result if no matching instance is found
+     */
+    private <T> T getFromSpringFactories(WebApplicationType webApplicationType,
 			BiFunction<ApplicationContextFactory, WebApplicationType, T> action, Supplier<T> defaultResult) {
 		for (ApplicationContextFactory candidate : SpringFactoriesLoader.loadFactories(ApplicationContextFactory.class,
 				getClass().getClassLoader())) {

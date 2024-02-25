@@ -79,12 +79,28 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 		this.gson = gson;
 	}
 
-	@Override
+	/**
+     * Writes the given object to JSON using the Gson library.
+     * 
+     * @param value the object to be written to JSON
+     * @param type the ResolvableType representing the type of the object
+     * @return a JSON string representation of the object
+     * @throws IOException if an I/O error occurs while writing the object to JSON
+     */
+    @Override
 	protected String writeObject(T value, ResolvableType type) throws IOException {
 		return this.gson.toJson(value, type.getType());
 	}
 
-	@Override
+	/**
+     * Reads an object from a reader using Gson library.
+     * 
+     * @param reader the reader to read the object from
+     * @param type the type of the object to be read
+     * @return the object read from the reader
+     * @throws IOException if an I/O error occurs while reading from the reader
+     */
+    @Override
 	protected T readObject(Reader reader, ResolvableType type) throws IOException {
 		return this.gson.fromJson(reader, type.getType());
 	}
@@ -114,11 +130,23 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 	 */
 	private static class GsonFieldInitializer extends FieldInitializer<Gson> {
 
-		protected GsonFieldInitializer() {
+		/**
+         * Creates a new instance of the GsonFieldInitializer class.
+         * This constructor calls the constructor of the superclass, passing the GsonTester class as a parameter.
+         */
+        protected GsonFieldInitializer() {
 			super(GsonTester.class);
 		}
 
-		@Override
+		/**
+         * Creates a tester for JSON marshalling using Gson.
+         * 
+         * @param resourceLoadClass the class used for resource loading
+         * @param type the ResolvableType representing the type to be marshalled
+         * @param marshaller the Gson marshaller
+         * @return the created GsonTester
+         */
+        @Override
 		protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type,
 				Gson marshaller) {
 			return new GsonTester<>(resourceLoadClass, type, marshaller);

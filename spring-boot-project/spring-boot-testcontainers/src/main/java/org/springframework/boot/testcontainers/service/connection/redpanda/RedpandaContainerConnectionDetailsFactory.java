@@ -34,7 +34,13 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 class RedpandaContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<RedpandaContainer, KafkaConnectionDetails> {
 
-	@Override
+	/**
+     * Returns the connection details for the Redpanda container.
+     * 
+     * @param source the source of the container connection
+     * @return the connection details for the Redpanda container
+     */
+    @Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<RedpandaContainer> source) {
 		return new RedpandaContainerConnectionDetails(source);
@@ -46,11 +52,21 @@ class RedpandaContainerConnectionDetailsFactory
 	private static final class RedpandaContainerConnectionDetails extends ContainerConnectionDetails<RedpandaContainer>
 			implements KafkaConnectionDetails {
 
-		private RedpandaContainerConnectionDetails(ContainerConnectionSource<RedpandaContainer> source) {
+		/**
+         * Constructs a new RedpandaContainerConnectionDetails object with the specified ContainerConnectionSource.
+         * 
+         * @param source the ContainerConnectionSource used to create the RedpandaContainerConnectionDetails object
+         */
+        private RedpandaContainerConnectionDetails(ContainerConnectionSource<RedpandaContainer> source) {
 			super(source);
 		}
 
-		@Override
+		/**
+         * Returns a list of bootstrap servers for the Redpanda container connection details.
+         *
+         * @return a list of bootstrap servers
+         */
+        @Override
 		public List<String> getBootstrapServers() {
 			return List.of(getContainer().getBootstrapServers());
 		}

@@ -32,7 +32,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
  */
 class KotlinPluginAction implements PluginApplicationAction {
 
-	@Override
+	/**
+     * Executes the action on the given project.
+     *
+     * @param project the project on which the action is executed
+     */
+    @Override
 	public void execute(Project project) {
 		ExtraPropertiesExtension extraProperties = project.getExtensions().getExtraProperties();
 		if (!extraProperties.has("kotlin.version")) {
@@ -42,17 +47,33 @@ class KotlinPluginAction implements PluginApplicationAction {
 		enableJavaParametersOption(project);
 	}
 
-	private String getKotlinVersion(Project project) {
+	/**
+     * Returns the version of Kotlin plugin used in the given project.
+     *
+     * @param project the project to get the Kotlin plugin version from
+     * @return the version of Kotlin plugin used in the project
+     */
+    private String getKotlinVersion(Project project) {
 		return KotlinPluginWrapperKt.getKotlinPluginVersion(project);
 	}
 
-	private void enableJavaParametersOption(Project project) {
+	/**
+     * Enables the Java parameters option for the specified project.
+     *
+     * @param project the project to enable the Java parameters option for
+     */
+    private void enableJavaParametersOption(Project project) {
 		project.getTasks()
 			.withType(KotlinCompile.class)
 			.configureEach((compile) -> compile.getKotlinOptions().setJavaParameters(true));
 	}
 
-	@Override
+	/**
+     * Returns the class of the plugin associated with this action.
+     *
+     * @return the class of the plugin
+     */
+    @Override
 	public Class<? extends Plugin<? extends Project>> getPluginClass() {
 		return KotlinPluginWrapper.class;
 	}

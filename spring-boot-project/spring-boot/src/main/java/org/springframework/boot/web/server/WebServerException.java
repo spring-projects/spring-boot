@@ -25,7 +25,13 @@ package org.springframework.boot.web.server;
 @SuppressWarnings("serial")
 public class WebServerException extends RuntimeException {
 
-	public WebServerException(String message, Throwable cause) {
+	/**
+     * Constructs a new WebServerException with the specified detail message and cause.
+     *
+     * @param message the detail message (which is saved for later retrieval by the getMessage() method).
+     * @param cause the cause (which is saved for later retrieval by the getCause() method).
+     */
+    public WebServerException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

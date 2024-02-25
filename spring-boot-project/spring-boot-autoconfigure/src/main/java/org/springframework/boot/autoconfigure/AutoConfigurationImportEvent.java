@@ -33,7 +33,14 @@ public class AutoConfigurationImportEvent extends EventObject {
 
 	private final Set<String> exclusions;
 
-	public AutoConfigurationImportEvent(Object source, List<String> candidateConfigurations, Set<String> exclusions) {
+	/**
+     * Constructs a new AutoConfigurationImportEvent with the specified source, candidate configurations, and exclusions.
+     * 
+     * @param source the object that triggered the event
+     * @param candidateConfigurations the list of candidate configurations for auto-configuration
+     * @param exclusions the set of exclusions for auto-configuration
+     */
+    public AutoConfigurationImportEvent(Object source, List<String> candidateConfigurations, Set<String> exclusions) {
 		super(source);
 		this.candidateConfigurations = Collections.unmodifiableList(candidateConfigurations);
 		this.exclusions = Collections.unmodifiableSet(exclusions);

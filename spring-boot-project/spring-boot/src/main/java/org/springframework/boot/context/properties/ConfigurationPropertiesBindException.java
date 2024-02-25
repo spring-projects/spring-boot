@@ -31,7 +31,13 @@ public class ConfigurationPropertiesBindException extends BeanCreationException 
 
 	private final ConfigurationPropertiesBean bean;
 
-	ConfigurationPropertiesBindException(ConfigurationPropertiesBean bean, Exception cause) {
+	/**
+     * Constructs a new ConfigurationPropertiesBindException with the specified ConfigurationPropertiesBean and cause.
+     * 
+     * @param bean the ConfigurationPropertiesBean that caused the exception
+     * @param cause the cause of the exception
+     */
+    ConfigurationPropertiesBindException(ConfigurationPropertiesBean bean, Exception cause) {
 		super(bean.getName(), getMessage(bean), cause);
 		this.bean = bean;
 	}
@@ -52,7 +58,13 @@ public class ConfigurationPropertiesBindException extends BeanCreationException 
 		return this.bean.getAnnotation();
 	}
 
-	private static String getMessage(ConfigurationPropertiesBean bean) {
+	/**
+     * Returns a message describing the failure to bind properties to a specific class.
+     * 
+     * @param bean the ConfigurationPropertiesBean object containing the annotation and type information
+     * @return a String message describing the failure
+     */
+    private static String getMessage(ConfigurationPropertiesBean bean) {
 		ConfigurationProperties annotation = bean.getAnnotation();
 		StringBuilder message = new StringBuilder();
 		message.append("Could not bind properties to '");

@@ -35,20 +35,38 @@ public class ProcessInfoContributor implements InfoContributor {
 
 	private final ProcessInfo processInfo;
 
-	public ProcessInfoContributor() {
+	/**
+     * Constructs a new ProcessInfoContributor object.
+     * Initializes the processInfo instance variable with a new ProcessInfo object.
+     */
+    public ProcessInfoContributor() {
 		this.processInfo = new ProcessInfo();
 	}
 
-	@Override
+	/**
+     * Contributes the process information to the given builder.
+     * 
+     * @param builder the builder to contribute the process information to
+     */
+    @Override
 	public void contribute(Builder builder) {
 		builder.withDetail("process", this.processInfo);
 	}
 
-	static class ProcessInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * ProcessInfoContributorRuntimeHints class.
+     */
+    static class ProcessInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
-		@Override
+		/**
+         * Registers the runtime hints for the ProcessInfoContributor class.
+         * 
+         * @param hints the runtime hints to be registered
+         * @param classLoader the class loader to be used for registering the hints
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), ProcessInfo.class);
 		}

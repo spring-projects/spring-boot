@@ -49,12 +49,20 @@ public class IntegrationGraphEndpoint {
 		this.graphServer = graphServer;
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves the graph descriptor from the graph server.
+     * 
+     * @return the graph descriptor
+     */
+    @ReadOperation
 	public GraphDescriptor graph() {
 		return new GraphDescriptor(this.graphServer.getGraph());
 	}
 
-	@WriteOperation
+	/**
+     * Rebuilds the integration graph by calling the rebuild method of the graph server.
+     */
+    @WriteOperation
 	public void rebuild() {
 		this.graphServer.rebuild();
 	}
@@ -70,21 +78,41 @@ public class IntegrationGraphEndpoint {
 
 		private final Collection<LinkNode> links;
 
-		GraphDescriptor(Graph graph) {
+		/**
+         * Constructs a new GraphDescriptor object with the given Graph.
+         * 
+         * @param graph the Graph object to be used for constructing the GraphDescriptor
+         */
+        GraphDescriptor(Graph graph) {
 			this.contentDescriptor = graph.getContentDescriptor();
 			this.nodes = graph.getNodes();
 			this.links = graph.getLinks();
 		}
 
-		public Map<String, Object> getContentDescriptor() {
+		/**
+         * Returns the content descriptor of the GraphDescriptor.
+         * 
+         * @return the content descriptor as a Map<String, Object>
+         */
+        public Map<String, Object> getContentDescriptor() {
 			return this.contentDescriptor;
 		}
 
-		public Collection<IntegrationNode> getNodes() {
+		/**
+         * Returns the collection of integration nodes in the graph.
+         *
+         * @return the collection of integration nodes
+         */
+        public Collection<IntegrationNode> getNodes() {
 			return this.nodes;
 		}
 
-		public Collection<LinkNode> getLinks() {
+		/**
+         * Returns the collection of LinkNodes in the GraphDescriptor.
+         *
+         * @return the collection of LinkNodes in the GraphDescriptor
+         */
+        public Collection<LinkNode> getLinks() {
 			return this.links;
 		}
 

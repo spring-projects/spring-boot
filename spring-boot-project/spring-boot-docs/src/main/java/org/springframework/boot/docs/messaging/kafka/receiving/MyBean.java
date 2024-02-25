@@ -19,10 +19,18 @@ package org.springframework.boot.docs.messaging.kafka.receiving;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
-	@KafkaListener(topics = "someTopic")
+	/**
+     * This method is a Kafka listener that processes messages from the "someTopic" topic.
+     * 
+     * @param content the content of the message to be processed
+     */
+    @KafkaListener(topics = "someTopic")
 	public void processMessage(String content) {
 		// ...
 	}

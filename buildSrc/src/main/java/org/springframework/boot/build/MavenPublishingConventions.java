@@ -58,7 +58,12 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  */
 class MavenPublishingConventions {
 
-	void apply(Project project) {
+	/**
+     * Applies the MavenPublishPlugin to the given project and customizes the MavenPublication.
+     * 
+     * @param project the project to apply the MavenPublishPlugin to
+     */
+    void apply(Project project) {
 		project.getPlugins().withType(MavenPublishPlugin.class).all((mavenPublish) -> {
 			PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 			if (project.hasProperty("deploymentRepository")) {
@@ -78,7 +83,13 @@ class MavenPublishingConventions {
 		});
 	}
 
-	private void customizeMavenPublication(MavenPublication publication, Project project) {
+	/**
+     * Customizes the Maven publication by customizing the POM, Java Maven publication, and suppressing Maven optional feature warnings.
+     * 
+     * @param publication The Maven publication to be customized.
+     * @param project The project associated with the Maven publication.
+     */
+    private void customizeMavenPublication(MavenPublication publication, Project project) {
 		customizePom(publication.getPom(), project);
 		project.getPlugins()
 			.withType(JavaPlugin.class)
@@ -86,7 +97,13 @@ class MavenPublishingConventions {
 		suppressMavenOptionalFeatureWarnings(publication);
 	}
 
-	private void customizePom(MavenPom pom, Project project) {
+	/**
+     * Customizes the POM (Project Object Model) for a Maven project.
+     * 
+     * @param pom     the MavenPom object to be customized
+     * @param project the Project object representing the Maven project
+     */
+    private void customizePom(MavenPom pom, Project project) {
 		pom.getUrl().set("https://spring.io/projects/spring-boot");
 		pom.getName().set(project.provider(project::getName));
 		pom.getDescription().set(project.provider(project::getDescription));
@@ -101,7 +118,13 @@ class MavenPublishingConventions {
 		}
 	}
 
-	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
+	/**
+     * Customizes the Java Maven publication.
+     * 
+     * @param publication The Maven publication to customize.
+     * @param project The project to which the publication belongs.
+     */
+    private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
 		addMavenOptionalFeature(project);
 		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_API, (mappingStrategy) -> mappingStrategy
 			.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
@@ -125,24 +148,44 @@ class MavenPublishingConventions {
 				ConfigurationVariantDetails::mapToOptional);
 	}
 
-	private void suppressMavenOptionalFeatureWarnings(MavenPublication publication) {
+	/**
+     * Suppresses Maven optional feature warnings for the given Maven publication.
+     * 
+     * @param publication The Maven publication to suppress warnings for.
+     */
+    private void suppressMavenOptionalFeatureWarnings(MavenPublication publication) {
 		publication.suppressPomMetadataWarningsFor("mavenOptionalApiElements");
 		publication.suppressPomMetadataWarningsFor("mavenOptionalRuntimeElements");
 	}
 
-	private void customizeOrganization(MavenPomOrganization organization) {
+	/**
+     * Customizes the organization details in the Maven POM.
+     * 
+     * @param organization the MavenPomOrganization object containing the organization details
+     */
+    private void customizeOrganization(MavenPomOrganization organization) {
 		organization.getName().set("VMware, Inc.");
 		organization.getUrl().set("https://spring.io");
 	}
 
-	private void customizeLicences(MavenPomLicenseSpec licences) {
+	/**
+     * Customizes the licenses for the Maven POM.
+     * 
+     * @param licences The MavenPomLicenseSpec object representing the licenses to be customized.
+     */
+    private void customizeLicences(MavenPomLicenseSpec licences) {
 		licences.license((licence) -> {
 			licence.getName().set("Apache License, Version 2.0");
 			licence.getUrl().set("https://www.apache.org/licenses/LICENSE-2.0");
 		});
 	}
 
-	private void customizeDevelopers(MavenPomDeveloperSpec developers) {
+	/**
+     * Customizes the developers section of the Maven POM.
+     * 
+     * @param developers the MavenPomDeveloperSpec object representing the developers section
+     */
+    private void customizeDevelopers(MavenPomDeveloperSpec developers) {
 		developers.developer((developer) -> {
 			developer.getName().set("Spring");
 			developer.getEmail().set("ask@spring.io");
@@ -151,7 +194,13 @@ class MavenPublishingConventions {
 		});
 	}
 
-	private void customizeScm(MavenPomScm scm, Project project) {
+	/**
+     * Customizes the SCM (Source Control Management) configuration in the Maven POM file.
+     * 
+     * @param scm the MavenPomScm object representing the SCM configuration
+     * @param project the Project object representing the Maven project
+     */
+    private void customizeScm(MavenPomScm scm, Project project) {
 		if (!isUserInherited(project)) {
 			scm.getConnection().set("scm:git:git://github.com/spring-projects/spring-boot.git");
 			scm.getDeveloperConnection().set("scm:git:ssh://git@github.com/spring-projects/spring-boot.git");
@@ -159,12 +208,23 @@ class MavenPublishingConventions {
 		scm.getUrl().set("https://github.com/spring-projects/spring-boot");
 	}
 
-	private void customizeIssueManagement(MavenPomIssueManagement issueManagement) {
+	/**
+     * Customizes the issue management for the Maven POM.
+     * 
+     * @param issueManagement the MavenPomIssueManagement object to be customized
+     */
+    private void customizeIssueManagement(MavenPomIssueManagement issueManagement) {
 		issueManagement.getSystem().set("GitHub");
 		issueManagement.getUrl().set("https://github.com/spring-projects/spring-boot/issues");
 	}
 
-	private boolean isUserInherited(Project project) {
+	/**
+     * Checks if the given project is inherited from the "spring-boot-starter-parent" or "spring-boot-dependencies".
+     * 
+     * @param project the project to check
+     * @return true if the project is inherited from "spring-boot-starter-parent" or "spring-boot-dependencies", false otherwise
+     */
+    private boolean isUserInherited(Project project) {
 		return "spring-boot-starter-parent".equals(project.getName())
 				|| "spring-boot-dependencies".equals(project.getName());
 	}

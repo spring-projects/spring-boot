@@ -35,20 +35,38 @@ public class JavaInfoContributor implements InfoContributor {
 
 	private final JavaInfo javaInfo;
 
-	public JavaInfoContributor() {
+	/**
+     * Constructs a new JavaInfoContributor object.
+     * Initializes the javaInfo field with a new JavaInfo object.
+     */
+    public JavaInfoContributor() {
 		this.javaInfo = new JavaInfo();
 	}
 
-	@Override
+	/**
+     * Contributes Java information to the builder.
+     * 
+     * @param builder the builder to contribute to
+     */
+    @Override
 	public void contribute(Builder builder) {
 		builder.withDetail("java", this.javaInfo);
 	}
 
-	static class JavaInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * JavaInfoContributorRuntimeHints class.
+     */
+    static class JavaInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
-		@Override
+		/**
+         * Registers the runtime hints for the given class loader.
+         * 
+         * @param hints the runtime hints to be registered
+         * @param classLoader the class loader to be used for registering the hints
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), JavaInfo.class);
 		}

@@ -19,6 +19,9 @@ package smoketest.data.cassandra;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
+/**
+ * SampleEntity class.
+ */
 @Table
 public class SampleEntity {
 
@@ -27,19 +30,39 @@ public class SampleEntity {
 
 	private String description;
 
-	public String getId() {
+	/**
+     * Returns the ID of the SampleEntity.
+     *
+     * @return the ID of the SampleEntity
+     */
+    public String getId() {
 		return this.id;
 	}
 
-	public void setId(String id) {
+	/**
+     * Sets the ID of the SampleEntity.
+     * 
+     * @param id the ID to set
+     */
+    public void setId(String id) {
 		this.id = id;
 	}
 
-	public String getDescription() {
+	/**
+     * Returns the description of the SampleEntity.
+     *
+     * @return the description of the SampleEntity
+     */
+    public String getDescription() {
 		return this.description;
 	}
 
-	public void setDescription(String description) {
+	/**
+     * Sets the description of the SampleEntity.
+     * 
+     * @param description the new description to be set
+     */
+    public void setDescription(String description) {
 		this.description = description;
 	}
 

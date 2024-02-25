@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.features.testing.utilities.configdataapplicationcontextinitializer;
 
+/**
+ * Config class.
+ */
 class Config {
 
 }

@@ -76,63 +76,138 @@ public class MailProperties {
 	 */
 	private String jndiName;
 
-	public String getHost() {
+	/**
+     * Returns the host of the mail properties.
+     *
+     * @return the host of the mail properties
+     */
+    public String getHost() {
 		return this.host;
 	}
 
-	public void setHost(String host) {
+	/**
+     * Sets the host for the mail properties.
+     * 
+     * @param host the host to be set
+     */
+    public void setHost(String host) {
 		this.host = host;
 	}
 
-	public Integer getPort() {
+	/**
+     * Returns the port number for the mail server.
+     *
+     * @return the port number for the mail server
+     */
+    public Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(Integer port) {
+	/**
+     * Sets the port number for the mail server.
+     * 
+     * @param port the port number to be set
+     */
+    public void setPort(Integer port) {
 		this.port = port;
 	}
 
-	public String getUsername() {
+	/**
+     * Returns the username associated with the MailProperties object.
+     *
+     * @return the username
+     */
+    public String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	/**
+     * Sets the username for the MailProperties.
+     * 
+     * @param username the username to be set
+     */
+    public void setUsername(String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	/**
+     * Returns the password associated with the MailProperties object.
+     * 
+     * @return the password
+     */
+    public String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	/**
+     * Sets the password for the email account.
+     * 
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
 		this.password = password;
 	}
 
-	public String getProtocol() {
+	/**
+     * Returns the protocol used for sending and receiving emails.
+     * 
+     * @return the protocol used for sending and receiving emails
+     */
+    public String getProtocol() {
 		return this.protocol;
 	}
 
-	public void setProtocol(String protocol) {
+	/**
+     * Sets the protocol for the mail properties.
+     * 
+     * @param protocol the protocol to be set
+     */
+    public void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
 
-	public Charset getDefaultEncoding() {
+	/**
+     * Returns the default encoding used by the MailProperties class.
+     * 
+     * @return the default encoding
+     */
+    public Charset getDefaultEncoding() {
 		return this.defaultEncoding;
 	}
 
-	public void setDefaultEncoding(Charset defaultEncoding) {
+	/**
+     * Sets the default encoding for the MailProperties.
+     * 
+     * @param defaultEncoding the default encoding to be set
+     */
+    public void setDefaultEncoding(Charset defaultEncoding) {
 		this.defaultEncoding = defaultEncoding;
 	}
 
-	public Map<String, String> getProperties() {
+	/**
+     * Returns the properties of the MailProperties object.
+     * 
+     * @return a Map containing the properties as key-value pairs
+     */
+    public Map<String, String> getProperties() {
 		return this.properties;
 	}
 
-	public void setJndiName(String jndiName) {
+	/**
+     * Sets the JNDI name for the mail properties.
+     * 
+     * @param jndiName the JNDI name to set
+     */
+    public void setJndiName(String jndiName) {
 		this.jndiName = jndiName;
 	}
 
-	public String getJndiName() {
+	/**
+     * Returns the JNDI name associated with this MailProperties object.
+     *
+     * @return the JNDI name
+     */
+    public String getJndiName() {
 		return this.jndiName;
 	}
 

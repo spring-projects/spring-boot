@@ -21,17 +21,30 @@ import jakarta.ws.rs.Path;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Endpoint class.
+ */
 @Component
 @Path("/hello")
 public class Endpoint {
 
 	private final Service service;
 
-	public Endpoint(Service service) {
+	/**
+     * Constructs a new Endpoint object with the specified Service.
+     * 
+     * @param service the Service object to be associated with the Endpoint
+     */
+    public Endpoint(Service service) {
 		this.service = service;
 	}
 
-	@GET
+	/**
+     * Retrieves a message from the service and returns it.
+     *
+     * @return the message retrieved from the service
+     */
+    @GET
 	public String message() {
 		return "Hello " + this.service.message();
 	}

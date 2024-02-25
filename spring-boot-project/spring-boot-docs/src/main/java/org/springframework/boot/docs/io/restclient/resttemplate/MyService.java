@@ -20,16 +20,30 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * MyService class.
+ */
 @Service
 public class MyService {
 
 	private final RestTemplate restTemplate;
 
-	public MyService(RestTemplateBuilder restTemplateBuilder) {
+	/**
+     * Constructs a new instance of MyService with the provided RestTemplateBuilder.
+     * 
+     * @param restTemplateBuilder the RestTemplateBuilder used to build the RestTemplate
+     */
+    public MyService(RestTemplateBuilder restTemplateBuilder) {
 		this.restTemplate = restTemplateBuilder.build();
 	}
 
-	public Details someRestCall(String name) {
+	/**
+     * Makes a REST call to retrieve the details of a given name.
+     * 
+     * @param name the name for which details are to be retrieved
+     * @return the details of the given name
+     */
+    public Details someRestCall(String name) {
 		return this.restTemplate.getForObject("/{name}/details", Details.class, name);
 	}
 

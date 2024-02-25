@@ -33,13 +33,26 @@ import org.springframework.core.Ordered;
 public class TomcatVirtualThreadsWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory>, Ordered {
 
-	@Override
+	/**
+     * Customizes the ConfigurableTomcatWebServerFactory by adding a protocol handler customizer.
+     * The protocol handler customizer sets the executor for the protocol handler to a VirtualThreadExecutor
+     * with the specified name.
+     *
+     * @param factory the ConfigurableTomcatWebServerFactory to customize
+     */
+    @Override
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
 		factory.addProtocolHandlerCustomizers(
 				(protocolHandler) -> protocolHandler.setExecutor(new VirtualThreadExecutor("tomcat-handler-")));
 	}
 
-	@Override
+	/**
+     * Returns the order of this customizer in the execution order.
+     * The order is determined by adding 1 to the order of the TomcatWebServerFactoryCustomizer.
+     *
+     * @return the order of this customizer
+     */
+    @Override
 	public int getOrder() {
 		return TomcatWebServerFactoryCustomizer.ORDER + 1;
 	}

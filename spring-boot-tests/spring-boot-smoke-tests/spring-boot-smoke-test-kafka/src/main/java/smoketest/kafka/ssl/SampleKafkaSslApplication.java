@@ -19,10 +19,19 @@ package smoketest.kafka.ssl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleKafkaSslApplication class.
+ */
 @SpringBootApplication
 public class SampleKafkaSslApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring application by running the SampleKafkaSslApplication class.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleKafkaSslApplication.class, args);
 	}
 

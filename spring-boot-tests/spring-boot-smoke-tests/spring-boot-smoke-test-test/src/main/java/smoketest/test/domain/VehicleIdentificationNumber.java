@@ -27,13 +27,26 @@ public final class VehicleIdentificationNumber {
 
 	private final String vin;
 
-	public VehicleIdentificationNumber(String vin) {
+	/**
+     * Constructs a new VehicleIdentificationNumber object with the specified VIN.
+     * 
+     * @param vin the Vehicle Identification Number to be assigned to the object
+     * @throws IllegalArgumentException if the VIN is null or not exactly 17 characters long
+     */
+    public VehicleIdentificationNumber(String vin) {
 		Assert.notNull(vin, "VIN must not be null");
 		Assert.isTrue(vin.length() == 17, "VIN must be exactly 17 characters");
 		this.vin = vin;
 	}
 
-	@Override
+	/**
+     * Compares this VehicleIdentificationNumber object to the specified object.
+     * The result is true if and only if the argument is not null and is a VehicleIdentificationNumber object that represents the same VIN as this object.
+     * 
+     * @param obj the object to compare this VehicleIdentificationNumber against
+     * @return true if the given object represents a VehicleIdentificationNumber equivalent to this VehicleIdentificationNumber, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -44,12 +57,22 @@ public final class VehicleIdentificationNumber {
 		return this.vin.equals(((VehicleIdentificationNumber) obj).vin);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for the VehicleIdentificationNumber object.
+     * 
+     * @return the hash code value for the VehicleIdentificationNumber object
+     */
+    @Override
 	public int hashCode() {
 		return this.vin.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns the string representation of the VehicleIdentificationNumber object.
+     * 
+     * @return the VIN (Vehicle Identification Number) as a string
+     */
+    @Override
 	public String toString() {
 		return this.vin;
 	}

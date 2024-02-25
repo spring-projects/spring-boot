@@ -117,7 +117,12 @@ public class ResolveMainClassName extends DefaultTask {
 		return this.configuredMainClass;
 	}
 
-	@TaskAction
+	/**
+     * Resolves and stores the main class name.
+     * 
+     * @throws IOException if an I/O error occurs while creating or writing to the output file
+     */
+    @TaskAction
 	void resolveAndStoreMainClassName() throws IOException {
 		File outputFile = this.outputFile.getAsFile().get();
 		outputFile.getParentFile().mkdirs();
@@ -126,7 +131,12 @@ public class ResolveMainClassName extends DefaultTask {
 				StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
-	private String resolveMainClassName() {
+	/**
+     * Resolves the main class name.
+     * 
+     * @return The main class name.
+     */
+    private String resolveMainClassName() {
 		String configuredMainClass = this.configuredMainClass.getOrNull();
 		if (configuredMainClass != null) {
 			return configuredMainClass;
@@ -140,7 +150,13 @@ public class ResolveMainClassName extends DefaultTask {
 			.orElse("");
 	}
 
-	private String findMainClass(File file) {
+	/**
+     * Finds the main class in the given file.
+     * 
+     * @param file the file to search for the main class
+     * @return the fully qualified name of the main class if found, null otherwise
+     */
+    private String findMainClass(File file) {
 		try {
 			return MainClassFinder.findSingleMainClass(file, SPRING_BOOT_APPLICATION_CLASS_NAME);
 		}
@@ -149,7 +165,12 @@ public class ResolveMainClassName extends DefaultTask {
 		}
 	}
 
-	Provider<String> readMainClassName() {
+	/**
+     * Reads the main class name from the classpath.
+     * 
+     * @return a provider of the main class name as a string
+     */
+    Provider<String> readMainClassName() {
 		String classpath = getClasspath().filter(File::isDirectory)
 			.getFiles()
 			.stream()
@@ -159,15 +180,31 @@ public class ResolveMainClassName extends DefaultTask {
 		return this.outputFile.map(new ClassNameReader(classpath));
 	}
 
-	private static final class ClassNameReader implements Transformer<String, RegularFile> {
+	/**
+     * ClassNameReader class.
+     */
+    private static final class ClassNameReader implements Transformer<String, RegularFile> {
 
 		private final String classpath;
 
-		private ClassNameReader(String classpath) {
+		/**
+         * Constructs a new ClassNameReader object with the specified classpath.
+         * 
+         * @param classpath the classpath to be used for reading the class name
+         */
+        private ClassNameReader(String classpath) {
 			this.classpath = classpath;
 		}
 
-		@Override
+		/**
+         * Transforms a regular file into a string representation.
+         * 
+         * @param file The regular file to be transformed.
+         * @return The string representation of the transformed file.
+         * @throws InvalidUserDataException If the main class name has not been configured and cannot be resolved from the classpath.
+         * @throws RuntimeException If there is a failure to read the main class name from the file.
+         */
+        @Override
 		public String transform(RegularFile file) {
 			if (file.getAsFile().length() == 0) {
 				throw new InvalidUserDataException(

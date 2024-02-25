@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configurecustomdatasource.custom;
 
+/**
+ * SomeDataSource class.
+ */
 public class SomeDataSource {
 
 }

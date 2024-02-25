@@ -46,7 +46,16 @@ import org.springframework.transaction.ReactiveTransactionManager;
 @ConditionalOnBean(Driver.class)
 public class Neo4jReactiveDataAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a ReactiveDatabaseSelectionProvider bean if no other bean of the same type is present.
+     * This bean is responsible for providing the database selection for reactive Neo4j data operations.
+     * The database selection is determined based on the value of the 'database' property in the Neo4jDataProperties.
+     * If the 'database' property is not set, the default selection provider is used.
+     *
+     * @param dataProperties the Neo4jDataProperties object containing the configuration properties
+     * @return the ReactiveDatabaseSelectionProvider bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public ReactiveDatabaseSelectionProvider reactiveDatabaseSelectionProvider(Neo4jDataProperties dataProperties) {
 		String database = dataProperties.getDatabase();
@@ -54,14 +63,28 @@ public class Neo4jReactiveDataAutoConfiguration {
 				: ReactiveDatabaseSelectionProvider.getDefaultSelectionProvider();
 	}
 
-	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_CLIENT_BEAN_NAME)
+	/**
+     * Creates a ReactiveNeo4jClient bean if no other bean of the same type is present.
+     * 
+     * @param driver The Neo4j driver used for database connectivity.
+     * @param databaseNameProvider The provider for selecting the database to connect to.
+     * @return The created ReactiveNeo4jClient bean.
+     */
+    @Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_CLIENT_BEAN_NAME)
 	@ConditionalOnMissingBean
 	public ReactiveNeo4jClient reactiveNeo4jClient(Driver driver,
 			ReactiveDatabaseSelectionProvider databaseNameProvider) {
 		return ReactiveNeo4jClient.create(driver, databaseNameProvider);
 	}
 
-	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_TEMPLATE_BEAN_NAME)
+	/**
+     * Creates a new instance of ReactiveNeo4jTemplate using the provided ReactiveNeo4jClient and Neo4jMappingContext.
+     * 
+     * @param neo4jClient The ReactiveNeo4jClient used for executing queries.
+     * @param neo4jMappingContext The Neo4jMappingContext used for mapping entities to the database.
+     * @return A new instance of ReactiveNeo4jTemplate.
+     */
+    @Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_TEMPLATE_BEAN_NAME)
 	@ConditionalOnMissingBean(ReactiveNeo4jOperations.class)
 	public ReactiveNeo4jTemplate reactiveNeo4jTemplate(ReactiveNeo4jClient neo4jClient,
 			Neo4jMappingContext neo4jMappingContext) {

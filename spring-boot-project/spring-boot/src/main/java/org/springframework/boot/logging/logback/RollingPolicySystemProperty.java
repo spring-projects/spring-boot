@@ -57,7 +57,13 @@ public enum RollingPolicySystemProperty {
 
 	private final String deprecatedApplicationPropertyName;
 
-	RollingPolicySystemProperty(String applicationPropertyName, String deprecatedApplicationPropertyName) {
+	/**
+     * Constructs a new RollingPolicySystemProperty with the specified application property name and deprecated application property name.
+     * 
+     * @param applicationPropertyName the name of the application property for the rolling policy
+     * @param deprecatedApplicationPropertyName the name of the deprecated application property for the rolling policy
+     */
+    RollingPolicySystemProperty(String applicationPropertyName, String deprecatedApplicationPropertyName) {
 		this.environmentVariableName = "LOGBACK_ROLLINGPOLICY_" + name();
 		this.applicationPropertyName = "logging.logback.rollingpolicy." + applicationPropertyName;
 		this.deprecatedApplicationPropertyName = deprecatedApplicationPropertyName;
@@ -71,11 +77,21 @@ public enum RollingPolicySystemProperty {
 		return this.environmentVariableName;
 	}
 
-	String getApplicationPropertyName() {
+	/**
+     * Returns the application property name.
+     *
+     * @return the application property name
+     */
+    String getApplicationPropertyName() {
 		return this.applicationPropertyName;
 	}
 
-	String getDeprecatedApplicationPropertyName() {
+	/**
+     * Returns the name of the deprecated application property.
+     *
+     * @return the name of the deprecated application property
+     */
+    String getDeprecatedApplicationPropertyName() {
 		return this.deprecatedApplicationPropertyName;
 	}
 

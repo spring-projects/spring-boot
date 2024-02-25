@@ -34,7 +34,12 @@ import org.assertj.core.internal.Objects;
  */
 public class ObjectContentAssert<A> extends AbstractObjectAssert<ObjectContentAssert<A>, A> {
 
-	protected ObjectContentAssert(A actual) {
+	/**
+     * Constructs a new ObjectContentAssert object with the given actual value.
+     * 
+     * @param actual the actual value to be asserted
+     */
+    protected ObjectContentAssert(A actual) {
 		super(actual, ObjectContentAssert.class);
 	}
 

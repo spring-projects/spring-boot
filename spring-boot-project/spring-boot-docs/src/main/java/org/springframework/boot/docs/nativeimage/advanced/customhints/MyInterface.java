@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.nativeimage.advanced.customhints;
 
+/**
+ * MyInterface interface.
+ */
 interface MyInterface {
 
 }

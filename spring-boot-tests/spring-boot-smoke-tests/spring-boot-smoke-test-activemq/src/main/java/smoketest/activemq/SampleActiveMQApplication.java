@@ -24,16 +24,30 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jms.annotation.EnableJms;
 
+/**
+ * SampleActiveMQApplication class.
+ */
 @SpringBootApplication
 @EnableJms
 public class SampleActiveMQApplication {
 
-	@Bean
+	/**
+     * Creates a new ActiveMQQueue object with the name "sample.queue".
+     * 
+     * @return the newly created ActiveMQQueue object
+     */
+    @Bean
 	public Queue queue() {
 		return new ActiveMQQueue("sample.queue");
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the SampleActiveMQApplication class.
+     * It starts the Spring application by calling the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the main method
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleActiveMQApplication.class, args);
 	}
 

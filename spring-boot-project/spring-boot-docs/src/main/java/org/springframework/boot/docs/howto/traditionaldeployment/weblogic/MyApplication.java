@@ -20,6 +20,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.web.WebApplicationInitializer;
 
+/**
+ * MyApplication class.
+ */
 @SpringBootApplication
 public class MyApplication extends SpringBootServletInitializer implements WebApplicationInitializer {
 

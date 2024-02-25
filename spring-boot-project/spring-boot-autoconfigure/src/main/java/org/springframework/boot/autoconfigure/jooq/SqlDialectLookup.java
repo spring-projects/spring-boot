@@ -37,7 +37,10 @@ final class SqlDialectLookup {
 
 	private static final Log logger = LogFactory.getLog(SqlDialectLookup.class);
 
-	private SqlDialectLookup() {
+	/**
+     * Constructor for the SqlDialectLookup class.
+     */
+    private SqlDialectLookup() {
 	}
 
 	/**

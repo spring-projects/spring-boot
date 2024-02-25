@@ -22,10 +22,19 @@ import org.springframework.boot.autoconfigure.cache.Cache2kBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyCache2kDefaultsConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyCache2kDefaultsConfiguration {
 
-	@Bean
+	/**
+     * Returns a Cache2kBuilderCustomizer that sets the default configuration for Cache2k caches.
+     * The default configuration includes an entry capacity of 200 and an expiration time of 5 minutes after write.
+     *
+     * @return the Cache2kBuilderCustomizer that sets the default configuration
+     */
+    @Bean
 	public Cache2kBuilderCustomizer myCache2kDefaultsCustomizer() {
 		// @formatter:off
 		return (builder) -> builder.entryCapacity(200)

@@ -89,7 +89,12 @@ public class Image {
 		return this.name;
 	}
 
-	void setName(String name) {
+	/**
+     * Sets the name of the image.
+     * 
+     * @param name the name to be set for the image
+     */
+    void setName(String name) {
 		this.name = name;
 	}
 
@@ -101,7 +106,12 @@ public class Image {
 		return this.builder;
 	}
 
-	void setBuilder(String builder) {
+	/**
+     * Sets the builder of the Image.
+     * 
+     * @param builder the name of the builder to be set
+     */
+    void setBuilder(String builder) {
 		this.builder = builder;
 	}
 
@@ -113,7 +123,12 @@ public class Image {
 		return this.runImage;
 	}
 
-	void setRunImage(String runImage) {
+	/**
+     * Sets the run image for the Image object.
+     * 
+     * @param runImage the path or name of the run image
+     */
+    void setRunImage(String runImage) {
 		this.runImage = runImage;
 	}
 
@@ -133,7 +148,12 @@ public class Image {
 		return this.cleanCache;
 	}
 
-	void setCleanCache(Boolean cleanCache) {
+	/**
+     * Sets the value indicating whether the cache should be cleaned.
+     * 
+     * @param cleanCache the value indicating whether the cache should be cleaned
+     */
+    void setCleanCache(Boolean cleanCache) {
 		this.cleanCache = cleanCache;
 	}
 
@@ -153,7 +173,12 @@ public class Image {
 		return this.pullPolicy;
 	}
 
-	void setPullPolicy(PullPolicy pullPolicy) {
+	/**
+     * Sets the pull policy for the image.
+     * 
+     * @param pullPolicy the pull policy to be set
+     */
+    void setPullPolicy(PullPolicy pullPolicy) {
 		this.pullPolicy = pullPolicy;
 	}
 
@@ -165,7 +190,12 @@ public class Image {
 		return this.publish;
 	}
 
-	void setPublish(Boolean publish) {
+	/**
+     * Sets the publish status of the image.
+     * 
+     * @param publish the publish status to be set
+     */
+    void setPublish(Boolean publish) {
 		this.publish = publish;
 	}
 
@@ -177,7 +207,12 @@ public class Image {
 		return this.network;
 	}
 
-	public void setNetwork(String network) {
+	/**
+     * Sets the network of the image.
+     * 
+     * @param network the network to set
+     */
+    public void setNetwork(String network) {
 		this.network = network;
 	}
 
@@ -189,7 +224,12 @@ public class Image {
 		return this.createdDate;
 	}
 
-	public void setCreatedDate(String createdDate) {
+	/**
+     * Sets the created date of the image.
+     * 
+     * @param createdDate the created date to be set
+     */
+    public void setCreatedDate(String createdDate) {
 		this.createdDate = createdDate;
 	}
 
@@ -201,15 +241,35 @@ public class Image {
 		return this.applicationDirectory;
 	}
 
-	public void setApplicationDirectory(String applicationDirectory) {
+	/**
+     * Sets the application directory for the Image.
+     * 
+     * @param applicationDirectory the directory path where the application is located
+     */
+    public void setApplicationDirectory(String applicationDirectory) {
 		this.applicationDirectory = applicationDirectory;
 	}
 
-	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
+	/**
+     * Returns a BuildRequest object based on the given artifact and application content.
+     * 
+     * @param artifact the artifact to be used in the build request
+     * @param applicationContent a function that takes an Owner object and returns a TarArchive object representing the application content
+     * @return a BuildRequest object customized based on the artifact and application content
+     */
+    BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
 		return customize(BuildRequest.of(getOrDeduceName(artifact), applicationContent));
 	}
 
-	private ImageReference getOrDeduceName(Artifact artifact) {
+	/**
+     * Returns the ImageReference based on the provided Artifact.
+     * If the name is not empty, it returns the ImageReference with the provided name.
+     * Otherwise, it deduces the name from the Artifact's artifactId and creates the ImageReference with the deduced name and version.
+     *
+     * @param artifact the Artifact object used to generate the ImageReference
+     * @return the ImageReference based on the provided Artifact
+     */
+    private ImageReference getOrDeduceName(Artifact artifact) {
 		if (StringUtils.hasText(this.name)) {
 			return ImageReference.of(this.name);
 		}
@@ -217,7 +277,13 @@ public class Image {
 		return ImageReference.of(imageName, artifact.getVersion());
 	}
 
-	private BuildRequest customize(BuildRequest request) {
+	/**
+     * Customizes the given BuildRequest object based on the values of the properties in this Image class.
+     * 
+     * @param request the BuildRequest object to be customized
+     * @return the customized BuildRequest object
+     */
+    private BuildRequest customize(BuildRequest request) {
 		if (StringUtils.hasText(this.builder)) {
 			request = request.withBuilder(ImageReference.of(this.builder));
 		}

@@ -31,12 +31,23 @@ class ElasticsearchEnvironment {
 
 	private final String password;
 
-	ElasticsearchEnvironment(Map<String, String> env) {
+	/**
+     * Constructs a new ElasticsearchEnvironment object with the given environment variables.
+     * 
+     * @param env a Map containing the environment variables
+     * @throws IllegalArgumentException if the ELASTIC_PASSWORD_FILE variable is present
+     */
+    ElasticsearchEnvironment(Map<String, String> env) {
 		Assert.state(!env.containsKey("ELASTIC_PASSWORD_FILE"), "ELASTIC_PASSWORD_FILE is not supported");
 		this.password = env.get("ELASTIC_PASSWORD");
 	}
 
-	String getPassword() {
+	/**
+     * Returns the password associated with the Elasticsearch environment.
+     *
+     * @return the password
+     */
+    String getPassword() {
 		return this.password;
 	}
 

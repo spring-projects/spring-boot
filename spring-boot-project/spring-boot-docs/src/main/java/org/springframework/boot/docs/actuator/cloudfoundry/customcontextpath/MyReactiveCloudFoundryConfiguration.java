@@ -31,28 +31,54 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
+/**
+ * MyReactiveCloudFoundryConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(WebFluxProperties.class)
 public class MyReactiveCloudFoundryConfiguration {
 
-	@Bean
+	/**
+     * Creates an HTTP handler for the Cloud Foundry environment.
+     * 
+     * @param applicationContext the application context
+     * @param properties the WebFlux properties
+     * @return the Cloud Foundry HTTP handler
+     */
+    @Bean
 	public HttpHandler httpHandler(ApplicationContext applicationContext, WebFluxProperties properties) {
 		HttpHandler httpHandler = WebHttpHandlerBuilder.applicationContext(applicationContext).build();
 		return new CloudFoundryHttpHandler(properties.getBasePath(), httpHandler);
 	}
 
-	private static final class CloudFoundryHttpHandler implements HttpHandler {
+	/**
+     * CloudFoundryHttpHandler class.
+     */
+    private static final class CloudFoundryHttpHandler implements HttpHandler {
 
 		private final HttpHandler delegate;
 
 		private final ContextPathCompositeHandler contextPathDelegate;
 
-		private CloudFoundryHttpHandler(String basePath, HttpHandler delegate) {
+		/**
+         * Constructs a new CloudFoundryHttpHandler with the specified base path and delegate HttpHandler.
+         *
+         * @param basePath the base path for the handler
+         * @param delegate the delegate HttpHandler to handle the requests
+         */
+        private CloudFoundryHttpHandler(String basePath, HttpHandler delegate) {
 			this.delegate = delegate;
 			this.contextPathDelegate = new ContextPathCompositeHandler(Map.of(basePath, delegate));
 		}
 
-		@Override
+		/**
+         * Handles the incoming server HTTP request and server HTTP response.
+         * 
+         * @param request the server HTTP request
+         * @param response the server HTTP response
+         * @return a Mono representing the completion of the request handling
+         */
+        @Override
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
 			// Remove underlying context path first (e.g. Servlet container)
 			String path = request.getPath().pathWithinApplication().value();

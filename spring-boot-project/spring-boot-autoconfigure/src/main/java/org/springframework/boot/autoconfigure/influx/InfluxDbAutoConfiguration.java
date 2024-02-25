@@ -51,7 +51,16 @@ import org.springframework.context.annotation.Bean;
 @SuppressWarnings("removal")
 public class InfluxDbAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates an instance of InfluxDB based on the provided properties.
+     * If no custom InfluxDB instance is found, a new instance is created using the provided properties.
+     * 
+     * @param properties the InfluxDB properties
+     * @param builder an optional provider for custom OkHttpClient builders
+     * @param customizers an optional provider for custom InfluxDB customizers
+     * @return an instance of InfluxDB
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public InfluxDB influxDb(InfluxDbProperties properties, ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
 			ObjectProvider<InfluxDbCustomizer> customizers) {
@@ -61,7 +70,15 @@ public class InfluxDbAutoConfiguration {
 		return influxDb;
 	}
 
-	private static OkHttpClient.Builder determineBuilder(InfluxDbOkHttpClientBuilderProvider builder) {
+	/**
+     * Determines the OkHttpClient.Builder to be used for InfluxDB.
+     * If a custom builder is provided, it will be returned.
+     * Otherwise, a new instance of OkHttpClient.Builder will be created.
+     *
+     * @param builder the InfluxDbOkHttpClientBuilderProvider to provide the custom builder
+     * @return the OkHttpClient.Builder to be used for InfluxDB
+     */
+    private static OkHttpClient.Builder determineBuilder(InfluxDbOkHttpClientBuilderProvider builder) {
 		if (builder != null) {
 			return builder.get();
 		}

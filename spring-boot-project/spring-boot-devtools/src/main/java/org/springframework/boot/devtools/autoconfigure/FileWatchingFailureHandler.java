@@ -36,11 +36,22 @@ class FileWatchingFailureHandler implements FailureHandler {
 
 	private final FileSystemWatcherFactory fileSystemWatcherFactory;
 
-	FileWatchingFailureHandler(FileSystemWatcherFactory fileSystemWatcherFactory) {
+	/**
+     * Constructs a new FileWatchingFailureHandler with the specified FileSystemWatcherFactory.
+     * 
+     * @param fileSystemWatcherFactory the factory used to create FileSystemWatcher instances
+     */
+    FileWatchingFailureHandler(FileSystemWatcherFactory fileSystemWatcherFactory) {
 		this.fileSystemWatcherFactory = fileSystemWatcherFactory;
 	}
 
-	@Override
+	/**
+     * Handles a failure by starting a file system watcher and waiting for it to complete.
+     * 
+     * @param failure the Throwable representing the failure
+     * @return the Outcome indicating whether to retry or not
+     */
+    @Override
 	public Outcome handle(Throwable failure) {
 		CountDownLatch latch = new CountDownLatch(1);
 		FileSystemWatcher watcher = this.fileSystemWatcherFactory.getFileSystemWatcher();
@@ -56,15 +67,29 @@ class FileWatchingFailureHandler implements FailureHandler {
 		return Outcome.RETRY;
 	}
 
-	private static class Listener implements FileChangeListener {
+	/**
+     * Listener class.
+     */
+    private static class Listener implements FileChangeListener {
 
 		private final CountDownLatch latch;
 
-		Listener(CountDownLatch latch) {
+		/**
+         * Constructs a new Listener with the specified CountDownLatch.
+         *
+         * @param latch the CountDownLatch to be used by the Listener
+         */
+        Listener(CountDownLatch latch) {
 			this.latch = latch;
 		}
 
-		@Override
+		/**
+         * This method is called when there is a change in the set of files.
+         * It decrements the latch count down by one.
+         *
+         * @param changeSet the set of changed files
+         */
+        @Override
 		public void onChange(Set<ChangedFiles> changeSet) {
 			this.latch.countDown();
 		}

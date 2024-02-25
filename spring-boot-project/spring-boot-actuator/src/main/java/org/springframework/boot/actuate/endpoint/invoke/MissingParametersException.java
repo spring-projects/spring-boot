@@ -34,7 +34,12 @@ public final class MissingParametersException extends InvalidEndpointRequestExce
 
 	private final Set<OperationParameter> missingParameters;
 
-	public MissingParametersException(Set<OperationParameter> missingParameters) {
+	/**
+     * Constructs a new MissingParametersException with the specified missing parameters.
+     * 
+     * @param missingParameters the set of missing parameters
+     */
+    public MissingParametersException(Set<OperationParameter> missingParameters) {
 		super("Failed to invoke operation because the following required parameters were missing: "
 				+ StringUtils.collectionToCommaDelimitedString(missingParameters),
 				"Missing parameters: "

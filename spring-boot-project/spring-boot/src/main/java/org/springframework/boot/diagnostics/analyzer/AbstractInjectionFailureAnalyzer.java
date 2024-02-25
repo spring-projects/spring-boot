@@ -35,12 +35,28 @@ import org.springframework.util.ClassUtils;
  */
 public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable> extends AbstractFailureAnalyzer<T> {
 
-	@Override
+	/**
+     * Analyzes the failure and generates a FailureAnalysis object.
+     * 
+     * @param rootFailure the root cause of the failure
+     * @param cause the specific cause of the failure
+     * @return a FailureAnalysis object containing information about the failure
+     */
+    @Override
 	protected final FailureAnalysis analyze(Throwable rootFailure, T cause) {
 		return analyze(rootFailure, cause, getDescription(rootFailure));
 	}
 
-	private String getDescription(Throwable rootFailure) {
+	/**
+     * Returns the description of the root failure by finding the most nested cause of type UnsatisfiedDependencyException or BeanInstantiationException.
+     * If the root failure is an UnsatisfiedDependencyException, the description is obtained by calling the getDescription method on the UnsatisfiedDependencyException.
+     * If the root failure is a BeanInstantiationException, the description is obtained by calling the getDescription method on the BeanInstantiationException.
+     * If the root failure is neither an UnsatisfiedDependencyException nor a BeanInstantiationException, null is returned.
+     * 
+     * @param rootFailure the root failure to get the description for
+     * @return the description of the root failure, or null if the root failure is not an UnsatisfiedDependencyException or a BeanInstantiationException
+     */
+    private String getDescription(Throwable rootFailure) {
 		UnsatisfiedDependencyException unsatisfiedDependency = findMostNestedCause(rootFailure,
 				UnsatisfiedDependencyException.class);
 		if (unsatisfiedDependency != null) {
@@ -54,7 +70,16 @@ public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable> exte
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Finds the most nested cause of a given type in a throwable hierarchy.
+     * 
+     * @param root the root throwable to start the search from
+     * @param type the type of exception to search for
+     * @return the most nested cause of the given type, or null if not found
+     * @throws ClassCastException if the found cause cannot be cast to the specified type
+     * @param <C> the type of exception to search for, must extend Exception
+     */
+    @SuppressWarnings("unchecked")
 	private <C extends Exception> C findMostNestedCause(Throwable root, Class<C> type) {
 		Throwable candidate = root;
 		C result = null;
@@ -67,7 +92,13 @@ public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable> exte
 		return result;
 	}
 
-	private String getDescription(UnsatisfiedDependencyException ex) {
+	/**
+     * Returns a description of the unsatisfied dependency exception.
+     * 
+     * @param ex the UnsatisfiedDependencyException
+     * @return a description of the unsatisfied dependency exception
+     */
+    private String getDescription(UnsatisfiedDependencyException ex) {
 		InjectionPoint injectionPoint = ex.getInjectionPoint();
 		if (injectionPoint != null) {
 			if (injectionPoint.getField() != null) {
@@ -89,7 +120,13 @@ public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable> exte
 		return ex.getResourceDescription();
 	}
 
-	private String getDescription(BeanInstantiationException ex) {
+	/**
+     * Returns the description of the given BeanInstantiationException.
+     * 
+     * @param ex the BeanInstantiationException to get the description for
+     * @return the description of the BeanInstantiationException
+     */
+    private String getDescription(BeanInstantiationException ex) {
 		if (ex.getConstructingMethod() != null) {
 			return String.format("Method %s in %s", ex.getConstructingMethod().getName(),
 					ex.getConstructingMethod().getDeclaringClass().getName());

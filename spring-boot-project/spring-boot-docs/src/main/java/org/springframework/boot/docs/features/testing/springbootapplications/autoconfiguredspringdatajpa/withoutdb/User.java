@@ -16,16 +16,35 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdatajpa.withoutdb;
 
+/**
+ * User class.
+ */
 class User {
 
-	User(String username, String employeeNumber) {
+	/**
+     * Constructs a new User object with the specified username and employee number.
+     *
+     * @param username the username of the user
+     * @param employeeNumber the employee number of the user
+     */
+    User(String username, String employeeNumber) {
 	}
 
-	String getEmployeeNumber() {
+	/**
+     * Returns the employee number of the user.
+     *
+     * @return the employee number of the user, or null if not available
+     */
+    String getEmployeeNumber() {
 		return null;
 	}
 
-	String getUsername() {
+	/**
+     * Returns the username of the user.
+     *
+     * @return the username of the user
+     */
+    String getUsername() {
 		return null;
 	}
 

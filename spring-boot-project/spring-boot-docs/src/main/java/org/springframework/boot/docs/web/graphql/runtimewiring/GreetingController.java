@@ -20,10 +20,19 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+/**
+ * GreetingController class.
+ */
 @Controller
 public class GreetingController {
 
-	@QueryMapping
+	/**
+     * Returns a greeting message with the provided name.
+     *
+     * @param name the name to be included in the greeting message
+     * @return a greeting message with the provided name
+     */
+    @QueryMapping
 	public String greeting(@Argument String name) {
 		return "Hello, " + name + "!";
 	}

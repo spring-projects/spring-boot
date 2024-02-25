@@ -139,7 +139,19 @@ public class LiveReloadServer {
 		return this.port;
 	}
 
-	private void acceptConnections() {
+	/**
+     * Accepts incoming connections and handles them in separate threads.
+     * 
+     * This method continuously accepts incoming connections using the server socket. 
+     * For each accepted connection, a new ConnectionHandler thread is created and executed using the executor.
+     * 
+     * If a SocketTimeoutException occurs while accepting a connection, it is ignored.
+     * 
+     * If any other exception occurs, it is logged as a debug message if the logger is in debug mode.
+     * 
+     * This method continues accepting connections until the server socket is closed.
+     */
+    private void acceptConnections() {
 		do {
 			try {
 				Socket socket = this.serverSocket.accept();
@@ -186,7 +198,12 @@ public class LiveReloadServer {
 		}
 	}
 
-	private void closeAllConnections() throws IOException {
+	/**
+     * Closes all connections established by the LiveReloadServer.
+     * 
+     * @throws IOException if an I/O error occurs while closing the connections
+     */
+    private void closeAllConnections() throws IOException {
 		synchronized (this.connections) {
 			for (Connection connection : this.connections) {
 				connection.close();
@@ -212,13 +229,23 @@ public class LiveReloadServer {
 		}
 	}
 
-	private void addConnection(Connection connection) {
+	/**
+     * Adds a connection to the list of connections in the LiveReloadServer.
+     * 
+     * @param connection the connection to be added
+     */
+    private void addConnection(Connection connection) {
 		synchronized (this.connections) {
 			this.connections.add(connection);
 		}
 	}
 
-	private void removeConnection(Connection connection) {
+	/**
+     * Removes a connection from the LiveReloadServer's list of connections.
+     * 
+     * @param connection the connection to be removed
+     */
+    private void removeConnection(Connection connection) {
 		synchronized (this.connections) {
 			this.connections.remove(connection);
 		}
@@ -248,12 +275,23 @@ public class LiveReloadServer {
 
 		private final InputStream inputStream;
 
-		ConnectionHandler(Socket socket) throws IOException {
+		/**
+         * Constructs a new ConnectionHandler object with the specified Socket.
+         * 
+         * @param socket the Socket object representing the connection
+         * @throws IOException if an I/O error occurs when creating the InputStream
+         */
+        ConnectionHandler(Socket socket) throws IOException {
 			this.socket = socket;
 			this.inputStream = socket.getInputStream();
 		}
 
-		@Override
+		/**
+         * This method is the entry point for the thread that handles the LiveReload connection.
+         * It catches any ConnectionClosedException and logs a debug message indicating that the connection was closed.
+         * It also catches any other exception and logs a debug message with the exception details if debug logging is enabled.
+         */
+        @Override
 		public void run() {
 			try {
 				handle();
@@ -268,7 +306,12 @@ public class LiveReloadServer {
 			}
 		}
 
-		private void handle() throws Exception {
+		/**
+         * Handles the connection by creating a connection object, running the connection, and closing the input stream and socket.
+         * 
+         * @throws Exception if an error occurs during the handling of the connection
+         */
+        private void handle() throws Exception {
 			try {
 				try (OutputStream outputStream = this.socket.getOutputStream()) {
 					Connection connection = createConnection(this.socket, this.inputStream, outputStream);
@@ -283,7 +326,13 @@ public class LiveReloadServer {
 			}
 		}
 
-		private void runConnection(Connection connection) throws Exception {
+		/**
+         * Runs a connection by adding it to the connection list, executing its run method, and then removing it from the list.
+         * 
+         * @param connection the connection to run
+         * @throws Exception if an error occurs during the execution of the connection
+         */
+        private void runConnection(Connection connection) throws Exception {
 			try {
 				addConnection(connection);
 				connection.run();
@@ -302,7 +351,14 @@ public class LiveReloadServer {
 
 		private final AtomicInteger threadNumber = new AtomicInteger(1);
 
-		@Override
+		/**
+         * Creates a new thread with the specified runnable object.
+         * The thread is set as a daemon thread and named with a unique identifier.
+         * 
+         * @param r the runnable object to be executed by the thread
+         * @return the newly created thread
+         */
+        @Override
 		public Thread newThread(Runnable r) {
 			Thread thread = new Thread(r);
 			thread.setDaemon(true);

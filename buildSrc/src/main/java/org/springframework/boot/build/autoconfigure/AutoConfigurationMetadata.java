@@ -56,7 +56,17 @@ public class AutoConfigurationMetadata extends DefaultTask {
 
 	private File outputFile;
 
-	public AutoConfigurationMetadata() {
+	/**
+     * Constructs a new instance of AutoConfigurationMetadata.
+     * 
+     * This method retrieves the inputs and sets the file path for the AutoConfiguration.imports file located in the META-INF/spring/org.springframework.boot.autoconfigure directory.
+     * The path sensitivity is set to RELATIVE and the property name is set to "org.springframework.boot.autoconfigure.AutoConfiguration".
+     * 
+     * The method also sets a dependency on the processResources task name of the source set.
+     * 
+     * Additionally, it creates a configuration named "AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME" if it does not already exist in the project's configurations.
+     */
+    public AutoConfigurationMetadata() {
 		getInputs()
 			.file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
 					"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports"))
@@ -68,20 +78,40 @@ public class AutoConfigurationMetadata extends DefaultTask {
 			.maybeCreate(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME);
 	}
 
-	public void setSourceSet(SourceSet sourceSet) {
+	/**
+     * Sets the source set for the AutoConfigurationMetadata.
+     * 
+     * @param sourceSet the source set to be set
+     */
+    public void setSourceSet(SourceSet sourceSet) {
 		this.sourceSet = sourceSet;
 	}
 
-	@OutputFile
+	/**
+     * Returns the output file.
+     *
+     * @return the output file
+     */
+    @OutputFile
 	public File getOutputFile() {
 		return this.outputFile;
 	}
 
-	public void setOutputFile(File outputFile) {
+	/**
+     * Sets the output file for the AutoConfigurationMetadata.
+     * 
+     * @param outputFile the output file to be set
+     */
+    public void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
 	}
 
-	@TaskAction
+	/**
+     * Reads the auto configuration properties and stores them in a file.
+     *
+     * @throws IOException if an I/O error occurs while reading or writing the file
+     */
+    @TaskAction
 	void documentAutoConfiguration() throws IOException {
 		Properties autoConfiguration = readAutoConfiguration();
 		getOutputFile().getParentFile().mkdirs();
@@ -90,7 +120,13 @@ public class AutoConfigurationMetadata extends DefaultTask {
 		}
 	}
 
-	private Properties readAutoConfiguration() throws IOException {
+	/**
+     * Reads the auto-configuration properties from the auto-configurations file.
+     * 
+     * @return the auto-configuration properties
+     * @throws IOException if an I/O error occurs while reading the file
+     */
+    private Properties readAutoConfiguration() throws IOException {
 		Properties autoConfiguration = CollectionFactory.createSortedProperties(true);
 		List<String> classNames = readAutoConfigurationsFile();
 		Set<String> publicClassNames = new LinkedHashSet<>();
@@ -127,7 +163,15 @@ public class AutoConfigurationMetadata extends DefaultTask {
 		}
 	}
 
-	private String stripComment(String line) {
+	/**
+     * This method is used to strip the comment from a given line of code.
+     * If the line does not contain any comment, it returns the trimmed line.
+     * If the line contains a comment, it returns the trimmed line without the comment.
+     *
+     * @param line The line of code from which the comment needs to be stripped.
+     * @return The trimmed line without the comment.
+     */
+    private String stripComment(String line) {
 		int commentStart = line.indexOf(COMMENT_START);
 		if (commentStart == -1) {
 			return line.trim();
@@ -135,7 +179,13 @@ public class AutoConfigurationMetadata extends DefaultTask {
 		return line.substring(0, commentStart).trim();
 	}
 
-	private File findClassFile(String className) {
+	/**
+     * Finds the class file for the given class name.
+     * 
+     * @param className the fully qualified name of the class
+     * @return the class file if found, null otherwise
+     */
+    private File findClassFile(String className) {
 		String classFileName = className.replace(".", "/") + ".class";
 		for (File classesDir : this.sourceSet.getOutput().getClassesDirs()) {
 			File classFile = new File(classesDir, classFileName);

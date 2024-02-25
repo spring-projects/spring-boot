@@ -47,11 +47,24 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 public class MongoReactiveHealthContributorAutoConfiguration
 		extends CompositeReactiveHealthContributorConfiguration<MongoReactiveHealthIndicator, ReactiveMongoTemplate> {
 
-	public MongoReactiveHealthContributorAutoConfiguration() {
+	/**
+     * Constructs a new MongoReactiveHealthContributorAutoConfiguration.
+     * 
+     * This constructor initializes the MongoReactiveHealthContributorAutoConfiguration class by calling the super constructor with the MongoReactiveHealthIndicator class as the argument.
+     * 
+     * @see MongoReactiveHealthIndicator
+     */
+    public MongoReactiveHealthContributorAutoConfiguration() {
 		super(MongoReactiveHealthIndicator::new);
 	}
 
-	@Bean
+	/**
+     * Creates a ReactiveHealthContributor for MongoDB if no existing bean with the names "mongoHealthIndicator" and "mongoHealthContributor" is found.
+     * 
+     * @param reactiveMongoTemplates a map of ReactiveMongoTemplate beans
+     * @return the created ReactiveHealthContributor for MongoDB
+     */
+    @Bean
 	@ConditionalOnMissingBean(name = { "mongoHealthIndicator", "mongoHealthContributor" })
 	public ReactiveHealthContributor mongoHealthContributor(Map<String, ReactiveMongoTemplate> reactiveMongoTemplates) {
 		return createContributor(reactiveMongoTemplates);

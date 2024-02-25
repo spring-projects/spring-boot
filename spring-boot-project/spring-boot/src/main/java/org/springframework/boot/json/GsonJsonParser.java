@@ -39,23 +39,43 @@ public class GsonJsonParser extends AbstractJsonParser {
 
 	private final Gson gson = new GsonBuilder().create();
 
-	@Override
+	/**
+     * Parses a JSON string into a Map object.
+     * 
+     * @param json the JSON string to parse
+     * @return a Map object representing the parsed JSON
+     * @throws Exception if an error occurs during parsing
+     */
+    @Override
 	public Map<String, Object> parseMap(String json) {
 		return tryParse(() -> parseMap(json, (trimmed) -> this.gson.fromJson(trimmed, MAP_TYPE.getType())),
 				Exception.class);
 	}
 
-	@Override
+	/**
+     * Parses a JSON string into a list of objects.
+     * 
+     * @param json the JSON string to parse
+     * @return a list of objects parsed from the JSON string
+     * @throws Exception if an error occurs during parsing
+     */
+    @Override
 	public List<Object> parseList(String json) {
 		return tryParse(() -> parseList(json, (trimmed) -> this.gson.fromJson(trimmed, LIST_TYPE.getType())),
 				Exception.class);
 	}
 
-	private static final class MapTypeToken extends TypeToken<Map<String, Object>> {
+	/**
+     * MapTypeToken class.
+     */
+    private static final class MapTypeToken extends TypeToken<Map<String, Object>> {
 
 	}
 
-	private static final class ListTypeToken extends TypeToken<List<Object>> {
+	/**
+     * ListTypeToken class.
+     */
+    private static final class ListTypeToken extends TypeToken<List<Object>> {
 
 	}
 

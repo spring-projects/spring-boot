@@ -39,7 +39,13 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ ObservationRegistry.class, BatchObservabilityBeanPostProcessor.class })
 public class BatchObservationAutoConfiguration {
 
-	@ConditionalOnMissingBean
+	/**
+     * Creates a new instance of {@link BatchObservabilityBeanPostProcessor} if no other bean of the same type is present in the application context.
+     * This bean post processor is responsible for adding observability features to the batch processing beans.
+     * 
+     * @return the {@link BatchObservabilityBeanPostProcessor} bean instance
+     */
+    @ConditionalOnMissingBean
 	@Bean
 	public static BatchObservabilityBeanPostProcessor batchObservabilityBeanPostProcessor() {
 		return new BatchObservabilityBeanPostProcessor();

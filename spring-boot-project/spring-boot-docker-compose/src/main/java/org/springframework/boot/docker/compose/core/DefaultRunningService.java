@@ -45,7 +45,15 @@ class DefaultRunningService implements RunningService, OriginProvider {
 
 	private final DockerEnv env;
 
-	DefaultRunningService(DockerHost host, DockerComposeFile composeFile, DockerCliComposePsResponse composePsResponse,
+	/**
+     * Creates a new instance of DefaultRunningService.
+     * 
+     * @param host              the DockerHost where the service is running
+     * @param composeFile       the DockerComposeFile used to deploy the service
+     * @param composePsResponse the DockerCliComposePsResponse containing information about the service
+     * @param inspectResponse   the DockerCliInspectResponse containing detailed information about the service
+     */
+    DefaultRunningService(DockerHost host, DockerComposeFile composeFile, DockerCliComposePsResponse composePsResponse,
 			DockerCliInspectResponse inspectResponse) {
 		this.origin = new DockerComposeOrigin(composeFile, composePsResponse.name());
 		this.name = composePsResponse.name();
@@ -57,42 +65,82 @@ class DefaultRunningService implements RunningService, OriginProvider {
 		this.labels = Collections.unmodifiableMap(inspectResponse.config().labels());
 	}
 
-	@Override
+	/**
+     * Returns the origin of the running service.
+     *
+     * @return the origin of the running service
+     */
+    @Override
 	public Origin getOrigin() {
 		return this.origin;
 	}
 
-	@Override
+	/**
+     * Returns the name of the running service.
+     *
+     * @return the name of the running service
+     */
+    @Override
 	public String name() {
 		return this.name;
 	}
 
-	@Override
+	/**
+     * Returns the image reference associated with this running service.
+     *
+     * @return the image reference
+     */
+    @Override
 	public ImageReference image() {
 		return this.image;
 	}
 
-	@Override
+	/**
+     * Returns the host of the running service.
+     *
+     * @return the host of the running service
+     */
+    @Override
 	public String host() {
 		return this.host.toString();
 	}
 
-	@Override
+	/**
+     * Returns the connection ports of the running service.
+     *
+     * @return the connection ports of the running service
+     */
+    @Override
 	public ConnectionPorts ports() {
 		return this.ports;
 	}
 
-	@Override
+	/**
+     * Returns the environment variables as a map.
+     *
+     * @return a map containing the environment variables
+     */
+    @Override
 	public Map<String, String> env() {
 		return this.env.asMap();
 	}
 
-	@Override
+	/**
+     * Returns the labels associated with this running service.
+     * 
+     * @return a map containing the labels as key-value pairs
+     */
+    @Override
 	public Map<String, String> labels() {
 		return this.labels;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the object.
+     * 
+     * @return the name of the object
+     */
+    @Override
 	public String toString() {
 		return this.name;
 	}

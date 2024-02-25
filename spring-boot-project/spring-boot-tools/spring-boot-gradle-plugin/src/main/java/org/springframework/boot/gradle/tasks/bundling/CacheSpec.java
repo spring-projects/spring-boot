@@ -38,12 +38,22 @@ public class CacheSpec {
 
 	private Cache cache = null;
 
-	@Inject
+	/**
+     * Constructs a new CacheSpec object.
+     * 
+     * @param objectFactory the object factory used to create new objects
+     */
+    @Inject
 	public CacheSpec(ObjectFactory objectFactory) {
 		this.objectFactory = objectFactory;
 	}
 
-	public Cache asCache() {
+	/**
+     * Returns the cache object associated with this CacheSpec.
+     *
+     * @return the cache object
+     */
+    public Cache asCache() {
 		return this.cache;
 	}
 

@@ -48,12 +48,25 @@ final class TarGzipBuildpack implements Buildpack {
 
 	private final BuildpackCoordinates coordinates;
 
-	private TarGzipBuildpack(Path path) {
+	/**
+     * Constructs a new TarGzipBuildpack object with the specified path.
+     * 
+     * @param path the path to the TarGzipBuildpack
+     */
+    private TarGzipBuildpack(Path path) {
 		this.path = path;
 		this.coordinates = findBuildpackCoordinates(path);
 	}
 
-	private BuildpackCoordinates findBuildpackCoordinates(Path path) {
+	/**
+     * Finds the coordinates of a buildpack by parsing the buildpack descriptor file 'buildpack.toml' from a given tar.gz file.
+     * 
+     * @param path the path to the tar.gz file containing the buildpack
+     * @return the buildpack coordinates extracted from the 'buildpack.toml' file
+     * @throws IllegalArgumentException if the 'buildpack.toml' file is not found in the buildpack
+     * @throws RuntimeException if there is an error parsing the buildpack descriptor
+     */
+    private BuildpackCoordinates findBuildpackCoordinates(Path path) {
 		try {
 			try (TarArchiveInputStream tar = new TarArchiveInputStream(
 					new GzipCompressorInputStream(Files.newInputStream(path)))) {
@@ -73,17 +86,34 @@ final class TarGzipBuildpack implements Buildpack {
 		}
 	}
 
-	@Override
+	/**
+     * Returns the coordinates of the TarGzipBuildpack.
+     * 
+     * @return the coordinates of the TarGzipBuildpack
+     */
+    @Override
 	public BuildpackCoordinates getCoordinates() {
 		return this.coordinates;
 	}
 
-	@Override
+	/**
+     * Applies the given layers to the TarGzipBuildpack.
+     * 
+     * @param layers the layers to be applied
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
 	public void apply(IOConsumer<Layer> layers) throws IOException {
 		layers.accept(Layer.fromTarArchive(this::copyAndRebaseEntries));
 	}
 
-	private void copyAndRebaseEntries(OutputStream outputStream) throws IOException {
+	/**
+     * Copies and rebases entries from a TarGzipBuildpack to an OutputStream.
+     * 
+     * @param outputStream the OutputStream to write the copied and rebased entries to
+     * @throws IOException if an I/O error occurs during the copying and rebasing process
+     */
+    private void copyAndRebaseEntries(OutputStream outputStream) throws IOException {
 		String id = this.coordinates.getSanitizedId();
 		Path basePath = Paths.get("/cnb/buildpacks/", id, this.coordinates.getVersion());
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(
@@ -102,7 +132,14 @@ final class TarGzipBuildpack implements Buildpack {
 		}
 	}
 
-	private void writeBasePathEntries(TarArchiveOutputStream output, Path basePath) throws IOException {
+	/**
+     * Writes base path entries to the given TarArchiveOutputStream.
+     * 
+     * @param output the TarArchiveOutputStream to write to
+     * @param basePath the base path to generate entries from
+     * @throws IOException if an I/O error occurs while writing the entries
+     */
+    private void writeBasePathEntries(TarArchiveOutputStream output, Path basePath) throws IOException {
 		int pathCount = basePath.getNameCount();
 		for (int pathIndex = 1; pathIndex < pathCount + 1; pathIndex++) {
 			String name = "/" + basePath.subpath(0, pathIndex) + "/";

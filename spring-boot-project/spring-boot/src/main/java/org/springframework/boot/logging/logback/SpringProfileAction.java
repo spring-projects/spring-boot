@@ -33,7 +33,15 @@ import org.xml.sax.Attributes;
  */
 class SpringProfileAction extends BaseModelAction {
 
-	@Override
+	/**
+     * Builds the current model for the SpringProfileAction class.
+     * 
+     * @param interpretationContext The SaxEventInterpretationContext object used for interpretation.
+     * @param name The name of the model.
+     * @param attributes The attributes of the model.
+     * @return The built SpringProfileModel object.
+     */
+    @Override
 	protected Model buildCurrentModel(SaxEventInterpretationContext interpretationContext, String name,
 			Attributes attributes) {
 		SpringProfileModel model = new SpringProfileModel();

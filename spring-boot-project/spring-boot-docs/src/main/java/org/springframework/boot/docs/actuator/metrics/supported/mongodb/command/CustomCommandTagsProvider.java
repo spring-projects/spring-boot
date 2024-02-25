@@ -20,9 +20,18 @@ import com.mongodb.event.CommandEvent;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider;
 
+/**
+ * CustomCommandTagsProvider class.
+ */
 class CustomCommandTagsProvider implements MongoCommandTagsProvider {
 
-	@Override
+	/**
+     * Returns an empty list of tags for the given command event.
+     * 
+     * @param commandEvent the command event for which to retrieve the tags
+     * @return an empty list of tags
+     */
+    @Override
 	public Iterable<Tag> commandTags(CommandEvent commandEvent) {
 		return java.util.Collections.emptyList();
 	}

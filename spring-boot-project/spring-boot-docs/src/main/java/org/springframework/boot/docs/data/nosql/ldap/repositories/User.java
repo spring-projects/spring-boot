@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.data.nosql.ldap.repositories;
 
+/**
+ * User class.
+ */
 class User {
 
 }

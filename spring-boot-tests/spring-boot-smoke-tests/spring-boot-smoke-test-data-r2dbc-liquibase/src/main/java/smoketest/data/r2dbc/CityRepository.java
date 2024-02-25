@@ -20,6 +20,9 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
+/**
+ * CityRepository interface.
+ */
 public interface CityRepository extends ReactiveCrudRepository<City, Long> {
 
 	Flux<City> findByState(String state);

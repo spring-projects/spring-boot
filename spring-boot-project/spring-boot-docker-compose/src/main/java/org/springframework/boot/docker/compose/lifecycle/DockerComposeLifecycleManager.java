@@ -70,14 +70,35 @@ class DockerComposeLifecycleManager {
 
 	private final ServiceReadinessChecks serviceReadinessChecks;
 
-	DockerComposeLifecycleManager(ApplicationContext applicationContext, Binder binder,
+	/**
+     * Constructs a new DockerComposeLifecycleManager with the specified parameters.
+     *
+     * @param applicationContext the application context
+     * @param binder the binder
+     * @param shutdownHandlers the shutdown handlers
+     * @param properties the Docker Compose properties
+     * @param eventListeners the set of event listeners
+     */
+    DockerComposeLifecycleManager(ApplicationContext applicationContext, Binder binder,
 			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties,
 			Set<ApplicationListener<?>> eventListeners) {
 		this(null, applicationContext, binder, shutdownHandlers, properties, eventListeners,
 				new DockerComposeSkipCheck(), null);
 	}
 
-	DockerComposeLifecycleManager(File workingDirectory, ApplicationContext applicationContext, Binder binder,
+	/**
+     * Constructs a new DockerComposeLifecycleManager with the specified parameters.
+     * 
+     * @param workingDirectory the working directory for Docker Compose
+     * @param applicationContext the application context for the Spring application
+     * @param binder the binder for binding properties
+     * @param shutdownHandlers the shutdown handlers for the Spring application
+     * @param properties the Docker Compose properties
+     * @param eventListeners the event listeners for the Spring application
+     * @param skipCheck the skip check for skipping Docker Compose checks
+     * @param serviceReadinessChecks the service readiness checks for Docker Compose services
+     */
+    DockerComposeLifecycleManager(File workingDirectory, ApplicationContext applicationContext, Binder binder,
 			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties,
 			Set<ApplicationListener<?>> eventListeners, DockerComposeSkipCheck skipCheck,
 			ServiceReadinessChecks serviceReadinessChecks) {
@@ -92,7 +113,25 @@ class DockerComposeLifecycleManager {
 				: new ServiceReadinessChecks(properties.getReadiness());
 	}
 
-	void start() {
+	/**
+     * Starts the Docker Compose services based on the configuration properties.
+     * If AOT processing or native images are enabled, Docker Compose support is disabled.
+     * If Docker Compose support is not enabled, the method returns.
+     * If Docker Compose support is skipped based on the configured skip conditions, the method returns.
+     * Retrieves the Docker Compose file and active profiles.
+     * Initializes the DockerCompose instance with the compose file and active profiles.
+     * If no services are defined in the Docker Compose file with the active profiles, a warning is logged and the method returns.
+     * Retrieves the lifecycle management, start, stop, and readiness configurations from the properties.
+     * Retrieves the list of running services from the DockerCompose instance.
+     * If lifecycle management requires starting the services and no services are currently running, the start command is applied to the DockerCompose instance.
+     * If the readiness configuration is set to ONLY_IF_STARTED, it is changed to ALWAYS.
+     * If lifecycle management requires stopping the services, a shutdown handler is added to apply the stop command with the configured timeout.
+     * If there are already Docker Compose services running, the method logs a message and skips the startup process.
+     * Filters out any ignored services from the list of running services.
+     * If the readiness configuration is set to ALWAYS or null, waits until the relevant services are ready.
+     * Publishes a DockerComposeServicesReadyEvent with the relevant services.
+     */
+    void start() {
 		if (Boolean.getBoolean("spring.aot.processing") || AotDetector.useGeneratedArtifacts()) {
 			logger.trace("Docker Compose support disabled with AOT and native images");
 			return;
@@ -141,7 +180,15 @@ class DockerComposeLifecycleManager {
 		publishEvent(new DockerComposeServicesReadyEvent(this.applicationContext, relevantServices));
 	}
 
-	protected DockerComposeFile getComposeFile() {
+	/**
+     * Retrieves the Docker Compose file to be used for the lifecycle management.
+     * If a file path is specified in the properties, it will be used. Otherwise, the method will search for a Docker Compose file in the working directory.
+     * If no Docker Compose file is found, an exception will be thrown.
+     * 
+     * @return The DockerComposeFile object representing the Docker Compose file.
+     * @throws IllegalStateException if no Docker Compose file is found.
+     */
+    protected DockerComposeFile getComposeFile() {
 		DockerComposeFile composeFile = (this.properties.getFile() != null)
 				? DockerComposeFile.of(this.properties.getFile()) : DockerComposeFile.find(this.workingDirectory);
 		Assert.state(composeFile != null, () -> "No Docker Compose file found in directory '%s'".formatted(
@@ -150,11 +197,24 @@ class DockerComposeLifecycleManager {
 		return composeFile;
 	}
 
-	protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles) {
+	/**
+     * Returns a DockerCompose object based on the provided DockerComposeFile and active profiles.
+     * 
+     * @param composeFile the DockerComposeFile to use for creating the DockerCompose object
+     * @param activeProfiles the set of active profiles to use for creating the DockerCompose object
+     * @return the DockerCompose object created using the provided DockerComposeFile and active profiles
+     */
+    protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles) {
 		return DockerCompose.get(composeFile, this.properties.getHost(), activeProfiles);
 	}
 
-	private boolean isIgnored(RunningService service) {
+	/**
+     * Checks if a RunningService is ignored based on its labels.
+     * 
+     * @param service the RunningService to check
+     * @return true if the RunningService is ignored, false otherwise
+     */
+    private boolean isIgnored(RunningService service) {
 		return service.labels().containsKey(IGNORE_LABEL);
 	}
 

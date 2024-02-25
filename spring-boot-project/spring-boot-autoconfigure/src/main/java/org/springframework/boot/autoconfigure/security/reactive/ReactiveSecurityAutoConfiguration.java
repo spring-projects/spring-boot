@@ -52,18 +52,32 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 @ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class, WebFilterChainProxy.class, WebFluxConfigurer.class })
 public class ReactiveSecurityAutoConfiguration {
 
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	/**
+     * SpringBootWebFluxSecurityConfiguration class.
+     */
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	@Configuration(proxyBeanMethods = false)
 	class SpringBootWebFluxSecurityConfiguration {
 
-		@Bean
+		/**
+         * Returns a ReactiveAuthenticationManager that denies all authentication attempts.
+         * This method is conditional on the absence of beans for ReactiveAuthenticationManager,
+         * ReactiveUserDetailsService, and SecurityWebFilterChain.
+         * 
+         * @return a ReactiveAuthenticationManager that throws a UsernameNotFoundException
+         *         for all authentication attempts
+         */
+        @Bean
 		@ConditionalOnMissingBean({ ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class,
 				SecurityWebFilterChain.class })
 		ReactiveAuthenticationManager denyAllAuthenticationManager() {
 			return (authentication) -> Mono.error(new UsernameNotFoundException(authentication.getName()));
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * EnableWebFluxSecurityConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(WebFilterChainProxy.class)
 		@EnableWebFluxSecurity
 		static class EnableWebFluxSecurityConfiguration {

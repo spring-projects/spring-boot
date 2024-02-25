@@ -20,13 +20,21 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean implements EnvironmentAware {
 
 	@SuppressWarnings("unused")
 	private String instanceId;
 
-	@Override
+	/**
+     * Sets the environment for the MyBean instance.
+     * 
+     * @param environment the environment object containing the properties
+     */
+    @Override
 	public void setEnvironment(Environment environment) {
 		this.instanceId = environment.getProperty("vcap.application.instance_id");
 	}

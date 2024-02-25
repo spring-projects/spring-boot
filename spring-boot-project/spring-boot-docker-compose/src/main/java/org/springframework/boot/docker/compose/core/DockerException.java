@@ -26,11 +26,22 @@ package org.springframework.boot.docker.compose.core;
  */
 public abstract class DockerException extends RuntimeException {
 
-	public DockerException(String message) {
+	/**
+     * Constructs a new DockerException with the specified detail message.
+     *
+     * @param message the detail message (which is saved for later retrieval by the getMessage() method)
+     */
+    public DockerException(String message) {
 		super(message);
 	}
 
-	public DockerException(String message, Throwable cause) {
+	/**
+     * Constructs a new DockerException with the specified detail message and cause.
+     *
+     * @param message the detail message (which is saved for later retrieval by the getMessage() method).
+     * @param cause the cause (which is saved for later retrieval by the getCause() method).
+     */
+    public DockerException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

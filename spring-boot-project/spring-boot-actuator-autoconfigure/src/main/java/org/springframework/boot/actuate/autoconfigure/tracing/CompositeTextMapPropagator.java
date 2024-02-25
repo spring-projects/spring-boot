@@ -74,31 +74,68 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 		this.fields = Collections.unmodifiableSet(fields);
 	}
 
-	private Stream<String> fields(Collection<TextMapPropagator> propagators) {
+	/**
+     * Returns a stream of all the fields from the given collection of TextMapPropagators.
+     *
+     * @param propagators the collection of TextMapPropagators
+     * @return a stream of all the fields
+     */
+    private Stream<String> fields(Collection<TextMapPropagator> propagators) {
 		return propagators.stream().flatMap((propagator) -> propagator.fields().stream());
 	}
 
-	Collection<TextMapPropagator> getInjectors() {
+	/**
+     * Returns the collection of injectors.
+     *
+     * @return the collection of injectors
+     */
+    Collection<TextMapPropagator> getInjectors() {
 		return this.injectors;
 	}
 
-	Collection<TextMapPropagator> getExtractors() {
+	/**
+     * Returns the collection of TextMapPropagator extractors.
+     *
+     * @return the collection of TextMapPropagator extractors
+     */
+    Collection<TextMapPropagator> getExtractors() {
 		return this.extractors;
 	}
 
-	@Override
+	/**
+     * Returns a collection of fields in the CompositeTextMapPropagator.
+     *
+     * @return a collection of fields
+     */
+    @Override
 	public Collection<String> fields() {
 		return this.fields;
 	}
 
-	@Override
+	/**
+     * Injects the given context into the carrier using the provided TextMapSetter.
+     * 
+     * @param <C> the type of the carrier
+     * @param context the context to be injected
+     * @param carrier the carrier to inject the context into
+     * @param setter the TextMapSetter to use for injecting the context
+     */
+    @Override
 	public <C> void inject(Context context, C carrier, TextMapSetter<C> setter) {
 		if (context != null && setter != null) {
 			this.injectors.forEach((injector) -> injector.inject(context, carrier, setter));
 		}
 	}
 
-	@Override
+	/**
+     * Extracts the context and baggage from the given carrier using the provided getter.
+     * 
+     * @param context the current context
+     * @param carrier the carrier from which to extract the context and baggage
+     * @param getter the getter to use for extracting values from the carrier
+     * @return the extracted context with baggage
+     */
+    @Override
 	public <C> Context extract(Context context, C carrier, TextMapGetter<C> getter) {
 		if (context == null) {
 			return Context.root();
@@ -143,11 +180,22 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 
 		private final boolean baggage;
 
-		TextMapPropagatorMapper(boolean baggage) {
+		/**
+         * Constructs a new TextMapPropagatorMapper with the specified baggage flag.
+         * 
+         * @param baggage the flag indicating whether baggage should be propagated or not
+         */
+        TextMapPropagatorMapper(boolean baggage) {
 			this.baggage = baggage;
 		}
 
-		TextMapPropagator map(PropagationType type) {
+		/**
+         * Returns a TextMapPropagator based on the specified PropagationType.
+         *
+         * @param type the PropagationType to determine the TextMapPropagator to return
+         * @return the TextMapPropagator based on the specified PropagationType
+         */
+        TextMapPropagator map(PropagationType type) {
 			return switch (type) {
 				case B3 -> b3Single();
 				case B3_MULTI -> b3Multi();

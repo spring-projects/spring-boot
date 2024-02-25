@@ -22,6 +22,9 @@ import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
 
+/**
+ * Person class.
+ */
 @Entry(objectClasses = { "person", "top" })
 public class Person {
 
@@ -31,7 +34,12 @@ public class Person {
 	@Attribute(name = "telephoneNumber")
 	private String phone;
 
-	@Override
+	/**
+     * Returns a string representation of the Customer object.
+     * 
+     * @return a string representation of the Customer object
+     */
+    @Override
 	public String toString() {
 		return String.format("Customer[dn=%s, phone='%s']", this.dn, this.phone);
 	}

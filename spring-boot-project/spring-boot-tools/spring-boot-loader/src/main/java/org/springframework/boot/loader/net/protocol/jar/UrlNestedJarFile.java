@@ -37,24 +37,52 @@ class UrlNestedJarFile extends NestedJarFile {
 
 	private final Consumer<JarFile> closeAction;
 
-	UrlNestedJarFile(File file, String nestedEntryName, Version version, Consumer<JarFile> closeAction)
+	/**
+     * Constructs a new UrlNestedJarFile with the specified file, nested entry name, version, and close action.
+     * 
+     * @param file the file representing the nested JAR file
+     * @param nestedEntryName the name of the nested entry within the JAR file
+     * @param version the version of the nested JAR file
+     * @param closeAction the action to be performed when the JAR file is closed
+     * @throws IOException if an I/O error occurs while reading the JAR file
+     */
+    UrlNestedJarFile(File file, String nestedEntryName, Version version, Consumer<JarFile> closeAction)
 			throws IOException {
 		super(file, nestedEntryName, version);
 		this.manifest = new UrlJarManifest(super::getManifest);
 		this.closeAction = closeAction;
 	}
 
-	@Override
+	/**
+     * Returns the manifest of the nested JAR file.
+     * 
+     * @return the manifest of the nested JAR file
+     * @throws IOException if an I/O error occurs while reading the manifest
+     */
+    @Override
 	public Manifest getManifest() throws IOException {
 		return this.manifest.get();
 	}
 
-	@Override
+	/**
+     * Returns a {@code JarEntry} object for the specified entry name.
+     * 
+     * @param name the name of the entry
+     * @return a {@code JarEntry} object for the specified entry name
+     */
+    @Override
 	public JarEntry getEntry(String name) {
 		return UrlJarEntry.of(super.getEntry(name), this.manifest);
 	}
 
-	@Override
+	/**
+     * Closes the UrlNestedJarFile and releases any system resources associated with it.
+     * This method overrides the close() method in the superclass and throws an IOException.
+     * If a closeAction is set, it will be executed before closing the file.
+     *
+     * @throws IOException if an I/O error occurs while closing the file
+     */
+    @Override
 	public void close() throws IOException {
 		if (this.closeAction != null) {
 			this.closeAction.accept(this);

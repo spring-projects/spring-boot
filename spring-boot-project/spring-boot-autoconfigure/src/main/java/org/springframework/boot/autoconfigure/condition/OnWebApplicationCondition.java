@@ -48,7 +48,14 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 
 	private static final String REACTIVE_WEB_APPLICATION_CLASS = "org.springframework.web.reactive.HandlerResult";
 
-	@Override
+	/**
+     * Returns an array of ConditionOutcome objects based on the provided autoConfigurationClasses and autoConfigurationMetadata.
+     * 
+     * @param autoConfigurationClasses an array of auto-configuration class names
+     * @param autoConfigurationMetadata the auto-configuration metadata
+     * @return an array of ConditionOutcome objects
+     */
+    @Override
 	protected ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
 		ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
@@ -62,7 +69,13 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 		return outcomes;
 	}
 
-	private ConditionOutcome getOutcome(String type) {
+	/**
+     * Returns the outcome of the condition based on the given type.
+     *
+     * @param type the type of web application
+     * @return the condition outcome
+     */
+    private ConditionOutcome getOutcome(String type) {
 		if (type == null) {
 			return null;
 		}
@@ -84,7 +97,14 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 		return null;
 	}
 
-	@Override
+	/**
+     * Determines the match outcome for the conditional annotation {@link ConditionalOnWebApplication}.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		boolean required = metadata.isAnnotated(ConditionalOnWebApplication.class.getName());
 		ConditionOutcome outcome = isWebApplication(context, metadata, required);
@@ -97,7 +117,15 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 		return ConditionOutcome.match(outcome.getConditionMessage());
 	}
 
-	private ConditionOutcome isWebApplication(ConditionContext context, AnnotatedTypeMetadata metadata,
+	/**
+     * Determines if the application is a web application based on the provided metadata.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @param required indicates if the web application is required
+     * @return the condition outcome indicating if the application is a web application
+     */
+    private ConditionOutcome isWebApplication(ConditionContext context, AnnotatedTypeMetadata metadata,
 			boolean required) {
 		return switch (deduceType(metadata)) {
 			case SERVLET -> isServletWebApplication(context);
@@ -106,7 +134,14 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 		};
 	}
 
-	private ConditionOutcome isAnyWebApplication(ConditionContext context, boolean required) {
+	/**
+     * Determines if the application is a web application.
+     * 
+     * @param context the condition context
+     * @param required indicates if the web application is required
+     * @return the condition outcome indicating if the application is a web application
+     */
+    private ConditionOutcome isAnyWebApplication(ConditionContext context, boolean required) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnWebApplication.class,
 				required ? "(required)" : "");
 		ConditionOutcome servletOutcome = isServletWebApplication(context);
@@ -121,7 +156,13 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 				message.because(servletOutcome.getMessage()).append("and").append(reactiveOutcome.getMessage()));
 	}
 
-	private ConditionOutcome isServletWebApplication(ConditionContext context) {
+	/**
+     * Determines if the application is a servlet web application.
+     * 
+     * @param context the condition context
+     * @return the condition outcome indicating if the application is a servlet web application or not
+     */
+    private ConditionOutcome isServletWebApplication(ConditionContext context) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("");
 		if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS, context.getClassLoader())) {
 			return ConditionOutcome.noMatch(message.didNotFind("servlet web application classes").atAll());
@@ -141,7 +182,13 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 		return ConditionOutcome.noMatch(message.because("not a servlet web application"));
 	}
 
-	private ConditionOutcome isReactiveWebApplication(ConditionContext context) {
+	/**
+     * Determines if the application is a reactive web application.
+     * 
+     * @param context the condition context
+     * @return the condition outcome indicating if the application is a reactive web application or not
+     */
+    private ConditionOutcome isReactiveWebApplication(ConditionContext context) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("");
 		if (!ClassNameFilter.isPresent(REACTIVE_WEB_APPLICATION_CLASS, context.getClassLoader())) {
 			return ConditionOutcome.noMatch(message.didNotFind("reactive web application classes").atAll());
@@ -155,7 +202,13 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 		return ConditionOutcome.noMatch(message.because("not a reactive web application"));
 	}
 
-	private Type deduceType(AnnotatedTypeMetadata metadata) {
+	/**
+     * Deduces the type based on the provided metadata.
+     * 
+     * @param metadata the metadata containing the annotation attributes
+     * @return the deduced type
+     */
+    private Type deduceType(AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnWebApplication.class.getName());
 		if (attributes != null) {
 			return (Type) attributes.get("type");

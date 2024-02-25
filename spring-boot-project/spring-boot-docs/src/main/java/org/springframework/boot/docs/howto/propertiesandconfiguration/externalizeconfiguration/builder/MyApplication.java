@@ -19,9 +19,20 @@ package org.springframework.boot.docs.howto.propertiesandconfiguration.externali
 import org.springframework.boot.Banner;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+/**
+ * MyApplication class.
+ */
 public class MyApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It initializes and runs the Spring application using the SpringApplicationBuilder.
+     * The banner mode is set to OFF to disable the application banner.
+     * The MyApplication class is used as the source for the application.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		// @formatter:off
 		new SpringApplicationBuilder()
 			.bannerMode(Banner.Mode.OFF)

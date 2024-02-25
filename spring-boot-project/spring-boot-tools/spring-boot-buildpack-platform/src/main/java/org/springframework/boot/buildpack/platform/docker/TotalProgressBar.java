@@ -73,7 +73,13 @@ public class TotalProgressBar implements Consumer<TotalProgressEvent> {
 		this.out = out;
 	}
 
-	@Override
+	/**
+     * This method is used to update the progress of the total progress bar based on the TotalProgressEvent.
+     * It accepts a TotalProgressEvent object as a parameter.
+     * 
+     * @param event The TotalProgressEvent object containing the progress information.
+     */
+    @Override
 	public void accept(TotalProgressEvent event) {
 		int percent = event.getPercent() / 2;
 		while (this.printed < percent) {

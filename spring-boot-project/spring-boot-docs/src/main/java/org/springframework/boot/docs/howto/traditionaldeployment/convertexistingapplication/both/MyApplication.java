@@ -21,19 +21,41 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
+/**
+ * MyApplication class.
+ */
 @SpringBootApplication
 public class MyApplication extends SpringBootServletInitializer {
 
-	@Override
+	/**
+     * Configures the SpringApplicationBuilder for the MyApplication class.
+     * 
+     * @param builder the SpringApplicationBuilder to be configured
+     * @return the configured SpringApplicationBuilder
+     */
+    @Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 		return customizerBuilder(builder);
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the MyApplication class.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		customizerBuilder(new SpringApplicationBuilder()).run(args);
 	}
 
-	private static SpringApplicationBuilder customizerBuilder(SpringApplicationBuilder builder) {
+	/**
+     * This method is a customizer for the SpringApplicationBuilder.
+     * It takes a SpringApplicationBuilder object as a parameter and returns a modified builder.
+     * The modified builder includes the sources of the MyApplication class and sets the banner mode to OFF.
+     * 
+     * @param builder the SpringApplicationBuilder object to be customized
+     * @return the modified SpringApplicationBuilder object
+     */
+    private static SpringApplicationBuilder customizerBuilder(SpringApplicationBuilder builder) {
 		return builder.sources(MyApplication.class).bannerMode(Banner.Mode.OFF);
 	}
 

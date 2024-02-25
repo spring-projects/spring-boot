@@ -70,12 +70,23 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 	private final ContextCustomizerKey key;
 
-	ImportsContextCustomizer(Class<?> testClass) {
+	/**
+     * Constructs a new ImportsContextCustomizer with the specified test class.
+     * 
+     * @param testClass the test class for which the context customizer is being created
+     */
+    ImportsContextCustomizer(Class<?> testClass) {
 		this.testClassName = testClass.getName();
 		this.key = new ContextCustomizerKey(testClass);
 	}
 
-	@Override
+	/**
+     * Customizes the application context by registering bean definitions and configurations.
+     * 
+     * @param context the configurable application context
+     * @param mergedContextConfiguration the merged context configuration
+     */
+    @Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
 		BeanDefinitionRegistry registry = getBeanDefinitionRegistry(context);
@@ -84,20 +95,40 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		registerImportsConfiguration(registry, reader);
 	}
 
-	private void registerCleanupPostProcessor(BeanDefinitionRegistry registry, AnnotatedBeanDefinitionReader reader) {
+	/**
+     * Registers a cleanup post processor for the given bean definition registry and annotated bean definition reader.
+     * This post processor is responsible for cleaning up imports after the test execution.
+     *
+     * @param registry the bean definition registry to register the cleanup post processor with
+     * @param reader the annotated bean definition reader to use for registering the cleanup post processor
+     */
+    private void registerCleanupPostProcessor(BeanDefinitionRegistry registry, AnnotatedBeanDefinitionReader reader) {
 		BeanDefinition definition = registerBean(registry, reader, ImportsCleanupPostProcessor.BEAN_NAME,
 				ImportsCleanupPostProcessor.class);
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		definition.getConstructorArgumentValues().addIndexedArgumentValue(0, this.testClassName);
 	}
 
-	private void registerImportsConfiguration(BeanDefinitionRegistry registry, AnnotatedBeanDefinitionReader reader) {
+	/**
+     * Registers the imports configuration in the given bean definition registry using the provided annotated bean definition reader.
+     * 
+     * @param registry the bean definition registry to register the imports configuration
+     * @param reader the annotated bean definition reader to use for registration
+     */
+    private void registerImportsConfiguration(BeanDefinitionRegistry registry, AnnotatedBeanDefinitionReader reader) {
 		BeanDefinition definition = registerBean(registry, reader, ImportsConfiguration.BEAN_NAME,
 				ImportsConfiguration.class);
 		definition.setAttribute(TEST_CLASS_NAME_ATTRIBUTE, this.testClassName);
 	}
 
-	private BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context) {
+	/**
+     * Returns the BeanDefinitionRegistry from the given ApplicationContext.
+     * 
+     * @param context the ApplicationContext from which to retrieve the BeanDefinitionRegistry
+     * @return the BeanDefinitionRegistry if found in the ApplicationContext
+     * @throws IllegalStateException if the BeanDefinitionRegistry cannot be located
+     */
+    private BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context) {
 		if (context instanceof BeanDefinitionRegistry beanDefinitionRegistry) {
 			return beanDefinitionRegistry;
 		}
@@ -107,13 +138,28 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		throw new IllegalStateException("Could not locate BeanDefinitionRegistry");
 	}
 
-	private BeanDefinition registerBean(BeanDefinitionRegistry registry, AnnotatedBeanDefinitionReader reader,
+	/**
+     * Registers a bean with the given bean name and type in the provided bean definition registry.
+     * 
+     * @param registry the bean definition registry to register the bean with
+     * @param reader the annotated bean definition reader to use for registration
+     * @param beanName the name of the bean to register
+     * @param type the type of the bean to register
+     * @return the bean definition of the registered bean
+     */
+    private BeanDefinition registerBean(BeanDefinitionRegistry registry, AnnotatedBeanDefinitionReader reader,
 			String beanName, Class<?> type) {
 		reader.registerBean(type, beanName);
 		return registry.getBeanDefinition(beanName);
 	}
 
-	@Override
+	/**
+     * Compares this ImportsContextCustomizer object with the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return true if the specified object is equal to this ImportsContextCustomizer object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -126,12 +172,23 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		return this.key.equals(other.key);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this ImportsContextCustomizer object.
+     * The hash code is generated based on the key of the object.
+     *
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return this.key.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the object.
+     * 
+     * @return a string representation of the object
+     */
+    @Override
 	public String toString() {
 		return new ToStringCreator(this).append("key", this.key).toString();
 	}
@@ -158,12 +215,34 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		private ConfigurableListableBeanFactory beanFactory;
 
-		@Override
+		/**
+         * Set the BeanFactory that this object runs in.
+         * <p>
+         * Invoked after population of normal bean properties but before an init callback such as InitializingBean's
+         * {@code afterPropertiesSet} or a custom init-method. Invoked after ResourceLoaderAware's {@code setResourceLoader},
+         * ApplicationEventPublisherAware's {@code setApplicationEventPublisher} and MessageSourceAware's
+         * {@code setMessageSource}.
+         * <p>
+         * This method will be invoked after any bean properties have been set and before any custom init-method or
+         * afterPropertiesSet() callbacks have been invoked.
+         * <p>
+         * This method allows the bean instance to perform initialization only possible when all bean properties have been set
+         * and to throw an exception in the event of misconfiguration.
+         * @param beanFactory the BeanFactory object that this object runs in
+         * @throws BeansException if initialization attempted by this object fails
+         */
+        @Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 			this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 		}
 
-		@Override
+		/**
+         * Selects the imports to be used by the importing class.
+         * 
+         * @param importingClassMetadata the metadata of the importing class
+         * @return an array of import strings
+         */
+        @Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			BeanDefinition definition = this.beanFactory.getBeanDefinition(ImportsConfiguration.BEAN_NAME);
 			Object testClassName = definition.getAttribute(TEST_CLASS_NAME_ATTRIBUTE);
@@ -183,15 +262,35 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		private final String testClassName;
 
-		ImportsCleanupPostProcessor(String testClassName) {
+		/**
+         * Constructs a new ImportsCleanupPostProcessor with the specified test class name.
+         * 
+         * @param testClassName the name of the test class
+         */
+        ImportsCleanupPostProcessor(String testClassName) {
 			this.testClassName = testClassName;
 		}
 
-		@Override
+		/**
+         * This method is called after the bean factory has been initialized and all bean definitions have been loaded.
+         * It allows for post-processing of the bean factory, before beans are actually instantiated.
+         * 
+         * @param beanFactory the bean factory that has been initialized
+         * @throws BeansException if any error occurs during the post-processing
+         */
+        @Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
-		@Override
+		/**
+         * This method is used to post-process the bean definition registry by removing specific bean definitions.
+         * It iterates through all the bean definitions in the registry and removes the ones that have a matching class name.
+         * Additionally, it also removes a specific bean definition by its name.
+         * 
+         * @param registry The bean definition registry to be processed.
+         * @throws BeansException If an error occurs during the bean processing.
+         */
+        @Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			try {
 				String[] names = registry.getBeanDefinitionNames();
@@ -231,7 +330,12 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		}
 		private final Set<Object> key;
 
-		ContextCustomizerKey(Class<?> testClass) {
+		/**
+         * Constructs a new ContextCustomizerKey object for the given test class.
+         * 
+         * @param testClass the test class for which the ContextCustomizerKey is being created
+         */
+        ContextCustomizerKey(Class<?> testClass) {
 			MergedAnnotations annotations = MergedAnnotations.search(MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
 				.withAnnotationFilter(this::isFilteredAnnotation)
 				.from(testClass);
@@ -251,11 +355,24 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			}
 		}
 
-		private boolean isFilteredAnnotation(String typeName) {
+		/**
+         * Checks if the given type name matches any of the annotation filters.
+         *
+         * @param typeName the type name to be checked
+         * @return true if the type name matches any of the annotation filters, false otherwise
+         */
+        private boolean isFilteredAnnotation(String typeName) {
 			return ANNOTATION_FILTERS.stream().anyMatch((filter) -> filter.matches(typeName));
 		}
 
-		private Set<Object> determineImports(MergedAnnotations annotations, Class<?> testClass) {
+		/**
+         * Determines the imports required for the given merged annotations and test class.
+         * 
+         * @param annotations the merged annotations to process
+         * @param testClass the test class to introspect
+         * @return a set of determined imports
+         */
+        private Set<Object> determineImports(MergedAnnotations annotations, Class<?> testClass) {
 			Set<Object> determinedImports = new LinkedHashSet<>();
 			AnnotationMetadata metadata = AnnotationMetadata.introspect(testClass);
 			for (MergedAnnotation<Import> annotation : annotations.stream(Import.class).toList()) {
@@ -270,7 +387,14 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			return determinedImports;
 		}
 
-		private Set<Object> determineImports(Class<?> source, AnnotationMetadata metadata) {
+		/**
+         * Determines the imports for a given source class and annotation metadata.
+         * 
+         * @param source the source class
+         * @param metadata the annotation metadata
+         * @return a set of objects representing the imports, or null if the imports cannot be determined
+         */
+        private Set<Object> determineImports(Class<?> source, AnnotationMetadata metadata) {
 			if (DeterminableImports.class.isAssignableFrom(source)) {
 				// We can determine the imports
 				return ((DeterminableImports) instantiate(source)).determineImports(metadata);
@@ -285,11 +409,24 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			return Collections.singleton(source.getName());
 		}
 
-		private Set<Object> synthesize(MergedAnnotations annotations) {
+		/**
+         * Synthesizes a set of objects from the given merged annotations.
+         *
+         * @param annotations the merged annotations to synthesize from
+         * @return a set of synthesized objects
+         */
+        private Set<Object> synthesize(MergedAnnotations annotations) {
 			return annotations.stream().map(MergedAnnotation::synthesize).collect(Collectors.toSet());
 		}
 
-		@SuppressWarnings("unchecked")
+		/**
+         * Instantiates an object of the given source class.
+         * 
+         * @param source the class to instantiate
+         * @return the instantiated object
+         * @throws IllegalStateException if unable to instantiate the object
+         */
+        @SuppressWarnings("unchecked")
 		private <T> T instantiate(Class<T> source) {
 			try {
 				Constructor<?> constructor = source.getDeclaredConstructor();
@@ -302,17 +439,33 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			}
 		}
 
-		@Override
+		/**
+         * Compares this ContextCustomizerKey object to the specified object. The result is true if and only if the argument is not null, is of the same class as this object, and has the same key value.
+         *
+         * @param obj the object to compare this ContextCustomizerKey against
+         * @return true if the given object represents a ContextCustomizerKey with the same key value, false otherwise
+         */
+        @Override
 		public boolean equals(Object obj) {
 			return (obj != null && getClass() == obj.getClass() && this.key.equals(((ContextCustomizerKey) obj).key));
 		}
 
-		@Override
+		/**
+         * Returns the hash code value for this ContextCustomizerKey object.
+         * 
+         * @return the hash code value for this ContextCustomizerKey object
+         */
+        @Override
 		public int hashCode() {
 			return this.key.hashCode();
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * 
+         * @return the string representation of the object
+         */
+        @Override
 		public String toString() {
 			return this.key.toString();
 		}

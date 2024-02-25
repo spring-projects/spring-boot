@@ -21,6 +21,9 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+/**
+ * SampleConfigurationProperties class.
+ */
 @Validated
 @ConfigurationProperties(prefix = "sample")
 public final class SampleConfigurationProperties {
@@ -28,11 +31,21 @@ public final class SampleConfigurationProperties {
 	@NotNull
 	private String name;
 
-	public String getName() {
+	/**
+     * Returns the name of the SampleConfigurationProperties object.
+     *
+     * @return the name of the SampleConfigurationProperties object
+     */
+    public String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	/**
+     * Sets the name of the SampleConfigurationProperties.
+     * 
+     * @param name the name to set
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 

@@ -43,7 +43,13 @@ class QualifierDefinition {
 
 	private final Set<Annotation> annotations;
 
-	QualifierDefinition(Field field, Set<Annotation> annotations) {
+	/**
+     * Constructs a new QualifierDefinition object with the given field and annotations.
+     * 
+     * @param field the field for which the qualifier definition is being created
+     * @param annotations the set of annotations associated with the field
+     */
+    QualifierDefinition(Field field, Set<Annotation> annotations) {
 		// We can't use the field or descriptor as part of the context key
 		// but we can assume that if two fields have the same qualifiers then
 		// it's safe for Spring to use either for qualifier logic
@@ -52,15 +58,33 @@ class QualifierDefinition {
 		this.annotations = annotations;
 	}
 
-	boolean matches(ConfigurableListableBeanFactory beanFactory, String beanName) {
+	/**
+     * Checks if the specified bean in the given bean factory matches the autowire candidate criteria.
+     * 
+     * @param beanFactory the bean factory to check against
+     * @param beanName the name of the bean to check
+     * @return true if the bean matches the autowire candidate criteria, false otherwise
+     */
+    boolean matches(ConfigurableListableBeanFactory beanFactory, String beanName) {
 		return beanFactory.isAutowireCandidate(beanName, this.descriptor);
 	}
 
-	void applyTo(RootBeanDefinition definition) {
+	/**
+     * Applies the qualified element to the given RootBeanDefinition.
+     * 
+     * @param definition the RootBeanDefinition to apply the qualified element to
+     */
+    void applyTo(RootBeanDefinition definition) {
 		definition.setQualifiedElement(this.field);
 	}
 
-	@Override
+	/**
+     * Compares this QualifierDefinition object with the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return true if the specified object is equal to this QualifierDefinition object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -72,12 +96,23 @@ class QualifierDefinition {
 		return this.annotations.equals(other.annotations);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this QualifierDefinition object.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return this.annotations.hashCode();
 	}
 
-	static QualifierDefinition forElement(AnnotatedElement element) {
+	/**
+     * Returns the QualifierDefinition for the given AnnotatedElement.
+     * 
+     * @param element the AnnotatedElement to get the QualifierDefinition for
+     * @return the QualifierDefinition for the given element, or null if the element is null or not an instance of Field or if no qualifier annotations are found
+     */
+    static QualifierDefinition forElement(AnnotatedElement element) {
 		if (element != null && element instanceof Field field) {
 			Set<Annotation> annotations = getQualifierAnnotations(field);
 			if (!annotations.isEmpty()) {
@@ -87,7 +122,13 @@ class QualifierDefinition {
 		return null;
 	}
 
-	private static Set<Annotation> getQualifierAnnotations(Field field) {
+	/**
+     * Returns a set of qualifier annotations for the given field.
+     * 
+     * @param field the field for which to retrieve qualifier annotations
+     * @return a set of qualifier annotations
+     */
+    private static Set<Annotation> getQualifierAnnotations(Field field) {
 		// Assume that any annotations other than @MockBean/@SpyBean are qualifiers
 		Annotation[] candidates = field.getDeclaredAnnotations();
 		Set<Annotation> annotations = new HashSet<>(candidates.length);
@@ -99,7 +140,15 @@ class QualifierDefinition {
 		return annotations;
 	}
 
-	private static boolean isMockOrSpyAnnotation(Class<? extends Annotation> type) {
+	/**
+     * Checks if the given annotation type is either {@link MockBean} or {@link SpyBean},
+     * or if it is present as a meta-annotation on the provided class.
+     * 
+     * @param type the annotation type to check
+     * @return {@code true} if the annotation type is either {@link MockBean} or {@link SpyBean},
+     *         or if it is present as a meta-annotation on the provided class; {@code false} otherwise
+     */
+    private static boolean isMockOrSpyAnnotation(Class<? extends Annotation> type) {
 		if (type.equals(MockBean.class) || type.equals(SpyBean.class)) {
 			return true;
 		}

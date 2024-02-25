@@ -46,12 +46,25 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnEnabledMetricsExport("simple")
 public class SimpleMetricsExportAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of SimpleMeterRegistry with the provided configuration and clock.
+     * 
+     * @param config the configuration for the SimpleMeterRegistry
+     * @param clock the clock used by the SimpleMeterRegistry
+     * @return a new instance of SimpleMeterRegistry
+     */
+    @Bean
 	public SimpleMeterRegistry simpleMeterRegistry(SimpleConfig config, Clock clock) {
 		return new SimpleMeterRegistry(config, clock);
 	}
 
-	@Bean
+	/**
+     * Creates a SimpleConfig bean if no other bean of the same type is present.
+     * 
+     * @param simpleProperties the SimpleProperties object used to configure the SimpleConfig bean
+     * @return a SimpleConfig bean configured with the provided SimpleProperties
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public SimpleConfig simpleConfig(SimpleProperties simpleProperties) {
 		return new SimplePropertiesConfigAdapter(simpleProperties);

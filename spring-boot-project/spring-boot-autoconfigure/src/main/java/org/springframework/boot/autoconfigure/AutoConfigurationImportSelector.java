@@ -94,7 +94,13 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	private ConfigurationClassFilter configurationClassFilter;
 
-	@Override
+	/**
+     * Selects the imports for auto-configuration based on the provided annotation metadata.
+     * 
+     * @param annotationMetadata the annotation metadata of the configuration class
+     * @return an array of fully qualified class names to be imported
+     */
+    @Override
 	public String[] selectImports(AnnotationMetadata annotationMetadata) {
 		if (!isEnabled(annotationMetadata)) {
 			return NO_IMPORTS;
@@ -103,12 +109,23 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		return StringUtils.toStringArray(autoConfigurationEntry.getConfigurations());
 	}
 
-	@Override
+	/**
+     * Returns a predicate that filters out strings based on exclusion criteria.
+     *
+     * @return the exclusion filter predicate
+     */
+    @Override
 	public Predicate<String> getExclusionFilter() {
 		return this::shouldExclude;
 	}
 
-	private boolean shouldExclude(String configurationClassName) {
+	/**
+     * Determines whether the given configuration class should be excluded based on the configuration class filter.
+     * 
+     * @param configurationClassName the fully qualified name of the configuration class
+     * @return {@code true} if the configuration class should be excluded, {@code false} otherwise
+     */
+    private boolean shouldExclude(String configurationClassName) {
 		return getConfigurationClassFilter().filter(Collections.singletonList(configurationClassName)).isEmpty();
 	}
 
@@ -133,12 +150,23 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		return new AutoConfigurationEntry(configurations, exclusions);
 	}
 
-	@Override
+	/**
+     * Returns the import group for the AutoConfigurationImportSelector class.
+     * 
+     * @return the import group for the AutoConfigurationImportSelector class
+     */
+    @Override
 	public Class<? extends Group> getImportGroup() {
 		return AutoConfigurationGroup.class;
 	}
 
-	protected boolean isEnabled(AnnotationMetadata metadata) {
+	/**
+     * Determines if the auto-configuration is enabled based on the provided metadata.
+     * 
+     * @param metadata the annotation metadata to be evaluated
+     * @return true if the auto-configuration is enabled, false otherwise
+     */
+    protected boolean isEnabled(AnnotationMetadata metadata) {
 		if (getClass() == AutoConfigurationImportSelector.class) {
 			return getEnvironment().getProperty(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, Boolean.class, true);
 		}
@@ -186,7 +214,13 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		return configurations;
 	}
 
-	private void checkExcludedClasses(List<String> configurations, Set<String> exclusions) {
+	/**
+     * Checks the excluded classes against the configurations and handles any invalid excludes.
+     * 
+     * @param configurations the list of configurations
+     * @param exclusions the set of excluded classes
+     */
+    private void checkExcludedClasses(List<String> configurations, Set<String> exclusions) {
 		List<String> invalidExcludes = new ArrayList<>(exclusions.size());
 		for (String exclusion : exclusions) {
 			if (ClassUtils.isPresent(exclusion, getClass().getClassLoader()) && !configurations.contains(exclusion)) {
@@ -249,11 +283,21 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		return (excludes != null) ? Arrays.asList(excludes) : Collections.emptyList();
 	}
 
-	protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
+	/**
+     * Retrieves the list of auto-configuration import filters.
+     * 
+     * @return the list of auto-configuration import filters
+     */
+    protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
 		return SpringFactoriesLoader.loadFactories(AutoConfigurationImportFilter.class, this.beanClassLoader);
 	}
 
-	private ConfigurationClassFilter getConfigurationClassFilter() {
+	/**
+     * Returns the configuration class filter.
+     * 
+     * @return the configuration class filter
+     */
+    private ConfigurationClassFilter getConfigurationClassFilter() {
 		if (this.configurationClassFilter == null) {
 			List<AutoConfigurationImportFilter> filters = getAutoConfigurationImportFilters();
 			for (AutoConfigurationImportFilter filter : filters) {
@@ -264,16 +308,36 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		return this.configurationClassFilter;
 	}
 
-	protected final <T> List<T> removeDuplicates(List<T> list) {
+	/**
+     * Removes duplicate elements from the given list.
+     * 
+     * @param <T> the type of elements in the list
+     * @param list the list from which duplicate elements are to be removed
+     * @return a new list containing the unique elements from the original list, in the same order
+     */
+    protected final <T> List<T> removeDuplicates(List<T> list) {
 		return new ArrayList<>(new LinkedHashSet<>(list));
 	}
 
-	protected final List<String> asList(AnnotationAttributes attributes, String name) {
+	/**
+     * Converts the given array of strings to a list of strings.
+     * 
+     * @param attributes the annotation attributes containing the array of strings
+     * @param name the name of the attribute containing the array of strings
+     * @return a list of strings converted from the given array of strings
+     */
+    protected final List<String> asList(AnnotationAttributes attributes, String name) {
 		String[] value = attributes.getStringArray(name);
 		return Arrays.asList(value);
 	}
 
-	private void fireAutoConfigurationImportEvents(List<String> configurations, Set<String> exclusions) {
+	/**
+     * Fires the AutoConfigurationImportEvents to the registered AutoConfigurationImportListeners.
+     * 
+     * @param configurations the list of configurations to be imported
+     * @param exclusions the set of configurations to be excluded
+     */
+    private void fireAutoConfigurationImportEvents(List<String> configurations, Set<String> exclusions) {
 		List<AutoConfigurationImportListener> listeners = getAutoConfigurationImportListeners();
 		if (!listeners.isEmpty()) {
 			AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, configurations, exclusions);
@@ -284,11 +348,21 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		}
 	}
 
-	protected List<AutoConfigurationImportListener> getAutoConfigurationImportListeners() {
+	/**
+     * Retrieves the list of AutoConfigurationImportListeners.
+     * 
+     * @return the list of AutoConfigurationImportListeners
+     */
+    protected List<AutoConfigurationImportListener> getAutoConfigurationImportListeners() {
 		return SpringFactoriesLoader.loadFactories(AutoConfigurationImportListener.class, this.beanClassLoader);
 	}
 
-	private void invokeAwareMethods(Object instance) {
+	/**
+     * Invokes the aware methods on the given instance.
+     * 
+     * @param instance the object instance
+     */
+    private void invokeAwareMethods(Object instance) {
 		if (instance instanceof Aware) {
 			if (instance instanceof BeanClassLoaderAware beanClassLoaderAwareInstance) {
 				beanClassLoaderAwareInstance.setBeanClassLoader(this.beanClassLoader);
@@ -305,60 +379,137 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		}
 	}
 
-	@Override
+	/**
+     * Set the BeanFactory that this object runs in.
+     * <p>
+     * Invoked after population of normal bean properties but before an init callback such as InitializingBean's
+     * {@code afterPropertiesSet} or a custom init-method. Invoked after ResourceLoaderAware's {@code setResourceLoader},
+     * ApplicationEventPublisherAware's {@code setApplicationEventPublisher} and MessageSourceAware's
+     * {@code setMessageSource}.
+     * <p>
+     * This method allows the bean instance to perform initialization based on its bean factory context, such as setting up
+     * custom editors or registering beans.
+     * <p>
+     * This implementation checks that the bean factory is an instance of {@code ConfigurableListableBeanFactory} and
+     * assigns it to the {@code beanFactory} field.
+     *
+     * @param beanFactory the BeanFactory that this object runs in
+     * @throws BeansException if initialization failed
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
+     * @see org.springframework.context.ResourceLoaderAware#setResourceLoader
+     * @see org.springframework.context.ApplicationEventPublisherAware#setApplicationEventPublisher
+     * @see org.springframework.context.MessageSourceAware#setMessageSource
+     */
+    @Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		Assert.isInstanceOf(ConfigurableListableBeanFactory.class, beanFactory);
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 	}
 
-	protected final ConfigurableListableBeanFactory getBeanFactory() {
+	/**
+     * Returns the ConfigurableListableBeanFactory associated with this AutoConfigurationImportSelector.
+     *
+     * @return the ConfigurableListableBeanFactory associated with this AutoConfigurationImportSelector
+     */
+    protected final ConfigurableListableBeanFactory getBeanFactory() {
 		return this.beanFactory;
 	}
 
-	@Override
+	/**
+     * Set the ClassLoader to be used for loading bean classes.
+     * 
+     * @param classLoader the ClassLoader to be used
+     */
+    @Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.beanClassLoader = classLoader;
 	}
 
-	protected ClassLoader getBeanClassLoader() {
+	/**
+     * Returns the ClassLoader used for loading the beans.
+     *
+     * @return the ClassLoader used for loading the beans
+     */
+    protected ClassLoader getBeanClassLoader() {
 		return this.beanClassLoader;
 	}
 
-	@Override
+	/**
+     * Set the environment for this AutoConfigurationImportSelector.
+     * 
+     * @param environment the environment to set
+     */
+    @Override
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
 	}
 
-	protected final Environment getEnvironment() {
+	/**
+     * Returns the environment associated with this AutoConfigurationImportSelector.
+     *
+     * @return the environment associated with this AutoConfigurationImportSelector
+     */
+    protected final Environment getEnvironment() {
 		return this.environment;
 	}
 
-	@Override
+	/**
+     * Set the resource loader to be used for loading resources.
+     * 
+     * @param resourceLoader the resource loader to be set
+     */
+    @Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
 
-	protected final ResourceLoader getResourceLoader() {
+	/**
+     * Returns the resource loader used by this AutoConfigurationImportSelector.
+     *
+     * @return the resource loader used by this AutoConfigurationImportSelector
+     */
+    protected final ResourceLoader getResourceLoader() {
 		return this.resourceLoader;
 	}
 
-	@Override
+	/**
+     * Returns the order in which this AutoConfigurationImportSelector should be processed.
+     * The order is determined by subtracting 1 from the LOWEST_PRECEDENCE constant defined in the Ordered interface.
+     *
+     * @return the order of this AutoConfigurationImportSelector
+     */
+    @Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE - 1;
 	}
 
-	private static class ConfigurationClassFilter {
+	/**
+     * ConfigurationClassFilter class.
+     */
+    private static class ConfigurationClassFilter {
 
 		private final AutoConfigurationMetadata autoConfigurationMetadata;
 
 		private final List<AutoConfigurationImportFilter> filters;
 
-		ConfigurationClassFilter(ClassLoader classLoader, List<AutoConfigurationImportFilter> filters) {
+		/**
+         * Constructs a new ConfigurationClassFilter with the specified class loader and list of auto configuration import filters.
+         * 
+         * @param classLoader the class loader to use for loading auto configuration metadata
+         * @param filters the list of auto configuration import filters to apply
+         */
+        ConfigurationClassFilter(ClassLoader classLoader, List<AutoConfigurationImportFilter> filters) {
 			this.autoConfigurationMetadata = AutoConfigurationMetadataLoader.loadMetadata(classLoader);
 			this.filters = filters;
 		}
 
-		List<String> filter(List<String> configurations) {
+		/**
+         * Filters the given list of configurations based on the registered filters.
+         * 
+         * @param configurations the list of configurations to be filtered
+         * @return the filtered list of configurations
+         */
+        List<String> filter(List<String> configurations) {
 			long startTime = System.nanoTime();
 			String[] candidates = StringUtils.toStringArray(configurations);
 			boolean skipped = false;
@@ -390,7 +541,10 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	}
 
-	private static final class AutoConfigurationGroup
+	/**
+     * AutoConfigurationGroup class.
+     */
+    private static final class AutoConfigurationGroup
 			implements DeferredImportSelector.Group, BeanClassLoaderAware, BeanFactoryAware, ResourceLoaderAware {
 
 		private final Map<String, AnnotationMetadata> entries = new LinkedHashMap<>();
@@ -405,22 +559,44 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 		private AutoConfigurationMetadata autoConfigurationMetadata;
 
-		@Override
+		/**
+         * Sets the class loader to be used for loading beans in this AutoConfigurationGroup.
+         * 
+         * @param classLoader the class loader to be set
+         */
+        @Override
 		public void setBeanClassLoader(ClassLoader classLoader) {
 			this.beanClassLoader = classLoader;
 		}
 
-		@Override
+		/**
+         * Sets the bean factory for this AutoConfigurationGroup.
+         * 
+         * @param beanFactory the bean factory to be set
+         */
+        @Override
 		public void setBeanFactory(BeanFactory beanFactory) {
 			this.beanFactory = beanFactory;
 		}
 
-		@Override
+		/**
+         * Sets the resource loader for this AutoConfigurationGroup.
+         * 
+         * @param resourceLoader the resource loader to be set
+         */
+        @Override
 		public void setResourceLoader(ResourceLoader resourceLoader) {
 			this.resourceLoader = resourceLoader;
 		}
 
-		@Override
+		/**
+         * Process the annotation metadata and deferred import selector.
+         * 
+         * @param annotationMetadata the annotation metadata
+         * @param deferredImportSelector the deferred import selector
+         * @throws IllegalArgumentException if the deferred import selector is not an instance of AutoConfigurationImportSelector
+         */
+        @Override
 		public void process(AnnotationMetadata annotationMetadata, DeferredImportSelector deferredImportSelector) {
 			Assert.state(deferredImportSelector instanceof AutoConfigurationImportSelector,
 					() -> String.format("Only %s implementations are supported, got %s",
@@ -434,7 +610,21 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 			}
 		}
 
-		@Override
+		/**
+         * Returns an iterable of entries representing the selected imports for auto-configuration.
+         * If the autoConfigurationEntries list is empty, an empty list is returned.
+         * 
+         * The method first collects all exclusions from the autoConfigurationEntries list and stores them in a set.
+         * Then, it collects all configurations from the autoConfigurationEntries list and stores them in a linked hash set.
+         * The method removes all exclusions from the set of configurations.
+         * 
+         * The method then sorts the remaining configurations using the sortAutoConfigurations method and the autoConfigurationMetadata.
+         * Each sorted configuration is mapped to an Entry object, which contains the entry and the import class name.
+         * The mapped entries are collected into a list and returned.
+         * 
+         * @return an iterable of entries representing the selected imports for auto-configuration
+         */
+        @Override
 		public Iterable<Entry> selectImports() {
 			if (this.autoConfigurationEntries.isEmpty()) {
 				return Collections.emptyList();
@@ -454,20 +644,40 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 				.toList();
 		}
 
-		private AutoConfigurationMetadata getAutoConfigurationMetadata() {
+		/**
+         * Retrieves the auto-configuration metadata.
+         * 
+         * @return The auto-configuration metadata.
+         */
+        private AutoConfigurationMetadata getAutoConfigurationMetadata() {
 			if (this.autoConfigurationMetadata == null) {
 				this.autoConfigurationMetadata = AutoConfigurationMetadataLoader.loadMetadata(this.beanClassLoader);
 			}
 			return this.autoConfigurationMetadata;
 		}
 
-		private List<String> sortAutoConfigurations(Set<String> configurations,
+		/**
+         * Sorts the given set of auto configurations based on their priority order.
+         * 
+         * @param configurations the set of auto configurations to be sorted
+         * @param autoConfigurationMetadata the metadata containing information about the auto configurations
+         * @return a sorted list of auto configurations
+         */
+        private List<String> sortAutoConfigurations(Set<String> configurations,
 				AutoConfigurationMetadata autoConfigurationMetadata) {
 			return new AutoConfigurationSorter(getMetadataReaderFactory(), autoConfigurationMetadata)
 				.getInPriorityOrder(configurations);
 		}
 
-		private MetadataReaderFactory getMetadataReaderFactory() {
+		/**
+         * Returns the MetadataReaderFactory used by this AutoConfigurationGroup.
+         * If the SharedMetadataReaderFactoryContextInitializer bean is available in the bean factory,
+         * it will be used. Otherwise, a new instance of CachingMetadataReaderFactory will be created
+         * using the provided resource loader.
+         *
+         * @return the MetadataReaderFactory used by this AutoConfigurationGroup
+         */
+        private MetadataReaderFactory getMetadataReaderFactory() {
 			try {
 				return this.beanFactory.getBean(SharedMetadataReaderFactoryContextInitializer.BEAN_NAME,
 						MetadataReaderFactory.class);
@@ -479,13 +689,19 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	}
 
-	protected static class AutoConfigurationEntry {
+	/**
+     * AutoConfigurationEntry class.
+     */
+    protected static class AutoConfigurationEntry {
 
 		private final List<String> configurations;
 
 		private final Set<String> exclusions;
 
-		private AutoConfigurationEntry() {
+		/**
+         * Constructs a new AutoConfigurationEntry with an empty list of configurations and an empty set of exclusions.
+         */
+        private AutoConfigurationEntry() {
 			this.configurations = Collections.emptyList();
 			this.exclusions = Collections.emptySet();
 		}
@@ -501,11 +717,21 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 			this.exclusions = new HashSet<>(exclusions);
 		}
 
-		public List<String> getConfigurations() {
+		/**
+         * Returns the list of configurations.
+         *
+         * @return the list of configurations
+         */
+        public List<String> getConfigurations() {
 			return this.configurations;
 		}
 
-		public Set<String> getExclusions() {
+		/**
+         * Returns the set of exclusions.
+         *
+         * @return the set of exclusions
+         */
+        public Set<String> getExclusions() {
 			return this.exclusions;
 		}
 

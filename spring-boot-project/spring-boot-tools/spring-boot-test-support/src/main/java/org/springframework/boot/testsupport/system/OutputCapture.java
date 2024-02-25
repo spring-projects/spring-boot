@@ -54,7 +54,13 @@ class OutputCapture implements CapturedOutput {
 		this.systemCaptures.removeLast().release();
 	}
 
-	@Override
+	/**
+     * Compares this OutputCapture object with the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return true if the specified object is equal to this OutputCapture object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -65,12 +71,22 @@ class OutputCapture implements CapturedOutput {
 		return false;
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this OutputCapture object.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return toString().hashCode();
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the OutputCapture object.
+     * 
+     * @return a string representation of the OutputCapture object
+     */
+    @Override
 	public String toString() {
 		return getAll();
 	}
@@ -110,7 +126,14 @@ class OutputCapture implements CapturedOutput {
 		this.systemCaptures.peek().reset();
 	}
 
-	private String get(Predicate<Type> filter) {
+	/**
+     * Retrieves the captured output based on the provided filter.
+     * 
+     * @param filter the filter to apply on the captured output
+     * @return the captured output as a string
+     * @throws IllegalStateException if no system captures are found
+     */
+    private String get(Predicate<Type> filter) {
 		Assert.state(!this.systemCaptures.isEmpty(),
 				"No system captures found. Please check your output capture registration.");
 		StringBuilder builder = new StringBuilder();
@@ -134,31 +157,60 @@ class OutputCapture implements CapturedOutput {
 
 		private final List<CapturedString> capturedStrings = new ArrayList<>();
 
-		SystemCapture() {
+		/**
+         * Initializes the SystemCapture object by redirecting the standard output and error streams to custom PrintStreamCapture objects.
+         * 
+         * The standard output stream is redirected to a PrintStreamCapture object named 'out', which captures the output and invokes the 'captureOut' method.
+         * The standard error stream is redirected to a PrintStreamCapture object named 'err', which captures the output and invokes the 'captureErr' method.
+         * 
+         * @see PrintStreamCapture
+         * @see System#setOut(java.io.PrintStream)
+         * @see System#setErr(java.io.PrintStream)
+         */
+        SystemCapture() {
 			this.out = new PrintStreamCapture(System.out, this::captureOut);
 			this.err = new PrintStreamCapture(System.err, this::captureErr);
 			System.setOut(this.out);
 			System.setErr(this.err);
 		}
 
-		void release() {
+		/**
+         * Releases the captured output and error streams and restores the original streams.
+         */
+        void release() {
 			System.setOut(this.out.getParent());
 			System.setErr(this.err.getParent());
 		}
 
-		private void captureOut(String string) {
+		/**
+         * Captures the output string and adds it to the list of captured strings.
+         * 
+         * @param string the output string to be captured
+         */
+        private void captureOut(String string) {
 			synchronized (this.monitor) {
 				this.capturedStrings.add(new CapturedString(Type.OUT, string));
 			}
 		}
 
-		private void captureErr(String string) {
+		/**
+         * Captures an error string and adds it to the list of captured strings.
+         * 
+         * @param string the error string to be captured
+         */
+        private void captureErr(String string) {
 			synchronized (this.monitor) {
 				this.capturedStrings.add(new CapturedString(Type.ERR, string));
 			}
 		}
 
-		void append(StringBuilder builder, Predicate<Type> filter) {
+		/**
+         * Appends captured strings to the provided StringBuilder based on the given filter.
+         * 
+         * @param builder The StringBuilder to append the captured strings to.
+         * @param filter The filter to determine which captured strings to append.
+         */
+        void append(StringBuilder builder, Predicate<Type> filter) {
 			synchronized (this.monitor) {
 				for (CapturedString stringCapture : this.capturedStrings) {
 					if (filter.test(stringCapture.getType())) {
@@ -168,7 +220,11 @@ class OutputCapture implements CapturedOutput {
 			}
 		}
 
-		void reset() {
+		/**
+         * Resets the captured strings by clearing the list of captured strings.
+         * This method is synchronized to ensure thread safety.
+         */
+        void reset() {
 			synchronized (this.monitor) {
 				this.capturedStrings.clear();
 			}
@@ -183,16 +239,36 @@ class OutputCapture implements CapturedOutput {
 
 		private final PrintStream parent;
 
-		PrintStreamCapture(PrintStream parent, Consumer<String> copy) {
+		/**
+         * Constructs a new PrintStreamCapture object with the specified parent PrintStream and copy Consumer.
+         * 
+         * @param parent the parent PrintStream to capture output from
+         * @param copy the Consumer to copy captured output to
+         */
+        PrintStreamCapture(PrintStream parent, Consumer<String> copy) {
 			super(new OutputStreamCapture(getSystemStream(parent), copy));
 			this.parent = parent;
 		}
 
-		PrintStream getParent() {
+		/**
+         * Returns the parent PrintStream object of this PrintStreamCapture object.
+         *
+         * @return the parent PrintStream object
+         */
+        PrintStream getParent() {
 			return this.parent;
 		}
 
-		private static PrintStream getSystemStream(PrintStream printStream) {
+		/**
+         * Returns the system stream of the given PrintStream object.
+         * If the given PrintStream object is an instance of PrintStreamCapture,
+         * it will traverse through the parent PrintStreamCapture objects until it finds a non-PrintStreamCapture parent.
+         * The non-PrintStreamCapture parent will be returned as the system stream.
+         *
+         * @param printStream the PrintStream object to get the system stream from
+         * @return the system stream of the given PrintStream object
+         */
+        private static PrintStream getSystemStream(PrintStream printStream) {
 			while (printStream instanceof PrintStreamCapture printStreamCapture) {
 				printStream = printStreamCapture.getParent();
 			}
@@ -210,23 +286,52 @@ class OutputCapture implements CapturedOutput {
 
 		private final Consumer<String> copy;
 
-		OutputStreamCapture(PrintStream systemStream, Consumer<String> copy) {
+		/**
+         * Constructs an OutputStreamCapture object with the specified systemStream and copy consumer.
+         * 
+         * @param systemStream the PrintStream to capture the output from
+         * @param copy the consumer to copy the captured output to
+         */
+        OutputStreamCapture(PrintStream systemStream, Consumer<String> copy) {
 			this.systemStream = systemStream;
 			this.copy = copy;
 		}
 
-		@Override
+		/**
+         * Writes a single byte to the output stream.
+         * 
+         * @param b the byte to be written
+         * @throws IOException if an I/O error occurs
+         */
+        @Override
 		public void write(int b) throws IOException {
 			write(new byte[] { (byte) (b & 0xFF) });
 		}
 
-		@Override
+		/**
+         * Writes a portion of an array of bytes to this output stream.
+         * The write operation is performed by copying the specified portion
+         * of the byte array, converting it into a string, and passing it to
+         * the copy consumer. The specified portion is then written to the
+         * underlying system output stream.
+         *
+         * @param b   the data.
+         * @param off the start offset in the data.
+         * @param len the number of bytes to write.
+         * @throws IOException if an I/O error occurs.
+         */
+        @Override
 		public void write(byte[] b, int off, int len) throws IOException {
 			this.copy.accept(new String(b, off, len));
 			this.systemStream.write(b, off, len);
 		}
 
-		@Override
+		/**
+         * Flushes the output stream.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
+        @Override
 		public void flush() throws IOException {
 			this.systemStream.flush();
 		}
@@ -242,16 +347,32 @@ class OutputCapture implements CapturedOutput {
 
 		private final String string;
 
-		CapturedString(Type type, String string) {
+		/**
+         * Constructs a new CapturedString object with the specified type and string.
+         * 
+         * @param type the type of the captured string
+         * @param string the captured string
+         */
+        CapturedString(Type type, String string) {
 			this.type = type;
 			this.string = string;
 		}
 
-		Type getType() {
+		/**
+         * Returns the type of the CapturedString object.
+         * 
+         * @return the type of the CapturedString object
+         */
+        Type getType() {
 			return this.type;
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the CapturedString object.
+         *
+         * @return the string representation of the CapturedString object
+         */
+        @Override
 		public String toString() {
 			return this.string;
 		}

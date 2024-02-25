@@ -23,10 +23,18 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyDataSourceConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyDataSourceConfiguration {
 
-	@Bean
+	/**
+     * Creates and configures a DataSource object based on the properties specified in the "app.datasource" configuration.
+     * 
+     * @return The configured DataSource object.
+     */
+    @Bean
 	@ConfigurationProperties("app.datasource")
 	public DataSource dataSource() {
 		return DataSourceBuilder.create().build();

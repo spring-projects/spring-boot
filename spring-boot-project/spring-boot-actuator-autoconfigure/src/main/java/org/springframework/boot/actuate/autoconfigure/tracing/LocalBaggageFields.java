@@ -36,7 +36,13 @@ class LocalBaggageFields {
 
 	private final List<String> fields;
 
-	LocalBaggageFields(List<String> fields) {
+	/**
+     * Initializes a new instance of the LocalBaggageFields class with the specified list of fields.
+     * 
+     * @param fields the list of fields to be set (must not be null)
+     * @throws IllegalArgumentException if the fields parameter is null
+     */
+    LocalBaggageFields(List<String> fields) {
 		Assert.notNull(fields, "fields must not be null");
 		this.fields = fields;
 	}

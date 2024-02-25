@@ -31,16 +31,26 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 class DefaultWebSecurityCondition extends AllNestedConditions {
 
-	DefaultWebSecurityCondition() {
+	/**
+     * Creates a new instance of DefaultWebSecurityCondition.
+     * This constructor sets the configuration phase to REGISTER_BEAN.
+     */
+    DefaultWebSecurityCondition() {
 		super(ConfigurationPhase.REGISTER_BEAN);
 	}
 
-	@ConditionalOnClass({ SecurityFilterChain.class, HttpSecurity.class })
+	/**
+     * Classes class.
+     */
+    @ConditionalOnClass({ SecurityFilterChain.class, HttpSecurity.class })
 	static class Classes {
 
 	}
 
-	@ConditionalOnMissingBean({ SecurityFilterChain.class })
+	/**
+     * Beans class.
+     */
+    @ConditionalOnMissingBean({ SecurityFilterChain.class })
 	static class Beans {
 
 	}

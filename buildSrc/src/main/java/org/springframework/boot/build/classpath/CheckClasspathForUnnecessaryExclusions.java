@@ -65,7 +65,13 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 
 	private Configuration classpath;
 
-	@Inject
+	/**
+     * Constructor for the CheckClasspathForUnnecessaryExclusions class.
+     * 
+     * @param dependencyHandler   The dependency handler used to manage dependencies.
+     * @param configurations     The container for project configurations.
+     */
+    @Inject
 	public CheckClasspathForUnnecessaryExclusions(DependencyHandler dependencyHandler,
 			ConfigurationContainer configurations) {
 		this.dependencyHandler = getProject().getDependencies();
@@ -75,25 +81,45 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 		getOutputs().upToDateWhen((task) -> true);
 	}
 
-	public void setClasspath(Configuration classpath) {
+	/**
+     * Sets the classpath configuration.
+     * 
+     * @param classpath the classpath configuration to set
+     */
+    public void setClasspath(Configuration classpath) {
 		this.classpath = classpath;
 		this.exclusionsByDependencyId.clear();
 		this.dependencyById.clear();
 		classpath.getAllDependencies().all(this::processDependency);
 	}
 
-	@Classpath
+	/**
+     * Returns the classpath of the CheckClasspathForUnnecessaryExclusions class.
+     *
+     * @return the classpath of the CheckClasspathForUnnecessaryExclusions class
+     */
+    @Classpath
 	public FileCollection getClasspath() {
 		return this.classpath;
 	}
 
-	private void processDependency(Dependency dependency) {
+	/**
+     * Processes the given dependency.
+     * 
+     * @param dependency the dependency to be processed
+     */
+    private void processDependency(Dependency dependency) {
 		if (dependency instanceof ModuleDependency moduleDependency) {
 			processDependency(moduleDependency);
 		}
 	}
 
-	private void processDependency(ModuleDependency dependency) {
+	/**
+     * Processes a module dependency by extracting its ID and exclude rules.
+     * 
+     * @param dependency the module dependency to process
+     */
+    private void processDependency(ModuleDependency dependency) {
 		String dependencyId = getId(dependency);
 		TreeSet<String> exclusions = dependency.getExcludeRules()
 			.stream()
@@ -105,12 +131,27 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 		}
 	}
 
-	@Input
+	/**
+     * Returns a map of exclusions by dependency ID.
+     * 
+     * @return the map of exclusions by dependency ID
+     */
+    @Input
 	Map<String, Set<String>> getExclusionsByDependencyId() {
 		return this.exclusionsByDependencyId;
 	}
 
-	@TaskAction
+	/**
+     * Checks for unnecessary exclusions in the classpath.
+     * 
+     * This method iterates through the exclusionsByDependencyId map and checks if there are any exclusions present for each dependency.
+     * If exclusions are found, it retrieves the dependency to check and gets the incoming artifacts for the specified platform.
+     * It then removes any exclusions that match the artifact IDs.
+     * After that, it removes any profile exclusions for the dependency.
+     * If there are still exclusions remaining, it adds them to the unnecessaryExclusions map.
+     * Finally, if there are any unnecessary exclusions found, a GradleException is thrown with the exception message.
+     */
+    @TaskAction
 	public void checkForUnnecessaryExclusions() {
 		Map<String, Set<String>> unnecessaryExclusions = new HashMap<>();
 		this.exclusionsByDependencyId.forEach((dependencyId, exclusions) -> {
@@ -134,13 +175,25 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 		}
 	}
 
-	private void removeProfileExclusions(String dependencyId, Set<String> exclusions) {
+	/**
+     * Removes the specified exclusions from the given dependency.
+     * 
+     * @param dependencyId the ID of the dependency
+     * @param exclusions the set of exclusions to be removed
+     */
+    private void removeProfileExclusions(String dependencyId, Set<String> exclusions) {
 		if ("org.xmlunit:xmlunit-core".equals(dependencyId)) {
 			exclusions.remove("javax.xml.bind:jaxb-api");
 		}
 	}
 
-	private String getExceptionMessage(Map<String, Set<String>> unnecessaryExclusions) {
+	/**
+     * Returns the exception message for unnecessary exclusions.
+     * 
+     * @param unnecessaryExclusions a map containing the unnecessary exclusions
+     * @return the exception message
+     */
+    private String getExceptionMessage(Map<String, Set<String>> unnecessaryExclusions) {
 		StringBuilder message = new StringBuilder("Unnecessary exclusions detected:");
 		for (Entry<String, Set<String>> entry : unnecessaryExclusions.entrySet()) {
 			message.append(String.format("%n    %s", entry.getKey()));
@@ -151,19 +204,46 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 		return message.toString();
 	}
 
-	private String getId(ResolvedArtifactResult artifact) {
+	/**
+     * Returns the ID of the given artifact.
+     * 
+     * @param artifact the resolved artifact result
+     * @return the ID of the artifact
+     */
+    private String getId(ResolvedArtifactResult artifact) {
 		return getId((ModuleComponentIdentifier) artifact.getId().getComponentIdentifier());
 	}
 
-	private String getId(ModuleDependency dependency) {
+	/**
+     * Returns the ID of the given ModuleDependency.
+     * The ID is generated by concatenating the group and name of the dependency.
+     * 
+     * @param dependency the ModuleDependency to get the ID for
+     * @return the ID of the dependency
+     */
+    private String getId(ModuleDependency dependency) {
 		return dependency.getGroup() + ":" + dependency.getName();
 	}
 
-	private String getId(ExcludeRule rule) {
+	/**
+     * Returns the ID of the given ExcludeRule.
+     * The ID is generated by concatenating the group and module of the rule.
+     *
+     * @param rule the ExcludeRule for which to get the ID
+     * @return the ID of the ExcludeRule
+     */
+    private String getId(ExcludeRule rule) {
 		return rule.getGroup() + ":" + rule.getModule();
 	}
 
-	private String getId(ModuleComponentIdentifier identifier) {
+	/**
+     * Returns the ID of the given ModuleComponentIdentifier.
+     * The ID is generated by concatenating the group and module of the identifier.
+     *
+     * @param identifier the ModuleComponentIdentifier to get the ID from
+     * @return the ID of the identifier
+     */
+    private String getId(ModuleComponentIdentifier identifier) {
 		return identifier.getGroup() + ":" + identifier.getModule();
 	}
 

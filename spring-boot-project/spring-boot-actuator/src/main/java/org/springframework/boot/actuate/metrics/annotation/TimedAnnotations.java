@@ -38,7 +38,10 @@ public final class TimedAnnotations {
 
 	private static final Map<AnnotatedElement, Set<Timed>> cache = new ConcurrentReferenceHashMap<>();
 
-	private TimedAnnotations() {
+	/**
+     * Private constructor for the TimedAnnotations class.
+     */
+    private TimedAnnotations() {
 	}
 
 	/**
@@ -56,7 +59,13 @@ public final class TimedAnnotations {
 		return findTimedAnnotations(type);
 	}
 
-	private static Set<Timed> findTimedAnnotations(AnnotatedElement element) {
+	/**
+     * Finds all Timed annotations present on the given AnnotatedElement.
+     * 
+     * @param element the AnnotatedElement to search for Timed annotations
+     * @return a Set of Timed annotations found on the element, or an empty Set if none are found
+     */
+    private static Set<Timed> findTimedAnnotations(AnnotatedElement element) {
 		if (element == null) {
 			return Collections.emptySet();
 		}

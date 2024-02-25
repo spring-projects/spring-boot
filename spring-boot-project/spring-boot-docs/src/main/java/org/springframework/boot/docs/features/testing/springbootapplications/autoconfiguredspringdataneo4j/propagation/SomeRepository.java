@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdataneo4j.propagation;
 
+/**
+ * SomeRepository interface.
+ */
 interface SomeRepository {
 
 }

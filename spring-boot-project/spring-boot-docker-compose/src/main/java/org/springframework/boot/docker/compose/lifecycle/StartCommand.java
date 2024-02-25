@@ -43,11 +43,22 @@ public enum StartCommand {
 
 	private final BiConsumer<DockerCompose, LogLevel> action;
 
-	StartCommand(BiConsumer<DockerCompose, LogLevel> action) {
+	/**
+     * Sets the action to be performed when the StartCommand is executed.
+     * 
+     * @param action the action to be performed, which takes a DockerCompose object and a LogLevel object as parameters
+     */
+    StartCommand(BiConsumer<DockerCompose, LogLevel> action) {
 		this.action = action;
 	}
 
-	void applyTo(DockerCompose dockerCompose, LogLevel logLevel) {
+	/**
+     * Applies the specified log level to the given DockerCompose instance.
+     * 
+     * @param dockerCompose the DockerCompose instance to apply the log level to
+     * @param logLevel the log level to be applied
+     */
+    void applyTo(DockerCompose dockerCompose, LogLevel logLevel) {
 		this.action.accept(dockerCompose, logLevel);
 	}
 

@@ -49,7 +49,14 @@ import org.springframework.context.annotation.Import;
 		ArtemisConnectionFactoryConfiguration.class })
 public class ArtemisAutoConfiguration {
 
-	@Bean
+	/**
+     * Generates an instance of ArtemisConnectionDetails if no other bean of type ArtemisConnectionDetails is present.
+     * Uses the provided ArtemisProperties to create a new instance of PropertiesArtemisConnectionDetails.
+     * 
+     * @param properties The ArtemisProperties used to create the new instance of PropertiesArtemisConnectionDetails.
+     * @return An instance of ArtemisConnectionDetails.
+     */
+    @Bean
 	@ConditionalOnMissingBean(ArtemisConnectionDetails.class)
 	ArtemisConnectionDetails artemisConnectionDetails(ArtemisProperties properties) {
 		return new PropertiesArtemisConnectionDetails(properties);
@@ -62,26 +69,51 @@ public class ArtemisAutoConfiguration {
 
 		private final ArtemisProperties properties;
 
-		PropertiesArtemisConnectionDetails(ArtemisProperties properties) {
+		/**
+         * Constructs a new instance of PropertiesArtemisConnectionDetails with the specified ArtemisProperties.
+         * 
+         * @param properties the ArtemisProperties to be used for configuring the connection details
+         */
+        PropertiesArtemisConnectionDetails(ArtemisProperties properties) {
 			this.properties = properties;
 		}
 
-		@Override
+		/**
+         * Returns the Artemis mode of the connection details.
+         * 
+         * @return the Artemis mode of the connection details
+         */
+        @Override
 		public ArtemisMode getMode() {
 			return this.properties.getMode();
 		}
 
-		@Override
+		/**
+         * Returns the broker URL.
+         * 
+         * @return the broker URL
+         */
+        @Override
 		public String getBrokerUrl() {
 			return this.properties.getBrokerUrl();
 		}
 
-		@Override
+		/**
+         * Returns the user associated with this connection details.
+         *
+         * @return the user associated with this connection details
+         */
+        @Override
 		public String getUser() {
 			return this.properties.getUser();
 		}
 
-		@Override
+		/**
+         * Returns the password for the Artemis connection details.
+         *
+         * @return the password for the Artemis connection details
+         */
+        @Override
 		public String getPassword() {
 			return this.properties.getPassword();
 		}

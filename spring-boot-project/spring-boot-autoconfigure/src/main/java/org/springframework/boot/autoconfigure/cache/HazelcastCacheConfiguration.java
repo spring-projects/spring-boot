@@ -47,7 +47,14 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnSingleCandidate(HazelcastInstance.class)
 class HazelcastCacheConfiguration {
 
-	@Bean
+	/**
+     * Creates a HazelcastCacheManager bean with the provided customizers and existing HazelcastInstance.
+     * 
+     * @param customizers the customizers to apply to the HazelcastCacheManager
+     * @param existingHazelcastInstance the existing HazelcastInstance to use for cache management
+     * @return the customized HazelcastCacheManager bean
+     */
+    @Bean
 	HazelcastCacheManager cacheManager(CacheManagerCustomizers customizers,
 			HazelcastInstance existingHazelcastInstance) {
 		HazelcastCacheManager cacheManager = new HazelcastCacheManager(existingHazelcastInstance);

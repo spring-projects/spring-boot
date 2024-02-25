@@ -52,27 +52,57 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 
 	private final Collection<URI> repositoryUrls;
 
-	MavenMetadataVersionResolver(Collection<URI> repositoryUrls) {
+	/**
+     * Constructs a new MavenMetadataVersionResolver with the specified collection of repository URLs.
+     *
+     * @param repositoryUrls the collection of repository URLs to be used for resolving Maven metadata versions
+     */
+    MavenMetadataVersionResolver(Collection<URI> repositoryUrls) {
 		this(new RestTemplate(Collections.singletonList(new StringHttpMessageConverter())), repositoryUrls);
 	}
 
-	MavenMetadataVersionResolver(RestTemplate restTemplate, Collection<URI> repositoryUrls) {
+	/**
+     * Constructs a new MavenMetadataVersionResolver with the specified RestTemplate and repository URLs.
+     * 
+     * @param restTemplate the RestTemplate to use for making HTTP requests
+     * @param repositoryUrls the collection of repository URLs to search for Maven metadata versions
+     */
+    MavenMetadataVersionResolver(RestTemplate restTemplate, Collection<URI> repositoryUrls) {
 		this.rest = restTemplate;
 		this.repositoryUrls = normalize(repositoryUrls);
 	}
 
-	private Collection<URI> normalize(Collection<URI> uris) {
+	/**
+     * Normalizes a collection of URIs.
+     *
+     * @param uris the collection of URIs to be normalized
+     * @return a collection of normalized URIs
+     */
+    private Collection<URI> normalize(Collection<URI> uris) {
 		return uris.stream().map(this::normalize).toList();
 	}
 
-	private URI normalize(URI uri) {
+	/**
+     * Normalizes the given URI by appending a trailing slash if the path is not already a slash.
+     *
+     * @param uri the URI to be normalized
+     * @return the normalized URI
+     */
+    private URI normalize(URI uri) {
 		if ("/".equals(uri.getPath())) {
 			return uri;
 		}
 		return URI.create(uri + "/");
 	}
 
-	@Override
+	/**
+     * Resolves the versions of a given artifact in a specified group.
+     * 
+     * @param groupId    the group ID of the artifact
+     * @param artifactId the artifact ID
+     * @return a sorted set of DependencyVersion objects representing the resolved versions
+     */
+    @Override
 	public SortedSet<DependencyVersion> resolveVersions(String groupId, String artifactId) {
 		Set<String> versions = new HashSet<>();
 		for (URI repositoryUrl : this.repositoryUrls) {
@@ -81,7 +111,15 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 		return versions.stream().map(DependencyVersion::parse).collect(Collectors.toCollection(TreeSet::new));
 	}
 
-	private Set<String> resolveVersions(String groupId, String artifactId, URI repositoryUrl) {
+	/**
+     * Resolves the versions of a given artifact in a Maven repository.
+     * 
+     * @param groupId       the group ID of the artifact
+     * @param artifactId    the artifact ID
+     * @param repositoryUrl the URL of the Maven repository
+     * @return a set of strings representing the versions of the artifact
+     */
+    private Set<String> resolveVersions(String groupId, String artifactId, URI repositoryUrl) {
 		Set<String> versions = new HashSet<>();
 		URI url = repositoryUrl.resolve(groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml");
 		try {

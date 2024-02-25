@@ -30,11 +30,22 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
  */
 public class IncludeFilter extends DependencyFilter {
 
-	public IncludeFilter(List<Include> includes) {
+	/**
+     * Constructs a new IncludeFilter object with the specified list of includes.
+     * 
+     * @param includes the list of includes to be used for filtering
+     */
+    public IncludeFilter(List<Include> includes) {
 		super(includes);
 	}
 
-	@Override
+	/**
+     * Filters the given artifact based on the filters defined in the IncludeFilter class.
+     * 
+     * @param artifact The artifact to be filtered.
+     * @return {@code true} if the artifact passes all the filters, {@code false} otherwise.
+     */
+    @Override
 	protected boolean filter(Artifact artifact) {
 		for (FilterableDependency dependency : getFilters()) {
 			if (equals(artifact, dependency)) {

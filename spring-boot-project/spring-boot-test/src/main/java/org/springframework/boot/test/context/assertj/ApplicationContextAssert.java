@@ -280,7 +280,16 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		return Assertions.assertThat(bean).as("Bean of type <%s> from <%s>", type, getApplicationContext());
 	}
 
-	private String getPrimary(String[] names, Scope scope) {
+	/**
+     * Returns the primary name from the given array of names based on the specified scope.
+     * If there is only one name in the array, that name is considered as the primary name.
+     * If multiple names are found to be primary based on the specified scope, null is returned.
+     * 
+     * @param names the array of names to search for the primary name
+     * @param scope the scope to determine the primary name
+     * @return the primary name if found, null otherwise
+     */
+    private String getPrimary(String[] names, Scope scope) {
 		if (names.length == 1) {
 			return names[0];
 		}
@@ -296,7 +305,14 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		return primary;
 	}
 
-	private boolean isPrimary(String name, Scope scope) {
+	/**
+     * Checks if a bean with the given name is marked as primary in the application context.
+     * 
+     * @param name the name of the bean to check
+     * @param scope the scope of the search for the bean (NO_ANCESTORS or ALL_ANCESTORS)
+     * @return true if the bean is marked as primary, false otherwise
+     */
+    private boolean isPrimary(String name, Scope scope) {
 		ApplicationContext context = getApplicationContext();
 		while (context != null) {
 			if (context instanceof ConfigurableApplicationContext configurableContext) {
@@ -364,7 +380,13 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 			.as("Bean of name <%s> and type <%s> from <%s>", name, type, getApplicationContext());
 	}
 
-	private Object findBean(String name) {
+	/**
+     * Finds a bean with the given name in the application context.
+     * 
+     * @param name the name of the bean to find
+     * @return the bean object if found, or null if not found
+     */
+    private Object findBean(String name) {
 		try {
 			return getApplicationContext().getBean(name);
 		}
@@ -461,15 +483,32 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		return this;
 	}
 
-	protected final C getApplicationContext() {
+	/**
+     * Returns the application context.
+     *
+     * @return the application context
+     */
+    protected final C getApplicationContext() {
 		return this.actual;
 	}
 
-	protected final Throwable getStartupFailure() {
+	/**
+     * Returns the startup failure exception that occurred during the application context startup.
+     *
+     * @return the startup failure exception, or {@code null} if no exception occurred
+     */
+    protected final Throwable getStartupFailure() {
 		return this.startupFailure;
 	}
 
-	private ContextFailedToStart<C> contextFailedToStartWhenExpecting(String expectationFormat, Object... arguments) {
+	/**
+     * Creates a new instance of {@link ContextFailedToStart} with the application context, startup failure, and expectation format.
+     * 
+     * @param expectationFormat the format string for the expectation
+     * @param arguments the arguments to be formatted in the expectation format string
+     * @return a new instance of {@link ContextFailedToStart}
+     */
+    private ContextFailedToStart<C> contextFailedToStartWhenExpecting(String expectationFormat, Object... arguments) {
 		return new ContextFailedToStart<>(getApplicationContext(), this.startupFailure, expectationFormat, arguments);
 	}
 
@@ -483,12 +522,27 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		 */
 		NO_ANCESTORS {
 
-			@Override
+			/**
+     * Retrieves the names of all beans of the specified type from the given application context.
+     *
+     * @param applicationContext the application context from which to retrieve the bean names
+     * @param type the type of beans to retrieve
+     * @return an array of bean names of the specified type
+     */
+    @Override
 			String[] getBeanNamesForType(ApplicationContext applicationContext, Class<?> type) {
 				return applicationContext.getBeanNamesForType(type);
 			}
 
-			@Override
+			/**
+     * Retrieves all beans of the specified type from the given application context.
+     *
+     * @param applicationContext the application context from which to retrieve the beans
+     * @param type the type of beans to retrieve
+     * @param <T> the generic type of the beans
+     * @return a map of bean names to bean instances of the specified type
+     */
+    @Override
 			<T> Map<String, T> getBeansOfType(ApplicationContext applicationContext, Class<T> type) {
 				return applicationContext.getBeansOfType(type);
 			}
@@ -500,32 +554,81 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		 */
 		INCLUDE_ANCESTORS {
 
-			@Override
+			/**
+     * Retrieves the names of all beans of the specified type, including beans defined in ancestor contexts.
+     * 
+     * @param applicationContext the ApplicationContext to retrieve the bean names from
+     * @param type the type of beans to retrieve
+     * @return an array of bean names of the specified type
+     */
+    @Override
 			String[] getBeanNamesForType(ApplicationContext applicationContext, Class<?> type) {
 				return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(applicationContext, type);
 			}
 
-			@Override
+			/**
+     * Retrieves all beans of the specified type from the given application context, including beans from ancestor contexts.
+     *
+     * @param applicationContext the application context from which to retrieve the beans
+     * @param type the type of beans to retrieve
+     * @param <T> the generic type of the beans
+     * @return a map of bean names to bean instances of the specified type
+     */
+    @Override
 			<T> Map<String, T> getBeansOfType(ApplicationContext applicationContext, Class<T> type) {
 				return BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, type);
 			}
 
 		};
 
-		abstract String[] getBeanNamesForType(ApplicationContext applicationContext, Class<?> type);
+		/**
+     * Retrieve the names of all beans of the specified type or subtype in the given application context.
+     *
+     * @param applicationContext the application context to retrieve the bean names from
+     * @param type the type or subtype of beans to retrieve
+     * @return an array of bean names matching the specified type or subtype
+     */
+    abstract String[] getBeanNamesForType(ApplicationContext applicationContext, Class<?> type);
 
-		abstract <T> Map<String, T> getBeansOfType(ApplicationContext applicationContext, Class<T> type);
+		/**
+     * Retrieves all beans of the specified type from the given ApplicationContext.
+     *
+     * @param applicationContext the ApplicationContext from which to retrieve the beans
+     * @param type the type of beans to retrieve
+     * @param <T> the generic type of the beans
+     * @return a Map containing the beans of the specified type, with the bean names as keys
+     */
+    abstract <T> Map<String, T> getBeansOfType(ApplicationContext applicationContext, Class<T> type);
 
 	}
 
-	private static final class ContextFailedToStart<C extends ApplicationContext> extends BasicErrorMessageFactory {
+	/**
+     * ContextFailedToStart class.
+     */
+    private static final class ContextFailedToStart<C extends ApplicationContext> extends BasicErrorMessageFactory {
 
-		private ContextFailedToStart(C context, Throwable ex, String expectationFormat, Object... arguments) {
+		/**
+         * Constructs a new ContextFailedToStart exception with the specified context, throwable, expectation format, and arguments.
+         * 
+         * @param context the context that failed to start
+         * @param ex the throwable that caused the failure
+         * @param expectationFormat the format string for the expectation
+         * @param arguments the arguments to be formatted in the expectation format
+         */
+        private ContextFailedToStart(C context, Throwable ex, String expectationFormat, Object... arguments) {
 			super("%nExpecting:%n <%s>%n" + expectationFormat + ":%nbut context failed to start:%n%s",
 					combineArguments(context.toString(), ex, arguments));
 		}
 
-		private static Object[] combineArguments(String context, Throwable ex, Object[] arguments) {
+		/**
+         * Combines the given context, exception, and arguments into a single array.
+         * 
+         * @param context the context to be combined as the first element of the array
+         * @param ex the exception to be combined as the last element of the array
+         * @param arguments the arguments to be combined in between the context and exception
+         * @return the combined array of context, arguments, and exception
+         */
+        private static Object[] combineArguments(String context, Throwable ex, Object[] arguments) {
 			Object[] combinedArguments = new Object[arguments.length + 2];
 			combinedArguments[0] = unquotedString(context);
 			System.arraycopy(arguments, 0, combinedArguments, 1, arguments.length);
@@ -533,19 +636,37 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 			return combinedArguments;
 		}
 
-		private static String getIndentedStackTraceAsString(Throwable ex) {
+		/**
+         * Returns the indented stack trace as a string for the given Throwable object.
+         * 
+         * @param ex the Throwable object for which the stack trace is to be retrieved
+         * @return the indented stack trace as a string
+         */
+        private static String getIndentedStackTraceAsString(Throwable ex) {
 			String stackTrace = getStackTraceAsString(ex);
 			return indent(stackTrace);
 		}
 
-		private static String getStackTraceAsString(Throwable ex) {
+		/**
+         * Converts the stack trace of a given Throwable object into a string representation.
+         * 
+         * @param ex the Throwable object whose stack trace needs to be converted
+         * @return a string representation of the stack trace
+         */
+        private static String getStackTraceAsString(Throwable ex) {
 			StringWriter writer = new StringWriter();
 			PrintWriter printer = new PrintWriter(writer);
 			ex.printStackTrace(printer);
 			return writer.toString();
 		}
 
-		private static String indent(String input) {
+		/**
+         * Indents the given input string by adding a space at the beginning of each line.
+         * 
+         * @param input the input string to be indented
+         * @return the indented string
+         */
+        private static String indent(String input) {
 			BufferedReader reader = new BufferedReader(new StringReader(input));
 			StringWriter writer = new StringWriter();
 			PrintWriter printer = new PrintWriter(writer);

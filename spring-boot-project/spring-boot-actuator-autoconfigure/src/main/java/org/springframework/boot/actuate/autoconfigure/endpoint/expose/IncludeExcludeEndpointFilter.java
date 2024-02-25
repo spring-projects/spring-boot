@@ -78,7 +78,16 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 		this(endpointType, include, exclude, new EndpointPatterns(defaultIncludes));
 	}
 
-	private IncludeExcludeEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
+	/**
+     * Constructs a new IncludeExcludeEndpointFilter with the specified parameters.
+     *
+     * @param endpointType the class representing the type of endpoint
+     * @param environment the environment in which the filter is being used
+     * @param prefix the prefix used for binding configuration properties
+     * @param defaultIncludes the default patterns to include
+     * @throws IllegalArgumentException if any of the parameters are null or empty
+     */
+    private IncludeExcludeEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
 			EndpointPatterns defaultIncludes) {
 		Assert.notNull(endpointType, "EndpointType must not be null");
 		Assert.notNull(environment, "Environment must not be null");
@@ -91,7 +100,16 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 		this.exclude = new EndpointPatterns(bind(binder, prefix + ".exclude"));
 	}
 
-	private IncludeExcludeEndpointFilter(Class<E> endpointType, Collection<String> include, Collection<String> exclude,
+	/**
+     * Constructs a new IncludeExcludeEndpointFilter with the specified parameters.
+     * 
+     * @param endpointType the type of endpoint to filter
+     * @param include the collection of patterns to include
+     * @param exclude the collection of patterns to exclude
+     * @param defaultIncludes the default patterns to include
+     * @throws IllegalArgumentException if endpointType or defaultIncludes is null
+     */
+    private IncludeExcludeEndpointFilter(Class<E> endpointType, Collection<String> include, Collection<String> exclude,
 			EndpointPatterns defaultIncludes) {
 		Assert.notNull(endpointType, "EndpointType Type must not be null");
 		Assert.notNull(defaultIncludes, "DefaultIncludes must not be null");
@@ -101,11 +119,26 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 		this.exclude = new EndpointPatterns(exclude);
 	}
 
-	private List<String> bind(Binder binder, String name) {
+	/**
+     * Binds the given name to a list of strings using the provided binder.
+     * If the binding is successful, returns the bound list of strings.
+     * If the binding fails, returns an empty ArrayList.
+     *
+     * @param binder the binder to use for binding
+     * @param name the name to bind
+     * @return the bound list of strings, or an empty ArrayList if binding fails
+     */
+    private List<String> bind(Binder binder, String name) {
 		return binder.bind(name, Bindable.listOf(String.class)).orElseGet(ArrayList::new);
 	}
 
-	@Override
+	/**
+     * Determines if the given endpoint matches the filter criteria.
+     * 
+     * @param endpoint the endpoint to be matched
+     * @return true if the endpoint matches the filter criteria, false otherwise
+     */
+    @Override
 	public boolean match(E endpoint) {
 		if (!this.endpointType.isInstance(endpoint)) {
 			// Leave non-matching types for other filters
@@ -124,14 +157,26 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 		return isIncluded(endpointId) && !isExcluded(endpointId);
 	}
 
-	private boolean isIncluded(EndpointId endpointId) {
+	/**
+     * Checks if the given endpointId is included in the filter.
+     * 
+     * @param endpointId the endpointId to check
+     * @return true if the endpointId is included, false otherwise
+     */
+    private boolean isIncluded(EndpointId endpointId) {
 		if (this.include.isEmpty()) {
 			return this.defaultIncludes.matches(endpointId);
 		}
 		return this.include.matches(endpointId);
 	}
 
-	private boolean isExcluded(EndpointId endpointId) {
+	/**
+     * Checks if the given endpointId is excluded based on the exclude pattern.
+     * 
+     * @param endpointId the endpointId to check
+     * @return true if the endpointId is excluded, false otherwise
+     */
+    private boolean isExcluded(EndpointId endpointId) {
 		if (this.exclude.isEmpty()) {
 			return false;
 		}
@@ -149,11 +194,21 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 
 		private final Set<EndpointId> endpointIds;
 
-		EndpointPatterns(String[] patterns) {
+		/**
+         * Constructs a new instance of the EndpointPatterns class using the provided array of patterns.
+         * 
+         * @param patterns an array of patterns to be used for constructing the EndpointPatterns object
+         */
+        EndpointPatterns(String[] patterns) {
 			this((patterns != null) ? Arrays.asList(patterns) : null);
 		}
 
-		EndpointPatterns(Collection<String> patterns) {
+		/**
+         * Constructs an EndpointPatterns object with the given collection of patterns.
+         * 
+         * @param patterns the collection of patterns to be used for constructing the EndpointPatterns object
+         */
+        EndpointPatterns(Collection<String> patterns) {
 			patterns = (patterns != null) ? patterns : Collections.emptySet();
 			boolean matchesAll = false;
 			Set<EndpointId> endpointIds = new LinkedHashSet<>();
@@ -170,11 +225,22 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 			this.endpointIds = endpointIds;
 		}
 
-		boolean isEmpty() {
+		/**
+         * Returns a boolean value indicating whether the endpoint patterns are empty.
+         * 
+         * @return {@code true} if the endpoint patterns are empty, {@code false} otherwise.
+         */
+        boolean isEmpty() {
 			return this.empty;
 		}
 
-		boolean matches(EndpointId endpointId) {
+		/**
+         * Checks if the given endpointId matches the patterns.
+         * 
+         * @param endpointId the endpointId to be checked
+         * @return true if the endpointId matches the patterns, false otherwise
+         */
+        boolean matches(EndpointId endpointId) {
 			return this.matchesAll || this.endpointIds.contains(endpointId);
 		}
 

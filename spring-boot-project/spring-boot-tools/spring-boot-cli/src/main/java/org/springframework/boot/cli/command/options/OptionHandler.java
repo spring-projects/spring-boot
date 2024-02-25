@@ -74,15 +74,35 @@ public class OptionHandler {
 		this.argumentProcessor = argumentProcessor;
 	}
 
-	public OptionSpecBuilder option(String name, String description) {
+	/**
+     * Creates an OptionSpecBuilder for the specified option name and description.
+     * 
+     * @param name        the name of the option
+     * @param description the description of the option
+     * @return an OptionSpecBuilder for the specified option
+     */
+    public OptionSpecBuilder option(String name, String description) {
 		return getParser().accepts(name, description);
 	}
 
-	public OptionSpecBuilder option(List<String> aliases, String description) {
+	/**
+     * Creates an OptionSpecBuilder for the given list of aliases and description.
+     * 
+     * @param aliases the list of aliases for the option
+     * @param description the description of the option
+     * @return the OptionSpecBuilder for the given aliases and description
+     */
+    public OptionSpecBuilder option(List<String> aliases, String description) {
 		return getParser().acceptsAll(aliases, description);
 	}
 
-	public OptionParser getParser() {
+	/**
+     * Returns the OptionParser object associated with this OptionHandler.
+     * If the OptionParser object is not yet initialized, it initializes it by calling the options() method.
+     * 
+     * @return the OptionParser object associated with this OptionHandler
+     */
+    public OptionParser getParser() {
 		if (this.parser == null) {
 			this.parser = new OptionParser();
 			options();
@@ -90,10 +110,20 @@ public class OptionHandler {
 		return this.parser;
 	}
 
-	protected void options() {
+	/**
+     * This method is used to handle options.
+     */
+    protected void options() {
 	}
 
-	public final ExitStatus run(String... args) throws Exception {
+	/**
+     * Runs the program with the given arguments.
+     * 
+     * @param args the arguments to be passed to the program
+     * @return the exit status of the program
+     * @throws Exception if an error occurs during program execution
+     */
+    public final ExitStatus run(String... args) throws Exception {
 		String[] argsToUse = args.clone();
 		for (int i = 0; i < argsToUse.length; i++) {
 			if ("-cp".equals(argsToUse[i])) {
@@ -115,7 +145,15 @@ public class OptionHandler {
 		return ExitStatus.OK;
 	}
 
-	public String getHelp() {
+	/**
+     * Retrieves the help information for this OptionHandler.
+     * If the help information is not already generated, it generates it by formatting the help using a BuiltinHelpFormatter
+     * with a specified width and indent.
+     * It then prints the help to an output stream and stores the generated help in a string.
+     * 
+     * @return the help information for this OptionHandler
+     */
+    public String getHelp() {
 		if (this.help == null) {
 			getParser().formatHelpWith(new BuiltinHelpFormatter(80, 2));
 			OutputStream out = new ByteArrayOutputStream();
@@ -130,7 +168,12 @@ public class OptionHandler {
 		return this.help;
 	}
 
-	public Collection<OptionHelp> getOptionsHelp() {
+	/**
+     * Retrieves the help information for the options.
+     * 
+     * @return the collection of OptionHelp objects containing the help information for the options
+     */
+    public Collection<OptionHelp> getOptionsHelp() {
 		if (this.optionHelp == null) {
 			OptionHelpFormatter formatter = new OptionHelpFormatter();
 			getParser().formatHelpWith(formatter);
@@ -145,11 +188,20 @@ public class OptionHandler {
 		return this.optionHelp;
 	}
 
-	private static final class OptionHelpFormatter implements HelpFormatter {
+	/**
+     * OptionHelpFormatter class.
+     */
+    private static final class OptionHelpFormatter implements HelpFormatter {
 
 		private final List<OptionHelp> help = new ArrayList<>();
 
-		@Override
+		/**
+         * Formats the given options map into a string representation.
+         * 
+         * @param options the map of options to be formatted
+         * @return the formatted string representation of the options
+         */
+        @Override
 		public String format(Map<String, ? extends OptionDescriptor> options) {
 			Comparator<OptionDescriptor> comparator = Comparator
 				.comparing((optionDescriptor) -> optionDescriptor.options().iterator().next());
@@ -163,19 +215,32 @@ public class OptionHandler {
 			return "";
 		}
 
-		Collection<OptionHelp> getOptionHelp() {
+		/**
+         * Returns an unmodifiable list of OptionHelp objects.
+         * 
+         * @return the list of OptionHelp objects
+         */
+        Collection<OptionHelp> getOptionHelp() {
 			return Collections.unmodifiableList(this.help);
 		}
 
 	}
 
-	private static class OptionHelpAdapter implements OptionHelp {
+	/**
+     * OptionHelpAdapter class.
+     */
+    private static class OptionHelpAdapter implements OptionHelp {
 
 		private final Set<String> options;
 
 		private final String description;
 
-		OptionHelpAdapter(OptionDescriptor descriptor) {
+		/**
+         * Constructs a new OptionHelpAdapter with the given OptionDescriptor.
+         * 
+         * @param descriptor the OptionDescriptor to be used
+         */
+        OptionHelpAdapter(OptionDescriptor descriptor) {
 			this.options = new LinkedHashSet<>();
 			for (String option : descriptor.options()) {
 				String prefix = (option.length() != 1) ? "--" : "-";
@@ -188,12 +253,22 @@ public class OptionHandler {
 			this.description = descriptor.description();
 		}
 
-		@Override
+		/**
+         * Returns the set of options available.
+         *
+         * @return the set of options available
+         */
+        @Override
 		public Set<String> getOptions() {
 			return this.options;
 		}
 
-		@Override
+		/**
+         * Returns the usage help for this method.
+         *
+         * @return the usage help as a string
+         */
+        @Override
 		public String getUsageHelp() {
 			return this.description;
 		}

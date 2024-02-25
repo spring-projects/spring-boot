@@ -81,14 +81,26 @@ class DockerCli {
 		return dockerCommand.deserialize(json);
 	}
 
-	private Consumer<String> createOutputConsumer(LogLevel logLevel) {
+	/**
+     * Creates a consumer for output based on the specified log level.
+     * 
+     * @param logLevel the log level to determine the behavior of the consumer
+     * @return a consumer for output if the log level is not null and not LogLevel.OFF, otherwise null
+     */
+    private Consumer<String> createOutputConsumer(LogLevel logLevel) {
 		if (logLevel == null || logLevel == LogLevel.OFF) {
 			return null;
 		}
 		return (line) -> logLevel.log(logger, line);
 	}
 
-	private List<String> createCommand(Type type) {
+	/**
+     * Creates a command based on the given type.
+     * 
+     * @param type the type of command to create
+     * @return a list of strings representing the command
+     */
+    private List<String> createCommand(Type type) {
 		return switch (type) {
 			case DOCKER -> new ArrayList<>(this.dockerCommands.get(type));
 			case DOCKER_COMPOSE -> {
@@ -125,12 +137,26 @@ class DockerCli {
 
 		private final List<String> dockerComposeCommand;
 
-		DockerCommands(ProcessRunner processRunner) {
+		/**
+         * Constructor for the DockerCommands class.
+         * 
+         * @param processRunner the ProcessRunner object used to execute commands
+         */
+        DockerCommands(ProcessRunner processRunner) {
 			this.dockerCommand = getDockerCommand(processRunner);
 			this.dockerComposeCommand = getDockerComposeCommand(processRunner);
 		}
 
-		private List<String> getDockerCommand(ProcessRunner processRunner) {
+		/**
+         * Retrieves the Docker command to be used for executing Docker operations.
+         * 
+         * @param processRunner the process runner used for executing the Docker command
+         * @return the Docker command as a list of strings
+         * @throws DockerProcessStartException if unable to start the Docker process
+         * @throws DockerNotRunningException if the Docker daemon is not running or cannot be connected to
+         * @throws ProcessExitException if an error occurs during the execution of the Docker command
+         */
+        private List<String> getDockerCommand(ProcessRunner processRunner) {
 			try {
 				String version = processRunner.run("docker", "version", "--format", "{{.Client.Version}}");
 				logger.trace(LogMessage.format("Using docker %s", version));
@@ -149,7 +175,14 @@ class DockerCli {
 			}
 		}
 
-		private List<String> getDockerComposeCommand(ProcessRunner processRunner) {
+		/**
+         * Retrieves the Docker Compose command to be used based on the availability of the 'docker compose' or 'docker-compose' command.
+         * 
+         * @param processRunner The process runner used to execute the command.
+         * @return The Docker Compose command as a list of strings.
+         * @throws DockerProcessStartException If unable to start the 'docker-compose' process or use 'docker compose'.
+         */
+        private List<String> getDockerComposeCommand(ProcessRunner processRunner) {
 			try {
 				DockerCliComposeVersionResponse response = DockerJson.deserialize(
 						processRunner.run("docker", "compose", "version", "--format", "json"),
@@ -174,7 +207,13 @@ class DockerCli {
 			}
 		}
 
-		List<String> get(Type type) {
+		/**
+         * Retrieves the list of commands based on the given type.
+         * 
+         * @param type the type of commands to retrieve (DOCKER or DOCKER_COMPOSE)
+         * @return the list of commands based on the given type
+         */
+        List<String> get(Type type) {
 			return switch (type) {
 				case DOCKER -> this.dockerCommand;
 				case DOCKER_COMPOSE -> this.dockerComposeCommand;

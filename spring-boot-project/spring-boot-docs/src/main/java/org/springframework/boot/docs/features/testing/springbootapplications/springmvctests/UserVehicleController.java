@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.springmvctests;
 
+/**
+ * UserVehicleController class.
+ */
 class UserVehicleController {
 
 }

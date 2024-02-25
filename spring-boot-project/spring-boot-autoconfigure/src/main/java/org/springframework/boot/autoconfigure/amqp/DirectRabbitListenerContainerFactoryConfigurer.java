@@ -40,7 +40,13 @@ public final class DirectRabbitListenerContainerFactoryConfigurer
 		super(rabbitProperties);
 	}
 
-	@Override
+	/**
+     * Configure the DirectRabbitListenerContainerFactory with the provided DirectRabbitListenerContainerFactory and ConnectionFactory.
+     * 
+     * @param factory the DirectRabbitListenerContainerFactory to configure
+     * @param connectionFactory the ConnectionFactory to use
+     */
+    @Override
 	public void configure(DirectRabbitListenerContainerFactory factory, ConnectionFactory connectionFactory) {
 		PropertyMapper map = PropertyMapper.get();
 		RabbitProperties.DirectContainer config = getRabbitProperties().getListener().getDirect();

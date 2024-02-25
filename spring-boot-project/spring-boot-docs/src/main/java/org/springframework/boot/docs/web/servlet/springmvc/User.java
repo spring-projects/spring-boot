@@ -18,9 +18,17 @@ package org.springframework.boot.docs.web.servlet.springmvc;
 
 import java.util.List;
 
+/**
+ * User class.
+ */
 class User {
 
-	List<Customer> getCustomers() {
+	/**
+     * Retrieves a list of customers.
+     *
+     * @return the list of customers, or null if no customers are found
+     */
+    List<Customer> getCustomers() {
 		return null;
 	}
 

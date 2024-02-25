@@ -44,15 +44,30 @@ public class ConfigurationPropertiesReportEndpointProperties {
 	 */
 	private final Set<String> roles = new HashSet<>();
 
-	public Show getShowValues() {
+	/**
+     * Returns the showValues property of the ConfigurationPropertiesReportEndpointProperties class.
+     *
+     * @return the showValues property
+     */
+    public Show getShowValues() {
 		return this.showValues;
 	}
 
-	public void setShowValues(Show showValues) {
+	/**
+     * Sets the showValues property.
+     * 
+     * @param showValues the Show object to set as the showValues property
+     */
+    public void setShowValues(Show showValues) {
 		this.showValues = showValues;
 	}
 
-	public Set<String> getRoles() {
+	/**
+     * Returns the set of roles associated with the ConfigurationPropertiesReportEndpointProperties.
+     *
+     * @return the set of roles
+     */
+    public Set<String> getRoles() {
 		return this.roles;
 	}
 

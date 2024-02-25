@@ -44,18 +44,36 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 
 	private volatile SslBundle sslBundle;
 
-	@Override
+	/**
+     * Configures the SslBundleSslEngineFactory with the provided configurations.
+     * 
+     * @param configs A map of configurations for the SslBundleSslEngineFactory.
+     */
+    @Override
 	public void configure(Map<String, ?> configs) {
 		this.configs = configs;
 		this.sslBundle = (SslBundle) configs.get(SSL_BUNDLE_CONFIG_NAME);
 	}
 
-	@Override
+	/**
+     * Closes the SSL engine factory.
+     *
+     * @throws IOException if an I/O error occurs while closing the SSL engine factory.
+     */
+    @Override
 	public void close() throws IOException {
 
 	}
 
-	@Override
+	/**
+     * Creates a client SSL engine with the specified peer host, peer port, and endpoint identification algorithm.
+     * 
+     * @param peerHost The host name of the peer.
+     * @param peerPort The port number of the peer.
+     * @param endpointIdentification The endpoint identification algorithm to be used.
+     * @return The created client SSL engine.
+     */
+    @Override
 	public SSLEngine createClientSslEngine(String peerHost, int peerPort, String endpointIdentification) {
 		SSLEngine sslEngine = this.sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
 		sslEngine.setUseClientMode(true);
@@ -65,29 +83,57 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 		return sslEngine;
 	}
 
-	@Override
+	/**
+     * Creates a server SSL engine for the given peer host and port.
+     * 
+     * @param peerHost the host name of the peer
+     * @param peerPort the port number of the peer
+     * @return the created server SSL engine
+     */
+    @Override
 	public SSLEngine createServerSslEngine(String peerHost, int peerPort) {
 		SSLEngine sslEngine = this.sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
 		sslEngine.setUseClientMode(false);
 		return sslEngine;
 	}
 
-	@Override
+	/**
+     * Determines whether the SslBundleSslEngineFactory should be rebuilt based on the provided nextConfigs.
+     * 
+     * @param nextConfigs the next set of configurations to compare with the current configurations
+     * @return true if the nextConfigs are different from the current configurations, false otherwise
+     */
+    @Override
 	public boolean shouldBeRebuilt(Map<String, Object> nextConfigs) {
 		return !nextConfigs.equals(this.configs);
 	}
 
-	@Override
+	/**
+     * Returns a set of reconfigurable configurations.
+     *
+     * @return a set of reconfigurable configurations
+     */
+    @Override
 	public Set<String> reconfigurableConfigs() {
 		return Set.of(SSL_BUNDLE_CONFIG_NAME);
 	}
 
-	@Override
+	/**
+     * Returns the KeyStore object associated with this SSL bundle.
+     * 
+     * @return the KeyStore object
+     */
+    @Override
 	public KeyStore keystore() {
 		return this.sslBundle.getStores().getKeyStore();
 	}
 
-	@Override
+	/**
+     * Returns the truststore used by the SSL engine factory.
+     *
+     * @return the truststore used by the SSL engine factory
+     */
+    @Override
 	public KeyStore truststore() {
 		return this.sslBundle.getStores().getTrustStore();
 	}

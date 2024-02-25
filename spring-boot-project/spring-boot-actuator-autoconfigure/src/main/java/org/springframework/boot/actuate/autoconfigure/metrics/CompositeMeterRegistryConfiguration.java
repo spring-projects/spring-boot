@@ -40,24 +40,49 @@ import org.springframework.context.annotation.Primary;
 @Conditional(MultipleNonPrimaryMeterRegistriesCondition.class)
 class CompositeMeterRegistryConfiguration {
 
-	@Bean
+	/**
+     * Creates a composite meter registry with the given clock and list of meter registries.
+     * The composite meter registry combines the functionality of multiple meter registries into a single registry.
+     * The primary meter registry is set as the default registry for the application.
+     *
+     * @param clock the clock used for measuring time
+     * @param registries the list of meter registries to be combined into the composite registry
+     * @return the composite meter registry
+     */
+    @Bean
 	@Primary
 	AutoConfiguredCompositeMeterRegistry compositeMeterRegistry(Clock clock, List<MeterRegistry> registries) {
 		return new AutoConfiguredCompositeMeterRegistry(clock, registries);
 	}
 
-	static class MultipleNonPrimaryMeterRegistriesCondition extends NoneNestedConditions {
+	/**
+     * MultipleNonPrimaryMeterRegistriesCondition class.
+     */
+    static class MultipleNonPrimaryMeterRegistriesCondition extends NoneNestedConditions {
 
-		MultipleNonPrimaryMeterRegistriesCondition() {
+		/**
+         * Constructor for the MultipleNonPrimaryMeterRegistriesCondition class.
+         * 
+         * Initializes the condition with the specified configuration phase.
+         * 
+         * @param configurationPhase The configuration phase for the condition.
+         */
+        MultipleNonPrimaryMeterRegistriesCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnMissingBean(MeterRegistry.class)
+		/**
+         * NoMeterRegistryCondition class.
+         */
+        @ConditionalOnMissingBean(MeterRegistry.class)
 		static class NoMeterRegistryCondition {
 
 		}
 
-		@ConditionalOnSingleCandidate(MeterRegistry.class)
+		/**
+         * SingleInjectableMeterRegistry class.
+         */
+        @ConditionalOnSingleCandidate(MeterRegistry.class)
 		static class SingleInjectableMeterRegistry {
 
 		}

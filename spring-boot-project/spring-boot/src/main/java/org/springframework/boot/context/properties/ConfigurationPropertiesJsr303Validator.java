@@ -37,21 +37,44 @@ final class ConfigurationPropertiesJsr303Validator implements Validator {
 
 	private final Delegate delegate;
 
-	ConfigurationPropertiesJsr303Validator(ApplicationContext applicationContext) {
+	/**
+     * Constructs a new ConfigurationPropertiesJsr303Validator with the specified ApplicationContext.
+     *
+     * @param applicationContext the ApplicationContext to be used by the validator
+     */
+    ConfigurationPropertiesJsr303Validator(ApplicationContext applicationContext) {
 		this.delegate = new Delegate(applicationContext);
 	}
 
-	@Override
+	/**
+     * Check if the validator supports the given type.
+     * 
+     * @param type the type to be validated
+     * @return true if the validator supports the type, false otherwise
+     */
+    @Override
 	public boolean supports(Class<?> type) {
 		return this.delegate.supports(type);
 	}
 
-	@Override
+	/**
+     * Validates the given target object using the delegate validator.
+     * 
+     * @param target the object to be validated
+     * @param errors the errors object to store any validation errors
+     */
+    @Override
 	public void validate(Object target, Errors errors) {
 		this.delegate.validate(target, errors);
 	}
 
-	static boolean isJsr303Present(ApplicationContext applicationContext) {
+	/**
+     * Checks if JSR 303 validation is present in the application context.
+     * 
+     * @param applicationContext the application context to check
+     * @return true if JSR 303 validation is present, false otherwise
+     */
+    static boolean isJsr303Present(ApplicationContext applicationContext) {
 		ClassLoader classLoader = applicationContext.getClassLoader();
 		for (String validatorClass : VALIDATOR_CLASSES) {
 			if (!ClassUtils.isPresent(validatorClass, classLoader)) {
@@ -61,9 +84,17 @@ final class ConfigurationPropertiesJsr303Validator implements Validator {
 		return true;
 	}
 
-	private static class Delegate extends LocalValidatorFactoryBean {
+	/**
+     * Delegate class.
+     */
+    private static class Delegate extends LocalValidatorFactoryBean {
 
-		Delegate(ApplicationContext applicationContext) {
+		/**
+         * Sets the application context and initializes the message interpolator.
+         * 
+         * @param applicationContext the application context to be set
+         */
+        Delegate(ApplicationContext applicationContext) {
 			setApplicationContext(applicationContext);
 			setMessageInterpolator(new MessageInterpolatorFactory(applicationContext).getObject());
 			afterPropertiesSet();

@@ -16,6 +16,9 @@
 
 package smoketest.websocket.jetty.echo;
 
+/**
+ * EchoService interface.
+ */
 public interface EchoService {
 
 	String getMessage(String message);

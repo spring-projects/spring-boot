@@ -32,11 +32,21 @@ public class WebClientCodecCustomizer implements WebClientCustomizer {
 
 	private final List<CodecCustomizer> codecCustomizers;
 
-	public WebClientCodecCustomizer(List<CodecCustomizer> codecCustomizers) {
+	/**
+     * Constructs a new WebClientCodecCustomizer with the specified list of CodecCustomizer objects.
+     *
+     * @param codecCustomizers the list of CodecCustomizer objects to be used for customizing the WebClient codec
+     */
+    public WebClientCodecCustomizer(List<CodecCustomizer> codecCustomizers) {
 		this.codecCustomizers = codecCustomizers;
 	}
 
-	@Override
+	/**
+     * Customizes the WebClient.Builder by applying codec customizers.
+     * 
+     * @param webClientBuilder the WebClient.Builder to customize
+     */
+    @Override
 	public void customize(WebClient.Builder webClientBuilder) {
 		webClientBuilder
 			.codecs((codecs) -> this.codecCustomizers.forEach((customizer) -> customizer.customize(codecs)));

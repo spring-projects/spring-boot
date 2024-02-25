@@ -25,11 +25,19 @@ package org.springframework.boot.json;
  */
 public class JsonParseException extends IllegalArgumentException {
 
-	public JsonParseException() {
+	/**
+     * Constructs a new {@code JsonParseException} with no detail message.
+     */
+    public JsonParseException() {
 		this(null);
 	}
 
-	public JsonParseException(Throwable cause) {
+	/**
+     * Constructs a new JsonParseException with the specified cause.
+     * 
+     * @param cause the cause of the exception
+     */
+    public JsonParseException(Throwable cause) {
 		super("Cannot parse JSON", cause);
 	}
 

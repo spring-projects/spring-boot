@@ -55,7 +55,14 @@ final class ImageBuildpack implements Buildpack {
 
 	private final ExportedLayers exportedLayers;
 
-	private ImageBuildpack(BuildpackResolverContext context, ImageReference imageReference) {
+	/**
+     * Constructs a new ImageBuildpack object.
+     * 
+     * @param context         the BuildpackResolverContext used for fetching the image
+     * @param imageReference  the reference to the buildpack image
+     * @throws IllegalArgumentException if there is an error pulling the buildpack image
+     */
+    private ImageBuildpack(BuildpackResolverContext context, ImageReference imageReference) {
 		ImageReference reference = imageReference.inTaggedOrDigestForm();
 		try {
 			Image image = context.fetchImage(reference, ImageType.BUILDPACK);
@@ -69,19 +76,37 @@ final class ImageBuildpack implements Buildpack {
 		}
 	}
 
-	private boolean buildpackExistsInBuilder(BuildpackResolverContext context, List<LayerId> imageLayers) {
+	/**
+     * Checks if the buildpack exists in the builder.
+     * 
+     * @param context The BuildpackResolverContext object.
+     * @param imageLayers The list of LayerId objects representing the image layers.
+     * @return true if the buildpack exists in the builder, false otherwise.
+     */
+    private boolean buildpackExistsInBuilder(BuildpackResolverContext context, List<LayerId> imageLayers) {
 		BuildpackLayerDetails buildpackLayerDetails = context.getBuildpackLayersMetadata()
 			.getBuildpack(this.coordinates.getId(), this.coordinates.getVersion());
 		String layerDiffId = (buildpackLayerDetails != null) ? buildpackLayerDetails.getLayerDiffId() : null;
 		return (layerDiffId != null) && imageLayers.stream().map(LayerId::toString).anyMatch(layerDiffId::equals);
 	}
 
-	@Override
+	/**
+     * Returns the coordinates of the buildpack.
+     *
+     * @return the coordinates of the buildpack
+     */
+    @Override
 	public BuildpackCoordinates getCoordinates() {
 		return this.coordinates;
 	}
 
-	@Override
+	/**
+     * Applies the given IOConsumer to the exported layers.
+     * 
+     * @param layers the IOConsumer to apply to the exported layers
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
 	public void apply(IOConsumer<Layer> layers) throws IOException {
 		if (this.exportedLayers != null) {
 			this.exportedLayers.apply(layers);
@@ -109,17 +134,34 @@ final class ImageBuildpack implements Buildpack {
 		}
 	}
 
-	private static class ExportedLayers {
+	/**
+     * ExportedLayers class.
+     */
+    private static class ExportedLayers {
 
 		private final List<Path> layerFiles;
 
-		ExportedLayers(BuildpackResolverContext context, ImageReference imageReference) throws IOException {
+		/**
+         * Export the layers of an image to temporary files.
+         * 
+         * @param context the buildpack resolver context
+         * @param imageReference the reference to the image
+         * @throws IOException if an I/O error occurs
+         */
+        ExportedLayers(BuildpackResolverContext context, ImageReference imageReference) throws IOException {
 			List<Path> layerFiles = new ArrayList<>();
 			context.exportImageLayers(imageReference, (name, path) -> layerFiles.add(copyToTemp(path)));
 			this.layerFiles = Collections.unmodifiableList(layerFiles);
 		}
 
-		private Path copyToTemp(Path path) throws IOException {
+		/**
+         * Copies the contents of the specified path to a temporary file.
+         * 
+         * @param path the path to be copied
+         * @return the path of the temporary file where the contents are copied
+         * @throws IOException if an I/O error occurs during the copying process
+         */
+        private Path copyToTemp(Path path) throws IOException {
 			Path outputPath = Files.createTempFile("create-builder-scratch-", null);
 			try (OutputStream out = Files.newOutputStream(outputPath)) {
 				copyLayerTar(path, out);
@@ -127,7 +169,14 @@ final class ImageBuildpack implements Buildpack {
 			return outputPath;
 		}
 
-		private void copyLayerTar(Path path, OutputStream out) throws IOException {
+		/**
+         * Copies the contents of a layer tar file to an output stream.
+         * 
+         * @param path the path to the layer tar file
+         * @param out the output stream to copy the contents to
+         * @throws IOException if an I/O error occurs during the copy process
+         */
+        private void copyLayerTar(Path path, OutputStream out) throws IOException {
 			try (TarArchiveInputStream tarIn = new TarArchiveInputStream(Files.newInputStream(path));
 					TarArchiveOutputStream tarOut = new TarArchiveOutputStream(out)) {
 				tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
@@ -142,7 +191,17 @@ final class ImageBuildpack implements Buildpack {
 			}
 		}
 
-		void apply(IOConsumer<Layer> layers) throws IOException {
+		/**
+         * Applies the given IOConsumer function to each layer file in the ExportedLayers object.
+         * The IOConsumer function accepts a Layer object and performs operations on it.
+         * Each layer file is read as a Tar archive and converted into a Layer object using the Layer.fromTarArchive method.
+         * The converted Layer object is then passed to the IOConsumer function for further processing.
+         * After processing, the layer file is deleted from the file system.
+         *
+         * @param layers the IOConsumer function to be applied to each layer file
+         * @throws IOException if an I/O error occurs while reading the layer file or deleting it
+         */
+        void apply(IOConsumer<Layer> layers) throws IOException {
 			for (Path path : this.layerFiles) {
 				layers.accept(Layer.fromTarArchive((out) -> {
 					InputStream in = Files.newInputStream(path);

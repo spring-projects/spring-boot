@@ -20,6 +20,9 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
+/**
+ * CustomerRepository interface.
+ */
 interface CustomerRepository extends ReactiveCrudRepository<Customer, Long> {
 
 	Flux<Customer> findByUser(User user);

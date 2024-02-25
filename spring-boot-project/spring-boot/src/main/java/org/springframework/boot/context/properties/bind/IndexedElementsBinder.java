@@ -45,11 +45,22 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	private static final String INDEX_ZERO = "[0]";
 
-	IndexedElementsBinder(Context context) {
+	/**
+     * Constructs a new IndexedElementsBinder with the specified context.
+     *
+     * @param context the context to be used by the IndexedElementsBinder
+     */
+    IndexedElementsBinder(Context context) {
 		super(context);
 	}
 
-	@Override
+	/**
+     * Determines whether recursive binding is allowed for the given configuration property source.
+     * 
+     * @param source the configuration property source to check
+     * @return {@code true} if recursive binding is allowed, {@code false} otherwise
+     */
+    @Override
 	protected boolean isAllowRecursiveBinding(ConfigurationPropertySource source) {
 		return source == null || source instanceof IterableConfigurationPropertySource;
 	}
@@ -74,7 +85,18 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 	}
 
-	private void bindIndexed(ConfigurationPropertySource source, ConfigurationPropertyName root, Bindable<?> target,
+	/**
+     * Binds the indexed elements from the given configuration property source to the target bindable object.
+     * 
+     * @param source the configuration property source
+     * @param root the root configuration property name
+     * @param target the target bindable object
+     * @param elementBinder the aggregate element binder
+     * @param collection the indexed collection supplier
+     * @param aggregateType the resolvable type of the aggregate
+     * @param elementType the resolvable type of the elements
+     */
+    private void bindIndexed(ConfigurationPropertySource source, ConfigurationPropertyName root, Bindable<?> target,
 			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection, ResolvableType aggregateType,
 			ResolvableType elementType) {
 		ConfigurationProperty property = source.getConfigurationProperty(root);
@@ -87,7 +109,16 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 	}
 
-	private void bindValue(Bindable<?> target, Collection<Object> collection, ResolvableType aggregateType,
+	/**
+     * Binds a value to a target bindable collection.
+     * 
+     * @param target         the target bindable collection
+     * @param collection     the collection to bind the value to
+     * @param aggregateType  the ResolvableType of the aggregate object
+     * @param elementType    the ResolvableType of the elements in the collection
+     * @param value          the value to bind
+     */
+    private void bindValue(Bindable<?> target, Collection<Object> collection, ResolvableType aggregateType,
 			ResolvableType elementType, Object value) {
 		if (value == null || (value instanceof CharSequence charSequence && charSequence.isEmpty())) {
 			return;
@@ -98,7 +129,16 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		collection.addAll(elements);
 	}
 
-	private void bindIndexed(ConfigurationPropertySource source, ConfigurationPropertyName root,
+	/**
+     * Binds indexed elements from the given configuration property source to the specified collection.
+     * 
+     * @param source the configuration property source
+     * @param root the root configuration property name
+     * @param elementBinder the aggregate element binder
+     * @param collection the indexed collection supplier
+     * @param elementType the resolvable type of the elements in the collection
+     */
+    private void bindIndexed(ConfigurationPropertySource source, ConfigurationPropertyName root,
 			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection, ResolvableType elementType) {
 		MultiValueMap<String, ConfigurationPropertyName> knownIndexedChildren = getKnownIndexedChildren(source, root);
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
@@ -113,7 +153,14 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		assertNoUnboundChildren(source, knownIndexedChildren);
 	}
 
-	private MultiValueMap<String, ConfigurationPropertyName> getKnownIndexedChildren(ConfigurationPropertySource source,
+	/**
+     * Retrieves the known indexed children of a given root configuration property name from a configuration property source.
+     * 
+     * @param source The configuration property source to retrieve the children from.
+     * @param root The root configuration property name.
+     * @return A MultiValueMap containing the indexed children, where the key is the index and the value is the configuration property name.
+     */
+    private MultiValueMap<String, ConfigurationPropertyName> getKnownIndexedChildren(ConfigurationPropertySource source,
 			ConfigurationPropertyName root) {
 		MultiValueMap<String, ConfigurationPropertyName> children = new LinkedMultiValueMap<>();
 		if (!(source instanceof IterableConfigurationPropertySource iterableSource)) {
@@ -129,7 +176,14 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		return children;
 	}
 
-	private void assertNoUnboundChildren(ConfigurationPropertySource source,
+	/**
+     * Asserts that there are no unbound children in the given configuration property source.
+     * 
+     * @param source the configuration property source
+     * @param children the map of children configuration property names
+     * @throws UnboundConfigurationPropertiesException if there are unbound children
+     */
+    private void assertNoUnboundChildren(ConfigurationPropertySource source,
 			MultiValueMap<String, ConfigurationPropertyName> children) {
 		if (!children.isEmpty()) {
 			throw new UnboundConfigurationPropertiesException(children.values()
@@ -140,7 +194,15 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 	}
 
-	private <C> C convert(Object value, ResolvableType type, Annotation... annotations) {
+	/**
+     * Converts the given value to the specified type using the provided annotations.
+     * 
+     * @param value the value to be converted
+     * @param type the ResolvableType representing the target type
+     * @param annotations the annotations to be used during conversion
+     * @return the converted value of type C
+     */
+    private <C> C convert(Object value, ResolvableType type, Annotation... annotations) {
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
 		return getContext().getConverter().convert(value, type, annotations);
 	}
@@ -151,7 +213,12 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	 */
 	protected static class IndexedCollectionSupplier extends AggregateSupplier<Collection<Object>> {
 
-		public IndexedCollectionSupplier(Supplier<Collection<Object>> supplier) {
+		/**
+         * Constructs a new IndexedCollectionSupplier with the specified supplier.
+         * 
+         * @param supplier the supplier used to create the collection
+         */
+        public IndexedCollectionSupplier(Supplier<Collection<Object>> supplier) {
 			super(supplier);
 		}
 

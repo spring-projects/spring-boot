@@ -32,7 +32,12 @@ public class RestClientBuilderConfigurer {
 
 	private List<RestClientCustomizer> customizers;
 
-	void setRestClientCustomizers(List<RestClientCustomizer> customizers) {
+	/**
+     * Sets the customizers for the RestClientBuilder.
+     * 
+     * @param customizers the list of RestClientCustomizer objects to be set as customizers
+     */
+    void setRestClientCustomizers(List<RestClientCustomizer> customizers) {
 		this.customizers = customizers;
 	}
 
@@ -47,7 +52,12 @@ public class RestClientBuilderConfigurer {
 		return builder;
 	}
 
-	private void applyCustomizers(Builder builder) {
+	/**
+     * Applies the customizers to the given builder.
+     * 
+     * @param builder the builder to apply the customizers to
+     */
+    private void applyCustomizers(Builder builder) {
 		if (this.customizers != null) {
 			for (RestClientCustomizer customizer : this.customizers) {
 				customizer.customize(builder);

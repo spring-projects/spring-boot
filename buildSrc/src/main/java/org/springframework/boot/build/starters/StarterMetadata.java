@@ -45,30 +45,64 @@ public class StarterMetadata extends DefaultTask {
 
 	private File destination;
 
-	public StarterMetadata() {
+	/**
+     * Initializes the StarterMetadata object.
+     * Sets the name and description properties based on the project's name and description.
+     * 
+     * @param name a Callable that returns the project's name
+     * @param description a Callable that returns the project's description
+     */
+    public StarterMetadata() {
 		getInputs().property("name", (Callable<String>) () -> getProject().getName());
 		getInputs().property("description", (Callable<String>) () -> getProject().getDescription());
 	}
 
-	@Classpath
+	/**
+     * Returns the dependencies of the StarterMetadata.
+     *
+     * @return the dependencies of the StarterMetadata
+     */
+    @Classpath
 	public FileCollection getDependencies() {
 		return this.dependencies;
 	}
 
-	public void setDependencies(Configuration dependencies) {
+	/**
+     * Sets the dependencies for the StarterMetadata.
+     * 
+     * @param dependencies the configuration object representing the dependencies
+     */
+    public void setDependencies(Configuration dependencies) {
 		this.dependencies = dependencies;
 	}
 
-	@OutputFile
+	/**
+     * Returns the destination file.
+     *
+     * @return the destination file
+     */
+    @OutputFile
 	public File getDestination() {
 		return this.destination;
 	}
 
-	public void setDestination(File destination) {
+	/**
+     * Sets the destination file for the StarterMetadata.
+     * 
+     * @param destination the destination file to be set
+     */
+    public void setDestination(File destination) {
 		this.destination = destination;
 	}
 
-	@TaskAction
+	/**
+     * Generates metadata for the StarterMetadata class.
+     * This method creates a properties object and sets various properties such as name, description, and dependencies.
+     * It then creates the necessary directories for the destination file and writes the properties to the file.
+     * 
+     * @throws IOException if an I/O error occurs while writing the properties to the file
+     */
+    @TaskAction
 	void generateMetadata() throws IOException {
 		Properties properties = CollectionFactory.createSortedProperties(true);
 		properties.setProperty("name", getProject().getName());

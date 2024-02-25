@@ -23,13 +23,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+/**
+ * WelcomeController class.
+ */
 @Controller
 public class WelcomeController {
 
 	@Value("${application.message:Hello World}")
 	private String message = "Hello World";
 
-	@GetMapping("/")
+	/**
+     * Retrieves the welcome page.
+     * 
+     * @param model the model object to be populated with data
+     * @return the name of the view to be rendered
+     */
+    @GetMapping("/")
 	public String welcome(Map<String, Object> model) {
 		model.put("time", new Date());
 		model.put("message", this.message);

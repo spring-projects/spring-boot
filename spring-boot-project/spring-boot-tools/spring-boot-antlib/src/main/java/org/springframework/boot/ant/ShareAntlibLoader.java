@@ -32,11 +32,21 @@ public class ShareAntlibLoader extends Task {
 
 	private String refid;
 
-	public ShareAntlibLoader(Project project) {
+	/**
+     * Constructs a new ShareAntlibLoader object with the specified project.
+     * 
+     * @param project the project to associate with the ShareAntlibLoader
+     */
+    public ShareAntlibLoader(Project project) {
 		setProject(project);
 	}
 
-	@Override
+	/**
+     * Executes the method.
+     * 
+     * @throws BuildException if the refid has no text
+     */
+    @Override
 	public void execute() throws BuildException {
 		if (!StringUtils.hasText(this.refid)) {
 			throw new BuildException("@refid has no text");
@@ -44,7 +54,12 @@ public class ShareAntlibLoader extends Task {
 		getProject().addReference(this.refid, getClass().getClassLoader());
 	}
 
-	public void setRefid(String refid) {
+	/**
+     * Sets the reference ID for the ShareAntlibLoader.
+     * 
+     * @param refid the reference ID to be set
+     */
+    public void setRefid(String refid) {
 		this.refid = refid;
 	}
 

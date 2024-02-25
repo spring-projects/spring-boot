@@ -64,11 +64,23 @@ class ServletComponentRegisteringPostProcessor
 
 	private ApplicationContext applicationContext;
 
-	ServletComponentRegisteringPostProcessor(Set<String> packagesToScan) {
+	/**
+     * Constructor for ServletComponentRegisteringPostProcessor class.
+     * 
+     * @param packagesToScan a set of packages to be scanned for servlet components
+     */
+    ServletComponentRegisteringPostProcessor(Set<String> packagesToScan) {
 		this.packagesToScan = packagesToScan;
 	}
 
-	@Override
+	/**
+     * This method is called to post-process the bean factory after it has been initialized.
+     * It scans the specified packages for components to register with the embedded web server.
+     * 
+     * @param beanFactory The bean factory to post-process.
+     * @throws BeansException If an error occurs during the post-processing.
+     */
+    @Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		if (isRunningInEmbeddedWebServer()) {
 			ClassPathScanningCandidateComponentProvider componentProvider = createComponentProvider();
@@ -78,7 +90,15 @@ class ServletComponentRegisteringPostProcessor
 		}
 	}
 
-	private void scanPackage(ClassPathScanningCandidateComponentProvider componentProvider, String packageToScan) {
+	/**
+     * Scans the specified package for candidate components using the given component provider.
+     * For each candidate component found, if it is an annotated bean definition, it is passed to
+     * each handler in the HANDLERS list for further processing.
+     *
+     * @param componentProvider the component provider used for scanning
+     * @param packageToScan the package to scan for candidate components
+     */
+    private void scanPackage(ClassPathScanningCandidateComponentProvider componentProvider, String packageToScan) {
 		for (BeanDefinition candidate : componentProvider.findCandidateComponents(packageToScan)) {
 			if (candidate instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
 				for (ServletComponentHandler handler : HANDLERS) {
@@ -88,12 +108,22 @@ class ServletComponentRegisteringPostProcessor
 		}
 	}
 
-	private boolean isRunningInEmbeddedWebServer() {
+	/**
+     * Checks if the application is running in an embedded web server.
+     * 
+     * @return true if the application is running in an embedded web server, false otherwise
+     */
+    private boolean isRunningInEmbeddedWebServer() {
 		return this.applicationContext instanceof WebApplicationContext webApplicationContext
 				&& webApplicationContext.getServletContext() == null;
 	}
 
-	private ClassPathScanningCandidateComponentProvider createComponentProvider() {
+	/**
+     * Creates a new instance of ClassPathScanningCandidateComponentProvider and configures it with the necessary settings.
+     * 
+     * @return The configured ClassPathScanningCandidateComponentProvider instance.
+     */
+    private ClassPathScanningCandidateComponentProvider createComponentProvider() {
 		ClassPathScanningCandidateComponentProvider componentProvider = new ClassPathScanningCandidateComponentProvider(
 				false);
 		componentProvider.setEnvironment(this.applicationContext.getEnvironment());
@@ -104,16 +134,33 @@ class ServletComponentRegisteringPostProcessor
 		return componentProvider;
 	}
 
-	Set<String> getPackagesToScan() {
+	/**
+     * Returns an unmodifiable set of packages to scan.
+     * 
+     * @return an unmodifiable set of packages to scan
+     */
+    Set<String> getPackagesToScan() {
 		return Collections.unmodifiableSet(this.packagesToScan);
 	}
 
-	@Override
+	/**
+     * Sets the application context for this ServletComponentRegisteringPostProcessor.
+     * 
+     * @param applicationContext the application context to be set
+     * @throws BeansException if an error occurs while setting the application context
+     */
+    @Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
-	@Override
+	/**
+     * Process the bean factory ahead of time to contribute to the AOT initialization.
+     * 
+     * @param beanFactory the configurable listable bean factory
+     * @return the bean factory initialization AOT contribution
+     */
+    @Override
 	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
 		return new BeanFactoryInitializationAotContribution() {
 

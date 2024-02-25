@@ -38,7 +38,15 @@ public class DiscoveredOperationMethod extends OperationMethod {
 
 	private final List<String> producesMediaTypes;
 
-	public DiscoveredOperationMethod(Method method, OperationType operationType,
+	/**
+     * Creates a new DiscoveredOperationMethod object.
+     * 
+     * @param method              the Method object representing the discovered operation method
+     * @param operationType       the OperationType of the discovered operation method
+     * @param annotationAttributes the AnnotationAttributes containing the attributes of the discovered operation method
+     * @throws IllegalArgumentException if annotationAttributes is null
+     */
+    public DiscoveredOperationMethod(Method method, OperationType operationType,
 			AnnotationAttributes annotationAttributes) {
 		super(method, operationType);
 		Assert.notNull(annotationAttributes, "AnnotationAttributes must not be null");
@@ -48,7 +56,13 @@ public class DiscoveredOperationMethod extends OperationMethod {
 		this.producesMediaTypes = Collections.unmodifiableList(producesMediaTypes);
 	}
 
-	private <E extends Enum<E> & Producible<E>> List<String> getProducesFromProducable(
+	/**
+     * Retrieves the list of produces from the given AnnotationAttributes.
+     * 
+     * @param annotationAttributes the AnnotationAttributes containing the produces information
+     * @return the list of produces as strings
+     */
+    private <E extends Enum<E> & Producible<E>> List<String> getProducesFromProducable(
 			AnnotationAttributes annotationAttributes) {
 		Class<?> type = getProducesFrom(annotationAttributes);
 		if (type == Producible.class) {
@@ -61,7 +75,13 @@ public class DiscoveredOperationMethod extends OperationMethod {
 		return produces;
 	}
 
-	private Class<?> getProducesFrom(AnnotationAttributes annotationAttributes) {
+	/**
+     * Retrieves the producesFrom value from the given AnnotationAttributes object.
+     * 
+     * @param annotationAttributes the AnnotationAttributes object containing the producesFrom value
+     * @return the producesFrom value if present, otherwise returns the default value Producible.class
+     */
+    private Class<?> getProducesFrom(AnnotationAttributes annotationAttributes) {
 		try {
 			return annotationAttributes.getClass("producesFrom");
 		}
@@ -70,7 +90,12 @@ public class DiscoveredOperationMethod extends OperationMethod {
 		}
 	}
 
-	public List<String> getProducesMediaTypes() {
+	/**
+     * Returns the list of media types that this method produces.
+     *
+     * @return the list of media types that this method produces
+     */
+    public List<String> getProducesMediaTypes() {
 		return this.producesMediaTypes;
 	}
 

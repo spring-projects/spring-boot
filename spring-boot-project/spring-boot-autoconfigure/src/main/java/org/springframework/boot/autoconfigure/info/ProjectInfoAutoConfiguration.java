@@ -53,11 +53,23 @@ public class ProjectInfoAutoConfiguration {
 
 	private final ProjectInfoProperties properties;
 
-	public ProjectInfoAutoConfiguration(ProjectInfoProperties properties) {
+	/**
+     * Constructs a new instance of ProjectInfoAutoConfiguration with the specified ProjectInfoProperties.
+     * 
+     * @param properties the ProjectInfoProperties to be used for configuration
+     */
+    public ProjectInfoAutoConfiguration(ProjectInfoProperties properties) {
 		this.properties = properties;
 	}
 
-	@Conditional(GitResourceAvailableCondition.class)
+	/**
+     * Creates a new instance of GitProperties by loading the properties from the specified location.
+     * This method is conditionally executed based on the availability of GitResourceAvailableCondition and the absence of a bean of type GitProperties.
+     * 
+     * @return a new instance of GitProperties
+     * @throws Exception if an error occurs while loading the properties
+     */
+    @Conditional(GitResourceAvailableCondition.class)
 	@ConditionalOnMissingBean
 	@Bean
 	public GitProperties gitProperties() throws Exception {
@@ -65,7 +77,14 @@ public class ProjectInfoAutoConfiguration {
 				loadFrom(this.properties.getGit().getLocation(), "git", this.properties.getGit().getEncoding()));
 	}
 
-	@ConditionalOnResource(resources = "${spring.info.build.location:classpath:META-INF/build-info.properties}")
+	/**
+     * Creates a bean of type {@link BuildProperties} if the specified resource is available and no bean of the same type exists.
+     * The resource location is determined by the property "spring.info.build.location" and defaults to "classpath:META-INF/build-info.properties".
+     * 
+     * @return the created {@link BuildProperties} bean
+     * @throws Exception if an error occurs while loading the build properties
+     */
+    @ConditionalOnResource(resources = "${spring.info.build.location:classpath:META-INF/build-info.properties}")
 	@ConditionalOnMissingBean
 	@Bean
 	public BuildProperties buildProperties() throws Exception {
@@ -73,7 +92,16 @@ public class ProjectInfoAutoConfiguration {
 				loadFrom(this.properties.getBuild().getLocation(), "build", this.properties.getBuild().getEncoding()));
 	}
 
-	protected Properties loadFrom(Resource location, String prefix, Charset encoding) throws IOException {
+	/**
+     * Loads properties from a given resource location with a specified prefix and encoding.
+     * 
+     * @param location the resource location to load properties from
+     * @param prefix the prefix to filter properties by
+     * @param encoding the character encoding of the resource
+     * @return a Properties object containing the filtered properties
+     * @throws IOException if an I/O error occurs while loading the properties
+     */
+    protected Properties loadFrom(Resource location, String prefix, Charset encoding) throws IOException {
 		prefix = prefix.endsWith(".") ? prefix : prefix + ".";
 		Properties source = loadSource(location, encoding);
 		Properties target = new Properties();
@@ -85,16 +113,34 @@ public class ProjectInfoAutoConfiguration {
 		return target;
 	}
 
-	private Properties loadSource(Resource location, Charset encoding) throws IOException {
+	/**
+     * Loads the properties from the given resource location with the specified encoding.
+     * 
+     * @param location the resource location to load the properties from
+     * @param encoding the character encoding to use for reading the resource, can be null
+     * @return the loaded properties
+     * @throws IOException if an I/O error occurs while reading the resource
+     */
+    private Properties loadSource(Resource location, Charset encoding) throws IOException {
 		if (encoding != null) {
 			return PropertiesLoaderUtils.loadProperties(new EncodedResource(location, encoding));
 		}
 		return PropertiesLoaderUtils.loadProperties(location);
 	}
 
-	static class GitResourceAvailableCondition extends SpringBootCondition {
+	/**
+     * GitResourceAvailableCondition class.
+     */
+    static class GitResourceAvailableCondition extends SpringBootCondition {
 
-		@Override
+		/**
+         * Determines the outcome of the condition for the availability of Git resource.
+         * 
+         * @param context   the condition context
+         * @param metadata  the annotated type metadata
+         * @return          the condition outcome
+         */
+        @Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ResourceLoader loader = context.getResourceLoader();
 			Environment environment = context.getEnvironment();

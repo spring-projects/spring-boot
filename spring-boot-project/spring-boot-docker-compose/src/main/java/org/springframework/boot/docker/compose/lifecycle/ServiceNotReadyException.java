@@ -29,16 +29,34 @@ class ServiceNotReadyException extends RuntimeException {
 
 	private final RunningService service;
 
-	ServiceNotReadyException(RunningService service, String message) {
+	/**
+     * Constructs a new ServiceNotReadyException with the specified service and message.
+     * 
+     * @param service the running service that is not ready
+     * @param message the detail message explaining the reason for the exception
+     */
+    ServiceNotReadyException(RunningService service, String message) {
 		this(service, message, null);
 	}
 
-	ServiceNotReadyException(RunningService service, String message, Throwable cause) {
+	/**
+     * Constructs a new ServiceNotReadyException with the specified running service, message, and cause.
+     * 
+     * @param service the running service that is not ready
+     * @param message the detail message
+     * @param cause the cause of the exception
+     */
+    ServiceNotReadyException(RunningService service, String message, Throwable cause) {
 		super(message, cause);
 		this.service = service;
 	}
 
-	RunningService getService() {
+	/**
+     * Returns the running service associated with this exception.
+     *
+     * @return the running service associated with this exception
+     */
+    RunningService getService() {
 		return this.service;
 	}
 

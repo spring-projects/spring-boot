@@ -45,7 +45,15 @@ import org.springframework.graphql.observation.GraphQlObservationInstrumentation
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class, Observation.class })
 public class GraphQlObservationAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link GraphQlObservationInstrumentation} if no other bean of the same type is present.
+     * 
+     * @param observationRegistry the {@link ObservationRegistry} used for registering observations
+     * @param executionConvention the {@link ExecutionRequestObservationConvention} used for observing execution requests (optional)
+     * @param dataFetcherConvention the {@link DataFetcherObservationConvention} used for observing data fetchers (optional)
+     * @return a new instance of {@link GraphQlObservationInstrumentation}
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public GraphQlObservationInstrumentation graphQlObservationInstrumentation(ObservationRegistry observationRegistry,
 			ObjectProvider<ExecutionRequestObservationConvention> executionConvention,

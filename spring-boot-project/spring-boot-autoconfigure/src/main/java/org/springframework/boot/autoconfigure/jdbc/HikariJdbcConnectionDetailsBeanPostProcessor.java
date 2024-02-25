@@ -30,11 +30,23 @@ import org.springframework.beans.factory.ObjectProvider;
  */
 class HikariJdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsBeanPostProcessor<HikariDataSource> {
 
-	HikariJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+	/**
+     * Constructs a new HikariJdbcConnectionDetailsBeanPostProcessor with the specified connectionDetailsProvider.
+     * 
+     * @param connectionDetailsProvider the provider for JdbcConnectionDetails objects
+     */
+    HikariJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
 		super(HikariDataSource.class, connectionDetailsProvider);
 	}
 
-	@Override
+	/**
+     * Sets the JDBC URL, username, password, and driver class name for the given HikariDataSource object.
+     * 
+     * @param dataSource the HikariDataSource object to be processed
+     * @param connectionDetails the JdbcConnectionDetails object containing the connection details
+     * @return the processed HikariDataSource object
+     */
+    @Override
 	protected Object processDataSource(HikariDataSource dataSource, JdbcConnectionDetails connectionDetails) {
 		dataSource.setJdbcUrl(connectionDetails.getJdbcUrl());
 		dataSource.setUsername(connectionDetails.getUsername());

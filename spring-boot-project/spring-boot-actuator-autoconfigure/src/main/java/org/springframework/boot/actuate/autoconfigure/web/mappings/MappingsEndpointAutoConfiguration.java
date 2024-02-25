@@ -46,32 +46,60 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnAvailableEndpoint(endpoint = MappingsEndpoint.class)
 public class MappingsEndpointAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of the {@link MappingsEndpoint} class.
+     * 
+     * @param applicationContext The application context.
+     * @param descriptionProviders The providers of mapping description.
+     * @return The {@link MappingsEndpoint} instance.
+     */
+    @Bean
 	public MappingsEndpoint mappingsEndpoint(ApplicationContext applicationContext,
 			ObjectProvider<MappingDescriptionProvider> descriptionProviders) {
 		return new MappingsEndpoint(descriptionProviders.orderedStream().toList(), applicationContext);
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ServletWebConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	static class ServletWebConfiguration {
 
-		@Bean
+		/**
+         * Returns a new instance of ServletsMappingDescriptionProvider.
+         * 
+         * @return the ServletsMappingDescriptionProvider instance
+         */
+        @Bean
 		ServletsMappingDescriptionProvider servletMappingDescriptionProvider() {
 			return new ServletsMappingDescriptionProvider();
 		}
 
-		@Bean
+		/**
+         * Returns a new instance of FiltersMappingDescriptionProvider.
+         * 
+         * @return a new instance of FiltersMappingDescriptionProvider
+         */
+        @Bean
 		FiltersMappingDescriptionProvider filterMappingDescriptionProvider() {
 			return new FiltersMappingDescriptionProvider();
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * SpringMvcConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(DispatcherServlet.class)
 		@ConditionalOnBean(DispatcherServlet.class)
 		static class SpringMvcConfiguration {
 
-			@Bean
+			/**
+             * Returns a new instance of DispatcherServletsMappingDescriptionProvider.
+             * 
+             * @return the DispatcherServletsMappingDescriptionProvider instance
+             */
+            @Bean
 			DispatcherServletsMappingDescriptionProvider dispatcherServletMappingDescriptionProvider() {
 				return new DispatcherServletsMappingDescriptionProvider();
 			}
@@ -80,13 +108,21 @@ public class MappingsEndpointAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ReactiveWebConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@ConditionalOnClass(DispatcherHandler.class)
 	@ConditionalOnBean(DispatcherHandler.class)
 	static class ReactiveWebConfiguration {
 
-		@Bean
+		/**
+         * Returns a new instance of DispatcherHandlersMappingDescriptionProvider.
+         * 
+         * @return the DispatcherHandlersMappingDescriptionProvider instance
+         */
+        @Bean
 		DispatcherHandlersMappingDescriptionProvider dispatcherHandlerMappingDescriptionProvider() {
 			return new DispatcherHandlersMappingDescriptionProvider();
 		}

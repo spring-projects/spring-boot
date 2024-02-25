@@ -36,12 +36,25 @@ final class NumberToDurationConverter implements GenericConverter {
 
 	private final StringToDurationConverter delegate = new StringToDurationConverter();
 
-	@Override
+	/**
+     * Returns a set of convertible types for the NumberToDurationConverter class.
+     * 
+     * @return a set containing a single ConvertiblePair object representing the conversion from Number to Duration.
+     */
+    @Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(Number.class, Duration.class));
 	}
 
-	@Override
+	/**
+     * Converts the given source object to the specified target type.
+     * 
+     * @param source the source object to be converted
+     * @param sourceType the type descriptor of the source object
+     * @param targetType the type descriptor of the target type
+     * @return the converted object of the target type
+     */
+    @Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return this.delegate.convert((source != null) ? source.toString() : null, TypeDescriptor.valueOf(String.class),
 				targetType);

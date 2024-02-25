@@ -19,6 +19,9 @@ package org.springframework.boot.docs.messaging.kafka.embedded.property;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 
+/**
+ * MyTest class.
+ */
 @SpringBootTest
 class MyTest {
 

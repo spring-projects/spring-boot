@@ -67,7 +67,13 @@ public class StopMojo extends AbstractMojo {
 	@Parameter(property = "spring-boot.stop.skip", defaultValue = "false")
 	private boolean skip;
 
-	@Override
+	/**
+     * Executes the stop operation for the application.
+     * 
+     * @throws MojoExecutionException if an error occurs during the execution of the stop operation.
+     * @throws MojoFailureException if the stop operation fails.
+     */
+    @Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
 			getLog().debug("skipping stop as per configuration.");
@@ -84,7 +90,14 @@ public class StopMojo extends AbstractMojo {
 		}
 	}
 
-	private void stop(MBeanServerConnection connection) throws IOException, MojoExecutionException {
+	/**
+     * Stops the Spring application gracefully using the provided MBeanServerConnection.
+     * 
+     * @param connection the MBeanServerConnection to use for stopping the application
+     * @throws IOException if an I/O error occurs while communicating with the MBean server
+     * @throws MojoExecutionException if the Spring application lifecycle JMX bean is not found
+     */
+    private void stop(MBeanServerConnection connection) throws IOException, MojoExecutionException {
 		try {
 			new SpringApplicationAdminClient(connection, this.jmxName).stop();
 		}

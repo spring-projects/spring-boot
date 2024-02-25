@@ -34,11 +34,23 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 class OracleXeR2dbcContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<OracleContainer, R2dbcConnectionDetails> {
 
-	OracleXeR2dbcContainerConnectionDetailsFactory() {
+	/**
+     * Constructs a new OracleXeR2dbcContainerConnectionDetailsFactory.
+     * 
+     * @param connectionName the name of the connection
+     * @param connectionFactoryOptions the options for the connection factory
+     */
+    OracleXeR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
-	@Override
+	/**
+     * Returns the R2dbcConnectionDetails for the given ContainerConnectionSource.
+     * 
+     * @param source the ContainerConnectionSource to get the connection details from
+     * @return the R2dbcConnectionDetails for the given ContainerConnectionSource
+     */
+    @Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
 		return new R2dbcDatabaseContainerConnectionDetails(source);
 	}
@@ -49,11 +61,21 @@ class OracleXeR2dbcContainerConnectionDetailsFactory
 	private static final class R2dbcDatabaseContainerConnectionDetails
 			extends ContainerConnectionDetails<OracleContainer> implements R2dbcConnectionDetails {
 
-		private R2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
+		/**
+         * Constructs a new R2dbcDatabaseContainerConnectionDetails with the specified ContainerConnectionSource.
+         *
+         * @param source the ContainerConnectionSource used to create the connection details
+         */
+        private R2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
 			super(source);
 		}
 
-		@Override
+		/**
+         * Returns the connection factory options for the R2DBC database container.
+         * 
+         * @return the connection factory options
+         */
+        @Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
 			return OracleR2DBCDatabaseContainer.getOptions(getContainer());
 		}

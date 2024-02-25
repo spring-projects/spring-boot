@@ -36,7 +36,17 @@ import org.springframework.test.context.TestContextAnnotationUtils;
  */
 class OverrideAutoConfigurationContextCustomizerFactory implements ContextCustomizerFactory {
 
-	@Override
+	/**
+     * Creates a customizer for the test context based on the provided test class and configuration attributes.
+     * If AOT detection is enabled, returns null.
+     * If the test class has the @OverrideAutoConfiguration annotation with enabled set to false, returns a DisableAutoConfigurationContextCustomizer.
+     * Otherwise, returns null.
+     *
+     * @param testClass                the test class for which the customizer is created
+     * @param configurationAttributes the configuration attributes for the test context
+     * @return the customizer for the test context, or null if AOT detection is enabled or @OverrideAutoConfiguration is disabled
+     */
+    @Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
 		if (AotDetector.useGeneratedArtifacts()) {
@@ -53,17 +63,36 @@ class OverrideAutoConfigurationContextCustomizerFactory implements ContextCustom
 	 */
 	private static final class DisableAutoConfigurationContextCustomizer implements ContextCustomizer {
 
-		@Override
+		/**
+         * Customize the application context by disabling auto-configuration.
+         * This method is called during the initialization of the application context.
+         * It sets the property "spring.autoconfigure.enabled.override" to "false" in order to disable auto-configuration.
+         *
+         * @param context the configurable application context
+         * @param mergedConfig the merged context configuration
+         */
+        @Override
 		public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 			TestPropertyValues.of(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY + "=false").applyTo(context);
 		}
 
-		@Override
+		/**
+         * Compares this object with the specified object for equality.
+         * 
+         * @param obj the object to compare with
+         * @return true if the specified object is of the same class as this object, false otherwise
+         */
+        @Override
 		public boolean equals(Object obj) {
 			return (obj != null) && (obj.getClass() == getClass());
 		}
 
-		@Override
+		/**
+         * Returns a hash code value for the object. This method overrides the default implementation of the hashCode() method.
+         *
+         * @return the hash code value for this object
+         */
+        @Override
 		public int hashCode() {
 			return getClass().hashCode();
 		}

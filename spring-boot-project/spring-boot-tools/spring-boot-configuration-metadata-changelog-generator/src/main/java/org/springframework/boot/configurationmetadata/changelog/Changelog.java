@@ -35,12 +35,28 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepos
  */
 record Changelog(String oldVersionNumber, String newVersionNumber, List<Difference> differences) {
 
-	static Changelog of(String oldVersionNumber, ConfigurationMetadataRepository oldMetadata, String newVersionNumber,
+	/**
+     * Generates a changelog based on the differences between two versions of a configuration metadata repository.
+     * 
+     * @param oldVersionNumber the version number of the old configuration metadata repository
+     * @param oldMetadata the old configuration metadata repository
+     * @param newVersionNumber the version number of the new configuration metadata repository
+     * @param newMetadata the new configuration metadata repository
+     * @return the changelog containing the differences between the two versions
+     */
+    static Changelog of(String oldVersionNumber, ConfigurationMetadataRepository oldMetadata, String newVersionNumber,
 			ConfigurationMetadataRepository newMetadata) {
 		return new Changelog(oldVersionNumber, newVersionNumber, computeDifferences(oldMetadata, newMetadata));
 	}
 
-	static List<Difference> computeDifferences(ConfigurationMetadataRepository oldMetadata,
+	/**
+     * Computes the differences between two ConfigurationMetadataRepositories.
+     * 
+     * @param oldMetadata The old ConfigurationMetadataRepository.
+     * @param newMetadata The new ConfigurationMetadataRepository.
+     * @return A list of Differences between the old and new repositories.
+     */
+    static List<Difference> computeDifferences(ConfigurationMetadataRepository oldMetadata,
 			ConfigurationMetadataRepository newMetadata) {
 		List<String> seenIds = new ArrayList<>();
 		List<Difference> differences = new ArrayList<>();

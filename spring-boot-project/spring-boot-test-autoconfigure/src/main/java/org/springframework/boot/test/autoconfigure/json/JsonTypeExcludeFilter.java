@@ -49,11 +49,21 @@ public final class JsonTypeExcludeFilter extends StandardAnnotationCustomizableT
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	}
 
-	JsonTypeExcludeFilter(Class<?> testClass) {
+	/**
+     * Constructs a new JsonTypeExcludeFilter with the specified testClass.
+     *
+     * @param testClass the class to be used for filtering JSON types
+     */
+    JsonTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 
-	@Override
+	/**
+     * Returns the default includes for the JsonTypeExcludeFilter class.
+     * 
+     * @return the set of classes that are included by default
+     */
+    @Override
 	protected Set<Class<?>> getDefaultIncludes() {
 		return DEFAULT_INCLUDES;
 	}

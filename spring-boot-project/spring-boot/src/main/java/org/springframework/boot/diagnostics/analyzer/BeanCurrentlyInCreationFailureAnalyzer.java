@@ -40,7 +40,12 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 
 	private final AbstractAutowireCapableBeanFactory beanFactory;
 
-	BeanCurrentlyInCreationFailureAnalyzer(BeanFactory beanFactory) {
+	/**
+     * Constructs a new BeanCurrentlyInCreationFailureAnalyzer with the specified beanFactory.
+     * 
+     * @param beanFactory the bean factory to be used by the analyzer
+     */
+    BeanCurrentlyInCreationFailureAnalyzer(BeanFactory beanFactory) {
 		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
 			this.beanFactory = autowireCapableBeanFactory;
 		}
@@ -49,7 +54,14 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		}
 	}
 
-	@Override
+	/**
+     * Analyzes the failure caused by a bean currently in creation exception.
+     * 
+     * @param rootFailure the root cause of the failure
+     * @param cause the bean currently in creation exception
+     * @return a FailureAnalysis object containing information about the failure, or null if no cycle is found
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BeanCurrentlyInCreationException cause) {
 		DependencyCycle dependencyCycle = findCycle(rootFailure);
 		if (dependencyCycle == null) {
@@ -58,7 +70,12 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		return new FailureAnalysis(buildMessage(dependencyCycle), action(), cause);
 	}
 
-	private String action() {
+	/**
+     * Returns a message indicating the action to be taken when a dependency cycle between beans is detected.
+     * 
+     * @return A message indicating the action to be taken
+     */
+    private String action() {
 		if (this.beanFactory != null && this.beanFactory.isAllowCircularReferences()) {
 			return "Despite circular references being allowed, the dependency cycle between beans could not be "
 					+ "broken. Update your application to remove the dependency cycle.";
@@ -69,7 +86,13 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 				+ "spring.main.allow-circular-references to true.";
 	}
 
-	private DependencyCycle findCycle(Throwable rootFailure) {
+	/**
+     * Finds the dependency cycle in the given root failure.
+     * 
+     * @param rootFailure the root failure to analyze
+     * @return the DependencyCycle object representing the cycle, or null if no cycle is found
+     */
+    private DependencyCycle findCycle(Throwable rootFailure) {
 		List<BeanInCycle> beansInCycle = new ArrayList<>();
 		Throwable candidate = rootFailure;
 		int cycleStart = -1;
@@ -90,7 +113,13 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		return new DependencyCycle(beansInCycle, cycleStart);
 	}
 
-	private String buildMessage(DependencyCycle dependencyCycle) {
+	/**
+     * Builds a message describing the dependency cycle in the application context.
+     * 
+     * @param dependencyCycle the DependencyCycle object representing the cycle
+     * @return the message describing the dependency cycle
+     */
+    private String buildMessage(DependencyCycle dependencyCycle) {
 		StringBuilder message = new StringBuilder();
 		message.append(
 				String.format("The dependencies of some of the beans in the application context form a cycle:%n%n"));
@@ -113,39 +142,73 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		return message.toString();
 	}
 
-	private static final class DependencyCycle {
+	/**
+     * DependencyCycle class.
+     */
+    private static final class DependencyCycle {
 
 		private final List<BeanInCycle> beansInCycle;
 
 		private final int cycleStart;
 
-		private DependencyCycle(List<BeanInCycle> beansInCycle, int cycleStart) {
+		/**
+         * Constructs a new DependencyCycle object with the specified list of beans in cycle and cycle start index.
+         * 
+         * @param beansInCycle the list of beans in the cycle
+         * @param cycleStart the index of the cycle start
+         */
+        private DependencyCycle(List<BeanInCycle> beansInCycle, int cycleStart) {
 			this.beansInCycle = beansInCycle;
 			this.cycleStart = cycleStart;
 		}
 
-		List<BeanInCycle> getBeansInCycle() {
+		/**
+         * Returns the list of beans in the cycle.
+         *
+         * @return the list of beans in the cycle
+         */
+        List<BeanInCycle> getBeansInCycle() {
 			return this.beansInCycle;
 		}
 
-		int getCycleStart() {
+		/**
+         * Returns the start of the cycle.
+         *
+         * @return the start of the cycle
+         */
+        int getCycleStart() {
 			return this.cycleStart;
 		}
 
 	}
 
-	private static final class BeanInCycle {
+	/**
+     * BeanInCycle class.
+     */
+    private static final class BeanInCycle {
 
 		private final String name;
 
 		private final String description;
 
-		private BeanInCycle(BeanCreationException ex) {
+		/**
+         * Creates a new BeanInCycle object with the given BeanCreationException.
+         * 
+         * @param ex the BeanCreationException that occurred
+         * @return a new BeanInCycle object
+         */
+        private BeanInCycle(BeanCreationException ex) {
 			this.name = ex.getBeanName();
 			this.description = determineDescription(ex);
 		}
 
-		private String determineDescription(BeanCreationException ex) {
+		/**
+         * Determines the description of the given BeanCreationException.
+         * 
+         * @param ex the BeanCreationException to determine the description for
+         * @return the description of the BeanCreationException
+         */
+        private String determineDescription(BeanCreationException ex) {
 			if (StringUtils.hasText(ex.getResourceDescription())) {
 				return String.format(" defined in %s", ex.getResourceDescription());
 			}
@@ -156,14 +219,26 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 			return "";
 		}
 
-		private InjectionPoint findFailedInjectionPoint(BeanCreationException ex) {
+		/**
+         * Finds the failed injection point from the given BeanCreationException.
+         * 
+         * @param ex the BeanCreationException that occurred
+         * @return the InjectionPoint object representing the failed injection point, or null if not found
+         */
+        private InjectionPoint findFailedInjectionPoint(BeanCreationException ex) {
 			if (ex instanceof UnsatisfiedDependencyException unsatisfiedDependencyException) {
 				return unsatisfiedDependencyException.getInjectionPoint();
 			}
 			return null;
 		}
 
-		@Override
+		/**
+         * Compares this object to the specified object for equality.
+         * 
+         * @param obj the object to compare to
+         * @return true if the objects are equal, false otherwise
+         */
+        @Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -174,24 +249,46 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 			return this.name.equals(((BeanInCycle) obj).name);
 		}
 
-		@Override
+		/**
+         * Returns the hash code value for the object based on the name property.
+         *
+         * @return the hash code value for the object
+         */
+        @Override
 		public int hashCode() {
 			return this.name.hashCode();
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * 
+         * @return the name and description of the object
+         */
+        @Override
 		public String toString() {
 			return this.name + this.description;
 		}
 
-		static BeanInCycle get(Throwable ex) {
+		/**
+         * Returns the BeanInCycle object associated with the given Throwable object.
+         * 
+         * @param ex the Throwable object to check
+         * @return the BeanInCycle object associated with the Throwable object, or null if not found
+         */
+        static BeanInCycle get(Throwable ex) {
 			if (ex instanceof BeanCreationException beanCreationException) {
 				return get(beanCreationException);
 			}
 			return null;
 		}
 
-		private static BeanInCycle get(BeanCreationException ex) {
+		/**
+         * Returns a BeanInCycle object based on the given BeanCreationException.
+         * 
+         * @param ex the BeanCreationException to be used
+         * @return a BeanInCycle object if the BeanCreationException has a bean name, otherwise null
+         */
+        private static BeanInCycle get(BeanCreationException ex) {
 			if (StringUtils.hasText(ex.getBeanName())) {
 				return new BeanInCycle(ex);
 			}

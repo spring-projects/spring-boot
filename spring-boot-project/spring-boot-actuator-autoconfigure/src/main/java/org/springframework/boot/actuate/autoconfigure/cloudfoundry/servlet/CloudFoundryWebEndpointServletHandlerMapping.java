@@ -70,7 +70,17 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 
 	private final Collection<ExposableEndpoint<?>> allEndpoints;
 
-	CloudFoundryWebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
+	/**
+     * Constructs a new CloudFoundryWebEndpointServletHandlerMapping with the specified parameters.
+     *
+     * @param endpointMapping        the endpoint mapping strategy
+     * @param endpoints              the collection of exposable web endpoints
+     * @param endpointMediaTypes     the media types for the endpoints
+     * @param corsConfiguration      the CORS configuration for the endpoints
+     * @param securityInterceptor    the security interceptor for Cloud Foundry
+     * @param allEndpoints           the collection of all endpoints
+     */
+    CloudFoundryWebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			CorsConfiguration corsConfiguration, CloudFoundrySecurityInterceptor securityInterceptor,
 			Collection<ExposableEndpoint<?>> allEndpoints) {
@@ -80,24 +90,53 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 		this.allEndpoints = allEndpoints;
 	}
 
-	@Override
+	/**
+     * Wraps the given ServletWebOperation with a SecureServletWebOperation, adding security
+     * interception for the specified endpoint.
+     * 
+     * @param endpoint The ExposableWebEndpoint associated with the operation
+     * @param operation The WebOperation to be wrapped
+     * @param servletWebOperation The ServletWebOperation to be wrapped
+     * @return The wrapped SecureServletWebOperation
+     */
+    @Override
 	protected ServletWebOperation wrapServletWebOperation(ExposableWebEndpoint endpoint, WebOperation operation,
 			ServletWebOperation servletWebOperation) {
 		return new SecureServletWebOperation(servletWebOperation, this.securityInterceptor, endpoint.getEndpointId());
 	}
 
-	@Override
+	/**
+     * Returns the LinksHandler for CloudFoundryWebEndpointServletHandlerMapping.
+     * 
+     * @return the LinksHandler instance for CloudFoundryWebEndpointServletHandlerMapping
+     */
+    @Override
 	protected LinksHandler getLinksHandler() {
 		return new CloudFoundryLinksHandler();
 	}
 
-	Collection<ExposableEndpoint<?>> getAllEndpoints() {
+	/**
+     * Returns a collection of all the exposable endpoints.
+     *
+     * @return a collection of exposable endpoints
+     */
+    Collection<ExposableEndpoint<?>> getAllEndpoints() {
 		return this.allEndpoints;
 	}
 
-	class CloudFoundryLinksHandler implements LinksHandler {
+	/**
+     * CloudFoundryLinksHandler class.
+     */
+    class CloudFoundryLinksHandler implements LinksHandler {
 
-		@Override
+		/**
+         * Retrieves the links for the Cloud Foundry web endpoint.
+         * 
+         * @param request  the HttpServletRequest object representing the incoming request
+         * @param response the HttpServletResponse object representing the outgoing response
+         * @return a Map containing the links for the web endpoint
+         */
+        @Override
 		@ResponseBody
 		@Reflective
 		public Map<String, Map<String, Link>> links(HttpServletRequest request, HttpServletResponse response) {
@@ -120,12 +159,23 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 			return Collections.singletonMap("_links", filteredLinks);
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * 
+         * @return a string representation of the object
+         */
+        @Override
 		public String toString() {
 			return "Actuator root web endpoint";
 		}
 
-		private void sendFailureResponse(HttpServletResponse response, SecurityResponse securityResponse) {
+		/**
+         * Sends a failure response with the given security response to the HttpServletResponse.
+         * 
+         * @param response The HttpServletResponse object to send the response to.
+         * @param securityResponse The SecurityResponse object containing the status and message for the failure response.
+         */
+        private void sendFailureResponse(HttpServletResponse response, SecurityResponse securityResponse) {
 			try {
 				response.sendError(securityResponse.getStatus().value(), securityResponse.getMessage());
 			}
@@ -147,14 +197,28 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 
 		private final EndpointId endpointId;
 
-		SecureServletWebOperation(ServletWebOperation delegate, CloudFoundrySecurityInterceptor securityInterceptor,
+		/**
+         * Constructs a new SecureServletWebOperation with the specified delegate, securityInterceptor, and endpointId.
+         * 
+         * @param delegate the delegate ServletWebOperation to be used
+         * @param securityInterceptor the CloudFoundrySecurityInterceptor to be used
+         * @param endpointId the EndpointId to be used
+         */
+        SecureServletWebOperation(ServletWebOperation delegate, CloudFoundrySecurityInterceptor securityInterceptor,
 				EndpointId endpointId) {
 			this.delegate = delegate;
 			this.securityInterceptor = securityInterceptor;
 			this.endpointId = endpointId;
 		}
 
-		@Override
+		/**
+         * Handles the HTTP request and returns the response.
+         * 
+         * @param request the HttpServletRequest object representing the incoming request
+         * @param body a Map containing the request body parameters
+         * @return the response object
+         */
+        @Override
 		public Object handle(HttpServletRequest request, Map<String, String> body) {
 			SecurityResponse securityResponse = this.securityInterceptor.preHandle(request, this.endpointId);
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
@@ -165,13 +229,22 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 
 	}
 
-	static class CloudFoundryWebEndpointServletHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * CloudFoundryWebEndpointServletHandlerMappingRuntimeHints class.
+     */
+    static class CloudFoundryWebEndpointServletHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
-		@Override
+		/**
+         * Registers the runtime hints for the CloudFoundryWebEndpointServletHandlerMapping class.
+         * 
+         * @param hints the runtime hints to register
+         * @param classLoader the class loader to use for reflection
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.reflectiveRegistrar.registerRuntimeHints(hints, CloudFoundryLinksHandler.class);
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);

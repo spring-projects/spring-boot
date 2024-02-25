@@ -53,37 +53,80 @@ public class SimpleStatusAggregator implements StatusAggregator {
 
 	private final Comparator<Status> comparator = new StatusComparator();
 
-	public SimpleStatusAggregator() {
+	/**
+     * Constructs a new SimpleStatusAggregator with the default order.
+     */
+    public SimpleStatusAggregator() {
 		this.order = DEFAULT_ORDER;
 	}
 
-	public SimpleStatusAggregator(Status... order) {
+	/**
+     * Constructs a SimpleStatusAggregator object with the given array of Status objects.
+     * 
+     * @param order the array of Status objects to be aggregated
+     */
+    public SimpleStatusAggregator(Status... order) {
 		this.order = ObjectUtils.isEmpty(order) ? DEFAULT_ORDER
 				: getUniformCodes(Arrays.stream(order).map(Status::getCode));
 	}
 
-	public SimpleStatusAggregator(String... order) {
+	/**
+     * Constructs a SimpleStatusAggregator object with the specified order of status codes.
+     * 
+     * @param order the order of status codes to be used for aggregation. If empty or null, the default order will be used.
+     */
+    public SimpleStatusAggregator(String... order) {
 		this.order = ObjectUtils.isEmpty(order) ? DEFAULT_ORDER : getUniformCodes(Arrays.stream(order));
 	}
 
-	public SimpleStatusAggregator(List<String> order) {
+	/**
+     * Constructs a SimpleStatusAggregator object with the given order of status codes.
+     * If the order is empty or null, the default order will be used.
+     * 
+     * @param order the list of status codes to be used for aggregation
+     */
+    public SimpleStatusAggregator(List<String> order) {
 		this.order = CollectionUtils.isEmpty(order) ? DEFAULT_ORDER : getUniformCodes(order.stream());
 	}
 
-	@Override
+	/**
+     * Returns the aggregate status based on the given set of statuses.
+     * 
+     * @param statuses the set of statuses to be aggregated
+     * @return the aggregate status
+     */
+    @Override
 	public Status getAggregateStatus(Set<Status> statuses) {
 		return statuses.stream().filter(this::contains).min(this.comparator).orElse(Status.UNKNOWN);
 	}
 
-	private boolean contains(Status status) {
+	/**
+     * Checks if the given status is contained in the order list.
+     * 
+     * @param status the status to be checked
+     * @return true if the status is contained in the order list, false otherwise
+     */
+    private boolean contains(Status status) {
 		return this.order.contains(getUniformCode(status.getCode()));
 	}
 
-	private static List<String> getUniformCodes(Stream<String> codes) {
+	/**
+     * Returns a list of uniform codes generated from the given stream of codes.
+     * 
+     * @param codes the stream of codes to generate uniform codes from
+     * @return a list of uniform codes
+     */
+    private static List<String> getUniformCodes(Stream<String> codes) {
 		return codes.map(SimpleStatusAggregator::getUniformCode).toList();
 	}
 
-	private static String getUniformCode(String code) {
+	/**
+     * Returns a uniform code by removing any non-alphabetic and non-digit characters from the given code.
+     * 
+     * @param code the code to generate the uniform code from
+     * @return the uniform code generated from the given code, or null if the given code is null
+     */
+    private static String getUniformCode(String code) {
 		if (code == null) {
 			return null;
 		}
@@ -102,7 +145,15 @@ public class SimpleStatusAggregator implements StatusAggregator {
 	 */
 	private final class StatusComparator implements Comparator<Status> {
 
-		@Override
+		/**
+         * Compares two Status objects based on their codes and the order specified in the SimpleStatusAggregator.
+         * 
+         * @param s1 the first Status object to compare
+         * @param s2 the second Status object to compare
+         * @return a negative integer if s1 comes before s2 in the specified order, a positive integer if s1 comes after s2,
+         *         or zero if s1 and s2 have the same position in the order
+         */
+        @Override
 		public int compare(Status s1, Status s2) {
 			List<String> order = SimpleStatusAggregator.this.order;
 			int i1 = order.indexOf(getUniformCode(s1.getCode()));

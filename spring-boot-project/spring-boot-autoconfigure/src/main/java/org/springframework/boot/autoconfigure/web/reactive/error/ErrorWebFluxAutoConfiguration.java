@@ -53,11 +53,27 @@ public class ErrorWebFluxAutoConfiguration {
 
 	private final ServerProperties serverProperties;
 
-	public ErrorWebFluxAutoConfiguration(ServerProperties serverProperties) {
+	/**
+     * Constructs a new ErrorWebFluxAutoConfiguration with the specified ServerProperties.
+     *
+     * @param serverProperties the ServerProperties to be used by the ErrorWebFluxAutoConfiguration
+     */
+    public ErrorWebFluxAutoConfiguration(ServerProperties serverProperties) {
 		this.serverProperties = serverProperties;
 	}
 
-	@Bean
+	/**
+     * Create a bean of type {@link ErrorWebExceptionHandler} if no other bean of the same type is present in the application context.
+     * The bean is conditionally created based on the absence of a bean of type {@link ErrorWebExceptionHandler} and is ordered with a priority of -1.
+     * 
+     * @param errorAttributes the error attributes to be used by the exception handler
+     * @param webProperties the web properties to be used by the exception handler
+     * @param viewResolvers the view resolvers to be used by the exception handler
+     * @param serverCodecConfigurer the server codec configurer to be used by the exception handler
+     * @param applicationContext the application context to be used by the exception handler
+     * @return the created {@link ErrorWebExceptionHandler} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(value = ErrorWebExceptionHandler.class, search = SearchStrategy.CURRENT)
 	@Order(-1)
 	public ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes,
@@ -71,7 +87,12 @@ public class ErrorWebFluxAutoConfiguration {
 		return exceptionHandler;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link DefaultErrorAttributes} if no other bean of type {@link ErrorAttributes} is present in the application context.
+     * 
+     * @return the {@link DefaultErrorAttributes} instance
+     */
+    @Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
 	public DefaultErrorAttributes errorAttributes() {
 		return new DefaultErrorAttributes();

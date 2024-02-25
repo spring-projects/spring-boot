@@ -22,23 +22,45 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
+/**
+ * InMemoryCustomerRepository class.
+ */
 @Repository
 public class InMemoryCustomerRepository implements CustomerRepository {
 
 	private final List<Customer> customers = new ArrayList<>();
 
-	public InMemoryCustomerRepository() {
+	/**
+     * Constructs a new InMemoryCustomerRepository and initializes it with three customers.
+     * The customers are added to the repository with their respective IDs, first names, and last names.
+     * 
+     * The first customer has an ID of 1, first name "Oliver", and last name "Gierke".
+     * The second customer has an ID of 2, first name "Andy", and last name "Wilkinson".
+     * The third customer has an ID of 2, first name "Dave", and last name "Syer".
+     */
+    public InMemoryCustomerRepository() {
 		this.customers.add(new Customer(1L, "Oliver", "Gierke"));
 		this.customers.add(new Customer(2L, "Andy", "Wilkinson"));
 		this.customers.add(new Customer(2L, "Dave", "Syer"));
 	}
 
-	@Override
+	/**
+     * Retrieves all customers from the repository.
+     *
+     * @return a list of Customer objects representing all customers in the repository.
+     */
+    @Override
 	public List<Customer> findAll() {
 		return this.customers;
 	}
 
-	@Override
+	/**
+     * Retrieves a customer with the specified ID from the repository.
+     *
+     * @param id the ID of the customer to retrieve
+     * @return the customer with the specified ID, or null if not found
+     */
+    @Override
 	public Customer findOne(Long id) {
 		for (Customer customer : this.customers) {
 			if (ObjectUtils.nullSafeEquals(customer.getId(), id)) {

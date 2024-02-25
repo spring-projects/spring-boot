@@ -19,6 +19,9 @@ package org.springframework.boot.docs.howto.dataaccess.usemultipleentitymanagers
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+/**
+ * OrderConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 @EnableJpaRepositories(basePackageClasses = Order.class, entityManagerFactoryRef = "firstEntityManagerFactory")
 public class OrderConfiguration {

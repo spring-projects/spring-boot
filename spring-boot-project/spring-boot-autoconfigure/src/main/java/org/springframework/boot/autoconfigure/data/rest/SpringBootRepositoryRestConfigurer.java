@@ -40,18 +40,35 @@ class SpringBootRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
 	private final RepositoryRestProperties properties;
 
-	SpringBootRepositoryRestConfigurer(Jackson2ObjectMapperBuilder objectMapperBuilder,
+	/**
+     * Constructs a new SpringBootRepositoryRestConfigurer with the specified Jackson2ObjectMapperBuilder and RepositoryRestProperties.
+     * 
+     * @param objectMapperBuilder the Jackson2ObjectMapperBuilder used for configuring the ObjectMapper
+     * @param properties the RepositoryRestProperties used for configuring the RepositoryRestConfiguration
+     */
+    SpringBootRepositoryRestConfigurer(Jackson2ObjectMapperBuilder objectMapperBuilder,
 			RepositoryRestProperties properties) {
 		this.objectMapperBuilder = objectMapperBuilder;
 		this.properties = properties;
 	}
 
-	@Override
+	/**
+     * Configure the repository REST configuration.
+     * 
+     * @param config the repository REST configuration
+     * @param cors the CORS registry
+     */
+    @Override
 	public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
 		this.properties.applyTo(config);
 	}
 
-	@Override
+	/**
+     * Configures the Jackson object mapper.
+     * 
+     * @param objectMapper the Jackson object mapper to be configured
+     */
+    @Override
 	public void configureJacksonObjectMapper(ObjectMapper objectMapper) {
 		if (this.objectMapperBuilder != null) {
 			this.objectMapperBuilder.configure(objectMapper);

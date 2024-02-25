@@ -54,7 +54,15 @@ public class ConfigDataResourceNotFoundException extends ConfigDataNotFoundExcep
 		this(resource, null, cause);
 	}
 
-	private ConfigDataResourceNotFoundException(ConfigDataResource resource, ConfigDataLocation location,
+	/**
+     * Constructs a new {@code ConfigDataResourceNotFoundException} with the specified resource, location, and cause.
+     * 
+     * @param resource the resource that was not found
+     * @param location the location where the resource was expected to be found
+     * @param cause the cause of the exception
+     * @throws IllegalArgumentException if the resource is null
+     */
+    private ConfigDataResourceNotFoundException(ConfigDataResource resource, ConfigDataLocation location,
 			Throwable cause) {
 		super(getMessage(resource, location), cause);
 		Assert.notNull(resource, "Resource must not be null");
@@ -78,12 +86,22 @@ public class ConfigDataResourceNotFoundException extends ConfigDataNotFoundExcep
 		return this.location;
 	}
 
-	@Override
+	/**
+     * Returns the origin of the exception.
+     * 
+     * @return the origin of the exception
+     */
+    @Override
 	public Origin getOrigin() {
 		return Origin.from(this.location);
 	}
 
-	@Override
+	/**
+     * Returns the description of the reference.
+     * 
+     * @return the description of the reference
+     */
+    @Override
 	public String getReferenceDescription() {
 		return getReferenceDescription(this.resource, this.location);
 	}
@@ -97,11 +115,25 @@ public class ConfigDataResourceNotFoundException extends ConfigDataNotFoundExcep
 		return new ConfigDataResourceNotFoundException(this.resource, location, getCause());
 	}
 
-	private static String getMessage(ConfigDataResource resource, ConfigDataLocation location) {
+	/**
+     * Returns the error message for when a config data resource cannot be found.
+     * 
+     * @param resource the config data resource that cannot be found
+     * @param location the location of the config data resource
+     * @return the error message indicating that the config data cannot be found
+     */
+    private static String getMessage(ConfigDataResource resource, ConfigDataLocation location) {
 		return String.format("Config data %s cannot be found", getReferenceDescription(resource, location));
 	}
 
-	private static String getReferenceDescription(ConfigDataResource resource, ConfigDataLocation location) {
+	/**
+     * Returns the description of the reference to the specified resource and location.
+     *
+     * @param resource the resource for which the description is to be generated
+     * @param location the location of the resource, can be null
+     * @return the description of the reference
+     */
+    private static String getReferenceDescription(ConfigDataResource resource, ConfigDataLocation location) {
 		String description = String.format("resource '%s'", resource);
 		if (location != null) {
 			description += String.format(" via location '%s'", location);
@@ -139,7 +171,14 @@ public class ConfigDataResourceNotFoundException extends ConfigDataNotFoundExcep
 		throwIfDoesNotExist(resource, resourceToCheck.exists());
 	}
 
-	private static void throwIfDoesNotExist(ConfigDataResource resource, boolean exists) {
+	/**
+     * Throws a {@link ConfigDataResourceNotFoundException} if the specified resource does not exist.
+     *
+     * @param resource the {@link ConfigDataResource} to check for existence
+     * @param exists   a boolean indicating whether the resource exists or not
+     * @throws ConfigDataResourceNotFoundException if the resource does not exist
+     */
+    private static void throwIfDoesNotExist(ConfigDataResource resource, boolean exists) {
 		if (!exists) {
 			throw new ConfigDataResourceNotFoundException(resource);
 		}

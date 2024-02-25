@@ -21,10 +21,20 @@ import smoketest.bootstrapregistry.external.svn.SubversionBootstrap;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleBootstrapRegistryApplication class.
+ */
 @SpringBootApplication
 public class SampleBootstrapRegistryApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleBootstrapRegistryApplication class.
+     * This method demonstrates how a Bootstrapper can be used to register a custom SubversionClient
+     * that still has access to data provided in the application.properties file.
+     * 
+     * @param args The command line arguments passed to the application.
+     */
+    public static void main(String[] args) {
 		// This example shows how a Bootstrapper can be used to register a custom
 		// SubversionClient that still has access to data provided in the
 		// application.properties file

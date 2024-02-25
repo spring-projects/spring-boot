@@ -20,22 +20,41 @@ import java.util.List;
 
 import org.springframework.boot.build.bom.Library;
 
+/**
+ * LibraryWithVersionOptions class.
+ */
 class LibraryWithVersionOptions {
 
 	private final Library library;
 
 	private final List<VersionOption> versionOptions;
 
-	LibraryWithVersionOptions(Library library, List<VersionOption> versionOptions) {
+	/**
+     * Constructs a new LibraryWithVersionOptions object with the specified library and version options.
+     * 
+     * @param library the library to be used
+     * @param versionOptions the list of version options
+     */
+    LibraryWithVersionOptions(Library library, List<VersionOption> versionOptions) {
 		this.library = library;
 		this.versionOptions = versionOptions;
 	}
 
-	Library getLibrary() {
+	/**
+     * Returns the library object associated with this LibraryWithVersionOptions instance.
+     *
+     * @return the library object
+     */
+    Library getLibrary() {
 		return this.library;
 	}
 
-	List<VersionOption> getVersionOptions() {
+	/**
+     * Returns the list of version options available in the library.
+     *
+     * @return the list of version options
+     */
+    List<VersionOption> getVersionOptions() {
 		return this.versionOptions;
 	}
 

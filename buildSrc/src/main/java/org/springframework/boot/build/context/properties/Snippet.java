@@ -39,7 +39,14 @@ class Snippet {
 
 	private final Map<String, String> overrides;
 
-	Snippet(String anchor, String title, Consumer<Config> config) {
+	/**
+     * Creates a new Snippet with the specified anchor and title, and applies the provided configuration.
+     * 
+     * @param anchor the anchor for the Snippet
+     * @param title the title for the Snippet
+     * @param config the configuration to be applied to the Snippet
+     */
+    Snippet(String anchor, String title, Consumer<Config> config) {
 		Set<String> prefixes = new LinkedHashSet<>();
 		Map<String, String> overrides = new LinkedHashMap<>();
 		if (config != null) {
@@ -63,19 +70,39 @@ class Snippet {
 		this.overrides = overrides;
 	}
 
-	String getAnchor() {
+	/**
+     * Returns the anchor of the Snippet.
+     *
+     * @return the anchor of the Snippet
+     */
+    String getAnchor() {
 		return this.anchor;
 	}
 
-	String getTitle() {
+	/**
+     * Returns the title of the Snippet.
+     *
+     * @return the title of the Snippet
+     */
+    String getTitle() {
 		return this.title;
 	}
 
-	void forEachPrefix(Consumer<String> action) {
+	/**
+     * Iterates over each prefix in the prefixes list and applies the specified action to it.
+     *
+     * @param action the action to be applied to each prefix
+     */
+    void forEachPrefix(Consumer<String> action) {
 		this.prefixes.forEach(action);
 	}
 
-	void forEachOverride(BiConsumer<String, String> action) {
+	/**
+     * Iterates over each entry in the overrides map and applies the specified action to each entry.
+     * 
+     * @param action the action to be applied to each entry in the overrides map
+     */
+    void forEachOverride(BiConsumer<String, String> action) {
 		this.overrides.forEach(action);
 	}
 

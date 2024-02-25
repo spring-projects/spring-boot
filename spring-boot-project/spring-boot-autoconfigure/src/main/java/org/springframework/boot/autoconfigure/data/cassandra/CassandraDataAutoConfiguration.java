@@ -63,11 +63,26 @@ public class CassandraDataAutoConfiguration {
 
 	private final CqlSession session;
 
-	public CassandraDataAutoConfiguration(CqlSession session) {
+	/**
+     * Constructs a new instance of the CassandraDataAutoConfiguration class with the specified CqlSession.
+     * 
+     * @param session the CqlSession to be used for interacting with Cassandra.
+     */
+    public CassandraDataAutoConfiguration(CqlSession session) {
 		this.session = session;
 	}
 
-	@Bean
+	/**
+     * Returns the CassandraManagedTypes bean if it is not already present in the application context.
+     * This bean is responsible for scanning the packages for Cassandra entity classes and returning the managed types.
+     * If no packages are specified, it will scan the packages from the EntityScanPackages and AutoConfigurationPackages.
+     * If no packages are found, it will return an empty CassandraManagedTypes object.
+     *
+     * @param beanFactory the BeanFactory used to retrieve the package names
+     * @return the CassandraManagedTypes bean
+     * @throws ClassNotFoundException if the entity classes cannot be found
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public static CassandraManagedTypes cassandraManagedTypes(BeanFactory beanFactory) throws ClassNotFoundException {
 		List<String> packages = EntityScanPackages.get(beanFactory).getPackageNames();
@@ -80,7 +95,14 @@ public class CassandraDataAutoConfiguration {
 		return CassandraManagedTypes.empty();
 	}
 
-	@Bean
+	/**
+     * Creates and configures a {@link CassandraMappingContext} bean if no other bean of the same type is present.
+     * 
+     * @param cassandraManagedTypes The managed types for the Cassandra mapping context.
+     * @param conversions The custom conversions for the Cassandra mapping context.
+     * @return The configured {@link CassandraMappingContext} bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public CassandraMappingContext cassandraMappingContext(CassandraManagedTypes cassandraManagedTypes,
 			CassandraCustomConversions conversions) {
@@ -90,7 +112,14 @@ public class CassandraDataAutoConfiguration {
 		return context;
 	}
 
-	@Bean
+	/**
+     * Creates a {@link CassandraConverter} bean if no other bean of the same type is present.
+     * 
+     * @param mapping the {@link CassandraMappingContext} used for mapping entities to Cassandra tables
+     * @param conversions the {@link CassandraCustomConversions} used for custom type conversions
+     * @return the created {@link CassandraConverter} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public CassandraConverter cassandraConverter(CassandraMappingContext mapping,
 			CassandraCustomConversions conversions) {
@@ -101,7 +130,14 @@ public class CassandraDataAutoConfiguration {
 		return converter;
 	}
 
-	@Bean
+	/**
+     * Creates a Cassandra Session Factory if no other bean of type SessionFactory is present.
+     * 
+     * @param environment the environment object
+     * @param converter the Cassandra converter
+     * @return the SessionFactoryFactoryBean
+     */
+    @Bean
 	@ConditionalOnMissingBean(SessionFactory.class)
 	public SessionFactoryFactoryBean cassandraSessionFactory(Environment environment, CassandraConverter converter) {
 		SessionFactoryFactoryBean session = new SessionFactoryFactoryBean();
@@ -112,13 +148,25 @@ public class CassandraDataAutoConfiguration {
 		return session;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of CassandraTemplate if there is no existing bean of type CassandraOperations.
+     * 
+     * @param sessionFactory the SessionFactory used for creating Cassandra sessions
+     * @param converter the CassandraConverter used for converting between Java objects and Cassandra entities
+     * @return a new instance of CassandraTemplate
+     */
+    @Bean
 	@ConditionalOnMissingBean(CassandraOperations.class)
 	public CassandraTemplate cassandraTemplate(SessionFactory sessionFactory, CassandraConverter converter) {
 		return new CassandraTemplate(sessionFactory, converter);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link CassandraCustomConversions} if no other bean of the same type is present.
+     * 
+     * @return the {@link CassandraCustomConversions} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public CassandraCustomConversions cassandraCustomConversions() {
 		return new CassandraCustomConversions(Collections.emptyList());

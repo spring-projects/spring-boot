@@ -45,7 +45,13 @@ public final class Ansi8BitColor implements AnsiElement {
 		this.code = code;
 	}
 
-	@Override
+	/**
+     * Compares this Ansi8BitColor object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -57,12 +63,22 @@ public final class Ansi8BitColor implements AnsiElement {
 		return this.prefix.equals(other.prefix) && this.code == other.code;
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this Ansi8BitColor object.
+     * 
+     * @return the hash code value for this Ansi8BitColor object
+     */
+    @Override
 	public int hashCode() {
 		return this.prefix.hashCode() * 31 + this.code;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the Ansi8BitColor object.
+     * 
+     * @return the string representation of the Ansi8BitColor object
+     */
+    @Override
 	public String toString() {
 		return this.prefix + this.code;
 	}

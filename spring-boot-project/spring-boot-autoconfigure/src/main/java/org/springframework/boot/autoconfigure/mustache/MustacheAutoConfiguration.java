@@ -50,13 +50,32 @@ public class MustacheAutoConfiguration {
 
 	private final ApplicationContext applicationContext;
 
-	public MustacheAutoConfiguration(MustacheProperties mustache, ApplicationContext applicationContext) {
+	/**
+     * Constructs a new MustacheAutoConfiguration with the specified MustacheProperties and ApplicationContext.
+     * 
+     * @param mustache the MustacheProperties to be used for configuration
+     * @param applicationContext the ApplicationContext to be used for configuration
+     */
+    public MustacheAutoConfiguration(MustacheProperties mustache, ApplicationContext applicationContext) {
 		this.mustache = mustache;
 		this.applicationContext = applicationContext;
 		checkTemplateLocationExists();
 	}
 
-	public void checkTemplateLocationExists() {
+	/**
+     * Checks if the template location exists.
+     * 
+     * If the "checkTemplateLocation" property is set to true, it creates a TemplateLocation object using the prefix specified in the Mustache configuration. 
+     * It then checks if the location exists in the ApplicationContext. If the location does not exist and the logger is enabled, it logs a warning message.
+     * 
+     * @see TemplateLocation
+     * @see MustacheAutoConfiguration
+     * @see ApplicationContext
+     * @see Logger
+     * 
+     * @since 1.0.0
+     */
+    public void checkTemplateLocationExists() {
 		if (this.mustache.isCheckTemplateLocation()) {
 			TemplateLocation location = new TemplateLocation(this.mustache.getPrefix());
 			if (!location.exists(this.applicationContext) && logger.isWarnEnabled()) {
@@ -67,13 +86,28 @@ public class MustacheAutoConfiguration {
 		}
 	}
 
-	@Bean
+	/**
+     * Creates a Mustache compiler bean if no other bean of the same type is present.
+     * 
+     * @param mustacheTemplateLoader the template loader to be used by the compiler
+     * @return the Mustache compiler bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader) {
 		return Mustache.compiler().withLoader(mustacheTemplateLoader);
 	}
 
-	@Bean
+	/**
+     * Creates a MustacheResourceTemplateLoader bean if no other bean of type TemplateLoader is present.
+     * 
+     * The MustacheResourceTemplateLoader is responsible for loading Mustache templates from resources.
+     * It uses the prefix and suffix specified in the MustacheProperties to determine the location of the templates.
+     * The charset for the templates can also be configured through the MustacheProperties.
+     * 
+     * @return The created MustacheResourceTemplateLoader bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean(TemplateLoader.class)
 	public MustacheResourceTemplateLoader mustacheTemplateLoader() {
 		MustacheResourceTemplateLoader loader = new MustacheResourceTemplateLoader(this.mustache.getPrefix(),

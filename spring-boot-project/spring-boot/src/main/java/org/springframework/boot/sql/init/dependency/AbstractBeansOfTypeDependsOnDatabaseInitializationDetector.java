@@ -32,7 +32,13 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 public abstract class AbstractBeansOfTypeDependsOnDatabaseInitializationDetector
 		implements DependsOnDatabaseInitializationDetector {
 
-	@Override
+	/**
+     * Detects beans of specified types that depend on database initialization.
+     * 
+     * @param beanFactory the bean factory to search for beans
+     * @return a set of bean names that depend on database initialization
+     */
+    @Override
 	public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
 		try {
 			Set<Class<?>> types = getDependsOnDatabaseInitializationBeanTypes();

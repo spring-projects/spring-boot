@@ -46,7 +46,14 @@ public abstract class AbstractCompositeHealthContributorConfiguration<C, I exten
 		this.indicatorFactory = indicatorFactory;
 	}
 
-	protected final C createContributor(Map<String, B> beans) {
+	/**
+     * Creates a contributor based on the given map of beans.
+     * 
+     * @param beans the map of beans to create the contributor from
+     * @return the created contributor
+     * @throws IllegalArgumentException if the beans map is empty
+     */
+    protected final C createContributor(Map<String, B> beans) {
 		Assert.notEmpty(beans, "Beans must not be empty");
 		if (beans.size() == 1) {
 			return createIndicator(beans.values().iterator().next());
@@ -54,9 +61,21 @@ public abstract class AbstractCompositeHealthContributorConfiguration<C, I exten
 		return createComposite(beans);
 	}
 
-	protected abstract C createComposite(Map<String, B> beans);
+	/**
+     * Creates a composite health contributor by combining multiple beans.
+     *
+     * @param beans a map of beans where the key is the bean name and the value is the bean instance
+     * @return the composite health contributor
+     */
+    protected abstract C createComposite(Map<String, B> beans);
 
-	protected I createIndicator(B bean) {
+	/**
+     * Creates an indicator for the given bean.
+     *
+     * @param bean the bean for which the indicator is created
+     * @return the created indicator
+     */
+    protected I createIndicator(B bean) {
 		return this.indicatorFactory.apply(bean);
 	}
 

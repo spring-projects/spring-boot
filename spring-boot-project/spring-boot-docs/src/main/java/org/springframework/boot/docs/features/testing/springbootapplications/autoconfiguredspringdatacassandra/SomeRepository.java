@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdatacassandra;
 
+/**
+ * SomeRepository interface.
+ */
 interface SomeRepository {
 
 }

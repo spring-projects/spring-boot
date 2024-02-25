@@ -33,30 +33,59 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 class ActiveMQClassicContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<ActiveMQContainer, ActiveMQConnectionDetails> {
 
-	@Override
+	/**
+     * Returns the ActiveMQConnectionDetails for the given ContainerConnectionSource.
+     * 
+     * @param source the ContainerConnectionSource for which to retrieve the connection details
+     * @return the ActiveMQConnectionDetails for the given ContainerConnectionSource
+     */
+    @Override
 	protected ActiveMQConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<ActiveMQContainer> source) {
 		return new ActiveMQContainerConnectionDetails(source);
 	}
 
-	private static final class ActiveMQContainerConnectionDetails extends ContainerConnectionDetails<ActiveMQContainer>
+	/**
+     * ActiveMQContainerConnectionDetails class.
+     */
+    private static final class ActiveMQContainerConnectionDetails extends ContainerConnectionDetails<ActiveMQContainer>
 			implements ActiveMQConnectionDetails {
 
-		private ActiveMQContainerConnectionDetails(ContainerConnectionSource<ActiveMQContainer> source) {
+		/**
+         * Constructs a new ActiveMQContainerConnectionDetails object with the specified ContainerConnectionSource.
+         * 
+         * @param source the ContainerConnectionSource used to create the ActiveMQContainerConnectionDetails object
+         */
+        private ActiveMQContainerConnectionDetails(ContainerConnectionSource<ActiveMQContainer> source) {
 			super(source);
 		}
 
-		@Override
+		/**
+         * Returns the broker URL of the ActiveMQ container connection details.
+         * 
+         * @return the broker URL of the ActiveMQ container connection details
+         */
+        @Override
 		public String getBrokerUrl() {
 			return getContainer().getBrokerUrl();
 		}
 
-		@Override
+		/**
+         * Returns the user associated with this ActiveMQContainerConnectionDetails.
+         * 
+         * @return the user associated with this ActiveMQContainerConnectionDetails
+         */
+        @Override
 		public String getUser() {
 			return getContainer().getUser();
 		}
 
-		@Override
+		/**
+         * Returns the password associated with the ActiveMQ container connection details.
+         * 
+         * @return the password associated with the ActiveMQ container connection details
+         */
+        @Override
 		public String getPassword() {
 			return getContainer().getPassword();
 		}

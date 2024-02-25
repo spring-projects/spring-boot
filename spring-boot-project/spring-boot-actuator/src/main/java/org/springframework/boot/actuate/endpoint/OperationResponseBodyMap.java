@@ -28,7 +28,12 @@ import java.util.Map;
  */
 class OperationResponseBodyMap<K, V> extends LinkedHashMap<K, V> implements OperationResponseBody {
 
-	OperationResponseBodyMap(Map<? extends K, ? extends V> map) {
+	/**
+     * Constructs a new OperationResponseBodyMap object with the specified map.
+     * 
+     * @param map the map to be used for constructing the OperationResponseBodyMap object
+     */
+    OperationResponseBodyMap(Map<? extends K, ? extends V> map) {
 		super(map);
 	}
 

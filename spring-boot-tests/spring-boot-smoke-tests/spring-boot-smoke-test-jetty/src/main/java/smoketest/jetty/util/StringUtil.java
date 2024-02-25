@@ -18,12 +18,25 @@ package smoketest.jetty.util;
 
 import java.util.Arrays;
 
+/**
+ * StringUtil class.
+ */
 public final class StringUtil {
 
-	private StringUtil() {
+	/**
+     * Private constructor for the StringUtil class.
+     */
+    private StringUtil() {
 	}
 
-	public static String repeat(char c, int length) {
+	/**
+     * Repeats a given character a specified number of times and returns the resulting string.
+     * 
+     * @param c the character to be repeated
+     * @param length the number of times the character should be repeated
+     * @return the resulting string with the repeated character
+     */
+    public static String repeat(char c, int length) {
 		char[] chars = new char[length];
 		Arrays.fill(chars, c);
 		return new String(chars);

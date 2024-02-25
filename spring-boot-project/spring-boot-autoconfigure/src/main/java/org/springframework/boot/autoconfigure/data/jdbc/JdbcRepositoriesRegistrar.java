@@ -32,22 +32,40 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  */
 class JdbcRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
-	@Override
+	/**
+     * Returns the annotation class that is used to enable JDBC repositories.
+     *
+     * @return the annotation class {@code EnableJdbcRepositories}
+     */
+    @Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableJdbcRepositories.class;
 	}
 
-	@Override
+	/**
+     * Returns the configuration class for enabling JDBC repositories.
+     *
+     * @return the configuration class for enabling JDBC repositories
+     */
+    @Override
 	protected Class<?> getConfiguration() {
 		return EnableJdbcRepositoriesConfiguration.class;
 	}
 
-	@Override
+	/**
+     * Returns the repository configuration extension for JDBC repositories.
+     * 
+     * @return the repository configuration extension for JDBC repositories
+     */
+    @Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new JdbcRepositoryConfigExtension();
 	}
 
-	@EnableJdbcRepositories
+	/**
+     * EnableJdbcRepositoriesConfiguration class.
+     */
+    @EnableJdbcRepositories
 	private static final class EnableJdbcRepositoriesConfiguration {
 
 	}

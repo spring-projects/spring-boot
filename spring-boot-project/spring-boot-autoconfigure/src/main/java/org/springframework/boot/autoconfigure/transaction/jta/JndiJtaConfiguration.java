@@ -40,7 +40,13 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 @ConditionalOnMissingBean(org.springframework.transaction.TransactionManager.class)
 class JndiJtaConfiguration {
 
-	@Bean
+	/**
+     * Creates a JtaTransactionManager bean.
+     * 
+     * @param transactionManagerCustomizers the customizers for the transaction manager
+     * @return the JtaTransactionManager bean
+     */
+    @Bean
 	JtaTransactionManager transactionManager(
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager();

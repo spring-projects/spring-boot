@@ -20,6 +20,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * MyNonTransactionalTests class.
+ */
 @DataJpaTest
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 class MyNonTransactionalTests {

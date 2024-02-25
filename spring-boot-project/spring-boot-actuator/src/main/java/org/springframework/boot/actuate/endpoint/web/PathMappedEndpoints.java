@@ -61,7 +61,13 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 		this.endpoints = getEndpoints(suppliers);
 	}
 
-	private Map<EndpointId, PathMappedEndpoint> getEndpoints(Collection<EndpointsSupplier<?>> suppliers) {
+	/**
+     * Retrieves the endpoints from the given collection of suppliers and returns a map of endpoint IDs to path mapped endpoints.
+     * 
+     * @param suppliers the collection of endpoint suppliers
+     * @return an unmodifiable map of endpoint IDs to path mapped endpoints
+     */
+    private Map<EndpointId, PathMappedEndpoint> getEndpoints(Collection<EndpointsSupplier<?>> suppliers) {
 		Map<EndpointId, PathMappedEndpoint> endpoints = new LinkedHashMap<>();
 		suppliers.forEach((supplier) -> supplier.getEndpoints().forEach((endpoint) -> {
 			if (endpoint instanceof PathMappedEndpoint pathMappedEndpoint) {
@@ -134,12 +140,23 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 		return this.endpoints.values().stream();
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the collection of PathMappedEndpoint objects in this PathMappedEndpoints object.
+     *
+     * @return an iterator over the collection of PathMappedEndpoint objects in this PathMappedEndpoints object
+     */
+    @Override
 	public Iterator<PathMappedEndpoint> iterator() {
 		return this.endpoints.values().iterator();
 	}
 
-	private String getPath(PathMappedEndpoint endpoint) {
+	/**
+     * Returns the path for the given PathMappedEndpoint.
+     * 
+     * @param endpoint the PathMappedEndpoint to get the path for
+     * @return the path for the given PathMappedEndpoint, or null if the endpoint is null
+     */
+    private String getPath(PathMappedEndpoint endpoint) {
 		if (endpoint == null) {
 			return null;
 		}

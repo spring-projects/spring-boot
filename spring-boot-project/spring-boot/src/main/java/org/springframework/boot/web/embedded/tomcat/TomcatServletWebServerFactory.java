@@ -183,7 +183,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		super(contextPath, port);
 	}
 
-	private static List<LifecycleListener> getDefaultServerLifecycleListeners() {
+	/**
+     * Returns the default server lifecycle listeners for the TomcatServletWebServerFactory.
+     * 
+     * @return the list of default server lifecycle listeners
+     */
+    private static List<LifecycleListener> getDefaultServerLifecycleListeners() {
 		ArrayList<LifecycleListener> lifecycleListeners = new ArrayList<>();
 		if (!NativeDetector.inNativeImage()) {
 			AprLifecycleListener aprLifecycleListener = new AprLifecycleListener();
@@ -194,7 +199,25 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return lifecycleListeners;
 	}
 
-	@Override
+	/**
+     * Returns a WebServer instance configured with the given ServletContextInitializers.
+     * If the MBeanRegistry is disabled, it will be disabled in the Registry.
+     * Creates a Tomcat instance and sets the base directory to the provided baseDirectory or a temporary directory if baseDirectory is null.
+     * Adds the serverLifecycleListeners to the Tomcat server's LifecycleListeners.
+     * Creates a Connector with the provided protocol and sets throwOnFailure to true.
+     * Adds the Connector to the Tomcat service and customizes it.
+     * Sets the Connector as the Tomcat instance's Connector.
+     * Registers the Connector's Executor with the Tomcat instance.
+     * Disables auto deployment on the Tomcat host.
+     * Configures the Tomcat engine.
+     * Adds additional Tomcat Connectors to the Tomcat service and registers their Executors.
+     * Prepares the Tomcat host's context with the provided initializers.
+     * Returns a WebServer instance created from the configured Tomcat instance.
+     *
+     * @param initializers the ServletContextInitializers to configure the WebServer with
+     * @return a WebServer instance configured with the given ServletContextInitializers
+     */
+    @Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
 		if (this.disableMBeanRegistry) {
 			Registry.disableRegistry();
@@ -221,20 +244,37 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return getTomcatWebServer(tomcat);
 	}
 
-	private void registerConnectorExecutor(Tomcat tomcat, Connector connector) {
+	/**
+     * Registers the given Connector's Executor with the provided Tomcat instance.
+     * 
+     * @param tomcat the Tomcat instance to register the Executor with
+     * @param connector the Connector whose Executor needs to be registered
+     */
+    private void registerConnectorExecutor(Tomcat tomcat, Connector connector) {
 		if (connector.getProtocolHandler().getExecutor() instanceof Executor executor) {
 			tomcat.getService().addExecutor(executor);
 		}
 	}
 
-	private void configureEngine(Engine engine) {
+	/**
+     * Configures the engine with the specified background processor delay and valves.
+     * 
+     * @param engine the engine to be configured
+     */
+    private void configureEngine(Engine engine) {
 		engine.setBackgroundProcessorDelay(this.backgroundProcessorDelay);
 		for (Valve valve : this.engineValves) {
 			engine.getPipeline().addValve(valve);
 		}
 	}
 
-	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
+	/**
+     * Prepares the context for the given host and servlet context initializers.
+     * 
+     * @param host the host for the context
+     * @param initializers the servlet context initializers
+     */
+    protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File documentRoot = getValidDocumentRoot();
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		if (documentRoot != null) {
@@ -287,19 +327,34 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		context.addLocaleEncodingMappingParameter(Locale.JAPANESE.toString(), DEFAULT_CHARSET.displayName());
 	}
 
-	private void addLocaleMappings(TomcatEmbeddedContext context) {
+	/**
+     * Adds locale mappings to the given TomcatEmbeddedContext.
+     * 
+     * @param context the TomcatEmbeddedContext to add the locale mappings to
+     */
+    private void addLocaleMappings(TomcatEmbeddedContext context) {
 		getLocaleCharsetMappings().forEach(
 				(locale, charset) -> context.addLocaleEncodingMappingParameter(locale.toString(), charset.toString()));
 	}
 
-	private void configureTldPatterns(TomcatEmbeddedContext context) {
+	/**
+     * Configures the TLD patterns for the given TomcatEmbeddedContext.
+     * 
+     * @param context the TomcatEmbeddedContext to configure
+     */
+    private void configureTldPatterns(TomcatEmbeddedContext context) {
 		StandardJarScanFilter filter = new StandardJarScanFilter();
 		filter.setTldSkip(StringUtils.collectionToCommaDelimitedString(this.tldSkipPatterns));
 		filter.setTldScan(StringUtils.collectionToCommaDelimitedString(this.tldScanPatterns));
 		context.getJarScanner().setJarScanFilter(filter);
 	}
 
-	private void addDefaultServlet(Context context) {
+	/**
+     * Adds a default servlet to the given context.
+     * 
+     * @param context the context to which the default servlet will be added
+     */
+    private void addDefaultServlet(Context context) {
 		Wrapper defaultServlet = context.createWrapper();
 		defaultServlet.setName("default");
 		defaultServlet.setServletClass("org.apache.catalina.servlets.DefaultServlet");
@@ -312,7 +367,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		context.addServletMappingDecoded("/", "default");
 	}
 
-	private void addJspServlet(Context context) {
+	/**
+     * Adds a JSP servlet to the given context.
+     * 
+     * @param context the context to add the JSP servlet to
+     */
+    private void addJspServlet(Context context) {
 		Wrapper jspServlet = context.createWrapper();
 		jspServlet.setName("jsp");
 		jspServlet.setServletClass(getJsp().getClassName());
@@ -324,7 +384,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		context.addServletMappingDecoded("*.jspx", "jsp");
 	}
 
-	private void addJasperInitializer(TomcatEmbeddedContext context) {
+	/**
+     * Adds the JasperInitializer to the given TomcatEmbeddedContext.
+     * This initializer is responsible for initializing the Jasper JSP engine.
+     * 
+     * @param context the TomcatEmbeddedContext to add the initializer to
+     */
+    private void addJasperInitializer(TomcatEmbeddedContext context) {
 		try {
 			ServletContainerInitializer initializer = (ServletContainerInitializer) ClassUtils
 				.forName("org.apache.jasper.servlet.JasperInitializer", null)
@@ -364,20 +430,37 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 	}
 
-	private void customizeProtocol(AbstractProtocol<?> protocol) {
+	/**
+     * Customizes the protocol of the given AbstractProtocol object.
+     * 
+     * @param protocol the AbstractProtocol object to be customized
+     * 
+     * @since version 1.0
+     */
+    private void customizeProtocol(AbstractProtocol<?> protocol) {
 		if (getAddress() != null) {
 			protocol.setAddress(getAddress());
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Invokes the protocol handler customizers for the given protocol handler.
+     * 
+     * @param protocolHandler the protocol handler to customize
+     */
+    @SuppressWarnings("unchecked")
 	private void invokeProtocolHandlerCustomizers(ProtocolHandler protocolHandler) {
 		LambdaSafe
 			.callbacks(TomcatProtocolHandlerCustomizer.class, this.tomcatProtocolHandlerCustomizers, protocolHandler)
 			.invoke((customizer) -> customizer.customize(protocolHandler));
 	}
 
-	private void customizeSsl(Connector connector) {
+	/**
+     * Customizes the SSL configuration for the given connector.
+     * 
+     * @param connector the connector to customize
+     */
+    private void customizeSsl(Connector connector) {
 		SslConnectorCustomizer customizer = new SslConnectorCustomizer(logger, connector, getSsl().getClientAuth());
 		customizer.customize(getSslBundle());
 		String sslBundleName = getSsl().getBundle();
@@ -423,7 +506,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 	}
 
-	private void configureSession(Context context) {
+	/**
+     * Configures the session settings for the given context.
+     * 
+     * @param context the context to configure
+     */
+    private void configureSession(Context context) {
 		long sessionTimeout = getSessionTimeoutInMinutes();
 		context.setSessionTimeout((int) sessionTimeout);
 		Boolean httpOnly = getSession().getCookie().getHttpOnly();
@@ -443,7 +531,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 	}
 
-	private void setMimeMappings(Context context) {
+	/**
+     * Sets the MIME mappings for the given context.
+     * 
+     * @param context the context to set the MIME mappings for
+     */
+    private void setMimeMappings(Context context) {
 		if (context instanceof TomcatEmbeddedContext embeddedContext) {
 			embeddedContext.setMimeMappings(getMimeMappings());
 			return;
@@ -453,7 +546,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 	}
 
-	private void configureCookieProcessor(Context context) {
+	/**
+     * Configures the cookie processor for the given context.
+     * 
+     * @param context the context for which the cookie processor is to be configured
+     */
+    private void configureCookieProcessor(Context context) {
 		SameSite sessionSameSite = getSession().getCookie().getSameSite();
 		List<CookieSameSiteSupplier> suppliers = new ArrayList<>();
 		if (sessionSameSite != null) {
@@ -468,7 +566,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 	}
 
-	private void configurePersistSession(Manager manager) {
+	/**
+     * Configures the persistence of HTTP session state using the provided manager.
+     * 
+     * @param manager the manager to be configured for session persistence
+     * @throws IllegalArgumentException if the provided manager is not an instance of StandardManager
+     */
+    private void configurePersistSession(Manager manager) {
 		Assert.state(manager instanceof StandardManager,
 				() -> "Unable to persist HTTP session state using manager type " + manager.getClass().getName());
 		File dir = getValidSessionStoreDir();
@@ -476,7 +580,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		((StandardManager) manager).setPathname(file.getAbsolutePath());
 	}
 
-	private long getSessionTimeoutInMinutes() {
+	/**
+     * Returns the session timeout in minutes.
+     * 
+     * @return the session timeout in minutes
+     */
+    private long getSessionTimeoutInMinutes() {
 		Duration sessionTimeout = getSession().getTimeout();
 		if (isZeroOrLess(sessionTimeout)) {
 			return 0;
@@ -484,7 +593,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return Math.max(sessionTimeout.toMinutes(), 1);
 	}
 
-	private boolean isZeroOrLess(Duration sessionTimeout) {
+	/**
+     * Checks if the given session timeout is zero or less.
+     * 
+     * @param sessionTimeout the duration of the session timeout
+     * @return {@code true} if the session timeout is zero or less, {@code false} otherwise
+     */
+    private boolean isZeroOrLess(Duration sessionTimeout) {
 		return sessionTimeout == null || sessionTimeout.isNegative() || sessionTimeout.isZero();
 	}
 
@@ -508,12 +623,22 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return new TomcatWebServer(tomcat, getPort() >= 0, getShutdown());
 	}
 
-	@Override
+	/**
+     * Set the resource loader to be used by this factory.
+     * 
+     * @param resourceLoader the resource loader to be set
+     */
+    @Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
 
-	@Override
+	/**
+     * Sets the base directory for the web server.
+     * 
+     * @param baseDirectory the base directory to set
+     */
+    @Override
 	public void setBaseDirectory(File baseDirectory) {
 		this.baseDirectory = baseDirectory;
 	}
@@ -575,7 +700,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return this.engineValves;
 	}
 
-	@Override
+	/**
+     * Adds engine valves to the Tomcat servlet web server factory.
+     * 
+     * @param engineValves the engine valves to be added
+     * @throws IllegalArgumentException if the engine valves are null
+     */
+    @Override
 	public void addEngineValves(Valve... engineValves) {
 		Assert.notNull(engineValves, "Valves must not be null");
 		this.engineValves.addAll(Arrays.asList(engineValves));
@@ -657,7 +788,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return this.tomcatContextCustomizers;
 	}
 
-	@Override
+	/**
+     * Add customizers to the Tomcat context.
+     * 
+     * @param tomcatContextCustomizers the customizers to add (must not be null)
+     */
+    @Override
 	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
 		Assert.notNull(tomcatContextCustomizers, "TomcatContextCustomizers must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
@@ -674,7 +810,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		this.tomcatConnectorCustomizers = new LinkedHashSet<>(tomcatConnectorCustomizers);
 	}
 
-	@Override
+	/**
+     * Add customizers to the Tomcat connector.
+     * 
+     * @param tomcatConnectorCustomizers the customizers to be added (must not be null)
+     */
+    @Override
 	public void addConnectorCustomizers(TomcatConnectorCustomizer... tomcatConnectorCustomizers) {
 		Assert.notNull(tomcatConnectorCustomizers, "TomcatConnectorCustomizers must not be null");
 		this.tomcatConnectorCustomizers.addAll(Arrays.asList(tomcatConnectorCustomizers));
@@ -744,7 +885,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return this.additionalTomcatConnectors;
 	}
 
-	@Override
+	/**
+     * Sets the encoding to be used for parsing URIs.
+     * 
+     * @param uriEncoding the encoding to be used for parsing URIs
+     */
+    @Override
 	public void setUriEncoding(Charset uriEncoding) {
 		this.uriEncoding = uriEncoding;
 	}
@@ -757,7 +903,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return this.uriEncoding;
 	}
 
-	@Override
+	/**
+     * Sets the delay for the background processor.
+     * 
+     * @param delay the delay in milliseconds
+     */
+    @Override
 	public void setBackgroundProcessorDelay(int delay) {
 		this.backgroundProcessorDelay = delay;
 	}
@@ -779,7 +930,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	private static final class DisablePersistSessionListener implements LifecycleListener {
 
-		@Override
+		/**
+         * This method is called when a lifecycle event occurs.
+         * It disables session persistence by setting the pathname to null in the StandardManager.
+         * 
+         * @param event The lifecycle event that occurred.
+         */
+        @Override
 		public void lifecycleEvent(LifecycleEvent event) {
 			if (event.getType().equals(Lifecycle.START_EVENT)) {
 				Context context = (Context) event.getLifecycle();
@@ -792,7 +949,10 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	}
 
-	private final class StaticResourceConfigurer implements LifecycleListener {
+	/**
+     * StaticResourceConfigurer class.
+     */
+    private final class StaticResourceConfigurer implements LifecycleListener {
 
 		private static final String WEB_APP_MOUNT = "/";
 
@@ -800,18 +960,34 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 		private final Context context;
 
-		private StaticResourceConfigurer(Context context) {
+		/**
+         * Constructs a new StaticResourceConfigurer with the specified context.
+         *
+         * @param context the context to be used by the StaticResourceConfigurer
+         */
+        private StaticResourceConfigurer(Context context) {
 			this.context = context;
 		}
 
-		@Override
+		/**
+         * This method is an implementation of the lifecycleEvent method from the LifecycleListener interface.
+         * It is called when a lifecycle event occurs.
+         * 
+         * @param event The LifecycleEvent object representing the event that occurred.
+         */
+        @Override
 		public void lifecycleEvent(LifecycleEvent event) {
 			if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
 				addResourceJars(getUrlsOfJarsWithMetaInfResources());
 			}
 		}
 
-		private void addResourceJars(List<URL> resourceJarUrls) {
+		/**
+         * Adds the resource jars to the resource sets.
+         * 
+         * @param resourceJarUrls the list of URLs pointing to the resource jars
+         */
+        private void addResourceJars(List<URL> resourceJarUrls) {
 			for (URL url : resourceJarUrls) {
 				String path = url.getPath();
 				if (path.endsWith(".jar") || path.endsWith(".jar!/")) {
@@ -828,7 +1004,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			}
 		}
 
-		private void addResourceSet(String resource) {
+		/**
+         * Adds a resource set to the web resource root.
+         * 
+         * @param resource the resource to be added
+         */
+        private void addResourceSet(String resource) {
 			try {
 				if (isInsideClassicNestedJar(resource)) {
 					addClassicNestedResourceSet(resource);
@@ -848,7 +1029,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			}
 		}
 
-		private void addClassicNestedResourceSet(String resource) throws MalformedURLException {
+		/**
+         * Adds a classic nested resource set to the context's resources.
+         * 
+         * @param resource the URL of the nested resource set
+         * @throws MalformedURLException if the URL is malformed
+         */
+        private void addClassicNestedResourceSet(String resource) throws MalformedURLException {
 			// It's a nested jar but we now don't want the suffix because Tomcat
 			// is going to try and locate it as a root URL (not the resource
 			// inside it)
@@ -857,36 +1044,72 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 				.createWebResourceSet(ResourceSetType.RESOURCE_JAR, WEB_APP_MOUNT, url, INTERNAL_PATH);
 		}
 
-		private boolean isInsideClassicNestedJar(String resource) {
+		/**
+         * Checks if the given resource is inside a classic nested JAR file.
+         * 
+         * @param resource the resource to check
+         * @return true if the resource is inside a classic nested JAR file, false otherwise
+         */
+        private boolean isInsideClassicNestedJar(String resource) {
 			return !isInsideNestedJar(resource) && resource.indexOf("!/") < resource.lastIndexOf("!/");
 		}
 
-		private boolean isInsideNestedJar(String resource) {
+		/**
+         * Checks if a resource is inside a nested JAR file.
+         * 
+         * @param resource the resource to check
+         * @return true if the resource is inside a nested JAR file, false otherwise
+         */
+        private boolean isInsideNestedJar(String resource) {
 			return resource.startsWith("jar:nested:");
 		}
 
 	}
 
-	private static final class LoaderHidingResourceRoot extends StandardRoot {
+	/**
+     * LoaderHidingResourceRoot class.
+     */
+    private static final class LoaderHidingResourceRoot extends StandardRoot {
 
-		private LoaderHidingResourceRoot(TomcatEmbeddedContext context) {
+		/**
+         * Constructs a new LoaderHidingResourceRoot with the specified TomcatEmbeddedContext.
+         * 
+         * @param context the TomcatEmbeddedContext to be associated with this LoaderHidingResourceRoot
+         */
+        private LoaderHidingResourceRoot(TomcatEmbeddedContext context) {
 			super(context);
 		}
 
-		@Override
+		/**
+         * Creates a new WebResourceSet for the main resources.
+         * This method overrides the createMainResourceSet method in the parent class.
+         * It creates a new LoaderHidingWebResourceSet by passing the result of the super.createMainResourceSet() method as a parameter.
+         * 
+         * @return the newly created WebResourceSet for the main resources
+         */
+        @Override
 		protected WebResourceSet createMainResourceSet() {
 			return new LoaderHidingWebResourceSet(super.createMainResourceSet());
 		}
 
 	}
 
-	private static final class LoaderHidingWebResourceSet extends AbstractResourceSet {
+	/**
+     * LoaderHidingWebResourceSet class.
+     */
+    private static final class LoaderHidingWebResourceSet extends AbstractResourceSet {
 
 		private final WebResourceSet delegate;
 
 		private final Method initInternal;
 
-		private LoaderHidingWebResourceSet(WebResourceSet delegate) {
+		/**
+         * Constructs a new LoaderHidingWebResourceSet with the specified delegate WebResourceSet.
+         * 
+         * @param delegate the delegate WebResourceSet to be used
+         * @throws IllegalStateException if an exception occurs while initializing the internal method
+         */
+        private LoaderHidingWebResourceSet(WebResourceSet delegate) {
 			this.delegate = delegate;
 			try {
 				this.initInternal = LifecycleBase.class.getDeclaredMethod("initInternal");
@@ -897,7 +1120,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			}
 		}
 
-		@Override
+		/**
+         * Retrieves the web resource for the given path.
+         * 
+         * @param path the path of the resource to retrieve
+         * @return the web resource for the given path
+         */
+        @Override
 		public WebResource getResource(String path) {
 			if (path.startsWith("/org/springframework/boot")) {
 				return new EmptyResource(getRoot(), path);
@@ -905,12 +1134,24 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			return this.delegate.getResource(path);
 		}
 
-		@Override
+		/**
+         * Returns an array of strings representing the files and directories in the specified path.
+         *
+         * @param path the path of the directory to list
+         * @return an array of strings representing the files and directories in the specified path
+         */
+        @Override
 		public String[] list(String path) {
 			return this.delegate.list(path);
 		}
 
-		@Override
+		/**
+         * Returns a set of web application paths excluding those that start with "/org/springframework/boot".
+         * 
+         * @param path the base path to list web application paths from
+         * @return a set of web application paths
+         */
+        @Override
 		public Set<String> listWebAppPaths(String path) {
 			return this.delegate.listWebAppPaths(path)
 				.stream()
@@ -918,37 +1159,75 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 				.collect(Collectors.toSet());
 		}
 
-		@Override
+		/**
+         * Creates a new directory at the specified path.
+         * 
+         * @param path the path of the directory to be created
+         * @return true if the directory was successfully created, false otherwise
+         */
+        @Override
 		public boolean mkdir(String path) {
 			return this.delegate.mkdir(path);
 		}
 
-		@Override
+		/**
+         * Writes the contents of the given input stream to the specified path.
+         * 
+         * @param path      the path where the contents will be written
+         * @param is        the input stream containing the contents to be written
+         * @param overwrite a boolean indicating whether to overwrite the existing file if it already exists
+         * @return true if the contents were successfully written, false otherwise
+         */
+        @Override
 		public boolean write(String path, InputStream is, boolean overwrite) {
 			return this.delegate.write(path, is, overwrite);
 		}
 
-		@Override
+		/**
+         * Returns the base URL of the web resource set.
+         * 
+         * @return the base URL of the web resource set
+         */
+        @Override
 		public URL getBaseUrl() {
 			return this.delegate.getBaseUrl();
 		}
 
-		@Override
+		/**
+         * Sets the read-only flag for the LoaderHidingWebResourceSet.
+         * 
+         * @param readOnly true if the LoaderHidingWebResourceSet should be read-only, false otherwise
+         */
+        @Override
 		public void setReadOnly(boolean readOnly) {
 			this.delegate.setReadOnly(readOnly);
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the LoaderHidingWebResourceSet is read-only.
+         * 
+         * @return true if the LoaderHidingWebResourceSet is read-only, false otherwise.
+         */
+        @Override
 		public boolean isReadOnly() {
 			return this.delegate.isReadOnly();
 		}
 
-		@Override
+		/**
+         * Calls the garbage collector to free up memory.
+         * This method delegates the call to the gc() method of the delegate object.
+         */
+        @Override
 		public void gc() {
 			this.delegate.gc();
 		}
 
-		@Override
+		/**
+         * Initializes the internal state of the LoaderHidingWebResourceSet.
+         * 
+         * @throws LifecycleException if an error occurs during initialization
+         */
+        @Override
 		protected void initInternal() throws LifecycleException {
 			if (this.delegate instanceof LifecycleBase) {
 				try {
@@ -970,11 +1249,26 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 		private final List<CookieSameSiteSupplier> suppliers;
 
-		SuppliedSameSiteCookieProcessor(List<CookieSameSiteSupplier> suppliers) {
+		/**
+         * Constructs a new SuppliedSameSiteCookieProcessor with the given list of CookieSameSiteSupplier objects.
+         * 
+         * @param suppliers the list of CookieSameSiteSupplier objects to be used by the cookie processor
+         */
+        SuppliedSameSiteCookieProcessor(List<CookieSameSiteSupplier> suppliers) {
 			this.suppliers = suppliers;
 		}
 
-		@Override
+		/**
+         * Generates the header for the given cookie and HTTP servlet request.
+         * If the SameSite attribute is present in the cookie, it uses the Rfc6265CookieProcessor
+         * to generate the header with the SameSite attribute value.
+         * If the SameSite attribute is not present, it delegates the generation to the superclass.
+         * 
+         * @param cookie the cookie for which the header needs to be generated
+         * @param request the HTTP servlet request
+         * @return the generated header string
+         */
+        @Override
 		public String generateHeader(Cookie cookie, HttpServletRequest request) {
 			SameSite sameSite = getSameSite(cookie);
 			if (sameSite == null) {
@@ -985,7 +1279,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			return delegate.generateHeader(cookie, request);
 		}
 
-		private SameSite getSameSite(Cookie cookie) {
+		/**
+         * Returns the SameSite attribute value for the given cookie.
+         * 
+         * @param cookie the cookie to get the SameSite attribute value for
+         * @return the SameSite attribute value for the given cookie, or null if not found
+         */
+        private SameSite getSameSite(Cookie cookie) {
 			for (CookieSameSiteSupplier supplier : this.suppliers) {
 				SameSite sameSite = supplier.getSameSite(cookie);
 				if (sameSite != null) {

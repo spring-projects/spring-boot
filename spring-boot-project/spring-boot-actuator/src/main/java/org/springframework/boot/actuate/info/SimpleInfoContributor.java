@@ -30,13 +30,26 @@ public class SimpleInfoContributor implements InfoContributor {
 
 	private final Object detail;
 
-	public SimpleInfoContributor(String prefix, Object detail) {
+	/**
+     * Constructs a new SimpleInfoContributor with the specified prefix and detail.
+     * 
+     * @param prefix the prefix to be used for the contributor
+     * @param detail the detail object to be associated with the contributor
+     * @throws IllegalArgumentException if the prefix is null
+     */
+    public SimpleInfoContributor(String prefix, Object detail) {
 		Assert.notNull(prefix, "Prefix must not be null");
 		this.prefix = prefix;
 		this.detail = detail;
 	}
 
-	@Override
+	/**
+     * Contributes additional information to the provided Info.Builder object.
+     * If the detail is not null, it adds the detail to the builder with the specified prefix.
+     * 
+     * @param builder the Info.Builder object to contribute to
+     */
+    @Override
 	public void contribute(Info.Builder builder) {
 		if (this.detail != null) {
 			builder.withDetail(this.prefix, this.detail);

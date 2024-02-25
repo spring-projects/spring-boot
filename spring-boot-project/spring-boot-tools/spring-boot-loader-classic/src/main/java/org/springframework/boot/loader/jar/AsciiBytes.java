@@ -77,11 +77,22 @@ final class AsciiBytes {
 		this.length = length;
 	}
 
-	int length() {
+	/**
+     * Returns the length of the AsciiBytes object.
+     *
+     * @return the length of the AsciiBytes object
+     */
+    int length() {
 		return this.length;
 	}
 
-	boolean startsWith(AsciiBytes prefix) {
+	/**
+     * Checks if the AsciiBytes object starts with the specified prefix.
+     *
+     * @param prefix the AsciiBytes object to compare with
+     * @return true if the AsciiBytes object starts with the prefix, false otherwise
+     */
+    boolean startsWith(AsciiBytes prefix) {
 		if (this == prefix) {
 			return true;
 		}
@@ -96,7 +107,13 @@ final class AsciiBytes {
 		return true;
 	}
 
-	boolean endsWith(AsciiBytes postfix) {
+	/**
+     * Checks if the AsciiBytes object ends with the specified postfix.
+     *
+     * @param postfix the AsciiBytes object to check against
+     * @return true if the AsciiBytes object ends with the specified postfix, false otherwise
+     */
+    boolean endsWith(AsciiBytes postfix) {
 		if (this == postfix) {
 			return true;
 		}
@@ -112,11 +129,30 @@ final class AsciiBytes {
 		return true;
 	}
 
-	AsciiBytes substring(int beginIndex) {
+	/**
+     * Returns a new AsciiBytes object that is a substring of this AsciiBytes object.
+     * The substring begins at the specified {@code beginIndex} and extends to the end of this AsciiBytes object.
+     *
+     * @param beginIndex the beginning index, inclusive.
+     * @return the specified substring as a new AsciiBytes object.
+     * @throws IndexOutOfBoundsException if {@code beginIndex} is negative or greater than the length of this AsciiBytes object.
+     */
+    AsciiBytes substring(int beginIndex) {
 		return substring(beginIndex, this.length);
 	}
 
-	AsciiBytes substring(int beginIndex, int endIndex) {
+	/**
+     * Returns a new AsciiBytes object that is a substring of this AsciiBytes object.
+     * The substring begins at the specified {@code beginIndex} and extends to the character at index {@code endIndex - 1}.
+     * The length of the substring is {@code endIndex - beginIndex}.
+     *
+     * @param beginIndex the beginning index, inclusive.
+     * @param endIndex the ending index, exclusive.
+     * @return the specified substring as a new AsciiBytes object.
+     * @throws IndexOutOfBoundsException if {@code beginIndex} is negative, or {@code endIndex} is larger than the length of this AsciiBytes object,
+     * or {@code beginIndex} is larger than {@code endIndex}.
+     */
+    AsciiBytes substring(int beginIndex, int endIndex) {
 		int length = endIndex - beginIndex;
 		if (this.offset + length > this.bytes.length) {
 			throw new IndexOutOfBoundsException();
@@ -124,7 +160,14 @@ final class AsciiBytes {
 		return new AsciiBytes(this.bytes, this.offset + beginIndex, length);
 	}
 
-	boolean matches(CharSequence name, char suffix) {
+	/**
+     * Checks if the given name and suffix match the characters stored in the AsciiBytes object.
+     * 
+     * @param name   the CharSequence representing the name to be matched
+     * @param suffix the character representing the suffix to be matched
+     * @return true if the name and suffix match the characters stored in the AsciiBytes object, false otherwise
+     */
+    boolean matches(CharSequence name, char suffix) {
 		int charIndex = 0;
 		int nameLen = name.length();
 		int totalLen = nameLen + ((suffix != 0) ? 1 : 0);
@@ -154,7 +197,19 @@ final class AsciiBytes {
 		return charIndex == totalLen;
 	}
 
-	private char getChar(CharSequence name, char suffix, int index) {
+	/**
+     * Returns the character at the specified index in the given name CharSequence.
+     * If the index is within the bounds of the name, the character at that index is returned.
+     * If the index is equal to the length of the name, the suffix character is returned.
+     * If the index is greater than the length of the name, 0 is returned.
+     *
+     * @param name   the CharSequence representing the name
+     * @param suffix the character to be returned if the index is equal to the length of the name
+     * @param index  the index of the character to be returned
+     * @return the character at the specified index in the name CharSequence, or the suffix character if the index is equal to the length of the name,
+     *         or 0 if the index is greater than the length of the name
+     */
+    private char getChar(CharSequence name, char suffix, int index) {
 		if (index < name.length()) {
 			return name.charAt(index);
 		}
@@ -164,7 +219,13 @@ final class AsciiBytes {
 		return 0;
 	}
 
-	private int getNumberOfUtfBytes(int b) {
+	/**
+     * Returns the number of UTF bytes required to represent the given byte.
+     * 
+     * @param b the byte to check
+     * @return the number of UTF bytes required
+     */
+    private int getNumberOfUtfBytes(int b) {
 		if ((b & 0x80) == 0) {
 			return 1;
 		}
@@ -176,7 +237,13 @@ final class AsciiBytes {
 		return numberOfUtfBytes;
 	}
 
-	@Override
+	/**
+     * Compares this AsciiBytes object with the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
@@ -198,7 +265,12 @@ final class AsciiBytes {
 		return false;
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this AsciiBytes object.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		int hash = this.hash;
 		if (hash == 0 && this.bytes.length > 0) {
@@ -222,7 +294,12 @@ final class AsciiBytes {
 		return hash;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the AsciiBytes object.
+     * 
+     * @return the string representation of the AsciiBytes object
+     */
+    @Override
 	public String toString() {
 		if (this.string == null) {
 			if (this.length == 0) {
@@ -235,11 +312,23 @@ final class AsciiBytes {
 		return this.string;
 	}
 
-	static String toString(byte[] bytes) {
+	/**
+     * Converts a byte array to a string using the UTF-8 character encoding.
+     *
+     * @param bytes the byte array to be converted
+     * @return the resulting string
+     */
+    static String toString(byte[] bytes) {
 		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
-	static int hashCode(CharSequence charSequence) {
+	/**
+     * Calculates the hash code for a given CharSequence.
+     * 
+     * @param charSequence the CharSequence to calculate the hash code for
+     * @return the hash code of the CharSequence
+     */
+    static int hashCode(CharSequence charSequence) {
 		// We're compatible with String's hashCode()
 		if (charSequence instanceof StringSequence) {
 			// ... but save making an unnecessary String for StringSequence
@@ -248,7 +337,14 @@ final class AsciiBytes {
 		return charSequence.toString().hashCode();
 	}
 
-	static int hashCode(int hash, char suffix) {
+	/**
+     * Calculates the hash code for the given hash and suffix.
+     * 
+     * @param hash the initial hash value
+     * @param suffix the character to be added to the hash
+     * @return the calculated hash code
+     */
+    static int hashCode(int hash, char suffix) {
 		return (suffix != 0) ? (31 * hash + suffix) : hash;
 	}
 

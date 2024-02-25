@@ -33,7 +33,13 @@ import org.springframework.util.StringUtils;
  */
 public class IsoOffsetDateTimeConverter implements Converter<String, OffsetDateTime> {
 
-	@Override
+	/**
+     * Converts a string representation of an offset date-time to an OffsetDateTime object.
+     * 
+     * @param source the string representation of the offset date-time
+     * @return the converted OffsetDateTime object, or null if the source is empty or null
+     */
+    @Override
 	public OffsetDateTime convert(String source) {
 		if (StringUtils.hasLength(source)) {
 			return OffsetDateTime.parse(source, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
@@ -41,7 +47,12 @@ public class IsoOffsetDateTimeConverter implements Converter<String, OffsetDateT
 		return null;
 	}
 
-	public static void registerConverter(ConverterRegistry registry) {
+	/**
+     * Registers the IsoOffsetDateTimeConverter in the given ConverterRegistry.
+     * 
+     * @param registry the ConverterRegistry to register the converter in
+     */
+    public static void registerConverter(ConverterRegistry registry) {
 		registry.addConverter(new IsoOffsetDateTimeConverter());
 	}
 

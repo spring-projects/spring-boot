@@ -36,12 +36,25 @@ public final class SystemHealth extends CompositeHealth {
 
 	private final Set<String> groups;
 
-	SystemHealth(ApiVersion apiVersion, Status status, Map<String, HealthComponent> instances, Set<String> groups) {
+	/**
+     * Constructs a new SystemHealth object with the specified API version, status, instances, and groups.
+     * 
+     * @param apiVersion the API version of the system health
+     * @param status the status of the system health
+     * @param instances a map of health components associated with their names
+     * @param groups a set of groups associated with the system health
+     */
+    SystemHealth(ApiVersion apiVersion, Status status, Map<String, HealthComponent> instances, Set<String> groups) {
 		super(apiVersion, status, instances);
 		this.groups = (groups != null) ? new TreeSet<>(groups) : null;
 	}
 
-	@JsonInclude(Include.NON_EMPTY)
+	/**
+     * Returns the set of groups associated with the SystemHealth.
+     * 
+     * @return the set of groups, or an empty set if no groups are associated
+     */
+    @JsonInclude(Include.NON_EMPTY)
 	public Set<String> getGroups() {
 		return this.groups;
 	}

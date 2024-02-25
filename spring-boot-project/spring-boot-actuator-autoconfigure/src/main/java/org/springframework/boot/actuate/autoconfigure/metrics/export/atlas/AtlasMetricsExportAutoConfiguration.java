@@ -48,13 +48,27 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(AtlasProperties.class)
 public class AtlasMetricsExportAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates an instance of AtlasConfig if no other bean of the same type is present.
+     * Uses the provided AtlasProperties to create an instance of AtlasPropertiesConfigAdapter.
+     * 
+     * @param atlasProperties the AtlasProperties object used to create the AtlasPropertiesConfigAdapter
+     * @return an instance of AtlasConfig
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public AtlasConfig atlasConfig(AtlasProperties atlasProperties) {
 		return new AtlasPropertiesConfigAdapter(atlasProperties);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link AtlasMeterRegistry} if no other bean of the same type is present.
+     * 
+     * @param atlasConfig the configuration for Atlas
+     * @param clock the clock used for measuring time
+     * @return a new instance of {@link AtlasMeterRegistry}
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public AtlasMeterRegistry atlasMeterRegistry(AtlasConfig atlasConfig, Clock clock) {
 		return new AtlasMeterRegistry(atlasConfig, clock);

@@ -27,7 +27,12 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
  */
 public final class DataRedisTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataRedisTest> {
 
-	DataRedisTypeExcludeFilter(Class<?> testClass) {
+	/**
+     * Constructs a new DataRedisTypeExcludeFilter with the specified test class.
+     * 
+     * @param testClass the test class to be used for filtering
+     */
+    DataRedisTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 

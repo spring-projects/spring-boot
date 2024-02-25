@@ -28,11 +28,21 @@ class Table {
 
 	private final Set<Row> rows = new TreeSet<>();
 
-	void addRow(Row row) {
+	/**
+     * Adds a row to the table.
+     * 
+     * @param row the row to be added
+     */
+    void addRow(Row row) {
 		this.rows.add(row);
 	}
 
-	void write(Asciidoc asciidoc) {
+	/**
+     * Writes the given Asciidoc object to generate a table with columns "Name", "Description", and "Default Value".
+     * 
+     * @param asciidoc the Asciidoc object to write the table to
+     */
+    void write(Asciidoc asciidoc) {
 		asciidoc.appendln("[cols=\"4,3,3\", options=\"header\"]");
 		asciidoc.appendln("|===");
 		asciidoc.appendln("|Name|Description|Default Value");

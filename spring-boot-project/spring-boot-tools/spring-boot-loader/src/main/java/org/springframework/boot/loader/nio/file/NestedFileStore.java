@@ -35,56 +35,124 @@ class NestedFileStore extends FileStore {
 
 	private final NestedFileSystem fileSystem;
 
-	NestedFileStore(NestedFileSystem fileSystem) {
+	/**
+     * Constructs a new NestedFileStore object with the specified NestedFileSystem.
+     * 
+     * @param fileSystem the NestedFileSystem to be associated with the NestedFileStore
+     */
+    NestedFileStore(NestedFileSystem fileSystem) {
 		this.fileSystem = fileSystem;
 	}
 
-	@Override
+	/**
+     * Returns the name of the file system associated with this NestedFileStore.
+     * 
+     * @return the name of the file system
+     */
+    @Override
 	public String name() {
 		return this.fileSystem.toString();
 	}
 
-	@Override
+	/**
+     * Returns the type of the file store as "nestedfs".
+     * 
+     * @return the type of the file store
+     */
+    @Override
 	public String type() {
 		return "nestedfs";
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the file store is read-only.
+     * 
+     * @return true if the file store is read-only, false otherwise
+     */
+    @Override
 	public boolean isReadOnly() {
 		return this.fileSystem.isReadOnly();
 	}
 
-	@Override
+	/**
+     * Returns the total space in bytes available in the file store.
+     *
+     * @return the total space in bytes
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
 	public long getTotalSpace() throws IOException {
 		return 0;
 	}
 
-	@Override
+	/**
+     * Returns the amount of space available for this file store, in bytes.
+     *
+     * @return the amount of space available for this file store, in bytes.
+     * @throws IOException if an I/O error occurs.
+     */
+    @Override
 	public long getUsableSpace() throws IOException {
 		return 0;
 	}
 
-	@Override
+	/**
+     * Returns the amount of unallocated space in the file store.
+     *
+     * @return the amount of unallocated space in bytes
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
 	public long getUnallocatedSpace() throws IOException {
 		return 0;
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the specified file attribute view is supported by the nested file store.
+     *
+     * @param type the class representing the file attribute view
+     * @return {@code true} if the specified file attribute view is supported, {@code false} otherwise
+     */
+    @Override
 	public boolean supportsFileAttributeView(Class<? extends FileAttributeView> type) {
 		return getJarPathFileStore().supportsFileAttributeView(type);
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the specified file attribute view is supported by the nested file store.
+     *
+     * @param name the name of the file attribute view
+     * @return {@code true} if the specified file attribute view is supported, {@code false} otherwise
+     */
+    @Override
 	public boolean supportsFileAttributeView(String name) {
 		return getJarPathFileStore().supportsFileAttributeView(name);
 	}
 
-	@Override
+	/**
+     * Returns the file store attribute view of the specified type for the nested file store.
+     * 
+     * @param type the class object representing the type of the file store attribute view
+     * @return the file store attribute view of the specified type
+     * @throws UnsupportedOperationException if the attribute view is not available for the nested file store
+     * @throws IllegalArgumentException if the specified type is null
+     * @throws ClassCastException if the specified type does not implement the FileStoreAttributeView interface
+     */
+    @Override
 	public <V extends FileStoreAttributeView> V getFileStoreAttributeView(Class<V> type) {
 		return getJarPathFileStore().getFileStoreAttributeView(type);
 	}
 
-	@Override
+	/**
+     * Retrieves the value of the specified attribute from the NestedFileStore.
+     * 
+     * @param attribute the name of the attribute to retrieve
+     * @return the value of the specified attribute
+     * @throws IOException if an I/O error occurs while retrieving the attribute
+     * @throws UncheckedIOException if an unchecked I/O error occurs while retrieving the attribute
+     * @throws Throwable if the cause of the unchecked I/O error is a Throwable
+     */
+    @Override
 	public Object getAttribute(String attribute) throws IOException {
 		try {
 			return getJarPathFileStore().getAttribute(attribute);
@@ -94,7 +162,13 @@ class NestedFileStore extends FileStore {
 		}
 	}
 
-	protected FileStore getJarPathFileStore() {
+	/**
+     * Returns the file store for the JAR path of the file system.
+     * 
+     * @return the file store for the JAR path
+     * @throws UncheckedIOException if an I/O error occurs while retrieving the file store
+     */
+    protected FileStore getJarPathFileStore() {
 		try {
 			return Files.getFileStore(this.fileSystem.getJarPath());
 		}

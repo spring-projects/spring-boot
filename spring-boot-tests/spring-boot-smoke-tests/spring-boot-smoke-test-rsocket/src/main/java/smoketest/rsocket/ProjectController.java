@@ -22,10 +22,19 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
+/**
+ * ProjectController class.
+ */
 @Controller
 public class ProjectController {
 
-	@MessageMapping("find.project.{name}")
+	/**
+     * Finds a project with the given name.
+     *
+     * @param name the name of the project to find
+     * @return a Mono representing the found project
+     */
+    @MessageMapping("find.project.{name}")
 	public Mono<Project> findProject(@DestinationVariable String name) {
 		return Mono.just(new Project(name));
 	}

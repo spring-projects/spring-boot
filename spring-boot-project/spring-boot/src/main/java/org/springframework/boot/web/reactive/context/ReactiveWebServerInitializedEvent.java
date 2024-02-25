@@ -31,13 +31,24 @@ public class ReactiveWebServerInitializedEvent extends WebServerInitializedEvent
 
 	private final ReactiveWebServerApplicationContext applicationContext;
 
-	public ReactiveWebServerInitializedEvent(WebServer webServer,
+	/**
+     * Constructs a new ReactiveWebServerInitializedEvent with the specified web server and application context.
+     * 
+     * @param webServer the initialized web server
+     * @param applicationContext the initialized application context
+     */
+    public ReactiveWebServerInitializedEvent(WebServer webServer,
 			ReactiveWebServerApplicationContext applicationContext) {
 		super(webServer);
 		this.applicationContext = applicationContext;
 	}
 
-	@Override
+	/**
+     * Returns the application context associated with this event.
+     *
+     * @return the application context
+     */
+    @Override
 	public ReactiveWebServerApplicationContext getApplicationContext() {
 		return this.applicationContext;
 	}

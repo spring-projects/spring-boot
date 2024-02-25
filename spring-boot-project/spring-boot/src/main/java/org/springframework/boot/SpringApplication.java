@@ -296,13 +296,24 @@ public class SpringApplication {
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
-	private Class<?> deduceMainApplicationClass() {
+	/**
+     * Deduces the main application class.
+     * 
+     * @return The main application class, or null if not found.
+     */
+    private Class<?> deduceMainApplicationClass() {
 		return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 			.walk(this::findMainClass)
 			.orElse(null);
 	}
 
-	private Optional<Class<?>> findMainClass(Stream<StackFrame> stack) {
+	/**
+     * Finds the main class from the given stack of stack frames.
+     * 
+     * @param stack the stream of stack frames to search
+     * @return an Optional containing the main class if found, otherwise empty
+     */
+    private Optional<Class<?>> findMainClass(Stream<StackFrame> stack) {
 		return stack.filter((frame) -> Objects.equals(frame.getMethodName(), "main"))
 			.findFirst()
 			.map(StackWalker.StackFrame::getDeclaringClass);
@@ -354,13 +365,26 @@ public class SpringApplication {
 		return context;
 	}
 
-	private DefaultBootstrapContext createBootstrapContext() {
+	/**
+     * Creates a new {@link DefaultBootstrapContext} and initializes it with the registered {@link BootstrapRegistryInitializer}s.
+     * 
+     * @return the created {@link DefaultBootstrapContext}
+     */
+    private DefaultBootstrapContext createBootstrapContext() {
 		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 		this.bootstrapRegistryInitializers.forEach((initializer) -> initializer.initialize(bootstrapContext));
 		return bootstrapContext;
 	}
 
-	private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners,
+	/**
+     * Prepares the environment for the SpringApplication.
+     * 
+     * @param listeners the SpringApplicationRunListeners to be used
+     * @param bootstrapContext the DefaultBootstrapContext to be used
+     * @param applicationArguments the ApplicationArguments to be used
+     * @return the prepared ConfigurableEnvironment
+     */
+    private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners,
 			DefaultBootstrapContext bootstrapContext, ApplicationArguments applicationArguments) {
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
@@ -379,7 +403,13 @@ public class SpringApplication {
 		return environment;
 	}
 
-	private Class<? extends ConfigurableEnvironment> deduceEnvironmentClass() {
+	/**
+     * Deduces the class of the environment based on the web application type and the configured ApplicationContextFactory.
+     * If a specific environment class is not found, the default ApplicationEnvironment class is used.
+     * 
+     * @return The class of the environment to be used.
+     */
+    private Class<? extends ConfigurableEnvironment> deduceEnvironmentClass() {
 		Class<? extends ConfigurableEnvironment> environmentType = this.applicationContextFactory
 			.getEnvironmentType(this.webApplicationType);
 		if (environmentType == null && this.applicationContextFactory != ApplicationContextFactory.DEFAULT) {
@@ -391,7 +421,17 @@ public class SpringApplication {
 		return environmentType;
 	}
 
-	private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
+	/**
+     * Prepares the application context before it is fully initialized.
+     * 
+     * @param bootstrapContext the bootstrap context
+     * @param context the configurable application context
+     * @param environment the configurable environment
+     * @param listeners the application run listeners
+     * @param applicationArguments the application arguments
+     * @param printedBanner the printed banner
+     */
+    private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
 			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
@@ -432,7 +472,12 @@ public class SpringApplication {
 		listeners.contextLoaded(context);
 	}
 
-	private void addAotGeneratedInitializerIfNecessary(List<ApplicationContextInitializer<?>> initializers) {
+	/**
+     * Adds an AOT-generated initializer to the list of application context initializers if necessary.
+     * 
+     * @param initializers the list of application context initializers
+     */
+    private void addAotGeneratedInitializerIfNecessary(List<ApplicationContextInitializer<?>> initializers) {
 		if (AotDetector.useGeneratedArtifacts()) {
 			List<ApplicationContextInitializer<?>> aotInitializers = new ArrayList<>(
 					initializers.stream().filter(AotApplicationContextInitializer.class::isInstance).toList());
@@ -449,19 +494,41 @@ public class SpringApplication {
 		}
 	}
 
-	private void refreshContext(ConfigurableApplicationContext context) {
+	/**
+     * Refreshes the given application context.
+     * 
+     * @param context the configurable application context to refresh
+     */
+    private void refreshContext(ConfigurableApplicationContext context) {
 		if (this.registerShutdownHook) {
 			shutdownHook.registerApplicationContext(context);
 		}
 		refresh(context);
 	}
 
-	private void configureHeadlessProperty() {
+	/**
+     * Configures the headless property for the application.
+     * 
+     * This method sets the system property "java.awt.headless" to the value specified by the "headless" property of the SpringApplication object.
+     * If the "java.awt.headless" system property is already set, it will not be overridden.
+     * 
+     * @see System#setProperty(String, String)
+     * @see System#getProperty(String, String)
+     * 
+     * @since 1.0.0
+     */
+    private void configureHeadlessProperty() {
 		System.setProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
 				System.getProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, Boolean.toString(this.headless)));
 	}
 
-	private SpringApplicationRunListeners getRunListeners(String[] args) {
+	/**
+     * Retrieves the run listeners for the SpringApplication.
+     * 
+     * @param args the command line arguments passed to the SpringApplication
+     * @return the SpringApplicationRunListeners containing the run listeners
+     */
+    private SpringApplicationRunListeners getRunListeners(String[] args) {
 		ArgumentResolver argumentResolver = ArgumentResolver.of(SpringApplication.class, this);
 		argumentResolver = argumentResolver.and(String[].class, args);
 		List<SpringApplicationRunListener> listeners = getSpringFactoriesInstances(SpringApplicationRunListener.class,
@@ -475,15 +542,35 @@ public class SpringApplication {
 		return new SpringApplicationRunListeners(logger, listeners, this.applicationStartup);
 	}
 
-	private <T> List<T> getSpringFactoriesInstances(Class<T> type) {
+	/**
+     * Retrieve all instances of the specified type from the Spring Factories.
+     * 
+     * @param <T> the type of instances to retrieve
+     * @param type the class object representing the type of instances to retrieve
+     * @return a list of instances of the specified type
+     */
+    private <T> List<T> getSpringFactoriesInstances(Class<T> type) {
 		return getSpringFactoriesInstances(type, null);
 	}
 
-	private <T> List<T> getSpringFactoriesInstances(Class<T> type, ArgumentResolver argumentResolver) {
+	/**
+     * Retrieves instances of the specified type from the Spring factories.
+     * 
+     * @param <T> the type of instances to retrieve
+     * @param type the class object representing the type of instances to retrieve
+     * @param argumentResolver the argument resolver to use for resolving constructor arguments
+     * @return a list of instances of the specified type retrieved from the Spring factories
+     */
+    private <T> List<T> getSpringFactoriesInstances(Class<T> type, ArgumentResolver argumentResolver) {
 		return SpringFactoriesLoader.forDefaultResourceLocation(getClassLoader()).load(type, argumentResolver);
 	}
 
-	private ConfigurableEnvironment getOrCreateEnvironment() {
+	/**
+     * Returns the existing environment if it is already created, otherwise creates a new environment.
+     * 
+     * @return the existing or newly created ConfigurableEnvironment
+     */
+    private ConfigurableEnvironment getOrCreateEnvironment() {
 		if (this.environment != null) {
 			return this.environment;
 		}
@@ -565,7 +652,13 @@ public class SpringApplication {
 		}
 	}
 
-	private Banner printBanner(ConfigurableEnvironment environment) {
+	/**
+     * Prints the banner based on the specified environment.
+     * 
+     * @param environment the configurable environment
+     * @return the printed banner
+     */
+    private Banner printBanner(ConfigurableEnvironment environment) {
 		if (this.bannerMode == Banner.Mode.OFF) {
 			return null;
 		}
@@ -662,7 +755,13 @@ public class SpringApplication {
 		}
 	}
 
-	private List<String> quoteProfiles(String[] profiles) {
+	/**
+     * Quotes the given array of profiles by adding double quotes around each profile.
+     * 
+     * @param profiles the array of profiles to be quoted
+     * @return a list of quoted profiles
+     */
+    private List<String> quoteProfiles(String[] profiles) {
 		return Arrays.stream(profiles).map((profile) -> "\"" + profile + "\"").toList();
 	}
 
@@ -762,7 +861,13 @@ public class SpringApplication {
 	protected void afterRefresh(ConfigurableApplicationContext context, ApplicationArguments args) {
 	}
 
-	private void callRunners(ConfigurableApplicationContext context, ApplicationArguments args) {
+	/**
+     * Calls the runners in the specified application context in the order defined by their order values.
+     * 
+     * @param context the application context
+     * @param args the application arguments
+     */
+    private void callRunners(ConfigurableApplicationContext context, ApplicationArguments args) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		String[] beanNames = beanFactory.getBeanNamesForType(Runner.class);
 		Map<Runner, String> instancesToBeanNames = new IdentityHashMap<>();
@@ -774,14 +879,26 @@ public class SpringApplication {
 		instancesToBeanNames.keySet().stream().sorted(comparator).forEach((runner) -> callRunner(runner, args));
 	}
 
-	private OrderComparator getOrderComparator(ConfigurableListableBeanFactory beanFactory) {
+	/**
+     * Returns the OrderComparator for the given ConfigurableListableBeanFactory.
+     * 
+     * @param beanFactory the ConfigurableListableBeanFactory to get the OrderComparator for
+     * @return the OrderComparator for the given beanFactory
+     */
+    private OrderComparator getOrderComparator(ConfigurableListableBeanFactory beanFactory) {
 		Comparator<?> dependencyComparator = (beanFactory instanceof DefaultListableBeanFactory defaultListableBeanFactory)
 				? defaultListableBeanFactory.getDependencyComparator() : null;
 		return (dependencyComparator instanceof OrderComparator orderComparator) ? orderComparator
 				: AnnotationAwareOrderComparator.INSTANCE;
 	}
 
-	private void callRunner(Runner runner, ApplicationArguments args) {
+	/**
+     * Calls the specified runner with the given application arguments.
+     * 
+     * @param runner the runner to be called
+     * @param args the application arguments
+     */
+    private void callRunner(Runner runner, ApplicationArguments args) {
 		if (runner instanceof ApplicationRunner) {
 			callRunner(ApplicationRunner.class, runner, (applicationRunner) -> applicationRunner.run(args));
 		}
@@ -791,14 +908,31 @@ public class SpringApplication {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Calls the specified runner with the given type and runner object.
+     * 
+     * @param <R> the type of the runner
+     * @param type the class of the runner
+     * @param runner the runner object
+     * @param call the consumer function to be called with the runner object
+     * @throws IllegalStateException if the execution of the runner fails
+     */
+    @SuppressWarnings("unchecked")
 	private <R extends Runner> void callRunner(Class<R> type, Runner runner, ThrowingConsumer<R> call) {
 		call.throwing(
 				(message, ex) -> new IllegalStateException("Failed to execute " + ClassUtils.getShortName(type), ex))
 			.accept((R) runner);
 	}
 
-	private RuntimeException handleRunFailure(ConfigurableApplicationContext context, Throwable exception,
+	/**
+     * Handles the failure of running the application.
+     * 
+     * @param context the application context
+     * @param exception the exception that caused the failure
+     * @param listeners the run listeners
+     * @return a RuntimeException if the exception is an AbandonedRunException, otherwise an IllegalStateException
+     */
+    private RuntimeException handleRunFailure(ConfigurableApplicationContext context, Throwable exception,
 			SpringApplicationRunListeners listeners) {
 		if (exception instanceof AbandonedRunException abandonedRunException) {
 			return abandonedRunException;
@@ -825,7 +959,13 @@ public class SpringApplication {
 				: new IllegalStateException(exception);
 	}
 
-	private Collection<SpringBootExceptionReporter> getExceptionReporters(ConfigurableApplicationContext context) {
+	/**
+     * Retrieves a collection of SpringBootExceptionReporter instances.
+     * 
+     * @param context the configurable application context
+     * @return a collection of SpringBootExceptionReporter instances
+     */
+    private Collection<SpringBootExceptionReporter> getExceptionReporters(ConfigurableApplicationContext context) {
 		try {
 			ArgumentResolver argumentResolver = ArgumentResolver.of(ConfigurableApplicationContext.class, context);
 			return getSpringFactoriesInstances(SpringBootExceptionReporter.class, argumentResolver);
@@ -835,7 +975,16 @@ public class SpringApplication {
 		}
 	}
 
-	private void reportFailure(Collection<SpringBootExceptionReporter> exceptionReporters, Throwable failure) {
+	/**
+     * Reports a failure by iterating through a collection of SpringBootExceptionReporters and calling their
+     * reportException method. If a reporter successfully reports the exception, it is registered as a logged exception
+     * and the method returns. If no reporter is able to report the exception, the failure is logged using the logger
+     * and registered as a logged exception.
+     *
+     * @param exceptionReporters the collection of SpringBootExceptionReporters to iterate through
+     * @param failure the Throwable object representing the failure
+     */
+    private void reportFailure(Collection<SpringBootExceptionReporter> exceptionReporters, Throwable failure) {
 		try {
 			for (SpringBootExceptionReporter reporter : exceptionReporters) {
 				if (reporter.reportException(failure)) {
@@ -865,7 +1014,13 @@ public class SpringApplication {
 		}
 	}
 
-	private void handleExitCode(ConfigurableApplicationContext context, Throwable exception) {
+	/**
+     * Handles the exit code for the application.
+     * 
+     * @param context the configurable application context
+     * @param exception the throwable exception
+     */
+    private void handleExitCode(ConfigurableApplicationContext context, Throwable exception) {
 		int exitCode = getExitCodeFromException(context, exception);
 		if (exitCode != 0) {
 			if (context != null) {
@@ -878,7 +1033,14 @@ public class SpringApplication {
 		}
 	}
 
-	private int getExitCodeFromException(ConfigurableApplicationContext context, Throwable exception) {
+	/**
+     * Retrieves the exit code from the given exception.
+     * 
+     * @param context the configurable application context
+     * @param exception the throwable exception
+     * @return the exit code
+     */
+    private int getExitCodeFromException(ConfigurableApplicationContext context, Throwable exception) {
 		int exitCode = getExitCodeFromMappedException(context, exception);
 		if (exitCode == 0) {
 			exitCode = getExitCodeFromExitCodeGeneratorException(exception);
@@ -886,7 +1048,14 @@ public class SpringApplication {
 		return exitCode;
 	}
 
-	private int getExitCodeFromMappedException(ConfigurableApplicationContext context, Throwable exception) {
+	/**
+     * Retrieves the exit code from a mapped exception.
+     * 
+     * @param context the application context
+     * @param exception the exception to map
+     * @return the exit code
+     */
+    private int getExitCodeFromMappedException(ConfigurableApplicationContext context, Throwable exception) {
 		if (context == null || !context.isActive()) {
 			return 0;
 		}
@@ -896,7 +1065,14 @@ public class SpringApplication {
 		return generators.getExitCode();
 	}
 
-	private int getExitCodeFromExitCodeGeneratorException(Throwable exception) {
+	/**
+     * Returns the exit code from the given ExitCodeGeneratorException.
+     * 
+     * @param exception the Throwable object representing the ExitCodeGeneratorException
+     * @return the exit code obtained from the ExitCodeGenerator, or 0 if the exception is null
+     * @throws NullPointerException if the exception is null and does not have a cause
+     */
+    private int getExitCodeFromExitCodeGeneratorException(Throwable exception) {
 		if (exception == null) {
 			return 0;
 		}
@@ -906,14 +1082,25 @@ public class SpringApplication {
 		return getExitCodeFromExitCodeGeneratorException(exception.getCause());
 	}
 
-	SpringBootExceptionHandler getSpringBootExceptionHandler() {
+	/**
+     * Returns the SpringBootExceptionHandler for the current thread if it is the main thread.
+     * 
+     * @return the SpringBootExceptionHandler for the current thread if it is the main thread, otherwise null.
+     */
+    SpringBootExceptionHandler getSpringBootExceptionHandler() {
 		if (isMainThread(Thread.currentThread())) {
 			return SpringBootExceptionHandler.forCurrentThread();
 		}
 		return null;
 	}
 
-	private boolean isMainThread(Thread currentThread) {
+	/**
+     * Checks if the given thread is the main thread.
+     * 
+     * @param currentThread the thread to check
+     * @return true if the given thread is the main thread, false otherwise
+     */
+    private boolean isMainThread(Thread currentThread) {
 		return ("main".equals(currentThread.getName()) || "restartedMain".equals(currentThread.getName()))
 				&& "main".equals(currentThread.getThreadGroup().getName());
 	}
@@ -1458,13 +1645,26 @@ public class SpringApplication {
 		}
 	}
 
-	private static void close(ApplicationContext context) {
+	/**
+     * Closes the given ApplicationContext.
+     * 
+     * @param context the ApplicationContext to be closed
+     */
+    private static void close(ApplicationContext context) {
 		if (context instanceof ConfigurableApplicationContext closable) {
 			closable.close();
 		}
 	}
 
-	private static <E> Set<E> asUnmodifiableOrderedSet(Collection<E> elements) {
+	/**
+     * Returns an unmodifiable ordered set containing the elements of the specified collection.
+     * The elements are sorted based on their natural ordering or the ordering specified by the elements' annotations.
+     *
+     * @param elements the collection of elements to be added to the set
+     * @param <E> the type of elements in the set
+     * @return an unmodifiable ordered set containing the elements of the specified collection
+     */
+    private static <E> Set<E> asUnmodifiableOrderedSet(Collection<E> elements) {
 		List<E> list = new ArrayList<>(elements);
 		list.sort(AnnotationAwareOrderComparator.INSTANCE);
 		return new LinkedHashSet<>(list);
@@ -1482,7 +1682,13 @@ public class SpringApplication {
 
 		private final Set<Class<?>> sources;
 
-		Augmented(ThrowingConsumer<String[]> main, Set<Class<?>> sources) {
+		/**
+         * Executes the main method with the given throwing consumer and set of sources.
+         * 
+         * @param main the throwing consumer representing the main method
+         * @param sources the set of classes representing the sources
+         */
+        Augmented(ThrowingConsumer<String[]> main, Set<Class<?>> sources) {
 			this.main = main;
 			this.sources = Set.copyOf(sources);
 		}
@@ -1523,12 +1729,24 @@ public class SpringApplication {
 			private final List<ConfigurableApplicationContext> contexts = Collections
 				.synchronizedList(new ArrayList<>());
 
-			@Override
+			/**
+             * Called when the context is loaded.
+             * Adds the given context to the list of contexts.
+             *
+             * @param context the configurable application context
+             */
+            @Override
 			public void contextLoaded(ConfigurableApplicationContext context) {
 				this.contexts.add(context);
 			}
 
-			@Override
+			/**
+             * Returns the root application context from the list of contexts.
+             * 
+             * @return The root application context.
+             * @throws IllegalStateException if no root application context is located or if multiple root application contexts are located.
+             */
+            @Override
 			public ConfigurableApplicationContext getApplicationContext() {
 				List<ConfigurableApplicationContext> rootContexts = this.contexts.stream()
 					.filter((context) -> context.getParent() == null)
@@ -1567,25 +1785,53 @@ public class SpringApplication {
 
 		private final ConfigurableApplicationContext context;
 
-		PropertySourceOrderingBeanFactoryPostProcessor(ConfigurableApplicationContext context) {
+		/**
+         * Constructs a new PropertySourceOrderingBeanFactoryPostProcessor with the specified ConfigurableApplicationContext.
+         *
+         * @param context the ConfigurableApplicationContext to be used by the PropertySourceOrderingBeanFactoryPostProcessor
+         */
+        PropertySourceOrderingBeanFactoryPostProcessor(ConfigurableApplicationContext context) {
 			this.context = context;
 		}
 
-		@Override
+		/**
+         * Returns the order of this bean in the bean factory post-processor chain.
+         * The order is set to the highest precedence.
+         *
+         * @return the order of this bean
+         */
+        @Override
 		public int getOrder() {
 			return Ordered.HIGHEST_PRECEDENCE;
 		}
 
-		@Override
+		/**
+         * Moves the DefaultPropertiesPropertySource to the end of the property source list in the given bean factory.
+         * This method is called during the post-processing phase of the bean factory initialization.
+         *
+         * @param beanFactory the ConfigurableListableBeanFactory to process
+         * @throws BeansException if an error occurs during the bean factory post-processing
+         */
+        @Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 			DefaultPropertiesPropertySource.moveToEnd(this.context.getEnvironment());
 		}
 
 	}
 
-	static class SpringApplicationRuntimeHints extends BindableRuntimeHintsRegistrar {
+	/**
+     * SpringApplicationRuntimeHints class.
+     */
+    static class SpringApplicationRuntimeHints extends BindableRuntimeHintsRegistrar {
 
-		SpringApplicationRuntimeHints() {
+		/**
+         * Constructs a new SpringApplicationRuntimeHints object.
+         * 
+         * This constructor calls the constructor of the super class SpringApplication, passing the class SpringApplication.class as an argument.
+         * 
+         * @see SpringApplication
+         */
+        SpringApplicationRuntimeHints() {
 			super(SpringApplication.class);
 		}
 
@@ -1638,11 +1884,22 @@ public class SpringApplication {
 
 		private final SpringApplicationHook delegate;
 
-		private SingleUseSpringApplicationHook(SpringApplicationHook delegate) {
+		/**
+         * Constructs a new SingleUseSpringApplicationHook with the specified delegate.
+         * 
+         * @param delegate the delegate SpringApplicationHook to be used
+         */
+        private SingleUseSpringApplicationHook(SpringApplicationHook delegate) {
 			this.delegate = delegate;
 		}
 
-		@Override
+		/**
+         * Returns the run listener for the specified SpringApplication.
+         * 
+         * @param springApplication the SpringApplication instance
+         * @return the run listener if it has not been used before, null otherwise
+         */
+        @Override
 		public SpringApplicationRunListener getRunListener(SpringApplication springApplication) {
 			return this.used.compareAndSet(false, true) ? this.delegate.getRunListener(springApplication) : null;
 		}
@@ -1657,7 +1914,15 @@ public class SpringApplication {
 
 		private final AtomicReference<Thread> thread = new AtomicReference<>();
 
-		@Override
+		/**
+         * This method is an event listener that is triggered when an application context event occurs.
+         * It checks the type of the event and performs specific actions accordingly.
+         * If the event is a ContextRefreshedEvent, it starts a keep-alive thread.
+         * If the event is a ContextClosedEvent, it stops the keep-alive thread.
+         * 
+         * @param event The application context event that triggered this method.
+         */
+        @Override
 		public void onApplicationEvent(ApplicationContextEvent event) {
 			if (event instanceof ContextRefreshedEvent) {
 				startKeepAliveThread();
@@ -1667,7 +1932,16 @@ public class SpringApplication {
 			}
 		}
 
-		private void startKeepAliveThread() {
+		/**
+         * Starts a keep-alive thread.
+         * 
+         * This method creates a new thread that runs indefinitely, keeping the application alive.
+         * The thread is set as a non-daemon thread and named "keep-alive".
+         * 
+         * @throws None
+         * @return None
+         */
+        private void startKeepAliveThread() {
 			Thread thread = new Thread(() -> {
 				while (true) {
 					try {
@@ -1685,7 +1959,15 @@ public class SpringApplication {
 			}
 		}
 
-		private void stopKeepAliveThread() {
+		/**
+         * Stops the keep alive thread.
+         * 
+         * This method interrupts the keep alive thread, if it is running.
+         * 
+         * @throws SecurityException if a security manager exists and its checkAccess method doesn't allow the current thread to interrupt the keep alive thread.
+         * @see Thread#interrupt()
+         */
+        private void stopKeepAliveThread() {
 			Thread thread = this.thread.getAndSet(null);
 			if (thread == null) {
 				return;
@@ -1702,28 +1984,68 @@ public class SpringApplication {
 
 		private Duration timeTakenToStarted;
 
-		protected abstract long startTime();
+		/**
+         * Returns the start time of the startup process.
+         *
+         * @return the start time of the startup process
+         */
+        protected abstract long startTime();
 
-		protected abstract Long processUptime();
+		/**
+         * Returns the uptime of the system in milliseconds.
+         * 
+         * @return the uptime of the system in milliseconds
+         */
+        protected abstract Long processUptime();
 
-		protected abstract String action();
+		/**
+         * This method is declared as abstract and is meant to be overridden by subclasses.
+         * It performs a specific action and returns a String result.
+         *
+         * @return the result of the action as a String
+         */
+        protected abstract String action();
 
-		final Duration started() {
+		/**
+         * Returns the duration it took for the startup process to begin.
+         * 
+         * @return the duration it took for the startup process to begin
+         */
+        final Duration started() {
 			long now = System.currentTimeMillis();
 			this.timeTakenToStarted = Duration.ofMillis(now - startTime());
 			return this.timeTakenToStarted;
 		}
 
-		Duration timeTakenToStarted() {
+		/**
+         * Returns the duration of time taken for the startup process to begin.
+         *
+         * @return the duration of time taken for the startup process to begin
+         */
+        Duration timeTakenToStarted() {
 			return this.timeTakenToStarted;
 		}
 
-		private Duration ready() {
+		/**
+         * Calculates the duration between the current time and the start time of the application.
+         * 
+         * @return the duration between the current time and the start time
+         */
+        private Duration ready() {
 			long now = System.currentTimeMillis();
 			return Duration.ofMillis(now - startTime());
 		}
 
-		static Startup create() {
+		/**
+         * Creates a new instance of the Startup class.
+         * 
+         * This method checks if the classes "jdk.crac.management.CRaCMXBean" and "org.crac.management.CRaCMXBean" are present in the class loader.
+         * If both classes are present, it returns a new instance of the CoordinatedRestoreAtCheckpointStartup class.
+         * Otherwise, it returns a new instance of the StandardStartup class.
+         * 
+         * @return a new instance of the Startup class
+         */
+        static Startup create() {
 			ClassLoader classLoader = Startup.class.getClassLoader();
 			return (ClassUtils.isPresent("jdk.crac.management.CRaCMXBean", classLoader)
 					&& ClassUtils.isPresent("org.crac.management.CRaCMXBean", classLoader))
@@ -1739,12 +2061,22 @@ public class SpringApplication {
 
 		private final Long startTime = System.currentTimeMillis();
 
-		@Override
+		/**
+         * Returns the start time of the StandardStartup object.
+         *
+         * @return the start time of the StandardStartup object
+         */
+        @Override
 		protected long startTime() {
 			return this.startTime;
 		}
 
-		@Override
+		/**
+         * Returns the uptime of the current Java virtual machine in milliseconds.
+         * 
+         * @return the uptime of the Java virtual machine in milliseconds, or null if an error occurs
+         */
+        @Override
 		protected Long processUptime() {
 			try {
 				return ManagementFactory.getRuntimeMXBean().getUptime();
@@ -1754,7 +2086,12 @@ public class SpringApplication {
 			}
 		}
 
-		@Override
+		/**
+         * Returns the action performed by the StandardStartup class.
+         * 
+         * @return the action performed, which is "Started"
+         */
+        @Override
 		protected String action() {
 			return "Started";
 		}
@@ -1768,22 +2105,46 @@ public class SpringApplication {
 
 		private final StandardStartup fallback = new StandardStartup();
 
-		@Override
+		/**
+         * Returns the uptime since the last restore operation.
+         * 
+         * @return the uptime in milliseconds, or the fallback uptime if the uptime is negative
+         */
+        @Override
 		protected Long processUptime() {
 			long uptime = CRaCMXBean.getCRaCMXBean().getUptimeSinceRestore();
 			return (uptime >= 0) ? uptime : this.fallback.processUptime();
 		}
 
-		@Override
+		/**
+         * Performs an action based on the restore time.
+         * If the restore time is greater than or equal to 0, it returns "Restored".
+         * Otherwise, it delegates the action to the fallback object.
+         *
+         * @return the result of the action
+         */
+        @Override
 		protected String action() {
 			return (restoreTime() >= 0) ? "Restored" : this.fallback.action();
 		}
 
-		private long restoreTime() {
+		/**
+         * Returns the restore time in milliseconds.
+         * 
+         * @return the restore time in milliseconds
+         */
+        private long restoreTime() {
 			return CRaCMXBean.getCRaCMXBean().getRestoreTime();
 		}
 
-		@Override
+		/**
+         * Returns the start time for the coordinated restore at checkpoint startup.
+         * If the restore time is greater than or equal to 0, it returns the restore time.
+         * Otherwise, it returns the start time from the fallback.
+         *
+         * @return the start time for the coordinated restore at checkpoint startup
+         */
+        @Override
 		protected long startTime() {
 			long restoreTime = restoreTime();
 			return (restoreTime >= 0) ? restoreTime : this.fallback.startTime();
@@ -1801,18 +2162,37 @@ public class SpringApplication {
 
 		private final Map<?, String> instancesToBeanNames;
 
-		FactoryAwareOrderSourceProvider(ConfigurableBeanFactory beanFactory, Map<?, String> instancesToBeanNames) {
+		/**
+         * Constructs a new FactoryAwareOrderSourceProvider with the specified bean factory and instances to bean names mapping.
+         * 
+         * @param beanFactory the configurable bean factory to be used by the order source provider
+         * @param instancesToBeanNames a mapping of instances to their corresponding bean names
+         */
+        FactoryAwareOrderSourceProvider(ConfigurableBeanFactory beanFactory, Map<?, String> instancesToBeanNames) {
 			this.beanFactory = beanFactory;
 			this.instancesToBeanNames = instancesToBeanNames;
 		}
 
-		@Override
+		/**
+         * Retrieves the order source for the given object.
+         * 
+         * @param obj the object for which to retrieve the order source
+         * @return the order source for the given object, or null if not found
+         */
+        @Override
 		public Object getOrderSource(Object obj) {
 			String beanName = this.instancesToBeanNames.get(obj);
 			return (beanName != null) ? getOrderSource(beanName, obj.getClass()) : null;
 		}
 
-		private Object getOrderSource(String beanName, Class<?> instanceType) {
+		/**
+         * Retrieves the order source for a given bean name and instance type.
+         * 
+         * @param beanName the name of the bean
+         * @param instanceType the type of the instance
+         * @return an Object array containing the factory method and target type, or null if the bean definition does not exist
+         */
+        private Object getOrderSource(String beanName, Class<?> instanceType) {
 			try {
 				RootBeanDefinition beanDefinition = (RootBeanDefinition) this.beanFactory
 					.getMergedBeanDefinition(beanName);

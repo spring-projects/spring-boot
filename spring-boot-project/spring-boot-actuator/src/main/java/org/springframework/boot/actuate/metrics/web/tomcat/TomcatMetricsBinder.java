@@ -47,16 +47,35 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 
 	private volatile TomcatMetrics tomcatMetrics;
 
-	public TomcatMetricsBinder(MeterRegistry meterRegistry) {
+	/**
+     * Constructs a new TomcatMetricsBinder with the specified MeterRegistry and an empty list of additional tags.
+     *
+     * @param meterRegistry the MeterRegistry to bind Tomcat metrics to
+     */
+    public TomcatMetricsBinder(MeterRegistry meterRegistry) {
 		this(meterRegistry, Collections.emptyList());
 	}
 
-	public TomcatMetricsBinder(MeterRegistry meterRegistry, Iterable<Tag> tags) {
+	/**
+     * Constructs a new TomcatMetricsBinder with the specified MeterRegistry and tags.
+     *
+     * @param meterRegistry the MeterRegistry to bind the metrics to
+     * @param tags the tags to associate with the metrics
+     */
+    public TomcatMetricsBinder(MeterRegistry meterRegistry, Iterable<Tag> tags) {
 		this.meterRegistry = meterRegistry;
 		this.tags = tags;
 	}
 
-	@Override
+	/**
+     * This method is called when the application has started.
+     * It retrieves the application context from the event and finds the manager.
+     * It then creates a new instance of TomcatMetrics with the manager and tags provided.
+     * Finally, it binds the TomcatMetrics to the meter registry.
+     * 
+     * @param event The ApplicationStartedEvent that triggered this method
+     */
+    @Override
 	public void onApplicationEvent(ApplicationStartedEvent event) {
 		ApplicationContext applicationContext = event.getApplicationContext();
 		Manager manager = findManager(applicationContext);
@@ -64,7 +83,13 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 		this.tomcatMetrics.bindTo(this.meterRegistry);
 	}
 
-	private Manager findManager(ApplicationContext applicationContext) {
+	/**
+     * Finds the manager of the Tomcat web server in the given application context.
+     * 
+     * @param applicationContext the application context to search for the Tomcat web server
+     * @return the manager of the Tomcat web server, or null if not found
+     */
+    private Manager findManager(ApplicationContext applicationContext) {
 		if (applicationContext instanceof WebServerApplicationContext webServerApplicationContext) {
 			WebServer webServer = webServerApplicationContext.getWebServer();
 			if (webServer instanceof TomcatWebServer tomcatWebServer) {
@@ -77,7 +102,13 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 		return null;
 	}
 
-	private Context findContext(TomcatWebServer tomcatWebServer) {
+	/**
+     * Finds the first Context object in the given TomcatWebServer.
+     * 
+     * @param tomcatWebServer the TomcatWebServer to search for the Context object
+     * @return the first Context object found, or null if none is found
+     */
+    private Context findContext(TomcatWebServer tomcatWebServer) {
 		for (Container container : tomcatWebServer.getTomcat().getHost().findChildren()) {
 			if (container instanceof Context context) {
 				return context;
@@ -86,7 +117,11 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 		return null;
 	}
 
-	@Override
+	/**
+     * This method is called when the TomcatMetricsBinder is being destroyed.
+     * It closes the TomcatMetrics instance if it is not null.
+     */
+    @Override
 	public void destroy() {
 		if (this.tomcatMetrics != null) {
 			this.tomcatMetrics.close();

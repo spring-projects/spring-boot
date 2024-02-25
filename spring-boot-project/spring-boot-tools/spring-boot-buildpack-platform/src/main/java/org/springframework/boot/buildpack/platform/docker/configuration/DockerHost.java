@@ -30,25 +30,52 @@ public class DockerHost {
 
 	private final String certificatePath;
 
-	public DockerHost(String address) {
+	/**
+     * Constructs a new DockerHost object with the specified address.
+     * 
+     * @param address the address of the Docker host
+     */
+    public DockerHost(String address) {
 		this(address, false, null);
 	}
 
-	public DockerHost(String address, boolean secure, String certificatePath) {
+	/**
+     * Constructs a new DockerHost object with the specified address, secure flag, and certificate path.
+     * 
+     * @param address the address of the Docker host
+     * @param secure a boolean flag indicating whether the connection to the Docker host should be secure
+     * @param certificatePath the path to the certificate file for secure connection
+     */
+    public DockerHost(String address, boolean secure, String certificatePath) {
 		this.address = address;
 		this.secure = secure;
 		this.certificatePath = certificatePath;
 	}
 
-	public String getAddress() {
+	/**
+     * Returns the address of the Docker host.
+     *
+     * @return the address of the Docker host
+     */
+    public String getAddress() {
 		return this.address;
 	}
 
-	public boolean isSecure() {
+	/**
+     * Returns a boolean value indicating whether the Docker host is secure.
+     * 
+     * @return true if the Docker host is secure, false otherwise
+     */
+    public boolean isSecure() {
 		return this.secure;
 	}
 
-	public String getCertificatePath() {
+	/**
+     * Returns the path of the certificate file used by the DockerHost.
+     *
+     * @return the path of the certificate file
+     */
+    public String getCertificatePath() {
 		return this.certificatePath;
 	}
 

@@ -26,7 +26,12 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
  */
 class DataR2dbcTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataR2dbcTest> {
 
-	DataR2dbcTypeExcludeFilter(Class<?> testClass) {
+	/**
+     * Constructs a new DataR2dbcTypeExcludeFilter with the specified test class.
+     *
+     * @param testClass the test class to be excluded from R2DBC type filtering
+     */
+    DataR2dbcTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 

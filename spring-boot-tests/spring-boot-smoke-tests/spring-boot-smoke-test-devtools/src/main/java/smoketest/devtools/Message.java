@@ -16,6 +16,9 @@
 
 package smoketest.devtools;
 
+/**
+ * Message class.
+ */
 public final class Message {
 
 	/**
@@ -23,7 +26,10 @@ public final class Message {
 	 */
 	public static String MESSAGE = "Message";
 
-	private Message() {
+	/**
+     * Private constructor for the Message class.
+     */
+    private Message() {
 	}
 
 }

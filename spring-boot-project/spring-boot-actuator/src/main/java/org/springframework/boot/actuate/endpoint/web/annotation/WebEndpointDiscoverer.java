@@ -71,14 +71,31 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 		this.requestPredicateFactory = new RequestPredicateFactory(endpointMediaTypes);
 	}
 
-	@Override
+	/**
+     * Creates a new {@link ExposableWebEndpoint} based on the provided parameters.
+     * 
+     * @param endpointBean the bean representing the endpoint
+     * @param id the unique identifier for the endpoint
+     * @param enabledByDefault whether the endpoint is enabled by default
+     * @param operations the collection of operations supported by the endpoint
+     * @return the created {@link ExposableWebEndpoint}
+     */
+    @Override
 	protected ExposableWebEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
 			Collection<WebOperation> operations) {
 		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, id);
 		return new DiscoveredWebEndpoint(this, endpointBean, id, rootPath, enabledByDefault, operations);
 	}
 
-	@Override
+	/**
+     * Creates a new WebOperation object based on the provided endpointId, operationMethod, and invoker.
+     * 
+     * @param endpointId The identifier of the endpoint.
+     * @param operationMethod The method representing the discovered operation.
+     * @param invoker The invoker responsible for invoking the operation.
+     * @return The created WebOperation object.
+     */
+    @Override
 	protected WebOperation createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
 			OperationInvoker invoker) {
 		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, endpointId);
@@ -87,15 +104,30 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 		return new DiscoveredWebOperation(endpointId, operationMethod, invoker, requestPredicate);
 	}
 
-	@Override
+	/**
+     * Creates an operation key for the given web operation.
+     * 
+     * @param operation the web operation
+     * @return the operation key
+     */
+    @Override
 	protected OperationKey createOperationKey(WebOperation operation) {
 		return new OperationKey(operation.getRequestPredicate(),
 				() -> "web request predicate " + operation.getRequestPredicate());
 	}
 
-	static class WebEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * WebEndpointDiscovererRuntimeHints class.
+     */
+    static class WebEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
 
-		@Override
+		/**
+         * Registers the runtime hints for the WebEndpointDiscoverer class.
+         * 
+         * @param hints the runtime hints to register
+         * @param classLoader the class loader to use for reflection
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.reflection().registerType(WebEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 		}

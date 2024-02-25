@@ -75,59 +75,129 @@ public class JdbcSessionProperties {
 	 */
 	private SaveMode saveMode = SaveMode.ON_SET_ATTRIBUTE;
 
-	public String getSchema() {
+	/**
+     * Returns the schema associated with this JdbcSessionProperties object.
+     *
+     * @return the schema associated with this JdbcSessionProperties object
+     */
+    public String getSchema() {
 		return this.schema;
 	}
 
-	public void setSchema(String schema) {
+	/**
+     * Sets the schema for the JDBC session properties.
+     * 
+     * @param schema the schema to be set
+     */
+    public void setSchema(String schema) {
 		this.schema = schema;
 	}
 
-	public String getPlatform() {
+	/**
+     * Returns the platform of the JdbcSessionProperties.
+     * 
+     * @return the platform of the JdbcSessionProperties
+     */
+    public String getPlatform() {
 		return this.platform;
 	}
 
-	public void setPlatform(String platform) {
+	/**
+     * Sets the platform for the JDBC session properties.
+     * 
+     * @param platform the platform to set
+     */
+    public void setPlatform(String platform) {
 		this.platform = platform;
 	}
 
-	public String getTableName() {
+	/**
+     * Returns the name of the table associated with this JdbcSessionProperties object.
+     *
+     * @return the name of the table
+     */
+    public String getTableName() {
 		return this.tableName;
 	}
 
-	public void setTableName(String tableName) {
+	/**
+     * Sets the name of the table to be used in the JDBC session.
+     * 
+     * @param tableName the name of the table
+     */
+    public void setTableName(String tableName) {
 		this.tableName = tableName;
 	}
 
-	public String getCleanupCron() {
+	/**
+     * Returns the cleanup cron expression for the JDBC session properties.
+     *
+     * @return the cleanup cron expression
+     */
+    public String getCleanupCron() {
 		return this.cleanupCron;
 	}
 
-	public void setCleanupCron(String cleanupCron) {
+	/**
+     * Sets the cron expression for the cleanup task.
+     * 
+     * @param cleanupCron the cron expression for the cleanup task
+     */
+    public void setCleanupCron(String cleanupCron) {
 		this.cleanupCron = cleanupCron;
 	}
 
-	public DatabaseInitializationMode getInitializeSchema() {
+	/**
+     * Returns the initialization mode for the database schema.
+     * 
+     * @return the initialization mode for the database schema
+     */
+    public DatabaseInitializationMode getInitializeSchema() {
 		return this.initializeSchema;
 	}
 
-	public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
+	/**
+     * Sets the mode for initializing the database schema.
+     * 
+     * @param initializeSchema the mode for initializing the database schema
+     */
+    public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 		this.initializeSchema = initializeSchema;
 	}
 
-	public FlushMode getFlushMode() {
+	/**
+     * Returns the flush mode of this JdbcSessionProperties object.
+     * 
+     * @return the flush mode of this JdbcSessionProperties object
+     */
+    public FlushMode getFlushMode() {
 		return this.flushMode;
 	}
 
-	public void setFlushMode(FlushMode flushMode) {
+	/**
+     * Sets the flush mode for the JDBC session.
+     * 
+     * @param flushMode the flush mode to be set
+     */
+    public void setFlushMode(FlushMode flushMode) {
 		this.flushMode = flushMode;
 	}
 
-	public SaveMode getSaveMode() {
+	/**
+     * Returns the save mode for the JDBC session properties.
+     * 
+     * @return the save mode for the JDBC session properties
+     */
+    public SaveMode getSaveMode() {
 		return this.saveMode;
 	}
 
-	public void setSaveMode(SaveMode saveMode) {
+	/**
+     * Sets the save mode for the JDBC session properties.
+     * 
+     * @param saveMode the save mode to be set
+     */
+    public void setSaveMode(SaveMode saveMode) {
 		this.saveMode = saveMode;
 	}
 

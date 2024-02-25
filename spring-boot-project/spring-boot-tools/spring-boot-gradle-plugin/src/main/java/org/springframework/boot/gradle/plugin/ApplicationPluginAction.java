@@ -48,7 +48,12 @@ import org.springframework.boot.gradle.tasks.run.BootRun;
  */
 final class ApplicationPluginAction implements PluginApplicationAction {
 
-	@Override
+	/**
+     * Executes the given project by creating a boot distribution and configuring start scripts.
+     * 
+     * @param project The project to execute.
+     */
+    @Override
 	public void execute(Project project) {
 		JavaApplication javaApplication = project.getExtensions().getByType(JavaApplication.class);
 		DistributionContainer distributions = project.getExtensions().getByType(DistributionContainer.class);
@@ -64,19 +69,40 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		applyApplicationDefaultJvmArgsToRunTasks(project.getTasks(), javaApplication);
 	}
 
-	private void applyApplicationDefaultJvmArgsToRunTasks(TaskContainer tasks, JavaApplication javaApplication) {
+	/**
+     * Applies the default JVM arguments to the run tasks of the given task container and Java application.
+     * 
+     * @param tasks The task container containing the run tasks.
+     * @param javaApplication The Java application to apply the default JVM arguments to.
+     */
+    private void applyApplicationDefaultJvmArgsToRunTasks(TaskContainer tasks, JavaApplication javaApplication) {
 		applyApplicationDefaultJvmArgsToRunTask(tasks, javaApplication, SpringBootPlugin.BOOT_RUN_TASK_NAME);
 		applyApplicationDefaultJvmArgsToRunTask(tasks, javaApplication, SpringBootPlugin.BOOT_TEST_RUN_TASK_NAME);
 	}
 
-	private void applyApplicationDefaultJvmArgsToRunTask(TaskContainer tasks, JavaApplication javaApplication,
+	/**
+     * Applies the application default JVM arguments to the run task.
+     * 
+     * @param tasks The task container.
+     * @param javaApplication The Java application.
+     * @param taskName The name of the task.
+     */
+    private void applyApplicationDefaultJvmArgsToRunTask(TaskContainer tasks, JavaApplication javaApplication,
 			String taskName) {
 		tasks.named(taskName, BootRun.class)
 			.configure((bootRun) -> bootRun.getConventionMapping()
 				.map("jvmArgs", javaApplication::getApplicationDefaultJvmArgs));
 	}
 
-	private void configureCreateStartScripts(Project project, JavaApplication javaApplication,
+	/**
+     * Configures the creation of OS-specific start scripts for running the project as a Spring Boot application.
+     * 
+     * @param project The project to configure.
+     * @param javaApplication The Java application to run.
+     * @param distribution The distribution to generate start scripts for.
+     * @param createStartScripts The object responsible for creating start scripts.
+     */
+    private void configureCreateStartScripts(Project project, JavaApplication javaApplication,
 			Distribution distribution, CreateStartScripts createStartScripts) {
 		createStartScripts
 			.setDescription("Generates OS-specific start scripts to run the project as a Spring Boot application.");
@@ -96,22 +122,47 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		createStartScripts.getConventionMapping().map("defaultJvmOpts", javaApplication::getApplicationDefaultJvmArgs);
 	}
 
-	private CopySpec artifactFilesToLibCopySpec(Project project, Configuration configuration) {
+	/**
+     * Creates a CopySpec object to copy artifact files to the "lib" directory.
+     * 
+     * @param project the project object
+     * @param configuration the configuration object
+     * @return the CopySpec object with configured file permissions
+     */
+    private CopySpec artifactFilesToLibCopySpec(Project project, Configuration configuration) {
 		CopySpec copySpec = project.copySpec().into("lib").from(artifactFiles(configuration));
 		configureFilePermissions(copySpec, 0644);
 		return copySpec;
 	}
 
-	private Callable<FileCollection> artifactFiles(Configuration configuration) {
+	/**
+     * Returns a Callable object that retrieves the artifact files from the given configuration.
+     *
+     * @param configuration the configuration from which to retrieve the artifact files
+     * @return a Callable<FileCollection> object that retrieves the artifact files
+     */
+    private Callable<FileCollection> artifactFiles(Configuration configuration) {
 		return () -> configuration.getArtifacts().getFiles();
 	}
 
-	@Override
+	/**
+     * Returns the class of the plugin that this action is associated with.
+     *
+     * @return the class of the plugin
+     */
+    @Override
 	public Class<? extends Plugin<Project>> getPluginClass() {
 		return ApplicationPlugin.class;
 	}
 
-	private String loadResource(String name) {
+	/**
+     * Loads a resource with the given name.
+     * 
+     * @param name the name of the resource to load
+     * @return the content of the resource as a string
+     * @throws GradleException if the resource cannot be read
+     */
+    private String loadResource(String name) {
 		try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream(name))) {
 			char[] buffer = new char[4096];
 			int read;
@@ -126,7 +177,14 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		}
 	}
 
-	private void configureFilePermissions(CopySpec copySpec, int mode) {
+	/**
+     * Configures the file permissions for the given CopySpec.
+     * 
+     * @param copySpec The CopySpec to configure the file permissions for.
+     * @param mode The file mode to set.
+     * @throws GradleException If an error occurs while setting the file permissions.
+     */
+    private void configureFilePermissions(CopySpec copySpec, int mode) {
 		if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
 			try {
 				Method filePermissions = copySpec.getClass().getMethod("filePermissions", Action.class);

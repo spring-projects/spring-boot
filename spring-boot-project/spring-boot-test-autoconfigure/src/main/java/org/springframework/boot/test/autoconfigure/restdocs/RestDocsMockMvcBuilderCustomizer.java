@@ -38,14 +38,30 @@ public class RestDocsMockMvcBuilderCustomizer implements InitializingBean, MockM
 
 	private final RestDocumentationResultHandler resultHandler;
 
-	RestDocsMockMvcBuilderCustomizer(RestDocsProperties properties, MockMvcRestDocumentationConfigurer delegate,
+	/**
+     * Constructs a new RestDocsMockMvcBuilderCustomizer with the specified properties, delegate, and result handler.
+     * 
+     * @param properties the RestDocsProperties to be used
+     * @param delegate the MockMvcRestDocumentationConfigurer to be used
+     * @param resultHandler the RestDocumentationResultHandler to be used
+     */
+    RestDocsMockMvcBuilderCustomizer(RestDocsProperties properties, MockMvcRestDocumentationConfigurer delegate,
 			RestDocumentationResultHandler resultHandler) {
 		this.properties = properties;
 		this.delegate = delegate;
 		this.resultHandler = resultHandler;
 	}
 
-	@Override
+	/**
+     * {@inheritDoc}
+     * 
+     * Sets up the properties for the RestDocsMockMvcBuilderCustomizer.
+     * 
+     * This method is called after all the properties have been set, and it configures the URI scheme, host, and port based on the provided properties.
+     * 
+     * @throws Exception if an error occurs while setting up the properties
+     */
+    @Override
 	public void afterPropertiesSet() throws Exception {
 		PropertyMapper map = PropertyMapper.get();
 		RestDocsProperties properties = this.properties;
@@ -55,7 +71,12 @@ public class RestDocsMockMvcBuilderCustomizer implements InitializingBean, MockM
 		map.from(properties::getUriPort).whenNonNull().to(uri::withPort);
 	}
 
-	@Override
+	/**
+     * Customize the RestDocsMockMvcBuilder by applying the delegate builder and result handler.
+     * 
+     * @param builder the ConfigurableMockMvcBuilder to customize
+     */
+    @Override
 	public void customize(ConfigurableMockMvcBuilder<?> builder) {
 		builder.apply(this.delegate);
 		if (this.resultHandler != null) {

@@ -23,12 +23,21 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.web.context.WebApplicationContext;
 
+/**
+ * MyDemoBean class.
+ */
 public class MyDemoBean implements ApplicationListener<ApplicationStartedEvent> {
 
 	@SuppressWarnings("unused")
 	private ServletContext servletContext;
 
-	@Override
+	/**
+     * This method is called when the application is started.
+     * It retrieves the application context and sets the servlet context.
+     * 
+     * @param event The ApplicationStartedEvent object representing the application start event.
+     */
+    @Override
 	public void onApplicationEvent(ApplicationStartedEvent event) {
 		ApplicationContext applicationContext = event.getApplicationContext();
 		this.servletContext = ((WebApplicationContext) applicationContext).getServletContext();

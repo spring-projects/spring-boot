@@ -31,18 +31,34 @@ public class NonUniqueCacheException extends RuntimeException {
 
 	private final Collection<String> cacheManagerNames;
 
-	public NonUniqueCacheException(String cacheName, Collection<String> cacheManagerNames) {
+	/**
+     * Constructs a new NonUniqueCacheException with the specified cache name and cache manager names.
+     * 
+     * @param cacheName the name of the cache
+     * @param cacheManagerNames the collection of cache manager names
+     */
+    public NonUniqueCacheException(String cacheName, Collection<String> cacheManagerNames) {
 		super(String.format("Multiple caches named %s found, specify the 'cacheManager' to use: %s", cacheName,
 				cacheManagerNames));
 		this.cacheName = cacheName;
 		this.cacheManagerNames = Collections.unmodifiableCollection(cacheManagerNames);
 	}
 
-	public String getCacheName() {
+	/**
+     * Returns the name of the cache associated with this exception.
+     *
+     * @return the name of the cache
+     */
+    public String getCacheName() {
 		return this.cacheName;
 	}
 
-	public Collection<String> getCacheManagerNames() {
+	/**
+     * Returns a collection of cache manager names.
+     *
+     * @return a collection of cache manager names
+     */
+    public Collection<String> getCacheManagerNames() {
 		return this.cacheManagerNames;
 	}
 

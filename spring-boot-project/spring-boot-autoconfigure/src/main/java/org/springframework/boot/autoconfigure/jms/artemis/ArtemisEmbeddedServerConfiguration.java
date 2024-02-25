@@ -49,17 +49,37 @@ class ArtemisEmbeddedServerConfiguration {
 
 	private final ArtemisProperties properties;
 
-	ArtemisEmbeddedServerConfiguration(ArtemisProperties properties) {
+	/**
+     * Constructs a new instance of ArtemisEmbeddedServerConfiguration with the specified properties.
+     * 
+     * @param properties the ArtemisProperties object containing the configuration properties for the embedded server
+     */
+    ArtemisEmbeddedServerConfiguration(ArtemisProperties properties) {
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Generates the Artemis configuration based on the properties provided.
+     * If no existing bean is found, a new configuration is created using the ArtemisEmbeddedConfigurationFactory.
+     *
+     * @return the Artemis configuration
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	org.apache.activemq.artemis.core.config.Configuration artemisConfiguration() {
 		return new ArtemisEmbeddedConfigurationFactory(this.properties).createConfiguration();
 	}
 
-	@Bean(initMethod = "start", destroyMethod = "stop")
+	/**
+     * Creates and configures an instance of EmbeddedActiveMQ.
+     * 
+     * @param configuration           The Artemis core configuration.
+     * @param jmsConfiguration        The JMS configuration.
+     * @param configurationCustomizers The customizers for Artemis configuration.
+     * 
+     * @return The configured instance of EmbeddedActiveMQ.
+     */
+    @Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	EmbeddedActiveMQ embeddedActiveMq(org.apache.activemq.artemis.core.config.Configuration configuration,
 			JMSConfiguration jmsConfiguration,
@@ -83,7 +103,17 @@ class ArtemisEmbeddedServerConfiguration {
 		return embeddedActiveMq;
 	}
 
-	@Bean
+	/**
+     * Creates and configures a JMSConfiguration object for Artemis embedded server.
+     * If no JMSConfiguration bean is found, a new JMSConfigurationImpl object is created.
+     * The queue and topic configurations are retrieved from the provided queuesConfiguration and topicsConfiguration objects.
+     * The queue and topic configurations are also added from the embedded server properties.
+     * 
+     * @param queuesConfiguration - ObjectProvider of JMSQueueConfiguration objects
+     * @param topicsConfiguration - ObjectProvider of TopicConfiguration objects
+     * @return JMSConfiguration - the configured JMSConfiguration object
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	JMSConfiguration artemisJmsConfiguration(ObjectProvider<JMSQueueConfiguration> queuesConfiguration,
 			ObjectProvider<TopicConfiguration> topicsConfiguration) {
@@ -95,7 +125,13 @@ class ArtemisEmbeddedServerConfiguration {
 		return configuration;
 	}
 
-	private void addQueues(JMSConfiguration configuration, String[] queues) {
+	/**
+     * Adds the specified queues to the JMS configuration.
+     * 
+     * @param configuration the JMS configuration to add the queues to
+     * @param queues the names of the queues to be added
+     */
+    private void addQueues(JMSConfiguration configuration, String[] queues) {
 		boolean persistent = this.properties.getEmbedded().isPersistent();
 		for (String queue : queues) {
 			JMSQueueConfigurationImpl jmsQueueConfiguration = new JMSQueueConfigurationImpl();
@@ -106,7 +142,13 @@ class ArtemisEmbeddedServerConfiguration {
 		}
 	}
 
-	private void addTopics(JMSConfiguration configuration, String[] topics) {
+	/**
+     * Adds the specified topics to the JMS configuration.
+     * 
+     * @param configuration the JMS configuration to add the topics to
+     * @param topics the array of topics to be added
+     */
+    private void addTopics(JMSConfiguration configuration, String[] topics) {
 		for (String topic : topics) {
 			TopicConfigurationImpl topicConfiguration = new TopicConfigurationImpl();
 			topicConfiguration.setName(topic);

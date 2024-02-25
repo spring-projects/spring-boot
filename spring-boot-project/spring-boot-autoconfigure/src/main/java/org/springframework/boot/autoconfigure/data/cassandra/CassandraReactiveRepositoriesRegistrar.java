@@ -32,22 +32,40 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  */
 class CassandraReactiveRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
-	@Override
+	/**
+     * Returns the annotation class {@code EnableReactiveCassandraRepositories} that is used to enable reactive Cassandra repositories.
+     *
+     * @return the annotation class {@code EnableReactiveCassandraRepositories}
+     */
+    @Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableReactiveCassandraRepositories.class;
 	}
 
-	@Override
+	/**
+     * Returns the configuration class for enabling reactive Cassandra repositories.
+     * 
+     * @return the configuration class for enabling reactive Cassandra repositories
+     */
+    @Override
 	protected Class<?> getConfiguration() {
 		return EnableReactiveCassandraRepositoriesConfiguration.class;
 	}
 
-	@Override
+	/**
+     * Returns the repository configuration extension for Reactive Cassandra repositories.
+     *
+     * @return the ReactiveCassandraRepositoryConfigurationExtension
+     */
+    @Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new ReactiveCassandraRepositoryConfigurationExtension();
 	}
 
-	@EnableReactiveCassandraRepositories
+	/**
+     * EnableReactiveCassandraRepositoriesConfiguration class.
+     */
+    @EnableReactiveCassandraRepositories
 	private static final class EnableReactiveCassandraRepositoriesConfiguration {
 
 	}

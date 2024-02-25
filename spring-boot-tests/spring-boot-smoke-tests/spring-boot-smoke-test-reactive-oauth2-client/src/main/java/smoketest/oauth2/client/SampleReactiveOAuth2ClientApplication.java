@@ -19,10 +19,19 @@ package smoketest.oauth2.client;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleReactiveOAuth2ClientApplication class.
+ */
 @SpringBootApplication
 public class SampleReactiveOAuth2ClientApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring application by running the SampleReactiveOAuth2ClientApplication class.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleReactiveOAuth2ClientApplication.class);
 	}
 

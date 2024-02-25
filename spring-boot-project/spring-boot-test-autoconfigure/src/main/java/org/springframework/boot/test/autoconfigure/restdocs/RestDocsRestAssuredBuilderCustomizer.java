@@ -33,12 +33,24 @@ class RestDocsRestAssuredBuilderCustomizer implements InitializingBean {
 
 	private final RequestSpecification delegate;
 
-	RestDocsRestAssuredBuilderCustomizer(RestDocsProperties properties, RequestSpecification delegate) {
+	/**
+     * Constructs a new RestDocsRestAssuredBuilderCustomizer with the specified properties and delegate.
+     *
+     * @param properties the properties for configuring the RestDocsRestAssuredBuilderCustomizer
+     * @param delegate the delegate RequestSpecification to be used by the RestDocsRestAssuredBuilderCustomizer
+     */
+    RestDocsRestAssuredBuilderCustomizer(RestDocsProperties properties, RequestSpecification delegate) {
 		this.properties = properties;
 		this.delegate = delegate;
 	}
 
-	@Override
+	/**
+     * This method is called after all the properties have been set and is used to configure the RestDocsRestAssuredBuilderCustomizer.
+     * It sets the base URI and port for the RestDocsRestAssuredBuilderCustomizer based on the properties provided.
+     * 
+     * @throws Exception if an error occurs while setting the properties
+     */
+    @Override
 	public void afterPropertiesSet() throws Exception {
 		PropertyMapper map = PropertyMapper.get();
 		String host = this.properties.getUriHost();

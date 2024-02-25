@@ -20,10 +20,18 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
+/**
+ * ExampleHealthIndicator class.
+ */
 @Component
 public class ExampleHealthIndicator implements HealthIndicator {
 
-	@Override
+	/**
+     * Returns the health status of the application.
+     * 
+     * @return the health status of the application
+     */
+    @Override
 	public Health health() {
 		return Health.up().withDetail("counter", 42).build();
 	}

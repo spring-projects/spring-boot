@@ -115,38 +115,82 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private ObjectMapper objectMapper;
 
-	public ConfigurationPropertiesReportEndpoint(Iterable<SanitizingFunction> sanitizingFunctions, Show showValues) {
+	/**
+     * Constructs a new ConfigurationPropertiesReportEndpoint with the specified sanitizing functions and show values.
+     * 
+     * @param sanitizingFunctions an Iterable of SanitizingFunction objects representing the sanitizing functions to be used
+     * @param showValues a Show object representing the show values to be used
+     */
+    public ConfigurationPropertiesReportEndpoint(Iterable<SanitizingFunction> sanitizingFunctions, Show showValues) {
 		this.sanitizer = new Sanitizer(sanitizingFunctions);
 		this.showValues = showValues;
 	}
 
-	@Override
+	/**
+     * Set the application context for this ConfigurationPropertiesReportEndpoint.
+     * 
+     * @param context the ApplicationContext to set
+     * @throws BeansException if the context cannot be set
+     */
+    @Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		this.context = context;
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves the configuration properties descriptor.
+     * 
+     * @return The configuration properties descriptor.
+     */
+    @ReadOperation
 	public ConfigurationPropertiesDescriptor configurationProperties() {
 		boolean showUnsanitized = this.showValues.isShown(true);
 		return getConfigurationProperties(showUnsanitized);
 	}
 
-	ConfigurationPropertiesDescriptor getConfigurationProperties(boolean showUnsanitized) {
+	/**
+     * Retrieves the configuration properties descriptor.
+     * 
+     * @param showUnsanitized a boolean value indicating whether to show unsanitized properties
+     * @return the configuration properties descriptor
+     */
+    ConfigurationPropertiesDescriptor getConfigurationProperties(boolean showUnsanitized) {
 		return getConfigurationProperties(this.context, (bean) -> true, showUnsanitized);
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves the configuration properties with the specified prefix.
+     * 
+     * @param prefix The prefix used to filter the configuration properties.
+     * @return The descriptor containing the configuration properties with the specified prefix.
+     */
+    @ReadOperation
 	public ConfigurationPropertiesDescriptor configurationPropertiesWithPrefix(@Selector String prefix) {
 		boolean showUnsanitized = this.showValues.isShown(true);
 		return getConfigurationProperties(prefix, showUnsanitized);
 	}
 
-	ConfigurationPropertiesDescriptor getConfigurationProperties(String prefix, boolean showUnsanitized) {
+	/**
+     * Retrieves the configuration properties descriptor for the given prefix.
+     * 
+     * @param prefix The prefix to filter the configuration properties by.
+     * @param showUnsanitized Flag indicating whether to include unsanitized properties in the result.
+     * @return The configuration properties descriptor matching the given prefix.
+     */
+    ConfigurationPropertiesDescriptor getConfigurationProperties(String prefix, boolean showUnsanitized) {
 		return getConfigurationProperties(this.context, (bean) -> bean.getAnnotation().prefix().startsWith(prefix),
 				showUnsanitized);
 	}
 
-	private ConfigurationPropertiesDescriptor getConfigurationProperties(ApplicationContext context,
+	/**
+     * Retrieves the configuration properties for the given application context.
+     * 
+     * @param context                The application context from which to retrieve the configuration properties.
+     * @param beanFilterPredicate    A predicate used to filter the configuration properties beans.
+     * @param showUnsanitized        A flag indicating whether to show unsanitized configuration properties.
+     * @return                       The descriptor containing the configuration properties for the given context.
+     */
+    private ConfigurationPropertiesDescriptor getConfigurationProperties(ApplicationContext context,
 			Predicate<ConfigurationPropertiesBean> beanFilterPredicate, boolean showUnsanitized) {
 		ObjectMapper mapper = getObjectMapper();
 		Map<String, ContextConfigurationPropertiesDescriptor> contexts = new HashMap<>();
@@ -159,7 +203,13 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return new ConfigurationPropertiesDescriptor(contexts);
 	}
 
-	private ObjectMapper getObjectMapper() {
+	/**
+     * Returns the ObjectMapper instance used for JSON serialization and deserialization.
+     * If the ObjectMapper instance is not yet initialized, it will be created with the configured settings.
+     *
+     * @return the ObjectMapper instance
+     */
+    private ObjectMapper getObjectMapper() {
 		if (this.objectMapper == null) {
 			JsonMapper.Builder builder = JsonMapper.builder();
 			configureJsonMapper(builder);
@@ -187,7 +237,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		builder.addModule(new ConfigurationPropertiesModule());
 	}
 
-	private void applyConfigurationPropertiesFilter(JsonMapper.Builder builder) {
+	/**
+     * Applies the configuration properties filter to the provided JsonMapper builder.
+     * This filter is used to include only the properties annotated with @ConfigurationProperties
+     * when serializing objects to JSON.
+     *
+     * @param builder the JsonMapper builder to apply the filter to
+     */
+    private void applyConfigurationPropertiesFilter(JsonMapper.Builder builder) {
 		builder.annotationIntrospector(new ConfigurationPropertiesAnnotationIntrospector());
 		builder
 			.filterProvider(new SimpleFilterProvider().setDefaultFilter(new ConfigurationPropertiesPropertyFilter()));
@@ -203,7 +260,16 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		builder.serializerFactory(factory);
 	}
 
-	private ContextConfigurationPropertiesDescriptor describeBeans(ObjectMapper mapper, ApplicationContext context,
+	/**
+     * Describes the beans in the application context that are annotated with @ConfigurationProperties.
+     * 
+     * @param mapper                The ObjectMapper used for serialization.
+     * @param context               The ApplicationContext containing the beans.
+     * @param beanFilterPredicate   The predicate used to filter the beans.
+     * @param showUnsanitized       Flag indicating whether to show unsanitized values.
+     * @return                      The descriptor containing the configuration properties of the beans.
+     */
+    private ContextConfigurationPropertiesDescriptor describeBeans(ObjectMapper mapper, ApplicationContext context,
 			Predicate<ConfigurationPropertiesBean> beanFilterPredicate, boolean showUnsanitized) {
 		Map<String, ConfigurationPropertiesBean> beans = ConfigurationPropertiesBean.getAll(context);
 		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = beans.values()
@@ -215,7 +281,15 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				(context.getParent() != null) ? context.getParent().getId() : null);
 	}
 
-	private ConfigurationPropertiesBeanDescriptor describeBean(ObjectMapper mapper, ConfigurationPropertiesBean bean,
+	/**
+     * Describes a ConfigurationPropertiesBean by serializing its properties and inputs.
+     * 
+     * @param mapper           the ObjectMapper used for serialization
+     * @param bean             the ConfigurationPropertiesBean to describe
+     * @param showUnsanitized  a flag indicating whether to show unsanitized values
+     * @return                 a ConfigurationPropertiesBeanDescriptor containing the serialized properties and inputs
+     */
+    private ConfigurationPropertiesBeanDescriptor describeBean(ObjectMapper mapper, ConfigurationPropertiesBean bean,
 			boolean showUnsanitized) {
 		String prefix = bean.getAnnotation().prefix();
 		Map<String, Object> serialized = safeSerialize(mapper, bean.getInstance(), prefix);
@@ -267,7 +341,15 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return map;
 	}
 
-	private Object sanitizeWithPropertySourceIfPresent(String qualifiedKey, Object value, boolean showUnsanitized) {
+	/**
+     * Sanitizes the given value with the property source if present.
+     * 
+     * @param qualifiedKey the qualified key of the property
+     * @param value the value to be sanitized
+     * @param showUnsanitized flag indicating whether to show unsanitized values
+     * @return the sanitized value
+     */
+    private Object sanitizeWithPropertySourceIfPresent(String qualifiedKey, Object value, boolean showUnsanitized) {
 		ConfigurationPropertyName currentName = getCurrentName(qualifiedKey);
 		ConfigurationProperty candidate = getCandidate(currentName);
 		PropertySource<?> propertySource = getPropertySource(candidate);
@@ -279,7 +361,13 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return this.sanitizer.sanitize(data, showUnsanitized);
 	}
 
-	private PropertySource<?> getPropertySource(ConfigurationProperty configurationProperty) {
+	/**
+     * Retrieves the PropertySource associated with the given ConfigurationProperty.
+     * 
+     * @param configurationProperty the ConfigurationProperty to retrieve the PropertySource for
+     * @return the PropertySource associated with the given ConfigurationProperty, or null if the ConfigurationProperty is null or if no PropertySource is found
+     */
+    private PropertySource<?> getPropertySource(ConfigurationProperty configurationProperty) {
 		if (configurationProperty == null) {
 			return null;
 		}
@@ -288,11 +376,23 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return (underlyingSource instanceof PropertySource<?>) ? (PropertySource<?>) underlyingSource : null;
 	}
 
-	private ConfigurationPropertyName getCurrentName(String qualifiedKey) {
+	/**
+     * Returns the current name of the configuration property based on the provided qualified key.
+     * 
+     * @param qualifiedKey the qualified key of the configuration property
+     * @return the current name of the configuration property
+     */
+    private ConfigurationPropertyName getCurrentName(String qualifiedKey) {
 		return ConfigurationPropertyName.adapt(qualifiedKey, '.');
 	}
 
-	private ConfigurationProperty getCandidate(ConfigurationPropertyName currentName) {
+	/**
+     * Retrieves the candidate ConfigurationProperty for the given ConfigurationPropertyName.
+     * 
+     * @param currentName the ConfigurationPropertyName for which the candidate ConfigurationProperty is to be retrieved
+     * @return the candidate ConfigurationProperty, or null if not found
+     */
+    private ConfigurationProperty getCandidate(ConfigurationPropertyName currentName) {
 		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.context);
 		if (bound == null) {
 			return null;
@@ -304,7 +404,15 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return candidate;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Sanitizes the given list of objects by replacing sensitive information with placeholders.
+     * 
+     * @param prefix           the prefix to be used for generating the sanitized names
+     * @param list             the list of objects to be sanitized
+     * @param showUnsanitized  a flag indicating whether to show unsanitized values in the sanitized list
+     * @return                 the sanitized list of objects
+     */
+    @SuppressWarnings("unchecked")
 	private List<Object> sanitize(String prefix, List<Object> list, boolean showUnsanitized) {
 		List<Object> sanitized = new ArrayList<>();
 		int index = 0;
@@ -323,7 +431,15 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return sanitized;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Retrieves the inputs from the given map and returns a new map with the inputs augmented.
+     * 
+     * @param prefix           the prefix to be added to the qualified key
+     * @param map              the map containing the inputs
+     * @param showUnsanitized  a flag indicating whether to show unsanitized inputs
+     * @return                 a new map with the inputs augmented
+     */
+    @SuppressWarnings("unchecked")
 	private Map<String, Object> getInputs(String prefix, Map<String, Object> map, boolean showUnsanitized) {
 		Map<String, Object> augmented = new LinkedHashMap<>(map);
 		map.forEach((key, value) -> {
@@ -341,7 +457,15 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return augmented;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Retrieves the inputs from the given list and returns a new list with the inputs augmented.
+     * 
+     * @param prefix           the prefix to be added to the input names
+     * @param list             the list of objects containing the inputs
+     * @param showUnsanitized  a boolean indicating whether to show unsanitized inputs
+     * @return                 a new list with the inputs augmented
+     */
+    @SuppressWarnings("unchecked")
 	private List<Object> getInputs(String prefix, List<Object> list, boolean showUnsanitized) {
 		List<Object> augmented = new ArrayList<>();
 		int index = 0;
@@ -360,7 +484,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return augmented;
 	}
 
-	private Map<String, Object> applyInput(String qualifiedKey, boolean showUnsanitized) {
+	/**
+     * Applies the input to the specified qualified key and returns a map of the sanitized input.
+     * 
+     * @param qualifiedKey the qualified key to apply the input to
+     * @param showUnsanitized a boolean indicating whether to show unsanitized data
+     * @return a map of the sanitized input
+     */
+    private Map<String, Object> applyInput(String qualifiedKey, boolean showUnsanitized) {
 		ConfigurationPropertyName currentName = getCurrentName(qualifiedKey);
 		ConfigurationProperty candidate = getCandidate(currentName);
 		PropertySource<?> propertySource = getPropertySource(candidate);
@@ -372,7 +503,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return Collections.emptyMap();
 	}
 
-	private Map<String, Object> getInput(ConfigurationProperty candidate, Object sanitizedValue) {
+	/**
+     * Returns a map containing the input details of a configuration property.
+     * 
+     * @param candidate the configuration property to get the input details for
+     * @param sanitizedValue the sanitized value of the configuration property
+     * @return a map containing the input details of the configuration property
+     */
+    private Map<String, Object> getInput(ConfigurationProperty candidate, Object sanitizedValue) {
 		Map<String, Object> input = new LinkedHashMap<>();
 		Origin origin = Origin.from(candidate);
 		List<Origin> originParents = Origin.parentsFrom(candidate);
@@ -384,7 +522,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return input;
 	}
 
-	private Object stringifyIfNecessary(Object value) {
+	/**
+     * Converts the given value to a string if necessary.
+     * 
+     * @param value the value to be converted
+     * @return the converted value as a string, or the original value if it is null, a primitive or wrapper type, or a string
+     * @throws NullPointerException if the value is null
+     */
+    private Object stringifyIfNecessary(Object value) {
 		if (value == null || ClassUtils.isPrimitiveOrWrapper(value.getClass()) || value instanceof String) {
 			return value;
 		}
@@ -394,7 +539,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return "Complex property value " + value.getClass().getName();
 	}
 
-	private String getQualifiedKey(String prefix, String key) {
+	/**
+     * Returns the qualified key by concatenating the prefix and key.
+     * 
+     * @param prefix the prefix to be added to the key (optional)
+     * @param key the key to be qualified
+     * @return the qualified key
+     */
+    private String getQualifiedKey(String prefix, String key) {
 		return (prefix.isEmpty() ? prefix : prefix + ".") + key;
 	}
 
@@ -404,7 +556,16 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	private static final class ConfigurationPropertiesAnnotationIntrospector extends JacksonAnnotationIntrospector {
 
-		@Override
+		/**
+         * Overrides the {@code findFilterId} method in the parent class.
+         * 
+         * This method is used to find the filter ID for the given annotated element.
+         * If the filter ID is not found, it defaults to {@code CONFIGURATION_PROPERTIES_FILTER_ID}.
+         * 
+         * @param a the annotated element
+         * @return the filter ID for the annotated element
+         */
+        @Override
 		public Object findFilterId(Annotated a) {
 			Object id = super.findFilterId(a);
 			if (id == null) {
@@ -429,21 +590,49 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private static final Log logger = LogFactory.getLog(ConfigurationPropertiesPropertyFilter.class);
 
-		@Override
+		/**
+         * Determines whether to include the specified BeanPropertyWriter in the filtering process.
+         * 
+         * @param writer the BeanPropertyWriter to be evaluated
+         * @return true if the BeanPropertyWriter should be included, false otherwise
+         */
+        @Override
 		protected boolean include(BeanPropertyWriter writer) {
 			return include(writer.getFullName().getSimpleName());
 		}
 
-		@Override
+		/**
+         * Determines whether to include the specified PropertyWriter in the filtering process.
+         * 
+         * @param writer the PropertyWriter to be included
+         * @return true if the PropertyWriter should be included, false otherwise
+         */
+        @Override
 		protected boolean include(PropertyWriter writer) {
 			return include(writer.getFullName().getSimpleName());
 		}
 
-		private boolean include(String name) {
+		/**
+         * Checks if the given name should be included based on the filter criteria.
+         * 
+         * @param name the name to be checked
+         * @return {@code true} if the name should be included, {@code false} otherwise
+         */
+        private boolean include(String name) {
 			return !name.startsWith("$$");
 		}
 
-		@Override
+		/**
+         * Serializes the given object as a field using the provided JsonGenerator and SerializerProvider.
+         * This method is overridden to handle self-referential properties and skip them during serialization.
+         * 
+         * @param pojo     The object to be serialized as a field.
+         * @param jgen     The JsonGenerator used for serialization.
+         * @param provider The SerializerProvider used for serialization.
+         * @param writer   The PropertyWriter representing the property to be serialized.
+         * @throws Exception if an error occurs during serialization.
+         */
+        @Override
 		public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider provider,
 				PropertyWriter writer) throws Exception {
 			if (writer instanceof BeanPropertyWriter beanPropertyWriter) {
@@ -474,7 +663,12 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	private static final class ConfigurationPropertiesModule extends SimpleModule {
 
-		private ConfigurationPropertiesModule() {
+		/**
+         * Constructs a new ConfigurationPropertiesModule.
+         * This module is responsible for configuring the properties of the application.
+         * It adds a serializer for the DataSize class, using the ToStringSerializer instance.
+         */
+        private ConfigurationPropertiesModule() {
 			addSerializer(DataSize.class, ToStringSerializer.instance);
 		}
 
@@ -487,7 +681,17 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
 
-		@Override
+		/**
+         * This method is used to change the properties of a bean during serialization.
+         * It takes in the serialization configuration, bean description, and the list of bean property writers.
+         * It returns a new list of bean property writers with the modified properties.
+         *
+         * @param config The serialization configuration.
+         * @param beanDesc The bean description.
+         * @param beanProperties The list of bean property writers.
+         * @return The modified list of bean property writers.
+         */
+        @Override
 		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
 				List<BeanPropertyWriter> beanProperties) {
 			List<BeanPropertyWriter> result = new ArrayList<>();
@@ -502,7 +706,15 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			return result;
 		}
 
-		private boolean isCandidate(BeanDescription beanDesc, BeanPropertyWriter writer, Constructor<?> constructor) {
+		/**
+         * Checks if the given writer is a candidate for serialization based on the provided bean description and constructor.
+         * 
+         * @param beanDesc    The bean description of the object being serialized.
+         * @param writer      The bean property writer being checked.
+         * @param constructor The constructor of the object being serialized.
+         * @return true if the writer is a candidate for serialization, false otherwise.
+         */
+        private boolean isCandidate(BeanDescription beanDesc, BeanPropertyWriter writer, Constructor<?> constructor) {
 			if (constructor != null) {
 				Parameter[] parameters = constructor.getParameters();
 				String[] names = PARAMETER_NAME_DISCOVERER.getParameterNames(constructor);
@@ -522,7 +734,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			return isReadable(beanDesc, writer);
 		}
 
-		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
+		/**
+         * Determines if a property is readable based on the provided bean description and writer.
+         * 
+         * @param beanDesc the bean description
+         * @param writer the bean property writer
+         * @return true if the property is readable, false otherwise
+         */
+        private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
 			Class<?> parentType = beanDesc.getType().getRawClass();
 			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = findSetter(beanDesc, writer);
@@ -536,7 +755,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 					|| Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type);
 		}
 
-		private AnnotatedMethod findSetter(BeanDescription beanDesc, BeanPropertyWriter writer) {
+		/**
+         * Finds the setter method for a given BeanPropertyWriter in a BeanDescription.
+         * 
+         * @param beanDesc the BeanDescription object representing the bean class
+         * @param writer the BeanPropertyWriter object representing the property
+         * @return the AnnotatedMethod object representing the setter method, or null if not found
+         */
+        private AnnotatedMethod findSetter(BeanDescription beanDesc, BeanPropertyWriter writer) {
 			String name = "set" + determineAccessorSuffix(writer.getName());
 			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = beanDesc.findMethod(name, new Class<?>[] { type });
@@ -572,11 +798,21 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private final Map<String, ContextConfigurationPropertiesDescriptor> contexts;
 
-		ConfigurationPropertiesDescriptor(Map<String, ContextConfigurationPropertiesDescriptor> contexts) {
+		/**
+         * Constructs a new ConfigurationPropertiesDescriptor with the specified contexts.
+         *
+         * @param contexts a map of context names to ContextConfigurationPropertiesDescriptor objects
+         */
+        ConfigurationPropertiesDescriptor(Map<String, ContextConfigurationPropertiesDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
-		public Map<String, ContextConfigurationPropertiesDescriptor> getContexts() {
+		/**
+         * Returns the map of context configuration properties descriptors.
+         *
+         * @return the map of context configuration properties descriptors
+         */
+        public Map<String, ContextConfigurationPropertiesDescriptor> getContexts() {
 			return this.contexts;
 		}
 
@@ -592,17 +828,35 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private final String parentId;
 
-		private ContextConfigurationPropertiesDescriptor(Map<String, ConfigurationPropertiesBeanDescriptor> beans,
+		/**
+         * Constructs a new instance of the {@code ContextConfigurationPropertiesDescriptor} class with the specified parameters.
+         * 
+         * @param beans
+         *            a {@code Map} containing the bean descriptors for the configuration properties
+         * @param parentId
+         *            the ID of the parent configuration properties descriptor
+         */
+        private ContextConfigurationPropertiesDescriptor(Map<String, ConfigurationPropertiesBeanDescriptor> beans,
 				String parentId) {
 			this.beans = beans;
 			this.parentId = parentId;
 		}
 
-		public Map<String, ConfigurationPropertiesBeanDescriptor> getBeans() {
+		/**
+         * Returns the map of beans in the context configuration properties.
+         *
+         * @return the map of beans, where the key is the bean name and the value is the bean descriptor
+         */
+        public Map<String, ConfigurationPropertiesBeanDescriptor> getBeans() {
 			return this.beans;
 		}
 
-		public String getParentId() {
+		/**
+         * Returns the parent ID of the ContextConfigurationPropertiesDescriptor.
+         *
+         * @return the parent ID of the ContextConfigurationPropertiesDescriptor
+         */
+        public String getParentId() {
 			return this.parentId;
 		}
 
@@ -619,22 +873,44 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private final Map<String, Object> inputs;
 
-		private ConfigurationPropertiesBeanDescriptor(String prefix, Map<String, Object> properties,
+		/**
+         * Constructs a new ConfigurationPropertiesBeanDescriptor with the specified prefix, properties, and inputs.
+         * 
+         * @param prefix the prefix to be used for the properties
+         * @param properties the map of properties to be set
+         * @param inputs the map of inputs to be set
+         */
+        private ConfigurationPropertiesBeanDescriptor(String prefix, Map<String, Object> properties,
 				Map<String, Object> inputs) {
 			this.prefix = prefix;
 			this.properties = properties;
 			this.inputs = inputs;
 		}
 
-		public String getPrefix() {
+		/**
+         * Returns the prefix value of the ConfigurationPropertiesBeanDescriptor.
+         *
+         * @return the prefix value of the ConfigurationPropertiesBeanDescriptor
+         */
+        public String getPrefix() {
 			return this.prefix;
 		}
 
-		public Map<String, Object> getProperties() {
+		/**
+         * Returns the properties of the ConfigurationPropertiesBeanDescriptor.
+         * 
+         * @return a Map containing the properties of the ConfigurationPropertiesBeanDescriptor
+         */
+        public Map<String, Object> getProperties() {
 			return this.properties;
 		}
 
-		public Map<String, Object> getInputs() {
+		/**
+         * Returns the inputs of the ConfigurationPropertiesBeanDescriptor.
+         *
+         * @return a Map containing the inputs of the ConfigurationPropertiesBeanDescriptor
+         */
+        public Map<String, Object> getInputs() {
 			return this.inputs;
 		}
 

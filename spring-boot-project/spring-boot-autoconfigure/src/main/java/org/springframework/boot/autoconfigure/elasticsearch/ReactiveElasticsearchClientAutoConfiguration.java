@@ -45,7 +45,14 @@ import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchCl
 		ElasticsearchClientConfigurations.ElasticsearchTransportConfiguration.class })
 public class ReactiveElasticsearchClientAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of ReactiveElasticsearchClient if there is no existing bean of the same type.
+     * This method is conditionally executed only if there is a bean of type ElasticsearchTransport present.
+     * 
+     * @param transport the ElasticsearchTransport bean used for creating the ReactiveElasticsearchClient
+     * @return a new instance of ReactiveElasticsearchClient
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(ElasticsearchTransport.class)
 	ReactiveElasticsearchClient reactiveElasticsearchClient(ElasticsearchTransport transport) {

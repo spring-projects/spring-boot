@@ -55,7 +55,12 @@ public class EntityScanPackages {
 
 	private final List<String> packageNames;
 
-	EntityScanPackages(String... packageNames) {
+	/**
+     * Scans the specified package names for entities.
+     * 
+     * @param packageNames the names of the packages to scan for entities
+     */
+    EntityScanPackages(String... packageNames) {
 		List<String> packages = new ArrayList<>();
 		for (String name : packageNames) {
 			if (StringUtils.hasText(name)) {
@@ -127,16 +132,33 @@ public class EntityScanPackages {
 
 		private final Environment environment;
 
-		Registrar(Environment environment) {
+		/**
+         * Constructor for the Registrar class.
+         * 
+         * @param environment the environment to be set for the Registrar
+         */
+        Registrar(Environment environment) {
 			this.environment = environment;
 		}
 
-		@Override
+		/**
+         * Register bean definitions based on the provided annotation metadata and bean definition registry.
+         * 
+         * @param metadata the annotation metadata
+         * @param registry the bean definition registry
+         */
+        @Override
 		public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 			register(registry, getPackagesToScan(metadata));
 		}
 
-		private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
+		/**
+         * Retrieves the packages to scan for entities based on the provided annotation metadata.
+         * 
+         * @param metadata the annotation metadata containing the EntityScan annotation attributes
+         * @return a set of package names to scan for entities
+         */
+        private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
 			Set<String> packagesToScan = new LinkedHashSet<>();
@@ -159,17 +181,30 @@ public class EntityScanPackages {
 
 	}
 
-	static class EntityScanPackagesBeanDefinition extends GenericBeanDefinition {
+	/**
+     * EntityScanPackagesBeanDefinition class.
+     */
+    static class EntityScanPackagesBeanDefinition extends GenericBeanDefinition {
 
 		private final Set<String> packageNames = new LinkedHashSet<>();
 
-		EntityScanPackagesBeanDefinition(Collection<String> packageNames) {
+		/**
+         * Constructs a new EntityScanPackagesBeanDefinition with the specified package names.
+         * 
+         * @param packageNames the collection of package names to be added
+         */
+        EntityScanPackagesBeanDefinition(Collection<String> packageNames) {
 			setBeanClass(EntityScanPackages.class);
 			setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			addPackageNames(packageNames);
 		}
 
-		private void addPackageNames(Collection<String> additionalPackageNames) {
+		/**
+         * Adds additional package names to the existing collection of package names.
+         * 
+         * @param additionalPackageNames the collection of additional package names to be added
+         */
+        private void addPackageNames(Collection<String> additionalPackageNames) {
 			this.packageNames.addAll(additionalPackageNames);
 			getConstructorArgumentValues().addIndexedArgumentValue(0, StringUtils.toStringArray(this.packageNames));
 		}

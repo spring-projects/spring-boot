@@ -22,6 +22,9 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * MyMessagingProperties class.
+ */
 @ConfigurationProperties(prefix = "my.messaging")
 public class MyMessagingProperties {
 
@@ -34,15 +37,30 @@ public class MyMessagingProperties {
 		return this.addresses;
 	}
 
-	public void setAddresses(List<String> addresses) {
+	/**
+     * Sets the list of addresses for messaging.
+     * 
+     * @param addresses the list of addresses to be set
+     */
+    public void setAddresses(List<String> addresses) {
 		this.addresses = addresses;
 	}
 
-	public ContainerType getContainerType() {
+	/**
+     * Returns the container type of the messaging properties.
+     * 
+     * @return the container type of the messaging properties
+     */
+    public ContainerType getContainerType() {
 		return this.containerType;
 	}
 
-	public void setContainerType(ContainerType containerType) {
+	/**
+     * Sets the container type for the messaging properties.
+     * 
+     * @param containerType the container type to be set
+     */
+    public void setContainerType(ContainerType containerType) {
 		this.containerType = containerType;
 	}
 	// @fold:off

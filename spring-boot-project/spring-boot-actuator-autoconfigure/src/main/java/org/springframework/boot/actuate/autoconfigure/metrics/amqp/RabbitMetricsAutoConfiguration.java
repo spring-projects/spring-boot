@@ -43,7 +43,13 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnBean({ org.springframework.amqp.rabbit.connection.ConnectionFactory.class, MeterRegistry.class })
 public class RabbitMetricsAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a RabbitConnectionFactoryMetricsPostProcessor bean.
+     * 
+     * @param applicationContext the ApplicationContext used for creating the bean
+     * @return the RabbitConnectionFactoryMetricsPostProcessor bean
+     */
+    @Bean
 	public static RabbitConnectionFactoryMetricsPostProcessor rabbitConnectionFactoryMetricsPostProcessor(
 			ApplicationContext applicationContext) {
 		return new RabbitConnectionFactoryMetricsPostProcessor(applicationContext);

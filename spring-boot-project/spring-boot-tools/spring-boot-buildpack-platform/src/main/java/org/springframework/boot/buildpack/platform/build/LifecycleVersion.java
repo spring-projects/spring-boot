@@ -37,13 +37,26 @@ class LifecycleVersion implements Comparable<LifecycleVersion> {
 
 	private final int patch;
 
-	LifecycleVersion(int major, int minor, int patch) {
+	/**
+     * Constructs a new instance of the LifecycleVersion class with the specified major, minor, and patch versions.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @param patch the patch version number
+     */
+    LifecycleVersion(int major, int minor, int patch) {
 		this.major = major;
 		this.minor = minor;
 		this.patch = patch;
 	}
 
-	@Override
+	/**
+     * Compares this LifecycleVersion object with the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -59,7 +72,13 @@ class LifecycleVersion implements Comparable<LifecycleVersion> {
 		return result;
 	}
 
-	@Override
+	/**
+     * Returns a hash code value for the object. This method overrides the default implementation of the hashCode() method.
+     * The hash code is calculated based on the major, minor, and patch values of the LifecycleVersion object.
+     *
+     * @return the hash code value for the object
+     */
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -69,7 +88,12 @@ class LifecycleVersion implements Comparable<LifecycleVersion> {
 		return result;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the version in the format "vX.Y.Z".
+     *
+     * @return the string representation of the version
+     */
+    @Override
 	public String toString() {
 		return "v" + this.major + "." + this.minor + "." + this.patch;
 	}
@@ -84,7 +108,14 @@ class LifecycleVersion implements Comparable<LifecycleVersion> {
 		return compareTo(other) >= 0;
 	}
 
-	@Override
+	/**
+     * Compares this LifecycleVersion object with the specified object for order.
+     * 
+     * @param other the object to be compared
+     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object
+     * @throws NullPointerException if the specified object is null
+     */
+    @Override
 	public int compareTo(LifecycleVersion other) {
 		return COMPARATOR.compare(this, other);
 	}

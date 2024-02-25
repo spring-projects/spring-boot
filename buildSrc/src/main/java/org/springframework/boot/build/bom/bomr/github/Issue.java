@@ -37,22 +37,45 @@ public class Issue {
 
 	private final State state;
 
-	Issue(RestTemplate rest, int number, String title, State state) {
+	/**
+     * Creates a new Issue object with the specified parameters.
+     * 
+     * @param rest the RestTemplate object used for making REST API calls
+     * @param number the issue number
+     * @param title the title of the issue
+     * @param state the state of the issue
+     */
+    Issue(RestTemplate rest, int number, String title, State state) {
 		this.rest = rest;
 		this.number = number;
 		this.title = title;
 		this.state = state;
 	}
 
-	public int getNumber() {
+	/**
+     * Returns the number associated with this Issue.
+     *
+     * @return the number associated with this Issue
+     */
+    public int getNumber() {
 		return this.number;
 	}
 
-	public String getTitle() {
+	/**
+     * Returns the title of the issue.
+     *
+     * @return the title of the issue
+     */
+    public String getTitle() {
 		return this.title;
 	}
 
-	public State getState() {
+	/**
+     * Returns the state of the issue.
+     * 
+     * @return the state of the issue
+     */
+    public State getState() {
 		return this.state;
 	}
 
@@ -77,7 +100,14 @@ public class Issue {
 		 */
 		CLOSED;
 
-		static State of(String state) {
+		/**
+     * Returns the State object corresponding to the given state string.
+     * 
+     * @param state the state string to be converted to a State object
+     * @return the State object corresponding to the given state string
+     * @throws IllegalArgumentException if the given state string is unknown
+     */
+    static State of(String state) {
 			if ("open".equals(state)) {
 				return OPEN;
 			}

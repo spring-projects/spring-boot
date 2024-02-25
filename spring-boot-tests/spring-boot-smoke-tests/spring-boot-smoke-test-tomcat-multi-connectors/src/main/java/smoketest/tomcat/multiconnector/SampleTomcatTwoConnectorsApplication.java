@@ -33,20 +33,37 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class SampleTomcatTwoConnectorsApplication {
 
-	@Bean
+	/**
+     * Creates and configures a Tomcat servlet container with two connectors.
+     * 
+     * @return The configured Tomcat servlet container.
+     */
+    @Bean
 	public ServletWebServerFactory servletContainer() {
 		TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
 		tomcat.addAdditionalTomcatConnectors(createStandardConnector());
 		return tomcat;
 	}
 
-	private Connector createStandardConnector() {
+	/**
+     * Creates a standard connector using the "org.apache.coyote.http11.Http11NioProtocol" protocol.
+     * The port is set to 0, which means the operating system will assign an available port.
+     * 
+     * @return the created Connector object
+     */
+    private Connector createStandardConnector() {
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 		connector.setPort(0);
 		return connector;
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by running the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleTomcatTwoConnectorsApplication.class, args);
 	}
 

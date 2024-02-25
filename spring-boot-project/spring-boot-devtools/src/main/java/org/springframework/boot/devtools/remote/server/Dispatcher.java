@@ -42,7 +42,14 @@ public class Dispatcher {
 
 	private final List<HandlerMapper> mappers;
 
-	public Dispatcher(AccessManager accessManager, Collection<HandlerMapper> mappers) {
+	/**
+     * Constructs a new Dispatcher with the specified AccessManager and collection of HandlerMappers.
+     * 
+     * @param accessManager the AccessManager to be used by the Dispatcher (must not be null)
+     * @param mappers the collection of HandlerMappers to be used by the Dispatcher (must not be null)
+     * @throws IllegalArgumentException if either accessManager or mappers is null
+     */
+    public Dispatcher(AccessManager accessManager, Collection<HandlerMapper> mappers) {
 		Assert.notNull(accessManager, "AccessManager must not be null");
 		Assert.notNull(mappers, "Mappers must not be null");
 		this.accessManager = accessManager;
@@ -68,7 +75,17 @@ public class Dispatcher {
 		return false;
 	}
 
-	private void handle(Handler handler, ServerHttpRequest request, ServerHttpResponse response) throws IOException {
+	/**
+     * Handles the incoming request by checking if the request is allowed based on the access manager.
+     * If the request is not allowed, sets the response status code to HttpStatus.FORBIDDEN.
+     * Otherwise, delegates the handling of the request to the provided handler.
+     *
+     * @param handler  the handler responsible for handling the request
+     * @param request  the incoming server HTTP request
+     * @param response the server HTTP response
+     * @throws IOException if an I/O error occurs while handling the request
+     */
+    private void handle(Handler handler, ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		if (!this.accessManager.isAllowed(request)) {
 			response.setStatusCode(HttpStatus.FORBIDDEN);
 			return;

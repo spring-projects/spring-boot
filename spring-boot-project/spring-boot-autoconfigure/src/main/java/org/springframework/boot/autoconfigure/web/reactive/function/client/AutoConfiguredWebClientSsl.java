@@ -34,17 +34,36 @@ class AutoConfiguredWebClientSsl implements WebClientSsl {
 
 	private final SslBundles sslBundles;
 
-	AutoConfiguredWebClientSsl(ClientHttpConnectorFactory<?> clientHttpConnectorFactory, SslBundles sslBundles) {
+	/**
+     * Constructs a new AutoConfiguredWebClientSsl with the specified clientHttpConnectorFactory and sslBundles.
+     * 
+     * @param clientHttpConnectorFactory the clientHttpConnectorFactory to be used for creating the WebClient
+     * @param sslBundles the sslBundles containing the SSL certificates and configurations
+     */
+    AutoConfiguredWebClientSsl(ClientHttpConnectorFactory<?> clientHttpConnectorFactory, SslBundles sslBundles) {
 		this.clientHttpConnectorFactory = clientHttpConnectorFactory;
 		this.sslBundles = sslBundles;
 	}
 
-	@Override
+	/**
+     * Returns a Consumer that configures the WebClient.Builder with SSL settings from the specified bundle.
+     * 
+     * @param bundleName the name of the SSL bundle
+     * @return a Consumer that configures the WebClient.Builder with SSL settings
+     */
+    @Override
 	public Consumer<WebClient.Builder> fromBundle(String bundleName) {
 		return fromBundle(this.sslBundles.getBundle(bundleName));
 	}
 
-	@Override
+	/**
+     * Creates a Consumer function that configures the WebClient.Builder with the provided SslBundle.
+     * The SslBundle contains the necessary SSL configuration for the WebClient.
+     * 
+     * @param bundle the SslBundle containing the SSL configuration
+     * @return a Consumer function that configures the WebClient.Builder
+     */
+    @Override
 	public Consumer<WebClient.Builder> fromBundle(SslBundle bundle) {
 		return (builder) -> {
 			ClientHttpConnector connector = this.clientHttpConnectorFactory.createClientHttpConnector(bundle);

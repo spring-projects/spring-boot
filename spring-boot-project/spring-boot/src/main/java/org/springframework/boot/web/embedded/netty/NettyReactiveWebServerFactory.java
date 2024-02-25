@@ -60,14 +60,28 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private Shutdown shutdown;
 
-	public NettyReactiveWebServerFactory() {
+	/**
+     * Constructs a new NettyReactiveWebServerFactory.
+     */
+    public NettyReactiveWebServerFactory() {
 	}
 
-	public NettyReactiveWebServerFactory(int port) {
+	/**
+     * Constructs a new NettyReactiveWebServerFactory with the specified port.
+     *
+     * @param port the port number to bind the server to
+     */
+    public NettyReactiveWebServerFactory(int port) {
 		super(port);
 	}
 
-	@Override
+	/**
+     * Returns a {@link WebServer} instance using Netty as the underlying server implementation.
+     * 
+     * @param httpHandler the {@link HttpHandler} to be used for handling HTTP requests
+     * @return a {@link WebServer} instance
+     */
+    @Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		HttpServer httpServer = createHttpServer();
 		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(httpHandler);
@@ -77,7 +91,16 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return webServer;
 	}
 
-	NettyWebServer createNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
+	/**
+     * Creates a new NettyWebServer instance with the given parameters.
+     *
+     * @param httpServer        the HttpServer to be used by the NettyWebServer
+     * @param handlerAdapter    the ReactorHttpHandlerAdapter to be used by the NettyWebServer
+     * @param lifecycleTimeout  the duration for the server's lifecycle timeout
+     * @param shutdown          the Shutdown instance to be used by the NettyWebServer
+     * @return                  a new NettyWebServer instance
+     */
+    NettyWebServer createNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
 			Duration lifecycleTimeout, Shutdown shutdown) {
 		return new NettyWebServer(httpServer, handlerAdapter, lifecycleTimeout, shutdown, this.resourceFactory);
 	}
@@ -148,17 +171,32 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		this.resourceFactory = resourceFactory;
 	}
 
-	@Override
+	/**
+     * Sets the shutdown hook for the Netty Reactive Web Server.
+     * 
+     * @param shutdown the shutdown hook to be set
+     */
+    @Override
 	public void setShutdown(Shutdown shutdown) {
 		this.shutdown = shutdown;
 	}
 
-	@Override
+	/**
+     * Returns the shutdown object associated with this NettyReactiveWebServerFactory.
+     *
+     * @return the shutdown object
+     */
+    @Override
 	public Shutdown getShutdown() {
 		return this.shutdown;
 	}
 
-	private HttpServer createHttpServer() {
+	/**
+     * Creates an instance of HttpServer.
+     * 
+     * @return the created HttpServer instance
+     */
+    private HttpServer createHttpServer() {
 		HttpServer server = HttpServer.create().bindAddress(this::getListenAddress);
 		if (Ssl.isEnabled(getSsl())) {
 			server = customizeSslConfiguration(server);
@@ -171,7 +209,13 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return applyCustomizers(server);
 	}
 
-	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
+	/**
+     * Customizes the SSL configuration of the given {@link HttpServer} instance.
+     * 
+     * @param httpServer the {@link HttpServer} instance to customize
+     * @return the customized {@link HttpServer} instance
+     */
+    private HttpServer customizeSslConfiguration(HttpServer httpServer) {
 		SslServerCustomizer customizer = new SslServerCustomizer(getHttp2(), getSsl().getClientAuth(), getSslBundle());
 		String bundleName = getSsl().getBundle();
 		if (StringUtils.hasText(bundleName)) {
@@ -180,7 +224,12 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return customizer.apply(httpServer);
 	}
 
-	private HttpProtocol[] listProtocols() {
+	/**
+     * Returns an array of supported HTTP protocols.
+     * 
+     * @return an array of supported HTTP protocols
+     */
+    private HttpProtocol[] listProtocols() {
 		List<HttpProtocol> protocols = new ArrayList<>();
 		protocols.add(HttpProtocol.HTTP11);
 		if (getHttp2() != null && getHttp2().isEnabled()) {
@@ -194,14 +243,27 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return protocols.toArray(new HttpProtocol[0]);
 	}
 
-	private InetSocketAddress getListenAddress() {
+	/**
+     * Returns the listen address for the server.
+     * If the address is not null, it creates a new InetSocketAddress using the host address and port.
+     * If the address is null, it creates a new InetSocketAddress using only the port.
+     *
+     * @return the listen address for the server
+     */
+    private InetSocketAddress getListenAddress() {
 		if (getAddress() != null) {
 			return new InetSocketAddress(getAddress().getHostAddress(), getPort());
 		}
 		return new InetSocketAddress(getPort());
 	}
 
-	private HttpServer applyCustomizers(HttpServer server) {
+	/**
+     * Applies the customizers to the given HttpServer.
+     * 
+     * @param server the HttpServer to apply the customizers to
+     * @return the HttpServer with the customizers applied
+     */
+    private HttpServer applyCustomizers(HttpServer server) {
 		for (NettyServerCustomizer customizer : this.serverCustomizers) {
 			server = customizer.apply(server);
 		}

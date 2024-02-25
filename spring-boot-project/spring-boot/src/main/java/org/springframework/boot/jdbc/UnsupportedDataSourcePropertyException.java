@@ -27,11 +27,23 @@ import java.util.function.Supplier;
  */
 public class UnsupportedDataSourcePropertyException extends RuntimeException {
 
-	UnsupportedDataSourcePropertyException(String message) {
+	/**
+     * Constructs a new UnsupportedDataSourcePropertyException with the specified detail message.
+     *
+     * @param message the detail message
+     */
+    UnsupportedDataSourcePropertyException(String message) {
 		super(message);
 	}
 
-	static void throwIf(boolean test, Supplier<String> message) {
+	/**
+     * Throws an {@link UnsupportedDataSourcePropertyException} if the given test condition is true.
+     *
+     * @param test the boolean condition to test
+     * @param message a supplier that provides the error message to be used in the exception
+     * @throws UnsupportedDataSourcePropertyException if the test condition is true
+     */
+    static void throwIf(boolean test, Supplier<String> message) {
 		if (test) {
 			throw new UnsupportedDataSourcePropertyException(message.get());
 		}

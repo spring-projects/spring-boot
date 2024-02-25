@@ -49,16 +49,34 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	private final ClassPathIndexFile classPathIndex;
 
-	public ExecutableArchiveLauncher() throws Exception {
+	/**
+     * Constructs a new ExecutableArchiveLauncher.
+     * 
+     * @throws Exception if an error occurs during the creation of the ExecutableArchiveLauncher.
+     */
+    public ExecutableArchiveLauncher() throws Exception {
 		this(Archive.create(Launcher.class));
 	}
 
-	protected ExecutableArchiveLauncher(Archive archive) throws Exception {
+	/**
+     * Constructs a new ExecutableArchiveLauncher with the specified Archive.
+     * 
+     * @param archive the Archive to be used by the launcher
+     * @throws Exception if an error occurs during the construction of the launcher
+     */
+    protected ExecutableArchiveLauncher(Archive archive) throws Exception {
 		this.archive = archive;
 		this.classPathIndex = getClassPathIndex(this.archive);
 	}
 
-	ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
+	/**
+     * Retrieves the class path index file for the given archive.
+     * 
+     * @param archive the archive to retrieve the class path index from
+     * @return the class path index file, or null if the archive is not exploded
+     * @throws IOException if an I/O error occurs while retrieving the class path index file
+     */
+    ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
 		if (!archive.isExploded()) {
 			return null; // Regular archives already have a defined order
 		}
@@ -66,14 +84,29 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		return ClassPathIndexFile.loadIfPossible(archive.getRootDirectory(), location);
 	}
 
-	private String getClassPathIndexFileLocation(Archive archive) throws IOException {
+	/**
+     * Returns the location of the classpath index file for the given archive.
+     * 
+     * @param archive the archive for which to retrieve the classpath index file location
+     * @return the location of the classpath index file
+     * @throws IOException if an I/O error occurs while retrieving the manifest or attributes
+     */
+    private String getClassPathIndexFileLocation(Archive archive) throws IOException {
 		Manifest manifest = archive.getManifest();
 		Attributes attributes = (manifest != null) ? manifest.getMainAttributes() : null;
 		String location = (attributes != null) ? attributes.getValue(BOOT_CLASSPATH_INDEX_ATTRIBUTE) : null;
 		return (location != null) ? location : getEntryPathPrefix() + DEFAULT_CLASSPATH_INDEX_FILE_NAME;
 	}
 
-	@Override
+	/**
+     * Creates a custom class loader for the given collection of URLs.
+     * If the classPathIndex is not null, it adds the URLs from the classPathIndex to the provided URLs.
+     * 
+     * @param urls the collection of URLs to create the class loader with
+     * @return the created class loader
+     * @throws Exception if an error occurs while creating the class loader
+     */
+    @Override
 	protected ClassLoader createClassLoader(Collection<URL> urls) throws Exception {
 		if (this.classPathIndex != null) {
 			urls = new ArrayList<>(urls);
@@ -82,12 +115,24 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		return super.createClassLoader(urls);
 	}
 
-	@Override
+	/**
+     * Returns the archive associated with this ExecutableArchiveLauncher.
+     *
+     * @return the archive associated with this ExecutableArchiveLauncher
+     */
+    @Override
 	protected final Archive getArchive() {
 		return this.archive;
 	}
 
-	@Override
+	/**
+     * Returns the main class specified in the manifest of the executable archive.
+     * 
+     * @return the main class name
+     * @throws Exception if an error occurs while retrieving the main class
+     * @throws IllegalStateException if no 'Start-Class' manifest entry is specified in the executable archive
+     */
+    @Override
 	protected String getMainClass() throws Exception {
 		Manifest manifest = this.archive.getManifest();
 		String mainClass = (manifest != null) ? manifest.getMainAttributes().getValue(START_CLASS_ATTRIBUTE) : null;
@@ -97,12 +142,24 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		return mainClass;
 	}
 
-	@Override
+	/**
+     * Returns a set of URLs representing the classpath for this executable archive.
+     * 
+     * @return a set of URLs representing the classpath
+     * @throws Exception if an error occurs while retrieving the classpath URLs
+     */
+    @Override
 	protected Set<URL> getClassPathUrls() throws Exception {
 		return this.archive.getClassPathUrls(this::isIncludedOnClassPathAndNotIndexed, this::isSearchedDirectory);
 	}
 
-	private boolean isIncludedOnClassPathAndNotIndexed(Entry entry) {
+	/**
+     * Checks if the given entry is included on the classpath and not indexed.
+     * 
+     * @param entry the entry to check
+     * @return {@code true} if the entry is included on the classpath and not indexed, {@code false} otherwise
+     */
+    private boolean isIncludedOnClassPathAndNotIndexed(Entry entry) {
 		if (!isIncludedOnClassPath(entry)) {
 			return false;
 		}

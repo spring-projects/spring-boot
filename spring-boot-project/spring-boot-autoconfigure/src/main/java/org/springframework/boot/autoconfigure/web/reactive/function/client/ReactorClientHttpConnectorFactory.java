@@ -47,17 +47,35 @@ class ReactorClientHttpConnectorFactory implements ClientHttpConnectorFactory<Re
 
 	private final Supplier<Stream<ReactorNettyHttpClientMapper>> mappers;
 
-	ReactorClientHttpConnectorFactory(ReactorResourceFactory reactorResourceFactory) {
+	/**
+     * Constructs a new ReactorClientHttpConnectorFactory with the specified ReactorResourceFactory and empty Stream.
+     * 
+     * @param reactorResourceFactory the ReactorResourceFactory to be used by the ReactorClientHttpConnectorFactory
+     */
+    ReactorClientHttpConnectorFactory(ReactorResourceFactory reactorResourceFactory) {
 		this(reactorResourceFactory, Stream::empty);
 	}
 
-	ReactorClientHttpConnectorFactory(ReactorResourceFactory reactorResourceFactory,
+	/**
+     * Constructs a new ReactorClientHttpConnectorFactory with the specified ReactorResourceFactory and mappers.
+     * 
+     * @param reactorResourceFactory the ReactorResourceFactory used to create ReactorNettyHttpClient instances
+     * @param mappers the supplier of a stream of ReactorNettyHttpClientMapper instances used to map ReactorNettyHttpClient
+     *                instances to specific HTTP clients
+     */
+    ReactorClientHttpConnectorFactory(ReactorResourceFactory reactorResourceFactory,
 			Supplier<Stream<ReactorNettyHttpClientMapper>> mappers) {
 		this.reactorResourceFactory = reactorResourceFactory;
 		this.mappers = mappers;
 	}
 
-	@Override
+	/**
+     * Creates a ReactorClientHttpConnector with the provided SSL bundle.
+     * 
+     * @param sslBundle the SSL bundle to configure the connector with, can be null
+     * @return the created ReactorClientHttpConnector
+     */
+    @Override
 	public ReactorClientHttpConnector createClientHttpConnector(SslBundle sslBundle) {
 		List<ReactorNettyHttpClientMapper> mappers = this.mappers.get()
 			.collect(Collectors.toCollection(ArrayList::new));
@@ -75,16 +93,34 @@ class ReactorClientHttpConnectorFactory implements ClientHttpConnectorFactory<Re
 
 		private final SslBundle sslBundle;
 
-		SslConfigurer(SslBundle sslBundle) {
+		/**
+         * Constructs a new SslConfigurer with the specified SslBundle.
+         * 
+         * @param sslBundle the SslBundle containing the SSL configuration details
+         */
+        SslConfigurer(SslBundle sslBundle) {
 			this.sslBundle = sslBundle;
 		}
 
-		@Override
+		/**
+         * Configures the provided HttpClient with SSL customization.
+         *
+         * @param httpClient the HttpClient to be configured
+         * @return the configured HttpClient
+         * @throws IllegalStateException if an error occurs while customizing SSL
+         */
+        @Override
 		public HttpClient configure(HttpClient httpClient) {
 			return httpClient.secure(ThrowingConsumer.of(this::customizeSsl).throwing(IllegalStateException::new));
 		}
 
-		private void customizeSsl(SslContextSpec spec) throws SSLException {
+		/**
+         * Customizes the SSL configuration for the specified SslContextSpec.
+         * 
+         * @param spec the SslContextSpec to customize
+         * @throws SSLException if an error occurs while building the SSL context
+         */
+        private void customizeSsl(SslContextSpec spec) throws SSLException {
 			SslOptions options = this.sslBundle.getOptions();
 			SslManagerBundle managers = this.sslBundle.getManagers();
 			SslContextBuilder builder = SslContextBuilder.forClient()

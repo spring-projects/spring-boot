@@ -32,7 +32,13 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 class PulsarContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<PulsarContainer, PulsarConnectionDetails> {
 
-	@Override
+	/**
+     * Returns the connection details for the Pulsar container.
+     *
+     * @param source the source of the container connection
+     * @return the connection details for the Pulsar container
+     */
+    @Override
 	protected PulsarConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<PulsarContainer> source) {
 		return new PulsarContainerConnectionDetails(source);
 	}
@@ -43,16 +49,31 @@ class PulsarContainerConnectionDetailsFactory
 	private static final class PulsarContainerConnectionDetails extends ContainerConnectionDetails<PulsarContainer>
 			implements PulsarConnectionDetails {
 
-		private PulsarContainerConnectionDetails(ContainerConnectionSource<PulsarContainer> source) {
+		/**
+         * Constructs a new PulsarContainerConnectionDetails object with the specified source.
+         * 
+         * @param source the source of the container connection details
+         */
+        private PulsarContainerConnectionDetails(ContainerConnectionSource<PulsarContainer> source) {
 			super(source);
 		}
 
-		@Override
+		/**
+         * Returns the broker URL for the Pulsar container connection details.
+         * 
+         * @return the broker URL
+         */
+        @Override
 		public String getBrokerUrl() {
 			return getContainer().getPulsarBrokerUrl();
 		}
 
-		@Override
+		/**
+         * Returns the URL of the admin interface for the Pulsar container.
+         * 
+         * @return the URL of the admin interface
+         */
+        @Override
 		public String getAdminUrl() {
 			return getContainer().getHttpServiceUrl();
 		}

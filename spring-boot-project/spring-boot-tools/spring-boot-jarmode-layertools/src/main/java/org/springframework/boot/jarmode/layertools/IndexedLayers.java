@@ -44,7 +44,16 @@ class IndexedLayers implements Layers {
 
 	private final Map<String, List<String>> layers = new LinkedHashMap<>();
 
-	IndexedLayers(String indexFile) {
+	/**
+     * Constructs an instance of IndexedLayers by parsing the provided index file.
+     * The index file should be a string representation of the layers and their contents.
+     * Each line in the index file represents a layer or a content item within a layer.
+     * 
+     * @param indexFile the index file to parse
+     * @throws IllegalStateException if the index file is malformed
+     * @throws IllegalArgumentException if the index file is empty
+     */
+    IndexedLayers(String indexFile) {
 		String[] lines = Arrays.stream(indexFile.split("\n"))
 			.map((line) -> line.replace("\r", ""))
 			.filter(StringUtils::hasText)
@@ -65,17 +74,35 @@ class IndexedLayers implements Layers {
 		Assert.state(!this.layers.isEmpty(), "Empty layer index file loaded");
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the keys in the layers map.
+     *
+     * @return an iterator over the keys in the layers map
+     */
+    @Override
 	public Iterator<String> iterator() {
 		return this.layers.keySet().iterator();
 	}
 
-	@Override
+	/**
+     * Returns the layer of the given ZipEntry.
+     * 
+     * @param entry the ZipEntry for which to get the layer
+     * @return the layer of the ZipEntry
+     */
+    @Override
 	public String getLayer(ZipEntry entry) {
 		return getLayer(entry.getName());
 	}
 
-	private String getLayer(String name) {
+	/**
+     * Retrieves the layer associated with the given name.
+     * 
+     * @param name the name of the file
+     * @return the layer associated with the given name
+     * @throws IllegalStateException if no layer is defined in the index for the specified file
+     */
+    private String getLayer(String name) {
 		for (Map.Entry<String, List<String>> entry : this.layers.entrySet()) {
 			for (String candidate : entry.getValue()) {
 				if (candidate.equals(name) || (candidate.endsWith("/") && name.startsWith(candidate))) {

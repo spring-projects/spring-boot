@@ -32,11 +32,22 @@ public class SampleLayout extends Layouts.Jar implements CustomLoaderLayout {
 
 	private String name;
 
-	public SampleLayout(String name) {
+	/**
+     * Constructs a new SampleLayout with the specified name.
+     * 
+     * @param name the name of the SampleLayout
+     */
+    public SampleLayout(String name) {
 		this.name = name;
 	}
 
-	@Override
+	/**
+     * Writes the loaded classes to the specified LoaderClassesWriter.
+     * 
+     * @param writer the LoaderClassesWriter to write the loaded classes to
+     * @throws IOException if an I/O error occurs while writing the loaded classes
+     */
+    @Override
 	public void writeLoadedClasses(LoaderClassesWriter writer) throws IOException {
 		writer.writeEntry(this.name, new ByteArrayInputStream("test".getBytes()));
 	}

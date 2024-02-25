@@ -63,7 +63,14 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveManagementWebSecurityAutoConfiguration {
 
-	@Bean
+	/**
+     * Configures the security filter chain for the Reactive Management endpoints.
+     *
+     * @param http     the ServerHttpSecurity to configure
+     * @param handler  the PreFlightRequestHandler for handling pre-flight requests
+     * @return the configured SecurityWebFilterChain
+     */
+    @Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, PreFlightRequestHandler handler) {
 		http.authorizeExchange((exchanges) -> {
 			exchanges.matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
@@ -76,7 +83,14 @@ public class ReactiveManagementWebSecurityAutoConfiguration {
 		return http.build();
 	}
 
-	@Bean
+	/**
+     * Creates a ReactiveAuthenticationManager bean that denies all authentication attempts.
+     * This bean is conditional on the absence of any existing beans of type ReactiveAuthenticationManager
+     * and ReactiveUserDetailsService.
+     * 
+     * @return the created ReactiveAuthenticationManager bean
+     */
+    @Bean
 	@ConditionalOnMissingBean({ ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class })
 	ReactiveAuthenticationManager denyAllAuthenticationManager() {
 		return (authentication) -> Mono.error(new UsernameNotFoundException(authentication.getName()));

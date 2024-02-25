@@ -20,6 +20,9 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
+/**
+ * CustomerRepository interface.
+ */
 interface CustomerRepository extends CrudRepository<Customer, Long> {
 
 	List<Customer> findByUser(User user);

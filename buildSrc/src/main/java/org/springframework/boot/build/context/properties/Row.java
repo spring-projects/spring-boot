@@ -28,12 +28,24 @@ abstract class Row implements Comparable<Row> {
 
 	private final String id;
 
-	protected Row(Snippet snippet, String id) {
+	/**
+     * Constructs a new Row object with the given Snippet and id.
+     * 
+     * @param snippet the Snippet object associated with the Row
+     * @param id the unique identifier for the Row
+     */
+    protected Row(Snippet snippet, String id) {
 		this.snippet = snippet;
 		this.id = id;
 	}
 
-	@Override
+	/**
+     * Compares this Row object to the specified object. The result is true if and only if the argument is not null and is a Row object that represents the same row as this object.
+     * 
+     * @param obj the object to compare this Row against
+     * @return true if the given object represents a Row equivalent to this Row, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -45,20 +57,43 @@ abstract class Row implements Comparable<Row> {
 		return this.id.equals(other.id);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this Row object.
+     * 
+     * @return the hash code value for this Row object
+     */
+    @Override
 	public int hashCode() {
 		return this.id.hashCode();
 	}
 
-	@Override
+	/**
+     * Compares this Row object with the specified Row object for order.
+     * Returns a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+     * 
+     * @param other the Row object to be compared
+     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object
+     */
+    @Override
 	public int compareTo(Row other) {
 		return this.id.compareTo(other.id);
 	}
 
-	String getAnchor() {
+	/**
+     * Returns the anchor of the Row.
+     * The anchor is obtained by concatenating the anchor of the snippet and the id of the Row.
+     *
+     * @return the anchor of the Row
+     */
+    String getAnchor() {
 		return this.snippet.getAnchor() + "." + this.id;
 	}
 
-	abstract void write(Asciidoc asciidoc);
+	/**
+     * Writes the given Asciidoc content to the row.
+     * 
+     * @param asciidoc the Asciidoc content to be written
+     */
+    abstract void write(Asciidoc asciidoc);
 
 }

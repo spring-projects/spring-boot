@@ -18,6 +18,9 @@ package org.springframework.boot.docs.howto.springmvc.writexmlrestservice;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+/**
+ * MyThing class.
+ */
 @XmlRootElement
 public class MyThing {
 
@@ -28,7 +31,12 @@ public class MyThing {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	/**
+     * Sets the name of the MyThing object.
+     * 
+     * @param name the name to be set
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 	// @fold:off

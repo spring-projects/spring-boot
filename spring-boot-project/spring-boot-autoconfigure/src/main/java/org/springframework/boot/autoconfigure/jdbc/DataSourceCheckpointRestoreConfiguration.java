@@ -38,11 +38,20 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnBean(DataSource.class)
 class DataSourceCheckpointRestoreConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * Hikari class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HikariDataSource.class)
 	static class Hikari {
 
-		@Bean
+		/**
+         * Creates a new instance of {@link HikariCheckpointRestoreLifecycle} if no other bean of the same type is present.
+         * 
+         * @param dataSource the {@link DataSource} to be used by the {@link HikariCheckpointRestoreLifecycle}
+         * @return a new instance of {@link HikariCheckpointRestoreLifecycle}
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		HikariCheckpointRestoreLifecycle hikariCheckpointRestoreLifecycle(DataSource dataSource) {
 			return new HikariCheckpointRestoreLifecycle(dataSource);

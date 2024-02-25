@@ -47,7 +47,16 @@ import org.springframework.util.ObjectUtils;
 @Conditional(CacheCondition.class)
 class CouchbaseCacheConfiguration {
 
-	@Bean
+	/**
+     * Creates a CouchbaseCacheManager bean.
+     *
+     * @param cacheProperties                      the cache properties
+     * @param customizers                          the cache manager customizers
+     * @param couchbaseCacheManagerBuilderCustomizers the Couchbase cache manager builder customizers
+     * @param clientFactory                        the Couchbase client factory
+     * @return the CouchbaseCacheManager bean
+     */
+    @Bean
 	CouchbaseCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
 			ObjectProvider<CouchbaseCacheManagerBuilderCustomizer> couchbaseCacheManagerBuilderCustomizers,
 			CouchbaseClientFactory clientFactory) {

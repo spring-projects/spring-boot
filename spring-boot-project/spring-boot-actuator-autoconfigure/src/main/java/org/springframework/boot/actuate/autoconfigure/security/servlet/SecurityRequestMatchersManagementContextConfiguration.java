@@ -45,12 +45,22 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class SecurityRequestMatchersManagementContextConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * MvcRequestMatcherConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(DispatcherServlet.class)
 	@ConditionalOnBean(DispatcherServletPath.class)
 	public static class MvcRequestMatcherConfiguration {
 
-		@Bean
+		/**
+         * Creates a RequestMatcherProvider bean if it is missing and the DispatcherServlet class is present.
+         * The RequestMatcherProvider bean is responsible for providing request matchers based on the servlet path.
+         * 
+         * @param servletPath The DispatcherServletPath bean used to get the relative path.
+         * @return The created AntPathRequestMatcherProvider bean.
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnClass(DispatcherServlet.class)
 		public RequestMatcherProvider requestMatcherProvider(DispatcherServletPath servletPath) {
@@ -59,13 +69,22 @@ public class SecurityRequestMatchersManagementContextConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * JerseyRequestMatcherConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
 	@ConditionalOnBean(JerseyApplicationPath.class)
 	public static class JerseyRequestMatcherConfiguration {
 
-		@Bean
+		/**
+         * Creates a RequestMatcherProvider bean.
+         * 
+         * @param applicationPath the JerseyApplicationPath object representing the application path
+         * @return the RequestMatcherProvider object
+         */
+        @Bean
 		public RequestMatcherProvider requestMatcherProvider(JerseyApplicationPath applicationPath) {
 			return new AntPathRequestMatcherProvider(applicationPath::getRelativePath);
 		}

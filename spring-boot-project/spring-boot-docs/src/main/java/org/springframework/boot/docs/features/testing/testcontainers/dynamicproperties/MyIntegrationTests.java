@@ -25,6 +25,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
+/**
+ * MyIntegrationTests class.
+ */
 @Testcontainers
 @SpringBootTest
 class MyIntegrationTests {
@@ -32,12 +35,28 @@ class MyIntegrationTests {
 	@Container
 	static Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:5");
 
-	@Test
+	/**
+     * This method is a test case for integration testing.
+     * It is used to test the functionality of the integration between different components.
+     * 
+     * @param none
+     * @return void
+     * 
+     * @throws none
+     * 
+     * @since 1.0
+     */
+    @Test
 	void myTest() {
 		// ...
 	}
 
-	@DynamicPropertySource
+	/**
+     * Registers the Neo4j properties in the dynamic property registry.
+     * 
+     * @param registry the dynamic property registry to register the properties with
+     */
+    @DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {
 		registry.add("spring.neo4j.uri", neo4j::getBoltUrl);
 	}

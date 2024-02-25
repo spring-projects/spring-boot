@@ -18,6 +18,9 @@ package org.springframework.boot.docs.features.testing.springbootapplications.de
 
 import org.springframework.boot.test.context.SpringBootTest;
 
+/**
+ * MyWebFluxTests class.
+ */
 @SpringBootTest(properties = "spring.main.web-application-type=reactive")
 class MyWebFluxTests {
 

@@ -19,10 +19,21 @@ package org.springframework.boot.docs.io.caching;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyMathService class.
+ */
 @Component
 public class MyMathService {
 
-	@Cacheable("piDecimals")
+	/**
+     * Computes the decimal value of Pi up to a specified precision.
+     *
+     * @param precision the number of decimal places to compute Pi
+     * @return the decimal value of Pi up to the specified precision
+     *
+     * @cacheable("piDecimals")
+     */
+    @Cacheable("piDecimals")
 	public int computePiDecimal(int precision) {
 		/**/ return 0;
 	}

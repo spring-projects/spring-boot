@@ -47,11 +47,21 @@ public class ConnectionDetailsFactories {
 
 	private final List<Registration<?, ?>> registrations = new ArrayList<>();
 
-	public ConnectionDetailsFactories() {
+	/**
+     * Constructs a new instance of ConnectionDetailsFactories.
+     * 
+     * @param loader the SpringFactoriesLoader used to load ConnectionDetailsFactory instances
+     */
+    public ConnectionDetailsFactories() {
 		this(SpringFactoriesLoader.forDefaultResourceLocation(ConnectionDetailsFactory.class.getClassLoader()));
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	/**
+     * Constructs a new ConnectionDetailsFactories object with the given SpringFactoriesLoader.
+     * 
+     * @param loader the SpringFactoriesLoader used to load ConnectionDetailsFactory instances
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
 	ConnectionDetailsFactories(SpringFactoriesLoader loader) {
 		List<ConnectionDetailsFactory> factories = loader.load(ConnectionDetailsFactory.class,
 				FailureHandler.logging(logger));
@@ -91,7 +101,16 @@ public class ConnectionDetailsFactories {
 		return Map.copyOf(result);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Retrieves a list of registrations for the given source object.
+     * 
+     * @param source    the source object for which to retrieve registrations
+     * @param required  a boolean indicating whether registrations are required
+     * @param <S>       the type of the source object
+     * @return          a list of registrations for the given source object
+     * @throws ConnectionDetailsFactoryNotFoundException if required is true and no registrations are found
+     */
+    @SuppressWarnings("unchecked")
 	<S> List<Registration<S, ?>> getRegistrations(S source, boolean required) {
 		Class<S> sourceType = (Class<S>) source.getClass();
 		List<Registration<S, ?>> result = new ArrayList<>();
@@ -119,7 +138,15 @@ public class ConnectionDetailsFactories {
 	record Registration<S, D extends ConnectionDetails>(Class<S> sourceType, Class<D> connectionDetailsType,
 			ConnectionDetailsFactory<S, D> factory) {
 
-		@SuppressWarnings("unchecked")
+		/**
+     * Retrieves a Registration object based on the provided ConnectionDetailsFactory.
+     * 
+     * @param factory the ConnectionDetailsFactory used to create the Registration object
+     * @param <S> the source type for the ConnectionDetailsFactory
+     * @param <D> the destination type for the ConnectionDetailsFactory, which must extend ConnectionDetails
+     * @return the Registration object if the ConnectionDetailsFactory has resolvable generics, otherwise null
+     */
+    @SuppressWarnings("unchecked")
 		private static <S, D extends ConnectionDetails> Registration<S, D> get(ConnectionDetailsFactory<S, D> factory) {
 			ResolvableType type = ResolvableType.forClass(ConnectionDetailsFactory.class, factory.getClass());
 			if (!type.hasUnresolvableGenerics()) {

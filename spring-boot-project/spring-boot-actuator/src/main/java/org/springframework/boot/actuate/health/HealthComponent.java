@@ -30,7 +30,10 @@ import org.springframework.boot.actuate.endpoint.OperationResponseBody;
  */
 public abstract class HealthComponent implements OperationResponseBody {
 
-	HealthComponent() {
+	/**
+     * Constructs a new HealthComponent object.
+     */
+    HealthComponent() {
 	}
 
 	/**

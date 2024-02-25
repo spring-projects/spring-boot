@@ -94,7 +94,12 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	public static final String ROLLINGPOLICY_MAX_HISTORY = RollingPolicySystemProperty.MAX_HISTORY
 		.getEnvironmentVariableName();
 
-	public LogbackLoggingSystemProperties(Environment environment) {
+	/**
+     * Constructs a new instance of LogbackLoggingSystemProperties with the specified environment.
+     *
+     * @param environment the environment to be used by the logging system properties
+     */
+    public LogbackLoggingSystemProperties(Environment environment) {
 		super(environment);
 	}
 
@@ -121,25 +126,45 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 		super(environment, defaultValueResolver, setter);
 	}
 
-	@Override
+	/**
+     * Returns the default charset used by the system.
+     * 
+     * @return The default charset used by the system.
+     */
+    @Override
 	protected Charset getDefaultCharset() {
 		return Charset.defaultCharset();
 	}
 
-	@Override
+	/**
+     * Applies the LogFile and PropertyResolver to the LogbackLoggingSystemProperties.
+     * 
+     * @param logFile the LogFile to apply
+     * @param resolver the PropertyResolver to apply
+     */
+    @Override
 	protected void apply(LogFile logFile, PropertyResolver resolver) {
 		super.apply(logFile, resolver);
 		applyJBossLoggingProperties();
 		applyRollingPolicyProperties(resolver);
 	}
 
-	private void applyJBossLoggingProperties() {
+	/**
+     * Applies JBoss logging properties if JBoss logging is present.
+     * Sets the system property "org.jboss.logging.provider" to "slf4j".
+     */
+    private void applyJBossLoggingProperties() {
 		if (JBOSS_LOGGING_PRESENT) {
 			setSystemProperty("org.jboss.logging.provider", "slf4j");
 		}
 	}
 
-	private void applyRollingPolicyProperties(PropertyResolver resolver) {
+	/**
+     * Applies the rolling policy properties to the given property resolver.
+     * 
+     * @param resolver the property resolver to apply the rolling policy properties to
+     */
+    private void applyRollingPolicyProperties(PropertyResolver resolver) {
 		applyRollingPolicy(RollingPolicySystemProperty.FILE_NAME_PATTERN, resolver);
 		applyRollingPolicy(RollingPolicySystemProperty.CLEAN_HISTORY_ON_START, resolver);
 		applyRollingPolicy(RollingPolicySystemProperty.MAX_FILE_SIZE, resolver, DataSize.class);
@@ -147,11 +172,25 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 		applyRollingPolicy(RollingPolicySystemProperty.MAX_HISTORY, resolver);
 	}
 
-	private void applyRollingPolicy(RollingPolicySystemProperty property, PropertyResolver resolver) {
+	/**
+     * Applies the rolling policy to the specified property using the given resolver.
+     * 
+     * @param property the rolling policy system property to apply
+     * @param resolver the property resolver to use
+     */
+    private void applyRollingPolicy(RollingPolicySystemProperty property, PropertyResolver resolver) {
 		applyRollingPolicy(property, resolver, String.class);
 	}
 
-	private <T> void applyRollingPolicy(RollingPolicySystemProperty property, PropertyResolver resolver,
+	/**
+     * Applies the rolling policy system property by resolving the property value and setting it as a system property.
+     * 
+     * @param property the rolling policy system property to apply
+     * @param resolver the property resolver to use for resolving the property value
+     * @param type the type of the property value
+     * @param <T> the generic type of the property value
+     */
+    private <T> void applyRollingPolicy(RollingPolicySystemProperty property, PropertyResolver resolver,
 			Class<T> type) {
 		T value = getProperty(resolver, property.getApplicationPropertyName(), type);
 		value = (value != null) ? value : getProperty(resolver, property.getDeprecatedApplicationPropertyName(), type);
@@ -161,7 +200,19 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Retrieves a property value from the given PropertyResolver using the specified key and type.
+     * 
+     * @param resolver the PropertyResolver to retrieve the property value from
+     * @param key the key of the property to retrieve
+     * @param type the type of the property value
+     * @return the property value of the specified type
+     * @throws ConversionFailedException if the property value cannot be converted to the specified type
+     * @throws ConverterNotFoundException if a converter for the specified type is not found
+     * @throws IllegalArgumentException if the type is not supported and is not DataSize
+     * @throws NullPointerException if the resolver or key is null
+     */
+    @SuppressWarnings("unchecked")
 	private <T> T getProperty(PropertyResolver resolver, String key, Class<T> type) {
 		try {
 			return resolver.getProperty(key, type);

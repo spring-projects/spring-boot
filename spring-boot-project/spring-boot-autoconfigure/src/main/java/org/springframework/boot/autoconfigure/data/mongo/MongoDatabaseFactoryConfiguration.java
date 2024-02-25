@@ -42,7 +42,15 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 @ConditionalOnSingleCandidate(MongoClient.class)
 class MongoDatabaseFactoryConfiguration {
 
-	@Bean
+	/**
+     * Creates a MongoDatabaseFactorySupport object using the provided MongoClient, MongoProperties, and MongoConnectionDetails.
+     * 
+     * @param mongoClient The MongoClient object used to connect to the MongoDB server.
+     * @param properties The MongoProperties object containing the MongoDB connection properties.
+     * @param connectionDetails The MongoConnectionDetails object containing the MongoDB connection details.
+     * @return A MongoDatabaseFactorySupport object for the specified MongoClient, database, and connection details.
+     */
+    @Bean
 	MongoDatabaseFactorySupport<?> mongoDatabaseFactory(MongoClient mongoClient, MongoProperties properties,
 			MongoConnectionDetails connectionDetails) {
 		String database = properties.getDatabase();

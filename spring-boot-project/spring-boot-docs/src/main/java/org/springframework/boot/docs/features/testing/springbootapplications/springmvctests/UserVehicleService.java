@@ -16,9 +16,18 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.springmvctests;
 
+/**
+ * UserVehicleService class.
+ */
 class UserVehicleService {
 
-	VehicleDetails getVehicleDetails(String name) {
+	/**
+     * Retrieves the details of a vehicle based on its name.
+     * 
+     * @param name the name of the vehicle
+     * @return the VehicleDetails object containing the details of the vehicle
+     */
+    VehicleDetails getVehicleDetails(String name) {
 		return null;
 	}
 

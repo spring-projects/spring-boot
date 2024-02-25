@@ -35,16 +35,32 @@ public class JettyConnectionMetricsBinder extends AbstractJettyMetricsBinder {
 
 	private final Iterable<Tag> tags;
 
-	public JettyConnectionMetricsBinder(MeterRegistry meterRegistry) {
+	/**
+     * Constructs a new JettyConnectionMetricsBinder with the specified MeterRegistry and an empty list of additional metrics.
+     *
+     * @param meterRegistry the MeterRegistry to bind the connection metrics to
+     */
+    public JettyConnectionMetricsBinder(MeterRegistry meterRegistry) {
 		this(meterRegistry, Collections.emptyList());
 	}
 
-	public JettyConnectionMetricsBinder(MeterRegistry meterRegistry, Iterable<Tag> tags) {
+	/**
+     * Constructs a new JettyConnectionMetricsBinder with the specified MeterRegistry and tags.
+     *
+     * @param meterRegistry the MeterRegistry to bind the metrics to
+     * @param tags the tags to associate with the metrics
+     */
+    public JettyConnectionMetricsBinder(MeterRegistry meterRegistry, Iterable<Tag> tags) {
 		this.meterRegistry = meterRegistry;
 		this.tags = tags;
 	}
 
-	@Override
+	/**
+     * Binds the metrics for the given server.
+     * 
+     * @param server the server to bind metrics to
+     */
+    @Override
 	protected void bindMetrics(Server server) {
 		JettyConnectionMetrics.addToAllConnectors(server, this.meterRegistry, this.tags);
 	}

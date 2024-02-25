@@ -19,6 +19,9 @@ package org.springframework.boot.docs.features.profiles;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+/**
+ * ProductionConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 @Profile("production")
 public class ProductionConfiguration {

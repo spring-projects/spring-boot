@@ -40,7 +40,14 @@ class RegisteredClientsConfiguredCondition extends SpringBootCondition {
 	private static final Bindable<Map<String, OAuth2AuthorizationServerProperties.Client>> STRING_CLIENT_MAP = Bindable
 		.mapOf(String.class, OAuth2AuthorizationServerProperties.Client.class);
 
-	@Override
+	/**
+     * Determines the outcome of the condition for the RegisteredClientsConfiguredCondition.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage
 			.forCondition("OAuth2 Registered Clients Configured Condition");
@@ -56,7 +63,13 @@ class RegisteredClientsConfiguredCondition extends SpringBootCondition {
 		return ConditionOutcome.noMatch(message.notAvailable("registered clients"));
 	}
 
-	private Map<String, OAuth2AuthorizationServerProperties.Client> getRegistrations(Environment environment) {
+	/**
+     * Retrieves the registrations for OAuth2 authorization server clients.
+     * 
+     * @param environment the environment containing the configuration properties
+     * @return a map of client IDs to client configurations
+     */
+    private Map<String, OAuth2AuthorizationServerProperties.Client> getRegistrations(Environment environment) {
 		return Binder.get(environment)
 			.bind("spring.security.oauth2.authorizationserver.client", STRING_CLIENT_MAP)
 			.orElse(Collections.emptyMap());

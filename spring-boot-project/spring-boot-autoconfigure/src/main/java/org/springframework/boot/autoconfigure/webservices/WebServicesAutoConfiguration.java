@@ -66,7 +66,14 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @EnableConfigurationProperties(WebServicesProperties.class)
 public class WebServicesAutoConfiguration {
 
-	@Bean
+	/**
+     * Registers the MessageDispatcherServlet with the specified URL mapping and initialization parameters.
+     * 
+     * @param applicationContext the ApplicationContext to set for the MessageDispatcherServlet
+     * @param properties the WebServicesProperties containing the servlet configuration
+     * @return the ServletRegistrationBean for the MessageDispatcherServlet
+     */
+    @Bean
 	public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
 			ApplicationContext applicationContext, WebServicesProperties properties) {
 		MessageDispatcherServlet servlet = new MessageDispatcherServlet();
@@ -81,30 +88,57 @@ public class WebServicesAutoConfiguration {
 		return registration;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link WsdlDefinitionBeanFactoryPostProcessor} and registers it as a bean in the application context.
+     * This bean is responsible for post-processing the bean factory and adding WSDL definitions to it.
+     * It is only created if the {@link OnWsdlLocationsCondition} condition is met.
+     *
+     * @return the {@link WsdlDefinitionBeanFactoryPostProcessor} bean
+     */
+    @Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	@Conditional(OnWsdlLocationsCondition.class)
 	public static WsdlDefinitionBeanFactoryPostProcessor wsdlDefinitionBeanFactoryPostProcessor() {
 		return new WsdlDefinitionBeanFactoryPostProcessor();
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * WsConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@EnableWs
 	protected static class WsConfiguration {
 
 	}
 
-	static class WsdlDefinitionBeanFactoryPostProcessor
+	/**
+     * WsdlDefinitionBeanFactoryPostProcessor class.
+     */
+    static class WsdlDefinitionBeanFactoryPostProcessor
 			implements BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
 
 		private ApplicationContext applicationContext;
 
-		@Override
+		/**
+         * Sets the application context for this bean factory post processor.
+         * 
+         * @param applicationContext the application context to be set
+         */
+        @Override
 		public void setApplicationContext(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 
-		@Override
+		/**
+         * This method is called during the post-processing phase of the bean definition registry.
+         * It retrieves the WSDL locations from the application's environment using the Spring Binder.
+         * For each WSDL location, it registers beans for the WSDL and XSD files using the provided
+         * registry.
+         * 
+         * @param registry the bean definition registry to register the beans with
+         * @throws BeansException if an error occurs during the bean registration process
+         */
+        @Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			Binder binder = Binder.get(this.applicationContext.getEnvironment());
 			List<String> wsdlLocations = binder.bind("spring.webservices.wsdl-locations", Bindable.listOf(String.class))
@@ -116,11 +150,29 @@ public class WebServicesAutoConfiguration {
 			}
 		}
 
-		@Override
+		/**
+         * {@inheritDoc}
+         * 
+         * This method is called after the bean factory has been initialized and allows for post-processing of the bean factory.
+         * 
+         * @param beanFactory the bean factory to be post-processed
+         * @throws BeansException if any error occurs during post-processing
+         */
+        @Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
-		private <T> void registerBeans(String location, String pattern, Class<T> type,
+		/**
+         * Registers beans based on the given location, pattern, type, bean supplier, and registry.
+         * 
+         * @param location the location of the resources to be registered as beans
+         * @param pattern the pattern to match the resources to be registered as beans
+         * @param type the class type of the beans to be registered
+         * @param beanSupplier the function to supply the beans based on the resources
+         * @param registry the bean definition registry to register the beans
+         * @param <T> the generic type of the beans to be registered
+         */
+        private <T> void registerBeans(String location, String pattern, Class<T> type,
 				Function<Resource, T> beanSupplier, BeanDefinitionRegistry registry) {
 			for (Resource resource : getResources(location, pattern)) {
 				BeanDefinition beanDefinition = BeanDefinitionBuilder
@@ -131,7 +183,14 @@ public class WebServicesAutoConfiguration {
 			}
 		}
 
-		private Resource[] getResources(String location, String pattern) {
+		/**
+         * Retrieves an array of resources based on the given location and pattern.
+         * 
+         * @param location the location of the resources
+         * @param pattern the pattern to match the resources
+         * @return an array of resources matching the given location and pattern
+         */
+        private Resource[] getResources(String location, String pattern) {
 			try {
 				return this.applicationContext.getResources(ensureTrailingSlash(location) + pattern);
 			}
@@ -140,7 +199,13 @@ public class WebServicesAutoConfiguration {
 			}
 		}
 
-		private String ensureTrailingSlash(String path) {
+		/**
+         * Ensures that the given path has a trailing slash.
+         * 
+         * @param path the path to ensure trailing slash for
+         * @return the path with a trailing slash
+         */
+        private String ensureTrailingSlash(String path) {
 			return path.endsWith("/") ? path : path + "/";
 		}
 

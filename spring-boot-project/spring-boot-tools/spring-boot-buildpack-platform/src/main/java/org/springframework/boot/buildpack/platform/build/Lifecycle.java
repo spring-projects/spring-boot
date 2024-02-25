@@ -116,32 +116,67 @@ class Lifecycle implements Closeable {
 		this.securityOptions = getSecurityOptions(request);
 	}
 
-	private Cache getBuildCache(BuildRequest request) {
+	/**
+     * Retrieves the build cache for the given build request.
+     * 
+     * @param request the build request
+     * @return the build cache
+     */
+    private Cache getBuildCache(BuildRequest request) {
 		if (request.getBuildCache() != null) {
 			return request.getBuildCache();
 		}
 		return createVolumeCache(request, "build");
 	}
 
-	private Cache getLaunchCache(BuildRequest request) {
+	/**
+     * Retrieves the launch cache for the given build request.
+     * If the launch cache is already set in the request, it is returned.
+     * Otherwise, a new launch cache is created using the provided build request and returned.
+     *
+     * @param request the build request containing the launch cache
+     * @return the launch cache for the build request
+     */
+    private Cache getLaunchCache(BuildRequest request) {
 		if (request.getLaunchCache() != null) {
 			return request.getLaunchCache();
 		}
 		return createVolumeCache(request, "launch");
 	}
 
-	private String getApplicationDirectory(BuildRequest request) {
+	/**
+     * Returns the application directory specified in the given build request.
+     * If the application directory is not provided in the request, the default
+     * application directory will be returned.
+     *
+     * @param request the build request containing the application directory
+     * @return the application directory specified in the request, or the default
+     *         application directory if not provided
+     */
+    private String getApplicationDirectory(BuildRequest request) {
 		return (request.getApplicationDirectory() != null) ? request.getApplicationDirectory() : Directory.APPLICATION;
 	}
 
-	private List<String> getSecurityOptions(BuildRequest request) {
+	/**
+     * Returns the security options for the given build request.
+     * 
+     * @param request the build request
+     * @return the security options for the build request
+     */
+    private List<String> getSecurityOptions(BuildRequest request) {
 		if (request.getSecurityOptions() != null) {
 			return request.getSecurityOptions();
 		}
 		return (Platform.isWindows()) ? Collections.emptyList() : DEFAULT_SECURITY_OPTIONS;
 	}
 
-	private ApiVersion getPlatformVersion(BuilderMetadata.Lifecycle lifecycle) {
+	/**
+     * Returns the latest supported platform version based on the given lifecycle.
+     * 
+     * @param lifecycle the lifecycle object containing the APIs information
+     * @return the latest supported platform version
+     */
+    private ApiVersion getPlatformVersion(BuilderMetadata.Lifecycle lifecycle) {
 		if (lifecycle.getApis().getPlatform() != null) {
 			String[] supportedVersions = lifecycle.getApis().getPlatform();
 			return ApiVersions.SUPPORTED_PLATFORMS.findLatestSupported(supportedVersions);
@@ -165,7 +200,12 @@ class Lifecycle implements Closeable {
 		this.log.executedLifecycle(this.request);
 	}
 
-	private Phase createPhase() {
+	/**
+     * Creates a new Phase object with the specified configuration.
+     * 
+     * @return the created Phase object
+     */
+    private Phase createPhase() {
 		Phase phase = new Phase("creator", isVerboseLogging());
 		phase.withDaemonAccess();
 		configureDaemonAccess(phase);
@@ -201,43 +241,99 @@ class Lifecycle implements Closeable {
 		return phase;
 	}
 
-	private Cache getLayersBindingSource(BuildRequest request) {
+	/**
+     * Returns the cache for the layers binding source based on the given build request.
+     * If the build workspace is not null, it retrieves the cache from the build workspace using the "layers" key.
+     * Otherwise, it creates a new volume cache with the prefix "pack-layers-".
+     *
+     * @param request the build request containing the build workspace
+     * @return the cache for the layers binding source
+     */
+    private Cache getLayersBindingSource(BuildRequest request) {
 		if (request.getBuildWorkspace() != null) {
 			return getBuildWorkspaceBindingSource(request.getBuildWorkspace(), "layers");
 		}
 		return createVolumeCache("pack-layers-");
 	}
 
-	private Cache getApplicationBindingSource(BuildRequest request) {
+	/**
+     * Retrieves the application binding source from the given build request.
+     * If the build workspace is not null, it calls the getBuildWorkspaceBindingSource method
+     * with the build workspace and "app" as parameters.
+     * Otherwise, it creates a volume cache with the prefix "pack-app-" using the createVolumeCache method.
+     * 
+     * @param request the build request containing the build workspace
+     * @return the application binding source cache
+     */
+    private Cache getApplicationBindingSource(BuildRequest request) {
 		if (request.getBuildWorkspace() != null) {
 			return getBuildWorkspaceBindingSource(request.getBuildWorkspace(), "app");
 		}
 		return createVolumeCache("pack-app-");
 	}
 
-	private Cache getBuildWorkspaceBindingSource(Cache buildWorkspace, String suffix) {
+	/**
+     * Returns a new Cache object based on the given buildWorkspace and suffix.
+     * If the buildWorkspace has a volume, a new Cache object is created with the volume name concatenated with the suffix.
+     * If the buildWorkspace has a bind, a new Cache object is created with the bind source concatenated with the suffix.
+     * 
+     * @param buildWorkspace The original Cache object representing the build workspace.
+     * @param suffix The suffix to be appended to the volume name or bind source.
+     * @return A new Cache object based on the given buildWorkspace and suffix.
+     */
+    private Cache getBuildWorkspaceBindingSource(Cache buildWorkspace, String suffix) {
 		return (buildWorkspace.getVolume() != null) ? Cache.volume(buildWorkspace.getVolume().getName() + "-" + suffix)
 				: Cache.bind(buildWorkspace.getBind().getSource() + "-" + suffix);
 	}
 
-	private String getCacheBindingSource(Cache cache) {
+	/**
+     * Returns the binding source of the cache.
+     * 
+     * @param cache the cache object
+     * @return the binding source of the cache
+     */
+    private String getCacheBindingSource(Cache cache) {
 		return (cache.getVolume() != null) ? cache.getVolume().getName() : cache.getBind().getSource();
 	}
 
-	private Cache createVolumeCache(String prefix) {
+	/**
+     * Creates a cache for a volume with the given prefix.
+     * 
+     * @param prefix the prefix to be used for the volume name
+     * @return the cache for the volume
+     */
+    private Cache createVolumeCache(String prefix) {
 		return Cache.volume(createRandomVolumeName(prefix));
 	}
 
-	private Cache createVolumeCache(BuildRequest request, String suffix) {
+	/**
+     * Creates a cache for a volume based on the given build request and suffix.
+     * 
+     * @param request the build request
+     * @param suffix the suffix to be added to the cache name
+     * @return the created cache
+     */
+    private Cache createVolumeCache(BuildRequest request, String suffix) {
 		return Cache.volume(
 				VolumeName.basedOn(request.getName(), ImageReference::toLegacyString, "pack-cache-", "." + suffix, 6));
 	}
 
-	protected VolumeName createRandomVolumeName(String prefix) {
+	/**
+     * Generates a random volume name with the given prefix.
+     * 
+     * @param prefix the prefix to be used in the volume name
+     * @return a randomly generated volume name with the given prefix
+     */
+    protected VolumeName createRandomVolumeName(String prefix) {
 		return VolumeName.random(prefix);
 	}
 
-	private void configureDaemonAccess(Phase phase) {
+	/**
+     * Configures the daemon access for the specified phase.
+     * 
+     * @param phase The phase to configure the daemon access for.
+     */
+    private void configureDaemonAccess(Phase phase) {
 		if (this.dockerHost != null) {
 			if (this.dockerHost.isRemote()) {
 				phase.withEnv("DOCKER_HOST", this.dockerHost.getAddress());
@@ -258,15 +354,31 @@ class Lifecycle implements Closeable {
 		}
 	}
 
-	private boolean isVerboseLogging() {
+	/**
+     * Checks if verbose logging is enabled.
+     * 
+     * @return true if verbose logging is enabled, false otherwise
+     */
+    private boolean isVerboseLogging() {
 		return this.request.isVerboseLogging() && this.lifecycleVersion.isEqualOrGreaterThan(LOGGING_MINIMUM_VERSION);
 	}
 
-	private boolean requiresProcessTypeDefault() {
+	/**
+     * Checks if the current platform version requires the default process type.
+     * 
+     * @return true if the platform version supports any of the specified API versions (0.4 or 0.5), false otherwise
+     */
+    private boolean requiresProcessTypeDefault() {
 		return this.platformVersion.supportsAny(ApiVersion.of(0, 4), ApiVersion.of(0, 5));
 	}
 
-	private void run(Phase phase) throws IOException {
+	/**
+     * Runs the specified phase of the lifecycle.
+     * 
+     * @param phase the phase to run
+     * @throws IOException if an I/O error occurs
+     */
+    private void run(Phase phase) throws IOException {
 		Consumer<LogUpdateEvent> logConsumer = this.log.runningPhase(this.request, phase.getName());
 		ContainerConfig containerConfig = ContainerConfig.of(this.builder.getName(), phase::apply);
 		ContainerReference reference = createContainer(containerConfig);
@@ -283,7 +395,14 @@ class Lifecycle implements Closeable {
 		}
 	}
 
-	private ContainerReference createContainer(ContainerConfig config) throws IOException {
+	/**
+     * Creates a container with the given configuration.
+     * 
+     * @param config the configuration for the container
+     * @return a reference to the created container
+     * @throws IOException if an I/O error occurs
+     */
+    private ContainerReference createContainer(ContainerConfig config) throws IOException {
 		if (this.applicationVolumePopulated) {
 			return this.docker.container().create(config);
 		}
@@ -300,13 +419,24 @@ class Lifecycle implements Closeable {
 		}
 	}
 
-	@Override
+	/**
+     * Closes the Lifecycle by deleting the cache for the layers and application.
+     * 
+     * @throws IOException if an I/O error occurs while deleting the cache
+     */
+    @Override
 	public void close() throws IOException {
 		deleteCache(this.layers);
 		deleteCache(this.application);
 	}
 
-	private void deleteCache(Cache cache) throws IOException {
+	/**
+     * Deletes the cache by deleting its associated volume and bind.
+     * 
+     * @param cache the cache to be deleted
+     * @throws IOException if an I/O error occurs while deleting the cache
+     */
+    private void deleteCache(Cache cache) throws IOException {
 		if (cache.getVolume() != null) {
 			deleteVolume(cache.getVolume().getVolumeName());
 		}
@@ -315,11 +445,23 @@ class Lifecycle implements Closeable {
 		}
 	}
 
-	private void deleteVolume(VolumeName name) throws IOException {
+	/**
+     * Deletes a volume with the specified name.
+     * 
+     * @param name the name of the volume to be deleted
+     * @throws IOException if an I/O error occurs while deleting the volume
+     */
+    private void deleteVolume(VolumeName name) throws IOException {
 		this.docker.volume().delete(name, true);
 	}
 
-	private void deleteBind(String source) {
+	/**
+     * Deletes the bind mount directory specified by the given source path.
+     * 
+     * @param source the path of the bind mount directory to be deleted
+     * @throws IllegalStateException if an error occurs while cleaning the bind mount directory
+     */
+    private void deleteBind(String source) {
 		try {
 			FileSystemUtils.deleteRecursively(Path.of(source));
 		}

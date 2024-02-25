@@ -75,15 +75,32 @@ public class Handler extends URLStreamHandler {
 
 	private URLStreamHandler fallbackHandler;
 
-	public Handler() {
+	/**
+     * Constructs a new Handler with no parameters.
+     * 
+     * @param null - the parameter is not used in this constructor
+     */
+    public Handler() {
 		this(null);
 	}
 
-	public Handler(JarFile jarFile) {
+	/**
+     * Constructs a new Handler object with the specified JarFile.
+     * 
+     * @param jarFile the JarFile to be associated with the Handler
+     */
+    public Handler(JarFile jarFile) {
 		this.jarFile = jarFile;
 	}
 
-	@Override
+	/**
+     * Opens a connection to the specified URL.
+     * 
+     * @param url the URL to open a connection to
+     * @return the URLConnection object representing the connection to the URL
+     * @throws IOException if an I/O error occurs while opening the connection
+     */
+    @Override
 	protected URLConnection openConnection(URL url) throws IOException {
 		if (this.jarFile != null && isUrlInJarFile(url, this.jarFile)) {
 			return JarURLConnection.get(url, this.jarFile);
@@ -96,13 +113,29 @@ public class Handler extends URLStreamHandler {
 		}
 	}
 
-	private boolean isUrlInJarFile(URL url, JarFile jarFile) throws MalformedURLException {
+	/**
+     * Checks if a given URL is located within a JAR file.
+     * 
+     * @param url      the URL to check
+     * @param jarFile  the JAR file to compare against
+     * @return         true if the URL is located within the JAR file, false otherwise
+     * @throws MalformedURLException  if the URL is malformed
+     */
+    private boolean isUrlInJarFile(URL url, JarFile jarFile) throws MalformedURLException {
 		// Try the path first to save building a new url string each time
 		return url.getPath().startsWith(jarFile.getUrl().getPath())
 				&& url.toString().startsWith(jarFile.getUrlString());
 	}
 
-	private URLConnection openFallbackConnection(URL url, Exception reason) throws IOException {
+	/**
+     * Opens a fallback connection to the specified URL.
+     * 
+     * @param url the URL to open the connection to
+     * @param reason the exception that occurred while trying to open the connection
+     * @return the opened connection, or null if no connection could be opened
+     * @throws IOException if an I/O error occurs while opening the connection
+     */
+    private URLConnection openFallbackConnection(URL url, Exception reason) throws IOException {
 		try {
 			URLConnection connection = openFallbackTomcatConnection(url);
 			connection = (connection != null) ? connection : openFallbackContextConnection(url);
@@ -146,7 +179,13 @@ public class Handler extends URLStreamHandler {
 		return null;
 	}
 
-	private boolean isTomcatWarUrl(String file) {
+	/**
+     * Checks if the given file is a Tomcat WAR URL.
+     * 
+     * @param file The file to be checked.
+     * @return true if the file is a Tomcat WAR URL, false otherwise.
+     */
+    private boolean isTomcatWarUrl(String file) {
 		if (file.startsWith(TOMCAT_WARFILE_PROTOCOL) || !file.contains("*/")) {
 			try {
 				URLConnection connection = new URL(file).openConnection();
@@ -193,7 +232,13 @@ public class Handler extends URLStreamHandler {
 		return new URL(null, url.toExternalForm(), fallbackHandler).openConnection();
 	}
 
-	private URLStreamHandler getFallbackHandler() {
+	/**
+     * Returns the fallback URLStreamHandler.
+     * 
+     * @return the fallback URLStreamHandler
+     * @throws IllegalStateException if unable to find fallback handler
+     */
+    private URLStreamHandler getFallbackHandler() {
 		if (this.fallbackHandler != null) {
 			return this.fallbackHandler;
 		}
@@ -210,7 +255,14 @@ public class Handler extends URLStreamHandler {
 		throw new IllegalStateException("Unable to find fallback handler");
 	}
 
-	private void log(boolean warning, String message, Exception cause) {
+	/**
+     * Logs a message with an optional warning level and an optional exception cause.
+     * 
+     * @param warning  a boolean indicating whether the message should be logged as a warning
+     * @param message  the message to be logged
+     * @param cause    the exception cause (optional)
+     */
+    private void log(boolean warning, String message, Exception cause) {
 		try {
 			Level level = warning ? Level.WARNING : Level.FINEST;
 			Logger.getLogger(getClass().getName()).log(level, message, cause);
@@ -222,7 +274,15 @@ public class Handler extends URLStreamHandler {
 		}
 	}
 
-	@Override
+	/**
+     * Parses the given URL and sets the file for the context.
+     * 
+     * @param context the context URL
+     * @param spec the URL specification
+     * @param start the starting index of the URL specification
+     * @param limit the ending index of the URL specification
+     */
+    @Override
 	protected void parseURL(URL context, String spec, int start, int limit) {
 		if (spec.regionMatches(true, 0, JAR_PROTOCOL, 0, JAR_PROTOCOL.length())) {
 			setFile(context, getFileFromSpec(spec.substring(start, limit)));
@@ -232,7 +292,14 @@ public class Handler extends URLStreamHandler {
 		}
 	}
 
-	private String getFileFromSpec(String spec) {
+	/**
+     * Retrieves the file from the given specification.
+     * 
+     * @param spec The specification of the file.
+     * @return The file specified by the given specification.
+     * @throws IllegalArgumentException If the specification is invalid or does not contain "!/".
+     */
+    private String getFileFromSpec(String spec) {
 		int separatorIndex = spec.lastIndexOf("!/");
 		if (separatorIndex == -1) {
 			throw new IllegalArgumentException("No !/ in spec '" + spec + "'");
@@ -246,7 +313,15 @@ public class Handler extends URLStreamHandler {
 		}
 	}
 
-	private String getFileFromContext(URL context, String spec) {
+	/**
+     * Retrieves a file from the given context URL and appends the specified path.
+     * 
+     * @param context The URL context from which to retrieve the file.
+     * @param spec The path to append to the retrieved file.
+     * @return The file path with the appended path.
+     * @throws IllegalArgumentException If no '/' is found in the context URL's file.
+     */
+    private String getFileFromContext(URL context, String spec) {
 		String file = context.getFile();
 		if (spec.startsWith("/")) {
 			return trimToJarRoot(file) + SEPARATOR + spec.substring(1);
@@ -261,7 +336,14 @@ public class Handler extends URLStreamHandler {
 		return file.substring(0, lastSlashIndex + 1) + spec;
 	}
 
-	private String trimToJarRoot(String file) {
+	/**
+     * Trims the given file path to the root of the JAR file.
+     * 
+     * @param file the file path to be trimmed
+     * @return the trimmed file path
+     * @throws IllegalArgumentException if no "!/" is found in the context URL's file
+     */
+    private String trimToJarRoot(String file) {
 		int lastSeparatorIndex = file.lastIndexOf(SEPARATOR);
 		if (lastSeparatorIndex == -1) {
 			throw new IllegalArgumentException("No !/ found in context URL's file '" + file + "'");
@@ -269,7 +351,13 @@ public class Handler extends URLStreamHandler {
 		return file.substring(0, lastSeparatorIndex);
 	}
 
-	private void setFile(URL context, String file) {
+	/**
+     * Sets the file for the given context URL.
+     * 
+     * @param context the context URL
+     * @param file the file to set
+     */
+    private void setFile(URL context, String file) {
 		String path = normalize(file);
 		String query = null;
 		int queryIndex = path.lastIndexOf('?');
@@ -280,7 +368,14 @@ public class Handler extends URLStreamHandler {
 		setURL(context, JAR_PROTOCOL, null, -1, null, null, path, query, context.getRef());
 	}
 
-	private String normalize(String file) {
+	/**
+     * Normalizes the given file path by replacing occurrences of the current directory and parent directory
+     * with the appropriate directory separators.
+     * 
+     * @param file the file path to be normalized
+     * @return the normalized file path
+     */
+    private String normalize(String file) {
 		if (!file.contains(CURRENT_DIR) && !file.contains(PARENT_DIR)) {
 			return file;
 		}
@@ -291,7 +386,13 @@ public class Handler extends URLStreamHandler {
 		return file.substring(0, afterLastSeparatorIndex) + afterSeparator;
 	}
 
-	private String replaceParentDir(String file) {
+	/**
+     * Replaces the parent directory references in the given file path with the actual directory names.
+     * 
+     * @param file the file path to be processed
+     * @return the file path with parent directory references replaced
+     */
+    private String replaceParentDir(String file) {
 		int parentDirIndex;
 		while ((parentDirIndex = file.indexOf(PARENT_DIR)) >= 0) {
 			int precedingSlashIndex = file.lastIndexOf('/', parentDirIndex - 1);
@@ -305,16 +406,35 @@ public class Handler extends URLStreamHandler {
 		return file;
 	}
 
-	private String replaceCurrentDir(String file) {
+	/**
+     * Replaces the current directory pattern in the given file path with a forward slash.
+     * 
+     * @param file the file path to be processed
+     * @return the file path with the current directory pattern replaced by a forward slash
+     */
+    private String replaceCurrentDir(String file) {
 		return CURRENT_DIR_PATTERN.matcher(file).replaceAll("/");
 	}
 
-	@Override
+	/**
+     * Computes the hash code for the given URL object.
+     * 
+     * @param u the URL object for which the hash code is to be computed
+     * @return the hash code value for the given URL object
+     */
+    @Override
 	protected int hashCode(URL u) {
 		return hashCode(u.getProtocol(), u.getFile());
 	}
 
-	private int hashCode(String protocol, String file) {
+	/**
+     * Calculates the hash code for a given protocol and file.
+     * 
+     * @param protocol the protocol to be used
+     * @param file the file to be used
+     * @return the hash code calculated for the protocol and file
+     */
+    private int hashCode(String protocol, String file) {
 		int result = (protocol != null) ? protocol.hashCode() : 0;
 		int separatorIndex = file.indexOf(SEPARATOR);
 		if (separatorIndex == -1) {
@@ -332,7 +452,14 @@ public class Handler extends URLStreamHandler {
 		return result;
 	}
 
-	@Override
+	/**
+     * Determines if two URLs refer to the same file.
+     * 
+     * @param u1 the first URL
+     * @param u2 the second URL
+     * @return true if the URLs refer to the same file, false otherwise
+     */
+    @Override
 	protected boolean sameFile(URL u1, URL u2) {
 		if (!u1.getProtocol().equals("jar") || !u2.getProtocol().equals("jar")) {
 			return false;
@@ -362,11 +489,25 @@ public class Handler extends URLStreamHandler {
 		return super.sameFile(u1, u2);
 	}
 
-	private String canonicalize(String path) {
+	/**
+     * Canonicalizes the given path by replacing all occurrences of the separator pattern with a forward slash.
+     * 
+     * @param path the path to be canonicalized
+     * @return the canonicalized path
+     */
+    private String canonicalize(String path) {
 		return SEPARATOR_PATTERN.matcher(path).replaceAll("/");
 	}
 
-	public JarFile getRootJarFileFromUrl(URL url) throws IOException {
+	/**
+     * Retrieves the root JarFile from the given URL.
+     * 
+     * @param url The URL of the Jar file.
+     * @return The root JarFile.
+     * @throws IOException If an I/O error occurs.
+     * @throws MalformedURLException If the Jar URL does not contain the "!/" separator.
+     */
+    public JarFile getRootJarFileFromUrl(URL url) throws IOException {
 		String spec = url.getFile();
 		int separatorIndex = spec.indexOf(SEPARATOR);
 		if (separatorIndex == -1) {
@@ -376,7 +517,14 @@ public class Handler extends URLStreamHandler {
 		return getRootJarFile(name);
 	}
 
-	private JarFile getRootJarFile(String name) throws IOException {
+	/**
+     * Retrieves the root JarFile based on the given name.
+     * 
+     * @param name The name of the root JarFile.
+     * @return The root JarFile.
+     * @throws IOException If there is an error opening the root Jar file.
+     */
+    private JarFile getRootJarFile(String name) throws IOException {
 		try {
 			if (!name.startsWith(FILE_PROTOCOL)) {
 				throw new IllegalStateException("Not a file URL");
@@ -443,7 +591,12 @@ public class Handler extends URLStreamHandler {
 		}
 	}
 
-	private static boolean canResetCachedUrlHandlers() {
+	/**
+     * Checks if the cached URL handlers can be reset.
+     * 
+     * @return {@code true} if the cached URL handlers can be reset, {@code false} otherwise.
+     */
+    private static boolean canResetCachedUrlHandlers() {
 		try {
 			resetCachedUrlHandlers();
 			return true;
@@ -453,7 +606,11 @@ public class Handler extends URLStreamHandler {
 		}
 	}
 
-	private static void resetCachedUrlHandlers() {
+	/**
+     * Resets the cached URL stream handlers.
+     * This method sets the URL stream handler factory to null, effectively clearing any cached URL stream handlers.
+     */
+    private static void resetCachedUrlHandlers() {
 		URL.setURLStreamHandlerFactory(null);
 	}
 

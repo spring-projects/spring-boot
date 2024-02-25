@@ -27,7 +27,13 @@ public class ActiveMQContainer extends GenericContainer<ActiveMQContainer> {
 
 	private static final int DEFAULT_PORT = 61616;
 
-	public ActiveMQContainer() {
+	/**
+     * Constructs a new ActiveMQContainer object.
+     * 
+     * This constructor initializes the ActiveMQContainer with the default Docker image name for ActiveMQ.
+     * It also adds the default port for ActiveMQ to the list of exposed ports.
+     */
+    public ActiveMQContainer() {
 		super(DockerImageNames.activeMq());
 		addExposedPorts(DEFAULT_PORT);
 	}

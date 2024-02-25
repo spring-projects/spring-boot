@@ -34,7 +34,17 @@ final class SkipPathExtensionContentNegotiation implements HandlerInterceptor {
 	private static final String SKIP_ATTRIBUTE = org.springframework.web.accept.PathExtensionContentNegotiationStrategy.class
 		.getName() + ".SKIP";
 
-	@Override
+	/**
+     * This method is used to handle the pre-processing of a request before it is handled by the controller.
+     * It sets an attribute in the request to skip the content negotiation for the path extension.
+     * 
+     * @param request  the HttpServletRequest object representing the incoming request
+     * @param response  the HttpServletResponse object representing the outgoing response
+     * @param handler  the Object representing the handler for the request
+     * @return true if the request should be processed further, false otherwise
+     * @throws Exception if an exception occurs during the processing of the request
+     */
+    @Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		request.setAttribute(SKIP_ATTRIBUTE, Boolean.TRUE);

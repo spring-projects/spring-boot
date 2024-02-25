@@ -22,10 +22,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+/**
+ * EchoHandler class.
+ */
 @Component
 public class EchoHandler {
 
-	public Mono<ServerResponse> echo(ServerRequest request) {
+	/**
+     * Echoes the request body in the response body.
+     *
+     * @param request the server request
+     * @return the server response with the echoed request body
+     */
+    public Mono<ServerResponse> echo(ServerRequest request) {
 		return ServerResponse.ok().body(request.bodyToMono(String.class), String.class);
 	}
 

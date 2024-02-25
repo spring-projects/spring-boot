@@ -32,30 +32,57 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 
 	private static final int OTLP_PORT = 4318;
 
-	OpenTelemetryTracingDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new instance of the OpenTelemetryTracingDockerComposeConnectionDetailsFactory class.
+     * 
+     * This class extends the superclass "otel/opentelemetry-collector-contrib" and is used for configuring
+     * the OpenTelemetry tracing with Docker Compose connection details. It also utilizes the
+     * "org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfiguration" class for
+     * auto-configuration of the tracing with OTLP (OpenTelemetry Protocol).
+     */
+    OpenTelemetryTracingDockerComposeConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
 				"org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfiguration");
 	}
 
-	@Override
+	/**
+     * Returns the connection details for a Docker Compose setup.
+     * 
+     * @param source the Docker Compose connection source
+     * @return the connection details for the Docker Compose setup
+     */
+    @Override
 	protected OtlpTracingConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new OpenTelemetryTracingDockerComposeConnectionDetails(source.getRunningService());
 	}
 
-	private static final class OpenTelemetryTracingDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+	/**
+     * OpenTelemetryTracingDockerComposeConnectionDetails class.
+     */
+    private static final class OpenTelemetryTracingDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements OtlpTracingConnectionDetails {
 
 		private final String host;
 
 		private final int port;
 
-		private OpenTelemetryTracingDockerComposeConnectionDetails(RunningService source) {
+		/**
+         * Constructs a new OpenTelemetryTracingDockerComposeConnectionDetails object with the provided RunningService source.
+         * 
+         * @param source the RunningService object representing the source of the connection details
+         */
+        private OpenTelemetryTracingDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
 			this.port = source.ports().get(OTLP_PORT);
 		}
 
-		@Override
+		/**
+         * Returns the URL for the OpenTelemetry tracing endpoint.
+         * 
+         * @return the URL for the OpenTelemetry tracing endpoint
+         */
+        @Override
 		public String getUrl() {
 			return "http://%s:%d/v1/traces".formatted(this.host, this.port);
 		}

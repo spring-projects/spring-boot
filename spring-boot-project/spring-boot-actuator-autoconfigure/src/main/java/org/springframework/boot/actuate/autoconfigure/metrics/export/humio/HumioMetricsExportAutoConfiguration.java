@@ -51,17 +51,37 @@ public class HumioMetricsExportAutoConfiguration {
 
 	private final HumioProperties properties;
 
-	public HumioMetricsExportAutoConfiguration(HumioProperties properties) {
+	/**
+     * Constructs a new instance of HumioMetricsExportAutoConfiguration with the specified HumioProperties.
+     *
+     * @param properties the HumioProperties to be used for configuration
+     */
+    public HumioMetricsExportAutoConfiguration(HumioProperties properties) {
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Creates a HumioConfig bean if no other bean of the same type is present.
+     * This method is annotated with @ConditionalOnMissingBean to ensure that it is only executed if no other bean of the same type is already defined.
+     * It returns a new instance of HumioPropertiesConfigAdapter, which is an implementation of the HumioConfig interface.
+     * The properties parameter is used to initialize the HumioPropertiesConfigAdapter instance.
+     *
+     * @return a HumioConfig bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public HumioConfig humioConfig() {
 		return new HumioPropertiesConfigAdapter(this.properties);
 	}
 
-	@Bean
+	/**
+     * Creates a HumioMeterRegistry bean if there is no existing bean of the same type.
+     * 
+     * @param humioConfig The HumioConfig object used for configuring the HumioMeterRegistry.
+     * @param clock The Clock object used for providing the current time.
+     * @return The created HumioMeterRegistry bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public HumioMeterRegistry humioMeterRegistry(HumioConfig humioConfig, Clock clock) {
 		return HumioMeterRegistry.builder(humioConfig)

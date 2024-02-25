@@ -77,7 +77,14 @@ public class JdbcSessionDataSourceScriptDatabaseInitializer extends DataSourceSc
 		return settings;
 	}
 
-	private static List<String> resolveSchemaLocations(DataSource dataSource, JdbcSessionProperties properties) {
+	/**
+     * Resolves the schema locations based on the provided data source and session properties.
+     * 
+     * @param dataSource the data source to be used for resolving schema locations
+     * @param properties the session properties containing the platform and schema information
+     * @return a list of resolved schema locations
+     */
+    private static List<String> resolveSchemaLocations(DataSource dataSource, JdbcSessionProperties properties) {
 		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql");
 		if (StringUtils.hasText(properties.getPlatform())) {

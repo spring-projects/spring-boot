@@ -56,7 +56,15 @@ public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 		this.migrationStrategy = migrationStrategy;
 	}
 
-	@Override
+	/**
+     * This method is called after all bean properties have been set and performs the necessary migration tasks.
+     * If a migration strategy is provided, it will be used to migrate the Flyway instance. Otherwise, the default
+     * migration method will be called. If the default migration method is not available (Flyway version < 7.0),
+     * a fallback method will be invoked.
+     *
+     * @throws Exception if an error occurs during the migration process
+     */
+    @Override
 	public void afterPropertiesSet() throws Exception {
 		if (this.migrationStrategy != null) {
 			this.migrationStrategy.migrate(this.flyway);
@@ -72,12 +80,22 @@ public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 		}
 	}
 
-	@Override
+	/**
+     * Returns the order of the Flyway migration initializer.
+     *
+     * @return the order of the Flyway migration initializer
+     */
+    @Override
 	public int getOrder() {
 		return this.order;
 	}
 
-	public void setOrder(int order) {
+	/**
+     * Sets the order of the migration.
+     * 
+     * @param order the order of the migration
+     */
+    public void setOrder(int order) {
 		this.order = order;
 	}
 

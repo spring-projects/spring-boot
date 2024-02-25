@@ -41,7 +41,12 @@ public interface SpanProcessors extends Iterable<SpanProcessor> {
 	 */
 	List<SpanProcessor> list();
 
-	@Override
+	/**
+ * Returns an iterator over the elements in this SpanProcessors object in proper sequence.
+ *
+ * @return an iterator over the elements in this SpanProcessors object in proper sequence
+ */
+@Override
 	default Iterator<SpanProcessor> iterator() {
 		return list().iterator();
 	}

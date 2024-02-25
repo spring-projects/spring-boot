@@ -30,17 +30,36 @@ final class UrlJarEntry extends JarEntry {
 
 	private final UrlJarManifest manifest;
 
-	private UrlJarEntry(JarEntry entry, UrlJarManifest manifest) {
+	/**
+     * Constructs a new UrlJarEntry object with the specified JarEntry and UrlJarManifest.
+     * 
+     * @param entry the JarEntry object representing the entry in the JAR file
+     * @param manifest the UrlJarManifest object representing the manifest of the JAR file
+     */
+    private UrlJarEntry(JarEntry entry, UrlJarManifest manifest) {
 		super(entry);
 		this.manifest = manifest;
 	}
 
-	@Override
+	/**
+     * Returns the attributes of this UrlJarEntry.
+     * 
+     * @return the attributes of this UrlJarEntry
+     * @throws IOException if an I/O error occurs while retrieving the attributes
+     */
+    @Override
 	public Attributes getAttributes() throws IOException {
 		return this.manifest.getEntryAttributes(this);
 	}
 
-	static UrlJarEntry of(ZipEntry entry, UrlJarManifest manifest) {
+	/**
+     * Creates a new UrlJarEntry object from the given ZipEntry and UrlJarManifest.
+     * 
+     * @param entry    the ZipEntry to be converted into a UrlJarEntry
+     * @param manifest the UrlJarManifest associated with the UrlJarEntry
+     * @return         a new UrlJarEntry object if the ZipEntry is not null, otherwise null
+     */
+    static UrlJarEntry of(ZipEntry entry, UrlJarManifest manifest) {
 		return (entry != null) ? new UrlJarEntry((JarEntry) entry, manifest) : null;
 	}
 

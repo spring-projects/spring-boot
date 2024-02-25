@@ -40,7 +40,13 @@ import org.springframework.util.ClassUtils;
  */
 class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements BeanFactoryInitializationAotProcessor {
 
-	@Override
+	/**
+     * Processes the ConfigurationProperties annotations ahead of time.
+     * 
+     * @param beanFactory the bean factory to process
+     * @return the ConfigurationPropertiesReflectionHintsContribution object containing the bindables
+     */
+    @Override
 	public ConfigurationPropertiesReflectionHintsContribution processAheadOfTime(
 			ConfigurableListableBeanFactory beanFactory) {
 		String[] beanNames = beanFactory.getBeanNamesForAnnotation(ConfigurationProperties.class);
@@ -58,23 +64,42 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 		return (!bindables.isEmpty()) ? new ConfigurationPropertiesReflectionHintsContribution(bindables) : null;
 	}
 
-	static final class ConfigurationPropertiesReflectionHintsContribution
+	/**
+     * ConfigurationPropertiesReflectionHintsContribution class.
+     */
+    static final class ConfigurationPropertiesReflectionHintsContribution
 			implements BeanFactoryInitializationAotContribution {
 
 		private final List<Bindable<?>> bindables;
 
-		private ConfigurationPropertiesReflectionHintsContribution(List<Bindable<?>> bindables) {
+		/**
+         * Constructs a new ConfigurationPropertiesReflectionHintsContribution object with the specified list of bindables.
+         * 
+         * @param bindables the list of bindables to be used by the ConfigurationPropertiesReflectionHintsContribution object
+         */
+        private ConfigurationPropertiesReflectionHintsContribution(List<Bindable<?>> bindables) {
 			this.bindables = bindables;
 		}
 
-		@Override
+		/**
+         * Applies the configuration properties reflection hints to the given generation context and bean factory initialization code.
+         * 
+         * @param generationContext The generation context to apply the hints to.
+         * @param beanFactoryInitializationCode The bean factory initialization code to apply the hints to.
+         */
+        @Override
 		public void applyTo(GenerationContext generationContext,
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
 			BindableRuntimeHintsRegistrar.forBindables(this.bindables)
 				.registerHints(generationContext.getRuntimeHints());
 		}
 
-		Iterable<Bindable<?>> getBindables() {
+		/**
+         * Returns an iterable of bindable objects.
+         *
+         * @return an iterable of bindable objects
+         */
+        Iterable<Bindable<?>> getBindables() {
 			return this.bindables;
 		}
 

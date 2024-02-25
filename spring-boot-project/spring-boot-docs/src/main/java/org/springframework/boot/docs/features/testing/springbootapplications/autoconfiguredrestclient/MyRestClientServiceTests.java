@@ -27,6 +27,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+/**
+ * MyRestClientServiceTests class.
+ */
 @RestClientTest(RemoteVehicleDetailsService.class)
 class MyRestClientServiceTests {
 
@@ -36,7 +39,22 @@ class MyRestClientServiceTests {
 	@Autowired
 	private MockRestServiceServer server;
 
-	@Test
+	/**
+     * Test case to verify the behavior of the getVehicleDetailsWhenResultIsSuccessShouldReturnDetails method.
+     * 
+     * This method tests the functionality of the MyRestClientService class's callRestService method when the result is success.
+     * It verifies that the method returns the expected greeting message.
+     * 
+     * The test sets up a mock server to handle the REST request and response.
+     * It expects a GET request to "https://example.com/greet/details" and responds with a success status and a plain text response body of "hello".
+     * 
+     * The method then calls the callRestService method of the MyRestClientService class and stores the returned greeting message.
+     * 
+     * Finally, it asserts that the greeting message is equal to the expected value of "hello".
+     * 
+     * @throws Exception if an error occurs during the test
+     */
+    @Test
 	void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails() {
 		this.server.expect(requestTo("https://example.com/greet/details"))
 			.andRespond(withSuccess("hello", MediaType.TEXT_PLAIN));

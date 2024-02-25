@@ -70,7 +70,12 @@ public class ApplicationTemp {
 		this.sourceClass = sourceClass;
 	}
 
-	@Override
+	/**
+     * Returns the absolute path of the directory.
+     *
+     * @return the absolute path of the directory
+     */
+    @Override
 	public String toString() {
 		return getDir().getAbsolutePath();
 	}
@@ -92,7 +97,13 @@ public class ApplicationTemp {
 		return createDirectory(getPath().resolve(subDir)).toFile();
 	}
 
-	private Path getPath() {
+	/**
+     * Returns the path of the temporary directory for the application.
+     * If the path is not already set, it generates a hash based on the source class and creates a directory with that hash in the temporary directory.
+     * 
+     * @return the path of the temporary directory
+     */
+    private Path getPath() {
 		if (this.path == null) {
 			this.pathLock.lock();
 			try {
@@ -108,7 +119,14 @@ public class ApplicationTemp {
 		return this.path;
 	}
 
-	private Path createDirectory(Path path) {
+	/**
+     * Creates a directory at the specified path if it does not already exist.
+     * 
+     * @param path the path at which to create the directory
+     * @return the created directory path
+     * @throws IllegalStateException if unable to create the directory
+     */
+    private Path createDirectory(Path path) {
 		try {
 			if (!Files.exists(path)) {
 				Files.createDirectory(path, getFileAttributes(path.getFileSystem(), DIRECTORY_PERMISSIONS));
@@ -120,14 +138,27 @@ public class ApplicationTemp {
 		}
 	}
 
-	private FileAttribute<?>[] getFileAttributes(FileSystem fileSystem, EnumSet<PosixFilePermission> ownerReadWrite) {
+	/**
+     * Returns an array of file attributes for the given file system and owner read/write permissions.
+     * 
+     * @param fileSystem the file system to retrieve the file attributes from
+     * @param ownerReadWrite the owner read/write permissions to be used as file attributes
+     * @return an array of file attributes
+     */
+    private FileAttribute<?>[] getFileAttributes(FileSystem fileSystem, EnumSet<PosixFilePermission> ownerReadWrite) {
 		if (!fileSystem.supportedFileAttributeViews().contains("posix")) {
 			return NO_FILE_ATTRIBUTES;
 		}
 		return new FileAttribute<?>[] { PosixFilePermissions.asFileAttribute(ownerReadWrite) };
 	}
 
-	private Path getTempDirectory() {
+	/**
+     * Returns the path to the temporary directory.
+     * 
+     * @return the path to the temporary directory
+     * @throws IllegalStateException if the 'java.io.tmpdir' property is not set, or if the temporary directory does not exist or is not a directory
+     */
+    private Path getTempDirectory() {
 		String property = System.getProperty("java.io.tmpdir");
 		Assert.state(StringUtils.hasLength(property), "No 'java.io.tmpdir' property set");
 		Path tempDirectory = Paths.get(property);
@@ -137,7 +168,14 @@ public class ApplicationTemp {
 		return tempDirectory;
 	}
 
-	private byte[] generateHash(Class<?> sourceClass) {
+	/**
+     * Generates a hash value based on the provided source class.
+     * 
+     * @param sourceClass the class used to generate the hash
+     * @return a byte array representing the generated hash
+     * @throws IllegalStateException if an error occurs during the hash generation process
+     */
+    private byte[] generateHash(Class<?> sourceClass) {
 		ApplicationHome home = new ApplicationHome(sourceClass);
 		MessageDigest digest;
 		try {
@@ -156,13 +194,25 @@ public class ApplicationTemp {
 		}
 	}
 
-	private void update(MessageDigest digest, Object source) {
+	/**
+     * Updates the given MessageDigest with the bytes obtained from the provided source object.
+     * 
+     * @param digest the MessageDigest to be updated
+     * @param source the object from which the bytes will be obtained
+     */
+    private void update(MessageDigest digest, Object source) {
 		if (source != null) {
 			digest.update(getUpdateSourceBytes(source));
 		}
 	}
 
-	private byte[] getUpdateSourceBytes(Object source) {
+	/**
+     * Returns the byte array representation of the update source.
+     * 
+     * @param source the update source object
+     * @return the byte array representation of the update source
+     */
+    private byte[] getUpdateSourceBytes(Object source) {
 		if (source instanceof File file) {
 			return getUpdateSourceBytes(file.getAbsolutePath());
 		}

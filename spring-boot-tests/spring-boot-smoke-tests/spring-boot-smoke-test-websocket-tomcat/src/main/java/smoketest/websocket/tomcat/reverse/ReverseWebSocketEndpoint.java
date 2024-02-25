@@ -22,10 +22,20 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
+/**
+ * ReverseWebSocketEndpoint class.
+ */
 @ServerEndpoint("/reverse")
 public class ReverseWebSocketEndpoint {
 
-	@OnMessage
+	/**
+     * Handles incoming messages from the WebSocket session.
+     * 
+     * @param session the WebSocket session
+     * @param message the incoming message
+     * @throws IOException if an I/O error occurs while sending the reversed message
+     */
+    @OnMessage
 	public void handleMessage(Session session, String message) throws IOException {
 		session.getBasicRemote().sendText("Reversed: " + new StringBuilder(message).reverse());
 	}

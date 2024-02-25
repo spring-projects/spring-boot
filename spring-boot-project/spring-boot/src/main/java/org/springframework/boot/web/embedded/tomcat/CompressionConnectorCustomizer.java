@@ -33,11 +33,21 @@ class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
 
 	private final Compression compression;
 
-	CompressionConnectorCustomizer(Compression compression) {
+	/**
+     * Constructs a new CompressionConnectorCustomizer with the specified Compression object.
+     * 
+     * @param compression the Compression object to be used for customization
+     */
+    CompressionConnectorCustomizer(Compression compression) {
 		this.compression = compression;
 	}
 
-	@Override
+	/**
+     * Customizes the given Connector by enabling compression if the compression is enabled.
+     * 
+     * @param connector the Connector to be customized
+     */
+    @Override
 	public void customize(Connector connector) {
 		if (this.compression != null && this.compression.getEnabled()) {
 			ProtocolHandler handler = connector.getProtocolHandler();
@@ -47,7 +57,12 @@ class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
 		}
 	}
 
-	private void customize(AbstractHttp11Protocol<?> protocol) {
+	/**
+     * Customizes the given AbstractHttp11Protocol with compression settings.
+     * 
+     * @param protocol the AbstractHttp11Protocol to be customized
+     */
+    private void customize(AbstractHttp11Protocol<?> protocol) {
 		Compression compression = this.compression;
 		protocol.setCompression("on");
 		protocol.setCompressionMinSize(getMinResponseSize(compression));
@@ -57,15 +72,32 @@ class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
 		}
 	}
 
-	private int getMinResponseSize(Compression compression) {
+	/**
+     * Returns the minimum response size in bytes for the given compression type.
+     * 
+     * @param compression the compression type
+     * @return the minimum response size in bytes
+     */
+    private int getMinResponseSize(Compression compression) {
 		return (int) compression.getMinResponseSize().toBytes();
 	}
 
-	private String getMimeTypes(Compression compression) {
+	/**
+     * Returns a comma-delimited string of MIME types supported by the given compression.
+     *
+     * @param compression the compression object
+     * @return a comma-delimited string of MIME types
+     */
+    private String getMimeTypes(Compression compression) {
 		return StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes());
 	}
 
-	private String getExcludedUserAgents() {
+	/**
+     * Returns a comma-delimited string of excluded user agents.
+     * 
+     * @return a comma-delimited string of excluded user agents
+     */
+    private String getExcludedUserAgents() {
 		return StringUtils.arrayToCommaDelimitedString(this.compression.getExcludedUserAgents());
 	}
 

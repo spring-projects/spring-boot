@@ -38,37 +38,76 @@ class AvailabilityProbesHealthEndpointGroup implements HealthEndpointGroup {
 
 	private final AdditionalHealthEndpointPath additionalPath;
 
-	AvailabilityProbesHealthEndpointGroup(AdditionalHealthEndpointPath additionalPath, String... members) {
+	/**
+     * Constructs a new AvailabilityProbesHealthEndpointGroup with the specified additionalPath and members.
+     *
+     * @param additionalPath the additional health endpoint path to be added
+     * @param members        the members of the health endpoint group
+     */
+    AvailabilityProbesHealthEndpointGroup(AdditionalHealthEndpointPath additionalPath, String... members) {
 		this.members = new HashSet<>(Arrays.asList(members));
 		this.additionalPath = additionalPath;
 	}
 
-	@Override
+	/**
+     * Checks if a given name is a member of the AvailabilityProbesHealthEndpointGroup.
+     * 
+     * @param name the name to check
+     * @return true if the name is a member, false otherwise
+     */
+    @Override
 	public boolean isMember(String name) {
 		return this.members.contains(name);
 	}
 
-	@Override
+	/**
+     * Determines whether to show the components of the AvailabilityProbesHealthEndpointGroup.
+     *
+     * @param securityContext the security context to check for authorization
+     * @return true if the components should be shown, false otherwise
+     */
+    @Override
 	public boolean showComponents(SecurityContext securityContext) {
 		return false;
 	}
 
-	@Override
+	/**
+     * Determines whether to show details of the availability probes health endpoint group.
+     * 
+     * @param securityContext the security context used to determine access rights
+     * @return true if the details should be shown, false otherwise
+     */
+    @Override
 	public boolean showDetails(SecurityContext securityContext) {
 		return false;
 	}
 
-	@Override
+	/**
+     * Returns the default status aggregator for the AvailabilityProbesHealthEndpointGroup.
+     * 
+     * @return the default status aggregator
+     */
+    @Override
 	public StatusAggregator getStatusAggregator() {
 		return StatusAggregator.getDefault();
 	}
 
-	@Override
+	/**
+     * Returns the HTTP code status mapper for this AvailabilityProbesHealthEndpointGroup.
+     * 
+     * @return the HTTP code status mapper
+     */
+    @Override
 	public HttpCodeStatusMapper getHttpCodeStatusMapper() {
 		return HttpCodeStatusMapper.DEFAULT;
 	}
 
-	@Override
+	/**
+     * Returns the additional health endpoint path.
+     *
+     * @return the additional health endpoint path
+     */
+    @Override
 	public AdditionalHealthEndpointPath getAdditionalPath() {
 		return this.additionalPath;
 	}

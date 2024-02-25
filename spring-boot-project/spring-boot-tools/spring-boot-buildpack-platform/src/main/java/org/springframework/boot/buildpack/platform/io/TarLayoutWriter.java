@@ -38,33 +38,82 @@ class TarLayoutWriter implements Layout, Closeable {
 
 	private final TarArchiveOutputStream outputStream;
 
-	TarLayoutWriter(OutputStream outputStream) {
+	/**
+     * Constructs a new TarLayoutWriter object with the specified output stream.
+     * 
+     * @param outputStream the output stream to write the tar archive to
+     */
+    TarLayoutWriter(OutputStream outputStream) {
 		this.outputStream = new TarArchiveOutputStream(outputStream);
 		this.outputStream.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
 	}
 
-	@Override
+	/**
+     * Creates a directory entry in the archive with the specified name, owner, and mode.
+     * 
+     * @param name  the name of the directory
+     * @param owner the owner of the directory
+     * @param mode  the mode of the directory
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
 	public void directory(String name, Owner owner, int mode) throws IOException {
 		this.outputStream.putArchiveEntry(createDirectoryEntry(name, owner, mode));
 		this.outputStream.closeArchiveEntry();
 	}
 
-	@Override
+	/**
+     * Writes a file to the archive with the specified name, owner, mode, and content.
+     * 
+     * @param name the name of the file to be written
+     * @param owner the owner of the file
+     * @param mode the mode of the file
+     * @param content the content of the file
+     * @throws IOException if an I/O error occurs while writing the file
+     */
+    @Override
 	public void file(String name, Owner owner, int mode, Content content) throws IOException {
 		this.outputStream.putArchiveEntry(createFileEntry(name, owner, mode, content.size()));
 		content.writeTo(StreamUtils.nonClosing(this.outputStream));
 		this.outputStream.closeArchiveEntry();
 	}
 
-	private TarArchiveEntry createDirectoryEntry(String name, Owner owner, int mode) {
+	/**
+     * Creates a TarArchiveEntry for a directory with the specified name, owner, and mode.
+     * 
+     * @param name The name of the directory.
+     * @param owner The owner of the directory.
+     * @param mode The mode of the directory.
+     * @return The TarArchiveEntry representing the directory.
+     */
+    private TarArchiveEntry createDirectoryEntry(String name, Owner owner, int mode) {
 		return createEntry(name, owner, TarConstants.LF_DIR, mode, 0);
 	}
 
-	private TarArchiveEntry createFileEntry(String name, Owner owner, int mode, int size) {
+	/**
+     * Creates a new TarArchiveEntry for a file with the specified name, owner, mode, and size.
+     * 
+     * @param name the name of the file
+     * @param owner the owner of the file
+     * @param mode the mode of the file
+     * @param size the size of the file
+     * @return the created TarArchiveEntry
+     */
+    private TarArchiveEntry createFileEntry(String name, Owner owner, int mode, int size) {
 		return createEntry(name, owner, TarConstants.LF_NORMAL, mode, size);
 	}
 
-	private TarArchiveEntry createEntry(String name, Owner owner, byte linkFlag, int mode, int size) {
+	/**
+     * Creates a TarArchiveEntry object with the specified parameters.
+     * 
+     * @param name the name of the entry
+     * @param owner the owner of the entry
+     * @param linkFlag the link flag of the entry
+     * @param mode the mode of the entry
+     * @param size the size of the entry
+     * @return the created TarArchiveEntry object
+     */
+    private TarArchiveEntry createEntry(String name, Owner owner, byte linkFlag, int mode, int size) {
 		TarArchiveEntry entry = new TarArchiveEntry(name, linkFlag, true);
 		entry.setUserId(owner.getUid());
 		entry.setGroupId(owner.getGid());
@@ -74,11 +123,21 @@ class TarLayoutWriter implements Layout, Closeable {
 		return entry;
 	}
 
-	void finish() throws IOException {
+	/**
+     * Finishes writing to the output stream.
+     * 
+     * @throws IOException if an I/O error occurs
+     */
+    void finish() throws IOException {
 		this.outputStream.finish();
 	}
 
-	@Override
+	/**
+     * Closes the output stream associated with this TarLayoutWriter.
+     * 
+     * @throws IOException if an I/O error occurs while closing the output stream
+     */
+    @Override
 	public void close() throws IOException {
 		this.outputStream.close();
 	}

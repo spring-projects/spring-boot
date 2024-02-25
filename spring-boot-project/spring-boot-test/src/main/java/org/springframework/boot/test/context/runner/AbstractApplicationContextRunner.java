@@ -324,7 +324,13 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		return customizer.apply((SELF) this);
 	}
 
-	private SELF newInstance(RunnerConfiguration<C> runnerConfiguration) {
+	/**
+     * Creates a new instance of the AbstractApplicationContextRunner class with the provided runner configuration.
+     * 
+     * @param runnerConfiguration the runner configuration to be used for creating the new instance
+     * @return a new instance of the AbstractApplicationContextRunner class
+     */
+    private SELF newInstance(RunnerConfiguration<C> runnerConfiguration) {
 		return this.instanceFactory.apply(runnerConfiguration);
 	}
 
@@ -358,13 +364,27 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		return (SELF) this;
 	}
 
-	private void consumeAssertableContext(boolean refresh, ContextConsumer<? super A> consumer) {
+	/**
+     * Consumes an assertable context by creating it with the specified refresh flag and passing it to the provided consumer.
+     * 
+     * @param refresh   a boolean indicating whether the context should be refreshed
+     * @param consumer  the consumer to accept the assertable context
+     * @param <A>       the type of the assertable context
+     */
+    private void consumeAssertableContext(boolean refresh, ContextConsumer<? super A> consumer) {
 		try (A context = createAssertableContext(refresh)) {
 			accept(consumer, context);
 		}
 	}
 
-	private void withContextClassLoader(ClassLoader classLoader, Runnable action) {
+	/**
+     * Executes the specified action with the given class loader as the context class loader.
+     * If the class loader is null, the action is executed without changing the context class loader.
+     * 
+     * @param classLoader the class loader to set as the context class loader
+     * @param action the action to be executed
+     */
+    private void withContextClassLoader(ClassLoader classLoader, Runnable action) {
 		if (classLoader == null) {
 			action.run();
 		}
@@ -381,7 +401,13 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Creates an assertable context.
+     * 
+     * @param refresh a boolean value indicating whether the context should be refreshed
+     * @return an instance of the assertable context
+     */
+    @SuppressWarnings("unchecked")
 	private A createAssertableContext(boolean refresh) {
 		ResolvableType resolvableType = ResolvableType.forClass(AbstractApplicationContextRunner.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
@@ -389,7 +415,14 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		return ApplicationContextAssertProvider.get(assertType, contextType, () -> createAndLoadContext(refresh));
 	}
 
-	private C createAndLoadContext(boolean refresh) {
+	/**
+     * Creates and loads the application context.
+     * 
+     * @param refresh a boolean value indicating whether to refresh the context
+     * @return the created and loaded application context
+     * @throws RuntimeException if an error occurs during configuration or context creation
+     */
+    private C createAndLoadContext(boolean refresh) {
 		C context = this.runnerConfiguration.contextFactory.get();
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
@@ -409,7 +442,13 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		}
 	}
 
-	private void configureContext(C context, boolean refresh) {
+	/**
+     * Configures the context with the given context and refresh flag.
+     * 
+     * @param context the context to be configured
+     * @param refresh a flag indicating whether the context should be refreshed
+     */
+    private void configureContext(C context, boolean refresh) {
 		if (this.runnerConfiguration.parent != null) {
 			context.setParent(this.runnerConfiguration.parent);
 		}
@@ -429,7 +468,14 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		}
 	}
 
-	private void accept(ContextConsumer<? super A> consumer, A context) {
+	/**
+     * Accepts a consumer function and a context object, and executes the consumer function with the context object.
+     * 
+     * @param consumer the consumer function to be executed
+     * @param context the context object to be passed to the consumer function
+     * @throws Throwable if an exception occurs during the execution of the consumer function
+     */
+    private void accept(ContextConsumer<? super A> consumer, A context) {
 		try {
 			consumer.accept(context);
 		}
@@ -438,7 +484,14 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Rethrows the specified throwable.
+     *
+     * @param e the throwable to be rethrown
+     * @throws E the type of throwable to be thrown
+     * @since 1.0
+     */
+    @SuppressWarnings("unchecked")
 	private <E extends Throwable> void rethrow(Throwable e) throws E {
 		throw (E) e;
 	}
@@ -452,23 +505,47 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 		Consumer<GenericApplicationContext> registrar;
 
-		public BeanRegistration(String name, Class<T> type, Object... constructorArgs) {
+		/**
+         * Creates a new instance of BeanRegistration with the specified name, type, and constructor arguments.
+         * 
+         * @param name the name of the bean to be registered
+         * @param type the class type of the bean to be registered
+         * @param constructorArgs the constructor arguments to be used when creating the bean
+         */
+        public BeanRegistration(String name, Class<T> type, Object... constructorArgs) {
 			this.registrar = (context) -> context.registerBean(name, type, constructorArgs);
 		}
 
-		public BeanRegistration(String name, Class<T> type, Supplier<T> supplier,
+		/**
+         * Creates a new instance of BeanRegistration with the specified parameters.
+         * 
+         * @param name the name of the bean
+         * @param type the class type of the bean
+         * @param supplier the supplier function that provides the bean instance
+         * @param customizers optional customizers to apply to the bean definition
+         */
+        public BeanRegistration(String name, Class<T> type, Supplier<T> supplier,
 				BeanDefinitionCustomizer... customizers) {
 			this.registrar = (context) -> context.registerBean(name, type, supplier, customizers);
 		}
 
-		public void apply(ConfigurableApplicationContext context) {
+		/**
+         * Applies the given ConfigurableApplicationContext to the BeanRegistration.
+         * 
+         * @param context the ConfigurableApplicationContext to be applied
+         * @throws IllegalArgumentException if the context is not an instance of GenericApplicationContext
+         */
+        public void apply(ConfigurableApplicationContext context) {
 			Assert.isInstanceOf(GenericApplicationContext.class, context);
 			this.registrar.accept(((GenericApplicationContext) context));
 		}
 
 	}
 
-	protected static final class RunnerConfiguration<C extends ConfigurableApplicationContext> {
+	/**
+     * RunnerConfiguration class.
+     */
+    protected static final class RunnerConfiguration<C extends ConfigurableApplicationContext> {
 
 		private final Supplier<C> contextFactory;
 
@@ -490,11 +567,21 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 		private List<Configurations> configurations = Collections.emptyList();
 
-		private RunnerConfiguration(Supplier<C> contextFactory) {
+		/**
+         * Constructs a new RunnerConfiguration object with the given context factory.
+         * 
+         * @param contextFactory the supplier that provides the context object for the runner
+         */
+        private RunnerConfiguration(Supplier<C> contextFactory) {
 			this.contextFactory = contextFactory;
 		}
 
-		private RunnerConfiguration(RunnerConfiguration<C> source) {
+		/**
+         * Constructs a new RunnerConfiguration object by copying the values from the given source object.
+         * 
+         * @param source the source RunnerConfiguration object to copy the values from
+         */
+        private RunnerConfiguration(RunnerConfiguration<C> source) {
 			this.contextFactory = source.contextFactory;
 			this.allowBeanDefinitionOverriding = source.allowBeanDefinitionOverriding;
 			this.allowCircularReferences = source.allowCircularReferences;
@@ -507,57 +594,119 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 			this.configurations = source.configurations;
 		}
 
-		private RunnerConfiguration<C> withAllowBeanDefinitionOverriding(boolean allowBeanDefinitionOverriding) {
+		/**
+         * Sets whether bean definition overriding is allowed in the runner configuration.
+         * 
+         * @param allowBeanDefinitionOverriding true if bean definition overriding is allowed, false otherwise
+         * @return a new RunnerConfiguration object with the updated allowBeanDefinitionOverriding value
+         */
+        private RunnerConfiguration<C> withAllowBeanDefinitionOverriding(boolean allowBeanDefinitionOverriding) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.allowBeanDefinitionOverriding = allowBeanDefinitionOverriding;
 			return config;
 		}
 
-		private RunnerConfiguration<C> withAllowCircularReferences(boolean allowCircularReferences) {
+		/**
+         * Sets whether circular references are allowed in the runner configuration.
+         * 
+         * @param allowCircularReferences true if circular references are allowed, false otherwise
+         * @return a new RunnerConfiguration object with the updated allowCircularReferences value
+         */
+        private RunnerConfiguration<C> withAllowCircularReferences(boolean allowCircularReferences) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.allowCircularReferences = allowCircularReferences;
 			return config;
 		}
 
-		private RunnerConfiguration<C> withInitializer(ApplicationContextInitializer<? super C> initializer) {
+		/**
+         * Adds an ApplicationContextInitializer to the RunnerConfiguration.
+         * 
+         * @param initializer the ApplicationContextInitializer to be added
+         * @return a new RunnerConfiguration with the added initializer
+         * @throws IllegalArgumentException if the initializer is null
+         */
+        private RunnerConfiguration<C> withInitializer(ApplicationContextInitializer<? super C> initializer) {
 			Assert.notNull(initializer, "Initializer must not be null");
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.initializers = add(config.initializers, initializer);
 			return config;
 		}
 
-		private RunnerConfiguration<C> withPropertyValues(String... pairs) {
+		/**
+         * Sets the property values for the RunnerConfiguration.
+         * 
+         * @param pairs the property key-value pairs to be set
+         * @return a new RunnerConfiguration object with the updated property values
+         */
+        private RunnerConfiguration<C> withPropertyValues(String... pairs) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.environmentProperties = config.environmentProperties.and(pairs);
 			return config;
 		}
 
-		private RunnerConfiguration<C> withSystemProperties(String... pairs) {
+		/**
+         * Sets the system properties for the runner configuration.
+         * 
+         * @param pairs the key-value pairs of system properties to be set
+         * @return a new RunnerConfiguration object with the updated system properties
+         */
+        private RunnerConfiguration<C> withSystemProperties(String... pairs) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.systemProperties = config.systemProperties.and(pairs);
 			return config;
 		}
 
-		private RunnerConfiguration<C> withClassLoader(ClassLoader classLoader) {
+		/**
+         * Sets the class loader for the runner configuration.
+         * 
+         * @param classLoader the class loader to be set
+         * @return a new RunnerConfiguration object with the specified class loader
+         */
+        private RunnerConfiguration<C> withClassLoader(ClassLoader classLoader) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.classLoader = classLoader;
 			return config;
 		}
 
-		private RunnerConfiguration<C> withParent(ApplicationContext parent) {
+		/**
+         * Sets the parent ApplicationContext for this RunnerConfiguration.
+         * 
+         * @param parent the parent ApplicationContext to set
+         * @return a new RunnerConfiguration with the specified parent ApplicationContext
+         */
+        private RunnerConfiguration<C> withParent(ApplicationContext parent) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.parent = parent;
 			return config;
 		}
 
-		private <T> RunnerConfiguration<C> withBean(String name, Class<T> type, Object... constructorArgs) {
+		/**
+         * Adds a bean registration to the runner configuration.
+         * 
+         * @param name            the name of the bean
+         * @param type            the class type of the bean
+         * @param constructorArgs the constructor arguments for the bean
+         * @param <T>             the generic type of the bean
+         * @return a new RunnerConfiguration with the added bean registration
+         */
+        private <T> RunnerConfiguration<C> withBean(String name, Class<T> type, Object... constructorArgs) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.beanRegistrations = add(config.beanRegistrations,
 					new BeanRegistration<>(name, type, constructorArgs));
 			return config;
 		}
 
-		private <T> RunnerConfiguration<C> withBean(String name, Class<T> type, Supplier<T> supplier,
+		/**
+         * Adds a bean to the runner configuration.
+         *
+         * @param <T>         the type of the bean
+         * @param name        the name of the bean
+         * @param type        the class of the bean
+         * @param supplier    the supplier function to create the bean
+         * @param customizers the customizers to apply to the bean definition
+         * @return the updated runner configuration with the added bean
+         */
+        private <T> RunnerConfiguration<C> withBean(String name, Class<T> type, Supplier<T> supplier,
 				BeanDefinitionCustomizer... customizers) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.beanRegistrations = add(config.beanRegistrations,
@@ -565,14 +714,29 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 			return config;
 		}
 
-		private RunnerConfiguration<C> withConfiguration(Configurations configurations) {
+		/**
+         * Sets the configurations for the runner.
+         * 
+         * @param configurations the configurations to be set (must not be null)
+         * @return a new RunnerConfiguration object with the updated configurations
+         * @throws IllegalArgumentException if the configurations parameter is null
+         */
+        private RunnerConfiguration<C> withConfiguration(Configurations configurations) {
 			Assert.notNull(configurations, "Configurations must not be null");
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.configurations = add(config.configurations, configurations);
 			return config;
 		}
 
-		private static <T> List<T> add(List<T> list, T element) {
+		/**
+         * Adds an element to the given list and returns a new list with the added element.
+         *
+         * @param <T> the type of elements in the list
+         * @param list the list to add the element to
+         * @param element the element to be added to the list
+         * @return a new list with the added element
+         */
+        private static <T> List<T> add(List<T> list, T element) {
 			List<T> result = new ArrayList<>(list);
 			result.add(element);
 			return result;

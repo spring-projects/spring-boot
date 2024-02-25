@@ -21,12 +21,21 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+/**
+ * SampleApplication class.
+ */
 @Configuration(proxyBeanMethods = false)
 @ComponentScan
 @EnableAsync
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by calling the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleApplication.class, args);
 	}
 

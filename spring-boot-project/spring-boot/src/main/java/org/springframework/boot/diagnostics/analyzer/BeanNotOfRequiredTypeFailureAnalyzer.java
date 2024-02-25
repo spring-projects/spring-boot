@@ -38,7 +38,14 @@ public class BeanNotOfRequiredTypeFailureAnalyzer extends AbstractFailureAnalyze
 			+ "interfaces or forcing the use of CGLib-based "
 			+ "proxies by setting proxyTargetClass=true on @EnableAsync and/or @EnableCaching.";
 
-	@Override
+	/**
+     * Analyzes the failure caused by a BeanNotOfRequiredTypeException.
+     * 
+     * @param rootFailure the root cause of the failure
+     * @param cause the BeanNotOfRequiredTypeException that caused the failure
+     * @return a FailureAnalysis object containing the description, action, and cause of the failure, or null if the actual type is not a proxy class
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BeanNotOfRequiredTypeException cause) {
 		if (!Proxy.isProxyClass(cause.getActualType())) {
 			return null;
@@ -46,7 +53,13 @@ public class BeanNotOfRequiredTypeFailureAnalyzer extends AbstractFailureAnalyze
 		return new FailureAnalysis(getDescription(cause), ACTION, cause);
 	}
 
-	private String getDescription(BeanNotOfRequiredTypeException ex) {
+	/**
+     * Generates a description for the given BeanNotOfRequiredTypeException.
+     * 
+     * @param ex the BeanNotOfRequiredTypeException to generate the description for
+     * @return the generated description as a String
+     */
+    private String getDescription(BeanNotOfRequiredTypeException ex) {
 		StringWriter description = new StringWriter();
 		PrintWriter printer = new PrintWriter(description);
 		printer.printf("The bean '%s' could not be injected because it is a JDK dynamic proxy%n%n", ex.getBeanName());

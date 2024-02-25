@@ -69,11 +69,23 @@ import org.springframework.util.unit.DataSize;
 @EnableConfigurationProperties(RSocketProperties.class)
 public class RSocketServerAutoConfiguration {
 
-	@Conditional(OnRSocketWebServerCondition.class)
+	/**
+     * WebFluxServerConfiguration class.
+     */
+    @Conditional(OnRSocketWebServerCondition.class)
 	@Configuration(proxyBeanMethods = false)
 	static class WebFluxServerConfiguration {
 
-		@Bean
+		/**
+         * Creates an instance of {@link RSocketWebSocketNettyRouteProvider} if no bean of the same type is already present.
+         * This method is conditional on the absence of a bean of the same type.
+         * 
+         * @param properties the {@link RSocketProperties} containing server configuration properties
+         * @param messageHandler the {@link RSocketMessageHandler} used for handling RSocket messages
+         * @param customizers the {@link ObjectProvider} for customizing the RSocket server
+         * @return the {@link RSocketWebSocketNettyRouteProvider} instance
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
 				RSocketMessageHandler messageHandler, ObjectProvider<RSocketServerCustomizer> customizers) {
@@ -82,7 +94,13 @@ public class RSocketServerAutoConfiguration {
 					customizers.orderedStream());
 		}
 
-		private Consumer<Builder> customizeWebsocketServerSpec(Spec spec) {
+		/**
+         * Customizes the WebSocket server specification based on the provided {@link Spec}.
+         * 
+         * @param spec the WebSocket server specification
+         * @return a consumer that applies the customization to the WebSocket server builder
+         */
+        private Consumer<Builder> customizeWebsocketServerSpec(Spec spec) {
 			return (builder) -> {
 				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(spec.getProtocols()).to(builder::protocols);
@@ -94,13 +112,26 @@ public class RSocketServerAutoConfiguration {
 
 	}
 
-	@ConditionalOnProperty(prefix = "spring.rsocket.server", name = "port")
+	/**
+     * EmbeddedServerConfiguration class.
+     */
+    @ConditionalOnProperty(prefix = "spring.rsocket.server", name = "port")
 	@ConditionalOnClass(ReactorResourceFactory.class)
 	@Configuration(proxyBeanMethods = false)
 	@Import(ReactorNettyConfigurations.ReactorResourceFactoryConfiguration.class)
 	static class EmbeddedServerConfiguration {
 
-		@Bean
+		/**
+         * Creates an instance of {@link RSocketServerFactory} based on the provided properties, resource factory,
+         * customizers, and SSL bundles.
+         *
+         * @param properties the RSocket properties
+         * @param resourceFactory the reactor resource factory
+         * @param customizers the RSocket server customizers
+         * @param sslBundles the SSL bundles
+         * @return the RSocket server factory
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		RSocketServerFactory rSocketServerFactory(RSocketProperties properties, ReactorResourceFactory resourceFactory,
 				ObjectProvider<RSocketServerCustomizer> customizers, ObjectProvider<SslBundles> sslBundles) {
@@ -117,14 +148,28 @@ public class RSocketServerAutoConfiguration {
 			return factory;
 		}
 
-		@Bean
+		/**
+         * Creates an instance of {@link RSocketServerBootstrap} if no other bean of the same type is present.
+         * 
+         * @param rSocketServerFactory the {@link RSocketServerFactory} to be used for creating the RSocket server
+         * @param rSocketMessageHandler the {@link RSocketMessageHandler} to be used for handling RSocket messages
+         * @return the {@link RSocketServerBootstrap} instance
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		RSocketServerBootstrap rSocketServerBootstrap(RSocketServerFactory rSocketServerFactory,
 				RSocketMessageHandler rSocketMessageHandler) {
 			return new RSocketServerBootstrap(rSocketServerFactory, rSocketMessageHandler.responder());
 		}
 
-		@Bean
+		/**
+         * Customizes the RSocket server to use the frame decoder based on the type of data buffer factory.
+         * If the data buffer factory is an instance of NettyDataBufferFactory, the server payload decoder is set to ZERO_COPY.
+         * 
+         * @param rSocketMessageHandler the RSocket message handler
+         * @return the customized RSocket server
+         */
+        @Bean
 		RSocketServerCustomizer frameDecoderRSocketServerCustomizer(RSocketMessageHandler rSocketMessageHandler) {
 			return (server) -> {
 				if (rSocketMessageHandler.getRSocketStrategies()
@@ -136,28 +181,48 @@ public class RSocketServerAutoConfiguration {
 
 	}
 
-	static class OnRSocketWebServerCondition extends AllNestedConditions {
+	/**
+     * OnRSocketWebServerCondition class.
+     */
+    static class OnRSocketWebServerCondition extends AllNestedConditions {
 
-		OnRSocketWebServerCondition() {
+		/**
+         * Constructs a new OnRSocketWebServerCondition with the specified configuration phase.
+         * 
+         * @param configurationPhase the configuration phase for this condition
+         */
+        OnRSocketWebServerCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+		/**
+         * IsReactiveWebApplication class.
+         */
+        @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 		static class IsReactiveWebApplication {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.rsocket.server", name = "port", matchIfMissing = true)
+		/**
+         * HasNoPortConfigured class.
+         */
+        @ConditionalOnProperty(prefix = "spring.rsocket.server", name = "port", matchIfMissing = true)
 		static class HasNoPortConfigured {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.rsocket.server", name = "mapping-path")
+		/**
+         * HasMappingPathConfigured class.
+         */
+        @ConditionalOnProperty(prefix = "spring.rsocket.server", name = "mapping-path")
 		static class HasMappingPathConfigured {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.rsocket.server", name = "transport", havingValue = "websocket")
+		/**
+         * HasWebsocketTransportConfigured class.
+         */
+        @ConditionalOnProperty(prefix = "spring.rsocket.server", name = "transport", havingValue = "websocket")
 		static class HasWebsocketTransportConfigured {
 
 		}

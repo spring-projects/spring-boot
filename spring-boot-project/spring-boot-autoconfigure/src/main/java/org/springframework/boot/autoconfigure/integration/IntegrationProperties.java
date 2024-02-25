@@ -49,35 +49,73 @@ public class IntegrationProperties {
 
 	private final Management management = new Management();
 
-	public Channel getChannel() {
+	/**
+     * Returns the channel associated with this IntegrationProperties object.
+     *
+     * @return the channel associated with this IntegrationProperties object
+     */
+    public Channel getChannel() {
 		return this.channel;
 	}
 
-	public Endpoint getEndpoint() {
+	/**
+     * Returns the endpoint of the IntegrationProperties.
+     *
+     * @return the endpoint of the IntegrationProperties
+     */
+    public Endpoint getEndpoint() {
 		return this.endpoint;
 	}
 
-	public Error getError() {
+	/**
+     * Returns the error associated with the IntegrationProperties object.
+     *
+     * @return the error associated with the IntegrationProperties object
+     */
+    public Error getError() {
 		return this.error;
 	}
 
-	public Jdbc getJdbc() {
+	/**
+     * Returns the Jdbc object associated with this IntegrationProperties instance.
+     *
+     * @return the Jdbc object
+     */
+    public Jdbc getJdbc() {
 		return this.jdbc;
 	}
 
-	public RSocket getRsocket() {
+	/**
+     * Returns the RSocket object.
+     *
+     * @return the RSocket object
+     */
+    public RSocket getRsocket() {
 		return this.rsocket;
 	}
 
-	public Poller getPoller() {
+	/**
+     * Returns the Poller object associated with this IntegrationProperties instance.
+     *
+     * @return the Poller object
+     */
+    public Poller getPoller() {
 		return this.poller;
 	}
 
-	public Management getManagement() {
+	/**
+     * Returns the management object associated with this IntegrationProperties instance.
+     *
+     * @return the management object
+     */
+    public Management getManagement() {
 		return this.management;
 	}
 
-	public static class Channel {
+	/**
+     * Channel class.
+     */
+    public static class Channel {
 
 		/**
 		 * Whether to create input channels if necessary.
@@ -95,33 +133,66 @@ public class IntegrationProperties {
 		 */
 		private int maxBroadcastSubscribers = Integer.MAX_VALUE;
 
-		public void setAutoCreate(boolean autoCreate) {
+		/**
+         * Sets the flag indicating whether the channel should automatically create new instances.
+         * 
+         * @param autoCreate the flag indicating whether the channel should automatically create new instances
+         */
+        public void setAutoCreate(boolean autoCreate) {
 			this.autoCreate = autoCreate;
 		}
 
-		public boolean isAutoCreate() {
+		/**
+         * Returns a boolean value indicating whether auto creation is enabled for the channel.
+         * 
+         * @return true if auto creation is enabled, false otherwise
+         */
+        public boolean isAutoCreate() {
 			return this.autoCreate;
 		}
 
-		public void setMaxUnicastSubscribers(int maxUnicastSubscribers) {
+		/**
+         * Sets the maximum number of unicast subscribers for the channel.
+         * 
+         * @param maxUnicastSubscribers the maximum number of unicast subscribers to set
+         */
+        public void setMaxUnicastSubscribers(int maxUnicastSubscribers) {
 			this.maxUnicastSubscribers = maxUnicastSubscribers;
 		}
 
-		public int getMaxUnicastSubscribers() {
+		/**
+         * Returns the maximum number of unicast subscribers allowed for this channel.
+         *
+         * @return the maximum number of unicast subscribers
+         */
+        public int getMaxUnicastSubscribers() {
 			return this.maxUnicastSubscribers;
 		}
 
-		public void setMaxBroadcastSubscribers(int maxBroadcastSubscribers) {
+		/**
+         * Sets the maximum number of subscribers allowed for a broadcast in this channel.
+         * 
+         * @param maxBroadcastSubscribers the maximum number of subscribers allowed for a broadcast
+         */
+        public void setMaxBroadcastSubscribers(int maxBroadcastSubscribers) {
 			this.maxBroadcastSubscribers = maxBroadcastSubscribers;
 		}
 
-		public int getMaxBroadcastSubscribers() {
+		/**
+         * Returns the maximum number of subscribers allowed for broadcasting.
+         *
+         * @return the maximum number of subscribers allowed for broadcasting
+         */
+        public int getMaxBroadcastSubscribers() {
 			return this.maxBroadcastSubscribers;
 		}
 
 	}
 
-	public static class Endpoint {
+	/**
+     * Endpoint class.
+     */
+    public static class Endpoint {
 
 		/**
 		 * Whether to throw an exception when a reply is not expected anymore by a
@@ -141,33 +212,66 @@ public class IntegrationProperties {
 		 */
 		private List<String> noAutoStartup = new ArrayList<>();
 
-		public void setThrowExceptionOnLateReply(boolean throwExceptionOnLateReply) {
+		/**
+         * Sets whether an exception should be thrown if a late reply is received.
+         * 
+         * @param throwExceptionOnLateReply true if an exception should be thrown, false otherwise
+         */
+        public void setThrowExceptionOnLateReply(boolean throwExceptionOnLateReply) {
 			this.throwExceptionOnLateReply = throwExceptionOnLateReply;
 		}
 
-		public boolean isThrowExceptionOnLateReply() {
+		/**
+         * Returns a boolean value indicating whether an exception should be thrown on a late reply.
+         * 
+         * @return true if an exception should be thrown on a late reply, false otherwise
+         */
+        public boolean isThrowExceptionOnLateReply() {
 			return this.throwExceptionOnLateReply;
 		}
 
-		public List<String> getReadOnlyHeaders() {
+		/**
+         * Returns a list of read-only headers.
+         * 
+         * @return the list of read-only headers
+         */
+        public List<String> getReadOnlyHeaders() {
 			return this.readOnlyHeaders;
 		}
 
-		public void setReadOnlyHeaders(List<String> readOnlyHeaders) {
+		/**
+         * Sets the list of read-only headers for the endpoint.
+         * 
+         * @param readOnlyHeaders the list of read-only headers to be set
+         */
+        public void setReadOnlyHeaders(List<String> readOnlyHeaders) {
 			this.readOnlyHeaders = readOnlyHeaders;
 		}
 
-		public List<String> getNoAutoStartup() {
+		/**
+         * Returns a list of strings representing the endpoints that are not set to auto-startup.
+         *
+         * @return a list of strings representing the endpoints that are not set to auto-startup
+         */
+        public List<String> getNoAutoStartup() {
 			return this.noAutoStartup;
 		}
 
-		public void setNoAutoStartup(List<String> noAutoStartup) {
+		/**
+         * Sets the list of endpoints that should not be started automatically.
+         * 
+         * @param noAutoStartup the list of endpoints to exclude from automatic startup
+         */
+        public void setNoAutoStartup(List<String> noAutoStartup) {
 			this.noAutoStartup = noAutoStartup;
 		}
 
 	}
 
-	public static class Error {
+	/**
+     * Error class.
+     */
+    public static class Error {
 
 		/**
 		 * Whether to not silently ignore messages on the global 'errorChannel' when there
@@ -181,25 +285,48 @@ public class IntegrationProperties {
 		 */
 		private boolean ignoreFailures = true;
 
-		public boolean isRequireSubscribers() {
+		/**
+         * Returns a boolean value indicating whether subscribers are required.
+         * 
+         * @return true if subscribers are required, false otherwise
+         */
+        public boolean isRequireSubscribers() {
 			return this.requireSubscribers;
 		}
 
-		public void setRequireSubscribers(boolean requireSubscribers) {
+		/**
+         * Sets whether subscribers are required for this error.
+         * 
+         * @param requireSubscribers true if subscribers are required, false otherwise
+         */
+        public void setRequireSubscribers(boolean requireSubscribers) {
 			this.requireSubscribers = requireSubscribers;
 		}
 
-		public boolean isIgnoreFailures() {
+		/**
+         * Returns a boolean value indicating whether failures should be ignored.
+         * 
+         * @return true if failures should be ignored, false otherwise
+         */
+        public boolean isIgnoreFailures() {
 			return this.ignoreFailures;
 		}
 
-		public void setIgnoreFailures(boolean ignoreFailures) {
+		/**
+         * Sets whether to ignore failures.
+         * 
+         * @param ignoreFailures true to ignore failures, false otherwise
+         */
+        public void setIgnoreFailures(boolean ignoreFailures) {
 			this.ignoreFailures = ignoreFailures;
 		}
 
 	}
 
-	public static class Jdbc {
+	/**
+     * Jdbc class.
+     */
+    public static class Jdbc {
 
 		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 				+ "integration/jdbc/schema-@@platform@@.sql";
@@ -220,47 +347,93 @@ public class IntegrationProperties {
 		 */
 		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
 
-		public String getSchema() {
+		/**
+         * Returns the schema of the Jdbc object.
+         *
+         * @return the schema of the Jdbc object
+         */
+        public String getSchema() {
 			return this.schema;
 		}
 
-		public void setSchema(String schema) {
+		/**
+         * Sets the schema for the JDBC connection.
+         * 
+         * @param schema the name of the schema to be set
+         */
+        public void setSchema(String schema) {
 			this.schema = schema;
 		}
 
-		public String getPlatform() {
+		/**
+         * Returns the platform of the JDBC connection.
+         * 
+         * @return the platform of the JDBC connection
+         */
+        public String getPlatform() {
 			return this.platform;
 		}
 
-		public void setPlatform(String platform) {
+		/**
+         * Sets the platform for the JDBC connection.
+         * 
+         * @param platform the platform to be set
+         */
+        public void setPlatform(String platform) {
 			this.platform = platform;
 		}
 
-		public DatabaseInitializationMode getInitializeSchema() {
+		/**
+         * Returns the initialization mode for the database schema.
+         * 
+         * @return the initialization mode for the database schema
+         */
+        public DatabaseInitializationMode getInitializeSchema() {
 			return this.initializeSchema;
 		}
 
-		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
+		/**
+         * Sets the mode for initializing the database schema.
+         * 
+         * @param initializeSchema the mode for initializing the database schema
+         */
+        public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 			this.initializeSchema = initializeSchema;
 		}
 
 	}
 
-	public static class RSocket {
+	/**
+     * RSocket class.
+     */
+    public static class RSocket {
 
 		private final Client client = new Client();
 
 		private final Server server = new Server();
 
-		public Client getClient() {
+		/**
+         * Returns the client associated with this RSocket.
+         *
+         * @return the client associated with this RSocket
+         */
+        public Client getClient() {
 			return this.client;
 		}
 
-		public Server getServer() {
+		/**
+         * Returns the server associated with this RSocket.
+         *
+         * @return the server associated with this RSocket
+         */
+        public Server getServer() {
 			return this.server;
 		}
 
-		public static class Client {
+		/**
+         * Client class.
+         */
+        public static class Client {
 
 			/**
 			 * TCP RSocket server host to connect to.
@@ -277,44 +450,87 @@ public class IntegrationProperties {
 			 */
 			private URI uri;
 
-			public void setHost(String host) {
+			/**
+             * Sets the host for the client.
+             * 
+             * @param host the host to set
+             */
+            public void setHost(String host) {
 				this.host = host;
 			}
 
-			public String getHost() {
+			/**
+             * Returns the host of the client.
+             *
+             * @return the host of the client
+             */
+            public String getHost() {
 				return this.host;
 			}
 
-			public void setPort(Integer port) {
+			/**
+             * Sets the port number for the client.
+             * 
+             * @param port the port number to be set
+             */
+            public void setPort(Integer port) {
 				this.port = port;
 			}
 
-			public Integer getPort() {
+			/**
+             * Returns the port number of the client.
+             *
+             * @return the port number of the client
+             */
+            public Integer getPort() {
 				return this.port;
 			}
 
-			public void setUri(URI uri) {
+			/**
+             * Sets the URI for the client.
+             * 
+             * @param uri the URI to be set
+             */
+            public void setUri(URI uri) {
 				this.uri = uri;
 			}
 
-			public URI getUri() {
+			/**
+             * Returns the URI associated with this Client.
+             *
+             * @return the URI associated with this Client
+             */
+            public URI getUri() {
 				return this.uri;
 			}
 
 		}
 
-		public static class Server {
+		/**
+         * Server class.
+         */
+        public static class Server {
 
 			/**
 			 * Whether to handle message mapping for RSocket through Spring Integration.
 			 */
 			private boolean messageMappingEnabled;
 
-			public boolean isMessageMappingEnabled() {
+			/**
+             * Returns a boolean value indicating whether the message mapping is enabled.
+             * 
+             * @return true if the message mapping is enabled, false otherwise
+             */
+            public boolean isMessageMappingEnabled() {
 				return this.messageMappingEnabled;
 			}
 
-			public void setMessageMappingEnabled(boolean messageMappingEnabled) {
+			/**
+             * Sets the flag indicating whether message mapping is enabled.
+             * 
+             * @param messageMappingEnabled true if message mapping is enabled, false otherwise
+             */
+            public void setMessageMappingEnabled(boolean messageMappingEnabled) {
 				this.messageMappingEnabled = messageMappingEnabled;
 			}
 
@@ -322,7 +538,10 @@ public class IntegrationProperties {
 
 	}
 
-	public static class Poller {
+	/**
+     * Poller class.
+     */
+    public static class Poller {
 
 		/**
 		 * Maximum number of messages to poll per polling cycle.
@@ -356,57 +575,120 @@ public class IntegrationProperties {
 		 */
 		private String cron;
 
-		public int getMaxMessagesPerPoll() {
+		/**
+         * Returns the maximum number of messages that can be processed per poll.
+         *
+         * @return the maximum number of messages per poll
+         */
+        public int getMaxMessagesPerPoll() {
 			return this.maxMessagesPerPoll;
 		}
 
-		public void setMaxMessagesPerPoll(int maxMessagesPerPoll) {
+		/**
+         * Sets the maximum number of messages to be processed per poll.
+         * 
+         * @param maxMessagesPerPoll the maximum number of messages to be processed per poll
+         */
+        public void setMaxMessagesPerPoll(int maxMessagesPerPoll) {
 			this.maxMessagesPerPoll = maxMessagesPerPoll;
 		}
 
-		public Duration getReceiveTimeout() {
+		/**
+         * Returns the receive timeout duration.
+         *
+         * @return the receive timeout duration
+         */
+        public Duration getReceiveTimeout() {
 			return this.receiveTimeout;
 		}
 
-		public void setReceiveTimeout(Duration receiveTimeout) {
+		/**
+         * Sets the receive timeout for the Poller.
+         * 
+         * @param receiveTimeout the receive timeout duration to be set
+         */
+        public void setReceiveTimeout(Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
 		}
 
-		public Duration getFixedDelay() {
+		/**
+         * Returns the fixed delay for the Poller.
+         *
+         * @return the fixed delay for the Poller
+         */
+        public Duration getFixedDelay() {
 			return this.fixedDelay;
 		}
 
-		public void setFixedDelay(Duration fixedDelay) {
+		/**
+         * Sets the fixed delay for the poller.
+         * 
+         * @param fixedDelay the fixed delay duration to be set
+         */
+        public void setFixedDelay(Duration fixedDelay) {
 			this.fixedDelay = fixedDelay;
 		}
 
-		public Duration getFixedRate() {
+		/**
+         * Returns the fixed rate at which the poller is scheduled to run.
+         *
+         * @return the fixed rate at which the poller is scheduled to run
+         */
+        public Duration getFixedRate() {
 			return this.fixedRate;
 		}
 
-		public void setFixedRate(Duration fixedRate) {
+		/**
+         * Sets the fixed rate at which the poller should run.
+         * 
+         * @param fixedRate the fixed rate at which the poller should run
+         */
+        public void setFixedRate(Duration fixedRate) {
 			this.fixedRate = fixedRate;
 		}
 
-		public Duration getInitialDelay() {
+		/**
+         * Returns the initial delay for the Poller.
+         *
+         * @return the initial delay for the Poller
+         */
+        public Duration getInitialDelay() {
 			return this.initialDelay;
 		}
 
-		public void setInitialDelay(Duration initialDelay) {
+		/**
+         * Sets the initial delay for the Poller.
+         * 
+         * @param initialDelay the initial delay to be set
+         */
+        public void setInitialDelay(Duration initialDelay) {
 			this.initialDelay = initialDelay;
 		}
 
-		public String getCron() {
+		/**
+         * Returns the cron expression used by the Poller.
+         *
+         * @return the cron expression
+         */
+        public String getCron() {
 			return this.cron;
 		}
 
-		public void setCron(String cron) {
+		/**
+         * Sets the cron expression for scheduling the poller.
+         * 
+         * @param cron the cron expression to be set
+         */
+        public void setCron(String cron) {
 			this.cron = cron;
 		}
 
 	}
 
-	public static class Management {
+	/**
+     * Management class.
+     */
+    public static class Management {
 
 		/**
 		 * Whether Spring Integration components should perform logging in the main
@@ -425,19 +707,39 @@ public class IntegrationProperties {
 		 */
 		private List<String> observationPatterns = new ArrayList<>();
 
-		public boolean isDefaultLoggingEnabled() {
+		/**
+         * Returns a boolean value indicating whether the default logging is enabled.
+         * 
+         * @return true if the default logging is enabled, false otherwise
+         */
+        public boolean isDefaultLoggingEnabled() {
 			return this.defaultLoggingEnabled;
 		}
 
-		public void setDefaultLoggingEnabled(boolean defaultLoggingEnabled) {
+		/**
+         * Sets the default logging enabled flag.
+         * 
+         * @param defaultLoggingEnabled the flag indicating whether default logging is enabled or not
+         */
+        public void setDefaultLoggingEnabled(boolean defaultLoggingEnabled) {
 			this.defaultLoggingEnabled = defaultLoggingEnabled;
 		}
 
-		public List<String> getObservationPatterns() {
+		/**
+         * Returns the observation patterns.
+         * 
+         * @return the observation patterns as a list of strings
+         */
+        public List<String> getObservationPatterns() {
 			return this.observationPatterns;
 		}
 
-		public void setObservationPatterns(List<String> observationPatterns) {
+		/**
+         * Sets the observation patterns for the Management class.
+         * 
+         * @param observationPatterns the list of observation patterns to be set
+         */
+        public void setObservationPatterns(List<String> observationPatterns) {
 			this.observationPatterns = observationPatterns;
 		}
 

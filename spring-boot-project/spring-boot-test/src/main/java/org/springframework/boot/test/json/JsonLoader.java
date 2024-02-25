@@ -41,16 +41,33 @@ class JsonLoader {
 
 	private final Charset charset;
 
-	JsonLoader(Class<?> resourceLoadClass, Charset charset) {
+	/**
+     * Constructs a new JsonLoader object with the specified resource load class and charset.
+     * 
+     * @param resourceLoadClass the class used for loading the JSON resource
+     * @param charset the character set used for decoding the JSON resource
+     */
+    JsonLoader(Class<?> resourceLoadClass, Charset charset) {
 		this.resourceLoadClass = resourceLoadClass;
 		this.charset = (charset != null) ? charset : StandardCharsets.UTF_8;
 	}
 
-	Class<?> getResourceLoadClass() {
+	/**
+     * Returns the resource load class.
+     * 
+     * @return the resource load class
+     */
+    Class<?> getResourceLoadClass() {
 		return this.resourceLoadClass;
 	}
 
-	String getJson(CharSequence source) {
+	/**
+     * Retrieves the JSON content from the given source.
+     * 
+     * @param source the source of the JSON content
+     * @return the JSON content as a string, or null if the source is null
+     */
+    String getJson(CharSequence source) {
 		if (source == null) {
 			return null;
 		}
@@ -60,15 +77,35 @@ class JsonLoader {
 		return source.toString();
 	}
 
-	String getJson(String path, Class<?> resourceLoadClass) {
+	/**
+     * Retrieves the JSON content from the specified path using the provided resource load class.
+     * 
+     * @param path The path to the JSON file.
+     * @param resourceLoadClass The class used for loading the resource.
+     * @return The JSON content as a string.
+     */
+    String getJson(String path, Class<?> resourceLoadClass) {
 		return getJson(new ClassPathResource(path, resourceLoadClass));
 	}
 
-	String getJson(byte[] source) {
+	/**
+     * Converts a byte array to a JSON string.
+     * 
+     * @param source the byte array to be converted
+     * @return the JSON string representation of the byte array
+     */
+    String getJson(byte[] source) {
 		return getJson(new ByteArrayInputStream(source));
 	}
 
-	String getJson(File source) {
+	/**
+     * Retrieves the JSON data from the specified file.
+     * 
+     * @param source the file containing the JSON data
+     * @return the JSON data as a string
+     * @throws IllegalStateException if unable to load JSON from the file
+     */
+    String getJson(File source) {
 		try {
 			return getJson(new FileInputStream(source));
 		}
@@ -77,7 +114,14 @@ class JsonLoader {
 		}
 	}
 
-	String getJson(Resource source) {
+	/**
+     * Retrieves the JSON data from the given resource.
+     * 
+     * @param source the resource containing the JSON data
+     * @return the JSON data as a string
+     * @throws IllegalStateException if unable to load JSON from the source
+     */
+    String getJson(Resource source) {
 		try {
 			return getJson(source.getInputStream());
 		}
@@ -86,7 +130,14 @@ class JsonLoader {
 		}
 	}
 
-	String getJson(InputStream source) {
+	/**
+     * Reads the content of the given InputStream and returns it as a JSON string.
+     * 
+     * @param source the InputStream containing the JSON content
+     * @return the JSON content as a string
+     * @throws IllegalStateException if unable to load JSON from the InputStream
+     */
+    String getJson(InputStream source) {
 		try {
 			return FileCopyUtils.copyToString(new InputStreamReader(source, this.charset));
 		}

@@ -30,7 +30,12 @@ import org.springframework.context.ApplicationEvent;
 @SuppressWarnings("serial")
 public abstract class WebServerInitializedEvent extends ApplicationEvent {
 
-	protected WebServerInitializedEvent(WebServer webServer) {
+	/**
+     * Constructs a new WebServerInitializedEvent with the specified WebServer.
+     *
+     * @param webServer the WebServer that has been initialized
+     */
+    protected WebServerInitializedEvent(WebServer webServer) {
 		super(webServer);
 	}
 

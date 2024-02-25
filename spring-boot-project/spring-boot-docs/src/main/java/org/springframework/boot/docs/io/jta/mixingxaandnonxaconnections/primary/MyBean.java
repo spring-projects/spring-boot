@@ -18,6 +18,9 @@ package org.springframework.boot.docs.io.jta.mixingxaandnonxaconnections.primary
 
 import jakarta.jms.ConnectionFactory;
 
+/**
+ * MyBean class.
+ */
 public class MyBean {
 
 	// tag::code[]

@@ -22,12 +22,20 @@ import org.neo4j.driver.Values;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final Driver driver;
 
-	public MyBean(Driver driver) {
+	/**
+     * Constructs a new instance of MyBean with the specified Driver.
+     *
+     * @param driver the Driver object to be assigned to the MyBean instance
+     */
+    public MyBean(Driver driver) {
 		this.driver = driver;
 	}
 

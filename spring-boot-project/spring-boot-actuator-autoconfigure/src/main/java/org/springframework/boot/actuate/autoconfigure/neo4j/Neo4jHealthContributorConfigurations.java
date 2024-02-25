@@ -40,14 +40,30 @@ import org.springframework.context.annotation.Configuration;
  */
 class Neo4jHealthContributorConfigurations {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * Neo4jConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	static class Neo4jConfiguration extends CompositeHealthContributorConfiguration<Neo4jHealthIndicator, Driver> {
 
-		Neo4jConfiguration() {
+		/**
+         * Constructs a new Neo4jConfiguration object.
+         * 
+         * This constructor initializes a new Neo4jConfiguration object and sets the health indicator to Neo4jHealthIndicator.
+         * 
+         * @param neo4jHealthIndicator the health indicator for Neo4j
+         */
+        Neo4jConfiguration() {
 			super(Neo4jHealthIndicator::new);
 		}
 
-		@Bean
+		/**
+         * Creates a Neo4j health contributor if no existing bean with the names "neo4jHealthIndicator" or "neo4jHealthContributor" is found.
+         * 
+         * @param drivers a map of Neo4j drivers
+         * @return the created Neo4j health contributor
+         */
+        @Bean
 		@ConditionalOnMissingBean(name = { "neo4jHealthIndicator", "neo4jHealthContributor" })
 		HealthContributor neo4jHealthContributor(Map<String, Driver> drivers) {
 			return createContributor(drivers);
@@ -55,16 +71,32 @@ class Neo4jHealthContributorConfigurations {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * Neo4jReactiveConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Flux.class)
 	static class Neo4jReactiveConfiguration
 			extends CompositeReactiveHealthContributorConfiguration<Neo4jReactiveHealthIndicator, Driver> {
 
-		Neo4jReactiveConfiguration() {
+		/**
+         * Constructs a new Neo4jReactiveConfiguration object.
+         * 
+         * This constructor initializes the Neo4jReactiveConfiguration object by calling the superclass constructor with a Neo4jReactiveHealthIndicator object as a parameter.
+         * 
+         * @see Neo4jReactiveHealthIndicator
+         */
+        Neo4jReactiveConfiguration() {
 			super(Neo4jReactiveHealthIndicator::new);
 		}
 
-		@Bean
+		/**
+         * Creates a ReactiveHealthContributor for Neo4j if no existing bean with the names "neo4jHealthIndicator" or "neo4jHealthContributor" is found.
+         * 
+         * @param drivers a map of Neo4j drivers
+         * @return the created ReactiveHealthContributor for Neo4j
+         */
+        @Bean
 		@ConditionalOnMissingBean(name = { "neo4jHealthIndicator", "neo4jHealthContributor" })
 		ReactiveHealthContributor neo4jHealthContributor(Map<String, Driver> drivers) {
 			return createContributor(drivers);

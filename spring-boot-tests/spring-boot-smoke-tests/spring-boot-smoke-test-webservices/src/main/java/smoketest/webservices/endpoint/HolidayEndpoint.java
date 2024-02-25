@@ -30,6 +30,9 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 
+/**
+ * HolidayEndpoint class.
+ */
 @Endpoint
 public class HolidayEndpoint {
 
@@ -43,7 +46,12 @@ public class HolidayEndpoint {
 
 	private final HumanResourceService humanResourceService;
 
-	public HolidayEndpoint(HumanResourceService humanResourceService) {
+	/**
+     * Constructs a new HolidayEndpoint with the specified HumanResourceService.
+     * 
+     * @param humanResourceService the HumanResourceService to be used by the HolidayEndpoint
+     */
+    public HolidayEndpoint(HumanResourceService humanResourceService) {
 		this.humanResourceService = humanResourceService;
 		Namespace namespace = Namespace.getNamespace("hr", NAMESPACE_URI);
 		XPathFactory xPathFactory = XPathFactory.instance();
@@ -53,7 +61,13 @@ public class HolidayEndpoint {
 				namespace);
 	}
 
-	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "HolidayRequest")
+	/**
+     * Handles a holiday request.
+     * 
+     * @param holidayRequest The XML element representing the holiday request.
+     * @throws Exception if an error occurs while handling the request.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "HolidayRequest")
 	public void handleHolidayRequest(@RequestPayload Element holidayRequest) throws Exception {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date startDate = dateFormat.parse(this.startDateExpression.evaluateFirst(holidayRequest).getText());

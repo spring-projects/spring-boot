@@ -16,15 +16,28 @@
 
 package org.springframework.boot.docs.features.developingautoconfiguration.testing;
 
+/**
+ * MyService class.
+ */
 public class MyService {
 
 	private final String name;
 
-	public MyService(String name) {
+	/**
+     * Constructs a new instance of MyService with the specified name.
+     *
+     * @param name the name of the service
+     */
+    public MyService(String name) {
 		this.name = name;
 	}
 
-	public String getName() {
+	/**
+     * Returns the name of the object.
+     *
+     * @return the name of the object
+     */
+    public String getName() {
 		return this.name;
 	}
 

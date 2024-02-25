@@ -47,11 +47,21 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration {
 
-	protected FreeMarkerServletWebConfiguration(FreeMarkerProperties properties) {
+	/**
+     * Constructs a new FreeMarkerServletWebConfiguration with the specified properties.
+     *
+     * @param properties the FreeMarker properties to be used
+     */
+    protected FreeMarkerServletWebConfiguration(FreeMarkerProperties properties) {
 		super(properties);
 	}
 
-	@Bean
+	/**
+     * Creates and configures a FreeMarkerConfigurer bean if no other bean of type FreeMarkerConfig is present.
+     * 
+     * @return The configured FreeMarkerConfigurer bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean(FreeMarkerConfig.class)
 	FreeMarkerConfigurer freeMarkerConfigurer() {
 		FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
@@ -59,12 +69,23 @@ class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration 
 		return configurer;
 	}
 
-	@Bean
+	/**
+     * Returns the FreeMarker configuration based on the provided FreeMarkerConfig object.
+     * 
+     * @param configurer the FreeMarkerConfig object used to retrieve the configuration
+     * @return the FreeMarker configuration
+     */
+    @Bean
 	freemarker.template.Configuration freeMarkerConfiguration(FreeMarkerConfig configurer) {
 		return configurer.getConfiguration();
 	}
 
-	@Bean
+	/**
+     * Creates a FreeMarkerViewResolver bean if it is missing and the property "spring.freemarker.enabled" is either not present or set to true.
+     * 
+     * @return The FreeMarkerViewResolver bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
 	@ConditionalOnProperty(name = "spring.freemarker.enabled", matchIfMissing = true)
 	FreeMarkerViewResolver freeMarkerViewResolver() {
@@ -73,7 +94,13 @@ class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration 
 		return resolver;
 	}
 
-	@Bean
+	/**
+     * Registers a {@link ResourceUrlEncodingFilter} as a filter bean if it is not already present.
+     * This filter is enabled only if the resource chain is enabled.
+     * 
+     * @return the {@link FilterRegistrationBean} for the {@link ResourceUrlEncodingFilter}
+     */
+    @Bean
 	@ConditionalOnEnabledResourceChain
 	@ConditionalOnMissingFilterBean(ResourceUrlEncodingFilter.class)
 	FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter() {

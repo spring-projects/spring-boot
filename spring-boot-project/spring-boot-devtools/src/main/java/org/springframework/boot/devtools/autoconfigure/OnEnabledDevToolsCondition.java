@@ -31,7 +31,14 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 public class OnEnabledDevToolsCondition extends SpringBootCondition {
 
-	@Override
+	/**
+     * Determines the outcome of the condition for enabling Devtools.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("Devtools");
 		boolean shouldEnable = DevToolsEnablementDeducer.shouldEnable(Thread.currentThread());

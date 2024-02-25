@@ -26,6 +26,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.mockito.BDDMockito.given;
 
+/**
+ * MyControllerTests class.
+ */
 @WebFluxTest(UserVehicleController.class)
 class MyControllerTests {
 
@@ -35,7 +38,10 @@ class MyControllerTests {
 	@MockBean
 	private UserVehicleService userVehicleService;
 
-	@Test
+	/**
+     * Test case for example method.
+     */
+    @Test
 	void testExample() {
 		// @formatter:off
 		given(this.userVehicleService.getVehicleDetails("sboot"))

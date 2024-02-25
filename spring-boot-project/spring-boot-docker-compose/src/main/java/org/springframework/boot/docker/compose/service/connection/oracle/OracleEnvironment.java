@@ -34,13 +34,26 @@ class OracleEnvironment {
 
 	private final String database;
 
-	OracleEnvironment(Map<String, String> env, String defaultDatabase) {
+	/**
+     * Constructs a new OracleEnvironment object with the given environment variables and default database.
+     * 
+     * @param env a map containing the environment variables
+     * @param defaultDatabase the default database to use if the ORACLE_DATABASE environment variable is not set
+     */
+    OracleEnvironment(Map<String, String> env, String defaultDatabase) {
 		this.username = env.getOrDefault("APP_USER", "system");
 		this.password = extractPassword(env);
 		this.database = env.getOrDefault("ORACLE_DATABASE", defaultDatabase);
 	}
 
-	private String extractPassword(Map<String, String> env) {
+	/**
+     * Extracts the password from the given environment map.
+     * 
+     * @param env the environment map containing the password information
+     * @return the extracted password
+     * @throws IllegalStateException if the required password information is not found in the environment map
+     */
+    private String extractPassword(Map<String, String> env) {
 		if (env.containsKey("APP_USER")) {
 			String password = env.get("APP_USER_PASSWORD");
 			Assert.state(StringUtils.hasLength(password), "No Oracle app password found");
@@ -53,15 +66,30 @@ class OracleEnvironment {
 		return password;
 	}
 
-	String getUsername() {
+	/**
+     * Returns the username associated with the Oracle environment.
+     *
+     * @return the username
+     */
+    String getUsername() {
 		return this.username;
 	}
 
-	String getPassword() {
+	/**
+     * Returns the password of the OracleEnvironment.
+     *
+     * @return the password of the OracleEnvironment
+     */
+    String getPassword() {
 		return this.password;
 	}
 
-	String getDatabase() {
+	/**
+     * Returns the name of the database.
+     *
+     * @return the name of the database
+     */
+    String getDatabase() {
 		return this.database;
 	}
 

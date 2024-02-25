@@ -30,11 +30,22 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 
 	private final UncaughtExceptionHandler delegate;
 
-	SilentExitExceptionHandler(UncaughtExceptionHandler delegate) {
+	/**
+     * Constructs a new SilentExitExceptionHandler with the specified delegate UncaughtExceptionHandler.
+     * 
+     * @param delegate the delegate UncaughtExceptionHandler to be used
+     */
+    SilentExitExceptionHandler(UncaughtExceptionHandler delegate) {
 		this.delegate = delegate;
 	}
 
-	@Override
+	/**
+     * Handles uncaught exceptions in a thread.
+     * 
+     * @param thread    the thread in which the exception occurred
+     * @param exception the uncaught exception
+     */
+    @Override
 	public void uncaughtException(Thread thread, Throwable exception) {
 		if (exception instanceof SilentExitException || (exception instanceof InvocationTargetException targetException
 				&& targetException.getTargetException() instanceof SilentExitException)) {
@@ -48,7 +59,13 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 		}
 	}
 
-	private boolean isJvmExiting(Thread exceptionThread) {
+	/**
+     * Checks if the Java Virtual Machine (JVM) is exiting.
+     * 
+     * @param exceptionThread the thread that caused the exception
+     * @return true if the JVM is exiting, false otherwise
+     */
+    private boolean isJvmExiting(Thread exceptionThread) {
 		for (Thread thread : getAllThreads()) {
 			if (thread != exceptionThread && thread.isAlive() && !thread.isDaemon()) {
 				return false;
@@ -57,7 +74,12 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 		return true;
 	}
 
-	protected Thread[] getAllThreads() {
+	/**
+     * Returns an array of all currently active threads in the system.
+     * 
+     * @return an array of Thread objects representing all currently active threads
+     */
+    protected Thread[] getAllThreads() {
 		ThreadGroup rootThreadGroup = getRootThreadGroup();
 		Thread[] threads = new Thread[32];
 		int count = rootThreadGroup.enumerate(threads);
@@ -68,7 +90,12 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 		return Arrays.copyOf(threads, count);
 	}
 
-	private ThreadGroup getRootThreadGroup() {
+	/**
+     * Returns the root thread group of the current thread.
+     * 
+     * @return the root thread group
+     */
+    private ThreadGroup getRootThreadGroup() {
 		ThreadGroup candidate = Thread.currentThread().getThreadGroup();
 		while (candidate.getParent() != null) {
 			candidate = candidate.getParent();
@@ -76,11 +103,23 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 		return candidate;
 	}
 
-	protected void preventNonZeroExitCode() {
+	/**
+     * This method is used to prevent a non-zero exit code from being returned.
+     * It calls the System.exit() method with a parameter of 0, which terminates the Java Virtual Machine.
+     * This ensures that the program exits with a successful status code.
+     */
+    protected void preventNonZeroExitCode() {
 		System.exit(0);
 	}
 
-	static void setup(Thread thread) {
+	/**
+     * Sets up the provided thread with a custom uncaught exception handler.
+     * If the current uncaught exception handler is not an instance of SilentExitExceptionHandler,
+     * it wraps it with a SilentExitExceptionHandler and sets it as the new uncaught exception handler for the thread.
+     * 
+     * @param thread the thread to set up with the custom uncaught exception handler
+     */
+    static void setup(Thread thread) {
 		UncaughtExceptionHandler handler = thread.getUncaughtExceptionHandler();
 		if (!(handler instanceof SilentExitExceptionHandler)) {
 			handler = new SilentExitExceptionHandler(handler);
@@ -88,11 +127,17 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 		}
 	}
 
-	static void exitCurrentThread() {
+	/**
+     * Throws a {@link SilentExitException} to exit the current thread.
+     */
+    static void exitCurrentThread() {
 		throw new SilentExitException();
 	}
 
-	private static final class SilentExitException extends RuntimeException {
+	/**
+     * SilentExitException class.
+     */
+    private static final class SilentExitException extends RuntimeException {
 
 	}
 

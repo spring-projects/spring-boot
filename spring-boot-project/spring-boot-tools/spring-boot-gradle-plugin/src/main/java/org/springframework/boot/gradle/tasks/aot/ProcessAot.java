@@ -34,7 +34,10 @@ import org.gradle.api.tasks.TaskAction;
 @CacheableTask
 public abstract class ProcessAot extends AbstractAot {
 
-	public ProcessAot() {
+	/**
+     * This method sets the main class to "org.springframework.boot.SpringApplicationAotProcessor" for the ProcessAot class.
+     */
+    public ProcessAot() {
 		getMainClass().set("org.springframework.boot.SpringApplicationAotProcessor");
 	}
 
@@ -45,7 +48,15 @@ public abstract class ProcessAot extends AbstractAot {
 	@Input
 	public abstract Property<String> getApplicationMainClass();
 
-	@Override
+	/**
+     * Executes the task.
+     * 
+     * This method is annotated with @TaskAction, indicating that it is the action to be performed when the task is executed.
+     * It creates a list of arguments, adds the application main class obtained from getApplicationMainClass() method, and adds all the processor arguments obtained from processorArgs() method.
+     * The arguments are then set using setArgs() method.
+     * Finally, the super class's exec() method is called to execute the task.
+     */
+    @Override
 	@TaskAction
 	public void exec() {
 		List<String> args = new ArrayList<>();

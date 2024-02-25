@@ -40,23 +40,47 @@ public class ContextIdApplicationContextInitializer
 
 	private int order = Ordered.LOWEST_PRECEDENCE - 10;
 
-	public void setOrder(int order) {
+	/**
+     * Sets the order of the ContextIdApplicationContextInitializer.
+     * 
+     * @param order the order value to set
+     */
+    public void setOrder(int order) {
 		this.order = order;
 	}
 
-	@Override
+	/**
+     * Returns the order of this ContextIdApplicationContextInitializer.
+     *
+     * @return the order of this ContextIdApplicationContextInitializer
+     */
+    @Override
 	public int getOrder() {
 		return this.order;
 	}
 
-	@Override
+	/**
+     * Initializes the application context by setting the context ID and registering it as a singleton bean.
+     * 
+     * @param applicationContext the configurable application context to be initialized
+     */
+    @Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		ContextId contextId = getContextId(applicationContext);
 		applicationContext.setId(contextId.getId());
 		applicationContext.getBeanFactory().registerSingleton(ContextId.class.getName(), contextId);
 	}
 
-	private ContextId getContextId(ConfigurableApplicationContext applicationContext) {
+	/**
+     * Retrieves the context ID for the given application context.
+     * If the application context has a parent and the parent contains a bean of type ContextId,
+     * it creates a child ID by calling the createChildId() method on the parent's ContextId bean.
+     * Otherwise, it creates a new ContextId using the application ID from the environment.
+     *
+     * @param applicationContext the configurable application context
+     * @return the context ID
+     */
+    private ContextId getContextId(ConfigurableApplicationContext applicationContext) {
 		ApplicationContext parent = applicationContext.getParent();
 		if (parent != null && parent.containsBean(ContextId.class.getName())) {
 			return parent.getBean(ContextId.class).createChildId();
@@ -64,7 +88,13 @@ public class ContextIdApplicationContextInitializer
 		return new ContextId(getApplicationId(applicationContext.getEnvironment()));
 	}
 
-	private String getApplicationId(ConfigurableEnvironment environment) {
+	/**
+     * Returns the application ID based on the given environment.
+     * 
+     * @param environment the configurable environment
+     * @return the application ID
+     */
+    private String getApplicationId(ConfigurableEnvironment environment) {
 		String name = environment.getProperty("spring.application.name");
 		return StringUtils.hasText(name) ? name : "application";
 	}
@@ -78,15 +108,30 @@ public class ContextIdApplicationContextInitializer
 
 		private final String id;
 
-		ContextId(String id) {
+		/**
+         * Constructs a new ContextId object with the specified id.
+         * 
+         * @param id the id to be set for the ContextId object
+         */
+        ContextId(String id) {
 			this.id = id;
 		}
 
-		ContextId createChildId() {
+		/**
+         * Creates a new child ContextId by appending the current ContextId with a hyphen and the incremented value of the children counter.
+         * 
+         * @return the newly created child ContextId
+         */
+        ContextId createChildId() {
 			return new ContextId(this.id + "-" + this.children.incrementAndGet());
 		}
 
-		String getId() {
+		/**
+         * Returns the ID of the context.
+         *
+         * @return the ID of the context
+         */
+        String getId() {
 			return this.id;
 		}
 

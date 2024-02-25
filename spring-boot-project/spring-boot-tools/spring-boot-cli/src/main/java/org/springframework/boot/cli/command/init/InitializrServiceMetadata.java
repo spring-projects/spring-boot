@@ -66,7 +66,12 @@ class InitializrServiceMetadata {
 		this.defaults = Collections.unmodifiableMap(parseDefaults(root));
 	}
 
-	InitializrServiceMetadata(ProjectType defaultProjectType) {
+	/**
+     * Constructs a new InitializrServiceMetadata object with the specified default project type.
+     * 
+     * @param defaultProjectType the default project type to be set
+     */
+    InitializrServiceMetadata(ProjectType defaultProjectType) {
 		this.dependencies = new HashMap<>();
 		this.projectTypes = new MetadataHolder<>();
 		this.projectTypes.getContent().put(defaultProjectType.getId(), defaultProjectType);
@@ -124,7 +129,14 @@ class InitializrServiceMetadata {
 		return this.defaults;
 	}
 
-	private Map<String, Dependency> parseDependencies(JSONObject root) throws JSONException {
+	/**
+     * Parses the dependencies from the given JSON object.
+     * 
+     * @param root the root JSON object containing the dependencies
+     * @return a map of dependencies with their names as keys
+     * @throws JSONException if there is an error parsing the JSON
+     */
+    private Map<String, Dependency> parseDependencies(JSONObject root) throws JSONException {
 		Map<String, Dependency> result = new HashMap<>();
 		if (!root.has(DEPENDENCIES_EL)) {
 			return result;
@@ -138,7 +150,14 @@ class InitializrServiceMetadata {
 		return result;
 	}
 
-	private MetadataHolder<String, ProjectType> parseProjectTypes(JSONObject root) throws JSONException {
+	/**
+     * Parses the project types from the given JSON object and returns a MetadataHolder object containing the parsed project types.
+     * 
+     * @param root The JSON object containing the project types.
+     * @return A MetadataHolder object containing the parsed project types.
+     * @throws JSONException If there is an error while parsing the JSON object.
+     */
+    private MetadataHolder<String, ProjectType> parseProjectTypes(JSONObject root) throws JSONException {
 		MetadataHolder<String, ProjectType> result = new MetadataHolder<>();
 		if (!root.has(TYPE_EL)) {
 			return result;
@@ -157,7 +176,14 @@ class InitializrServiceMetadata {
 		return result;
 	}
 
-	private Map<String, String> parseDefaults(JSONObject root) throws JSONException {
+	/**
+     * Parses the default values from the given JSON object.
+     * 
+     * @param root the JSON object to parse
+     * @return a map containing the parsed default values
+     * @throws JSONException if there is an error while parsing the JSON object
+     */
+    private Map<String, String> parseDefaults(JSONObject root) throws JSONException {
 		Map<String, String> result = new HashMap<>();
 		Iterator<?> keys = root.keys();
 		while (keys.hasNext()) {
@@ -172,7 +198,14 @@ class InitializrServiceMetadata {
 		return result;
 	}
 
-	private void parseGroup(JSONObject group, Map<String, Dependency> dependencies) throws JSONException {
+	/**
+     * Parses a group from the given JSONObject and adds the parsed dependencies to the provided map.
+     * 
+     * @param group        the JSONObject representing the group
+     * @param dependencies the map to add the parsed dependencies to
+     * @throws JSONException if there is an error parsing the group
+     */
+    private void parseGroup(JSONObject group, Map<String, Dependency> dependencies) throws JSONException {
 		if (group.has(VALUES_EL)) {
 			JSONArray content = group.getJSONArray(VALUES_EL);
 			for (int i = 0; i < content.length(); i++) {
@@ -182,14 +215,29 @@ class InitializrServiceMetadata {
 		}
 	}
 
-	private Dependency parseDependency(JSONObject object) throws JSONException {
+	/**
+     * Parses a JSON object and returns a Dependency object.
+     * 
+     * @param object the JSON object to parse
+     * @return the parsed Dependency object
+     * @throws JSONException if there is an error parsing the JSON object
+     */
+    private Dependency parseDependency(JSONObject object) throws JSONException {
 		String id = getStringValue(object, ID_ATTRIBUTE, null);
 		String name = getStringValue(object, NAME_ATTRIBUTE, null);
 		String description = getStringValue(object, DESCRIPTION_ATTRIBUTE, null);
 		return new Dependency(id, name, description);
 	}
 
-	private ProjectType parseType(JSONObject object, String defaultId) throws JSONException {
+	/**
+     * Parses the project type from the given JSON object.
+     *
+     * @param object     the JSON object containing the project type information
+     * @param defaultId  the default ID for the project type
+     * @return the parsed ProjectType object
+     * @throws JSONException if there is an error parsing the JSON object
+     */
+    private ProjectType parseType(JSONObject object, String defaultId) throws JSONException {
 		String id = getStringValue(object, ID_ATTRIBUTE, null);
 		String name = getStringValue(object, NAME_ATTRIBUTE, null);
 		String action = getStringValue(object, ACTION_ATTRIBUTE, null);
@@ -202,11 +250,29 @@ class InitializrServiceMetadata {
 		return new ProjectType(id, name, action, defaultType, tags);
 	}
 
-	private String getStringValue(JSONObject object, String name, String defaultValue) throws JSONException {
+	/**
+     * Returns the value of the specified key from the given JSONObject.
+     * If the key is present in the JSONObject, the corresponding value is returned.
+     * If the key is not present, the defaultValue is returned instead.
+     * 
+     * @param object the JSONObject from which to retrieve the value
+     * @param name the name of the key to retrieve the value for
+     * @param defaultValue the default value to return if the key is not present
+     * @return the value of the specified key if present, otherwise the defaultValue
+     * @throws JSONException if there is an error while retrieving the value from the JSONObject
+     */
+    private String getStringValue(JSONObject object, String name, String defaultValue) throws JSONException {
 		return object.has(name) ? object.getString(name) : defaultValue;
 	}
 
-	private Map<String, String> parseStringItems(JSONObject json) throws JSONException {
+	/**
+     * Parses the string items from a JSONObject and returns them as a Map.
+     * 
+     * @param json the JSONObject to parse
+     * @return a Map containing the parsed string items
+     * @throws JSONException if there is an error while parsing the JSONObject
+     */
+    private Map<String, String> parseStringItems(JSONObject json) throws JSONException {
 		Map<String, String> result = new HashMap<>();
 		for (Iterator<?> iterator = json.keys(); iterator.hasNext();) {
 			String key = (String) iterator.next();
@@ -218,25 +284,47 @@ class InitializrServiceMetadata {
 		return result;
 	}
 
-	private static final class MetadataHolder<K, T> {
+	/**
+     * MetadataHolder class.
+     */
+    private static final class MetadataHolder<K, T> {
 
 		private final Map<K, T> content;
 
 		private T defaultItem;
 
-		private MetadataHolder() {
+		/**
+         * Constructs a new instance of the MetadataHolder class.
+         * Initializes the content field with an empty HashMap.
+         */
+        private MetadataHolder() {
 			this.content = new HashMap<>();
 		}
 
-		Map<K, T> getContent() {
+		/**
+         * Returns the content of the MetadataHolder object.
+         *
+         * @return the content of the MetadataHolder object
+         */
+        Map<K, T> getContent() {
 			return this.content;
 		}
 
-		T getDefaultItem() {
+		/**
+         * Returns the default item of the MetadataHolder.
+         *
+         * @return the default item of the MetadataHolder
+         */
+        T getDefaultItem() {
 			return this.defaultItem;
 		}
 
-		void setDefaultItem(T defaultItem) {
+		/**
+         * Sets the default item for the MetadataHolder.
+         * 
+         * @param defaultItem the default item to be set
+         */
+        void setDefaultItem(T defaultItem) {
 			this.defaultItem = defaultItem;
 		}
 

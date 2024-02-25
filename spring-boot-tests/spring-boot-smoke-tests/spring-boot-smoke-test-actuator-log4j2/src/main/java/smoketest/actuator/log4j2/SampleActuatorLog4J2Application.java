@@ -19,10 +19,19 @@ package smoketest.actuator.log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleActuatorLog4J2Application class.
+ */
 @SpringBootApplication
 public class SampleActuatorLog4J2Application {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by running the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleActuatorLog4J2Application.class, args);
 	}
 

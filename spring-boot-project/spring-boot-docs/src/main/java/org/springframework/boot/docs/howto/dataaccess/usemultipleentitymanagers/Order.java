@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.howto.dataaccess.usemultipleentitymanagers;
 
+/**
+ * Order class.
+ */
 class Order {
 
 }

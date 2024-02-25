@@ -29,6 +29,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import org.hibernate.annotations.NaturalId;
 
+/**
+ * Hotel class.
+ */
 @Entity
 public class Hotel implements Serializable {
 
@@ -56,27 +59,59 @@ public class Hotel implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "hotel")
 	private Set<Review> reviews;
 
-	protected Hotel() {
+	/**
+     * Constructs a new instance of the Hotel class.
+     * 
+     * This constructor is marked as protected, which means it can only be accessed by subclasses of the Hotel class.
+     * It is used to create a new Hotel object.
+     */
+    protected Hotel() {
 	}
 
-	public Hotel(City city, String name) {
+	/**
+     * Creates a new Hotel object with the specified city and name.
+     * 
+     * @param city the city where the hotel is located
+     * @param name the name of the hotel
+     */
+    public Hotel(City city, String name) {
 		this.city = city;
 		this.name = name;
 	}
 
-	public City getCity() {
+	/**
+     * Returns the city where the hotel is located.
+     * 
+     * @return the city where the hotel is located
+     */
+    public City getCity() {
 		return this.city;
 	}
 
-	public String getName() {
+	/**
+     * Returns the name of the hotel.
+     *
+     * @return the name of the hotel
+     */
+    public String getName() {
 		return this.name;
 	}
 
-	public String getAddress() {
+	/**
+     * Returns the address of the hotel.
+     *
+     * @return the address of the hotel
+     */
+    public String getAddress() {
 		return this.address;
 	}
 
-	public String getZip() {
+	/**
+     * Returns the zip code of the hotel.
+     *
+     * @return the zip code of the hotel
+     */
+    public String getZip() {
 		return this.zip;
 	}
 

@@ -63,7 +63,13 @@ class ExplodedArchive implements Archive {
 		this.rootUriPath = ExplodedArchive.this.rootDirectory.toURI().getPath();
 	}
 
-	@Override
+	/**
+     * Retrieves the manifest of the exploded archive.
+     * 
+     * @return The manifest of the exploded archive, or null if no manifest is found.
+     * @throws IOException If an I/O error occurs while loading the manifest.
+     */
+    @Override
 	public Manifest getManifest() throws IOException {
 		Object manifest = this.manifest;
 		if (manifest == null) {
@@ -73,7 +79,13 @@ class ExplodedArchive implements Archive {
 		return (manifest != NO_MANIFEST) ? (Manifest) manifest : null;
 	}
 
-	private Object loadManifest() throws IOException {
+	/**
+     * Loads the manifest file from the root directory of the exploded archive.
+     * 
+     * @return the loaded manifest object
+     * @throws IOException if an I/O error occurs while reading the manifest file
+     */
+    private Object loadManifest() throws IOException {
 		File file = new File(this.rootDirectory, "META-INF/MANIFEST.MF");
 		if (!file.exists()) {
 			return NO_MANIFEST;
@@ -83,7 +95,15 @@ class ExplodedArchive implements Archive {
 		}
 	}
 
-	@Override
+	/**
+     * Retrieves the classpath URLs for the entries in the ExplodedArchive.
+     * 
+     * @param includeFilter         a Predicate to filter the entries to be included in the classpath URLs
+     * @param directorySearchFilter a Predicate to filter the directories to be searched for entries
+     * @return a Set of URLs representing the classpath URLs
+     * @throws IOException if an I/O error occurs while retrieving the classpath URLs
+     */
+    @Override
 	public Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> directorySearchFilter)
 			throws IOException {
 		Set<URL> urls = new LinkedHashSet<>();
@@ -105,7 +125,13 @@ class ExplodedArchive implements Archive {
 		return urls;
 	}
 
-	private List<File> listFiles(File file) {
+	/**
+     * Returns a list of files in the specified directory.
+     * 
+     * @param file the directory to list files from
+     * @return a list of files in the directory, or an empty list if the directory is empty or does not exist
+     */
+    private List<File> listFiles(File file) {
 		File[] files = file.listFiles();
 		if (files == null) {
 			return Collections.emptyList();
@@ -114,12 +140,22 @@ class ExplodedArchive implements Archive {
 		return Arrays.asList(files);
 	}
 
-	@Override
+	/**
+     * Returns the root directory of the ExplodedArchive.
+     *
+     * @return the root directory of the ExplodedArchive
+     */
+    @Override
 	public File getRootDirectory() {
 		return this.rootDirectory;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the root directory of the ExplodedArchive.
+     *
+     * @return a string representation of the root directory
+     */
+    @Override
 	public String toString() {
 		return this.rootDirectory.toString();
 	}
@@ -129,7 +165,12 @@ class ExplodedArchive implements Archive {
 	 */
 	private record FileArchiveEntry(String name, File file) implements Entry {
 
-		@Override
+		/**
+     * Returns a boolean value indicating whether the current file is a directory.
+     * 
+     * @return true if the current file is a directory, false otherwise
+     */
+    @Override
 		public boolean isDirectory() {
 			return this.file.isDirectory();
 		}

@@ -74,7 +74,15 @@ public class LaunchedClassLoader extends JarUrlClassLoader {
 		this.rootArchive = rootArchive;
 	}
 
-	@Override
+	/**
+     * Loads the specified class with the given name, and optionally resolves it.
+     * 
+     * @param name    the name of the class to be loaded
+     * @param resolve whether or not to resolve the class
+     * @return the loaded class
+     * @throws ClassNotFoundException if the class with the specified name could not be found
+     */
+    @Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		if (name.startsWith(JAR_MODE_PACKAGE_PREFIX) || name.equals(JAR_MODE_RUNNER_CLASS_NAME)) {
 			try {
@@ -91,7 +99,14 @@ public class LaunchedClassLoader extends JarUrlClassLoader {
 		return super.loadClass(name, resolve);
 	}
 
-	private Class<?> loadClassInLaunchedClassLoader(String name) throws ClassNotFoundException {
+	/**
+     * Loads a class in the LaunchedClassLoader.
+     * 
+     * @param name the fully qualified name of the class to be loaded
+     * @return the loaded class
+     * @throws ClassNotFoundException if the class cannot be found
+     */
+    private Class<?> loadClassInLaunchedClassLoader(String name) throws ClassNotFoundException {
 		try {
 			String internalName = name.replace('.', '/') + ".class";
 			try (InputStream inputStream = getParent().getResourceAsStream(internalName);
@@ -111,18 +126,50 @@ public class LaunchedClassLoader extends JarUrlClassLoader {
 		}
 	}
 
-	@Override
+	/**
+     * Defines a package with the specified name, manifest, and URL.
+     * 
+     * @param name the name of the package
+     * @param man the manifest of the package
+     * @param url the URL of the package
+     * @return the defined package
+     * @throws IllegalArgumentException if the package name is invalid
+     */
+    @Override
 	protected Package definePackage(String name, Manifest man, URL url) throws IllegalArgumentException {
 		return (!this.exploded) ? super.definePackage(name, man, url) : definePackageForExploded(name, man, url);
 	}
 
-	private Package definePackageForExploded(String name, Manifest man, URL url) {
+	/**
+     * Defines a package for an exploded JAR file.
+     * 
+     * @param name the name of the package
+     * @param man the manifest of the JAR file
+     * @param url the URL of the JAR file
+     * @return the defined package
+     */
+    private Package definePackageForExploded(String name, Manifest man, URL url) {
 		synchronized (this.definePackageLock) {
 			return definePackage(DefinePackageCallType.MANIFEST, () -> super.definePackage(name, man, url));
 		}
 	}
 
-	@Override
+	/**
+     * Defines a package with the specified name, specification title, specification version, specification vendor,
+     * implementation title, implementation version, implementation vendor, and seal base URL.
+     * 
+     * @param name         the name of the package
+     * @param specTitle    the specification title of the package
+     * @param specVersion  the specification version of the package
+     * @param specVendor   the specification vendor of the package
+     * @param implTitle    the implementation title of the package
+     * @param implVersion  the implementation version of the package
+     * @param implVendor   the implementation vendor of the package
+     * @param sealBase     the URL to the seal base of the package
+     * @return the defined package
+     * @throws IllegalArgumentException if the package name is invalid
+     */
+    @Override
 	protected Package definePackage(String name, String specTitle, String specVersion, String specVendor,
 			String implTitle, String implVersion, String implVendor, URL sealBase) throws IllegalArgumentException {
 		if (!this.exploded) {
@@ -133,7 +180,15 @@ public class LaunchedClassLoader extends JarUrlClassLoader {
 				specVendor, implTitle, implVersion, implVendor, sealBase));
 	}
 
-	private Package definePackageForExploded(String name, URL sealBase, Supplier<Package> call) {
+	/**
+     * Defines a package for an exploded JAR file.
+     * 
+     * @param name      the name of the package
+     * @param sealBase  the URL to the seal base for the package
+     * @param call      a supplier that provides the package to be defined
+     * @return          the defined package
+     */
+    private Package definePackageForExploded(String name, URL sealBase, Supplier<Package> call) {
 		synchronized (this.definePackageLock) {
 			if (this.definePackageCallType == null) {
 				// We're not part of a call chain which means that the URLClassLoader
@@ -148,7 +203,15 @@ public class LaunchedClassLoader extends JarUrlClassLoader {
 		}
 	}
 
-	private <T> T definePackage(DefinePackageCallType type, Supplier<T> call) {
+	/**
+     * Defines a package with the specified call type and executes the provided call.
+     * 
+     * @param type the DefinePackageCallType to be set
+     * @param call the Supplier representing the call to be executed
+     * @param <T> the type of the result returned by the call
+     * @return the result returned by the call
+     */
+    private <T> T definePackage(DefinePackageCallType type, Supplier<T> call) {
 		DefinePackageCallType existingType = this.definePackageCallType;
 		try {
 			this.definePackageCallType = type;
@@ -159,7 +222,13 @@ public class LaunchedClassLoader extends JarUrlClassLoader {
 		}
 	}
 
-	private Manifest getManifest(Archive archive) {
+	/**
+     * Retrieves the manifest of the given archive.
+     * 
+     * @param archive the archive from which to retrieve the manifest
+     * @return the manifest of the archive, or null if the archive is null or an IOException occurs
+     */
+    private Manifest getManifest(Archive archive) {
 		try {
 			return (archive != null) ? archive.getManifest() : null;
 		}

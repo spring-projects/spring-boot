@@ -32,11 +32,21 @@ public class R2dbcObservationProperties {
 	 */
 	private boolean includeParameterValues;
 
-	public boolean isIncludeParameterValues() {
+	/**
+     * Returns a boolean value indicating whether the parameter values should be included.
+     *
+     * @return {@code true} if the parameter values should be included, {@code false} otherwise.
+     */
+    public boolean isIncludeParameterValues() {
 		return this.includeParameterValues;
 	}
 
-	public void setIncludeParameterValues(boolean includeParameterValues) {
+	/**
+     * Sets whether to include parameter values in the R2dbcObservationProperties.
+     * 
+     * @param includeParameterValues true to include parameter values, false otherwise
+     */
+    public void setIncludeParameterValues(boolean includeParameterValues) {
 		this.includeParameterValues = includeParameterValues;
 	}
 

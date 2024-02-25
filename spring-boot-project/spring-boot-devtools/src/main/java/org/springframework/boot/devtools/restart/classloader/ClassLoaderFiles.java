@@ -96,7 +96,12 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 		getOrCreateSourceDirectory(sourceDirectory).add(name, file);
 	}
 
-	private void removeAll(String name) {
+	/**
+     * Removes all files with the given name from all source directories.
+     * 
+     * @param name the name of the files to be removed
+     */
+    private void removeAll(String name) {
 		for (SourceDirectory sourceDirectory : this.sourceDirectories.values()) {
 			sourceDirectory.remove(name);
 		}
@@ -132,7 +137,13 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 		return size;
 	}
 
-	@Override
+	/**
+     * Retrieves a ClassLoaderFile with the specified name from the source directories.
+     * 
+     * @param name the name of the file to retrieve
+     * @return the ClassLoaderFile with the specified name, or null if not found
+     */
+    @Override
 	public ClassLoaderFile getFile(String name) {
 		for (SourceDirectory sourceDirectory : this.sourceDirectories.values()) {
 			ClassLoaderFile file = sourceDirectory.get(name);
@@ -154,23 +165,50 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 
 		private final Map<String, ClassLoaderFile> files = new LinkedHashMap<>();
 
-		SourceDirectory(String name) {
+		/**
+         * Constructs a new SourceDirectory with the specified name.
+         * 
+         * @param name the name of the source directory
+         */
+        SourceDirectory(String name) {
 			this.name = name;
 		}
 
-		public Set<Entry<String, ClassLoaderFile>> getFilesEntrySet() {
+		/**
+         * Returns a set view of the mappings contained in the files map.
+         * 
+         * @return a set view of the mappings contained in the files map
+         */
+        public Set<Entry<String, ClassLoaderFile>> getFilesEntrySet() {
 			return this.files.entrySet();
 		}
 
-		protected final void add(String name, ClassLoaderFile file) {
+		/**
+         * Adds a file to the source directory.
+         * 
+         * @param name the name of the file
+         * @param file the file to be added
+         */
+        protected final void add(String name, ClassLoaderFile file) {
 			this.files.put(name, file);
 		}
 
-		protected final void remove(String name) {
+		/**
+         * Removes a file with the specified name from the source directory.
+         * 
+         * @param name the name of the file to be removed
+         */
+        protected final void remove(String name) {
 			this.files.remove(name);
 		}
 
-		protected final ClassLoaderFile get(String name) {
+		/**
+         * Retrieves the ClassLoaderFile associated with the given name.
+         * 
+         * @param name the name of the ClassLoaderFile to retrieve
+         * @return the ClassLoaderFile associated with the given name, or null if not found
+         */
+        protected final ClassLoaderFile get(String name) {
 			return this.files.get(name);
 		}
 

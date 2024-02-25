@@ -36,11 +36,22 @@ class LiquibaseSchemaManagementProvider implements SchemaManagementProvider {
 
 	private final Iterable<SpringLiquibase> liquibaseInstances;
 
-	LiquibaseSchemaManagementProvider(ObjectProvider<SpringLiquibase> liquibases) {
+	/**
+     * Constructs a new LiquibaseSchemaManagementProvider with the specified Liquibase instances.
+     * 
+     * @param liquibases the object provider for SpringLiquibase instances
+     */
+    LiquibaseSchemaManagementProvider(ObjectProvider<SpringLiquibase> liquibases) {
 		this.liquibaseInstances = liquibases;
 	}
 
-	@Override
+	/**
+     * Returns the schema management type for the given data source.
+     * 
+     * @param dataSource the data source to check
+     * @return the schema management type for the data source
+     */
+    @Override
 	public SchemaManagement getSchemaManagement(DataSource dataSource) {
 		return StreamSupport.stream(this.liquibaseInstances.spliterator(), false)
 			.map(SpringLiquibase::getDataSource)

@@ -24,11 +24,22 @@ package org.springframework.boot.cli.command.init;
  */
 public class ReportableException extends RuntimeException {
 
-	public ReportableException(String message) {
+	/**
+     * Constructs a new ReportableException with the specified detail message.
+     *
+     * @param message the detail message (which is saved for later retrieval by the getMessage() method)
+     */
+    public ReportableException(String message) {
 		super(message);
 	}
 
-	public ReportableException(String message, Throwable cause) {
+	/**
+     * Constructs a new ReportableException with the specified detail message and cause.
+     *
+     * @param message the detail message (which is saved for later retrieval by the getMessage() method).
+     * @param cause the cause (which is saved for later retrieval by the getCause() method).
+     */
+    public ReportableException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

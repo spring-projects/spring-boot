@@ -35,16 +35,32 @@ public class JettySslHandshakeMetricsBinder extends AbstractJettyMetricsBinder {
 
 	private final Iterable<Tag> tags;
 
-	public JettySslHandshakeMetricsBinder(MeterRegistry meterRegistry) {
+	/**
+     * Constructs a new JettySslHandshakeMetricsBinder with the specified MeterRegistry.
+     * 
+     * @param meterRegistry the MeterRegistry to bind the metrics to
+     */
+    public JettySslHandshakeMetricsBinder(MeterRegistry meterRegistry) {
 		this(meterRegistry, Collections.emptyList());
 	}
 
-	public JettySslHandshakeMetricsBinder(MeterRegistry meterRegistry, Iterable<Tag> tags) {
+	/**
+     * Constructs a new JettySslHandshakeMetricsBinder with the specified MeterRegistry and tags.
+     *
+     * @param meterRegistry the MeterRegistry to bind the metrics to
+     * @param tags the tags to associate with the metrics
+     */
+    public JettySslHandshakeMetricsBinder(MeterRegistry meterRegistry, Iterable<Tag> tags) {
 		this.meterRegistry = meterRegistry;
 		this.tags = tags;
 	}
 
-	@Override
+	/**
+     * Binds the SSL handshake metrics to the given Jetty server.
+     * 
+     * @param server the Jetty server to bind the metrics to
+     */
+    @Override
 	protected void bindMetrics(Server server) {
 		JettySslHandshakeMetrics.addToAllConnectors(server, this.meterRegistry, this.tags);
 	}

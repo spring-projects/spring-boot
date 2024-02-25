@@ -41,12 +41,23 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 
 	private final ConnectionFactory connectionFactory;
 
-	public JmsHealthIndicator(ConnectionFactory connectionFactory) {
+	/**
+     * Constructs a new JmsHealthIndicator with the specified ConnectionFactory.
+     * 
+     * @param connectionFactory the ConnectionFactory to be used for JMS health check
+     */
+    public JmsHealthIndicator(ConnectionFactory connectionFactory) {
 		super("JMS health check failed");
 		this.connectionFactory = connectionFactory;
 	}
 
-	@Override
+	/**
+     * Performs a health check on the JMS connection.
+     * 
+     * @param builder the Health.Builder object used to build the health status
+     * @throws Exception if an error occurs during the health check
+     */
+    @Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		try (Connection connection = this.connectionFactory.createConnection()) {
 			new MonitoredConnection(connection).start();
@@ -54,17 +65,31 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 		}
 	}
 
-	private final class MonitoredConnection {
+	/**
+     * MonitoredConnection class.
+     */
+    private final class MonitoredConnection {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
 		private final Connection connection;
 
-		MonitoredConnection(Connection connection) {
+		/**
+         * Creates a new MonitoredConnection object with the specified Connection.
+         * 
+         * @param connection the Connection object to be monitored
+         */
+        MonitoredConnection(Connection connection) {
 			this.connection = connection;
 		}
 
-		void start() throws JMSException {
+		/**
+         * Starts the connection and waits for it to start within 5 seconds.
+         * If the connection fails to start within the specified time, it will be closed.
+         *
+         * @throws JMSException if there is an error starting the connection
+         */
+        void start() throws JMSException {
 			new Thread(() -> {
 				try {
 					if (!this.latch.await(5, TimeUnit.SECONDS)) {
@@ -81,7 +106,12 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 			this.latch.countDown();
 		}
 
-		private void closeConnection() {
+		/**
+         * Closes the connection to the database.
+         * 
+         * @throws Exception if an error occurs while closing the connection
+         */
+        private void closeConnection() {
 			try {
 				this.connection.close();
 			}

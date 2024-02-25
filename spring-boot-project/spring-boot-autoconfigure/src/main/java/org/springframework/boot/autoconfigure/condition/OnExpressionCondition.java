@@ -35,7 +35,14 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
 class OnExpressionCondition extends SpringBootCondition {
 
-	@Override
+	/**
+     * Determines the outcome of a condition based on the specified expression.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String expression = (String) metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName())
 			.get("value");
@@ -51,7 +58,14 @@ class OnExpressionCondition extends SpringBootCondition {
 		return ConditionOutcome.noMatch(messageBuilder.because("no BeanFactory available."));
 	}
 
-	private boolean evaluateExpression(ConfigurableListableBeanFactory beanFactory, String expression) {
+	/**
+     * Evaluates the given expression using the provided bean factory.
+     * 
+     * @param beanFactory the bean factory to use for resolving beans
+     * @param expression the expression to evaluate
+     * @return true if the expression evaluates to a non-null boolean value, false otherwise
+     */
+    private boolean evaluateExpression(ConfigurableListableBeanFactory beanFactory, String expression) {
 		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();

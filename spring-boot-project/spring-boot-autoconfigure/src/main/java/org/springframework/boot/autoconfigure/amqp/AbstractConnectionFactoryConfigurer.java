@@ -67,11 +67,21 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 		this.connectionDetails = connectionDetails;
 	}
 
-	protected final ConnectionNameStrategy getConnectionNameStrategy() {
+	/**
+     * Returns the connection name strategy used by this AbstractConnectionFactoryConfigurer.
+     *
+     * @return the connection name strategy
+     */
+    protected final ConnectionNameStrategy getConnectionNameStrategy() {
 		return this.connectionNameStrategy;
 	}
 
-	public final void setConnectionNameStrategy(ConnectionNameStrategy connectionNameStrategy) {
+	/**
+     * Sets the connection name strategy for the AbstractConnectionFactoryConfigurer.
+     * 
+     * @param connectionNameStrategy the connection name strategy to be set
+     */
+    public final void setConnectionNameStrategy(ConnectionNameStrategy connectionNameStrategy) {
 		this.connectionNameStrategy = connectionNameStrategy;
 	}
 

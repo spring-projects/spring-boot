@@ -97,7 +97,21 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private final List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 
-	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
+	/**
+     * Constructs a new HibernateJpaConfiguration object with the specified parameters.
+     * 
+     * @param dataSource The data source to be used for the JPA configuration.
+     * @param jpaProperties The JPA properties to be used for the configuration.
+     * @param beanFactory The bean factory to be used for the configuration.
+     * @param jtaTransactionManager The JTA transaction manager to be used for the configuration.
+     * @param hibernateProperties The Hibernate properties to be used for the configuration.
+     * @param metadataProviders The metadata providers to be used for the configuration.
+     * @param providers The schema management providers to be used for the configuration.
+     * @param physicalNamingStrategy The physical naming strategy to be used for the configuration.
+     * @param implicitNamingStrategy The implicit naming strategy to be used for the configuration.
+     * @param hibernatePropertiesCustomizers The Hibernate properties customizers to be used for the configuration.
+     */
+    HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
 			ConfigurableListableBeanFactory beanFactory, ObjectProvider<JtaTransactionManager> jtaTransactionManager,
 			HibernateProperties hibernateProperties,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
@@ -114,7 +128,16 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				hibernatePropertiesCustomizers.orderedStream().toList());
 	}
 
-	private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(
+	/**
+     * Determines the list of HibernatePropertiesCustomizer to be applied.
+     * 
+     * @param physicalNamingStrategy The physical naming strategy to be used.
+     * @param implicitNamingStrategy The implicit naming strategy to be used.
+     * @param beanFactory The configurable listable bean factory.
+     * @param hibernatePropertiesCustomizers The list of HibernatePropertiesCustomizer to be applied.
+     * @return The list of HibernatePropertiesCustomizer determined.
+     */
+    private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(
 			PhysicalNamingStrategy physicalNamingStrategy, ImplicitNamingStrategy implicitNamingStrategy,
 			ConfigurableListableBeanFactory beanFactory,
 			List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
@@ -132,12 +155,22 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		return customizers;
 	}
 
-	@Override
+	/**
+     * Creates a new instance of {@link HibernateJpaVendorAdapter} to be used as the JPA vendor adapter.
+     * 
+     * @return the newly created {@link HibernateJpaVendorAdapter}
+     */
+    @Override
 	protected AbstractJpaVendorAdapter createJpaVendorAdapter() {
 		return new HibernateJpaVendorAdapter();
 	}
 
-	@Override
+	/**
+     * Retrieves the vendor properties for the Hibernate JPA configuration.
+     * 
+     * @return a map containing the vendor properties
+     */
+    @Override
 	protected Map<String, Object> getVendorProperties() {
 		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider.getDefaultDdlAuto(getDataSource());
 		return new LinkedHashMap<>(this.hibernateProperties.determineHibernateProperties(
@@ -145,7 +178,12 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 					.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
 	}
 
-	@Override
+	/**
+     * Customizes the vendor properties for the Hibernate JPA configuration.
+     * 
+     * @param vendorProperties the map of vendor properties to customize
+     */
+    @Override
 	protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
 		super.customizeVendorProperties(vendorProperties);
 		if (!vendorProperties.containsKey(JTA_PLATFORM)) {
@@ -156,7 +194,13 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 	}
 
-	private void configureJtaPlatform(Map<String, Object> vendorProperties) throws LinkageError {
+	/**
+     * Configures the JTA platform for Hibernate.
+     * 
+     * @param vendorProperties the vendor-specific properties
+     * @throws LinkageError if there is an error configuring the JTA platform
+     */
+    private void configureJtaPlatform(Map<String, Object> vendorProperties) throws LinkageError {
 		JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
 		// Make sure Hibernate doesn't attempt to auto-detect a JTA platform
 		if (jtaTransactionManager == null) {
@@ -169,23 +213,46 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 	}
 
-	private void configureProviderDisablesAutocommit(Map<String, Object> vendorProperties) {
+	/**
+     * Configures the provider to disable autocommit if the data source autocommit is disabled and JTA is not enabled.
+     * 
+     * @param vendorProperties the map of vendor-specific properties
+     */
+    private void configureProviderDisablesAutocommit(Map<String, Object> vendorProperties) {
 		if (isDataSourceAutoCommitDisabled() && !isJta()) {
 			vendorProperties.put(PROVIDER_DISABLES_AUTOCOMMIT, "true");
 		}
 	}
 
-	private boolean isDataSourceAutoCommitDisabled() {
+	/**
+     * Checks if the auto-commit feature is disabled for the data source.
+     * 
+     * @return {@code true} if the auto-commit feature is disabled, {@code false} otherwise
+     */
+    private boolean isDataSourceAutoCommitDisabled() {
 		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(getDataSource());
 		return poolMetadata != null && Boolean.FALSE.equals(poolMetadata.getDefaultAutoCommit());
 	}
 
-	private boolean runningOnWebSphere() {
+	/**
+     * Checks if the application is running on WebSphere.
+     * 
+     * @return {@code true} if the application is running on WebSphere, {@code false} otherwise.
+     */
+    private boolean runningOnWebSphere() {
 		return ClassUtils.isPresent("com.ibm.websphere.jtaextensions.ExtendedJTATransaction",
 				getClass().getClassLoader());
 	}
 
-	private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
+	/**
+     * Configures the Spring JTA platform for Hibernate.
+     * 
+     * @param vendorProperties the vendor-specific properties
+     * @param jtaTransactionManager the JTA transaction manager
+     * @throws IllegalStateException if unable to set Hibernate JTA platform
+     * @throws LinkageError if a LinkageError occurs while setting Hibernate JTA platform
+     */
+    private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
 			JtaTransactionManager jtaTransactionManager) {
 		try {
 			vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(jtaTransactionManager));
@@ -204,7 +271,12 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 	}
 
-	private boolean isUsingJndi() {
+	/**
+     * Checks if the default JNDI environment is being used.
+     * 
+     * @return true if the default JNDI environment is available, false otherwise
+     */
+    private boolean isUsingJndi() {
 		try {
 			return JndiLocatorDelegate.isDefaultJndiEnvironmentAvailable();
 		}
@@ -213,7 +285,13 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 	}
 
-	private Object getNoJtaPlatformManager() {
+	/**
+     * Retrieves the JtaPlatform manager that does not support JTA transactions.
+     * 
+     * @return The JtaPlatform manager instance.
+     * @throws IllegalStateException if no available JtaPlatform candidates are found.
+     */
+    private Object getNoJtaPlatformManager() {
 		for (String candidate : NO_JTA_PLATFORM_CLASSES) {
 			try {
 				return Class.forName(candidate).getDeclaredConstructor().newInstance();
@@ -226,19 +304,33 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				"No available JtaPlatform candidates amongst " + Arrays.toString(NO_JTA_PLATFORM_CLASSES));
 	}
 
-	private static class NamingStrategiesHibernatePropertiesCustomizer implements HibernatePropertiesCustomizer {
+	/**
+     * NamingStrategiesHibernatePropertiesCustomizer class.
+     */
+    private static class NamingStrategiesHibernatePropertiesCustomizer implements HibernatePropertiesCustomizer {
 
 		private final PhysicalNamingStrategy physicalNamingStrategy;
 
 		private final ImplicitNamingStrategy implicitNamingStrategy;
 
-		NamingStrategiesHibernatePropertiesCustomizer(PhysicalNamingStrategy physicalNamingStrategy,
+		/**
+         * Constructs a new instance of NamingStrategiesHibernatePropertiesCustomizer with the specified physicalNamingStrategy and implicitNamingStrategy.
+         * 
+         * @param physicalNamingStrategy the physical naming strategy to be used
+         * @param implicitNamingStrategy the implicit naming strategy to be used
+         */
+        NamingStrategiesHibernatePropertiesCustomizer(PhysicalNamingStrategy physicalNamingStrategy,
 				ImplicitNamingStrategy implicitNamingStrategy) {
 			this.physicalNamingStrategy = physicalNamingStrategy;
 			this.implicitNamingStrategy = implicitNamingStrategy;
 		}
 
-		@Override
+		/**
+         * Customizes the Hibernate properties by adding the physical and implicit naming strategies.
+         * 
+         * @param hibernateProperties the Hibernate properties to be customized
+         */
+        @Override
 		public void customize(Map<String, Object> hibernateProperties) {
 			if (this.physicalNamingStrategy != null) {
 				hibernateProperties.put("hibernate.physical_naming_strategy", this.physicalNamingStrategy);
@@ -250,12 +342,21 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	}
 
-	static class HibernateRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * HibernateRuntimeHints class.
+     */
+    static class HibernateRuntimeHints implements RuntimeHintsRegistrar {
 
 		private static final Consumer<Builder> INVOKE_DECLARED_CONSTRUCTORS = TypeHint
 			.builtWith(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 
-		@Override
+		/**
+         * Registers the hints for the given runtime hints and class loader.
+         * 
+         * @param hints the runtime hints to register
+         * @param classLoader the class loader to use for reflection
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			for (String noJtaPlatformClass : NO_JTA_PLATFORM_CLASSES) {
 				hints.reflection().registerType(TypeReference.of(noJtaPlatformClass), INVOKE_DECLARED_CONSTRUCTORS);

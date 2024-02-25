@@ -36,11 +36,21 @@ public class LogFileWebEndpointProperties {
 	 */
 	private File externalFile;
 
-	public File getExternalFile() {
+	/**
+     * Returns the external file associated with this LogFileWebEndpointProperties instance.
+     *
+     * @return the external file
+     */
+    public File getExternalFile() {
 		return this.externalFile;
 	}
 
-	public void setExternalFile(File externalFile) {
+	/**
+     * Sets the external file for the LogFileWebEndpointProperties.
+     * 
+     * @param externalFile the external file to be set
+     */
+    public void setExternalFile(File externalFile) {
 		this.externalFile = externalFile;
 	}
 

@@ -36,15 +36,32 @@ class NoConnectionFactoryBeanFailureAnalyzer extends AbstractFailureAnalyzer<NoS
 
 	private final ClassLoader classLoader;
 
-	NoConnectionFactoryBeanFailureAnalyzer() {
+	/**
+     * Constructs a new NoConnectionFactoryBeanFailureAnalyzer with the specified class loader.
+     *
+     * @param classLoader the class loader to use for loading classes and resources
+     */
+    NoConnectionFactoryBeanFailureAnalyzer() {
 		this(NoConnectionFactoryBeanFailureAnalyzer.class.getClassLoader());
 	}
 
-	NoConnectionFactoryBeanFailureAnalyzer(ClassLoader classLoader) {
+	/**
+     * Constructs a new NoConnectionFactoryBeanFailureAnalyzer with the specified class loader.
+     *
+     * @param classLoader the class loader to be used for loading classes and resources
+     */
+    NoConnectionFactoryBeanFailureAnalyzer(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
-	@Override
+	/**
+     * Analyzes the failure caused by a missing ConnectionFactory bean.
+     * 
+     * @param rootFailure the root cause of the failure
+     * @param cause the specific exception that caused the failure (NoSuchBeanDefinitionException)
+     * @return a FailureAnalysis object containing information about the failure, or null if the failure cannot be analyzed
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause) {
 		if (ConnectionFactory.class.equals(cause.getBeanType())
 				&& this.classLoader.getResource("META-INF/services/io.r2dbc.spi.ConnectionFactoryProvider") == null) {
@@ -55,7 +72,15 @@ class NoConnectionFactoryBeanFailureAnalyzer extends AbstractFailureAnalyzer<NoS
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the order value for this failure analyzer.
+     * 
+     * The order value determines the order in which the failure analyzers are executed.
+     * A lower value means higher priority.
+     * 
+     * @return the order value for this failure analyzer
+     */
+    @Override
 	public int getOrder() {
 		return 0;
 	}

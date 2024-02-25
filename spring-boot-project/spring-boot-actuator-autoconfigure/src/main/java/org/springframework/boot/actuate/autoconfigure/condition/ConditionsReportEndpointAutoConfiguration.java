@@ -35,7 +35,14 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnAvailableEndpoint(endpoint = ConditionsReportEndpoint.class)
 public class ConditionsReportEndpointAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a ConditionsReportEndpoint bean if no bean of type ConditionsReportEndpoint is already present in the application context.
+     * The creation of this bean is conditional on the absence of a bean of type SearchStrategy.CURRENT.
+     * 
+     * @param context the configurable application context
+     * @return the ConditionsReportEndpoint bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public ConditionsReportEndpoint conditionsReportEndpoint(ConfigurableApplicationContext context) {
 		return new ConditionsReportEndpoint(context);

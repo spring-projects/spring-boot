@@ -22,6 +22,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyAutoConfiguration class.
+ */
 @AutoConfiguration
 // Some conditions ...
 public class MyAutoConfiguration {
@@ -32,7 +35,12 @@ public class MyAutoConfiguration {
 	@ConditionalOnClass(SomeService.class)
 	public static class SomeServiceConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of SomeService if no other bean of type SomeService is present in the application context.
+         * 
+         * @return the created SomeService instance
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		public SomeService someService() {
 			return new SomeService();

@@ -35,7 +35,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 @ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
 class NamedParameterJdbcTemplateConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of NamedParameterJdbcTemplate using the provided JdbcTemplate.
+     * 
+     * @param jdbcTemplate the JdbcTemplate to be used by the NamedParameterJdbcTemplate
+     * @return a new instance of NamedParameterJdbcTemplate
+     */
+    @Bean
 	@Primary
 	NamedParameterJdbcTemplate namedParameterJdbcTemplate(JdbcTemplate jdbcTemplate) {
 		return new NamedParameterJdbcTemplate(jdbcTemplate);

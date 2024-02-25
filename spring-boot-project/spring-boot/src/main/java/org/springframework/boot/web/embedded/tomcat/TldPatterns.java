@@ -200,7 +200,10 @@ final class TldPatterns {
 		DEFAULT_SCAN = Collections.unmodifiableSet(scanPatterns);
 	}
 
-	private TldPatterns() {
+	/**
+     * Private constructor for the TldPatterns class.
+     */
+    private TldPatterns() {
 	}
 
 }

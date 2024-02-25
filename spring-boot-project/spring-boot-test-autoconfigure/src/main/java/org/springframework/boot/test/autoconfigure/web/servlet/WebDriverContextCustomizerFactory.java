@@ -33,7 +33,14 @@ import org.springframework.test.context.ContextCustomizerFactory;
  */
 class WebDriverContextCustomizerFactory implements ContextCustomizerFactory {
 
-	@Override
+	/**
+     * Creates a context customizer for the given test class and configuration attributes.
+     * 
+     * @param testClass the test class for which the context customizer is created
+     * @param configAttributes the configuration attributes for the context customizer
+     * @return the created context customizer
+     */
+    @Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		return new WebDriverContextCustomizer();

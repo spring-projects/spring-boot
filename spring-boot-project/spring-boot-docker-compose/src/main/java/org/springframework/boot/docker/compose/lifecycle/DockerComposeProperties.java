@@ -77,59 +77,131 @@ public class DockerComposeProperties {
 
 	private final Readiness readiness = new Readiness();
 
-	public boolean isEnabled() {
+	/**
+     * Returns the current status of the Docker Compose properties.
+     * 
+     * @return true if the Docker Compose properties are enabled, false otherwise.
+     */
+    public boolean isEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	/**
+     * Sets the enabled status of the DockerComposeProperties.
+     * 
+     * @param enabled the enabled status to be set
+     */
+    public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public File getFile() {
+	/**
+     * Returns the file associated with this DockerComposeProperties object.
+     *
+     * @return the file associated with this DockerComposeProperties object
+     */
+    public File getFile() {
 		return this.file;
 	}
 
-	public void setFile(File file) {
+	/**
+     * Sets the file for the DockerComposeProperties.
+     * 
+     * @param file the file to be set
+     */
+    public void setFile(File file) {
 		this.file = file;
 	}
 
-	public LifecycleManagement getLifecycleManagement() {
+	/**
+     * Returns the LifecycleManagement object associated with this DockerComposeProperties instance.
+     *
+     * @return the LifecycleManagement object
+     */
+    public LifecycleManagement getLifecycleManagement() {
 		return this.lifecycleManagement;
 	}
 
-	public void setLifecycleManagement(LifecycleManagement lifecycleManagement) {
+	/**
+     * Sets the lifecycle management for the DockerComposeProperties.
+     * 
+     * @param lifecycleManagement the lifecycle management to be set
+     */
+    public void setLifecycleManagement(LifecycleManagement lifecycleManagement) {
 		this.lifecycleManagement = lifecycleManagement;
 	}
 
-	public String getHost() {
+	/**
+     * Returns the host value.
+     *
+     * @return the host value
+     */
+    public String getHost() {
 		return this.host;
 	}
 
-	public void setHost(String host) {
+	/**
+     * Sets the host for the DockerComposeProperties.
+     * 
+     * @param host the host to be set
+     */
+    public void setHost(String host) {
 		this.host = host;
 	}
 
-	public Start getStart() {
+	/**
+     * Returns the start property of the DockerComposeProperties class.
+     *
+     * @return the start property of the DockerComposeProperties class
+     */
+    public Start getStart() {
 		return this.start;
 	}
 
-	public Stop getStop() {
+	/**
+     * Returns the stop object.
+     *
+     * @return the stop object
+     */
+    public Stop getStop() {
 		return this.stop;
 	}
 
-	public Profiles getProfiles() {
+	/**
+     * Returns the profiles object.
+     *
+     * @return the profiles object
+     */
+    public Profiles getProfiles() {
 		return this.profiles;
 	}
 
-	public Skip getSkip() {
+	/**
+     * Returns the skip property of the DockerComposeProperties object.
+     * 
+     * @return the skip property of the DockerComposeProperties object
+     */
+    public Skip getSkip() {
 		return this.skip;
 	}
 
-	public Readiness getReadiness() {
+	/**
+     * Returns the readiness of the DockerComposeProperties.
+     *
+     * @return the readiness of the DockerComposeProperties
+     */
+    public Readiness getReadiness() {
 		return this.readiness;
 	}
 
-	static DockerComposeProperties get(Binder binder) {
+	/**
+     * Retrieves the DockerComposeProperties object from the given Binder.
+     * If the DockerComposeProperties object is not found in the Binder, a new instance is created.
+     * 
+     * @param binder the Binder object used for retrieving the DockerComposeProperties object
+     * @return the DockerComposeProperties object retrieved from the Binder, or a new instance if not found
+     */
+    static DockerComposeProperties get(Binder binder) {
 		return binder.bind(NAME, DockerComposeProperties.class).orElseGet(DockerComposeProperties::new);
 	}
 
@@ -148,19 +220,39 @@ public class DockerComposeProperties {
 		 */
 		private LogLevel logLevel = LogLevel.INFO;
 
-		public StartCommand getCommand() {
+		/**
+         * Returns the command associated with the StartCommand object.
+         *
+         * @return the command associated with the StartCommand object
+         */
+        public StartCommand getCommand() {
 			return this.command;
 		}
 
-		public void setCommand(StartCommand command) {
+		/**
+         * Sets the command for the Start class.
+         * 
+         * @param command the StartCommand object to be set
+         */
+        public void setCommand(StartCommand command) {
 			this.command = command;
 		}
 
-		public LogLevel getLogLevel() {
+		/**
+         * Returns the log level of the Start class.
+         * 
+         * @return the log level of the Start class
+         */
+        public LogLevel getLogLevel() {
 			return this.logLevel;
 		}
 
-		public void setLogLevel(LogLevel logLevel) {
+		/**
+         * Sets the log level for the application.
+         * 
+         * @param logLevel the log level to be set
+         */
+        public void setLogLevel(LogLevel logLevel) {
 			this.logLevel = logLevel;
 		}
 
@@ -181,19 +273,39 @@ public class DockerComposeProperties {
 		 */
 		private Duration timeout = Duration.ofSeconds(10);
 
-		public StopCommand getCommand() {
+		/**
+         * Returns the StopCommand associated with this Stop object.
+         *
+         * @return the StopCommand associated with this Stop object
+         */
+        public StopCommand getCommand() {
 			return this.command;
 		}
 
-		public void setCommand(StopCommand command) {
+		/**
+         * Sets the command for stopping.
+         * 
+         * @param command the StopCommand object to be set
+         */
+        public void setCommand(StopCommand command) {
 			this.command = command;
 		}
 
-		public Duration getTimeout() {
+		/**
+         * Returns the timeout duration.
+         *
+         * @return the timeout duration
+         */
+        public Duration getTimeout() {
 			return this.timeout;
 		}
 
-		public void setTimeout(Duration timeout) {
+		/**
+         * Sets the timeout for the Stop class.
+         * 
+         * @param timeout the duration of the timeout
+         */
+        public void setTimeout(Duration timeout) {
 			this.timeout = timeout;
 		}
 
@@ -209,11 +321,21 @@ public class DockerComposeProperties {
 		 */
 		private Set<String> active = new LinkedHashSet<>();
 
-		public Set<String> getActive() {
+		/**
+         * Returns the set of active profiles.
+         *
+         * @return the set of active profiles
+         */
+        public Set<String> getActive() {
 			return this.active;
 		}
 
-		public void setActive(Set<String> active) {
+		/**
+         * Sets the active profiles.
+         * 
+         * @param active the active profiles to be set
+         */
+        public void setActive(Set<String> active) {
 			this.active = active;
 		}
 
@@ -229,11 +351,21 @@ public class DockerComposeProperties {
 		 */
 		private boolean inTests = true;
 
-		public boolean isInTests() {
+		/**
+         * Returns a boolean value indicating whether the object is in tests.
+         * 
+         * @return true if the object is in tests, false otherwise
+         */
+        public boolean isInTests() {
 			return this.inTests;
 		}
 
-		public void setInTests(boolean inTests) {
+		/**
+         * Sets the value indicating whether the code is running in a test environment.
+         * 
+         * @param inTests the value indicating whether the code is running in a test environment
+         */
+        public void setInTests(boolean inTests) {
 			this.inTests = inTests;
 		}
 
@@ -259,23 +391,48 @@ public class DockerComposeProperties {
 		 */
 		private final Tcp tcp = new Tcp();
 
-		public Wait getWait() {
+		/**
+         * Returns the wait object associated with this Readiness instance.
+         *
+         * @return the wait object
+         */
+        public Wait getWait() {
 			return this.wait;
 		}
 
-		public void setWait(Wait wait) {
+		/**
+         * Sets the wait object for the Readiness class.
+         * 
+         * @param wait the wait object to be set
+         */
+        public void setWait(Wait wait) {
 			this.wait = wait;
 		}
 
-		public Duration getTimeout() {
+		/**
+         * Returns the timeout duration for the readiness check.
+         *
+         * @return the timeout duration
+         */
+        public Duration getTimeout() {
 			return this.timeout;
 		}
 
-		public void setTimeout(Duration timeout) {
+		/**
+         * Sets the timeout for the Readiness class.
+         * 
+         * @param timeout the duration of the timeout
+         */
+        public void setTimeout(Duration timeout) {
 			this.timeout = timeout;
 		}
 
-		public Tcp getTcp() {
+		/**
+         * Returns the Tcp object associated with this Readiness object.
+         *
+         * @return the Tcp object associated with this Readiness object
+         */
+        public Tcp getTcp() {
 			return this.tcp;
 		}
 
@@ -317,19 +474,39 @@ public class DockerComposeProperties {
 			 */
 			private Duration readTimeout = Duration.ofMillis(200);
 
-			public Duration getConnectTimeout() {
+			/**
+             * Returns the connect timeout duration.
+             *
+             * @return the connect timeout duration
+             */
+            public Duration getConnectTimeout() {
 				return this.connectTimeout;
 			}
 
-			public void setConnectTimeout(Duration connectTimeout) {
+			/**
+             * Sets the connection timeout for the TCP connection.
+             * 
+             * @param connectTimeout the duration of the connection timeout
+             */
+            public void setConnectTimeout(Duration connectTimeout) {
 				this.connectTimeout = connectTimeout;
 			}
 
-			public Duration getReadTimeout() {
+			/**
+             * Returns the read timeout for the TCP connection.
+             *
+             * @return the read timeout duration
+             */
+            public Duration getReadTimeout() {
 				return this.readTimeout;
 			}
 
-			public void setReadTimeout(Duration readTimeout) {
+			/**
+             * Sets the read timeout for the TCP connection.
+             * 
+             * @param readTimeout the duration of the read timeout
+             */
+            public void setReadTimeout(Duration readTimeout) {
 				this.readTimeout = readTimeout;
 			}
 

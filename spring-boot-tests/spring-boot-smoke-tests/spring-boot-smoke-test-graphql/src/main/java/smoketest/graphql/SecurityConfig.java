@@ -28,12 +28,24 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * SecurityConfig class.
+ */
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-	@Bean
+	/**
+     * Configures the security filter chain for the Spring Web application.
+     * Disables CSRF protection and permits all requests.
+     * Uses HTTP Basic authentication.
+     * 
+     * @param http the HttpSecurity object to configure
+     * @return the configured DefaultSecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
+    @Bean
 	public DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf((csrf) -> csrf.disable())
 			// Demonstrate that method security works
@@ -43,7 +55,13 @@ public class SecurityConfig {
 			.build();
 	}
 
-	@Bean
+	/**
+     * Creates an in-memory user details manager with two users: "rob" and "admin".
+     * The password encoder used is the default password encoder.
+     * 
+     * @return the in-memory user details manager
+     */
+    @Bean
 	@SuppressWarnings("deprecation")
 	public InMemoryUserDetailsManager userDetailsService() {
 		User.UserBuilder userBuilder = User.withDefaultPasswordEncoder();

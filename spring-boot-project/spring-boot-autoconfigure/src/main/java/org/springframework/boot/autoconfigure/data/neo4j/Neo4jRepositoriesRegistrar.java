@@ -32,22 +32,40 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  */
 class Neo4jRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
-	@Override
+	/**
+     * Returns the annotation class that is used to enable Neo4j repositories.
+     *
+     * @return the annotation class {@code EnableNeo4jRepositories}
+     */
+    @Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableNeo4jRepositories.class;
 	}
 
-	@Override
+	/**
+     * Returns the configuration class for enabling Neo4j repositories.
+     * 
+     * @return the configuration class for enabling Neo4j repositories
+     */
+    @Override
 	protected Class<?> getConfiguration() {
 		return EnableNeo4jRepositoriesConfiguration.class;
 	}
 
-	@Override
+	/**
+     * Returns the repository configuration extension for Neo4j repositories.
+     * 
+     * @return The repository configuration extension for Neo4j repositories.
+     */
+    @Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new Neo4jRepositoryConfigurationExtension();
 	}
 
-	@EnableNeo4jRepositories
+	/**
+     * EnableNeo4jRepositoriesConfiguration class.
+     */
+    @EnableNeo4jRepositories
 	private static final class EnableNeo4jRepositoriesConfiguration {
 
 	}

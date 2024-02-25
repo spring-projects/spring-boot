@@ -23,10 +23,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+/**
+ * MyRandomPortWebTestClientTests class.
+ */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MyRandomPortWebTestClientTests {
 
-	@Test
+	/**
+     * This is an example test method that tests the "/" endpoint using a WebTestClient.
+     * It verifies that the response status is OK and the response body is "Hello World".
+     *
+     * @param webClient the WebTestClient instance used for making HTTP requests
+     */
+    @Test
 	void exampleTest(@Autowired WebTestClient webClient) {
 		// @formatter:off
 		webClient

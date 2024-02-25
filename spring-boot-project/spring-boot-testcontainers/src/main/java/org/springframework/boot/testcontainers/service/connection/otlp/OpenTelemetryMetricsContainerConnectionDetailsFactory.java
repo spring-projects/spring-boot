@@ -35,25 +35,51 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 class OpenTelemetryMetricsContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<Container<?>, OtlpMetricsConnectionDetails> {
 
-	OpenTelemetryMetricsContainerConnectionDetailsFactory() {
+	/**
+     * Constructs a new instance of the {@code OpenTelemetryMetricsContainerConnectionDetailsFactory} class.
+     * 
+     * @param repositoryName the name of the repository containing the OpenTelemetry collector-contrib library
+     * @param configurationClassName the fully qualified class name of the OtlpMetricsExportAutoConfiguration class
+     */
+    OpenTelemetryMetricsContainerConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
 				"org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration");
 	}
 
-	@Override
+	/**
+     * Returns the connection details for the given container connection source.
+     *
+     * @param source the container connection source
+     * @return the connection details for the container
+     */
+    @Override
 	protected OtlpMetricsConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<Container<?>> source) {
 		return new OpenTelemetryMetricsContainerConnectionDetails(source);
 	}
 
-	private static final class OpenTelemetryMetricsContainerConnectionDetails
+	/**
+     * OpenTelemetryMetricsContainerConnectionDetails class.
+     */
+    private static final class OpenTelemetryMetricsContainerConnectionDetails
 			extends ContainerConnectionDetails<Container<?>> implements OtlpMetricsConnectionDetails {
 
-		private OpenTelemetryMetricsContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		/**
+         * Constructs a new OpenTelemetryMetricsContainerConnectionDetails with the specified ContainerConnectionSource.
+         *
+         * @param source the source of the container connection
+         */
+        private OpenTelemetryMetricsContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 
-		@Override
+		/**
+         * Returns the URL for accessing the metrics endpoint.
+         * The URL is constructed using the host and mapped port of the container.
+         *
+         * @return the URL for accessing the metrics endpoint
+         */
+        @Override
 		public String getUrl() {
 			return "http://%s:%d/v1/metrics".formatted(getContainer().getHost(), getContainer().getMappedPort(4318));
 		}

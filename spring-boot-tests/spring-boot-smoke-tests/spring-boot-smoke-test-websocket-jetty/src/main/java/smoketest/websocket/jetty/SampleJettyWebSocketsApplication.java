@@ -37,53 +37,103 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 import org.springframework.web.socket.handler.PerConnectionWebSocketHandler;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
+/**
+ * SampleJettyWebSocketsApplication class.
+ */
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableWebSocket
 public class SampleJettyWebSocketsApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
 
-	@Override
+	/**
+     * Registers WebSocket handlers for the application.
+     * 
+     * @param registry the WebSocketHandlerRegistry to register the handlers with
+     */
+    @Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		registry.addHandler(echoWebSocketHandler(), "/echo").withSockJS();
 		registry.addHandler(snakeWebSocketHandler(), "/snake").withSockJS();
 	}
 
-	@Override
+	/**
+     * Configures the Spring application builder.
+     * 
+     * @param application the Spring application builder
+     * @return the sources of the Spring application
+     */
+    @Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(SampleJettyWebSocketsApplication.class);
 	}
 
-	@Bean
+	/**
+     * Creates and returns an instance of the EchoService interface.
+     * 
+     * @return the EchoService instance
+     */
+    @Bean
 	public EchoService echoService() {
 		return new DefaultEchoService("Did you say \"%s\"?");
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of the GreetingService interface using the SimpleGreetingService implementation.
+     * 
+     * @return the newly created GreetingService instance
+     */
+    @Bean
 	public GreetingService greetingService() {
 		return new SimpleGreetingService();
 	}
 
-	@Bean
+	/**
+     * Creates a WebSocketHandler that handles incoming WebSocket messages by echoing them back to the sender.
+     * 
+     * @return the created WebSocketHandler
+     */
+    @Bean
 	public WebSocketHandler echoWebSocketHandler() {
 		return new EchoWebSocketHandler(echoService());
 	}
 
-	@Bean
+	/**
+     * Creates a WebSocketHandler for handling snake game WebSocket connections.
+     * 
+     * @return the WebSocketHandler instance for snake game WebSocket connections
+     */
+    @Bean
 	public WebSocketHandler snakeWebSocketHandler() {
 		return new PerConnectionWebSocketHandler(SnakeWebSocketHandler.class);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of ReverseWebSocketEndpoint.
+     * 
+     * @return the newly created ReverseWebSocketEndpoint instance
+     */
+    @Bean
 	public ReverseWebSocketEndpoint reverseWebSocketEndpoint() {
 		return new ReverseWebSocketEndpoint();
 	}
 
-	@Bean
+	/**
+     * Initializes and configures the ServerEndpointExporter.
+     * 
+     * @return the ServerEndpointExporter instance
+     */
+    @Bean
 	public ServerEndpointExporter serverEndpointExporter() {
 		return new ServerEndpointExporter();
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring application by running the SampleJettyWebSocketsApplication class.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleJettyWebSocketsApplication.class, args);
 	}
 

@@ -31,11 +31,19 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * SampleServletApplication class.
+ */
 @SpringBootConfiguration
 @EnableAutoConfiguration
 public class SampleServletApplication extends SpringBootServletInitializer {
 
-	@SuppressWarnings("serial")
+	/**
+     * Creates a new instance of the dispatcher servlet.
+     * 
+     * @return the dispatcher servlet
+     */
+    @SuppressWarnings("serial")
 	@Bean
 	public Servlet dispatcherServlet() {
 		return new GenericServlet() {
@@ -47,12 +55,24 @@ public class SampleServletApplication extends SpringBootServletInitializer {
 		};
 	}
 
-	@Override
+	/**
+     * Configures the Spring application builder.
+     * 
+     * @param application the Spring application builder
+     * @return the sources of the Spring application
+     */
+    @Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(SampleServletApplication.class);
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by running the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleServletApplication.class, args);
 	}
 

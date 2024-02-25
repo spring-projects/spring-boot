@@ -172,7 +172,13 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		super(contextPath, port);
 	}
 
-	@Override
+	/**
+     * Returns a WebServer instance configured with the provided ServletContextInitializers.
+     * 
+     * @param initializers the ServletContextInitializers to be applied to the WebServer
+     * @return a configured WebServer instance
+     */
+    @Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
 		context.getContext().getServletContext().setExtendedListenerTypes(true);
@@ -203,7 +209,13 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return getJettyWebServer(server);
 	}
 
-	private Server createServer(InetSocketAddress address) {
+	/**
+     * Creates a Jetty server instance with the specified address.
+     * 
+     * @param address the InetSocketAddress to bind the server to
+     * @return the created Server instance
+     */
+    private Server createServer(InetSocketAddress address) {
 		Server server = new Server(getThreadPool());
 		server.setConnectors(new Connector[] { createConnector(address, server) });
 		server.setStopTimeout(0);
@@ -214,7 +226,14 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return server;
 	}
 
-	private AbstractConnector createConnector(InetSocketAddress address, Server server) {
+	/**
+     * Creates a connector for the given address and server.
+     * 
+     * @param address the address to bind the connector to
+     * @param server the server instance to create the connector for
+     * @return the created connector
+     */
+    private AbstractConnector createConnector(InetSocketAddress address, Server server) {
 		HttpConfiguration httpConfiguration = new HttpConfiguration();
 		httpConfiguration.setSendServerVersion(false);
 		List<ConnectionFactory> connectionFactories = new ArrayList<>();
@@ -229,7 +248,13 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return connector;
 	}
 
-	private Handler addHandlerWrappers(Handler handler) {
+	/**
+     * Adds wrapper handlers to the given handler based on the configuration settings.
+     * 
+     * @param handler the original handler to which the wrappers will be added
+     * @return the modified handler with the added wrappers
+     */
+    private Handler addHandlerWrappers(Handler handler) {
 		if (getCompression() != null && getCompression().getEnabled()) {
 			handler = applyWrapper(handler, JettyHandlerWrappers.createGzipHandlerWrapper(getCompression()));
 		}
@@ -242,12 +267,25 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return handler;
 	}
 
-	private Handler applyWrapper(Handler handler, Handler.Wrapper wrapper) {
+	/**
+     * Applies a wrapper to the given handler.
+     * 
+     * @param handler the original handler to be wrapped
+     * @param wrapper the wrapper to be applied
+     * @return the wrapped handler
+     */
+    private Handler applyWrapper(Handler handler, Handler.Wrapper wrapper) {
 		wrapper.setHandler(handler);
 		return wrapper;
 	}
 
-	private void customizeSsl(Server server, InetSocketAddress address) {
+	/**
+     * Customizes the SSL configuration for the given server and address.
+     * 
+     * @param server the server to customize
+     * @param address the address to bind the server to
+     */
+    private void customizeSsl(Server server, InetSocketAddress address) {
 		new SslServerCustomizer(getHttp2(), address, getSsl().getClientAuth(), getSslBundle()).customize(server);
 	}
 
@@ -283,7 +321,12 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		postProcessWebAppContext(context);
 	}
 
-	private void configureSession(WebAppContext context) {
+	/**
+     * Configures the session for the given WebAppContext.
+     * 
+     * @param context the WebAppContext to configure the session for
+     */
+    private void configureSession(WebAppContext context) {
 		SessionHandler handler = context.getSessionHandler();
 		SameSite sessionSameSite = getSession().getCookie().getSameSite();
 		if (sessionSameSite != null) {
@@ -300,23 +343,45 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 	}
 
-	private boolean isNegative(Duration sessionTimeout) {
+	/**
+     * Checks if the given session timeout is negative.
+     * 
+     * @param sessionTimeout the session timeout duration to be checked
+     * @return {@code true} if the session timeout is negative or {@code null}, {@code false} otherwise
+     */
+    private boolean isNegative(Duration sessionTimeout) {
 		return sessionTimeout == null || sessionTimeout.isNegative();
 	}
 
-	private void addLocaleMappings(WebAppContext context) {
+	/**
+     * Adds locale mappings to the given WebAppContext.
+     * 
+     * @param context the WebAppContext to add the locale mappings to
+     */
+    private void addLocaleMappings(WebAppContext context) {
 		getLocaleCharsetMappings()
 			.forEach((locale, charset) -> context.addLocaleEncoding(locale.toString(), charset.toString()));
 	}
 
-	private File getTempDirectory(WebAppContext context) {
+	/**
+     * Returns the temporary directory for the given web application context.
+     * 
+     * @param context the web application context
+     * @return the temporary directory for the web application context, or null if the system property "java.io.tmpdir" is not set
+     */
+    private File getTempDirectory(WebAppContext context) {
 		String temp = System.getProperty("java.io.tmpdir");
 		return (temp != null)
 				? new File(temp, WebInfConfiguration.getCanonicalNameForWebAppTmpDir(context) + UUID.randomUUID())
 				: null;
 	}
 
-	private void configureDocumentRoot(WebAppContext handler) {
+	/**
+     * Configures the document root for the given WebAppContext handler.
+     * 
+     * @param handler the WebAppContext handler to configure
+     */
+    private void configureDocumentRoot(WebAppContext handler) {
 		File root = getValidDocumentRoot();
 		File docBase = (root != null) ? root : createTempDir("jetty-docbase");
 		try {
@@ -340,7 +405,16 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 	}
 
-	private Resource createResource(URL url, ResourceFactory resourceFactory, URLResourceFactory urlResourceFactory)
+	/**
+     * Creates a resource based on the given URL.
+     * 
+     * @param url                 the URL of the resource
+     * @param resourceFactory     the factory for creating resources
+     * @param urlResourceFactory  the factory for creating URL resources
+     * @return                    the created resource
+     * @throws Exception          if an error occurs while creating the resource
+     */
+    private Resource createResource(URL url, ResourceFactory resourceFactory, URLResourceFactory urlResourceFactory)
 			throws Exception {
 		if ("file".equals(url.getProtocol())) {
 			File file = new File(url.toURI());
@@ -475,27 +549,52 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return new JettyWebServer(server, getPort() >= 0);
 	}
 
-	@Override
+	/**
+     * Set the resource loader to be used by this JettyServletWebServerFactory.
+     * 
+     * @param resourceLoader the resource loader to be set
+     */
+    @Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
 
-	@Override
+	/**
+     * Sets whether to use forward headers.
+     * 
+     * @param useForwardHeaders true to use forward headers, false otherwise
+     */
+    @Override
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
 	}
 
-	@Override
+	/**
+     * Sets the number of acceptors for the Jetty server.
+     * 
+     * @param acceptors the number of acceptors to set
+     */
+    @Override
 	public void setAcceptors(int acceptors) {
 		this.acceptors = acceptors;
 	}
 
-	@Override
+	/**
+     * Sets the number of selectors to be used by the Jetty server.
+     * 
+     * @param selectors the number of selectors to be used
+     */
+    @Override
 	public void setSelectors(int selectors) {
 		this.selectors = selectors;
 	}
 
-	@Override
+	/**
+     * Sets the maximum number of connections allowed for this Jetty servlet web server factory.
+     * 
+     * @param maxConnections the maximum number of connections to set
+     */
+    @Override
 	public void setMaxConnections(int maxConnections) {
 		this.maxConnections = maxConnections;
 	}
@@ -519,7 +618,12 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return this.jettyServerCustomizers;
 	}
 
-	@Override
+	/**
+     * Adds customizers to the Jetty server.
+     * 
+     * @param customizers the customizers to be added (must not be null)
+     */
+    @Override
 	public void addServerCustomizers(JettyServerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
@@ -563,12 +667,23 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return this.threadPool;
 	}
 
-	@Override
+	/**
+     * Sets the thread pool for the Jetty servlet web server factory.
+     * 
+     * @param threadPool the thread pool to be set
+     */
+    @Override
 	public void setThreadPool(ThreadPool threadPool) {
 		this.threadPool = threadPool;
 	}
 
-	private void addJettyErrorPages(ErrorHandler errorHandler, Collection<ErrorPage> errorPages) {
+	/**
+     * Adds Jetty error pages to the provided ErrorHandler.
+     * 
+     * @param errorHandler The ErrorHandler to which the error pages will be added.
+     * @param errorPages   The collection of ErrorPage objects representing the error pages to be added.
+     */
+    private void addJettyErrorPages(ErrorHandler errorHandler, Collection<ErrorPage> errorPages) {
 		if (errorHandler instanceof ErrorPageErrorHandler handler) {
 			for (ErrorPage errorPage : errorPages) {
 				if (errorPage.isGlobal()) {
@@ -586,7 +701,10 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 	}
 
-	private static final class LoaderHidingResource extends Resource {
+	/**
+     * LoaderHidingResource class.
+     */
+    private static final class LoaderHidingResource extends Resource {
 
 		private static final String LOADER_RESOURCE_PATH_PREFIX = "/org/springframework/boot/";
 
@@ -594,27 +712,55 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 		private final Resource delegate;
 
-		private LoaderHidingResource(Resource base, Resource delegate) {
+		/**
+         * Constructs a new LoaderHidingResource with the specified base and delegate resources.
+         * 
+         * @param base the base resource to be used
+         * @param delegate the delegate resource to be used
+         */
+        private LoaderHidingResource(Resource base, Resource delegate) {
 			this.base = base;
 			this.delegate = delegate;
 		}
 
-		@Override
+		/**
+         * Applies the specified action to each element in this collection.
+         *
+         * @param action the action to be applied to each element
+         * @throws NullPointerException if the specified action is null
+         */
+        @Override
 		public void forEach(Consumer<? super Resource> action) {
 			this.delegate.forEach(action);
 		}
 
-		@Override
+		/**
+         * Returns the path of the resource.
+         *
+         * @return the path of the resource
+         */
+        @Override
 		public Path getPath() {
 			return this.delegate.getPath();
 		}
 
-		@Override
+		/**
+         * Checks if the current resource is contained within the specified resource.
+         * 
+         * @param r the resource to check containment against
+         * @return true if the current resource is contained within the specified resource, false otherwise
+         */
+        @Override
 		public boolean isContainedIn(Resource r) {
 			return this.delegate.isContainedIn(r);
 		}
 
-		@Override
+		/**
+         * Returns an iterator over the resources in this LoaderHidingResource object.
+         * 
+         * @return an iterator over the resources in this LoaderHidingResource object
+         */
+        @Override
 		public Iterator<Resource> iterator() {
 			if (this.delegate instanceof CombinedResource) {
 				return list().iterator();
@@ -622,82 +768,167 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			return List.<Resource>of(this).iterator();
 		}
 
-		@Override
+		/**
+         * Compares this LoaderHidingResource object to the specified object. The result is true if and only if the argument is not null and is a LoaderHidingResource object that represents the same resource as this object.
+         * 
+         * @param obj the object to compare this LoaderHidingResource against
+         * @return true if the given object represents a LoaderHidingResource equivalent to this object, false otherwise
+         */
+        @Override
 		public boolean equals(Object obj) {
 			return this.delegate.equals(obj);
 		}
 
-		@Override
+		/**
+         * Returns a hash code value for the object. This method overrides the hashCode() method in the Object class.
+         * 
+         * @return the hash code value for the object
+         */
+        @Override
 		public int hashCode() {
 			return this.delegate.hashCode();
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the resource exists.
+         *
+         * @return {@code true} if the resource exists, {@code false} otherwise.
+         */
+        @Override
 		public boolean exists() {
 			return this.delegate.exists();
 		}
 
-		@Override
+		/**
+         * Returns a Spliterator over the elements in this LoaderHidingResource object.
+         *
+         * @return a Spliterator over the elements in this LoaderHidingResource object
+         */
+        @Override
 		public Spliterator<Resource> spliterator() {
 			return this.delegate.spliterator();
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the resource is a directory.
+         *
+         * @return true if the resource is a directory, false otherwise
+         */
+        @Override
 		public boolean isDirectory() {
 			return this.delegate.isDirectory();
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the resource is readable.
+         *
+         * @return {@code true} if the resource is readable, {@code false} otherwise.
+         */
+        @Override
 		public boolean isReadable() {
 			return this.delegate.isReadable();
 		}
 
-		@Override
+		/**
+         * Returns the last modified timestamp of the resource.
+         *
+         * @return the last modified timestamp of the resource
+         */
+        @Override
 		public Instant lastModified() {
 			return this.delegate.lastModified();
 		}
 
-		@Override
+		/**
+         * Returns the length of the resource.
+         *
+         * @return the length of the resource
+         */
+        @Override
 		public long length() {
 			return this.delegate.length();
 		}
 
-		@Override
+		/**
+         * Returns the URI of the resource.
+         *
+         * @return the URI of the resource
+         */
+        @Override
 		public URI getURI() {
 			return this.delegate.getURI();
 		}
 
-		@Override
+		/**
+         * Returns the name of the resource.
+         *
+         * @return the name of the resource
+         */
+        @Override
 		public String getName() {
 			return this.delegate.getName();
 		}
 
-		@Override
+		/**
+         * Returns the file name of the resource.
+         *
+         * @return the file name of the resource
+         */
+        @Override
 		public String getFileName() {
 			return this.delegate.getFileName();
 		}
 
-		@Override
+		/**
+         * Returns a new input stream for reading the content of this resource.
+         *
+         * @return a new input stream
+         * @throws IOException if an I/O error occurs
+         */
+        @Override
 		public InputStream newInputStream() throws IOException {
 			return this.delegate.newInputStream();
 		}
 
-		@Override
+		/**
+         * Returns a new ReadableByteChannel that reads bytes from this resource.
+         *
+         * @return a new ReadableByteChannel
+         * @throws IOException if an I/O error occurs
+         */
+        @Override
 		public ReadableByteChannel newReadableByteChannel() throws IOException {
 			return this.delegate.newReadableByteChannel();
 		}
 
-		@Override
+		/**
+         * Returns a list of resources, filtering out any loader resources.
+         * 
+         * @return a list of non-loader resources
+         */
+        @Override
 		public List<Resource> list() {
 			return this.delegate.list().stream().filter(this::nonLoaderResource).toList();
 		}
 
-		private boolean nonLoaderResource(Resource resource) {
+		/**
+         * Checks if the given resource is a non-loader resource.
+         * 
+         * @param resource the resource to be checked
+         * @return {@code true} if the resource is not a loader resource, {@code false} otherwise
+         */
+        private boolean nonLoaderResource(Resource resource) {
 			Path prefix = this.base.getPath().resolve(Path.of("org", "springframework", "boot"));
 			return !resource.getPath().startsWith(prefix);
 		}
 
-		@Override
+		/**
+         * Resolves the given subUriPath to a Resource object.
+         * 
+         * @param subUriPath the sub-path of the URI to resolve
+         * @return the resolved Resource object, or null if the subUriPath starts with LOADER_RESOURCE_PATH_PREFIX or if the delegate's resolve method returns null
+         */
+        @Override
 		public Resource resolve(String subUriPath) {
 			if (subUriPath.startsWith(LOADER_RESOURCE_PATH_PREFIX)) {
 				return null;
@@ -706,27 +937,53 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			return (resolved != null) ? new LoaderHidingResource(this.base, resolved) : null;
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the resource is an alias.
+         * 
+         * @return true if the resource is an alias, false otherwise
+         */
+        @Override
 		public boolean isAlias() {
 			return this.delegate.isAlias();
 		}
 
-		@Override
+		/**
+         * Returns the real URI of the resource.
+         *
+         * @return the real URI of the resource
+         */
+        @Override
 		public URI getRealURI() {
 			return this.delegate.getRealURI();
 		}
 
-		@Override
+		/**
+         * Copies the content of this resource to the specified destination path.
+         *
+         * @param destination the path where the content will be copied to
+         * @throws IOException if an I/O error occurs during the copying process
+         */
+        @Override
 		public void copyTo(Path destination) throws IOException {
 			this.delegate.copyTo(destination);
 		}
 
-		@Override
+		/**
+         * Returns a collection of all resources, excluding loader resources.
+         *
+         * @return a collection of resources
+         */
+        @Override
 		public Collection<Resource> getAllResources() {
 			return this.delegate.getAllResources().stream().filter(this::nonLoaderResource).toList();
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * 
+         * @return a string representation of the object
+         */
+        @Override
 		public String toString() {
 			return this.delegate.toString();
 		}
@@ -740,12 +997,23 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 		private final Set<String> classNames;
 
-		WebListenersConfiguration(Set<String> webListenerClassNames) {
+		/**
+         * Constructs a new WebListenersConfiguration object with the specified set of web listener class names.
+         * 
+         * @param webListenerClassNames the set of web listener class names to be used for configuration
+         */
+        WebListenersConfiguration(Set<String> webListenerClassNames) {
 			super(new AbstractConfiguration.Builder());
 			this.classNames = webListenerClassNames;
 		}
 
-		@Override
+		/**
+         * Configures the WebAppContext by adding servlets for each class name specified.
+         * 
+         * @param context the WebAppContext to be configured
+         * @throws Exception if an error occurs during configuration
+         */
+        @Override
 		public void configure(WebAppContext context) throws Exception {
 			ServletHandler servletHandler = context.getServletHandler();
 			for (String className : this.classNames) {
@@ -753,14 +1021,31 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			}
 		}
 
-		private void configure(WebAppContext context, ServletHandler servletHandler, String className)
+		/**
+         * Configures the given WebAppContext with the specified ServletHandler and class name.
+         * 
+         * @param context The WebAppContext to be configured.
+         * @param servletHandler The ServletHandler to be used.
+         * @param className The name of the class to be loaded.
+         * @throws ClassNotFoundException If the specified class cannot be found.
+         */
+        private void configure(WebAppContext context, ServletHandler servletHandler, String className)
 				throws ClassNotFoundException {
 			ListenerHolder holder = servletHandler.newListenerHolder(new Source(Source.Origin.ANNOTATION, className));
 			holder.setHeldClass(loadClass(context, className));
 			servletHandler.addListener(holder);
 		}
 
-		@SuppressWarnings("unchecked")
+		/**
+         * Loads the class with the given className using the classLoader of the provided WebAppContext.
+         * If the classLoader is null, the classLoader of the current class is used.
+         * 
+         * @param context the WebAppContext to use for loading the class
+         * @param className the name of the class to load
+         * @return the loaded class as a subclass of EventListener
+         * @throws ClassNotFoundException if the class with the given className cannot be found
+         */
+        @SuppressWarnings("unchecked")
 		private Class<? extends EventListener> loadClass(WebAppContext context, String className)
 				throws ClassNotFoundException {
 			ClassLoader classLoader = context.getClassLoader();
@@ -780,49 +1065,101 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 		private final List<CookieSameSiteSupplier> suppliers;
 
-		SuppliedSameSiteCookieHandlerWrapper(List<CookieSameSiteSupplier> suppliers) {
+		/**
+         * Constructs a new SuppliedSameSiteCookieHandlerWrapper with the specified list of CookieSameSiteSupplier objects.
+         * 
+         * @param suppliers the list of CookieSameSiteSupplier objects to be used by the wrapper
+         */
+        SuppliedSameSiteCookieHandlerWrapper(List<CookieSameSiteSupplier> suppliers) {
 			this.suppliers = suppliers;
 		}
 
-		@Override
+		/**
+         * Overrides the handle method to wrap the response with a SuppliedSameSiteCookieResponse object.
+         * 
+         * @param request the request object
+         * @param response the response object
+         * @param callback the callback object
+         * @return true if the request is handled successfully, false otherwise
+         * @throws Exception if an error occurs during handling the request
+         */
+        @Override
 		public boolean handle(Request request, Response response, Callback callback) throws Exception {
 			SuppliedSameSiteCookieResponse wrappedResponse = new SuppliedSameSiteCookieResponse(request, response);
 			return super.handle(request, wrappedResponse, callback);
 		}
 
-		private class SuppliedSameSiteCookieResponse extends Response.Wrapper {
+		/**
+         * SuppliedSameSiteCookieResponse class.
+         */
+        private class SuppliedSameSiteCookieResponse extends Response.Wrapper {
 
 			private HttpFields.Mutable wrappedHeaders;
 
-			SuppliedSameSiteCookieResponse(Request request, Response wrapped) {
+			/**
+             * Constructs a new SuppliedSameSiteCookieResponse object.
+             * 
+             * @param request the request object associated with the response
+             * @param wrapped the wrapped response object
+             */
+            SuppliedSameSiteCookieResponse(Request request, Response wrapped) {
 				super(request, wrapped);
 				this.wrappedHeaders = new SuppliedSameSiteCookieHeaders(
 						request.getConnectionMetaData().getHttpConfiguration().getResponseCookieCompliance(),
 						wrapped.getHeaders());
 			}
 
-			@Override
+			/**
+             * Returns the headers of the SuppliedSameSiteCookieResponse.
+             *
+             * @return the headers of the SuppliedSameSiteCookieResponse
+             */
+            @Override
 			public Mutable getHeaders() {
 				return this.wrappedHeaders;
 			}
 
 		}
 
-		private class SuppliedSameSiteCookieHeaders extends HttpFields.Mutable.Wrapper {
+		/**
+         * SuppliedSameSiteCookieHeaders class.
+         */
+        private class SuppliedSameSiteCookieHeaders extends HttpFields.Mutable.Wrapper {
 
 			private final CookieCompliance compliance;
 
-			SuppliedSameSiteCookieHeaders(CookieCompliance compliance, HttpFields.Mutable fields) {
+			/**
+             * Constructs a new instance of the SuppliedSameSiteCookieHeaders class with the specified compliance and fields.
+             * 
+             * @param compliance the cookie compliance level
+             * @param fields the HTTP fields containing the cookie headers
+             */
+            SuppliedSameSiteCookieHeaders(CookieCompliance compliance, HttpFields.Mutable fields) {
 				super(fields);
 				this.compliance = compliance;
 			}
 
-			@Override
+			/**
+             * This method is called when a field is added to the HTTP message.
+             * It checks if the field is a Set-Cookie header and calls the onAddSetCookieField method if it is.
+             * 
+             * @param field the HttpField object being added
+             * @return the HttpField object being added, or the result of the onAddSetCookieField method if the field is a Set-Cookie header
+             */
+            @Override
 			public HttpField onAddField(HttpField field) {
 				return (field.getHeader() != HttpHeader.SET_COOKIE) ? field : onAddSetCookieField(field);
 			}
 
-			private HttpField onAddSetCookieField(HttpField field) {
+			/**
+             * Parses the value of the supplied {@link HttpField} as a Set-Cookie header and checks if it contains a SameSite attribute.
+             * If the SameSite attribute is present, it updates the SameSite attribute value and returns a new {@link HttpField} with the updated cookie.
+             * If the SameSite attribute is not present, it returns the original {@link HttpField}.
+             *
+             * @param field the {@link HttpField} to parse and update
+             * @return a new {@link HttpField} with the updated SameSite attribute value, or the original {@link HttpField} if no update is required
+             */
+            private HttpField onAddSetCookieField(HttpField field) {
 				HttpCookie cookie = setCookieParser.parse(field.getValue());
 				SameSite sameSite = (cookie != null) ? getSameSite(cookie) : null;
 				if (sameSite == null) {
@@ -832,17 +1169,36 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 				return new HttpCookieUtils.SetCookieHttpField(updatedCookie, this.compliance);
 			}
 
-			private HttpCookie buildCookieWithUpdatedSameSite(HttpCookie cookie, SameSite sameSite) {
+			/**
+             * Builds a new HttpCookie object with an updated SameSite attribute.
+             * 
+             * @param cookie the original HttpCookie object
+             * @param sameSite the new SameSite value to be set
+             * @return a new HttpCookie object with the updated SameSite attribute
+             */
+            private HttpCookie buildCookieWithUpdatedSameSite(HttpCookie cookie, SameSite sameSite) {
 				return HttpCookie.build(cookie)
 					.sameSite(org.eclipse.jetty.http.HttpCookie.SameSite.from(sameSite.name()))
 					.build();
 			}
 
-			private SameSite getSameSite(HttpCookie cookie) {
+			/**
+             * Returns the SameSite attribute of the given HttpCookie.
+             * 
+             * @param cookie the HttpCookie to get the SameSite attribute from
+             * @return the SameSite attribute of the HttpCookie
+             */
+            private SameSite getSameSite(HttpCookie cookie) {
 				return getSameSite(asServletCookie(cookie));
 			}
 
-			private SameSite getSameSite(Cookie cookie) {
+			/**
+             * Returns the SameSite attribute value for the given cookie.
+             * 
+             * @param cookie the cookie for which to retrieve the SameSite attribute value
+             * @return the SameSite attribute value for the given cookie, or null if not found
+             */
+            private SameSite getSameSite(Cookie cookie) {
 				return SuppliedSameSiteCookieHandlerWrapper.this.suppliers.stream()
 					.map((supplier) -> supplier.getSameSite(cookie))
 					.filter(Objects::nonNull)
@@ -850,7 +1206,13 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 					.orElse(null);
 			}
 
-			private Cookie asServletCookie(HttpCookie cookie) {
+			/**
+             * Converts an HttpCookie object to a Servlet Cookie object.
+             * 
+             * @param cookie the HttpCookie to be converted
+             * @return the converted Servlet Cookie object
+             */
+            private Cookie asServletCookie(HttpCookie cookie) {
 				Cookie servletCookie = new Cookie(cookie.getName(), cookie.getValue());
 				cookie.getAttributes().forEach(servletCookie::setAttribute);
 				return servletCookie;

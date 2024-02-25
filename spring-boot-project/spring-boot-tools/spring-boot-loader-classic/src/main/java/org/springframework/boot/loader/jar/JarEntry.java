@@ -44,7 +44,15 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	private volatile JarEntryCertification certification;
 
-	JarEntry(JarFile jarFile, int index, CentralDirectoryFileHeader header, AsciiBytes nameAlias) {
+	/**
+     * Constructs a new JarEntry object.
+     * 
+     * @param jarFile the JarFile object representing the JAR file containing this entry
+     * @param index the index of this entry within the JAR file
+     * @param header the CentralDirectoryFileHeader object representing the header of this entry
+     * @param nameAlias the alternative name for this entry, if available
+     */
+    JarEntry(JarFile jarFile, int index, CentralDirectoryFileHeader header, AsciiBytes nameAlias) {
 		super((nameAlias != null) ? nameAlias.toString() : header.getName().toString());
 		this.index = index;
 		this.name = (nameAlias != null) ? nameAlias : header.getName();
@@ -62,15 +70,32 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 		}
 	}
 
-	int getIndex() {
+	/**
+     * Returns the index of this JarEntry.
+     *
+     * @return the index of this JarEntry
+     */
+    int getIndex() {
 		return this.index;
 	}
 
-	AsciiBytes getAsciiBytesName() {
+	/**
+     * Returns the ASCII bytes representation of the name of this JarEntry.
+     *
+     * @return the ASCII bytes representation of the name of this JarEntry
+     */
+    AsciiBytes getAsciiBytesName() {
 		return this.name;
 	}
 
-	@Override
+	/**
+     * Checks if the JarEntry has the specified name and suffix.
+     * 
+     * @param name   the name to be checked
+     * @param suffix the suffix to be checked
+     * @return true if the JarEntry has the specified name and suffix, false otherwise
+     */
+    @Override
 	public boolean hasName(CharSequence name, char suffix) {
 		return this.headerName.matches(name, suffix);
 	}
@@ -84,23 +109,44 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 		return new URL(this.jarFile.getUrl(), getName());
 	}
 
-	@Override
+	/**
+     * Returns the attributes of this JarEntry.
+     * 
+     * @return the attributes of this JarEntry, or null if the JarEntry does not have any attributes
+     * @throws IOException if an I/O error occurs while reading the manifest file
+     */
+    @Override
 	public Attributes getAttributes() throws IOException {
 		Manifest manifest = this.jarFile.getManifest();
 		return (manifest != null) ? manifest.getAttributes(getName()) : null;
 	}
 
-	@Override
+	/**
+     * Returns an array of certificates associated with this JarEntry.
+     * 
+     * @return an array of certificates associated with this JarEntry
+     */
+    @Override
 	public Certificate[] getCertificates() {
 		return getCertification().getCertificates();
 	}
 
-	@Override
+	/**
+     * Returns an array of CodeSigner objects representing the signers of the JAR entry.
+     *
+     * @return an array of CodeSigner objects representing the signers of the JAR entry
+     */
+    @Override
 	public CodeSigner[] getCodeSigners() {
 		return getCertification().getCodeSigners();
 	}
 
-	private JarEntryCertification getCertification() {
+	/**
+     * Returns the certification status of the JarEntry.
+     * 
+     * @return the certification status of the JarEntry. Returns JarEntryCertification.NONE if the JarEntry is not signed.
+     */
+    private JarEntryCertification getCertification() {
 		if (!this.jarFile.isSigned()) {
 			return JarEntryCertification.NONE;
 		}
@@ -112,7 +158,12 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 		return certification;
 	}
 
-	@Override
+	/**
+     * Returns the offset of the local file header for this JarEntry.
+     *
+     * @return the offset of the local file header
+     */
+    @Override
 	public long getLocalHeaderOffset() {
 		return this.localHeaderOffset;
 	}

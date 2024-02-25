@@ -18,9 +18,17 @@ package smoketest.simple;
 
 import org.springframework.boot.ExitCodeGenerator;
 
+/**
+ * ExitException class.
+ */
 public class ExitException extends RuntimeException implements ExitCodeGenerator {
 
-	@Override
+	/**
+     * Returns the exit code associated with this exception.
+     *
+     * @return the exit code
+     */
+    @Override
 	public int getExitCode() {
 		return 10;
 	}

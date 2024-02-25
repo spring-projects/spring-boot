@@ -20,6 +20,9 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 
+/**
+ * MyJdbcTests class.
+ */
 @JdbcTest
 @ImportAutoConfiguration(IntegrationAutoConfiguration.class)
 class MyJdbcTests {

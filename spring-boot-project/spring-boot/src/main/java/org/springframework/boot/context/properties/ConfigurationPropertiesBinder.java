@@ -80,35 +80,66 @@ class ConfigurationPropertiesBinder {
 
 	private volatile Binder binder;
 
-	ConfigurationPropertiesBinder(ApplicationContext applicationContext) {
+	/**
+     * Constructs a new ConfigurationPropertiesBinder with the given ApplicationContext.
+     * 
+     * @param applicationContext the ApplicationContext to bind configuration properties to
+     */
+    ConfigurationPropertiesBinder(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 		this.propertySources = new PropertySourcesDeducer(applicationContext).getPropertySources();
 		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(applicationContext);
 		this.jsr303Present = ConfigurationPropertiesJsr303Validator.isJsr303Present(applicationContext);
 	}
 
-	BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
+	/**
+     * Binds the given ConfigurationPropertiesBean to its corresponding target object.
+     * 
+     * @param propertiesBean the ConfigurationPropertiesBean to bind
+     * @return the BindResult containing the bound target object
+     */
+    BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
 		Bindable<?> target = propertiesBean.asBindTarget();
 		ConfigurationProperties annotation = propertiesBean.getAnnotation();
 		BindHandler bindHandler = getBindHandler(target, annotation);
 		return getBinder().bind(annotation.prefix(), target, bindHandler);
 	}
 
-	Object bindOrCreate(ConfigurationPropertiesBean propertiesBean) {
+	/**
+     * Binds or creates an object based on the provided ConfigurationPropertiesBean.
+     * 
+     * @param propertiesBean The ConfigurationPropertiesBean containing the properties to bind or create an object from.
+     * @return The bound or created object.
+     */
+    Object bindOrCreate(ConfigurationPropertiesBean propertiesBean) {
 		Bindable<?> target = propertiesBean.asBindTarget();
 		ConfigurationProperties annotation = propertiesBean.getAnnotation();
 		BindHandler bindHandler = getBindHandler(target, annotation);
 		return getBinder().bindOrCreate(annotation.prefix(), target, bindHandler);
 	}
 
-	private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext) {
+	/**
+     * Retrieves the validator bean from the application context based on the provided bean name.
+     * 
+     * @param applicationContext the application context to retrieve the validator bean from
+     * @return the validator bean if found, otherwise null
+     */
+    private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext) {
 		if (applicationContext.containsBean(VALIDATOR_BEAN_NAME)) {
 			return applicationContext.getBean(VALIDATOR_BEAN_NAME, Validator.class);
 		}
 		return null;
 	}
 
-	private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperties annotation) {
+	/**
+     * Returns the bind handler for the given target and annotation.
+     * 
+     * @param target the bindable target
+     * @param annotation the configuration properties annotation
+     * @return the bind handler
+     * @param <T> the type of the bindable target
+     */
+    private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperties annotation) {
 		List<Validator> validators = getValidators(target);
 		BindHandler handler = getHandler();
 		handler = new ConfigurationPropertiesBindHandler(handler);
@@ -128,14 +159,25 @@ class ConfigurationPropertiesBinder {
 		return handler;
 	}
 
-	private IgnoreTopLevelConverterNotFoundBindHandler getHandler() {
+	/**
+     * Returns the handler for ignoring top-level converter not found bind errors.
+     * 
+     * @return the handler for ignoring top-level converter not found bind errors
+     */
+    private IgnoreTopLevelConverterNotFoundBindHandler getHandler() {
 		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.applicationContext);
 		return (bound != null)
 				? new IgnoreTopLevelConverterNotFoundBindHandler(new BoundPropertiesTrackingBindHandler(bound::add))
 				: new IgnoreTopLevelConverterNotFoundBindHandler();
 	}
 
-	private List<Validator> getValidators(Bindable<?> target) {
+	/**
+     * Retrieves a list of validators for the given target object.
+     * 
+     * @param target the target object to retrieve validators for
+     * @return a list of validators
+     */
+    private List<Validator> getValidators(Bindable<?> target) {
 		List<Validator> validators = new ArrayList<>(3);
 		if (this.configurationPropertiesValidator != null) {
 			validators.add(this.configurationPropertiesValidator);
@@ -150,7 +192,13 @@ class ConfigurationPropertiesBinder {
 		return validators;
 	}
 
-	private Validator getSelfValidator(Bindable<?> target) {
+	/**
+     * Retrieves the self validator for the given target.
+     * 
+     * @param target the target bindable object
+     * @return the self validator if found, otherwise null
+     */
+    private Validator getSelfValidator(Bindable<?> target) {
 		if (target.getValue() != null) {
 			Object value = target.getValue().get();
 			return (value instanceof Validator validator) ? validator : null;
@@ -162,20 +210,39 @@ class ConfigurationPropertiesBinder {
 		return null;
 	}
 
-	private Validator getJsr303Validator() {
+	/**
+     * Returns the JSR 303 validator for configuration properties.
+     * If the validator is not already initialized, it creates a new instance of ConfigurationPropertiesJsr303Validator using the application context.
+     * 
+     * @return the JSR 303 validator for configuration properties
+     */
+    private Validator getJsr303Validator() {
 		if (this.jsr303Validator == null) {
 			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(this.applicationContext);
 		}
 		return this.jsr303Validator;
 	}
 
-	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
+	/**
+     * Retrieves the list of ConfigurationPropertiesBindHandlerAdvisor instances.
+     * 
+     * @return The list of ConfigurationPropertiesBindHandlerAdvisor instances.
+     */
+    private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
 		return this.applicationContext.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
 			.orderedStream()
 			.toList();
 	}
 
-	private Binder getBinder() {
+	/**
+     * Returns the binder instance for configuration properties.
+     * If the binder instance is null, it creates a new binder instance using the provided configuration property sources,
+     * property sources placeholders resolver, conversion services, property editor initializer, and null for the
+     * validator and message interpolator.
+     *
+     * @return the binder instance for configuration properties
+     */
+    private Binder getBinder() {
 		if (this.binder == null) {
 			this.binder = new Binder(getConfigurationPropertySources(), getPropertySourcesPlaceholdersResolver(),
 					getConversionServices(), getPropertyEditorInitializer(), null, null);
@@ -183,26 +250,54 @@ class ConfigurationPropertiesBinder {
 		return this.binder;
 	}
 
-	private Iterable<ConfigurationPropertySource> getConfigurationPropertySources() {
+	/**
+     * Returns an iterable of ConfigurationPropertySource objects.
+     * 
+     * @return an iterable of ConfigurationPropertySource objects
+     */
+    private Iterable<ConfigurationPropertySource> getConfigurationPropertySources() {
 		return ConfigurationPropertySources.from(this.propertySources);
 	}
 
-	private PropertySourcesPlaceholdersResolver getPropertySourcesPlaceholdersResolver() {
+	/**
+     * Returns a new instance of PropertySourcesPlaceholdersResolver initialized with the property sources.
+     *
+     * @return a new instance of PropertySourcesPlaceholdersResolver
+     */
+    private PropertySourcesPlaceholdersResolver getPropertySourcesPlaceholdersResolver() {
 		return new PropertySourcesPlaceholdersResolver(this.propertySources);
 	}
 
-	private List<ConversionService> getConversionServices() {
+	/**
+     * Retrieves the list of conversion services.
+     * 
+     * @return the list of conversion services
+     */
+    private List<ConversionService> getConversionServices() {
 		return new ConversionServiceDeducer(this.applicationContext).getConversionServices();
 	}
 
-	private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {
+	/**
+     * Returns a {@code Consumer} that initializes the property editor registry.
+     * 
+     * @return the property editor initializer, or {@code null} if the application context is not a {@code ConfigurableApplicationContext}
+     */
+    private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {
 		if (this.applicationContext instanceof ConfigurableApplicationContext configurableContext) {
 			return configurableContext.getBeanFactory()::copyRegisteredEditorsTo;
 		}
 		return null;
 	}
 
-	static void register(BeanDefinitionRegistry registry) {
+	/**
+     * Registers the ConfigurationPropertiesBinderFactory bean definition in the given registry.
+     * If the registry does not already contain a bean definition with the specified bean name,
+     * a new bean definition is created and registered with the specified bean name.
+     * The bean definition is set to have the infrastructure role.
+     * 
+     * @param registry the BeanDefinitionRegistry to register the bean definition in
+     */
+    static void register(BeanDefinitionRegistry registry) {
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
 				.rootBeanDefinition(ConfigurationPropertiesBinderFactory.class)
@@ -212,7 +307,13 @@ class ConfigurationPropertiesBinder {
 		}
 	}
 
-	static ConfigurationPropertiesBinder get(BeanFactory beanFactory) {
+	/**
+     * Retrieves the ConfigurationPropertiesBinder instance from the specified BeanFactory.
+     * 
+     * @param beanFactory the BeanFactory from which to retrieve the ConfigurationPropertiesBinder instance
+     * @return the ConfigurationPropertiesBinder instance retrieved from the BeanFactory
+     */
+    static ConfigurationPropertiesBinder get(BeanFactory beanFactory) {
 		return beanFactory.getBean(BEAN_NAME, ConfigurationPropertiesBinder.class);
 	}
 
@@ -222,17 +323,37 @@ class ConfigurationPropertiesBinder {
 	 */
 	private static class ConfigurationPropertiesBindHandler extends AbstractBindHandler {
 
-		ConfigurationPropertiesBindHandler(BindHandler handler) {
+		/**
+         * Constructs a new ConfigurationPropertiesBindHandler with the specified BindHandler.
+         *
+         * @param handler the BindHandler to be used
+         */
+        ConfigurationPropertiesBindHandler(BindHandler handler) {
 			super(handler);
 		}
 
-		@Override
+		/**
+         * This method is called when the binding process starts for a specific configuration property.
+         * It checks if the target type is a configuration properties class and applies bind restrictions accordingly.
+         * 
+         * @param name the name of the configuration property being bound
+         * @param target the target bindable object
+         * @param context the bind context
+         * @return the modified bindable object with bind restrictions applied if necessary
+         */
+        @Override
 		public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
 			return isConfigurationProperties(target.getType().resolve())
 					? target.withBindRestrictions(BindRestriction.NO_DIRECT_PROPERTY) : target;
 		}
 
-		private boolean isConfigurationProperties(Class<?> target) {
+		/**
+         * Checks if the given target class is annotated with {@link ConfigurationProperties}.
+         * 
+         * @param target the target class to check
+         * @return {@code true} if the target class is annotated with {@link ConfigurationProperties}, {@code false} otherwise
+         */
+        private boolean isConfigurationProperties(Class<?> target) {
 			return target != null && MergedAnnotations.from(target).isPresent(ConfigurationProperties.class);
 		}
 
@@ -246,17 +367,34 @@ class ConfigurationPropertiesBinder {
 
 		private ConfigurationPropertiesBinder binder;
 
-		@Override
+		/**
+         * Sets the application context for this ConfigurationPropertiesBinderFactory.
+         * 
+         * @param applicationContext the application context to set
+         * @throws BeansException if an error occurs while setting the application context
+         */
+        @Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			this.binder = (this.binder != null) ? this.binder : new ConfigurationPropertiesBinder(applicationContext);
 		}
 
-		@Override
+		/**
+         * Returns the type of object that is created by this factory.
+         * 
+         * @return the type of object created by this factory, which is ConfigurationPropertiesBinder class.
+         */
+        @Override
 		public Class<?> getObjectType() {
 			return ConfigurationPropertiesBinder.class;
 		}
 
-		@Override
+		/**
+         * Retrieves the ConfigurationPropertiesBinder object.
+         * 
+         * @return The ConfigurationPropertiesBinder object.
+         * @throws Exception If the binder is not created due to missing setApplicationContext call.
+         */
+        @Override
 		public ConfigurationPropertiesBinder getObject() throws Exception {
 			Assert.state(this.binder != null, "Binder was not created due to missing setApplicationContext call");
 			return this.binder;
@@ -272,16 +410,33 @@ class ConfigurationPropertiesBinder {
 
 		private final Class<?> type;
 
-		SelfValidatingConstructorBoundBindableValidator(Class<?> type) {
+		/**
+         * Constructs a new SelfValidatingConstructorBoundBindableValidator with the specified type.
+         * 
+         * @param type the class type to be validated
+         */
+        SelfValidatingConstructorBoundBindableValidator(Class<?> type) {
 			this.type = type;
 		}
 
-		@Override
+		/**
+         * Determines if the specified class is supported by this validator.
+         * 
+         * @param candidate the class to be checked
+         * @return true if the specified class is supported, false otherwise
+         */
+        @Override
 		public boolean supports(Class<?> candidate) {
 			return candidate.isAssignableFrom(this.type);
 		}
 
-		@Override
+		/**
+         * Validates the given target object using the specified Errors object.
+         * 
+         * @param target the object to be validated
+         * @param errors the Errors object to store any validation errors
+         */
+        @Override
 		public void validate(Object target, Errors errors) {
 			((Validator) target).validate(target, errors);
 		}

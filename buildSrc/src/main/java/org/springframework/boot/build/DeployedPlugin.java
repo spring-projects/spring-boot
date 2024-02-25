@@ -37,7 +37,15 @@ public class DeployedPlugin implements Plugin<Project> {
 	 */
 	public static final String GENERATE_POM_TASK_NAME = "generatePomFileForMavenPublication";
 
-	@Override
+	/**
+     * Applies the MavenPublishPlugin and MavenRepositoryPlugin to the given project.
+     * Configures the publishing extension and creates a MavenPublication named "maven".
+     * Adds the Java component to the MavenPublication if the JAR task is enabled.
+     * Adds the JavaPlatform component to the MavenPublication if the JavaPlatformPlugin is applied.
+     * 
+     * @param project the project to apply the plugins and configure the publishing for
+     */
+    @Override
 	@SuppressWarnings("deprecation")
 	public void apply(Project project) {
 		project.getPlugins().apply(MavenPublishPlugin.class);

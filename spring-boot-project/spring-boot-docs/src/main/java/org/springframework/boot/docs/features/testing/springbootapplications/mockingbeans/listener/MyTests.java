@@ -21,6 +21,9 @@ import org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListene
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 
+/**
+ * MyTests class.
+ */
 @ContextConfiguration(classes = MyConfig.class)
 @TestExecutionListeners({ MockitoTestExecutionListener.class, ResetMocksTestExecutionListener.class })
 class MyTests {

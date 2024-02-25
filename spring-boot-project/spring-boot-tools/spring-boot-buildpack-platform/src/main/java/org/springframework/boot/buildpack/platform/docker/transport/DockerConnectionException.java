@@ -29,11 +29,25 @@ public class DockerConnectionException extends RuntimeException {
 
 	private static final String JNA_EXCEPTION_CLASS_NAME = "com.sun.jna.LastErrorException";
 
-	public DockerConnectionException(String host, Exception cause) {
+	/**
+     * Constructs a new DockerConnectionException with the specified host and cause.
+     * 
+     * @param host the host where the Docker connection failed
+     * @param cause the exception that caused the Docker connection failure
+     */
+    public DockerConnectionException(String host, Exception cause) {
 		super(buildMessage(host, cause), cause);
 	}
 
-	private static String buildMessage(String host, Exception cause) {
+	/**
+     * Builds an error message for a failed connection to the Docker daemon.
+     * 
+     * @param host the host to which the connection failed
+     * @param cause the exception that caused the connection failure
+     * @return the error message
+     * @throws IllegalArgumentException if the host or cause is null
+     */
+    private static String buildMessage(String host, Exception cause) {
 		Assert.notNull(host, "Host must not be null");
 		Assert.notNull(cause, "Cause must not be null");
 		StringBuilder message = new StringBuilder("Connection to the Docker daemon at '" + host + "' failed");
@@ -45,7 +59,16 @@ public class DockerConnectionException extends RuntimeException {
 		return message.toString();
 	}
 
-	private static String getCauseMessage(Exception cause) {
+	/**
+     * Returns the cause message of the given exception.
+     * If the cause of the exception is an instance of JNA_EXCEPTION_CLASS_NAME,
+     * then the cause message of the cause exception is returned.
+     * Otherwise, the message of the given exception is returned.
+     *
+     * @param cause the exception whose cause message is to be retrieved
+     * @return the cause message of the exception
+     */
+    private static String getCauseMessage(Exception cause) {
 		if (cause.getCause() != null && cause.getCause().getClass().getName().equals(JNA_EXCEPTION_CLASS_NAME)) {
 			return cause.getCause().getMessage();
 		}

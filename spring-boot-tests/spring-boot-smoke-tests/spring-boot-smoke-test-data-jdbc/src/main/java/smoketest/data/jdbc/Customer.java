@@ -20,6 +20,9 @@ import java.time.LocalDate;
 
 import org.springframework.data.annotation.Id;
 
+/**
+ * Customer class.
+ */
 public class Customer {
 
 	@Id
@@ -29,27 +32,57 @@ public class Customer {
 
 	private LocalDate dateOfBirth;
 
-	public Long getId() {
+	/**
+     * Returns the ID of the customer.
+     *
+     * @return the ID of the customer
+     */
+    public Long getId() {
 		return this.id;
 	}
 
-	public void setId(Long id) {
+	/**
+     * Sets the ID of the customer.
+     * 
+     * @param id the ID to set
+     */
+    public void setId(Long id) {
 		this.id = id;
 	}
 
-	public String getFirstName() {
+	/**
+     * Returns the first name of the customer.
+     *
+     * @return the first name of the customer
+     */
+    public String getFirstName() {
 		return this.firstName;
 	}
 
-	public void setFirstName(String firstName) {
+	/**
+     * Sets the first name of the customer.
+     * 
+     * @param firstName the first name to be set
+     */
+    public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 
-	public LocalDate getDateOfBirth() {
+	/**
+     * Returns the date of birth of the customer.
+     *
+     * @return the date of birth of the customer
+     */
+    public LocalDate getDateOfBirth() {
 		return this.dateOfBirth;
 	}
 
-	public void setDateOfBirth(LocalDate dateOfBirth) {
+	/**
+     * Sets the date of birth for the customer.
+     * 
+     * @param dateOfBirth the date of birth to be set
+     */
+    public void setDateOfBirth(LocalDate dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 

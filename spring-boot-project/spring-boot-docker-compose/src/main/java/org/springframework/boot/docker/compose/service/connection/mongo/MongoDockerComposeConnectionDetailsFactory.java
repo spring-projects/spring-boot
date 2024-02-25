@@ -38,11 +38,23 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 	private static final int MONGODB_PORT = 27017;
 
-	protected MongoDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new MongoDockerComposeConnectionDetailsFactory.
+     * 
+     * @param containerNames the names of the MongoDB containers
+     * @param connectionStringClass the class representing the connection string
+     */
+    protected MongoDockerComposeConnectionDetailsFactory() {
 		super(MONGODB_CONTAINER_NAMES, "com.mongodb.ConnectionString");
 	}
 
-	@Override
+	/**
+     * Retrieves the connection details for a MongoDB Docker Compose service.
+     * 
+     * @param source the source of the Docker Compose connection
+     * @return the connection details for the specified Docker Compose service
+     */
+    @Override
 	protected MongoDockerComposeConnectionDetails getDockerComposeConnectionDetails(
 			DockerComposeConnectionSource source) {
 		return new MongoDockerComposeConnectionDetails(source.getRunningService());
@@ -56,13 +68,24 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 		private final ConnectionString connectionString;
 
-		MongoDockerComposeConnectionDetails(RunningService service) {
+		/**
+         * Constructs a new MongoDockerComposeConnectionDetails object with the specified RunningService.
+         * 
+         * @param service the RunningService object representing the running service
+         */
+        MongoDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.connectionString = buildConnectionString(service);
 
 		}
 
-		private ConnectionString buildConnectionString(RunningService service) {
+		/**
+         * Builds a connection string for connecting to a MongoDB instance based on the provided running service.
+         * 
+         * @param service The running service containing the necessary details for connecting to the MongoDB instance.
+         * @return A ConnectionString object representing the connection string for the MongoDB instance.
+         */
+        private ConnectionString buildConnectionString(RunningService service) {
 			MongoEnvironment environment = new MongoEnvironment(service.env());
 			StringBuilder builder = new StringBuilder("mongodb://");
 			if (environment.getUsername() != null) {
@@ -82,7 +105,12 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 			return new ConnectionString(builder.toString());
 		}
 
-		@Override
+		/**
+         * Returns the connection string for the MongoDB Docker Compose connection details.
+         *
+         * @return the connection string
+         */
+        @Override
 		public ConnectionString getConnectionString() {
 			return this.connectionString;
 		}

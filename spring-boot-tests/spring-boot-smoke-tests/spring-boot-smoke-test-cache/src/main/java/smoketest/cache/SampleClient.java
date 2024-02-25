@@ -24,6 +24,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+/**
+ * SampleClient class.
+ */
 @Component
 @Profile("app")
 class SampleClient {
@@ -48,12 +51,24 @@ class SampleClient {
 
 	private final Random random;
 
-	SampleClient(CountryRepository countryService) {
+	/**
+     * Constructs a new SampleClient object with the specified CountryRepository.
+     * 
+     * @param countryService the CountryRepository to be used by the SampleClient
+     * @param random a Random object used for generating random values
+     */
+    SampleClient(CountryRepository countryService) {
 		this.countryService = countryService;
 		this.random = new Random();
 	}
 
-	@Scheduled(fixedDelay = 500)
+	/**
+     * This method is used to retrieve a country with a random country code.
+     * It is scheduled to run with a fixed delay of 500 milliseconds.
+     * 
+     * @return void
+     */
+    @Scheduled(fixedDelay = 500)
 	void retrieveCountry() {
 		String randomCode = SAMPLE_COUNTRY_CODES.get(this.random.nextInt(SAMPLE_COUNTRY_CODES.size()));
 		System.out.println("Looking for country with code '" + randomCode + "'");

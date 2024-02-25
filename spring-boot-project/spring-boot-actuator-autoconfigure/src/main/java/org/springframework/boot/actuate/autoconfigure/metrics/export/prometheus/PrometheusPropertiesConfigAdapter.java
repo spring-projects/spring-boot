@@ -32,31 +32,62 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<PrometheusProperties>
 		implements PrometheusConfig {
 
-	PrometheusPropertiesConfigAdapter(PrometheusProperties properties) {
+	/**
+     * Constructs a new PrometheusPropertiesConfigAdapter with the specified PrometheusProperties.
+     * 
+     * @param properties the PrometheusProperties to be used by the adapter
+     */
+    PrometheusPropertiesConfigAdapter(PrometheusProperties properties) {
 		super(properties);
 	}
 
-	@Override
+	/**
+     * Returns the prefix for Prometheus metrics export.
+     *
+     * @return the prefix for Prometheus metrics export
+     */
+    @Override
 	public String prefix() {
 		return "management.prometheus.metrics.export";
 	}
 
-	@Override
+	/**
+     * Retrieves the value associated with the specified key from the PrometheusPropertiesConfigAdapter.
+     *
+     * @param key the key whose associated value is to be retrieved
+     * @return the value to which the specified key is mapped, or null if the key is not found
+     */
+    @Override
 	public String get(String key) {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the value of the descriptions property.
+     * 
+     * @return the value of the descriptions property
+     */
+    @Override
 	public boolean descriptions() {
 		return get(PrometheusProperties::isDescriptions, PrometheusConfig.super::descriptions);
 	}
 
-	@Override
+	/**
+     * Returns the histogram flavor for the Prometheus configuration.
+     * 
+     * @return the histogram flavor
+     */
+    @Override
 	public HistogramFlavor histogramFlavor() {
 		return get(PrometheusProperties::getHistogramFlavor, PrometheusConfig.super::histogramFlavor);
 	}
 
-	@Override
+	/**
+     * Returns the step duration for the Prometheus configuration.
+     * 
+     * @return the step duration
+     */
+    @Override
 	public Duration step() {
 		return get(PrometheusProperties::getStep, PrometheusConfig.super::step);
 	}

@@ -43,7 +43,10 @@ final class DockerJson {
 		.addModule(new ParameterNamesModule())
 		.build();
 
-	private DockerJson() {
+	/**
+     * Private constructor for the DockerJson class.
+     */
+    private DockerJson() {
 	}
 
 	/**
@@ -73,7 +76,15 @@ final class DockerJson {
 		return deserialize(json, objectMapper.getTypeFactory().constructType(type));
 	}
 
-	private static <T> T deserialize(String json, JavaType type) {
+	/**
+     * Deserialize the given JSON string into an object of the specified type.
+     * 
+     * @param json The JSON string to be deserialized.
+     * @param type The JavaType representing the type of object to be deserialized into.
+     * @return The deserialized object of the specified type.
+     * @throws DockerOutputParseException If an error occurs during deserialization.
+     */
+    private static <T> T deserialize(String json, JavaType type) {
 		try {
 			return objectMapper.readValue(json.trim(), type);
 		}

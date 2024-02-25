@@ -25,11 +25,21 @@ class MissingValueException extends RuntimeException {
 
 	private final String optionName;
 
-	MissingValueException(String optionName) {
+	/**
+     * Constructs a new MissingValueException with the specified option name.
+     * 
+     * @param optionName the name of the missing option
+     */
+    MissingValueException(String optionName) {
 		this.optionName = optionName;
 	}
 
-	@Override
+	/**
+     * Returns the message of the MissingValueException.
+     * 
+     * @return the message of the MissingValueException
+     */
+    @Override
 	public String getMessage() {
 		return "--" + this.optionName;
 	}

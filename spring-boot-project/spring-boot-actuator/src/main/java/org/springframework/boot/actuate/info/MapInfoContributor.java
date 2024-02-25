@@ -29,11 +29,21 @@ public class MapInfoContributor implements InfoContributor {
 
 	private final Map<String, Object> info;
 
-	public MapInfoContributor(Map<String, Object> info) {
+	/**
+     * Constructs a new MapInfoContributor with the specified information.
+     * 
+     * @param info the information to be stored in the MapInfoContributor
+     */
+    public MapInfoContributor(Map<String, Object> info) {
 		this.info = new LinkedHashMap<>(info);
 	}
 
-	@Override
+	/**
+     * Contributes the information to the given Info.Builder object.
+     * 
+     * @param builder the Info.Builder object to contribute the information to
+     */
+    @Override
 	public void contribute(Info.Builder builder) {
 		builder.withDetails(this.info);
 	}

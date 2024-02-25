@@ -32,26 +32,53 @@ import io.micrometer.core.instrument.push.PushRegistryConfig;
 public abstract class PushRegistryPropertiesConfigAdapter<T extends PushRegistryProperties>
 		extends PropertiesConfigAdapter<T> implements PushRegistryConfig {
 
-	public PushRegistryPropertiesConfigAdapter(T properties) {
+	/**
+     * Constructs a new PushRegistryPropertiesConfigAdapter with the specified properties.
+     * 
+     * @param properties the properties to be used for configuring the adapter
+     */
+    public PushRegistryPropertiesConfigAdapter(T properties) {
 		super(properties);
 	}
 
-	@Override
+	/**
+     * Retrieves the value associated with the specified key from the PushRegistryPropertiesConfigAdapter.
+     * 
+     * @param k the key whose associated value is to be retrieved
+     * @return the value to which the specified key is mapped, or null if the key is not found
+     */
+    @Override
 	public String get(String k) {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the step duration for the PushRegistryPropertiesConfigAdapter.
+     * This method overrides the step() method in the PushRegistryConfig interface.
+     * 
+     * @return the step duration
+     */
+    @Override
 	public Duration step() {
 		return get(T::getStep, PushRegistryConfig.super::step);
 	}
 
-	@Override
+	/**
+     * Returns the enabled status of the PushRegistryConfig.
+     * 
+     * @return true if the PushRegistryConfig is enabled, false otherwise.
+     */
+    @Override
 	public boolean enabled() {
 		return get(T::isEnabled, PushRegistryConfig.super::enabled);
 	}
 
-	@Override
+	/**
+     * Returns the batch size for the push registry.
+     * 
+     * @return the batch size
+     */
+    @Override
 	public int batchSize() {
 		return get(T::getBatchSize, PushRegistryConfig.super::batchSize);
 	}

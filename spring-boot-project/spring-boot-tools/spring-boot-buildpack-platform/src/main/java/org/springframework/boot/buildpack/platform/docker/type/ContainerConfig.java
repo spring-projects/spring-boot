@@ -47,7 +47,21 @@ public class ContainerConfig {
 
 	private final String json;
 
-	ContainerConfig(String user, ImageReference image, String command, List<String> args, Map<String, String> labels,
+	/**
+     * Creates a new ContainerConfig object with the specified parameters.
+     *
+     * @param user            the user to run the container as
+     * @param image           the reference to the container image
+     * @param command         the command to run inside the container
+     * @param args            the arguments to pass to the command
+     * @param labels          the labels to assign to the container
+     * @param bindings        the bindings for volumes to mount inside the container
+     * @param env             the environment variables to set inside the container
+     * @param networkMode     the network mode for the container
+     * @param securityOptions the security options for the container
+     * @throws IOException if an I/O error occurs
+     */
+    ContainerConfig(String user, ImageReference image, String command, List<String> args, Map<String, String> labels,
 			List<Binding> bindings, Map<String, String> env, String networkMode, List<String> securityOptions)
 			throws IOException {
 		Assert.notNull(image, "Image must not be null");
@@ -87,7 +101,12 @@ public class ContainerConfig {
 		StreamUtils.copy(this.json, StandardCharsets.UTF_8, outputStream);
 	}
 
-	@Override
+	/**
+     * Returns the JSON representation of the ContainerConfig object.
+     *
+     * @return the JSON representation of the ContainerConfig object
+     */
+    @Override
 	public String toString() {
 		return this.json;
 	}
@@ -127,11 +146,23 @@ public class ContainerConfig {
 
 		private final List<String> securityOptions = new ArrayList<>();
 
-		Update(ImageReference image) {
+		/**
+         * Updates the image reference.
+         * 
+         * @param image the new image reference to be set
+         */
+        Update(ImageReference image) {
 			this.image = image;
 		}
 
-		private ContainerConfig run(Consumer<Update> update) {
+		/**
+         * Runs the update on the container configuration.
+         * 
+         * @param update the consumer function to apply the update
+         * @return the updated container configuration
+         * @throws IllegalStateException if an IOException occurs during the update
+         */
+        private ContainerConfig run(Consumer<Update> update) {
 			update.accept(this);
 			try {
 				return new ContainerConfig(this.user, this.image, this.command, this.args, this.labels, this.bindings,

@@ -22,10 +22,18 @@ import org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryOptionsBuil
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyR2dbcConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyR2dbcConfiguration {
 
-	@Bean
+	/**
+     * Customizes the connection factory options builder to set the port to 5432.
+     *
+     * @return the connection factory options builder customizer
+     */
+    @Bean
 	public ConnectionFactoryOptionsBuilderCustomizer connectionFactoryPortCustomizer() {
 		return (builder) -> builder.option(ConnectionFactoryOptions.PORT, 5432);
 	}

@@ -51,11 +51,22 @@ record BundleContentProperty(String name, String value) {
 		return StringUtils.hasText(this.value);
 	}
 
-	Path toWatchPath() {
+	/**
+     * Returns the path to watch for changes.
+     * 
+     * @return the path to watch
+     */
+    Path toWatchPath() {
 		return toPath();
 	}
 
-	private Path toPath() {
+	/**
+     * Converts the value of the property to a {@link Path} object.
+     * 
+     * @return the {@link Path} object representing the value of the property
+     * @throws IllegalStateException if the value is not a file URL or if the conversion fails
+     */
+    private Path toPath() {
 		try {
 			URL url = toUrl();
 			Assert.state(isFileUrl(url), () -> "Value '%s' is not a file URL".formatted(url));
@@ -67,12 +78,25 @@ record BundleContentProperty(String name, String value) {
 		}
 	}
 
-	private URL toUrl() throws FileNotFoundException {
+	/**
+     * Converts the value of the BundleContentProperty object to a URL.
+     * 
+     * @return the URL representation of the value
+     * @throws FileNotFoundException if the value does not represent a valid file path
+     * @throws IllegalStateException if the value contains PEM content
+     */
+    private URL toUrl() throws FileNotFoundException {
 		Assert.state(!isPemContent(), "Value contains PEM content");
 		return ResourceUtils.getURL(this.value);
 	}
 
-	private boolean isFileUrl(URL url) {
+	/**
+     * Checks if the given URL is a file URL.
+     * 
+     * @param url the URL to check
+     * @return true if the URL is a file URL, false otherwise
+     */
+    private boolean isFileUrl(URL url) {
 		return "file".equalsIgnoreCase(url.getProtocol());
 	}
 

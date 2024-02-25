@@ -40,13 +40,24 @@ class ImportTestcontainersRegistrar implements ImportBeanDefinitionRegistrar {
 
 	private final DynamicPropertySourceMethodsImporter dynamicPropertySourceMethodsImporter;
 
-	ImportTestcontainersRegistrar(Environment environment) {
+	/**
+     * Initializes the ImportTestcontainersRegistrar with the given environment.
+     * 
+     * @param environment the environment to be used
+     */
+    ImportTestcontainersRegistrar(Environment environment) {
 		this.containerFieldsImporter = new ContainerFieldsImporter();
 		this.dynamicPropertySourceMethodsImporter = (!ClassUtils.isPresent(DYNAMIC_PROPERTY_SOURCE_CLASS, null)) ? null
 				: new DynamicPropertySourceMethodsImporter(environment);
 	}
 
-	@Override
+	/**
+     * Registers bean definitions based on the provided annotation metadata and bean definition registry.
+     * 
+     * @param importingClassMetadata the annotation metadata of the importing class
+     * @param registry the bean definition registry
+     */
+    @Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		MergedAnnotation<ImportTestcontainers> annotation = importingClassMetadata.getAnnotations()
 			.get(ImportTestcontainers.class);
@@ -58,7 +69,13 @@ class ImportTestcontainersRegistrar implements ImportBeanDefinitionRegistrar {
 		registerBeanDefinitions(registry, definitionClasses);
 	}
 
-	private void registerBeanDefinitions(BeanDefinitionRegistry registry, Class<?>[] definitionClasses) {
+	/**
+     * Registers bean definitions for the given definition classes in the specified registry.
+     * 
+     * @param registry the BeanDefinitionRegistry to register the bean definitions with
+     * @param definitionClasses the array of definition classes to register bean definitions for
+     */
+    private void registerBeanDefinitions(BeanDefinitionRegistry registry, Class<?>[] definitionClasses) {
 		for (Class<?> definitionClass : definitionClasses) {
 			this.containerFieldsImporter.registerBeanDefinitions(registry, definitionClass);
 			if (this.dynamicPropertySourceMethodsImporter != null) {

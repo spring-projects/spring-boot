@@ -34,7 +34,10 @@ import java.util.Map;
  */
 public final class Layouts {
 
-	private Layouts() {
+	/**
+     * Constructs a new instance of the Layouts class.
+     */
+    private Layouts() {
 	}
 
 	/**
@@ -64,37 +67,74 @@ public final class Layouts {
 	 */
 	public static class Jar implements RepackagingLayout {
 
-		@Override
+		/**
+         * Returns the launcher class name for the Jar.
+         * 
+         * @return the launcher class name for the Jar
+         */
+        @Override
 		public String getLauncherClassName() {
 			return "org.springframework.boot.loader.launch.JarLauncher";
 		}
 
-		@Override
+		/**
+         * Returns the location of the library with the specified name and scope.
+         * 
+         * @param libraryName the name of the library
+         * @param scope the scope of the library
+         * @return the location of the library
+         */
+        @Override
 		public String getLibraryLocation(String libraryName, LibraryScope scope) {
 			return "BOOT-INF/lib/";
 		}
 
-		@Override
+		/**
+         * Returns the location of the classes in the Jar.
+         *
+         * @return the location of the classes in the Jar
+         */
+        @Override
 		public String getClassesLocation() {
 			return "";
 		}
 
-		@Override
+		/**
+         * Returns the location of the repackaged classes.
+         * 
+         * @return the location of the repackaged classes
+         */
+        @Override
 		public String getRepackagedClassesLocation() {
 			return "BOOT-INF/classes/";
 		}
 
-		@Override
+		/**
+         * Returns the location of the classpath index file.
+         * 
+         * @return the location of the classpath index file
+         */
+        @Override
 		public String getClasspathIndexFileLocation() {
 			return "BOOT-INF/classpath.idx";
 		}
 
-		@Override
+		/**
+         * Returns the location of the layers index file.
+         * 
+         * @return the location of the layers index file
+         */
+        @Override
 		public String getLayersIndexFileLocation() {
 			return "BOOT-INF/layers.idx";
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the method is executable.
+         *
+         * @return true if the method is executable, false otherwise.
+         */
+        @Override
 		public boolean isExecutable() {
 			return true;
 		}
@@ -106,7 +146,12 @@ public final class Layouts {
 	 */
 	public static class Expanded extends Jar {
 
-		@Override
+		/**
+         * Returns the launcher class name.
+         *
+         * @return the launcher class name
+         */
+        @Override
 		public String getLauncherClassName() {
 			return "org.springframework.boot.loader.launch.PropertiesLauncher";
 		}
@@ -118,12 +163,22 @@ public final class Layouts {
 	 */
 	public static class None extends Jar {
 
-		@Override
+		/**
+         * Returns the launcher class name.
+         * 
+         * @return the launcher class name, which is null in this case.
+         */
+        @Override
 		public String getLauncherClassName() {
 			return null;
 		}
 
-		@Override
+		/**
+         * Returns whether the method is executable.
+         * 
+         * @return true if the method is executable, false otherwise.
+         */
+        @Override
 		public boolean isExecutable() {
 			return false;
 		}
@@ -146,32 +201,64 @@ public final class Layouts {
 			SCOPE_LOCATION = Collections.unmodifiableMap(locations);
 		}
 
-		@Override
+		/**
+         * Returns the launcher class name for the War class.
+         * 
+         * @return the launcher class name for the War class
+         */
+        @Override
 		public String getLauncherClassName() {
 			return "org.springframework.boot.loader.launch.WarLauncher";
 		}
 
-		@Override
+		/**
+         * Returns the location of the specified library based on the given library name and scope.
+         *
+         * @param libraryName the name of the library
+         * @param scope the scope of the library
+         * @return the location of the library
+         */
+        @Override
 		public String getLibraryLocation(String libraryName, LibraryScope scope) {
 			return SCOPE_LOCATION.get(scope);
 		}
 
-		@Override
+		/**
+         * Returns the location of the classes directory in the web application.
+         * 
+         * @return the location of the classes directory in the web application
+         */
+        @Override
 		public String getClassesLocation() {
 			return "WEB-INF/classes/";
 		}
 
-		@Override
+		/**
+         * Returns the location of the classpath index file.
+         * 
+         * @return the location of the classpath index file
+         */
+        @Override
 		public String getClasspathIndexFileLocation() {
 			return "WEB-INF/classpath.idx";
 		}
 
-		@Override
+		/**
+         * Returns the file location of the layers index file.
+         * 
+         * @return the file location of the layers index file
+         */
+        @Override
 		public String getLayersIndexFileLocation() {
 			return "WEB-INF/layers.idx";
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the method is executable.
+         *
+         * @return true if the method is executable, false otherwise.
+         */
+        @Override
 		public boolean isExecutable() {
 			return true;
 		}

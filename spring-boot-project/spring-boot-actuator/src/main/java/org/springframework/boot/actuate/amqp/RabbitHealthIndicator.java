@@ -33,18 +33,35 @@ public class RabbitHealthIndicator extends AbstractHealthIndicator {
 
 	private final RabbitTemplate rabbitTemplate;
 
-	public RabbitHealthIndicator(RabbitTemplate rabbitTemplate) {
+	/**
+     * Constructs a new RabbitHealthIndicator with the specified RabbitTemplate.
+     * 
+     * @param rabbitTemplate the RabbitTemplate to be used for health check
+     * @throws IllegalArgumentException if the rabbitTemplate is null
+     */
+    public RabbitHealthIndicator(RabbitTemplate rabbitTemplate) {
 		super("Rabbit health check failed");
 		Assert.notNull(rabbitTemplate, "RabbitTemplate must not be null");
 		this.rabbitTemplate = rabbitTemplate;
 	}
 
-	@Override
+	/**
+     * Performs a health check on the RabbitHealthIndicator.
+     * 
+     * @param builder the Health.Builder object used to build the health status
+     * @throws Exception if an error occurs during the health check
+     */
+    @Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		builder.up().withDetail("version", getVersion());
 	}
 
-	private String getVersion() {
+	/**
+     * Retrieves the version of the RabbitMQ server.
+     * 
+     * @return the version of the RabbitMQ server as a String
+     */
+    private String getVersion() {
 		return this.rabbitTemplate
 			.execute((channel) -> channel.getConnection().getServerProperties().get("version").toString());
 	}

@@ -39,25 +39,50 @@ public class PrepareMavenBinaries extends DefaultTask {
 
 	private File outputDir;
 
-	@OutputDirectory
+	/**
+     * Returns the output directory.
+     * 
+     * @return the output directory
+     */
+    @OutputDirectory
 	public File getOutputDir() {
 		return this.outputDir;
 	}
 
-	public void setOutputDir(File outputDir) {
+	/**
+     * Sets the output directory for the Maven binaries.
+     * 
+     * @param outputDir the output directory to set
+     */
+    public void setOutputDir(File outputDir) {
 		this.outputDir = outputDir;
 	}
 
-	@Input
+	/**
+     * Returns the set of versions.
+     *
+     * @return the set of versions
+     */
+    @Input
 	public Set<String> getVersions() {
 		return this.versions;
 	}
 
-	public void versions(String... versions) {
+	/**
+     * Adds the given versions to the list of versions.
+     * 
+     * @param versions the versions to be added
+     */
+    public void versions(String... versions) {
 		this.versions.addAll(Arrays.asList(versions));
 	}
 
-	@TaskAction
+	/**
+     * Prepares the Maven binaries by downloading and extracting the specified versions.
+     * 
+     * @param versions an array of Maven versions to be prepared
+     */
+    @TaskAction
 	public void prepareBinaries() {
 		for (String version : this.versions) {
 			Configuration configuration = getProject().getConfigurations()

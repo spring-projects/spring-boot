@@ -35,7 +35,13 @@ class StringToFileConverter implements Converter<String, File> {
 
 	private static final ResourceLoader resourceLoader = new DefaultResourceLoader(null);
 
-	@Override
+	/**
+     * Converts a given source string to a File object.
+     * 
+     * @param source the source string to be converted
+     * @return the converted File object
+     */
+    @Override
 	public File convert(String source) {
 		if (ResourceUtils.isUrl(source)) {
 			return getFile(resourceLoader.getResource(source));
@@ -51,7 +57,14 @@ class StringToFileConverter implements Converter<String, File> {
 		return file;
 	}
 
-	private File getFile(Resource resource) {
+	/**
+     * Retrieves the file from the given resource.
+     * 
+     * @param resource the resource from which to retrieve the file
+     * @return the file retrieved from the resource
+     * @throws IllegalStateException if the file cannot be retrieved from the resource
+     */
+    private File getFile(Resource resource) {
 		try {
 			return resource.getFile();
 		}

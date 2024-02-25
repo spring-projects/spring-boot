@@ -42,7 +42,10 @@ public class SslContextFactory {
 
 	private static final String KEY_STORE_ALIAS = "spring-boot-docker";
 
-	public SslContextFactory() {
+	/**
+     * Constructs a new instance of the SslContextFactory class.
+     */
+    public SslContextFactory() {
 	}
 
 	/**
@@ -72,14 +75,31 @@ public class SslContextFactory {
 		}
 	}
 
-	private KeyManagerFactory getKeyManagerFactory(Path keyPath, Path certPath) throws Exception {
+	/**
+     * Returns a KeyManagerFactory initialized with the specified key and certificate paths.
+     * 
+     * @param keyPath the path to the key file
+     * @param certPath the path to the certificate file
+     * @return the initialized KeyManagerFactory
+     * @throws Exception if an error occurs while creating or initializing the KeyManagerFactory
+     */
+    private KeyManagerFactory getKeyManagerFactory(Path keyPath, Path certPath) throws Exception {
 		KeyStore store = KeyStoreFactory.create(certPath, keyPath, KEY_STORE_ALIAS);
 		KeyManagerFactory factory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 		factory.init(store, NO_PASSWORD);
 		return factory;
 	}
 
-	private TrustManagerFactory getTrustManagerFactory(Path caPath, Path caKeyPath)
+	/**
+     * Returns a TrustManagerFactory initialized with the specified CA certificate and key paths.
+     * 
+     * @param caPath the path to the CA certificate
+     * @param caKeyPath the path to the CA key
+     * @return the initialized TrustManagerFactory
+     * @throws NoSuchAlgorithmException if the default algorithm for TrustManagerFactory is not available
+     * @throws KeyStoreException if there is an error accessing the KeyStore
+     */
+    private TrustManagerFactory getTrustManagerFactory(Path caPath, Path caKeyPath)
 			throws NoSuchAlgorithmException, KeyStoreException {
 		KeyStore store = KeyStoreFactory.create(caPath, caKeyPath, KEY_STORE_ALIAS);
 		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -87,7 +107,13 @@ public class SslContextFactory {
 		return factory;
 	}
 
-	private static void verifyCertificateFiles(Path... paths) {
+	/**
+     * Verifies the existence and regular file status of the given certificate files.
+     * 
+     * @param paths the paths of the certificate files to be verified
+     * @throws IllegalStateException if any of the certificate files do not exist or are not regular files
+     */
+    private static void verifyCertificateFiles(Path... paths) {
 		for (Path path : paths) {
 			Assert.state(Files.exists(path) && Files.isRegularFile(path),
 					"Certificate path must contain the files 'ca.pem', 'cert.pem', and 'key.pem' files");

@@ -51,7 +51,13 @@ public class CassandraDriverHealthIndicator extends AbstractHealthIndicator {
 		this.session = session;
 	}
 
-	@Override
+	/**
+     * Performs a health check on the Cassandra driver.
+     * 
+     * @param builder the Health.Builder object used to build the health status
+     * @throws Exception if an error occurs during the health check
+     */
+    @Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Collection<Node> nodes = this.session.getMetadata().getNodes().values();
 		Optional<Node> nodeUp = nodes.stream().filter((node) -> node.getState() == NodeState.UP).findAny();

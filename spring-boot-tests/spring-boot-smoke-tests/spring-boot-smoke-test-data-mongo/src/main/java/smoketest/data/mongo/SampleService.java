@@ -19,16 +19,30 @@ package smoketest.data.mongo;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+/**
+ * SampleService class.
+ */
 @Service
 public class SampleService {
 
 	private final MongoTemplate mongoTemplate;
 
-	public SampleService(MongoTemplate mongoTemplate) {
+	/**
+     * Constructs a new SampleService with the specified MongoTemplate.
+     * 
+     * @param mongoTemplate the MongoTemplate to be used by the SampleService
+     */
+    public SampleService(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 
-	public boolean hasCollection(String collectionName) {
+	/**
+     * Checks if a collection with the given name exists in the MongoDB database.
+     * 
+     * @param collectionName the name of the collection to check
+     * @return true if the collection exists, false otherwise
+     */
+    public boolean hasCollection(String collectionName) {
 		return this.mongoTemplate.collectionExists(collectionName);
 	}
 

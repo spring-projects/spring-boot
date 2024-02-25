@@ -28,7 +28,14 @@ import org.springframework.boot.diagnostics.FailureAnalyzer;
 class MultipleConnectionPoolConfigurationsFailureAnalyzer
 		extends AbstractFailureAnalyzer<MultipleConnectionPoolConfigurationsException> {
 
-	@Override
+	/**
+     * Analyzes the failure caused by MultipleConnectionPoolConfigurationsException.
+     * 
+     * @param rootFailure the root cause of the failure
+     * @param cause the MultipleConnectionPoolConfigurationsException that caused the failure
+     * @return a FailureAnalysis object containing the analysis result
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, MultipleConnectionPoolConfigurationsException cause) {
 		return new FailureAnalysis(cause.getMessage(),
 				"Update your configuration so that R2DBC connection pooling is configured using either the "

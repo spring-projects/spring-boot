@@ -41,7 +41,15 @@ import org.springframework.data.mapping.model.FieldNamingStrategy;
 @Configuration(proxyBeanMethods = false)
 class CouchbaseDataConfiguration {
 
-	@Bean
+	/**
+     * Creates a MappingCouchbaseConverter bean if no other bean of the same type is present.
+     * 
+     * @param properties The CouchbaseDataProperties object containing the configuration properties.
+     * @param couchbaseMappingContext The CouchbaseMappingContext object used for mapping entities to Couchbase documents.
+     * @param couchbaseCustomConversions The CouchbaseCustomConversions object containing custom type conversions.
+     * @return The MappingCouchbaseConverter bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	MappingCouchbaseConverter couchbaseMappingConverter(CouchbaseDataProperties properties,
 			CouchbaseMappingContext couchbaseMappingContext, CouchbaseCustomConversions couchbaseCustomConversions) {
@@ -51,13 +59,51 @@ class CouchbaseDataConfiguration {
 		return converter;
 	}
 
-	@Bean
+	/**
+     * Returns a new instance of the TranslationService interface if no other bean of the same type is present.
+     * This method creates and returns a JacksonTranslationService object, which is an implementation of the TranslationService interface.
+     * 
+     * @return a new instance of the TranslationService interface if no other bean of the same type is present
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	TranslationService couchbaseTranslationService() {
 		return new JacksonTranslationService();
 	}
 
-	@Bean(name = BeanNames.COUCHBASE_MAPPING_CONTEXT)
+	/**
+     * Creates and configures a {@link CouchbaseMappingContext} bean.
+     * 
+     * This method is annotated with {@link Bean} and {@link ConditionalOnMissingBean} to ensure that
+     * it is only executed if no other bean with the same name exists in the application context.
+     * 
+     * The {@link CouchbaseMappingContext} is responsible for mapping entities to Couchbase documents.
+     * 
+     * The method takes the following parameters:
+     * - {@link CouchbaseDataProperties properties}: The properties for configuring Couchbase data.
+     * - {@link ApplicationContext applicationContext}: The application context.
+     * - {@link CouchbaseCustomConversions couchbaseCustomConversions}: The custom conversions for Couchbase data.
+     * 
+     * The method first creates a new instance of {@link CouchbaseMappingContext}.
+     * 
+     * It then sets the initial entity set by scanning for entities annotated with {@link Document} using
+     * the {@link EntityScanner} class and the provided application context.
+     * 
+     * The simple type holder is set using the custom conversions.
+     * 
+     * If a field naming strategy is specified in the properties, it is instantiated and set on the mapping context.
+     * 
+     * The auto index creation flag is also set on the mapping context.
+     * 
+     * Finally, the created mapping context is returned.
+     * 
+     * @param properties The properties for configuring Couchbase data.
+     * @param applicationContext The application context.
+     * @param couchbaseCustomConversions The custom conversions for Couchbase data.
+     * @return The configured {@link CouchbaseMappingContext} bean.
+     * @throws ClassNotFoundException If the field naming strategy class cannot be found.
+     */
+    @Bean(name = BeanNames.COUCHBASE_MAPPING_CONTEXT)
 	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_MAPPING_CONTEXT)
 	CouchbaseMappingContext couchbaseMappingContext(CouchbaseDataProperties properties,
 			ApplicationContext applicationContext, CouchbaseCustomConversions couchbaseCustomConversions)
@@ -74,7 +120,18 @@ class CouchbaseDataConfiguration {
 		return mappingContext;
 	}
 
-	@Bean(name = BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+	/**
+     * Creates a new instance of {@link CouchbaseCustomConversions} if no bean with the name {@link BeanNames#COUCHBASE_CUSTOM_CONVERSIONS}
+     * is already present in the application context.
+     * 
+     * This method is annotated with {@link ConditionalOnMissingBean} to ensure that it is only executed if no bean with the specified name
+     * is already defined.
+     * 
+     * The created {@link CouchbaseCustomConversions} instance is initialized with an empty list of converters.
+     * 
+     * @return a new instance of {@link CouchbaseCustomConversions} with an empty list of converters
+     */
+    @Bean(name = BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
 	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
 	CouchbaseCustomConversions couchbaseCustomConversions() {
 		return new CouchbaseCustomConversions(Collections.emptyList());

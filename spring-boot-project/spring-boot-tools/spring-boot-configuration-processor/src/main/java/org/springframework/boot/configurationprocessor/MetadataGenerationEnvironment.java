@@ -103,7 +103,21 @@ class MetadataGenerationEnvironment {
 
 	private final String autowiredAnnotation;
 
-	MetadataGenerationEnvironment(ProcessingEnvironment environment, String configurationPropertiesAnnotation,
+	/**
+     * Constructs a new MetadataGenerationEnvironment object.
+     * 
+     * @param environment the ProcessingEnvironment object used for processing annotations
+     * @param configurationPropertiesAnnotation the fully qualified name of the annotation used for configuration properties
+     * @param nestedConfigurationPropertyAnnotation the fully qualified name of the annotation used for nested configuration properties
+     * @param deprecatedConfigurationPropertyAnnotation the fully qualified name of the annotation used for deprecated configuration properties
+     * @param constructorBindingAnnotation the fully qualified name of the annotation used for constructor binding
+     * @param autowiredAnnotation the fully qualified name of the annotation used for autowiring
+     * @param defaultValueAnnotation the fully qualified name of the annotation used for default values
+     * @param endpointAnnotations a set of fully qualified names of annotations used for defining endpoints
+     * @param readOperationAnnotation the fully qualified name of the annotation used for read operations
+     * @param nameAnnotation the fully qualified name of the annotation used for defining names
+     */
+    MetadataGenerationEnvironment(ProcessingEnvironment environment, String configurationPropertiesAnnotation,
 			String nestedConfigurationPropertyAnnotation, String deprecatedConfigurationPropertyAnnotation,
 			String constructorBindingAnnotation, String autowiredAnnotation, String defaultValueAnnotation,
 			Set<String> endpointAnnotations, String readOperationAnnotation, String nameAnnotation) {
@@ -122,7 +136,14 @@ class MetadataGenerationEnvironment {
 		this.nameAnnotation = nameAnnotation;
 	}
 
-	private static FieldValuesParser resolveFieldValuesParser(ProcessingEnvironment env) {
+	/**
+     * Resolves the field values parser based on the provided processing environment.
+     * 
+     * @param env the processing environment
+     * @return the field values parser
+     * @throws NullPointerException if the processing environment is null
+     */
+    private static FieldValuesParser resolveFieldValuesParser(ProcessingEnvironment env) {
 		try {
 			return new JavaCompilerFieldValuesParser(env);
 		}
@@ -131,11 +152,21 @@ class MetadataGenerationEnvironment {
 		}
 	}
 
-	TypeUtils getTypeUtils() {
+	/**
+     * Returns the TypeUtils object associated with this MetadataGenerationEnvironment.
+     * 
+     * @return the TypeUtils object
+     */
+    TypeUtils getTypeUtils() {
 		return this.typeUtils;
 	}
 
-	Messager getMessager() {
+	/**
+     * Returns the Messager object associated with this MetadataGenerationEnvironment.
+     * 
+     * @return the Messager object
+     */
+    Messager getMessager() {
 		return this.messager;
 	}
 
@@ -150,7 +181,13 @@ class MetadataGenerationEnvironment {
 		return this.defaultValues.computeIfAbsent(type, this::resolveFieldValues).get(name);
 	}
 
-	boolean isExcluded(TypeMirror type) {
+	/**
+     * Checks if the given TypeMirror is excluded.
+     * 
+     * @param type the TypeMirror to check
+     * @return true if the TypeMirror is excluded, false otherwise
+     */
+    boolean isExcluded(TypeMirror type) {
 		if (type == null) {
 			return false;
 		}
@@ -161,7 +198,13 @@ class MetadataGenerationEnvironment {
 		return TYPE_EXCLUDES.contains(typeName);
 	}
 
-	boolean isDeprecated(Element element) {
+	/**
+     * Checks if the given element is deprecated.
+     * 
+     * @param element the element to check
+     * @return true if the element is deprecated, false otherwise
+     */
+    boolean isDeprecated(Element element) {
 		if (isElementDeprecated(element)) {
 			return true;
 		}
@@ -171,7 +214,13 @@ class MetadataGenerationEnvironment {
 		return false;
 	}
 
-	ItemDeprecation resolveItemDeprecation(Element element) {
+	/**
+     * Resolves the deprecation information for an element.
+     * 
+     * @param element the element to resolve deprecation information for
+     * @return the deprecation information for the element
+     */
+    ItemDeprecation resolveItemDeprecation(Element element) {
 		AnnotationMirror annotation = getAnnotation(element, this.deprecatedConfigurationPropertyAnnotation);
 		String reason = null;
 		String replacement = null;
@@ -184,19 +233,46 @@ class MetadataGenerationEnvironment {
 		return new ItemDeprecation(reason, replacement, since);
 	}
 
-	boolean hasConstructorBindingAnnotation(ExecutableElement element) {
+	/**
+     * Checks if the given ExecutableElement has the constructor binding annotation.
+     * 
+     * @param element the ExecutableElement to check
+     * @return true if the ExecutableElement has the constructor binding annotation, false otherwise
+     */
+    boolean hasConstructorBindingAnnotation(ExecutableElement element) {
 		return hasAnnotation(element, this.constructorBindingAnnotation, true);
 	}
 
-	boolean hasAutowiredAnnotation(ExecutableElement element) {
+	/**
+     * Checks if the given ExecutableElement has the @Autowired annotation.
+     * 
+     * @param element the ExecutableElement to check
+     * @return true if the ExecutableElement has the @Autowired annotation, false otherwise
+     */
+    boolean hasAutowiredAnnotation(ExecutableElement element) {
 		return hasAnnotation(element, this.autowiredAnnotation);
 	}
 
-	boolean hasAnnotation(Element element, String type) {
+	/**
+     * Checks if the given element has the specified annotation type.
+     * 
+     * @param element the element to check for annotation
+     * @param type the fully qualified name of the annotation type
+     * @return true if the element has the specified annotation type, false otherwise
+     */
+    boolean hasAnnotation(Element element, String type) {
 		return hasAnnotation(element, type, false);
 	}
 
-	boolean hasAnnotation(Element element, String type, boolean considerMetaAnnotations) {
+	/**
+     * Checks if the given element has an annotation of the specified type.
+     * 
+     * @param element              the element to check for annotations
+     * @param type                 the fully qualified name of the annotation type
+     * @param considerMetaAnnotations  flag indicating whether to consider meta-annotations
+     * @return                     true if the element has the specified annotation, false otherwise
+     */
+    boolean hasAnnotation(Element element, String type, boolean considerMetaAnnotations) {
 		if (element != null) {
 			for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
 				if (type.equals(annotation.getAnnotationType().toString())) {
@@ -216,7 +292,15 @@ class MetadataGenerationEnvironment {
 		return false;
 	}
 
-	private boolean hasMetaAnnotation(Element annotationElement, String type, Set<Element> seen) {
+	/**
+     * Checks if the given annotation element or any of its meta-annotations have the specified type.
+     * 
+     * @param annotationElement the annotation element to check
+     * @param type the type of the meta-annotation to look for
+     * @param seen a set of already seen elements to avoid infinite recursion
+     * @return true if the annotation element or any of its meta-annotations have the specified type, false otherwise
+     */
+    private boolean hasMetaAnnotation(Element annotationElement, String type, Set<Element> seen) {
 		if (seen.add(annotationElement)) {
 			for (AnnotationMirror annotation : annotationElement.getAnnotationMirrors()) {
 				DeclaredType annotationType = annotation.getAnnotationType();
@@ -229,7 +313,14 @@ class MetadataGenerationEnvironment {
 		return false;
 	}
 
-	AnnotationMirror getAnnotation(Element element, String type) {
+	/**
+     * Retrieves the annotation mirror of the specified type for the given element.
+     * 
+     * @param element the element to retrieve the annotation mirror from
+     * @param type the fully qualified name of the annotation type
+     * @return the annotation mirror of the specified type, or null if not found
+     */
+    AnnotationMirror getAnnotation(Element element, String type) {
 		if (element != null) {
 			for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
 				if (type.equals(annotation.getAnnotationType().toString())) {
@@ -255,7 +346,14 @@ class MetadataGenerationEnvironment {
 		return Collections.unmodifiableList(stack);
 	}
 
-	private boolean collectElementsAnnotatedOrMetaAnnotatedWith(TypeElement annotationType, LinkedList<Element> stack) {
+	/**
+     * Recursively collects elements that are annotated or meta-annotated with the specified annotation type.
+     * 
+     * @param annotationType the type of annotation to search for
+     * @param stack the stack of elements being processed
+     * @return true if an element annotated with the specified annotation type is found, false otherwise
+     */
+    private boolean collectElementsAnnotatedOrMetaAnnotatedWith(TypeElement annotationType, LinkedList<Element> stack) {
 		Element element = stack.peekLast();
 		for (AnnotationMirror annotation : this.elements.getAllAnnotationMirrors(element)) {
 			Element annotationElement = annotation.getAnnotationType().asElement();
@@ -272,14 +370,27 @@ class MetadataGenerationEnvironment {
 		return false;
 	}
 
-	Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
+	/**
+     * Retrieves the element values of the given annotation.
+     * 
+     * @param annotation the annotation mirror to retrieve the element values from
+     * @return a map containing the element names and their corresponding values
+     */
+    Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
 		Map<String, Object> values = new LinkedHashMap<>();
 		annotation.getElementValues()
 			.forEach((name, value) -> values.put(name.getSimpleName().toString(), getAnnotationValue(value)));
 		return values;
 	}
 
-	String getAnnotationElementStringValue(AnnotationMirror annotation, String name) {
+	/**
+     * Retrieves the string value of the specified element in the given annotation.
+     *
+     * @param annotation the annotation mirror to retrieve the value from
+     * @param name the name of the element to retrieve the value for
+     * @return the string value of the specified element, or null if not found
+     */
+    String getAnnotationElementStringValue(AnnotationMirror annotation, String name) {
 		return annotation.getElementValues()
 			.entrySet()
 			.stream()
@@ -289,7 +400,13 @@ class MetadataGenerationEnvironment {
 			.orElse(null);
 	}
 
-	private Object getAnnotationValue(AnnotationValue annotationValue) {
+	/**
+     * Retrieves the value of an annotation.
+     * 
+     * @param annotationValue the annotation value to retrieve
+     * @return the value of the annotation
+     */
+    private Object getAnnotationValue(AnnotationValue annotationValue) {
 		Object value = annotationValue.getValue();
 		if (value instanceof List) {
 			List<Object> values = new ArrayList<>();
@@ -299,57 +416,127 @@ class MetadataGenerationEnvironment {
 		return value;
 	}
 
-	private String asString(Object value) {
+	/**
+     * Converts an object to a string representation.
+     * 
+     * @param value the object to be converted
+     * @return the string representation of the object, or null if the object is null or empty
+     */
+    private String asString(Object value) {
 		return (value == null || value.toString().isEmpty()) ? null : (String) value;
 	}
 
-	TypeElement getConfigurationPropertiesAnnotationElement() {
+	/**
+     * Returns the TypeElement representing the annotation used for configuration properties.
+     * 
+     * @return the TypeElement representing the configuration properties annotation
+     */
+    TypeElement getConfigurationPropertiesAnnotationElement() {
 		return this.elements.getTypeElement(this.configurationPropertiesAnnotation);
 	}
 
-	AnnotationMirror getConfigurationPropertiesAnnotation(Element element) {
+	/**
+     * Retrieves the annotation mirror for the configuration properties annotation from the given element.
+     * 
+     * @param element the element from which to retrieve the annotation mirror
+     * @return the annotation mirror for the configuration properties annotation, or null if not found
+     */
+    AnnotationMirror getConfigurationPropertiesAnnotation(Element element) {
 		return getAnnotation(element, this.configurationPropertiesAnnotation);
 	}
 
-	AnnotationMirror getNestedConfigurationPropertyAnnotation(Element element) {
+	/**
+     * Retrieves the nested configuration property annotation mirror for the given element.
+     * 
+     * @param element the element for which to retrieve the annotation mirror
+     * @return the nested configuration property annotation mirror, or null if not found
+     */
+    AnnotationMirror getNestedConfigurationPropertyAnnotation(Element element) {
 		return getAnnotation(element, this.nestedConfigurationPropertyAnnotation);
 	}
 
-	AnnotationMirror getDefaultValueAnnotation(Element element) {
+	/**
+     * Retrieves the annotation mirror for the default value annotation of the specified element.
+     * 
+     * @param element the element for which to retrieve the default value annotation
+     * @return the annotation mirror for the default value annotation, or null if not found
+     */
+    AnnotationMirror getDefaultValueAnnotation(Element element) {
 		return getAnnotation(element, this.defaultValueAnnotation);
 	}
 
-	Set<TypeElement> getEndpointAnnotationElements() {
+	/**
+     * Returns a set of TypeElement objects representing the endpoint annotations used in the MetadataGenerationEnvironment.
+     * 
+     * @return a set of TypeElement objects representing the endpoint annotations
+     */
+    Set<TypeElement> getEndpointAnnotationElements() {
 		return this.endpointAnnotations.stream()
 			.map(this.elements::getTypeElement)
 			.filter(Objects::nonNull)
 			.collect(Collectors.toSet());
 	}
 
-	AnnotationMirror getReadOperationAnnotation(Element element) {
+	/**
+     * Retrieves the annotation mirror for the read operation annotation on the specified element.
+     * 
+     * @param element the element to retrieve the annotation mirror from
+     * @return the annotation mirror for the read operation annotation, or null if not found
+     */
+    AnnotationMirror getReadOperationAnnotation(Element element) {
 		return getAnnotation(element, this.readOperationAnnotation);
 	}
 
-	AnnotationMirror getNameAnnotation(Element element) {
+	/**
+     * Retrieves the annotation mirror for the specified element's name annotation.
+     * 
+     * @param element the element for which to retrieve the annotation mirror
+     * @return the annotation mirror for the element's name annotation, or null if not found
+     */
+    AnnotationMirror getNameAnnotation(Element element) {
 		return getAnnotation(element, this.nameAnnotation);
 	}
 
-	boolean hasNullableAnnotation(Element element) {
+	/**
+     * Checks if the given element has a nullable annotation.
+     *
+     * @param element the element to check
+     * @return true if the element has a nullable annotation, false otherwise
+     */
+    boolean hasNullableAnnotation(Element element) {
 		return getAnnotation(element, NULLABLE_ANNOTATION) != null;
 	}
 
-	private boolean isElementDeprecated(Element element) {
+	/**
+     * Checks if the given element is deprecated.
+     * 
+     * @param element the element to check
+     * @return true if the element is deprecated, false otherwise
+     */
+    private boolean isElementDeprecated(Element element) {
 		return hasAnnotation(element, "java.lang.Deprecated")
 				|| hasAnnotation(element, this.deprecatedConfigurationPropertyAnnotation);
 	}
 
-	private Map<String, Object> resolveFieldValues(TypeElement element) {
+	/**
+     * Resolves the field values for the given TypeElement.
+     * 
+     * @param element the TypeElement for which to resolve the field values
+     * @return a Map containing the resolved field values, with field names as keys and field values as values
+     */
+    private Map<String, Object> resolveFieldValues(TypeElement element) {
 		Map<String, Object> values = new LinkedHashMap<>();
 		resolveFieldValuesFor(values, element);
 		return values;
 	}
 
-	private void resolveFieldValuesFor(Map<String, Object> values, TypeElement element) {
+	/**
+     * Resolves the field values for a given element and adds them to the provided map.
+     * 
+     * @param values the map to add the field values to
+     * @param element the element to resolve the field values for
+     */
+    private void resolveFieldValuesFor(Map<String, Object> values, TypeElement element) {
 		try {
 			this.fieldValuesParser.getFieldValues(element).forEach((name, value) -> {
 				if (!values.containsKey(name)) {

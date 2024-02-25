@@ -60,26 +60,61 @@ import org.springframework.util.CollectionUtils;
 @Configuration(proxyBeanMethods = false)
 class HealthEndpointConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of the {@link StatusAggregator} interface if no other bean of the same type is present.
+     * 
+     * @param properties the {@link HealthEndpointProperties} object containing the health endpoint properties
+     * @return a new instance of the {@link StatusAggregator} interface
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	StatusAggregator healthStatusAggregator(HealthEndpointProperties properties) {
 		return new SimpleStatusAggregator(properties.getStatus().getOrder());
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of HttpCodeStatusMapper if no bean of this type is already present in the application context.
+     * Uses the provided HealthEndpointProperties to initialize the SimpleHttpCodeStatusMapper with the HTTP mapping defined in the properties.
+     * 
+     * @param properties the HealthEndpointProperties used to initialize the SimpleHttpCodeStatusMapper
+     * @return a new instance of SimpleHttpCodeStatusMapper if no bean of this type is already present, otherwise returns the existing bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	HttpCodeStatusMapper healthHttpCodeStatusMapper(HealthEndpointProperties properties) {
 		return new SimpleHttpCodeStatusMapper(properties.getStatus().getHttpMapping());
 	}
 
-	@Bean
+	/**
+     * Creates and returns an instance of {@link HealthEndpointGroups} by auto-configuring it with the provided
+     * {@link ApplicationContext} and {@link HealthEndpointProperties}.
+     * This method is annotated with {@link Bean} and {@link ConditionalOnMissingBean} to ensure that it is only
+     * executed if there is no existing bean of type {@link HealthEndpointGroups} in the application context.
+     *
+     * @param applicationContext The {@link ApplicationContext} used for auto-configuration.
+     * @param properties The {@link HealthEndpointProperties} used for auto-configuration.
+     * @return An instance of {@link HealthEndpointGroups} that is auto-configured with the provided parameters.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	HealthEndpointGroups healthEndpointGroups(ApplicationContext applicationContext,
 			HealthEndpointProperties properties) {
 		return new AutoConfiguredHealthEndpointGroups(applicationContext, properties);
 	}
 
-	@Bean
+	/**
+     * Creates a HealthContributorRegistry bean if it is missing in the application context.
+     * The registry is populated with health contributors based on the availability of reactive health contributors.
+     * If the Flux class is present in the application classloader, the reactive health contributors are adapted and added to the registry.
+     * Finally, an AutoConfiguredHealthContributorRegistry is created with the populated health contributors and group names.
+     *
+     * @param applicationContext         the application context
+     * @param groups                      the health endpoint groups
+     * @param healthContributors          the map of health contributors
+     * @param reactiveHealthContributors  the map of reactive health contributors
+     * @return the created HealthContributorRegistry bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	HealthContributorRegistry healthContributorRegistry(ApplicationContext applicationContext,
 			HealthEndpointGroups groups, Map<String, HealthContributor> healthContributors,
@@ -90,7 +125,15 @@ class HealthEndpointConfiguration {
 		return new AutoConfiguredHealthContributorRegistry(healthContributors, groups.getNames());
 	}
 
-	@Bean
+	/**
+     * Creates a {@link HealthEndpointGroupMembershipValidator} bean if the property
+     * "management.endpoint.health.validate-group-membership" is set to true or is missing.
+     * 
+     * @param properties the {@link HealthEndpointProperties} object containing the health endpoint properties
+     * @param healthContributorRegistry the {@link HealthContributorRegistry} object containing the health contributor registry
+     * @return the {@link HealthEndpointGroupMembershipValidator} bean
+     */
+    @Bean
 	@ConditionalOnProperty(name = "management.endpoint.health.validate-group-membership", havingValue = "true",
 			matchIfMissing = true)
 	HealthEndpointGroupMembershipValidator healthEndpointGroupMembershipValidator(HealthEndpointProperties properties,
@@ -98,14 +141,28 @@ class HealthEndpointConfiguration {
 		return new HealthEndpointGroupMembershipValidator(properties, healthContributorRegistry);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of the {@link HealthEndpoint} class.
+     * 
+     * @param registry the {@link HealthContributorRegistry} used to retrieve health contributors
+     * @param groups the {@link HealthEndpointGroups} used to group health contributors
+     * @param properties the {@link HealthEndpointProperties} used to configure the health endpoint
+     * @return a new instance of the {@link HealthEndpoint} class
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	HealthEndpoint healthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups,
 			HealthEndpointProperties properties) {
 		return new HealthEndpoint(registry, groups, properties.getLogging().getSlowIndicatorThreshold());
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link HealthEndpointGroupsBeanPostProcessor} with the provided {@link HealthEndpointGroupsPostProcessor}.
+     * 
+     * @param healthEndpointGroupsPostProcessors the {@link HealthEndpointGroupsPostProcessor} to be used by the {@link HealthEndpointGroupsBeanPostProcessor}
+     * @return a new instance of {@link HealthEndpointGroupsBeanPostProcessor}
+     */
+    @Bean
 	static HealthEndpointGroupsBeanPostProcessor healthEndpointGroupsBeanPostProcessor(
 			ObjectProvider<HealthEndpointGroupsPostProcessor> healthEndpointGroupsPostProcessors) {
 		return new HealthEndpointGroupsBeanPostProcessor(healthEndpointGroupsPostProcessors);
@@ -119,11 +176,24 @@ class HealthEndpointConfiguration {
 
 		private final ObjectProvider<HealthEndpointGroupsPostProcessor> postProcessors;
 
-		HealthEndpointGroupsBeanPostProcessor(ObjectProvider<HealthEndpointGroupsPostProcessor> postProcessors) {
+		/**
+         * Constructs a new HealthEndpointGroupsBeanPostProcessor with the specified postProcessors.
+         * 
+         * @param postProcessors the ObjectProvider of HealthEndpointGroupsPostProcessor instances to be used for post-processing
+         */
+        HealthEndpointGroupsBeanPostProcessor(ObjectProvider<HealthEndpointGroupsPostProcessor> postProcessors) {
 			this.postProcessors = postProcessors;
 		}
 
-		@Override
+		/**
+         * Apply post-processing logic after initialization of a bean.
+         * 
+         * @param bean the initialized bean object
+         * @param beanName the name of the bean
+         * @return the processed bean object
+         * @throws BeansException if an error occurs during post-processing
+         */
+        @Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof HealthEndpointGroups groups) {
 				return applyPostProcessors(groups);
@@ -131,7 +201,13 @@ class HealthEndpointConfiguration {
 			return bean;
 		}
 
-		private Object applyPostProcessors(HealthEndpointGroups bean) {
+		/**
+         * Applies the post processors to the given HealthEndpointGroups bean.
+         * 
+         * @param bean the HealthEndpointGroups bean to be processed
+         * @return the processed HealthEndpointGroups bean
+         */
+        private Object applyPostProcessors(HealthEndpointGroups bean) {
 			for (HealthEndpointGroupsPostProcessor postProcessor : this.postProcessors.orderedStream()
 				.toArray(HealthEndpointGroupsPostProcessor[]::new)) {
 				bean = postProcessor.postProcessHealthEndpointGroups(bean);
@@ -149,13 +225,25 @@ class HealthEndpointConfiguration {
 
 		private final Map<String, HealthContributor> adapted;
 
-		AdaptedReactiveHealthContributors(Map<String, ReactiveHealthContributor> reactiveContributors) {
+		/**
+         * Adapts the given map of ReactiveHealthContributors to a map of HealthContributors.
+         * 
+         * @param reactiveContributors the map of ReactiveHealthContributors to be adapted
+         */
+        AdaptedReactiveHealthContributors(Map<String, ReactiveHealthContributor> reactiveContributors) {
 			Map<String, HealthContributor> adapted = new LinkedHashMap<>();
 			reactiveContributors.forEach((name, contributor) -> adapted.put(name, adapt(contributor)));
 			this.adapted = Collections.unmodifiableMap(adapted);
 		}
 
-		private HealthContributor adapt(ReactiveHealthContributor contributor) {
+		/**
+         * Adapts a ReactiveHealthContributor to a HealthContributor.
+         * 
+         * @param contributor the ReactiveHealthContributor to adapt
+         * @return the adapted HealthContributor
+         * @throws IllegalStateException if the ReactiveHealthContributor type is unsupported
+         */
+        private HealthContributor adapt(ReactiveHealthContributor contributor) {
 			if (contributor instanceof ReactiveHealthIndicator healthIndicator) {
 				return adapt(healthIndicator);
 			}
@@ -165,7 +253,13 @@ class HealthEndpointConfiguration {
 			throw new IllegalStateException("Unsupported ReactiveHealthContributor type " + contributor.getClass());
 		}
 
-		private HealthIndicator adapt(ReactiveHealthIndicator indicator) {
+		/**
+         * Adapts a ReactiveHealthIndicator to a HealthIndicator.
+         * 
+         * @param indicator the ReactiveHealthIndicator to adapt
+         * @return the adapted HealthIndicator
+         */
+        private HealthIndicator adapt(ReactiveHealthIndicator indicator) {
 			return new HealthIndicator() {
 
 				@Override
@@ -181,7 +275,13 @@ class HealthEndpointConfiguration {
 			};
 		}
 
-		private CompositeHealthContributor adapt(CompositeReactiveHealthContributor composite) {
+		/**
+         * Adapts a CompositeReactiveHealthContributor to a CompositeHealthContributor.
+         * 
+         * @param composite the CompositeReactiveHealthContributor to be adapted
+         * @return the adapted CompositeHealthContributor
+         */
+        private CompositeHealthContributor adapt(CompositeReactiveHealthContributor composite) {
 			return new CompositeHealthContributor() {
 
 				@Override
@@ -211,7 +311,12 @@ class HealthEndpointConfiguration {
 			};
 		}
 
-		Map<String, HealthContributor> get() {
+		/**
+         * Returns the map of health contributors.
+         *
+         * @return the map of health contributors
+         */
+        Map<String, HealthContributor> get() {
 			return this.adapted;
 		}
 
@@ -228,25 +333,49 @@ class HealthEndpointConfiguration {
 
 		private final HealthContributorRegistry registry;
 
-		HealthEndpointGroupMembershipValidator(HealthEndpointProperties properties,
+		/**
+         * Constructs a new HealthEndpointGroupMembershipValidator with the specified properties and registry.
+         * 
+         * @param properties the properties for the health endpoint
+         * @param registry the registry for health contributors
+         */
+        HealthEndpointGroupMembershipValidator(HealthEndpointProperties properties,
 				HealthContributorRegistry registry) {
 			this.properties = properties;
 			this.registry = registry;
 		}
 
-		@Override
+		/**
+         * This method is called after all singleton beans have been instantiated.
+         * It is responsible for validating the groups in the HealthEndpointGroupMembershipValidator class.
+         */
+        @Override
 		public void afterSingletonsInstantiated() {
 			validateGroups();
 		}
 
-		private void validateGroups() {
+		/**
+         * Validates the groups by checking the included and excluded members.
+         * 
+         * @param None
+         * @return None
+         */
+        private void validateGroups() {
 			this.properties.getGroup().forEach((name, group) -> {
 				validate(group.getInclude(), "Included", name);
 				validate(group.getExclude(), "Excluded", name);
 			});
 		}
 
-		private void validate(Set<String> names, String type, String group) {
+		/**
+         * Validates the given set of names for a specific type and group.
+         * 
+         * @param names the set of names to validate
+         * @param type the type of health contributor
+         * @param group the group of health contributors
+         * @throws NoSuchHealthContributorException if a health contributor does not exist
+         */
+        private void validate(Set<String> names, String type, String group) {
 			if (CollectionUtils.isEmpty(names)) {
 				return;
 			}
@@ -261,7 +390,13 @@ class HealthEndpointConfiguration {
 			}
 		}
 
-		private boolean contributorExists(String[] path) {
+		/**
+         * Checks if a contributor exists in the registry based on the given path.
+         * 
+         * @param path The path to the contributor in the registry.
+         * @return true if the contributor exists, false otherwise.
+         */
+        private boolean contributorExists(String[] path) {
 			int pathOffset = 0;
 			Object contributor = this.registry;
 			while (pathOffset < path.length) {
@@ -280,7 +415,14 @@ class HealthEndpointConfiguration {
 		 */
 		static class NoSuchHealthContributorException extends RuntimeException {
 
-			NoSuchHealthContributorException(String type, String name, String group) {
+			/**
+             * Constructs a new NoSuchHealthContributorException with the specified type, name, and group.
+             * 
+             * @param type the type of the health contributor
+             * @param name the name of the health contributor
+             * @param group the group of the health contributor
+             */
+            NoSuchHealthContributorException(String type, String name, String group) {
 				super(type + " health contributor '" + name + "' in group '" + group + "' does not exist");
 			}
 

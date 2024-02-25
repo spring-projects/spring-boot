@@ -47,7 +47,14 @@ public class Repackager extends Packager {
 		super(source);
 	}
 
-	@Override
+	/**
+     * Writes the signature file if necessary.
+     * 
+     * @param writtenLibraries the map of written libraries
+     * @param writer the abstract jar writer
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
 	protected void writeSignatureFileIfNecessary(Map<String, Library> writtenLibraries, AbstractJarWriter writer)
 			throws IOException {
 		if (getSource().getName().toLowerCase().endsWith(".jar") && hasSignedLibrary(writtenLibraries)) {
@@ -56,7 +63,14 @@ public class Repackager extends Packager {
 		}
 	}
 
-	private boolean hasSignedLibrary(Map<String, Library> writtenLibraries) throws IOException {
+	/**
+     * Checks if any of the libraries in the given map of written libraries are signed.
+     * 
+     * @param writtenLibraries a map of written libraries, where the key is the library name and the value is the Library object
+     * @return true if any of the libraries are signed, false otherwise
+     * @throws IOException if an I/O error occurs while checking the libraries
+     */
+    private boolean hasSignedLibrary(Map<String, Library> writtenLibraries) throws IOException {
 		for (Library library : writtenLibraries.values()) {
 			if (!(library instanceof JarModeLibrary) && FileUtils.isSignedJarFile(library.getFile())) {
 				return true;
@@ -145,7 +159,17 @@ public class Repackager extends Packager {
 		}
 	}
 
-	private void repackage(JarFile sourceJar, File destination, Libraries libraries, LaunchScript launchScript,
+	/**
+     * Repackages a JAR file with the specified source JAR, destination file, libraries, launch script, and last modified time.
+     * 
+     * @param sourceJar the source JAR file to be repackaged
+     * @param destination the destination file where the repackaged JAR will be saved
+     * @param libraries the libraries to be included in the repackaged JAR
+     * @param launchScript the launch script to be included in the repackaged JAR
+     * @param lastModifiedTime the last modified time of the repackaged JAR file
+     * @throws IOException if an I/O error occurs during the repackaging process
+     */
+    private void repackage(JarFile sourceJar, File destination, Libraries libraries, LaunchScript launchScript,
 			FileTime lastModifiedTime) throws IOException {
 		try (JarWriter writer = new JarWriter(destination, launchScript, lastModifiedTime)) {
 			write(sourceJar, libraries, writer, lastModifiedTime != null);
@@ -155,13 +179,26 @@ public class Repackager extends Packager {
 		}
 	}
 
-	private void renameFile(File file, File dest) {
+	/**
+     * Renames a file to a specified destination.
+     * 
+     * @param file the file to be renamed
+     * @param dest the destination file name
+     * @throws IllegalStateException if unable to rename the file
+     */
+    private void renameFile(File file, File dest) {
 		if (!file.renameTo(dest)) {
 			throw new IllegalStateException("Unable to rename '" + file + "' to '" + dest + "'");
 		}
 	}
 
-	private void deleteFile(File file) {
+	/**
+     * Deletes the specified file.
+     * 
+     * @param file the file to be deleted
+     * @throws IllegalStateException if unable to delete the file
+     */
+    private void deleteFile(File file) {
 		if (!file.delete()) {
 			throw new IllegalStateException("Unable to delete '" + file + "'");
 		}

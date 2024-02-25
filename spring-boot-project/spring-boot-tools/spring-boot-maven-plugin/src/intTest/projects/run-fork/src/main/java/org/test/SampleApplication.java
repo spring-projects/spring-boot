@@ -18,9 +18,17 @@ package org.test;
 
 import java.io.File;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		System.out.println("I haz been run from '" + new File("").getAbsolutePath() + "'");
 	}
 

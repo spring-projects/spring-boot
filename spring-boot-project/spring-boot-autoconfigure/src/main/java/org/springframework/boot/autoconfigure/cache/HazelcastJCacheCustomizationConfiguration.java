@@ -37,20 +37,40 @@ import org.springframework.core.io.Resource;
 @ConditionalOnClass(HazelcastInstance.class)
 class HazelcastJCacheCustomizationConfiguration {
 
-	@Bean
+	/**
+     * Returns a HazelcastPropertiesCustomizer object that customizes the Hazelcast properties based on the provided HazelcastInstance.
+     *
+     * @param hazelcastInstance the HazelcastInstance object used to customize the Hazelcast properties
+     * @return a HazelcastPropertiesCustomizer object that customizes the Hazelcast properties
+     */
+    @Bean
 	HazelcastPropertiesCustomizer hazelcastPropertiesCustomizer(ObjectProvider<HazelcastInstance> hazelcastInstance) {
 		return new HazelcastPropertiesCustomizer(hazelcastInstance.getIfUnique());
 	}
 
-	static class HazelcastPropertiesCustomizer implements JCachePropertiesCustomizer {
+	/**
+     * HazelcastPropertiesCustomizer class.
+     */
+    static class HazelcastPropertiesCustomizer implements JCachePropertiesCustomizer {
 
 		private final HazelcastInstance hazelcastInstance;
 
-		HazelcastPropertiesCustomizer(HazelcastInstance hazelcastInstance) {
+		/**
+         * Constructs a new HazelcastPropertiesCustomizer with the specified HazelcastInstance.
+         *
+         * @param hazelcastInstance the HazelcastInstance to be used by the customizer
+         */
+        HazelcastPropertiesCustomizer(HazelcastInstance hazelcastInstance) {
 			this.hazelcastInstance = hazelcastInstance;
 		}
 
-		@Override
+		/**
+         * Customizes the cache properties and properties for Hazelcast.
+         * 
+         * @param cacheProperties the cache properties
+         * @param properties the properties
+         */
+        @Override
 		public void customize(CacheProperties cacheProperties, Properties properties) {
 			Resource configLocation = cacheProperties.resolveConfigLocation(cacheProperties.getJcache().getConfig());
 			if (configLocation != null) {
@@ -62,7 +82,14 @@ class HazelcastJCacheCustomizationConfiguration {
 			}
 		}
 
-		private static URI toUri(Resource config) {
+		/**
+         * Converts a Resource object to a URI.
+         *
+         * @param config the Resource object to convert
+         * @return the URI representation of the Resource object
+         * @throws IllegalArgumentException if the URI cannot be obtained from the Resource object
+         */
+        private static URI toUri(Resource config) {
 			try {
 				return config.getURI();
 			}

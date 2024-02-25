@@ -49,10 +49,18 @@ public class LaunchScriptConfiguration implements Serializable {
 
 	private File script;
 
-	public LaunchScriptConfiguration() {
+	/**
+     * Creates a new instance of LaunchScriptConfiguration.
+     */
+    public LaunchScriptConfiguration() {
 	}
 
-	LaunchScriptConfiguration(AbstractArchiveTask archiveTask) {
+	/**
+     * Sets the launch script configuration for the given archive task.
+     * 
+     * @param archiveTask The archive task for which the launch script configuration is being set.
+     */
+    LaunchScriptConfiguration(AbstractArchiveTask archiveTask) {
 		Project project = archiveTask.getProject();
 		String baseName = archiveTask.getArchiveBaseName().get();
 		putIfMissing(this.properties, "initInfoProvides", baseName);
@@ -100,15 +108,34 @@ public class LaunchScriptConfiguration implements Serializable {
 		this.script = script;
 	}
 
-	private String removeLineBreaks(String string) {
+	/**
+     * Removes line breaks from the given string.
+     * 
+     * @param string the string from which line breaks are to be removed
+     * @return the string with line breaks removed, or null if the input string is null
+     */
+    private String removeLineBreaks(String string) {
 		return (string != null) ? WHITE_SPACE_PATTERN.matcher(string).replaceAll(" ") : null;
 	}
 
-	private String augmentLineBreaks(String string) {
+	/**
+     * Replaces line breaks in the given string with a newline character followed by a hash symbol and a space.
+     * 
+     * @param string the string to be processed
+     * @return the processed string with augmented line breaks, or null if the input string is null
+     */
+    private String augmentLineBreaks(String string) {
 		return (string != null) ? LINE_FEED_PATTERN.matcher(string).replaceAll("\n#  ") : null;
 	}
 
-	private void putIfMissing(Map<String, String> properties, String key, String... valueCandidates) {
+	/**
+     * Puts the specified key-value pair into the properties map if the key is missing.
+     * 
+     * @param properties the map of properties
+     * @param key the key to be checked and added if missing
+     * @param valueCandidates the array of candidate values to be added as the value for the key
+     */
+    private void putIfMissing(Map<String, String> properties, String key, String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
 				if (candidate != null && !candidate.isEmpty()) {

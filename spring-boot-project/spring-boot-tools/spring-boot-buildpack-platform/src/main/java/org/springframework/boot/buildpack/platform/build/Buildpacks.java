@@ -40,15 +40,31 @@ final class Buildpacks {
 
 	private final List<Buildpack> buildpacks;
 
-	private Buildpacks(List<Buildpack> buildpacks) {
+	/**
+     * Constructs a new instance of the Buildpacks class with the specified list of buildpacks.
+     * 
+     * @param buildpacks the list of buildpacks to be assigned to the Buildpacks object
+     */
+    private Buildpacks(List<Buildpack> buildpacks) {
 		this.buildpacks = buildpacks;
 	}
 
-	List<Buildpack> getBuildpacks() {
+	/**
+     * Returns the list of buildpacks.
+     *
+     * @return the list of buildpacks
+     */
+    List<Buildpack> getBuildpacks() {
 		return this.buildpacks;
 	}
 
-	void apply(IOConsumer<Layer> layers) throws IOException {
+	/**
+     * Applies the given layers to the buildpacks.
+     * 
+     * @param layers the layers to apply
+     * @throws IOException if an I/O error occurs
+     */
+    void apply(IOConsumer<Layer> layers) throws IOException {
 		if (!this.buildpacks.isEmpty()) {
 			for (Buildpack buildpack : this.buildpacks) {
 				buildpack.apply(layers);
@@ -57,11 +73,22 @@ final class Buildpacks {
 		}
 	}
 
-	void addOrderLayerContent(Layout layout) throws IOException {
+	/**
+     * Adds the content of the order.toml file to the specified layout.
+     * 
+     * @param layout The layout to which the content should be added.
+     * @throws IOException If an I/O error occurs while reading the order.toml file.
+     */
+    void addOrderLayerContent(Layout layout) throws IOException {
 		layout.file("/cnb/order.toml", Owner.ROOT, Content.of(getOrderToml()));
 	}
 
-	private String getOrderToml() {
+	/**
+     * Returns the order TOML string representation.
+     * 
+     * @return The order TOML string.
+     */
+    private String getOrderToml() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("[[order]]\n\n");
 		for (Buildpack buildpack : this.buildpacks) {
@@ -70,7 +97,13 @@ final class Buildpacks {
 		return builder.toString();
 	}
 
-	private void appendToOrderToml(StringBuilder builder, BuildpackCoordinates coordinates) {
+	/**
+     * Appends the given BuildpackCoordinates to the order.toml file.
+     * 
+     * @param builder The StringBuilder object representing the order.toml file.
+     * @param coordinates The BuildpackCoordinates object to be appended.
+     */
+    private void appendToOrderToml(StringBuilder builder, BuildpackCoordinates coordinates) {
 		builder.append("  [[order.group]]\n");
 		builder.append("    id = \"" + coordinates.getId() + "\"\n");
 		if (StringUtils.hasText(coordinates.getVersion())) {
@@ -79,7 +112,13 @@ final class Buildpacks {
 		builder.append("\n");
 	}
 
-	static Buildpacks of(List<Buildpack> buildpacks) {
+	/**
+     * Creates a new Buildpacks object from the given list of buildpacks.
+     * 
+     * @param buildpacks the list of buildpacks to be included in the Buildpacks object
+     * @return a new Buildpacks object containing the given buildpacks, or an empty Buildpacks object if the list is empty or null
+     */
+    static Buildpacks of(List<Buildpack> buildpacks) {
 		return CollectionUtils.isEmpty(buildpacks) ? EMPTY : new Buildpacks(buildpacks);
 	}
 

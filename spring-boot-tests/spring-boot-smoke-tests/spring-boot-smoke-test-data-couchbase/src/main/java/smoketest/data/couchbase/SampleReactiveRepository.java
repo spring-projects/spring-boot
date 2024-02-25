@@ -18,6 +18,9 @@ package smoketest.data.couchbase;
 
 import org.springframework.data.couchbase.repository.ReactiveCouchbaseRepository;
 
+/**
+ * SampleReactiveRepository interface.
+ */
 interface SampleReactiveRepository extends ReactiveCouchbaseRepository<SampleDocument, String> {
 
 }

@@ -18,6 +18,9 @@ package org.springframework.boot.docs.web.reactive.webflux;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
+/**
+ * UserRepository interface.
+ */
 interface UserRepository extends ReactiveCrudRepository<User, Long> {
 
 }

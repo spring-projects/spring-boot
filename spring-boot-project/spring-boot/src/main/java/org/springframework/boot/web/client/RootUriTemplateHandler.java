@@ -38,7 +38,13 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 
 	private final UriTemplateHandler handler;
 
-	protected RootUriTemplateHandler(UriTemplateHandler handler) {
+	/**
+     * Constructs a new RootUriTemplateHandler with the specified UriTemplateHandler.
+     *
+     * @param handler the UriTemplateHandler to be used for handling URI templates
+     * @throws IllegalArgumentException if the handler is null
+     */
+    protected RootUriTemplateHandler(UriTemplateHandler handler) {
 		Assert.notNull(handler, "Handler must not be null");
 		this.rootUri = null;
 		this.handler = handler;
@@ -64,24 +70,51 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 		this.handler = handler;
 	}
 
-	@Override
+	/**
+     * Expands the given URI template with the provided URI variables.
+     * 
+     * @param uriTemplate the URI template to expand
+     * @param uriVariables the map of URI variables to substitute in the template
+     * @return the expanded URI
+     */
+    @Override
 	public URI expand(String uriTemplate, Map<String, ?> uriVariables) {
 		return this.handler.expand(apply(uriTemplate), uriVariables);
 	}
 
-	@Override
+	/**
+     * Expands the given URI template with the provided URI variables.
+     * 
+     * @param uriTemplate the URI template to expand
+     * @param uriVariables the URI variables to be substituted in the template
+     * @return the expanded URI
+     */
+    @Override
 	public URI expand(String uriTemplate, Object... uriVariables) {
 		return this.handler.expand(apply(uriTemplate), uriVariables);
 	}
 
-	private String apply(String uriTemplate) {
+	/**
+     * Applies the given URI template by appending it to the root URI.
+     * If the URI template starts with a forward slash, it is appended directly to the root URI.
+     * Otherwise, the URI template is returned as is.
+     *
+     * @param uriTemplate the URI template to apply
+     * @return the applied URI template
+     */
+    private String apply(String uriTemplate) {
 		if (StringUtils.startsWithIgnoreCase(uriTemplate, "/")) {
 			return getRootUri() + uriTemplate;
 		}
 		return uriTemplate;
 	}
 
-	public String getRootUri() {
+	/**
+     * Returns the root URI.
+     *
+     * @return the root URI
+     */
+    public String getRootUri() {
 		return this.rootUri;
 	}
 

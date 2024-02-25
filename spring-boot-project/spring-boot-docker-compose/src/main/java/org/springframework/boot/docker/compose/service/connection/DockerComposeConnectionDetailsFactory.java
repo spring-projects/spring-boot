@@ -75,16 +75,35 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 		this.requiredClassNames = requiredClassNames;
 	}
 
-	@Override
+	/**
+     * Returns the connection details for the given DockerComposeConnectionSource.
+     * 
+     * @param source the DockerComposeConnectionSource to get the connection details for
+     * @return the connection details for the given DockerComposeConnectionSource, or null if the source is not accepted
+     */
+    @Override
 	public final D getConnectionDetails(DockerComposeConnectionSource source) {
 		return (!accept(source)) ? null : getDockerComposeConnectionDetails(source);
 	}
 
-	private boolean accept(DockerComposeConnectionSource source) {
+	/**
+     * Checks if the given DockerComposeConnectionSource is accepted based on the following criteria:
+     * - The required classes are available
+     * - The given predicate test passes for the source
+     *
+     * @param source The DockerComposeConnectionSource to be checked for acceptance
+     * @return true if the source is accepted, false otherwise
+     */
+    private boolean accept(DockerComposeConnectionSource source) {
 		return hasRequiredClasses() && this.predicate.test(source);
 	}
 
-	private boolean hasRequiredClasses() {
+	/**
+     * Checks if all the required classes are present.
+     * 
+     * @return true if all the required classes are present, false otherwise
+     */
+    private boolean hasRequiredClasses() {
 		return ObjectUtils.isEmpty(this.requiredClassNames) || Arrays.stream(this.requiredClassNames)
 			.allMatch((requiredClassName) -> ClassUtils.isPresent(requiredClassName, null));
 	}
@@ -115,7 +134,12 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 			this.origin = Origin.from(runningService);
 		}
 
-		@Override
+		/**
+         * Returns the origin of the DockerComposeConnectionDetails.
+         * 
+         * @return the origin of the DockerComposeConnectionDetails
+         */
+        @Override
 		public Origin getOrigin() {
 			return this.origin;
 		}

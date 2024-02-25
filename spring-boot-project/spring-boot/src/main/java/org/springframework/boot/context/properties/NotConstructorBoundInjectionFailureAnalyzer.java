@@ -39,12 +39,25 @@ import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 class NotConstructorBoundInjectionFailureAnalyzer
 		extends AbstractInjectionFailureAnalyzer<NoSuchBeanDefinitionException> implements Ordered {
 
-	@Override
+	/**
+     * Returns the order in which this failure analyzer should be executed.
+     * 
+     * @return the order of execution
+     */
+    @Override
 	public int getOrder() {
 		return 0;
 	}
 
-	@Override
+	/**
+     * Analyzes the failure caused by a non-constructor bound injection.
+     * 
+     * @param rootFailure the root cause of the failure
+     * @param cause the specific exception that caused the failure (NoSuchBeanDefinitionException)
+     * @param description a description of the failure
+     * @return a FailureAnalysis object containing information about the failure, or null if the failure cannot be analyzed
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause, String description) {
 		InjectionPoint injectionPoint = findInjectionPoint(rootFailure);
 		if (isConstructorBindingConfigurationProperties(injectionPoint)) {
@@ -60,19 +73,37 @@ class NotConstructorBoundInjectionFailureAnalyzer
 		return null;
 	}
 
-	private boolean isConstructorBindingConfigurationProperties(InjectionPoint injectionPoint) {
+	/**
+     * Checks if the given injection point is a constructor binding configuration properties.
+     * 
+     * @param injectionPoint the injection point to check
+     * @return true if the injection point is a constructor binding configuration properties, false otherwise
+     */
+    private boolean isConstructorBindingConfigurationProperties(InjectionPoint injectionPoint) {
 		return injectionPoint != null && injectionPoint.getMember() instanceof Constructor<?> constructor
 				&& isConstructorBindingConfigurationProperties(constructor);
 	}
 
-	private boolean isConstructorBindingConfigurationProperties(Constructor<?> constructor) {
+	/**
+     * Checks if the given constructor is configured with constructor binding for configuration properties.
+     * 
+     * @param constructor the constructor to check
+     * @return true if the constructor is configured with constructor binding for configuration properties, false otherwise
+     */
+    private boolean isConstructorBindingConfigurationProperties(Constructor<?> constructor) {
 		Class<?> declaringClass = constructor.getDeclaringClass();
 		BindMethod bindMethod = ConfigurationPropertiesBean.deduceBindMethod(declaringClass);
 		return MergedAnnotations.from(declaringClass, SearchStrategy.TYPE_HIERARCHY)
 			.isPresent(ConfigurationProperties.class) && bindMethod == BindMethod.VALUE_OBJECT;
 	}
 
-	private InjectionPoint findInjectionPoint(Throwable failure) {
+	/**
+     * Finds the injection point causing the failure.
+     * 
+     * @param failure the Throwable object representing the failure
+     * @return the InjectionPoint object representing the injection point causing the failure, or null if not found
+     */
+    private InjectionPoint findInjectionPoint(Throwable failure) {
 		UnsatisfiedDependencyException unsatisfiedDependencyException = findCause(failure,
 				UnsatisfiedDependencyException.class);
 		if (unsatisfiedDependencyException == null) {

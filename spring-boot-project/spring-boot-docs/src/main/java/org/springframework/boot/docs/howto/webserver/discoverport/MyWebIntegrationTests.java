@@ -20,6 +20,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
+/**
+ * MyWebIntegrationTests class.
+ */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MyWebIntegrationTests {
 

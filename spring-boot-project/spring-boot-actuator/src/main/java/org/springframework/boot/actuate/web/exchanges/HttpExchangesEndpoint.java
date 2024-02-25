@@ -44,7 +44,12 @@ public class HttpExchangesEndpoint {
 		this.repository = repository;
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves all HTTP exchanges from the repository.
+     *
+     * @return an instance of HttpExchangesDescriptor containing all the HTTP exchanges
+     */
+    @ReadOperation
 	public HttpExchangesDescriptor httpExchanges() {
 		return new HttpExchangesDescriptor(this.repository.findAll());
 	}
@@ -56,11 +61,21 @@ public class HttpExchangesEndpoint {
 
 		private final List<HttpExchange> exchanges;
 
-		private HttpExchangesDescriptor(List<HttpExchange> exchanges) {
+		/**
+         * Constructs a new HttpExchangesDescriptor with the specified list of HttpExchanges.
+         *
+         * @param exchanges the list of HttpExchanges to be included in the descriptor
+         */
+        private HttpExchangesDescriptor(List<HttpExchange> exchanges) {
 			this.exchanges = exchanges;
 		}
 
-		public List<HttpExchange> getExchanges() {
+		/**
+         * Returns the list of HttpExchange objects.
+         *
+         * @return the list of HttpExchange objects
+         */
+        public List<HttpExchange> getExchanges() {
 			return this.exchanges;
 		}
 

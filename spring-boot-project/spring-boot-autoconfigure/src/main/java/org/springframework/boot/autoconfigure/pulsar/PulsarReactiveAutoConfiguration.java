@@ -74,18 +74,36 @@ public class PulsarReactiveAutoConfiguration {
 
 	private final PulsarReactivePropertiesMapper propertiesMapper;
 
-	PulsarReactiveAutoConfiguration(PulsarProperties properties) {
+	/**
+     * Constructs a new PulsarReactiveAutoConfiguration instance with the specified PulsarProperties.
+     * 
+     * @param properties the PulsarProperties to be used for configuration
+     */
+    PulsarReactiveAutoConfiguration(PulsarProperties properties) {
 		this.properties = properties;
 		this.propertiesMapper = new PulsarReactivePropertiesMapper(properties);
 	}
 
-	@Bean
+	/**
+     * Creates a ReactivePulsarClient bean if no other bean of the same type is present.
+     * 
+     * @param pulsarClient the PulsarClient bean to be adapted
+     * @return the created ReactivePulsarClient bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	ReactivePulsarClient reactivePulsarClient(PulsarClient pulsarClient) {
 		return AdaptedReactivePulsarClientFactory.create(pulsarClient);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link CaffeineShadedProducerCacheProvider} if no other bean of type {@link ProducerCacheProvider} is present.
+     * This bean is conditionally created based on the presence of the class {@link CaffeineShadedProducerCacheProvider} and the property "spring.pulsar.producer.cache.enabled" being set to "true" or not present.
+     * The properties for the cache provider are obtained from the {@link PulsarProperties.Producer.Cache} configuration.
+     * 
+     * @return the created instance of {@link CaffeineShadedProducerCacheProvider}
+     */
+    @Bean
 	@ConditionalOnMissingBean(ProducerCacheProvider.class)
 	@ConditionalOnClass(CaffeineShadedProducerCacheProvider.class)
 	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
@@ -95,7 +113,13 @@ public class PulsarReactiveAutoConfiguration {
 				properties.getMaximumSize(), properties.getInitialCapacity());
 	}
 
-	@Bean
+	/**
+     * Creates a ReactiveMessageSenderCache bean if it is missing and the property "spring.pulsar.producer.cache.enabled" is set to true or is missing.
+     * 
+     * @param producerCacheProvider the provider for the ProducerCacheProvider bean
+     * @return the ReactiveMessageSenderCache bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
 	ReactiveMessageSenderCache reactivePulsarMessageSenderCache(
@@ -103,12 +127,29 @@ public class PulsarReactiveAutoConfiguration {
 		return reactivePulsarMessageSenderCache(producerCacheProvider.getIfAvailable());
 	}
 
-	private ReactiveMessageSenderCache reactivePulsarMessageSenderCache(ProducerCacheProvider producerCacheProvider) {
+	/**
+     * Creates a cache for the ReactiveMessageSender using the provided ProducerCacheProvider.
+     * If the producerCacheProvider is not null, it creates a cache using the provided provider.
+     * If the producerCacheProvider is null, it creates a cache using the default provider.
+     *
+     * @param producerCacheProvider the provider for the ProducerCache
+     * @return the ReactiveMessageSenderCache
+     */
+    private ReactiveMessageSenderCache reactivePulsarMessageSenderCache(ProducerCacheProvider producerCacheProvider) {
 		return (producerCacheProvider != null) ? AdaptedReactivePulsarClientFactory.createCache(producerCacheProvider)
 				: AdaptedReactivePulsarClientFactory.createCache();
 	}
 
-	@Bean
+	/**
+     * Creates a default {@link ReactivePulsarSenderFactory} bean if no other bean of the same type is present.
+     * 
+     * @param reactivePulsarClient the {@link ReactivePulsarClient} bean
+     * @param reactiveMessageSenderCache the {@link ReactiveMessageSenderCache} bean provider
+     * @param topicResolver the {@link TopicResolver} bean
+     * @param customizersProvider the {@link ReactiveMessageSenderBuilderCustomizer} bean provider
+     * @return the default {@link ReactivePulsarSenderFactory} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(ReactivePulsarSenderFactory.class)
 	DefaultReactivePulsarSenderFactory<?> reactivePulsarSenderFactory(ReactivePulsarClient reactivePulsarClient,
 			ObjectProvider<ReactiveMessageSenderCache> reactiveMessageSenderCache, TopicResolver topicResolver,
@@ -125,14 +166,27 @@ public class PulsarReactiveAutoConfiguration {
 			.build();
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Applies the customizers to the given ReactiveMessageSenderBuilder.
+     * 
+     * @param customizers the list of ReactiveMessageSenderBuilderCustomizer instances
+     * @param builder the ReactiveMessageSenderBuilder to customize
+     */
+    @SuppressWarnings("unchecked")
 	private void applyMessageSenderBuilderCustomizers(List<ReactiveMessageSenderBuilderCustomizer<?>> customizers,
 			ReactiveMessageSenderBuilder<?> builder) {
 		LambdaSafe.callbacks(ReactiveMessageSenderBuilderCustomizer.class, customizers, builder)
 			.invoke((customizer) -> customizer.customize(builder));
 	}
 
-	@Bean
+	/**
+     * Creates a default ReactivePulsarConsumerFactory bean if no other bean of type ReactivePulsarConsumerFactory is present.
+     * 
+     * @param pulsarReactivePulsarClient the ReactivePulsarClient bean
+     * @param customizersProvider the ObjectProvider for ReactiveMessageConsumerBuilderCustomizer beans
+     * @return the created DefaultReactivePulsarConsumerFactory bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(ReactivePulsarConsumerFactory.class)
 	DefaultReactivePulsarConsumerFactory<?> reactivePulsarConsumerFactory(
 			ReactivePulsarClient pulsarReactivePulsarClient,
@@ -145,14 +199,29 @@ public class PulsarReactiveAutoConfiguration {
 		return new DefaultReactivePulsarConsumerFactory<>(pulsarReactivePulsarClient, lambdaSafeCustomizers);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Applies the customizers to the given ReactiveMessageConsumerBuilder.
+     * 
+     * @param customizers the list of ReactiveMessageConsumerBuilderCustomizer instances
+     * @param builder the ReactiveMessageConsumerBuilder to customize
+     */
+    @SuppressWarnings("unchecked")
 	private void applyMessageConsumerBuilderCustomizers(List<ReactiveMessageConsumerBuilderCustomizer<?>> customizers,
 			ReactiveMessageConsumerBuilder<?> builder) {
 		LambdaSafe.callbacks(ReactiveMessageConsumerBuilderCustomizer.class, customizers, builder)
 			.invoke((customizer) -> customizer.customize(builder));
 	}
 
-	@Bean
+	/**
+     * Creates a {@link DefaultReactivePulsarListenerContainerFactory} bean if there is no existing bean with the name "reactivePulsarListenerContainerFactory".
+     * This factory is responsible for creating reactive listener containers for consuming messages from Apache Pulsar.
+     * 
+     * @param reactivePulsarConsumerFactory The {@link ReactivePulsarConsumerFactory} used for creating reactive Pulsar consumers.
+     * @param schemaResolver The {@link SchemaResolver} used for resolving the schema of the consumed messages.
+     * @param topicResolver The {@link TopicResolver} used for resolving the topic of the consumed messages.
+     * @return The created {@link DefaultReactivePulsarListenerContainerFactory} bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean(name = "reactivePulsarListenerContainerFactory")
 	DefaultReactivePulsarListenerContainerFactory<?> reactivePulsarListenerContainerFactory(
 			ReactivePulsarConsumerFactory<Object> reactivePulsarConsumerFactory, SchemaResolver schemaResolver,
@@ -164,7 +233,14 @@ public class PulsarReactiveAutoConfiguration {
 		return new DefaultReactivePulsarListenerContainerFactory<>(reactivePulsarConsumerFactory, containerProperties);
 	}
 
-	@Bean
+	/**
+     * Creates a default {@link ReactivePulsarReaderFactory} bean if no other bean of the same type is present.
+     * 
+     * @param reactivePulsarClient the {@link ReactivePulsarClient} bean
+     * @param customizersProvider the {@link ObjectProvider} of {@link ReactiveMessageReaderBuilderCustomizer} beans
+     * @return the created {@link DefaultReactivePulsarReaderFactory} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(ReactivePulsarReaderFactory.class)
 	DefaultReactivePulsarReaderFactory<?> reactivePulsarReaderFactory(ReactivePulsarClient reactivePulsarClient,
 			ObjectProvider<ReactiveMessageReaderBuilderCustomizer<?>> customizersProvider) {
@@ -176,21 +252,38 @@ public class PulsarReactiveAutoConfiguration {
 		return new DefaultReactivePulsarReaderFactory<>(reactivePulsarClient, lambdaSafeCustomizers);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Applies the customizers to the given ReactiveMessageReaderBuilder.
+     * 
+     * @param customizers the list of ReactiveMessageReaderBuilderCustomizer instances
+     * @param builder the ReactiveMessageReaderBuilder to customize
+     */
+    @SuppressWarnings("unchecked")
 	private void applyMessageReaderBuilderCustomizers(List<ReactiveMessageReaderBuilderCustomizer<?>> customizers,
 			ReactiveMessageReaderBuilder<?> builder) {
 		LambdaSafe.callbacks(ReactiveMessageReaderBuilderCustomizer.class, customizers, builder)
 			.invoke((customizer) -> customizer.customize(builder));
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of ReactivePulsarTemplate if no other bean of the same type is present.
+     * 
+     * @param reactivePulsarSenderFactory the ReactivePulsarSenderFactory used to create ReactivePulsarSender instances
+     * @param schemaResolver the SchemaResolver used to resolve schemas for messages
+     * @param topicResolver the TopicResolver used to resolve topics for messages
+     * @return a new instance of ReactivePulsarTemplate
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	ReactivePulsarTemplate<?> pulsarReactiveTemplate(ReactivePulsarSenderFactory<?> reactivePulsarSenderFactory,
 			SchemaResolver schemaResolver, TopicResolver topicResolver) {
 		return new ReactivePulsarTemplate<>(reactivePulsarSenderFactory, schemaResolver, topicResolver);
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * EnableReactivePulsarConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@EnableReactivePulsar
 	@ConditionalOnMissingBean(
 			name = PulsarAnnotationSupportBeanNames.REACTIVE_PULSAR_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)

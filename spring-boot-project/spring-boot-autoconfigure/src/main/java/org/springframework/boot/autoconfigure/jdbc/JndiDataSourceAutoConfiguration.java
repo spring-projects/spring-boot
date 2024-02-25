@@ -45,7 +45,17 @@ import org.springframework.jmx.support.JmxUtils;
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class JndiDataSourceAutoConfiguration {
 
-	@Bean(destroyMethod = "")
+	/**
+     * Creates a DataSource bean using the provided DataSourceProperties and ApplicationContext.
+     * If a DataSource bean with the same name already exists, it will not be created.
+     * The JNDI name specified in the DataSourceProperties is used to lookup the DataSource.
+     * If necessary, the MBean for the created DataSource is excluded from the ApplicationContext.
+     * 
+     * @param properties the DataSourceProperties containing the JNDI name
+     * @param context the ApplicationContext for excluding the MBean
+     * @return the created DataSource bean
+     */
+    @Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
 	public DataSource dataSource(DataSourceProperties properties, ApplicationContext context) {
 		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
@@ -54,7 +64,14 @@ public class JndiDataSourceAutoConfiguration {
 		return dataSource;
 	}
 
-	private void excludeMBeanIfNecessary(Object candidate, String beanName, ApplicationContext context) {
+	/**
+     * Excludes the specified MBean if necessary.
+     * 
+     * @param candidate the object to check if it is an MBean
+     * @param beanName the name of the bean
+     * @param context the application context
+     */
+    private void excludeMBeanIfNecessary(Object candidate, String beanName, ApplicationContext context) {
 		for (MBeanExporter mbeanExporter : context.getBeansOfType(MBeanExporter.class).values()) {
 			if (JmxUtils.isMBean(candidate.getClass())) {
 				mbeanExporter.addExcludedBean(beanName);

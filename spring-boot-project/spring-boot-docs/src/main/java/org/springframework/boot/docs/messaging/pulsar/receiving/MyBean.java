@@ -19,10 +19,19 @@ package org.springframework.boot.docs.messaging.pulsar.receiving;
 import org.springframework.pulsar.annotation.PulsarListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
-	@PulsarListener(topics = "someTopic")
+	/**
+     * This method is a listener for the "someTopic" topic.
+     * It processes the received message content.
+     *
+     * @param content the content of the message to be processed
+     */
+    @PulsarListener(topics = "someTopic")
 	public void processMessage(String content) {
 		// ...
 	}

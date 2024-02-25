@@ -23,10 +23,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 
+/**
+ * MyJmsConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyJmsConfiguration {
 
-	@Bean
+	/**
+     * Creates a JMS listener container factory with the given connection factory and configurer.
+     * 
+     * @param connectionFactory the connection factory to be used by the listener container factory
+     * @param configurer the configurer to be used by the listener container factory
+     * @return the created JMS listener container factory
+     */
+    @Bean
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
 			DefaultJmsListenerContainerFactoryConfigurer configurer) {
 		DefaultJmsListenerContainerFactory listenerFactory = new DefaultJmsListenerContainerFactory();

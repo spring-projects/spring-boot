@@ -34,11 +34,21 @@ public class HateoasProperties {
 	 */
 	private boolean useHalAsDefaultJsonMediaType = true;
 
-	public boolean getUseHalAsDefaultJsonMediaType() {
+	/**
+     * Returns the value of the useHalAsDefaultJsonMediaType property.
+     * 
+     * @return true if HAL is used as the default JSON media type, false otherwise.
+     */
+    public boolean getUseHalAsDefaultJsonMediaType() {
 		return this.useHalAsDefaultJsonMediaType;
 	}
 
-	public void setUseHalAsDefaultJsonMediaType(boolean useHalAsDefaultJsonMediaType) {
+	/**
+     * Sets the flag to use HAL as the default JSON media type.
+     * 
+     * @param useHalAsDefaultJsonMediaType true to use HAL as the default JSON media type, false otherwise
+     */
+    public void setUseHalAsDefaultJsonMediaType(boolean useHalAsDefaultJsonMediaType) {
 		this.useHalAsDefaultJsonMediaType = useHalAsDefaultJsonMediaType;
 	}
 

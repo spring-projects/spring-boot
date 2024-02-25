@@ -48,11 +48,23 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 
 	private final ConfigurableEnvironment environment;
 
-	MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(Environment environment) {
+	/**
+     * Constructs a new MutuallyExclusiveConfigurationPropertiesFailureAnalyzer with the specified environment.
+     * 
+     * @param environment the environment to be used by the failure analyzer
+     */
+    MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(Environment environment) {
 		this.environment = (ConfigurableEnvironment) environment;
 	}
 
-	@Override
+	/**
+     * Analyzes the failure caused by a MutuallyExclusiveConfigurationPropertiesException.
+     * 
+     * @param rootFailure The root cause of the failure.
+     * @param cause The MutuallyExclusiveConfigurationPropertiesException that caused the failure.
+     * @return A FailureAnalysis object containing the analysis of the failure.
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, MutuallyExclusiveConfigurationPropertiesException cause) {
 		List<Descriptor> descriptors = new ArrayList<>();
 		for (String name : cause.getConfiguredNames()) {
@@ -69,13 +81,24 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 				cause);
 	}
 
-	private List<Descriptor> getDescriptors(String propertyName) {
+	/**
+     * Retrieves a list of descriptors for a given property name.
+     * 
+     * @param propertyName the name of the property
+     * @return a list of descriptors for the property
+     */
+    private List<Descriptor> getDescriptors(String propertyName) {
 		return getPropertySources().filter((source) -> source.containsProperty(propertyName))
 			.map((source) -> Descriptor.get(source, propertyName))
 			.toList();
 	}
 
-	private Stream<PropertySource<?>> getPropertySources() {
+	/**
+     * Returns a stream of property sources.
+     * 
+     * @return a stream of property sources
+     */
+    private Stream<PropertySource<?>> getPropertySources() {
 		if (this.environment == null) {
 			return Stream.empty();
 		}
@@ -84,7 +107,14 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 			.filter((source) -> !ConfigurationPropertySources.isAttachedConfigurationPropertySource(source));
 	}
 
-	private void appendDetails(StringBuilder message, MutuallyExclusiveConfigurationPropertiesException cause,
+	/**
+     * Appends details about mutually exclusive configuration properties to the given message.
+     * 
+     * @param message the StringBuilder to append the details to
+     * @param cause the MutuallyExclusiveConfigurationPropertiesException that caused the failure
+     * @param descriptors the list of Descriptors representing the configured properties
+     */
+    private void appendDetails(StringBuilder message, MutuallyExclusiveConfigurationPropertiesException cause,
 			List<Descriptor> descriptors) {
 		descriptors.sort(Comparator.comparing((descriptor) -> descriptor.propertyName));
 		message.append(String.format("The following configuration properties are mutually exclusive:%n%n"));
@@ -99,11 +129,25 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 		configuredDescriptions.forEach(message::append);
 	}
 
-	private Set<String> sortedStrings(Collection<String> input) {
+	/**
+     * Returns a sorted set of strings based on the given input collection.
+     * 
+     * @param input the input collection of strings
+     * @return a sorted set of strings
+     */
+    private Set<String> sortedStrings(Collection<String> input) {
 		return sortedStrings(input, Function.identity());
 	}
 
-	private <S> Set<String> sortedStrings(Collection<S> input, Function<S, String> converter) {
+	/**
+     * Sorts a collection of objects and converts them to strings using a provided converter function.
+     * 
+     * @param <S> the type of objects in the collection
+     * @param input the collection of objects to be sorted and converted
+     * @param converter the function used to convert objects to strings
+     * @return a sorted set of strings converted from the input collection
+     */
+    private <S> Set<String> sortedStrings(Collection<S> input, Function<S, String> converter) {
 		TreeSet<String> results = new TreeSet<>();
 		for (S item : input) {
 			results.add(converter.apply(item));
@@ -111,18 +155,34 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 		return results;
 	}
 
-	private static final class Descriptor {
+	/**
+     * Descriptor class.
+     */
+    private static final class Descriptor {
 
 		private final String propertyName;
 
 		private final Origin origin;
 
-		private Descriptor(String propertyName, Origin origin) {
+		/**
+         * Constructs a new Descriptor with the specified property name and origin.
+         * 
+         * @param propertyName the name of the property
+         * @param origin the origin of the property
+         */
+        private Descriptor(String propertyName, Origin origin) {
 			this.propertyName = propertyName;
 			this.origin = origin;
 		}
 
-		static Descriptor get(PropertySource<?> source, String propertyName) {
+		/**
+         * Retrieves the descriptor for the specified property from the given property source.
+         * 
+         * @param source the property source to retrieve the descriptor from
+         * @param propertyName the name of the property
+         * @return the descriptor for the property
+         */
+        static Descriptor get(PropertySource<?> source, String propertyName) {
 			Origin origin = OriginLookup.getOrigin(source, propertyName);
 			return new Descriptor(propertyName, origin);
 		}

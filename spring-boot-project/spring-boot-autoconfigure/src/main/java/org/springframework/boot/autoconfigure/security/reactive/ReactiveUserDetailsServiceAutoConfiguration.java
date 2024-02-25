@@ -74,7 +74,14 @@ public class ReactiveUserDetailsServiceAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(ReactiveUserDetailsServiceAutoConfiguration.class);
 
-	@Bean
+	/**
+     * Creates a reactive user details service using the provided security properties and password encoder.
+     * 
+     * @param properties the security properties containing user details
+     * @param passwordEncoder the password encoder used to encode the user's password
+     * @return a reactive user details service with the specified user details
+     */
+    @Bean
 	public MapReactiveUserDetailsService reactiveUserDetailsService(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();
@@ -82,12 +89,30 @@ public class ReactiveUserDetailsServiceAutoConfiguration {
 		return new MapReactiveUserDetailsService(userDetails);
 	}
 
-	private UserDetails getUserDetails(SecurityProperties.User user, String password) {
+	/**
+     * Retrieves the user details for the given user and password.
+     *
+     * @param user     the security user object containing user details
+     * @param password the password for the user
+     * @return the user details object
+     */
+    private UserDetails getUserDetails(SecurityProperties.User user, String password) {
 		List<String> roles = user.getRoles();
 		return User.withUsername(user.getName()).password(password).roles(StringUtils.toStringArray(roles)).build();
 	}
 
-	private String getOrDeducePassword(SecurityProperties.User user, PasswordEncoder encoder) {
+	/**
+     * Retrieves the password for the given user or deduces it based on the provided encoder.
+     * If the user's password is generated, it logs the generated password.
+     * If an encoder is provided or the password matches the password algorithm pattern,
+     * it returns the password as is.
+     * Otherwise, it returns the password prefixed with NOOP_PASSWORD_PREFIX.
+     *
+     * @param user    the user for which to retrieve or deduce the password
+     * @param encoder the password encoder to use for deducing the password
+     * @return the retrieved or deduced password
+     */
+    private String getOrDeducePassword(SecurityProperties.User user, PasswordEncoder encoder) {
 		String password = user.getPassword();
 		if (user.isPasswordGenerated()) {
 			logger.info(String.format("%n%nUsing generated security password: %s%n", user.getPassword()));
@@ -98,43 +123,74 @@ public class ReactiveUserDetailsServiceAutoConfiguration {
 		return NOOP_PASSWORD_PREFIX + password;
 	}
 
-	static class RSocketEnabledOrReactiveWebApplication extends AnyNestedCondition {
+	/**
+     * RSocketEnabledOrReactiveWebApplication class.
+     */
+    static class RSocketEnabledOrReactiveWebApplication extends AnyNestedCondition {
 
-		RSocketEnabledOrReactiveWebApplication() {
+		/**
+         * Constructor for the RSocketEnabledOrReactiveWebApplication class.
+         * 
+         * @param configurationPhase The configuration phase for registering the bean.
+         */
+        RSocketEnabledOrReactiveWebApplication() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnBean(RSocketMessageHandler.class)
+		/**
+         * RSocketSecurityEnabledCondition class.
+         */
+        @ConditionalOnBean(RSocketMessageHandler.class)
 		static class RSocketSecurityEnabledCondition {
 
 		}
 
-		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+		/**
+         * ReactiveWebApplicationCondition class.
+         */
+        @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 		static class ReactiveWebApplicationCondition {
 
 		}
 
 	}
 
-	static final class MissingAlternativeOrUserPropertiesConfigured extends AnyNestedCondition {
+	/**
+     * MissingAlternativeOrUserPropertiesConfigured class.
+     */
+    static final class MissingAlternativeOrUserPropertiesConfigured extends AnyNestedCondition {
 
-		MissingAlternativeOrUserPropertiesConfigured() {
+		/**
+         * Constructs a new instance of the MissingAlternativeOrUserPropertiesConfigured class.
+         * 
+         * This constructor calls the super constructor with the ConfigurationPhase.PARSE_CONFIGURATION parameter.
+         */
+        MissingAlternativeOrUserPropertiesConfigured() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnMissingClass({
+		/**
+         * MissingAlternative class.
+         */
+        @ConditionalOnMissingClass({
 				"org.springframework.security.oauth2.client.registration.ClientRegistrationRepository",
 				"org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector" })
 		static final class MissingAlternative {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.user", name = "name")
+		/**
+         * NameConfigured class.
+         */
+        @ConditionalOnProperty(prefix = "spring.security.user", name = "name")
 		static final class NameConfigured {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.user", name = "password")
+		/**
+         * PasswordConfigured class.
+         */
+        @ConditionalOnProperty(prefix = "spring.security.user", name = "password")
 		static final class PasswordConfigured {
 
 		}

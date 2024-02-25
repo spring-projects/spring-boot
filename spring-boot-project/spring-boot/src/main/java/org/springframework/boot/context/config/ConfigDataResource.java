@@ -45,7 +45,12 @@ public abstract class ConfigDataResource {
 		this.optional = optional;
 	}
 
-	boolean isOptional() {
+	/**
+     * Returns a boolean value indicating whether the data is optional.
+     *
+     * @return true if the data is optional, false otherwise
+     */
+    boolean isOptional() {
 		return this.optional;
 	}
 

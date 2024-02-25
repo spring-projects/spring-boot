@@ -153,180 +153,401 @@ public class LiquibaseProperties {
 	 */
 	private UIService uiService;
 
-	public String getChangeLog() {
+	/**
+     * Returns the change log associated with the LiquibaseProperties object.
+     *
+     * @return the change log
+     */
+    public String getChangeLog() {
 		return this.changeLog;
 	}
 
-	public void setChangeLog(String changeLog) {
+	/**
+     * Sets the change log for Liquibase.
+     * 
+     * @param changeLog the change log to be set
+     * @throws IllegalArgumentException if the change log is null
+     */
+    public void setChangeLog(String changeLog) {
 		Assert.notNull(changeLog, "ChangeLog must not be null");
 		this.changeLog = changeLog;
 	}
 
-	public String getContexts() {
+	/**
+     * Returns the contexts of the LiquibaseProperties.
+     *
+     * @return the contexts of the LiquibaseProperties
+     */
+    public String getContexts() {
 		return this.contexts;
 	}
 
-	public void setContexts(String contexts) {
+	/**
+     * Sets the contexts for Liquibase.
+     * 
+     * @param contexts the contexts to set
+     */
+    public void setContexts(String contexts) {
 		this.contexts = contexts;
 	}
 
-	public String getDefaultSchema() {
+	/**
+     * Returns the default schema.
+     *
+     * @return the default schema
+     */
+    public String getDefaultSchema() {
 		return this.defaultSchema;
 	}
 
-	public void setDefaultSchema(String defaultSchema) {
+	/**
+     * Sets the default schema for the Liquibase properties.
+     * 
+     * @param defaultSchema the default schema to be set
+     */
+    public void setDefaultSchema(String defaultSchema) {
 		this.defaultSchema = defaultSchema;
 	}
 
-	public String getLiquibaseSchema() {
+	/**
+     * Returns the Liquibase schema.
+     * 
+     * @return the Liquibase schema
+     */
+    public String getLiquibaseSchema() {
 		return this.liquibaseSchema;
 	}
 
-	public void setLiquibaseSchema(String liquibaseSchema) {
+	/**
+     * Sets the Liquibase schema.
+     * 
+     * @param liquibaseSchema the Liquibase schema to set
+     */
+    public void setLiquibaseSchema(String liquibaseSchema) {
 		this.liquibaseSchema = liquibaseSchema;
 	}
 
-	public String getLiquibaseTablespace() {
+	/**
+     * Returns the Liquibase tablespace.
+     * 
+     * @return the Liquibase tablespace
+     */
+    public String getLiquibaseTablespace() {
 		return this.liquibaseTablespace;
 	}
 
-	public void setLiquibaseTablespace(String liquibaseTablespace) {
+	/**
+     * Sets the Liquibase tablespace.
+     * 
+     * @param liquibaseTablespace the Liquibase tablespace to set
+     */
+    public void setLiquibaseTablespace(String liquibaseTablespace) {
 		this.liquibaseTablespace = liquibaseTablespace;
 	}
 
-	public String getDatabaseChangeLogTable() {
+	/**
+     * Returns the name of the database change log table.
+     * 
+     * @return the name of the database change log table
+     */
+    public String getDatabaseChangeLogTable() {
 		return this.databaseChangeLogTable;
 	}
 
-	public void setDatabaseChangeLogTable(String databaseChangeLogTable) {
+	/**
+     * Sets the name of the database change log table.
+     * 
+     * @param databaseChangeLogTable the name of the database change log table
+     */
+    public void setDatabaseChangeLogTable(String databaseChangeLogTable) {
 		this.databaseChangeLogTable = databaseChangeLogTable;
 	}
 
-	public String getDatabaseChangeLogLockTable() {
+	/**
+     * Returns the name of the database change log lock table.
+     * 
+     * @return the name of the database change log lock table
+     */
+    public String getDatabaseChangeLogLockTable() {
 		return this.databaseChangeLogLockTable;
 	}
 
-	public void setDatabaseChangeLogLockTable(String databaseChangeLogLockTable) {
+	/**
+     * Sets the name of the database change log lock table.
+     * 
+     * @param databaseChangeLogLockTable the name of the database change log lock table
+     */
+    public void setDatabaseChangeLogLockTable(String databaseChangeLogLockTable) {
 		this.databaseChangeLogLockTable = databaseChangeLogLockTable;
 	}
 
-	public boolean isDropFirst() {
+	/**
+     * Returns a boolean value indicating whether the first change set should be dropped.
+     *
+     * @return true if the first change set should be dropped, false otherwise
+     */
+    public boolean isDropFirst() {
 		return this.dropFirst;
 	}
 
-	public void setDropFirst(boolean dropFirst) {
+	/**
+     * Sets the flag indicating whether to drop the first change set when applying changes.
+     * 
+     * @param dropFirst true to drop the first change set, false otherwise
+     */
+    public void setDropFirst(boolean dropFirst) {
 		this.dropFirst = dropFirst;
 	}
 
-	public boolean isClearChecksums() {
+	/**
+     * Returns a boolean value indicating whether the checksums should be cleared.
+     * 
+     * @return {@code true} if the checksums should be cleared, {@code false} otherwise
+     */
+    public boolean isClearChecksums() {
 		return this.clearChecksums;
 	}
 
-	public void setClearChecksums(boolean clearChecksums) {
+	/**
+     * Sets the flag to clear checksums.
+     * 
+     * @param clearChecksums the flag indicating whether to clear checksums
+     */
+    public void setClearChecksums(boolean clearChecksums) {
 		this.clearChecksums = clearChecksums;
 	}
 
-	public boolean isEnabled() {
+	/**
+     * Returns the current status of the enabled flag.
+     *
+     * @return {@code true} if the enabled flag is set to true, {@code false} otherwise.
+     */
+    public boolean isEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	/**
+     * Sets the enabled status of the LiquibaseProperties.
+     * 
+     * @param enabled the enabled status to be set
+     */
+    public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public String getUser() {
+	/**
+     * Returns the user associated with the Liquibase properties.
+     *
+     * @return the user associated with the Liquibase properties
+     */
+    public String getUser() {
 		return this.user;
 	}
 
-	public void setUser(String user) {
+	/**
+     * Sets the user for the LiquibaseProperties.
+     * 
+     * @param user the user to set
+     */
+    public void setUser(String user) {
 		this.user = user;
 	}
 
-	public String getPassword() {
+	/**
+     * Returns the password.
+     *
+     * @return the password
+     */
+    public String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	/**
+     * Sets the password for the LiquibaseProperties object.
+     * 
+     * @param password the password to be set
+     */
+    public void setPassword(String password) {
 		this.password = password;
 	}
 
-	public String getDriverClassName() {
+	/**
+     * Returns the driver class name.
+     * 
+     * @return the driver class name
+     */
+    public String getDriverClassName() {
 		return this.driverClassName;
 	}
 
-	public void setDriverClassName(String driverClassName) {
+	/**
+     * Sets the driver class name for the Liquibase properties.
+     * 
+     * @param driverClassName the driver class name to be set
+     */
+    public void setDriverClassName(String driverClassName) {
 		this.driverClassName = driverClassName;
 	}
 
-	public String getUrl() {
+	/**
+     * Returns the URL of the Liquibase database connection.
+     *
+     * @return the URL of the Liquibase database connection
+     */
+    public String getUrl() {
 		return this.url;
 	}
 
-	public void setUrl(String url) {
+	/**
+     * Sets the URL for the Liquibase database connection.
+     * 
+     * @param url the URL to set
+     */
+    public void setUrl(String url) {
 		this.url = url;
 	}
 
-	public String getLabelFilter() {
+	/**
+     * Returns the label filter used for Liquibase changesets.
+     * 
+     * @return the label filter
+     */
+    public String getLabelFilter() {
 		return this.labelFilter;
 	}
 
-	public void setLabelFilter(String labelFilter) {
+	/**
+     * Sets the label filter for Liquibase properties.
+     * 
+     * @param labelFilter the label filter to be set
+     */
+    public void setLabelFilter(String labelFilter) {
 		this.labelFilter = labelFilter;
 	}
 
-	public Map<String, String> getParameters() {
+	/**
+     * Returns the parameters of the LiquibaseProperties.
+     *
+     * @return a Map containing the parameters of the LiquibaseProperties
+     */
+    public Map<String, String> getParameters() {
 		return this.parameters;
 	}
 
-	public void setParameters(Map<String, String> parameters) {
+	/**
+     * Sets the parameters for the LiquibaseProperties.
+     * 
+     * @param parameters a Map containing the parameters to be set
+     */
+    public void setParameters(Map<String, String> parameters) {
 		this.parameters = parameters;
 	}
 
-	public File getRollbackFile() {
+	/**
+     * Returns the rollback file associated with the LiquibaseProperties object.
+     *
+     * @return the rollback file
+     */
+    public File getRollbackFile() {
 		return this.rollbackFile;
 	}
 
-	public void setRollbackFile(File rollbackFile) {
+	/**
+     * Sets the rollback file for Liquibase.
+     * 
+     * @param rollbackFile the rollback file to be set
+     */
+    public void setRollbackFile(File rollbackFile) {
 		this.rollbackFile = rollbackFile;
 	}
 
-	public boolean isTestRollbackOnUpdate() {
+	/**
+     * Returns the value indicating whether the test rollback on update is enabled or not.
+     * 
+     * @return {@code true} if the test rollback on update is enabled, {@code false} otherwise.
+     */
+    public boolean isTestRollbackOnUpdate() {
 		return this.testRollbackOnUpdate;
 	}
 
-	public void setTestRollbackOnUpdate(boolean testRollbackOnUpdate) {
+	/**
+     * Sets the flag indicating whether to test rollback on update.
+     * 
+     * @param testRollbackOnUpdate the flag indicating whether to test rollback on update
+     */
+    public void setTestRollbackOnUpdate(boolean testRollbackOnUpdate) {
 		this.testRollbackOnUpdate = testRollbackOnUpdate;
 	}
 
-	public String getTag() {
+	/**
+     * Returns the tag associated with the LiquibaseProperties object.
+     *
+     * @return the tag associated with the LiquibaseProperties object
+     */
+    public String getTag() {
 		return this.tag;
 	}
 
-	public void setTag(String tag) {
+	/**
+     * Sets the tag for the LiquibaseProperties.
+     * 
+     * @param tag the tag to be set
+     */
+    public void setTag(String tag) {
 		this.tag = tag;
 	}
 
-	public ShowSummary getShowSummary() {
+	/**
+     * Returns the show summary of the LiquibaseProperties.
+     *
+     * @return the show summary of the LiquibaseProperties
+     */
+    public ShowSummary getShowSummary() {
 		return this.showSummary;
 	}
 
-	public void setShowSummary(ShowSummary showSummary) {
+	/**
+     * Sets the show summary for the LiquibaseProperties.
+     * 
+     * @param showSummary the show summary to be set
+     */
+    public void setShowSummary(ShowSummary showSummary) {
 		this.showSummary = showSummary;
 	}
 
-	public ShowSummaryOutput getShowSummaryOutput() {
+	/**
+     * Returns the ShowSummaryOutput object.
+     *
+     * @return the ShowSummaryOutput object
+     */
+    public ShowSummaryOutput getShowSummaryOutput() {
 		return this.showSummaryOutput;
 	}
 
-	public void setShowSummaryOutput(ShowSummaryOutput showSummaryOutput) {
+	/**
+     * Sets the ShowSummaryOutput object.
+     * 
+     * @param showSummaryOutput the ShowSummaryOutput object to be set
+     */
+    public void setShowSummaryOutput(ShowSummaryOutput showSummaryOutput) {
 		this.showSummaryOutput = showSummaryOutput;
 	}
 
-	public UIService getUiService() {
+	/**
+     * Returns the UI service associated with this LiquibaseProperties instance.
+     *
+     * @return the UI service
+     */
+    public UIService getUiService() {
 		return this.uiService;
 	}
 
-	public void setUiService(UIService uiService) {
+	/**
+     * Sets the UI service for the LiquibaseProperties class.
+     * 
+     * @param uiService the UI service to be set
+     */
+    public void setUiService(UIService uiService) {
 		this.uiService = uiService;
 	}
 

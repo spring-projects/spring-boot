@@ -16,9 +16,17 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.mockingbeans.bean;
 
+/**
+ * Reverser class.
+ */
 class Reverser {
 
-	String getReverseValue() {
+	/**
+     * Returns the reverse value of a string.
+     *
+     * @return the reverse value of the string, or null if the string is null.
+     */
+    String getReverseValue() {
 		return null;
 	}
 

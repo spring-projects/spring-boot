@@ -19,6 +19,9 @@ package smoketest.data.redis;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+/**
+ * PersonHash class.
+ */
 @RedisHash("persons")
 public class PersonHash {
 
@@ -27,19 +30,39 @@ public class PersonHash {
 
 	private String description;
 
-	public String getId() {
+	/**
+     * Returns the ID of the person.
+     *
+     * @return the ID of the person
+     */
+    public String getId() {
 		return this.id;
 	}
 
-	public void setId(String id) {
+	/**
+     * Sets the ID of the person.
+     * 
+     * @param id the ID to set
+     */
+    public void setId(String id) {
 		this.id = id;
 	}
 
-	public String getDescription() {
+	/**
+     * Returns the description of the PersonHash object.
+     *
+     * @return the description of the PersonHash object
+     */
+    public String getDescription() {
 		return this.description;
 	}
 
-	public void setDescription(String description) {
+	/**
+     * Sets the description of the person.
+     * 
+     * @param description the description to be set
+     */
+    public void setDescription(String description) {
 		this.description = description;
 	}
 

@@ -41,14 +41,26 @@ class RestTemplateBuilderClientHttpRequestInitializer implements ClientHttpReque
 
 	private final Set<RestTemplateRequestCustomizer<?>> requestCustomizers;
 
-	RestTemplateBuilderClientHttpRequestInitializer(BasicAuthentication basicAuthentication,
+	/**
+     * Constructs a new RestTemplateBuilderClientHttpRequestInitializer with the specified parameters.
+     *
+     * @param basicAuthentication the BasicAuthentication object used for authentication
+     * @param defaultHeaders the default headers to be added to each request
+     * @param requestCustomizers the set of customizers to be applied to each request
+     */
+    RestTemplateBuilderClientHttpRequestInitializer(BasicAuthentication basicAuthentication,
 			Map<String, List<String>> defaultHeaders, Set<RestTemplateRequestCustomizer<?>> requestCustomizers) {
 		this.basicAuthentication = basicAuthentication;
 		this.defaultHeaders = defaultHeaders;
 		this.requestCustomizers = requestCustomizers;
 	}
 
-	@Override
+	/**
+     * Initializes the ClientHttpRequest with the necessary headers and customizations.
+     * 
+     * @param request the ClientHttpRequest to be initialized
+     */
+    @Override
 	@SuppressWarnings("unchecked")
 	public void initialize(ClientHttpRequest request) {
 		HttpHeaders headers = request.getHeaders();

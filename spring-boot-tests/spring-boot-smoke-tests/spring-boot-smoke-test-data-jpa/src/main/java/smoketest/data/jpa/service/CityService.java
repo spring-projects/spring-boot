@@ -22,6 +22,9 @@ import smoketest.data.jpa.domain.HotelSummary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+/**
+ * CityService interface.
+ */
 public interface CityService {
 
 	Page<City> findCities(CitySearchCriteria criteria, Pageable pageable);

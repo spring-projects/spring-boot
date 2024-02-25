@@ -79,16 +79,34 @@ public class RemoteClientConfiguration implements InitializingBean {
 	@Value("${remoteUrl}")
 	private String remoteUrl;
 
-	public RemoteClientConfiguration(DevToolsProperties properties) {
+	/**
+     * Constructs a new RemoteClientConfiguration object with the specified DevToolsProperties.
+     * 
+     * @param properties the DevToolsProperties to be used for configuring the remote client
+     */
+    public RemoteClientConfiguration(DevToolsProperties properties) {
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Returns a new instance of PropertySourcesPlaceholderConfigurer.
+     * 
+     * @return a new instance of PropertySourcesPlaceholderConfigurer
+     */
+    @Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
 
-	@Bean
+	/**
+     * Returns the ClientHttpRequestFactory bean used for creating HTTP requests to remote servers.
+     * 
+     * This method creates a SimpleClientHttpRequestFactory and sets a proxy if configured in the application properties.
+     * It also adds a security interceptor to the list of interceptors.
+     * 
+     * @return the ClientHttpRequestFactory bean
+     */
+    @Bean
 	public ClientHttpRequestFactory clientHttpRequestFactory() {
 		List<ClientHttpRequestInterceptor> interceptors = Collections.singletonList(getSecurityInterceptor());
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
@@ -100,7 +118,18 @@ public class RemoteClientConfiguration implements InitializingBean {
 		return new InterceptingClientHttpRequestFactory(requestFactory, interceptors);
 	}
 
-	private ClientHttpRequestInterceptor getSecurityInterceptor() {
+	/**
+     * Returns a security interceptor for the remote client.
+     * The interceptor adds a secret header to the HTTP request for authentication.
+     * The secret header name and value are retrieved from the remote properties.
+     * 
+     * @return the security interceptor
+     * @throws IllegalStateException if the secret value is null
+     * @see RemoteDevToolsProperties#getSecretHeaderName()
+     * @see RemoteDevToolsProperties#getSecret()
+     * @see HttpHeaderInterceptor
+     */
+    private ClientHttpRequestInterceptor getSecurityInterceptor() {
 		RemoteDevToolsProperties remoteProperties = this.properties.getRemote();
 		String secretHeaderName = remoteProperties.getSecretHeaderName();
 		String secret = remoteProperties.getSecret();
@@ -109,12 +138,22 @@ public class RemoteClientConfiguration implements InitializingBean {
 		return new HttpHeaderInterceptor(secretHeaderName, secret);
 	}
 
-	@Override
+	/**
+     * This method is called after all the properties have been set for the RemoteClientConfiguration class.
+     * It logs any warnings that may have occurred during the initialization process.
+     */
+    @Override
 	public void afterPropertiesSet() {
 		logWarnings();
 	}
 
-	private void logWarnings() {
+	/**
+     * Logs any warnings related to the remote client configuration.
+     * 
+     * This method checks if remote restart is disabled and logs a warning if it is.
+     * It also checks if the connection URL is insecure and logs a warning if it is not using HTTPS.
+     */
+    private void logWarnings() {
 		RemoteDevToolsProperties remoteProperties = this.properties.getRemote();
 		if (!remoteProperties.getRestart().isEnabled()) {
 			logger.warn("Remote restart is disabled.");
@@ -141,14 +180,26 @@ public class RemoteClientConfiguration implements InitializingBean {
 
 		private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-		LiveReloadConfiguration(DevToolsProperties properties, ClientHttpRequestFactory clientHttpRequestFactory,
+		/**
+         * Constructs a new LiveReloadConfiguration object with the specified properties, clientHttpRequestFactory, and remoteUrl.
+         * 
+         * @param properties the DevToolsProperties object containing the configuration properties for the LiveReload server
+         * @param clientHttpRequestFactory the ClientHttpRequestFactory object used for making HTTP requests
+         * @param remoteUrl the URL of the remote server to connect to for LiveReload functionality
+         */
+        LiveReloadConfiguration(DevToolsProperties properties, ClientHttpRequestFactory clientHttpRequestFactory,
 				@Value("${remoteUrl}") String remoteUrl) {
 			this.properties = properties;
 			this.clientHttpRequestFactory = clientHttpRequestFactory;
 			this.remoteUrl = remoteUrl;
 		}
 
-		@Bean
+		/**
+         * Creates a new instance of LiveReloadServer.
+         * 
+         * @return the LiveReloadServer instance
+         */
+        @Bean
 		@RestartScope
 		@ConditionalOnMissingBean
 		LiveReloadServer liveReloadServer() {
@@ -156,7 +207,13 @@ public class RemoteClientConfiguration implements InitializingBean {
 					Restarter.getInstance().getThreadFactory());
 		}
 
-		@Bean
+		/**
+         * Creates an ApplicationListener that listens for ClassPathChangedEvent and triggers a live reload if a change is detected.
+         * 
+         * @param optionalLiveReloadServer an optional LiveReloadServer instance
+         * @return the ApplicationListener that triggers the live reload
+         */
+        @Bean
 		ApplicationListener<ClassPathChangedEvent> liveReloadTriggeringClassPathChangedEventListener(
 				OptionalLiveReloadServer optionalLiveReloadServer) {
 			return (event) -> {
@@ -166,12 +223,23 @@ public class RemoteClientConfiguration implements InitializingBean {
 			};
 		}
 
-		@Bean
+		/**
+         * Creates an OptionalLiveReloadServer object with the provided LiveReloadServer object.
+         * 
+         * @param liveReloadServer the ObjectProvider for LiveReloadServer
+         * @return an OptionalLiveReloadServer object with the provided LiveReloadServer object, or an empty Optional if LiveReloadServer is not available
+         */
+        @Bean
 		OptionalLiveReloadServer optionalLiveReloadServer(ObjectProvider<LiveReloadServer> liveReloadServer) {
 			return new OptionalLiveReloadServer(liveReloadServer.getIfAvailable());
 		}
 
-		final ExecutorService getExecutor() {
+		/**
+         * Returns the ExecutorService used by the LiveReloadConfiguration.
+         *
+         * @return the ExecutorService used by the LiveReloadConfiguration
+         */
+        final ExecutorService getExecutor() {
 			return this.executor;
 		}
 
@@ -186,11 +254,23 @@ public class RemoteClientConfiguration implements InitializingBean {
 
 		private final DevToolsProperties properties;
 
-		RemoteRestartClientConfiguration(DevToolsProperties properties) {
+		/**
+         * Initializes a new instance of the RemoteRestartClientConfiguration class.
+         * 
+         * @param properties the DevToolsProperties object containing the configuration properties for the remote restart client
+         */
+        RemoteRestartClientConfiguration(DevToolsProperties properties) {
 			this.properties = properties;
 		}
 
-		@Bean
+		/**
+         * Creates a ClassPathFileSystemWatcher object with the given dependencies.
+         * 
+         * @param fileSystemWatcherFactory The factory for creating FileSystemWatcher objects.
+         * @param classPathRestartStrategy The strategy for restarting the classpath.
+         * @return The created ClassPathFileSystemWatcher object.
+         */
+        @Bean
 		ClassPathFileSystemWatcher classPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
 				ClassPathRestartStrategy classPathRestartStrategy) {
 			DefaultRestartInitializer restartInitializer = new DefaultRestartInitializer();
@@ -201,12 +281,22 @@ public class RemoteClientConfiguration implements InitializingBean {
 			return new ClassPathFileSystemWatcher(fileSystemWatcherFactory, classPathRestartStrategy, urls);
 		}
 
-		@Bean
+		/**
+         * Returns a factory for creating a FileSystemWatcher.
+         *
+         * @return the FileSystemWatcherFactory
+         */
+        @Bean
 		FileSystemWatcherFactory getFileSystemWatcherFactory() {
 			return this::newFileSystemWatcher;
 		}
 
-		private FileSystemWatcher newFileSystemWatcher() {
+		/**
+         * Creates a new instance of FileSystemWatcher with the specified restart properties.
+         * 
+         * @return a new instance of FileSystemWatcher
+         */
+        private FileSystemWatcher newFileSystemWatcher() {
 			Restart restartProperties = this.properties.getRestart();
 			FileSystemWatcher watcher = new FileSystemWatcher(true, restartProperties.getPollInterval(),
 					restartProperties.getQuietPeriod());
@@ -217,12 +307,25 @@ public class RemoteClientConfiguration implements InitializingBean {
 			return watcher;
 		}
 
-		@Bean
+		/**
+         * Returns a new instance of ClassPathRestartStrategy.
+         * 
+         * @return a new instance of ClassPathRestartStrategy
+         */
+        @Bean
 		ClassPathRestartStrategy classPathRestartStrategy() {
 			return new PatternClassPathRestartStrategy(this.properties.getRestart().getAllExclude());
 		}
 
-		@Bean
+		/**
+         * Creates a ClassPathChangeUploader bean with the provided ClientHttpRequestFactory and remoteUrl.
+         * The remoteUrl is obtained from the application properties and is used to construct the URL for restarting the remote server.
+         * 
+         * @param requestFactory the ClientHttpRequestFactory used for creating HTTP requests
+         * @param remoteUrl the URL of the remote server obtained from the application properties
+         * @return a ClassPathChangeUploader bean configured with the remote URL and request factory
+         */
+        @Bean
 		ClassPathChangeUploader classPathChangeUploader(ClientHttpRequestFactory requestFactory,
 				@Value("${remoteUrl}") String remoteUrl) {
 			String url = remoteUrl + this.properties.getRemote().getContextPath() + "/restart";

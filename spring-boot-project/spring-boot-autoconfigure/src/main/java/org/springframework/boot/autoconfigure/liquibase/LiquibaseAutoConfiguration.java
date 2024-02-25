@@ -76,26 +76,51 @@ import org.springframework.util.StringUtils;
 @ImportRuntimeHints(LiquibaseAutoConfigurationRuntimeHints.class)
 public class LiquibaseAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a LiquibaseSchemaManagementProvider bean that provides the default DDL mode for Liquibase.
+     * 
+     * @param liquibases the ObjectProvider for SpringLiquibase instances
+     * @return the LiquibaseSchemaManagementProvider bean
+     */
+    @Bean
 	public LiquibaseSchemaManagementProvider liquibaseDefaultDdlModeProvider(
 			ObjectProvider<SpringLiquibase> liquibases) {
 		return new LiquibaseSchemaManagementProvider(liquibases);
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * LiquibaseConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ConnectionCallback.class)
 	@ConditionalOnMissingBean(SpringLiquibase.class)
 	@EnableConfigurationProperties(LiquibaseProperties.class)
 	public static class LiquibaseConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of {@link PropertiesLiquibaseConnectionDetails} if no bean of type {@link LiquibaseConnectionDetails} is present.
+         * 
+         * @param properties The {@link LiquibaseProperties} object containing the liquibase configuration properties.
+         * @param jdbcConnectionDetails The {@link JdbcConnectionDetails} object provider.
+         * @return The {@link PropertiesLiquibaseConnectionDetails} object.
+         */
+        @Bean
 		@ConditionalOnMissingBean(LiquibaseConnectionDetails.class)
 		PropertiesLiquibaseConnectionDetails liquibaseConnectionDetails(LiquibaseProperties properties,
 				ObjectProvider<JdbcConnectionDetails> jdbcConnectionDetails) {
 			return new PropertiesLiquibaseConnectionDetails(properties);
 		}
 
-		@Bean
+		/**
+         * Creates and configures a SpringLiquibase bean.
+         *
+         * @param dataSource the data source object provider
+         * @param liquibaseDataSource the liquibase data source object provider
+         * @param properties the liquibase properties
+         * @param connectionDetails the liquibase connection details
+         * @return the configured SpringLiquibase bean
+         */
+        @Bean
 		public SpringLiquibase liquibase(ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource, LiquibaseProperties properties,
 				LiquibaseConnectionDetails connectionDetails) {
@@ -129,7 +154,15 @@ public class LiquibaseAutoConfiguration {
 			return liquibase;
 		}
 
-		private SpringLiquibase createSpringLiquibase(DataSource liquibaseDataSource, DataSource dataSource,
+		/**
+         * Creates a SpringLiquibase instance for performing database migrations.
+         * 
+         * @param liquibaseDataSource the DataSource for Liquibase
+         * @param dataSource the main DataSource for the application
+         * @param connectionDetails the LiquibaseConnectionDetails containing the connection details
+         * @return a SpringLiquibase instance configured with the appropriate DataSource
+         */
+        private SpringLiquibase createSpringLiquibase(DataSource liquibaseDataSource, DataSource dataSource,
 				LiquibaseConnectionDetails connectionDetails) {
 			DataSource migrationDataSource = getMigrationDataSource(liquibaseDataSource, dataSource, connectionDetails);
 			SpringLiquibase liquibase = (migrationDataSource == liquibaseDataSource
@@ -139,7 +172,20 @@ public class LiquibaseAutoConfiguration {
 			return liquibase;
 		}
 
-		private DataSource getMigrationDataSource(DataSource liquibaseDataSource, DataSource dataSource,
+		/**
+         * Returns the migration DataSource to be used by Liquibase.
+         * If a liquibaseDataSource is provided, it will be returned.
+         * Otherwise, if a JDBC URL is provided in the connectionDetails, a new DataSource will be created using the SimpleDriverDataSource class.
+         * If a username is provided in the connectionDetails and a dataSource is provided, a new DataSource will be created using the SimpleDriverDataSource class derived from the provided dataSource.
+         * If none of the above conditions are met and a dataSource is not provided, an IllegalStateException will be thrown.
+         *
+         * @param liquibaseDataSource The DataSource to be used by Liquibase, if provided.
+         * @param dataSource The DataSource to be used if a liquibaseDataSource is not provided and a username is provided in the connectionDetails.
+         * @param connectionDetails The LiquibaseConnectionDetails containing the JDBC URL and username.
+         * @return The migration DataSource to be used by Liquibase.
+         * @throws IllegalStateException If a dataSource is not provided and a liquibaseDataSource is not provided and a username is not provided in the connectionDetails.
+         */
+        private DataSource getMigrationDataSource(DataSource liquibaseDataSource, DataSource dataSource,
 				LiquibaseConnectionDetails connectionDetails) {
 			if (liquibaseDataSource != null) {
 				return liquibaseDataSource;
@@ -162,7 +208,13 @@ public class LiquibaseAutoConfiguration {
 			return dataSource;
 		}
 
-		private void applyConnectionDetails(LiquibaseConnectionDetails connectionDetails,
+		/**
+         * Applies the connection details to the given DataSourceBuilder.
+         * 
+         * @param connectionDetails the LiquibaseConnectionDetails object containing the connection details
+         * @param builder the DataSourceBuilder to apply the connection details to
+         */
+        private void applyConnectionDetails(LiquibaseConnectionDetails connectionDetails,
 				DataSourceBuilder<?> builder) {
 			builder.username(connectionDetails.getUsername());
 			builder.password(connectionDetails.getPassword());
@@ -174,32 +226,58 @@ public class LiquibaseAutoConfiguration {
 
 	}
 
-	static final class LiquibaseDataSourceCondition extends AnyNestedCondition {
+	/**
+     * LiquibaseDataSourceCondition class.
+     */
+    static final class LiquibaseDataSourceCondition extends AnyNestedCondition {
 
-		LiquibaseDataSourceCondition() {
+		/**
+         * Constructs a new LiquibaseDataSourceCondition with the specified configuration phase.
+         * 
+         * @param configurationPhase the configuration phase for the condition
+         */
+        LiquibaseDataSourceCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnBean(DataSource.class)
+		/**
+         * DataSourceBeanCondition class.
+         */
+        @ConditionalOnBean(DataSource.class)
 		private static final class DataSourceBeanCondition {
 
 		}
 
-		@ConditionalOnBean(JdbcConnectionDetails.class)
+		/**
+         * JdbcConnectionDetailsCondition class.
+         */
+        @ConditionalOnBean(JdbcConnectionDetails.class)
 		private static final class JdbcConnectionDetailsCondition {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.liquibase", name = "url")
+		/**
+         * LiquibaseUrlCondition class.
+         */
+        @ConditionalOnProperty(prefix = "spring.liquibase", name = "url")
 		private static final class LiquibaseUrlCondition {
 
 		}
 
 	}
 
-	static class LiquibaseAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * LiquibaseAutoConfigurationRuntimeHints class.
+     */
+    static class LiquibaseAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
 
-		@Override
+		/**
+         * Registers the runtime hints for Liquibase auto configuration.
+         *
+         * @param hints       the runtime hints to register
+         * @param classLoader the class loader to use for resource loading
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources().registerPattern("db/changelog/*");
 		}
@@ -213,26 +291,51 @@ public class LiquibaseAutoConfiguration {
 
 		private final LiquibaseProperties properties;
 
-		PropertiesLiquibaseConnectionDetails(LiquibaseProperties properties) {
+		/**
+         * Constructs a new instance of PropertiesLiquibaseConnectionDetails with the specified LiquibaseProperties.
+         *
+         * @param properties the LiquibaseProperties to be set for this instance
+         */
+        PropertiesLiquibaseConnectionDetails(LiquibaseProperties properties) {
 			this.properties = properties;
 		}
 
-		@Override
+		/**
+         * Returns the username for the connection details.
+         * 
+         * @return the username
+         */
+        @Override
 		public String getUsername() {
 			return this.properties.getUser();
 		}
 
-		@Override
+		/**
+         * Returns the password for the Liquibase connection details.
+         *
+         * @return the password for the Liquibase connection details
+         */
+        @Override
 		public String getPassword() {
 			return this.properties.getPassword();
 		}
 
-		@Override
+		/**
+         * Returns the JDBC URL for the connection.
+         *
+         * @return the JDBC URL
+         */
+        @Override
 		public String getJdbcUrl() {
 			return this.properties.getUrl();
 		}
 
-		@Override
+		/**
+         * Returns the driver class name for the connection.
+         * 
+         * @return the driver class name
+         */
+        @Override
 		public String getDriverClassName() {
 			String driverClassName = this.properties.getDriverClassName();
 			return (driverClassName != null) ? driverClassName : LiquibaseConnectionDetails.super.getDriverClassName();

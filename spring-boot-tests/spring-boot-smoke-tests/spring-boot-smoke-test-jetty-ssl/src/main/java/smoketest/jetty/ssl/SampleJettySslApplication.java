@@ -19,10 +19,18 @@ package smoketest.jetty.ssl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleJettySslApplication class.
+ */
 @SpringBootApplication
 public class SampleJettySslApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleJettySslApplication class.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleJettySslApplication.class, args);
 	}
 

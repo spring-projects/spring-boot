@@ -37,37 +37,74 @@ class ForkProcessCommand extends RunProcessCommand {
 
 	private final Command command;
 
-	ForkProcessCommand(Command command) {
+	/**
+     * Creates a new instance of ForkProcessCommand with the specified command.
+     * 
+     * @param command the command to be executed
+     */
+    ForkProcessCommand(Command command) {
 		super(new JavaExecutable().toString());
 		this.command = command;
 	}
 
-	@Override
+	/**
+     * Returns the name of the command.
+     * 
+     * @return the name of the command
+     */
+    @Override
 	public String getName() {
 		return this.command.getName();
 	}
 
-	@Override
+	/**
+     * Returns the description of the command.
+     * 
+     * @return the description of the command
+     */
+    @Override
 	public String getDescription() {
 		return this.command.getDescription();
 	}
 
-	@Override
+	/**
+     * Returns the usage help for the ForkProcessCommand.
+     * 
+     * @return the usage help for the ForkProcessCommand
+     */
+    @Override
 	public String getUsageHelp() {
 		return this.command.getUsageHelp();
 	}
 
-	@Override
+	/**
+     * Returns the help information for the command.
+     * 
+     * @return the help information for the command
+     */
+    @Override
 	public String getHelp() {
 		return this.command.getHelp();
 	}
 
-	@Override
+	/**
+     * Returns the collection of option help for the command.
+     * 
+     * @return the collection of option help
+     */
+    @Override
 	public Collection<OptionHelp> getOptionsHelp() {
 		return this.command.getOptionsHelp();
 	}
 
-	@Override
+	/**
+     * Runs the specified command with the given arguments.
+     * 
+     * @param args the arguments to be passed to the command
+     * @return the exit status of the command
+     * @throws Exception if an error occurs while running the command
+     */
+    @Override
 	public ExitStatus run(String... args) throws Exception {
 		List<String> fullArgs = new ArrayList<>();
 		fullArgs.add("-cp");

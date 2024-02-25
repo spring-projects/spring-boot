@@ -31,7 +31,13 @@ class SslBundleRabbitConnectionFactoryBean extends RabbitConnectionFactoryBean {
 
 	private boolean enableHostnameVerification;
 
-	@Override
+	/**
+     * Sets up SSL for the RabbitMQ connection factory.
+     * If an SSL bundle is provided, it creates an SSL context using the bundle and sets it as the protocol for the connection factory.
+     * If hostname verification is enabled, it enables hostname verification for the connection factory.
+     * If no SSL bundle is provided, it calls the superclass method to set up SSL.
+     */
+    @Override
 	protected void setUpSSL() {
 		if (this.sslBundle != null) {
 			this.connectionFactory.useSslProtocol(this.sslBundle.createSslContext());
@@ -44,11 +50,21 @@ class SslBundleRabbitConnectionFactoryBean extends RabbitConnectionFactoryBean {
 		}
 	}
 
-	void setSslBundle(SslBundle sslBundle) {
+	/**
+     * Sets the SSL bundle for the RabbitMQ connection factory.
+     * 
+     * @param sslBundle the SSL bundle to set
+     */
+    void setSslBundle(SslBundle sslBundle) {
 		this.sslBundle = sslBundle;
 	}
 
-	@Override
+	/**
+     * Sets the flag to enable or disable hostname verification for SSL connections.
+     * 
+     * @param enable true to enable hostname verification, false to disable it
+     */
+    @Override
 	public void setEnableHostnameVerification(boolean enable) {
 		this.enableHostnameVerification = enable;
 		super.setEnableHostnameVerification(enable);

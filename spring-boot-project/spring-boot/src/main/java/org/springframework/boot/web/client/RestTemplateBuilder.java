@@ -113,7 +113,23 @@ public class RestTemplateBuilder {
 		this.requestCustomizers = Collections.emptySet();
 	}
 
-	private RestTemplateBuilder(ClientHttpRequestFactorySettings requestFactorySettings, boolean detectRequestFactory,
+	/**
+     * Constructs a new RestTemplateBuilder with the specified parameters.
+     *
+     * @param requestFactorySettings The settings for the client HTTP request factory.
+     * @param detectRequestFactory   Flag indicating whether to automatically detect the request factory.
+     * @param rootUri                The root URI for the RestTemplate.
+     * @param messageConverters      The set of HTTP message converters to be used by the RestTemplate.
+     * @param interceptors           The set of client HTTP request interceptors to be used by the RestTemplate.
+     * @param requestFactory         The function to create the client HTTP request factory.
+     * @param uriTemplateHandler     The URI template handler to be used by the RestTemplate.
+     * @param errorHandler           The response error handler to be used by the RestTemplate.
+     * @param basicAuthentication    The basic authentication credentials to be used by the RestTemplate.
+     * @param defaultHeaders         The default headers to be used by the RestTemplate.
+     * @param customizers            The set of customizers to be applied to the RestTemplate.
+     * @param requestCustomizers     The set of request customizers to be applied to the RestTemplate.
+     */
+    private RestTemplateBuilder(ClientHttpRequestFactorySettings requestFactorySettings, boolean detectRequestFactory,
 			String rootUri, Set<HttpMessageConverter<?>> messageConverters,
 			Set<ClientHttpRequestInterceptor> interceptors,
 			Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory> requestFactory,
@@ -666,7 +682,12 @@ public class RestTemplateBuilder {
 		return null;
 	}
 
-	private void addClientHttpRequestInitializer(RestTemplate restTemplate) {
+	/**
+     * Adds a client HTTP request initializer to the given RestTemplate.
+     * 
+     * @param restTemplate the RestTemplate to add the client HTTP request initializer to
+     */
+    private void addClientHttpRequestInitializer(RestTemplate restTemplate) {
 		if (this.basicAuthentication == null && this.defaultHeaders.isEmpty() && this.requestCustomizers.isEmpty()) {
 			return;
 		}
@@ -675,20 +696,51 @@ public class RestTemplateBuilder {
 					this.requestCustomizers));
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Returns a copied set of the given items.
+     *
+     * @param items the items to be copied into a set
+     * @param <T>   the type of the items
+     * @return a copied set containing the given items
+     */
+    @SuppressWarnings("unchecked")
 	private <T> Set<T> copiedSetOf(T... items) {
 		return copiedSetOf(Arrays.asList(items));
 	}
 
-	private <T> Set<T> copiedSetOf(Collection<? extends T> collection) {
+	/**
+     * Creates a new set containing the elements of the specified collection.
+     * The returned set is a shallow copy of the original collection.
+     * 
+     * @param collection the collection whose elements are to be copied
+     * @param <T> the type of elements in the collection
+     * @return a new set containing the elements of the specified collection
+     * @throws NullPointerException if the specified collection is null
+     */
+    private <T> Set<T> copiedSetOf(Collection<? extends T> collection) {
 		return Collections.unmodifiableSet(new LinkedHashSet<>(collection));
 	}
 
-	private static <T> List<T> copiedListOf(T[] items) {
+	/**
+     * Returns an unmodifiable list containing a copy of the elements in the specified array.
+     * 
+     * @param <T> the type of elements in the array
+     * @param items the array of elements to be copied
+     * @return an unmodifiable list containing a copy of the elements in the specified array
+     */
+    private static <T> List<T> copiedListOf(T[] items) {
 		return Collections.unmodifiableList(Arrays.asList(Arrays.copyOf(items, items.length)));
 	}
 
-	private static <T> Set<T> append(Collection<? extends T> collection, Collection<? extends T> additions) {
+	/**
+     * Appends the elements from the specified collections to the given collection.
+     * 
+     * @param collection the collection to append elements to (nullable)
+     * @param additions the collection containing elements to be appended (nullable)
+     * @param <T> the type of elements in the collections
+     * @return an unmodifiable set containing the elements from the original collection and the additions
+     */
+    private static <T> Set<T> append(Collection<? extends T> collection, Collection<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((collection != null) ? collection : Collections.emptySet());
 		if (additions != null) {
 			result.addAll(additions);
@@ -696,7 +748,17 @@ public class RestTemplateBuilder {
 		return Collections.unmodifiableSet(result);
 	}
 
-	private static <K, V> Map<K, List<V>> append(Map<K, List<V>> map, K key, V[] values) {
+	/**
+     * Appends the given array of values to the list associated with the specified key in the given map.
+     * If the map is null, an empty map is created.
+     * If the values array is null, no changes are made to the map.
+     * 
+     * @param map the map to append the values to, or null to create a new empty map
+     * @param key the key to associate the values with in the map
+     * @param values the array of values to append to the list associated with the key
+     * @return an unmodifiable map with the appended values
+     */
+    private static <K, V> Map<K, List<V>> append(Map<K, List<V>> map, K key, V[] values) {
 		Map<K, List<V>> result = new LinkedHashMap<>((map != null) ? map : Collections.emptyMap());
 		if (values != null) {
 			result.put(key, copiedListOf(values));

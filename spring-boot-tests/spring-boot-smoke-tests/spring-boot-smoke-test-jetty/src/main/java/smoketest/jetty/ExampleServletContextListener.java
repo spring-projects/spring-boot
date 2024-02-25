@@ -27,12 +27,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExampleServletContextListener implements ServletContextListener {
 
-	@Override
+	/**
+     * This method is called when the ServletContext is initialized.
+     * It prints a message to the console indicating that the context has been initialized.
+     *
+     * @param sce The ServletContextEvent object that contains information about the event.
+     */
+    @Override
 	public void contextInitialized(ServletContextEvent sce) {
 		System.out.println("*** contextInitialized");
 	}
 
-	@Override
+	/**
+     * This method is called when the ServletContext is about to be destroyed.
+     * It prints a message indicating that the context is being destroyed.
+     *
+     * @param sce the ServletContextEvent object representing the event
+     */
+    @Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		System.out.println("*** contextDestroyed");
 	}

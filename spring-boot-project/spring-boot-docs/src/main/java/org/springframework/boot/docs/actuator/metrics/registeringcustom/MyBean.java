@@ -21,12 +21,20 @@ import io.micrometer.core.instrument.Tags;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final Dictionary dictionary;
 
-	public MyBean(MeterRegistry registry) {
+	/**
+     * Constructs a new instance of MyBean with the given MeterRegistry.
+     * 
+     * @param registry the MeterRegistry to be used
+     */
+    public MyBean(MeterRegistry registry) {
 		this.dictionary = Dictionary.load();
 		registry.gauge("dictionary.size", Tags.empty(), this.dictionary.getWords().size());
 	}

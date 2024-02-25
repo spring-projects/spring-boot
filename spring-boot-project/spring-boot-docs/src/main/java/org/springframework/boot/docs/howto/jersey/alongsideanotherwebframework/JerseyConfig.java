@@ -21,10 +21,18 @@ import org.glassfish.jersey.servlet.ServletProperties;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * JerseyConfig class.
+ */
 @Component
 public class JerseyConfig extends ResourceConfig {
 
-	public JerseyConfig() {
+	/**
+     * Initializes the Jersey configuration.
+     * Registers the Endpoint class as a resource.
+     * Sets the property to forward the request to the next filter if a 404 error occurs.
+     */
+    public JerseyConfig() {
 		register(Endpoint.class);
 		property(ServletProperties.FILTER_FORWARD_ON_404, true);
 	}

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.io.webservices.template;
 
+/**
+ * SomeRequest class.
+ */
 class SomeRequest {
 
 }

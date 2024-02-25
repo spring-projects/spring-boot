@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.web.servlet.springmvc;
 
+/**
+ * Customer class.
+ */
 class Customer {
 
 }

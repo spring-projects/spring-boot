@@ -26,17 +26,33 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+/**
+ * MyControllerAdvice class.
+ */
 @ControllerAdvice(basePackageClasses = SomeController.class)
 public class MyControllerAdvice extends ResponseEntityExceptionHandler {
 
-	@ResponseBody
+	/**
+     * Handles the exception thrown by the controller.
+     * 
+     * @param request the HttpServletRequest object
+     * @param ex the Throwable object representing the exception
+     * @return a ResponseEntity object containing the error body and status
+     */
+    @ResponseBody
 	@ExceptionHandler(MyException.class)
 	public ResponseEntity<?> handleControllerException(HttpServletRequest request, Throwable ex) {
 		HttpStatus status = getStatus(request);
 		return new ResponseEntity<>(new MyErrorBody(status.value(), ex.getMessage()), status);
 	}
 
-	private HttpStatus getStatus(HttpServletRequest request) {
+	/**
+     * Returns the HTTP status code of the given HttpServletRequest.
+     * 
+     * @param request the HttpServletRequest object
+     * @return the HttpStatus object representing the status code of the request
+     */
+    private HttpStatus getStatus(HttpServletRequest request) {
 		Integer code = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 		HttpStatus status = HttpStatus.resolve(code);
 		return (status != null) ? status : HttpStatus.INTERNAL_SERVER_ERROR;

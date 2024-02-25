@@ -29,7 +29,12 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 public class RestartScopeInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-	@Override
+	/**
+     * Initializes the application context by registering the "restart" scope.
+     * 
+     * @param applicationContext the configurable application context
+     */
+    @Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		applicationContext.getBeanFactory().registerScope("restart", new RestartScope());
 	}
@@ -39,26 +44,56 @@ public class RestartScopeInitializer implements ApplicationContextInitializer<Co
 	 */
 	private static final class RestartScope implements Scope {
 
-		@Override
+		/**
+         * Retrieves an attribute from the Restarter instance or adds it if it doesn't exist.
+         * 
+         * @param name the name of the attribute to retrieve or add
+         * @param objectFactory the object factory used to create the attribute if it doesn't exist
+         * @return the attribute associated with the given name
+         */
+        @Override
 		public Object get(String name, ObjectFactory<?> objectFactory) {
 			return Restarter.getInstance().getOrAddAttribute(name, objectFactory);
 		}
 
-		@Override
+		/**
+         * Removes the attribute with the specified name from the RestartScope.
+         * 
+         * @param name the name of the attribute to be removed
+         * @return the value of the removed attribute, or null if the attribute does not exist
+         */
+        @Override
 		public Object remove(String name) {
 			return Restarter.getInstance().removeAttribute(name);
 		}
 
-		@Override
+		/**
+         * Registers a destruction callback for the given name.
+         * 
+         * @param name     the name of the object to register the destruction callback for
+         * @param callback the callback to be executed when the object is destroyed
+         */
+        @Override
 		public void registerDestructionCallback(String name, Runnable callback) {
 		}
 
-		@Override
+		/**
+         * Resolves the contextual object for the given key.
+         * 
+         * @param key the key for the contextual object
+         * @return the resolved contextual object, or null if not found
+         */
+        @Override
 		public Object resolveContextualObject(String key) {
 			return null;
 		}
 
-		@Override
+		/**
+         * Returns the conversation ID associated with the restart scope.
+         * 
+         * @return the conversation ID associated with the restart scope, or null if none
+         */
+        @Override
 		public String getConversationId() {
 			return null;
 		}

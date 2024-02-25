@@ -37,11 +37,23 @@ class MockWebServiceServerWebServiceTemplateCustomizer implements WebServiceTemp
 
 	private final TestMockWebServiceServer mockServer;
 
-	MockWebServiceServerWebServiceTemplateCustomizer(TestMockWebServiceServer mockServer) {
+	/**
+     * Constructs a new MockWebServiceServerWebServiceTemplateCustomizer with the specified TestMockWebServiceServer.
+     * 
+     * @param mockServer the TestMockWebServiceServer to be used for mocking web service requests
+     */
+    MockWebServiceServerWebServiceTemplateCustomizer(TestMockWebServiceServer mockServer) {
 		this.mockServer = mockServer;
 	}
 
-	@Override
+	/**
+     * Customizes the given WebServiceTemplate by setting the message sender to the mock server's mock message sender.
+     * This method is used by the @WebServiceClientTest and supports only a single WebServiceTemplate.
+     *
+     * @param webServiceTemplate the WebServiceTemplate to be customized
+     * @throws IllegalStateException if this method is called more than once
+     */
+    @Override
 	public void customize(WebServiceTemplate webServiceTemplate) {
 		Assert.state(!this.applied.getAndSet(true), "@WebServiceClientTest supports only a single WebServiceTemplate");
 		webServiceTemplate.setMessageSender(this.mockServer.getMockMessageSender());

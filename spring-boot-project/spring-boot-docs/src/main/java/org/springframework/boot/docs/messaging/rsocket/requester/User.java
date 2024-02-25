@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.messaging.rsocket.requester;
 
+/**
+ * User class.
+ */
 class User {
 
 }

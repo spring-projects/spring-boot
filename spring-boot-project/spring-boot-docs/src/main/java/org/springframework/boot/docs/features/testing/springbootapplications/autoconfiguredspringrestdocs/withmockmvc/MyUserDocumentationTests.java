@@ -28,6 +28,9 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * MyUserDocumentationTests class.
+ */
 @WebMvcTest(UserController.class)
 @AutoConfigureRestDocs
 class MyUserDocumentationTests {
@@ -35,7 +38,12 @@ class MyUserDocumentationTests {
 	@Autowired
 	private MockMvc mvc;
 
-	@Test
+	/**
+     * Test case to list users.
+     * 
+     * @throws Exception if an error occurs during the test
+     */
+    @Test
 	void listUsers() throws Exception {
 		this.mvc.perform(get("/users").accept(MediaType.TEXT_PLAIN))
 			.andExpect(status().isOk())

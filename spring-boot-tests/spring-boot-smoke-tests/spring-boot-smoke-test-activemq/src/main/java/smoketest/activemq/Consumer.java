@@ -19,10 +19,19 @@ package smoketest.activemq;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * Consumer class.
+ */
 @Component
 public class Consumer {
 
-	@JmsListener(destination = "sample.queue")
+	/**
+     * This method is a message listener for the "sample.queue" destination.
+     * It receives a text message and prints it to the console.
+     *
+     * @param text the text message received from the queue
+     */
+    @JmsListener(destination = "sample.queue")
 	public void receiveQueue(String text) {
 		System.out.println(text);
 	}

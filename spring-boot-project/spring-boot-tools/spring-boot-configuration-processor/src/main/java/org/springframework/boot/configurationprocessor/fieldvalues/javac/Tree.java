@@ -33,11 +33,22 @@ class Tree extends ReflectionWrapper {
 
 	private final Method getClassTreeMembers = findMethod(findClass("com.sun.source.tree.ClassTree"), "getMembers");
 
-	Tree(Object instance) {
+	/**
+     * Constructs a new Tree object with the specified instance.
+     * 
+     * @param instance the instance of the object
+     */
+    Tree(Object instance) {
 		super("com.sun.source.tree.Tree", instance);
 	}
 
-	void accept(TreeVisitor visitor) throws Exception {
+	/**
+     * Accepts a TreeVisitor and invokes the acceptMethod on the instance of the Tree class.
+     * 
+     * @param visitor the TreeVisitor to be accepted
+     * @throws Exception if an error occurs during the invocation of the acceptMethod
+     */
+    void accept(TreeVisitor visitor) throws Exception {
 		this.acceptMethod.invoke(getInstance(), Proxy.newProxyInstance(getInstance().getClass().getClassLoader(),
 				new Class<?>[] { this.treeVisitorType }, new TreeVisitorInvocationHandler(visitor)), 0);
 	}
@@ -49,11 +60,27 @@ class Tree extends ReflectionWrapper {
 
 		private TreeVisitor treeVisitor;
 
-		TreeVisitorInvocationHandler(TreeVisitor treeVisitor) {
+		/**
+         * Constructs a new TreeVisitorInvocationHandler with the specified TreeVisitor.
+         * 
+         * @param treeVisitor the TreeVisitor object to be associated with this invocation handler
+         */
+        TreeVisitorInvocationHandler(TreeVisitor treeVisitor) {
 			this.treeVisitor = treeVisitor;
 		}
 
-		@Override
+		/**
+         * This method is invoked when a method is called on the proxy object.
+         * It handles the invocation of the visitClass and visitVariable methods
+         * based on the method name and arguments passed.
+         *
+         * @param proxy  the proxy object on which the method is called
+         * @param method the method being invoked
+         * @param args   the arguments passed to the method
+         * @return null
+         * @throws Throwable if an exception occurs during the invocation
+         */
+        @Override
 		@SuppressWarnings("rawtypes")
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			if (method.getName().equals("visitClass") && (Integer) args[1] == 0) {

@@ -37,7 +37,12 @@ public class SslProperties {
 	 */
 	private final Bundles bundle = new Bundles();
 
-	public Bundles getBundle() {
+	/**
+     * Returns the bundle associated with this SslProperties object.
+     * 
+     * @return the bundle associated with this SslProperties object
+     */
+    public Bundles getBundle() {
 		return this.bundle;
 	}
 
@@ -61,41 +66,78 @@ public class SslProperties {
 		 */
 		private final Watch watch = new Watch();
 
-		public Map<String, PemSslBundleProperties> getPem() {
+		/**
+         * Returns the PEM SSL bundle properties.
+         * 
+         * @return a map containing the PEM SSL bundle properties, where the key is a string representing the bundle name
+         *         and the value is an object of type PemSslBundleProperties
+         */
+        public Map<String, PemSslBundleProperties> getPem() {
 			return this.pem;
 		}
 
-		public Map<String, JksSslBundleProperties> getJks() {
+		/**
+         * Returns the map of JKS SSL bundle properties.
+         * 
+         * @return the map of JKS SSL bundle properties
+         */
+        public Map<String, JksSslBundleProperties> getJks() {
 			return this.jks;
 		}
 
-		public Watch getWatch() {
+		/**
+         * Returns the watch object associated with this Bundles object.
+         *
+         * @return the watch object
+         */
+        public Watch getWatch() {
 			return this.watch;
 		}
 
-		public static class Watch {
+		/**
+         * Watch class.
+         */
+        public static class Watch {
 
 			/**
 			 * File watching.
 			 */
 			private final File file = new File();
 
-			public File getFile() {
+			/**
+             * Returns the file associated with this Watch object.
+             *
+             * @return the file associated with this Watch object
+             */
+            public File getFile() {
 				return this.file;
 			}
 
-			public static class File {
+			/**
+             * File class.
+             */
+            public static class File {
 
 				/**
 				 * Quiet period, after which changes are detected.
 				 */
 				private Duration quietPeriod = Duration.ofSeconds(10);
 
-				public Duration getQuietPeriod() {
+				/**
+                 * Returns the quiet period of the File.
+                 *
+                 * @return the quiet period of the File
+                 */
+                public Duration getQuietPeriod() {
 					return this.quietPeriod;
 				}
 
-				public void setQuietPeriod(Duration quietPeriod) {
+				/**
+                 * Sets the quiet period for the File.
+                 * 
+                 * @param quietPeriod the duration of the quiet period
+                 */
+                public void setQuietPeriod(Duration quietPeriod) {
 					this.quietPeriod = quietPeriod;
 				}
 

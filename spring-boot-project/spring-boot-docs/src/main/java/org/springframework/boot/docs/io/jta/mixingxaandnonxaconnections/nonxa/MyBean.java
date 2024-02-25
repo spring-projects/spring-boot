@@ -20,6 +20,9 @@ import jakarta.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 
+/**
+ * MyBean class.
+ */
 public class MyBean {
 
 	// tag::code[]

@@ -16,9 +16,17 @@
 
 package org.test;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		assertEnvValue("ENV1", "5000");
 		assertEnvValue("ENV2", "Some Text");
 		assertEnvValue("ENV3", "");
@@ -27,7 +35,14 @@ public class SampleApplication {
 		System.out.println("I haz been run");
 	}
 
-	private static void assertEnvValue(String envKey, String expectedValue) {
+	/**
+     * Asserts the value of an environment variable.
+     * 
+     * @param envKey the key of the environment variable to be checked
+     * @param expectedValue the expected value of the environment variable
+     * @throws IllegalStateException if the actual value of the environment variable does not match the expected value
+     */
+    private static void assertEnvValue(String envKey, String expectedValue) {
 		String actual = System.getenv(envKey);
 		if (!expectedValue.equals(actual)) {
 			throw new IllegalStateException("env property [" + envKey + "] mismatch "

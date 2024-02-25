@@ -59,45 +59,95 @@ public class SignalFxProperties extends StepRegistryProperties {
 	 */
 	private HistogramType publishedHistogramType = HistogramType.DEFAULT;
 
-	@Override
+	/**
+     * Returns the step duration for the SignalFxProperties class.
+     *
+     * @return the step duration
+     */
+    @Override
 	public Duration getStep() {
 		return this.step;
 	}
 
-	@Override
+	/**
+     * Sets the step duration for the SignalFxProperties.
+     * 
+     * @param step the duration of each step
+     */
+    @Override
 	public void setStep(Duration step) {
 		this.step = step;
 	}
 
-	public String getAccessToken() {
+	/**
+     * Returns the access token.
+     *
+     * @return the access token
+     */
+    public String getAccessToken() {
 		return this.accessToken;
 	}
 
-	public void setAccessToken(String accessToken) {
+	/**
+     * Sets the access token for SignalFx.
+     * 
+     * @param accessToken the access token to set
+     */
+    public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
 
-	public String getUri() {
+	/**
+     * Returns the URI of the SignalFxProperties.
+     *
+     * @return the URI of the SignalFxProperties
+     */
+    public String getUri() {
 		return this.uri;
 	}
 
-	public void setUri(String uri) {
+	/**
+     * Sets the URI for the SignalFxProperties.
+     * 
+     * @param uri the URI to be set
+     */
+    public void setUri(String uri) {
 		this.uri = uri;
 	}
 
-	public String getSource() {
+	/**
+     * Returns the source of the SignalFxProperties.
+     *
+     * @return the source of the SignalFxProperties
+     */
+    public String getSource() {
 		return this.source;
 	}
 
-	public void setSource(String source) {
+	/**
+     * Sets the source of the SignalFxProperties.
+     * 
+     * @param source the source to set
+     */
+    public void setSource(String source) {
 		this.source = source;
 	}
 
-	public HistogramType getPublishedHistogramType() {
+	/**
+     * Returns the published histogram type.
+     * 
+     * @return the published histogram type
+     */
+    public HistogramType getPublishedHistogramType() {
 		return this.publishedHistogramType;
 	}
 
-	public void setPublishedHistogramType(HistogramType publishedHistogramType) {
+	/**
+     * Sets the type of histogram to be published.
+     * 
+     * @param publishedHistogramType the type of histogram to be published
+     */
+    public void setPublishedHistogramType(HistogramType publishedHistogramType) {
 		this.publishedHistogramType = publishedHistogramType;
 	}
 

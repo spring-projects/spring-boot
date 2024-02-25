@@ -47,18 +47,27 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @ConditionalOnProperty(prefix = "spring.aop", name = "auto", havingValue = "true", matchIfMissing = true)
 public class AopAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * AspectJAutoProxyingConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Advice.class)
 	static class AspectJAutoProxyingConfiguration {
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * JdkDynamicAutoProxyConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@EnableAspectJAutoProxy(proxyTargetClass = false)
 		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false")
 		static class JdkDynamicAutoProxyConfiguration {
 
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * CglibAutoProxyConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@EnableAspectJAutoProxy(proxyTargetClass = true)
 		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true",
 				matchIfMissing = true)
@@ -68,13 +77,23 @@ public class AopAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ClassProxyingConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingClass("org.aspectj.weaver.Advice")
 	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true",
 			matchIfMissing = true)
 	static class ClassProxyingConfiguration {
 
-		@Bean
+		/**
+         * This method is a BeanFactoryPostProcessor that forces the AutoProxyCreator to use class proxying.
+         * It registers the AutoProxyCreator if necessary and then forces it to use class proxying.
+         * 
+         * @param beanFactory The BeanFactory to apply the post-processing to.
+         * @return The BeanFactoryPostProcessor that forces the AutoProxyCreator to use class proxying.
+         */
+        @Bean
 		static BeanFactoryPostProcessor forceAutoProxyCreatorToUseClassProxying() {
 			return (beanFactory) -> {
 				if (beanFactory instanceof BeanDefinitionRegistry registry) {

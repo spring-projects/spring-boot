@@ -42,7 +42,12 @@ public class ValueHint implements Serializable {
 		return this.value;
 	}
 
-	public void setValue(Object value) {
+	/**
+     * Sets the value of the object.
+     * 
+     * @param value the value to be set
+     */
+    public void setValue(Object value) {
 		this.value = value;
 	}
 
@@ -55,7 +60,12 @@ public class ValueHint implements Serializable {
 		return this.description;
 	}
 
-	public void setDescription(String description) {
+	/**
+     * Sets the description of the ValueHint.
+     * 
+     * @param description the description to be set
+     */
+    public void setDescription(String description) {
 		this.description = description;
 	}
 
@@ -68,11 +78,21 @@ public class ValueHint implements Serializable {
 		return this.shortDescription;
 	}
 
-	public void setShortDescription(String shortDescription) {
+	/**
+     * Sets the short description of the ValueHint.
+     * 
+     * @param shortDescription the short description to be set
+     */
+    public void setShortDescription(String shortDescription) {
 		this.shortDescription = shortDescription;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the ValueHint object.
+     *
+     * @return a string representation of the ValueHint object
+     */
+    @Override
 	public String toString() {
 		return "ValueHint{value=" + this.value + ", description='" + this.description + '\'' + '}';
 	}

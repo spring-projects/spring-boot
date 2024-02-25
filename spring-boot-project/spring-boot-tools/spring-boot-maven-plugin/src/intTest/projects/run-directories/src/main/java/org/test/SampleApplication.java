@@ -20,9 +20,17 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		if (!readContent("one.txt").contains("1")) {
 			throw new IllegalArgumentException("Invalid content for one.txt");
 		}
@@ -32,7 +40,14 @@ public class SampleApplication {
 		System.out.println("I haz been run");
 	}
 
-	private static String readContent(String location) {
+	/**
+     * Reads the content of a file located at the specified location.
+     * 
+     * @param location the location of the file to be read
+     * @return the content of the file as a string
+     * @throws IllegalArgumentException if the file is not found at the specified location
+     */
+    private static String readContent(String location) {
 		InputStream in = SampleApplication.class.getClassLoader().getResourceAsStream(location);
 		if (in == null) {
 			throw new IllegalArgumentException("Not found: '" + location + "'");

@@ -55,7 +55,16 @@ class PropertyMigration {
 
 	private final boolean compatibleType;
 
-	PropertyMigration(ConfigurationProperty property, ConfigurationMetadataProperty metadata,
+	/**
+     * Constructs a new PropertyMigration object with the given parameters.
+     * 
+     * @param property            the ConfigurationProperty to be migrated
+     * @param metadata            the ConfigurationMetadataProperty of the property
+     * @param replacementMetadata the ConfigurationMetadataProperty of the replacement property
+     * @param mapMigration        a boolean indicating whether the migration involves mapping
+     * @return                    a new PropertyMigration object
+     */
+    PropertyMigration(ConfigurationProperty property, ConfigurationMetadataProperty metadata,
 			ConfigurationMetadataProperty replacementMetadata, boolean mapMigration) {
 		this.property = property;
 		this.lineNumber = determineLineNumber(property);
@@ -65,7 +74,13 @@ class PropertyMigration {
 		this.compatibleType = determineCompatibleType(metadata, replacementMetadata);
 	}
 
-	private static Integer determineLineNumber(ConfigurationProperty property) {
+	/**
+     * Determines the line number of the given ConfigurationProperty's origin.
+     * 
+     * @param property the ConfigurationProperty to determine the line number for
+     * @return the line number of the origin, or null if it cannot be determined
+     */
+    private static Integer determineLineNumber(ConfigurationProperty property) {
 		Origin origin = property.getOrigin();
 		if (origin instanceof TextResourceOrigin textOrigin) {
 			if (textOrigin.getLocation() != null) {
@@ -75,7 +90,14 @@ class PropertyMigration {
 		return null;
 	}
 
-	private static boolean determineCompatibleType(ConfigurationMetadataProperty metadata,
+	/**
+     * Determines if the replacement metadata is compatible with the current metadata type.
+     * 
+     * @param metadata the current metadata property
+     * @param replacementMetadata the replacement metadata property
+     * @return true if the replacement metadata is compatible with the current metadata type, false otherwise
+     */
+    private static boolean determineCompatibleType(ConfigurationMetadataProperty metadata,
 			ConfigurationMetadataProperty replacementMetadata) {
 		String currentType = determineType(metadata);
 		String replacementType = determineType(replacementMetadata);
@@ -89,7 +111,13 @@ class PropertyMigration {
 				&& (currentType.equals(Long.class.getName()) || currentType.equals(Integer.class.getName()));
 	}
 
-	private static String determineType(ConfigurationMetadataProperty metadata) {
+	/**
+     * Determines the type of a ConfigurationMetadataProperty.
+     * 
+     * @param metadata the ConfigurationMetadataProperty to determine the type for
+     * @return the type of the ConfigurationMetadataProperty, or null if the metadata or type is null
+     */
+    private static String determineType(ConfigurationMetadataProperty metadata) {
 		if (metadata == null || metadata.getType() == null) {
 			return null;
 		}
@@ -104,30 +132,63 @@ class PropertyMigration {
 		return candidate;
 	}
 
-	ConfigurationProperty getProperty() {
+	/**
+     * Retrieves the property associated with this PropertyMigration instance.
+     * 
+     * @return the property associated with this PropertyMigration instance
+     */
+    ConfigurationProperty getProperty() {
 		return this.property;
 	}
 
-	Integer getLineNumber() {
+	/**
+     * Returns the line number of the property migration.
+     *
+     * @return the line number of the property migration
+     */
+    Integer getLineNumber() {
 		return this.lineNumber;
 	}
 
-	ConfigurationMetadataProperty getMetadata() {
+	/**
+     * Returns the metadata of the ConfigurationMetadataProperty.
+     *
+     * @return the metadata of the ConfigurationMetadataProperty
+     */
+    ConfigurationMetadataProperty getMetadata() {
 		return this.metadata;
 	}
 
-	boolean isCompatibleType() {
+	/**
+     * Returns a boolean value indicating whether the type is compatible.
+     *
+     * @return true if the type is compatible, false otherwise.
+     */
+    boolean isCompatibleType() {
 		return this.compatibleType;
 	}
 
-	String getNewPropertyName() {
+	/**
+     * Returns the new property name based on the migration rules.
+     * If map migration is enabled, it calls the getNewMapPropertyName method
+     * to determine the new property name based on the given property, metadata, and replacement metadata.
+     * Otherwise, it returns the replacement property name specified in the deprecation metadata.
+     *
+     * @return the new property name
+     */
+    String getNewPropertyName() {
 		if (this.mapMigration) {
 			return getNewMapPropertyName(this.property, this.metadata, this.replacementMetadata).toString();
 		}
 		return this.metadata.getDeprecation().getReplacement();
 	}
 
-	String determineReason() {
+	/**
+     * Determines the reason for property migration.
+     * 
+     * @return the reason for property migration
+     */
+    String determineReason() {
 		if (this.compatibleType) {
 			return "Replacement: " + getNewPropertyName();
 		}
@@ -145,7 +206,17 @@ class PropertyMigration {
 		return "Reason: none";
 	}
 
-	private static ConfigurationPropertyName getNewMapPropertyName(ConfigurationProperty property,
+	/**
+     * Returns the new ConfigurationPropertyName for a given ConfigurationProperty, ConfigurationMetadataProperty,
+     * and replacement ConfigurationMetadataProperty.
+     *
+     * @param property   the ConfigurationProperty to get the old name from
+     * @param metadata   the ConfigurationMetadataProperty to get the old prefix from
+     * @param replacement   the ConfigurationMetadataProperty to get the new prefix from
+     * @return the new ConfigurationPropertyName
+     * @throws IllegalArgumentException if the old prefix is not an ancestor of the old name
+     */
+    private static ConfigurationPropertyName getNewMapPropertyName(ConfigurationProperty property,
 			ConfigurationMetadataProperty metadata, ConfigurationMetadataProperty replacement) {
 		ConfigurationPropertyName oldName = property.getName();
 		ConfigurationPropertyName oldPrefix = ConfigurationPropertyName.of(metadata.getId());

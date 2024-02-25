@@ -31,10 +31,27 @@ final class JarModeRunner {
 
 	static final String DISABLE_SYSTEM_EXIT = JarModeRunner.class.getName() + ".DISABLE_SYSTEM_EXIT";
 
-	private JarModeRunner() {
+	/**
+     * Private constructor for the JarModeRunner class.
+     */
+    private JarModeRunner() {
 	}
 
-	static void main(String[] args) {
+	/**
+     * The main method of the JarModeRunner class.
+     * 
+     * This method is responsible for running the application in the specified jar mode.
+     * It retrieves the jar mode from the system property "jarmode" and loads the available
+     * jar mode candidates using the SpringFactoriesLoader. It then iterates through the
+     * candidates and checks if any of them accepts the specified jar mode. If a candidate
+     * accepts the mode, it runs the candidate's run method passing the mode and command line
+     * arguments. If no candidate accepts the mode, an error message is printed to the standard
+     * error stream. If the system property "DISABLE_SYSTEM_EXIT" is not set to true, the
+     * application exits with a status code of 1.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    static void main(String[] args) {
 		String mode = System.getProperty("jarmode");
 		List<JarMode> candidates = SpringFactoriesLoader.loadFactories(JarMode.class,
 				ClassUtils.getDefaultClassLoader());

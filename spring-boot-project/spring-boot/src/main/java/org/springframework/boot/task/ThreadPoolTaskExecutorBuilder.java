@@ -67,7 +67,23 @@ public class ThreadPoolTaskExecutorBuilder {
 
 	private final Set<ThreadPoolTaskExecutorCustomizer> customizers;
 
-	public ThreadPoolTaskExecutorBuilder() {
+	/**
+     * Constructs a new ThreadPoolTaskExecutorBuilder with default values for all properties.
+     * 
+     * The default values are as follows:
+     * - queueCapacity: null
+     * - corePoolSize: null
+     * - maxPoolSize: null
+     * - allowCoreThreadTimeOut: null
+     * - keepAlive: null
+     * - acceptTasksAfterContextClose: null
+     * - awaitTermination: null
+     * - awaitTerminationPeriod: null
+     * - threadNamePrefix: null
+     * - taskDecorator: null
+     * - customizers: null
+     */
+    public ThreadPoolTaskExecutorBuilder() {
 		this.queueCapacity = null;
 		this.corePoolSize = null;
 		this.maxPoolSize = null;
@@ -81,7 +97,22 @@ public class ThreadPoolTaskExecutorBuilder {
 		this.customizers = null;
 	}
 
-	private ThreadPoolTaskExecutorBuilder(Integer queueCapacity, Integer corePoolSize, Integer maxPoolSize,
+	/**
+     * Constructs a new ThreadPoolTaskExecutorBuilder with the specified parameters.
+     *
+     * @param queueCapacity the maximum number of tasks that can be queued
+     * @param corePoolSize the number of threads to keep in the pool, even if they are idle
+     * @param maxPoolSize the maximum number of threads to allow in the pool
+     * @param allowCoreThreadTimeOut whether core threads are allowed to time out and terminate
+     * @param keepAlive the amount of time that excess idle threads will wait for new tasks before terminating
+     * @param acceptTasksAfterContextClose whether to accept new tasks after the application context is closed
+     * @param awaitTermination whether to wait for the executor to terminate upon application context shutdown
+     * @param awaitTerminationPeriod the maximum amount of time to wait for the executor to terminate
+     * @param threadNamePrefix the prefix to use for thread names
+     * @param taskDecorator the task decorator to be applied to tasks executed by the executor
+     * @param customizers the set of customizers to apply to the executor
+     */
+    private ThreadPoolTaskExecutorBuilder(Integer queueCapacity, Integer corePoolSize, Integer maxPoolSize,
 			Boolean allowCoreThreadTimeOut, Duration keepAlive, Boolean acceptTasksAfterContextClose,
 			Boolean awaitTermination, Duration awaitTerminationPeriod, String threadNamePrefix,
 			TaskDecorator taskDecorator, Set<ThreadPoolTaskExecutorCustomizer> customizers) {
@@ -338,7 +369,15 @@ public class ThreadPoolTaskExecutorBuilder {
 		return taskExecutor;
 	}
 
-	private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
+	/**
+     * Appends the elements from the specified iterable to the given set.
+     * 
+     * @param set       the set to append elements to (nullable)
+     * @param additions the iterable containing the elements to be appended
+     * @param <T>       the type of elements in the set
+     * @return an unmodifiable set containing the original elements from the set and the appended elements
+     */
+    private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
 		additions.forEach(result::add);
 		return Collections.unmodifiableSet(result);

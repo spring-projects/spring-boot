@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.web.reactive.webflux;
 
+/**
+ * Customer class.
+ */
 class Customer {
 
 }

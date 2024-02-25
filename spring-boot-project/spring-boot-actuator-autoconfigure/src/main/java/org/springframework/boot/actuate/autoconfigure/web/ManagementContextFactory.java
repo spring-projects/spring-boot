@@ -49,14 +49,27 @@ public final class ManagementContextFactory {
 
 	private final Class<?>[] autoConfigurationClasses;
 
-	public ManagementContextFactory(WebApplicationType webApplicationType,
+	/**
+     * Constructs a new ManagementContextFactory with the specified parameters.
+     *
+     * @param webApplicationType the type of web application
+     * @param webServerFactoryClass the class of the web server factory
+     * @param autoConfigurationClasses the auto-configuration classes
+     */
+    public ManagementContextFactory(WebApplicationType webApplicationType,
 			Class<? extends WebServerFactory> webServerFactoryClass, Class<?>... autoConfigurationClasses) {
 		this.webApplicationType = webApplicationType;
 		this.webServerFactoryClass = webServerFactoryClass;
 		this.autoConfigurationClasses = autoConfigurationClasses;
 	}
 
-	public ConfigurableApplicationContext createManagementContext(ApplicationContext parentContext) {
+	/**
+     * Creates a management context with the given parent context.
+     * 
+     * @param parentContext the parent application context
+     * @return the created management context
+     */
+    public ConfigurableApplicationContext createManagementContext(ApplicationContext parentContext) {
 		Environment parentEnvironment = parentContext.getEnvironment();
 		ConfigurableEnvironment childEnvironment = ApplicationContextFactory.DEFAULT
 			.createEnvironment(this.webApplicationType);
@@ -70,13 +83,26 @@ public final class ManagementContextFactory {
 		return managementContext;
 	}
 
-	public void registerWebServerFactoryBeans(ApplicationContext parentContext,
+	/**
+     * Registers the web server factory beans in the given management context.
+     * 
+     * @param parentContext the parent application context
+     * @param managementContext the management application context
+     * @param registry the annotation config registry
+     */
+    public void registerWebServerFactoryBeans(ApplicationContext parentContext,
 			ConfigurableApplicationContext managementContext, AnnotationConfigRegistry registry) {
 		registry.register(this.autoConfigurationClasses);
 		registerWebServerFactoryFromParent(parentContext, managementContext);
 	}
 
-	private void registerWebServerFactoryFromParent(ApplicationContext parentContext,
+	/**
+     * Registers the web server factory from the parent application context into the management context.
+     * 
+     * @param parentContext The parent application context.
+     * @param managementContext The management context.
+     */
+    private void registerWebServerFactoryFromParent(ApplicationContext parentContext,
 			ConfigurableApplicationContext managementContext) {
 		try {
 			if (managementContext.getBeanFactory() instanceof BeanDefinitionRegistry registry) {
@@ -89,7 +115,15 @@ public final class ManagementContextFactory {
 		}
 	}
 
-	private Class<?> determineWebServerFactoryClass(ApplicationContext parent) throws NoSuchBeanDefinitionException {
+	/**
+     * Determines the web server factory class to be used for the management context.
+     * 
+     * @param parent the parent application context
+     * @return the web server factory class
+     * @throws NoSuchBeanDefinitionException if the web server factory class is not found in the parent application context
+     * @throws FatalBeanException if the web server factory class cannot be instantiated
+     */
+    private Class<?> determineWebServerFactoryClass(ApplicationContext parent) throws NoSuchBeanDefinitionException {
 		Class<?> factoryClass = parent.getBean(this.webServerFactoryClass).getClass();
 		if (cannotBeInstantiated(factoryClass)) {
 			throw new FatalBeanException("ManagementContextWebServerFactory implementation " + factoryClass.getName()
@@ -99,7 +133,13 @@ public final class ManagementContextFactory {
 		return factoryClass;
 	}
 
-	private boolean cannotBeInstantiated(Class<?> factoryClass) {
+	/**
+     * Determines if the given factory class cannot be instantiated.
+     * 
+     * @param factoryClass the factory class to check
+     * @return true if the factory class cannot be instantiated, false otherwise
+     */
+    private boolean cannotBeInstantiated(Class<?> factoryClass) {
 		return factoryClass.isLocalClass()
 				|| (factoryClass.isMemberClass() && !Modifier.isStatic(factoryClass.getModifiers()))
 				|| factoryClass.isAnonymousClass();

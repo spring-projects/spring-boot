@@ -26,17 +26,30 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+/**
+ * WebConfig class.
+ */
 @EnableWebMvc
 @ComponentScan
 @Configuration(proxyBeanMethods = false)
 public class WebConfig implements WebMvcConfigurer {
 
-	@Override
+	/**
+     * Adds a view controller for the root URL ("/") with the view name "home".
+     * 
+     * @param registry the ViewControllerRegistry to register the view controller with
+     */
+    @Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/").setViewName("home");
 	}
 
-	@Bean
+	/**
+     * Configures the view resolver for the application.
+     * 
+     * @return the configured InternalResourceViewResolver
+     */
+    @Bean
 	public InternalResourceViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 		viewResolver.setPrefix("/WEB-INF/views/");
@@ -44,13 +57,23 @@ public class WebConfig implements WebMvcConfigurer {
 		return viewResolver;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of the DispatcherServlet class.
+     * 
+     * @return the created DispatcherServlet instance
+     */
+    @Bean
 	// Only used when running in embedded servlet
 	public DispatcherServlet dispatcherServlet() {
 		return new DispatcherServlet();
 	}
 
-	@Override
+	/**
+     * Enables default servlet handling.
+     * 
+     * @param configurer the DefaultServletHandlerConfigurer object used to configure default servlet handling
+     */
+    @Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable();
 	}

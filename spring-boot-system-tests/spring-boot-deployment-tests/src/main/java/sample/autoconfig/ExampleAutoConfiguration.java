@@ -22,19 +22,35 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * ExampleAutoConfiguration class.
+ */
 @ConditionalOnWarDeployment
 @AutoConfiguration
 public class ExampleAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of the TestEndpoint class.
+     * 
+     * @return the TestEndpoint instance
+     */
+    @Bean
 	public TestEndpoint testEndpoint() {
 		return new TestEndpoint();
 	}
 
-	@Endpoint(id = "war")
+	/**
+     * TestEndpoint class.
+     */
+    @Endpoint(id = "war")
 	static class TestEndpoint {
 
-		@ReadOperation
+		/**
+         * Returns a JSON string with the message "hello":"world".
+         *
+         * @return a JSON string with the message "hello":"world"
+         */
+        @ReadOperation
 		String hello() {
 			return "{\"hello\":\"world\"}";
 		}

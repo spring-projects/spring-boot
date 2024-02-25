@@ -48,7 +48,16 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @ConditionalOnBean({ RegisteredClientRepository.class, AuthorizationServerSettings.class })
 class OAuth2AuthorizationServerWebSecurityConfiguration {
 
-	@Bean
+	/**
+     * Configures the security filter chain for the authorization server.
+     * This filter chain is responsible for handling security aspects of the authorization server.
+     * The filter chain is applied with the highest precedence.
+     *
+     * @param http the HttpSecurity object to configure the security filter chain
+     * @return the configured SecurityFilterChain for the authorization server
+     * @throws Exception if an error occurs during configuration
+     */
+    @Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
@@ -59,14 +68,28 @@ class OAuth2AuthorizationServerWebSecurityConfiguration {
 		return http.build();
 	}
 
-	@Bean
+	/**
+     * Configures the default security filter chain for the OAuth2 authorization server.
+     * This filter chain is responsible for handling authentication and authorization for incoming HTTP requests.
+     * The filter chain is ordered with the BASIC_AUTH_ORDER to ensure that basic authentication is applied before other authentication mechanisms.
+     * 
+     * @param http the HttpSecurity object used to configure the security filter chain
+     * @return the configured SecurityFilterChain object
+     * @throws Exception if an error occurs while configuring the security filter chain
+     */
+    @Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).formLogin(withDefaults());
 		return http.build();
 	}
 
-	private static RequestMatcher createRequestMatcher() {
+	/**
+     * Creates a request matcher for media types.
+     * 
+     * @return The created request matcher.
+     */
+    private static RequestMatcher createRequestMatcher() {
 		MediaTypeRequestMatcher requestMatcher = new MediaTypeRequestMatcher(MediaType.TEXT_HTML);
 		requestMatcher.setIgnoredMediaTypes(Set.of(MediaType.ALL));
 		return requestMatcher;

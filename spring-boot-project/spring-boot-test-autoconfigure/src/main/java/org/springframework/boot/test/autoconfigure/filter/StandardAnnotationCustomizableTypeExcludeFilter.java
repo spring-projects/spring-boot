@@ -51,41 +51,82 @@ public abstract class StandardAnnotationCustomizableTypeExcludeFilter<A extends 
 
 	private final MergedAnnotation<A> annotation;
 
-	protected StandardAnnotationCustomizableTypeExcludeFilter(Class<?> testClass) {
+	/**
+     * Constructs a new {@code StandardAnnotationCustomizableTypeExcludeFilter} object with the given test class.
+     * 
+     * @param testClass the test class to create the filter for
+     */
+    protected StandardAnnotationCustomizableTypeExcludeFilter(Class<?> testClass) {
 		this.annotation = MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
 			.get(getAnnotationType());
 	}
 
-	protected final MergedAnnotation<A> getAnnotation() {
+	/**
+     * Returns the merged annotation associated with this StandardAnnotationCustomizableTypeExcludeFilter.
+     *
+     * @return the merged annotation
+     */
+    protected final MergedAnnotation<A> getAnnotation() {
 		return this.annotation;
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether this method has an annotation.
+     * 
+     * @return {@code true} if this method has an annotation, {@code false} otherwise.
+     */
+    @Override
 	protected boolean hasAnnotation() {
 		return this.annotation.isPresent();
 	}
 
-	@Override
+	/**
+     * Retrieves the filters of the specified type.
+     * 
+     * @param type the type of filters to retrieve
+     * @return an array of filters of the specified type, or an empty array if no filters of the specified type are found
+     */
+    @Override
 	protected Filter[] getFilters(FilterType type) {
 		return this.annotation.getValue(FILTER_TYPE_ATTRIBUTES[type.ordinal()], Filter[].class).orElse(NO_FILTERS);
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether to use default filters.
+     *
+     * @return {@code true} if default filters should be used, {@code false} otherwise.
+     */
+    @Override
 	protected boolean isUseDefaultFilters() {
 		return this.annotation.getValue("useDefaultFilters", Boolean.class).orElse(false);
 	}
 
-	@Override
+	/**
+     * Returns the default set of classes to be included.
+     * 
+     * @return an empty set of classes
+     */
+    @Override
 	protected Set<Class<?>> getDefaultIncludes() {
 		return Collections.emptySet();
 	}
 
-	@Override
+	/**
+     * Returns an empty set of classes to include as components.
+     * 
+     * @return an empty set of classes to include as components
+     */
+    @Override
 	protected Set<Class<?>> getComponentIncludes() {
 		return Collections.emptySet();
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Returns the annotation type of the current instance.
+     * 
+     * @return the annotation type of the current instance
+     */
+    @SuppressWarnings("unchecked")
 	protected Class<A> getAnnotationType() {
 		ResolvableType type = ResolvableType.forClass(StandardAnnotationCustomizableTypeExcludeFilter.class,
 				getClass());

@@ -19,12 +19,20 @@ package org.springframework.boot.docs.data.nosql.couchbase.repositories;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final CouchbaseTemplate template;
 
-	public MyBean(CouchbaseTemplate template) {
+	/**
+     * Constructs a new instance of MyBean with the specified CouchbaseTemplate.
+     * 
+     * @param template the CouchbaseTemplate to be used by this MyBean instance
+     */
+    public MyBean(CouchbaseTemplate template) {
 		this.template = template;
 	}
 

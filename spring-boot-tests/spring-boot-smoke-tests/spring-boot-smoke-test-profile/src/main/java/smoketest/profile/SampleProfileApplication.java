@@ -25,6 +25,9 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.ConfigurableEnvironment;
 
+/**
+ * SampleProfileApplication class.
+ */
 @SpringBootApplication
 public class SampleProfileApplication implements CommandLineRunner {
 
@@ -35,12 +38,23 @@ public class SampleProfileApplication implements CommandLineRunner {
 	@Autowired
 	private MessageService helloWorldService;
 
-	@Override
+	/**
+     * This method is the entry point of the application and is responsible for printing the message
+     * returned by the helloWorldService.
+     *
+     * @param args The command line arguments passed to the application.
+     */
+    @Override
 	public void run(String... args) {
 		System.out.println(this.helloWorldService.getMessage());
 	}
 
-	public static void main(String... args) {
+	/**
+     * The main method of the SampleProfileApplication class.
+     * 
+     * @param args The command line arguments passed to the application.
+     */
+    public static void main(String... args) {
 		SpringApplication application = new SpringApplication(SampleProfileApplication.class) {
 
 			@Override

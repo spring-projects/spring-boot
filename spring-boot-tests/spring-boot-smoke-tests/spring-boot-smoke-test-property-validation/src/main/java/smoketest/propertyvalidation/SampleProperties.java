@@ -19,6 +19,9 @@ package smoketest.propertyvalidation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+/**
+ * SampleProperties class.
+ */
 @ConfigurationProperties(prefix = "sample")
 @Validated
 public class SampleProperties {
@@ -33,19 +36,39 @@ public class SampleProperties {
 	 */
 	private Integer port = 8080;
 
-	public String getHost() {
+	/**
+     * Returns the host value.
+     *
+     * @return the host value
+     */
+    public String getHost() {
 		return this.host;
 	}
 
-	public void setHost(String host) {
+	/**
+     * Sets the host for the SampleProperties class.
+     * 
+     * @param host the host to be set
+     */
+    public void setHost(String host) {
 		this.host = host;
 	}
 
-	public Integer getPort() {
+	/**
+     * Returns the port number.
+     *
+     * @return the port number
+     */
+    public Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(Integer port) {
+	/**
+     * Sets the port number for the SampleProperties class.
+     * 
+     * @param port the port number to be set
+     */
+    public void setPort(Integer port) {
 		this.port = port;
 	}
 

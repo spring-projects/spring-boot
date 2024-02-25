@@ -76,7 +76,14 @@ public class IntegrationDataSourceScriptDatabaseInitializer extends DataSourceSc
 		return settings;
 	}
 
-	private static List<String> resolveSchemaLocations(DataSource dataSource, IntegrationProperties.Jdbc properties) {
+	/**
+     * Resolves the schema locations based on the provided data source and JDBC properties.
+     * 
+     * @param dataSource the data source to be used for resolving the schema locations
+     * @param properties the JDBC properties containing the platform and schema information
+     * @return a list of resolved schema locations
+     */
+    private static List<String> resolveSchemaLocations(DataSource dataSource, IntegrationProperties.Jdbc properties) {
 		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql");
 		if (StringUtils.hasText(properties.getPlatform())) {

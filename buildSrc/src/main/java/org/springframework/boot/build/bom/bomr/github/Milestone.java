@@ -31,7 +31,14 @@ public class Milestone {
 
 	private final OffsetDateTime dueOn;
 
-	Milestone(String name, int number, OffsetDateTime dueOn) {
+	/**
+     * Creates a new Milestone with the specified name, number, and due date.
+     * 
+     * @param name the name of the milestone
+     * @param number the number of the milestone
+     * @param dueOn the due date of the milestone
+     */
+    Milestone(String name, int number, OffsetDateTime dueOn) {
 		this.name = name;
 		this.number = number;
 		this.dueOn = dueOn;
@@ -53,11 +60,21 @@ public class Milestone {
 		return this.number;
 	}
 
-	public OffsetDateTime getDueOn() {
+	/**
+     * Returns the due date and time of the milestone.
+     *
+     * @return the due date and time of the milestone
+     */
+    public OffsetDateTime getDueOn() {
 		return this.dueOn;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the Milestone object.
+     * 
+     * @return the name and number of the Milestone object in the format "name (number)"
+     */
+    @Override
 	public String toString() {
 		return this.name + " (" + this.number + ")";
 	}

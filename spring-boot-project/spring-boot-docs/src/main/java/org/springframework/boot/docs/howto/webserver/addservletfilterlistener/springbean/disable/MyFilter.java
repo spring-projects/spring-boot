@@ -18,6 +18,9 @@ package org.springframework.boot.docs.howto.webserver.addservletfilterlistener.s
 
 import jakarta.servlet.Filter;
 
+/**
+ * MyFilter class.
+ */
 public abstract class MyFilter implements Filter {
 
 }

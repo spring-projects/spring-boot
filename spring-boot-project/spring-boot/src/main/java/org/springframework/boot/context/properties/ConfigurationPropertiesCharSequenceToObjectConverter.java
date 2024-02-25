@@ -48,16 +48,33 @@ final class ConfigurationPropertiesCharSequenceToObjectConverter implements Cond
 
 	private final ConversionService conversionService;
 
-	ConfigurationPropertiesCharSequenceToObjectConverter(ConversionService conversionService) {
+	/**
+     * Constructs a new ConfigurationPropertiesCharSequenceToObjectConverter with the specified ConversionService.
+     *
+     * @param conversionService the ConversionService to be used for converting CharSequence to Object.
+     */
+    ConfigurationPropertiesCharSequenceToObjectConverter(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
-	@Override
+	/**
+     * Returns the set of convertible types supported by this converter.
+     *
+     * @return the set of convertible types
+     */
+    @Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return TYPES;
 	}
 
-	@Override
+	/**
+     * Determines if the given source type and target type can be matched for conversion.
+     * 
+     * @param sourceType the source type descriptor
+     * @param targetType the target type descriptor
+     * @return true if the source type and target type can be matched for conversion, false otherwise
+     */
+    @Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (sourceType.getType() == String.class || this.disable.get() == Boolean.TRUE) {
 			return false;
@@ -95,7 +112,15 @@ final class ConfigurationPropertiesCharSequenceToObjectConverter implements Cond
 		return (targetType.isArray() || targetType.isCollection()) && !targetType.equals(BYTE_ARRAY);
 	}
 
-	@Override
+	/**
+     * Converts a CharSequence object to the specified target type.
+     * 
+     * @param source the source object to be converted
+     * @param sourceType the TypeDescriptor of the source object
+     * @param targetType the TypeDescriptor of the target type
+     * @return the converted object of the target type
+     */
+    @Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return this.conversionService.convert(source.toString(), STRING, targetType);
 	}

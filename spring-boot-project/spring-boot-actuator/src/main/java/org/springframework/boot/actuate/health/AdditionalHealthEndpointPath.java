@@ -35,7 +35,13 @@ public final class AdditionalHealthEndpointPath {
 
 	private final String canonicalValue;
 
-	private AdditionalHealthEndpointPath(WebServerNamespace namespace, String value) {
+	/**
+     * Constructs a new AdditionalHealthEndpointPath with the specified WebServerNamespace and value.
+     * 
+     * @param namespace the WebServerNamespace to associate with the AdditionalHealthEndpointPath
+     * @param value the value of the AdditionalHealthEndpointPath
+     */
+    private AdditionalHealthEndpointPath(WebServerNamespace namespace, String value) {
 		this.namespace = namespace;
 		this.value = value;
 		this.canonicalValue = (!value.startsWith("/")) ? "/" + value : value;
@@ -66,7 +72,13 @@ public final class AdditionalHealthEndpointPath {
 		return this.namespace.equals(webServerNamespace);
 	}
 
-	@Override
+	/**
+     * Compares this AdditionalHealthEndpointPath object to the specified object.
+     * 
+     * @param obj the object to compare to
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -81,7 +93,12 @@ public final class AdditionalHealthEndpointPath {
 		return result;
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this AdditionalHealthEndpointPath object.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -90,7 +107,13 @@ public final class AdditionalHealthEndpointPath {
 		return result;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the AdditionalHealthEndpointPath object.
+     * The string representation is in the format of "namespace:value".
+     *
+     * @return the string representation of the AdditionalHealthEndpointPath object
+     */
+    @Override
 	public String toString() {
 		return this.namespace.getValue() + ":" + this.value;
 	}
@@ -126,7 +149,13 @@ public final class AdditionalHealthEndpointPath {
 		return new AdditionalHealthEndpointPath(webServerNamespace, value);
 	}
 
-	private static void validateValue(String value) {
+	/**
+     * Validates the given value to ensure it contains only one segment.
+     *
+     * @param value the value to be validated
+     * @throws IllegalArgumentException if the value contains more than one segment
+     */
+    private static void validateValue(String value) {
 		Assert.isTrue(StringUtils.countOccurrencesOf(value, "/") <= 1 && value.indexOf("/") <= 0,
 				"Value must contain only one segment.");
 	}

@@ -20,6 +20,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyApplication class.
+ */
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EntityScan(basePackageClasses = City.class)

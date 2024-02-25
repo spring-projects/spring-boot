@@ -128,12 +128,23 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		return this.map.values();
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the elements in this MimeMappings collection.
+     *
+     * @return an iterator over the elements in this MimeMappings collection
+     */
+    @Override
 	public final Iterator<Mapping> iterator() {
 		return getAll().iterator();
 	}
 
-	@Override
+	/**
+     * Compares this MimeMappings object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the specified object is equal to this MimeMappings object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
@@ -147,12 +158,22 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		return false;
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for the MimeMappings object.
+     * 
+     * @return the hash code value for the MimeMappings object
+     */
+    @Override
 	public int hashCode() {
 		return getMap().hashCode();
 	}
 
-	Map<String, Mapping> getMap() {
+	/**
+     * Returns the map of string to mapping objects.
+     *
+     * @return the map of string to mapping objects
+     */
+    Map<String, Mapping> getMap() {
 		return this.map;
 	}
 
@@ -188,22 +209,45 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 
 		private final String mimeType;
 
-		public Mapping(String extension, String mimeType) {
+		/**
+         * Constructs a new Mapping object with the specified extension and mimeType.
+         * 
+         * @param extension the file extension associated with the mapping (must not be null)
+         * @param mimeType the MIME type associated with the mapping (must not be null)
+         * @throws IllegalArgumentException if either extension or mimeType is null
+         */
+        public Mapping(String extension, String mimeType) {
 			Assert.notNull(extension, "Extension must not be null");
 			Assert.notNull(mimeType, "MimeType must not be null");
 			this.extension = extension;
 			this.mimeType = mimeType;
 		}
 
-		public String getExtension() {
+		/**
+         * Returns the extension of the mapping.
+         *
+         * @return the extension of the mapping
+         */
+        public String getExtension() {
 			return this.extension;
 		}
 
-		public String getMimeType() {
+		/**
+         * Returns the MIME type of the mapping.
+         *
+         * @return the MIME type of the mapping
+         */
+        public String getMimeType() {
 			return this.mimeType;
 		}
 
-		@Override
+		/**
+         * Compares this Mapping object to the specified object for equality.
+         * 
+         * @param obj the object to compare to
+         * @return true if the specified object is equal to this Mapping object, false otherwise
+         */
+        @Override
 		public boolean equals(Object obj) {
 			if (obj == null) {
 				return false;
@@ -217,12 +261,22 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 			return false;
 		}
 
-		@Override
+		/**
+         * Returns the hash code value for this Mapping object.
+         * 
+         * @return the hash code value for this Mapping object
+         */
+        @Override
 		public int hashCode() {
 			return this.extension.hashCode();
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the Mapping object.
+         * 
+         * @return a string representation of the Mapping object
+         */
+        @Override
 		public String toString() {
 			return "Mapping [extension=" + this.extension + ", mimeType=" + this.mimeType + "]";
 		}
@@ -283,16 +337,31 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 
 		private volatile Map<String, Mapping> loaded;
 
-		DefaultMimeMappings() {
+		/**
+         * Constructs a new instance of DefaultMimeMappings with a default MimeMappings object and sets the boolean value to false.
+         */
+        DefaultMimeMappings() {
 			super(new MimeMappings(), false);
 		}
 
-		@Override
+		/**
+         * Retrieves all the mappings from the loaded mime mappings.
+         *
+         * @return a collection of all the mappings
+         */
+        @Override
 		public Collection<Mapping> getAll() {
 			return load().values();
 		}
 
-		@Override
+		/**
+         * Retrieves the MIME type associated with the given file extension.
+         * 
+         * @param extension the file extension (e.g. "txt", "jpg")
+         * @return the corresponding MIME type, or null if not found
+         * @throws IllegalArgumentException if the extension is null
+         */
+        @Override
 		public String get(String extension) {
 			Assert.notNull(extension, "Extension must not be null");
 			extension = extension.toLowerCase(Locale.ENGLISH);
@@ -308,17 +377,35 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 			return get(loaded, extension);
 		}
 
-		private String get(Map<String, Mapping> mappings, String extension) {
+		/**
+         * Retrieves the MIME type associated with the given file extension from the provided mappings.
+         * 
+         * @param mappings the map containing the file extension to MIME type mappings
+         * @param extension the file extension for which the MIME type is to be retrieved
+         * @return the MIME type associated with the given file extension, or null if no mapping is found
+         */
+        private String get(Map<String, Mapping> mappings, String extension) {
 			Mapping mapping = mappings.get(extension);
 			return (mapping != null) ? mapping.getMimeType() : null;
 		}
 
-		@Override
+		/**
+         * Retrieves the map of mime mappings.
+         * 
+         * @return the map of mime mappings
+         */
+        @Override
 		Map<String, Mapping> getMap() {
 			return load();
 		}
 
-		private Map<String, Mapping> load() {
+		/**
+         * Loads the MIME mappings from the properties file.
+         * 
+         * @return a map containing the loaded MIME mappings
+         * @throws IllegalArgumentException if unable to load the default MIME types
+         */
+        private Map<String, Mapping> load() {
 			Map<String, Mapping> loaded = this.loaded;
 			if (loaded != null) {
 				return loaded;
@@ -352,48 +439,105 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 
 		private final AtomicBoolean copied = new AtomicBoolean();
 
-		LazyMimeMappingsCopy(MimeMappings source) {
+		/**
+         * Creates a new instance of the LazyMimeMappingsCopy class with the specified MimeMappings source.
+         * 
+         * @param source the MimeMappings object to be used as the source for copying
+         */
+        LazyMimeMappingsCopy(MimeMappings source) {
 			this.source = source;
 		}
 
-		@Override
+		/**
+         * Adds a new mapping for a file extension and its corresponding MIME type.
+         * If necessary, copies the mappings from the parent class before adding the new mapping.
+         * 
+         * @param extension the file extension to be mapped
+         * @param mimeType the MIME type to be associated with the file extension
+         * @return the updated mappings after adding the new mapping
+         */
+        @Override
 		public String add(String extension, String mimeType) {
 			copyIfNecessary();
 			return super.add(extension, mimeType);
 		}
 
-		@Override
+		/**
+         * Removes the specified extension from the lazy MIME mappings copy.
+         * 
+         * @param extension the extension to be removed
+         * @return the removed extension
+         */
+        @Override
 		public String remove(String extension) {
 			copyIfNecessary();
 			return super.remove(extension);
 		}
 
-		private void copyIfNecessary() {
+		/**
+         * Copies the mime mappings from the source to the current instance if necessary.
+         * <p>
+         * This method checks if the mime mappings have already been copied. If not, it atomically sets the copied flag to true
+         * and proceeds to copy the mime mappings from the source to the current instance.
+         * </p>
+         * <p>
+         * The copying is done by iterating over each mapping in the source and adding it to the current instance using the
+         * extension as the key and the mime type as the value.
+         * </p>
+         */
+        private void copyIfNecessary() {
 			if (this.copied.compareAndSet(false, true)) {
 				this.source.forEach((mapping) -> add(mapping.getExtension(), mapping.getMimeType()));
 			}
 		}
 
-		@Override
+		/**
+         * Retrieves the MIME mapping for the specified file extension.
+         * 
+         * @param extension the file extension for which the MIME mapping is to be retrieved
+         * @return the MIME mapping for the specified file extension
+         */
+        @Override
 		public String get(String extension) {
 			return !this.copied.get() ? this.source.get(extension) : super.get(extension);
 		}
 
-		@Override
+		/**
+         * Returns a collection of all the mappings.
+         * If the mappings have not been copied, it returns the mappings from the source.
+         * If the mappings have been copied, it returns the mappings from the superclass.
+         *
+         * @return a collection of all the mappings
+         */
+        @Override
 		public Collection<Mapping> getAll() {
 			return !this.copied.get() ? this.source.getAll() : super.getAll();
 		}
 
-		@Override
+		/**
+         * Returns the map of mime mappings.
+         * 
+         * @return the map of mime mappings
+         */
+        @Override
 		Map<String, Mapping> getMap() {
 			return !this.copied.get() ? this.source.getMap() : super.getMap();
 		}
 
 	}
 
-	static class MimeMappingsRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * MimeMappingsRuntimeHints class.
+     */
+    static class MimeMappingsRuntimeHints implements RuntimeHintsRegistrar {
 
-		@Override
+		/**
+         * Registers hints for runtime mime mappings.
+         * 
+         * @param hints the runtime hints to register
+         * @param classLoader the class loader to use for loading resources
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources()
 				.registerPattern("org/springframework/boot/web/server/" + DefaultMimeMappings.MIME_MAPPINGS_PROPERTIES);

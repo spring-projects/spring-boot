@@ -35,11 +35,23 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 class MongoContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<MongoDBContainer, MongoConnectionDetails> {
 
-	MongoContainerConnectionDetailsFactory() {
+	/**
+     * Constructs a new MongoContainerConnectionDetailsFactory object.
+     * 
+     * @param connectionName the name of the connection
+     * @param connectionString the connection string
+     */
+    MongoContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "com.mongodb.ConnectionString");
 	}
 
-	@Override
+	/**
+     * Returns the connection details for the specified container connection source.
+     * 
+     * @param source the container connection source
+     * @return the connection details for the container
+     */
+    @Override
 	protected MongoConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MongoDBContainer> source) {
 		return new MongoContainerConnectionDetails(source);
 	}
@@ -50,11 +62,21 @@ class MongoContainerConnectionDetailsFactory
 	private static final class MongoContainerConnectionDetails extends ContainerConnectionDetails<MongoDBContainer>
 			implements MongoConnectionDetails {
 
-		private MongoContainerConnectionDetails(ContainerConnectionSource<MongoDBContainer> source) {
+		/**
+         * Constructs a new MongoContainerConnectionDetails object with the specified ContainerConnectionSource.
+         * 
+         * @param source the ContainerConnectionSource used to create the MongoDB container connection
+         */
+        private MongoContainerConnectionDetails(ContainerConnectionSource<MongoDBContainer> source) {
 			super(source);
 		}
 
-		@Override
+		/**
+         * Returns the connection string for the MongoDB container.
+         * 
+         * @return the connection string
+         */
+        @Override
 		public ConnectionString getConnectionString() {
 			return new ConnectionString(getContainer().getReplicaSetUrl());
 		}

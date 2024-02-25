@@ -63,18 +63,41 @@ public class MockMvcAutoConfiguration {
 
 	private final WebMvcProperties webMvcProperties;
 
-	MockMvcAutoConfiguration(WebApplicationContext context, WebMvcProperties webMvcProperties) {
+	/**
+     * Constructs a new MockMvcAutoConfiguration with the specified WebApplicationContext and WebMvcProperties.
+     * 
+     * @param context the WebApplicationContext to be used by the configuration
+     * @param webMvcProperties the WebMvcProperties to be used by the configuration
+     */
+    MockMvcAutoConfiguration(WebApplicationContext context, WebMvcProperties webMvcProperties) {
 		this.context = context;
 		this.webMvcProperties = webMvcProperties;
 	}
 
-	@Bean
+	/**
+     * Returns the DispatcherServlet path.
+     * 
+     * This method is annotated with @Bean and @ConditionalOnMissingBean, indicating that it should be used as a bean if no other bean of the same type is present.
+     * 
+     * The returned DispatcherServletPath is a functional interface that provides a method to get the path of the DispatcherServlet.
+     * 
+     * The path is obtained from the webMvcProperties, which is a property object that holds the configuration properties for the web MVC framework.
+     * 
+     * @return the DispatcherServlet path
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public DispatcherServletPath dispatcherServletPath() {
 		return () -> this.webMvcProperties.getServlet().getPath();
 	}
 
-	@Bean
+	/**
+     * Creates a default MockMvcBuilder if no other MockMvcBuilder bean is present.
+     * 
+     * @param customizers the list of MockMvcBuilderCustomizer beans
+     * @return the default MockMvcBuilder
+     */
+    @Bean
 	@ConditionalOnMissingBean(MockMvcBuilder.class)
 	public DefaultMockMvcBuilder mockMvcBuilder(List<MockMvcBuilderCustomizer> customizers) {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.context);
@@ -85,29 +108,58 @@ public class MockMvcAutoConfiguration {
 		return builder;
 	}
 
-	@Bean
+	/**
+     * Returns a SpringBootMockMvcBuilderCustomizer bean that customizes the MockMvc builder for the Spring Test MockMvc configuration.
+     * The properties for customization are prefixed with "spring.test.mockmvc".
+     *
+     * @return the SpringBootMockMvcBuilderCustomizer bean
+     */
+    @Bean
 	@ConfigurationProperties(prefix = "spring.test.mockmvc")
 	public SpringBootMockMvcBuilderCustomizer springBootMockMvcBuilderCustomizer() {
 		return new SpringBootMockMvcBuilderCustomizer(this.context);
 	}
 
-	@Bean
+	/**
+     * Creates a MockMvc bean if no other bean of type MockMvc is present.
+     * 
+     * @param builder the MockMvcBuilder used to build the MockMvc instance
+     * @return the created MockMvc instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public MockMvc mockMvc(MockMvcBuilder builder) {
 		return builder.build();
 	}
 
-	@Bean
+	/**
+     * Creates a DispatcherServlet bean if no other bean of the same type is present.
+     * 
+     * @param mockMvc the MockMvc instance used to obtain the DispatcherServlet
+     * @return the DispatcherServlet bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public DispatcherServlet dispatcherServlet(MockMvc mockMvc) {
 		return mockMvc.getDispatcherServlet();
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * WebTestClientMockMvcConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ WebClient.class, WebTestClient.class })
 	static class WebTestClientMockMvcConfiguration {
 
-		@Bean
+		/**
+         * Creates a WebTestClient instance using the provided MockMvc instance and a list of customizers.
+         * If no customizers are provided, a default WebTestClient.Builder is used.
+         * 
+         * @param mockMvc the MockMvc instance to bind the WebTestClient to
+         * @param customizers a list of customizers to apply to the WebTestClient.Builder
+         * @return a WebTestClient instance
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		WebTestClient webTestClient(MockMvc mockMvc, List<WebTestClientBuilderCustomizer> customizers) {
 			WebTestClient.Builder builder = MockMvcWebTestClient.bindTo(mockMvc);
@@ -119,22 +171,42 @@ public class MockMvcAutoConfiguration {
 
 	}
 
-	private static class MockMvcDispatcherServletCustomizer implements DispatcherServletCustomizer {
+	/**
+     * MockMvcDispatcherServletCustomizer class.
+     */
+    private static class MockMvcDispatcherServletCustomizer implements DispatcherServletCustomizer {
 
 		private final WebMvcProperties webMvcProperties;
 
-		MockMvcDispatcherServletCustomizer(WebMvcProperties webMvcProperties) {
+		/**
+         * Constructs a new MockMvcDispatcherServletCustomizer with the specified WebMvcProperties.
+         *
+         * @param webMvcProperties the WebMvcProperties to be used by the MockMvcDispatcherServletCustomizer
+         */
+        MockMvcDispatcherServletCustomizer(WebMvcProperties webMvcProperties) {
 			this.webMvcProperties = webMvcProperties;
 		}
 
-		@Override
+		/**
+         * Customize the DispatcherServlet with the provided configuration properties.
+         * 
+         * @param dispatcherServlet the DispatcherServlet to customize
+         */
+        @Override
 		public void customize(DispatcherServlet dispatcherServlet) {
 			dispatcherServlet.setDispatchOptionsRequest(this.webMvcProperties.isDispatchOptionsRequest());
 			dispatcherServlet.setDispatchTraceRequest(this.webMvcProperties.isDispatchTraceRequest());
 			configureThrowExceptionIfNoHandlerFound(dispatcherServlet);
 		}
 
-		@SuppressWarnings({ "deprecation", "removal" })
+		/**
+         * Configures whether an exception should be thrown if no handler is found for a request.
+         * 
+         * @param dispatcherServlet the DispatcherServlet instance
+         * @deprecated This method is deprecated and may be removed in future versions.
+         * @removal This method is marked for removal and will be removed in future versions.
+         */
+        @SuppressWarnings({ "deprecation", "removal" })
 		private void configureThrowExceptionIfNoHandlerFound(DispatcherServlet dispatcherServlet) {
 			dispatcherServlet
 				.setThrowExceptionIfNoHandlerFound(this.webMvcProperties.isThrowExceptionIfNoHandlerFound());

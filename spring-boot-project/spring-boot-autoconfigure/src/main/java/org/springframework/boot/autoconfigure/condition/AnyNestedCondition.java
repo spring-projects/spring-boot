@@ -57,11 +57,22 @@ import org.springframework.core.annotation.Order;
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
 public abstract class AnyNestedCondition extends AbstractNestedCondition {
 
-	public AnyNestedCondition(ConfigurationPhase configurationPhase) {
+	/**
+     * Constructs a new instance of AnyNestedCondition with the specified configuration phase.
+     * 
+     * @param configurationPhase the configuration phase for this condition
+     */
+    public AnyNestedCondition(ConfigurationPhase configurationPhase) {
 		super(configurationPhase);
 	}
 
-	@Override
+	/**
+     * Returns the final match outcome based on the member outcomes.
+     * 
+     * @param memberOutcomes the member match outcomes
+     * @return the final match outcome
+     */
+    @Override
 	protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 		boolean match = !memberOutcomes.getMatches().isEmpty();
 		List<ConditionMessage> messages = new ArrayList<>();

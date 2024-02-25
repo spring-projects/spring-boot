@@ -19,6 +19,9 @@ package org.springframework.boot.docs.features.testing.springbootapplications.au
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 
+/**
+ * MyDataNeo4jTests class.
+ */
 @DataNeo4jTest
 class MyDataNeo4jTests {
 

@@ -24,13 +24,21 @@ import smoketest.jpa.domain.Tag;
 
 import org.springframework.stereotype.Repository;
 
+/**
+ * JpaTagRepository class.
+ */
 @Repository
 class JpaTagRepository implements TagRepository {
 
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@Override
+	/**
+     * Retrieves all tags from the database.
+     *
+     * @return a list of Tag objects representing all the tags in the database.
+     */
+    @Override
 	public List<Tag> findAll() {
 		return this.entityManager.createQuery("SELECT t FROM Tag t", Tag.class).getResultList();
 	}

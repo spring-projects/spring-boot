@@ -25,12 +25,24 @@ import java.util.Arrays;
  */
 class TestJarMode implements JarMode {
 
-	@Override
+	/**
+     * Determines if the given mode is accepted.
+     * 
+     * @param mode the mode to be checked
+     * @return true if the mode is accepted, false otherwise
+     */
+    @Override
 	public boolean accepts(String mode) {
 		return "test".equals(mode);
 	}
 
-	@Override
+	/**
+     * Runs the program in the specified mode with the given arguments.
+     * 
+     * @param mode the mode in which the program should run
+     * @param args the arguments to be passed to the program
+     */
+    @Override
 	public void run(String mode, String[] args) {
 		System.out.println("running in " + mode + " jar mode " + Arrays.asList(args));
 	}

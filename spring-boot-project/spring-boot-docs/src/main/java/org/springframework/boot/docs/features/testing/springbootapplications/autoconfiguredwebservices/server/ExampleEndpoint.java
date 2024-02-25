@@ -23,10 +23,18 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import org.springframework.xml.transform.StringSource;
 
+/**
+ * ExampleEndpoint class.
+ */
 @Endpoint
 public class ExampleEndpoint {
 
-	@PayloadRoot(localPart = "ExampleRequest")
+	/**
+     * Handles the ExampleRequest and returns an ExampleResponse.
+     *
+     * @return The ExampleResponse containing the value 42.
+     */
+    @PayloadRoot(localPart = "ExampleRequest")
 	@ResponsePayload
 	public Source handleRequest() {
 		return new StringSource("<ExampleResponse>42</ExampleResponse>");

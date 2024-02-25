@@ -16,5 +16,8 @@
 
 package smoketest.pulsar;
 
+/**
+ * SampleMessage record.
+ */
 record SampleMessage(Integer id, String content) {
 }

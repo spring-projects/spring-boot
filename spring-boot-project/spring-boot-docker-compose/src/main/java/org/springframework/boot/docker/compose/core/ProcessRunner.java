@@ -98,7 +98,14 @@ class ProcessRunner {
 		return stdOut;
 	}
 
-	private Process startProcess(String[] command) {
+	/**
+     * Starts a new process with the given command.
+     * 
+     * @param command the command to be executed
+     * @return the started process
+     * @throws ProcessStartException if an error occurs while starting the process
+     */
+    private Process startProcess(String[] command) {
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
 		processBuilder.directory(this.workingDirectory);
 		try {
@@ -116,7 +123,14 @@ class ProcessRunner {
 		}
 	}
 
-	private int waitForProcess(Process process) {
+	/**
+     * Waits for the given process to complete and returns the exit value.
+     *
+     * @param process the process to wait for
+     * @return the exit value of the process
+     * @throws IllegalStateException if the waiting process is interrupted
+     */
+    private int waitForProcess(Process process) {
 		try {
 			return process.waitFor();
 		}
@@ -138,7 +152,14 @@ class ProcessRunner {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
-		ReaderThread(InputStream source, String name, Consumer<String> outputConsumer) {
+		/**
+         * Constructs a new ReaderThread object.
+         * 
+         * @param source the InputStream source to read from
+         * @param name the name of the thread
+         * @param outputConsumer the consumer to handle the output
+         */
+        ReaderThread(InputStream source, String name, Consumer<String> outputConsumer) {
 			this.source = source;
 			this.outputConsumer = outputConsumer;
 			setName("OutputReader-" + name);
@@ -146,7 +167,15 @@ class ProcessRunner {
 			start();
 		}
 
-		@Override
+		/**
+         * Runs the thread.
+         * 
+         * This method reads the input stream from the source and appends each line to the output.
+         * If an output consumer is set, it also invokes the consumer with each line.
+         * 
+         * @throws UncheckedIOException if there is an error reading the process stream
+         */
+        @Override
 		public void run() {
 			try (BufferedReader reader = new BufferedReader(
 					new InputStreamReader(this.source, StandardCharsets.UTF_8))) {
@@ -166,7 +195,12 @@ class ProcessRunner {
 			}
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * 
+         * @return the string representation of the object, or null if the thread is interrupted
+         */
+        @Override
 		public String toString() {
 			try {
 				this.latch.await();

@@ -46,12 +46,24 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C> implements S
 
 	private final Object contextLock = new Object();
 
-	public ApplicationContextServerWebExchangeMatcher(Class<? extends C> contextClass) {
+	/**
+     * Constructs a new ApplicationContextServerWebExchangeMatcher with the specified context class.
+     * 
+     * @param contextClass the class of the application context to be used
+     * @throws IllegalArgumentException if the context class is null
+     */
+    public ApplicationContextServerWebExchangeMatcher(Class<? extends C> contextClass) {
 		Assert.notNull(contextClass, "Context class must not be null");
 		this.contextClass = contextClass;
 	}
 
-	@Override
+	/**
+     * Determines if the given server web exchange matches the conditions specified by this matcher.
+     * 
+     * @param exchange the server web exchange to be matched
+     * @return a Mono emitting a MatchResult indicating if the exchange matches or not
+     */
+    @Override
 	public final Mono<MatchResult> matches(ServerWebExchange exchange) {
 		if (ignoreApplicationContext(exchange.getApplicationContext())) {
 			return MatchResult.notMatch();
@@ -79,7 +91,15 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C> implements S
 		return false;
 	}
 
-	protected Supplier<C> getContext(ServerWebExchange exchange) {
+	/**
+     * Returns the context for the given ServerWebExchange.
+     * If the context is not yet initialized, it creates a new context using the createContext method.
+     * The created context is then initialized and stored in the context variable.
+     * 
+     * @param exchange the ServerWebExchange for which the context is required
+     * @return the context for the given ServerWebExchange
+     */
+    protected Supplier<C> getContext(ServerWebExchange exchange) {
 		if (this.context == null) {
 			synchronized (this.contextLock) {
 				if (this.context == null) {
@@ -99,7 +119,14 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C> implements S
 	protected void initialized(Supplier<C> context) {
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Creates a context for the given ServerWebExchange.
+     * 
+     * @param exchange the ServerWebExchange for which the context needs to be created
+     * @return a Supplier that provides the created context
+     * @throws IllegalStateException if no ApplicationContext is found on the ServerWebExchange
+     */
+    @SuppressWarnings("unchecked")
 	private Supplier<C> createContext(ServerWebExchange exchange) {
 		ApplicationContext context = exchange.getApplicationContext();
 		Assert.state(context != null, "No ApplicationContext found on ServerWebExchange.");

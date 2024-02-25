@@ -30,21 +30,44 @@ public class InvalidConfigurationPropertyNameException extends RuntimeException 
 
 	private final List<Character> invalidCharacters;
 
-	public InvalidConfigurationPropertyNameException(CharSequence name, List<Character> invalidCharacters) {
+	/**
+     * Constructs a new InvalidConfigurationPropertyNameException with the specified name and invalid characters.
+     * 
+     * @param name the name of the invalid configuration property
+     * @param invalidCharacters the list of invalid characters in the property name
+     */
+    public InvalidConfigurationPropertyNameException(CharSequence name, List<Character> invalidCharacters) {
 		super("Configuration property name '" + name + "' is not valid");
 		this.name = name;
 		this.invalidCharacters = invalidCharacters;
 	}
 
-	public List<Character> getInvalidCharacters() {
+	/**
+     * Returns a list of invalid characters.
+     *
+     * @return a list of invalid characters
+     */
+    public List<Character> getInvalidCharacters() {
 		return this.invalidCharacters;
 	}
 
-	public CharSequence getName() {
+	/**
+     * Returns the name of the invalid configuration property.
+     *
+     * @return the name of the invalid configuration property
+     */
+    public CharSequence getName() {
 		return this.name;
 	}
 
-	public static void throwIfHasInvalidChars(CharSequence name, List<Character> invalidCharacters) {
+	/**
+     * Throws an {@link InvalidConfigurationPropertyNameException} if the given name contains any invalid characters.
+     *
+     * @param name               the name to check for invalid characters
+     * @param invalidCharacters  the list of invalid characters to check against
+     * @throws InvalidConfigurationPropertyNameException if the name contains any invalid characters
+     */
+    public static void throwIfHasInvalidChars(CharSequence name, List<Character> invalidCharacters) {
 		if (!invalidCharacters.isEmpty()) {
 			throw new InvalidConfigurationPropertyNameException(name, invalidCharacters);
 		}

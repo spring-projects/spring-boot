@@ -38,11 +38,23 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactory
 
 	private static final String[] POSTGRES_CONTAINER_NAMES = { "postgres", "bitnami/postgresql" };
 
-	PostgresR2dbcDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new PostgresR2dbcDockerComposeConnectionDetailsFactory.
+     * 
+     * @param postgresContainerNames the names of the Postgres containers
+     * @param connectionFactoryOptions the options for the R2DBC connection factory
+     */
+    PostgresR2dbcDockerComposeConnectionDetailsFactory() {
 		super(POSTGRES_CONTAINER_NAMES, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
-	@Override
+	/**
+     * Retrieves the connection details for a Docker Compose service.
+     * 
+     * @param source the Docker Compose connection source
+     * @return the R2dbcConnectionDetails for the specified Docker Compose service
+     */
+    @Override
 	protected R2dbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new PostgresDbR2dbcDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -58,14 +70,24 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactory
 
 		private final ConnectionFactoryOptions connectionFactoryOptions;
 
-		PostgresDbR2dbcDockerComposeConnectionDetails(RunningService service) {
+		/**
+         * Constructs a new instance of the PostgresDbR2dbcDockerComposeConnectionDetails class with the specified RunningService.
+         * 
+         * @param service the RunningService object representing the running service
+         */
+        PostgresDbR2dbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			PostgresEnvironment environment = new PostgresEnvironment(service.env());
 			this.connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service, environment.getDatabase(),
 					environment.getUsername(), environment.getPassword());
 		}
 
-		@Override
+		/**
+         * Returns the connection factory options for establishing a connection to the Postgres database.
+         *
+         * @return the connection factory options
+         */
+        @Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
 			return this.connectionFactoryOptions;
 		}

@@ -28,7 +28,14 @@ import org.springframework.web.util.pattern.PatternParseException;
  */
 class PatternParseFailureAnalyzer extends AbstractFailureAnalyzer<PatternParseException> {
 
-	@Override
+	/**
+     * Analyzes the failure caused by a pattern parse exception.
+     * 
+     * @param rootFailure the root failure that caused the pattern parse exception
+     * @param cause the pattern parse exception
+     * @return a FailureAnalysis object containing the analysis of the failure
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, PatternParseException cause) {
 		return new FailureAnalysis("Invalid mapping pattern detected:\n" + cause.toDetailedString(),
 				"Fix this pattern in your application or switch to the legacy parser implementation with "

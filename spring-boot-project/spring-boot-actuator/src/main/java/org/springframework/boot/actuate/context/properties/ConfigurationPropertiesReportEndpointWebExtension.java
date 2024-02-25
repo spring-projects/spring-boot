@@ -42,20 +42,40 @@ public class ConfigurationPropertiesReportEndpointWebExtension {
 
 	private final Set<String> roles;
 
-	public ConfigurationPropertiesReportEndpointWebExtension(ConfigurationPropertiesReportEndpoint delegate,
+	/**
+     * Constructs a new ConfigurationPropertiesReportEndpointWebExtension with the specified delegate, showValues, and roles.
+     * 
+     * @param delegate the delegate ConfigurationPropertiesReportEndpoint
+     * @param showValues the Show enum value indicating whether to show property values
+     * @param roles the Set of roles allowed to access the endpoint
+     */
+    public ConfigurationPropertiesReportEndpointWebExtension(ConfigurationPropertiesReportEndpoint delegate,
 			Show showValues, Set<String> roles) {
 		this.delegate = delegate;
 		this.showValues = showValues;
 		this.roles = roles;
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves the configuration properties descriptor.
+     * 
+     * @param securityContext the security context for authentication and authorization
+     * @return the configuration properties descriptor
+     */
+    @ReadOperation
 	public ConfigurationPropertiesDescriptor configurationProperties(SecurityContext securityContext) {
 		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
 		return this.delegate.getConfigurationProperties(showUnsanitized);
 	}
 
-	@ReadOperation
+	/**
+     * Retrieves the configuration properties with the given prefix.
+     * 
+     * @param securityContext The security context.
+     * @param prefix The prefix to filter the configuration properties.
+     * @return The response containing the configuration properties with the given prefix.
+     */
+    @ReadOperation
 	public WebEndpointResponse<ConfigurationPropertiesDescriptor> configurationPropertiesWithPrefix(
 			SecurityContext securityContext, @Selector String prefix) {
 		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);

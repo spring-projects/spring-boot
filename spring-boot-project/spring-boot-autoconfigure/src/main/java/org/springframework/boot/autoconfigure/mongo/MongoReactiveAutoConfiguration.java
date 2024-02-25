@@ -51,13 +51,28 @@ import org.springframework.core.annotation.Order;
 @EnableConfigurationProperties(MongoProperties.class)
 public class MongoReactiveAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link PropertiesMongoConnectionDetails} if there is no existing bean of type {@link MongoConnectionDetails}.
+     * Uses the provided {@link MongoProperties} to construct the {@link PropertiesMongoConnectionDetails}.
+     * 
+     * @param properties the {@link MongoProperties} used to construct the {@link PropertiesMongoConnectionDetails}
+     * @return a new instance of {@link PropertiesMongoConnectionDetails} if there is no existing bean of type {@link MongoConnectionDetails}
+     */
+    @Bean
 	@ConditionalOnMissingBean(MongoConnectionDetails.class)
 	PropertiesMongoConnectionDetails mongoConnectionDetails(MongoProperties properties) {
 		return new PropertiesMongoConnectionDetails(properties);
 	}
 
-	@Bean
+	/**
+     * Creates a reactive streams MongoDB client bean if no other bean of the same type is present.
+     * Uses the provided builder customizers and settings to configure the client.
+     *
+     * @param builderCustomizers The customizers to apply to the MongoClientSettings builder.
+     * @param settings The settings to use for creating the client.
+     * @return The created reactive streams MongoDB client.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public MongoClient reactiveStreamsMongoClient(
 			ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers, MongoClientSettings settings) {
@@ -66,16 +81,32 @@ public class MongoReactiveAutoConfiguration {
 		return factory.createMongoClient(settings);
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * MongoClientSettingsConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(MongoClientSettings.class)
 	static class MongoClientSettingsConfiguration {
 
-		@Bean
+		/**
+         * Returns the MongoClientSettings object with default settings.
+         * 
+         * @return the MongoClientSettings object with default settings
+         */
+        @Bean
 		MongoClientSettings mongoClientSettings() {
 			return MongoClientSettings.builder().build();
 		}
 
-		@Bean
+		/**
+         * Returns a customizer for the standard MongoDB client settings builder.
+         * 
+         * @param properties the MongoDB properties
+         * @param connectionDetails the MongoDB connection details
+         * @param sslBundles the SSL bundles (optional)
+         * @return the customizer for the standard MongoDB client settings builder
+         */
+        @Bean
 		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
 				MongoConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
 			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails.getConnectionString(),
@@ -84,11 +115,21 @@ public class MongoReactiveAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * NettyDriverConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ SocketChannel.class, NioEventLoopGroup.class })
 	static class NettyDriverConfiguration {
 
-		@Bean
+		/**
+         * Returns a NettyDriverMongoClientSettingsBuilderCustomizer bean with the highest precedence.
+         * This bean is responsible for customizing the Netty driver settings for the MongoDB client.
+         * 
+         * @param settings the provider for MongoClientSettings
+         * @return a NettyDriverMongoClientSettingsBuilderCustomizer bean
+         */
+        @Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
 		NettyDriverMongoClientSettingsBuilderCustomizer nettyDriverCustomizer(
 				ObjectProvider<MongoClientSettings> settings) {
@@ -107,11 +148,22 @@ public class MongoReactiveAutoConfiguration {
 
 		private volatile EventLoopGroup eventLoopGroup;
 
-		NettyDriverMongoClientSettingsBuilderCustomizer(ObjectProvider<MongoClientSettings> settings) {
+		/**
+         * Constructs a new NettyDriverMongoClientSettingsBuilderCustomizer with the specified settings.
+         *
+         * @param settings the provider of MongoClientSettings
+         */
+        NettyDriverMongoClientSettingsBuilderCustomizer(ObjectProvider<MongoClientSettings> settings) {
 			this.settings = settings;
 		}
 
-		@Override
+		/**
+         * Customizes the NettyDriverMongoClientSettingsBuilder by setting the transport configuration.
+         * If a custom transport configuration is not available, it sets the default NioEventLoopGroup.
+         * 
+         * @param builder the NettyDriverMongoClientSettingsBuilder to be customized
+         */
+        @Override
 		public void customize(Builder builder) {
 			if (!isCustomTransportConfiguration(this.settings.getIfAvailable())) {
 				NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
@@ -120,7 +172,13 @@ public class MongoReactiveAutoConfiguration {
 			}
 		}
 
-		@Override
+		/**
+         * This method is called when the object is being destroyed.
+         * It shuts down the event loop group gracefully and awaits for the termination.
+         * 
+         * @throws InterruptedException if the thread is interrupted while awaiting the termination
+         */
+        @Override
 		public void destroy() {
 			EventLoopGroup eventLoopGroup = this.eventLoopGroup;
 			if (eventLoopGroup != null) {
@@ -129,7 +187,14 @@ public class MongoReactiveAutoConfiguration {
 			}
 		}
 
-		@SuppressWarnings("deprecation")
+		/**
+         * Checks if the provided MongoClientSettings object has a custom transport configuration.
+         * 
+         * @param settings the MongoClientSettings object to check
+         * @return true if the settings object has a custom transport configuration, false otherwise
+         * @deprecated This method is deprecated and will be removed in a future release.
+         */
+        @SuppressWarnings("deprecation")
 		private boolean isCustomTransportConfiguration(MongoClientSettings settings) {
 			return settings != null
 					&& (settings.getTransportSettings() != null || settings.getStreamFactoryFactory() != null);

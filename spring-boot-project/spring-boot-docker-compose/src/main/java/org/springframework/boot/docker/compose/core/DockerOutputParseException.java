@@ -26,7 +26,13 @@ package org.springframework.boot.docker.compose.core;
  */
 public class DockerOutputParseException extends DockerException {
 
-	DockerOutputParseException(String json, Throwable cause) {
+	/**
+     * Constructs a new DockerOutputParseException with the specified JSON and cause.
+     * 
+     * @param json the JSON string that failed to parse
+     * @param cause the cause of the exception
+     */
+    DockerOutputParseException(String json, Throwable cause) {
 		super("Failed to parse docker JSON:\n\n" + json, cause);
 	}
 

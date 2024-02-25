@@ -20,20 +20,41 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 
+/**
+ * MyUserHandler class.
+ */
 @Component
 public class MyUserHandler {
 
-	public ServerResponse getUser(ServerRequest request) {
+	/**
+     * Retrieves a user based on the provided server request.
+     *
+     * @param request the server request containing the necessary information to retrieve the user
+     * @return a server response indicating the success or failure of the operation
+     */
+    public ServerResponse getUser(ServerRequest request) {
 		/**/
 		return ServerResponse.ok().build();
 	}
 
-	public ServerResponse getUserCustomers(ServerRequest request) {
+	/**
+     * Retrieves the customers associated with a user.
+     *
+     * @param request the server request containing the necessary information
+     * @return the server response indicating the success of the operation
+     */
+    public ServerResponse getUserCustomers(ServerRequest request) {
 		/**/
 		return ServerResponse.ok().build();
 	}
 
-	public ServerResponse deleteUser(ServerRequest request) {
+	/**
+     * Deletes a user based on the provided request.
+     *
+     * @param request the server request containing the user information to be deleted
+     * @return the server response indicating the success of the deletion
+     */
+    public ServerResponse deleteUser(ServerRequest request) {
 		/**/
 		return ServerResponse.ok().build();
 	}

@@ -42,7 +42,12 @@ public class MainMethodRunner {
 		this.args = (args != null) ? args.clone() : null;
 	}
 
-	public void run() throws Exception {
+	/**
+     * Runs the main method of a specified class.
+     * 
+     * @throws Exception if an error occurs while running the main method
+     */
+    public void run() throws Exception {
 		Class<?> mainClass = Class.forName(this.mainClassName, false, Thread.currentThread().getContextClassLoader());
 		Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
 		mainMethod.setAccessible(true);

@@ -67,7 +67,12 @@ public class ClassPathChangedEvent extends ApplicationEvent {
 		return this.restartRequired;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the ClassPathChangedEvent object.
+     * 
+     * @return a string representation of the ClassPathChangedEvent object
+     */
+    @Override
 	public String toString() {
 		return new ToStringCreator(this).append("changeSet", this.changeSet)
 			.append("restartRequired", this.restartRequired)
@@ -103,7 +108,14 @@ public class ClassPathChangedEvent extends ApplicationEvent {
 				quantityOfUnit(modified, "modification"));
 	}
 
-	private String quantityOfUnit(int quantity, String unit) {
+	/**
+     * Returns the quantity of a unit in a formatted string.
+     * 
+     * @param quantity the quantity of the unit
+     * @param unit the unit of measurement
+     * @return the formatted string representing the quantity and unit
+     */
+    private String quantityOfUnit(int quantity, String unit) {
 		return quantity + " " + ((quantity != 1) ? unit + "s" : unit);
 	}
 

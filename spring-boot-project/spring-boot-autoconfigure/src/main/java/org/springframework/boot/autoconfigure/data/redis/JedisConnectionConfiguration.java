@@ -62,7 +62,18 @@ import org.springframework.util.StringUtils;
 @ConditionalOnProperty(name = "spring.data.redis.client-type", havingValue = "jedis", matchIfMissing = true)
 class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
-	JedisConnectionConfiguration(RedisProperties properties,
+	/**
+     * Constructs a new JedisConnectionConfiguration with the specified RedisProperties, RedisStandaloneConfiguration provider,
+     * RedisSentinelConfiguration provider, RedisClusterConfiguration provider, RedisConnectionDetails, and SslBundles provider.
+     * 
+     * @param properties the RedisProperties object containing the Redis connection properties
+     * @param standaloneConfigurationProvider the provider for RedisStandaloneConfiguration
+     * @param sentinelConfiguration the provider for RedisSentinelConfiguration
+     * @param clusterConfiguration the provider for RedisClusterConfiguration
+     * @param connectionDetails the RedisConnectionDetails object containing the Redis connection details
+     * @param sslBundles the provider for SslBundles
+     */
+    JedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
 			ObjectProvider<RedisClusterConfiguration> clusterConfiguration, RedisConnectionDetails connectionDetails,
@@ -71,14 +82,26 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 				clusterConfiguration, sslBundles);
 	}
 
-	@Bean
+	/**
+     * Creates a JedisConnectionFactory for Redis based on the specified threading configuration.
+     * 
+     * @param builderCustomizers the customizers for the JedisClientConfigurationBuilder
+     * @return the JedisConnectionFactory
+     */
+    @Bean
 	@ConditionalOnThreading(Threading.PLATFORM)
 	JedisConnectionFactory redisConnectionFactory(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		return createJedisConnectionFactory(builderCustomizers);
 	}
 
-	@Bean
+	/**
+     * Creates a JedisConnectionFactory for virtual threading.
+     * 
+     * @param builderCustomizers ObjectProvider of JedisClientConfigurationBuilderCustomizer
+     * @return JedisConnectionFactory for virtual threading
+     */
+    @Bean
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	JedisConnectionFactory redisConnectionFactoryVirtualThreads(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
@@ -89,7 +112,13 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return factory;
 	}
 
-	private JedisConnectionFactory createJedisConnectionFactory(
+	/**
+     * Creates a JedisConnectionFactory based on the provided builder customizers.
+     * 
+     * @param builderCustomizers the customizers for the JedisClientConfigurationBuilder
+     * @return a JedisConnectionFactory instance
+     */
+    private JedisConnectionFactory createJedisConnectionFactory(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration(builderCustomizers);
 		if (getSentinelConfig() != null) {
@@ -101,7 +130,13 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return new JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);
 	}
 
-	private JedisClientConfiguration getJedisClientConfiguration(
+	/**
+     * Returns the JedisClientConfiguration for the Jedis connection.
+     * 
+     * @param builderCustomizers the customizers for the JedisClientConfiguration builder
+     * @return the JedisClientConfiguration
+     */
+    private JedisClientConfiguration getJedisClientConfiguration(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfigurationBuilder builder = applyProperties(JedisClientConfiguration.builder());
 		if (isSslEnabled()) {
@@ -118,7 +153,13 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return builder.build();
 	}
 
-	private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
+	/**
+     * Applies the properties from the JedisConnectionConfiguration to the JedisClientConfigurationBuilder.
+     * 
+     * @param builder the JedisClientConfigurationBuilder to apply the properties to
+     * @return the modified JedisClientConfigurationBuilder
+     */
+    private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(getProperties().getTimeout()).to(builder::readTimeout);
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);
@@ -126,7 +167,12 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return builder;
 	}
 
-	private void applySsl(JedisClientConfigurationBuilder builder) {
+	/**
+     * Applies SSL configuration to the JedisClientConfigurationBuilder.
+     * 
+     * @param builder The JedisClientConfigurationBuilder to apply SSL configuration to.
+     */
+    private void applySsl(JedisClientConfigurationBuilder builder) {
 		JedisSslClientConfigurationBuilder sslBuilder = builder.useSsl();
 		if (getProperties().getSsl().getBundle() != null) {
 			SslBundle sslBundle = getSslBundles().getBundle(getProperties().getSsl().getBundle());
@@ -140,12 +186,24 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		}
 	}
 
-	private void applyPooling(RedisProperties.Pool pool,
+	/**
+     * Applies pooling configuration to the Jedis client configuration builder.
+     * 
+     * @param pool the Redis pool configuration
+     * @param builder the Jedis client configuration builder
+     */
+    private void applyPooling(RedisProperties.Pool pool,
 			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
 		builder.usePooling().poolConfig(jedisPoolConfig(pool));
 	}
 
-	private JedisPoolConfig jedisPoolConfig(RedisProperties.Pool pool) {
+	/**
+     * Creates a JedisPoolConfig object based on the provided RedisProperties.Pool object.
+     * 
+     * @param pool the RedisProperties.Pool object containing the pool configuration properties
+     * @return a JedisPoolConfig object with the configured properties
+     */
+    private JedisPoolConfig jedisPoolConfig(RedisProperties.Pool pool) {
 		JedisPoolConfig config = new JedisPoolConfig();
 		config.setMaxTotal(pool.getMaxActive());
 		config.setMaxIdle(pool.getMaxIdle());
@@ -159,7 +217,12 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return config;
 	}
 
-	private void customizeConfigurationFromUrl(JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
+	/**
+     * Customizes the Jedis client configuration from a URL.
+     * 
+     * @param builder the Jedis client configuration builder
+     */
+    private void customizeConfigurationFromUrl(JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
 		if (urlUsesSsl()) {
 			builder.useSsl();
 		}

@@ -49,12 +49,24 @@ public class SystemTestPlugin implements Plugin<Project> {
 	 */
 	public static String SYSTEM_TEST_SOURCE_SET_NAME = "systemTest";
 
-	@Override
+	/**
+     * Applies the SystemTestPlugin to the given project.
+     * This plugin is applied only if the project has the JavaPlugin applied.
+     * It configures the system testing for the project.
+     *
+     * @param project the project to apply the plugin to
+     */
+    @Override
 	public void apply(Project project) {
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> configureSystemTesting(project));
 	}
 
-	private void configureSystemTesting(Project project) {
+	/**
+     * Configures the system testing for the given project.
+     * 
+     * @param project The project to configure system testing for.
+     */
+    private void configureSystemTesting(Project project) {
 		SourceSet systemTestSourceSet = createSourceSet(project);
 		createTestTask(project, systemTestSourceSet);
 		project.getPlugins().withType(EclipsePlugin.class, (eclipsePlugin) -> {
@@ -65,7 +77,13 @@ public class SystemTestPlugin implements Plugin<Project> {
 		});
 	}
 
-	private SourceSet createSourceSet(Project project) {
+	/**
+     * Creates a new source set for system tests.
+     * 
+     * @param project the project to create the source set for
+     * @return the created source set for system tests
+     */
+    private SourceSet createSourceSet(Project project) {
 		SourceSetContainer sourceSets = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
 		SourceSet systemTestSourceSet = sourceSets.create(SYSTEM_TEST_SOURCE_SET_NAME);
 		SourceSet mainSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
@@ -76,7 +94,13 @@ public class SystemTestPlugin implements Plugin<Project> {
 		return systemTestSourceSet;
 	}
 
-	private void createTestTask(Project project, SourceSet systemTestSourceSet) {
+	/**
+     * Creates a test task for running system tests.
+     * 
+     * @param project The project to create the test task for.
+     * @param systemTestSourceSet The source set containing the system test classes.
+     */
+    private void createTestTask(Project project, SourceSet systemTestSourceSet) {
 		Test systemTest = project.getTasks().create(SYSTEM_TEST_TASK_NAME, Test.class);
 		systemTest.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
 		systemTest.setDescription("Runs system tests.");
@@ -89,7 +113,12 @@ public class SystemTestPlugin implements Plugin<Project> {
 		}
 	}
 
-	private boolean isCi() {
+	/**
+     * Checks if the current environment is a continuous integration (CI) environment.
+     * 
+     * @return true if the current environment is a CI environment, false otherwise.
+     */
+    private boolean isCi() {
 		return Boolean.parseBoolean(System.getenv("CI"));
 	}
 

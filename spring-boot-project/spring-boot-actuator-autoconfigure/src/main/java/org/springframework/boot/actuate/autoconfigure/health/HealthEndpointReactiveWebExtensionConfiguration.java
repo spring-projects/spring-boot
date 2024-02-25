@@ -49,7 +49,18 @@ import org.springframework.context.annotation.Configuration;
 		exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
 class HealthEndpointReactiveWebExtensionConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of ReactiveHealthEndpointWebExtension.
+     * This method is annotated with @Bean, @ConditionalOnMissingBean, and @ConditionalOnBean(HealthEndpoint.class),
+     * indicating that it will be used to create a bean if no other bean of the same type is present,
+     * and only if a bean of type HealthEndpoint is present.
+     * 
+     * @param reactiveHealthContributorRegistry The ReactiveHealthContributorRegistry used to retrieve health contributors.
+     * @param groups The HealthEndpointGroups used to group health contributors.
+     * @param properties The HealthEndpointProperties used to configure the health endpoint.
+     * @return A new instance of ReactiveHealthEndpointWebExtension.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(HealthEndpoint.class)
 	ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension(
@@ -59,11 +70,22 @@ class HealthEndpointReactiveWebExtensionConfiguration {
 				properties.getLogging().getSlowIndicatorThreshold());
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * WebFluxAdditionalHealthEndpointPathsConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 	static class WebFluxAdditionalHealthEndpointPathsConfiguration {
 
-		@Bean
+		/**
+         * Creates a WebFluxHandlerMapping for additional health endpoint paths.
+         * 
+         * @param webEndpointsSupplier the supplier of web endpoints
+         * @param groups the health endpoint groups
+         * @return the WebFluxHandlerMapping for additional health endpoint paths
+         * @throws IllegalStateException if no endpoint with the specified ID is found
+         */
+        @Bean
 		AdditionalHealthEndpointPathsWebFluxHandlerMapping healthEndpointWebFluxHandlerMapping(
 				WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
 			Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();

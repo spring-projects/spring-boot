@@ -45,60 +45,119 @@ public class ObservationProperties {
 	 */
 	private Map<String, Boolean> enable = new LinkedHashMap<>();
 
-	public Map<String, Boolean> getEnable() {
+	/**
+     * Returns a map of enable values.
+     * 
+     * @return a map containing enable values as Boolean objects
+     */
+    public Map<String, Boolean> getEnable() {
 		return this.enable;
 	}
 
-	public void setEnable(Map<String, Boolean> enable) {
+	/**
+     * Sets the enable status for each observation property.
+     * 
+     * @param enable a map containing the enable status for each observation property. The key is the property name and the value is a boolean indicating whether the property is enabled or not.
+     */
+    public void setEnable(Map<String, Boolean> enable) {
 		this.enable = enable;
 	}
 
-	public Http getHttp() {
+	/**
+     * Returns the Http object associated with this ObservationProperties instance.
+     *
+     * @return the Http object
+     */
+    public Http getHttp() {
 		return this.http;
 	}
 
-	public Map<String, String> getKeyValues() {
+	/**
+     * Returns the key-value pairs stored in the ObservationProperties object.
+     * 
+     * @return a Map containing the key-value pairs
+     */
+    public Map<String, String> getKeyValues() {
 		return this.keyValues;
 	}
 
-	public void setKeyValues(Map<String, String> keyValues) {
+	/**
+     * Sets the key-value pairs for the ObservationProperties.
+     * 
+     * @param keyValues the key-value pairs to be set
+     */
+    public void setKeyValues(Map<String, String> keyValues) {
 		this.keyValues = keyValues;
 	}
 
-	public static class Http {
+	/**
+     * Http class.
+     */
+    public static class Http {
 
 		private final Client client = new Client();
 
 		private final Server server = new Server();
 
-		public Client getClient() {
+		/**
+         * Returns the client associated with this Http instance.
+         *
+         * @return the client associated with this Http instance
+         */
+        public Client getClient() {
 			return this.client;
 		}
 
-		public Server getServer() {
+		/**
+         * Returns the server object associated with this Http instance.
+         *
+         * @return the server object
+         */
+        public Server getServer() {
 			return this.server;
 		}
 
-		public static class Client {
+		/**
+         * Client class.
+         */
+        public static class Client {
 
 			private final ClientRequests requests = new ClientRequests();
 
-			public ClientRequests getRequests() {
+			/**
+             * Returns the ClientRequests object containing the requests made by the client.
+             *
+             * @return the ClientRequests object containing the requests made by the client
+             */
+            public ClientRequests getRequests() {
 				return this.requests;
 			}
 
-			public static class ClientRequests {
+			/**
+             * ClientRequests class.
+             */
+            public static class ClientRequests {
 
 				/**
 				 * Name of the observation for client requests.
 				 */
 				private String name = "http.client.requests";
 
-				public String getName() {
+				/**
+                 * Returns the name of the client.
+                 *
+                 * @return the name of the client
+                 */
+                public String getName() {
 					return this.name;
 				}
 
-				public void setName(String name) {
+				/**
+                 * Sets the name of the client.
+                 * 
+                 * @param name the name of the client
+                 */
+                public void setName(String name) {
 					this.name = name;
 				}
 
@@ -106,26 +165,47 @@ public class ObservationProperties {
 
 		}
 
-		public static class Server {
+		/**
+         * Server class.
+         */
+        public static class Server {
 
 			private final ServerRequests requests = new ServerRequests();
 
-			public ServerRequests getRequests() {
+			/**
+             * Returns the ServerRequests object that contains the requests made to the server.
+             *
+             * @return the ServerRequests object containing the requests made to the server
+             */
+            public ServerRequests getRequests() {
 				return this.requests;
 			}
 
-			public static class ServerRequests {
+			/**
+             * ServerRequests class.
+             */
+            public static class ServerRequests {
 
 				/**
 				 * Name of the observation for server requests.
 				 */
 				private String name = "http.server.requests";
 
-				public String getName() {
+				/**
+                 * Returns the name of the ServerRequests object.
+                 *
+                 * @return the name of the ServerRequests object
+                 */
+                public String getName() {
 					return this.name;
 				}
 
-				public void setName(String name) {
+				/**
+                 * Sets the name of the server request.
+                 * 
+                 * @param name the name to be set for the server request
+                 */
+                public void setName(String name) {
 					this.name = name;
 				}
 

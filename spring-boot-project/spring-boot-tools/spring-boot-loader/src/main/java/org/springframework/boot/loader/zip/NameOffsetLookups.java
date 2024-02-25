@@ -33,12 +33,24 @@ class NameOffsetLookups {
 
 	private final BitSet enabled;
 
-	NameOffsetLookups(int offset, int size) {
+	/**
+     * Constructs a new NameOffsetLookups object with the specified offset and size.
+     * 
+     * @param offset the offset value to set
+     * @param size the size value to set
+     */
+    NameOffsetLookups(int offset, int size) {
 		this.offset = offset;
 		this.enabled = (size != 0) ? new BitSet(size) : null;
 	}
 
-	void swap(int i, int j) {
+	/**
+     * Swaps the values at the specified indices in the 'enabled' list.
+     * 
+     * @param i the index of the first element to be swapped
+     * @param j the index of the second element to be swapped
+     */
+    void swap(int i, int j) {
 		if (this.enabled != null) {
 			boolean temp = this.enabled.get(i);
 			this.enabled.set(i, this.enabled.get(j));
@@ -46,26 +58,55 @@ class NameOffsetLookups {
 		}
 	}
 
-	int get(int index) {
+	/**
+     * Retrieves the offset value for the specified index.
+     * 
+     * @param index the index for which the offset value is to be retrieved
+     * @return the offset value if the index is enabled, otherwise 0
+     */
+    int get(int index) {
 		return isEnabled(index) ? this.offset : 0;
 	}
 
-	int enable(int index, boolean enable) {
+	/**
+     * Enables or disables the specified index in the NameOffsetLookups object.
+     * 
+     * @param index The index to enable or disable.
+     * @param enable True to enable the index, false to disable it.
+     * @return The offset value if enable is true, otherwise 0.
+     */
+    int enable(int index, boolean enable) {
 		if (this.enabled != null) {
 			this.enabled.set(index, enable);
 		}
 		return (!enable) ? 0 : this.offset;
 	}
 
-	boolean isEnabled(int index) {
+	/**
+     * Returns a boolean value indicating whether the element at the specified index is enabled.
+     *
+     * @param index the index of the element to check
+     * @return {@code true} if the element is enabled, {@code false} otherwise
+     */
+    boolean isEnabled(int index) {
 		return (this.enabled != null && this.enabled.get(index));
 	}
 
-	boolean hasAnyEnabled() {
+	/**
+     * Checks if any of the elements in the enabled BitSet are set to true.
+     * 
+     * @return true if at least one element in the enabled BitSet is set to true, false otherwise.
+     */
+    boolean hasAnyEnabled() {
 		return this.enabled != null && this.enabled.cardinality() > 0;
 	}
 
-	NameOffsetLookups emptyCopy() {
+	/**
+     * Creates and returns a new instance of the NameOffsetLookups class with the same offset and an empty enabled list.
+     *
+     * @return A new instance of the NameOffsetLookups class.
+     */
+    NameOffsetLookups emptyCopy() {
 		return new NameOffsetLookups(this.offset, this.enabled.size());
 	}
 

@@ -32,12 +32,24 @@ class CompositeHealthContributorReactiveAdapter implements CompositeReactiveHeal
 
 	private final CompositeHealthContributor delegate;
 
-	CompositeHealthContributorReactiveAdapter(CompositeHealthContributor delegate) {
+	/**
+     * Constructs a new CompositeHealthContributorReactiveAdapter with the specified delegate.
+     *
+     * @param delegate the delegate CompositeHealthContributor to be used
+     * @throws IllegalArgumentException if the delegate is null
+     */
+    CompositeHealthContributorReactiveAdapter(CompositeHealthContributor delegate) {
 		Assert.notNull(delegate, "Delegate must not be null");
 		this.delegate = delegate;
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the elements in this CompositeHealthContributorReactiveAdapter.
+     * The elements are of type NamedContributor<ReactiveHealthContributor>.
+     *
+     * @return an Iterator.
+     */
+    @Override
 	public Iterator<NamedContributor<ReactiveHealthContributor>> iterator() {
 		Iterator<NamedContributor<HealthContributor>> iterator = this.delegate.iterator();
 		return new Iterator<>() {
@@ -57,7 +69,13 @@ class CompositeHealthContributorReactiveAdapter implements CompositeReactiveHeal
 		};
 	}
 
-	@Override
+	/**
+     * Retrieves the ReactiveHealthContributor with the specified name from the delegate CompositeHealthContributor.
+     * 
+     * @param name the name of the ReactiveHealthContributor to retrieve
+     * @return the ReactiveHealthContributor with the specified name, or null if not found
+     */
+    @Override
 	public ReactiveHealthContributor getContributor(String name) {
 		HealthContributor contributor = this.delegate.getContributor(name);
 		return (contributor != null) ? ReactiveHealthContributor.adapt(contributor) : null;

@@ -23,12 +23,22 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.stereotype.Service;
 
+/**
+ * StubHumanResourceService class.
+ */
 @Service
 public class StubHumanResourceService implements HumanResourceService {
 
 	private final Log logger = LogFactory.getLog(StubHumanResourceService.class);
 
-	@Override
+	/**
+     * Books a holiday for a specified period of time for a given person.
+     * 
+     * @param startDate the start date of the holiday
+     * @param endDate the end date of the holiday
+     * @param name the name of the person for whom the holiday is being booked
+     */
+    @Override
 	public void bookHoliday(Date startDate, Date endDate, String name) {
 		this.logger.info("Booking holiday for [" + startDate + " - " + endDate + "] for [" + name + "]");
 	}

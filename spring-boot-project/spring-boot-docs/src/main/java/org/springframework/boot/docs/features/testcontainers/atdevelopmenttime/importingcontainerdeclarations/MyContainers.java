@@ -22,6 +22,9 @@ import org.testcontainers.junit.jupiter.Container;
 
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
+/**
+ * MyContainers interface.
+ */
 public interface MyContainers {
 
 	@Container

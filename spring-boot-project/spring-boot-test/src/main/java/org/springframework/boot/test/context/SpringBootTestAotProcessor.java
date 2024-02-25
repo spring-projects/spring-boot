@@ -45,7 +45,24 @@ public class SpringBootTestAotProcessor extends TestAotProcessor {
 		super(classpathRoots, settings);
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SpringBootTestAotProcessor class.
+     * 
+     * This method is the entry point of the application. It expects 6 command line arguments:
+     * - classpathRoots: a string representing the classpath roots separated by the system's file separator
+     * - sourceOutput: the path where the source files will be generated
+     * - resourceOutput: the path where the resource files will be generated
+     * - classOutput: the path where the class files will be generated
+     * - groupId: the group ID of the project
+     * - artifactId: the artifact ID of the project
+     * 
+     * If the number of arguments is less than 6, an exception will be thrown with a usage message.
+     * 
+     * The method collects the classpath roots into a set of Path objects, using the system's file separator.
+     * It then creates a Settings object with the provided paths and project information.
+     * Finally, it creates a new instance of the SpringBootTestAotProcessor class and calls the process method.
+     */
+    public static void main(String[] args) {
 		int requiredArgs = 6;
 		Assert.isTrue(args.length >= requiredArgs,
 				() -> "Usage: %s <classpathRoots> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId>"

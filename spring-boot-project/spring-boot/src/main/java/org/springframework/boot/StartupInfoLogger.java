@@ -41,23 +41,45 @@ class StartupInfoLogger {
 
 	private final Class<?> sourceClass;
 
-	StartupInfoLogger(Class<?> sourceClass) {
+	/**
+     * Constructs a new instance of StartupInfoLogger with the specified source class.
+     * 
+     * @param sourceClass the class from which the logger is being instantiated
+     */
+    StartupInfoLogger(Class<?> sourceClass) {
 		this.sourceClass = sourceClass;
 	}
 
-	void logStarting(Log applicationLog) {
+	/**
+     * Logs the starting information using the provided application log.
+     * 
+     * @param applicationLog the log to be used for logging the starting information (must not be null)
+     * @throws IllegalArgumentException if the applicationLog is null
+     */
+    void logStarting(Log applicationLog) {
 		Assert.notNull(applicationLog, "Log must not be null");
 		applicationLog.info(LogMessage.of(this::getStartingMessage));
 		applicationLog.debug(LogMessage.of(this::getRunningMessage));
 	}
 
-	void logStarted(Log applicationLog, Startup startup) {
+	/**
+     * Logs the startup information of the application.
+     * 
+     * @param applicationLog the log object used for logging
+     * @param startup the startup object containing the startup information
+     */
+    void logStarted(Log applicationLog, Startup startup) {
 		if (applicationLog.isInfoEnabled()) {
 			applicationLog.info(getStartedMessage(startup));
 		}
 	}
 
-	private CharSequence getStartingMessage() {
+	/**
+     * Returns the starting message for the StartupInfoLogger class.
+     * 
+     * @return the starting message
+     */
+    private CharSequence getStartingMessage() {
 		StringBuilder message = new StringBuilder();
 		message.append("Starting");
 		appendAotMode(message);
@@ -69,7 +91,12 @@ class StartupInfoLogger {
 		return message;
 	}
 
-	private CharSequence getRunningMessage() {
+	/**
+     * Returns a CharSequence containing the running message.
+     * 
+     * @return the running message
+     */
+    private CharSequence getRunningMessage() {
 		StringBuilder message = new StringBuilder();
 		message.append("Running with Spring Boot");
 		appendVersion(message, getClass());
@@ -78,7 +105,13 @@ class StartupInfoLogger {
 		return message;
 	}
 
-	private CharSequence getStartedMessage(Startup startup) {
+	/**
+     * Returns a CharSequence representing the get started message for a given startup.
+     * 
+     * @param startup the Startup object representing the startup information
+     * @return a CharSequence representing the get started message
+     */
+    private CharSequence getStartedMessage(Startup startup) {
 		StringBuilder message = new StringBuilder();
 		message.append(startup.action());
 		appendApplicationName(message);
@@ -93,24 +126,50 @@ class StartupInfoLogger {
 		return message;
 	}
 
-	private void appendAotMode(StringBuilder message) {
+	/**
+     * Appends the AOT mode information to the given message.
+     * 
+     * @param message the StringBuilder object to append the AOT mode information to
+     */
+    private void appendAotMode(StringBuilder message) {
 		append(message, "", () -> AotDetector.useGeneratedArtifacts() ? "AOT-processed" : null);
 	}
 
-	private void appendApplicationName(StringBuilder message) {
+	/**
+     * Appends the application name to the given message.
+     * 
+     * @param message the StringBuilder to append the application name to
+     */
+    private void appendApplicationName(StringBuilder message) {
 		append(message, "",
 				() -> (this.sourceClass != null) ? ClassUtils.getShortName(this.sourceClass) : "application");
 	}
 
-	private void appendVersion(StringBuilder message, Class<?> source) {
+	/**
+     * Appends the version information of the specified source class to the given message.
+     *
+     * @param message the StringBuilder object to append the version information to
+     * @param source the Class object representing the source class
+     */
+    private void appendVersion(StringBuilder message, Class<?> source) {
 		append(message, "v", () -> source.getPackage().getImplementationVersion());
 	}
 
-	private void appendPid(StringBuilder message) {
+	/**
+     * Appends the process ID (PID) to the given message.
+     * 
+     * @param message the StringBuilder to append the PID to
+     */
+    private void appendPid(StringBuilder message) {
 		append(message, "with PID ", ApplicationPid::new);
 	}
 
-	private void appendContext(StringBuilder message) {
+	/**
+     * Appends the context information to the given message.
+     * 
+     * @param message the message to append the context information to
+     */
+    private void appendContext(StringBuilder message) {
 		StringBuilder context = new StringBuilder();
 		ApplicationHome home = new ApplicationHome(this.sourceClass);
 		if (home.getSource() != null) {
@@ -125,15 +184,36 @@ class StartupInfoLogger {
 		}
 	}
 
-	private void appendJavaVersion(StringBuilder message) {
+	/**
+     * Appends the Java version to the given message.
+     * 
+     * @param message the StringBuilder to append the Java version to
+     */
+    private void appendJavaVersion(StringBuilder message) {
 		append(message, "using Java ", () -> System.getProperty("java.version"));
 	}
 
-	private void append(StringBuilder message, String prefix, Callable<Object> call) {
+	/**
+     * Appends the result of a Callable to a StringBuilder with a given prefix.
+     * 
+     * @param message the StringBuilder to append the result to
+     * @param prefix the prefix to prepend to the result
+     * @param call the Callable to execute and append its result
+     */
+    private void append(StringBuilder message, String prefix, Callable<Object> call) {
 		append(message, prefix, call, "");
 	}
 
-	private void append(StringBuilder message, String prefix, Callable<Object> call, String defaultValue) {
+	/**
+     * Appends a message to a StringBuilder object with a given prefix and value.
+     * If the value is null or empty, it will be replaced with a default value.
+     * 
+     * @param message the StringBuilder object to append the message to
+     * @param prefix the prefix to prepend to the value
+     * @param call the Callable object to retrieve the value from
+     * @param defaultValue the default value to use if the retrieved value is null or empty
+     */
+    private void append(StringBuilder message, String prefix, Callable<Object> call, String defaultValue) {
 		Object result = callIfPossible(call);
 		String value = (result != null) ? result.toString() : null;
 		if (!StringUtils.hasLength(value)) {
@@ -146,7 +226,13 @@ class StartupInfoLogger {
 		}
 	}
 
-	private Object callIfPossible(Callable<Object> call) {
+	/**
+     * Executes the given Callable object and returns the result if successful.
+     * 
+     * @param call the Callable object to be executed
+     * @return the result of the Callable object if successful, null otherwise
+     */
+    private Object callIfPossible(Callable<Object> call) {
 		try {
 			return call.call();
 		}

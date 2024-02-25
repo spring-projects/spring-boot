@@ -38,7 +38,13 @@ public class TestcontainersLifecycleApplicationContextInitializer
 
 	private static final Set<ConfigurableApplicationContext> applied = Collections.newSetFromMap(new WeakHashMap<>());
 
-	@Override
+	/**
+     * Initializes the application context by adding necessary bean factory post processors and application listeners
+     * for Testcontainers lifecycle management.
+     *
+     * @param applicationContext the configurable application context to be initialized
+     */
+    @Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		synchronized (applied) {
 			if (!applied.add(applicationContext)) {

@@ -69,7 +69,22 @@ public class TaskExecutorBuilder {
 
 	private final Set<TaskExecutorCustomizer> customizers;
 
-	public TaskExecutorBuilder() {
+	/**
+     * Constructs a new TaskExecutorBuilder with default values for all properties.
+     * 
+     * The default values are:
+     * - queueCapacity: null
+     * - corePoolSize: null
+     * - maxPoolSize: null
+     * - allowCoreThreadTimeOut: null
+     * - keepAlive: null
+     * - awaitTermination: null
+     * - awaitTerminationPeriod: null
+     * - threadNamePrefix: null
+     * - taskDecorator: null
+     * - customizers: null
+     */
+    public TaskExecutorBuilder() {
 		this.queueCapacity = null;
 		this.corePoolSize = null;
 		this.maxPoolSize = null;
@@ -82,7 +97,21 @@ public class TaskExecutorBuilder {
 		this.customizers = null;
 	}
 
-	private TaskExecutorBuilder(Integer queueCapacity, Integer corePoolSize, Integer maxPoolSize,
+	/**
+     * Constructs a new TaskExecutorBuilder with the specified parameters.
+     *
+     * @param queueCapacity the capacity of the task queue
+     * @param corePoolSize the core pool size of the task executor
+     * @param maxPoolSize the maximum pool size of the task executor
+     * @param allowCoreThreadTimeOut whether core threads are allowed to time out
+     * @param keepAlive the duration to keep non-core threads alive when idle
+     * @param awaitTermination whether to await termination of the task executor
+     * @param awaitTerminationPeriod the duration to await termination of the task executor
+     * @param threadNamePrefix the prefix to use for thread names in the task executor
+     * @param taskDecorator the task decorator to use for decorating tasks
+     * @param customizers the set of customizers to apply to the task executor
+     */
+    private TaskExecutorBuilder(Integer queueCapacity, Integer corePoolSize, Integer maxPoolSize,
 			Boolean allowCoreThreadTimeOut, Duration keepAlive, Boolean awaitTermination,
 			Duration awaitTerminationPeriod, String threadNamePrefix, TaskDecorator taskDecorator,
 			Set<TaskExecutorCustomizer> customizers) {
@@ -321,7 +350,15 @@ public class TaskExecutorBuilder {
 		return taskExecutor;
 	}
 
-	private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
+	/**
+     * Appends the elements from the specified iterable to the given set.
+     * 
+     * @param set       the set to append elements to (nullable)
+     * @param additions the iterable containing elements to be appended
+     * @param <T>       the type of elements in the set
+     * @return an unmodifiable set containing the original set elements and the appended elements
+     */
+    private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
 		additions.forEach(result::add);
 		return Collections.unmodifiableSet(result);

@@ -23,11 +23,21 @@ import jakarta.ws.rs.QueryParam;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * ReverseEndpoint class.
+ */
 @Component
 @Path("/reverse")
 public class ReverseEndpoint {
 
-	@GET
+	/**
+     * Reverses the given input string.
+     *
+     * @param input the input string to be reversed
+     * @return the reversed input string
+     * @throws NullPointerException if the input string is null
+     */
+    @GET
 	public String reverse(@QueryParam("input") @NotNull String input) {
 		return new StringBuilder(input).reverse().toString();
 	}

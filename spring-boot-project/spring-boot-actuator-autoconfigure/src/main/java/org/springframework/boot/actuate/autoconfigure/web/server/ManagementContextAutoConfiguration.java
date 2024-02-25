@@ -48,17 +48,30 @@ import org.springframework.util.Assert;
 @EnableConfigurationProperties({ WebEndpointProperties.class, ManagementServerProperties.class })
 public class ManagementContextAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * SameManagementContextConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.SAME)
 	static class SameManagementContextConfiguration implements SmartInitializingSingleton {
 
 		private final Environment environment;
 
-		SameManagementContextConfiguration(Environment environment) {
+		/**
+         * Constructs a new SameManagementContextConfiguration object with the specified environment.
+         * 
+         * @param environment the environment to be used for the configuration
+         */
+        SameManagementContextConfiguration(Environment environment) {
 			this.environment = environment;
 		}
 
-		@Override
+		/**
+         * This method is called after all singleton beans have been instantiated in the application context.
+         * It verifies the SSL configuration and address configuration.
+         * If the environment is an instance of ConfigurableEnvironment, it adds a local management port property alias.
+         */
+        @Override
 		public void afterSingletonsInstantiated() {
 			verifySslConfiguration();
 			verifyAddressConfiguration();
@@ -67,13 +80,28 @@ public class ManagementContextAutoConfiguration {
 			}
 		}
 
-		private void verifySslConfiguration() {
+		/**
+         * Verifies the SSL configuration for the management server.
+         * 
+         * This method checks if the management-specific SSL is enabled and throws an exception if it is.
+         * The management server should not be configured with SSL as it is not listening on a separate port.
+         * 
+         * @throws IllegalStateException if management-specific SSL is enabled
+         */
+        private void verifySslConfiguration() {
 			Boolean enabled = this.environment.getProperty("management.server.ssl.enabled", Boolean.class, false);
 			Assert.state(!enabled, "Management-specific SSL cannot be configured as the management "
 					+ "server is not listening on a separate port");
 		}
 
-		private void verifyAddressConfiguration() {
+		/**
+         * Verifies the address configuration for the management server.
+         * 
+         * This method checks if the management-specific server address is configured. If the management server is not listening on a separate port, the address should not be configured.
+         * 
+         * @throws IllegalStateException if the management-specific server address is configured when the management server is not listening on a separate port
+         */
+        private void verifyAddressConfiguration() {
 			Object address = this.environment.getProperty("management.server.address");
 			Assert.state(address == null, "Management-specific server address cannot be configured as the management "
 					+ "server is not listening on a separate port");
@@ -98,7 +126,10 @@ public class ManagementContextAutoConfiguration {
 			});
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * EnableSameManagementContextConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@EnableManagementContext(ManagementContextType.SAME)
 		static class EnableSameManagementContextConfiguration {
 
@@ -106,11 +137,21 @@ public class ManagementContextAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * DifferentManagementContextConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	static class DifferentManagementContextConfiguration {
 
-		@Bean
+		/**
+         * Creates a ChildManagementContextInitializer object with the given management context factory and parent application context.
+         * 
+         * @param managementContextFactory the management context factory used to create the child management context
+         * @param parentContext the parent application context
+         * @return the ChildManagementContextInitializer object
+         */
+        @Bean
 		static ChildManagementContextInitializer childManagementContextInitializer(
 				ManagementContextFactory managementContextFactory, ApplicationContext parentContext) {
 			return new ChildManagementContextInitializer(managementContextFactory, parentContext);

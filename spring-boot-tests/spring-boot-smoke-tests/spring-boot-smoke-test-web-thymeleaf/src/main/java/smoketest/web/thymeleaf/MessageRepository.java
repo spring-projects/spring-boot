@@ -16,6 +16,9 @@
 
 package smoketest.web.thymeleaf;
 
+/**
+ * MessageRepository interface.
+ */
 public interface MessageRepository {
 
 	Iterable<Message> findAll();

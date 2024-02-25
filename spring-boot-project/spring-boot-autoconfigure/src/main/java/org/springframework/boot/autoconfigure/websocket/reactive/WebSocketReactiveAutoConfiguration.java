@@ -46,11 +46,20 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 public class WebSocketReactiveAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * TomcatWebSocketConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Tomcat.class, WsSci.class })
 	static class TomcatWebSocketConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of {@link TomcatWebSocketReactiveWebServerCustomizer} if no bean with the name "websocketReactiveWebServerCustomizer" is present.
+         * This customizer is used to configure the Tomcat WebSocket support for the reactive web server.
+         *
+         * @return the {@link TomcatWebSocketReactiveWebServerCustomizer} instance
+         */
+        @Bean
 		@ConditionalOnMissingBean(name = "websocketReactiveWebServerCustomizer")
 		TomcatWebSocketReactiveWebServerCustomizer websocketReactiveWebServerCustomizer() {
 			return new TomcatWebSocketReactiveWebServerCustomizer();
@@ -58,11 +67,20 @@ public class WebSocketReactiveAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * JettyWebSocketConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JakartaWebSocketServletContainerInitializer.class)
 	static class JettyWebSocketConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of JettyWebSocketReactiveWebServerCustomizer if there is no existing bean with the name "websocketReactiveWebServerCustomizer".
+         * This customizer is used to configure the Jetty WebSocket server for the reactive web server.
+         *
+         * @return the JettyWebSocketReactiveWebServerCustomizer instance
+         */
+        @Bean
 		@ConditionalOnMissingBean(name = "websocketReactiveWebServerCustomizer")
 		JettyWebSocketReactiveWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new JettyWebSocketReactiveWebServerCustomizer();

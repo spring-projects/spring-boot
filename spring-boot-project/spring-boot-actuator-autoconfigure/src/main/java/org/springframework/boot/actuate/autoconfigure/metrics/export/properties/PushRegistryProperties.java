@@ -55,43 +55,93 @@ public abstract class PushRegistryProperties {
 	 */
 	private Integer batchSize = 10000;
 
-	public Duration getStep() {
+	/**
+     * Returns the step duration.
+     *
+     * @return the step duration
+     */
+    public Duration getStep() {
 		return this.step;
 	}
 
-	public void setStep(Duration step) {
+	/**
+     * Sets the step duration for the PushRegistryProperties.
+     * 
+     * @param step the duration to set as the step
+     */
+    public void setStep(Duration step) {
 		this.step = step;
 	}
 
-	public boolean isEnabled() {
+	/**
+     * Returns the current status of the enabled property.
+     * 
+     * @return true if the enabled property is set to true, false otherwise.
+     */
+    public boolean isEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	/**
+     * Sets the enabled status of the PushRegistryProperties.
+     * 
+     * @param enabled the enabled status to be set
+     */
+    public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public Duration getConnectTimeout() {
+	/**
+     * Returns the connect timeout duration.
+     *
+     * @return the connect timeout duration
+     */
+    public Duration getConnectTimeout() {
 		return this.connectTimeout;
 	}
 
-	public void setConnectTimeout(Duration connectTimeout) {
+	/**
+     * Sets the connection timeout for the PushRegistryProperties.
+     * 
+     * @param connectTimeout the duration of the connection timeout
+     */
+    public void setConnectTimeout(Duration connectTimeout) {
 		this.connectTimeout = connectTimeout;
 	}
 
-	public Duration getReadTimeout() {
+	/**
+     * Returns the read timeout duration.
+     *
+     * @return the read timeout duration
+     */
+    public Duration getReadTimeout() {
 		return this.readTimeout;
 	}
 
-	public void setReadTimeout(Duration readTimeout) {
+	/**
+     * Sets the read timeout for the PushRegistryProperties.
+     * 
+     * @param readTimeout the duration of the read timeout
+     */
+    public void setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
 	}
 
-	public Integer getBatchSize() {
+	/**
+     * Returns the batch size for processing push notifications.
+     *
+     * @return the batch size for processing push notifications
+     */
+    public Integer getBatchSize() {
 		return this.batchSize;
 	}
 
-	public void setBatchSize(Integer batchSize) {
+	/**
+     * Sets the batch size for processing push registry properties.
+     * 
+     * @param batchSize the batch size to be set
+     */
+    public void setBatchSize(Integer batchSize) {
 		this.batchSize = batchSize;
 	}
 

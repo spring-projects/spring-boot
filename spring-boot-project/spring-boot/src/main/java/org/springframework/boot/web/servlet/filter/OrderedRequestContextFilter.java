@@ -30,7 +30,12 @@ public class OrderedRequestContextFilter extends RequestContextFilter implements
 	// Order defaults to after Spring Session filter
 	private int order = REQUEST_WRAPPER_FILTER_MAX_ORDER - 105;
 
-	@Override
+	/**
+     * Returns the order value of this filter.
+     *
+     * @return the order value of this filter
+     */
+    @Override
 	public int getOrder() {
 		return this.order;
 	}

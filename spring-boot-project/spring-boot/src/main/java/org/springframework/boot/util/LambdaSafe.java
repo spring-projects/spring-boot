@@ -53,7 +53,10 @@ public final class LambdaSafe {
 				? ReflectionUtils.findMethod(CLASS_GET_MODULE.getReturnType(), "getName") : null;
 	}
 
-	private LambdaSafe() {
+	/**
+     * Private constructor for the LambdaSafe class.
+     */
+    private LambdaSafe() {
 	}
 
 	/**
@@ -113,7 +116,14 @@ public final class LambdaSafe {
 
 		private Filter<C, A> filter = new GenericTypeFilter<>();
 
-		LambdaSafeCallback(Class<C> callbackType, A argument, Object[] additionalArguments) {
+		/**
+         * Constructs a new instance of LambdaSafeCallback with the specified callback type, argument, and additional arguments.
+         * 
+         * @param callbackType the class representing the callback type
+         * @param argument the argument to be passed to the callback
+         * @param additionalArguments additional arguments to be passed to the callback
+         */
+        LambdaSafeCallback(Class<C> callbackType, A argument, Object[] additionalArguments) {
 			this.callbackType = callbackType;
 			this.argument = argument;
 			this.additionalArguments = additionalArguments;
@@ -153,7 +163,17 @@ public final class LambdaSafe {
 			return self();
 		}
 
-		protected final <R> InvocationResult<R> invoke(C callbackInstance, Supplier<R> supplier) {
+		/**
+         * Invokes the given supplier callback instance if it matches the filter criteria.
+         * 
+         * @param callbackInstance the callback instance to be invoked
+         * @param supplier the supplier callback function to be invoked
+         * @param <R> the type of the result returned by the supplier callback function
+         * @return an InvocationResult object containing the result of the supplier callback function, 
+         *         or a no-result InvocationResult if the callback instance does not match the filter criteria
+         * @throws ClassCastException if the callback instance does not match the expected type and is not a lambda function
+         */
+        protected final <R> InvocationResult<R> invoke(C callbackInstance, Supplier<R> supplier) {
 			if (this.filter.match(this.callbackType, callbackInstance, this.argument, this.additionalArguments)) {
 				try {
 					return InvocationResult.of(supplier.get());
@@ -168,16 +188,35 @@ public final class LambdaSafe {
 			return InvocationResult.noResult();
 		}
 
-		private boolean isLambdaGenericProblem(ClassCastException ex) {
+		/**
+         * Checks if the given exception is a ClassCastException caused by a generic problem in a lambda expression.
+         * 
+         * @param ex the ClassCastException to be checked
+         * @return true if the exception is a ClassCastException caused by a generic problem in a lambda expression, false otherwise
+         */
+        private boolean isLambdaGenericProblem(ClassCastException ex) {
 			return (ex.getMessage() == null || startsWithArgumentClassName(ex.getMessage()));
 		}
 
-		private boolean startsWithArgumentClassName(String message) {
+		/**
+         * Checks if the given message starts with the class name of the argument.
+         * 
+         * @param message the message to check
+         * @return true if the message starts with the class name of the argument, false otherwise
+         */
+        private boolean startsWithArgumentClassName(String message) {
 			Predicate<Object> startsWith = (argument) -> startsWithArgumentClassName(message, argument);
 			return startsWith.test(this.argument) || Stream.of(this.additionalArguments).anyMatch(startsWith);
 		}
 
-		private boolean startsWithArgumentClassName(String message, Object argument) {
+		/**
+         * Checks if the given message starts with the class name of the provided argument.
+         * 
+         * @param message the message to check
+         * @param argument the argument to compare the class name with
+         * @return true if the message starts with the class name of the argument, false otherwise
+         */
+        private boolean startsWithArgumentClassName(String message, Object argument) {
 			if (argument == null) {
 				return false;
 			}
@@ -205,7 +244,13 @@ public final class LambdaSafe {
 			return false;
 		}
 
-		private void logNonMatchingType(C callback, ClassCastException ex) {
+		/**
+         * Logs a non-matching type exception for the given callback.
+         * 
+         * @param callback the callback object
+         * @param ex the ClassCastException that occurred
+         */
+        private void logNonMatchingType(C callback, ClassCastException ex) {
 			if (this.logger.isDebugEnabled()) {
 				Class<?> expectedType = ResolvableType.forClass(this.callbackType).resolveGeneric();
 				String expectedTypeName = (expectedType != null) ? ClassUtils.getShortName(expectedType) + " type"
@@ -216,7 +261,12 @@ public final class LambdaSafe {
 			}
 		}
 
-		@SuppressWarnings("unchecked")
+		/**
+         * Returns a reference to the current instance of the LambdaSafeCallback class.
+         * 
+         * @return a reference to the current instance of the LambdaSafeCallback class
+         */
+        @SuppressWarnings("unchecked")
 		private SELF self() {
 			return (SELF) this;
 		}
@@ -233,7 +283,15 @@ public final class LambdaSafe {
 
 		private final C callbackInstance;
 
-		private Callback(Class<C> callbackType, C callbackInstance, A argument, Object[] additionalArguments) {
+		/**
+         * Constructs a new Callback object with the specified callback type, callback instance, argument, and additional arguments.
+         * 
+         * @param callbackType the class representing the type of the callback
+         * @param callbackInstance the instance of the callback
+         * @param argument the argument to be passed to the callback
+         * @param additionalArguments additional arguments to be passed to the callback
+         */
+        private Callback(Class<C> callbackType, C callbackInstance, A argument, Object[] additionalArguments) {
 			super(callbackType, argument, additionalArguments);
 			this.callbackInstance = callbackInstance;
 		}
@@ -272,7 +330,16 @@ public final class LambdaSafe {
 
 		private final Collection<? extends C> callbackInstances;
 
-		private Callbacks(Class<C> callbackType, Collection<? extends C> callbackInstances, A argument,
+		/**
+         * Constructs a new Callbacks object with the specified callback type, callback instances,
+         * argument, and additional arguments.
+         * 
+         * @param callbackType the class representing the type of the callbacks
+         * @param callbackInstances a collection of callback instances
+         * @param argument the argument to be passed to the callbacks
+         * @param additionalArguments additional arguments to be passed to the callbacks
+         */
+        private Callbacks(Class<C> callbackType, Collection<? extends C> callbackInstances, A argument,
 				Object[] additionalArguments) {
 			super(callbackType, argument, additionalArguments);
 			this.callbackInstances = callbackInstances;
@@ -344,7 +411,18 @@ public final class LambdaSafe {
 	 */
 	private static final class GenericTypeFilter<C, A> implements Filter<C, A> {
 
-		@Override
+		/**
+         * Determines if the given callback instance matches the specified callback type and argument.
+         * 
+         * @param <C> the type of the callback
+         * @param <A> the type of the argument
+         * @param callbackType the type of the callback
+         * @param callbackInstance the instance of the callback
+         * @param argument the argument to be matched
+         * @param additionalArguments additional arguments to be considered
+         * @return true if the callback instance matches the callback type and argument, false otherwise
+         */
+        @Override
 		public boolean match(Class<C> callbackType, C callbackInstance, A argument, Object[] additionalArguments) {
 			ResolvableType type = ResolvableType.forClass(callbackType, callbackInstance.getClass());
 			if (type.getGenerics().length == 1 && type.resolveGeneric() != null) {
@@ -369,7 +447,12 @@ public final class LambdaSafe {
 
 		private final R value;
 
-		private InvocationResult(R value) {
+		/**
+         * Constructs a new InvocationResult object with the specified value.
+         *
+         * @param value the value to be assigned to the InvocationResult object
+         */
+        private InvocationResult(R value) {
 			this.value = value;
 		}
 

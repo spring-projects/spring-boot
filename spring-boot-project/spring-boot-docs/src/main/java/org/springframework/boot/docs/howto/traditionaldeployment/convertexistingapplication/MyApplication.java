@@ -21,10 +21,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
+/**
+ * MyApplication class.
+ */
 @SpringBootApplication
 public class MyApplication extends SpringBootServletInitializer {
 
-	@Override
+	/**
+     * Configures the SpringApplicationBuilder for the application.
+     * 
+     * @param application the SpringApplicationBuilder instance
+     * @return the configured SpringApplicationBuilder instance
+     */
+    @Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		// Customize the application or call application.sources(...) to add sources
 		// Since our example is itself a @Configuration class (through

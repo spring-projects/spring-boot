@@ -104,27 +104,63 @@ public class WebMvcProperties {
 
 	private final Problemdetails problemdetails = new Problemdetails();
 
-	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
+	/**
+     * Returns the format of the message codes resolver.
+     *
+     * @return the format of the message codes resolver
+     */
+    public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
 	}
 
-	public void setMessageCodesResolverFormat(DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
+	/**
+     * Sets the format for the message codes resolver.
+     * 
+     * @param messageCodesResolverFormat the format to set for the message codes resolver
+     */
+    public void setMessageCodesResolverFormat(DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
 		this.messageCodesResolverFormat = messageCodesResolverFormat;
 	}
 
-	public Format getFormat() {
+	/**
+     * Returns the format of the WebMvcProperties.
+     *
+     * @return the format of the WebMvcProperties
+     */
+    public Format getFormat() {
 		return this.format;
 	}
 
-	public boolean isPublishRequestHandledEvents() {
+	/**
+     * Returns a boolean value indicating whether the publish request handled events flag is enabled or not.
+     * 
+     * @return true if the publish request handled events flag is enabled, false otherwise
+     */
+    public boolean isPublishRequestHandledEvents() {
 		return this.publishRequestHandledEvents;
 	}
 
-	public void setPublishRequestHandledEvents(boolean publishRequestHandledEvents) {
+	/**
+     * Sets the flag indicating whether to publish request handled events.
+     * 
+     * @param publishRequestHandledEvents the flag indicating whether to publish request handled events
+     */
+    public void setPublishRequestHandledEvents(boolean publishRequestHandledEvents) {
 		this.publishRequestHandledEvents = publishRequestHandledEvents;
 	}
 
-	@Deprecated(since = "3.2.0", forRemoval = true)
+	/**
+     * Returns the value of the throwExceptionIfNoHandlerFound property.
+     * 
+     * @return the value of the throwExceptionIfNoHandlerFound property
+     * 
+     * @deprecated This method is deprecated since version 3.2.0 and is scheduled for removal.
+     *             The DispatcherServlet property is deprecated for removal and should no longer need to be configured.
+     *             Please use an alternative approach to handle the case when no handler is found.
+     *             This method will be removed in a future release.
+     *             Consider using the setThrowExceptionIfNoHandlerFound(boolean) method instead.
+     */
+    @Deprecated(since = "3.2.0", forRemoval = true)
 	@DeprecatedConfigurationProperty(
 			reason = "DispatcherServlet property is deprecated for removal and should no longer need to be configured",
 			since = "3.2.0")
@@ -132,84 +168,186 @@ public class WebMvcProperties {
 		return this.throwExceptionIfNoHandlerFound;
 	}
 
-	@Deprecated(since = "3.2.0", forRemoval = true)
+	/**
+     * Sets the flag indicating whether an exception should be thrown if no handler is found.
+     *
+     * @param throwExceptionIfNoHandlerFound the flag indicating whether an exception should be thrown
+     *                                       if no handler is found
+     * @deprecated This method is deprecated since version 3.2.0 and will be removed in a future release.
+     *             Please use an alternative method instead.
+     */
+    @Deprecated(since = "3.2.0", forRemoval = true)
 	public void setThrowExceptionIfNoHandlerFound(boolean throwExceptionIfNoHandlerFound) {
 		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
 	}
 
-	public boolean isLogRequestDetails() {
+	/**
+     * Returns a boolean value indicating whether to log request details.
+     *
+     * @return true if request details should be logged, false otherwise
+     */
+    public boolean isLogRequestDetails() {
 		return this.logRequestDetails;
 	}
 
-	public void setLogRequestDetails(boolean logRequestDetails) {
+	/**
+     * Sets the flag to determine whether to log request details.
+     * 
+     * @param logRequestDetails
+     *            the flag indicating whether to log request details
+     */
+    public void setLogRequestDetails(boolean logRequestDetails) {
 		this.logRequestDetails = logRequestDetails;
 	}
 
-	public boolean isLogResolvedException() {
+	/**
+     * Returns a boolean value indicating whether the resolved exceptions should be logged.
+     *
+     * @return {@code true} if the resolved exceptions should be logged, {@code false} otherwise.
+     */
+    public boolean isLogResolvedException() {
 		return this.logResolvedException;
 	}
 
-	public void setLogResolvedException(boolean logResolvedException) {
+	/**
+     * Sets the flag indicating whether to log resolved exceptions.
+     * 
+     * @param logResolvedException true to enable logging of resolved exceptions, false otherwise
+     */
+    public void setLogResolvedException(boolean logResolvedException) {
 		this.logResolvedException = logResolvedException;
 	}
 
-	public boolean isDispatchOptionsRequest() {
+	/**
+     * Returns a boolean value indicating whether the request is a dispatch options request.
+     *
+     * @return {@code true} if the request is a dispatch options request, {@code false} otherwise.
+     */
+    public boolean isDispatchOptionsRequest() {
 		return this.dispatchOptionsRequest;
 	}
 
-	public void setDispatchOptionsRequest(boolean dispatchOptionsRequest) {
+	/**
+     * Sets the flag indicating whether to dispatch an OPTIONS request to the handler method.
+     * 
+     * @param dispatchOptionsRequest the flag indicating whether to dispatch an OPTIONS request
+     */
+    public void setDispatchOptionsRequest(boolean dispatchOptionsRequest) {
 		this.dispatchOptionsRequest = dispatchOptionsRequest;
 	}
 
-	public boolean isDispatchTraceRequest() {
+	/**
+     * Returns a boolean value indicating whether a dispatch trace request is enabled.
+     *
+     * @return {@code true} if dispatch trace request is enabled, {@code false} otherwise.
+     */
+    public boolean isDispatchTraceRequest() {
 		return this.dispatchTraceRequest;
 	}
 
-	public void setDispatchTraceRequest(boolean dispatchTraceRequest) {
+	/**
+     * Sets the flag indicating whether to dispatch trace requests.
+     * 
+     * @param dispatchTraceRequest true to dispatch trace requests, false otherwise
+     */
+    public void setDispatchTraceRequest(boolean dispatchTraceRequest) {
 		this.dispatchTraceRequest = dispatchTraceRequest;
 	}
 
-	public String getStaticPathPattern() {
+	/**
+     * Returns the static path pattern.
+     *
+     * @return the static path pattern
+     */
+    public String getStaticPathPattern() {
 		return this.staticPathPattern;
 	}
 
-	public void setStaticPathPattern(String staticPathPattern) {
+	/**
+     * Sets the static path pattern for serving static resources.
+     * 
+     * @param staticPathPattern the static path pattern to be set
+     */
+    public void setStaticPathPattern(String staticPathPattern) {
 		this.staticPathPattern = staticPathPattern;
 	}
 
-	public String getWebjarsPathPattern() {
+	/**
+     * Returns the webjars path pattern.
+     * 
+     * @return the webjars path pattern
+     */
+    public String getWebjarsPathPattern() {
 		return this.webjarsPathPattern;
 	}
 
-	public void setWebjarsPathPattern(String webjarsPathPattern) {
+	/**
+     * Sets the path pattern for Webjars.
+     * 
+     * @param webjarsPathPattern the path pattern for Webjars
+     */
+    public void setWebjarsPathPattern(String webjarsPathPattern) {
 		this.webjarsPathPattern = webjarsPathPattern;
 	}
 
-	public Async getAsync() {
+	/**
+     * Returns the Async object associated with this WebMvcProperties instance.
+     *
+     * @return the Async object
+     */
+    public Async getAsync() {
 		return this.async;
 	}
 
-	public Servlet getServlet() {
+	/**
+     * Returns the servlet associated with this instance.
+     *
+     * @return the servlet associated with this instance
+     */
+    public Servlet getServlet() {
 		return this.servlet;
 	}
 
-	public View getView() {
+	/**
+     * Returns the view associated with this WebMvcProperties object.
+     *
+     * @return the view associated with this WebMvcProperties object
+     */
+    public View getView() {
 		return this.view;
 	}
 
-	public Contentnegotiation getContentnegotiation() {
+	/**
+     * Returns the content negotiation configuration for this WebMvcProperties instance.
+     *
+     * @return the content negotiation configuration
+     */
+    public Contentnegotiation getContentnegotiation() {
 		return this.contentnegotiation;
 	}
 
-	public Pathmatch getPathmatch() {
+	/**
+     * Returns the Pathmatch object associated with this WebMvcProperties instance.
+     *
+     * @return the Pathmatch object
+     */
+    public Pathmatch getPathmatch() {
 		return this.pathmatch;
 	}
 
-	public Problemdetails getProblemdetails() {
+	/**
+     * Returns the Problemdetails object associated with this WebMvcProperties instance.
+     *
+     * @return the Problemdetails object
+     */
+    public Problemdetails getProblemdetails() {
 		return this.problemdetails;
 	}
 
-	public static class Async {
+	/**
+     * Async class.
+     */
+    public static class Async {
 
 		/**
 		 * Amount of time before asynchronous request handling times out. If this value is
@@ -217,17 +355,30 @@ public class WebMvcProperties {
 		 */
 		private Duration requestTimeout;
 
-		public Duration getRequestTimeout() {
+		/**
+         * Returns the request timeout duration.
+         *
+         * @return the request timeout duration
+         */
+        public Duration getRequestTimeout() {
 			return this.requestTimeout;
 		}
 
-		public void setRequestTimeout(Duration requestTimeout) {
+		/**
+         * Sets the request timeout for the asynchronous operation.
+         * 
+         * @param requestTimeout the duration of the request timeout
+         */
+        public void setRequestTimeout(Duration requestTimeout) {
 			this.requestTimeout = requestTimeout;
 		}
 
 	}
 
-	public static class Servlet {
+	/**
+     * Servlet class.
+     */
+    public static class Servlet {
 
 		/**
 		 * Path of the dispatcher servlet. Setting a custom value for this property is not
@@ -240,25 +391,51 @@ public class WebMvcProperties {
 		 */
 		private int loadOnStartup = -1;
 
-		public String getPath() {
+		/**
+         * Returns the path of the servlet.
+         *
+         * @return the path of the servlet
+         */
+        public String getPath() {
 			return this.path;
 		}
 
-		public void setPath(String path) {
+		/**
+         * Sets the path for the servlet.
+         * 
+         * @param path the path to be set
+         * @throws IllegalArgumentException if the path is null or contains wildcards
+         */
+        public void setPath(String path) {
 			Assert.notNull(path, "Path must not be null");
 			Assert.isTrue(!path.contains("*"), "Path must not contain wildcards");
 			this.path = path;
 		}
 
-		public int getLoadOnStartup() {
+		/**
+         * Returns the value of the loadOnStartup property.
+         *
+         * @return the value of the loadOnStartup property
+         */
+        public int getLoadOnStartup() {
 			return this.loadOnStartup;
 		}
 
-		public void setLoadOnStartup(int loadOnStartup) {
+		/**
+         * Sets the value for the load on startup parameter.
+         * 
+         * @param loadOnStartup the value to set for the load on startup parameter
+         */
+        public void setLoadOnStartup(int loadOnStartup) {
 			this.loadOnStartup = loadOnStartup;
 		}
 
-		public String getServletMapping() {
+		/**
+         * Returns the servlet mapping for the current servlet.
+         * 
+         * @return the servlet mapping
+         */
+        public String getServletMapping() {
 			if (this.path.equals("") || this.path.equals("/")) {
 				return "/";
 			}
@@ -268,7 +445,13 @@ public class WebMvcProperties {
 			return this.path + "/*";
 		}
 
-		public String getPath(String path) {
+		/**
+         * Returns the full path for a given path by appending the servlet prefix.
+         * 
+         * @param path the path to be processed
+         * @return the full path with the servlet prefix
+         */
+        public String getPath(String path) {
 			String prefix = getServletPrefix();
 			if (!path.startsWith("/")) {
 				path = "/" + path;
@@ -276,7 +459,12 @@ public class WebMvcProperties {
 			return prefix + path;
 		}
 
-		public String getServletPrefix() {
+		/**
+         * Returns the servlet prefix.
+         * 
+         * @return the servlet prefix
+         */
+        public String getServletPrefix() {
 			String result = this.path;
 			int index = result.indexOf('*');
 			if (index != -1) {
@@ -290,7 +478,10 @@ public class WebMvcProperties {
 
 	}
 
-	public static class View {
+	/**
+     * View class.
+     */
+    public static class View {
 
 		/**
 		 * Spring MVC view prefix.
@@ -302,25 +493,48 @@ public class WebMvcProperties {
 		 */
 		private String suffix;
 
-		public String getPrefix() {
+		/**
+         * Returns the prefix used in the View.
+         *
+         * @return the prefix used in the View
+         */
+        public String getPrefix() {
 			return this.prefix;
 		}
 
-		public void setPrefix(String prefix) {
+		/**
+         * Sets the prefix for the View.
+         * 
+         * @param prefix the prefix to be set
+         */
+        public void setPrefix(String prefix) {
 			this.prefix = prefix;
 		}
 
-		public String getSuffix() {
+		/**
+         * Returns the suffix of the View.
+         *
+         * @return the suffix of the View
+         */
+        public String getSuffix() {
 			return this.suffix;
 		}
 
-		public void setSuffix(String suffix) {
+		/**
+         * Sets the suffix for the view.
+         * 
+         * @param suffix the suffix to be set for the view
+         */
+        public void setSuffix(String suffix) {
 			this.suffix = suffix;
 		}
 
 	}
 
-	public static class Contentnegotiation {
+	/**
+     * Contentnegotiation class.
+     */
+    public static class Contentnegotiation {
 
 		/**
 		 * Whether a request parameter ("format" by default) should be used to determine
@@ -339,50 +553,96 @@ public class WebMvcProperties {
 		 */
 		private String parameterName;
 
-		public boolean isFavorParameter() {
+		/**
+         * Returns whether the favor parameter is enabled or not.
+         * 
+         * @return true if the favor parameter is enabled, false otherwise
+         */
+        public boolean isFavorParameter() {
 			return this.favorParameter;
 		}
 
-		public void setFavorParameter(boolean favorParameter) {
+		/**
+         * Sets the favorParameter flag for content negotiation.
+         * 
+         * @param favorParameter the flag indicating whether to favor parameter for content negotiation
+         */
+        public void setFavorParameter(boolean favorParameter) {
 			this.favorParameter = favorParameter;
 		}
 
-		public Map<String, MediaType> getMediaTypes() {
+		/**
+         * Returns the map of media types.
+         * 
+         * @return the map of media types
+         */
+        public Map<String, MediaType> getMediaTypes() {
 			return this.mediaTypes;
 		}
 
-		public void setMediaTypes(Map<String, MediaType> mediaTypes) {
+		/**
+         * Sets the media types for content negotiation.
+         * 
+         * @param mediaTypes a map containing the media types to be set
+         */
+        public void setMediaTypes(Map<String, MediaType> mediaTypes) {
 			this.mediaTypes = mediaTypes;
 		}
 
-		public String getParameterName() {
+		/**
+         * Returns the name of the parameter.
+         *
+         * @return the name of the parameter
+         */
+        public String getParameterName() {
 			return this.parameterName;
 		}
 
-		public void setParameterName(String parameterName) {
+		/**
+         * Sets the parameter name for content negotiation.
+         * 
+         * @param parameterName the name of the parameter to be set
+         */
+        public void setParameterName(String parameterName) {
 			this.parameterName = parameterName;
 		}
 
 	}
 
-	public static class Pathmatch {
+	/**
+     * Pathmatch class.
+     */
+    public static class Pathmatch {
 
 		/**
 		 * Choice of strategy for matching request paths against registered mappings.
 		 */
 		private MatchingStrategy matchingStrategy = MatchingStrategy.PATH_PATTERN_PARSER;
 
-		public MatchingStrategy getMatchingStrategy() {
+		/**
+         * Returns the matching strategy used by the Pathmatch class.
+         * 
+         * @return the matching strategy
+         */
+        public MatchingStrategy getMatchingStrategy() {
 			return this.matchingStrategy;
 		}
 
-		public void setMatchingStrategy(MatchingStrategy matchingStrategy) {
+		/**
+         * Sets the matching strategy for the Pathmatch class.
+         * 
+         * @param matchingStrategy the matching strategy to be set
+         */
+        public void setMatchingStrategy(MatchingStrategy matchingStrategy) {
 			this.matchingStrategy = matchingStrategy;
 		}
 
 	}
 
-	public static class Format {
+	/**
+     * Format class.
+     */
+    public static class Format {
 
 		/**
 		 * Date format to use, for example 'dd/MM/yyyy'.
@@ -399,27 +659,57 @@ public class WebMvcProperties {
 		 */
 		private String dateTime;
 
-		public String getDate() {
+		/**
+         * Returns the date.
+         *
+         * @return the date
+         */
+        public String getDate() {
 			return this.date;
 		}
 
-		public void setDate(String date) {
+		/**
+         * Sets the date for the Format class.
+         * 
+         * @param date the date to be set
+         */
+        public void setDate(String date) {
 			this.date = date;
 		}
 
-		public String getTime() {
+		/**
+         * Returns the current time.
+         *
+         * @return the current time as a String
+         */
+        public String getTime() {
 			return this.time;
 		}
 
-		public void setTime(String time) {
+		/**
+         * Sets the time value for the Format object.
+         * 
+         * @param time the time value to be set
+         */
+        public void setTime(String time) {
 			this.time = time;
 		}
 
-		public String getDateTime() {
+		/**
+         * Returns the date and time in the specified format.
+         *
+         * @return the date and time in the specified format
+         */
+        public String getDateTime() {
 			return this.dateTime;
 		}
 
-		public void setDateTime(String dateTime) {
+		/**
+         * Sets the date and time for the Format object.
+         * 
+         * @param dateTime the date and time to be set
+         */
+        public void setDateTime(String dateTime) {
 			this.dateTime = dateTime;
 		}
 
@@ -444,18 +734,31 @@ public class WebMvcProperties {
 
 	}
 
-	public static class Problemdetails {
+	/**
+     * Problemdetails class.
+     */
+    public static class Problemdetails {
 
 		/**
 		 * Whether RFC 7807 Problem Details support should be enabled.
 		 */
 		private boolean enabled = false;
 
-		public boolean isEnabled() {
+		/**
+         * Returns the current status of the enabled flag.
+         *
+         * @return {@code true} if the flag is enabled, {@code false} otherwise.
+         */
+        public boolean isEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(boolean enabled) {
+		/**
+         * Sets the enabled status of the Problemdetails object.
+         * 
+         * @param enabled the boolean value indicating whether the Problemdetails object is enabled or not
+         */
+        public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 

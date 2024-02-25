@@ -64,17 +64,36 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 
 	private BeanFactory beanFactory;
 
-	@Override
+	/**
+     * Sets the bean factory for this JsonComponentModule.
+     * 
+     * @param beanFactory the bean factory to be set
+     * @throws BeansException if an error occurs while setting the bean factory
+     */
+    @Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
 
-	@Override
+	/**
+     * This method is called after all the properties have been set for the JsonComponentModule class.
+     * It registers the JSON components.
+     */
+    @Override
 	public void afterPropertiesSet() {
 		registerJsonComponents();
 	}
 
-	public void registerJsonComponents() {
+	/**
+     * Registers JSON components.
+     * 
+     * This method iterates through the bean factories starting from the current bean factory and its parent bean factories.
+     * If a bean factory is an instance of ListableBeanFactory, it adds JSON beans from that bean factory.
+     * 
+     * @param None
+     * @return None
+     */
+    public void registerJsonComponents() {
 		BeanFactory beanFactory = this.beanFactory;
 		while (beanFactory != null) {
 			if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
@@ -85,14 +104,24 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		}
 	}
 
-	private void addJsonBeans(ListableBeanFactory beanFactory) {
+	/**
+     * Adds JSON beans to the module.
+     * 
+     * @param beanFactory the bean factory to retrieve the beans from
+     */
+    private void addJsonBeans(ListableBeanFactory beanFactory) {
 		Map<String, Object> beans = beanFactory.getBeansWithAnnotation(JsonComponent.class);
 		for (Object bean : beans.values()) {
 			addJsonBean(bean);
 		}
 	}
 
-	private void addJsonBean(Object bean) {
+	/**
+     * Adds a JSON bean to the module.
+     * 
+     * @param bean the JSON bean to be added
+     */
+    private void addJsonBean(Object bean) {
 		MergedAnnotation<JsonComponent> annotation = MergedAnnotations
 			.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY)
 			.get(JsonComponent.class);
@@ -101,7 +130,14 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		addJsonBean(bean, types, scope);
 	}
 
-	private void addJsonBean(Object bean, Class<?>[] types, Scope scope) {
+	/**
+     * Adds a JSON bean to the module.
+     * 
+     * @param bean The JSON bean to be added.
+     * @param types The types associated with the bean.
+     * @param scope The scope of the bean.
+     */
+    private void addJsonBean(Object bean, Class<?>[] types, Scope scope) {
 		if (bean instanceof JsonSerializer) {
 			addJsonSerializerBean((JsonSerializer<?>) bean, scope, types);
 		}
@@ -119,13 +155,27 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		}
 	}
 
-	private static boolean isSuitableInnerClass(Class<?> innerClass) {
+	/**
+     * Checks if the given inner class is suitable for use as a JSON component.
+     * 
+     * @param innerClass the inner class to check
+     * @return true if the inner class is suitable, false otherwise
+     */
+    private static boolean isSuitableInnerClass(Class<?> innerClass) {
 		return !Modifier.isAbstract(innerClass.getModifiers()) && (JsonSerializer.class.isAssignableFrom(innerClass)
 				|| JsonDeserializer.class.isAssignableFrom(innerClass)
 				|| KeyDeserializer.class.isAssignableFrom(innerClass));
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Adds a JSON serializer bean to the module.
+     * 
+     * @param serializer the JSON serializer to be added
+     * @param scope the scope of the serializer (VALUES or KEYS)
+     * @param types the types to be serialized by the serializer
+     * @param <T> the type of the serializer
+     */
+    @SuppressWarnings("unchecked")
 	private <T> void addJsonSerializerBean(JsonSerializer<T> serializer, JsonComponent.Scope scope, Class<?>[] types) {
 		Class<T> baseType = (Class<T>) ResolvableType.forClass(JsonSerializer.class, serializer.getClass())
 			.resolveGeneric();
@@ -134,19 +184,43 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Adds a JSON deserializer bean to the module.
+     * 
+     * @param deserializer the JSON deserializer to be added
+     * @param types the types to which the deserializer should be applied
+     * @param <T> the type of the deserializer
+     */
+    @SuppressWarnings("unchecked")
 	private <T> void addJsonDeserializerBean(JsonDeserializer<T> deserializer, Class<?>[] types) {
 		Class<T> baseType = (Class<T>) ResolvableType.forClass(JsonDeserializer.class, deserializer.getClass())
 			.resolveGeneric();
 		addBeanToModule(deserializer, baseType, types, this::addDeserializer);
 	}
 
-	private void addKeyDeserializerBean(KeyDeserializer deserializer, Class<?>[] types) {
+	/**
+     * Adds a KeyDeserializer bean to the module.
+     * 
+     * @param deserializer the KeyDeserializer to be added
+     * @param types the types for which the KeyDeserializer should be used
+     * @throws IllegalArgumentException if the types array is empty or null
+     */
+    private void addKeyDeserializerBean(KeyDeserializer deserializer, Class<?>[] types) {
 		Assert.notEmpty(types, "Type must be specified for KeyDeserializer");
 		addBeanToModule(deserializer, Object.class, types, this::addKeyDeserializer);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Adds a bean to the module.
+     * 
+     * @param element the element to be added
+     * @param baseType the base type of the bean
+     * @param types the types of the bean
+     * @param consumer the consumer function to accept the bean
+     * @param <E> the type of the element
+     * @param <T> the base type of the bean
+     */
+    @SuppressWarnings("unchecked")
 	private <E, T> void addBeanToModule(E element, Class<T> baseType, Class<?>[] types,
 			BiConsumer<Class<T>, E> consumer) {
 		if (ObjectUtils.isEmpty(types)) {
@@ -159,9 +233,20 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		}
 	}
 
-	static class JsonComponentBeanFactoryInitializationAotProcessor implements BeanFactoryInitializationAotProcessor {
+	/**
+     * JsonComponentBeanFactoryInitializationAotProcessor class.
+     */
+    static class JsonComponentBeanFactoryInitializationAotProcessor implements BeanFactoryInitializationAotProcessor {
 
-		@Override
+		/**
+         * Processes the bean factory ahead of time to find all classes annotated with @JsonComponent
+         * and their suitable inner classes.
+         * 
+         * @param beanFactory the configurable listable bean factory
+         * @return the bean factory initialization AOT contribution containing the inner components
+         *         of the classes annotated with @JsonComponent, or null if no inner components are found
+         */
+        @Override
 		public BeanFactoryInitializationAotContribution processAheadOfTime(
 				ConfigurableListableBeanFactory beanFactory) {
 			String[] jsonComponents = beanFactory.getBeanNamesForAnnotation(JsonComponent.class);
@@ -179,15 +264,29 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 
 	}
 
-	private static final class JsonComponentAotContribution implements BeanFactoryInitializationAotContribution {
+	/**
+     * JsonComponentAotContribution class.
+     */
+    private static final class JsonComponentAotContribution implements BeanFactoryInitializationAotContribution {
 
 		private final Map<Class<?>, List<Class<?>>> innerComponents;
 
-		private JsonComponentAotContribution(Map<Class<?>, List<Class<?>>> innerComponents) {
+		/**
+         * Constructs a new JsonComponentAotContribution object with the specified inner components.
+         * 
+         * @param innerComponents a map containing the inner components, where the key is the outer component class and the value is a list of inner component classes
+         */
+        private JsonComponentAotContribution(Map<Class<?>, List<Class<?>>> innerComponents) {
 			this.innerComponents = innerComponents;
 		}
 
-		@Override
+		/**
+         * Applies the given generation context and bean factory initialization code to this JsonComponentAotContribution.
+         * 
+         * @param generationContext The generation context to apply.
+         * @param beanFactoryInitializationCode The bean factory initialization code to apply.
+         */
+        @Override
 		public void applyTo(GenerationContext generationContext,
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
 			ReflectionHints reflection = generationContext.getRuntimeHints().reflection();

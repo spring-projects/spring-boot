@@ -26,12 +26,26 @@ import jline.console.completer.ArgumentCompleter.WhitespaceArgumentDelimiter;
  */
 class EscapeAwareWhiteSpaceArgumentDelimiter extends WhitespaceArgumentDelimiter {
 
-	@Override
+	/**
+     * Determines if the character at the specified position in the given buffer is escaped.
+     * 
+     * @param buffer the character sequence buffer
+     * @param pos the position of the character in the buffer
+     * @return true if the character is escaped, false otherwise
+     */
+    @Override
 	public boolean isEscaped(CharSequence buffer, int pos) {
 		return (isEscapeChar(buffer, pos - 1));
 	}
 
-	private boolean isEscapeChar(CharSequence buffer, int pos) {
+	/**
+     * Checks if the character at the specified position in the given buffer is an escape character.
+     * 
+     * @param buffer the character sequence buffer to check
+     * @param pos the position of the character to check
+     * @return {@code true} if the character at the specified position is an escape character, {@code false} otherwise
+     */
+    private boolean isEscapeChar(CharSequence buffer, int pos) {
 		if (pos >= 0) {
 			for (char c : getEscapeChars()) {
 				if (buffer.charAt(pos) == c) {
@@ -42,7 +56,14 @@ class EscapeAwareWhiteSpaceArgumentDelimiter extends WhitespaceArgumentDelimiter
 		return false;
 	}
 
-	@Override
+	/**
+     * Determines if the specified position in the given buffer is within a quoted section.
+     * 
+     * @param buffer the character sequence to search within
+     * @param pos the position to check
+     * @return true if the position is within a quoted section, false otherwise
+     */
+    @Override
 	public boolean isQuoted(CharSequence buffer, int pos) {
 		int closingQuote = searchBackwards(buffer, pos - 1, getQuoteChars());
 		if (closingQuote == -1) {
@@ -55,7 +76,15 @@ class EscapeAwareWhiteSpaceArgumentDelimiter extends WhitespaceArgumentDelimiter
 		return isQuoted(buffer, openingQuote - 1);
 	}
 
-	private int searchBackwards(CharSequence buffer, int pos, char... chars) {
+	/**
+     * Searches backwards in the given buffer for the first occurrence of any of the specified characters.
+     * 
+     * @param buffer the character sequence to search in
+     * @param pos the starting position for the search
+     * @param chars the characters to search for
+     * @return the index of the first occurrence of any of the specified characters, or -1 if not found
+     */
+    private int searchBackwards(CharSequence buffer, int pos, char... chars) {
 		while (pos >= 0) {
 			for (char c : chars) {
 				if (buffer.charAt(pos) == c && !isEscaped(buffer, pos)) {
@@ -67,12 +96,24 @@ class EscapeAwareWhiteSpaceArgumentDelimiter extends WhitespaceArgumentDelimiter
 		return -1;
 	}
 
-	String[] parseArguments(String line) {
+	/**
+     * Parses the given line and returns an array of arguments.
+     * 
+     * @param line the line to be parsed
+     * @return an array of parsed arguments
+     */
+    String[] parseArguments(String line) {
 		ArgumentList delimit = delimit(line, 0);
 		return cleanArguments(delimit.getArguments());
 	}
 
-	private String[] cleanArguments(String[] arguments) {
+	/**
+     * Cleans the given array of arguments by removing any leading or trailing white spaces.
+     * 
+     * @param arguments the array of arguments to be cleaned
+     * @return the cleaned array of arguments
+     */
+    private String[] cleanArguments(String[] arguments) {
 		String[] cleanArguments = new String[arguments.length];
 		for (int i = 0; i < arguments.length; i++) {
 			cleanArguments[i] = cleanArgument(arguments[i]);
@@ -80,7 +121,13 @@ class EscapeAwareWhiteSpaceArgumentDelimiter extends WhitespaceArgumentDelimiter
 		return cleanArguments;
 	}
 
-	private String cleanArgument(String argument) {
+	/**
+     * Cleans the given argument by removing any surrounding quotes and replacing escape sequences.
+     * 
+     * @param argument the argument to be cleaned
+     * @return the cleaned argument
+     */
+    private String cleanArgument(String argument) {
 		for (char c : getQuoteChars()) {
 			String quote = String.valueOf(c);
 			if (argument.startsWith(quote) && argument.endsWith(quote)) {
@@ -90,7 +137,13 @@ class EscapeAwareWhiteSpaceArgumentDelimiter extends WhitespaceArgumentDelimiter
 		return replaceEscapes(argument);
 	}
 
-	private String replaceEscapes(String string) {
+	/**
+     * Replaces escape sequences in a given string with their corresponding characters.
+     * 
+     * @param string the string to be processed
+     * @return the processed string with escape sequences replaced
+     */
+    private String replaceEscapes(String string) {
 		string = string.replace("\\ ", " ");
 		string = string.replace("\\\\", "\\");
 		string = string.replace("\\t", "\t");

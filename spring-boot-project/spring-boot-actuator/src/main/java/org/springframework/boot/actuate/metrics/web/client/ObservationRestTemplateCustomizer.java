@@ -46,7 +46,12 @@ public class ObservationRestTemplateCustomizer implements RestTemplateCustomizer
 		this.observationRegistry = observationRegistry;
 	}
 
-	@Override
+	/**
+     * Customizes the given RestTemplate instance by setting the observation convention and registry.
+     * 
+     * @param restTemplate the RestTemplate instance to be customized
+     */
+    @Override
 	public void customize(RestTemplate restTemplate) {
 		restTemplate.setObservationConvention(this.observationConvention);
 		restTemplate.setObservationRegistry(this.observationRegistry);

@@ -23,21 +23,40 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * CityController class.
+ */
 @RestController
 public class CityController {
 
 	private final CityRepository repository;
 
-	public CityController(CityRepository repository) {
+	/**
+     * Constructs a new CityController with the specified CityRepository.
+     * 
+     * @param repository the CityRepository to be used by the CityController
+     */
+    public CityController(CityRepository repository) {
 		this.repository = repository;
 	}
 
-	@GetMapping("/cities")
+	/**
+     * Retrieves all cities.
+     *
+     * @return a Flux of City objects representing all cities.
+     */
+    @GetMapping("/cities")
 	public Flux<City> findCities() {
 		return this.repository.findAll();
 	}
 
-	@GetMapping("/cities/{id}")
+	/**
+     * Retrieves a city by its ID.
+     *
+     * @param id the ID of the city to retrieve
+     * @return a Mono containing the city with the specified ID, or an empty Mono if no city is found
+     */
+    @GetMapping("/cities/{id}")
 	public Mono<City> findCityById(@PathVariable long id) {
 		return this.repository.findById(id);
 	}

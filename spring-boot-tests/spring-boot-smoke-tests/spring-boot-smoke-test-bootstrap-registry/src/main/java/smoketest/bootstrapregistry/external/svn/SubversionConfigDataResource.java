@@ -29,20 +29,42 @@ class SubversionConfigDataResource extends ConfigDataResource {
 
 	private final SubversionServerCertificate serverCertificate;
 
-	SubversionConfigDataResource(String location, String serverCertificate) {
+	/**
+     * Constructs a new SubversionConfigDataResource with the specified location and server certificate.
+     * 
+     * @param location the location of the Subversion configuration data resource
+     * @param serverCertificate the server certificate for the Subversion server
+     */
+    SubversionConfigDataResource(String location, String serverCertificate) {
 		this.location = location;
 		this.serverCertificate = SubversionServerCertificate.of(serverCertificate);
 	}
 
-	String getLocation() {
+	/**
+     * Returns the location of the Subversion configuration data resource.
+     *
+     * @return the location of the Subversion configuration data resource
+     */
+    String getLocation() {
 		return this.location;
 	}
 
-	SubversionServerCertificate getServerCertificate() {
+	/**
+     * Returns the server certificate associated with this SubversionConfigDataResource.
+     *
+     * @return the server certificate
+     */
+    SubversionServerCertificate getServerCertificate() {
 		return this.serverCertificate;
 	}
 
-	@Override
+	/**
+     * Compares this SubversionConfigDataResource object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the specified object is equal to this SubversionConfigDataResource object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -54,12 +76,23 @@ class SubversionConfigDataResource extends ConfigDataResource {
 		return this.location.equals(other.location);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this SubversionConfigDataResource object.
+     * The hash code is generated based on the location of the resource.
+     *
+     * @return the hash code value for this SubversionConfigDataResource object
+     */
+    @Override
 	public int hashCode() {
 		return this.location.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns the string representation of the location.
+     *
+     * @return the location as a string
+     */
+    @Override
 	public String toString() {
 		return this.location;
 	}

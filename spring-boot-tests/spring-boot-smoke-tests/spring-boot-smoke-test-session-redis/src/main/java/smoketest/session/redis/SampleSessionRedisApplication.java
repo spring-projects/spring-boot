@@ -19,10 +19,19 @@ package smoketest.session.redis;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleSessionRedisApplication class.
+ */
 @SpringBootApplication
 public class SampleSessionRedisApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by running the SpringApplication.run() method.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleSessionRedisApplication.class);
 	}
 

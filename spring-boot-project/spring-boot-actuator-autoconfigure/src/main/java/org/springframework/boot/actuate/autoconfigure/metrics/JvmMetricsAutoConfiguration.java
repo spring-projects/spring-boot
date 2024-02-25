@@ -44,43 +44,79 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnBean(MeterRegistry.class)
 public class JvmMetricsAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of JvmGcMetrics if no other bean of the same type is present.
+     * 
+     * @return the newly created JvmGcMetrics instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public JvmGcMetrics jvmGcMetrics() {
 		return new JvmGcMetrics();
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of JvmHeapPressureMetrics if no other bean of the same type is present.
+     * 
+     * @return the newly created JvmHeapPressureMetrics instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public JvmHeapPressureMetrics jvmHeapPressureMetrics() {
 		return new JvmHeapPressureMetrics();
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of JvmMemoryMetrics if no other bean of the same type is present.
+     * 
+     * @return the newly created JvmMemoryMetrics instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public JvmMemoryMetrics jvmMemoryMetrics() {
 		return new JvmMemoryMetrics();
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of JvmThreadMetrics if no other bean of the same type is present.
+     * 
+     * @return the newly created JvmThreadMetrics instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public JvmThreadMetrics jvmThreadMetrics() {
 		return new JvmThreadMetrics();
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of ClassLoaderMetrics if no other bean of the same type is present in the application context.
+     * This bean is conditionally created only if there is no other bean of the same type already present.
+     * 
+     * @return the newly created ClassLoaderMetrics instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public ClassLoaderMetrics classLoaderMetrics() {
 		return new ClassLoaderMetrics();
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of JvmInfoMetrics if no other bean of the same type is present.
+     * 
+     * @return the newly created JvmInfoMetrics instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public JvmInfoMetrics jvmInfoMetrics() {
 		return new JvmInfoMetrics();
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of JvmCompilationMetrics if no other bean of the same type is present.
+     * 
+     * @return the newly created JvmCompilationMetrics instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public JvmCompilationMetrics jvmCompilationMetrics() {
 		return new JvmCompilationMetrics();

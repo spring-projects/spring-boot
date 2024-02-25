@@ -99,11 +99,21 @@ public class RabbitConnectionFactoryBeanConfigurer {
 		this.sslBundles = sslBundles;
 	}
 
-	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
+	/**
+     * Sets the credentials provider for the RabbitConnectionFactoryBeanConfigurer.
+     * 
+     * @param credentialsProvider the credentials provider to be set
+     */
+    public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
 		this.credentialsProvider = credentialsProvider;
 	}
 
-	public void setCredentialsRefreshService(CredentialsRefreshService credentialsRefreshService) {
+	/**
+     * Sets the credentials refresh service for the RabbitConnectionFactoryBeanConfigurer.
+     * 
+     * @param credentialsRefreshService the credentials refresh service to be set
+     */
+    public void setCredentialsRefreshService(CredentialsRefreshService credentialsRefreshService) {
 		this.credentialsRefreshService = credentialsRefreshService;
 	}
 

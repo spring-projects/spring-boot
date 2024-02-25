@@ -45,12 +45,23 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 @ConditionalOnMissingBean(ConnectionFactory.class)
 class ActiveMQConnectionFactoryConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * SimpleConnectionFactoryConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false",
 			matchIfMissing = true)
 	static class SimpleConnectionFactoryConfiguration {
 
-		@Bean
+		/**
+         * Creates an ActiveMQConnectionFactory bean if the property "spring.jms.cache.enabled" is set to "false".
+         * 
+         * @param properties The ActiveMQProperties object containing the configuration properties.
+         * @param factoryCustomizers The ObjectProvider for ActiveMQConnectionFactoryCustomizer objects.
+         * @param connectionDetails The ActiveMQConnectionDetails object containing the connection details.
+         * @return The ActiveMQConnectionFactory bean.
+         */
+        @Bean
 		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "false")
 		ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
@@ -58,7 +69,15 @@ class ActiveMQConnectionFactoryConfiguration {
 			return createJmsConnectionFactory(properties, factoryCustomizers, connectionDetails);
 		}
 
-		private static ActiveMQConnectionFactory createJmsConnectionFactory(ActiveMQProperties properties,
+		/**
+         * Creates a JMS connection factory using the provided ActiveMQ properties, factory customizers, and connection details.
+         * 
+         * @param properties The ActiveMQ properties used to configure the connection factory.
+         * @param factoryCustomizers The customizers used to customize the connection factory.
+         * @param connectionDetails The connection details used to establish the connection.
+         * @return The created JMS connection factory.
+         */
+        private static ActiveMQConnectionFactory createJmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
 				ActiveMQConnectionDetails connectionDetails) {
 			return new ActiveMQConnectionFactoryFactory(properties, factoryCustomizers.orderedStream().toList(),
@@ -66,13 +85,25 @@ class ActiveMQConnectionFactoryConfiguration {
 				.createConnectionFactory(ActiveMQConnectionFactory.class);
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * CachingConnectionFactoryConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(CachingConnectionFactory.class)
 		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "true",
 				matchIfMissing = true)
 		static class CachingConnectionFactoryConfiguration {
 
-			@Bean
+			/**
+             * Creates a CachingConnectionFactory bean for JMS connection.
+             * 
+             * @param jmsProperties        the JMS properties
+             * @param properties           the ActiveMQ properties
+             * @param factoryCustomizers   the ActiveMQ connection factory customizers
+             * @param connectionDetails    the ActiveMQ connection details
+             * @return                     the CachingConnectionFactory bean
+             */
+            @Bean
 			CachingConnectionFactory jmsConnectionFactory(JmsProperties jmsProperties, ActiveMQProperties properties,
 					ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
 					ActiveMQConnectionDetails connectionDetails) {
@@ -89,11 +120,22 @@ class ActiveMQConnectionFactoryConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * PooledConnectionFactoryConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ JmsPoolConnectionFactory.class, PooledObject.class })
 	static class PooledConnectionFactoryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		/**
+         * Creates a JmsPoolConnectionFactory bean with the specified configuration properties.
+         * 
+         * @param properties the ActiveMQProperties object containing the configuration properties
+         * @param factoryCustomizers the ObjectProvider of ActiveMQConnectionFactoryCustomizer objects
+         * @param connectionDetails the ActiveMQConnectionDetails object containing the connection details
+         * @return the JmsPoolConnectionFactory bean
+         */
+        @Bean(destroyMethod = "stop")
 		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true")
 		JmsPoolConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,

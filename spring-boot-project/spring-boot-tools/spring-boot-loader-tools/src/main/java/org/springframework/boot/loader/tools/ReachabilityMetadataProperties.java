@@ -37,7 +37,12 @@ public final class ReachabilityMetadataProperties {
 
 	private final Properties properties;
 
-	private ReachabilityMetadataProperties(Properties properties) {
+	/**
+     * Constructs a new ReachabilityMetadataProperties object with the specified properties.
+     * 
+     * @param properties the properties to be set for the ReachabilityMetadataProperties object
+     */
+    private ReachabilityMetadataProperties(Properties properties) {
 		this.properties = properties;
 	}
 

@@ -37,12 +37,23 @@ import org.springframework.util.StringUtils;
  */
 public class ArchitecturePlugin implements Plugin<Project> {
 
-	@Override
+	/**
+     * Applies the ArchitecturePlugin to the given Project.
+     * This method registers tasks for the project.
+     * 
+     * @param project the Project to which the plugin is applied
+     */
+    @Override
 	public void apply(Project project) {
 		project.getPlugins().withType(JavaBasePlugin.class, (javaPlugin) -> registerTasks(project));
 	}
 
-	private void registerTasks(Project project) {
+	/**
+     * Registers tasks for checking the architecture of the project.
+     * 
+     * @param project The project to register the tasks for.
+     */
+    private void registerTasks(Project project) {
 		JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 		List<TaskProvider<ArchitectureCheck>> packageTangleChecks = new ArrayList<>();
 		for (SourceSet sourceSet : javaPluginExtension.getSourceSets()) {

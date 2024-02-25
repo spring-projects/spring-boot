@@ -21,16 +21,31 @@ import reactor.core.publisher.Mono;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Service;
 
+/**
+ * MyService class.
+ */
 @Service
 public class MyService {
 
 	private final RSocketRequester rsocketRequester;
 
-	public MyService(RSocketRequester.Builder rsocketRequesterBuilder) {
+	/**
+     * Constructs a new instance of MyService with the provided RSocketRequester.Builder.
+     * 
+     * @param rsocketRequesterBuilder the RSocketRequester.Builder used to create the RSocketRequester
+     * @throws IllegalArgumentException if the provided RSocketRequester.Builder is null
+     */
+    public MyService(RSocketRequester.Builder rsocketRequesterBuilder) {
 		this.rsocketRequester = rsocketRequesterBuilder.tcp("example.org", 9898);
 	}
 
-	public Mono<User> someRSocketCall(String name) {
+	/**
+     * Makes an RSocket call to retrieve a User object based on the provided name.
+     * 
+     * @param name the name of the user to retrieve
+     * @return a Mono emitting the User object
+     */
+    public Mono<User> someRSocketCall(String name) {
 		return this.rsocketRequester.route("user").data(name).retrieveMono(User.class);
 	}
 

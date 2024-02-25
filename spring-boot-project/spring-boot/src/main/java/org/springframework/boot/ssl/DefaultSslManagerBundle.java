@@ -34,12 +34,24 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 
 	private final SslBundleKey key;
 
-	DefaultSslManagerBundle(SslStoreBundle storeBundle, SslBundleKey key) {
+	/**
+     * Constructs a new DefaultSslManagerBundle with the specified SslStoreBundle and SslBundleKey.
+     * 
+     * @param storeBundle the SslStoreBundle to be used, or SslStoreBundle.NONE if null
+     * @param key the SslBundleKey to be used, or SslBundleKey.NONE if null
+     */
+    DefaultSslManagerBundle(SslStoreBundle storeBundle, SslBundleKey key) {
 		this.storeBundle = (storeBundle != null) ? storeBundle : SslStoreBundle.NONE;
 		this.key = (key != null) ? key : SslBundleKey.NONE;
 	}
 
-	@Override
+	/**
+     * Returns the KeyManagerFactory for this SSL manager bundle.
+     * 
+     * @return the KeyManagerFactory
+     * @throws IllegalStateException if the KeyManagerFactory could not be loaded
+     */
+    @Override
 	public KeyManagerFactory getKeyManagerFactory() {
 		try {
 			KeyStore store = this.storeBundle.getKeyStore();
@@ -61,7 +73,13 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 		}
 	}
 
-	@Override
+	/**
+     * Returns the TrustManagerFactory instance for the trust store in the SSL manager bundle.
+     * 
+     * @return the TrustManagerFactory instance
+     * @throws IllegalStateException if the trust manager factory could not be loaded
+     */
+    @Override
 	public TrustManagerFactory getTrustManagerFactory() {
 		try {
 			KeyStore store = this.storeBundle.getTrustStore();
@@ -75,11 +93,25 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 		}
 	}
 
-	protected KeyManagerFactory getKeyManagerFactoryInstance(String algorithm) throws NoSuchAlgorithmException {
+	/**
+     * Returns an instance of KeyManagerFactory for the specified algorithm.
+     * 
+     * @param algorithm the algorithm name
+     * @return the KeyManagerFactory instance
+     * @throws NoSuchAlgorithmException if the specified algorithm is not available
+     */
+    protected KeyManagerFactory getKeyManagerFactoryInstance(String algorithm) throws NoSuchAlgorithmException {
 		return KeyManagerFactory.getInstance(algorithm);
 	}
 
-	protected TrustManagerFactory getTrustManagerFactoryInstance(String algorithm) throws NoSuchAlgorithmException {
+	/**
+     * Returns a TrustManagerFactory instance for the specified algorithm.
+     *
+     * @param algorithm the algorithm name
+     * @return the TrustManagerFactory instance
+     * @throws NoSuchAlgorithmException if the specified algorithm is not available
+     */
+    protected TrustManagerFactory getTrustManagerFactoryInstance(String algorithm) throws NoSuchAlgorithmException {
 		return TrustManagerFactory.getInstance(algorithm);
 	}
 

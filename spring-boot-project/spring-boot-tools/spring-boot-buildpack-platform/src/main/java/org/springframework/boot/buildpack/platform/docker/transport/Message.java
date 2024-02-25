@@ -29,7 +29,12 @@ public class Message {
 
 	private final String message;
 
-	@JsonCreator
+	/**
+     * Constructs a new Message object with the specified message.
+     *
+     * @param message the message to be set for the Message object
+     */
+    @JsonCreator
 	Message(@JsonProperty("message") String message) {
 		this.message = message;
 	}
@@ -42,7 +47,12 @@ public class Message {
 		return this.message;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the Message object.
+     *
+     * @return the message string
+     */
+    @Override
 	public String toString() {
 		return this.message;
 	}

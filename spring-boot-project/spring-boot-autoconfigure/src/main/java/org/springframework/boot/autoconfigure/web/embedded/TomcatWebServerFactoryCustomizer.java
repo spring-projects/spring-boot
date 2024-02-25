@@ -77,17 +77,34 @@ public class TomcatWebServerFactoryCustomizer
 
 	private final ServerProperties serverProperties;
 
-	public TomcatWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
+	/**
+     * Constructs a new TomcatWebServerFactoryCustomizer with the specified environment and server properties.
+     * 
+     * @param environment the environment object used for configuration
+     * @param serverProperties the server properties object used for configuration
+     */
+    public TomcatWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
 		this.environment = environment;
 		this.serverProperties = serverProperties;
 	}
 
-	@Override
+	/**
+     * Returns the order value for this customizer.
+     * The order determines the priority of this customizer when multiple customizers are applied.
+     * 
+     * @return the order value
+     */
+    @Override
 	public int getOrder() {
 		return ORDER;
 	}
 
-	@Override
+	/**
+     * Customize the Tomcat web server factory.
+     *
+     * @param factory the configurable Tomcat web server factory
+     */
+    @Override
 	@SuppressWarnings("removal")
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat properties = this.serverProperties.getTomcat();
@@ -146,7 +163,13 @@ public class TomcatWebServerFactoryCustomizer
 		customizeErrorReportValve(this.serverProperties.getError(), factory);
 	}
 
-	private void configureExecutor(ConfigurableTomcatWebServerFactory factory, Threads threadProperties) {
+	/**
+     * Configures the executor for the Tomcat web server factory.
+     * 
+     * @param factory the ConfigurableTomcatWebServerFactory instance
+     * @param threadProperties the Threads instance containing thread properties
+     */
+    private void configureExecutor(ConfigurableTomcatWebServerFactory factory, Threads threadProperties) {
 		factory.addProtocolHandlerCustomizers((handler) -> {
 			StandardThreadExecutor executor = new StandardThreadExecutor();
 			executor.setMinSpareThreads(threadProperties.getMinSpare());
@@ -159,21 +182,45 @@ public class TomcatWebServerFactoryCustomizer
 		});
 	}
 
-	private boolean isPositive(int value) {
+	/**
+     * Checks if the given value is positive.
+     * 
+     * @param value the value to be checked
+     * @return true if the value is positive, false otherwise
+     */
+    private boolean isPositive(int value) {
 		return value > 0;
 	}
 
-	@SuppressWarnings("rawtypes")
+	/**
+     * Customizes the accept count of the given {@link ConfigurableTomcatWebServerFactory}.
+     * 
+     * @param factory the {@link ConfigurableTomcatWebServerFactory} to customize
+     * @param acceptCount the accept count value to set
+     */
+    @SuppressWarnings("rawtypes")
 	private void customizeAcceptCount(ConfigurableTomcatWebServerFactory factory, int acceptCount) {
 		customizeHandler(factory, acceptCount, AbstractProtocol.class, AbstractProtocol::setAcceptCount);
 	}
 
-	@SuppressWarnings("rawtypes")
+	/**
+     * Customizes the processor cache of the given {@link ConfigurableTomcatWebServerFactory}.
+     * 
+     * @param factory the {@link ConfigurableTomcatWebServerFactory} to customize
+     * @param processorCache the size of the processor cache
+     */
+    @SuppressWarnings("rawtypes")
 	private void customizeProcessorCache(ConfigurableTomcatWebServerFactory factory, int processorCache) {
 		customizeHandler(factory, processorCache, AbstractProtocol.class, AbstractProtocol::setProcessorCache);
 	}
 
-	private void customizeKeepAliveTimeout(ConfigurableTomcatWebServerFactory factory, Duration keepAliveTimeout) {
+	/**
+     * Customizes the keep-alive timeout for the Tomcat web server factory.
+     * 
+     * @param factory The ConfigurableTomcatWebServerFactory to customize.
+     * @param keepAliveTimeout The duration of the keep-alive timeout.
+     */
+    private void customizeKeepAliveTimeout(ConfigurableTomcatWebServerFactory factory, Duration keepAliveTimeout) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			for (UpgradeProtocol upgradeProtocol : handler.findUpgradeProtocols()) {
@@ -187,32 +234,68 @@ public class TomcatWebServerFactoryCustomizer
 		});
 	}
 
-	@SuppressWarnings("rawtypes")
+	/**
+     * Customizes the maximum number of keep-alive requests allowed for the Tomcat web server factory.
+     * 
+     * @param factory the Tomcat web server factory to customize
+     * @param maxKeepAliveRequests the maximum number of keep-alive requests allowed
+     */
+    @SuppressWarnings("rawtypes")
 	private void customizeMaxKeepAliveRequests(ConfigurableTomcatWebServerFactory factory, int maxKeepAliveRequests) {
 		customizeHandler(factory, maxKeepAliveRequests, AbstractHttp11Protocol.class,
 				AbstractHttp11Protocol::setMaxKeepAliveRequests);
 	}
 
-	@SuppressWarnings("rawtypes")
+	/**
+     * Customizes the maximum number of connections for the Tomcat web server factory.
+     * 
+     * @param factory the Tomcat web server factory to customize
+     * @param maxConnections the maximum number of connections to set
+     */
+    @SuppressWarnings("rawtypes")
 	private void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory, int maxConnections) {
 		customizeHandler(factory, maxConnections, AbstractProtocol.class, AbstractProtocol::setMaxConnections);
 	}
 
-	@SuppressWarnings("rawtypes")
+	/**
+     * Customizes the connection timeout for the Tomcat web server factory.
+     * 
+     * @param factory the Tomcat web server factory to customize
+     * @param connectionTimeout the duration of the connection timeout
+     */
+    @SuppressWarnings("rawtypes")
 	private void customizeConnectionTimeout(ConfigurableTomcatWebServerFactory factory, Duration connectionTimeout) {
 		customizeHandler(factory, (int) connectionTimeout.toMillis(), AbstractProtocol.class,
 				AbstractProtocol::setConnectionTimeout);
 	}
 
-	private void customizeRelaxedPathChars(ConfigurableTomcatWebServerFactory factory, String relaxedChars) {
+	/**
+     * Sets the relaxed path characters for the Tomcat web server factory.
+     * 
+     * @param factory the ConfigurableTomcatWebServerFactory to customize
+     * @param relaxedChars the relaxed path characters to set
+     */
+    private void customizeRelaxedPathChars(ConfigurableTomcatWebServerFactory factory, String relaxedChars) {
 		factory.addConnectorCustomizers((connector) -> connector.setProperty("relaxedPathChars", relaxedChars));
 	}
 
-	private void customizeRelaxedQueryChars(ConfigurableTomcatWebServerFactory factory, String relaxedChars) {
+	/**
+     * Sets the relaxed query characters for the Tomcat web server factory.
+     * 
+     * @param factory the ConfigurableTomcatWebServerFactory to customize
+     * @param relaxedChars the characters to be considered as relaxed in query strings
+     */
+    private void customizeRelaxedQueryChars(ConfigurableTomcatWebServerFactory factory, String relaxedChars) {
 		factory.addConnectorCustomizers((connector) -> connector.setProperty("relaxedQueryChars", relaxedChars));
 	}
 
-	@SuppressWarnings("deprecation")
+	/**
+     * Customizes the rejection of illegal headers for the given TomcatWebServerFactory.
+     * 
+     * @param factory the ConfigurableTomcatWebServerFactory to customize
+     * @param rejectIllegalHeader true to reject illegal headers, false otherwise
+     */
+    @SuppressWarnings("deprecation")
 	private void customizeRejectIllegalHeader(ConfigurableTomcatWebServerFactory factory, boolean rejectIllegalHeader) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
@@ -222,11 +305,23 @@ public class TomcatWebServerFactoryCustomizer
 		});
 	}
 
-	private String joinCharacters(List<Character> content) {
+	/**
+     * Joins a list of characters into a single string.
+     *
+     * @param content the list of characters to be joined
+     * @return the resulting string after joining the characters
+     */
+    private String joinCharacters(List<Character> content) {
 		return content.stream().map(String::valueOf).collect(Collectors.joining());
 	}
 
-	private void customizeRemoteIpValve(ConfigurableTomcatWebServerFactory factory) {
+	/**
+     * Customizes the RemoteIpValve for the TomcatWebServerFactory.
+     * This valve is used to handle remote IP and protocol headers.
+     * 
+     * @param factory The ConfigurableTomcatWebServerFactory to customize.
+     */
+    private void customizeRemoteIpValve(ConfigurableTomcatWebServerFactory factory) {
 		Remoteip remoteIpProperties = this.serverProperties.getTomcat().getRemoteip();
 		String protocolHeader = remoteIpProperties.getProtocolHeader();
 		String remoteIpHeader = remoteIpProperties.getRemoteIpHeader();
@@ -255,7 +350,12 @@ public class TomcatWebServerFactoryCustomizer
 		}
 	}
 
-	private boolean getOrDeduceUseForwardHeaders() {
+	/**
+     * Returns a boolean value indicating whether to use forward headers or deduce it based on the active cloud platform.
+     * 
+     * @return {@code true} if forward headers should be used or deduced, {@code false} otherwise
+     */
+    private boolean getOrDeduceUseForwardHeaders() {
 		if (this.serverProperties.getForwardHeadersStrategy() == null) {
 			CloudPlatform platform = CloudPlatform.getActive(this.environment);
 			return platform != null && platform.isUsingForwardHeaders();
@@ -263,27 +363,54 @@ public class TomcatWebServerFactoryCustomizer
 		return this.serverProperties.getForwardHeadersStrategy() == ServerProperties.ForwardHeadersStrategy.NATIVE;
 	}
 
-	@SuppressWarnings("rawtypes")
+	/**
+     * Customizes the maximum HTTP request header size for the Tomcat web server factory.
+     * 
+     * @param factory the configurable Tomcat web server factory
+     * @param maxHttpRequestHeaderSize the maximum HTTP request header size to set
+     */
+    @SuppressWarnings("rawtypes")
 	private void customizeMaxHttpRequestHeaderSize(ConfigurableTomcatWebServerFactory factory,
 			int maxHttpRequestHeaderSize) {
 		customizeHandler(factory, maxHttpRequestHeaderSize, AbstractHttp11Protocol.class,
 				AbstractHttp11Protocol::setMaxHttpRequestHeaderSize);
 	}
 
-	@SuppressWarnings("rawtypes")
+	/**
+     * Customizes the maximum size of the HTTP response header for the given Tomcat web server factory.
+     * 
+     * @param factory the Tomcat web server factory to customize
+     * @param maxHttpResponseHeaderSize the maximum size of the HTTP response header
+     */
+    @SuppressWarnings("rawtypes")
 	private void customizeMaxHttpResponseHeaderSize(ConfigurableTomcatWebServerFactory factory,
 			int maxHttpResponseHeaderSize) {
 		customizeHandler(factory, maxHttpResponseHeaderSize, AbstractHttp11Protocol.class,
 				AbstractHttp11Protocol::setMaxHttpResponseHeaderSize);
 	}
 
-	@SuppressWarnings("rawtypes")
+	/**
+     * Customizes the maximum swallow size for the Tomcat web server factory.
+     * 
+     * @param factory the configurable Tomcat web server factory
+     * @param maxSwallowSize the maximum swallow size to set
+     */
+    @SuppressWarnings("rawtypes")
 	private void customizeMaxSwallowSize(ConfigurableTomcatWebServerFactory factory, int maxSwallowSize) {
 		customizeHandler(factory, maxSwallowSize, AbstractHttp11Protocol.class,
 				AbstractHttp11Protocol::setMaxSwallowSize);
 	}
 
-	private <T extends ProtocolHandler> void customizeHandler(ConfigurableTomcatWebServerFactory factory, int value,
+	/**
+     * Customizes the protocol handler of the Tomcat web server factory.
+     * 
+     * @param factory the configurable Tomcat web server factory
+     * @param value the value to be passed to the consumer
+     * @param type the class type of the protocol handler
+     * @param consumer the consumer function to customize the protocol handler
+     * @param <T> the type parameter representing the protocol handler
+     */
+    private <T extends ProtocolHandler> void customizeHandler(ConfigurableTomcatWebServerFactory factory, int value,
 			Class<T> type, ObjIntConsumer<T> consumer) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
@@ -293,11 +420,22 @@ public class TomcatWebServerFactoryCustomizer
 		});
 	}
 
-	private void customizeMaxHttpFormPostSize(ConfigurableTomcatWebServerFactory factory, int maxHttpFormPostSize) {
+	/**
+     * Customizes the maximum HTTP form post size for the given Tomcat web server factory.
+     * 
+     * @param factory the configurable Tomcat web server factory to customize
+     * @param maxHttpFormPostSize the maximum HTTP form post size to set
+     */
+    private void customizeMaxHttpFormPostSize(ConfigurableTomcatWebServerFactory factory, int maxHttpFormPostSize) {
 		factory.addConnectorCustomizers((connector) -> connector.setMaxPostSize(maxHttpFormPostSize));
 	}
 
-	private void customizeAccessLog(ConfigurableTomcatWebServerFactory factory) {
+	/**
+     * Customizes the access log configuration for the Tomcat web server factory.
+     * 
+     * @param factory the configurable Tomcat web server factory
+     */
+    private void customizeAccessLog(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat tomcatProperties = this.serverProperties.getTomcat();
 		AccessLogValve valve = new AccessLogValve();
 		PropertyMapper map = PropertyMapper.get();
@@ -321,7 +459,12 @@ public class TomcatWebServerFactoryCustomizer
 		factory.addEngineValves(valve);
 	}
 
-	private void customizeStaticResources(ConfigurableTomcatWebServerFactory factory) {
+	/**
+     * Customizes the static resources of the Tomcat web server factory.
+     * 
+     * @param factory the configurable Tomcat web server factory
+     */
+    private void customizeStaticResources(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat.Resource resource = this.serverProperties.getTomcat().getResource();
 		factory.addContextCustomizers((context) -> context.addLifecycleListener((event) -> {
 			if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
@@ -334,7 +477,13 @@ public class TomcatWebServerFactoryCustomizer
 		}));
 	}
 
-	private void customizeErrorReportValve(ErrorProperties error, ConfigurableTomcatWebServerFactory factory) {
+	/**
+     * Customizes the ErrorReportValve for the Tomcat web server factory.
+     * 
+     * @param error   the ErrorProperties object containing error configuration
+     * @param factory the ConfigurableTomcatWebServerFactory object to customize
+     */
+    private void customizeErrorReportValve(ErrorProperties error, ConfigurableTomcatWebServerFactory factory) {
 		if (error.getIncludeStacktrace() == IncludeAttribute.NEVER) {
 			factory.addContextCustomizers((context) -> {
 				ErrorReportValve valve = new ErrorReportValve();

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.io.restclient.webclient.ssl;
 
+/**
+ * Details class.
+ */
 public class Details {
 
 }

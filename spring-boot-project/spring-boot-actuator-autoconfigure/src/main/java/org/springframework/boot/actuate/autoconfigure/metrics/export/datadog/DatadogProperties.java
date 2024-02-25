@@ -58,43 +58,93 @@ public class DatadogProperties extends StepRegistryProperties {
 	 */
 	private String uri = "https://api.datadoghq.com";
 
-	public String getApiKey() {
+	/**
+     * Returns the API key.
+     *
+     * @return the API key
+     */
+    public String getApiKey() {
 		return this.apiKey;
 	}
 
-	public void setApiKey(String apiKey) {
+	/**
+     * Sets the API key for accessing the Datadog API.
+     * 
+     * @param apiKey the API key to be set
+     */
+    public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
 	}
 
-	public String getApplicationKey() {
+	/**
+     * Returns the application key.
+     *
+     * @return the application key
+     */
+    public String getApplicationKey() {
 		return this.applicationKey;
 	}
 
-	public void setApplicationKey(String applicationKey) {
+	/**
+     * Sets the application key for the Datadog integration.
+     * 
+     * @param applicationKey the application key to be set
+     */
+    public void setApplicationKey(String applicationKey) {
 		this.applicationKey = applicationKey;
 	}
 
-	public boolean isDescriptions() {
+	/**
+     * Returns the value indicating whether descriptions are enabled or not.
+     * 
+     * @return true if descriptions are enabled, false otherwise
+     */
+    public boolean isDescriptions() {
 		return this.descriptions;
 	}
 
-	public void setDescriptions(boolean descriptions) {
+	/**
+     * Sets the flag indicating whether descriptions should be included.
+     * 
+     * @param descriptions the flag indicating whether descriptions should be included
+     */
+    public void setDescriptions(boolean descriptions) {
 		this.descriptions = descriptions;
 	}
 
-	public String getHostTag() {
+	/**
+     * Returns the host tag associated with the DatadogProperties object.
+     * 
+     * @return the host tag
+     */
+    public String getHostTag() {
 		return this.hostTag;
 	}
 
-	public void setHostTag(String hostTag) {
+	/**
+     * Sets the host tag for the DatadogProperties.
+     * 
+     * @param hostTag the host tag to be set
+     */
+    public void setHostTag(String hostTag) {
 		this.hostTag = hostTag;
 	}
 
-	public String getUri() {
+	/**
+     * Returns the URI of the DatadogProperties object.
+     *
+     * @return the URI of the DatadogProperties object
+     */
+    public String getUri() {
 		return this.uri;
 	}
 
-	public void setUri(String uri) {
+	/**
+     * Sets the URI for the DatadogProperties class.
+     * 
+     * @param uri the URI to be set
+     */
+    public void setUri(String uri) {
 		this.uri = uri;
 	}
 

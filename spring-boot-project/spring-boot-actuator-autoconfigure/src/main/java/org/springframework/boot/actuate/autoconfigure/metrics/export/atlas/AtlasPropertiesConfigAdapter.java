@@ -30,86 +30,172 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  */
 class AtlasPropertiesConfigAdapter extends PropertiesConfigAdapter<AtlasProperties> implements AtlasConfig {
 
-	AtlasPropertiesConfigAdapter(AtlasProperties properties) {
+	/**
+     * Constructs a new AtlasPropertiesConfigAdapter with the specified AtlasProperties.
+     * 
+     * @param properties the AtlasProperties to be used by the adapter
+     */
+    AtlasPropertiesConfigAdapter(AtlasProperties properties) {
 		super(properties);
 	}
 
-	@Override
+	/**
+     * Retrieves the value associated with the specified key from the AtlasPropertiesConfigAdapter.
+     *
+     * @param key the key whose associated value is to be retrieved
+     * @return the value to which the specified key is mapped, or null if the key is not found
+     */
+    @Override
 	public String get(String key) {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the step duration.
+     * 
+     * @return the step duration
+     */
+    @Override
 	public Duration step() {
 		return get(AtlasProperties::getStep, AtlasConfig.super::step);
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the feature is enabled.
+     *
+     * @return {@code true} if the feature is enabled, {@code false} otherwise.
+     */
+    @Override
 	public boolean enabled() {
 		return get(AtlasProperties::isEnabled, AtlasConfig.super::enabled);
 	}
 
-	@Override
+	/**
+     * Returns the connect timeout duration.
+     *
+     * @return the connect timeout duration
+     */
+    @Override
 	public Duration connectTimeout() {
 		return get(AtlasProperties::getConnectTimeout, AtlasConfig.super::connectTimeout);
 	}
 
-	@Override
+	/**
+     * Returns the read timeout duration.
+     *
+     * @return the read timeout duration
+     */
+    @Override
 	public Duration readTimeout() {
 		return get(AtlasProperties::getReadTimeout, AtlasConfig.super::readTimeout);
 	}
 
-	@Override
+	/**
+     * Returns the number of threads.
+     * 
+     * @return the number of threads
+     */
+    @Override
 	public int numThreads() {
 		return get(AtlasProperties::getNumThreads, AtlasConfig.super::numThreads);
 	}
 
-	@Override
+	/**
+     * Returns the batch size for processing.
+     * 
+     * @return the batch size
+     */
+    @Override
 	public int batchSize() {
 		return get(AtlasProperties::getBatchSize, AtlasConfig.super::batchSize);
 	}
 
-	@Override
+	/**
+     * Returns the URI value from the AtlasProperties configuration, or falls back to the default URI value from the AtlasConfig interface.
+     * 
+     * @return the URI value
+     */
+    @Override
 	public String uri() {
 		return get(AtlasProperties::getUri, AtlasConfig.super::uri);
 	}
 
-	@Override
+	/**
+     * Returns the time to live (TTL) for meter data.
+     * 
+     * @return the time to live for meter data
+     */
+    @Override
 	public Duration meterTTL() {
 		return get(AtlasProperties::getMeterTimeToLive, AtlasConfig.super::meterTTL);
 	}
 
-	@Override
+	/**
+     * Returns whether the LWC (Lightweight Configuration) is enabled.
+     * 
+     * @return true if LWC is enabled, false otherwise
+     */
+    @Override
 	public boolean lwcEnabled() {
 		return get(AtlasProperties::isLwcEnabled, AtlasConfig.super::lwcEnabled);
 	}
 
-	@Override
+	/**
+     * Returns the duration of the LWC step.
+     * 
+     * @return the duration of the LWC step
+     */
+    @Override
 	public Duration lwcStep() {
 		return get(AtlasProperties::getLwcStep, AtlasConfig.super::lwcStep);
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether to ignore the publish step in LWC.
+     * 
+     * @return {@code true} if the publish step should be ignored, {@code false} otherwise.
+     */
+    @Override
 	public boolean lwcIgnorePublishStep() {
 		return get(AtlasProperties::isLwcIgnorePublishStep, AtlasConfig.super::lwcIgnorePublishStep);
 	}
 
-	@Override
+	/**
+     * Returns the refresh frequency for the configuration.
+     *
+     * @return the refresh frequency for the configuration
+     */
+    @Override
 	public Duration configRefreshFrequency() {
 		return get(AtlasProperties::getConfigRefreshFrequency, AtlasConfig.super::configRefreshFrequency);
 	}
 
-	@Override
+	/**
+     * Returns the time to live (TTL) for the configuration.
+     * 
+     * @return the time to live (TTL) for the configuration
+     */
+    @Override
 	public Duration configTTL() {
 		return get(AtlasProperties::getConfigTimeToLive, AtlasConfig.super::configTTL);
 	}
 
-	@Override
+	/**
+     * Returns the configuration URI.
+     *
+     * @return the configuration URI
+     */
+    @Override
 	public String configUri() {
 		return get(AtlasProperties::getConfigUri, AtlasConfig.super::configUri);
 	}
 
-	@Override
+	/**
+     * Returns the evaluated URI.
+     * 
+     * @return the evaluated URI
+     */
+    @Override
 	public String evalUri() {
 		return get(AtlasProperties::getEvalUri, AtlasConfig.super::evalUri);
 	}

@@ -35,7 +35,13 @@ import org.springframework.util.ClassUtils;
  */
 class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 
-	@Override
+	/**
+     * Registers hints for Logback logging system.
+     * 
+     * @param hints the runtime hints object
+     * @param classLoader the class loader to use for checking class presence
+     */
+    @Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		if (!ClassUtils.isPresent("ch.qos.logback.classic.LoggerContext", classLoader)) {
 			return;
@@ -46,24 +52,46 @@ class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 		registerHintsForSpringBootConverters(reflection);
 	}
 
-	private void registerHintsForLogbackLoggingSystemTypeChecks(ReflectionHints reflection, ClassLoader classLoader) {
+	/**
+     * Registers type hints for Logback logging system type checks.
+     * 
+     * @param reflection   the ReflectionHints object used for registering type hints
+     * @param classLoader  the ClassLoader used for loading classes
+     */
+    private void registerHintsForLogbackLoggingSystemTypeChecks(ReflectionHints reflection, ClassLoader classLoader) {
 		reflection.registerType(LoggerContext.class);
 		reflection.registerTypeIfPresent(classLoader, "org.slf4j.bridge.SLF4JBridgeHandler", (typeHint) -> {
 		});
 	}
 
-	private void registerHintsForBuiltInLogbackConverters(ReflectionHints reflection) {
+	/**
+     * Registers hints for the built-in Logback converters.
+     * 
+     * @param reflection the ReflectionHints object used for registering hints
+     */
+    private void registerHintsForBuiltInLogbackConverters(ReflectionHints reflection) {
 		registerForPublicConstructorInvocation(reflection, DateTokenConverter.class, IntegerTokenConverter.class,
 				SyslogStartConverter.class);
 	}
 
-	private void registerHintsForSpringBootConverters(ReflectionHints reflection) {
+	/**
+     * Registers hints for Spring Boot converters.
+     * 
+     * @param reflection the reflection hints object
+     */
+    private void registerHintsForSpringBootConverters(ReflectionHints reflection) {
 		registerForPublicConstructorInvocation(reflection, ColorConverter.class,
 				ExtendedWhitespaceThrowableProxyConverter.class, WhitespaceThrowableProxyConverter.class,
 				CorrelationIdConverter.class);
 	}
 
-	private void registerForPublicConstructorInvocation(ReflectionHints reflection, Class<?>... classes) {
+	/**
+     * Registers the given classes for public constructor invocation in the provided ReflectionHints object.
+     * 
+     * @param reflection The ReflectionHints object to register the classes with.
+     * @param classes The classes to be registered.
+     */
+    private void registerForPublicConstructorInvocation(ReflectionHints reflection, Class<?>... classes) {
 		reflection.registerTypes(TypeReference.listOf(classes),
 				(hint) -> hint.withMembers(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
 	}

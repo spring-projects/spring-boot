@@ -55,42 +55,80 @@ class ResolvedDependencies {
 
 	private final ListProperty<File> artifactFiles;
 
-	ResolvedDependencies(Project project) {
+	/**
+     * Resolves the dependencies of the given project.
+     * 
+     * @param project The project for which dependencies need to be resolved.
+     */
+    ResolvedDependencies(Project project) {
 		this.artifactIds = project.getObjects().listProperty(ComponentArtifactIdentifier.class);
 		this.artifactFiles = project.getObjects().listProperty(File.class);
 		this.projectCoordinatesByPath = projectCoordinatesByPath(project);
 	}
 
-	private static Map<String, LibraryCoordinates> projectCoordinatesByPath(Project project) {
+	/**
+     * Returns a map of project coordinates by path.
+     * 
+     * @param project the project to retrieve the coordinates from
+     * @return a map of project coordinates with the project path as the key
+     */
+    private static Map<String, LibraryCoordinates> projectCoordinatesByPath(Project project) {
 		return project.getRootProject()
 			.getAllprojects()
 			.stream()
 			.collect(Collectors.toMap(Project::getPath, ResolvedDependencies::libraryCoordinates));
 	}
 
-	private static LibraryCoordinates libraryCoordinates(Project project) {
+	/**
+     * Returns the library coordinates of the given project.
+     *
+     * @param project the project for which to retrieve the library coordinates
+     * @return the library coordinates of the project
+     */
+    private static LibraryCoordinates libraryCoordinates(Project project) {
 		return LibraryCoordinates.of(Objects.toString(project.getGroup()), project.getName(),
 				Objects.toString(project.getVersion()));
 	}
 
-	@Input
+	/**
+     * Returns the list of artifact identifiers.
+     *
+     * @return the list of artifact identifiers
+     */
+    @Input
 	ListProperty<ComponentArtifactIdentifier> getArtifactIds() {
 		return this.artifactIds;
 	}
 
-	@Classpath
+	/**
+     * Returns the list of artifact files.
+     *
+     * @return the list of artifact files
+     */
+    @Classpath
 	ListProperty<File> getArtifactFiles() {
 		return this.artifactFiles;
 	}
 
-	void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts) {
+	/**
+     * Adds the resolved artifacts to the existing set of artifact files and artifact IDs.
+     * 
+     * @param resolvedArtifacts the provider of a set of resolved artifact results
+     */
+    void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts) {
 		this.artifactFiles.addAll(
 				resolvedArtifacts.map((artifacts) -> artifacts.stream().map(ResolvedArtifactResult::getFile).toList()));
 		this.artifactIds.addAll(
 				resolvedArtifacts.map((artifacts) -> artifacts.stream().map(ResolvedArtifactResult::getId).toList()));
 	}
 
-	DependencyDescriptor find(File file) {
+	/**
+     * Finds the dependency descriptor for the given file.
+     * 
+     * @param file the file to find the dependency descriptor for
+     * @return the dependency descriptor if found, null otherwise
+     */
+    DependencyDescriptor find(File file) {
 		ComponentArtifactIdentifier id = findArtifactIdentifier(file);
 		if (id == null) {
 			return null;
@@ -111,7 +149,13 @@ class ResolvedDependencies {
 		return null;
 	}
 
-	private ComponentArtifactIdentifier findArtifactIdentifier(File file) {
+	/**
+     * Finds the artifact identifier for a given file.
+     * 
+     * @param file The file to find the artifact identifier for.
+     * @return The artifact identifier for the given file, or null if not found.
+     */
+    private ComponentArtifactIdentifier findArtifactIdentifier(File file) {
 		List<File> files = this.artifactFiles.get();
 		for (int i = 0; i < files.size(); i++) {
 			if (file.equals(files.get(i))) {
@@ -130,16 +174,32 @@ class ResolvedDependencies {
 
 		private final boolean projectDependency;
 
-		private DependencyDescriptor(LibraryCoordinates coordinates, boolean projectDependency) {
+		/**
+         * Constructs a new DependencyDescriptor with the specified LibraryCoordinates and projectDependency flag.
+         * 
+         * @param coordinates the LibraryCoordinates object representing the coordinates of the dependency
+         * @param projectDependency a boolean flag indicating whether the dependency is a project dependency or not
+         */
+        private DependencyDescriptor(LibraryCoordinates coordinates, boolean projectDependency) {
 			this.coordinates = coordinates;
 			this.projectDependency = projectDependency;
 		}
 
-		LibraryCoordinates getCoordinates() {
+		/**
+         * Returns the coordinates of the library.
+         *
+         * @return the coordinates of the library
+         */
+        LibraryCoordinates getCoordinates() {
 			return this.coordinates;
 		}
 
-		boolean isProjectDependency() {
+		/**
+         * Returns a boolean value indicating whether the dependency is a project dependency.
+         *
+         * @return true if the dependency is a project dependency, false otherwise.
+         */
+        boolean isProjectDependency() {
 			return this.projectDependency;
 		}
 

@@ -38,17 +38,37 @@ public class DefaultJerseyApplicationPath implements JerseyApplicationPath {
 
 	private final ResourceConfig config;
 
-	public DefaultJerseyApplicationPath(String applicationPath, ResourceConfig config) {
+	/**
+     * Constructs a new DefaultJerseyApplicationPath with the specified application path and resource configuration.
+     * 
+     * @param applicationPath the application path for the Jersey application
+     * @param config the resource configuration for the Jersey application
+     */
+    public DefaultJerseyApplicationPath(String applicationPath, ResourceConfig config) {
 		this.applicationPath = applicationPath;
 		this.config = config;
 	}
 
-	@Override
+	/**
+     * Returns the path of the application.
+     * 
+     * @return the path of the application
+     */
+    @Override
 	public String getPath() {
 		return resolveApplicationPath();
 	}
 
-	private String resolveApplicationPath() {
+	/**
+     * Resolves the application path for the DefaultJerseyApplicationPath class.
+     * If the application path is already set, it returns the existing value.
+     * Otherwise, it checks for the @ApplicationPath annotation on the configured application class.
+     * If the annotation is present, it returns the value specified in the annotation.
+     * If the annotation is not present, it returns "/*" as a fallback.
+     *
+     * @return the resolved application path
+     */
+    private String resolveApplicationPath() {
 		if (StringUtils.hasLength(this.applicationPath)) {
 			return this.applicationPath;
 		}

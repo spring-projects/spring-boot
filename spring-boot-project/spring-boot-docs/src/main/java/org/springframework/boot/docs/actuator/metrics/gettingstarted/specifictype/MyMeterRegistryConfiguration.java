@@ -24,15 +24,31 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCusto
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyMeterRegistryConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyMeterRegistryConfiguration {
 
-	@Bean
+	/**
+     * Configures the naming convention for GraphiteMeterRegistry.
+     * 
+     * @return the MeterRegistryCustomizer that sets the naming convention for GraphiteMeterRegistry
+     */
+    @Bean
 	public MeterRegistryCustomizer<GraphiteMeterRegistry> graphiteMetricsNamingConvention() {
 		return (registry) -> registry.config().namingConvention(this::name);
 	}
 
-	private String name(String name, Meter.Type type, String baseUnit) {
+	/**
+     * Returns the name of the meter with the specified parameters.
+     *
+     * @param name      the name of the meter
+     * @param type      the type of the meter
+     * @param baseUnit  the base unit of the meter
+     * @return          the name of the meter in snake case format
+     */
+    private String name(String name, Meter.Type type, String baseUnit) {
 		return /**/ NamingConvention.snakeCase.name(name, type, baseUnit);
 	}
 

@@ -50,23 +50,49 @@ public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 
 	private final RegularFileProperty reportLocation;
 
-	public CheckAdditionalSpringConfigurationMetadata() {
+	/**
+     * Constructor for the CheckAdditionalSpringConfigurationMetadata class.
+     * Initializes the reportLocation property using the getProject().getObjects().fileProperty() method.
+     */
+    public CheckAdditionalSpringConfigurationMetadata() {
 		this.reportLocation = getProject().getObjects().fileProperty();
 	}
 
-	@OutputFile
+	/**
+     * Returns the location of the report file.
+     *
+     * @return The location of the report file.
+     */
+    @OutputFile
 	public RegularFileProperty getReportLocation() {
 		return this.reportLocation;
 	}
 
-	@Override
+	/**
+     * Returns the source file tree for the additional Spring configuration metadata.
+     * 
+     * @return the source file tree for the additional Spring configuration metadata
+     */
+    @Override
 	@InputFiles
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public FileTree getSource() {
 		return super.getSource();
 	}
 
-	@TaskAction
+	/**
+     * Checks the additional Spring configuration metadata.
+     * 
+     * @throws JsonParseException if there is an error parsing the JSON data.
+     * @throws IOException if there is an error reading or writing the file.
+     * @throws GradleException if there are problems found in the additional Spring configuration metadata.
+     * 
+     * @see Report
+     * @see File
+     * @see Files
+     * @see StandardOpenOption
+     */
+    @TaskAction
 	void check() throws JsonParseException, IOException {
 		Report report = createReport();
 		File reportFile = getReportLocation().get().getAsFile();
@@ -77,7 +103,15 @@ public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Creates a report by analyzing the source files and checking for additional Spring configuration metadata.
+     * 
+     * @return The generated report.
+     * @throws IOException If an I/O error occurs while reading the files.
+     * @throws JsonParseException If a JSON parsing error occurs.
+     * @throws JsonMappingException If a JSON mapping error occurs.
+     */
+    @SuppressWarnings("unchecked")
 	private Report createReport() throws IOException, JsonParseException, JsonMappingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		Report report = new Report();
@@ -91,7 +125,14 @@ public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 		return report;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Checks the order of names in the given JSON map for the specified key.
+     * 
+     * @param key      the key to check in the JSON map
+     * @param json     the JSON map to check
+     * @param analysis the analysis object to store any problems found
+     */
+    @SuppressWarnings("unchecked")
 	private void check(String key, Map<String, Object> json, Analysis analysis) {
 		List<Map<String, Object>> groups = (List<Map<String, Object>>) json.getOrDefault(key, Collections.emptyList());
 		List<String> names = groups.stream().map((group) -> (String) group.get("name")).toList();
@@ -106,23 +147,43 @@ public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 		}
 	}
 
-	private List<String> sortedCopy(Collection<String> original) {
+	/**
+     * Creates a sorted copy of the given collection of strings.
+     *
+     * @param original the original collection of strings
+     * @return a sorted copy of the original collection
+     */
+    private List<String> sortedCopy(Collection<String> original) {
 		List<String> copy = new ArrayList<>(original);
 		Collections.sort(copy);
 		return copy;
 	}
 
-	private static final class Report implements Iterable<String> {
+	/**
+     * Report class.
+     */
+    private static final class Report implements Iterable<String> {
 
 		private final List<Analysis> analyses = new ArrayList<>();
 
-		private Analysis analysis(Path path) {
+		/**
+         * Creates a new Analysis object and adds it to the list of analyses.
+         * 
+         * @param path the path to the file for analysis
+         * @return the newly created Analysis object
+         */
+        private Analysis analysis(Path path) {
 			Analysis analysis = new Analysis(path);
 			this.analyses.add(analysis);
 			return analysis;
 		}
 
-		private boolean hasProblems() {
+		/**
+         * Checks if the report has any problems.
+         * 
+         * @return true if the report has problems, false otherwise.
+         */
+        private boolean hasProblems() {
 			for (Analysis analysis : this.analyses) {
 				if (!analysis.problems.isEmpty()) {
 					return true;
@@ -131,7 +192,13 @@ public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 			return false;
 		}
 
-		@Override
+		/**
+         * Returns an iterator over the lines of the report.
+         * Each line represents a source code file and its associated problems.
+         * 
+         * @return an iterator over the lines of the report
+         */
+        @Override
 		public Iterator<String> iterator() {
 			List<String> lines = new ArrayList<>();
 			for (Analysis analysis : this.analyses) {
@@ -150,13 +217,21 @@ public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 
 	}
 
-	private static final class Analysis {
+	/**
+     * Analysis class.
+     */
+    private static final class Analysis {
 
 		private final List<String> problems = new ArrayList<>();
 
 		private final Path source;
 
-		private Analysis(Path source) {
+		/**
+         * Constructs a new Analysis object with the specified source path.
+         * 
+         * @param source the path to the source file or directory
+         */
+        private Analysis(Path source) {
 			this.source = source;
 		}
 

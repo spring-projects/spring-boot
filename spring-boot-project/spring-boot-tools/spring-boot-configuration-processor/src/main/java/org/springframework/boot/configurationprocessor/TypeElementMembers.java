@@ -58,14 +58,31 @@ class TypeElementMembers {
 
 	private final Map<String, List<ExecutableElement>> publicSetters = new LinkedHashMap<>();
 
-	TypeElementMembers(MetadataGenerationEnvironment env, TypeElement targetType) {
+	/**
+     * Generates the members of a given TypeElement.
+     * 
+     * @param env The MetadataGenerationEnvironment used for generating metadata.
+     * @param targetType The TypeElement for which the members need to be generated.
+     */
+    TypeElementMembers(MetadataGenerationEnvironment env, TypeElement targetType) {
 		this.env = env;
 		this.targetType = targetType;
 		this.isRecord = RECORD_CLASS_NAME.equals(targetType.getSuperclass().toString());
 		process(targetType);
 	}
 
-	private void process(TypeElement element) {
+	/**
+     * Processes the given TypeElement by iterating over its enclosed elements.
+     * For each enclosed field, the method calls the processField() method.
+     * For each enclosed method, the method calls the processMethod() method.
+     * 
+     * After processing the enclosed elements, the method checks if the TypeElement has a superclass.
+     * If it does, and the superclass is not java.lang.Object or java.lang.Record, the method recursively
+     * calls itself with the superclass as the argument.
+     * 
+     * @param element The TypeElement to be processed.
+     */
+    private void process(TypeElement element) {
 		for (VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
 			processField(field);
 		}
@@ -79,7 +96,12 @@ class TypeElementMembers {
 		}
 	}
 
-	private void processMethod(ExecutableElement method) {
+	/**
+     * Processes the given ExecutableElement method.
+     * 
+     * @param method the ExecutableElement method to process
+     */
+    private void processMethod(ExecutableElement method) {
 		if (isPublic(method)) {
 			String name = method.getSimpleName().toString();
 			if (isGetter(method)) {
@@ -103,21 +125,49 @@ class TypeElementMembers {
 		}
 	}
 
-	private boolean isPublic(ExecutableElement method) {
+	/**
+     * Checks if the given method is public.
+     *
+     * @param method the ExecutableElement representing the method to be checked
+     * @return true if the method is public and not abstract or static, false otherwise
+     */
+    private boolean isPublic(ExecutableElement method) {
 		Set<Modifier> modifiers = method.getModifiers();
 		return modifiers.contains(Modifier.PUBLIC) && !modifiers.contains(Modifier.ABSTRACT)
 				&& !modifiers.contains(Modifier.STATIC);
 	}
 
-	ExecutableElement getMatchingGetter(List<ExecutableElement> candidates, TypeMirror type) {
+	/**
+     * Returns the matching getter method from the given list of candidates for the specified type.
+     * 
+     * @param candidates the list of candidate getter methods
+     * @param type the type to match against
+     * @return the matching getter method, or null if no match is found
+     */
+    ExecutableElement getMatchingGetter(List<ExecutableElement> candidates, TypeMirror type) {
 		return getMatchingAccessor(candidates, type, ExecutableElement::getReturnType);
 	}
 
-	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates, TypeMirror type) {
+	/**
+     * Returns the matching setter method from the given list of candidates for the specified type.
+     * 
+     * @param candidates the list of setter methods to search from
+     * @param type the type of the parameter that the setter method should accept
+     * @return the matching setter method, or null if no match is found
+     */
+    private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates, TypeMirror type) {
 		return getMatchingAccessor(candidates, type, (candidate) -> candidate.getParameters().get(0).asType());
 	}
 
-	private ExecutableElement getMatchingAccessor(List<ExecutableElement> candidates, TypeMirror type,
+	/**
+     * Returns the matching accessor from the given list of candidates based on the provided type.
+     * 
+     * @param candidates The list of candidate accessor elements to search from.
+     * @param type The type to match against.
+     * @param typeExtractor The function to extract the type from an accessor element.
+     * @return The matching accessor element, or null if no match is found.
+     */
+    private ExecutableElement getMatchingAccessor(List<ExecutableElement> candidates, TypeMirror type,
 			Function<ExecutableElement, TypeMirror> typeExtractor) {
 		for (ExecutableElement candidate : candidates) {
 			TypeMirror candidateType = typeExtractor.apply(candidate);
@@ -128,7 +178,13 @@ class TypeElementMembers {
 		return null;
 	}
 
-	private boolean isGetter(ExecutableElement method) {
+	/**
+     * Checks if the given method is a getter method.
+     *
+     * @param method the method to check
+     * @return true if the method is a getter method, false otherwise
+     */
+    private boolean isGetter(ExecutableElement method) {
 		boolean hasParameters = !method.getParameters().isEmpty();
 		boolean returnsVoid = TypeKind.VOID == method.getReturnType().getKind();
 		if (hasParameters || returnsVoid) {
@@ -141,7 +197,13 @@ class TypeElementMembers {
 		return (name.startsWith("get") && name.length() > 3) || (name.startsWith("is") && name.length() > 2);
 	}
 
-	private boolean isSetter(ExecutableElement method) {
+	/**
+     * Checks if the given method is a setter.
+     * 
+     * @param method the ExecutableElement representing the method to be checked
+     * @return true if the method is a setter, false otherwise
+     */
+    private boolean isSetter(ExecutableElement method) {
 		if (this.isRecord) {
 			return false;
 		}
@@ -150,7 +212,13 @@ class TypeElementMembers {
 				&& isSetterReturnType(method));
 	}
 
-	private boolean isSetterReturnType(ExecutableElement method) {
+	/**
+     * Checks if the given method is a setter method by examining its return type.
+     * 
+     * @param method the ExecutableElement representing the method to be checked
+     * @return true if the method is a setter method, false otherwise
+     */
+    private boolean isSetterReturnType(ExecutableElement method) {
 		TypeMirror returnType = method.getReturnType();
 		if (TypeKind.VOID == returnType.getKind()) {
 			return true;
@@ -167,7 +235,14 @@ class TypeElementMembers {
 		return false;
 	}
 
-	private String getAccessorName(String methodName) {
+	/**
+     * Returns the accessor name for a given method name.
+     * 
+     * @param methodName the method name
+     * @return the accessor name
+     * @throws IllegalStateException if the methodName does not start with 'is', 'get' or 'set'
+     */
+    private String getAccessorName(String methodName) {
 		if (this.isRecord && this.fields.containsKey(methodName)) {
 			return methodName;
 		}
@@ -180,34 +255,77 @@ class TypeElementMembers {
 		throw new IllegalStateException("methodName must start with 'is', 'get' or 'set', was '" + methodName + "'");
 	}
 
-	private String lowerCaseFirstCharacter(String string) {
+	/**
+     * Converts the first character of the given string to lowercase.
+     * 
+     * @param string the string to convert
+     * @return the string with the first character converted to lowercase
+     */
+    private String lowerCaseFirstCharacter(String string) {
 		return Character.toLowerCase(string.charAt(0)) + string.substring(1);
 	}
 
-	private void processField(VariableElement field) {
+	/**
+     * Processes a field and adds it to the fields map.
+     * 
+     * @param field the VariableElement representing the field to be processed
+     */
+    private void processField(VariableElement field) {
 		String name = field.getSimpleName().toString();
 		this.fields.putIfAbsent(name, field);
 	}
 
-	Map<String, VariableElement> getFields() {
+	/**
+     * Returns an unmodifiable map of fields in the TypeElementMembers class.
+     *
+     * @return an unmodifiable map of fields
+     */
+    Map<String, VariableElement> getFields() {
 		return Collections.unmodifiableMap(this.fields);
 	}
 
-	Map<String, List<ExecutableElement>> getPublicGetters() {
+	/**
+     * Returns an unmodifiable map of public getters.
+     *
+     * @return an unmodifiable map of public getters
+     */
+    Map<String, List<ExecutableElement>> getPublicGetters() {
 		return Collections.unmodifiableMap(this.publicGetters);
 	}
 
-	ExecutableElement getPublicGetter(String name, TypeMirror type) {
+	/**
+     * Returns the public getter method for the specified name and type.
+     * 
+     * @param name The name of the property.
+     * @param type The type of the property.
+     * @return The public getter method for the specified name and type, or null if not found.
+     */
+    ExecutableElement getPublicGetter(String name, TypeMirror type) {
 		List<ExecutableElement> candidates = this.publicGetters.get(name);
 		return getPublicAccessor(candidates, type, (specificType) -> getMatchingGetter(candidates, specificType));
 	}
 
-	ExecutableElement getPublicSetter(String name, TypeMirror type) {
+	/**
+     * Returns the public setter method for the specified name and type.
+     * 
+     * @param name The name of the property.
+     * @param type The type of the property.
+     * @return The public setter method for the specified name and type, or null if not found.
+     */
+    ExecutableElement getPublicSetter(String name, TypeMirror type) {
 		List<ExecutableElement> candidates = this.publicSetters.get(name);
 		return getPublicAccessor(candidates, type, (specificType) -> getMatchingSetter(candidates, specificType));
 	}
 
-	private ExecutableElement getPublicAccessor(List<ExecutableElement> candidates, TypeMirror type,
+	/**
+     * Returns the public accessor method from the given list of candidates for the specified type.
+     * 
+     * @param candidates                 the list of candidate accessor methods
+     * @param type                       the type for which the accessor method is required
+     * @param matchingAccessorExtractor  the function to extract the matching accessor method for the type
+     * @return                           the public accessor method, or null if not found
+     */
+    private ExecutableElement getPublicAccessor(List<ExecutableElement> candidates, TypeMirror type,
 			Function<TypeMirror, ExecutableElement> matchingAccessorExtractor) {
 		if (candidates != null) {
 			ExecutableElement matching = matchingAccessorExtractor.apply(type);

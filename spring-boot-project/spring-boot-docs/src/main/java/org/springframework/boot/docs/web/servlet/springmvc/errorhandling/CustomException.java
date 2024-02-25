@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.web.servlet.springmvc.errorhandling;
 
+/**
+ * CustomException class.
+ */
 class CustomException extends RuntimeException {
 
 }

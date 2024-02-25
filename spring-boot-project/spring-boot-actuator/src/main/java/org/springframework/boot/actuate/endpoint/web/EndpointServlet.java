@@ -42,32 +42,72 @@ public final class EndpointServlet {
 
 	private final int loadOnStartup;
 
-	public EndpointServlet(Class<? extends Servlet> servlet) {
+	/**
+     * Constructs a new EndpointServlet with the specified servlet class.
+     * 
+     * @param servlet the class of the servlet to be instantiated
+     */
+    public EndpointServlet(Class<? extends Servlet> servlet) {
 		this(instantiateClass(servlet));
 	}
 
-	private static Servlet instantiateClass(Class<? extends Servlet> servlet) {
+	/**
+     * Instantiates a servlet class.
+     * 
+     * @param servlet the servlet class to be instantiated
+     * @return the instantiated servlet
+     * @throws IllegalArgumentException if the servlet is null
+     */
+    private static Servlet instantiateClass(Class<? extends Servlet> servlet) {
 		Assert.notNull(servlet, "Servlet must not be null");
 		return BeanUtils.instantiateClass(servlet);
 	}
 
-	public EndpointServlet(Servlet servlet) {
+	/**
+     * Constructs a new EndpointServlet with the specified Servlet and default values for the map and port.
+     *
+     * @param servlet the Servlet to be associated with the EndpointServlet
+     */
+    public EndpointServlet(Servlet servlet) {
 		this(servlet, Collections.emptyMap(), -1);
 	}
 
-	private EndpointServlet(Servlet servlet, Map<String, String> initParameters, int loadOnStartup) {
+	/**
+     * Constructs a new EndpointServlet with the specified servlet, init parameters, and load on startup value.
+     * 
+     * @param servlet the servlet to be associated with the EndpointServlet (must not be null)
+     * @param initParameters the initialization parameters for the servlet (must not be null)
+     * @param loadOnStartup the load on startup value for the servlet
+     * @throws IllegalArgumentException if the servlet is null
+     */
+    private EndpointServlet(Servlet servlet, Map<String, String> initParameters, int loadOnStartup) {
 		Assert.notNull(servlet, "Servlet must not be null");
 		this.servlet = servlet;
 		this.initParameters = Collections.unmodifiableMap(initParameters);
 		this.loadOnStartup = loadOnStartup;
 	}
 
-	public EndpointServlet withInitParameter(String name, String value) {
+	/**
+     * Sets an initialization parameter for this servlet with the given name and value.
+     * 
+     * @param name the name of the initialization parameter (must not be empty)
+     * @param value the value of the initialization parameter
+     * @return the updated EndpointServlet instance
+     * @throws IllegalArgumentException if the name is empty
+     */
+    public EndpointServlet withInitParameter(String name, String value) {
 		Assert.hasText(name, "Name must not be empty");
 		return withInitParameters(Collections.singletonMap(name, value));
 	}
 
-	public EndpointServlet withInitParameters(Map<String, String> initParameters) {
+	/**
+     * Creates a new instance of EndpointServlet with the provided init parameters.
+     * 
+     * @param initParameters the map of init parameters to be set for the servlet
+     * @return a new instance of EndpointServlet with the merged init parameters
+     * @throws IllegalArgumentException if the initParameters is null or contains empty names
+     */
+    public EndpointServlet withInitParameters(Map<String, String> initParameters) {
 		Assert.notNull(initParameters, "InitParameters must not be null");
 		boolean hasEmptyName = initParameters.keySet().stream().anyMatch((name) -> !StringUtils.hasText(name));
 		Assert.isTrue(!hasEmptyName, "InitParameters must not contain empty names");
@@ -89,15 +129,30 @@ public final class EndpointServlet {
 		return new EndpointServlet(this.servlet, this.initParameters, loadOnStartup);
 	}
 
-	Servlet getServlet() {
+	/**
+     * Returns the servlet associated with this EndpointServlet.
+     *
+     * @return the servlet associated with this EndpointServlet
+     */
+    Servlet getServlet() {
 		return this.servlet;
 	}
 
-	Map<String, String> getInitParameters() {
+	/**
+     * Returns the initialization parameters of the EndpointServlet.
+     *
+     * @return a Map containing the initialization parameters as key-value pairs
+     */
+    Map<String, String> getInitParameters() {
 		return this.initParameters;
 	}
 
-	int getLoadOnStartup() {
+	/**
+     * Returns the value of the loadOnStartup property.
+     *
+     * @return the value of the loadOnStartup property
+     */
+    int getLoadOnStartup() {
 		return this.loadOnStartup;
 	}
 

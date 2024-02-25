@@ -21,10 +21,20 @@ import io.micrometer.observation.ObservationPredicate;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * MyObservationPredicate class.
+ */
 @Component
 class MyObservationPredicate implements ObservationPredicate {
 
-	@Override
+	/**
+     * This method is used to test if the given name contains the word "denied".
+     * 
+     * @param name    the name to be tested
+     * @param context the context in which the test is performed
+     * @return true if the name does not contain the word "denied", false otherwise
+     */
+    @Override
 	public boolean test(String name, Context context) {
 		return !name.contains("denied");
 	}

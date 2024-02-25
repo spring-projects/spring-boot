@@ -47,7 +47,19 @@ public class IgnoreTopLevelConverterNotFoundBindHandler extends AbstractBindHand
 		super(parent);
 	}
 
-	@Override
+	/**
+     * This method is called when a binding fails due to a ConverterNotFoundException.
+     * It checks if the binding failure occurred at the top level and if so, returns null.
+     * Otherwise, it rethrows the exception.
+     *
+     * @param name    the name of the configuration property that failed to bind
+     * @param target  the bindable target of the binding
+     * @param context the bind context
+     * @param error   the exception that occurred during binding
+     * @return null if the binding failure occurred at the top level, otherwise rethrows the exception
+     * @throws Exception the original exception that occurred during binding
+     */
+    @Override
 	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
 			throws Exception {
 		if (context.getDepth() == 0 && error instanceof ConverterNotFoundException) {

@@ -43,7 +43,12 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 
 	private boolean ensureUniqueRuntimeObjectNames;
 
-	public ParentAwareNamingStrategy(JmxAttributeSource attributeSource) {
+	/**
+     * Constructs a new ParentAwareNamingStrategy with the specified JmxAttributeSource.
+     * 
+     * @param attributeSource the JmxAttributeSource to be used by the naming strategy
+     */
+    public ParentAwareNamingStrategy(JmxAttributeSource attributeSource) {
 		super(attributeSource);
 	}
 
@@ -56,12 +61,26 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 		this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;
 	}
 
-	@Override
+	/**
+     * Sets the application context for this ParentAwareNamingStrategy.
+     * 
+     * @param applicationContext the application context to be set
+     * @throws BeansException if an error occurs while setting the application context
+     */
+    @Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
-	@Override
+	/**
+     * Returns the ObjectName for the given managed bean and bean key.
+     * 
+     * @param managedBean the managed bean
+     * @param beanKey the bean key
+     * @return the ObjectName for the managed bean
+     * @throws MalformedObjectNameException if the ObjectName is malformed
+     */
+    @Override
 	public ObjectName getObjectName(Object managedBean, String beanKey) throws MalformedObjectNameException {
 		ObjectName name = super.getObjectName(managedBean, beanKey);
 		if (this.ensureUniqueRuntimeObjectNames) {
@@ -73,7 +92,14 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 		return name;
 	}
 
-	private boolean parentContextContainsSameBean(ApplicationContext context, String beanKey) {
+	/**
+     * Checks if the parent ApplicationContext contains a bean with the given beanKey.
+     * 
+     * @param context the ApplicationContext to check
+     * @param beanKey the key of the bean to check for
+     * @return true if the parent ApplicationContext contains a bean with the given beanKey, false otherwise
+     */
+    private boolean parentContextContainsSameBean(ApplicationContext context, String beanKey) {
 		if (context.getParent() == null) {
 			return false;
 		}
@@ -86,7 +112,16 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 		}
 	}
 
-	private ObjectName appendToObjectName(ObjectName name, String key, String value)
+	/**
+     * Appends a key-value pair to the properties of an ObjectName.
+     * 
+     * @param name the original ObjectName
+     * @param key the key to be added
+     * @param value the value to be added
+     * @return the modified ObjectName with the new key-value pair
+     * @throws MalformedObjectNameException if the modified ObjectName is malformed
+     */
+    private ObjectName appendToObjectName(ObjectName name, String key, String value)
 			throws MalformedObjectNameException {
 		Hashtable<String, String> keyProperties = name.getKeyPropertyList();
 		keyProperties.put(key, value);

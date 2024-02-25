@@ -19,12 +19,20 @@ package org.springframework.boot.docs.messaging.jms.sending;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final JmsTemplate jmsTemplate;
 
-	public MyBean(JmsTemplate jmsTemplate) {
+	/**
+     * Constructs a new instance of MyBean with the specified JmsTemplate.
+     * 
+     * @param jmsTemplate the JmsTemplate to be used by this MyBean
+     */
+    public MyBean(JmsTemplate jmsTemplate) {
 		this.jmsTemplate = jmsTemplate;
 	}
 

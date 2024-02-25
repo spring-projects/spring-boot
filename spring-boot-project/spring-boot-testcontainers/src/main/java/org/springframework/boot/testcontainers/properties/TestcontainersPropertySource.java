@@ -57,11 +57,22 @@ public class TestcontainersPropertySource extends MapPropertySource {
 
 	private final Set<ApplicationEventPublisher> eventPublishers = new CopyOnWriteArraySet<>();
 
-	TestcontainersPropertySource() {
+	/**
+     * Constructs a new TestcontainersPropertySource with the specified map.
+     *
+     * @param map the map to be used for storing properties
+     */
+    TestcontainersPropertySource() {
 		this(Collections.synchronizedMap(new LinkedHashMap<>()));
 	}
 
-	private TestcontainersPropertySource(Map<String, Supplier<Object>> valueSuppliers) {
+	/**
+     * Constructs a new TestcontainersPropertySource with the given value suppliers.
+     *
+     * @param valueSuppliers the map of value suppliers for the property source
+     * @throws IllegalArgumentException if the name or value supplier is null or blank
+     */
+    private TestcontainersPropertySource(Map<String, Supplier<Object>> valueSuppliers) {
 		super(NAME, Collections.unmodifiableMap(valueSuppliers));
 		this.registry = (name, valueSupplier) -> {
 			Assert.hasText(name, "'name' must not be null or blank");
@@ -70,35 +81,81 @@ public class TestcontainersPropertySource extends MapPropertySource {
 		};
 	}
 
-	private void addEventPublisher(ApplicationEventPublisher eventPublisher) {
+	/**
+     * Adds an ApplicationEventPublisher to the list of event publishers.
+     * 
+     * @param eventPublisher the ApplicationEventPublisher to be added
+     */
+    private void addEventPublisher(ApplicationEventPublisher eventPublisher) {
 		this.eventPublishers.add(eventPublisher);
 	}
 
-	@Override
+	/**
+     * Retrieves the value of the specified property.
+     *
+     * @param name the name of the property to retrieve
+     * @return the value of the property, or null if the property does not exist
+     */
+    @Override
 	public Object getProperty(String name) {
 		Object valueSupplier = this.source.get(name);
 		return (valueSupplier != null) ? getProperty(name, valueSupplier) : null;
 	}
 
-	private Object getProperty(String name, Object valueSupplier) {
+	/**
+     * Retrieves the value of a property based on its name and value supplier.
+     * 
+     * @param name the name of the property
+     * @param valueSupplier the supplier that provides the value of the property
+     * @return the value of the property
+     */
+    private Object getProperty(String name, Object valueSupplier) {
 		BeforeTestcontainersPropertySuppliedEvent event = new BeforeTestcontainersPropertySuppliedEvent(this, name);
 		this.eventPublishers.forEach((eventPublisher) -> eventPublisher.publishEvent(event));
 		return SupplierUtils.resolve(valueSupplier);
 	}
 
-	public static DynamicPropertyRegistry attach(Environment environment) {
+	/**
+     * Attaches a dynamic property registry to the specified environment.
+     *
+     * @param environment the environment to attach the dynamic property registry to
+     * @return the attached dynamic property registry
+     */
+    public static DynamicPropertyRegistry attach(Environment environment) {
 		return attach(environment, null);
 	}
 
-	static DynamicPropertyRegistry attach(ConfigurableApplicationContext applicationContext) {
+	/**
+     * Attaches a dynamic property registry to the given ConfigurableApplicationContext.
+     * 
+     * @param applicationContext the ConfigurableApplicationContext to attach the dynamic property registry to
+     * @return the attached DynamicPropertyRegistry
+     */
+    static DynamicPropertyRegistry attach(ConfigurableApplicationContext applicationContext) {
 		return attach(applicationContext.getEnvironment(), applicationContext, null);
 	}
 
-	public static DynamicPropertyRegistry attach(Environment environment, BeanDefinitionRegistry registry) {
+	/**
+     * Attaches a dynamic property registry to the given environment and bean definition registry.
+     * 
+     * @param environment the environment to attach the dynamic property registry to
+     * @param registry the bean definition registry to attach the dynamic property registry to
+     * @return the attached dynamic property registry
+     */
+    public static DynamicPropertyRegistry attach(Environment environment, BeanDefinitionRegistry registry) {
 		return attach(environment, null, registry);
 	}
 
-	private static DynamicPropertyRegistry attach(Environment environment, ApplicationEventPublisher eventPublisher,
+	/**
+     * Attaches the TestcontainersPropertySource to the given environment, event publisher, and bean definition registry.
+     * 
+     * @param environment The environment to attach the TestcontainersPropertySource to. Must be a ConfigurableEnvironment.
+     * @param eventPublisher The event publisher to add to the TestcontainersPropertySource. Can be null.
+     * @param registry The bean definition registry to register the EventPublisherRegistrar bean definition. Can be null.
+     * @return The DynamicPropertyRegistry associated with the TestcontainersPropertySource.
+     * @throws IllegalStateException if the environment is not a ConfigurableEnvironment.
+     */
+    private static DynamicPropertyRegistry attach(Environment environment, ApplicationEventPublisher eventPublisher,
 			BeanDefinitionRegistry registry) {
 		Assert.state(environment instanceof ConfigurableEnvironment,
 				"TestcontainersPropertySource can only be attached to a ConfigurableEnvironment");
@@ -113,7 +170,14 @@ public class TestcontainersPropertySource extends MapPropertySource {
 		return propertySource.registry;
 	}
 
-	static TestcontainersPropertySource getOrAdd(ConfigurableEnvironment environment) {
+	/**
+     * Retrieves the TestcontainersPropertySource from the given ConfigurableEnvironment, or adds it if it does not exist.
+     * 
+     * @param environment the ConfigurableEnvironment from which to retrieve or add the TestcontainersPropertySource
+     * @return the TestcontainersPropertySource
+     * @throws IllegalStateException if the TestcontainersPropertySource type registered is incorrect
+     */
+    static TestcontainersPropertySource getOrAdd(ConfigurableEnvironment environment) {
 		PropertySource<?> propertySource = environment.getPropertySources().get(NAME);
 		if (propertySource == null) {
 			environment.getPropertySources().addFirst(new TestcontainersPropertySource());
@@ -137,16 +201,32 @@ public class TestcontainersPropertySource extends MapPropertySource {
 
 		private ApplicationEventPublisher eventPublisher;
 
-		EventPublisherRegistrar(Environment environment) {
+		/**
+         * Constructs a new EventPublisherRegistrar with the specified environment.
+         * 
+         * @param environment the environment in which the EventPublisherRegistrar operates
+         */
+        EventPublisherRegistrar(Environment environment) {
 			this.environment = environment;
 		}
 
-		@Override
+		/**
+         * Sets the application event publisher.
+         * 
+         * @param eventPublisher the application event publisher to be set
+         */
+        @Override
 		public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
 			this.eventPublisher = eventPublisher;
 		}
 
-		@Override
+		/**
+         * Post-processes the bean factory by adding the event publisher to the Testcontainers property source.
+         * 
+         * @param beanFactory the bean factory to be processed
+         * @throws BeansException if an error occurs during bean processing
+         */
+        @Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 			if (this.eventPublisher != null) {
 				TestcontainersPropertySource.getOrAdd((ConfigurableEnvironment) this.environment)

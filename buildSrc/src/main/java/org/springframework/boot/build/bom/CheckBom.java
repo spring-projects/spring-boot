@@ -47,12 +47,22 @@ public class CheckBom extends DefaultTask {
 
 	private final BomExtension bom;
 
-	@Inject
+	/**
+     * Constructs a new CheckBom object with the specified BomExtension.
+     * 
+     * @param bom the BomExtension object to be used for checking BOM
+     */
+    @Inject
 	public CheckBom(BomExtension bom) {
 		this.bom = bom;
 	}
 
-	@TaskAction
+	/**
+     * Checks the Bill of Materials (BOM) for any errors.
+     * 
+     * @throws GradleException if any errors are found in the BOM
+     */
+    @TaskAction
 	void checkBom() {
 		List<String> errors = new ArrayList<>();
 		for (Library library : this.bom.getLibraries()) {
@@ -66,7 +76,13 @@ public class CheckBom extends DefaultTask {
 		}
 	}
 
-	private void checkLibrary(Library library, List<String> errors) {
+	/**
+     * Checks the given library for any errors and adds them to the provided list of errors.
+     * 
+     * @param library The library to be checked.
+     * @param errors  The list of errors to which any found errors will be added.
+     */
+    private void checkLibrary(Library library, List<String> errors) {
 		List<String> libraryErrors = new ArrayList<>();
 		checkExclusions(library, libraryErrors);
 		checkProhibitedVersions(library, libraryErrors);
@@ -79,7 +95,13 @@ public class CheckBom extends DefaultTask {
 		}
 	}
 
-	private void checkExclusions(Library library, List<String> errors) {
+	/**
+     * Checks for exclusions in the given library and adds any errors to the provided list.
+     * 
+     * @param library The library to check for exclusions.
+     * @param errors The list to add any errors found during the check.
+     */
+    private void checkExclusions(Library library, List<String> errors) {
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
 				if (!module.getExclusions().isEmpty()) {
@@ -89,7 +111,15 @@ public class CheckBom extends DefaultTask {
 		}
 	}
 
-	private void checkExclusions(String groupId, Module module, DependencyVersion version, List<String> errors) {
+	/**
+     * Checks the exclusions for a given module in a specified group and version.
+     * 
+     * @param groupId the group ID of the module
+     * @param module the module to check exclusions for
+     * @param version the version of the module
+     * @param errors a list to store any errors encountered during the check
+     */
+    private void checkExclusions(String groupId, Module module, DependencyVersion version, List<String> errors) {
 		Set<String> resolved = getProject().getConfigurations()
 			.detachedConfiguration(
 					getProject().getDependencies().create(groupId + ":" + module.getName() + ":" + version))
@@ -123,7 +153,13 @@ public class CheckBom extends DefaultTask {
 		}
 	}
 
-	private void checkProhibitedVersions(Library library, List<String> errors) {
+	/**
+     * Checks if the current version of a library is prohibited or falls within an ineffective version range.
+     * 
+     * @param library The library to check.
+     * @param errors A list to store any errors encountered during the check.
+     */
+    private void checkProhibitedVersions(Library library, List<String> errors) {
 		ArtifactVersion currentVersion = new DefaultArtifactVersion(library.getVersion().getVersion().toString());
 		for (ProhibitedVersion prohibited : library.getProhibitedVersions()) {
 			if (prohibited.isProhibited(library.getVersion().getVersion().toString())) {
@@ -150,7 +186,13 @@ public class CheckBom extends DefaultTask {
 		}
 	}
 
-	private void checkVersionAlignment(Library library, List<String> errors) {
+	/**
+     * Checks if the version of a library is aligned with the specified version alignment.
+     * 
+     * @param library The library to check.
+     * @param errors A list to store any errors encountered during the check.
+     */
+    private void checkVersionAlignment(Library library, List<String> errors) {
 		VersionAlignment versionAlignment = library.getVersionAlignment();
 		if (versionAlignment == null) {
 			return;

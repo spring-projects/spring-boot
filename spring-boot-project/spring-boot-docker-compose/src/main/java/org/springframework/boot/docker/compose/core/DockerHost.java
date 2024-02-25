@@ -36,11 +36,22 @@ final class DockerHost {
 
 	private final String host;
 
-	private DockerHost(String host) {
+	/**
+     * Constructs a new DockerHost object with the specified host.
+     *
+     * @param host the host address of the Docker host
+     */
+    private DockerHost(String host) {
 		this.host = host;
 	}
 
-	@Override
+	/**
+     * Compares this DockerHost object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the specified object is equal to this DockerHost object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -52,12 +63,22 @@ final class DockerHost {
 		return this.host.equals(other.host);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for the DockerHost object.
+     * 
+     * @return the hash code value for the DockerHost object
+     */
+    @Override
 	public int hashCode() {
 		return this.host.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the DockerHost object.
+     *
+     * @return the host name of the DockerHost object
+     */
+    @Override
 	public String toString() {
 		return this.host;
 	}
@@ -90,28 +111,64 @@ final class DockerHost {
 		return new DockerHost(host);
 	}
 
-	private static String fromServicesHostEnv(Function<String, String> systemEnv) {
+	/**
+     * Retrieves the value of the SERVICES_HOST environment variable.
+     * 
+     * @param systemEnv a function that retrieves environment variable values
+     * @return the value of the SERVICES_HOST environment variable
+     */
+    private static String fromServicesHostEnv(Function<String, String> systemEnv) {
 		return systemEnv.apply("SERVICES_HOST");
 	}
 
-	private static String fromDockerHostEnv(Function<String, String> systemEnv) {
+	/**
+     * Converts the Docker host environment variable to a formatted endpoint string.
+     * 
+     * @param systemEnv the function to retrieve system environment variables
+     * @return the formatted endpoint string
+     */
+    private static String fromDockerHostEnv(Function<String, String> systemEnv) {
 		return fromEndpoint(systemEnv.apply("DOCKER_HOST"));
 	}
 
-	private static String fromCurrentContext(Supplier<List<DockerCliContextResponse>> contextsSupplier) {
+	/**
+     * Retrieves the Docker host endpoint from the current context.
+     * 
+     * @param contextsSupplier a supplier function that provides a list of Docker CLI contexts
+     * @return the Docker host endpoint if found in the current context, null otherwise
+     */
+    private static String fromCurrentContext(Supplier<List<DockerCliContextResponse>> contextsSupplier) {
 		DockerCliContextResponse current = getCurrentContext(contextsSupplier.get());
 		return (current != null) ? fromEndpoint(current.dockerEndpoint()) : null;
 	}
 
-	private static DockerCliContextResponse getCurrentContext(List<DockerCliContextResponse> candidates) {
+	/**
+     * Returns the current Docker CLI context from the given list of candidates.
+     * 
+     * @param candidates the list of Docker CLI context responses
+     * @return the current Docker CLI context, or null if not found
+     */
+    private static DockerCliContextResponse getCurrentContext(List<DockerCliContextResponse> candidates) {
 		return candidates.stream().filter(DockerCliContextResponse::current).findFirst().orElse(null);
 	}
 
-	private static String fromEndpoint(String endpoint) {
+	/**
+     * Converts the given endpoint string to a URI string representation.
+     * 
+     * @param endpoint the endpoint string to convert
+     * @return the URI string representation of the endpoint, or null if the endpoint is empty or null
+     */
+    private static String fromEndpoint(String endpoint) {
 		return (StringUtils.hasLength(endpoint)) ? fromUri(URI.create(endpoint)) : null;
 	}
 
-	private static String fromUri(URI uri) {
+	/**
+     * Returns the host name from the given URI.
+     * 
+     * @param uri the URI from which to extract the host name
+     * @return the host name if the URI scheme is "http", "https", or "tcp", otherwise null
+     */
+    private static String fromUri(URI uri) {
 		try {
 			return switch (uri.getScheme()) {
 				case "http", "https", "tcp" -> uri.getHost();

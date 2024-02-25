@@ -60,12 +60,22 @@ public interface ContainerContent {
 		Assert.hasText(destinationPath, "DestinationPath must not be empty");
 		return new ContainerContent() {
 
-			@Override
+			/**
+     * Returns the TarArchive object associated with this ContainerContent.
+     *
+     * @return the TarArchive object associated with this ContainerContent
+     */
+    @Override
 			public TarArchive getArchive() {
 				return archive;
 			}
 
-			@Override
+			/**
+     * Returns the destination path of the container content.
+     *
+     * @return the destination path of the container content
+     */
+    @Override
 			public String getDestinationPath() {
 				return destinationPath;
 			}

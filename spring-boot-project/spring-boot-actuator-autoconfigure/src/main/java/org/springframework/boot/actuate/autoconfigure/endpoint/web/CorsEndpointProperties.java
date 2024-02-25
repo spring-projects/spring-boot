@@ -80,63 +80,138 @@ public class CorsEndpointProperties {
 	@DurationUnit(ChronoUnit.SECONDS)
 	private Duration maxAge = Duration.ofSeconds(1800);
 
-	public List<String> getAllowedOrigins() {
+	/**
+     * Returns the list of allowed origins.
+     *
+     * @return the list of allowed origins
+     */
+    public List<String> getAllowedOrigins() {
 		return this.allowedOrigins;
 	}
 
-	public void setAllowedOrigins(List<String> allowedOrigins) {
+	/**
+     * Sets the list of allowed origins for CORS requests.
+     * 
+     * @param allowedOrigins the list of allowed origins
+     */
+    public void setAllowedOrigins(List<String> allowedOrigins) {
 		this.allowedOrigins = allowedOrigins;
 	}
 
-	public List<String> getAllowedOriginPatterns() {
+	/**
+     * Returns the list of allowed origin patterns.
+     *
+     * @return the list of allowed origin patterns
+     */
+    public List<String> getAllowedOriginPatterns() {
 		return this.allowedOriginPatterns;
 	}
 
-	public void setAllowedOriginPatterns(List<String> allowedOriginPatterns) {
+	/**
+     * Sets the allowed origin patterns for CORS requests.
+     * 
+     * @param allowedOriginPatterns the list of allowed origin patterns
+     */
+    public void setAllowedOriginPatterns(List<String> allowedOriginPatterns) {
 		this.allowedOriginPatterns = allowedOriginPatterns;
 	}
 
-	public List<String> getAllowedMethods() {
+	/**
+     * Returns the list of allowed HTTP methods.
+     *
+     * @return the list of allowed HTTP methods
+     */
+    public List<String> getAllowedMethods() {
 		return this.allowedMethods;
 	}
 
-	public void setAllowedMethods(List<String> allowedMethods) {
+	/**
+     * Sets the allowed HTTP methods for CORS requests.
+     * 
+     * @param allowedMethods the list of allowed HTTP methods
+     */
+    public void setAllowedMethods(List<String> allowedMethods) {
 		this.allowedMethods = allowedMethods;
 	}
 
-	public List<String> getAllowedHeaders() {
+	/**
+     * Returns the list of allowed headers.
+     *
+     * @return the list of allowed headers
+     */
+    public List<String> getAllowedHeaders() {
 		return this.allowedHeaders;
 	}
 
-	public void setAllowedHeaders(List<String> allowedHeaders) {
+	/**
+     * Sets the list of allowed headers for CORS requests.
+     * 
+     * @param allowedHeaders the list of allowed headers
+     */
+    public void setAllowedHeaders(List<String> allowedHeaders) {
 		this.allowedHeaders = allowedHeaders;
 	}
 
-	public List<String> getExposedHeaders() {
+	/**
+     * Returns the list of exposed headers.
+     *
+     * @return the list of exposed headers
+     */
+    public List<String> getExposedHeaders() {
 		return this.exposedHeaders;
 	}
 
-	public void setExposedHeaders(List<String> exposedHeaders) {
+	/**
+     * Sets the list of exposed headers.
+     * 
+     * @param exposedHeaders the list of exposed headers to be set
+     */
+    public void setExposedHeaders(List<String> exposedHeaders) {
 		this.exposedHeaders = exposedHeaders;
 	}
 
-	public Boolean getAllowCredentials() {
+	/**
+     * Returns the value of the allowCredentials property.
+     * 
+     * @return the value of the allowCredentials property
+     */
+    public Boolean getAllowCredentials() {
 		return this.allowCredentials;
 	}
 
-	public void setAllowCredentials(Boolean allowCredentials) {
+	/**
+     * Sets whether credentials are allowed for cross-origin requests.
+     * 
+     * @param allowCredentials a boolean value indicating whether credentials are allowed
+     */
+    public void setAllowCredentials(Boolean allowCredentials) {
 		this.allowCredentials = allowCredentials;
 	}
 
-	public Duration getMaxAge() {
+	/**
+     * Returns the maximum age of the CORS (Cross-Origin Resource Sharing) policy.
+     * 
+     * @return the maximum age of the CORS policy
+     */
+    public Duration getMaxAge() {
 		return this.maxAge;
 	}
 
-	public void setMaxAge(Duration maxAge) {
+	/**
+     * Sets the maximum age for CORS requests.
+     * 
+     * @param maxAge the maximum age for CORS requests
+     */
+    public void setMaxAge(Duration maxAge) {
 		this.maxAge = maxAge;
 	}
 
-	public CorsConfiguration toCorsConfiguration() {
+	/**
+     * Converts the CorsEndpointProperties object to a CorsConfiguration object.
+     * 
+     * @return The CorsConfiguration object representing the CORS configuration, or null if both allowedOrigins and allowedOriginPatterns are empty.
+     */
+    public CorsConfiguration toCorsConfiguration() {
 		if (CollectionUtils.isEmpty(this.allowedOrigins) && CollectionUtils.isEmpty(this.allowedOriginPatterns)) {
 			return null;
 		}

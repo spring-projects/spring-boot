@@ -30,22 +30,40 @@ public class InfoContributorProperties {
 
 	private final Git git = new Git();
 
-	public Git getGit() {
+	/**
+     * Returns the Git object.
+     *
+     * @return the Git object
+     */
+    public Git getGit() {
 		return this.git;
 	}
 
-	public static class Git {
+	/**
+     * Git class.
+     */
+    public static class Git {
 
 		/**
 		 * Mode to use to expose git information.
 		 */
 		private GitInfoContributor.Mode mode = GitInfoContributor.Mode.SIMPLE;
 
-		public GitInfoContributor.Mode getMode() {
+		/**
+         * Returns the mode of the GitInfoContributor.
+         *
+         * @return the mode of the GitInfoContributor
+         */
+        public GitInfoContributor.Mode getMode() {
 			return this.mode;
 		}
 
-		public void setMode(GitInfoContributor.Mode mode) {
+		/**
+         * Sets the mode of the GitInfoContributor.
+         * 
+         * @param mode the mode to set for the GitInfoContributor
+         */
+        public void setMode(GitInfoContributor.Mode mode) {
 			this.mode = mode;
 		}
 

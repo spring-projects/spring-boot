@@ -37,12 +37,25 @@ final class NumberToPeriodConverter implements GenericConverter {
 
 	private final StringToPeriodConverter delegate = new StringToPeriodConverter();
 
-	@Override
+	/**
+     * Returns a set of convertible types for the NumberToPeriodConverter class.
+     * 
+     * @return a set containing a single ConvertiblePair object representing the conversion from Number to Period.
+     */
+    @Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(Number.class, Period.class));
 	}
 
-	@Override
+	/**
+     * Converts the given source object to the specified target type.
+     * 
+     * @param source the source object to be converted
+     * @param sourceType the type descriptor of the source object
+     * @param targetType the type descriptor of the target type
+     * @return the converted object
+     */
+    @Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return this.delegate.convert((source != null) ? source.toString() : null, TypeDescriptor.valueOf(String.class),
 				targetType);

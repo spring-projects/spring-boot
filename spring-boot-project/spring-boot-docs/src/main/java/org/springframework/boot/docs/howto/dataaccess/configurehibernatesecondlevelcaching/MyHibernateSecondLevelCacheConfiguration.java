@@ -23,10 +23,19 @@ import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyHibernateSecondLevelCacheConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyHibernateSecondLevelCacheConfiguration {
 
-	@Bean
+	/**
+     * Customizes the Hibernate properties to use the provided JCacheCacheManager as the cache manager for the second level cache.
+     * 
+     * @param cacheManager the JCacheCacheManager instance to be used as the cache manager
+     * @return the HibernatePropertiesCustomizer that sets the cache manager in the Hibernate properties
+     */
+    @Bean
 	public HibernatePropertiesCustomizer hibernateSecondLevelCacheCustomizer(JCacheCacheManager cacheManager) {
 		return (properties) -> properties.put(ConfigSettings.CACHE_MANAGER, cacheManager.getCacheManager());
 	}

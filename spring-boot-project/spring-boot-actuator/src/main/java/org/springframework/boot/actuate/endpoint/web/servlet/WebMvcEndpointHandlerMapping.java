@@ -71,7 +71,12 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 		setOrder(-100);
 	}
 
-	@Override
+	/**
+     * Returns the LinksHandler for this WebMvcEndpointHandlerMapping.
+     * 
+     * @return the LinksHandler instance
+     */
+    @Override
 	protected LinksHandler getLinksHandler() {
 		return new WebMvcLinksHandler();
 	}
@@ -81,7 +86,14 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 	 */
 	class WebMvcLinksHandler implements LinksHandler {
 
-		@Override
+		/**
+         * Retrieves the links for the current request.
+         * 
+         * @param request  the HttpServletRequest object representing the current request
+         * @param response the HttpServletResponse object representing the current response
+         * @return a Map containing the links for the current request
+         */
+        @Override
 		@ResponseBody
 		@Reflective
 		public Map<String, Map<String, Link>> links(HttpServletRequest request, HttpServletResponse response) {
@@ -90,20 +102,34 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 			return OperationResponseBody.of(Collections.singletonMap("_links", links));
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * 
+         * @return the string representation of the object
+         */
+        @Override
 		public String toString() {
 			return "Actuator root web endpoint";
 		}
 
 	}
 
-	static class WebMvcEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * WebMvcEndpointHandlerMappingRuntimeHints class.
+     */
+    static class WebMvcEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
-		@Override
+		/**
+         * Registers the runtime hints for WebMvcEndpointHandlerMapping.
+         * 
+         * @param hints the runtime hints to register
+         * @param classLoader the class loader to use for reflection
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.reflectiveRegistrar.registerRuntimeHints(hints, WebMvcLinksHandler.class);
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);

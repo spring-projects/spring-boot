@@ -55,13 +55,27 @@ public class ResourceBanner implements Banner {
 
 	private final Resource resource;
 
-	public ResourceBanner(Resource resource) {
+	/**
+     * Constructs a new ResourceBanner object with the given resource.
+     * 
+     * @param resource the resource to be used for the banner
+     * @throws IllegalArgumentException if the resource is null
+     * @throws IllegalArgumentException if the resource does not exist
+     */
+    public ResourceBanner(Resource resource) {
 		Assert.notNull(resource, "Resource must not be null");
 		Assert.isTrue(resource.exists(), "Resource must exist");
 		this.resource = resource;
 	}
 
-	@Override
+	/**
+     * Prints the banner to the specified output stream.
+     *
+     * @param environment the environment to resolve property placeholders
+     * @param sourceClass the source class used for resolving property placeholders
+     * @param out the output stream to print the banner to
+     */
+    @Override
 	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
 		try {
 			String banner = StreamUtils.copyToString(this.resource.getInputStream(),
@@ -97,7 +111,13 @@ public class ResourceBanner implements Banner {
 		return resolvers;
 	}
 
-	private MapPropertySource getTitleSource(Class<?> sourceClass) {
+	/**
+     * Returns a MapPropertySource containing the application title.
+     * 
+     * @param sourceClass the class used to retrieve the application title
+     * @return a MapPropertySource containing the application title
+     */
+    private MapPropertySource getTitleSource(Class<?> sourceClass) {
 		String applicationTitle = getApplicationTitle(sourceClass);
 		Map<String, Object> titleMap = Collections.singletonMap("application.title",
 				(applicationTitle != null) ? applicationTitle : "");
@@ -115,15 +135,32 @@ public class ResourceBanner implements Banner {
 		return (sourcePackage != null) ? sourcePackage.getImplementationTitle() : null;
 	}
 
-	private AnsiPropertySource getAnsiSource() {
+	/**
+     * Returns an instance of AnsiPropertySource.
+     * 
+     * @return an instance of AnsiPropertySource
+     */
+    private AnsiPropertySource getAnsiSource() {
 		return new AnsiPropertySource("ansi", true);
 	}
 
-	private MapPropertySource getVersionSource(Class<?> sourceClass) {
+	/**
+     * Returns a MapPropertySource containing the versions map for the given source class.
+     *
+     * @param sourceClass the class for which the versions map is to be generated
+     * @return a MapPropertySource containing the versions map
+     */
+    private MapPropertySource getVersionSource(Class<?> sourceClass) {
 		return new MapPropertySource("version", getVersionsMap(sourceClass));
 	}
 
-	private Map<String, Object> getVersionsMap(Class<?> sourceClass) {
+	/**
+     * Returns a map containing the versions of the application and Spring Boot.
+     * 
+     * @param sourceClass the class from which to retrieve the application version
+     * @return a map containing the versions of the application and Spring Boot
+     */
+    private Map<String, Object> getVersionsMap(Class<?> sourceClass) {
 		String appVersion = getApplicationVersion(sourceClass);
 		String bootVersion = getBootVersion();
 		Map<String, Object> versions = new HashMap<>();
@@ -134,16 +171,34 @@ public class ResourceBanner implements Banner {
 		return versions;
 	}
 
-	protected String getApplicationVersion(Class<?> sourceClass) {
+	/**
+     * Returns the version of the application.
+     * 
+     * @param sourceClass the class from which the version is obtained
+     * @return the version of the application, or null if not available
+     */
+    protected String getApplicationVersion(Class<?> sourceClass) {
 		Package sourcePackage = (sourceClass != null) ? sourceClass.getPackage() : null;
 		return (sourcePackage != null) ? sourcePackage.getImplementationVersion() : null;
 	}
 
-	protected String getBootVersion() {
+	/**
+     * Returns the version of Spring Boot being used.
+     *
+     * @return the version of Spring Boot
+     */
+    protected String getBootVersion() {
 		return SpringBootVersion.getVersion();
 	}
 
-	private String getVersionString(String version, boolean format) {
+	/**
+     * Returns the version string with optional formatting.
+     * 
+     * @param version the version string to be formatted
+     * @param format  true if the version string should be formatted, false otherwise
+     * @return the formatted version string if format is true, otherwise the original version string
+     */
+    private String getVersionString(String version, boolean format) {
 		if (version == null) {
 			return "";
 		}

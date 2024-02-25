@@ -45,7 +45,14 @@ import org.springframework.util.StringUtils;
 @Order(Ordered.HIGHEST_PRECEDENCE + 40)
 class OnPropertyCondition extends SpringBootCondition {
 
-	@Override
+	/**
+     * Determines the match outcome for the given condition context and annotated type metadata.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		List<AnnotationAttributes> allAnnotationAttributes = metadata.getAnnotations()
 			.stream(ConditionalOnProperty.class.getName())
@@ -64,7 +71,14 @@ class OnPropertyCondition extends SpringBootCondition {
 		return ConditionOutcome.match(ConditionMessage.of(match));
 	}
 
-	private ConditionOutcome determineOutcome(AnnotationAttributes annotationAttributes, PropertyResolver resolver) {
+	/**
+     * Determines the outcome of the condition based on the provided annotation attributes and property resolver.
+     * 
+     * @param annotationAttributes the annotation attributes containing the properties to check
+     * @param resolver the property resolver to use for resolving property values
+     * @return the condition outcome
+     */
+    private ConditionOutcome determineOutcome(AnnotationAttributes annotationAttributes, PropertyResolver resolver) {
 		Spec spec = new Spec(annotationAttributes);
 		List<String> missingProperties = new ArrayList<>();
 		List<String> nonMatchingProperties = new ArrayList<>();
@@ -83,7 +97,10 @@ class OnPropertyCondition extends SpringBootCondition {
 			.match(ConditionMessage.forCondition(ConditionalOnProperty.class, spec).because("matched"));
 	}
 
-	private static class Spec {
+	/**
+     * Spec class.
+     */
+    private static class Spec {
 
 		private final String prefix;
 
@@ -93,7 +110,12 @@ class OnPropertyCondition extends SpringBootCondition {
 
 		private final boolean matchIfMissing;
 
-		Spec(AnnotationAttributes annotationAttributes) {
+		/**
+         * Initializes a new instance of the Spec class with the provided annotation attributes.
+         * 
+         * @param annotationAttributes the annotation attributes to initialize the Spec with
+         */
+        Spec(AnnotationAttributes annotationAttributes) {
 			String prefix = annotationAttributes.getString("prefix").trim();
 			if (StringUtils.hasText(prefix) && !prefix.endsWith(".")) {
 				prefix = prefix + ".";
@@ -104,7 +126,15 @@ class OnPropertyCondition extends SpringBootCondition {
 			this.matchIfMissing = annotationAttributes.getBoolean("matchIfMissing");
 		}
 
-		private String[] getNames(Map<String, Object> annotationAttributes) {
+		/**
+         * Retrieves the names from the given annotation attributes.
+         * 
+         * @param annotationAttributes the map of annotation attributes
+         * @return an array of names
+         * @throws IllegalStateException if neither the "value" nor the "name" attribute is specified
+         * @throws IllegalStateException if both the "value" and the "name" attributes are specified
+         */
+        private String[] getNames(Map<String, Object> annotationAttributes) {
 			String[] value = (String[]) annotationAttributes.get("value");
 			String[] name = (String[]) annotationAttributes.get("name");
 			Assert.state(value.length > 0 || name.length > 0,
@@ -114,7 +144,14 @@ class OnPropertyCondition extends SpringBootCondition {
 			return (value.length > 0) ? value : name;
 		}
 
-		private void collectProperties(PropertyResolver resolver, List<String> missing, List<String> nonMatching) {
+		/**
+         * Collects properties from the given PropertyResolver and adds them to the appropriate lists.
+         * 
+         * @param resolver the PropertyResolver to collect properties from
+         * @param missing a list to store missing properties
+         * @param nonMatching a list to store properties that do not match the specified value
+         */
+        private void collectProperties(PropertyResolver resolver, List<String> missing, List<String> nonMatching) {
 			for (String name : this.names) {
 				String key = this.prefix + name;
 				if (resolver.containsProperty(key)) {
@@ -130,14 +167,31 @@ class OnPropertyCondition extends SpringBootCondition {
 			}
 		}
 
-		private boolean isMatch(String value, String requiredValue) {
+		/**
+         * Checks if the given value matches the required value.
+         * 
+         * @param value          the value to be checked
+         * @param requiredValue  the required value to be matched against
+         * @return               true if the value matches the required value, false otherwise
+         */
+        private boolean isMatch(String value, String requiredValue) {
 			if (StringUtils.hasLength(requiredValue)) {
 				return requiredValue.equalsIgnoreCase(value);
 			}
 			return !"false".equalsIgnoreCase(value);
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * The string representation includes the prefix, names, and havingValue of the object.
+         * If there is only one name, it is appended directly after the prefix.
+         * If there are multiple names, they are enclosed in square brackets and separated by commas.
+         * If a havingValue is present, it is appended after an equals sign.
+         * The resulting string is enclosed in parentheses.
+         *
+         * @return a string representation of the object
+         */
+        @Override
 		public String toString() {
 			StringBuilder result = new StringBuilder();
 			result.append("(");

@@ -79,27 +79,54 @@ public class MapConfigurationPropertySource implements IterableConfigurationProp
 		this.source.put((name != null) ? name.toString() : null, value);
 	}
 
-	@Override
+	/**
+     * Returns the underlying source of the MapConfigurationPropertySource.
+     *
+     * @return the underlying source of the MapConfigurationPropertySource
+     */
+    @Override
 	public Object getUnderlyingSource() {
 		return this.source;
 	}
 
-	@Override
+	/**
+     * Retrieves the configuration property with the specified name from the underlying delegate.
+     * 
+     * @param name the name of the configuration property to retrieve
+     * @return the configuration property with the specified name
+     */
+    @Override
 	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		return this.delegate.getConfigurationProperty(name);
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the elements in this MapConfigurationPropertySource in proper sequence.
+     *
+     * @return an iterator over the elements in this MapConfigurationPropertySource in proper sequence
+     */
+    @Override
 	public Iterator<ConfigurationPropertyName> iterator() {
 		return this.delegate.iterator();
 	}
 
-	@Override
+	/**
+     * Returns a sequential Stream with the ConfigurationPropertyName elements of this MapConfigurationPropertySource.
+     *
+     * @return a sequential Stream with the ConfigurationPropertyName elements of this MapConfigurationPropertySource
+     */
+    @Override
 	public Stream<ConfigurationPropertyName> stream() {
 		return this.delegate.stream();
 	}
 
-	private void assertNotReadOnlySystemAttributesMap(Map<?, ?> map) {
+	/**
+     * Asserts that the given map does not contain read-only system attributes.
+     * 
+     * @param map the map to be checked
+     * @throws IllegalArgumentException if the map contains read-only system attributes
+     */
+    private void assertNotReadOnlySystemAttributesMap(Map<?, ?> map) {
 		try {
 			map.size();
 		}

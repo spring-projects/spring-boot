@@ -21,15 +21,28 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * MyApplication class.
+ */
 @SpringBootApplication
 public class MyApplication {
 
-	@Bean
+	/**
+     * Returns an ExitCodeGenerator that generates an exit code of 42.
+     *
+     * @return the ExitCodeGenerator that generates an exit code of 42
+     */
+    @Bean
 	public ExitCodeGenerator exitCodeGenerator() {
 		return () -> 42;
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the MyApplication class.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		System.exit(SpringApplication.exit(SpringApplication.run(MyApplication.class, args)));
 	}
 

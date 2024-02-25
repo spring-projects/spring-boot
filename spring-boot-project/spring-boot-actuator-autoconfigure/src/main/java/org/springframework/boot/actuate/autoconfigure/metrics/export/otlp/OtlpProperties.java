@@ -62,46 +62,103 @@ public class OtlpProperties extends StepRegistryProperties {
 	 */
 	private TimeUnit baseTimeUnit = TimeUnit.MILLISECONDS;
 
-	public String getUrl() {
+	/**
+     * Returns the URL of the OtlpProperties.
+     *
+     * @return the URL of the OtlpProperties
+     */
+    public String getUrl() {
 		return this.url;
 	}
 
-	public void setUrl(String url) {
+	/**
+     * Sets the URL for the OtlpProperties.
+     * 
+     * @param url the URL to be set
+     */
+    public void setUrl(String url) {
 		this.url = url;
 	}
 
-	public AggregationTemporality getAggregationTemporality() {
+	/**
+     * Returns the aggregation temporality of the OtlpProperties.
+     *
+     * @return the aggregation temporality of the OtlpProperties
+     */
+    public AggregationTemporality getAggregationTemporality() {
 		return this.aggregationTemporality;
 	}
 
-	public void setAggregationTemporality(AggregationTemporality aggregationTemporality) {
+	/**
+     * Sets the aggregation temporality for the OtlpProperties.
+     * 
+     * @param aggregationTemporality the aggregation temporality to be set
+     */
+    public void setAggregationTemporality(AggregationTemporality aggregationTemporality) {
 		this.aggregationTemporality = aggregationTemporality;
 	}
 
-	@Deprecated(since = "3.2.0", forRemoval = true)
+	/**
+     * Returns the resource attributes.
+     * 
+     * @return the resource attributes
+     * 
+     * @deprecated This method has been deprecated since version 3.2.0 and will be removed in a future release.
+     *             Use {@link #getManagementOpenTelemetryResourceAttributes()} instead.
+     */
+    @Deprecated(since = "3.2.0", forRemoval = true)
 	@DeprecatedConfigurationProperty(replacement = "management.opentelemetry.resource-attributes", since = "3.2.0")
 	public Map<String, String> getResourceAttributes() {
 		return this.resourceAttributes;
 	}
 
-	@Deprecated(since = "3.2.0", forRemoval = true)
+	/**
+     * Sets the resource attributes.
+     * 
+     * @param resourceAttributes the resource attributes to be set
+     * 
+     * @deprecated This method is deprecated since version 3.2.0 and will be removed in a future release.
+     * 
+     * @see OtlpProperties
+     */
+    @Deprecated(since = "3.2.0", forRemoval = true)
 	public void setResourceAttributes(Map<String, String> resourceAttributes) {
 		this.resourceAttributes = resourceAttributes;
 	}
 
-	public Map<String, String> getHeaders() {
+	/**
+     * Returns the headers of the OtlpProperties.
+     *
+     * @return the headers of the OtlpProperties as a Map with key-value pairs
+     */
+    public Map<String, String> getHeaders() {
 		return this.headers;
 	}
 
-	public void setHeaders(Map<String, String> headers) {
+	/**
+     * Sets the headers for the OtlpProperties.
+     * 
+     * @param headers a Map containing the headers to be set
+     */
+    public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
 	}
 
-	public TimeUnit getBaseTimeUnit() {
+	/**
+     * Returns the base time unit used in the OtlpProperties.
+     *
+     * @return the base time unit used in the OtlpProperties
+     */
+    public TimeUnit getBaseTimeUnit() {
 		return this.baseTimeUnit;
 	}
 
-	public void setBaseTimeUnit(TimeUnit baseTimeUnit) {
+	/**
+     * Sets the base time unit for the OtlpProperties.
+     * 
+     * @param baseTimeUnit the base time unit to be set
+     */
+    public void setBaseTimeUnit(TimeUnit baseTimeUnit) {
 		this.baseTimeUnit = baseTimeUnit;
 	}
 

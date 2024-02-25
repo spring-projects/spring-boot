@@ -43,7 +43,16 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnBean(HealthEndpoint.class)
 class ReactiveHealthEndpointConfiguration {
 
-	@Bean
+	/**
+     * Creates a ReactiveHealthContributorRegistry bean if it is missing in the application context.
+     * This bean is responsible for managing the reactive health contributors.
+     *
+     * @param healthContributors         a map of health contributors
+     * @param reactiveHealthContributors a map of reactive health contributors
+     * @param groups                     the health endpoint groups
+     * @return the ReactiveHealthContributorRegistry bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	ReactiveHealthContributorRegistry reactiveHealthContributorRegistry(
 			Map<String, HealthContributor> healthContributors,

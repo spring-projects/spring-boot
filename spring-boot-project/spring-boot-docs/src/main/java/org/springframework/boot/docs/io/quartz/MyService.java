@@ -18,9 +18,18 @@ package org.springframework.boot.docs.io.quartz;
 
 import java.util.Date;
 
+/**
+ * MyService class.
+ */
 class MyService {
 
-	void someMethod(Date date, String name) {
+	/**
+     * This method takes a Date object and a String name as parameters.
+     * 
+     * @param date The Date object to be processed.
+     * @param name The name to be used in the processing.
+     */
+    void someMethod(Date date, String name) {
 	}
 
 }

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.io.restclient.restclient;
 
+/**
+ * Details class.
+ */
 public class Details {
 
 }

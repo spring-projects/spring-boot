@@ -35,7 +35,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties(NettyProperties.class)
 public class NettyAutoConfiguration {
 
-	public NettyAutoConfiguration(NettyProperties properties) {
+	/**
+     * Constructs a new NettyAutoConfiguration object with the given NettyProperties.
+     * 
+     * @param properties the NettyProperties object containing the configuration properties
+     */
+    public NettyAutoConfiguration(NettyProperties properties) {
 		if (properties.getLeakDetection() != null) {
 			NettyProperties.LeakDetection leakDetection = properties.getLeakDetection();
 			ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.valueOf(leakDetection.name()));

@@ -18,6 +18,9 @@ package smoketest.data.ldap;
 
 import org.springframework.data.ldap.repository.LdapRepository;
 
+/**
+ * PersonRepository interface.
+ */
 public interface PersonRepository extends LdapRepository<Person> {
 
 	Person findByPhone(String phone);

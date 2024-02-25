@@ -40,11 +40,22 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration(proxyBeanMethods = false)
 class OAuth2ResourceServerOpaqueTokenConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * OpaqueTokenIntrospectionClientConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(OpaqueTokenIntrospector.class)
 	static class OpaqueTokenIntrospectionClientConfiguration {
 
-		@Bean
+		/**
+         * Creates a bean for the {@link SpringOpaqueTokenIntrospector} class if the property
+         * "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri" is present.
+         * 
+         * @param properties the {@link OAuth2ResourceServerProperties} object containing the
+         *                   configuration properties
+         * @return the {@link SpringOpaqueTokenIntrospector} bean
+         */
+        @Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri")
 		SpringOpaqueTokenIntrospector opaqueTokenIntrospector(OAuth2ResourceServerProperties properties) {
 			OAuth2ResourceServerProperties.Opaquetoken opaqueToken = properties.getOpaquetoken();
@@ -54,11 +65,22 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * OAuth2SecurityFilterChainConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnDefaultWebSecurity
 	static class OAuth2SecurityFilterChainConfiguration {
 
-		@Bean
+		/**
+         * Configures the security filter chain for handling opaque tokens in OAuth2 authentication.
+         * This method is conditional on the presence of a bean of type OpaqueTokenIntrospector.
+         * 
+         * @param http the HttpSecurity object to configure
+         * @return the configured SecurityFilterChain object
+         * @throws Exception if an error occurs during configuration
+         */
+        @Bean
 		@ConditionalOnBean(OpaqueTokenIntrospector.class)
 		SecurityFilterChain opaqueTokenSecurityFilterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());

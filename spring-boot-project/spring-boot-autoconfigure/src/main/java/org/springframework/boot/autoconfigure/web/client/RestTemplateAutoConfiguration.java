@@ -43,7 +43,19 @@ import org.springframework.web.client.RestTemplate;
 @Conditional(NotReactiveWebApplicationCondition.class)
 public class RestTemplateAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a bean of type RestTemplateBuilderConfigurer.
+     * 
+     * This bean is responsible for configuring the RestTemplateBuilder used to create RestTemplate instances.
+     * It sets the HttpMessageConverters, RestTemplateCustomizers, and RestTemplateRequestCustomizers for the RestTemplateBuilder.
+     * 
+     * @param messageConverters - ObjectProvider of HttpMessageConverters used for converting HTTP messages.
+     * @param restTemplateCustomizers - ObjectProvider of RestTemplateCustomizers used for customizing RestTemplate instances.
+     * @param restTemplateRequestCustomizers - ObjectProvider of RestTemplateRequestCustomizers used for customizing RestTemplate requests.
+     * 
+     * @return RestTemplateBuilderConfigurer - the configured RestTemplateBuilderConfigurer bean.
+     */
+    @Bean
 	@Lazy
 	public RestTemplateBuilderConfigurer restTemplateBuilderConfigurer(
 			ObjectProvider<HttpMessageConverters> messageConverters,
@@ -56,7 +68,13 @@ public class RestTemplateAutoConfiguration {
 		return configurer;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of RestTemplateBuilder with the provided RestTemplateBuilderConfigurer.
+     * 
+     * @param restTemplateBuilderConfigurer the RestTemplateBuilderConfigurer to configure the RestTemplateBuilder
+     * @return a new instance of RestTemplateBuilder
+     */
+    @Bean
 	@Lazy
 	@ConditionalOnMissingBean
 	public RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer restTemplateBuilderConfigurer) {

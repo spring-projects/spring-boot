@@ -59,14 +59,28 @@ public class DefaultLaunchScript implements LaunchScript {
 		this.content = expandPlaceholders(content, properties);
 	}
 
-	private String loadContent(File file) throws IOException {
+	/**
+     * Loads the content of a file.
+     * 
+     * @param file the file to load the content from
+     * @return the content of the file as a string
+     * @throws IOException if an I/O error occurs while reading the file
+     */
+    private String loadContent(File file) throws IOException {
 		if (file == null) {
 			return loadContent(getClass().getResourceAsStream("launch.script"));
 		}
 		return loadContent(new FileInputStream(file));
 	}
 
-	private String loadContent(InputStream inputStream) throws IOException {
+	/**
+     * Loads the content from the given input stream and returns it as a string.
+     * 
+     * @param inputStream the input stream to load the content from
+     * @return the content loaded from the input stream as a string
+     * @throws IOException if an I/O error occurs while reading the input stream
+     */
+    private String loadContent(InputStream inputStream) throws IOException {
 		try (inputStream) {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			copy(inputStream, outputStream);
@@ -74,7 +88,14 @@ public class DefaultLaunchScript implements LaunchScript {
 		}
 	}
 
-	private void copy(InputStream inputStream, OutputStream outputStream) throws IOException {
+	/**
+     * Copies the contents of an InputStream to an OutputStream.
+     * 
+     * @param inputStream the InputStream to read from
+     * @param outputStream the OutputStream to write to
+     * @throws IOException if an I/O error occurs during the copying process
+     */
+    private void copy(InputStream inputStream, OutputStream outputStream) throws IOException {
 		byte[] buffer = new byte[BUFFER_SIZE];
 		int bytesRead;
 		while ((bytesRead = inputStream.read(buffer)) != -1) {
@@ -83,7 +104,15 @@ public class DefaultLaunchScript implements LaunchScript {
 		outputStream.flush();
 	}
 
-	private String expandPlaceholders(String content, Map<?, ?> properties) throws IOException {
+	/**
+     * Expands placeholders in the given content using the provided properties.
+     * 
+     * @param content    the content with placeholders to be expanded
+     * @param properties the map of properties to be used for expansion
+     * @return the expanded content with placeholders replaced by their corresponding values
+     * @throws IOException if an I/O error occurs while parsing file property values
+     */
+    private String expandPlaceholders(String content, Map<?, ?> properties) throws IOException {
 		StringBuilder expanded = new StringBuilder();
 		Matcher matcher = PLACEHOLDER_PATTERN.matcher(content);
 		while (matcher.find()) {
@@ -108,14 +137,26 @@ public class DefaultLaunchScript implements LaunchScript {
 		return expanded.toString();
 	}
 
-	private String parseFilePropertyValue(Object propertyValue) throws IOException {
+	/**
+     * Parses the property value and returns the content of the file.
+     * 
+     * @param propertyValue the value of the property to be parsed
+     * @return the content of the file
+     * @throws IOException if an I/O error occurs while loading the file content
+     */
+    private String parseFilePropertyValue(Object propertyValue) throws IOException {
 		if (propertyValue instanceof File file) {
 			return loadContent(file);
 		}
 		return loadContent(new File(propertyValue.toString()));
 	}
 
-	@Override
+	/**
+     * Converts the content of the DefaultLaunchScript object to a byte array.
+     * 
+     * @return the content of the DefaultLaunchScript object as a byte array
+     */
+    @Override
 	public byte[] toByteArray() {
 		return this.content.getBytes(StandardCharsets.UTF_8);
 	}

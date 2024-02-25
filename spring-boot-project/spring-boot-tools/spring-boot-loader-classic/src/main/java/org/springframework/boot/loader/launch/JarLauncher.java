@@ -24,10 +24,19 @@ package org.springframework.boot.loader.launch;
  */
 public final class JarLauncher {
 
-	private JarLauncher() {
+	/**
+     * Private constructor for the JarLauncher class.
+     */
+    private JarLauncher() {
 	}
 
-	public static void main(String[] args) throws Exception {
+	/**
+     * The main method of the JarLauncher class.
+     * 
+     * @param args the command line arguments passed to the main method
+     * @throws Exception if an error occurs during execution
+     */
+    public static void main(String[] args) throws Exception {
 		org.springframework.boot.loader.JarLauncher.main(args);
 	}
 

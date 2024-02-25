@@ -16,22 +16,43 @@
 
 package smoketest.rsocket;
 
+/**
+ * Project class.
+ */
 public class Project {
 
 	private String name;
 
-	public Project() {
+	/**
+     * Constructs a new Project object.
+     */
+    public Project() {
 	}
 
-	public Project(String name) {
+	/**
+     * Constructs a new Project object with the specified name.
+     *
+     * @param name the name of the project
+     */
+    public Project(String name) {
 		this.name = name;
 	}
 
-	public String getName() {
+	/**
+     * Returns the name of the Project.
+     *
+     * @return the name of the Project
+     */
+    public String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	/**
+     * Sets the name of the project.
+     * 
+     * @param name the name of the project
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 

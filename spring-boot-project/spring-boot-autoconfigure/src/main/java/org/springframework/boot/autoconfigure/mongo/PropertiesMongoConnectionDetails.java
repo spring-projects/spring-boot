@@ -36,11 +36,24 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 
 	private final MongoProperties properties;
 
-	public PropertiesMongoConnectionDetails(MongoProperties properties) {
+	/**
+     * Constructs a new instance of PropertiesMongoConnectionDetails with the specified MongoProperties.
+     * 
+     * @param properties the MongoProperties object containing the connection details
+     */
+    public PropertiesMongoConnectionDetails(MongoProperties properties) {
 		this.properties = properties;
 	}
 
-	@Override
+	/**
+     * Returns the ConnectionString object based on the properties provided.
+     * The ConnectionString follows the format: mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database.collection][?options]]
+     * If the URI property is provided, it will be used to create the ConnectionString.
+     * Otherwise, the ConnectionString will be constructed using the individual properties.
+     * 
+     * @return the ConnectionString object
+     */
+    @Override
 	public ConnectionString getConnectionString() {
 		// mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database.collection][?options]]
 		if (this.properties.getUri() != null) {
@@ -74,21 +87,43 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 		return new ConnectionString(builder.toString());
 	}
 
-	private String encode(String input) {
+	/**
+     * Encodes the given input string using UTF-8 encoding.
+     * 
+     * @param input the string to be encoded
+     * @return the encoded string
+     */
+    private String encode(String input) {
 		return URLEncoder.encode(input, StandardCharsets.UTF_8);
 	}
 
-	private char[] encode(char[] input) {
+	/**
+     * Encodes the given input using URLEncoder with UTF-8 charset.
+     * 
+     * @param input the input to be encoded
+     * @return the encoded input as a character array
+     */
+    private char[] encode(char[] input) {
 		return URLEncoder.encode(new String(input), StandardCharsets.UTF_8).toCharArray();
 	}
 
-	@Override
+	/**
+     * Returns the GridFs instance.
+     * 
+     * @return the GridFs instance
+     */
+    @Override
 	public GridFs getGridFs() {
 		return GridFs.of(PropertiesMongoConnectionDetails.this.properties.getGridfs().getDatabase(),
 				PropertiesMongoConnectionDetails.this.properties.getGridfs().getBucket());
 	}
 
-	private List<String> getOptions() {
+	/**
+     * Returns a list of options for the MongoDB connection.
+     * 
+     * @return the list of options
+     */
+    private List<String> getOptions() {
 		List<String> options = new ArrayList<>();
 		if (this.properties.getReplicaSetName() != null) {
 			options.add("replicaSet=" + this.properties.getReplicaSetName());

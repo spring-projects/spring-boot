@@ -36,7 +36,13 @@ final class WelcomePage {
 
 	private final boolean templated;
 
-	private WelcomePage(String viewName, boolean templated) {
+	/**
+     * Constructs a new WelcomePage object with the specified view name and templated flag.
+     * 
+     * @param viewName the name of the view to be displayed
+     * @param templated a boolean flag indicating whether the view is templated or not
+     */
+    private WelcomePage(String viewName, boolean templated) {
 		this.viewName = viewName;
 		this.templated = templated;
 	}

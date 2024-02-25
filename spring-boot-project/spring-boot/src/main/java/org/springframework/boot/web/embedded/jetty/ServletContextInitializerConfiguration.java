@@ -46,7 +46,13 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 		this.initializers = initializers;
 	}
 
-	@Override
+	/**
+     * Configures the WebAppContext by setting the class loader and calling the initializers.
+     * 
+     * @param context the WebAppContext to be configured
+     * @throws Exception if an error occurs during configuration
+     */
+    @Override
 	public void configure(WebAppContext context) throws Exception {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		Thread.currentThread().setContextClassLoader(context.getClassLoader());
@@ -58,7 +64,13 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 		}
 	}
 
-	private void callInitializers(WebAppContext context) throws ServletException {
+	/**
+     * Calls the initializers for the given WebAppContext.
+     * 
+     * @param context the WebAppContext to call the initializers on
+     * @throws ServletException if an error occurs during initialization
+     */
+    private void callInitializers(WebAppContext context) throws ServletException {
 		try {
 			context.getContext().setExtendedListenerTypes(true);
 			for (ServletContextInitializer initializer : this.initializers) {

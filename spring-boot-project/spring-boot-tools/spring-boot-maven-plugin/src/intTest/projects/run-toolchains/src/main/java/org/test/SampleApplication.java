@@ -16,9 +16,18 @@
 
 package org.test;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args the command line arguments
+     * @throws IllegalStateException if called, as it should not be called
+     */
+    public static void main(String[] args) {
 		throw new IllegalStateException("Should not be called!");
 	}
 

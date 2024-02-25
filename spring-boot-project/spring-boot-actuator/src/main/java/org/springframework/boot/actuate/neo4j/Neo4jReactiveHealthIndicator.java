@@ -49,12 +49,23 @@ public final class Neo4jReactiveHealthIndicator extends AbstractReactiveHealthIn
 
 	private final Neo4jHealthDetailsHandler healthDetailsHandler;
 
-	public Neo4jReactiveHealthIndicator(Driver driver) {
+	/**
+     * Constructs a new Neo4jReactiveHealthIndicator with the specified driver.
+     *
+     * @param driver the Neo4j driver to be used for health checks
+     */
+    public Neo4jReactiveHealthIndicator(Driver driver) {
 		this.driver = driver;
 		this.healthDetailsHandler = new Neo4jHealthDetailsHandler();
 	}
 
-	@Override
+	/**
+     * Performs a health check on the Neo4j database.
+     * 
+     * @param builder the Health.Builder object used to build the health status
+     * @return a Mono object representing the health status of the Neo4j database
+     */
+    @Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
 		return runHealthCheckQuery()
 			.doOnError(SessionExpiredException.class, (ex) -> logger.warn(Neo4jHealthIndicator.MESSAGE_SESSION_EXPIRED))
@@ -65,19 +76,41 @@ public final class Neo4jReactiveHealthIndicator extends AbstractReactiveHealthIn
 			});
 	}
 
-	Mono<Neo4jHealthDetails> runHealthCheckQuery() {
+	/**
+     * Executes a health check query on the Neo4j database.
+     * 
+     * @return a Mono emitting the Neo4jHealthDetails containing the health details of the database
+     */
+    Mono<Neo4jHealthDetails> runHealthCheckQuery() {
 		return Mono.using(this::session, this::healthDetails, ReactiveSession::close);
 	}
 
-	private ReactiveSession session() {
+	/**
+     * Returns a reactive session for interacting with the Neo4j database.
+     *
+     * @return the reactive session
+     */
+    private ReactiveSession session() {
 		return this.driver.session(ReactiveSession.class, Neo4jHealthIndicator.DEFAULT_SESSION_CONFIG);
 	}
 
-	private Mono<Neo4jHealthDetails> healthDetails(ReactiveSession session) {
+	/**
+     * Retrieves the health details of the Neo4j database using the provided ReactiveSession.
+     *
+     * @param session the ReactiveSession object used to execute the Cypher query
+     * @return a Mono emitting the Neo4jHealthDetails object containing the health details
+     */
+    private Mono<Neo4jHealthDetails> healthDetails(ReactiveSession session) {
 		return Mono.from(session.run(Neo4jHealthIndicator.CYPHER)).flatMap(this::healthDetails);
 	}
 
-	private Mono<? extends Neo4jHealthDetails> healthDetails(ReactiveResult result) {
+	/**
+     * Retrieves the health details of Neo4j from the given ReactiveResult.
+     *
+     * @param result the ReactiveResult containing the health details of Neo4j
+     * @return a Mono of Neo4jHealthDetails representing the health details of Neo4j
+     */
+    private Mono<? extends Neo4jHealthDetails> healthDetails(ReactiveResult result) {
 		Flux<Record> records = Flux.from(result.records());
 		Mono<ResultSummary> summary = Mono.from(result.consume());
 		Neo4jHealthDetailsBuilder builder = new Neo4jHealthDetailsBuilder();
@@ -92,11 +125,22 @@ public final class Neo4jReactiveHealthIndicator extends AbstractReactiveHealthIn
 
 		private Record record;
 
-		void record(Record record) {
+		/**
+         * Sets the record for the Neo4jHealthDetailsBuilder.
+         * 
+         * @param record the record to be set
+         */
+        void record(Record record) {
 			this.record = record;
 		}
 
-		private Neo4jHealthDetails build(ResultSummary summary) {
+		/**
+         * Builds a Neo4jHealthDetails object using the provided ResultSummary.
+         * 
+         * @param summary the ResultSummary object used to build the Neo4jHealthDetails
+         * @return a new Neo4jHealthDetails object
+         */
+        private Neo4jHealthDetails build(ResultSummary summary) {
 			return new Neo4jHealthDetails(this.record, summary);
 		}
 

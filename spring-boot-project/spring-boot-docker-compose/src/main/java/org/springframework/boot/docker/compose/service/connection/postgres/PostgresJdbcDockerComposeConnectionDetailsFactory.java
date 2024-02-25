@@ -36,11 +36,22 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 
 	private static final String[] POSTGRES_CONTAINER_NAMES = { "postgres", "bitnami/postgresql" };
 
-	protected PostgresJdbcDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new instance of the {@code PostgresJdbcDockerComposeConnectionDetailsFactory} class.
+     * 
+     * @param postgresContainerNames an array of strings representing the names of the Postgres containers
+     */
+    protected PostgresJdbcDockerComposeConnectionDetailsFactory() {
 		super(POSTGRES_CONTAINER_NAMES);
 	}
 
-	@Override
+	/**
+     * Returns the JDBC connection details for a Docker Compose connection.
+     * 
+     * @param source the Docker Compose connection source
+     * @return the JDBC connection details
+     */
+    @Override
 	protected JdbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new PostgresJdbcDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -57,23 +68,43 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 
 		private final String jdbcUrl;
 
-		PostgresJdbcDockerComposeConnectionDetails(RunningService service) {
+		/**
+         * Constructs a new instance of PostgresJdbcDockerComposeConnectionDetails with the provided RunningService.
+         * 
+         * @param service the RunningService object representing the running service
+         */
+        PostgresJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new PostgresEnvironment(service.env());
 			this.jdbcUrl = jdbcUrlBuilder.build(service, this.environment.getDatabase());
 		}
 
-		@Override
+		/**
+         * Returns the username associated with the current environment.
+         * 
+         * @return the username
+         */
+        @Override
 		public String getUsername() {
 			return this.environment.getUsername();
 		}
 
-		@Override
+		/**
+         * Returns the password for the Postgres JDBC connection.
+         * 
+         * @return the password for the Postgres JDBC connection
+         */
+        @Override
 		public String getPassword() {
 			return this.environment.getPassword();
 		}
 
-		@Override
+		/**
+         * Returns the JDBC URL for the PostgresJdbcDockerComposeConnectionDetails.
+         *
+         * @return the JDBC URL
+         */
+        @Override
 		public String getJdbcUrl() {
 			return this.jdbcUrl;
 		}

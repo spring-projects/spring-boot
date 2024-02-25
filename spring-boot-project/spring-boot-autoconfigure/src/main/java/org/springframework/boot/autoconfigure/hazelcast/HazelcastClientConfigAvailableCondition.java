@@ -37,13 +37,30 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 class HazelcastClientConfigAvailableCondition extends HazelcastConfigResourceCondition {
 
-	HazelcastClientConfigAvailableCondition() {
+	/**
+     * Constructs a new HazelcastClientConfigAvailableCondition with the default configuration file locations.
+     * The configuration file locations are checked in the following order:
+     * 1. System property "hazelcast.client.config" with value "file:./hazelcast-client.xml"
+     * 2. Classpath resource "hazelcast-client.xml"
+     * 3. System property "hazelcast.client.config" with value "file:./hazelcast-client.yaml"
+     * 4. Classpath resource "hazelcast-client.yaml"
+     * 5. System property "hazelcast.client.config" with value "file:./hazelcast-client.yml"
+     * 6. Classpath resource "hazelcast-client.yml"
+     */
+    HazelcastClientConfigAvailableCondition() {
 		super(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY, "file:./hazelcast-client.xml",
 				"classpath:/hazelcast-client.xml", "file:./hazelcast-client.yaml", "classpath:/hazelcast-client.yaml",
 				"file:./hazelcast-client.yml", "classpath:/hazelcast-client.yml");
 	}
 
-	@Override
+	/**
+     * Determines the outcome of the condition for the availability of the Hazelcast client configuration.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		if (context.getEnvironment().containsProperty(HAZELCAST_CONFIG_PROPERTY)) {
 			ConditionOutcome configValidationOutcome = HazelcastClientValidation.clientConfigOutcome(context,
@@ -54,9 +71,20 @@ class HazelcastClientConfigAvailableCondition extends HazelcastConfigResourceCon
 		return getResourceOutcome(context, metadata);
 	}
 
-	static class HazelcastClientValidation {
+	/**
+     * HazelcastClientValidation class.
+     */
+    static class HazelcastClientValidation {
 
-		static ConditionOutcome clientConfigOutcome(ConditionContext context, String propertyName, Builder builder) {
+		/**
+         * Determines the outcome of the client configuration based on the provided condition context, property name, and builder.
+         * 
+         * @param context the condition context
+         * @param propertyName the name of the property containing the resource path
+         * @param builder the builder used to construct the condition outcome
+         * @return the condition outcome indicating whether the client configuration exists and if it is recognized
+         */
+        static ConditionOutcome clientConfigOutcome(ConditionContext context, String propertyName, Builder builder) {
 			String resourcePath = context.getEnvironment().getProperty(propertyName);
 			Resource resource = context.getResourceLoader().getResource(resourcePath);
 			if (!resource.exists()) {
@@ -71,7 +99,15 @@ class HazelcastClientConfigAvailableCondition extends HazelcastConfigResourceCon
 			}
 		}
 
-		private static String existingConfigurationOutcome(Resource resource, boolean client) throws IOException {
+		/**
+         * Returns the outcome of an existing configuration based on the given resource and client flag.
+         * 
+         * @param resource the resource containing the configuration
+         * @param client   flag indicating whether the configuration is for a client or server
+         * @return the outcome message indicating the type of configuration detected
+         * @throws IOException if an I/O error occurs while retrieving the resource URL
+         */
+        private static String existingConfigurationOutcome(Resource resource, boolean client) throws IOException {
 			URL location = resource.getURL();
 			return client ? "Hazelcast client configuration detected at '" + location + "'"
 					: "Hazelcast server configuration detected  at '" + location + "'";

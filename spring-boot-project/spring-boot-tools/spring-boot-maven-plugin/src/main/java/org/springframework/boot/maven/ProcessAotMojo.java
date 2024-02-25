@@ -86,7 +86,12 @@ public class ProcessAotMojo extends AbstractAotMojo {
 	@Parameter
 	private String[] profiles;
 
-	@Override
+	/**
+     * Executes the Ahead-of-Time (AOT) processing for the project.
+     * 
+     * @throws Exception if an error occurs during the AOT processing.
+     */
+    @Override
 	protected void executeAot() throws Exception {
 		if (this.project.getPackaging().equals("pom")) {
 			getLog().debug("process-aot goal could not be applied to pom project.");
@@ -101,7 +106,13 @@ public class ProcessAotMojo extends AbstractAotMojo {
 		copyAll(this.generatedClasses.toPath(), this.classesDirectory.toPath());
 	}
 
-	private String[] getAotArguments(String applicationClass) {
+	/**
+     * Returns an array of AOT arguments for the given application class.
+     * 
+     * @param applicationClass the fully qualified name of the application class
+     * @return an array of AOT arguments
+     */
+    private String[] getAotArguments(String applicationClass) {
 		List<String> aotArguments = new ArrayList<>();
 		aotArguments.add(applicationClass);
 		aotArguments.add(this.generatedSources.toString());
@@ -113,12 +124,23 @@ public class ProcessAotMojo extends AbstractAotMojo {
 		return aotArguments.toArray(String[]::new);
 	}
 
-	private URL[] getClassPath() throws Exception {
+	/**
+     * Returns an array of URLs representing the classpath.
+     * 
+     * @return an array of URLs representing the classpath
+     * @throws Exception if an error occurs while getting the classpath
+     */
+    private URL[] getClassPath() throws Exception {
 		File[] directories = new File[] { this.classesDirectory, this.generatedClasses };
 		return getClassPath(directories, new ExcludeTestScopeArtifactFilter());
 	}
 
-	private RunArguments resolveArguments() {
+	/**
+     * Resolves the arguments for running the process.
+     * 
+     * @return the resolved RunArguments object
+     */
+    private RunArguments resolveArguments() {
 		RunArguments runArguments = new RunArguments(this.arguments);
 		if (!ObjectUtils.isEmpty(this.profiles)) {
 			runArguments.getArgs().addFirst("--spring.profiles.active=" + String.join(",", this.profiles));

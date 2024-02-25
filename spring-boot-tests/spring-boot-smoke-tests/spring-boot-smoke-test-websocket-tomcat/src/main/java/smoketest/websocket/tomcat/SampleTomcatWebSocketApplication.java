@@ -37,53 +37,104 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 import org.springframework.web.socket.handler.PerConnectionWebSocketHandler;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
+/**
+ * SampleTomcatWebSocketApplication class.
+ */
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableWebSocket
 public class SampleTomcatWebSocketApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
 
-	@Override
+	/**
+     * Registers WebSocket handlers for the given WebSocketHandlerRegistry.
+     * 
+     * @param registry the WebSocketHandlerRegistry to register the handlers with
+     */
+    @Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		registry.addHandler(echoWebSocketHandler(), "/echo").withSockJS();
 		registry.addHandler(snakeWebSocketHandler(), "/snake").withSockJS();
 	}
 
-	@Override
+	/**
+     * Configures the Spring application builder.
+     * 
+     * @param application the Spring application builder
+     * @return the sources of the SampleTomcatWebSocketApplication class
+     */
+    @Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(SampleTomcatWebSocketApplication.class);
 	}
 
-	@Bean
+	/**
+     * Creates and returns an instance of the EchoService interface.
+     * 
+     * @return the EchoService instance
+     */
+    @Bean
 	public EchoService echoService() {
 		return new DefaultEchoService("Did you say \"%s\"?");
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of the GreetingService interface.
+     * 
+     * @return the newly created GreetingService instance
+     */
+    @Bean
 	public GreetingService greetingService() {
 		return new SimpleGreetingService();
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of EchoWebSocketHandler and returns it as a WebSocketHandler.
+     * The EchoWebSocketHandler is initialized with an instance of EchoService.
+     * 
+     * @return the WebSocketHandler for handling WebSocket connections
+     */
+    @Bean
 	public WebSocketHandler echoWebSocketHandler() {
 		return new EchoWebSocketHandler(echoService());
 	}
 
-	@Bean
+	/**
+     * Creates a WebSocketHandler for handling snake game WebSocket connections.
+     * 
+     * @return the WebSocketHandler for snake game WebSocket connections
+     */
+    @Bean
 	public WebSocketHandler snakeWebSocketHandler() {
 		return new PerConnectionWebSocketHandler(SnakeWebSocketHandler.class);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of ReverseWebSocketEndpoint.
+     * 
+     * @return the newly created ReverseWebSocketEndpoint instance
+     */
+    @Bean
 	public ReverseWebSocketEndpoint reverseWebSocketEndpoint() {
 		return new ReverseWebSocketEndpoint();
 	}
 
-	@Bean
+	/**
+     * Initializes and configures the ServerEndpointExporter.
+     * 
+     * @return the ServerEndpointExporter instance
+     */
+    @Bean
 	public ServerEndpointExporter serverEndpointExporter() {
 		return new ServerEndpointExporter();
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring application by running the SampleTomcatWebSocketApplication class.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleTomcatWebSocketApplication.class, args);
 	}
 

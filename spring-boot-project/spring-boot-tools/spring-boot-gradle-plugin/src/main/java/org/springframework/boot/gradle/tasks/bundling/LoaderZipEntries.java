@@ -48,7 +48,15 @@ class LoaderZipEntries {
 
 	private final int fileMode;
 
-	LoaderZipEntries(Long entryTime, int dirMode, int fileMode, LoaderImplementation loaderImplementation) {
+	/**
+     * Creates a new instance of LoaderZipEntries with the specified parameters.
+     * 
+     * @param entryTime the entry time to set for the LoaderZipEntries
+     * @param dirMode the directory mode to set for the LoaderZipEntries
+     * @param fileMode the file mode to set for the LoaderZipEntries
+     * @param loaderImplementation the loader implementation to set for the LoaderZipEntries
+     */
+    LoaderZipEntries(Long entryTime, int dirMode, int fileMode, LoaderImplementation loaderImplementation) {
 		this.entryTime = entryTime;
 		this.dirMode = dirMode;
 		this.fileMode = fileMode;
@@ -56,7 +64,14 @@ class LoaderZipEntries {
 				: LoaderImplementation.DEFAULT;
 	}
 
-	WrittenEntries writeTo(ZipArchiveOutputStream out) throws IOException {
+	/**
+     * Writes the entries from the loader jar file to the specified ZipArchiveOutputStream.
+     * 
+     * @param out the ZipArchiveOutputStream to write the entries to
+     * @return a WrittenEntries object containing the directories and files written
+     * @throws IOException if an I/O error occurs while writing the entries
+     */
+    WrittenEntries writeTo(ZipArchiveOutputStream out) throws IOException {
 		WrittenEntries written = new WrittenEntries();
 		try (ZipInputStream loaderJar = new ZipInputStream(
 				getClass().getResourceAsStream("/" + this.loaderImplementation.getJarResourceName()))) {
@@ -76,27 +91,55 @@ class LoaderZipEntries {
 		return written;
 	}
 
-	private void writeDirectory(ZipArchiveEntry entry, ZipArchiveOutputStream out) throws IOException {
+	/**
+     * Writes a directory entry to the specified ZipArchiveOutputStream.
+     * 
+     * @param entry The ZipArchiveEntry representing the directory to be written.
+     * @param out The ZipArchiveOutputStream to write the directory entry to.
+     * @throws IOException If an I/O error occurs while writing the directory entry.
+     */
+    private void writeDirectory(ZipArchiveEntry entry, ZipArchiveOutputStream out) throws IOException {
 		prepareEntry(entry, this.dirMode);
 		out.putArchiveEntry(entry);
 		out.closeArchiveEntry();
 	}
 
-	private void writeFile(ZipArchiveEntry entry, ZipInputStream in, ZipArchiveOutputStream out) throws IOException {
+	/**
+     * Writes a file to a ZipArchiveOutputStream.
+     * 
+     * @param entry The ZipArchiveEntry representing the file to be written.
+     * @param in The ZipInputStream used to read the file data.
+     * @param out The ZipArchiveOutputStream used to write the file data.
+     * @throws IOException If an I/O error occurs while writing the file.
+     */
+    private void writeFile(ZipArchiveEntry entry, ZipInputStream in, ZipArchiveOutputStream out) throws IOException {
 		prepareEntry(entry, this.fileMode);
 		out.putArchiveEntry(entry);
 		copy(in, out);
 		out.closeArchiveEntry();
 	}
 
-	private void prepareEntry(ZipArchiveEntry entry, int unixMode) {
+	/**
+     * Prepares a ZipArchiveEntry by setting the entry time and Unix mode.
+     * 
+     * @param entry The ZipArchiveEntry to be prepared.
+     * @param unixMode The Unix mode to be set for the entry.
+     */
+    private void prepareEntry(ZipArchiveEntry entry, int unixMode) {
 		if (this.entryTime != null) {
 			entry.setTime(DefaultTimeZoneOffset.INSTANCE.removeFrom(this.entryTime));
 		}
 		entry.setUnixMode(unixMode);
 	}
 
-	private void copy(InputStream in, OutputStream out) throws IOException {
+	/**
+     * Copies the content from the input stream to the output stream.
+     *
+     * @param in the input stream to read from
+     * @param out the output stream to write to
+     * @throws IOException if an I/O error occurs during the copying process
+     */
+    private void copy(InputStream in, OutputStream out) throws IOException {
 		StreamUtils.copy(in, out);
 	}
 
@@ -109,15 +152,31 @@ class LoaderZipEntries {
 
 		private final Set<String> files = new LinkedHashSet<>();
 
-		private void addDirectory(ZipEntry entry) {
+		/**
+         * Adds a directory to the list of directories in the WrittenEntries class.
+         * 
+         * @param entry the ZipEntry representing the directory to be added
+         */
+        private void addDirectory(ZipEntry entry) {
 			this.directories.add(entry.getName());
 		}
 
-		private void addFile(ZipEntry entry) {
+		/**
+         * Adds a file to the list of files in the WrittenEntries class.
+         * 
+         * @param entry the ZipEntry object representing the file to be added
+         */
+        private void addFile(ZipEntry entry) {
 			this.files.add(entry.getName());
 		}
 
-		boolean isWrittenDirectory(FileTreeElement element) {
+		/**
+         * Checks if the given FileTreeElement represents a written directory.
+         * 
+         * @param element the FileTreeElement to check
+         * @return true if the element is a written directory, false otherwise
+         */
+        boolean isWrittenDirectory(FileTreeElement element) {
 			String path = element.getRelativePath().getPathString();
 			if (element.isDirectory() && !path.endsWith(("/"))) {
 				path += "/";
@@ -125,7 +184,12 @@ class LoaderZipEntries {
 			return this.directories.contains(path);
 		}
 
-		Set<String> getFiles() {
+		/**
+         * Returns the set of files.
+         *
+         * @return the set of files
+         */
+        Set<String> getFiles() {
 			return this.files;
 		}
 

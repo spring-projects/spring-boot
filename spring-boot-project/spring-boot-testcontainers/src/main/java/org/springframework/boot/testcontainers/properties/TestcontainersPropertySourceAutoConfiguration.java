@@ -36,10 +36,20 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 @ConditionalOnClass(DynamicPropertyRegistry.class)
 public class TestcontainersPropertySourceAutoConfiguration {
 
-	TestcontainersPropertySourceAutoConfiguration() {
+	/**
+     * This method is the constructor for the TestcontainersPropertySourceAutoConfiguration class.
+     */
+    TestcontainersPropertySourceAutoConfiguration() {
 	}
 
-	@Bean
+	/**
+     * Attaches a TestcontainersPropertySource to the given ConfigurableApplicationContext.
+     * This allows dynamic properties to be registered and used within the application.
+     *
+     * @param applicationContext the ConfigurableApplicationContext to attach the TestcontainersPropertySource to
+     * @return the DynamicPropertyRegistry containing the attached TestcontainersPropertySource
+     */
+    @Bean
 	static DynamicPropertyRegistry dynamicPropertyRegistry(ConfigurableApplicationContext applicationContext) {
 		return TestcontainersPropertySource.attach(applicationContext);
 	}

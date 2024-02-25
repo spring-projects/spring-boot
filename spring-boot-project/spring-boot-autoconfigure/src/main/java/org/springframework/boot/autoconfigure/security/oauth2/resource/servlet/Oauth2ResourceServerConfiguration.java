@@ -29,7 +29,10 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
  */
 class Oauth2ResourceServerConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * JwtConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JwtDecoder.class)
 	@Import({ OAuth2ResourceServerJwtConfiguration.JwtDecoderConfiguration.class,
 			OAuth2ResourceServerJwtConfiguration.OAuth2SecurityFilterChainConfiguration.class,
@@ -38,7 +41,10 @@ class Oauth2ResourceServerConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * OpaqueTokenConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@Import({ OAuth2ResourceServerOpaqueTokenConfiguration.OpaqueTokenIntrospectionClientConfiguration.class,
 			OAuth2ResourceServerOpaqueTokenConfiguration.OAuth2SecurityFilterChainConfiguration.class })
 	static class OpaqueTokenConfiguration {

@@ -29,17 +29,33 @@ import org.springframework.core.env.MutablePropertySources;
  */
 class ApplicationReactiveWebEnvironment extends StandardReactiveWebEnvironment {
 
-	@Override
+	/**
+     * Returns the value of the active profiles property.
+     * 
+     * @return the value of the active profiles property, or null if not set
+     */
+    @Override
 	protected String doGetActiveProfilesProperty() {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the value of the default profiles property for this environment.
+     * 
+     * @return the value of the default profiles property, or {@code null} if not set
+     */
+    @Override
 	protected String doGetDefaultProfilesProperty() {
 		return null;
 	}
 
-	@Override
+	/**
+     * Creates a ConfigurablePropertyResolver using the provided MutablePropertySources.
+     * 
+     * @param propertySources the MutablePropertySources to use for resolving properties
+     * @return the created ConfigurablePropertyResolver
+     */
+    @Override
 	protected ConfigurablePropertyResolver createPropertyResolver(MutablePropertySources propertySources) {
 		return ConfigurationPropertySources.createPropertyResolver(propertySources);
 	}

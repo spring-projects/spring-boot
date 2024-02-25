@@ -66,7 +66,10 @@ import org.springframework.jms.support.destination.DestinationResolver;
 @ImportRuntimeHints(JmsRuntimeHints.class)
 public class JmsAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * JmsTemplateConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	protected static class JmsTemplateConfiguration {
 
 		private final JmsProperties properties;
@@ -77,7 +80,16 @@ public class JmsAutoConfiguration {
 
 		private final ObjectProvider<ObservationRegistry> observationRegistry;
 
-		public JmsTemplateConfiguration(JmsProperties properties,
+		/**
+         * Constructs a new JmsTemplateConfiguration with the provided JmsProperties, DestinationResolver,
+         * MessageConverter, and ObservationRegistry.
+         * 
+         * @param properties the JmsProperties to be used for configuring the JmsTemplate
+         * @param destinationResolver the DestinationResolver to be used for resolving destinations
+         * @param messageConverter the MessageConverter to be used for converting messages
+         * @param observationRegistry the ObservationRegistry to be used for observing JMS operations
+         */
+        public JmsTemplateConfiguration(JmsProperties properties,
 				ObjectProvider<DestinationResolver> destinationResolver,
 				ObjectProvider<MessageConverter> messageConverter,
 				ObjectProvider<ObservationRegistry> observationRegistry) {
@@ -87,7 +99,13 @@ public class JmsAutoConfiguration {
 			this.observationRegistry = observationRegistry;
 		}
 
-		@Bean
+		/**
+         * Creates a JmsTemplate bean if no other bean of type JmsOperations is present and there is a single candidate bean of type ConnectionFactory.
+         * 
+         * @param connectionFactory the ConnectionFactory bean to be used for creating the JmsTemplate
+         * @return the created JmsTemplate bean
+         */
+        @Bean
 		@ConditionalOnMissingBean(JmsOperations.class)
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
@@ -101,7 +119,13 @@ public class JmsAutoConfiguration {
 			return template;
 		}
 
-		private void mapTemplateProperties(Template properties, JmsTemplate template) {
+		/**
+         * Maps the properties of a Template object to a JmsTemplate object.
+         * 
+         * @param properties the Template object containing the properties to be mapped
+         * @param template the JmsTemplate object to map the properties to
+         */
+        private void mapTemplateProperties(Template properties, JmsTemplate template) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties.getSession().getAcknowledgeMode()::getMode).to(template::setSessionAcknowledgeMode);
 			map.from(properties.getSession()::isTransacted).to(template::setSessionTransacted);
@@ -116,12 +140,22 @@ public class JmsAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * MessagingTemplateConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JmsMessagingTemplate.class)
 	@Import(JmsTemplateConfiguration.class)
 	protected static class MessagingTemplateConfiguration {
 
-		@Bean
+		/**
+         * Creates a JmsMessagingTemplate bean if there is no existing bean of type JmsMessageOperations and there is a single candidate bean of type JmsTemplate.
+         * 
+         * @param properties the JmsProperties object containing the properties for the JmsTemplate
+         * @param jmsTemplate the JmsTemplate bean used for sending and receiving JMS messages
+         * @return the JmsMessagingTemplate bean
+         */
+        @Bean
 		@ConditionalOnMissingBean(JmsMessageOperations.class)
 		@ConditionalOnSingleCandidate(JmsTemplate.class)
 		public JmsMessagingTemplate jmsMessagingTemplate(JmsProperties properties, JmsTemplate jmsTemplate) {
@@ -130,16 +164,31 @@ public class JmsAutoConfiguration {
 			return messagingTemplate;
 		}
 
-		private void mapTemplateProperties(Template properties, JmsMessagingTemplate messagingTemplate) {
+		/**
+         * Maps the properties of a Template object to a JmsMessagingTemplate object.
+         * 
+         * @param properties the Template object containing the properties to be mapped
+         * @param messagingTemplate the JmsMessagingTemplate object to map the properties to
+         */
+        private void mapTemplateProperties(Template properties, JmsMessagingTemplate messagingTemplate) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties::getDefaultDestination).to(messagingTemplate::setDefaultDestinationName);
 		}
 
 	}
 
-	static class JmsRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * JmsRuntimeHints class.
+     */
+    static class JmsRuntimeHints implements RuntimeHintsRegistrar {
 
-		@Override
+		/**
+         * Registers hints for the runtime.
+         * 
+         * @param hints the runtime hints to register
+         * @param classLoader the class loader to use for reflection
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.reflection()
 				.registerType(TypeReference.of(AcknowledgeMode.class), (type) -> type.withMethod("of",

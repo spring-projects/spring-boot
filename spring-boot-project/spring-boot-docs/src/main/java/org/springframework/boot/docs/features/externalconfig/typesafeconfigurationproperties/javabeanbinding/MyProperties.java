@@ -23,6 +23,9 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * MyProperties class.
+ */
 @ConfigurationProperties("my.service")
 public class MyProperties {
 
@@ -37,19 +40,39 @@ public class MyProperties {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	/**
+     * Sets the enabled status of the MyProperties object.
+     * 
+     * @param enabled the enabled status to be set
+     */
+    public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public InetAddress getRemoteAddress() {
+	/**
+     * Returns the remote address of the current instance.
+     *
+     * @return the remote address of the current instance
+     */
+    public InetAddress getRemoteAddress() {
 		return this.remoteAddress;
 	}
 
-	public void setRemoteAddress(InetAddress remoteAddress) {
+	/**
+     * Sets the remote address for the MyProperties class.
+     * 
+     * @param remoteAddress the InetAddress representing the remote address
+     */
+    public void setRemoteAddress(InetAddress remoteAddress) {
 		this.remoteAddress = remoteAddress;
 	}
 
-	public Security getSecurity() {
+	/**
+     * Returns the security object associated with this MyProperties instance.
+     *
+     * @return the security object
+     */
+    public Security getSecurity() {
 		return this.security;
 	}
 	// @fold:off
@@ -67,23 +90,48 @@ public class MyProperties {
 			return this.username;
 		}
 
-		public void setUsername(String username) {
+		/**
+         * Sets the username for the Security class.
+         * 
+         * @param username the username to be set
+         */
+        public void setUsername(String username) {
 			this.username = username;
 		}
 
-		public String getPassword() {
+		/**
+         * Returns the password of the Security object.
+         *
+         * @return the password of the Security object
+         */
+        public String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		/**
+         * Sets the password for the security.
+         * 
+         * @param password the password to be set
+         */
+        public void setPassword(String password) {
 			this.password = password;
 		}
 
-		public List<String> getRoles() {
+		/**
+         * Returns the list of roles.
+         *
+         * @return the list of roles
+         */
+        public List<String> getRoles() {
 			return this.roles;
 		}
 
-		public void setRoles(List<String> roles) {
+		/**
+         * Sets the roles for the user.
+         * 
+         * @param roles the list of roles to be set
+         */
+        public void setRoles(List<String> roles) {
 			this.roles = roles;
 		}
 		// @fold:off

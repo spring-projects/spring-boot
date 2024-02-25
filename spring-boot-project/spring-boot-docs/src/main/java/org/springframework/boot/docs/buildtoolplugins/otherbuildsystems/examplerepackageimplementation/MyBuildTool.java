@@ -25,16 +25,30 @@ import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 import org.springframework.boot.loader.tools.Repackager;
 
+/**
+ * MyBuildTool class.
+ */
 public class MyBuildTool {
 
-	public void build() throws IOException {
+	/**
+     * Builds the project by repackaging the source JAR file.
+     * 
+     * @throws IOException if an I/O error occurs during the repackaging process.
+     */
+    public void build() throws IOException {
 		File sourceJarFile = /**/ null;
 		Repackager repackager = new Repackager(sourceJarFile);
 		repackager.setBackupSource(false);
 		repackager.repackage(this::getLibraries);
 	}
 
-	private void getLibraries(LibraryCallback callback) throws IOException {
+	/**
+     * Retrieves the libraries used in the build process.
+     * 
+     * @param callback the callback to be invoked for each library
+     * @throws IOException if an I/O error occurs while retrieving the libraries
+     */
+    private void getLibraries(LibraryCallback callback) throws IOException {
 		// Build system specific implementation, callback for each dependency
 		for (File nestedJar : getCompileScopeJars()) {
 			callback.library(new Library(nestedJar, LibraryScope.COMPILE));
@@ -42,7 +56,12 @@ public class MyBuildTool {
 		// ...
 	}
 
-	private List<File> getCompileScopeJars() {
+	/**
+     * Returns the list of JAR files that are part of the compile scope.
+     *
+     * @return the list of JAR files in the compile scope, or null if none are found
+     */
+    private List<File> getCompileScopeJars() {
 		return /**/ null;
 	}
 

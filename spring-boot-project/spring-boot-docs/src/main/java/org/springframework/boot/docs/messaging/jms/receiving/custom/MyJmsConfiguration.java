@@ -23,10 +23,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 
+/**
+ * MyJmsConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyJmsConfiguration {
 
-	@Bean
+	/**
+     * Creates a custom JMS listener container factory.
+     * 
+     * @param configurer The default JMS listener container factory configurer.
+     * @return The custom JMS listener container factory.
+     */
+    @Bean
 	public DefaultJmsListenerContainerFactory myFactory(DefaultJmsListenerContainerFactoryConfigurer configurer) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		ConnectionFactory connectionFactory = getCustomConnectionFactory();
@@ -35,7 +44,12 @@ public class MyJmsConfiguration {
 		return factory;
 	}
 
-	private ConnectionFactory getCustomConnectionFactory() {
+	/**
+     * Returns a custom ConnectionFactory.
+     *
+     * @return the custom ConnectionFactory
+     */
+    private ConnectionFactory getCustomConnectionFactory() {
 		return /**/ null;
 	}
 

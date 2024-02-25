@@ -16,9 +16,17 @@
 
 package smoketest.websocket.undertow.client;
 
+/**
+ * SimpleGreetingService class.
+ */
 public class SimpleGreetingService implements GreetingService {
 
-	@Override
+	/**
+     * Returns the greeting message.
+     *
+     * @return the greeting message "Hello world!"
+     */
+    @Override
 	public String getGreeting() {
 		return "Hello world!";
 	}

@@ -48,12 +48,23 @@ final class GracefulShutdown {
 
 	private volatile boolean shuttingDown = false;
 
-	GracefulShutdown(Server server, Supplier<Integer> activeRequests) {
+	/**
+     * Gracefully shuts down the server by stopping the server and waiting for all active requests to complete.
+     * 
+     * @param server the server to be shut down
+     * @param activeRequests a supplier that provides the number of active requests
+     */
+    GracefulShutdown(Server server, Supplier<Integer> activeRequests) {
 		this.server = server;
 		this.activeRequests = activeRequests;
 	}
 
-	void shutDownGracefully(GracefulShutdownCallback callback) {
+	/**
+     * Initiates a graceful shutdown of the server.
+     * 
+     * @param callback the callback function to be executed after the shutdown is complete
+     */
+    void shutDownGracefully(GracefulShutdownCallback callback) {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
 		boolean jetty10 = isJetty10();
 		for (Connector connector : this.server.getConnectors()) {
@@ -64,7 +75,13 @@ final class GracefulShutdown {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Shuts down the given Connector and optionally waits for the result.
+     * 
+     * @param connector the Connector to be shutdown
+     * @param getResult flag indicating whether to wait for the shutdown result
+     */
+    @SuppressWarnings("unchecked")
 	private void shutdown(Connector connector, boolean getResult) {
 		Future<Void> result;
 		try {
@@ -87,7 +104,12 @@ final class GracefulShutdown {
 		}
 	}
 
-	private boolean isJetty10() {
+	/**
+     * Checks if the Jetty version is 10 or higher.
+     * 
+     * @return true if the Jetty version is 10 or higher, false otherwise.
+     */
+    private boolean isJetty10() {
 		try {
 			return CompletableFuture.class.equals(Connector.class.getMethod("shutdown").getReturnType());
 		}
@@ -96,7 +118,12 @@ final class GracefulShutdown {
 		}
 	}
 
-	private void awaitShutdown(GracefulShutdownCallback callback) {
+	/**
+     * Waits for the shutdown process to complete gracefully.
+     * 
+     * @param callback the callback to be invoked when the shutdown process is complete
+     */
+    private void awaitShutdown(GracefulShutdownCallback callback) {
 		while (this.shuttingDown && this.activeRequests.get() > 0) {
 			sleep(100);
 		}
@@ -113,7 +140,14 @@ final class GracefulShutdown {
 		}
 	}
 
-	private void sleep(long millis) {
+	/**
+     * Suspends the execution of the current thread for the specified number of milliseconds.
+     * 
+     * @param millis the number of milliseconds to sleep
+     * @throws IllegalArgumentException if the value of millis is negative
+     * @throws InterruptedException if the current thread is interrupted while sleeping
+     */
+    private void sleep(long millis) {
 		try {
 			Thread.sleep(millis);
 		}
@@ -122,7 +156,11 @@ final class GracefulShutdown {
 		}
 	}
 
-	void abort() {
+	/**
+     * Aborts the graceful shutdown process.
+     * This method sets the shuttingDown flag to false, indicating that the shutdown process should be stopped.
+     */
+    void abort() {
 		this.shuttingDown = false;
 	}
 

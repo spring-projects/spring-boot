@@ -58,17 +58,37 @@ public class MultipartAutoConfiguration {
 
 	private final MultipartProperties multipartProperties;
 
-	public MultipartAutoConfiguration(MultipartProperties multipartProperties) {
+	/**
+     * Constructs a new MultipartAutoConfiguration with the specified MultipartProperties.
+     * 
+     * @param multipartProperties the MultipartProperties to be used for configuration
+     */
+    public MultipartAutoConfiguration(MultipartProperties multipartProperties) {
 		this.multipartProperties = multipartProperties;
 	}
 
-	@Bean
+	/**
+     * Creates a MultipartConfigElement if no bean of type MultipartConfigElement is present.
+     * 
+     * @return the created MultipartConfigElement
+     */
+    @Bean
 	@ConditionalOnMissingBean(MultipartConfigElement.class)
 	public MultipartConfigElement multipartConfigElement() {
 		return this.multipartProperties.createMultipartConfig();
 	}
 
-	@Bean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
+	/**
+     * Creates a bean for the multipart resolver if it is not already present in the application context.
+     * The multipart resolver is responsible for handling multipart requests in a servlet-based application.
+     * If a custom multipart resolver is already defined, this bean creation will be skipped.
+     * 
+     * The created multipart resolver is an instance of StandardServletMultipartResolver.
+     * It is configured with the resolve lazily and strict servlet compliance properties from the multipartProperties bean.
+     * 
+     * @return The created StandardServletMultipartResolver bean.
+     */
+    @Bean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
 	@ConditionalOnMissingBean(MultipartResolver.class)
 	public StandardServletMultipartResolver multipartResolver() {
 		StandardServletMultipartResolver multipartResolver = new StandardServletMultipartResolver();

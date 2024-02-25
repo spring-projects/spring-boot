@@ -23,19 +23,39 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * SampleKafkaApplication class.
+ */
 @SpringBootApplication
 public class SampleKafkaApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring application by running the SampleKafkaApplication class.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleKafkaApplication.class, args);
 	}
 
-	@Bean
+	/**
+     * Creates a new Kafka topic for testing purposes.
+     * 
+     * @return the newly created Kafka topic
+     */
+    @Bean
 	public NewTopic kafkaTestTopic() {
 		return new NewTopic("testTopic", 10, (short) 2);
 	}
 
-	@Bean
+	/**
+     * Creates an ApplicationRunner bean that sends a SampleMessage to the specified Producer.
+     * 
+     * @param producer the Producer used to send the SampleMessage
+     * @return the ApplicationRunner bean
+     */
+    @Bean
 	public ApplicationRunner runner(Producer producer) {
 		return (args) -> producer.send(new SampleMessage(1, "A simple test message"));
 	}

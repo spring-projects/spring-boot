@@ -16,9 +16,17 @@
 
 package org.test;
 
+/**
+ * SampleApplication class.
+ */
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleApplication class.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 
 		Class<?> appContext = null;
 		try {

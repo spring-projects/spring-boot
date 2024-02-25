@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.features.springapplication.applicationavailability.managing;
 
+/**
+ * CacheCompletelyBrokenException class.
+ */
 class CacheCompletelyBrokenException extends RuntimeException {
 
 }

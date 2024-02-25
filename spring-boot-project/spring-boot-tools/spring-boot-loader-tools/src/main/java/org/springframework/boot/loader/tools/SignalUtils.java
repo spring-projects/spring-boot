@@ -28,7 +28,10 @@ public final class SignalUtils {
 
 	private static final Signal SIG_INT = new Signal("INT");
 
-	private SignalUtils() {
+	/**
+     * Private constructor for the SignalUtils class.
+     */
+    private SignalUtils() {
 	}
 
 	/**

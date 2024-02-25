@@ -39,7 +39,16 @@ class LoggerConfigurationComparator implements Comparator<LoggerConfiguration> {
 		this.rootLoggerName = rootLoggerName;
 	}
 
-	@Override
+	/**
+     * Compares two LoggerConfiguration objects based on their names.
+     * 
+     * @param o1 the first LoggerConfiguration object to be compared
+     * @param o2 the second LoggerConfiguration object to be compared
+     * @return -1 if the rootLoggerName of o1 matches the rootLoggerName of the comparator, 
+     *         1 if the rootLoggerName of o2 matches the rootLoggerName of the comparator,
+     *         otherwise, returns the result of comparing the names of o1 and o2
+     */
+    @Override
 	public int compare(LoggerConfiguration o1, LoggerConfiguration o2) {
 		if (this.rootLoggerName.equals(o1.getName())) {
 			return -1;

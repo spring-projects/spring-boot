@@ -38,7 +38,13 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @ConditionalOnProperty(prefix = "spring.mail", name = "host")
 class MailSenderPropertiesConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of JavaMailSenderImpl if no other bean of type JavaMailSender is present.
+     * 
+     * @param properties the MailProperties object containing the configuration properties for the mail sender
+     * @return a new instance of JavaMailSenderImpl with the applied properties
+     */
+    @Bean
 	@ConditionalOnMissingBean(JavaMailSender.class)
 	JavaMailSenderImpl mailSender(MailProperties properties) {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
@@ -46,7 +52,13 @@ class MailSenderPropertiesConfiguration {
 		return sender;
 	}
 
-	private void applyProperties(MailProperties properties, JavaMailSenderImpl sender) {
+	/**
+     * Applies the given MailProperties to the provided JavaMailSenderImpl instance.
+     * 
+     * @param properties the MailProperties to apply
+     * @param sender the JavaMailSenderImpl instance to apply the properties to
+     */
+    private void applyProperties(MailProperties properties, JavaMailSenderImpl sender) {
 		sender.setHost(properties.getHost());
 		if (properties.getPort() != null) {
 			sender.setPort(properties.getPort());
@@ -62,7 +74,13 @@ class MailSenderPropertiesConfiguration {
 		}
 	}
 
-	private Properties asProperties(Map<String, String> source) {
+	/**
+     * Converts a map of string key-value pairs to a Properties object.
+     * 
+     * @param source the map containing the key-value pairs to be converted
+     * @return the converted Properties object
+     */
+    private Properties asProperties(Map<String, String> source) {
 		Properties properties = new Properties();
 		properties.putAll(source);
 		return properties;

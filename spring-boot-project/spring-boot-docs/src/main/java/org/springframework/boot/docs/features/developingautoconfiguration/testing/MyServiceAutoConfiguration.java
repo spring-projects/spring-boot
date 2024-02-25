@@ -24,27 +24,49 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.docs.features.developingautoconfiguration.testing.MyServiceAutoConfiguration.UserProperties;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * MyServiceAutoConfiguration class.
+ */
 @AutoConfiguration
 @ConditionalOnClass(MyService.class)
 @EnableConfigurationProperties(UserProperties.class)
 public class MyServiceAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of MyService if no other bean of type MyService is present in the application context.
+     * 
+     * @param properties the UserProperties object containing the necessary configuration properties for MyService
+     * @return a new instance of MyService with the specified name
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public MyService userService(UserProperties properties) {
 		return new MyService(properties.getName());
 	}
 
-	@ConfigurationProperties("user")
+	/**
+     * UserProperties class.
+     */
+    @ConfigurationProperties("user")
 	public static class UserProperties {
 
 		private String name = "test";
 
-		public String getName() {
+		/**
+         * Returns the name of the UserProperties object.
+         *
+         * @return the name of the UserProperties object
+         */
+        public String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		/**
+         * Sets the name of the user.
+         * 
+         * @param name the name to set
+         */
+        public void setName(String name) {
 			this.name = name;
 		}
 

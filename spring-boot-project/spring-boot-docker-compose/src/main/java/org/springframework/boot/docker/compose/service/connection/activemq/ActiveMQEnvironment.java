@@ -29,16 +29,32 @@ class ActiveMQEnvironment {
 
 	private final String password;
 
-	ActiveMQEnvironment(Map<String, String> env) {
+	/**
+     * Constructs a new ActiveMQEnvironment object with the provided environment variables.
+     * 
+     * @param env a map containing the environment variables
+     * @throws NullPointerException if the provided map is null
+     */
+    ActiveMQEnvironment(Map<String, String> env) {
 		this.user = env.get("ACTIVEMQ_USERNAME");
 		this.password = env.get("ACTIVEMQ_PASSWORD");
 	}
 
-	String getUser() {
+	/**
+     * Returns the user associated with the ActiveMQEnvironment.
+     *
+     * @return the user associated with the ActiveMQEnvironment
+     */
+    String getUser() {
 		return this.user;
 	}
 
-	String getPassword() {
+	/**
+     * Returns the password used for authentication.
+     *
+     * @return the password used for authentication
+     */
+    String getPassword() {
 		return this.password;
 	}
 

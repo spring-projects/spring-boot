@@ -69,14 +69,30 @@ public class JmxEndpointAutoConfiguration {
 
 	private final JmxProperties jmxProperties;
 
-	public JmxEndpointAutoConfiguration(ApplicationContext applicationContext, JmxEndpointProperties properties,
+	/**
+     * Constructs a new JmxEndpointAutoConfiguration with the specified ApplicationContext, JmxEndpointProperties, and JmxProperties.
+     * 
+     * @param applicationContext the ApplicationContext used for dependency injection
+     * @param properties the JmxEndpointProperties used for configuring JMX endpoints
+     * @param jmxProperties the JmxProperties used for configuring JMX settings
+     */
+    public JmxEndpointAutoConfiguration(ApplicationContext applicationContext, JmxEndpointProperties properties,
 			JmxProperties jmxProperties) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
 		this.jmxProperties = jmxProperties;
 	}
 
-	@Bean
+	/**
+     * Creates a JmxEndpointDiscoverer bean if no other bean of type JmxEndpointsSupplier is present.
+     * This bean is responsible for discovering JMX endpoints annotated with @JmxEndpoint.
+     * 
+     * @param parameterValueMapper The ParameterValueMapper used for mapping method parameters.
+     * @param invokerAdvisors The OperationInvokerAdvisor objects used for advising the operation invokers.
+     * @param filters The EndpointFilter objects used for filtering the discovered JMX endpoints.
+     * @return The created JmxEndpointDiscoverer bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean(JmxEndpointsSupplier.class)
 	public JmxEndpointDiscoverer jmxAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
@@ -85,14 +101,37 @@ public class JmxEndpointAutoConfiguration {
 				invokerAdvisors.orderedStream().toList(), filters.orderedStream().toList());
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link DefaultEndpointObjectNameFactory} if no bean of type {@link EndpointObjectNameFactory}
+     * is already present in the application context.
+     * 
+     * The creation of the bean is conditional on the absence of a bean of type {@link EndpointObjectNameFactory} and
+     * the specified search strategy.
+     * 
+     * The created instance of {@link DefaultEndpointObjectNameFactory} uses the provided {@link MBeanServer} and
+     * the context ID generated from the application context.
+     * 
+     * @param mBeanServer the {@link MBeanServer} to be used by the {@link DefaultEndpointObjectNameFactory}
+     * @return a new instance of {@link DefaultEndpointObjectNameFactory} if no bean of type {@link EndpointObjectNameFactory}
+     *         is already present in the application context
+     */
+    @Bean
 	@ConditionalOnMissingBean(value = EndpointObjectNameFactory.class, search = SearchStrategy.CURRENT)
 	public DefaultEndpointObjectNameFactory endpointObjectNameFactory(MBeanServer mBeanServer) {
 		String contextId = ObjectUtils.getIdentityHexString(this.applicationContext);
 		return new DefaultEndpointObjectNameFactory(this.properties, this.jmxProperties, mBeanServer, contextId);
 	}
 
-	@Bean
+	/**
+     * Creates a JmxEndpointExporter bean if there is a single candidate for MBeanServer.
+     * 
+     * @param mBeanServer The MBeanServer instance.
+     * @param endpointObjectNameFactory The EndpointObjectNameFactory instance.
+     * @param objectMapper The ObjectMapper instance.
+     * @param jmxEndpointsSupplier The JmxEndpointsSupplier instance.
+     * @return The JmxEndpointExporter bean.
+     */
+    @Bean
 	@ConditionalOnSingleCandidate(MBeanServer.class)
 	public JmxEndpointExporter jmxMBeanExporter(MBeanServer mBeanServer,
 			EndpointObjectNameFactory endpointObjectNameFactory, ObjectProvider<ObjectMapper> objectMapper,
@@ -104,14 +143,25 @@ public class JmxEndpointAutoConfiguration {
 
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link IncludeExcludeEndpointFilter} for filtering JMX endpoints based on inclusion and exclusion patterns.
+     * 
+     * @return the created {@link IncludeExcludeEndpointFilter} instance
+     */
+    @Bean
 	public IncludeExcludeEndpointFilter<ExposableJmxEndpoint> jmxIncludeExcludePropertyEndpointFilter() {
 		JmxEndpointProperties.Exposure exposure = this.properties.getExposure();
 		return new IncludeExcludeEndpointFilter<>(ExposableJmxEndpoint.class, exposure.getInclude(),
 				exposure.getExclude(), EndpointExposure.JMX.getDefaultIncludes());
 	}
 
-	@Bean
+	/**
+     * Returns a LazyInitializationExcludeFilter for eagerly initializing the JmxEndpointExporter bean.
+     * This filter excludes the JmxEndpointExporter class from lazy initialization.
+     *
+     * @return the LazyInitializationExcludeFilter for eagerly initializing the JmxEndpointExporter bean
+     */
+    @Bean
 	static LazyInitializationExcludeFilter eagerlyInitializeJmxEndpointExporter() {
 		return LazyInitializationExcludeFilter.forBeanTypes(JmxEndpointExporter.class);
 	}

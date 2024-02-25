@@ -18,6 +18,9 @@ package org.springframework.boot.docs.appendix.configurationmetadata.annotationp
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * MyServerProperties class.
+ */
 @ConfigurationProperties(prefix = "my.server")
 public class MyServerProperties {
 
@@ -41,23 +44,48 @@ public class MyServerProperties {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	/**
+     * Sets the name of the server.
+     * 
+     * @param name the name to set
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 
-	public String getIp() {
+	/**
+     * Returns the IP address of the server.
+     *
+     * @return the IP address of the server
+     */
+    public String getIp() {
 		return this.ip;
 	}
 
-	public void setIp(String ip) {
+	/**
+     * Sets the IP address for the server.
+     * 
+     * @param ip the IP address to be set
+     */
+    public void setIp(String ip) {
 		this.ip = ip;
 	}
 
-	public int getPort() {
+	/**
+     * Returns the port number of the server.
+     *
+     * @return the port number
+     */
+    public int getPort() {
 		return this.port;
 	}
 
-	public void setPort(int port) {
+	/**
+     * Sets the port number for the server.
+     * 
+     * @param port the port number to be set
+     */
+    public void setPort(int port) {
 		this.port = port;
 	}
 	// fold:off

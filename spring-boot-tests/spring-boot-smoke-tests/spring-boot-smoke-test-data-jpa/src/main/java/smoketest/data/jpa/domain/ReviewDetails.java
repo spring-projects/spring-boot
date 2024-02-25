@@ -19,6 +19,9 @@ package smoketest.data.jpa.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * ReviewDetails class.
+ */
 public class ReviewDetails implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -33,46 +36,99 @@ public class ReviewDetails implements Serializable {
 
 	private String details;
 
-	public ReviewDetails() {
+	/**
+     * Constructs a new ReviewDetails object.
+     */
+    public ReviewDetails() {
 	}
 
-	public Rating getRating() {
+	/**
+     * Returns the rating of the review.
+     *
+     * @return the rating of the review
+     */
+    public Rating getRating() {
 		return this.rating;
 	}
 
-	public void setRating(Rating rating) {
+	/**
+     * Sets the rating for the review.
+     * 
+     * @param rating the rating to be set
+     */
+    public void setRating(Rating rating) {
 		this.rating = rating;
 	}
 
-	public Date getCheckInDate() {
+	/**
+     * Returns the check-in date of the review.
+     *
+     * @return the check-in date of the review
+     */
+    public Date getCheckInDate() {
 		return this.checkInDate;
 	}
 
-	public void setCheckInDate(Date checkInDate) {
+	/**
+     * Sets the check-in date for the review.
+     * 
+     * @param checkInDate the check-in date to be set
+     */
+    public void setCheckInDate(Date checkInDate) {
 		this.checkInDate = checkInDate;
 	}
 
-	public TripType getTripType() {
+	/**
+     * Returns the trip type of the review.
+     * 
+     * @return the trip type of the review
+     */
+    public TripType getTripType() {
 		return this.tripType;
 	}
 
-	public void setTripType(TripType tripType) {
+	/**
+     * Sets the trip type for the review details.
+     * 
+     * @param tripType the trip type to be set
+     */
+    public void setTripType(TripType tripType) {
 		this.tripType = tripType;
 	}
 
-	public String getTitle() {
+	/**
+     * Returns the title of the review.
+     *
+     * @return the title of the review
+     */
+    public String getTitle() {
 		return this.title;
 	}
 
-	public void setTitle(String title) {
+	/**
+     * Sets the title of the review.
+     * 
+     * @param title the title of the review
+     */
+    public void setTitle(String title) {
 		this.title = title;
 	}
 
-	public String getDetails() {
+	/**
+     * Returns the details of the review.
+     *
+     * @return the details of the review
+     */
+    public String getDetails() {
 		return this.details;
 	}
 
-	public void setDetails(String details) {
+	/**
+     * Sets the details of the review.
+     * 
+     * @param details the details of the review
+     */
+    public void setDetails(String details) {
 		this.details = details;
 	}
 

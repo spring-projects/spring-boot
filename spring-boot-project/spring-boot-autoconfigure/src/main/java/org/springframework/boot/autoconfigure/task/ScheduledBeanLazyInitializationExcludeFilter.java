@@ -45,19 +45,38 @@ class ScheduledBeanLazyInitializationExcludeFilter implements LazyInitialization
 
 	private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
 
-	ScheduledBeanLazyInitializationExcludeFilter() {
+	/**
+     * Initializes the exclude filter for lazy initialization of scheduled beans.
+     * This method ignores AOP infrastructure classes such as scoped proxies,
+     * TaskScheduler, and ScheduledExecutorService.
+     */
+    ScheduledBeanLazyInitializationExcludeFilter() {
 		// Ignore AOP infrastructure such as scoped proxies.
 		this.nonAnnotatedClasses.add(AopInfrastructureBean.class);
 		this.nonAnnotatedClasses.add(TaskScheduler.class);
 		this.nonAnnotatedClasses.add(ScheduledExecutorService.class);
 	}
 
-	@Override
+	/**
+     * Determines if a bean should be excluded from lazy initialization based on whether it has a scheduled task.
+     * 
+     * @param beanName the name of the bean
+     * @param beanDefinition the definition of the bean
+     * @param beanType the type of the bean
+     * @return true if the bean should be excluded, false otherwise
+     */
+    @Override
 	public boolean isExcluded(String beanName, BeanDefinition beanDefinition, Class<?> beanType) {
 		return hasScheduledTask(beanType);
 	}
 
-	private boolean hasScheduledTask(Class<?> type) {
+	/**
+     * Checks if the given class has any scheduled tasks.
+     * 
+     * @param type the class to check for scheduled tasks
+     * @return true if the class has scheduled tasks, false otherwise
+     */
+    private boolean hasScheduledTask(Class<?> type) {
 		Class<?> targetType = ClassUtils.getUserClass(type);
 		if (!this.nonAnnotatedClasses.contains(targetType)
 				&& AnnotationUtils.isCandidateClass(targetType, Arrays.asList(Scheduled.class, Schedules.class))) {

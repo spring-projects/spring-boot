@@ -44,19 +44,35 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
  */
 class TaskSchedulingConfigurations {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * TaskSchedulerConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
 	@ConditionalOnMissingBean({ TaskScheduler.class, ScheduledExecutorService.class })
 	@SuppressWarnings("removal")
 	static class TaskSchedulerConfiguration {
 
-		@Bean(name = "taskScheduler")
+		/**
+         * Creates a task scheduler bean with the name "taskScheduler" and is conditionally enabled based on the threading type being virtual.
+         * 
+         * @param builder the builder used to construct the task scheduler
+         * @return the created task scheduler bean
+         */
+        @Bean(name = "taskScheduler")
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		SimpleAsyncTaskScheduler taskSchedulerVirtualThreads(SimpleAsyncTaskSchedulerBuilder builder) {
 			return builder.build();
 		}
 
-		@Bean
+		/**
+         * Creates a ThreadPoolTaskScheduler bean if the threading is set to PLATFORM.
+         * 
+         * @param taskSchedulerBuilder The TaskSchedulerBuilder used to build the task scheduler.
+         * @param threadPoolTaskSchedulerBuilderProvider The provider for the ThreadPoolTaskSchedulerBuilder.
+         * @return The ThreadPoolTaskScheduler bean.
+         */
+        @Bean
 		@ConditionalOnThreading(Threading.PLATFORM)
 		ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder taskSchedulerBuilder,
 				ObjectProvider<ThreadPoolTaskSchedulerBuilder> threadPoolTaskSchedulerBuilderProvider) {
@@ -70,11 +86,22 @@ class TaskSchedulingConfigurations {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * TaskSchedulerBuilderConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@SuppressWarnings("removal")
 	static class TaskSchedulerBuilderConfiguration {
 
-		@Bean
+		/**
+         * Configure the TaskSchedulerBuilder based on the provided properties and customizers.
+         * If no customizers are provided, the default configuration will be used.
+         * 
+         * @param properties the TaskSchedulingProperties containing the configuration properties
+         * @param taskSchedulerCustomizers the customizers to apply to the TaskSchedulerBuilder
+         * @return the configured TaskSchedulerBuilder
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		TaskSchedulerBuilder taskSchedulerBuilder(TaskSchedulingProperties properties,
 				ObjectProvider<TaskSchedulerCustomizer> taskSchedulerCustomizers) {
@@ -90,11 +117,28 @@ class TaskSchedulingConfigurations {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ThreadPoolTaskSchedulerBuilderConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@SuppressWarnings("removal")
 	static class ThreadPoolTaskSchedulerBuilderConfiguration {
 
-		@Bean
+		/**
+         * Creates a {@link ThreadPoolTaskSchedulerBuilder} bean if no other bean of type {@link TaskSchedulerBuilder} or {@link ThreadPoolTaskSchedulerBuilder} is present.
+         * 
+         * The {@link ThreadPoolTaskSchedulerBuilder} is used to configure a {@link ThreadPoolTaskScheduler} for task scheduling.
+         * 
+         * The configuration properties for the task scheduler are obtained from the {@link TaskSchedulingProperties} bean.
+         * 
+         * The {@link ThreadPoolTaskSchedulerBuilder} is customized with any available {@link ThreadPoolTaskSchedulerCustomizer} beans and deprecated {@link TaskSchedulerCustomizer} beans.
+         * 
+         * @param properties the task scheduling properties
+         * @param threadPoolTaskSchedulerCustomizers the thread pool task scheduler customizers
+         * @param taskSchedulerCustomizers the task scheduler customizers
+         * @return the configured {@link ThreadPoolTaskSchedulerBuilder}
+         */
+        @Bean
 		@ConditionalOnMissingBean({ TaskSchedulerBuilder.class, ThreadPoolTaskSchedulerBuilder.class })
 		ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder(TaskSchedulingProperties properties,
 				ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers,
@@ -111,33 +155,61 @@ class TaskSchedulingConfigurations {
 			return builder;
 		}
 
-		private ThreadPoolTaskSchedulerCustomizer adapt(TaskSchedulerCustomizer customizer) {
+		/**
+         * Adapts a {@link TaskSchedulerCustomizer} to a {@link ThreadPoolTaskSchedulerCustomizer}.
+         * 
+         * @param customizer the {@link TaskSchedulerCustomizer} to adapt
+         * @return the adapted {@link ThreadPoolTaskSchedulerCustomizer}
+         */
+        private ThreadPoolTaskSchedulerCustomizer adapt(TaskSchedulerCustomizer customizer) {
 			return customizer::customize;
 		}
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * SimpleAsyncTaskSchedulerBuilderConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	static class SimpleAsyncTaskSchedulerBuilderConfiguration {
 
 		private final TaskSchedulingProperties properties;
 
 		private final ObjectProvider<SimpleAsyncTaskSchedulerCustomizer> taskSchedulerCustomizers;
 
-		SimpleAsyncTaskSchedulerBuilderConfiguration(TaskSchedulingProperties properties,
+		/**
+         * Constructs a new SimpleAsyncTaskSchedulerBuilderConfiguration with the specified properties and task scheduler customizers.
+         * 
+         * @param properties the task scheduling properties to be used
+         * @param taskSchedulerCustomizers the customizers to be applied to the task scheduler
+         */
+        SimpleAsyncTaskSchedulerBuilderConfiguration(TaskSchedulingProperties properties,
 				ObjectProvider<SimpleAsyncTaskSchedulerCustomizer> taskSchedulerCustomizers) {
 			this.properties = properties;
 			this.taskSchedulerCustomizers = taskSchedulerCustomizers;
 		}
 
-		@Bean
+		/**
+         * Creates a SimpleAsyncTaskSchedulerBuilder bean if no other bean of the same type is present in the application context.
+         * This bean is conditionally created only if the threading mode is set to PLATFORM.
+         * 
+         * @return the SimpleAsyncTaskSchedulerBuilder bean
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnThreading(Threading.PLATFORM)
 		SimpleAsyncTaskSchedulerBuilder simpleAsyncTaskSchedulerBuilder() {
 			return builder();
 		}
 
-		@Bean(name = "simpleAsyncTaskSchedulerBuilder")
+		/**
+         * Configures a SimpleAsyncTaskSchedulerBuilder bean with the name "simpleAsyncTaskSchedulerBuilderVirtualThreads".
+         * This bean is conditionally created if there is no existing bean of the same type.
+         * It is also conditionally created if the threading type is set to virtual.
+         * 
+         * @return The configured SimpleAsyncTaskSchedulerBuilder bean.
+         */
+        @Bean(name = "simpleAsyncTaskSchedulerBuilder")
 		@ConditionalOnMissingBean
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		SimpleAsyncTaskSchedulerBuilder simpleAsyncTaskSchedulerBuilderVirtualThreads() {
@@ -146,7 +218,12 @@ class TaskSchedulingConfigurations {
 			return builder;
 		}
 
-		private SimpleAsyncTaskSchedulerBuilder builder() {
+		/**
+         * Returns a builder for creating a SimpleAsyncTaskScheduler.
+         * 
+         * @return the SimpleAsyncTaskSchedulerBuilder
+         */
+        private SimpleAsyncTaskSchedulerBuilder builder() {
 			SimpleAsyncTaskSchedulerBuilder builder = new SimpleAsyncTaskSchedulerBuilder();
 			builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
 			builder = builder.customizers(this.taskSchedulerCustomizers.orderedStream()::iterator);

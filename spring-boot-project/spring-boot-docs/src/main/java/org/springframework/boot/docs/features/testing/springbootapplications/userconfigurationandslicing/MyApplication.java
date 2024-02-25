@@ -19,6 +19,9 @@ package org.springframework.boot.docs.features.testing.springbootapplications.us
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
+/**
+ * MyApplication class.
+ */
 @SpringBootApplication
 @EnableMongoAuditing
 public class MyApplication {

@@ -26,17 +26,35 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.stereotype.Service;
 
+/**
+ * SampleApplication class.
+ */
 @Configuration(proxyBeanMethods = false)
 @ImportRuntimeHints(SampleApplicationRuntimeHints.class)
 public class SampleApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by calling the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleApplication.class, args);
 	}
 
-	static class SampleApplicationRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * SampleApplicationRuntimeHints class.
+     */
+    static class SampleApplicationRuntimeHints implements RuntimeHintsRegistrar {
 
-		@Override
+		/**
+         * Registers hints for runtime behavior.
+         * 
+         * @param hints the runtime hints to register
+         * @param classLoader the class loader to use for loading classes
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			// Force creation of at least one JDK proxy
 			hints.proxies().registerJdkProxy(AopProxyUtils.completeJdkProxyInterfaces(Service.class));

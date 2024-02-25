@@ -40,7 +40,13 @@ class SpringProfileIfNestedWithinSecondPhaseElementSanityChecker extends Context
 	private static final List<Class<? extends Model>> SECOND_PHASE_TYPES = List.of(AppenderModel.class,
 			LoggerModel.class, RootLoggerModel.class);
 
-	@Override
+	/**
+     * Checks if the given model contains nested <springProfile> elements within an <appender>, <logger>, or <root> element.
+     * If any nested <springProfile> elements are found, warning messages are added to the logger.
+     * 
+     * @param model the model to check
+     */
+    @Override
 	public void check(Model model) {
 		if (model == null) {
 			return;

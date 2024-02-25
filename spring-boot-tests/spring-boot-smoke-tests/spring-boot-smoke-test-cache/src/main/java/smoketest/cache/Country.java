@@ -18,20 +18,39 @@ package smoketest.cache;
 
 import java.io.Serializable;
 
+/**
+ * Country class.
+ */
 @SuppressWarnings("serial")
 public class Country implements Serializable {
 
 	private final String code;
 
-	public Country(String code) {
+	/**
+     * Constructs a new Country object with the specified code.
+     * 
+     * @param code the code of the country
+     */
+    public Country(String code) {
 		this.code = code;
 	}
 
-	public String getCode() {
+	/**
+     * Returns the code of the country.
+     *
+     * @return the code of the country
+     */
+    public String getCode() {
 		return this.code;
 	}
 
-	@Override
+	/**
+     * Compares this Country object to the specified object. The result is true if and only if the argument is not null and is a Country object that has the same code as this object.
+     *
+     * @param o the object to compare this Country against
+     * @return true if the given object represents a Country with the same code, false otherwise
+     */
+    @Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -45,7 +64,12 @@ public class Country implements Serializable {
 		return this.code.equals(country.code);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this Country object.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return this.code.hashCode();
 	}

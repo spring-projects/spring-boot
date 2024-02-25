@@ -23,22 +23,42 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.validation.Validator;
 
+/**
+ * SamplePropertyValidationApplication class.
+ */
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class SamplePropertyValidationApplication implements CommandLineRunner {
 
 	private final SampleProperties properties;
 
-	public SamplePropertyValidationApplication(SampleProperties properties) {
+	/**
+     * Constructs a new SamplePropertyValidationApplication with the specified SampleProperties.
+     * 
+     * @param properties the SampleProperties to be used by the application
+     */
+    public SamplePropertyValidationApplication(SampleProperties properties) {
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Returns a new instance of {@link SamplePropertiesValidator} that implements the {@link Validator} interface.
+     * This method is annotated with {@link Bean} to indicate that it is a Spring bean definition.
+     * 
+     * @return a new instance of {@link SamplePropertiesValidator}
+     */
+    @Bean
 	public static Validator configurationPropertiesValidator() {
 		return new SamplePropertiesValidator();
 	}
 
-	@Override
+	/**
+     * This method is the entry point of the application and is responsible for running the application.
+     * It prints the sample host and port values from the properties file.
+     * 
+     * @param args The command line arguments passed to the application.
+     */
+    @Override
 	public void run(String... args) {
 		System.out.println("=========================================");
 		System.out.println("Sample host: " + this.properties.getHost());
@@ -46,7 +66,13 @@ public class SamplePropertyValidationApplication implements CommandLineRunner {
 		System.out.println("=========================================");
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It initializes and runs the SpringApplicationBuilder to start the SamplePropertyValidationApplication.
+     *
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		new SpringApplicationBuilder(SamplePropertyValidationApplication.class).run(args);
 	}
 

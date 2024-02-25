@@ -25,13 +25,22 @@ import org.springframework.ws.test.server.RequestCreators;
 import org.springframework.ws.test.server.ResponseMatchers;
 import org.springframework.xml.transform.StringSource;
 
+/**
+ * MyWebServiceServerTests class.
+ */
 @WebServiceServerTest(ExampleEndpoint.class)
 class MyWebServiceServerTests {
 
 	@Autowired
 	private MockWebServiceClient client;
 
-	@Test
+	/**
+     * This method is used to test the server call using a mock server.
+     * It sends a request with payload "<ExampleRequest/>" to the client and expects a response with payload "<ExampleResponse>42</ExampleResponse>".
+     * 
+     * @throws Exception if an error occurs during the test
+     */
+    @Test
 	void mockServerCall() {
 		// @formatter:off
 		this.client

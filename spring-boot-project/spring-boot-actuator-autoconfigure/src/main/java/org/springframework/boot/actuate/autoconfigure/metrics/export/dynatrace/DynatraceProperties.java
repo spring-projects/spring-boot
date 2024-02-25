@@ -47,31 +47,64 @@ public class DynatraceProperties extends StepRegistryProperties {
 	 */
 	private String uri;
 
-	public String getApiToken() {
+	/**
+     * Returns the API token.
+     * 
+     * @return the API token
+     */
+    public String getApiToken() {
 		return this.apiToken;
 	}
 
-	public void setApiToken(String apiToken) {
+	/**
+     * Sets the API token for authentication.
+     * 
+     * @param apiToken the API token to be set
+     */
+    public void setApiToken(String apiToken) {
 		this.apiToken = apiToken;
 	}
 
-	public String getUri() {
+	/**
+     * Returns the URI of the DynatraceProperties object.
+     *
+     * @return the URI of the DynatraceProperties object
+     */
+    public String getUri() {
 		return this.uri;
 	}
 
-	public void setUri(String uri) {
+	/**
+     * Sets the URI for the DynatraceProperties.
+     * 
+     * @param uri the URI to be set
+     */
+    public void setUri(String uri) {
 		this.uri = uri;
 	}
 
-	public V1 getV1() {
+	/**
+     * Returns the V1 object.
+     *
+     * @return the V1 object
+     */
+    public V1 getV1() {
 		return this.v1;
 	}
 
-	public V2 getV2() {
+	/**
+     * Returns the V2 object.
+     *
+     * @return the V2 object
+     */
+    public V2 getV2() {
 		return this.v2;
 	}
 
-	public static class V1 {
+	/**
+     * V1 class.
+     */
+    public static class V1 {
 
 		/**
 		 * ID of the custom device that is exporting metrics to Dynatrace.
@@ -90,33 +123,66 @@ public class DynatraceProperties extends StepRegistryProperties {
 		 */
 		private String technologyType = "java";
 
-		public String getDeviceId() {
+		/**
+         * Returns the device ID.
+         *
+         * @return the device ID
+         */
+        public String getDeviceId() {
 			return this.deviceId;
 		}
 
-		public void setDeviceId(String deviceId) {
+		/**
+         * Sets the device ID.
+         * 
+         * @param deviceId the device ID to be set
+         */
+        public void setDeviceId(String deviceId) {
 			this.deviceId = deviceId;
 		}
 
-		public String getGroup() {
+		/**
+         * Returns the group of the object.
+         * 
+         * @return the group of the object
+         */
+        public String getGroup() {
 			return this.group;
 		}
 
-		public void setGroup(String group) {
+		/**
+         * Sets the group for the object.
+         * 
+         * @param group the group to be set
+         */
+        public void setGroup(String group) {
 			this.group = group;
 		}
 
-		public String getTechnologyType() {
+		/**
+         * Returns the technology type of the object.
+         * 
+         * @return the technology type
+         */
+        public String getTechnologyType() {
 			return this.technologyType;
 		}
 
-		public void setTechnologyType(String technologyType) {
+		/**
+         * Sets the technology type for the V1 class.
+         * 
+         * @param technologyType the technology type to be set
+         */
+        public void setTechnologyType(String technologyType) {
 			this.technologyType = technologyType;
 		}
 
 	}
 
-	public static class V2 {
+	/**
+     * V2 class.
+     */
+    public static class V2 {
 
 		/**
 		 * Default dimensions that are added to all metrics in the form of key-value
@@ -146,43 +212,93 @@ public class DynatraceProperties extends StepRegistryProperties {
 		 */
 		private boolean exportMeterMetadata = true;
 
-		public Map<String, String> getDefaultDimensions() {
+		/**
+         * Returns the default dimensions as a map of key-value pairs.
+         *
+         * @return the default dimensions as a map of key-value pairs
+         */
+        public Map<String, String> getDefaultDimensions() {
 			return this.defaultDimensions;
 		}
 
-		public void setDefaultDimensions(Map<String, String> defaultDimensions) {
+		/**
+         * Sets the default dimensions for the V2 class.
+         * 
+         * @param defaultDimensions a map containing the default dimensions as key-value pairs
+         */
+        public void setDefaultDimensions(Map<String, String> defaultDimensions) {
 			this.defaultDimensions = defaultDimensions;
 		}
 
-		public boolean isEnrichWithDynatraceMetadata() {
+		/**
+         * Returns a boolean value indicating whether the data is enriched with Dynatrace metadata.
+         * 
+         * @return true if the data is enriched with Dynatrace metadata, false otherwise
+         */
+        public boolean isEnrichWithDynatraceMetadata() {
 			return this.enrichWithDynatraceMetadata;
 		}
 
-		public void setEnrichWithDynatraceMetadata(Boolean enrichWithDynatraceMetadata) {
+		/**
+         * Sets the flag to enrich the data with Dynatrace metadata.
+         * 
+         * @param enrichWithDynatraceMetadata true to enrich the data with Dynatrace metadata, false otherwise
+         */
+        public void setEnrichWithDynatraceMetadata(Boolean enrichWithDynatraceMetadata) {
 			this.enrichWithDynatraceMetadata = enrichWithDynatraceMetadata;
 		}
 
-		public String getMetricKeyPrefix() {
+		/**
+         * Returns the metric key prefix.
+         * 
+         * @return the metric key prefix
+         */
+        public String getMetricKeyPrefix() {
 			return this.metricKeyPrefix;
 		}
 
-		public void setMetricKeyPrefix(String metricKeyPrefix) {
+		/**
+         * Sets the metric key prefix.
+         * 
+         * @param metricKeyPrefix the metric key prefix to be set
+         */
+        public void setMetricKeyPrefix(String metricKeyPrefix) {
 			this.metricKeyPrefix = metricKeyPrefix;
 		}
 
-		public boolean isUseDynatraceSummaryInstruments() {
+		/**
+         * Returns the value of the useDynatraceSummaryInstruments property.
+         * 
+         * @return the value of the useDynatraceSummaryInstruments property
+         */
+        public boolean isUseDynatraceSummaryInstruments() {
 			return this.useDynatraceSummaryInstruments;
 		}
 
-		public void setUseDynatraceSummaryInstruments(boolean useDynatraceSummaryInstruments) {
+		/**
+         * Sets the flag indicating whether to use Dynatrace summary instruments.
+         * 
+         * @param useDynatraceSummaryInstruments true to use Dynatrace summary instruments, false otherwise
+         */
+        public void setUseDynatraceSummaryInstruments(boolean useDynatraceSummaryInstruments) {
 			this.useDynatraceSummaryInstruments = useDynatraceSummaryInstruments;
 		}
 
-		public boolean isExportMeterMetadata() {
+		/**
+         * Returns the value of the exportMeterMetadata flag.
+         * 
+         * @return true if the exportMeterMetadata flag is set, false otherwise.
+         */
+        public boolean isExportMeterMetadata() {
 			return this.exportMeterMetadata;
 		}
 
-		public void setExportMeterMetadata(boolean exportMeterMetadata) {
+		/**
+         * Sets the flag to export meter metadata.
+         * 
+         * @param exportMeterMetadata true to export meter metadata, false otherwise
+         */
+        public void setExportMeterMetadata(boolean exportMeterMetadata) {
 			this.exportMeterMetadata = exportMeterMetadata;
 		}
 

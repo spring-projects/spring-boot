@@ -36,7 +36,12 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnMissingBean(Tracer.class)
 public class NoopTracerAutoConfiguration {
 
-	@Bean
+	/**
+     * Returns a NOOP tracer.
+     * 
+     * @return the NOOP tracer
+     */
+    @Bean
 	Tracer noopTracer() {
 		return Tracer.NOOP;
 	}

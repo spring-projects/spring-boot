@@ -51,17 +51,35 @@ public class DynatraceMetricsExportAutoConfiguration {
 
 	private final DynatraceProperties properties;
 
-	public DynatraceMetricsExportAutoConfiguration(DynatraceProperties properties) {
+	/**
+     * Constructs a new DynatraceMetricsExportAutoConfiguration with the specified DynatraceProperties.
+     * 
+     * @param properties the DynatraceProperties to be used for configuration
+     */
+    public DynatraceMetricsExportAutoConfiguration(DynatraceProperties properties) {
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Creates a DynatraceConfig bean if no other bean of the same type is present.
+     * This bean is used to configure the Dynatrace metrics export.
+     * 
+     * @return the DynatraceConfig bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public DynatraceConfig dynatraceConfig() {
 		return new DynatracePropertiesConfigAdapter(this.properties);
 	}
 
-	@Bean
+	/**
+     * Creates a DynatraceMeterRegistry bean if there is no existing bean of the same type.
+     * 
+     * @param dynatraceConfig The DynatraceConfig object containing the configuration properties for Dynatrace.
+     * @param clock The Clock object used for measuring time.
+     * @return The DynatraceMeterRegistry bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public DynatraceMeterRegistry dynatraceMeterRegistry(DynatraceConfig dynatraceConfig, Clock clock) {
 		return DynatraceMeterRegistry.builder(dynatraceConfig)

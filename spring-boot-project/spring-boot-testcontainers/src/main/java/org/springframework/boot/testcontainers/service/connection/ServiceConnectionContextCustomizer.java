@@ -46,18 +46,36 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 
 	private final ConnectionDetailsFactories connectionDetailsFactories;
 
-	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources) {
+	/**
+     * Constructs a new ServiceConnectionContextCustomizer with the specified list of container connection sources.
+     * 
+     * @param sources the list of container connection sources
+     */
+    ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources) {
 		this(sources, new ConnectionDetailsFactories());
 	}
 
-	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources,
+	/**
+     * Constructs a new ServiceConnectionContextCustomizer with the specified list of ContainerConnectionSource objects
+     * and ConnectionDetailsFactories object.
+     *
+     * @param sources the list of ContainerConnectionSource objects to be used for the service connection context customization
+     * @param connectionDetailsFactories the ConnectionDetailsFactories object to be used for creating connection details
+     */
+    ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources,
 			ConnectionDetailsFactories connectionDetailsFactories) {
 		this.sources = sources;
 		this.keys = sources.stream().map(CacheKey::new).collect(Collectors.toUnmodifiableSet());
 		this.connectionDetailsFactories = connectionDetailsFactories;
 	}
 
-	@Override
+	/**
+     * Customizes the application context by initializing Testcontainers and registering connection details beans.
+     * 
+     * @param context the configurable application context
+     * @param mergedConfig the merged context configuration
+     */
+    @Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 		new TestcontainersLifecycleApplicationContextInitializer().initialize(context);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
@@ -67,7 +85,14 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 		}
 	}
 
-	@Override
+	/**
+     * Compares this ServiceConnectionContextCustomizer object to the specified object.
+     * The result is true if and only if the argument is not null and is a ServiceConnectionContextCustomizer object that represents the same keys as this object.
+     * 
+     * @param obj the object to compare this ServiceConnectionContextCustomizer against
+     * @return true if the given object represents a ServiceConnectionContextCustomizer equivalent to this object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -78,12 +103,22 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 		return this.keys.equals(((ServiceConnectionContextCustomizer) obj).keys);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this ServiceConnectionContextCustomizer object.
+     * 
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return this.keys.hashCode();
 	}
 
-	List<ContainerConnectionSource<?>> getSources() {
+	/**
+     * Returns the list of ContainerConnectionSource objects.
+     *
+     * @return the list of ContainerConnectionSource objects
+     */
+    List<ContainerConnectionSource<?>> getSources() {
 		return this.sources;
 	}
 
@@ -93,7 +128,12 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	 */
 	private record CacheKey(String connectionName, Set<Class<?>> connectionDetailsTypes, Container<?> container) {
 
-		CacheKey(ContainerConnectionSource<?> source) {
+		/**
+     * Constructs a new CacheKey object based on the provided ContainerConnectionSource.
+     * 
+     * @param source the ContainerConnectionSource used to create the CacheKey
+     */
+    CacheKey(ContainerConnectionSource<?> source) {
 			this(source.getConnectionName(), source.getConnectionDetailsTypes(), source.getContainerSupplier().get());
 		}
 

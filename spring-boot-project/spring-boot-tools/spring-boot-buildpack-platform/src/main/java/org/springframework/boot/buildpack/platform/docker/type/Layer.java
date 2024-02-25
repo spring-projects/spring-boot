@@ -40,7 +40,14 @@ public class Layer implements Content {
 
 	private final LayerId id;
 
-	Layer(TarArchive tarArchive) throws NoSuchAlgorithmException, IOException {
+	/**
+     * Creates a new Layer object from a TarArchive.
+     * 
+     * @param tarArchive the TarArchive to create the Layer from
+     * @throws NoSuchAlgorithmException if the SHA-256 algorithm is not available
+     * @throws IOException if an I/O error occurs while reading the TarArchive
+     */
+    Layer(TarArchive tarArchive) throws NoSuchAlgorithmException, IOException {
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		this.content = InspectedContent.of(tarArchive::writeTo, digest::update);
 		this.id = LayerId.ofSha256Digest(digest.digest());
@@ -54,12 +61,23 @@ public class Layer implements Content {
 		return this.id;
 	}
 
-	@Override
+	/**
+     * Returns the number of elements in the Layer.
+     *
+     * @return the number of elements in the Layer
+     */
+    @Override
 	public int size() {
 		return this.content.size();
 	}
 
-	@Override
+	/**
+     * Writes the content of the layer to the specified output stream.
+     *
+     * @param outputStream the output stream to write the content to
+     * @throws IOException if an I/O error occurs while writing to the output stream
+     */
+    @Override
 	public void writeTo(OutputStream outputStream) throws IOException {
 		this.content.writeTo(outputStream);
 	}

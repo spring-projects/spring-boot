@@ -40,18 +40,34 @@ class ZipkinWebClientSender extends HttpSender {
 
 	private final Duration timeout;
 
-	ZipkinWebClientSender(String endpoint, WebClient webClient, Duration timeout) {
+	/**
+     * Constructs a new ZipkinWebClientSender with the specified endpoint, WebClient, and timeout.
+     *
+     * @param endpoint the URL endpoint to send the Zipkin spans to
+     * @param webClient the WebClient instance to use for sending the spans
+     * @param timeout the maximum duration to wait for a response from the endpoint
+     */
+    ZipkinWebClientSender(String endpoint, WebClient webClient, Duration timeout) {
 		this.endpoint = endpoint;
 		this.webClient = webClient;
 		this.timeout = timeout;
 	}
 
-	@Override
+	/**
+     * Sends the encoded spans in a batched format using HTTP POST call.
+     * 
+     * @param batchedEncodedSpans the batched encoded spans to be sent
+     * @return the HTTP POST call object used to send the spans
+     */
+    @Override
 	public HttpPostCall sendSpans(byte[] batchedEncodedSpans) {
 		return new WebClientHttpPostCall(this.endpoint, batchedEncodedSpans, this.webClient, this.timeout);
 	}
 
-	private static class WebClientHttpPostCall extends HttpPostCall {
+	/**
+     * WebClientHttpPostCall class.
+     */
+    private static class WebClientHttpPostCall extends HttpPostCall {
 
 		private final String endpoint;
 
@@ -59,30 +75,59 @@ class ZipkinWebClientSender extends HttpSender {
 
 		private final Duration timeout;
 
-		WebClientHttpPostCall(String endpoint, byte[] body, WebClient webClient, Duration timeout) {
+		/**
+         * Sends an HTTP POST request to the specified endpoint using the provided WebClient.
+         * 
+         * @param endpoint the URL or URI of the endpoint to send the request to
+         * @param body the body of the request as a byte array
+         * @param webClient the WebClient instance to use for sending the request
+         * @param timeout the maximum duration to wait for the request to complete
+         */
+        WebClientHttpPostCall(String endpoint, byte[] body, WebClient webClient, Duration timeout) {
 			super(body);
 			this.endpoint = endpoint;
 			this.webClient = webClient;
 			this.timeout = timeout;
 		}
 
-		@Override
+		/**
+         * Creates a clone of the WebClientHttpPostCall object.
+         * 
+         * @return A Call object representing the cloned WebClientHttpPostCall.
+         */
+        @Override
 		public Call<Void> clone() {
 			return new WebClientHttpPostCall(this.endpoint, getUncompressedBody(), this.webClient, this.timeout);
 		}
 
-		@Override
+		/**
+         * Executes the HTTP POST call using the WebClient.
+         * 
+         * @return The result of the HTTP POST call.
+         * @throws Exception if an error occurs during the execution of the HTTP POST call.
+         */
+        @Override
 		protected Void doExecute() {
 			sendRequest().block();
 			return null;
 		}
 
-		@Override
+		/**
+         * Enqueues a request to be sent using the WebClientHttpPostCall.
+         * 
+         * @param callback the callback to be invoked when the request is completed
+         */
+        @Override
 		protected void doEnqueue(Callback<Void> callback) {
 			sendRequest().subscribe((entity) -> callback.onSuccess(null), callback::onError);
 		}
 
-		private Mono<ResponseEntity<Void>> sendRequest() {
+		/**
+         * Sends a POST request to the specified endpoint using WebClient.
+         * 
+         * @return a Mono object representing the response entity with no body
+         */
+        private Mono<ResponseEntity<Void>> sendRequest() {
 			return this.webClient.post()
 				.uri(this.endpoint)
 				.headers(this::addDefaultHeaders)
@@ -92,7 +137,12 @@ class ZipkinWebClientSender extends HttpSender {
 				.timeout(this.timeout);
 		}
 
-		private void addDefaultHeaders(HttpHeaders headers) {
+		/**
+         * Adds default headers to the provided HttpHeaders object.
+         * 
+         * @param headers the HttpHeaders object to which the default headers will be added
+         */
+        private void addDefaultHeaders(HttpHeaders headers) {
 			headers.addAll(getDefaultHeaders());
 		}
 

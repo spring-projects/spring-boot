@@ -37,18 +37,37 @@ class MariaDbEnvironment {
 
 	private final String database;
 
-	MariaDbEnvironment(Map<String, String> env) {
+	/**
+     * Constructs a new MariaDbEnvironment object with the provided environment variables.
+     * 
+     * @param env a map containing the environment variables
+     * @throws IllegalArgumentException if any of the required environment variables are missing or empty
+     */
+    MariaDbEnvironment(Map<String, String> env) {
 		this.username = extractUsername(env);
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);
 	}
 
-	private String extractUsername(Map<String, String> env) {
+	/**
+     * Extracts the username from the given environment map.
+     * 
+     * @param env the environment map containing the username
+     * @return the extracted username
+     */
+    private String extractUsername(Map<String, String> env) {
 		String user = env.get("MARIADB_USER");
 		return (user != null) ? user : env.getOrDefault("MYSQL_USER", "root");
 	}
 
-	private String extractPassword(Map<String, String> env) {
+	/**
+     * Extracts the password from the given environment variables.
+     * 
+     * @param env the map of environment variables
+     * @return the extracted password
+     * @throws IllegalStateException if any unsupported environment variable is found or if no password is found and empty passwords are not allowed
+     */
+    private String extractPassword(Map<String, String> env) {
 		Assert.state(!env.containsKey("MARIADB_RANDOM_ROOT_PASSWORD"), "MARIADB_RANDOM_ROOT_PASSWORD is not supported");
 		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD"), "MYSQL_RANDOM_ROOT_PASSWORD is not supported");
 		Assert.state(!env.containsKey("MARIADB_ROOT_PASSWORD_HASH"), "MARIADB_ROOT_PASSWORD_HASH is not supported");
@@ -62,22 +81,44 @@ class MariaDbEnvironment {
 		return (password != null) ? password : "";
 	}
 
-	private String extractDatabase(Map<String, String> env) {
+	/**
+     * Extracts the database name from the environment variables.
+     * 
+     * @param env the map of environment variables
+     * @return the database name
+     * @throws IllegalStateException if no database name is defined
+     */
+    private String extractDatabase(Map<String, String> env) {
 		String database = env.get("MARIADB_DATABASE");
 		database = (database != null) ? database : env.get("MYSQL_DATABASE");
 		Assert.state(database != null, "No MARIADB_DATABASE defined");
 		return database;
 	}
 
-	String getUsername() {
+	/**
+     * Returns the username associated with the MariaDbEnvironment object.
+     *
+     * @return the username
+     */
+    String getUsername() {
 		return this.username;
 	}
 
-	String getPassword() {
+	/**
+     * Retrieves the password used for authentication.
+     *
+     * @return the password used for authentication
+     */
+    String getPassword() {
 		return this.password;
 	}
 
-	String getDatabase() {
+	/**
+     * Returns the name of the database associated with this MariaDbEnvironment object.
+     *
+     * @return the name of the database
+     */
+    String getDatabase() {
 		return this.database;
 	}
 

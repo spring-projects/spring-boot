@@ -29,7 +29,12 @@ import org.springframework.boot.origin.Origin;
  */
 public record DockerComposeOrigin(DockerComposeFile composeFile, String serviceName) implements Origin {
 
-	@Override
+	/**
+     * Returns a string representation of the Docker compose service.
+     * 
+     * @return a string representation of the Docker compose service
+     */
+    @Override
 	public String toString() {
 		return "Docker compose service '%s' defined in '%s'".formatted(this.serviceName,
 				(this.composeFile != null) ? this.composeFile : "default compose file");

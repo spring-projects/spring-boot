@@ -32,11 +32,23 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 
 	private final RedisProperties properties;
 
-	PropertiesRedisConnectionDetails(RedisProperties properties) {
+	/**
+     * Constructs a new instance of PropertiesRedisConnectionDetails with the specified RedisProperties.
+     * 
+     * @param properties the RedisProperties to be used for the connection details
+     */
+    PropertiesRedisConnectionDetails(RedisProperties properties) {
 		this.properties = properties;
 	}
 
-	@Override
+	/**
+     * Returns the username for the Redis connection.
+     * If the URL property is not null, it retrieves the username from the connection information.
+     * Otherwise, it returns the username from the properties.
+     *
+     * @return the username for the Redis connection
+     */
+    @Override
 	public String getUsername() {
 		if (this.properties.getUrl() != null) {
 			ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
@@ -45,7 +57,14 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		return this.properties.getUsername();
 	}
 
-	@Override
+	/**
+     * Retrieves the password for the Redis connection.
+     * If the URL property is not null, it retrieves the password from the connection info.
+     * Otherwise, it retrieves the password from the properties.
+     *
+     * @return the password for the Redis connection
+     */
+    @Override
 	public String getPassword() {
 		if (this.properties.getUrl() != null) {
 			ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
@@ -54,7 +73,14 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		return this.properties.getPassword();
 	}
 
-	@Override
+	/**
+     * Retrieves the Standalone instance based on the connection details provided in the PropertiesRedisConnectionDetails class.
+     * If the URL property is not null, it creates a ConnectionInfo object using the URL and returns a Standalone instance with the host, port, and database extracted from the ConnectionInfo object.
+     * If the URL property is null, it returns a Standalone instance with the host, port, and database provided in the PropertiesRedisConnectionDetails class.
+     *
+     * @return The Standalone instance representing the Redis connection details.
+     */
+    @Override
 	public Standalone getStandalone() {
 		if (this.properties.getUrl() != null) {
 			ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
@@ -64,11 +90,22 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		return Standalone.of(this.properties.getHost(), this.properties.getPort(), this.properties.getDatabase());
 	}
 
-	private ConnectionInfo connectionInfo(String url) {
+	/**
+     * Retrieves the connection information for the given URL.
+     * 
+     * @param url the URL to parse and retrieve the connection information from
+     * @return the ConnectionInfo object containing the parsed connection information, or null if the URL is null
+     */
+    private ConnectionInfo connectionInfo(String url) {
 		return (url != null) ? RedisConnectionConfiguration.parseUrl(url) : null;
 	}
 
-	@Override
+	/**
+     * Retrieves the Sentinel configuration details for the Redis connection.
+     * 
+     * @return The Sentinel configuration details, or null if not configured.
+     */
+    @Override
 	public Sentinel getSentinel() {
 		org.springframework.boot.autoconfigure.data.redis.RedisProperties.Sentinel sentinel = this.properties
 			.getSentinel();
@@ -105,14 +142,26 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		};
 	}
 
-	@Override
+	/**
+     * Returns the Redis cluster associated with this connection details.
+     * 
+     * @return the Redis cluster, or null if not available
+     */
+    @Override
 	public Cluster getCluster() {
 		RedisProperties.Cluster cluster = this.properties.getCluster();
 		List<Node> nodes = (cluster != null) ? cluster.getNodes().stream().map(this::asNode).toList() : null;
 		return (nodes != null) ? () -> nodes : null;
 	}
 
-	private Node asNode(String node) {
+	/**
+     * Converts a string representation of a node into a Node object.
+     * 
+     * @param node the string representation of the node in the format "host:port"
+     * @return the Node object representing the specified node
+     * @throws NumberFormatException if the port number cannot be parsed as an integer
+     */
+    private Node asNode(String node) {
 		String[] components = node.split(":");
 		return new Node(components[0], Integer.parseInt(components[1]));
 	}

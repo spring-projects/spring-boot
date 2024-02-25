@@ -90,13 +90,27 @@ public class LogFile {
 		put(properties, LoggingSystemProperty.LOG_FILE, toString());
 	}
 
-	private void put(Properties properties, LoggingSystemProperty property, String value) {
+	/**
+     * Puts the specified value into the given properties object if the value is not empty.
+     * 
+     * @param properties the properties object to put the value into
+     * @param property the logging system property to use as the key
+     * @param value the value to put into the properties object
+     */
+    private void put(Properties properties, LoggingSystemProperty property, String value) {
 		if (StringUtils.hasLength(value)) {
 			properties.put(property.getEnvironmentVariableName(), value);
 		}
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the LogFile object.
+     * If the file path is not empty, it returns the file path.
+     * Otherwise, it returns the path of a default log file named "spring.log" in the specified directory.
+     *
+     * @return a string representation of the LogFile object
+     */
+    @Override
 	public String toString() {
 		if (StringUtils.hasLength(this.file)) {
 			return this.file;

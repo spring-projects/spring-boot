@@ -21,12 +21,21 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+/**
+ * SampleCacheApplication class.
+ */
 @EnableCaching
 @EnableScheduling
 @SpringBootApplication
 public class SampleCacheApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It initializes a SpringApplicationBuilder and runs the application with the specified profiles.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		new SpringApplicationBuilder().sources(SampleCacheApplication.class).profiles("app").run(args);
 	}
 

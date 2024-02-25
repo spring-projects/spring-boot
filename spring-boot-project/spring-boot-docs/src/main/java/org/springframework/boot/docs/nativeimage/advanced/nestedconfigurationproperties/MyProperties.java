@@ -19,6 +19,9 @@ package org.springframework.boot.docs.nativeimage.advanced.nestedconfigurationpr
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+/**
+ * MyProperties class.
+ */
 @ConfigurationProperties(prefix = "my.properties")
 public class MyProperties {
 
@@ -32,11 +35,21 @@ public class MyProperties {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	/**
+     * Sets the name of the property.
+     * 
+     * @param name the name to be set
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 
-	public Nested getNested() {
+	/**
+     * Returns the nested object.
+     *
+     * @return the nested object
+     */
+    public Nested getNested() {
 		return this.nested;
 	}
 	// @fold:off

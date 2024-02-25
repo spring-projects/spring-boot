@@ -96,7 +96,15 @@ public class RestartServer {
 		restart(urls, files);
 	}
 
-	private boolean updateFileSystem(URL url, String name, ClassLoaderFile classLoaderFile) {
+	/**
+     * Updates the file system with the given URL, name, and classLoaderFile.
+     * 
+     * @param url             the URL of the directory to update
+     * @param name            the name of the file to update
+     * @param classLoaderFile the ClassLoaderFile containing the updated contents
+     * @return true if the file system was successfully updated, false otherwise
+     */
+    private boolean updateFileSystem(URL url, String name, ClassLoaderFile classLoaderFile) {
 		if (!isDirectoryUrl(url.toString())) {
 			return false;
 		}
@@ -117,11 +125,24 @@ public class RestartServer {
 		return false;
 	}
 
-	private boolean isDirectoryUrl(String urlString) {
+	/**
+     * Checks if the given URL string represents a directory.
+     * 
+     * @param urlString the URL string to be checked
+     * @return true if the URL string represents a directory, false otherwise
+     */
+    private boolean isDirectoryUrl(String urlString) {
 		return urlString.startsWith("file:") && urlString.endsWith("/");
 	}
 
-	private Set<URL> getMatchingUrls(Set<URL> urls, String sourceDirectory) {
+	/**
+     * Returns a set of URLs that match the given source directory.
+     * 
+     * @param urls             the set of URLs to filter
+     * @param sourceDirectory  the source directory to match against
+     * @return                 a set of matching URLs
+     */
+    private Set<URL> getMatchingUrls(Set<URL> urls, String sourceDirectory) {
 		Set<URL> matchingUrls = new LinkedHashSet<>();
 		for (URL url : urls) {
 			if (this.sourceDirectoryUrlFilter.isMatch(sourceDirectory, url)) {
@@ -134,7 +155,12 @@ public class RestartServer {
 		return matchingUrls;
 	}
 
-	private Set<URL> getClassLoaderUrls() {
+	/**
+     * Returns a set of URLs representing the class loader URLs.
+     * 
+     * @return a set of URLs representing the class loader URLs
+     */
+    private Set<URL> getClassLoaderUrls() {
 		Set<URL> urls = new LinkedHashSet<>();
 		ClassLoader classLoader = this.classLoader;
 		while (classLoader != null) {
@@ -146,13 +172,23 @@ public class RestartServer {
 		return urls;
 	}
 
-	private void updateTimeStamp(Iterable<URL> urls) {
+	/**
+     * Updates the timestamp for a collection of URLs.
+     * 
+     * @param urls the collection of URLs to update the timestamp for
+     */
+    private void updateTimeStamp(Iterable<URL> urls) {
 		for (URL url : urls) {
 			updateTimeStamp(url);
 		}
 	}
 
-	private void updateTimeStamp(URL url) {
+	/**
+     * Updates the timestamp of a file located at the given URL.
+     * 
+     * @param url the URL of the file to update the timestamp for
+     */
+    private void updateTimeStamp(URL url) {
 		try {
 			URL actualUrl = ResourceUtils.extractJarFileURL(url);
 			File file = ResourceUtils.getFile(actualUrl, "Jar URL");

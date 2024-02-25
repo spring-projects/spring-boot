@@ -46,7 +46,15 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
 @Import(RedisWebSessionConfiguration.class)
 class RedisReactiveSessionConfiguration {
 
-	@Bean
+	/**
+     * Customizes the ReactiveRedisSessionRepository bean with the provided session properties, redis session properties, and server properties.
+     * 
+     * @param sessionProperties The session properties.
+     * @param redisSessionProperties The redis session properties.
+     * @param serverProperties The server properties.
+     * @return The customized ReactiveRedisSessionRepository bean.
+     */
+    @Bean
 	ReactiveSessionRepositoryCustomizer<ReactiveRedisSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
 			ServerProperties serverProperties) {

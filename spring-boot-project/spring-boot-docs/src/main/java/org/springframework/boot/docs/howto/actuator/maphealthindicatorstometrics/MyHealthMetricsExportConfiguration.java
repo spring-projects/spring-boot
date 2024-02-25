@@ -23,15 +23,34 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyHealthMetricsExportConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyHealthMetricsExportConfiguration {
 
-	public MyHealthMetricsExportConfiguration(MeterRegistry registry, HealthEndpoint healthEndpoint) {
+	/**
+     * Constructs a new MyHealthMetricsExportConfiguration with the given MeterRegistry and HealthEndpoint.
+     * 
+     * @param registry the MeterRegistry to register the health gauge with
+     * @param healthEndpoint the HealthEndpoint to retrieve the health status from
+     */
+    public MyHealthMetricsExportConfiguration(MeterRegistry registry, HealthEndpoint healthEndpoint) {
 		// This example presumes common tags (such as the app) are applied elsewhere
 		Gauge.builder("health", healthEndpoint, this::getStatusCode).strongReference(true).register(registry);
 	}
 
-	private int getStatusCode(HealthEndpoint health) {
+	/**
+     * Returns the status code based on the health status of the provided HealthEndpoint.
+     * 
+     * @param health the HealthEndpoint to get the status from
+     * @return the status code:
+     *         - 3 if the status is UP
+     *         - 2 if the status is OUT_OF_SERVICE
+     *         - 1 if the status is DOWN
+     *         - 0 if the status is unknown or null
+     */
+    private int getStatusCode(HealthEndpoint health) {
 		Status status = health.health().getStatus();
 		if (Status.UP.equals(status)) {
 			return 3;

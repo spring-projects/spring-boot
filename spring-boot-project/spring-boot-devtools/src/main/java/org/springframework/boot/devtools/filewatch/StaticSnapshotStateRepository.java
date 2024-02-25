@@ -27,12 +27,22 @@ class StaticSnapshotStateRepository implements SnapshotStateRepository {
 
 	private volatile Object state;
 
-	@Override
+	/**
+     * Saves the state of the object.
+     * 
+     * @param state the state of the object to be saved
+     */
+    @Override
 	public void save(Object state) {
 		this.state = state;
 	}
 
-	@Override
+	/**
+     * Restores the state of the StaticSnapshotStateRepository.
+     * 
+     * @return the restored state of the StaticSnapshotStateRepository
+     */
+    @Override
 	public Object restore() {
 		return this.state;
 	}

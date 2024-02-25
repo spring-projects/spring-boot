@@ -61,13 +61,25 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 		this(dataSource, settings, null);
 	}
 
-	private QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings,
+	/**
+     * Constructs a new QuartzDataSourceScriptDatabaseInitializer with the specified DataSource, DatabaseInitializationSettings, and commentPrefixes.
+     * 
+     * @param dataSource the DataSource to be used for database initialization
+     * @param settings the DatabaseInitializationSettings to be used for database initialization
+     * @param commentPrefixes the list of comment prefixes to be used for database initialization scripts
+     */
+    private QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings,
 			List<String> commentPrefixes) {
 		super(dataSource, settings);
 		this.commentPrefixes = commentPrefixes;
 	}
 
-	@Override
+	/**
+     * Customize the ResourceDatabasePopulator by setting the comment prefixes.
+     * 
+     * @param populator the ResourceDatabasePopulator to customize
+     */
+    @Override
 	protected void customize(ResourceDatabasePopulator populator) {
 		if (!ObjectUtils.isEmpty(this.commentPrefixes)) {
 			populator.setCommentPrefixes(this.commentPrefixes.toArray(new String[0]));
@@ -92,7 +104,14 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 		return settings;
 	}
 
-	private static List<String> resolveSchemaLocations(DataSource dataSource, QuartzProperties.Jdbc properties) {
+	/**
+     * Resolves the schema locations based on the provided data source and JDBC properties.
+     * 
+     * @param dataSource the data source to be used for resolving the schema locations
+     * @param properties the JDBC properties containing the platform and schema information
+     * @return a list of resolved schema locations
+     */
+    private static List<String> resolveSchemaLocations(DataSource dataSource, QuartzProperties.Jdbc properties) {
 		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.DB2, "db2_v95");
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MYSQL, "mysql_innodb");

@@ -45,7 +45,13 @@ class ManifestInfo {
 		this(manifest, null);
 	}
 
-	private ManifestInfo(Manifest manifest, Boolean multiRelease) {
+	/**
+     * Constructs a new ManifestInfo object with the specified manifest and multiRelease flag.
+     * 
+     * @param manifest the manifest object containing information about the JAR file
+     * @param multiRelease a boolean flag indicating whether the JAR file supports multiple releases
+     */
+    private ManifestInfo(Manifest manifest, Boolean multiRelease) {
 		this.manifest = manifest;
 		this.multiRelease = multiRelease;
 	}

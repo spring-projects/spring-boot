@@ -33,11 +33,24 @@ import org.springframework.core.ResolvableType;
  */
 class ArrayBinder extends IndexedElementsBinder<Object> {
 
-	ArrayBinder(Context context) {
+	/**
+     * Constructs a new ArrayBinder with the specified context.
+     *
+     * @param context the context to be used by the ArrayBinder
+     */
+    ArrayBinder(Context context) {
 		super(context);
 	}
 
-	@Override
+	/**
+     * Binds an aggregate configuration property to an array.
+     * 
+     * @param name           the name of the configuration property
+     * @param target         the bindable target
+     * @param elementBinder  the element binder
+     * @return               the bound array
+     */
+    @Override
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
 		IndexedCollectionSupplier result = new IndexedCollectionSupplier(ArrayList::new);
@@ -55,7 +68,14 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 		return null;
 	}
 
-	@Override
+	/**
+     * Merges the existing object with the additional object.
+     * 
+     * @param existing the supplier of the existing object
+     * @param additional the additional object to be merged
+     * @return the merged object
+     */
+    @Override
 	protected Object merge(Supplier<Object> existing, Object additional) {
 		return additional;
 	}

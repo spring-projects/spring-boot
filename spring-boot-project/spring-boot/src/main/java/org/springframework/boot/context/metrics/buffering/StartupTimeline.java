@@ -37,7 +37,13 @@ public class StartupTimeline {
 
 	private final List<TimelineEvent> events;
 
-	StartupTimeline(Instant startTime, List<TimelineEvent> events) {
+	/**
+     * Creates a new instance of StartupTimeline with the specified start time and list of events.
+     * 
+     * @param startTime the start time of the timeline
+     * @param events the list of timeline events
+     */
+    StartupTimeline(Instant startTime, List<TimelineEvent> events) {
 		this.startTime = startTime;
 		this.events = Collections.unmodifiableList(events);
 	}
@@ -71,7 +77,13 @@ public class StartupTimeline {
 
 		private final Duration duration;
 
-		TimelineEvent(BufferedStartupStep step, Instant endTime) {
+		/**
+         * Constructs a new TimelineEvent with the given BufferedStartupStep and end time.
+         * 
+         * @param step the BufferedStartupStep associated with this event
+         * @param endTime the end time of this event
+         */
+        TimelineEvent(BufferedStartupStep step, Instant endTime) {
 			this.step = step;
 			this.endTime = endTime;
 			this.duration = Duration.between(step.getStartTime(), endTime);

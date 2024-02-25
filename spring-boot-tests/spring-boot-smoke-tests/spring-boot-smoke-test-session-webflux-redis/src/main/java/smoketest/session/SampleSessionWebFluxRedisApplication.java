@@ -25,14 +25,29 @@ import org.springframework.security.web.server.context.WebSessionServerSecurityC
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * SampleSessionWebFluxRedisApplication class.
+ */
 @SpringBootApplication
 public class SampleSessionWebFluxRedisApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring application by running the SampleSessionWebFluxRedisApplication class.
+     *
+     * @param args The command line arguments passed to the application.
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleSessionWebFluxRedisApplication.class);
 	}
 
-	@Bean
+	/**
+     * Configures the security filter chain for the Spring WebFlux application.
+     * 
+     * @param http the ServerHttpSecurity object used to configure the security settings
+     * @return the SecurityWebFilterChain object representing the configured security filter chain
+     */
+    @Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 		http.authorizeExchange((exchange) -> exchange.anyExchange().authenticated());
 		http.httpBasic((basic) -> basic.securityContextRepository(new WebSessionServerSecurityContextRepository()));

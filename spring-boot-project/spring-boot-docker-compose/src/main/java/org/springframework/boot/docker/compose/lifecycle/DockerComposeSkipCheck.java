@@ -44,7 +44,14 @@ class DockerComposeSkipCheck {
 		SKIPPED_STACK_ELEMENTS = Collections.unmodifiableSet(skipped);
 	}
 
-	boolean shouldSkip(ClassLoader classLoader, DockerComposeProperties.Skip properties) {
+	/**
+     * Determines whether the Docker Compose check should be skipped based on the provided class loader and skip properties.
+     * 
+     * @param classLoader the class loader to check for required classes
+     * @param properties the skip properties to evaluate
+     * @return true if the Docker Compose check should be skipped, false otherwise
+     */
+    boolean shouldSkip(ClassLoader classLoader, DockerComposeProperties.Skip properties) {
 		if (properties.isInTests() && hasAtLeastOneRequiredClass(classLoader)) {
 			Thread thread = Thread.currentThread();
 			for (StackTraceElement element : thread.getStackTrace()) {
@@ -56,7 +63,13 @@ class DockerComposeSkipCheck {
 		return false;
 	}
 
-	private boolean hasAtLeastOneRequiredClass(ClassLoader classLoader) {
+	/**
+     * Checks if the given class loader has at least one of the required classes.
+     *
+     * @param classLoader the class loader to check
+     * @return true if the class loader has at least one of the required classes, false otherwise
+     */
+    private boolean hasAtLeastOneRequiredClass(ClassLoader classLoader) {
 		for (String requiredClass : REQUIRED_CLASSES) {
 			if (ClassUtils.isPresent(requiredClass, classLoader)) {
 				return true;
@@ -65,7 +78,13 @@ class DockerComposeSkipCheck {
 		return false;
 	}
 
-	private static boolean isSkippedStackElement(StackTraceElement element) {
+	/**
+     * Checks if a given stack trace element should be skipped based on a list of skipped stack elements.
+     * 
+     * @param element the stack trace element to check
+     * @return true if the stack trace element should be skipped, false otherwise
+     */
+    private static boolean isSkippedStackElement(StackTraceElement element) {
 		for (String skipped : SKIPPED_STACK_ELEMENTS) {
 			if (element.getClassName().startsWith(skipped)) {
 				return true;

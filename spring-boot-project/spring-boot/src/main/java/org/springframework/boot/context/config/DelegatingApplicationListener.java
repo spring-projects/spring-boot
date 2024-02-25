@@ -54,7 +54,16 @@ public class DelegatingApplicationListener implements ApplicationListener<Applic
 
 	private SimpleApplicationEventMulticaster multicaster;
 
-	@Override
+	/**
+     * This method is called when an application event is triggered.
+     * It checks if the event is an instance of ApplicationEnvironmentPreparedEvent and retrieves the listeners from the environment.
+     * If there are no listeners, the method returns.
+     * Otherwise, it creates a SimpleApplicationEventMulticaster and adds the listeners to it.
+     * Finally, it multicasts the event using the multicaster.
+     *
+     * @param event The application event triggered
+     */
+    @Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationEnvironmentPreparedEvent preparedEvent) {
 			List<ApplicationListener<ApplicationEvent>> delegates = getListeners(preparedEvent.getEnvironment());
@@ -71,7 +80,13 @@ public class DelegatingApplicationListener implements ApplicationListener<Applic
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Retrieves the list of application listeners based on the provided environment.
+     * 
+     * @param environment the configurable environment
+     * @return the list of application listeners
+     */
+    @SuppressWarnings("unchecked")
 	private List<ApplicationListener<ApplicationEvent>> getListeners(ConfigurableEnvironment environment) {
 		if (environment == null) {
 			return Collections.emptyList();
@@ -96,11 +111,21 @@ public class DelegatingApplicationListener implements ApplicationListener<Applic
 		return listeners;
 	}
 
-	public void setOrder(int order) {
+	/**
+     * Sets the order of the DelegatingApplicationListener.
+     * 
+     * @param order the order value to set
+     */
+    public void setOrder(int order) {
 		this.order = order;
 	}
 
-	@Override
+	/**
+     * Returns the order value of this DelegatingApplicationListener.
+     * 
+     * @return the order value of this DelegatingApplicationListener
+     */
+    @Override
 	public int getOrder() {
 		return this.order;
 	}

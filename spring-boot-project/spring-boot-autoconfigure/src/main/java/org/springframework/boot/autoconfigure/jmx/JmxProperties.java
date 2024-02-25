@@ -53,43 +53,93 @@ public class JmxProperties {
 	 */
 	private RegistrationPolicy registrationPolicy = RegistrationPolicy.FAIL_ON_EXISTING;
 
-	public boolean getEnabled() {
+	/**
+     * Returns the value of the enabled property.
+     *
+     * @return true if the property is enabled, false otherwise.
+     */
+    public boolean getEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	/**
+     * Sets the enabled status of the JmxProperties.
+     * 
+     * @param enabled the enabled status to be set
+     */
+    public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public boolean isUniqueNames() {
+	/**
+     * Returns a boolean value indicating whether the names are unique.
+     *
+     * @return true if the names are unique, false otherwise.
+     */
+    public boolean isUniqueNames() {
 		return this.uniqueNames;
 	}
 
-	public void setUniqueNames(boolean uniqueNames) {
+	/**
+     * Sets the flag indicating whether unique names should be used.
+     * 
+     * @param uniqueNames the flag indicating whether unique names should be used
+     */
+    public void setUniqueNames(boolean uniqueNames) {
 		this.uniqueNames = uniqueNames;
 	}
 
-	public String getServer() {
+	/**
+     * Returns the server value.
+     *
+     * @return the server value
+     */
+    public String getServer() {
 		return this.server;
 	}
 
-	public void setServer(String server) {
+	/**
+     * Sets the server for JMX properties.
+     * 
+     * @param server the server to be set
+     */
+    public void setServer(String server) {
 		this.server = server;
 	}
 
-	public String getDefaultDomain() {
+	/**
+     * Returns the default domain.
+     * 
+     * @return the default domain
+     */
+    public String getDefaultDomain() {
 		return this.defaultDomain;
 	}
 
-	public void setDefaultDomain(String defaultDomain) {
+	/**
+     * Sets the default domain for JMX properties.
+     * 
+     * @param defaultDomain the default domain to be set
+     */
+    public void setDefaultDomain(String defaultDomain) {
 		this.defaultDomain = defaultDomain;
 	}
 
-	public RegistrationPolicy getRegistrationPolicy() {
+	/**
+     * Returns the registration policy of this JmxProperties object.
+     *
+     * @return the registration policy
+     */
+    public RegistrationPolicy getRegistrationPolicy() {
 		return this.registrationPolicy;
 	}
 
-	public void setRegistrationPolicy(RegistrationPolicy registrationPolicy) {
+	/**
+     * Sets the registration policy for the JmxProperties.
+     * 
+     * @param registrationPolicy the registration policy to be set
+     */
+    public void setRegistrationPolicy(RegistrationPolicy registrationPolicy) {
 		this.registrationPolicy = registrationPolicy;
 	}
 

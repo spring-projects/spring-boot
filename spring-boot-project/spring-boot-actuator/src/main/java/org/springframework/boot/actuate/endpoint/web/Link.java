@@ -59,7 +59,12 @@ public class Link {
 		return this.templated;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the Link object.
+     *
+     * @return a string representation of the Link object
+     */
+    @Override
 	public String toString() {
 		return new ToStringCreator(this).append("href", this.href).toString();
 	}

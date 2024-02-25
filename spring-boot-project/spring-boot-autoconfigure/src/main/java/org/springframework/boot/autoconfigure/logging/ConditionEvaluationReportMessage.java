@@ -43,15 +43,33 @@ public class ConditionEvaluationReportMessage {
 
 	private final StringBuilder message;
 
-	public ConditionEvaluationReportMessage(ConditionEvaluationReport report) {
+	/**
+     * Constructs a new ConditionEvaluationReportMessage object with the given ConditionEvaluationReport and default message.
+     * 
+     * @param report the ConditionEvaluationReport to be associated with the message
+     */
+    public ConditionEvaluationReportMessage(ConditionEvaluationReport report) {
 		this(report, "CONDITIONS EVALUATION REPORT");
 	}
 
-	public ConditionEvaluationReportMessage(ConditionEvaluationReport report, String title) {
+	/**
+     * Constructs a new ConditionEvaluationReportMessage with the given ConditionEvaluationReport and title.
+     * 
+     * @param report the ConditionEvaluationReport to be used
+     * @param title the title of the message
+     */
+    public ConditionEvaluationReportMessage(ConditionEvaluationReport report, String title) {
 		this.message = getLogMessage(report, title);
 	}
 
-	private StringBuilder getLogMessage(ConditionEvaluationReport report, String title) {
+	/**
+     * Generates a log message based on the given ConditionEvaluationReport and title.
+     * 
+     * @param report the ConditionEvaluationReport to generate the log message from
+     * @param title the title to be included in the log message
+     * @return a StringBuilder object containing the log message
+     */
+    private StringBuilder getLogMessage(ConditionEvaluationReport report, String title) {
 		String separator = "=".repeat(title.length());
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("%n%n%n"));
@@ -67,7 +85,13 @@ public class ConditionEvaluationReportMessage {
 		return message;
 	}
 
-	private void logPositiveMatches(StringBuilder message, Map<String, ConditionAndOutcomes> shortOutcomes) {
+	/**
+     * Logs the positive matches from the given short outcomes map.
+     * 
+     * @param message The StringBuilder object to append the log messages to.
+     * @param shortOutcomes The map containing the short outcomes.
+     */
+    private void logPositiveMatches(StringBuilder message, Map<String, ConditionAndOutcomes> shortOutcomes) {
 		message.append(String.format("Positive matches:%n"));
 		message.append(String.format("-----------------%n"));
 		List<Entry<String, ConditionAndOutcomes>> matched = shortOutcomes.entrySet()
@@ -83,7 +107,13 @@ public class ConditionEvaluationReportMessage {
 		message.append(String.format("%n%n"));
 	}
 
-	private void logNegativeMatches(StringBuilder message, Map<String, ConditionAndOutcomes> shortOutcomes) {
+	/**
+     * Logs the negative matches in the given short outcomes map.
+     * 
+     * @param message The StringBuilder object to append the log messages to.
+     * @param shortOutcomes The map containing the short outcomes.
+     */
+    private void logNegativeMatches(StringBuilder message, Map<String, ConditionAndOutcomes> shortOutcomes) {
 		message.append(String.format("Negative matches:%n"));
 		message.append(String.format("-----------------%n"));
 		List<Entry<String, ConditionAndOutcomes>> nonMatched = shortOutcomes.entrySet()
@@ -99,7 +129,13 @@ public class ConditionEvaluationReportMessage {
 		message.append(String.format("%n%n"));
 	}
 
-	private void logExclusions(ConditionEvaluationReport report, StringBuilder message) {
+	/**
+     * Logs the exclusions from the given ConditionEvaluationReport.
+     * 
+     * @param report   the ConditionEvaluationReport containing the exclusions
+     * @param message  the StringBuilder to append the log message to
+     */
+    private void logExclusions(ConditionEvaluationReport report, StringBuilder message) {
 		message.append(String.format("Exclusions:%n"));
 		message.append(String.format("-----------%n"));
 		if (report.getExclusions().isEmpty()) {
@@ -113,7 +149,13 @@ public class ConditionEvaluationReportMessage {
 		message.append(String.format("%n%n"));
 	}
 
-	private void logUnconditionalClasses(ConditionEvaluationReport report, StringBuilder message) {
+	/**
+     * Logs the unconditional classes from the given ConditionEvaluationReport.
+     * 
+     * @param report   the ConditionEvaluationReport containing the unconditional classes
+     * @param message  the StringBuilder to append the log message to
+     */
+    private void logUnconditionalClasses(ConditionEvaluationReport report, StringBuilder message) {
 		message.append(String.format("Unconditional classes:%n"));
 		message.append(String.format("----------------------%n"));
 		if (report.getUnconditionalClasses().isEmpty()) {
@@ -126,7 +168,13 @@ public class ConditionEvaluationReportMessage {
 		}
 	}
 
-	private Map<String, ConditionAndOutcomes> orderByName(Map<String, ConditionAndOutcomes> outcomes) {
+	/**
+     * Orders the outcomes map by name.
+     * 
+     * @param outcomes the map of outcomes to be ordered
+     * @return the ordered map of outcomes
+     */
+    private Map<String, ConditionAndOutcomes> orderByName(Map<String, ConditionAndOutcomes> outcomes) {
 		MultiValueMap<String, String> map = mapToFullyQualifiedNames(outcomes.keySet());
 		List<String> shortNames = new ArrayList<>(map.keySet());
 		Collections.sort(shortNames);
@@ -144,21 +192,41 @@ public class ConditionEvaluationReportMessage {
 		return result;
 	}
 
-	private MultiValueMap<String, String> mapToFullyQualifiedNames(Set<String> keySet) {
+	/**
+     * Maps a set of fully qualified names to their corresponding short names.
+     * 
+     * @param keySet the set of fully qualified names to be mapped
+     * @return a MultiValueMap containing the short names as keys and the corresponding fully qualified names as values
+     */
+    private MultiValueMap<String, String> mapToFullyQualifiedNames(Set<String> keySet) {
 		LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 		keySet
 			.forEach((fullyQualifiedName) -> map.add(ClassUtils.getShortName(fullyQualifiedName), fullyQualifiedName));
 		return map;
 	}
 
-	private void addMatchLogMessage(StringBuilder message, String source, ConditionAndOutcomes matches) {
+	/**
+     * Adds a match log message to the given StringBuilder.
+     * 
+     * @param message the StringBuilder to which the match log message will be added
+     * @param source the source of the match log message
+     * @param matches the list of ConditionAndOutcomes that matched
+     */
+    private void addMatchLogMessage(StringBuilder message, String source, ConditionAndOutcomes matches) {
 		message.append(String.format("%n   %s matched:%n", source));
 		for (ConditionAndOutcome match : matches) {
 			logConditionAndOutcome(message, "      ", match);
 		}
 	}
 
-	private void addNonMatchLogMessage(StringBuilder message, String source,
+	/**
+     * Adds a non-match log message to the given StringBuilder.
+     * 
+     * @param message The StringBuilder to append the log message to.
+     * @param source The source of the log message.
+     * @param conditionAndOutcomes The list of ConditionAndOutcomes to process.
+     */
+    private void addNonMatchLogMessage(StringBuilder message, String source,
 			ConditionAndOutcomes conditionAndOutcomes) {
 		message.append(String.format("%n   %s:%n", source));
 		List<ConditionAndOutcome> matches = new ArrayList<>();
@@ -183,7 +251,14 @@ public class ConditionEvaluationReportMessage {
 		}
 	}
 
-	private void logConditionAndOutcome(StringBuilder message, String indent, ConditionAndOutcome conditionAndOutcome) {
+	/**
+     * Logs the condition and outcome of a condition evaluation.
+     * 
+     * @param message the StringBuilder object to append the log message to
+     * @param indent the indentation string to prepend to the log message
+     * @param conditionAndOutcome the ConditionAndOutcome object containing the condition and outcome information
+     */
+    private void logConditionAndOutcome(StringBuilder message, String indent, ConditionAndOutcome conditionAndOutcome) {
 		message.append(String.format("%s- ", indent));
 		String outcomeMessage = conditionAndOutcome.getOutcome().getMessage();
 		if (StringUtils.hasLength(outcomeMessage)) {
@@ -197,7 +272,12 @@ public class ConditionEvaluationReportMessage {
 		message.append(String.format(")%n"));
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the ConditionEvaluationReportMessage object.
+     * 
+     * @return a string representation of the ConditionEvaluationReportMessage object
+     */
+    @Override
 	public String toString() {
 		return this.message.toString();
 	}

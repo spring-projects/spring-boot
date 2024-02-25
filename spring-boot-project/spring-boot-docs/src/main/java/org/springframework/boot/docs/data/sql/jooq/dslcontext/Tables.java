@@ -24,13 +24,24 @@ import org.jooq.TableField;
 import org.jooq.impl.TableImpl;
 import org.jooq.impl.TableRecordImpl;
 
+/**
+ * Tables class.
+ */
 abstract class Tables {
 
 	static final TAuthor AUTHOR = null;
 
-	abstract class TAuthor extends TableImpl<TAuthorRecord> {
+	/**
+     * TAuthor class.
+     */
+    abstract class TAuthor extends TableImpl<TAuthorRecord> {
 
-		TAuthor(Name name) {
+		/**
+         * Constructs a new TAuthor object with the specified name.
+         * 
+         * @param name the name of the author
+         */
+        TAuthor(Name name) {
 			super(name);
 		}
 
@@ -38,9 +49,17 @@ abstract class Tables {
 
 	}
 
-	abstract class TAuthorRecord extends TableRecordImpl<TAuthorRecord> {
+	/**
+     * TAuthorRecord class.
+     */
+    abstract class TAuthorRecord extends TableRecordImpl<TAuthorRecord> {
 
-		TAuthorRecord(Table<TAuthorRecord> table) {
+		/**
+         * Constructs a new TAuthorRecord object with the specified table.
+         * 
+         * @param table the table to be used for constructing the TAuthorRecord object
+         */
+        TAuthorRecord(Table<TAuthorRecord> table) {
 			super(table);
 		}
 

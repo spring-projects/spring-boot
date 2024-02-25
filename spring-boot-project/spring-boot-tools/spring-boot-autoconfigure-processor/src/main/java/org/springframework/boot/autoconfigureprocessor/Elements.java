@@ -28,10 +28,19 @@ import javax.lang.model.type.TypeMirror;
  */
 final class Elements {
 
-	private Elements() {
+	/**
+     * Private constructor for the Elements class.
+     */
+    private Elements() {
 	}
 
-	static String getQualifiedName(Element element) {
+	/**
+     * Returns the qualified name of the given element.
+     * 
+     * @param element the element whose qualified name is to be returned
+     * @return the qualified name of the element, or null if the element is null
+     */
+    static String getQualifiedName(Element element) {
 		if (element != null) {
 			TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
 			if (enclosingElement != null) {
@@ -45,7 +54,13 @@ final class Elements {
 		return null;
 	}
 
-	private static TypeElement getEnclosingTypeElement(TypeMirror type) {
+	/**
+     * Returns the enclosing TypeElement of the given TypeMirror.
+     *
+     * @param type the TypeMirror to get the enclosing TypeElement from
+     * @return the enclosing TypeElement, or null if not found
+     */
+    private static TypeElement getEnclosingTypeElement(TypeMirror type) {
 		if (type instanceof DeclaredType declaredType) {
 			Element enclosingElement = declaredType.asElement().getEnclosingElement();
 			if (enclosingElement instanceof TypeElement typeElement) {

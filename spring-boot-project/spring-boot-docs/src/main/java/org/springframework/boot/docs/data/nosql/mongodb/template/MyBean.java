@@ -22,12 +22,20 @@ import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final MongoTemplate mongoTemplate;
 
-	public MyBean(MongoTemplate mongoTemplate) {
+	/**
+     * Constructs a new instance of MyBean with the specified MongoTemplate.
+     *
+     * @param mongoTemplate the MongoTemplate to be used for database operations
+     */
+    public MyBean(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 

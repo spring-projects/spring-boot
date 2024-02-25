@@ -19,10 +19,18 @@ package org.springframework.boot.docs.howto.springmvc.writejsonrestservice;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * MyController class.
+ */
 @RestController
 public class MyController {
 
-	@RequestMapping("/thing")
+	/**
+     * Retrieves a new instance of MyThing.
+     * 
+     * @return MyThing - a new instance of MyThing
+     */
+    @RequestMapping("/thing")
 	public MyThing thing() {
 		return new MyThing();
 	}

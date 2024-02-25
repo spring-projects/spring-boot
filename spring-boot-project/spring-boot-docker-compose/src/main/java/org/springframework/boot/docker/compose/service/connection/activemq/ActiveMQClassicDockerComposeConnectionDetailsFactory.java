@@ -33,11 +33,22 @@ class ActiveMQClassicDockerComposeConnectionDetailsFactory
 
 	private static final int ACTIVEMQ_PORT = 61616;
 
-	protected ActiveMQClassicDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new instance of ActiveMQClassicDockerComposeConnectionDetailsFactory.
+     * 
+     * This constructor sets the Docker image name to "apache/activemq-classic".
+     */
+    protected ActiveMQClassicDockerComposeConnectionDetailsFactory() {
 		super("apache/activemq-classic");
 	}
 
-	@Override
+	/**
+     * Returns the ActiveMQConnectionDetails for the given DockerComposeConnectionSource.
+     * 
+     * @param source the DockerComposeConnectionSource containing the running service information
+     * @return the ActiveMQConnectionDetails for the given DockerComposeConnectionSource
+     */
+    @Override
 	protected ActiveMQConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new ActiveMQDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -53,23 +64,43 @@ class ActiveMQClassicDockerComposeConnectionDetailsFactory
 
 		private final String brokerUrl;
 
-		protected ActiveMQDockerComposeConnectionDetails(RunningService service) {
+		/**
+         * Constructs a new ActiveMQDockerComposeConnectionDetails object with the provided RunningService.
+         * 
+         * @param service the RunningService object representing the ActiveMQ service
+         */
+        protected ActiveMQDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new ActiveMQClassicEnvironment(service.env());
 			this.brokerUrl = "tcp://" + service.host() + ":" + service.ports().get(ACTIVEMQ_PORT);
 		}
 
-		@Override
+		/**
+         * Returns the broker URL of the ActiveMQDockerComposeConnectionDetails.
+         *
+         * @return the broker URL of the ActiveMQDockerComposeConnectionDetails
+         */
+        @Override
 		public String getBrokerUrl() {
 			return this.brokerUrl;
 		}
 
-		@Override
+		/**
+         * Returns the user associated with the current environment.
+         * 
+         * @return the user associated with the current environment
+         */
+        @Override
 		public String getUser() {
 			return this.environment.getUser();
 		}
 
-		@Override
+		/**
+         * Returns the password for the ActiveMQ connection.
+         * 
+         * @return the password for the ActiveMQ connection
+         */
+        @Override
 		public String getPassword() {
 			return this.environment.getPassword();
 		}

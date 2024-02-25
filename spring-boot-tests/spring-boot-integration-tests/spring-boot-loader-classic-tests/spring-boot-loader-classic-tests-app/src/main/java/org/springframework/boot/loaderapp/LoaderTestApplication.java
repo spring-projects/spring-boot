@@ -29,10 +29,20 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.FileCopyUtils;
 
+/**
+ * LoaderTestApplication class.
+ */
 @SpringBootApplication
 public class LoaderTestApplication {
 
-	@Bean
+	/**
+     * This method returns a CommandLineRunner object that can be used to execute code when the application starts.
+     * It takes a ServletContext object as a parameter.
+     * 
+     * @param servletContext The ServletContext object used to retrieve the resource URL.
+     * @return A CommandLineRunner object that executes the code when the application starts.
+     */
+    @Bean
 	public CommandLineRunner commandLineRunner(ServletContext servletContext) {
 		return (args) -> {
 			File temp = new File(System.getProperty("java.io.tmpdir"));
@@ -52,7 +62,15 @@ public class LoaderTestApplication {
 		};
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by calling the SpringApplication.run() method
+     * with the LoaderTestApplication class and the command line arguments as parameters.
+     * After the application is started, the close() method is called to gracefully shut down the application.
+     *
+     * @param args The command line arguments passed to the application.
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(LoaderTestApplication.class, args).close();
 	}
 

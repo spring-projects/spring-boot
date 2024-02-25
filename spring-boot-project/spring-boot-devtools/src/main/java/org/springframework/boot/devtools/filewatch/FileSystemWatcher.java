@@ -157,7 +157,12 @@ public class FileSystemWatcher {
 		}
 	}
 
-	private void checkNotStarted() {
+	/**
+     * Checks if the FileSystemWatcher has already been started.
+     * 
+     * @throws IllegalStateException if the FileSystemWatcher has already been started
+     */
+    private void checkNotStarted() {
 		Assert.state(this.watchThread == null, "FileSystemWatcher already started");
 	}
 
@@ -179,7 +184,19 @@ public class FileSystemWatcher {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Creates or restores the initial snapshots for the directories being watched.
+     * 
+     * @SuppressWarnings("unchecked") is used to suppress unchecked warnings when casting the restored snapshots.
+     * 
+     * The method restores the snapshots from the snapshot state repository and updates the directories map accordingly.
+     * If the restored snapshots are available, they are used, otherwise new snapshots are created for each directory.
+     * 
+     * @see DirectorySnapshot
+     * @see File
+     * @see Map
+     */
+    @SuppressWarnings("unchecked")
 	private void createOrRestoreInitialSnapshots() {
 		Map<File, DirectorySnapshot> restored = (Map<File, DirectorySnapshot>) this.snapshotStateRepository.restore();
 		this.directories.replaceAll((f, v) -> {
@@ -221,7 +238,10 @@ public class FileSystemWatcher {
 		}
 	}
 
-	private static final class Watcher implements Runnable {
+	/**
+     * Watcher class.
+     */
+    private static final class Watcher implements Runnable {
 
 		private final AtomicInteger remainingScans;
 
@@ -237,7 +257,18 @@ public class FileSystemWatcher {
 
 		private final SnapshotStateRepository snapshotStateRepository;
 
-		private Watcher(AtomicInteger remainingScans, List<FileChangeListener> listeners, FileFilter triggerFilter,
+		/**
+         * Constructs a new Watcher object with the specified parameters.
+         *
+         * @param remainingScans the number of remaining scans to be performed
+         * @param listeners the list of file change listeners
+         * @param triggerFilter the file filter used to determine which files trigger events
+         * @param pollInterval the interval at which the watcher polls for file changes
+         * @param quietPeriod the quiet period after a file change before triggering an event
+         * @param directories the map of directories and their corresponding directory snapshots
+         * @param snapshotStateRepository the repository for storing and retrieving snapshot states
+         */
+        private Watcher(AtomicInteger remainingScans, List<FileChangeListener> listeners, FileFilter triggerFilter,
 				long pollInterval, long quietPeriod, Map<File, DirectorySnapshot> directories,
 				SnapshotStateRepository snapshotStateRepository) {
 			this.remainingScans = remainingScans;
@@ -250,7 +281,14 @@ public class FileSystemWatcher {
 
 		}
 
-		@Override
+		/**
+         * This method is used to run the scanning process.
+         * It continuously scans until there are no remaining scans or until the remaining scans is set to -1.
+         * It decrements the remaining scans count if it is greater than 0.
+         * It calls the scan() method to perform the scanning process.
+         * If the thread is interrupted, it will stop the scanning process.
+         */
+        @Override
 		public void run() {
 			int remainingScans = this.remainingScans.get();
 			while (remainingScans > 0 || remainingScans == -1) {
@@ -267,7 +305,12 @@ public class FileSystemWatcher {
 			}
 		}
 
-		private void scan() throws InterruptedException {
+		/**
+         * Scans the directories for changes and updates the snapshots accordingly.
+         * 
+         * @throws InterruptedException if the thread is interrupted while sleeping
+         */
+        private void scan() throws InterruptedException {
 			Thread.sleep(this.pollInterval - this.quietPeriod);
 			Map<File, DirectorySnapshot> previous;
 			Map<File, DirectorySnapshot> current = this.directories;
@@ -282,7 +325,14 @@ public class FileSystemWatcher {
 			}
 		}
 
-		private boolean isDifferent(Map<File, DirectorySnapshot> previous, Map<File, DirectorySnapshot> current) {
+		/**
+         * Checks if the current directory snapshots are different from the previous directory snapshots.
+         * 
+         * @param previous the map of previous directory snapshots
+         * @param current the map of current directory snapshots
+         * @return true if the directory snapshots are different, false otherwise
+         */
+        private boolean isDifferent(Map<File, DirectorySnapshot> previous, Map<File, DirectorySnapshot> current) {
 			if (!previous.keySet().equals(current.keySet())) {
 				return true;
 			}
@@ -296,7 +346,12 @@ public class FileSystemWatcher {
 			return false;
 		}
 
-		private Map<File, DirectorySnapshot> getCurrentSnapshots() {
+		/**
+         * Returns a map of current snapshots for each directory being watched.
+         * 
+         * @return a map containing the current snapshots for each directory being watched
+         */
+        private Map<File, DirectorySnapshot> getCurrentSnapshots() {
 			Map<File, DirectorySnapshot> snapshots = new LinkedHashMap<>();
 			for (File directory : this.directories.keySet()) {
 				snapshots.put(directory, new DirectorySnapshot(directory));
@@ -304,7 +359,12 @@ public class FileSystemWatcher {
 			return snapshots;
 		}
 
-		private void updateSnapshots(Collection<DirectorySnapshot> snapshots) {
+		/**
+         * Updates the snapshots of directories and triggers listeners if there are any changes.
+         * 
+         * @param snapshots the collection of directory snapshots to update
+         */
+        private void updateSnapshots(Collection<DirectorySnapshot> snapshots) {
 			Map<File, DirectorySnapshot> updated = new LinkedHashMap<>();
 			Set<ChangedFiles> changeSet = new LinkedHashSet<>();
 			for (DirectorySnapshot snapshot : snapshots) {
@@ -322,7 +382,12 @@ public class FileSystemWatcher {
 			}
 		}
 
-		private void fireListeners(Set<ChangedFiles> changeSet) {
+		/**
+         * Notifies all registered listeners about the changes in the set of files.
+         * 
+         * @param changeSet the set of changed files
+         */
+        private void fireListeners(Set<ChangedFiles> changeSet) {
 			for (FileChangeListener listener : this.listeners) {
 				listener.onChange(changeSet);
 			}

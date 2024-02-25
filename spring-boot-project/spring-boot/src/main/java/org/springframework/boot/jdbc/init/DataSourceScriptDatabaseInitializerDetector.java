@@ -32,12 +32,23 @@ class DataSourceScriptDatabaseInitializerDetector extends AbstractBeansOfTypeDat
 
 	static final int PRECEDENCE = Ordered.LOWEST_PRECEDENCE - 100;
 
-	@Override
+	/**
+     * Returns the set of bean types for the database initializer.
+     * 
+     * @return the set of bean types for the database initializer
+     */
+    @Override
 	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		return Collections.singleton(DataSourceScriptDatabaseInitializer.class);
 	}
 
-	@Override
+	/**
+     * Returns the order value indicating the precedence of this initializer
+     * when multiple initializers are present.
+     *
+     * @return the order value
+     */
+    @Override
 	public int getOrder() {
 		return PRECEDENCE;
 	}

@@ -39,7 +39,14 @@ class SpringBootBanner implements Banner {
 
 	private static final int STRAP_LINE_SIZE = 42;
 
-	@Override
+	/**
+     * Prints the banner for the Spring Boot application.
+     * 
+     * @param environment   the environment of the application
+     * @param sourceClass   the source class of the application
+     * @param printStream   the print stream to output the banner
+     */
+    @Override
 	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream printStream) {
 		for (String line : BANNER) {
 			printStream.println(line);

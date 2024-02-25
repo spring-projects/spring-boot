@@ -30,23 +30,51 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * SampleWebSecureJdbcApplication class.
+ */
 @SpringBootApplication
 public class SampleWebSecureJdbcApplication implements WebMvcConfigurer {
 
-	@Override
+	/**
+     * Adds view controllers to the registry.
+     * 
+     * @param registry the ViewControllerRegistry to add the view controllers to
+     */
+    @Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/").setViewName("home");
 		registry.addViewController("/login").setViewName("login");
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It initializes and runs the Spring Boot application using the SpringApplicationBuilder.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		new SpringApplicationBuilder(SampleWebSecureJdbcApplication.class).run(args);
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ApplicationSecurity class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	protected static class ApplicationSecurity {
 
-		@Bean
+		/**
+         * Configures the security filter chain for the application.
+         * Disables CSRF protection.
+         * Permits all requests with dispatcher type FORWARD.
+         * Requires full authentication for all other requests.
+         * Configures form login with a login page at "/login" and permits all access to the login page.
+         * 
+         * @param http the HttpSecurity object to configure
+         * @return the configured SecurityFilterChain
+         * @throws Exception if an error occurs during configuration
+         */
+        @Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.csrf((csrf) -> csrf.disable());
 			http.authorizeHttpRequests((requests) -> {
@@ -57,7 +85,13 @@ public class SampleWebSecureJdbcApplication implements WebMvcConfigurer {
 			return http.build();
 		}
 
-		@Bean
+		/**
+         * Creates a new instance of JdbcUserDetailsManager and sets the provided DataSource.
+         * 
+         * @param dataSource the DataSource to be set for the JdbcUserDetailsManager
+         * @return the created JdbcUserDetailsManager with the provided DataSource set
+         */
+        @Bean
 		public JdbcUserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
 			JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager();
 			jdbcUserDetailsManager.setDataSource(dataSource);

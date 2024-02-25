@@ -50,56 +50,112 @@ public class RemoteDevToolsProperties {
 
 	private final Proxy proxy = new Proxy();
 
-	public String getContextPath() {
+	/**
+     * Returns the context path of the RemoteDevToolsProperties.
+     *
+     * @return the context path of the RemoteDevToolsProperties
+     */
+    public String getContextPath() {
 		return this.contextPath;
 	}
 
-	public void setContextPath(String contextPath) {
+	/**
+     * Sets the context path for the RemoteDevToolsProperties.
+     * 
+     * @param contextPath the context path to be set
+     */
+    public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
 	}
 
-	public String getSecret() {
+	/**
+     * Returns the secret value.
+     *
+     * @return the secret value
+     */
+    public String getSecret() {
 		return this.secret;
 	}
 
-	public void setSecret(String secret) {
+	/**
+     * Sets the secret for the RemoteDevToolsProperties.
+     * 
+     * @param secret the secret to be set
+     */
+    public void setSecret(String secret) {
 		this.secret = secret;
 	}
 
-	public String getSecretHeaderName() {
+	/**
+     * Returns the secret header name.
+     *
+     * @return the secret header name
+     */
+    public String getSecretHeaderName() {
 		return this.secretHeaderName;
 	}
 
-	public void setSecretHeaderName(String secretHeaderName) {
+	/**
+     * Sets the name of the secret header.
+     * 
+     * @param secretHeaderName the name of the secret header
+     */
+    public void setSecretHeaderName(String secretHeaderName) {
 		this.secretHeaderName = secretHeaderName;
 	}
 
-	public Restart getRestart() {
+	/**
+     * Returns the restart object associated with this RemoteDevToolsProperties instance.
+     *
+     * @return the restart object
+     */
+    public Restart getRestart() {
 		return this.restart;
 	}
 
-	public Proxy getProxy() {
+	/**
+     * Returns the proxy object associated with this RemoteDevToolsProperties instance.
+     *
+     * @return the proxy object
+     */
+    public Proxy getProxy() {
 		return this.proxy;
 	}
 
-	public static class Restart {
+	/**
+     * Restart class.
+     */
+    public static class Restart {
 
 		/**
 		 * Whether to enable remote restart.
 		 */
 		private boolean enabled = true;
 
-		public boolean isEnabled() {
+		/**
+         * Returns the current status of the enabled flag.
+         *
+         * @return true if the enabled flag is set, false otherwise.
+         */
+        public boolean isEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(boolean enabled) {
+		/**
+         * Sets the enabled status of the Restart object.
+         * 
+         * @param enabled the new enabled status to be set
+         */
+        public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
 	}
 
-	public static class Proxy {
+	/**
+     * Proxy class.
+     */
+    public static class Proxy {
 
 		/**
 		 * The host of the proxy to use to connect to the remote application.
@@ -111,19 +167,39 @@ public class RemoteDevToolsProperties {
 		 */
 		private Integer port;
 
-		public String getHost() {
+		/**
+         * Returns the host of the Proxy.
+         *
+         * @return the host of the Proxy
+         */
+        public String getHost() {
 			return this.host;
 		}
 
-		public void setHost(String host) {
+		/**
+         * Sets the host for the Proxy.
+         * 
+         * @param host the host to be set
+         */
+        public void setHost(String host) {
 			this.host = host;
 		}
 
-		public Integer getPort() {
+		/**
+         * Returns the port number of the Proxy.
+         *
+         * @return the port number of the Proxy
+         */
+        public Integer getPort() {
 			return this.port;
 		}
 
-		public void setPort(Integer port) {
+		/**
+         * Sets the port number for the proxy.
+         * 
+         * @param port the port number to be set
+         */
+        public void setPort(Integer port) {
 			this.port = port;
 		}
 

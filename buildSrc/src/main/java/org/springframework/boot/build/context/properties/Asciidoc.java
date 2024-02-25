@@ -25,33 +25,64 @@ class Asciidoc {
 
 	private final StringBuilder content;
 
-	Asciidoc() {
+	/**
+     * Constructor for the Asciidoc class.
+     */
+    Asciidoc() {
 		this.content = new StringBuilder();
 	}
 
-	Asciidoc appendWithHardLineBreaks(Object... items) {
+	/**
+     * Appends the given items to the Asciidoc content with hard line breaks.
+     * 
+     * @param items the items to be appended
+     * @return the updated Asciidoc content
+     */
+    Asciidoc appendWithHardLineBreaks(Object... items) {
 		for (Object item : items) {
 			appendln("`+", item, "+` +");
 		}
 		return this;
 	}
 
-	Asciidoc appendln(Object... items) {
+	/**
+     * Appends the specified objects to the current Asciidoc content and adds a new line.
+     *
+     * @param items the objects to be appended
+     * @return the updated Asciidoc content with the appended objects and a new line
+     */
+    Asciidoc appendln(Object... items) {
 		return append(items).newLine();
 	}
 
-	Asciidoc append(Object... items) {
+	/**
+     * Appends the specified items to the content of this Asciidoc object.
+     * 
+     * @param items the items to be appended
+     * @return the updated Asciidoc object
+     */
+    Asciidoc append(Object... items) {
 		for (Object item : items) {
 			this.content.append(item);
 		}
 		return this;
 	}
 
-	Asciidoc newLine() {
+	/**
+     * Appends a new line to the Asciidoc content.
+     *
+     * @return the Asciidoc object with the new line appended
+     */
+    Asciidoc newLine() {
 		return append(System.lineSeparator());
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the content of this Asciidoc object.
+     *
+     * @return a string representation of the content
+     */
+    @Override
 	public String toString() {
 		return this.content.toString();
 	}

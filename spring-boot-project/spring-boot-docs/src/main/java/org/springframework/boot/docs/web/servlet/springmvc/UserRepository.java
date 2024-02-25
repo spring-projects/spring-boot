@@ -18,6 +18,9 @@ package org.springframework.boot.docs.web.servlet.springmvc;
 
 import org.springframework.data.repository.CrudRepository;
 
+/**
+ * UserRepository interface.
+ */
 interface UserRepository extends CrudRepository<User, Long> {
 
 }

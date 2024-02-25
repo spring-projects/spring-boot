@@ -188,7 +188,12 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		return this.layout;
 	}
 
-	@Override
+	/**
+     * Returns the loader implementation used by this RepackageMojo.
+     *
+     * @return the loader implementation used by this RepackageMojo
+     */
+    @Override
 	protected LoaderImplementation getLoaderImplementation() {
 		return this.loaderImplementation;
 	}
@@ -204,7 +209,13 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		return this.layoutFactory;
 	}
 
-	@Override
+	/**
+     * Executes the repackaging process.
+     * 
+     * @throws MojoExecutionException if an error occurs during the execution of the repackaging process.
+     * @throws MojoFailureException if the repackaging process fails.
+     */
+    @Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.project.getPackaging().equals("pom")) {
 			getLog().debug("repackage goal could not be applied to pom project.");
@@ -217,7 +228,12 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		repackage();
 	}
 
-	private void repackage() throws MojoExecutionException {
+	/**
+     * Repackages the source artifact into a new target artifact.
+     * 
+     * @throws MojoExecutionException if an error occurs during the repackaging process
+     */
+    private void repackage() throws MojoExecutionException {
 		Artifact source = getSourceArtifact(this.classifier);
 		File target = getTargetFile(this.finalName, this.classifier, this.outputDirectory);
 		Repackager repackager = getRepackager(source.getFile());
@@ -232,7 +248,13 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		updateArtifact(source, target, repackager.getBackupFile());
 	}
 
-	private FileTime parseOutputTimestamp() throws MojoExecutionException {
+	/**
+     * Parses the output timestamp and returns it as a FileTime object.
+     * 
+     * @return The output timestamp as a FileTime object.
+     * @throws MojoExecutionException If the value for parameter 'outputTimestamp' is invalid.
+     */
+    private FileTime parseOutputTimestamp() throws MojoExecutionException {
 		try {
 			return new MavenBuildOutputTimestamp(this.outputTimestamp).toFileTime();
 		}
@@ -241,18 +263,35 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		}
 	}
 
-	private Repackager getRepackager(File source) {
+	/**
+     * Returns a configured Repackager object based on the provided source file.
+     * 
+     * @param source the source file to be repackaged
+     * @return a configured Repackager object
+     */
+    private Repackager getRepackager(File source) {
 		return getConfiguredPackager(() -> new Repackager(source));
 	}
 
-	private LaunchScript getLaunchScript() throws IOException {
+	/**
+     * Retrieves the launch script for the current execution.
+     * 
+     * @return The launch script for the current execution, or null if no launch script is available.
+     * @throws IOException if an I/O error occurs while retrieving the launch script.
+     */
+    private LaunchScript getLaunchScript() throws IOException {
 		if (this.executable || this.embeddedLaunchScript != null) {
 			return new DefaultLaunchScript(this.embeddedLaunchScript, buildLaunchScriptProperties());
 		}
 		return null;
 	}
 
-	private Properties buildLaunchScriptProperties() {
+	/**
+     * Builds the launch script properties.
+     * 
+     * @return the launch script properties
+     */
+    private Properties buildLaunchScriptProperties() {
 		Properties properties = new Properties();
 		if (this.embeddedLaunchScriptProperties != null) {
 			properties.putAll(this.embeddedLaunchScriptProperties);
@@ -264,11 +303,24 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		return properties;
 	}
 
-	private String removeLineBreaks(String description) {
+	/**
+     * Removes line breaks from the given description string.
+     * 
+     * @param description the description string to remove line breaks from
+     * @return the description string with line breaks removed, or null if the input is null
+     */
+    private String removeLineBreaks(String description) {
 		return (description != null) ? WHITE_SPACE_PATTERN.matcher(description).replaceAll(" ") : null;
 	}
 
-	private void putIfMissing(Properties properties, String key, String... valueCandidates) {
+	/**
+     * Puts the specified key-value pair into the given Properties object if the key is missing.
+     * 
+     * @param properties the Properties object to modify
+     * @param key the key to check and insert if missing
+     * @param valueCandidates the candidate values to insert if the key is missing
+     */
+    private void putIfMissing(Properties properties, String key, String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
 				if (candidate != null && !candidate.isEmpty()) {
@@ -279,7 +331,14 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		}
 	}
 
-	private void updateArtifact(Artifact source, File target, File original) {
+	/**
+     * Updates the artifact with the given source, target, and original files.
+     * 
+     * @param source    The source artifact to update.
+     * @param target    The target file to update the artifact to.
+     * @param original  The original file to update the artifact from.
+     */
+    private void updateArtifact(Artifact source, File target, File original) {
 		if (this.attach) {
 			attachArtifact(source, target, original);
 		}
@@ -294,7 +353,14 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		}
 	}
 
-	private void attachArtifact(Artifact source, File target, File original) {
+	/**
+     * Attaches an artifact to the project.
+     * 
+     * @param source   The source artifact to attach.
+     * @param target   The target file to attach.
+     * @param original The original file.
+     */
+    private void attachArtifact(Artifact source, File target, File original) {
 		if (this.classifier != null && !source.getFile().equals(target)) {
 			getLog().info("Attaching repackaged archive " + target + " with classifier " + this.classifier);
 			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(), this.classifier, target);

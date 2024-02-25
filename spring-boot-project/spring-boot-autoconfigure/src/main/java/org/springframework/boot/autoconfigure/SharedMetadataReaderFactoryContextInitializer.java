@@ -60,7 +60,13 @@ class SharedMetadataReaderFactoryContextInitializer implements
 	public static final String BEAN_NAME = "org.springframework.boot.autoconfigure."
 			+ "internalCachingMetadataReaderFactory";
 
-	@Override
+	/**
+     * Initializes the application context by adding a bean factory post processor
+     * for caching metadata reader factory.
+     * 
+     * @param applicationContext the configurable application context
+     */
+    @Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		if (AotDetector.useGeneratedArtifacts()) {
 			return;
@@ -69,12 +75,23 @@ class SharedMetadataReaderFactoryContextInitializer implements
 		applicationContext.addBeanFactoryPostProcessor(postProcessor);
 	}
 
-	@Override
+	/**
+     * Returns the order value of this context initializer.
+     * 
+     * @return the order value
+     */
+    @Override
 	public int getOrder() {
 		return 0;
 	}
 
-	@Override
+	/**
+     * Determines if the given registered bean is excluded from Ahead-of-Time (AOT) processing.
+     * 
+     * @param registeredBean the registered bean to check
+     * @return {@code true} if the bean is excluded from AOT processing, {@code false} otherwise
+     */
+    @Override
 	public boolean isExcludedFromAotProcessing(RegisteredBean registeredBean) {
 		return BEAN_NAME.equals(registeredBean.getBeanName());
 	}
@@ -89,27 +106,57 @@ class SharedMetadataReaderFactoryContextInitializer implements
 
 		private final ConfigurableApplicationContext context;
 
-		CachingMetadataReaderFactoryPostProcessor(ConfigurableApplicationContext context) {
+		/**
+         * Constructs a new CachingMetadataReaderFactoryPostProcessor with the specified ConfigurableApplicationContext.
+         *
+         * @param context the ConfigurableApplicationContext to be used by the CachingMetadataReaderFactoryPostProcessor
+         */
+        CachingMetadataReaderFactoryPostProcessor(ConfigurableApplicationContext context) {
 			this.context = context;
 		}
 
-		@Override
+		/**
+         * Returns the order in which this post-processor should be executed.
+         * This method must be called before the ConfigurationClassPostProcessor is created.
+         * 
+         * @return the order value indicating the precedence of this post-processor
+         */
+        @Override
 		public int getOrder() {
 			// Must happen before the ConfigurationClassPostProcessor is created
 			return Ordered.HIGHEST_PRECEDENCE;
 		}
 
-		@Override
+		/**
+         * {@inheritDoc}
+         * 
+         * This method is called after the bean factory has been initialized and allows for post-processing of the bean factory.
+         * 
+         * @param beanFactory the bean factory that has been initialized
+         * @throws BeansException if any error occurs during post-processing
+         */
+        @Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
-		@Override
+		/**
+         * Post-processes the bean definition registry.
+         * 
+         * @param registry the bean definition registry to be processed
+         * @throws BeansException if any error occurs during the processing
+         */
+        @Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			register(registry);
 			configureConfigurationClassPostProcessor(registry);
 		}
 
-		private void register(BeanDefinitionRegistry registry) {
+		/**
+         * Registers a bean definition for the SharedMetadataReaderFactoryBean if it does not already exist in the given registry.
+         * 
+         * @param registry the BeanDefinitionRegistry to register the bean definition with
+         */
+        private void register(BeanDefinitionRegistry registry) {
 			if (!registry.containsBeanDefinition(BEAN_NAME)) {
 				BeanDefinition definition = BeanDefinitionBuilder
 					.rootBeanDefinition(SharedMetadataReaderFactoryBean.class, SharedMetadataReaderFactoryBean::new)
@@ -118,7 +165,12 @@ class SharedMetadataReaderFactoryContextInitializer implements
 			}
 		}
 
-		private void configureConfigurationClassPostProcessor(BeanDefinitionRegistry registry) {
+		/**
+         * Configures the ConfigurationClassPostProcessor for the given BeanDefinitionRegistry.
+         * 
+         * @param registry the BeanDefinitionRegistry to configure
+         */
+        private void configureConfigurationClassPostProcessor(BeanDefinitionRegistry registry) {
 			try {
 				configureConfigurationClassPostProcessor(
 						registry.getBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
@@ -128,7 +180,12 @@ class SharedMetadataReaderFactoryContextInitializer implements
 			}
 		}
 
-		private void configureConfigurationClassPostProcessor(BeanDefinition definition) {
+		/**
+         * Configures the ConfigurationClassPostProcessor for the given BeanDefinition.
+         * 
+         * @param definition the BeanDefinition to configure
+         */
+        private void configureConfigurationClassPostProcessor(BeanDefinition definition) {
 			if (definition instanceof AbstractBeanDefinition abstractBeanDefinition) {
 				configureConfigurationClassPostProcessor(abstractBeanDefinition);
 				return;
@@ -136,7 +193,15 @@ class SharedMetadataReaderFactoryContextInitializer implements
 			configureConfigurationClassPostProcessor(definition.getPropertyValues());
 		}
 
-		private void configureConfigurationClassPostProcessor(AbstractBeanDefinition definition) {
+		/**
+         * Configures the ConfigurationClassPostProcessor for the given bean definition.
+         * If the bean definition has an instance supplier, it sets a customizing supplier
+         * that wraps the original supplier with a ConfigurationClassPostProcessorCustomizingSupplier.
+         * Otherwise, it configures the ConfigurationClassPostProcessor with the given property values.
+         * 
+         * @param definition the bean definition to configure
+         */
+        private void configureConfigurationClassPostProcessor(AbstractBeanDefinition definition) {
 			Supplier<?> instanceSupplier = definition.getInstanceSupplier();
 			if (instanceSupplier != null) {
 				definition.setInstanceSupplier(
@@ -146,7 +211,12 @@ class SharedMetadataReaderFactoryContextInitializer implements
 			configureConfigurationClassPostProcessor(definition.getPropertyValues());
 		}
 
-		private void configureConfigurationClassPostProcessor(MutablePropertyValues propertyValues) {
+		/**
+         * Configures the ConfigurationClassPostProcessor by adding the metadataReaderFactory property.
+         * 
+         * @param propertyValues the MutablePropertyValues object containing the property values
+         */
+        private void configureConfigurationClassPostProcessor(MutablePropertyValues propertyValues) {
 			propertyValues.add("metadataReaderFactory", new RuntimeBeanReference(BEAN_NAME));
 		}
 
@@ -162,13 +232,24 @@ class SharedMetadataReaderFactoryContextInitializer implements
 
 		private final Supplier<?> instanceSupplier;
 
-		ConfigurationClassPostProcessorCustomizingSupplier(ConfigurableApplicationContext context,
+		/**
+         * Constructs a new ConfigurationClassPostProcessorCustomizingSupplier with the specified ConfigurableApplicationContext and instanceSupplier.
+         * 
+         * @param context the ConfigurableApplicationContext to be used
+         * @param instanceSupplier the Supplier to be used for supplying instances
+         */
+        ConfigurationClassPostProcessorCustomizingSupplier(ConfigurableApplicationContext context,
 				Supplier<?> instanceSupplier) {
 			this.context = context;
 			this.instanceSupplier = instanceSupplier;
 		}
 
-		@Override
+		/**
+         * Retrieves an instance of an object.
+         * 
+         * @return The retrieved object instance.
+         */
+        @Override
 		public Object get() {
 			Object instance = this.instanceSupplier.get();
 			if (instance instanceof ConfigurationClassPostProcessor postProcessor) {
@@ -177,7 +258,12 @@ class SharedMetadataReaderFactoryContextInitializer implements
 			return instance;
 		}
 
-		private void configureConfigurationClassPostProcessor(ConfigurationClassPostProcessor instance) {
+		/**
+         * Configures the ConfigurationClassPostProcessor instance by setting the MetadataReaderFactory.
+         * 
+         * @param instance the ConfigurationClassPostProcessor instance to be configured
+         */
+        private void configureConfigurationClassPostProcessor(ConfigurationClassPostProcessor instance) {
 			instance.setMetadataReaderFactory(this.context.getBean(BEAN_NAME, MetadataReaderFactory.class));
 		}
 
@@ -192,27 +278,53 @@ class SharedMetadataReaderFactoryContextInitializer implements
 
 		private ConcurrentReferenceCachingMetadataReaderFactory metadataReaderFactory;
 
-		@Override
+		/**
+         * Set the class loader to use for loading bean classes.
+         * 
+         * @param classLoader the class loader to use
+         */
+        @Override
 		public void setBeanClassLoader(ClassLoader classLoader) {
 			this.metadataReaderFactory = new ConcurrentReferenceCachingMetadataReaderFactory(classLoader);
 		}
 
-		@Override
+		/**
+         * Retrieves the shared instance of the ConcurrentReferenceCachingMetadataReaderFactory.
+         * 
+         * @return The shared instance of the ConcurrentReferenceCachingMetadataReaderFactory.
+         * @throws Exception if an error occurs while retrieving the shared instance.
+         */
+        @Override
 		public ConcurrentReferenceCachingMetadataReaderFactory getObject() throws Exception {
 			return this.metadataReaderFactory;
 		}
 
-		@Override
+		/**
+         * Returns the type of object that is created by this factory bean.
+         * 
+         * @return the type of object created by this factory bean, which is {@link CachingMetadataReaderFactory}
+         */
+        @Override
 		public Class<?> getObjectType() {
 			return CachingMetadataReaderFactory.class;
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the SharedMetadataReaderFactoryBean is a singleton.
+         * 
+         * @return true if the SharedMetadataReaderFactoryBean is a singleton, false otherwise
+         */
+        @Override
 		public boolean isSingleton() {
 			return true;
 		}
 
-		@Override
+		/**
+         * Clears the cache of the metadata reader factory when the application context is refreshed.
+         * 
+         * @param event the context refreshed event
+         */
+        @Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			this.metadataReaderFactory.clearCache();
 		}

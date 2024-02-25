@@ -46,12 +46,22 @@ public interface NamedContributor<C> {
 		Assert.notNull(contributor, "Contributor must not be null");
 		return new NamedContributor<>() {
 
-			@Override
+			/**
+     * Returns the name of the NamedContributor.
+     *
+     * @return the name of the NamedContributor
+     */
+    @Override
 			public String getName() {
 				return name;
 			}
 
-			@Override
+			/**
+     * Returns the contributor of this NamedContributor object.
+     *
+     * @return the contributor of this NamedContributor object
+     */
+    @Override
 			public C getContributor() {
 				return contributor;
 			}

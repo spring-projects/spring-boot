@@ -48,13 +48,26 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(SignalFxProperties.class)
 public class SignalFxMetricsExportAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a SignalFxConfig bean if no other bean of the same type is present.
+     * 
+     * @param props the SignalFxProperties object containing the configuration properties
+     * @return a SignalFxConfig bean configured with the provided properties
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public SignalFxConfig signalfxConfig(SignalFxProperties props) {
 		return new SignalFxPropertiesConfigAdapter(props);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of SignalFxMeterRegistry if no other bean of type SignalFxMeterRegistry is present.
+     * 
+     * @param config the SignalFxConfig object containing the configuration for the meter registry
+     * @param clock the Clock object used for measuring time
+     * @return a new instance of SignalFxMeterRegistry
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public SignalFxMeterRegistry signalFxMeterRegistry(SignalFxConfig config, Clock clock) {
 		return new SignalFxMeterRegistry(config, clock);

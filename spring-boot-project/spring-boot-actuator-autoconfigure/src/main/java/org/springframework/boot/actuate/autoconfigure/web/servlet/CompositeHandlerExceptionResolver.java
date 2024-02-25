@@ -48,7 +48,16 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 
 	private volatile List<HandlerExceptionResolver> resolvers;
 
-	@Override
+	/**
+     * Resolves the exception thrown during the handling of a request.
+     * 
+     * @param request  the HttpServletRequest object representing the current request
+     * @param response the HttpServletResponse object representing the current response
+     * @param handler  the Object representing the handler for the request
+     * @param ex       the Exception object representing the exception thrown during request handling
+     * @return a ModelAndView object representing the resolved exception, or null if no resolution is found
+     */
+    @Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
 			Exception ex) {
 		for (HandlerExceptionResolver resolver : getResolvers()) {
@@ -60,7 +69,12 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 		return null;
 	}
 
-	private List<HandlerExceptionResolver> getResolvers() {
+	/**
+     * Retrieves the list of HandlerExceptionResolvers.
+     * 
+     * @return The list of HandlerExceptionResolvers.
+     */
+    private List<HandlerExceptionResolver> getResolvers() {
 		List<HandlerExceptionResolver> resolvers = this.resolvers;
 		if (resolvers == null) {
 			resolvers = new ArrayList<>();
@@ -76,7 +90,13 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 		return resolvers;
 	}
 
-	private void collectResolverBeans(List<HandlerExceptionResolver> resolvers, BeanFactory beanFactory) {
+	/**
+     * Collects all the resolver beans of type HandlerExceptionResolver from the given bean factory and its parent bean factories recursively.
+     * 
+     * @param resolvers the list to store the collected resolver beans
+     * @param beanFactory the bean factory to collect the resolver beans from
+     */
+    private void collectResolverBeans(List<HandlerExceptionResolver> resolvers, BeanFactory beanFactory) {
 		if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
 			resolvers.addAll(listableBeanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
 		}

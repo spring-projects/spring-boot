@@ -92,47 +92,107 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 public class OutputCaptureExtension
 		implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
-	OutputCaptureExtension() {
+	/**
+     * Constructor for the OutputCaptureExtension class.
+     * 
+     * This constructor is package private to prevent users from directly creating an instance.
+     */
+    OutputCaptureExtension() {
 		// Package private to prevent users from directly creating an instance.
 	}
 
-	@Override
+	/**
+     * This method is called before all test methods in the test class.
+     * It is an overridden method from the ExtensionContext class.
+     * It throws an Exception if an error occurs.
+     * 
+     * @param context the ExtensionContext object representing the current test context
+     * @throws Exception if an error occurs during the execution of the method
+     */
+    @Override
 	public void beforeAll(ExtensionContext context) throws Exception {
 		getOutputCapture(context).push();
 	}
 
-	@Override
+	/**
+     * This method is called after all tests have been executed.
+     * It is used to pop the output capture from the context.
+     *
+     * @param context the extension context
+     * @throws Exception if an error occurs while popping the output capture
+     */
+    @Override
 	public void afterAll(ExtensionContext context) throws Exception {
 		getOutputCapture(context).pop();
 	}
 
-	@Override
+	/**
+     * This method is executed before each test method in the test class.
+     * It is used to push the output capture for the current test context.
+     *
+     * @param context the extension context for the current test
+     * @throws Exception if an error occurs during the execution of the method
+     */
+    @Override
 	public void beforeEach(ExtensionContext context) throws Exception {
 		getOutputCapture(context).push();
 	}
 
-	@Override
+	/**
+     * This method is called after each test execution to remove the captured output from the stack.
+     *
+     * @param context the extension context
+     * @throws Exception if an error occurs during the removal of the captured output
+     */
+    @Override
 	public void afterEach(ExtensionContext context) throws Exception {
 		getOutputCapture(context).pop();
 	}
 
-	@Override
+	/**
+     * Determines if the given parameter is supported by this extension.
+     * 
+     * @param parameterContext the parameter context
+     * @param extensionContext the extension context
+     * @return true if the parameter is supported, false otherwise
+     * @throws ParameterResolutionException if the parameter resolution fails
+     */
+    @Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
 		return CapturedOutput.class.equals(parameterContext.getParameter().getType());
 	}
 
-	@Override
+	/**
+     * Resolves the parameter for the given parameter context and extension context.
+     * 
+     * @param parameterContext the parameter context
+     * @param extensionContext the extension context
+     * @return the resolved parameter object
+     */
+    @Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		return getOutputCapture(extensionContext);
 	}
 
-	private OutputCapture getOutputCapture(ExtensionContext context) {
+	/**
+     * Retrieves the OutputCapture instance from the ExtensionContext's store, or creates a new instance if it does not exist.
+     * 
+     * @param context the ExtensionContext object representing the current extension context
+     * @return the OutputCapture instance retrieved from the store or a new instance if it does not exist
+     */
+    private OutputCapture getOutputCapture(ExtensionContext context) {
 		return getStore(context).getOrComputeIfAbsent(OutputCapture.class, (key) -> new OutputCapture(),
 				OutputCapture.class);
 	}
 
-	private Store getStore(ExtensionContext context) {
+	/**
+     * Retrieves the store associated with the given extension context.
+     * 
+     * @param context the extension context
+     * @return the store associated with the extension context
+     */
+    private Store getStore(ExtensionContext context) {
 		return context.getStore(Namespace.create(getClass()));
 	}
 

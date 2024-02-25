@@ -18,6 +18,9 @@ package smoketest.data.mongo;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleMongoApplication class.
+ */
 @SpringBootApplication
 public class SampleMongoApplication {
 

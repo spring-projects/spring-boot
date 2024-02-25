@@ -217,14 +217,27 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 		return this.matchAfter;
 	}
 
-	@Override
+	/**
+     * Returns the description of the filter registration.
+     * 
+     * @return the description of the filter registration
+     * @throws IllegalArgumentException if the filter is null
+     */
+    @Override
 	protected String getDescription() {
 		Filter filter = getFilter();
 		Assert.notNull(filter, "Filter must not be null");
 		return "filter " + getOrDeduceName(filter);
 	}
 
-	@Override
+	/**
+     * Adds a registration for the specified filter with the given description to the provided servlet context.
+     * 
+     * @param description the description of the filter
+     * @param servletContext the servlet context to add the filter registration to
+     * @return the dynamic filter registration object
+     */
+    @Override
 	protected Dynamic addRegistration(String description, ServletContext servletContext) {
 		Filter filter = getFilter();
 		return servletContext.addFilter(getOrDeduceName(filter), filter);
@@ -274,7 +287,12 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 		return getOrDeduceName(getFilter());
 	}
 
-	@Override
+	/**
+     * Returns a string representation of this object.
+     * 
+     * @return a string representation of this object
+     */
+    @Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder(getOrDeduceName(this));
 		if (this.servletNames.isEmpty() && this.urlPatterns.isEmpty()) {

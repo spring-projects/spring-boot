@@ -29,18 +29,35 @@ import org.springframework.test.context.MergedContextConfiguration;
  */
 class ExcludeFilterContextCustomizer implements ContextCustomizer {
 
-	@Override
+	/**
+     * Customize the application context by registering the TestTypeExcludeFilter with the bean factory.
+     * 
+     * @param context the configurable application context
+     * @param mergedContextConfiguration the merged context configuration
+     */
+    @Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
 		TestTypeExcludeFilter.registerWith(context.getBeanFactory());
 	}
 
-	@Override
+	/**
+     * Compares this object with the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return {@code true} if the specified object is of the same class as this object, {@code false} otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		return (obj != null) && (getClass() == obj.getClass());
 	}
 
-	@Override
+	/**
+     * Returns a hash code value for the object. This method overrides the default implementation of the hashCode() method.
+     *
+     * @return the hash code value for this object
+     */
+    @Override
 	public int hashCode() {
 		return getClass().hashCode();
 	}

@@ -69,13 +69,28 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(PrometheusProperties.class)
 public class PrometheusMetricsExportAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a PrometheusConfig bean if no other bean of the same type is present.
+     * 
+     * @param prometheusProperties the PrometheusProperties object used to configure the PrometheusConfig bean
+     * @return the PrometheusConfig bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public PrometheusConfig prometheusConfig(PrometheusProperties prometheusProperties) {
 		return new PrometheusPropertiesConfigAdapter(prometheusProperties);
 	}
 
-	@Bean
+	/**
+     * Creates a PrometheusMeterRegistry bean if there is no existing bean of the same type.
+     * 
+     * @param prometheusConfig The PrometheusConfig object used for configuration.
+     * @param collectorRegistry The CollectorRegistry object used for collecting metrics.
+     * @param clock The Clock object used for measuring time.
+     * @param exemplarSamplerProvider The ObjectProvider for ExemplarSampler, used for sampling exemplars.
+     * @return The PrometheusMeterRegistry bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public PrometheusMeterRegistry prometheusMeterRegistry(PrometheusConfig prometheusConfig,
 			CollectorRegistry collectorRegistry, Clock clock, ObjectProvider<ExemplarSampler> exemplarSamplerProvider) {
@@ -83,24 +98,44 @@ public class PrometheusMetricsExportAutoConfiguration {
 				exemplarSamplerProvider.getIfAvailable());
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of CollectorRegistry if no other bean of type CollectorRegistry is present.
+     * 
+     * @return the created CollectorRegistry instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public CollectorRegistry collectorRegistry() {
 		return new CollectorRegistry(true);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of DefaultExemplarSampler if no other bean of type ExemplarSampler is present and a bean of type SpanContextSupplier is present.
+     * 
+     * @param spanContextSupplier the bean of type SpanContextSupplier used to create the DefaultExemplarSampler instance
+     * @return a new instance of DefaultExemplarSampler
+     */
+    @Bean
 	@ConditionalOnMissingBean(ExemplarSampler.class)
 	@ConditionalOnBean(SpanContextSupplier.class)
 	public DefaultExemplarSampler exemplarSampler(SpanContextSupplier spanContextSupplier) {
 		return new DefaultExemplarSampler(spanContextSupplier);
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * PrometheusScrapeEndpointConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnAvailableEndpoint(endpoint = PrometheusScrapeEndpoint.class)
 	public static class PrometheusScrapeEndpointConfiguration {
 
-		@Bean
+		/**
+         * Creates a PrometheusScrapeEndpoint bean if no other bean of the same type is present.
+         * 
+         * @param collectorRegistry the CollectorRegistry to be used by the PrometheusScrapeEndpoint
+         * @return the PrometheusScrapeEndpoint bean
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		public PrometheusScrapeEndpoint prometheusEndpoint(CollectorRegistry collectorRegistry) {
 			return new PrometheusScrapeEndpoint(collectorRegistry);
@@ -124,7 +159,17 @@ public class PrometheusMetricsExportAutoConfiguration {
 		 */
 		private static final String FALLBACK_JOB = "spring";
 
-		@Bean
+		/**
+         * Creates a PrometheusPushGatewayManager bean if no other bean of the same type is present.
+         * This bean is responsible for managing the push gateway for Prometheus metrics.
+         * 
+         * @param collectorRegistry The CollectorRegistry used to register metrics.
+         * @param prometheusProperties The PrometheusProperties containing the push gateway configuration.
+         * @param environment The Environment object containing the application's environment details.
+         * @return The PrometheusPushGatewayManager bean.
+         * @throws MalformedURLException If the push gateway URL is malformed.
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		public PrometheusPushGatewayManager prometheusPushGatewayManager(CollectorRegistry collectorRegistry,
 				PrometheusProperties prometheusProperties, Environment environment) throws MalformedURLException {
@@ -142,11 +187,26 @@ public class PrometheusMetricsExportAutoConfiguration {
 					shutdownOperation);
 		}
 
-		private PushGateway initializePushGateway(String url) throws MalformedURLException {
+		/**
+         * Initializes a PushGateway with the specified URL.
+         * 
+         * @param url the URL of the PushGateway
+         * @return the initialized PushGateway
+         * @throws MalformedURLException if the URL is malformed
+         */
+        private PushGateway initializePushGateway(String url) throws MalformedURLException {
 			return new PushGateway(new URL(url));
 		}
 
-		private String getJob(PrometheusProperties.Pushgateway properties, Environment environment) {
+		/**
+         * Retrieves the job name from the PrometheusProperties.Pushgateway object or the Spring environment.
+         * If the job name is not found in either, a fallback job name is returned.
+         *
+         * @param properties   the PrometheusProperties.Pushgateway object containing the job name
+         * @param environment  the Spring environment object
+         * @return the job name if found, otherwise the fallback job name
+         */
+        private String getJob(PrometheusProperties.Pushgateway properties, Environment environment) {
 			String job = properties.getJob();
 			job = (job != null) ? job : environment.getProperty("spring.application.name");
 			return (job != null) ? job : FALLBACK_JOB;

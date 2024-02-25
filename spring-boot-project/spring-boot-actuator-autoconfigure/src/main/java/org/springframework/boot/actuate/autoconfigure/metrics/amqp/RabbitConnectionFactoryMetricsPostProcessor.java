@@ -43,11 +43,24 @@ class RabbitConnectionFactoryMetricsPostProcessor implements BeanPostProcessor, 
 
 	private volatile MeterRegistry meterRegistry;
 
-	RabbitConnectionFactoryMetricsPostProcessor(ApplicationContext context) {
+	/**
+     * Constructs a new RabbitConnectionFactoryMetricsPostProcessor with the specified ApplicationContext.
+     *
+     * @param context the ApplicationContext to be used by the RabbitConnectionFactoryMetricsPostProcessor
+     */
+    RabbitConnectionFactoryMetricsPostProcessor(ApplicationContext context) {
 		this.context = context;
 	}
 
-	@Override
+	/**
+     * Post-processes the bean after initialization.
+     * Binds the connection factory to the meter registry if it is an instance of AbstractConnectionFactory.
+     * 
+     * @param bean the initialized bean
+     * @param beanName the name of the bean
+     * @return the processed bean
+     */
+    @Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) {
 		if (bean instanceof AbstractConnectionFactory connectionFactory) {
 			bindConnectionFactoryToRegistry(getMeterRegistry(), beanName, connectionFactory);
@@ -55,7 +68,17 @@ class RabbitConnectionFactoryMetricsPostProcessor implements BeanPostProcessor, 
 		return bean;
 	}
 
-	private void bindConnectionFactoryToRegistry(MeterRegistry registry, String beanName,
+	/**
+     * Binds the given {@link AbstractConnectionFactory} to the provided {@link MeterRegistry} by creating a new instance of {@link RabbitMetrics} and binding it to the registry.
+     * The {@link RabbitMetrics} instance is created using the RabbitMQ connection factory obtained from the provided {@link AbstractConnectionFactory}.
+     * The connection factory name is derived from the given bean name by calling {@link #getConnectionFactoryName(String)}.
+     * The created {@link RabbitMetrics} instance is then bound to the registry using the connection factory name as a tag.
+     * 
+     * @param registry The {@link MeterRegistry} to bind the metrics to.
+     * @param beanName The name of the bean associated with the connection factory.
+     * @param connectionFactory The {@link AbstractConnectionFactory} to bind to the registry.
+     */
+    private void bindConnectionFactoryToRegistry(MeterRegistry registry, String beanName,
 			AbstractConnectionFactory connectionFactory) {
 		ConnectionFactory rabbitConnectionFactory = connectionFactory.getRabbitConnectionFactory();
 		String connectionFactoryName = getConnectionFactoryName(beanName);
@@ -75,14 +98,25 @@ class RabbitConnectionFactoryMetricsPostProcessor implements BeanPostProcessor, 
 		return beanName;
 	}
 
-	private MeterRegistry getMeterRegistry() {
+	/**
+     * Returns the MeterRegistry instance.
+     * 
+     * @return the MeterRegistry instance
+     */
+    private MeterRegistry getMeterRegistry() {
 		if (this.meterRegistry == null) {
 			this.meterRegistry = this.context.getBean(MeterRegistry.class);
 		}
 		return this.meterRegistry;
 	}
 
-	@Override
+	/**
+     * Returns the order of this RabbitConnectionFactoryMetricsPostProcessor bean.
+     * The order is set to the highest precedence using the Ordered.HIGHEST_PRECEDENCE constant.
+     *
+     * @return the order of this RabbitConnectionFactoryMetricsPostProcessor bean
+     */
+    @Override
 	public int getOrder() {
 		return Ordered.HIGHEST_PRECEDENCE;
 	}

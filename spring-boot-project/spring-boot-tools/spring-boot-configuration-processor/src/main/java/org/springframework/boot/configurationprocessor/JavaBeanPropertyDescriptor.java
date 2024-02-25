@@ -28,18 +28,41 @@ import javax.lang.model.type.TypeMirror;
  */
 class JavaBeanPropertyDescriptor extends PropertyDescriptor<ExecutableElement> {
 
-	JavaBeanPropertyDescriptor(TypeElement ownerElement, ExecutableElement factoryMethod, ExecutableElement getter,
+	/**
+     * Constructs a new JavaBeanPropertyDescriptor with the specified parameters.
+     *
+     * @param ownerElement the TypeElement representing the owner class of the property
+     * @param factoryMethod the ExecutableElement representing the factory method used to create instances of the owner class
+     * @param getter the ExecutableElement representing the getter method for the property
+     * @param name the name of the property
+     * @param type the TypeMirror representing the type of the property
+     * @param field the VariableElement representing the field associated with the property
+     * @param setter the ExecutableElement representing the setter method for the property
+     */
+    JavaBeanPropertyDescriptor(TypeElement ownerElement, ExecutableElement factoryMethod, ExecutableElement getter,
 			String name, TypeMirror type, VariableElement field, ExecutableElement setter) {
 		super(ownerElement, factoryMethod, getter, name, type, field, getter, setter);
 	}
 
-	@Override
+	/**
+     * Determines if the property represented by this JavaBeanPropertyDescriptor is a valid property.
+     * 
+     * @param env the MetadataGenerationEnvironment used for metadata generation
+     * @return true if the property is valid, false otherwise
+     */
+    @Override
 	protected boolean isProperty(MetadataGenerationEnvironment env) {
 		boolean isCollection = env.getTypeUtils().isCollectionOrMap(getType());
 		return !env.isExcluded(getType()) && getGetter() != null && (getSetter() != null || isCollection);
 	}
 
-	@Override
+	/**
+     * Resolves the default value for the property.
+     * 
+     * @param environment the metadata generation environment
+     * @return the default value for the property
+     */
+    @Override
 	protected Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
 		return environment.getFieldDefaultValue(getOwnerElement(), getName());
 	}

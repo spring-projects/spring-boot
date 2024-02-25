@@ -36,7 +36,13 @@ class DelegatingLoggingSystemFactory implements LoggingSystemFactory {
 		this.delegates = delegates;
 	}
 
-	@Override
+	/**
+     * Returns the logging system for the given class loader.
+     * 
+     * @param classLoader the class loader to get the logging system for
+     * @return the logging system for the given class loader, or null if none is found
+     */
+    @Override
 	public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
 		List<LoggingSystemFactory> delegates = (this.delegates != null) ? this.delegates.apply(classLoader) : null;
 		if (delegates != null) {

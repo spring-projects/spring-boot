@@ -32,51 +32,107 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  */
 class GangliaPropertiesConfigAdapter extends PropertiesConfigAdapter<GangliaProperties> implements GangliaConfig {
 
-	GangliaPropertiesConfigAdapter(GangliaProperties properties) {
+	/**
+     * Constructs a new GangliaPropertiesConfigAdapter with the specified GangliaProperties.
+     * 
+     * @param properties the GangliaProperties to be used for configuring the adapter
+     */
+    GangliaPropertiesConfigAdapter(GangliaProperties properties) {
 		super(properties);
 	}
 
-	@Override
+	/**
+     * Returns the prefix for Ganglia metrics export configuration.
+     *
+     * @return the prefix for Ganglia metrics export configuration
+     */
+    @Override
 	public String prefix() {
 		return "management.ganglia.metrics.export";
 	}
 
-	@Override
+	/**
+     * Retrieves the value associated with the specified key from the GangliaPropertiesConfigAdapter.
+     * 
+     * @param k the key whose associated value is to be retrieved
+     * @return the value to which the specified key is mapped, or null if the key is not found
+     */
+    @Override
 	public String get(String k) {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns whether Ganglia is enabled.
+     *
+     * @return {@code true} if Ganglia is enabled, {@code false} otherwise.
+     */
+    @Override
 	public boolean enabled() {
 		return get(GangliaProperties::isEnabled, GangliaConfig.super::enabled);
 	}
 
-	@Override
+	/**
+     * Returns the step duration for the Ganglia configuration.
+     * This method retrieves the step duration from the GangliaProperties class using the getStep() method.
+     * If the getStep() method returns null, the step duration is retrieved from the GangliaConfig interface using the default step() method.
+     * 
+     * @return the step duration for the Ganglia configuration
+     */
+    @Override
 	public Duration step() {
 		return get(GangliaProperties::getStep, GangliaConfig.super::step);
 	}
 
-	@Override
+	/**
+     * Returns the duration units for the Ganglia configuration.
+     * 
+     * @return the duration units
+     */
+    @Override
 	public TimeUnit durationUnits() {
 		return get(GangliaProperties::getDurationUnits, GangliaConfig.super::durationUnits);
 	}
 
-	@Override
+	/**
+     * Returns the addressing mode for the GMetric UDP connection.
+     *
+     * @return the addressing mode for the GMetric UDP connection
+     */
+    @Override
 	public GMetric.UDPAddressingMode addressingMode() {
 		return get(GangliaProperties::getAddressingMode, GangliaConfig.super::addressingMode);
 	}
 
-	@Override
+	/**
+     * Returns the time to live value.
+     * 
+     * @return the time to live value
+     */
+    @Override
 	public int ttl() {
 		return get(GangliaProperties::getTimeToLive, GangliaConfig.super::ttl);
 	}
 
-	@Override
+	/**
+     * Returns the host value from the GangliaPropertiesConfigAdapter class.
+     * If the host value is not present in the GangliaPropertiesConfigAdapter class,
+     * it falls back to the host value from the GangliaConfig interface.
+     *
+     * @return the host value from the GangliaPropertiesConfigAdapter class,
+     *         or the host value from the GangliaConfig interface if not present
+     */
+    @Override
 	public String host() {
 		return get(GangliaProperties::getHost, GangliaConfig.super::host);
 	}
 
-	@Override
+	/**
+     * Returns the port number for the Ganglia configuration.
+     * 
+     * @return the port number
+     */
+    @Override
 	public int port() {
 		return get(GangliaProperties::getPort, GangliaConfig.super::port);
 	}

@@ -63,29 +63,56 @@ import org.springframework.util.StringUtils;
  */
 class ElasticsearchRestClientConfigurations {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * RestClientBuilderConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(RestClientBuilder.class)
 	static class RestClientBuilderConfiguration {
 
 		private final ElasticsearchProperties properties;
 
-		RestClientBuilderConfiguration(ElasticsearchProperties properties) {
+		/**
+         * Constructs a new RestClientBuilderConfiguration object with the specified ElasticsearchProperties.
+         * 
+         * @param properties the ElasticsearchProperties object containing the configuration properties for the RestClientBuilder
+         */
+        RestClientBuilderConfiguration(ElasticsearchProperties properties) {
 			this.properties = properties;
 		}
 
-		@Bean
+		/**
+         * Creates an instance of {@link PropertiesElasticsearchConnectionDetails} if no bean of type {@link ElasticsearchConnectionDetails} is present.
+         * 
+         * @return the {@link PropertiesElasticsearchConnectionDetails} instance
+         */
+        @Bean
 		@ConditionalOnMissingBean(ElasticsearchConnectionDetails.class)
 		PropertiesElasticsearchConnectionDetails elasticsearchConnectionDetails() {
 			return new PropertiesElasticsearchConnectionDetails(this.properties);
 		}
 
-		@Bean
+		/**
+         * Returns a default RestClientBuilderCustomizer bean.
+         * 
+         * @param connectionDetails the Elasticsearch connection details
+         * @return the default RestClientBuilderCustomizer
+         */
+        @Bean
 		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(
 				ElasticsearchConnectionDetails connectionDetails) {
 			return new DefaultRestClientBuilderCustomizer(this.properties, connectionDetails);
 		}
 
-		@Bean
+		/**
+         * Creates a RestClientBuilder for Elasticsearch based on the provided connection details.
+         * 
+         * @param connectionDetails the Elasticsearch connection details
+         * @param builderCustomizers the customizers for the RestClientBuilder
+         * @param sslBundles the SSL bundles for configuring SSL
+         * @return the RestClientBuilder configured with the provided connection details
+         */
+        @Bean
 		RestClientBuilder elasticsearchRestClientBuilder(ElasticsearchConnectionDetails connectionDetails,
 				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers, ObjectProvider<SslBundles> sslBundles) {
 			RestClientBuilder builder = RestClient.builder(connectionDetails.getNodes()
@@ -112,7 +139,13 @@ class ElasticsearchRestClientConfigurations {
 			return builder;
 		}
 
-		private void configureSsl(HttpAsyncClientBuilder httpClientBuilder, SslBundle sslBundle) {
+		/**
+         * Configures SSL for the HTTP client builder.
+         * 
+         * @param httpClientBuilder The HTTP client builder to configure.
+         * @param sslBundle         The SSL bundle containing the SSL context and options.
+         */
+        private void configureSsl(HttpAsyncClientBuilder httpClientBuilder, SslBundle sslBundle) {
 			SSLContext sslcontext = sslBundle.createSslContext();
 			SslOptions sslOptions = sslBundle.getOptions();
 			httpClientBuilder.setSSLStrategy(new SSLIOSessionStrategy(sslcontext, sslOptions.getEnabledProtocols(),
@@ -121,23 +154,43 @@ class ElasticsearchRestClientConfigurations {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * RestClientConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(RestClient.class)
 	static class RestClientConfiguration {
 
-		@Bean
+		/**
+         * Creates and returns an instance of RestClient using the provided RestClientBuilder.
+         * 
+         * @param restClientBuilder the RestClientBuilder used to build the RestClient
+         * @return an instance of RestClient
+         */
+        @Bean
 		RestClient elasticsearchRestClient(RestClientBuilder restClientBuilder) {
 			return restClientBuilder.build();
 		}
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * RestClientSnifferConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Sniffer.class)
 	@ConditionalOnSingleCandidate(RestClient.class)
 	static class RestClientSnifferConfiguration {
 
-		@Bean
+		/**
+         * Creates a Sniffer instance for Elasticsearch based on the provided RestClient and ElasticsearchProperties.
+         * If no Sniffer instance is already present, this method will be called.
+         * 
+         * @param client the RestClient instance used for communication with Elasticsearch
+         * @param properties the ElasticsearchProperties instance containing configuration properties
+         * @return a Sniffer instance configured with the provided RestClient and ElasticsearchProperties
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		Sniffer elasticsearchSniffer(RestClient client, ElasticsearchProperties properties) {
 			SnifferBuilder builder = Sniffer.builder(client);
@@ -151,7 +204,10 @@ class ElasticsearchRestClientConfigurations {
 
 	}
 
-	static class DefaultRestClientBuilderCustomizer implements RestClientBuilderCustomizer {
+	/**
+     * DefaultRestClientBuilderCustomizer class.
+     */
+    static class DefaultRestClientBuilderCustomizer implements RestClientBuilderCustomizer {
 
 		private static final PropertyMapper map = PropertyMapper.get();
 
@@ -159,17 +215,33 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchConnectionDetails connectionDetails;
 
-		DefaultRestClientBuilderCustomizer(ElasticsearchProperties properties,
+		/**
+         * Constructs a new DefaultRestClientBuilderCustomizer with the specified ElasticsearchProperties and ElasticsearchConnectionDetails.
+         * 
+         * @param properties the ElasticsearchProperties to be used
+         * @param connectionDetails the ElasticsearchConnectionDetails to be used
+         */
+        DefaultRestClientBuilderCustomizer(ElasticsearchProperties properties,
 				ElasticsearchConnectionDetails connectionDetails) {
 			this.properties = properties;
 			this.connectionDetails = connectionDetails;
 		}
 
-		@Override
+		/**
+         * Customizes the RestClientBuilder.
+         * 
+         * @param builder the RestClientBuilder to be customized
+         */
+        @Override
 		public void customize(RestClientBuilder builder) {
 		}
 
-		@Override
+		/**
+         * Customize the HttpAsyncClientBuilder with the provided configuration.
+         *
+         * @param builder the HttpAsyncClientBuilder to customize
+         */
+        @Override
 		public void customize(HttpAsyncClientBuilder builder) {
 			builder.setDefaultCredentialsProvider(new ConnectionDetailsCredentialsProvider(this.connectionDetails));
 			map.from(this.properties::isSocketKeepAlive)
@@ -177,7 +249,12 @@ class ElasticsearchRestClientConfigurations {
 					.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
 		}
 
-		@Override
+		/**
+         * Customize the RequestConfig.Builder with the provided connection and socket timeouts.
+         * 
+         * @param builder the RequestConfig.Builder to customize
+         */
+        @Override
 		public void customize(RequestConfig.Builder builder) {
 			map.from(this.properties::getConnectionTimeout)
 				.whenNonNull()
@@ -191,9 +268,19 @@ class ElasticsearchRestClientConfigurations {
 
 	}
 
-	private static class ConnectionDetailsCredentialsProvider extends BasicCredentialsProvider {
+	/**
+     * ConnectionDetailsCredentialsProvider class.
+     */
+    private static class ConnectionDetailsCredentialsProvider extends BasicCredentialsProvider {
 
-		ConnectionDetailsCredentialsProvider(ElasticsearchConnectionDetails connectionDetails) {
+		/**
+         * Sets the credentials for the Elasticsearch connection based on the provided connection details.
+         * If a username is provided in the connection details, it sets the credentials using the provided username and password.
+         * It also sets the credentials for any URIs that have user info in the connection details.
+         * 
+         * @param connectionDetails the Elasticsearch connection details
+         */
+        ConnectionDetailsCredentialsProvider(ElasticsearchConnectionDetails connectionDetails) {
 			String username = connectionDetails.getUsername();
 			if (StringUtils.hasText(username)) {
 				Credentials credentials = new UsernamePasswordCredentials(username, connectionDetails.getPassword());
@@ -203,21 +290,44 @@ class ElasticsearchRestClientConfigurations {
 			uris.filter(this::hasUserInfo).forEach(this::addUserInfoCredentials);
 		}
 
-		private Stream<URI> getUris(ElasticsearchConnectionDetails connectionDetails) {
+		/**
+         * Returns a stream of URIs based on the provided Elasticsearch connection details.
+         *
+         * @param connectionDetails the Elasticsearch connection details
+         * @return a stream of URIs
+         */
+        private Stream<URI> getUris(ElasticsearchConnectionDetails connectionDetails) {
 			return connectionDetails.getNodes().stream().map(Node::toUri);
 		}
 
-		private boolean hasUserInfo(URI uri) {
+		/**
+         * Checks if the given URI has user information.
+         * 
+         * @param uri the URI to check
+         * @return {@code true} if the URI has user information, {@code false} otherwise
+         */
+        private boolean hasUserInfo(URI uri) {
 			return uri != null && StringUtils.hasLength(uri.getUserInfo());
 		}
 
-		private void addUserInfoCredentials(URI uri) {
+		/**
+         * Adds user information credentials to the specified URI.
+         * 
+         * @param uri The URI to add the credentials to.
+         */
+        private void addUserInfoCredentials(URI uri) {
 			AuthScope authScope = new AuthScope(uri.getHost(), uri.getPort());
 			Credentials credentials = createUserInfoCredentials(uri.getUserInfo());
 			setCredentials(authScope, credentials);
 		}
 
-		private Credentials createUserInfoCredentials(String userInfo) {
+		/**
+         * Creates a new instance of Credentials using the provided user information.
+         * 
+         * @param userInfo the user information in the format "username:password" or just "username"
+         * @return a new instance of Credentials with the provided user information
+         */
+        private Credentials createUserInfoCredentials(String userInfo) {
 			int delimiter = userInfo.indexOf(":");
 			if (delimiter == -1) {
 				return new UsernamePasswordCredentials(userInfo, null);
@@ -236,38 +346,76 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchProperties properties;
 
-		PropertiesElasticsearchConnectionDetails(ElasticsearchProperties properties) {
+		/**
+         * Initializes a new instance of the PropertiesElasticsearchConnectionDetails class.
+         * 
+         * @param properties the ElasticsearchProperties object containing the connection details
+         */
+        PropertiesElasticsearchConnectionDetails(ElasticsearchProperties properties) {
 			this.properties = properties;
 		}
 
-		@Override
+		/**
+         * Retrieves a list of nodes based on the URIs specified in the connection details.
+         * 
+         * @return a list of Node objects representing the Elasticsearch nodes
+         */
+        @Override
 		public List<Node> getNodes() {
 			return this.properties.getUris().stream().map(this::createNode).toList();
 		}
 
-		@Override
+		/**
+         * Returns the username associated with the Elasticsearch connection details.
+         *
+         * @return the username associated with the Elasticsearch connection details
+         */
+        @Override
 		public String getUsername() {
 			return this.properties.getUsername();
 		}
 
-		@Override
+		/**
+         * Returns the password for the Elasticsearch connection.
+         *
+         * @return the password for the Elasticsearch connection
+         */
+        @Override
 		public String getPassword() {
 			return this.properties.getPassword();
 		}
 
-		@Override
+		/**
+         * Returns the path prefix for the Elasticsearch connection details.
+         * 
+         * @return the path prefix for the Elasticsearch connection details
+         */
+        @Override
 		public String getPathPrefix() {
 			return this.properties.getPathPrefix();
 		}
 
-		private Node createNode(String uri) {
+		/**
+         * Creates a Node object using the provided URI.
+         * If the URI does not start with "http://" or "https://", it is assumed to be an HTTP URI and "http://" is prepended to it.
+         * 
+         * @param uri the URI to create the Node object from
+         * @return the created Node object
+         */
+        private Node createNode(String uri) {
 			if (!(uri.startsWith("http://") || uri.startsWith("https://"))) {
 				uri = "http://" + uri;
 			}
 			return createNode(URI.create(uri));
 		}
 
-		private Node createNode(URI uri) {
+		/**
+         * Creates a new Node object based on the provided URI.
+         * 
+         * @param uri the URI to create the Node from
+         * @return a new Node object
+         */
+        private Node createNode(URI uri) {
 			String userInfo = uri.getUserInfo();
 			Protocol protocol = Protocol.forScheme(uri.getScheme());
 			if (!StringUtils.hasLength(userInfo)) {

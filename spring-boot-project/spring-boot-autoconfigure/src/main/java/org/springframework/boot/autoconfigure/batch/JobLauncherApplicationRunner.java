@@ -110,7 +110,13 @@ public class JobLauncherApplicationRunner
 		this.jobRepository = jobRepository;
 	}
 
-	@Override
+	/**
+     * This method is called after all the properties have been set for the JobLauncherApplicationRunner class.
+     * It checks if there are multiple jobs and if a job name is specified. If a job name is specified, it checks if the job is either a local job or a registered job.
+     * If the job name is not specified, it throws an exception.
+     * If the job name is specified but no job is found with that name, it throws an exception.
+     */
+    @Override
 	public void afterPropertiesSet() {
 		Assert.isTrue(this.jobs.size() <= 1 || StringUtils.hasText(this.jobName),
 				"Job name must be specified in case of multiple jobs");
@@ -120,70 +126,147 @@ public class JobLauncherApplicationRunner
 		}
 	}
 
-	@Deprecated(since = "3.0.10", forRemoval = true)
+	/**
+     * Validates the JobLauncherApplicationRunner.
+     * 
+     * @deprecated This method has been deprecated since version 3.0.10 and will be removed in a future release.
+     *             Use the {@link #afterPropertiesSet()} method instead.
+     */
+    @Deprecated(since = "3.0.10", forRemoval = true)
 	public void validate() {
 		afterPropertiesSet();
 	}
 
-	public void setOrder(int order) {
+	/**
+     * Sets the order in which the JobLauncherApplicationRunner should be executed.
+     * 
+     * @param order the order value to set
+     */
+    public void setOrder(int order) {
 		this.order = order;
 	}
 
-	@Override
+	/**
+     * Returns the order of this JobLauncherApplicationRunner.
+     *
+     * @return the order of this JobLauncherApplicationRunner
+     */
+    @Override
 	public int getOrder() {
 		return this.order;
 	}
 
-	@Override
+	/**
+     * Sets the application event publisher.
+     * 
+     * @param publisher the application event publisher to set
+     */
+    @Override
 	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
 		this.publisher = publisher;
 	}
 
-	@Autowired(required = false)
+	/**
+     * Sets the JobRegistry for this JobLauncherApplicationRunner.
+     * 
+     * @param jobRegistry the JobRegistry to be set
+     */
+    @Autowired(required = false)
 	public void setJobRegistry(JobRegistry jobRegistry) {
 		this.jobRegistry = jobRegistry;
 	}
 
-	public void setJobName(String jobName) {
+	/**
+     * Sets the job name for the JobLauncherApplicationRunner.
+     * 
+     * @param jobName the name of the job to be set
+     */
+    public void setJobName(String jobName) {
 		this.jobName = jobName;
 	}
 
-	@Autowired(required = false)
+	/**
+     * Sets the JobParametersConverter for this JobLauncherApplicationRunner.
+     * 
+     * @param converter the JobParametersConverter to be set
+     */
+    @Autowired(required = false)
 	public void setJobParametersConverter(JobParametersConverter converter) {
 		this.converter = converter;
 	}
 
-	@Autowired(required = false)
+	/**
+     * Sets the collection of jobs.
+     * 
+     * @param jobs the collection of jobs to be set
+     */
+    @Autowired(required = false)
 	public void setJobs(Collection<Job> jobs) {
 		this.jobs = jobs;
 	}
 
-	@Override
+	/**
+     * Runs the application with the given arguments.
+     * 
+     * @param args the command line arguments passed to the application
+     * @throws Exception if an error occurs while running the application
+     */
+    @Override
 	public void run(ApplicationArguments args) throws Exception {
 		String[] jobArguments = args.getNonOptionArgs().toArray(new String[0]);
 		run(jobArguments);
 	}
 
-	public void run(String... args) throws JobExecutionException {
+	/**
+     * Runs the default command line with the given arguments.
+     * 
+     * @param args the command line arguments
+     * @throws JobExecutionException if there is an error executing the job
+     */
+    public void run(String... args) throws JobExecutionException {
 		logger.info("Running default command line with: " + Arrays.asList(args));
 		launchJobFromProperties(StringUtils.splitArrayElementsIntoProperties(args, "="));
 	}
 
-	protected void launchJobFromProperties(Properties properties) throws JobExecutionException {
+	/**
+     * Launches a job using the provided properties.
+     * 
+     * @param properties the properties containing the job parameters
+     * @throws JobExecutionException if there is an error executing the job
+     */
+    protected void launchJobFromProperties(Properties properties) throws JobExecutionException {
 		JobParameters jobParameters = this.converter.getJobParameters(properties);
 		executeLocalJobs(jobParameters);
 		executeRegisteredJobs(jobParameters);
 	}
 
-	private boolean isLocalJob(String jobName) {
+	/**
+     * Checks if a job with the given name is a local job.
+     * 
+     * @param jobName the name of the job to check
+     * @return true if the job is a local job, false otherwise
+     */
+    private boolean isLocalJob(String jobName) {
 		return this.jobs.stream().anyMatch((job) -> job.getName().equals(jobName));
 	}
 
-	private boolean isRegisteredJob(String jobName) {
+	/**
+     * Checks if a job with the given name is registered in the job registry.
+     *
+     * @param jobName the name of the job to check
+     * @return true if the job is registered, false otherwise
+     */
+    private boolean isRegisteredJob(String jobName) {
 		return this.jobRegistry != null && this.jobRegistry.getJobNames().contains(jobName);
 	}
 
-	private void executeLocalJobs(JobParameters jobParameters) throws JobExecutionException {
+	/**
+     * Executes local jobs with the given job parameters.
+     * 
+     * @param jobParameters the job parameters to be used for executing the jobs
+     * @throws JobExecutionException if there is an error executing the jobs
+     */
+    private void executeLocalJobs(JobParameters jobParameters) throws JobExecutionException {
 		for (Job job : this.jobs) {
 			if (StringUtils.hasText(this.jobName)) {
 				if (!this.jobName.equals(job.getName())) {
@@ -195,7 +278,13 @@ public class JobLauncherApplicationRunner
 		}
 	}
 
-	private void executeRegisteredJobs(JobParameters jobParameters) throws JobExecutionException {
+	/**
+     * Executes the registered jobs with the given job parameters.
+     * 
+     * @param jobParameters the job parameters to be used for job execution
+     * @throws JobExecutionException if there is an error during job execution
+     */
+    private void executeRegisteredJobs(JobParameters jobParameters) throws JobExecutionException {
 		if (this.jobRegistry != null && StringUtils.hasText(this.jobName)) {
 			if (!isLocalJob(this.jobName)) {
 				Job job = this.jobRegistry.getJob(this.jobName);
@@ -204,7 +293,17 @@ public class JobLauncherApplicationRunner
 		}
 	}
 
-	protected void execute(Job job, JobParameters jobParameters) throws JobExecutionAlreadyRunningException,
+	/**
+     * Executes a job with the given job parameters.
+     * 
+     * @param job the job to be executed
+     * @param jobParameters the job parameters for the execution
+     * @throws JobExecutionAlreadyRunningException if the job is already running
+     * @throws JobRestartException if the job cannot be restarted
+     * @throws JobInstanceAlreadyCompleteException if the job instance is already complete
+     * @throws JobParametersInvalidException if the job parameters are invalid
+     */
+    protected void execute(Job job, JobParameters jobParameters) throws JobExecutionAlreadyRunningException,
 			JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		JobParameters parameters = getNextJobParameters(job, jobParameters);
 		JobExecution execution = this.jobLauncher.run(job, parameters);
@@ -213,7 +312,17 @@ public class JobLauncherApplicationRunner
 		}
 	}
 
-	private JobParameters getNextJobParameters(Job job, JobParameters jobParameters) {
+	/**
+     * Retrieves the next set of job parameters for the given job and job parameters.
+     * If the job instance already exists in the job repository, it calls the getNextJobParametersForExisting method.
+     * If the job has a job parameters incrementer, it generates the next set of job parameters using the JobParametersBuilder and the job explorer.
+     * Finally, it merges the generated job parameters with the existing job parameters and returns the result.
+     *
+     * @param job           the job for which to retrieve the next job parameters
+     * @param jobParameters the current job parameters
+     * @return the next set of job parameters
+     */
+    private JobParameters getNextJobParameters(Job job, JobParameters jobParameters) {
 		if (this.jobRepository != null && this.jobRepository.isJobInstanceExists(job.getName(), jobParameters)) {
 			return getNextJobParametersForExisting(job, jobParameters);
 		}
@@ -226,7 +335,14 @@ public class JobLauncherApplicationRunner
 		return merge(nextParameters, jobParameters);
 	}
 
-	private JobParameters getNextJobParametersForExisting(Job job, JobParameters jobParameters) {
+	/**
+     * Retrieves the next set of job parameters for an existing job.
+     * 
+     * @param job The job for which to retrieve the next set of job parameters.
+     * @param jobParameters The current job parameters.
+     * @return The next set of job parameters for the existing job.
+     */
+    private JobParameters getNextJobParametersForExisting(Job job, JobParameters jobParameters) {
 		JobExecution lastExecution = this.jobRepository.getLastJobExecution(job.getName(), jobParameters);
 		if (isStoppedOrFailed(lastExecution) && job.isRestartable()) {
 			JobParameters previousIdentifyingParameters = new JobParameters(
@@ -236,12 +352,25 @@ public class JobLauncherApplicationRunner
 		return jobParameters;
 	}
 
-	private boolean isStoppedOrFailed(JobExecution execution) {
+	/**
+     * Checks if the given JobExecution is stopped or failed.
+     * 
+     * @param execution the JobExecution to check
+     * @return true if the JobExecution is stopped or failed, false otherwise
+     */
+    private boolean isStoppedOrFailed(JobExecution execution) {
 		BatchStatus status = (execution != null) ? execution.getStatus() : null;
 		return (status == BatchStatus.STOPPED || status == BatchStatus.FAILED);
 	}
 
-	private JobParameters merge(JobParameters parameters, JobParameters additionals) {
+	/**
+     * Merges the given JobParameters with additional JobParameters.
+     * 
+     * @param parameters the original JobParameters
+     * @param additionals the additional JobParameters to be merged
+     * @return a new JobParameters object containing the merged parameters
+     */
+    private JobParameters merge(JobParameters parameters, JobParameters additionals) {
 		Map<String, JobParameter<?>> merged = new LinkedHashMap<>();
 		merged.putAll(parameters.getParameters());
 		merged.putAll(additionals.getParameters());

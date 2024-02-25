@@ -32,66 +32,132 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  */
 public class StatsdPropertiesConfigAdapter extends PropertiesConfigAdapter<StatsdProperties> implements StatsdConfig {
 
-	public StatsdPropertiesConfigAdapter(StatsdProperties properties) {
+	/**
+     * Constructs a new StatsdPropertiesConfigAdapter with the specified StatsdProperties.
+     * 
+     * @param properties the StatsdProperties to be used for configuring the adapter
+     */
+    public StatsdPropertiesConfigAdapter(StatsdProperties properties) {
 		super(properties);
 	}
 
-	@Override
+	/**
+     * Retrieves the value associated with the specified key from the StatsdPropertiesConfigAdapter.
+     *
+     * @param s the key whose associated value is to be retrieved
+     * @return the value to which the specified key is mapped, or null if the key is not found
+     */
+    @Override
 	public String get(String s) {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the prefix used for exporting metrics to StatsD.
+     *
+     * @return the prefix used for exporting metrics to StatsD
+     */
+    @Override
 	public String prefix() {
 		return "management.statsd.metrics.export";
 	}
 
-	@Override
+	/**
+     * Returns the flavor of the Statsd configuration.
+     * 
+     * @return the flavor of the Statsd configuration
+     */
+    @Override
 	public StatsdFlavor flavor() {
 		return get(StatsdProperties::getFlavor, StatsdConfig.super::flavor);
 	}
 
-	@Override
+	/**
+     * Returns whether the Statsd properties are enabled.
+     * 
+     * @return {@code true} if the Statsd properties are enabled, {@code false} otherwise.
+     */
+    @Override
 	public boolean enabled() {
 		return get(StatsdProperties::isEnabled, StatsdConfig.super::enabled);
 	}
 
-	@Override
+	/**
+     * Returns the host for the Statsd server.
+     * 
+     * @return the host for the Statsd server
+     */
+    @Override
 	public String host() {
 		return get(StatsdProperties::getHost, StatsdConfig.super::host);
 	}
 
-	@Override
+	/**
+     * Returns the port number for the Statsd server.
+     *
+     * @return the port number
+     */
+    @Override
 	public int port() {
 		return get(StatsdProperties::getPort, StatsdConfig.super::port);
 	}
 
-	@Override
+	/**
+     * Returns the protocol used for Statsd communication.
+     * 
+     * @return the protocol used for Statsd communication
+     */
+    @Override
 	public StatsdProtocol protocol() {
 		return get(StatsdProperties::getProtocol, StatsdConfig.super::protocol);
 	}
 
-	@Override
+	/**
+     * Returns the maximum packet length.
+     *
+     * @return the maximum packet length
+     */
+    @Override
 	public int maxPacketLength() {
 		return get(StatsdProperties::getMaxPacketLength, StatsdConfig.super::maxPacketLength);
 	}
 
-	@Override
+	/**
+     * Returns the polling frequency for the StatsdConfig.
+     * 
+     * @return the polling frequency
+     */
+    @Override
 	public Duration pollingFrequency() {
 		return get(StatsdProperties::getPollingFrequency, StatsdConfig.super::pollingFrequency);
 	}
 
-	@Override
+	/**
+     * Returns the step duration for the StatsdConfig.
+     * 
+     * @return the step duration
+     */
+    @Override
 	public Duration step() {
 		return get(StatsdProperties::getStep, StatsdConfig.super::step);
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether unchanged meters should be published.
+     * 
+     * @return true if unchanged meters should be published, false otherwise
+     */
+    @Override
 	public boolean publishUnchangedMeters() {
 		return get(StatsdProperties::isPublishUnchangedMeters, StatsdConfig.super::publishUnchangedMeters);
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the statsd client is buffered.
+     * 
+     * @return {@code true} if the statsd client is buffered, {@code false} otherwise
+     */
+    @Override
 	public boolean buffered() {
 		return get(StatsdProperties::isBuffered, StatsdConfig.super::buffered);
 	}

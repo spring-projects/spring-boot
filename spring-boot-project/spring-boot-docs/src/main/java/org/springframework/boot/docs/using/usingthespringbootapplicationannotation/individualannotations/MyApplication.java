@@ -21,12 +21,21 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
+/**
+ * MyApplication class.
+ */
 @SpringBootConfiguration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @Import({ SomeConfiguration.class, AnotherConfiguration.class })
 public class MyApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by calling the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(MyApplication.class, args);
 	}
 

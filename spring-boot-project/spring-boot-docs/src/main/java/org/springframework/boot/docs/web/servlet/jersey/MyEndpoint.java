@@ -21,11 +21,19 @@ import jakarta.ws.rs.Path;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * MyEndpoint class.
+ */
 @Component
 @Path("/hello")
 public class MyEndpoint {
 
-	@GET
+	/**
+     * Returns a greeting message.
+     *
+     * @return the greeting message "Hello"
+     */
+    @GET
 	public String message() {
 		return "Hello";
 	}

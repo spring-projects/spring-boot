@@ -73,7 +73,13 @@ public class CommandException extends RuntimeException {
 		this.options = asEnumSet(options);
 	}
 
-	private EnumSet<Option> asEnumSet(Option[] options) {
+	/**
+     * Converts an array of Option objects into an EnumSet of Option.
+     * 
+     * @param options the array of Option objects to be converted
+     * @return an EnumSet of Option containing the same elements as the input array, or an empty EnumSet if the input array is null or empty
+     */
+    private EnumSet<Option> asEnumSet(Option[] options) {
 		if (options == null || options.length == 0) {
 			return EnumSet.noneOf(Option.class);
 		}

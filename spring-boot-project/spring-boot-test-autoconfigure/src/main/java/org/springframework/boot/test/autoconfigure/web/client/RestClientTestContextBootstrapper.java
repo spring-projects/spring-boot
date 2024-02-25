@@ -27,7 +27,13 @@ import org.springframework.test.context.TestContextBootstrapper;
  */
 class RestClientTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
-	@Override
+	/**
+     * Retrieves the properties specified in the {@link RestClientTest} annotation for the given test class.
+     * 
+     * @param testClass the test class for which to retrieve the properties
+     * @return an array of properties specified in the {@link RestClientTest} annotation, or null if the annotation is not present
+     */
+    @Override
 	protected String[] getProperties(Class<?> testClass) {
 		RestClientTest restClientTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				RestClientTest.class);

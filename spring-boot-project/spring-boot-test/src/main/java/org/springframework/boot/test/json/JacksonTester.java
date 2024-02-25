@@ -87,14 +87,29 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 		this(resourceLoadClass, type, objectMapper, null);
 	}
 
-	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type, ObjectMapper objectMapper, Class<?> view) {
+	/**
+     * Constructs a new JacksonTester with the specified resourceLoadClass, type, objectMapper, and view.
+     * 
+     * @param resourceLoadClass the class used for resource loading
+     * @param type the ResolvableType representing the type to be tested
+     * @param objectMapper the ObjectMapper used for serialization and deserialization
+     * @param view the class representing the view to be used for serialization
+     * @throws IllegalArgumentException if objectMapper is null
+     */
+    public JacksonTester(Class<?> resourceLoadClass, ResolvableType type, ObjectMapper objectMapper, Class<?> view) {
 		super(resourceLoadClass, type);
 		Assert.notNull(objectMapper, "ObjectMapper must not be null");
 		this.objectMapper = objectMapper;
 		this.view = view;
 	}
 
-	@Override
+	/**
+     * Returns the JSON content with the specified JSON string.
+     * 
+     * @param json the JSON string to be used as content
+     * @return the JSON content object
+     */
+    @Override
 	protected JsonContent<T> getJsonContent(String json) {
 		Configuration configuration = Configuration.builder()
 			.jsonProvider(new JacksonJsonProvider(this.objectMapper))
@@ -103,17 +118,39 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 		return new JsonContent<>(getResourceLoadClass(), getType(), json, configuration);
 	}
 
-	@Override
+	/**
+     * Reads an object from the given input stream using the specified type.
+     *
+     * @param inputStream the input stream to read from
+     * @param type the type of the object to read
+     * @return the object read from the input stream
+     * @throws IOException if an I/O error occurs while reading from the input stream
+     */
+    @Override
 	protected T readObject(InputStream inputStream, ResolvableType type) throws IOException {
 		return getObjectReader(type).readValue(inputStream);
 	}
 
-	@Override
+	/**
+     * Reads an object from a Reader using the specified ResolvableType.
+     * 
+     * @param reader the Reader to read from
+     * @param type the ResolvableType representing the type of the object to be read
+     * @return the object read from the Reader
+     * @throws IOException if an I/O error occurs while reading from the Reader
+     */
+    @Override
 	protected T readObject(Reader reader, ResolvableType type) throws IOException {
 		return getObjectReader(type).readValue(reader);
 	}
 
-	private ObjectReader getObjectReader(ResolvableType type) {
+	/**
+     * Returns an ObjectReader for the given ResolvableType.
+     * 
+     * @param type the ResolvableType to create the ObjectReader for
+     * @return the ObjectReader for the given ResolvableType
+     */
+    private ObjectReader getObjectReader(ResolvableType type) {
 		ObjectReader objectReader = this.objectMapper.readerFor(getType(type));
 		if (this.view != null) {
 			return objectReader.withView(this.view);
@@ -121,12 +158,26 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 		return objectReader;
 	}
 
-	@Override
+	/**
+     * Writes the given object as a JSON string using the specified type.
+     * 
+     * @param value the object to be written
+     * @param type the type of the object
+     * @return the JSON string representation of the object
+     * @throws IOException if an I/O error occurs during the writing process
+     */
+    @Override
 	protected String writeObject(T value, ResolvableType type) throws IOException {
 		return getObjectWriter(type).writeValueAsString(value);
 	}
 
-	private ObjectWriter getObjectWriter(ResolvableType type) {
+	/**
+     * Returns an ObjectWriter for the given ResolvableType.
+     * 
+     * @param type the ResolvableType to get the ObjectWriter for
+     * @return the ObjectWriter for the given ResolvableType
+     */
+    private ObjectWriter getObjectWriter(ResolvableType type) {
 		ObjectWriter objectWriter = this.objectMapper.writerFor(getType(type));
 		if (this.view != null) {
 			return objectWriter.withView(this.view);
@@ -134,7 +185,13 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 		return objectWriter;
 	}
 
-	private JavaType getType(ResolvableType type) {
+	/**
+     * Returns the JavaType representation of the given ResolvableType.
+     * 
+     * @param type the ResolvableType to convert to JavaType
+     * @return the JavaType representation of the given ResolvableType
+     */
+    private JavaType getType(ResolvableType type) {
 		return this.objectMapper.constructType(type.getType());
 	}
 
@@ -175,11 +232,24 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	 */
 	private static class JacksonFieldInitializer extends FieldInitializer<ObjectMapper> {
 
-		protected JacksonFieldInitializer() {
+		/**
+         * Constructs a new JacksonFieldInitializer.
+         * 
+         * @param jacksonTester the JacksonTester instance to be used by the initializer
+         */
+        protected JacksonFieldInitializer() {
 			super(JacksonTester.class);
 		}
 
-		@Override
+		/**
+         * Creates a tester for JSON marshalling using Jackson library.
+         * 
+         * @param resourceLoadClass the class used for resource loading
+         * @param type the ResolvableType representing the type to be marshalled
+         * @param marshaller the ObjectMapper used for marshalling
+         * @return the created JacksonTester instance
+         */
+        @Override
 		protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type,
 				ObjectMapper marshaller) {
 			return new JacksonTester<>(resourceLoadClass, type, marshaller);

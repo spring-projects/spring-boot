@@ -33,10 +33,19 @@ import org.springframework.boot.web.server.Compression;
  */
 final class JettyHandlerWrappers {
 
-	private JettyHandlerWrappers() {
+	/**
+     * Private constructor for the JettyHandlerWrappers class.
+     */
+    private JettyHandlerWrappers() {
 	}
 
-	static Handler.Wrapper createGzipHandlerWrapper(Compression compression) {
+	/**
+     * Creates a wrapper for the GzipHandler with the specified compression settings.
+     * 
+     * @param compression the Compression object containing the compression settings
+     * @return a Handler.Wrapper object representing the GzipHandler with the specified compression settings
+     */
+    static Handler.Wrapper createGzipHandlerWrapper(Compression compression) {
 		GzipHandler handler = new GzipHandler();
 		handler.setMinGzipSize((int) compression.getMinResponseSize().toBytes());
 		handler.setIncludedMimeTypes(compression.getMimeTypes());
@@ -46,7 +55,13 @@ final class JettyHandlerWrappers {
 		return handler;
 	}
 
-	static Handler.Wrapper createServerHeaderHandlerWrapper(String header) {
+	/**
+     * Creates a {@link Handler.Wrapper} object that adds a server header to the HTTP response.
+     * 
+     * @param header the value of the server header to be added
+     * @return a {@link Handler.Wrapper} object that adds the specified server header
+     */
+    static Handler.Wrapper createServerHeaderHandlerWrapper(String header) {
 		return new ServerHeaderHandler(header);
 	}
 
@@ -59,11 +74,25 @@ final class JettyHandlerWrappers {
 
 		private final String value;
 
-		ServerHeaderHandler(String value) {
+		/**
+         * Constructs a new ServerHeaderHandler with the specified value.
+         * 
+         * @param value the value to be set for the ServerHeaderHandler
+         */
+        ServerHeaderHandler(String value) {
 			this.value = value;
 		}
 
-		@Override
+		/**
+         * Handles the request and response by adding the server header to the response headers if it is not already present.
+         * 
+         * @param request the request object
+         * @param response the response object
+         * @param callback the callback object
+         * @return true if the request and response are handled successfully, false otherwise
+         * @throws Exception if an error occurs while handling the request and response
+         */
+        @Override
 		public boolean handle(Request request, Response response, Callback callback) throws Exception {
 			Mutable headers = response.getHeaders();
 			if (!headers.contains(SERVER_HEADER)) {

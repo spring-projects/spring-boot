@@ -49,13 +49,27 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 @Import({ LettuceConnectionConfiguration.class, JedisConnectionConfiguration.class })
 public class RedisAutoConfiguration {
 
-	@Bean
+	/**
+     * Generates a RedisConnectionDetails bean if no bean of type RedisConnectionDetails is present.
+     * Uses the RedisProperties to create a PropertiesRedisConnectionDetails object.
+     * 
+     * @param properties the RedisProperties object used to create the PropertiesRedisConnectionDetails object
+     * @return a RedisConnectionDetails bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(RedisConnectionDetails.class)
 	PropertiesRedisConnectionDetails redisConnectionDetails(RedisProperties properties) {
 		return new PropertiesRedisConnectionDetails(properties);
 	}
 
-	@Bean
+	/**
+     * Creates a RedisTemplate bean if no bean with the name "redisTemplate" is already present in the application context.
+     * This method is conditionally executed only if a RedisConnectionFactory bean is present and there is no existing bean with the name "redisTemplate".
+     * 
+     * @param redisConnectionFactory the RedisConnectionFactory bean used to create the RedisTemplate
+     * @return the RedisTemplate bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(name = "redisTemplate")
 	@ConditionalOnSingleCandidate(RedisConnectionFactory.class)
 	public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
@@ -64,7 +78,14 @@ public class RedisAutoConfiguration {
 		return template;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link StringRedisTemplate} if no other bean of the same type is present in the application context.
+     * This bean is conditionally created only if a single candidate bean of type {@link RedisConnectionFactory} is available.
+     * 
+     * @param redisConnectionFactory the {@link RedisConnectionFactory} to be used for creating the {@link StringRedisTemplate}
+     * @return a new instance of {@link StringRedisTemplate} using the provided {@link RedisConnectionFactory}
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnSingleCandidate(RedisConnectionFactory.class)
 	public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {

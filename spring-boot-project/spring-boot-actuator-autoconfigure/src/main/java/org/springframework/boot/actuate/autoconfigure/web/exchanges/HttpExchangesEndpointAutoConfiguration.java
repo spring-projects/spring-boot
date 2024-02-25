@@ -36,7 +36,13 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnAvailableEndpoint(endpoint = HttpExchangesEndpoint.class)
 public class HttpExchangesEndpointAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates an instance of {@link HttpExchangesEndpoint} if a bean of type {@link HttpExchangeRepository} is present and no bean of type {@link HttpExchangesEndpoint} is already defined.
+     * 
+     * @param exchangeRepository the {@link HttpExchangeRepository} bean to be used by the {@link HttpExchangesEndpoint}
+     * @return the created {@link HttpExchangesEndpoint} instance
+     */
+    @Bean
 	@ConditionalOnBean(HttpExchangeRepository.class)
 	@ConditionalOnMissingBean
 	public HttpExchangesEndpoint httpExchangesEndpoint(HttpExchangeRepository exchangeRepository) {

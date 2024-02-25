@@ -29,16 +29,29 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * SampleActuatorApplication class.
+ */
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class SampleActuatorApplication {
 
-	@Bean
+	/**
+     * Creates a health indicator for the "hello" endpoint.
+     * 
+     * @return the health indicator for the "hello" endpoint
+     */
+    @Bean
 	public HealthIndicator helloHealthIndicator() {
 		return createHealthIndicator("world");
 	}
 
-	@Bean
+	/**
+     * Creates a composite health contributor that combines multiple nested health contributors.
+     * 
+     * @return the composite health contributor
+     */
+    @Bean
 	public HealthContributor compositeHelloHealthContributor() {
 		Map<String, HealthContributor> map = new LinkedHashMap<>();
 		map.put("spring", createNestedHealthContributor("spring"));
@@ -46,7 +59,13 @@ public class SampleActuatorApplication {
 		return CompositeHealthContributor.fromMap(map);
 	}
 
-	private HealthContributor createNestedHealthContributor(String name) {
+	/**
+     * Creates a nested HealthContributor with the given name.
+     * 
+     * @param name the name of the HealthContributor
+     * @return the created nested HealthContributor
+     */
+    private HealthContributor createNestedHealthContributor(String name) {
 		Map<String, HealthContributor> map = new LinkedHashMap<>();
 		map.put("a", createHealthIndicator(name + "-a"));
 		map.put("b", createHealthIndicator(name + "-b"));
@@ -54,11 +73,22 @@ public class SampleActuatorApplication {
 		return CompositeHealthContributor.fromMap(map);
 	}
 
-	private HealthIndicator createHealthIndicator(String value) {
+	/**
+     * Creates a health indicator with the given value.
+     * 
+     * @param value the value to be included in the health indicator details
+     * @return a HealthIndicator object representing the health indicator
+     */
+    private HealthIndicator createHealthIndicator(String value) {
 		return () -> Health.up().withDetail("hello", value).build();
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleActuatorApplication class.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		SpringApplication application = new SpringApplication(SampleActuatorApplication.class);
 		application.setApplicationStartup(new BufferingApplicationStartup(1024));
 		application.run(args);

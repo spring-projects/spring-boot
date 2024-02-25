@@ -35,12 +35,25 @@ import org.springframework.util.ReflectionUtils;
  */
 final class DurationToNumberConverter implements GenericConverter {
 
-	@Override
+	/**
+     * Returns a set of convertible types for the DurationToNumberConverter class.
+     * 
+     * @return a set containing a single ConvertiblePair object representing the conversion from Duration to Number.
+     */
+    @Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(Duration.class, Number.class));
 	}
 
-	@Override
+	/**
+     * Converts a Duration object to a Number object.
+     * 
+     * @param source the source object to be converted
+     * @param sourceType the TypeDescriptor of the source object
+     * @param targetType the TypeDescriptor of the target object
+     * @return the converted object, or null if the source object is null
+     */
+    @Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
@@ -48,12 +61,27 @@ final class DurationToNumberConverter implements GenericConverter {
 		return convert((Duration) source, getDurationUnit(sourceType), targetType.getObjectType());
 	}
 
-	private ChronoUnit getDurationUnit(TypeDescriptor sourceType) {
+	/**
+     * Returns the duration unit specified by the {@link DurationUnit} annotation on the given source type.
+     * 
+     * @param sourceType the source type to retrieve the duration unit from
+     * @return the duration unit specified by the annotation, or null if the annotation is not present
+     */
+    private ChronoUnit getDurationUnit(TypeDescriptor sourceType) {
 		DurationUnit annotation = sourceType.getAnnotation(DurationUnit.class);
 		return (annotation != null) ? annotation.value() : null;
 	}
 
-	private Object convert(Duration source, ChronoUnit unit, Class<?> type) {
+	/**
+     * Converts a Duration object to a specified type using the given ChronoUnit.
+     * 
+     * @param source the Duration object to be converted
+     * @param unit the ChronoUnit to be used for conversion
+     * @param type the target type to convert the Duration to
+     * @return the converted object of the specified type
+     * @throws IllegalStateException if an error occurs during the conversion process
+     */
+    private Object convert(Duration source, ChronoUnit unit, Class<?> type) {
 		try {
 			return type.getConstructor(String.class)
 				.newInstance(String.valueOf(DurationStyle.Unit.fromChronoUnit(unit).longValue(source)));

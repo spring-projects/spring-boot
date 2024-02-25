@@ -16,6 +16,9 @@
 
 package smoketest.websocket.tomcat.echo;
 
+/**
+ * EchoService interface.
+ */
 public interface EchoService {
 
 	String getMessage(String message);

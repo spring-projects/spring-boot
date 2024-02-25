@@ -21,10 +21,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 
+/**
+ * MyApplicationTests class.
+ */
 @SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
 class MyApplicationTests {
 
-	@Test
+	/**
+     * This is an example test method.
+     * It is used to demonstrate how to write test cases in JUnit.
+     * 
+     * @param None
+     * @return None
+     */
+    @Test
 	void exampleTest() {
 		// ...
 	}

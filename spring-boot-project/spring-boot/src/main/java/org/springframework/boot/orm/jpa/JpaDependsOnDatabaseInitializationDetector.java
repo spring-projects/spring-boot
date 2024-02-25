@@ -37,11 +37,23 @@ class JpaDependsOnDatabaseInitializationDetector extends AbstractBeansOfTypeDepe
 
 	private final Environment environment;
 
-	JpaDependsOnDatabaseInitializationDetector(Environment environment) {
+	/**
+     * Constructs a new JpaDependsOnDatabaseInitializationDetector with the specified environment.
+     * 
+     * @param environment the environment used for detecting database initialization
+     */
+    JpaDependsOnDatabaseInitializationDetector(Environment environment) {
 		this.environment = environment;
 	}
 
-	@Override
+	/**
+     * Returns the set of bean types that the database initialization depends on.
+     * If the property "spring.jpa.defer-datasource-initialization" is set to true, an empty set is returned.
+     * Otherwise, a set containing the bean types EntityManagerFactory and AbstractEntityManagerFactoryBean is returned.
+     *
+     * @return the set of bean types that the database initialization depends on
+     */
+    @Override
 	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
 		boolean postpone = this.environment.getProperty("spring.jpa.defer-datasource-initialization", boolean.class,
 				false);

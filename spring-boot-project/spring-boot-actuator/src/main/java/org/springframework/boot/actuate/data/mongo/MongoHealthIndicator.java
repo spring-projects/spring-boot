@@ -35,13 +35,25 @@ public class MongoHealthIndicator extends AbstractHealthIndicator {
 
 	private final MongoTemplate mongoTemplate;
 
-	public MongoHealthIndicator(MongoTemplate mongoTemplate) {
+	/**
+     * Constructs a new MongoHealthIndicator with the specified MongoTemplate.
+     * 
+     * @param mongoTemplate the MongoTemplate to be used for health check
+     * @throws IllegalArgumentException if the mongoTemplate is null
+     */
+    public MongoHealthIndicator(MongoTemplate mongoTemplate) {
 		super("MongoDB health check failed");
 		Assert.notNull(mongoTemplate, "MongoTemplate must not be null");
 		this.mongoTemplate = mongoTemplate;
 	}
 
-	@Override
+	/**
+     * Performs a health check on the MongoDB instance.
+     * 
+     * @param builder the Health.Builder object used to build the health status
+     * @throws Exception if an error occurs during the health check
+     */
+    @Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Document result = this.mongoTemplate.executeCommand("{ isMaster: 1 }");
 		builder.up().withDetail("maxWireVersion", result.getInteger("maxWireVersion"));

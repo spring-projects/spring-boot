@@ -31,11 +31,22 @@ public class ConnectionDetailsFactoryNotFoundException extends RuntimeException 
 		this("No ConnectionDetailsFactory found for source '%s'".formatted(source));
 	}
 
-	public ConnectionDetailsFactoryNotFoundException(String message) {
+	/**
+     * Constructs a new ConnectionDetailsFactoryNotFoundException with the specified detail message.
+     *
+     * @param message the detail message
+     */
+    public ConnectionDetailsFactoryNotFoundException(String message) {
 		super(message);
 	}
 
-	public ConnectionDetailsFactoryNotFoundException(String message, Throwable cause) {
+	/**
+     * Constructs a new ConnectionDetailsFactoryNotFoundException with the specified detail message and cause.
+     *
+     * @param message the detail message (which is saved for later retrieval by the getMessage() method).
+     * @param cause the cause (which is saved for later retrieval by the getCause() method).
+     */
+    public ConnectionDetailsFactoryNotFoundException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

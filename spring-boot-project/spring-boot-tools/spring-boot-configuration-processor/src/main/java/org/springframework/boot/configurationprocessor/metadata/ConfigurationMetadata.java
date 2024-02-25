@@ -47,12 +47,21 @@ public class ConfigurationMetadata {
 
 	private final Map<String, List<ItemHint>> hints;
 
-	public ConfigurationMetadata() {
+	/**
+     * Constructs a new instance of ConfigurationMetadata.
+     * Initializes the items and hints maps as empty LinkedHashMaps.
+     */
+    public ConfigurationMetadata() {
 		this.items = new LinkedHashMap<>();
 		this.hints = new LinkedHashMap<>();
 	}
 
-	public ConfigurationMetadata(ConfigurationMetadata metadata) {
+	/**
+     * Creates a new instance of ConfigurationMetadata by copying the values from the given metadata object.
+     * 
+     * @param metadata the ConfigurationMetadata object to be copied
+     */
+    public ConfigurationMetadata(ConfigurationMetadata metadata) {
 		this.items = new LinkedHashMap<>(metadata.items);
 		this.hints = new LinkedHashMap<>(metadata.hints);
 	}
@@ -111,7 +120,14 @@ public class ConfigurationMetadata {
 		return flattenValues(this.hints);
 	}
 
-	protected void mergeItemMetadata(ItemMetadata metadata) {
+	/**
+     * Merges the provided ItemMetadata with the existing metadata in the ConfigurationMetadata.
+     * If a matching ItemMetadata is found, the properties of the provided metadata are merged into the matching metadata.
+     * If no matching ItemMetadata is found, the provided metadata is added to the ConfigurationMetadata.
+     * 
+     * @param metadata The ItemMetadata to be merged.
+     */
+    protected void mergeItemMetadata(ItemMetadata metadata) {
 		ItemMetadata matching = findMatchingItemMetadata(metadata);
 		if (matching != null) {
 			if (metadata.getDescription() != null) {
@@ -147,14 +163,30 @@ public class ConfigurationMetadata {
 		}
 	}
 
-	private <K, V> void add(Map<K, List<V>> map, K key, V value, boolean ifMissing) {
+	/**
+     * Adds a value to the specified key in the given map.
+     *
+     * @param <K>        the type of the key in the map
+     * @param <V>        the type of the value in the map
+     * @param map        the map to add the value to
+     * @param key        the key to add the value to
+     * @param value      the value to add
+     * @param ifMissing  a flag indicating whether to add the value only if the key is missing or if the key already exists
+     */
+    private <K, V> void add(Map<K, List<V>> map, K key, V value, boolean ifMissing) {
 		List<V> values = map.computeIfAbsent(key, (k) -> new ArrayList<>());
 		if (!ifMissing || values.isEmpty()) {
 			values.add(value);
 		}
 	}
 
-	private ItemMetadata findMatchingItemMetadata(ItemMetadata metadata) {
+	/**
+     * Finds the matching ItemMetadata for the given metadata.
+     * 
+     * @param metadata The ItemMetadata to find a match for.
+     * @return The matching ItemMetadata, or null if no match is found.
+     */
+    private ItemMetadata findMatchingItemMetadata(ItemMetadata metadata) {
 		List<ItemMetadata> candidates = this.items.get(metadata.getName());
 		if (candidates == null || candidates.isEmpty()) {
 			return null;
@@ -175,21 +207,46 @@ public class ConfigurationMetadata {
 		return null;
 	}
 
-	private boolean nullSafeEquals(Object o1, Object o2) {
+	/**
+     * Compares two objects for equality, taking into account null values.
+     * 
+     * @param o1 the first object to compare
+     * @param o2 the second object to compare
+     * @return true if the objects are equal, false otherwise
+     */
+    private boolean nullSafeEquals(Object o1, Object o2) {
 		if (o1 == o2) {
 			return true;
 		}
 		return o1 != null && o1.equals(o2);
 	}
 
-	public static String nestedPrefix(String prefix, String name) {
+	/**
+     * Generates a nested prefix by combining the given prefix and name.
+     * If the prefix is null, an empty string is used as the prefix.
+     * The name is converted to dashed case before combining with the prefix.
+     * If the prefix is empty, the name is used as is.
+     * The nested prefix is returned as a string.
+     *
+     * @param prefix the prefix to be combined with the name (can be null)
+     * @param name   the name to be combined with the prefix
+     * @return the nested prefix as a string
+     */
+    public static String nestedPrefix(String prefix, String name) {
 		String nestedPrefix = (prefix != null) ? prefix : "";
 		String dashedName = toDashedCase(name);
 		nestedPrefix += nestedPrefix.isEmpty() ? dashedName : "." + dashedName;
 		return nestedPrefix;
 	}
 
-	static String toDashedCase(String name) {
+	/**
+     * Converts a given name to dashed case.
+     * Dashed case is a naming convention where words are separated by dashes.
+     * 
+     * @param name the name to be converted
+     * @return the name converted to dashed case
+     */
+    static String toDashedCase(String name) {
 		StringBuilder dashed = new StringBuilder();
 		Character previous = null;
 		for (int i = 0; i < name.length(); i++) {
@@ -209,7 +266,15 @@ public class ConfigurationMetadata {
 		return dashed.toString().toLowerCase(Locale.ENGLISH);
 	}
 
-	private static <T extends Comparable<T>> List<T> flattenValues(Map<?, List<T>> map) {
+	/**
+     * Flattens the values of a map into a single list and sorts them in ascending order.
+     * 
+     * @param map the map containing lists of values
+     * @return a sorted list containing all the values from the map
+     * @throws NullPointerException if the map is null
+     * @param <T> the type of values in the map, must implement Comparable interface
+     */
+    private static <T extends Comparable<T>> List<T> flattenValues(Map<?, List<T>> map) {
 		List<T> content = new ArrayList<>();
 		for (List<T> values : map.values()) {
 			content.addAll(values);
@@ -218,7 +283,12 @@ public class ConfigurationMetadata {
 		return content;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the ConfigurationMetadata object.
+     * 
+     * @return a string representation of the ConfigurationMetadata object
+     */
+    @Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append(String.format("items: %n"));

@@ -24,20 +24,36 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ * WelcomeController class.
+ */
 @Controller
 public class WelcomeController {
 
 	@Value("${application.message:Hello World}")
 	private String message = "Hello World";
 
-	@GetMapping("/")
+	/**
+     * Retrieves the welcome page.
+     * 
+     * @param model the model object to be populated with data
+     * @return the name of the view to be rendered
+     */
+    @GetMapping("/")
 	public String welcome(Map<String, Object> model) {
 		model.put("time", new Date());
 		model.put("message", this.message);
 		return "welcome";
 	}
 
-	@RequestMapping("/foo")
+	/**
+     * Handles the request mapping for "/foo" endpoint.
+     * 
+     * @param model the model object to be populated with data
+     * @return the view name or template to be rendered
+     * @throws RuntimeException if an error occurs while processing the request
+     */
+    @RequestMapping("/foo")
 	public String foo(Map<String, Object> model) {
 		throw new RuntimeException("Foo");
 	}

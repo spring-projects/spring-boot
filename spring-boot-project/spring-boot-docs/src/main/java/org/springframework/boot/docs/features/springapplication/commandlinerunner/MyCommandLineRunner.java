@@ -19,10 +19,18 @@ package org.springframework.boot.docs.features.springapplication.commandlinerunn
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyCommandLineRunner class.
+ */
 @Component
 public class MyCommandLineRunner implements CommandLineRunner {
 
-	@Override
+	/**
+     * Executes the run method with the specified arguments.
+     *
+     * @param args the command line arguments
+     */
+    @Override
 	public void run(String... args) {
 		// Do something...
 	}

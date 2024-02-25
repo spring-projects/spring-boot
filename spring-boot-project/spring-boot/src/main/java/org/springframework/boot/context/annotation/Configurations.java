@@ -62,7 +62,13 @@ public abstract class Configurations {
 
 	private final Set<Class<?>> classes;
 
-	protected Configurations(Collection<Class<?>> classes) {
+	/**
+     * Constructs a new Configurations object with the given collection of classes.
+     * 
+     * @param classes the collection of classes to be used for the configurations
+     * @throws IllegalArgumentException if the classes parameter is null
+     */
+    protected Configurations(Collection<Class<?>> classes) {
 		Assert.notNull(classes, "Classes must not be null");
 		Collection<Class<?>> sorted = sort(classes);
 		this.classes = Collections.unmodifiableSet(new LinkedHashSet<>(sorted));
@@ -77,7 +83,12 @@ public abstract class Configurations {
 		return classes;
 	}
 
-	protected final Set<Class<?>> getClasses() {
+	/**
+     * Returns the set of classes.
+     *
+     * @return the set of classes
+     */
+    protected final Set<Class<?>> getClasses() {
 		return this.classes;
 	}
 
@@ -126,11 +137,23 @@ public abstract class Configurations {
 		return ClassUtils.toClassArray(classes);
 	}
 
-	private static Stream<Class<?>> streamClasses(Configurations configurations) {
+	/**
+     * Returns a stream of classes from the given configurations.
+     *
+     * @param configurations the configurations containing the classes
+     * @return a stream of classes
+     */
+    private static Stream<Class<?>> streamClasses(Configurations configurations) {
 		return configurations.getClasses().stream();
 	}
 
-	private static List<Configurations> collate(List<Configurations> orderedConfigurations) {
+	/**
+     * Collates a list of ordered configurations.
+     * 
+     * @param orderedConfigurations the list of ordered configurations to be collated
+     * @return the collated list of configurations
+     */
+    private static List<Configurations> collate(List<Configurations> orderedConfigurations) {
 		LinkedList<Configurations> collated = new LinkedList<>();
 		for (Configurations item : orderedConfigurations) {
 			if (collated.isEmpty() || collated.getLast().getClass() != item.getClass()) {

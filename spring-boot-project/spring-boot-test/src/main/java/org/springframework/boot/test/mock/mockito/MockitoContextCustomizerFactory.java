@@ -30,7 +30,14 @@ import org.springframework.test.context.TestContextAnnotationUtils;
  */
 class MockitoContextCustomizerFactory implements ContextCustomizerFactory {
 
-	@Override
+	/**
+     * Creates a context customizer for the given test class and configuration attributes.
+     * 
+     * @param testClass the test class for which the context customizer is being created
+     * @param configAttributes the configuration attributes for the test class
+     * @return the created context customizer
+     */
+    @Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		// We gather the explicit mock definitions here since they form part of the
@@ -40,7 +47,13 @@ class MockitoContextCustomizerFactory implements ContextCustomizerFactory {
 		return new MockitoContextCustomizer(parser.getDefinitions());
 	}
 
-	private void parseDefinitions(Class<?> testClass, DefinitionsParser parser) {
+	/**
+     * Parses the definitions for the given test class using the provided DefinitionsParser.
+     * 
+     * @param testClass the test class to parse definitions for
+     * @param parser the DefinitionsParser to use for parsing
+     */
+    private void parseDefinitions(Class<?> testClass, DefinitionsParser parser) {
 		parser.parse(testClass);
 		if (TestContextAnnotationUtils.searchEnclosingClass(testClass)) {
 			parseDefinitions(testClass.getEnclosingClass(), parser);

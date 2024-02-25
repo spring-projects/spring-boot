@@ -63,7 +63,19 @@ abstract class RedisConnectionConfiguration {
 
 	private final SslBundles sslBundles;
 
-	protected RedisConnectionConfiguration(RedisProperties properties, RedisConnectionDetails connectionDetails,
+	/**
+     * Constructs a new RedisConnectionConfiguration object with the provided properties, connection details,
+     * standalone configuration provider, sentinel configuration provider, cluster configuration provider,
+     * and SSL bundles.
+     * 
+     * @param properties the RedisProperties object containing the Redis connection properties
+     * @param connectionDetails the RedisConnectionDetails object containing the Redis connection details
+     * @param standaloneConfigurationProvider the ObjectProvider for RedisStandaloneConfiguration, if available
+     * @param sentinelConfigurationProvider the ObjectProvider for RedisSentinelConfiguration, if available
+     * @param clusterConfigurationProvider the ObjectProvider for RedisClusterConfiguration, if available
+     * @param sslBundles the ObjectProvider for SslBundles, if available
+     */
+    protected RedisConnectionConfiguration(RedisProperties properties, RedisConnectionDetails connectionDetails,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
@@ -76,7 +88,14 @@ abstract class RedisConnectionConfiguration {
 		this.sslBundles = sslBundles.getIfAvailable();
 	}
 
-	protected final RedisStandaloneConfiguration getStandaloneConfig() {
+	/**
+     * Returns the RedisStandaloneConfiguration object for the standalone Redis connection.
+     * If the standaloneConfiguration object is already initialized, it is returned.
+     * Otherwise, a new RedisStandaloneConfiguration object is created and initialized with the connection details.
+     * 
+     * @return the RedisStandaloneConfiguration object for the standalone Redis connection
+     */
+    protected final RedisStandaloneConfiguration getStandaloneConfig() {
 		if (this.standaloneConfiguration != null) {
 			return this.standaloneConfiguration;
 		}
@@ -89,7 +108,16 @@ abstract class RedisConnectionConfiguration {
 		return config;
 	}
 
-	protected final RedisSentinelConfiguration getSentinelConfig() {
+	/**
+     * Returns the RedisSentinelConfiguration for connecting to a Redis Sentinel cluster.
+     * If the sentinelConfiguration is already set, it is returned.
+     * If the connectionDetails contain sentinel information, a new RedisSentinelConfiguration is created and returned.
+     * The RedisSentinelConfiguration is configured with the master, sentinels, username, password, sentinel username, sentinel password, and database from the connectionDetails.
+     * If the connectionDetails do not contain sentinel information, null is returned.
+     *
+     * @return the RedisSentinelConfiguration for connecting to a Redis Sentinel cluster, or null if sentinel information is not available
+     */
+    protected final RedisSentinelConfiguration getSentinelConfig() {
 		if (this.sentinelConfiguration != null) {
 			return this.sentinelConfiguration;
 		}
@@ -138,28 +166,61 @@ abstract class RedisConnectionConfiguration {
 		return null;
 	}
 
-	private List<String> getNodes(Cluster cluster) {
+	/**
+     * Returns a list of formatted nodes in the given cluster.
+     *
+     * @param cluster the cluster object containing the nodes
+     * @return a list of formatted nodes in the format "host:port"
+     */
+    private List<String> getNodes(Cluster cluster) {
 		return cluster.getNodes().stream().map((node) -> "%s:%d".formatted(node.host(), node.port())).toList();
 	}
 
-	protected final RedisProperties getProperties() {
+	/**
+     * Returns the RedisProperties object associated with this RedisConnectionConfiguration.
+     *
+     * @return the RedisProperties object
+     */
+    protected final RedisProperties getProperties() {
 		return this.properties;
 	}
 
-	protected SslBundles getSslBundles() {
+	/**
+     * Returns the SSL bundles associated with this Redis connection configuration.
+     * 
+     * @return the SSL bundles
+     */
+    protected SslBundles getSslBundles() {
 		return this.sslBundles;
 	}
 
-	protected boolean isSslEnabled() {
+	/**
+     * Returns a boolean value indicating whether SSL is enabled for the Redis connection.
+     *
+     * @return {@code true} if SSL is enabled, {@code false} otherwise.
+     */
+    protected boolean isSslEnabled() {
 		return getProperties().getSsl().isEnabled();
 	}
 
-	protected boolean isPoolEnabled(Pool pool) {
+	/**
+     * Checks if the pool is enabled for the given pool.
+     *
+     * @param pool the pool to check
+     * @return {@code true} if the pool is enabled, {@code false} otherwise
+     */
+    protected boolean isPoolEnabled(Pool pool) {
 		Boolean enabled = pool.getEnabled();
 		return (enabled != null) ? enabled : COMMONS_POOL2_AVAILABLE;
 	}
 
-	private List<RedisNode> createSentinels(Sentinel sentinel) {
+	/**
+     * Creates a list of RedisNode objects based on the provided Sentinel object.
+     * 
+     * @param sentinel the Sentinel object containing the list of nodes
+     * @return a list of RedisNode objects
+     */
+    private List<RedisNode> createSentinels(Sentinel sentinel) {
 		List<RedisNode> nodes = new ArrayList<>();
 		for (Node node : sentinel.getNodes()) {
 			nodes.add(new RedisNode(node.host(), node.port()));
@@ -167,15 +228,32 @@ abstract class RedisConnectionConfiguration {
 		return nodes;
 	}
 
-	protected final boolean urlUsesSsl() {
+	/**
+     * Returns a boolean value indicating whether the URL uses SSL.
+     *
+     * @return {@code true} if the URL uses SSL, {@code false} otherwise.
+     */
+    protected final boolean urlUsesSsl() {
 		return parseUrl(this.properties.getUrl()).isUseSsl();
 	}
 
-	protected final RedisConnectionDetails getConnectionDetails() {
+	/**
+     * Returns the connection details for the Redis connection.
+     *
+     * @return the connection details for the Redis connection
+     */
+    protected final RedisConnectionDetails getConnectionDetails() {
 		return this.connectionDetails;
 	}
 
-	static ConnectionInfo parseUrl(String url) {
+	/**
+     * Parses the given URL and returns a ConnectionInfo object containing the parsed information.
+     * 
+     * @param url the URL to be parsed
+     * @return a ConnectionInfo object containing the parsed information
+     * @throws RedisUrlSyntaxException if the URL syntax is invalid
+     */
+    static ConnectionInfo parseUrl(String url) {
 		try {
 			URI uri = new URI(url);
 			String scheme = uri.getScheme();
@@ -203,7 +281,10 @@ abstract class RedisConnectionConfiguration {
 		}
 	}
 
-	static class ConnectionInfo {
+	/**
+     * ConnectionInfo class.
+     */
+    static class ConnectionInfo {
 
 		private final URI uri;
 
@@ -213,26 +294,54 @@ abstract class RedisConnectionConfiguration {
 
 		private final String password;
 
-		ConnectionInfo(URI uri, boolean useSsl, String username, String password) {
+		/**
+         * Constructs a new ConnectionInfo object with the specified URI, SSL usage, username, and password.
+         * 
+         * @param uri the URI of the connection
+         * @param useSsl true if SSL should be used, false otherwise
+         * @param username the username for authentication
+         * @param password the password for authentication
+         */
+        ConnectionInfo(URI uri, boolean useSsl, String username, String password) {
 			this.uri = uri;
 			this.useSsl = useSsl;
 			this.username = username;
 			this.password = password;
 		}
 
-		URI getUri() {
+		/**
+         * Returns the URI associated with this ConnectionInfo object.
+         *
+         * @return the URI associated with this ConnectionInfo object
+         */
+        URI getUri() {
 			return this.uri;
 		}
 
-		boolean isUseSsl() {
+		/**
+         * Returns a boolean value indicating whether SSL is being used.
+         *
+         * @return true if SSL is being used, false otherwise
+         */
+        boolean isUseSsl() {
 			return this.useSsl;
 		}
 
-		String getUsername() {
+		/**
+         * Returns the username associated with the ConnectionInfo object.
+         *
+         * @return the username
+         */
+        String getUsername() {
 			return this.username;
 		}
 
-		String getPassword() {
+		/**
+         * Returns the password associated with the ConnectionInfo object.
+         *
+         * @return the password
+         */
+        String getPassword() {
 			return this.password;
 		}
 

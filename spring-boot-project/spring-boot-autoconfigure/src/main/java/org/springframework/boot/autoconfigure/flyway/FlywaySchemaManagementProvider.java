@@ -35,11 +35,22 @@ class FlywaySchemaManagementProvider implements SchemaManagementProvider {
 
 	private final Iterable<Flyway> flywayInstances;
 
-	FlywaySchemaManagementProvider(Iterable<Flyway> flywayInstances) {
+	/**
+     * Constructs a new FlywaySchemaManagementProvider with the given Flyway instances.
+     *
+     * @param flywayInstances an Iterable of Flyway instances to be managed by this provider
+     */
+    FlywaySchemaManagementProvider(Iterable<Flyway> flywayInstances) {
 		this.flywayInstances = flywayInstances;
 	}
 
-	@Override
+	/**
+     * Returns the schema management type for the given data source.
+     * 
+     * @param dataSource the data source to check for schema management
+     * @return the schema management type for the data source
+     */
+    @Override
 	public SchemaManagement getSchemaManagement(DataSource dataSource) {
 		return StreamSupport.stream(this.flywayInstances.spliterator(), false)
 			.map((flyway) -> flyway.getConfiguration().getDataSource())

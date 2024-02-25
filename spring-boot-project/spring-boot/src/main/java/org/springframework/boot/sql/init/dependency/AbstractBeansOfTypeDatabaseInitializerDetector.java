@@ -30,7 +30,14 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  */
 public abstract class AbstractBeansOfTypeDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
-	@Override
+	/**
+     * Detects beans of specified types in the given bean factory.
+     * 
+     * @param beanFactory the bean factory to detect beans from
+     * @return a set of bean names that match the specified types
+     * @throws Throwable if an error occurs during the detection process
+     */
+    @Override
 	public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
 		try {
 			Set<Class<?>> types = getDatabaseInitializerBeanTypes();

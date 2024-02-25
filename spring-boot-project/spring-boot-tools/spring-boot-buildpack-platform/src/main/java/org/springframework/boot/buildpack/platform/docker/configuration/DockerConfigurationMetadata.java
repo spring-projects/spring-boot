@@ -64,25 +64,54 @@ final class DockerConfigurationMetadata {
 
 	private final DockerContext context;
 
-	private DockerConfigurationMetadata(String configLocation, DockerConfig config, DockerContext context) {
+	/**
+     * Constructs a new DockerConfigurationMetadata object with the specified configuration location, DockerConfig, and DockerContext.
+     * 
+     * @param configLocation the location of the Docker configuration
+     * @param config the Docker configuration
+     * @param context the Docker context
+     */
+    private DockerConfigurationMetadata(String configLocation, DockerConfig config, DockerContext context) {
 		this.configLocation = configLocation;
 		this.config = config;
 		this.context = context;
 	}
 
-	DockerConfig getConfiguration() {
+	/**
+     * Retrieves the configuration of the DockerConfig object.
+     *
+     * @return the configuration of the DockerConfig object
+     */
+    DockerConfig getConfiguration() {
 		return this.config;
 	}
 
-	DockerContext getContext() {
+	/**
+     * Returns the DockerContext associated with this DockerConfigurationMetadata.
+     *
+     * @return the DockerContext associated with this DockerConfigurationMetadata
+     */
+    DockerContext getContext() {
 		return this.context;
 	}
 
-	DockerContext forContext(String context) {
+	/**
+     * Creates a DockerContext object based on the provided context name.
+     * 
+     * @param context the name of the context
+     * @return a DockerContext object representing the specified context
+     */
+    DockerContext forContext(String context) {
 		return createDockerContext(this.configLocation, context);
 	}
 
-	static DockerConfigurationMetadata from(Environment environment) {
+	/**
+     * Creates a DockerConfigurationMetadata object from the given Environment.
+     * 
+     * @param environment the Environment object containing the Docker configuration
+     * @return a DockerConfigurationMetadata object representing the Docker configuration metadata
+     */
+    static DockerConfigurationMetadata from(Environment environment) {
 		String configLocation = (environment.get(DOCKER_CONFIG) != null) ? environment.get(DOCKER_CONFIG)
 				: Path.of(System.getProperty("user.home"), CONFIG_DIR).toString();
 		DockerConfig dockerConfig = createDockerConfig(configLocation);
@@ -90,7 +119,14 @@ final class DockerConfigurationMetadata {
 		return new DockerConfigurationMetadata(configLocation, dockerConfig, dockerContext);
 	}
 
-	private static DockerConfig createDockerConfig(String configLocation) {
+	/**
+     * Creates a DockerConfig object based on the provided configuration location.
+     * 
+     * @param configLocation the location of the Docker configuration file
+     * @return a DockerConfig object representing the configuration
+     * @throws IllegalStateException if there is an error parsing the configuration file
+     */
+    private static DockerConfig createDockerConfig(String configLocation) {
 		Path path = Path.of(configLocation, CONFIG_FILE_NAME);
 		if (!path.toFile().exists()) {
 			return DockerConfig.empty();
@@ -103,7 +139,16 @@ final class DockerConfigurationMetadata {
 		}
 	}
 
-	private static DockerContext createDockerContext(String configLocation, String currentContext) {
+	/**
+     * Creates a DockerContext object based on the provided configuration location and current context.
+     * 
+     * @param configLocation the location of the Docker configuration
+     * @param currentContext the current Docker context
+     * @return a DockerContext object representing the current Docker context
+     * @throws IllegalArgumentException if the current context does not exist
+     * @throws IllegalStateException if there is an error parsing the Docker context metadata file
+     */
+    private static DockerContext createDockerContext(String configLocation, String currentContext) {
 		if (currentContext == null || DEFAULT_CONTEXT.equals(currentContext)) {
 			return DockerContext.empty();
 		}
@@ -124,7 +169,14 @@ final class DockerConfigurationMetadata {
 		}
 	}
 
-	private static String asHash(String currentContext) {
+	/**
+     * Generates a SHA-256 hash of the given current context.
+     *
+     * @param currentContext the current context to be hashed
+     * @return the SHA-256 hash of the current context as a hexadecimal string
+     * @throws NoSuchAlgorithmException if the SHA-256 algorithm is not available
+     */
+    private static String asHash(String currentContext) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			byte[] hash = digest.digest(currentContext.getBytes(StandardCharsets.UTF_8));
@@ -135,7 +187,14 @@ final class DockerConfigurationMetadata {
 		}
 	}
 
-	private static String readPathContent(Path path) {
+	/**
+     * Reads the content of a file specified by the given path.
+     * 
+     * @param path the path of the file to read
+     * @return the content of the file as a string
+     * @throws IllegalStateException if an error occurs while reading the file
+     */
+    private static String readPathContent(Path path) {
 		try {
 			return Files.readString(path);
 		}
@@ -144,30 +203,58 @@ final class DockerConfigurationMetadata {
 		}
 	}
 
-	static final class DockerConfig extends MappedObject {
+	/**
+     * DockerConfig class.
+     */
+    static final class DockerConfig extends MappedObject {
 
 		private final String currentContext;
 
-		private DockerConfig(JsonNode node) {
+		/**
+         * Constructs a new DockerConfig object with the provided JSON node.
+         * 
+         * @param node the JSON node containing the Docker configuration data
+         */
+        private DockerConfig(JsonNode node) {
 			super(node, MethodHandles.lookup());
 			this.currentContext = valueAt("/currentContext", String.class);
 		}
 
-		String getCurrentContext() {
+		/**
+         * Returns the current context of the DockerConfig.
+         *
+         * @return the current context of the DockerConfig
+         */
+        String getCurrentContext() {
 			return this.currentContext;
 		}
 
-		static DockerConfig fromJson(String json) throws JsonProcessingException {
+		/**
+         * Converts a JSON string representation of a DockerConfig object into a DockerConfig instance.
+         * 
+         * @param json the JSON string representation of the DockerConfig object
+         * @return a DockerConfig instance created from the JSON string
+         * @throws JsonProcessingException if there is an error while processing the JSON string
+         */
+        static DockerConfig fromJson(String json) throws JsonProcessingException {
 			return new DockerConfig(SharedObjectMapper.get().readTree(json));
 		}
 
-		static DockerConfig empty() {
+		/**
+         * Creates an empty DockerConfig object.
+         * 
+         * @return an empty DockerConfig object
+         */
+        static DockerConfig empty() {
 			return new DockerConfig(NullNode.instance);
 		}
 
 	}
 
-	static final class DockerContext extends MappedObject {
+	/**
+     * DockerContext class.
+     */
+    static final class DockerContext extends MappedObject {
 
 		private final String dockerHost;
 
@@ -175,34 +262,73 @@ final class DockerConfigurationMetadata {
 
 		private final String tlsPath;
 
-		private DockerContext(JsonNode node, String tlsPath) {
+		/**
+         * Constructs a new DockerContext object with the provided JSON node and TLS path.
+         * 
+         * @param node     the JSON node containing the Docker context information
+         * @param tlsPath  the path to the TLS certificates for the Docker context
+         */
+        private DockerContext(JsonNode node, String tlsPath) {
 			super(node, MethodHandles.lookup());
 			this.dockerHost = valueAt("/Endpoints/" + DOCKER_ENDPOINT + "/Host", String.class);
 			this.skipTlsVerify = valueAt("/Endpoints/" + DOCKER_ENDPOINT + "/SkipTLSVerify", Boolean.class);
 			this.tlsPath = tlsPath;
 		}
 
-		String getDockerHost() {
+		/**
+         * Returns the Docker host.
+         *
+         * @return the Docker host
+         */
+        String getDockerHost() {
 			return this.dockerHost;
 		}
 
-		Boolean isTlsVerify() {
+		/**
+         * Returns a boolean value indicating whether TLS verification is enabled or not.
+         * 
+         * @return {@code true} if TLS verification is enabled, {@code false} otherwise
+         */
+        Boolean isTlsVerify() {
 			return this.skipTlsVerify != null && !this.skipTlsVerify;
 		}
 
-		String getTlsPath() {
+		/**
+         * Returns the path to the TLS directory.
+         *
+         * @return the path to the TLS directory
+         */
+        String getTlsPath() {
 			return this.tlsPath;
 		}
 
-		DockerContext withTlsPath(String tlsPath) {
+		/**
+         * Creates a new DockerContext object with the specified TLS path.
+         * 
+         * @param tlsPath the path to the TLS files
+         * @return a new DockerContext object with the specified TLS path
+         */
+        DockerContext withTlsPath(String tlsPath) {
 			return new DockerContext(this.getNode(), tlsPath);
 		}
 
-		static DockerContext fromJson(String json) throws JsonProcessingException {
+		/**
+         * Creates a DockerContext object from a JSON string.
+         * 
+         * @param json the JSON string representing the DockerContext
+         * @return a DockerContext object created from the JSON string
+         * @throws JsonProcessingException if there is an error processing the JSON string
+         */
+        static DockerContext fromJson(String json) throws JsonProcessingException {
 			return new DockerContext(SharedObjectMapper.get().readTree(json), null);
 		}
 
-		static DockerContext empty() {
+		/**
+         * Creates an empty DockerContext.
+         * 
+         * @return an empty DockerContext object
+         */
+        static DockerContext empty() {
 			return new DockerContext(NullNode.instance, null);
 		}
 

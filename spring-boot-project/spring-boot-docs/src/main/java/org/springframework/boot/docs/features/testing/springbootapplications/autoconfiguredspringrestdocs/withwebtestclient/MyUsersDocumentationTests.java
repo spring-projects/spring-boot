@@ -25,6 +25,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
+/**
+ * MyUsersDocumentationTests class.
+ */
 @WebFluxTest
 @AutoConfigureRestDocs
 class MyUsersDocumentationTests {
@@ -32,7 +35,10 @@ class MyUsersDocumentationTests {
 	@Autowired
 	private WebTestClient webTestClient;
 
-	@Test
+	/**
+     * Test case to list users.
+     */
+    @Test
 	void listUsers() {
 		// @formatter:off
 		this.webTestClient

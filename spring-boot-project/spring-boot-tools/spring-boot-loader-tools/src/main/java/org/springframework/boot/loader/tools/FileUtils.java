@@ -79,15 +79,33 @@ public abstract class FileUtils {
 		return false;
 	}
 
-	private static boolean hasDigestEntry(Manifest manifest) {
+	/**
+     * Checks if the given manifest has any entry with a digest name.
+     * 
+     * @param manifest the manifest to check
+     * @return true if the manifest has an entry with a digest name, false otherwise
+     */
+    private static boolean hasDigestEntry(Manifest manifest) {
 		return (manifest != null) && manifest.getEntries().values().stream().anyMatch(FileUtils::hasDigestName);
 	}
 
-	private static boolean hasDigestName(Attributes attributes) {
+	/**
+     * Checks if the given attributes contain a digest name.
+     * 
+     * @param attributes the attributes to check
+     * @return true if the attributes contain a digest name, false otherwise
+     */
+    private static boolean hasDigestName(Attributes attributes) {
 		return attributes.keySet().stream().anyMatch(FileUtils::isDigestName);
 	}
 
-	private static boolean isDigestName(Object name) {
+	/**
+     * Checks if the given name is a digest name.
+     * 
+     * @param name the name to be checked
+     * @return {@code true} if the name ends with "-DIGEST", {@code false} otherwise
+     */
+    private static boolean isDigestName(Object name) {
 		return String.valueOf(name).toUpperCase().endsWith("-DIGEST");
 	}
 

@@ -43,7 +43,12 @@ public final class JsonMixinModuleEntries {
 
 	private final Map<Object, Object> entries;
 
-	private JsonMixinModuleEntries(Builder builder) {
+	/**
+     * Constructs a new JsonMixinModuleEntries object with the given entries.
+     *
+     * @param builder the builder used to construct the JsonMixinModuleEntries object
+     */
+    private JsonMixinModuleEntries(Builder builder) {
 		this.entries = new LinkedHashMap<>(builder.entries);
 	}
 
@@ -85,7 +90,13 @@ public final class JsonMixinModuleEntries {
 		});
 	}
 
-	private static void registerMixinClass(Builder builder, Class<?> mixinClass) {
+	/**
+     * Registers a mixin class for the specified builder.
+     * 
+     * @param builder the builder to register the mixin class with
+     * @param mixinClass the mixin class to be registered
+     */
+    private static void registerMixinClass(Builder builder, Class<?> mixinClass) {
 		MergedAnnotation<JsonMixin> annotation = MergedAnnotations
 			.from(mixinClass, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
 			.get(JsonMixin.class);
@@ -106,7 +117,14 @@ public final class JsonMixinModuleEntries {
 				resolveClassNameIfNecessary(mixin, classLoader)));
 	}
 
-	private Class<?> resolveClassNameIfNecessary(Object type, ClassLoader classLoader) {
+	/**
+     * Resolves the class name if necessary.
+     * 
+     * @param type the type to resolve
+     * @param classLoader the class loader to use for resolving the class name
+     * @return the resolved class object
+     */
+    private Class<?> resolveClassNameIfNecessary(Object type, ClassLoader classLoader) {
 		return (type instanceof Class<?> clazz) ? clazz : ClassUtils.resolveClassName((String) type, classLoader);
 	}
 
@@ -117,7 +135,11 @@ public final class JsonMixinModuleEntries {
 
 		private final Map<Object, Object> entries;
 
-		Builder() {
+		/**
+         * Constructs a new instance of the Builder class.
+         * Initializes the entries field with a new LinkedHashMap.
+         */
+        Builder() {
 			this.entries = new LinkedHashMap<>();
 		}
 
@@ -143,19 +165,37 @@ public final class JsonMixinModuleEntries {
 			return this;
 		}
 
-		JsonMixinModuleEntries build() {
+		/**
+         * Builds a new instance of {@link JsonMixinModuleEntries} using the current state of this builder.
+         * 
+         * @return A new instance of {@link JsonMixinModuleEntries} with the current state of this builder.
+         */
+        JsonMixinModuleEntries build() {
 			return new JsonMixinModuleEntries(this);
 		}
 
 	}
 
-	static class JsonMixinComponentScanner extends ClassPathScanningCandidateComponentProvider {
+	/**
+     * JsonMixinComponentScanner class.
+     */
+    static class JsonMixinComponentScanner extends ClassPathScanningCandidateComponentProvider {
 
-		JsonMixinComponentScanner() {
+		/**
+         * Initializes a new instance of the JsonMixinComponentScanner class.
+         * Adds an include filter to scan for classes annotated with JsonMixin.
+         */
+        JsonMixinComponentScanner() {
 			addIncludeFilter(new AnnotationTypeFilter(JsonMixin.class));
 		}
 
-		@Override
+		/**
+         * Determines if the given bean definition is a candidate component for inclusion in the component scanning process.
+         * 
+         * @param beanDefinition the annotated bean definition to be checked
+         * @return true if the bean definition is a candidate component, false otherwise
+         */
+        @Override
 		protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
 			return true;
 		}

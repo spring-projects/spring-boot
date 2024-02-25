@@ -39,15 +39,31 @@ public final class ConditionMessage {
 
 	private final String message;
 
-	private ConditionMessage() {
+	/**
+     * Constructs a new ConditionMessage with a null message.
+     */
+    private ConditionMessage() {
 		this(null);
 	}
 
-	private ConditionMessage(String message) {
+	/**
+     * Constructs a new ConditionMessage with the specified message.
+     *
+     * @param message the message to be associated with the ConditionMessage
+     */
+    private ConditionMessage(String message) {
 		this.message = message;
 	}
 
-	private ConditionMessage(ConditionMessage prior, String message) {
+	/**
+     * Constructs a new ConditionMessage object with the given prior ConditionMessage and message.
+     * If the prior ConditionMessage is empty, the message is set as the new ConditionMessage's message.
+     * Otherwise, the new ConditionMessage's message is set as the concatenation of the prior ConditionMessage's message and the given message, separated by a semicolon.
+     * 
+     * @param prior the prior ConditionMessage object
+     * @param message the message to be added to the ConditionMessage object
+     */
+    private ConditionMessage(ConditionMessage prior, String message) {
 		this.message = prior.isEmpty() ? message : prior + "; " + message;
 	}
 
@@ -59,7 +75,13 @@ public final class ConditionMessage {
 		return !StringUtils.hasLength(this.message);
 	}
 
-	@Override
+	/**
+     * Compares this ConditionMessage object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the specified object is equal to this ConditionMessage object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -70,12 +92,22 @@ public final class ConditionMessage {
 		return false;
 	}
 
-	@Override
+	/**
+     * Returns a hash code value for the object. This method overrides the hashCode() method in the Object class.
+     * 
+     * @return the hash code value for the object
+     */
+    @Override
 	public int hashCode() {
 		return ObjectUtils.nullSafeHashCode(this.message);
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the object.
+     * 
+     * @return the message if it is not null, otherwise an empty string
+     */
+    @Override
 	public String toString() {
 		return (this.message != null) ? this.message : "";
 	}
@@ -200,7 +232,12 @@ public final class ConditionMessage {
 
 		private final String condition;
 
-		private Builder(String condition) {
+		/**
+         * Constructs a new Builder object with the specified condition.
+         *
+         * @param condition the condition to be set for the Builder object
+         */
+        private Builder(String condition) {
 			this.condition = condition;
 		}
 
@@ -318,7 +355,15 @@ public final class ConditionMessage {
 
 		private final String plural;
 
-		private ItemsBuilder(Builder condition, String reason, String singular, String plural) {
+		/**
+         * Constructs a new ItemsBuilder with the given condition, reason, singular, and plural values.
+         * 
+         * @param condition the condition for the builder
+         * @param reason the reason for the builder
+         * @param singular the singular form of the item
+         * @param plural the plural form of the item
+         */
+        private ItemsBuilder(Builder condition, String reason, String singular, String plural) {
 			this.condition = condition;
 			this.reason = reason;
 			this.singular = singular;
@@ -406,7 +451,13 @@ public final class ConditionMessage {
 		 */
 		NORMAL {
 
-			@Override
+			/**
+     * Applies the condition to the given item.
+     *
+     * @param item the item to apply the condition to
+     * @return the item after applying the condition
+     */
+    @Override
 			protected Object applyToItem(Object item) {
 				return item;
 			}
@@ -418,14 +469,28 @@ public final class ConditionMessage {
 		 */
 		QUOTE {
 
-			@Override
+			/**
+     * Applies the given item to the ConditionMessage.
+     * 
+     * @param item the item to be applied
+     * @return the applied item as a String enclosed in single quotes, or null if the item is null
+     */
+    @Override
 			protected String applyToItem(Object item) {
 				return (item != null) ? "'" + item + "'" : null;
 			}
 
 		};
 
-		public Collection<?> applyTo(Collection<?> items) {
+		/**
+     * Applies the specified condition to each item in the given collection and returns a new collection
+     * containing the results.
+     *
+     * @param items the collection of items to apply the condition to
+     * @return a new collection containing the results of applying the condition to each item in the
+     *         given collection, or null if the input collection is null
+     */
+    public Collection<?> applyTo(Collection<?> items) {
 			if (items == null) {
 				return null;
 			}
@@ -436,7 +501,13 @@ public final class ConditionMessage {
 			return result;
 		}
 
-		protected abstract Object applyToItem(Object item);
+		/**
+     * Applies the condition to the specified item.
+     *
+     * @param item the item to apply the condition to
+     * @return the result of applying the condition to the item
+     */
+    protected abstract Object applyToItem(Object item);
 
 	}
 

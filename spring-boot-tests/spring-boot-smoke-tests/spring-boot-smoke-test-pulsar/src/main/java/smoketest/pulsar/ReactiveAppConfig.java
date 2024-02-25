@@ -30,6 +30,9 @@ import org.springframework.pulsar.core.PulsarTopic;
 import org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener;
 import org.springframework.pulsar.reactive.core.ReactivePulsarTemplate;
 
+/**
+ * ReactiveAppConfig class.
+ */
 @Configuration(proxyBeanMethods = false)
 @Profile("smoketest.pulsar.reactive")
 class ReactiveAppConfig {
@@ -38,12 +41,23 @@ class ReactiveAppConfig {
 
 	private static final String TOPIC = "pulsar-reactive-smoke-test-topic";
 
-	@Bean
+	/**
+     * Creates a Pulsar topic with the specified name and number of partitions.
+     *
+     * @return the PulsarTopic object representing the created topic
+     */
+    @Bean
 	PulsarTopic pulsarTestTopic() {
 		return PulsarTopic.builder(TOPIC).numberOfPartitions(1).build();
 	}
 
-	@Bean
+	/**
+     * Sends messages to a Pulsar topic using a reactive Pulsar template.
+     * 
+     * @param template the reactive Pulsar template to use for sending messages
+     * @return an ApplicationRunner that sends messages to the Pulsar topic
+     */
+    @Bean
 	ApplicationRunner sendMessagesToPulsarTopic(ReactivePulsarTemplate<SampleMessage> template) {
 		return (args) -> Flux.range(0, 10)
 			.map((i) -> new SampleMessage(i, "message:" + i))
@@ -54,7 +68,13 @@ class ReactiveAppConfig {
 			.subscribe();
 	}
 
-	@ReactivePulsarListener(topics = TOPIC)
+	/**
+     * Consume messages from Pulsar topic in a reactive manner.
+     * 
+     * @param msg the sample message to consume
+     * @return a Mono representing the completion of the consumption process
+     */
+    @ReactivePulsarListener(topics = TOPIC)
 	Mono<Void> consumeMessagesFromPulsarTopic(SampleMessage msg) {
 		logger.info("++++++CONSUME REACTIVE:(" + msg.id() + ")------");
 		return Mono.empty();

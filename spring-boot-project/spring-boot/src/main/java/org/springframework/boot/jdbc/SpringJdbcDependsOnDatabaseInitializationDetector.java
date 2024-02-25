@@ -32,7 +32,13 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 class SpringJdbcDependsOnDatabaseInitializationDetector
 		extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector {
 
-	@Override
+	/**
+     * Returns a set of classes that this bean depends on for database initialization.
+     * The returned set includes the classes JdbcClient, JdbcOperations, and NamedParameterJdbcOperations.
+     *
+     * @return a set of classes that this bean depends on for database initialization
+     */
+    @Override
 	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
 		return Set.of(JdbcClient.class, JdbcOperations.class, NamedParameterJdbcOperations.class);
 	}

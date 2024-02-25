@@ -36,7 +36,15 @@ public class BindException extends RuntimeException implements OriginProvider {
 
 	private final ConfigurationPropertyName name;
 
-	BindException(ConfigurationPropertyName name, Bindable<?> target, ConfigurationProperty property, Throwable cause) {
+	/**
+     * Constructs a new BindException with the specified ConfigurationPropertyName, Bindable, ConfigurationProperty, and cause.
+     * 
+     * @param name the ConfigurationPropertyName associated with the exception
+     * @param target the Bindable associated with the exception
+     * @param property the ConfigurationProperty associated with the exception
+     * @param cause the Throwable that caused the exception
+     */
+    BindException(ConfigurationPropertyName name, Bindable<?> target, ConfigurationProperty property, Throwable cause) {
 		super(buildMessage(name, target), cause);
 		this.name = name;
 		this.target = target;
@@ -67,12 +75,24 @@ public class BindException extends RuntimeException implements OriginProvider {
 		return this.property;
 	}
 
-	@Override
+	/**
+     * Returns the origin of this BindException.
+     * 
+     * @return the origin of this BindException
+     */
+    @Override
 	public Origin getOrigin() {
 		return Origin.from(this.name);
 	}
 
-	private static String buildMessage(ConfigurationPropertyName name, Bindable<?> target) {
+	/**
+     * Builds a message for a failed property binding.
+     * 
+     * @param name   the name of the property being bound
+     * @param target the target object being bound to
+     * @return the generated message
+     */
+    private static String buildMessage(ConfigurationPropertyName name, Bindable<?> target) {
 		StringBuilder message = new StringBuilder();
 		message.append("Failed to bind properties");
 		message.append((name != null) ? " under '" + name + "'" : "");

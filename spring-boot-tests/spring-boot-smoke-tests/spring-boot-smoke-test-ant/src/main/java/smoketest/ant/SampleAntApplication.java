@@ -20,15 +20,31 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleAntApplication class.
+ */
 @SpringBootApplication
 public class SampleAntApplication implements CommandLineRunner {
 
-	@Override
+	/**
+     * This method is the entry point of the application.
+     * It is executed when the application is run.
+     * It prints "Spring Boot Ant Example" to the console.
+     *
+     * @param args The command line arguments passed to the application.
+     */
+    @Override
 	public void run(String... args) {
 		System.out.println("Spring Boot Ant Example");
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by calling the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleAntApplication.class, args);
 	}
 

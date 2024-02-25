@@ -30,11 +30,24 @@ import org.springframework.core.annotation.AnnotationAttributes;
  */
 class OnEnabledInfoContributorCondition extends OnEndpointElementCondition {
 
-	OnEnabledInfoContributorCondition() {
+	/**
+     * Constructs a new OnEnabledInfoContributorCondition with the specified prefix and annotation class.
+     *
+     * @param prefix the prefix for the management info
+     * @param annotationClass the annotation class to check for enabling the info contributor
+     */
+    OnEnabledInfoContributorCondition() {
 		super("management.info.", ConditionalOnEnabledInfoContributor.class);
 	}
 
-	@Override
+	/**
+     * Returns the default outcome for the condition.
+     * 
+     * @param context the condition context
+     * @param annotationAttributes the annotation attributes
+     * @return the default outcome for the condition
+     */
+    @Override
 	protected ConditionOutcome getDefaultOutcome(ConditionContext context, AnnotationAttributes annotationAttributes) {
 		InfoContributorFallback fallback = annotationAttributes.getEnum("fallback");
 		if (fallback == InfoContributorFallback.DISABLE) {

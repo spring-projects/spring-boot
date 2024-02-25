@@ -35,11 +35,22 @@ import org.springframework.util.StringUtils;
  */
 class WebServletHandler extends ServletComponentHandler {
 
-	WebServletHandler() {
+	/**
+     * Constructs a new WebServletHandler object.
+     * This constructor calls the superclass constructor with the parameter WebServlet.class.
+     */
+    WebServletHandler() {
 		super(WebServlet.class);
 	}
 
-	@Override
+	/**
+     * Handles the registration of a servlet bean definition in the bean definition registry.
+     * 
+     * @param attributes the attributes of the servlet registration
+     * @param beanDefinition the annotated bean definition of the servlet
+     * @param registry the bean definition registry
+     */
+    @Override
 	public void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry) {
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ServletRegistrationBean.class);
@@ -54,12 +65,27 @@ class WebServletHandler extends ServletComponentHandler {
 		registry.registerBeanDefinition(name, builder.getBeanDefinition());
 	}
 
-	private String determineName(Map<String, Object> attributes, BeanDefinition beanDefinition) {
+	/**
+     * Determines the name for a servlet handler based on the given attributes and bean definition.
+     * If the "name" attribute is present and has text, it is used as the name.
+     * Otherwise, the bean class name is used as the name.
+     * 
+     * @param attributes the attributes for the servlet handler
+     * @param beanDefinition the bean definition for the servlet handler
+     * @return the determined name for the servlet handler
+     */
+    private String determineName(Map<String, Object> attributes, BeanDefinition beanDefinition) {
 		return (String) (StringUtils.hasText((String) attributes.get("name")) ? attributes.get("name")
 				: beanDefinition.getBeanClassName());
 	}
 
-	private BeanDefinition determineMultipartConfig(AnnotatedBeanDefinition beanDefinition) {
+	/**
+     * Determines the MultipartConfig for the given bean definition.
+     * 
+     * @param beanDefinition The annotated bean definition to determine the MultipartConfig for.
+     * @return The BeanDefinition representing the MultipartConfig, or null if no MultipartConfig annotation is present.
+     */
+    private BeanDefinition determineMultipartConfig(AnnotatedBeanDefinition beanDefinition) {
 		Map<String, Object> attributes = beanDefinition.getMetadata()
 			.getAnnotationAttributes(MultipartConfig.class.getName());
 		if (attributes == null) {

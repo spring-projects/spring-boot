@@ -42,27 +42,55 @@ public class TaskExecutionProperties {
 	 */
 	private String threadNamePrefix = "task-";
 
-	public Simple getSimple() {
+	/**
+     * Returns the Simple object associated with this TaskExecutionProperties.
+     *
+     * @return the Simple object associated with this TaskExecutionProperties
+     */
+    public Simple getSimple() {
 		return this.simple;
 	}
 
-	public Pool getPool() {
+	/**
+     * Returns the pool associated with this TaskExecutionProperties object.
+     *
+     * @return the pool associated with this TaskExecutionProperties object
+     */
+    public Pool getPool() {
 		return this.pool;
 	}
 
-	public Shutdown getShutdown() {
+	/**
+     * Returns the shutdown object associated with this TaskExecutionProperties.
+     *
+     * @return the shutdown object
+     */
+    public Shutdown getShutdown() {
 		return this.shutdown;
 	}
 
-	public String getThreadNamePrefix() {
+	/**
+     * Returns the thread name prefix used for task execution.
+     *
+     * @return the thread name prefix
+     */
+    public String getThreadNamePrefix() {
 		return this.threadNamePrefix;
 	}
 
-	public void setThreadNamePrefix(String threadNamePrefix) {
+	/**
+     * Sets the prefix for the thread name of the task execution.
+     * 
+     * @param threadNamePrefix the prefix to be set for the thread name
+     */
+    public void setThreadNamePrefix(String threadNamePrefix) {
 		this.threadNamePrefix = threadNamePrefix;
 	}
 
-	public static class Simple {
+	/**
+     * Simple class.
+     */
+    public static class Simple {
 
 		/**
 		 * Set the maximum number of parallel accesses allowed. -1 indicates no
@@ -70,17 +98,30 @@ public class TaskExecutionProperties {
 		 */
 		private Integer concurrencyLimit;
 
-		public Integer getConcurrencyLimit() {
+		/**
+         * Returns the concurrency limit of the Simple class.
+         *
+         * @return the concurrency limit as an Integer
+         */
+        public Integer getConcurrencyLimit() {
 			return this.concurrencyLimit;
 		}
 
-		public void setConcurrencyLimit(Integer concurrencyLimit) {
+		/**
+         * Sets the concurrency limit for the Simple class.
+         * 
+         * @param concurrencyLimit the maximum number of concurrent operations allowed
+         */
+        public void setConcurrencyLimit(Integer concurrencyLimit) {
 			this.concurrencyLimit = concurrencyLimit;
 		}
 
 	}
 
-	public static class Pool {
+	/**
+     * Pool class.
+     */
+    public static class Pool {
 
 		/**
 		 * Queue capacity. An unbounded capacity does not increase the pool and therefore
@@ -113,51 +154,109 @@ public class TaskExecutionProperties {
 
 		private final Shutdown shutdown = new Shutdown();
 
-		public int getQueueCapacity() {
+		/**
+         * Returns the capacity of the queue in the Pool.
+         *
+         * @return the capacity of the queue
+         */
+        public int getQueueCapacity() {
 			return this.queueCapacity;
 		}
 
-		public void setQueueCapacity(int queueCapacity) {
+		/**
+         * Sets the capacity of the queue in the Pool.
+         * 
+         * @param queueCapacity the new capacity of the queue
+         */
+        public void setQueueCapacity(int queueCapacity) {
 			this.queueCapacity = queueCapacity;
 		}
 
-		public int getCoreSize() {
+		/**
+         * Returns the size of the core in the pool.
+         *
+         * @return the size of the core in the pool
+         */
+        public int getCoreSize() {
 			return this.coreSize;
 		}
 
-		public void setCoreSize(int coreSize) {
+		/**
+         * Sets the core size of the pool.
+         * 
+         * @param coreSize the new core size for the pool
+         */
+        public void setCoreSize(int coreSize) {
 			this.coreSize = coreSize;
 		}
 
-		public int getMaxSize() {
+		/**
+         * Returns the maximum size of the pool.
+         *
+         * @return the maximum size of the pool
+         */
+        public int getMaxSize() {
 			return this.maxSize;
 		}
 
-		public void setMaxSize(int maxSize) {
+		/**
+         * Sets the maximum size of the pool.
+         * 
+         * @param maxSize the maximum size of the pool
+         */
+        public void setMaxSize(int maxSize) {
 			this.maxSize = maxSize;
 		}
 
-		public boolean isAllowCoreThreadTimeout() {
+		/**
+         * Returns whether core threads are allowed to timeout.
+         * 
+         * @return {@code true} if core threads are allowed to timeout, {@code false} otherwise.
+         */
+        public boolean isAllowCoreThreadTimeout() {
 			return this.allowCoreThreadTimeout;
 		}
 
-		public void setAllowCoreThreadTimeout(boolean allowCoreThreadTimeout) {
+		/**
+         * Sets whether core threads in the pool are allowed to timeout.
+         * 
+         * @param allowCoreThreadTimeout true if core threads are allowed to timeout, false otherwise
+         */
+        public void setAllowCoreThreadTimeout(boolean allowCoreThreadTimeout) {
 			this.allowCoreThreadTimeout = allowCoreThreadTimeout;
 		}
 
-		public Duration getKeepAlive() {
+		/**
+         * Returns the keep alive duration for the pool.
+         *
+         * @return the keep alive duration
+         */
+        public Duration getKeepAlive() {
 			return this.keepAlive;
 		}
 
-		public void setKeepAlive(Duration keepAlive) {
+		/**
+         * Sets the keep alive duration for the pool.
+         * 
+         * @param keepAlive the duration for which idle objects in the pool should be kept alive
+         */
+        public void setKeepAlive(Duration keepAlive) {
 			this.keepAlive = keepAlive;
 		}
 
-		public Shutdown getShutdown() {
+		/**
+         * Returns the shutdown object associated with this Pool.
+         *
+         * @return the shutdown object associated with this Pool
+         */
+        public Shutdown getShutdown() {
 			return this.shutdown;
 		}
 
-		public static class Shutdown {
+		/**
+         * Shutdown class.
+         */
+        public static class Shutdown {
 
 			/**
 			 * Whether to accept further tasks after the application context close phase
@@ -165,11 +264,21 @@ public class TaskExecutionProperties {
 			 */
 			private boolean acceptTasksAfterContextClose;
 
-			public boolean isAcceptTasksAfterContextClose() {
+			/**
+             * Returns a boolean value indicating whether tasks are accepted after the context is closed.
+             *
+             * @return true if tasks are accepted after the context is closed, false otherwise
+             */
+            public boolean isAcceptTasksAfterContextClose() {
 				return this.acceptTasksAfterContextClose;
 			}
 
-			public void setAcceptTasksAfterContextClose(boolean acceptTasksAfterContextClose) {
+			/**
+             * Sets whether to accept tasks after the context is closed.
+             * 
+             * @param acceptTasksAfterContextClose true to accept tasks after the context is closed, false otherwise
+             */
+            public void setAcceptTasksAfterContextClose(boolean acceptTasksAfterContextClose) {
 				this.acceptTasksAfterContextClose = acceptTasksAfterContextClose;
 			}
 
@@ -177,7 +286,10 @@ public class TaskExecutionProperties {
 
 	}
 
-	public static class Shutdown {
+	/**
+     * Shutdown class.
+     */
+    public static class Shutdown {
 
 		/**
 		 * Whether the executor should wait for scheduled tasks to complete on shutdown.
@@ -189,19 +301,39 @@ public class TaskExecutionProperties {
 		 */
 		private Duration awaitTerminationPeriod;
 
-		public boolean isAwaitTermination() {
+		/**
+         * Returns the value indicating whether the termination of the Shutdown instance is awaited.
+         *
+         * @return {@code true} if the termination is awaited, {@code false} otherwise.
+         */
+        public boolean isAwaitTermination() {
 			return this.awaitTermination;
 		}
 
-		public void setAwaitTermination(boolean awaitTermination) {
+		/**
+         * Sets whether the program should await termination of all threads before exiting.
+         * 
+         * @param awaitTermination true if the program should await termination, false otherwise
+         */
+        public void setAwaitTermination(boolean awaitTermination) {
 			this.awaitTermination = awaitTermination;
 		}
 
-		public Duration getAwaitTerminationPeriod() {
+		/**
+         * Returns the await termination period.
+         * 
+         * @return the await termination period
+         */
+        public Duration getAwaitTerminationPeriod() {
 			return this.awaitTerminationPeriod;
 		}
 
-		public void setAwaitTerminationPeriod(Duration awaitTerminationPeriod) {
+		/**
+         * Sets the await termination period for the Shutdown class.
+         * 
+         * @param awaitTerminationPeriod the duration to wait for termination
+         */
+        public void setAwaitTerminationPeriod(Duration awaitTerminationPeriod) {
 			this.awaitTerminationPeriod = awaitTerminationPeriod;
 		}
 

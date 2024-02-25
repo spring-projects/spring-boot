@@ -69,7 +69,13 @@ class ConfigDataLoaders {
 		this.resourceTypes = getResourceTypes(this.loaders);
 	}
 
-	@SuppressWarnings("rawtypes")
+	/**
+     * Returns a list of resource types for the given list of ConfigDataLoaders.
+     * 
+     * @param loaders the list of ConfigDataLoaders
+     * @return an unmodifiable list of resource types
+     */
+    @SuppressWarnings("rawtypes")
 	private List<Class<?>> getResourceTypes(List<ConfigDataLoader> loaders) {
 		List<Class<?>> resourceTypes = new ArrayList<>(loaders.size());
 		for (ConfigDataLoader<?> loader : loaders) {
@@ -78,7 +84,13 @@ class ConfigDataLoaders {
 		return Collections.unmodifiableList(resourceTypes);
 	}
 
-	private Class<?> getResourceType(ConfigDataLoader<?> loader) {
+	/**
+     * Returns the resource type of the given ConfigDataLoader.
+     * 
+     * @param loader the ConfigDataLoader instance
+     * @return the resource type of the ConfigDataLoader
+     */
+    private Class<?> getResourceType(ConfigDataLoader<?> loader) {
 		return ResolvableType.forClass(loader.getClass()).as(ConfigDataLoader.class).resolveGeneric();
 	}
 
@@ -96,7 +108,16 @@ class ConfigDataLoaders {
 		return loader.load(context, resource);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Returns the appropriate ConfigDataLoader for the given resource.
+     * 
+     * @param context the ConfigDataLoaderContext
+     * @param resource the resource to load
+     * @return the ConfigDataLoader for the resource
+     * @throws IllegalStateException if multiple loaders are found for the resource
+     * @throws IllegalArgumentException if no loader is found for the resource
+     */
+    @SuppressWarnings("unchecked")
 	private <R extends ConfigDataResource> ConfigDataLoader<R> getLoader(ConfigDataLoaderContext context, R resource) {
 		ConfigDataLoader<R> result = null;
 		for (int i = 0; i < this.loaders.size(); i++) {

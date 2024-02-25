@@ -19,13 +19,21 @@ package smoketest.aop.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * HelloWorldService class.
+ */
 @Component
 public class HelloWorldService {
 
 	@Value("${test.name:World}")
 	private String name;
 
-	public String getHelloMessage() {
+	/**
+     * Returns a hello message with the name of the person.
+     *
+     * @return the hello message
+     */
+    public String getHelloMessage() {
 		return "Hello " + this.name;
 	}
 

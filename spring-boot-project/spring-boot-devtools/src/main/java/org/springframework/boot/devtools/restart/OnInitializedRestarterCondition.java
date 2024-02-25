@@ -31,7 +31,14 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 class OnInitializedRestarterCondition extends SpringBootCondition {
 
-	@Override
+	/**
+     * Determines the match outcome for the Initialized Restarter Condition.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("Initialized Restarter Condition");
 		Restarter restarter = getRestarter();
@@ -44,7 +51,13 @@ class OnInitializedRestarterCondition extends SpringBootCondition {
 		return ConditionOutcome.match(message.because("available and initialized"));
 	}
 
-	private Restarter getRestarter() {
+	/**
+     * Returns an instance of the Restarter class.
+     * 
+     * @return the Restarter instance
+     * @throws Exception if an error occurs while getting the Restarter instance
+     */
+    private Restarter getRestarter() {
 		try {
 			return Restarter.getInstance();
 		}

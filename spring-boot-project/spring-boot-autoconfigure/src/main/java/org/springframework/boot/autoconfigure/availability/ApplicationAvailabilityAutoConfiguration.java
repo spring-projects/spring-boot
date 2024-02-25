@@ -33,7 +33,12 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 public class ApplicationAvailabilityAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link ApplicationAvailabilityBean} if no other bean of type {@link ApplicationAvailability} is present.
+     * 
+     * @return the created {@link ApplicationAvailabilityBean} instance
+     */
+    @Bean
 	@ConditionalOnMissingBean(ApplicationAvailability.class)
 	public ApplicationAvailabilityBean applicationAvailability() {
 		return new ApplicationAvailabilityBean();

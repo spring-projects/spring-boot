@@ -61,7 +61,18 @@ import org.springframework.core.annotation.Order;
 @EnableConfigurationProperties(ObservationProperties.class)
 public class ObservationAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates an instance of ObservationRegistryPostProcessor.
+     *
+     * @param observationRegistryCustomizers   ObjectProvider of ObservationRegistryCustomizer instances
+     * @param observationPredicates            ObjectProvider of ObservationPredicate instances
+     * @param observationConventions           ObjectProvider of GlobalObservationConvention instances
+     * @param observationHandlers              ObjectProvider of ObservationHandler instances
+     * @param observationHandlerGrouping       ObjectProvider of ObservationHandlerGrouping instance
+     * @param observationFilters               ObjectProvider of ObservationFilter instances
+     * @return                                an instance of ObservationRegistryPostProcessor
+     */
+    @Bean
 	static ObservationRegistryPostProcessor observationRegistryPostProcessor(
 			ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
@@ -73,47 +84,83 @@ public class ObservationAutoConfiguration {
 				observationConventions, observationHandlers, observationHandlerGrouping, observationFilters);
 	}
 
-	@Bean
+	/**
+     * Creates an instance of ObservationRegistry if no other bean of type ObservationRegistry is present in the application context.
+     * 
+     * @return the created instance of ObservationRegistry
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	ObservationRegistry observationRegistry() {
 		return ObservationRegistry.create();
 	}
 
-	@Bean
+	/**
+     * Creates a {@link PropertiesObservationFilterPredicate} bean with the specified {@link ObservationProperties}.
+     * This bean is used to filter observations based on the provided properties.
+     *
+     * @param properties the {@link ObservationProperties} used for filtering observations
+     * @return the {@link PropertiesObservationFilterPredicate} bean
+     */
+    @Bean
 	@Order(0)
 	PropertiesObservationFilterPredicate propertiesObservationFilter(ObservationProperties properties) {
 		return new PropertiesObservationFilterPredicate(properties);
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * OnlyMetricsConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(MeterRegistry.class)
 	@ConditionalOnMissingClass("io.micrometer.tracing.Tracer")
 	static class OnlyMetricsConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of ObservationHandlerGrouping with the specified MeterObservationHandler class.
+         * 
+         * @return the created ObservationHandlerGrouping instance
+         */
+        @Bean
 		ObservationHandlerGrouping metricsObservationHandlerGrouping() {
 			return new ObservationHandlerGrouping(MeterObservationHandler.class);
 		}
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * OnlyTracingConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Tracer.class)
 	@ConditionalOnMissingClass("io.micrometer.core.instrument.MeterRegistry")
 	static class OnlyTracingConfiguration {
 
-		@Bean
+		/**
+         * Creates an instance of ObservationHandlerGrouping with TracingObservationHandler class.
+         * 
+         * @return the created ObservationHandlerGrouping object
+         */
+        @Bean
 		ObservationHandlerGrouping tracingObservationHandlerGrouping() {
 			return new ObservationHandlerGrouping(TracingObservationHandler.class);
 		}
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * MetricsWithTracingConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ MeterRegistry.class, Tracer.class })
 	static class MetricsWithTracingConfiguration {
 
-		@Bean
+		/**
+         * Creates an instance of ObservationHandlerGrouping that includes both TracingObservationHandler and MeterObservationHandler.
+         * 
+         * @return the created ObservationHandlerGrouping instance
+         */
+        @Bean
 		ObservationHandlerGrouping metricsAndTracingObservationHandlerGrouping() {
 			return new ObservationHandlerGrouping(
 					List.of(TracingObservationHandler.class, MeterObservationHandler.class));
@@ -121,27 +168,49 @@ public class ObservationAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * MeterObservationHandlerConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(MeterRegistry.class)
 	@ConditionalOnMissingBean(MeterObservationHandler.class)
 	static class MeterObservationHandlerConfiguration {
 
-		@ConditionalOnMissingBean(type = "io.micrometer.tracing.Tracer")
+		/**
+         * OnlyMetricsMeterObservationHandlerConfiguration class.
+         */
+        @ConditionalOnMissingBean(type = "io.micrometer.tracing.Tracer")
 		@Configuration(proxyBeanMethods = false)
 		static class OnlyMetricsMeterObservationHandlerConfiguration {
 
-			@Bean
+			/**
+             * Creates a new instance of DefaultMeterObservationHandler with the provided MeterRegistry.
+             * 
+             * @param meterRegistry the MeterRegistry to be used by the DefaultMeterObservationHandler
+             * @return a new instance of DefaultMeterObservationHandler
+             */
+            @Bean
 			DefaultMeterObservationHandler defaultMeterObservationHandler(MeterRegistry meterRegistry) {
 				return new DefaultMeterObservationHandler(meterRegistry);
 			}
 
 		}
 
-		@ConditionalOnBean(Tracer.class)
+		/**
+         * TracingAndMetricsObservationHandlerConfiguration class.
+         */
+        @ConditionalOnBean(Tracer.class)
 		@Configuration(proxyBeanMethods = false)
 		static class TracingAndMetricsObservationHandlerConfiguration {
 
-			@Bean
+			/**
+             * Creates a TracingAwareMeterObservationHandler with the given MeterRegistry and Tracer.
+             * 
+             * @param meterRegistry the MeterRegistry to be used by the handler
+             * @param tracer the Tracer to be used by the handler
+             * @return a TracingAwareMeterObservationHandler with the given MeterRegistry and Tracer
+             */
+            @Bean
 			TracingAwareMeterObservationHandler<Observation.Context> tracingAwareMeterObservationHandler(
 					MeterRegistry meterRegistry, Tracer tracer) {
 				DefaultMeterObservationHandler delegate = new DefaultMeterObservationHandler(meterRegistry);
@@ -152,11 +221,20 @@ public class ObservationAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ObservedAspectConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Advice.class)
 	static class ObservedAspectConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of {@link ObservedAspect} if no other bean of the same type is present in the application context.
+         * 
+         * @param observationRegistry the {@link ObservationRegistry} used by the {@link ObservedAspect}
+         * @return a new instance of {@link ObservedAspect}
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		ObservedAspect observedAspect(ObservationRegistry observationRegistry) {
 			return new ObservedAspect(observationRegistry);

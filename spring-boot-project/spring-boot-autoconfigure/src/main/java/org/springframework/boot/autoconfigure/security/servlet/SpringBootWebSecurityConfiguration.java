@@ -52,7 +52,16 @@ class SpringBootWebSecurityConfiguration {
 	@ConditionalOnDefaultWebSecurity
 	static class SecurityFilterChainConfiguration {
 
-		@Bean
+		/**
+         * Configures the default security filter chain for the application.
+         * This filter chain applies basic authentication to all requests and requires authentication for all requests.
+         * It also configures form login and HTTP basic authentication.
+         *
+         * @param http the HttpSecurity object used to configure the security filter chain
+         * @return the configured security filter chain
+         * @throws Exception if an error occurs during configuration
+         */
+        @Bean
 		@Order(SecurityProperties.BASIC_AUTH_ORDER)
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());

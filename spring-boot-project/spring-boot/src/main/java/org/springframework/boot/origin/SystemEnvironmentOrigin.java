@@ -30,17 +30,34 @@ public class SystemEnvironmentOrigin implements Origin {
 
 	private final String property;
 
-	public SystemEnvironmentOrigin(String property) {
+	/**
+     * Constructs a new SystemEnvironmentOrigin object with the specified property name.
+     * 
+     * @param property the name of the property
+     * @throws IllegalArgumentException if the property name is null or empty
+     */
+    public SystemEnvironmentOrigin(String property) {
 		Assert.notNull(property, "Property name must not be null");
 		Assert.hasText(property, "Property name must not be empty");
 		this.property = property;
 	}
 
-	public String getProperty() {
+	/**
+     * Returns the value of the property.
+     *
+     * @return the value of the property
+     */
+    public String getProperty() {
 		return this.property;
 	}
 
-	@Override
+	/**
+     * Compares this SystemEnvironmentOrigin object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the specified object is equal to this SystemEnvironmentOrigin object, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -52,12 +69,22 @@ public class SystemEnvironmentOrigin implements Origin {
 		return ObjectUtils.nullSafeEquals(this.property, other.property);
 	}
 
-	@Override
+	/**
+     * Returns a hash code value for the object. This method overrides the hashCode() method in the Object class.
+     * 
+     * @return the hash code value for the object
+     */
+    @Override
 	public int hashCode() {
 		return ObjectUtils.nullSafeHashCode(this.property);
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the SystemEnvironmentOrigin object.
+     * 
+     * @return a string representation of the SystemEnvironmentOrigin object
+     */
+    @Override
 	public String toString() {
 		return "System Environment Property \"" + this.property + "\"";
 	}

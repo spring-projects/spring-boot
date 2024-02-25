@@ -56,17 +56,37 @@ public class NewRelicMetricsExportAutoConfiguration {
 
 	private final NewRelicProperties properties;
 
-	public NewRelicMetricsExportAutoConfiguration(NewRelicProperties properties) {
+	/**
+     * Constructs a new instance of the NewRelicMetricsExportAutoConfiguration class with the specified NewRelicProperties.
+     * 
+     * @param properties the NewRelicProperties object containing the configuration properties for New Relic metrics export
+     */
+    public NewRelicMetricsExportAutoConfiguration(NewRelicProperties properties) {
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link NewRelicConfig} if no bean of type {@link NewRelicConfig} is already present in the application context.
+     * 
+     * @return the newly created {@link NewRelicConfig} instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public NewRelicConfig newRelicConfig() {
 		return new NewRelicPropertiesConfigAdapter(this.properties);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of NewRelicClientProvider based on the provided NewRelicConfig.
+     * If the clientProviderType is set to INSIGHTS_AGENT, it returns a NewRelicInsightsAgentClientProvider
+     * initialized with the given NewRelicConfig. Otherwise, it returns a NewRelicInsightsApiClientProvider
+     * initialized with the given NewRelicConfig and a HttpUrlConnectionSender with the specified connectTimeout
+     * and readTimeout.
+     *
+     * @param newRelicConfig the NewRelicConfig object used to initialize the client provider
+     * @return a NewRelicClientProvider instance based on the provided NewRelicConfig
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public NewRelicClientProvider newRelicClientProvider(NewRelicConfig newRelicConfig) {
 		if (newRelicConfig.clientProviderType() == ClientProviderType.INSIGHTS_AGENT) {
@@ -77,7 +97,15 @@ public class NewRelicMetricsExportAutoConfiguration {
 
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of NewRelicMeterRegistry if no other bean of the same type is present.
+     * 
+     * @param newRelicConfig the configuration for New Relic
+     * @param clock the clock used for measuring time
+     * @param newRelicClientProvider the provider for the New Relic client
+     * @return a new instance of NewRelicMeterRegistry
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig, Clock clock,
 			NewRelicClientProvider newRelicClientProvider) {

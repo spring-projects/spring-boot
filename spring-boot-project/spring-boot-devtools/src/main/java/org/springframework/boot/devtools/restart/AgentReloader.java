@@ -40,7 +40,10 @@ public abstract class AgentReloader {
 		AGENT_CLASSES = Collections.unmodifiableSet(agentClasses);
 	}
 
-	private AgentReloader() {
+	/**
+     * Private constructor for the AgentReloader class.
+     */
+    private AgentReloader() {
 	}
 
 	/**
@@ -52,7 +55,13 @@ public abstract class AgentReloader {
 				|| isActive(ClassLoader.getSystemClassLoader());
 	}
 
-	private static boolean isActive(ClassLoader classLoader) {
+	/**
+     * Checks if any of the agent classes specified in AGENT_CLASSES array are present in the given class loader.
+     * 
+     * @param classLoader the class loader to check
+     * @return true if any of the agent classes are present in the class loader, false otherwise
+     */
+    private static boolean isActive(ClassLoader classLoader) {
 		for (String agentClass : AGENT_CLASSES) {
 			if (ClassUtils.isPresent(agentClass, classLoader)) {
 				return true;

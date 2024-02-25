@@ -22,6 +22,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.history.RevisionRepository;
 
+/**
+ * CountryRepository interface.
+ */
 public interface CountryRepository extends RevisionRepository<Country, Long, Integer>, Repository<Country, Long> {
 
 	Page<Country> findAll(Pageable pageable);

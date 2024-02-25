@@ -21,12 +21,20 @@ import java.util.List;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * MyBean class.
+ */
 @Component
 public class MyBean {
 
 	private final LdapTemplate template;
 
-	public MyBean(LdapTemplate template) {
+	/**
+     * Constructs a new instance of MyBean with the specified LdapTemplate.
+     * 
+     * @param template the LdapTemplate to be used by the MyBean instance
+     */
+    public MyBean(LdapTemplate template) {
 		this.template = template;
 	}
 

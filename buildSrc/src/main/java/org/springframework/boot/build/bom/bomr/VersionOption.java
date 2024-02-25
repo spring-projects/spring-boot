@@ -31,45 +31,91 @@ class VersionOption {
 
 	private final DependencyVersion version;
 
-	VersionOption(DependencyVersion version) {
+	/**
+     * Constructor for VersionOption class.
+     * 
+     * @param version the dependency version to be set
+     */
+    VersionOption(DependencyVersion version) {
 		this.version = version;
 	}
 
-	DependencyVersion getVersion() {
+	/**
+     * Returns the version of the dependency.
+     *
+     * @return the version of the dependency
+     */
+    DependencyVersion getVersion() {
 		return this.version;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the VersionOption object.
+     * 
+     * @return the string representation of the VersionOption object
+     */
+    @Override
 	public String toString() {
 		return this.version.toString();
 	}
 
-	static final class AlignedVersionOption extends VersionOption {
+	/**
+     * AlignedVersionOption class.
+     */
+    static final class AlignedVersionOption extends VersionOption {
 
 		private final VersionAlignment alignedWith;
 
-		AlignedVersionOption(DependencyVersion version, VersionAlignment alignedWith) {
+		/**
+         * Constructs a new AlignedVersionOption with the specified DependencyVersion and VersionAlignment.
+         * 
+         * @param version the DependencyVersion for this AlignedVersionOption
+         * @param alignedWith the VersionAlignment to align this AlignedVersionOption with
+         */
+        AlignedVersionOption(DependencyVersion version, VersionAlignment alignedWith) {
 			super(version);
 			this.alignedWith = alignedWith;
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the AlignedVersionOption object.
+         * 
+         * @return a string representation of the AlignedVersionOption object, including the alignment information
+         *         with another version
+         */
+        @Override
 		public String toString() {
 			return super.toString() + " (aligned with " + this.alignedWith + ")";
 		}
 
 	}
 
-	static final class ResolvedVersionOption extends VersionOption {
+	/**
+     * ResolvedVersionOption class.
+     */
+    static final class ResolvedVersionOption extends VersionOption {
 
 		private final List<String> missingModules;
 
-		ResolvedVersionOption(DependencyVersion version, List<String> missingModules) {
+		/**
+         * Constructs a new ResolvedVersionOption object with the specified dependency version and list of missing modules.
+         * 
+         * @param version the dependency version for this ResolvedVersionOption
+         * @param missingModules the list of missing modules for this ResolvedVersionOption
+         */
+        ResolvedVersionOption(DependencyVersion version, List<String> missingModules) {
 			super(version);
 			this.missingModules = missingModules;
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the ResolvedVersionOption object.
+         * If there are no missing modules, the string representation is the same as the default toString() method.
+         * If there are missing modules, the string representation includes the missing modules in addition to the default toString() output.
+         * 
+         * @return a string representation of the ResolvedVersionOption object
+         */
+        @Override
 		public String toString() {
 			if (this.missingModules.isEmpty()) {
 				return super.toString();

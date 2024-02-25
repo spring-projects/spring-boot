@@ -33,7 +33,14 @@ class RawConfigurationMetadata {
 
 	private final List<ConfigurationMetadataHint> hints;
 
-	RawConfigurationMetadata(List<ConfigurationMetadataSource> sources, List<ConfigurationMetadataItem> items,
+	/**
+     * Constructs a new instance of RawConfigurationMetadata with the specified sources, items, and hints.
+     * 
+     * @param sources the list of ConfigurationMetadataSource objects
+     * @param items the list of ConfigurationMetadataItem objects
+     * @param hints the list of ConfigurationMetadataHint objects
+     */
+    RawConfigurationMetadata(List<ConfigurationMetadataSource> sources, List<ConfigurationMetadataItem> items,
 			List<ConfigurationMetadataHint> hints) {
 		this.sources = new ArrayList<>(sources);
 		this.items = new ArrayList<>(items);
@@ -43,11 +50,22 @@ class RawConfigurationMetadata {
 		}
 	}
 
-	List<ConfigurationMetadataSource> getSources() {
+	/**
+     * Returns the list of configuration metadata sources.
+     *
+     * @return the list of configuration metadata sources
+     */
+    List<ConfigurationMetadataSource> getSources() {
 		return this.sources;
 	}
 
-	ConfigurationMetadataSource getSource(ConfigurationMetadataItem item) {
+	/**
+     * Retrieves the source of the given configuration metadata item.
+     * 
+     * @param item the configuration metadata item
+     * @return the configuration metadata source, or null if the source type is null or no matching source is found
+     */
+    ConfigurationMetadataSource getSource(ConfigurationMetadataItem item) {
 		if (item.getSourceType() == null) {
 			return null;
 		}
@@ -58,11 +76,21 @@ class RawConfigurationMetadata {
 			.orElse(null);
 	}
 
-	List<ConfigurationMetadataItem> getItems() {
+	/**
+     * Returns the list of ConfigurationMetadataItems.
+     *
+     * @return the list of ConfigurationMetadataItems
+     */
+    List<ConfigurationMetadataItem> getItems() {
 		return this.items;
 	}
 
-	List<ConfigurationMetadataHint> getHints() {
+	/**
+     * Returns the list of configuration metadata hints.
+     *
+     * @return the list of configuration metadata hints
+     */
+    List<ConfigurationMetadataHint> getHints() {
 		return this.hints;
 	}
 
@@ -85,7 +113,13 @@ class RawConfigurationMetadata {
 		}
 	}
 
-	private static boolean hasLength(String string) {
+	/**
+     * Checks if the given string has a non-null and non-empty length.
+     * 
+     * @param string the string to be checked
+     * @return true if the string has a non-null and non-empty length, false otherwise
+     */
+    private static boolean hasLength(String string) {
 		return (string != null && !string.isEmpty());
 	}
 

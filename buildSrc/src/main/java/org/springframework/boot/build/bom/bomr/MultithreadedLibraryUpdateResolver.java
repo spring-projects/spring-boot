@@ -47,12 +47,25 @@ class MultithreadedLibraryUpdateResolver implements LibraryUpdateResolver {
 
 	private final LibraryUpdateResolver delegate;
 
-	MultithreadedLibraryUpdateResolver(int threads, LibraryUpdateResolver delegate) {
+	/**
+     * Initializes a new instance of the MultithreadedLibraryUpdateResolver class with the specified number of threads and delegate.
+     * 
+     * @param threads The number of threads to be used for resolving library updates.
+     * @param delegate The delegate responsible for resolving library updates.
+     */
+    MultithreadedLibraryUpdateResolver(int threads, LibraryUpdateResolver delegate) {
 		this.threads = threads;
 		this.delegate = delegate;
 	}
 
-	@Override
+	/**
+     * Finds library updates for a collection of libraries to upgrade.
+     * 
+     * @param librariesToUpgrade the collection of libraries to upgrade
+     * @param librariesByName the map of libraries by name
+     * @return a list of LibraryWithVersionOptions objects representing the library updates
+     */
+    @Override
 	public List<LibraryWithVersionOptions> findLibraryUpdates(Collection<Library> librariesToUpgrade,
 			Map<String, Library> librariesByName) {
 		LOGGER.info("Looking for updates using {} threads", this.threads);
@@ -74,7 +87,14 @@ class MultithreadedLibraryUpdateResolver implements LibraryUpdateResolver {
 		}
 	}
 
-	private Stream<LibraryWithVersionOptions> getResult(Future<List<LibraryWithVersionOptions>> job) {
+	/**
+     * Retrieves the result of a job that returns a list of LibraryWithVersionOptions objects.
+     * 
+     * @param job the Future representing the job that returns the list of LibraryWithVersionOptions objects
+     * @return a Stream of LibraryWithVersionOptions objects
+     * @throws RuntimeException if the job is interrupted or encounters an execution exception
+     */
+    private Stream<LibraryWithVersionOptions> getResult(Future<List<LibraryWithVersionOptions>> job) {
 		try {
 			return job.get().stream();
 		}

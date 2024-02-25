@@ -25,10 +25,18 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * MyRandomPortTestRestTemplateTests class.
+ */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MyRandomPortTestRestTemplateTests {
 
-	@Test
+	/**
+     * Test method to verify the functionality of the exampleTest.
+     * 
+     * @param restTemplate The TestRestTemplate instance used for making HTTP requests.
+     */
+    @Test
 	void exampleTest(@Autowired TestRestTemplate restTemplate) {
 		String body = restTemplate.getForObject("/", String.class);
 		assertThat(body).isEqualTo("Hello World");

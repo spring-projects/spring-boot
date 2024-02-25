@@ -28,7 +28,13 @@ import org.springframework.test.context.TestContextBootstrapper;
  */
 class DataCouchbaseTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
-	@Override
+	/**
+     * Retrieves the properties specified in the {@link DataCouchbaseTest} annotation for the given test class.
+     * 
+     * @param testClass the test class for which to retrieve the properties
+     * @return an array of properties specified in the {@link DataCouchbaseTest} annotation, or null if the annotation is not present
+     */
+    @Override
 	protected String[] getProperties(Class<?> testClass) {
 		DataCouchbaseTest dataCouchbaseTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				DataCouchbaseTest.class);

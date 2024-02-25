@@ -29,31 +29,59 @@ class ConfigurationPropertySourcesCaching implements ConfigurationPropertyCachin
 
 	private final Iterable<ConfigurationPropertySource> sources;
 
-	ConfigurationPropertySourcesCaching(Iterable<ConfigurationPropertySource> sources) {
+	/**
+     * Constructs a new ConfigurationPropertySourcesCaching object with the specified sources.
+     *
+     * @param sources the iterable collection of ConfigurationPropertySource objects to be cached
+     */
+    ConfigurationPropertySourcesCaching(Iterable<ConfigurationPropertySource> sources) {
 		this.sources = sources;
 	}
 
-	@Override
+	/**
+     * Enables the caching of configuration property sources.
+     * This method enables caching for each configuration property source
+     * by invoking the enable() method of the ConfigurationPropertyCaching class.
+     */
+    @Override
 	public void enable() {
 		forEach(ConfigurationPropertyCaching::enable);
 	}
 
-	@Override
+	/**
+     * Disables the caching for all configuration property sources.
+     * This method iterates over each configuration property caching instance and calls the disable method.
+     */
+    @Override
 	public void disable() {
 		forEach(ConfigurationPropertyCaching::disable);
 	}
 
-	@Override
+	/**
+     * Sets the time to live for all caching instances.
+     * 
+     * @param timeToLive the time to live duration
+     */
+    @Override
 	public void setTimeToLive(Duration timeToLive) {
 		forEach((caching) -> caching.setTimeToLive(timeToLive));
 	}
 
-	@Override
+	/**
+     * Clears all the configuration property sources caching.
+     * This method iterates over each configuration property caching and calls the clear method.
+     */
+    @Override
 	public void clear() {
 		forEach(ConfigurationPropertyCaching::clear);
 	}
 
-	private void forEach(Consumer<ConfigurationPropertyCaching> action) {
+	/**
+     * Iterates over each configuration property source and applies the specified action to the corresponding caching configuration property.
+     * 
+     * @param action the action to be applied to each caching configuration property
+     */
+    private void forEach(Consumer<ConfigurationPropertyCaching> action) {
 		if (this.sources != null) {
 			for (ConfigurationPropertySource source : this.sources) {
 				ConfigurationPropertyCaching caching = CachingConfigurationPropertySource.find(source);

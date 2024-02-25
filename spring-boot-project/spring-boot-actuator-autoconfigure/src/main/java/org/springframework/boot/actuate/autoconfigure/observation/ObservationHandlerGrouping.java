@@ -38,15 +38,31 @@ class ObservationHandlerGrouping {
 
 	private final List<Class<? extends ObservationHandler>> categories;
 
-	ObservationHandlerGrouping(Class<? extends ObservationHandler> category) {
+	/**
+     * Constructs a new ObservationHandlerGrouping with the specified category.
+     * 
+     * @param category the category of the ObservationHandler
+     */
+    ObservationHandlerGrouping(Class<? extends ObservationHandler> category) {
 		this(List.of(category));
 	}
 
-	ObservationHandlerGrouping(List<Class<? extends ObservationHandler>> categories) {
+	/**
+     * Constructs a new ObservationHandlerGrouping with the specified list of categories.
+     * 
+     * @param categories the list of categories to group the ObservationHandlers
+     */
+    ObservationHandlerGrouping(List<Class<? extends ObservationHandler>> categories) {
 		this.categories = categories;
 	}
 
-	void apply(List<ObservationHandler<?>> handlers, ObservationConfig config) {
+	/**
+     * Applies the observation handlers to the given configuration.
+     * 
+     * @param handlers the list of observation handlers
+     * @param config the observation configuration
+     */
+    void apply(List<ObservationHandler<?>> handlers, ObservationConfig config) {
 		MultiValueMap<Class<? extends ObservationHandler>, ObservationHandler<?>> groupings = new LinkedMultiValueMap<>();
 		List<ObservationHandler<?>> handlersWithoutCategory = new ArrayList<>();
 		for (ObservationHandler<?> handler : handlers) {
@@ -69,7 +85,13 @@ class ObservationHandlerGrouping {
 		}
 	}
 
-	private Class<? extends ObservationHandler> findCategory(ObservationHandler<?> handler) {
+	/**
+     * Finds the category of the given ObservationHandler.
+     * 
+     * @param handler the ObservationHandler to find the category for
+     * @return the category of the ObservationHandler, or null if not found
+     */
+    private Class<? extends ObservationHandler> findCategory(ObservationHandler<?> handler) {
 		for (Class<? extends ObservationHandler> category : this.categories) {
 			if (category.isInstance(handler)) {
 				return category;

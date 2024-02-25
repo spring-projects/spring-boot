@@ -44,12 +44,23 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 	 */
 	public static String INT_TEST_SOURCE_SET_NAME = "intTest";
 
-	@Override
+	/**
+     * Applies the IntegrationTestPlugin to the given project.
+     * This method configures integration testing for the project by adding the necessary plugins and configurations.
+     *
+     * @param project the project to apply the plugin to
+     */
+    @Override
 	public void apply(Project project) {
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> configureIntegrationTesting(project));
 	}
 
-	private void configureIntegrationTesting(Project project) {
+	/**
+     * Configures the integration testing for the given project.
+     * 
+     * @param project the project to configure integration testing for
+     */
+    private void configureIntegrationTesting(Project project) {
 		SourceSet intTestSourceSet = createSourceSet(project);
 		Test intTest = createTestTask(project, intTestSourceSet);
 		project.getTasks().getByName(LifecycleBasePlugin.CHECK_TASK_NAME).dependsOn(intTest);
@@ -60,7 +71,13 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 		});
 	}
 
-	private SourceSet createSourceSet(Project project) {
+	/**
+     * Creates a new source set for integration tests.
+     * 
+     * @param project the project to create the source set for
+     * @return the created source set for integration tests
+     */
+    private SourceSet createSourceSet(Project project) {
 		SourceSetContainer sourceSets = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
 		SourceSet intTestSourceSet = sourceSets.create(INT_TEST_SOURCE_SET_NAME);
 		SourceSet main = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
@@ -69,7 +86,14 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 		return intTestSourceSet;
 	}
 
-	private Test createTestTask(Project project, SourceSet intTestSourceSet) {
+	/**
+     * Creates a test task for integration tests.
+     * 
+     * @param project The project to create the test task for.
+     * @param intTestSourceSet The source set for integration tests.
+     * @return The created test task.
+     */
+    private Test createTestTask(Project project, SourceSet intTestSourceSet) {
 		Test intTest = project.getTasks().create(INT_TEST_TASK_NAME, Test.class);
 		intTest.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
 		intTest.setDescription("Runs integration tests.");

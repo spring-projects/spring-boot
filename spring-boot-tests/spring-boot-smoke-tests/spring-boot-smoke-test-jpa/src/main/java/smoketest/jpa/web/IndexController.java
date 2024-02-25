@@ -27,13 +27,21 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+/**
+ * IndexController class.
+ */
 @Controller
 public class IndexController {
 
 	@Autowired
 	private NoteRepository noteRepository;
 
-	@GetMapping("/")
+	/**
+     * Retrieves all notes from the database and displays them on the index page.
+     * 
+     * @return ModelAndView object representing the index page with the list of notes
+     */
+    @GetMapping("/")
 	@Transactional(readOnly = true)
 	public ModelAndView index() {
 		List<Note> notes = this.noteRepository.findAll();

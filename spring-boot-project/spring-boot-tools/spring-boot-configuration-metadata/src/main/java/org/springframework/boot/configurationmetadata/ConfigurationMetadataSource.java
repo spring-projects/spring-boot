@@ -52,7 +52,12 @@ public class ConfigurationMetadataSource implements Serializable {
 		return this.groupId;
 	}
 
-	void setGroupId(String groupId) {
+	/**
+     * Sets the group ID for the configuration metadata source.
+     * 
+     * @param groupId the group ID to be set
+     */
+    void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
 
@@ -65,7 +70,12 @@ public class ConfigurationMetadataSource implements Serializable {
 		return this.type;
 	}
 
-	void setType(String type) {
+	/**
+     * Sets the type of the configuration metadata source.
+     * 
+     * @param type the type of the configuration metadata source
+     */
+    void setType(String type) {
 		this.type = type;
 	}
 
@@ -78,7 +88,12 @@ public class ConfigurationMetadataSource implements Serializable {
 		return this.description;
 	}
 
-	void setDescription(String description) {
+	/**
+     * Sets the description of the configuration metadata source.
+     * 
+     * @param description the description to be set
+     */
+    void setDescription(String description) {
 		this.description = description;
 	}
 
@@ -91,7 +106,12 @@ public class ConfigurationMetadataSource implements Serializable {
 		return this.shortDescription;
 	}
 
-	public void setShortDescription(String shortDescription) {
+	/**
+     * Sets the short description of the configuration metadata source.
+     * 
+     * @param shortDescription the short description to be set
+     */
+    public void setShortDescription(String shortDescription) {
 		this.shortDescription = shortDescription;
 	}
 
@@ -104,7 +124,12 @@ public class ConfigurationMetadataSource implements Serializable {
 		return this.sourceType;
 	}
 
-	void setSourceType(String sourceType) {
+	/**
+     * Sets the source type for the configuration metadata.
+     * 
+     * @param sourceType the source type to be set
+     */
+    void setSourceType(String sourceType) {
 		this.sourceType = sourceType;
 	}
 
@@ -116,7 +141,12 @@ public class ConfigurationMetadataSource implements Serializable {
 		return this.sourceMethod;
 	}
 
-	void setSourceMethod(String sourceMethod) {
+	/**
+     * Sets the source method for the ConfigurationMetadataSource.
+     * 
+     * @param sourceMethod the source method to be set
+     */
+    void setSourceMethod(String sourceMethod) {
 		this.sourceMethod = sourceMethod;
 	}
 

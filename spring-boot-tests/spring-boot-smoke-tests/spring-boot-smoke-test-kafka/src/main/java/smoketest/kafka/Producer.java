@@ -19,16 +19,29 @@ package smoketest.kafka;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * Producer class.
+ */
 @Component
 public class Producer {
 
 	private final KafkaTemplate<Object, SampleMessage> kafkaTemplate;
 
-	Producer(KafkaTemplate<Object, SampleMessage> kafkaTemplate) {
+	/**
+     * Constructor for the Producer class.
+     * 
+     * @param kafkaTemplate the KafkaTemplate used for producing messages
+     */
+    Producer(KafkaTemplate<Object, SampleMessage> kafkaTemplate) {
 		this.kafkaTemplate = kafkaTemplate;
 	}
 
-	public void send(SampleMessage message) {
+	/**
+     * Sends a sample message to the "testTopic" Kafka topic.
+     * 
+     * @param message the sample message to be sent
+     */
+    public void send(SampleMessage message) {
 		this.kafkaTemplate.send("testTopic", message);
 		System.out.println("Sent sample message [" + message + "]");
 	}

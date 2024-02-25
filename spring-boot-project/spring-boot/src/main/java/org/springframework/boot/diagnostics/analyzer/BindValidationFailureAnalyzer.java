@@ -35,7 +35,16 @@ import org.springframework.validation.ObjectError;
  */
 class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 
-	@Override
+	/**
+     * Analyzes the given root failure and cause to determine if it is a bind validation exception.
+     * If it is a bind validation exception, it returns a FailureAnalysis object with the analysis result.
+     * Otherwise, it returns null.
+     *
+     * @param rootFailure The root failure that occurred.
+     * @param cause The cause of the root failure.
+     * @return A FailureAnalysis object if the exception is a bind validation exception, otherwise null.
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, Throwable cause) {
 		ExceptionDetails details = getBindValidationExceptionDetails(rootFailure);
 		if (details == null) {
@@ -44,7 +53,13 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 		return analyzeBindValidationException(details);
 	}
 
-	private ExceptionDetails getBindValidationExceptionDetails(Throwable rootFailure) {
+	/**
+     * Retrieves the details of a bind validation exception.
+     * 
+     * @param rootFailure the root failure exception
+     * @return the exception details, or null if no bind validation exception is found
+     */
+    private ExceptionDetails getBindValidationExceptionDetails(Throwable rootFailure) {
 		BindValidationException validationException = findCause(rootFailure, BindValidationException.class);
 		if (validationException != null) {
 			BindException target = findCause(rootFailure, BindException.class);
@@ -60,7 +75,13 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 		return null;
 	}
 
-	private FailureAnalysis analyzeBindValidationException(ExceptionDetails details) {
+	/**
+     * Analyzes a BindValidationException and generates a FailureAnalysis object.
+     * 
+     * @param details the ExceptionDetails object containing information about the exception
+     * @return a FailureAnalysis object representing the analysis result
+     */
+    private FailureAnalysis analyzeBindValidationException(ExceptionDetails details) {
 		StringBuilder description = new StringBuilder(
 				String.format("Binding to target %s failed:%n", details.getTarget()));
 		for (ObjectError error : details.getErrors()) {
@@ -72,7 +93,13 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 		return getFailureAnalysis(description, details.getCause());
 	}
 
-	private void appendFieldError(StringBuilder description, FieldError error) {
+	/**
+     * Appends a field error to the description.
+     * 
+     * @param description the StringBuilder object to append the error description to
+     * @param error the FieldError object representing the error
+     */
+    private void appendFieldError(StringBuilder description, FieldError error) {
 		Origin origin = Origin.from(error);
 		description.append(String.format("%n    Property: %s", error.getObjectName() + "." + error.getField()));
 		description.append(String.format("%n    Value: \"%s\"", error.getRejectedValue()));
@@ -81,11 +108,21 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 		}
 	}
 
-	private FailureAnalysis getFailureAnalysis(Object description, Throwable cause) {
+	/**
+     * Returns a FailureAnalysis object based on the provided description and cause.
+     * 
+     * @param description the description of the failure
+     * @param cause the Throwable object representing the cause of the failure
+     * @return a FailureAnalysis object containing the failure details
+     */
+    private FailureAnalysis getFailureAnalysis(Object description, Throwable cause) {
 		return new FailureAnalysis(description.toString(), "Update your application's configuration", cause);
 	}
 
-	private static class ExceptionDetails {
+	/**
+     * ExceptionDetails class.
+     */
+    private static class ExceptionDetails {
 
 		private final List<ObjectError> errors;
 
@@ -93,21 +130,43 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 
 		private final Throwable cause;
 
-		ExceptionDetails(List<ObjectError> errors, Object target, Throwable cause) {
+		/**
+         * Constructs a new ExceptionDetails object with the specified errors, target, and cause.
+         * 
+         * @param errors the list of ObjectError containing the errors associated with the exception
+         * @param target the target object that caused the exception
+         * @param cause the Throwable object that caused the exception
+         */
+        ExceptionDetails(List<ObjectError> errors, Object target, Throwable cause) {
 			this.errors = errors;
 			this.target = target;
 			this.cause = cause;
 		}
 
-		Object getTarget() {
+		/**
+         * Returns the target object associated with this ExceptionDetails.
+         *
+         * @return the target object
+         */
+        Object getTarget() {
 			return this.target;
 		}
 
-		List<ObjectError> getErrors() {
+		/**
+         * Returns the list of ObjectError instances representing the errors.
+         *
+         * @return the list of ObjectError instances representing the errors
+         */
+        List<ObjectError> getErrors() {
 			return this.errors;
 		}
 
-		Throwable getCause() {
+		/**
+         * Returns the cause of this exception.
+         *
+         * @return the cause of this exception, or null if the cause is nonexistent or unknown.
+         */
+        Throwable getCause() {
 			return this.cause;
 		}
 

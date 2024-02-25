@@ -19,10 +19,18 @@ package smoketest.war;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * MyController class.
+ */
 @RestController
 public class MyController {
 
-	@GetMapping("/")
+	/**
+     * Returns a greeting message.
+     * 
+     * @return the greeting message "Hello World!"
+     */
+    @GetMapping("/")
 	public String hello() {
 		return "Hello World!";
 	}

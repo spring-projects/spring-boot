@@ -72,7 +72,12 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 		setOrder(-100);
 	}
 
-	@Override
+	/**
+     * Returns the LinksHandler for this WebFluxEndpointHandlerMapping.
+     * 
+     * @return the LinksHandler instance
+     */
+    @Override
 	protected LinksHandler getLinksHandler() {
 		return new WebFluxLinksHandler();
 	}
@@ -82,7 +87,13 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 	 */
 	class WebFluxLinksHandler implements LinksHandler {
 
-		@Override
+		/**
+         * Retrieves the links for the given server web exchange.
+         * 
+         * @param exchange the server web exchange
+         * @return a map of links
+         */
+        @Override
 		@ResponseBody
 		@Reflective
 		public Map<String, Map<String, Link>> links(ServerWebExchange exchange) {
@@ -93,20 +104,34 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 			return OperationResponseBody.of(Collections.singletonMap("_links", links));
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * 
+         * @return the string representation of the object
+         */
+        @Override
 		public String toString() {
 			return "Actuator root web endpoint";
 		}
 
 	}
 
-	static class WebFluxEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * WebFluxEndpointHandlerMappingRuntimeHints class.
+     */
+    static class WebFluxEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
 
 		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
 
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
-		@Override
+		/**
+         * Registers the runtime hints for the WebFluxEndpointHandlerMappingRuntimeHints class.
+         * 
+         * @param hints the runtime hints to register
+         * @param classLoader the class loader to use for reflection
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			this.reflectiveRegistrar.registerRuntimeHints(hints, WebFluxLinksHandler.class);
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);

@@ -30,7 +30,13 @@ import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
  */
 class AutoConfiguredCompositeMeterRegistry extends CompositeMeterRegistry {
 
-	AutoConfiguredCompositeMeterRegistry(Clock clock, List<MeterRegistry> registries) {
+	/**
+     * Constructs a new AutoConfiguredCompositeMeterRegistry with the specified clock and list of meter registries.
+     *
+     * @param clock the clock used for measuring time
+     * @param registries the list of meter registries to be included in the composite meter registry
+     */
+    AutoConfiguredCompositeMeterRegistry(Clock clock, List<MeterRegistry> registries) {
 		super(clock, registries);
 	}
 

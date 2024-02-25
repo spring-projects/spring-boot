@@ -45,11 +45,21 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(HttpExchangesProperties.class)
 public class HttpExchangesAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ServletHttpExchangesConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	static class ServletHttpExchangesConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of the {@link HttpExchangesFilter} class if no other bean of the same type is present.
+         * 
+         * @param repository the {@link HttpExchangeRepository} bean to be injected
+         * @param properties the {@link HttpExchangesProperties} bean to be injected
+         * @return a new instance of the {@link HttpExchangesFilter} class
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		HttpExchangesFilter httpExchangesFilter(HttpExchangeRepository repository, HttpExchangesProperties properties) {
 			return new HttpExchangesFilter(repository, properties.getRecording().getInclude());
@@ -57,11 +67,21 @@ public class HttpExchangesAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * ReactiveHttpExchangesConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	static class ReactiveHttpExchangesConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of the {@link HttpExchangesWebFilter} if no other bean of the same type is present.
+         * 
+         * @param repository the {@link HttpExchangeRepository} used for storing and retrieving HTTP exchanges
+         * @param properties the {@link HttpExchangesProperties} containing configuration properties for HTTP exchanges recording
+         * @return a new instance of the {@link HttpExchangesWebFilter}
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		HttpExchangesWebFilter httpExchangesWebFilter(HttpExchangeRepository repository,
 				HttpExchangesProperties properties) {

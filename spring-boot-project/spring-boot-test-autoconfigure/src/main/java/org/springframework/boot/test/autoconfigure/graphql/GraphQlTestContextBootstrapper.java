@@ -27,7 +27,13 @@ import org.springframework.test.context.TestContextBootstrapper;
  */
 class GraphQlTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
-	@Override
+	/**
+     * Retrieves the properties from the given test class.
+     * 
+     * @param testClass the test class to retrieve the properties from
+     * @return an array of properties if the test class is annotated with {@link GraphQlTest}, otherwise null
+     */
+    @Override
 	protected String[] getProperties(Class<?> testClass) {
 		GraphQlTest graphQlTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, GraphQlTest.class);
 		return (graphQlTest != null) ? graphQlTest.properties() : null;

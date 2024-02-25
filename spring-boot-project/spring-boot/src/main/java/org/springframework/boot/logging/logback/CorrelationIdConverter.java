@@ -38,19 +38,35 @@ public class CorrelationIdConverter extends DynamicConverter<ILoggingEvent> {
 
 	private CorrelationIdFormatter formatter;
 
-	@Override
+	/**
+     * Starts the CorrelationIdConverter.
+     * 
+     * This method initializes the formatter by creating a new instance of CorrelationIdFormatter
+     * using the option list obtained from the getOptionList() method. It then calls the start() method
+     * of the superclass to start the converter.
+     */
+    @Override
 	public void start() {
 		this.formatter = CorrelationIdFormatter.of(getOptionList());
 		super.start();
 	}
 
-	@Override
+	/**
+     * Stops the CorrelationIdConverter by setting the formatter to null and calling the superclass's stop method.
+     */
+    @Override
 	public void stop() {
 		this.formatter = null;
 		super.stop();
 	}
 
-	@Override
+	/**
+     * Converts the given logging event into a formatted string.
+     * 
+     * @param event the logging event to be converted
+     * @return the formatted string representing the logging event
+     */
+    @Override
 	public String convert(ILoggingEvent event) {
 		if (this.formatter == null) {
 			return "";

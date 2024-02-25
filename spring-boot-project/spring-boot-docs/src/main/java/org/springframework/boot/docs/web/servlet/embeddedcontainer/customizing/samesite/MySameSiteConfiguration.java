@@ -20,10 +20,18 @@ import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MySameSiteConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MySameSiteConfiguration {
 
-	@Bean
+	/**
+     * Returns a CookieSameSiteSupplier that sets the SameSite attribute of cookies to "Lax" when the cookie name matches the pattern "myapp.*".
+     * 
+     * @return a CookieSameSiteSupplier that sets the SameSite attribute of cookies to "Lax" when the cookie name matches the pattern "myapp.*"
+     */
+    @Bean
 	public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
 		return CookieSameSiteSupplier.ofLax().whenHasNameMatching("myapp.*");
 	}

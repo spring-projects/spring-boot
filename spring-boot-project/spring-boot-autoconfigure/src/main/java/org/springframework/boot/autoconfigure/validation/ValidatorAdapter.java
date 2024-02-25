@@ -48,45 +48,94 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 
 	private final boolean existingBean;
 
-	ValidatorAdapter(SmartValidator target, boolean existingBean) {
+	/**
+     * Constructs a new ValidatorAdapter with the specified SmartValidator target and existingBean flag.
+     * 
+     * @param target the SmartValidator to be adapted
+     * @param existingBean flag indicating whether the target SmartValidator is an existing bean or not
+     */
+    ValidatorAdapter(SmartValidator target, boolean existingBean) {
 		this.target = target;
 		this.existingBean = existingBean;
 	}
 
-	public final Validator getTarget() {
+	/**
+     * Returns the target Validator object.
+     *
+     * @return the target Validator object
+     */
+    public final Validator getTarget() {
 		return this.target;
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the ValidatorAdapter supports the given class.
+     * 
+     * @param clazz the class to be checked for support
+     * @return true if the ValidatorAdapter supports the given class, false otherwise
+     */
+    @Override
 	public boolean supports(Class<?> clazz) {
 		return this.target.supports(clazz);
 	}
 
-	@Override
+	/**
+     * Validates the specified target object using the provided Errors object.
+     * 
+     * @param target the object to be validated
+     * @param errors the Errors object to store any validation errors
+     */
+    @Override
 	public void validate(Object target, Errors errors) {
 		this.target.validate(target, errors);
 	}
 
-	@Override
+	/**
+     * Validates the given target object using the specified validation hints.
+     * 
+     * @param target           the object to be validated
+     * @param errors           the errors object to store any validation errors
+     * @param validationHints  optional validation hints to be used during validation
+     */
+    @Override
 	public void validate(Object target, Errors errors, Object... validationHints) {
 		this.target.validate(target, errors, validationHints);
 	}
 
-	@Override
+	/**
+     * Sets the application context for this ValidatorAdapter.
+     * 
+     * @param applicationContext the ApplicationContext to be set
+     * @throws BeansException if an error occurs while setting the application context
+     */
+    @Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		if (!this.existingBean && this.target instanceof ApplicationContextAware contextAwareTarget) {
 			contextAwareTarget.setApplicationContext(applicationContext);
 		}
 	}
 
-	@Override
+	/**
+     * This method is called after all bean properties have been set, and performs any necessary initialization.
+     * If the target object is an instance of InitializingBean, the afterPropertiesSet() method of the target object is called.
+     * 
+     * @throws Exception if an error occurs during initialization
+     */
+    @Override
 	public void afterPropertiesSet() throws Exception {
 		if (!this.existingBean && this.target instanceof InitializingBean initializingBean) {
 			initializingBean.afterPropertiesSet();
 		}
 	}
 
-	@Override
+	/**
+     * This method is called when the ValidatorAdapter is being destroyed.
+     * It checks if the target bean is an instance of DisposableBean and if it is not an existing bean.
+     * If both conditions are met, it calls the destroy() method of the DisposableBean.
+     *
+     * @throws Exception if an error occurs during the destruction process
+     */
+    @Override
 	public void destroy() throws Exception {
 		if (!this.existingBean && this.target instanceof DisposableBean disposableBean) {
 			disposableBean.destroy();
@@ -111,7 +160,14 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 		return getExistingOrCreate(applicationContext);
 	}
 
-	private static Validator getExistingOrCreate(ApplicationContext applicationContext) {
+	/**
+     * Retrieves an existing Validator instance from the ApplicationContext if available,
+     * otherwise creates a new Validator instance.
+     * 
+     * @param applicationContext the ApplicationContext to retrieve the Validator from
+     * @return the existing Validator instance if available, otherwise a new Validator instance
+     */
+    private static Validator getExistingOrCreate(ApplicationContext applicationContext) {
 		Validator existing = getExisting(applicationContext);
 		if (existing != null) {
 			return wrap(existing, true);
@@ -119,7 +175,13 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 		return create(applicationContext);
 	}
 
-	private static Validator getExisting(ApplicationContext applicationContext) {
+	/**
+     * Retrieves an existing validator from the application context.
+     * 
+     * @param applicationContext the application context from which to retrieve the validator
+     * @return the existing validator if found, or null if not found
+     */
+    private static Validator getExisting(ApplicationContext applicationContext) {
 		try {
 			jakarta.validation.Validator validatorBean = applicationContext.getBean(jakarta.validation.Validator.class);
 			if (validatorBean instanceof Validator validator) {
@@ -132,7 +194,13 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 		}
 	}
 
-	private static Validator create(MessageSource messageSource) {
+	/**
+     * Creates a new Validator instance with the given MessageSource.
+     * 
+     * @param messageSource the MessageSource to be used for message interpolation
+     * @return a new Validator instance
+     */
+    private static Validator create(MessageSource messageSource) {
 		OptionalValidatorFactoryBean validator = new OptionalValidatorFactoryBean();
 		try {
 			MessageInterpolatorFactory factory = new MessageInterpolatorFactory(messageSource);
@@ -144,7 +212,14 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 		return wrap(validator, false);
 	}
 
-	private static Validator wrap(Validator validator, boolean existingBean) {
+	/**
+     * Wraps the given validator with the specified existing bean flag.
+     * 
+     * @param validator The validator to be wrapped.
+     * @param existingBean The flag indicating whether the validator is for an existing bean.
+     * @return The wrapped validator.
+     */
+    private static Validator wrap(Validator validator, boolean existingBean) {
 		if (validator instanceof jakarta.validation.Validator jakartaValidator) {
 			if (jakartaValidator instanceof SpringValidatorAdapter adapter) {
 				return new ValidatorAdapter(adapter, existingBean);
@@ -154,7 +229,16 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 		return validator;
 	}
 
-	@Override
+	/**
+     * Returns an object of the specified type if the underlying target object is an instance of the specified type.
+     * 
+     * @param type the class object representing the type to be unwrapped
+     * @return an object of the specified type if the underlying target object is an instance of the specified type, 
+     *         or the result of calling the unwrap method on the underlying target object
+     * @throws NullPointerException if the specified type is null
+     * @throws ClassCastException if the underlying target object is not an instance of the specified type
+     */
+    @Override
 	@SuppressWarnings("unchecked")
 	public <T> T unwrap(Class<T> type) {
 		if (type.isInstance(this.target)) {

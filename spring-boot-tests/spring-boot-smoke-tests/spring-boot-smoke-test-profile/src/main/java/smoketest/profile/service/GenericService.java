@@ -20,6 +20,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+/**
+ * GenericService class.
+ */
 @Component
 @Profile({ "generic" })
 public class GenericService implements MessageService {
@@ -30,7 +33,12 @@ public class GenericService implements MessageService {
 	@Value("${test.name:World}")
 	private String name;
 
-	@Override
+	/**
+     * Returns the message composed of the hello string and the name string.
+     * 
+     * @return the message composed of the hello string and the name string
+     */
+    @Override
 	public String getMessage() {
 		return this.hello + " " + this.name;
 	}

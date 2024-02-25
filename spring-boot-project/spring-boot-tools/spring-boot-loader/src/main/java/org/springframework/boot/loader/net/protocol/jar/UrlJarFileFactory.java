@@ -57,7 +57,13 @@ class UrlJarFileFactory {
 		return createJarFileForStream(jarFileUrl, version, closeAction);
 	}
 
-	private Runtime.Version getVersion(URL url) {
+	/**
+     * Returns the version of the runtime associated with the given URL.
+     * 
+     * @param url the URL for which the runtime version is to be determined
+     * @return the version of the runtime associated with the URL
+     */
+    private Runtime.Version getVersion(URL url) {
 		// The standard JDK handler uses #runtime to indicate that the runtime version
 		// should be used. This unfortunately doesn't work for us as
 		// jdk.internal.loader.URLClassPath only adds the runtime fragment when the URL
@@ -66,33 +72,81 @@ class UrlJarFileFactory {
 		return "base".equals(url.getRef()) ? JarFile.baseVersion() : JarFile.runtimeVersion();
 	}
 
-	private boolean isLocalFileUrl(URL url) {
+	/**
+     * Checks if the given URL is a local file URL.
+     * 
+     * @param url the URL to check
+     * @return true if the URL is a local file URL, false otherwise
+     */
+    private boolean isLocalFileUrl(URL url) {
 		return url.getProtocol().equalsIgnoreCase("file") && isLocal(url.getHost());
 	}
 
-	private boolean isLocal(String host) {
+	/**
+     * Checks if the given host is a local host.
+     * 
+     * @param host the host to be checked
+     * @return true if the host is local, false otherwise
+     */
+    private boolean isLocal(String host) {
 		return host == null || host.isEmpty() || host.equals("~") || host.equalsIgnoreCase("localhost");
 	}
 
-	private JarFile createJarFileForLocalFile(URL url, Runtime.Version version, Consumer<JarFile> closeAction)
+	/**
+     * Creates a JarFile object for a local file specified by the given URL.
+     * 
+     * @param url          the URL of the local file
+     * @param version      the version of the Java runtime environment
+     * @param closeAction  the action to be performed when the JarFile is closed
+     * @return             the created JarFile object
+     * @throws IOException if an I/O error occurs while creating the JarFile
+     */
+    private JarFile createJarFileForLocalFile(URL url, Runtime.Version version, Consumer<JarFile> closeAction)
 			throws IOException {
 		String path = UrlDecoder.decode(url.getPath());
 		return new UrlJarFile(new File(path), version, closeAction);
 	}
 
-	private JarFile createJarFileForNested(URL url, Runtime.Version version, Consumer<JarFile> closeAction)
+	/**
+     * Creates a JarFile for a nested URL.
+     * 
+     * @param url          the URL of the nested JarFile
+     * @param version      the version of the JarFile
+     * @param closeAction  the action to be performed when the JarFile is closed
+     * @return             the created JarFile
+     * @throws IOException if an I/O error occurs while creating the JarFile
+     */
+    private JarFile createJarFileForNested(URL url, Runtime.Version version, Consumer<JarFile> closeAction)
 			throws IOException {
 		NestedLocation location = NestedLocation.fromUrl(url);
 		return new UrlNestedJarFile(location.path().toFile(), location.nestedEntryName(), version, closeAction);
 	}
 
-	private JarFile createJarFileForStream(URL url, Version version, Consumer<JarFile> closeAction) throws IOException {
+	/**
+     * Creates a JarFile object for the given URL and version, with an optional close action.
+     * 
+     * @param url          the URL of the Jar file
+     * @param version      the version of the Jar file
+     * @param closeAction  the action to be performed when the JarFile is closed
+     * @return             the created JarFile object
+     * @throws IOException if an I/O error occurs while creating the JarFile
+     */
+    private JarFile createJarFileForStream(URL url, Version version, Consumer<JarFile> closeAction) throws IOException {
 		try (InputStream in = url.openStream()) {
 			return createJarFileForStream(in, version, closeAction);
 		}
 	}
 
-	private JarFile createJarFileForStream(InputStream in, Version version, Consumer<JarFile> closeAction)
+	/**
+     * Creates a JarFile object for the given input stream, version, and close action.
+     * 
+     * @param in           the input stream representing the jar file
+     * @param version      the version of the jar file
+     * @param closeAction  the action to be performed when the jar file is closed
+     * @return             the created JarFile object
+     * @throws IOException if an I/O error occurs while creating the JarFile object
+     */
+    private JarFile createJarFileForStream(InputStream in, Version version, Consumer<JarFile> closeAction)
 			throws IOException {
 		Path local = Files.createTempFile("jar_cache", null);
 		try {
@@ -107,7 +161,14 @@ class UrlJarFileFactory {
 		}
 	}
 
-	private void deleteIfPossible(Path local, Throwable cause) {
+	/**
+     * Deletes the specified file if it exists.
+     * 
+     * @param local the path of the file to be deleted
+     * @param cause the throwable object that caused the deletion to be attempted
+     * @throws NullPointerException if the local path is null
+     */
+    private void deleteIfPossible(Path local, Throwable cause) {
 		try {
 			Files.delete(local);
 		}
@@ -116,7 +177,13 @@ class UrlJarFileFactory {
 		}
 	}
 
-	static boolean isNestedUrl(URL url) {
+	/**
+     * Checks if the given URL is a nested URL.
+     * 
+     * @param url the URL to be checked
+     * @return true if the URL is a nested URL, false otherwise
+     */
+    static boolean isNestedUrl(URL url) {
 		return url.getProtocol().equalsIgnoreCase("nested");
 	}
 

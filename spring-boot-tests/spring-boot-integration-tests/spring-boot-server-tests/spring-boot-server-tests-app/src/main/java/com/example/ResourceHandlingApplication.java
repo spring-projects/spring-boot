@@ -40,14 +40,24 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class ResourceHandlingApplication {
 
-	@Bean
+	/**
+     * Registers a servlet for handling resource requests.
+     * 
+     * @return the ServletRegistrationBean for the resource servlet
+     */
+    @Bean
 	public ServletRegistrationBean<?> resourceServletRegistration() {
 		ServletRegistrationBean<?> registration = new ServletRegistrationBean<HttpServlet>(new GetResourceServlet());
 		registration.addUrlMappings("/servletContext");
 		return registration;
 	}
 
-	@Bean
+	/**
+     * Registers the GetResourcePathsServlet as a servlet and maps it to the "/resourcePaths" URL.
+     * 
+     * @return The ServletRegistrationBean for the GetResourcePathsServlet.
+     */
+    @Bean
 	public ServletRegistrationBean<?> resourcePathsServletRegistration() {
 		ServletRegistrationBean<?> registration = new ServletRegistrationBean<HttpServlet>(
 				new GetResourcePathsServlet());
@@ -55,7 +65,14 @@ public class ResourceHandlingApplication {
 		return registration;
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the ResourceHandlingApplication class.
+     * 
+     * This method is the entry point of the application. It checks if the Spring MVC framework is present. If it is, an error message is printed and the application exits. If it is not present, the application is started using the embedded container's static resource handling.
+     * 
+     * @param args The command line arguments passed to the application.
+     */
+    public static void main(String[] args) {
 		try {
 			Class.forName("org.springframework.web.servlet.DispatcherServlet");
 			System.err.println("Spring MVC must not be present, otherwise its static resource handling "
@@ -68,15 +85,33 @@ public class ResourceHandlingApplication {
 		}
 	}
 
-	private static final class GetResourcePathsServlet extends HttpServlet {
+	/**
+     * GetResourcePathsServlet class.
+     */
+    private static final class GetResourcePathsServlet extends HttpServlet {
 
-		@Override
+		/**
+         * This method is called when a GET request is made to the servlet.
+         * It retrieves the resource paths for the specified directory and writes them to the response.
+         * 
+         * @param req The HttpServletRequest object representing the request made to the servlet.
+         * @param resp The HttpServletResponse object representing the response to be sent back to the client.
+         * @throws ServletException If there is a servlet-related problem.
+         * @throws IOException If there is an I/O problem.
+         */
+        @Override
 		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 			collectResourcePaths("/").forEach(resp.getWriter()::println);
 			resp.getWriter().flush();
 		}
 
-		private Set<String> collectResourcePaths(String path) {
+		/**
+         * Recursively collects all resource paths under the given path.
+         * 
+         * @param path the path to collect resource paths from
+         * @return a set of all resource paths found under the given path
+         */
+        private Set<String> collectResourcePaths(String path) {
 			Set<String> allResourcePaths = new LinkedHashSet<>();
 			Set<String> pathsForPath = getServletContext().getResourcePaths(path);
 			if (pathsForPath != null) {
@@ -90,9 +125,22 @@ public class ResourceHandlingApplication {
 
 	}
 
-	private static final class GetResourceServlet extends HttpServlet {
+	/**
+     * GetResourceServlet class.
+     */
+    private static final class GetResourceServlet extends HttpServlet {
 
-		@Override
+		/**
+         * This method is called when a GET request is made to the servlet.
+         * It retrieves the resource specified in the query string and sends it back as a response.
+         * If the resource is not found, a 404 error is sent.
+         *
+         * @param req  the HttpServletRequest object representing the request made by the client
+         * @param resp the HttpServletResponse object representing the response to be sent back to the client
+         * @throws ServletException if there is a servlet-related problem
+         * @throws IOException      if there is an I/O problem
+         */
+        @Override
 		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 			URL resource = getServletContext().getResource(req.getQueryString());
 			if (resource == null) {

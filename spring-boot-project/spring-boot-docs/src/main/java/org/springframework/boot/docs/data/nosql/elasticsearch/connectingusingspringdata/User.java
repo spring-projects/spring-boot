@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.data.nosql.elasticsearch.connectingusingspringdata;
 
+/**
+ * User class.
+ */
 class User {
 
 }

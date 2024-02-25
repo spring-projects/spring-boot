@@ -35,10 +35,18 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyCloudFoundryConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyCloudFoundryConfiguration {
 
-	@Bean
+	/**
+     * Configures the Tomcat servlet web server factory for the Cloud Foundry application.
+     * 
+     * @return The configured TomcatServletWebServerFactory instance.
+     */
+    @Bean
 	public TomcatServletWebServerFactory servletWebServerFactory() {
 		return new TomcatServletWebServerFactory() {
 
@@ -57,7 +65,14 @@ public class MyCloudFoundryConfiguration {
 		};
 	}
 
-	private ServletContainerInitializer getServletContextInitializer(String contextPath) {
+	/**
+     * Returns a ServletContainerInitializer that initializes the servlet context with a servlet
+     * for handling requests to the specified context path.
+     * 
+     * @param contextPath the context path for the servlet
+     * @return the ServletContainerInitializer for initializing the servlet context
+     */
+    private ServletContainerInitializer getServletContextInitializer(String contextPath) {
 		return (classes, context) -> {
 			Servlet servlet = new GenericServlet() {
 

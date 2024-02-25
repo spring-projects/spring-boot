@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.nativeimage.introducinggraalvmnativeimages.understandingaotprocessing.sourcecodegeneration;
 
+/**
+ * MyBean class.
+ */
 public class MyBean {
 
 }

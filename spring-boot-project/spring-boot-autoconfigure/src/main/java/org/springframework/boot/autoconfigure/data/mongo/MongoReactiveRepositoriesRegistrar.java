@@ -32,22 +32,40 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  */
 class MongoReactiveRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
-	@Override
+	/**
+     * Returns the annotation class that is used to enable reactive Mongo repositories.
+     *
+     * @return the annotation class {@code EnableReactiveMongoRepositories}
+     */
+    @Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableReactiveMongoRepositories.class;
 	}
 
-	@Override
+	/**
+     * Returns the configuration class for enabling reactive Mongo repositories.
+     * 
+     * @return the configuration class for enabling reactive Mongo repositories
+     */
+    @Override
 	protected Class<?> getConfiguration() {
 		return EnableReactiveMongoRepositoriesConfiguration.class;
 	}
 
-	@Override
+	/**
+     * Returns the repository configuration extension for ReactiveMongo repositories.
+     * 
+     * @return The repository configuration extension for ReactiveMongo repositories.
+     */
+    @Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new ReactiveMongoRepositoryConfigurationExtension();
 	}
 
-	@EnableReactiveMongoRepositories
+	/**
+     * EnableReactiveMongoRepositoriesConfiguration class.
+     */
+    @EnableReactiveMongoRepositories
 	private static final class EnableReactiveMongoRepositoriesConfiguration {
 
 	}

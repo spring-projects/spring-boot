@@ -29,11 +29,22 @@ import org.springframework.boot.cli.command.status.ExitStatus;
  */
 public class ShellCommand extends AbstractCommand {
 
-	public ShellCommand() {
+	/**
+     * Constructs a new ShellCommand object.
+     * This command is used to start a nested shell.
+     */
+    public ShellCommand() {
 		super("shell", "Start a nested shell");
 	}
 
-	@Override
+	/**
+     * Executes the run method of the ShellCommand class.
+     * 
+     * @param args the command line arguments
+     * @return the exit status of the run method
+     * @throws Exception if an error occurs during execution
+     */
+    @Override
 	public ExitStatus run(String... args) throws Exception {
 		new Shell().run();
 		return ExitStatus.OK;

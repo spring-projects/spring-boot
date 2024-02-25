@@ -68,25 +68,54 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 		setOrder(-100);
 	}
 
-	private Map<Object, ExposableControllerEndpoint> getHandlers(Collection<ExposableControllerEndpoint> endpoints) {
+	/**
+     * Returns a map of handlers for the given collection of exposable controller endpoints.
+     * The map is created by iterating over the endpoints and mapping each endpoint's controller
+     * to the endpoint itself.
+     * 
+     * @param endpoints the collection of exposable controller endpoints
+     * @return an unmodifiable map of handlers, where the key is the controller and the value is the endpoint
+     */
+    private Map<Object, ExposableControllerEndpoint> getHandlers(Collection<ExposableControllerEndpoint> endpoints) {
 		Map<Object, ExposableControllerEndpoint> handlers = new LinkedHashMap<>();
 		endpoints.forEach((endpoint) -> handlers.put(endpoint.getController(), endpoint));
 		return Collections.unmodifiableMap(handlers);
 	}
 
-	@Override
+	/**
+     * Initializes the handler methods for the ControllerEndpointHandlerMapping class.
+     * This method detects the handler methods for each key in the handlers map.
+     */
+    @Override
 	protected void initHandlerMethods() {
 		this.handlers.keySet().forEach(this::detectHandlerMethods);
 	}
 
-	@Override
+	/**
+     * Registers a handler method for a ControllerEndpoint.
+     * 
+     * @param handler the handler object
+     * @param method the method to be registered
+     * @param mapping the RequestMappingInfo for the method
+     */
+    @Override
 	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
 		ExposableControllerEndpoint endpoint = this.handlers.get(handler);
 		mapping = withEndpointMappedPatterns(endpoint, mapping);
 		super.registerHandlerMethod(handler, method, mapping);
 	}
 
-	private RequestMappingInfo withEndpointMappedPatterns(ExposableControllerEndpoint endpoint,
+	/**
+     * Returns a new RequestMappingInfo object with the endpoint mapped patterns.
+     * If the mapping does not have any patterns, a default pattern is created.
+     * The endpoint mapped patterns are obtained by mapping each pattern in the
+     * original mapping to the endpoint mapped pattern using the getEndpointMappedPattern method.
+     * 
+     * @param endpoint the ExposableControllerEndpoint object representing the endpoint
+     * @param mapping the RequestMappingInfo object representing the original mapping
+     * @return a new RequestMappingInfo object with the endpoint mapped patterns
+     */
+    private RequestMappingInfo withEndpointMappedPatterns(ExposableControllerEndpoint endpoint,
 			RequestMappingInfo mapping) {
 		Set<PathPattern> patterns = mapping.getPathPatternsCondition().getPatterns();
 		if (patterns.isEmpty()) {
@@ -98,21 +127,48 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 		return mapping.mutate().paths(endpointMappedPatterns).build();
 	}
 
-	private String getEndpointMappedPattern(ExposableControllerEndpoint endpoint, PathPattern pattern) {
+	/**
+     * Returns the mapped pattern for the given endpoint and path pattern.
+     * 
+     * @param endpoint the exposable controller endpoint
+     * @param pattern the path pattern
+     * @return the mapped pattern
+     */
+    private String getEndpointMappedPattern(ExposableControllerEndpoint endpoint, PathPattern pattern) {
 		return this.endpointMapping.createSubPath(endpoint.getRootPath() + pattern);
 	}
 
-	@Override
+	/**
+     * Determines if the specified handler has a CORS configuration source.
+     * 
+     * @param handler the handler object to check
+     * @return true if the handler has a CORS configuration source, false otherwise
+     */
+    @Override
 	protected boolean hasCorsConfigurationSource(Object handler) {
 		return this.corsConfiguration != null;
 	}
 
-	@Override
+	/**
+     * Initializes the CORS configuration for the specified handler method and mapping.
+     * 
+     * @param handler the handler object
+     * @param method the handler method
+     * @param mapping the mapping information
+     * @return the CORS configuration
+     */
+    @Override
 	protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mapping) {
 		return this.corsConfiguration;
 	}
 
-	@Override
+	/**
+     * Extends the list of interceptors for the ControllerEndpointHandlerMapping.
+     * Adds a SkipPathExtensionContentNegotiation interceptor to the list.
+     *
+     * @param interceptors the list of interceptors to extend
+     */
+    @Override
 	protected void extendInterceptors(List<Object> interceptors) {
 		interceptors.add(new SkipPathExtensionContentNegotiation());
 	}

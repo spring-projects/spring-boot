@@ -22,6 +22,9 @@ import java.time.temporal.ChronoUnit;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
+/**
+ * MyProperties class.
+ */
 @ConfigurationProperties("my")
 public class MyProperties {
 
@@ -35,15 +38,30 @@ public class MyProperties {
 		return this.sessionTimeout;
 	}
 
-	public void setSessionTimeout(Duration sessionTimeout) {
+	/**
+     * Sets the session timeout for the MyProperties class.
+     * 
+     * @param sessionTimeout the duration of the session timeout
+     */
+    public void setSessionTimeout(Duration sessionTimeout) {
 		this.sessionTimeout = sessionTimeout;
 	}
 
-	public Duration getReadTimeout() {
+	/**
+     * Returns the read timeout duration.
+     *
+     * @return the read timeout duration
+     */
+    public Duration getReadTimeout() {
 		return this.readTimeout;
 	}
 
-	public void setReadTimeout(Duration readTimeout) {
+	/**
+     * Sets the read timeout for the MyProperties class.
+     * 
+     * @param readTimeout the duration of the read timeout
+     */
+    public void setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
 	}
 	// @fold:off

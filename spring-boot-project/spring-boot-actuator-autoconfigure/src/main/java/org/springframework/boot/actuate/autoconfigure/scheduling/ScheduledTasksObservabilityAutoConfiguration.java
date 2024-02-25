@@ -40,20 +40,40 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 @ConditionalOnClass(ThreadPoolTaskScheduler.class)
 public class ScheduledTasksObservabilityAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates an instance of ObservabilitySchedulingConfigurer with the provided ObservationRegistry.
+     * 
+     * @param observationRegistry the ObservationRegistry to be used by the ObservabilitySchedulingConfigurer
+     * @return an instance of ObservabilitySchedulingConfigurer
+     */
+    @Bean
 	ObservabilitySchedulingConfigurer observabilitySchedulingConfigurer(ObservationRegistry observationRegistry) {
 		return new ObservabilitySchedulingConfigurer(observationRegistry);
 	}
 
-	static final class ObservabilitySchedulingConfigurer implements SchedulingConfigurer {
+	/**
+     * ObservabilitySchedulingConfigurer class.
+     */
+    static final class ObservabilitySchedulingConfigurer implements SchedulingConfigurer {
 
 		private final ObservationRegistry observationRegistry;
 
-		ObservabilitySchedulingConfigurer(ObservationRegistry observationRegistry) {
+		/**
+         * Constructs a new ObservabilitySchedulingConfigurer with the specified ObservationRegistry.
+         * 
+         * @param observationRegistry the ObservationRegistry to be used for observability scheduling
+         */
+        ObservabilitySchedulingConfigurer(ObservationRegistry observationRegistry) {
 			this.observationRegistry = observationRegistry;
 		}
 
-		@Override
+		/**
+         * Configures the tasks for scheduling.
+         * 
+         * @param taskRegistrar the task registrar to configure
+         * @see ScheduledTaskRegistrar
+         */
+        @Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
 			taskRegistrar.setObservationRegistry(this.observationRegistry);
 		}

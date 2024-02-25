@@ -115,7 +115,14 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		this.converters = Collections.unmodifiableList(combined);
 	}
 
-	private List<HttpMessageConverter<?>> getCombinedConverters(Collection<HttpMessageConverter<?>> converters,
+	/**
+     * Combines the given collection of converters with the default converters and returns the combined list.
+     * 
+     * @param converters the collection of converters to be combined
+     * @param defaultConverters the default converters to be combined with the given converters
+     * @return the combined list of converters
+     */
+    private List<HttpMessageConverter<?>> getCombinedConverters(Collection<HttpMessageConverter<?>> converters,
 			List<HttpMessageConverter<?>> defaultConverters) {
 		List<HttpMessageConverter<?>> combined = new ArrayList<>();
 		List<HttpMessageConverter<?>> processing = new ArrayList<>(converters);
@@ -137,7 +144,14 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		return combined;
 	}
 
-	private boolean isReplacement(HttpMessageConverter<?> defaultConverter, HttpMessageConverter<?> candidate) {
+	/**
+     * Checks if the given candidate HttpMessageConverter can replace the defaultConverter.
+     * 
+     * @param defaultConverter the default HttpMessageConverter
+     * @param candidate the candidate HttpMessageConverter
+     * @return true if the candidate can replace the defaultConverter, false otherwise
+     */
+    private boolean isReplacement(HttpMessageConverter<?> defaultConverter, HttpMessageConverter<?> candidate) {
 		for (Class<?> nonReplacingConverter : NON_REPLACING_CONVERTERS) {
 			if (nonReplacingConverter.isInstance(candidate)) {
 				return false;
@@ -151,7 +165,13 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		return equivalentClass != null && ClassUtils.isAssignableValue(equivalentClass, candidate);
 	}
 
-	private void configurePartConverters(AllEncompassingFormHttpMessageConverter formConverter,
+	/**
+     * Configures the part converters for the given form converter and collection of converters.
+     * 
+     * @param formConverter The form converter to configure the part converters for.
+     * @param converters The collection of converters to combine with the part converters.
+     */
+    private void configurePartConverters(AllEncompassingFormHttpMessageConverter formConverter,
 			Collection<HttpMessageConverter<?>> converters) {
 		List<HttpMessageConverter<?>> partConverters = formConverter.getPartConverters();
 		List<HttpMessageConverter<?>> combinedConverters = getCombinedConverters(converters, partConverters);
@@ -181,7 +201,12 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		return converters;
 	}
 
-	private List<HttpMessageConverter<?>> getDefaultConverters() {
+	/**
+     * Returns the default list of HTTP message converters.
+     * 
+     * @return the list of HTTP message converters
+     */
+    private List<HttpMessageConverter<?>> getDefaultConverters() {
 		List<HttpMessageConverter<?>> converters = new ArrayList<>();
 		if (ClassUtils.isPresent("org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport",
 				null)) {
@@ -200,7 +225,12 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		return converters;
 	}
 
-	private void reorderXmlConvertersToEnd(List<HttpMessageConverter<?>> converters) {
+	/**
+     * Reorders the XML converters to the end of the list of converters.
+     * 
+     * @param converters the list of HTTP message converters
+     */
+    private void reorderXmlConvertersToEnd(List<HttpMessageConverter<?>> converters) {
 		List<HttpMessageConverter<?>> xml = new ArrayList<>();
 		for (Iterator<HttpMessageConverter<?>> iterator = converters.iterator(); iterator.hasNext();) {
 			HttpMessageConverter<?> converter = iterator.next();
@@ -213,7 +243,12 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		converters.addAll(xml);
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the HttpMessageConverters in this class.
+     *
+     * @return an iterator over the HttpMessageConverters in this class
+     */
+    @Override
 	public Iterator<HttpMessageConverter<?>> iterator() {
 		return getConverters().iterator();
 	}
@@ -227,7 +262,13 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		return this.converters;
 	}
 
-	private static void addClassIfExists(List<Class<?>> list, String className) {
+	/**
+     * Adds a class to the given list if it exists.
+     * 
+     * @param list the list to add the class to
+     * @param className the name of the class to add
+     */
+    private static void addClassIfExists(List<Class<?>> list, String className) {
 		try {
 			list.add(Class.forName(className));
 		}
@@ -236,7 +277,14 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		}
 	}
 
-	private static void putIfExists(Map<Class<?>, Class<?>> map, String keyClassName, String valueClassName) {
+	/**
+     * Puts the key-value pair into the given map if both the key and value classes exist.
+     * 
+     * @param map              the map to put the key-value pair into
+     * @param keyClassName     the fully qualified name of the key class
+     * @param valueClassName   the fully qualified name of the value class
+     */
+    private static void putIfExists(Map<Class<?>, Class<?>> map, String keyClassName, String valueClassName) {
 		try {
 			map.put(Class.forName(keyClassName), Class.forName(valueClassName));
 		}

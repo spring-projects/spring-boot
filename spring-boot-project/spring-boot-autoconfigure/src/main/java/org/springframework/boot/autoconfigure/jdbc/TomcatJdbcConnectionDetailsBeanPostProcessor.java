@@ -30,11 +30,23 @@ import org.springframework.beans.factory.ObjectProvider;
  */
 class TomcatJdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsBeanPostProcessor<DataSource> {
 
-	TomcatJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+	/**
+     * Constructs a new TomcatJdbcConnectionDetailsBeanPostProcessor with the specified connectionDetailsProvider.
+     * 
+     * @param connectionDetailsProvider the provider for JdbcConnectionDetails objects
+     */
+    TomcatJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
 		super(DataSource.class, connectionDetailsProvider);
 	}
 
-	@Override
+	/**
+     * Sets the connection details for the given data source.
+     * 
+     * @param dataSource the data source to set the connection details for
+     * @param connectionDetails the JDBC connection details to set
+     * @return the updated data source with the connection details set
+     */
+    @Override
 	protected Object processDataSource(DataSource dataSource, JdbcConnectionDetails connectionDetails) {
 		dataSource.setUrl(connectionDetails.getJdbcUrl());
 		dataSource.setUsername(connectionDetails.getUsername());

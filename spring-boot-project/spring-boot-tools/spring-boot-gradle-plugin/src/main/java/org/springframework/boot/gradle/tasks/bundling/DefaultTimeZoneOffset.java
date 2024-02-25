@@ -33,7 +33,12 @@ class DefaultTimeZoneOffset {
 
 	private final TimeZone defaultTimeZone;
 
-	DefaultTimeZoneOffset(TimeZone defaultTimeZone) {
+	/**
+     * Sets the default time zone offset.
+     * 
+     * @param defaultTimeZone the default time zone to set the offset for
+     */
+    DefaultTimeZoneOffset(TimeZone defaultTimeZone) {
 		this.defaultTimeZone = defaultTimeZone;
 	}
 

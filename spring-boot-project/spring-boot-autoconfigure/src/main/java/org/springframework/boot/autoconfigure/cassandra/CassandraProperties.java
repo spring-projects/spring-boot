@@ -114,111 +114,244 @@ public class CassandraProperties {
 	 */
 	private final Controlconnection controlconnection = new Controlconnection();
 
-	public Resource getConfig() {
+	/**
+     * Retrieves the configuration resource.
+     *
+     * @return the configuration resource
+     */
+    public Resource getConfig() {
 		return this.config;
 	}
 
-	public void setConfig(Resource config) {
+	/**
+     * Sets the configuration resource for the CassandraProperties class.
+     * 
+     * @param config the configuration resource to be set
+     */
+    public void setConfig(Resource config) {
 		this.config = config;
 	}
 
-	public String getKeyspaceName() {
+	/**
+     * Returns the name of the keyspace.
+     *
+     * @return the name of the keyspace
+     */
+    public String getKeyspaceName() {
 		return this.keyspaceName;
 	}
 
-	public void setKeyspaceName(String keyspaceName) {
+	/**
+     * Sets the name of the keyspace.
+     * 
+     * @param keyspaceName the name of the keyspace to be set
+     */
+    public void setKeyspaceName(String keyspaceName) {
 		this.keyspaceName = keyspaceName;
 	}
 
-	public String getSessionName() {
+	/**
+     * Returns the session name.
+     *
+     * @return the session name
+     */
+    public String getSessionName() {
 		return this.sessionName;
 	}
 
-	public void setSessionName(String sessionName) {
+	/**
+     * Sets the session name for the CassandraProperties class.
+     * 
+     * @param sessionName the session name to be set
+     */
+    public void setSessionName(String sessionName) {
 		this.sessionName = sessionName;
 	}
 
-	public List<String> getContactPoints() {
+	/**
+     * Returns the list of contact points.
+     *
+     * @return the list of contact points
+     */
+    public List<String> getContactPoints() {
 		return this.contactPoints;
 	}
 
-	public void setContactPoints(List<String> contactPoints) {
+	/**
+     * Sets the contact points for the Cassandra cluster.
+     * 
+     * @param contactPoints the list of contact points to set
+     */
+    public void setContactPoints(List<String> contactPoints) {
 		this.contactPoints = contactPoints;
 	}
 
-	public int getPort() {
+	/**
+     * Returns the port number.
+     *
+     * @return the port number
+     */
+    public int getPort() {
 		return this.port;
 	}
 
-	public void setPort(int port) {
+	/**
+     * Sets the port number for the Cassandra connection.
+     * 
+     * @param port the port number to set
+     */
+    public void setPort(int port) {
 		this.port = port;
 	}
 
-	public String getLocalDatacenter() {
+	/**
+     * Returns the local datacenter.
+     *
+     * @return the local datacenter
+     */
+    public String getLocalDatacenter() {
 		return this.localDatacenter;
 	}
 
-	public void setLocalDatacenter(String localDatacenter) {
+	/**
+     * Sets the local datacenter for the Cassandra properties.
+     * 
+     * @param localDatacenter the local datacenter to be set
+     */
+    public void setLocalDatacenter(String localDatacenter) {
 		this.localDatacenter = localDatacenter;
 	}
 
-	public String getUsername() {
+	/**
+     * Returns the username associated with the Cassandra properties.
+     *
+     * @return the username
+     */
+    public String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	/**
+     * Sets the username for the Cassandra connection.
+     * 
+     * @param username the username to set
+     */
+    public void setUsername(String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	/**
+     * Returns the password for the Cassandra connection.
+     *
+     * @return the password for the Cassandra connection
+     */
+    public String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	/**
+     * Sets the password for the Cassandra connection.
+     * 
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
 		this.password = password;
 	}
 
-	public Compression getCompression() {
+	/**
+     * Returns the compression type used by the CassandraProperties object.
+     * 
+     * @return the compression type
+     */
+    public Compression getCompression() {
 		return this.compression;
 	}
 
-	public void setCompression(Compression compression) {
+	/**
+     * Sets the compression algorithm to be used for data compression.
+     * 
+     * @param compression the compression algorithm to be set
+     */
+    public void setCompression(Compression compression) {
 		this.compression = compression;
 	}
 
-	public Ssl getSsl() {
+	/**
+     * Returns the SSL configuration for the Cassandra properties.
+     *
+     * @return the SSL configuration
+     */
+    public Ssl getSsl() {
 		return this.ssl;
 	}
 
-	public void setSsl(Ssl ssl) {
+	/**
+     * Sets the SSL configuration for the Cassandra properties.
+     * 
+     * @param ssl the SSL configuration to be set
+     */
+    public void setSsl(Ssl ssl) {
 		this.ssl = ssl;
 	}
 
-	public String getSchemaAction() {
+	/**
+     * Returns the schema action.
+     * 
+     * @return the schema action
+     */
+    public String getSchemaAction() {
 		return this.schemaAction;
 	}
 
-	public void setSchemaAction(String schemaAction) {
+	/**
+     * Sets the schema action for the CassandraProperties.
+     * 
+     * @param schemaAction the schema action to be set
+     */
+    public void setSchemaAction(String schemaAction) {
 		this.schemaAction = schemaAction;
 	}
 
-	public Connection getConnection() {
+	/**
+     * Returns the connection object.
+     * 
+     * @return the connection object
+     */
+    public Connection getConnection() {
 		return this.connection;
 	}
 
-	public Pool getPool() {
+	/**
+     * Returns the pool associated with this CassandraProperties object.
+     *
+     * @return the pool associated with this CassandraProperties object
+     */
+    public Pool getPool() {
 		return this.pool;
 	}
 
-	public Request getRequest() {
+	/**
+     * Returns the request object associated with this CassandraProperties instance.
+     *
+     * @return the request object
+     */
+    public Request getRequest() {
 		return this.request;
 	}
 
-	public Controlconnection getControlconnection() {
+	/**
+     * Returns the Controlconnection object associated with this CassandraProperties instance.
+     *
+     * @return the Controlconnection object
+     */
+    public Controlconnection getControlconnection() {
 		return this.controlconnection;
 	}
 
-	public static class Ssl {
+	/**
+     * Ssl class.
+     */
+    public static class Ssl {
 
 		/**
 		 * Whether to enable SSL support.
@@ -230,25 +363,48 @@ public class CassandraProperties {
 		 */
 		private String bundle;
 
-		public boolean isEnabled() {
+		/**
+         * Returns a boolean value indicating whether the SSL is enabled.
+         * 
+         * @return true if SSL is enabled, false otherwise
+         */
+        public boolean isEnabled() {
 			return (this.enabled != null) ? this.enabled : this.bundle != null;
 		}
 
-		public void setEnabled(boolean enabled) {
+		/**
+         * Sets the enabled status of the Ssl object.
+         * 
+         * @param enabled the boolean value indicating whether the Ssl object is enabled or not
+         */
+        public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
-		public String getBundle() {
+		/**
+         * Returns the bundle associated with this Ssl object.
+         * 
+         * @return the bundle associated with this Ssl object
+         */
+        public String getBundle() {
 			return this.bundle;
 		}
 
-		public void setBundle(String bundle) {
+		/**
+         * Sets the bundle for the Ssl class.
+         * 
+         * @param bundle the bundle to be set
+         */
+        public void setBundle(String bundle) {
 			this.bundle = bundle;
 		}
 
 	}
 
-	public static class Connection {
+	/**
+     * Connection class.
+     */
+    public static class Connection {
 
 		/**
 		 * Timeout to use when establishing driver connections.
@@ -261,25 +417,48 @@ public class CassandraProperties {
 		 */
 		private Duration initQueryTimeout;
 
-		public Duration getConnectTimeout() {
+		/**
+         * Returns the connect timeout duration.
+         *
+         * @return the connect timeout duration
+         */
+        public Duration getConnectTimeout() {
 			return this.connectTimeout;
 		}
 
-		public void setConnectTimeout(Duration connectTimeout) {
+		/**
+         * Sets the connection timeout for establishing a connection.
+         * 
+         * @param connectTimeout the duration to wait for a connection to be established
+         */
+        public void setConnectTimeout(Duration connectTimeout) {
 			this.connectTimeout = connectTimeout;
 		}
 
-		public Duration getInitQueryTimeout() {
+		/**
+         * Returns the initial query timeout value.
+         * 
+         * @return the initial query timeout value
+         */
+        public Duration getInitQueryTimeout() {
 			return this.initQueryTimeout;
 		}
 
-		public void setInitQueryTimeout(Duration initQueryTimeout) {
+		/**
+         * Sets the initial query timeout for the connection.
+         * 
+         * @param initQueryTimeout the duration of the initial query timeout
+         */
+        public void setInitQueryTimeout(Duration initQueryTimeout) {
 			this.initQueryTimeout = initQueryTimeout;
 		}
 
 	}
 
-	public static class Request {
+	/**
+     * Request class.
+     */
+    public static class Request {
 
 		/**
 		 * How long the driver waits for a request to complete.
@@ -303,39 +482,84 @@ public class CassandraProperties {
 
 		private final Throttler throttler = new Throttler();
 
-		public Duration getTimeout() {
+		/**
+         * Returns the timeout duration for the request.
+         *
+         * @return the timeout duration
+         */
+        public Duration getTimeout() {
 			return this.timeout;
 		}
 
-		public void setTimeout(Duration timeout) {
+		/**
+         * Sets the timeout for the request.
+         * 
+         * @param timeout the duration of the timeout
+         */
+        public void setTimeout(Duration timeout) {
 			this.timeout = timeout;
 		}
 
-		public DefaultConsistencyLevel getConsistency() {
+		/**
+         * Returns the default consistency level for the request.
+         * 
+         * @return the default consistency level
+         */
+        public DefaultConsistencyLevel getConsistency() {
 			return this.consistency;
 		}
 
-		public void setConsistency(DefaultConsistencyLevel consistency) {
+		/**
+         * Sets the consistency level for the request.
+         * 
+         * @param consistency the consistency level to be set
+         */
+        public void setConsistency(DefaultConsistencyLevel consistency) {
 			this.consistency = consistency;
 		}
 
-		public DefaultConsistencyLevel getSerialConsistency() {
+		/**
+         * Returns the default consistency level for serial consistency.
+         *
+         * @return the default serial consistency level
+         */
+        public DefaultConsistencyLevel getSerialConsistency() {
 			return this.serialConsistency;
 		}
 
-		public void setSerialConsistency(DefaultConsistencyLevel serialConsistency) {
+		/**
+         * Sets the serial consistency level for the request.
+         * 
+         * @param serialConsistency the serial consistency level to be set
+         */
+        public void setSerialConsistency(DefaultConsistencyLevel serialConsistency) {
 			this.serialConsistency = serialConsistency;
 		}
 
-		public Integer getPageSize() {
+		/**
+         * Returns the page size.
+         *
+         * @return the page size
+         */
+        public Integer getPageSize() {
 			return this.pageSize;
 		}
 
-		public void setPageSize(int pageSize) {
+		/**
+         * Sets the page size for the request.
+         * 
+         * @param pageSize the page size to be set
+         */
+        public void setPageSize(int pageSize) {
 			this.pageSize = pageSize;
 		}
 
-		public Throttler getThrottler() {
+		/**
+         * Returns the Throttler object associated with this Request.
+         *
+         * @return the Throttler object associated with this Request
+         */
+        public Throttler getThrottler() {
 			return this.throttler;
 		}
 
@@ -357,42 +581,78 @@ public class CassandraProperties {
 		 */
 		private Duration heartbeatInterval;
 
-		public Duration getIdleTimeout() {
+		/**
+         * Returns the idle timeout duration for the pool.
+         *
+         * @return the idle timeout duration
+         */
+        public Duration getIdleTimeout() {
 			return this.idleTimeout;
 		}
 
-		public void setIdleTimeout(Duration idleTimeout) {
+		/**
+         * Sets the idle timeout for the pool.
+         * 
+         * @param idleTimeout the duration of idle time after which an object in the pool is considered idle
+         */
+        public void setIdleTimeout(Duration idleTimeout) {
 			this.idleTimeout = idleTimeout;
 		}
 
-		public Duration getHeartbeatInterval() {
+		/**
+         * Returns the heartbeat interval of the Pool.
+         *
+         * @return the heartbeat interval of the Pool
+         */
+        public Duration getHeartbeatInterval() {
 			return this.heartbeatInterval;
 		}
 
-		public void setHeartbeatInterval(Duration heartbeatInterval) {
+		/**
+         * Sets the heartbeat interval for the Pool.
+         * 
+         * @param heartbeatInterval the duration of the heartbeat interval
+         */
+        public void setHeartbeatInterval(Duration heartbeatInterval) {
 			this.heartbeatInterval = heartbeatInterval;
 		}
 
 	}
 
-	public static class Controlconnection {
+	/**
+     * Controlconnection class.
+     */
+    public static class Controlconnection {
 
 		/**
 		 * Timeout to use for control queries.
 		 */
 		private Duration timeout;
 
-		public Duration getTimeout() {
+		/**
+         * Returns the timeout duration for the control connection.
+         *
+         * @return the timeout duration for the control connection
+         */
+        public Duration getTimeout() {
 			return this.timeout;
 		}
 
-		public void setTimeout(Duration timeout) {
+		/**
+         * Sets the timeout for the control connection.
+         * 
+         * @param timeout the duration of the timeout
+         */
+        public void setTimeout(Duration timeout) {
 			this.timeout = timeout;
 		}
 
 	}
 
-	public static class Throttler {
+	/**
+     * Throttler class.
+     */
+    public static class Throttler {
 
 		/**
 		 * Request throttling type.
@@ -422,43 +682,93 @@ public class CassandraProperties {
 		 */
 		private Duration drainInterval;
 
-		public ThrottlerType getType() {
+		/**
+         * Returns the type of the Throttler.
+         *
+         * @return the type of the Throttler
+         */
+        public ThrottlerType getType() {
 			return this.type;
 		}
 
-		public void setType(ThrottlerType type) {
+		/**
+         * Sets the type of the throttler.
+         * 
+         * @param type the type of the throttler
+         */
+        public void setType(ThrottlerType type) {
 			this.type = type;
 		}
 
-		public Integer getMaxQueueSize() {
+		/**
+         * Returns the maximum size of the queue.
+         *
+         * @return the maximum size of the queue
+         */
+        public Integer getMaxQueueSize() {
 			return this.maxQueueSize;
 		}
 
-		public void setMaxQueueSize(int maxQueueSize) {
+		/**
+         * Sets the maximum size of the queue.
+         * 
+         * @param maxQueueSize the maximum size of the queue
+         */
+        public void setMaxQueueSize(int maxQueueSize) {
 			this.maxQueueSize = maxQueueSize;
 		}
 
-		public Integer getMaxConcurrentRequests() {
+		/**
+         * Returns the maximum number of concurrent requests allowed by the Throttler.
+         *
+         * @return the maximum number of concurrent requests
+         */
+        public Integer getMaxConcurrentRequests() {
 			return this.maxConcurrentRequests;
 		}
 
-		public void setMaxConcurrentRequests(int maxConcurrentRequests) {
+		/**
+         * Sets the maximum number of concurrent requests allowed by the throttler.
+         * 
+         * @param maxConcurrentRequests the maximum number of concurrent requests
+         */
+        public void setMaxConcurrentRequests(int maxConcurrentRequests) {
 			this.maxConcurrentRequests = maxConcurrentRequests;
 		}
 
-		public Integer getMaxRequestsPerSecond() {
+		/**
+         * Returns the maximum number of requests allowed per second.
+         *
+         * @return the maximum number of requests per second
+         */
+        public Integer getMaxRequestsPerSecond() {
 			return this.maxRequestsPerSecond;
 		}
 
-		public void setMaxRequestsPerSecond(int maxRequestsPerSecond) {
+		/**
+         * Sets the maximum number of requests allowed per second.
+         * 
+         * @param maxRequestsPerSecond the maximum number of requests per second
+         */
+        public void setMaxRequestsPerSecond(int maxRequestsPerSecond) {
 			this.maxRequestsPerSecond = maxRequestsPerSecond;
 		}
 
-		public Duration getDrainInterval() {
+		/**
+         * Returns the drain interval of the Throttler.
+         *
+         * @return the drain interval of the Throttler
+         */
+        public Duration getDrainInterval() {
 			return this.drainInterval;
 		}
 
-		public void setDrainInterval(Duration drainInterval) {
+		/**
+         * Sets the drain interval for the throttler.
+         * 
+         * @param drainInterval the duration representing the drain interval
+         */
+        public void setDrainInterval(Duration drainInterval) {
 			this.drainInterval = drainInterval;
 		}
 
@@ -505,11 +815,21 @@ public class CassandraProperties {
 
 		private final String type;
 
-		ThrottlerType(String type) {
+		/**
+     * Sets the throttler type for the Cassandra properties.
+     *
+     * @param type the throttler type to be set
+     */
+    ThrottlerType(String type) {
 			this.type = type;
 		}
 
-		public String type() {
+		/**
+     * Returns the type of the CassandraProperties object.
+     *
+     * @return the type of the CassandraProperties object
+     */
+    public String type() {
 			return this.type;
 		}
 

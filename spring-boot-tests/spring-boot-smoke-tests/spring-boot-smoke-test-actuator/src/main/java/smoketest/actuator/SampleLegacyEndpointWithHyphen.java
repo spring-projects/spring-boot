@@ -23,11 +23,20 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.stereotype.Component;
 
+/**
+ * SampleLegacyEndpointWithHyphen class.
+ */
 @Component
 @Endpoint(id = "another-legacy")
 public class SampleLegacyEndpointWithHyphen {
 
-	@ReadOperation
+	/**
+     * This method returns a map containing a single key-value pair.
+     * The key is "legacy" and the value is also "legacy".
+     * 
+     * @return a map with a single key-value pair
+     */
+    @ReadOperation
 	public Map<String, String> example() {
 		return Collections.singletonMap("legacy", "legacy");
 	}

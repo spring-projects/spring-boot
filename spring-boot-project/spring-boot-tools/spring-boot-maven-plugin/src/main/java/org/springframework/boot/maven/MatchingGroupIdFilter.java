@@ -40,7 +40,13 @@ public class MatchingGroupIdFilter extends AbstractArtifactFeatureFilter {
 		super("", exclude);
 	}
 
-	@Override
+	/**
+     * Returns the group ID of the given artifact.
+     * 
+     * @param artifact the artifact to get the group ID from
+     * @return the group ID of the artifact
+     */
+    @Override
 	protected String getArtifactFeature(Artifact artifact) {
 		return artifact.getGroupId();
 	}

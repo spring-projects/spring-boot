@@ -39,13 +39,27 @@ public abstract class HazelcastConfigResourceCondition extends ResourceCondition
 
 	private final String configSystemProperty;
 
-	protected HazelcastConfigResourceCondition(String configSystemProperty, String... resourceLocations) {
+	/**
+     * Constructs a new HazelcastConfigResourceCondition with the specified config system property and resource locations.
+     * 
+     * @param configSystemProperty the system property used to specify the Hazelcast configuration file
+     * @param resourceLocations the locations of the Hazelcast configuration file
+     * @throws IllegalArgumentException if the configSystemProperty is null
+     */
+    protected HazelcastConfigResourceCondition(String configSystemProperty, String... resourceLocations) {
 		super("Hazelcast", HAZELCAST_CONFIG_PROPERTY, resourceLocations);
 		Assert.notNull(configSystemProperty, "ConfigSystemProperty must not be null");
 		this.configSystemProperty = configSystemProperty;
 	}
 
-	@Override
+	/**
+     * Determines the outcome of the resource condition based on the presence of a system property.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	protected ConditionOutcome getResourceOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		if (System.getProperty(this.configSystemProperty) != null) {
 			return ConditionOutcome

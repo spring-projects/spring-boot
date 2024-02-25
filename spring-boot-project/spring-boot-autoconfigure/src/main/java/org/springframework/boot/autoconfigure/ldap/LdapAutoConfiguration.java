@@ -46,14 +46,29 @@ import org.springframework.ldap.core.support.LdapContextSource;
 @EnableConfigurationProperties(LdapProperties.class)
 public class LdapAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link PropertiesLdapConnectionDetails} if no bean of type {@link LdapConnectionDetails} is present.
+     * 
+     * @param properties the {@link LdapProperties} object containing the LDAP connection properties
+     * @param environment the {@link Environment} object providing access to the application's environment
+     * @return a new instance of {@link PropertiesLdapConnectionDetails}
+     */
+    @Bean
 	@ConditionalOnMissingBean(LdapConnectionDetails.class)
 	PropertiesLdapConnectionDetails propertiesLdapConnectionDetails(LdapProperties properties,
 			Environment environment) {
 		return new PropertiesLdapConnectionDetails(properties, environment);
 	}
 
-	@Bean
+	/**
+     * Creates an instance of {@link LdapContextSource} if no other bean of the same type is present.
+     * 
+     * @param connectionDetails The LDAP connection details.
+     * @param properties The LDAP properties.
+     * @param dirContextAuthenticationStrategy The directory context authentication strategy.
+     * @return An instance of {@link LdapContextSource}.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public LdapContextSource ldapContextSource(LdapConnectionDetails connectionDetails, LdapProperties properties,
 			ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy) {
@@ -70,7 +85,14 @@ public class LdapAutoConfiguration {
 		return source;
 	}
 
-	@Bean
+	/**
+     * Creates an instance of LdapTemplate if no bean of type LdapOperations is present.
+     * 
+     * @param properties the LdapProperties object containing the LDAP configuration properties
+     * @param contextSource the ContextSource object used for connecting to the LDAP server
+     * @return an instance of LdapTemplate
+     */
+    @Bean
 	@ConditionalOnMissingBean(LdapOperations.class)
 	public LdapTemplate ldapTemplate(LdapProperties properties, ContextSource contextSource) {
 		Template template = properties.getTemplate();

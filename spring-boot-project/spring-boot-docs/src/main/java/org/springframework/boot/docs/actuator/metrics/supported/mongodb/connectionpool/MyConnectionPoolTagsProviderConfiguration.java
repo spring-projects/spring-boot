@@ -21,10 +21,18 @@ import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyConnectionPoolTagsProviderConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyConnectionPoolTagsProviderConfiguration {
 
-	@Bean
+	/**
+     * Returns a custom MongoConnectionPoolTagsProvider.
+     * 
+     * @return the custom MongoConnectionPoolTagsProvider
+     */
+    @Bean
 	public MongoConnectionPoolTagsProvider customConnectionPoolTagsProvider() {
 		return new CustomConnectionPoolTagsProvider();
 	}

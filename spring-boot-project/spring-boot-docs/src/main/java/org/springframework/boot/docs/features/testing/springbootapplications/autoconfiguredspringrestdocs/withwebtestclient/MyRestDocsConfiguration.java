@@ -20,10 +20,18 @@ import org.springframework.boot.test.autoconfigure.restdocs.RestDocsWebTestClien
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 
+/**
+ * MyRestDocsConfiguration class.
+ */
 @TestConfiguration(proxyBeanMethods = false)
 public class MyRestDocsConfiguration implements RestDocsWebTestClientConfigurationCustomizer {
 
-	@Override
+	/**
+     * Customize the WebTestClientRestDocumentationConfigurer.
+     * 
+     * @param configurer the WebTestClientRestDocumentationConfigurer to customize
+     */
+    @Override
 	public void customize(WebTestClientRestDocumentationConfigurer configurer) {
 		configurer.snippets().withEncoding("UTF-8");
 	}

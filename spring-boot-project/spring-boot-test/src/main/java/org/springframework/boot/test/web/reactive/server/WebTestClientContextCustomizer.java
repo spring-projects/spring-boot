@@ -57,7 +57,17 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
  */
 class WebTestClientContextCustomizer implements ContextCustomizer {
 
-	@Override
+	/**
+     * Customize the application context for the WebTestClient.
+     * This method is called during the initialization of the test context.
+     * It checks if the AOT (Ahead-of-Time) detection is enabled and returns if so.
+     * Otherwise, it retrieves the merged SpringBootTest annotation from the test class.
+     * If the web environment is set to embedded, it registers the WebTestClient in the context.
+     * 
+     * @param context the configurable application context
+     * @param mergedConfig the merged context configuration
+     */
+    @Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 		if (AotDetector.useGeneratedArtifacts()) {
 			return;
@@ -69,25 +79,49 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		}
 	}
 
-	private void registerWebTestClient(ConfigurableApplicationContext context) {
+	/**
+     * Registers the WebTestClient in the given ConfigurableApplicationContext.
+     * 
+     * @param context the ConfigurableApplicationContext to register the WebTestClient in
+     */
+    private void registerWebTestClient(ConfigurableApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof BeanDefinitionRegistry registry) {
 			registerWebTestClient(registry);
 		}
 	}
 
-	private void registerWebTestClient(BeanDefinitionRegistry registry) {
+	/**
+     * Registers the WebTestClientRegistrar bean definition in the given registry.
+     * This method is used to configure the WebTestClient for testing purposes.
+     * 
+     * @param registry the BeanDefinitionRegistry to register the WebTestClientRegistrar bean definition
+     * @see WebTestClientRegistrar
+     * @since 1.0
+     */
+    private void registerWebTestClient(BeanDefinitionRegistry registry) {
 		RootBeanDefinition definition = new RootBeanDefinition(WebTestClientRegistrar.class);
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		registry.registerBeanDefinition(WebTestClientRegistrar.class.getName(), definition);
 	}
 
-	@Override
+	/**
+     * Compares this object with the specified object for equality.
+     * 
+     * @param obj the object to compare with
+     * @return {@code true} if the specified object is equal to this object, {@code false} otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		return (obj != null) && (obj.getClass() == getClass());
 	}
 
-	@Override
+	/**
+     * Returns a hash code value for the object. This method overrides the hashCode() method in the Object class.
+     * 
+     * @return the hash code value for the object
+     */
+    @Override
 	public int hashCode() {
 		return getClass().hashCode();
 	}
@@ -101,17 +135,47 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 		private BeanFactory beanFactory;
 
-		@Override
+		/**
+         * Set the BeanFactory that this object runs in.
+         * <p>
+         * Invoked after population of normal bean properties but before an init callback such as InitializingBean's
+         * {@code afterPropertiesSet} or a custom init-method. Invoked after ApplicationContextAware's
+         * {@code setApplicationContext}.
+         * <p>
+         * This method allows the object instance to perform initialization based on its bean factory context,
+         * such as setting up bean references or preparing the object for use.
+         * <p>
+         * This implementation sets the specified BeanFactory as the beanFactory property of this object.
+         *
+         * @param beanFactory the BeanFactory that this object runs in
+         * @throws BeansException if initialization failed
+         */
+        @Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 			this.beanFactory = beanFactory;
 		}
 
-		@Override
+		/**
+         * Returns the order value of this object.
+         * 
+         * The order value indicates the relative order in which this object should be processed compared to other objects.
+         * 
+         * This method returns the lowest precedence value, indicating that this object should be processed last.
+         * 
+         * @return the order value of this object
+         */
+        @Override
 		public int getOrder() {
 			return Ordered.LOWEST_PRECEDENCE;
 		}
 
-		@Override
+		/**
+         * Post-processes the bean definition registry.
+         * 
+         * @param registry the bean definition registry
+         * @throws BeansException if an error occurs during bean processing
+         */
+        @Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			if (AotDetector.useGeneratedArtifacts()) {
 				return;
@@ -124,7 +188,13 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 		}
 
-		@Override
+		/**
+         * Post-process the given bean factory.
+         *
+         * @param beanFactory the bean factory to post-process
+         * @throws BeansException if an error occurs during post-processing
+         */
+        @Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
@@ -143,22 +213,44 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 		private static final String REACTIVE_APPLICATION_CONTEXT_CLASS = "org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext";
 
-		@Override
+		/**
+         * Sets the application context for this WebTestClientFactory.
+         * 
+         * @param applicationContext the application context to be set
+         * @throws BeansException if an error occurs while setting the application context
+         */
+        @Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			this.applicationContext = applicationContext;
 		}
 
-		@Override
+		/**
+         * Returns a boolean value indicating whether the WebTestClientFactory is a singleton.
+         *
+         * @return true if the WebTestClientFactory is a singleton, false otherwise
+         */
+        @Override
 		public boolean isSingleton() {
 			return true;
 		}
 
-		@Override
+		/**
+         * Returns the type of object that is created by this factory method.
+         * 
+         * @return the type of object created by this factory method, which is {@link WebTestClient}
+         */
+        @Override
 		public Class<?> getObjectType() {
 			return WebTestClient.class;
 		}
 
-		@Override
+		/**
+         * Returns the WebTestClient object.
+         * 
+         * @return the WebTestClient object
+         * @throws Exception if an error occurs while creating the WebTestClient object
+         */
+        @Override
 		public WebTestClient getObject() throws Exception {
 			if (this.object == null) {
 				this.object = createWebTestClient();
@@ -166,7 +258,12 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			return this.object;
 		}
 
-		private WebTestClient createWebTestClient() {
+		/**
+         * Creates a new instance of WebTestClient.
+         * 
+         * @return the created WebTestClient instance
+         */
+        private WebTestClient createWebTestClient() {
 			boolean sslEnabled = isSslEnabled(this.applicationContext);
 			String port = this.applicationContext.getEnvironment().getProperty("local.server.port", "8080");
 			String baseUrl = getBaseUrl(sslEnabled, port);
@@ -176,13 +273,25 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			return builder.baseUrl(baseUrl).build();
 		}
 
-		private String getBaseUrl(boolean sslEnabled, String port) {
+		/**
+         * Returns the base URL for the WebTestClient.
+         * 
+         * @param sslEnabled a boolean indicating whether SSL is enabled
+         * @param port the port number
+         * @return the base URL as a String
+         */
+        private String getBaseUrl(boolean sslEnabled, String port) {
 			String basePath = deduceBasePath();
 			String pathSegment = (StringUtils.hasText(basePath)) ? basePath : "";
 			return (sslEnabled ? "https" : "http") + "://localhost:" + port + pathSegment;
 		}
 
-		private String deduceBasePath() {
+		/**
+         * Deduces the base path for the web application based on the application context.
+         * 
+         * @return the base path for the web application, or null if it cannot be deduced
+         */
+        private String deduceBasePath() {
 			WebApplicationType webApplicationType = deduceFromApplicationContext(this.applicationContext.getClass());
 			if (webApplicationType == WebApplicationType.REACTIVE) {
 				return this.applicationContext.getEnvironment().getProperty("spring.webflux.base-path");
@@ -193,7 +302,13 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			return null;
 		}
 
-		static WebApplicationType deduceFromApplicationContext(Class<?> applicationContextClass) {
+		/**
+         * Deduces the web application type based on the given application context class.
+         * 
+         * @param applicationContextClass the class of the application context
+         * @return the deduced web application type
+         */
+        static WebApplicationType deduceFromApplicationContext(Class<?> applicationContextClass) {
 			if (isAssignable(SERVLET_APPLICATION_CONTEXT_CLASS, applicationContextClass)) {
 				return WebApplicationType.SERVLET;
 			}
@@ -203,7 +318,14 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			return WebApplicationType.NONE;
 		}
 
-		private static boolean isAssignable(String target, Class<?> type) {
+		/**
+         * Checks if the given target class name is assignable from the specified type.
+         *
+         * @param target the target class name to check
+         * @param type the type to check against
+         * @return {@code true} if the target class is assignable from the specified type, {@code false} otherwise
+         */
+        private static boolean isAssignable(String target, Class<?> type) {
 			try {
 				return ClassUtils.resolveClassName(target, null).isAssignableFrom(type);
 			}
@@ -212,7 +334,13 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			}
 		}
 
-		private boolean isSslEnabled(ApplicationContext context) {
+		/**
+         * Checks if SSL is enabled for the given application context.
+         * 
+         * @param context the application context
+         * @return true if SSL is enabled, false otherwise
+         */
+        private boolean isSslEnabled(ApplicationContext context) {
 			try {
 				AbstractReactiveWebServerFactory webServerFactory = context
 					.getBean(AbstractReactiveWebServerFactory.class);
@@ -223,7 +351,13 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			}
 		}
 
-		private void customizeWebTestClientBuilder(WebTestClient.Builder clientBuilder, ApplicationContext context) {
+		/**
+         * Customizes the WebTestClient.Builder by applying customizers from the ApplicationContext.
+         * 
+         * @param clientBuilder the WebTestClient.Builder to be customized
+         * @param context the ApplicationContext containing the customizers
+         */
+        private void customizeWebTestClientBuilder(WebTestClient.Builder clientBuilder, ApplicationContext context) {
 			for (WebTestClientBuilderCustomizer customizer : context
 				.getBeansOfType(WebTestClientBuilderCustomizer.class)
 				.values()) {
@@ -231,7 +365,13 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			}
 		}
 
-		private void customizeWebTestClientCodecs(WebTestClient.Builder clientBuilder, ApplicationContext context) {
+		/**
+         * Customizes the codecs used by the WebTestClient.
+         * 
+         * @param clientBuilder the WebTestClient.Builder instance
+         * @param context the ApplicationContext instance
+         */
+        private void customizeWebTestClientCodecs(WebTestClient.Builder clientBuilder, ApplicationContext context) {
 			Collection<CodecCustomizer> codecCustomizers = context.getBeansOfType(CodecCustomizer.class).values();
 			if (!CollectionUtils.isEmpty(codecCustomizers)) {
 				clientBuilder.exchangeStrategies(ExchangeStrategies.builder()

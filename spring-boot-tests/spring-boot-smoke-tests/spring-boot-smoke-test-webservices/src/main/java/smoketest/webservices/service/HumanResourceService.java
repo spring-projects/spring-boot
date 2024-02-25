@@ -18,6 +18,9 @@ package smoketest.webservices.service;
 
 import java.util.Date;
 
+/**
+ * HumanResourceService interface.
+ */
 public interface HumanResourceService {
 
 	void bookHoliday(Date startDate, Date endDate, String name);

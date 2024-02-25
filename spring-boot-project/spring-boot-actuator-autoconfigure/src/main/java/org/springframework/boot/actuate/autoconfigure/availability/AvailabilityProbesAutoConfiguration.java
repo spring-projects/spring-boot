@@ -45,20 +45,39 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @Conditional(AvailabilityProbesAutoConfiguration.ProbesCondition.class)
 public class AvailabilityProbesAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link LivenessStateHealthIndicator} if no bean with the name "livenessStateHealthIndicator" is already present.
+     * This health indicator is used to check the liveness state of the application.
+     * 
+     * @param applicationAvailability the {@link ApplicationAvailability} instance used to determine the availability of the application
+     * @return a new instance of {@link LivenessStateHealthIndicator}
+     */
+    @Bean
 	@ConditionalOnMissingBean(name = "livenessStateHealthIndicator")
 	public LivenessStateHealthIndicator livenessStateHealthIndicator(ApplicationAvailability applicationAvailability) {
 		return new LivenessStateHealthIndicator(applicationAvailability);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of ReadinessStateHealthIndicator if a bean with the name "readinessStateHealthIndicator" is missing.
+     * 
+     * @param applicationAvailability the ApplicationAvailability instance to be used by the ReadinessStateHealthIndicator
+     * @return the ReadinessStateHealthIndicator instance
+     */
+    @Bean
 	@ConditionalOnMissingBean(name = "readinessStateHealthIndicator")
 	public ReadinessStateHealthIndicator readinessStateHealthIndicator(
 			ApplicationAvailability applicationAvailability) {
 		return new ReadinessStateHealthIndicator(applicationAvailability);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of AvailabilityProbesHealthEndpointGroupsPostProcessor.
+     * 
+     * @param environment the environment object used to retrieve configuration properties
+     * @return the created AvailabilityProbesHealthEndpointGroupsPostProcessor instance
+     */
+    @Bean
 	public AvailabilityProbesHealthEndpointGroupsPostProcessor availabilityProbesHealthEndpointGroupsPostProcessor(
 			Environment environment) {
 		return new AvailabilityProbesHealthEndpointGroupsPostProcessor(environment);
@@ -76,7 +95,14 @@ public class AvailabilityProbesAutoConfiguration {
 
 		private static final String DEPRECATED_ENABLED_PROPERTY = "management.health.probes.enabled";
 
-		@Override
+		/**
+         * Determines the match outcome for the ProbesCondition.
+         * 
+         * @param context the condition context
+         * @param metadata the annotated type metadata
+         * @return the condition outcome
+         */
+        @Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Probes availability");
@@ -94,7 +120,15 @@ public class AvailabilityProbesAutoConfiguration {
 			return ConditionOutcome.noMatch(message.because("not running on a supported cloud platform"));
 		}
 
-		private ConditionOutcome onProperty(Environment environment, ConditionMessage.Builder message,
+		/**
+         * Determines the outcome of a condition based on the value of a property in the environment.
+         * 
+         * @param environment the environment containing the properties
+         * @param message a builder for creating condition messages
+         * @param propertyName the name of the property to check
+         * @return a ConditionOutcome object representing the outcome of the condition
+         */
+        private ConditionOutcome onProperty(Environment environment, ConditionMessage.Builder message,
 				String propertyName) {
 			String enabled = environment.getProperty(propertyName);
 			if (enabled != null) {

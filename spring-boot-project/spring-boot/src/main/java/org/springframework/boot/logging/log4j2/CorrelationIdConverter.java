@@ -44,12 +44,23 @@ public final class CorrelationIdConverter extends LogEventPatternConverter {
 
 	private final CorrelationIdFormatter formatter;
 
-	private CorrelationIdConverter(CorrelationIdFormatter formatter) {
+	/**
+     * Constructs a new CorrelationIdConverter with the specified CorrelationIdFormatter.
+     * 
+     * @param formatter the CorrelationIdFormatter to be used by the converter
+     */
+    private CorrelationIdConverter(CorrelationIdFormatter formatter) {
 		super("correlationId{%s}".formatted(formatter), "mdc");
 		this.formatter = formatter;
 	}
 
-	@Override
+	/**
+     * Formats the given log event by appending the value of the context data to the provided StringBuilder.
+     * 
+     * @param event the log event to be formatted
+     * @param toAppendTo the StringBuilder to which the formatted log event will be appended
+     */
+    @Override
 	public void format(LogEvent event, StringBuilder toAppendTo) {
 		ReadOnlyStringMap contextData = event.getContextData();
 		this.formatter.formatTo(contextData::getValue, toAppendTo);

@@ -52,7 +52,14 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	static {
 		try {
 			EMPTY_JAR_URL = new URL("jar:", null, 0, "file:!/", new URLStreamHandler() {
-				@Override
+				/**
+     * Opens a connection to the specified URL.
+     * 
+     * @param u the URL to open a connection to
+     * @return the URLConnection object representing the connection to the URL
+     * @throws IOException if an I/O error occurs while opening the connection
+     */
+    @Override
 				protected URLConnection openConnection(URL u) throws IOException {
 					// Stub URLStreamHandler to prevent the wrong JAR Handler from being
 					// Instantiated and cached.
@@ -79,7 +86,15 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	private java.util.jar.JarEntry jarEntry;
 
-	private JarURLConnection(URL url, AbstractJarFile jarFile, JarEntryName jarEntryName) throws IOException {
+	/**
+     * Constructs a new JarURLConnection with the specified URL, AbstractJarFile, and JarEntryName.
+     * 
+     * @param url the URL of the connection
+     * @param jarFile the AbstractJarFile associated with the connection
+     * @param jarEntryName the JarEntryName associated with the connection
+     * @throws IOException if an I/O error occurs while creating the connection
+     */
+    private JarURLConnection(URL url, AbstractJarFile jarFile, JarEntryName jarEntryName) throws IOException {
 		// What we pass to super is ultimately ignored
 		super(EMPTY_JAR_URL);
 		this.url = url;
@@ -87,7 +102,13 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		this.jarEntryName = jarEntryName;
 	}
 
-	@Override
+	/**
+     * Establishes a connection to the JAR file.
+     * 
+     * @throws IOException if an I/O error occurs while connecting to the JAR file
+     * @throws FileNotFoundException if the JAR file is not found
+     */
+    @Override
 	public void connect() throws IOException {
 		if (this.jarFile == null) {
 			throw FILE_NOT_FOUND_EXCEPTION;
@@ -101,13 +122,25 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		this.connected = true;
 	}
 
-	@Override
+	/**
+     * Returns the JAR file associated with this JarURLConnection.
+     * 
+     * @return the JAR file associated with this JarURLConnection
+     * @throws IOException if an I/O error occurs while connecting to the JAR file
+     */
+    @Override
 	public java.util.jar.JarFile getJarFile() throws IOException {
 		connect();
 		return this.jarFile;
 	}
 
-	@Override
+	/**
+     * Returns the URL of the JAR file associated with this connection.
+     * 
+     * @return the URL of the JAR file
+     * @throws NotFoundException if the JAR file is not found
+     */
+    @Override
 	public URL getJarFileURL() {
 		if (this.jarFile == null) {
 			throw NOT_FOUND_CONNECTION_EXCEPTION;
@@ -118,7 +151,13 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return this.jarFileUrl;
 	}
 
-	private URL buildJarFileUrl() {
+	/**
+     * Builds the URL for the JAR file.
+     * 
+     * @return the URL for the JAR file
+     * @throws IllegalStateException if a MalformedURLException occurs
+     */
+    private URL buildJarFileUrl() {
 		try {
 			String spec = this.jarFile.getUrl().getFile();
 			if (spec.endsWith(SEPARATOR)) {
@@ -134,7 +173,13 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 	}
 
-	@Override
+	/**
+     * Returns the JarEntry associated with this JarURLConnection.
+     * 
+     * @return the JarEntry associated with this JarURLConnection, or null if the jarEntryName is null or empty
+     * @throws IOException if an I/O error occurs while connecting to the JAR file
+     */
+    @Override
 	public java.util.jar.JarEntry getJarEntry() throws IOException {
 		if (this.jarEntryName == null || this.jarEntryName.isEmpty()) {
 			return null;
@@ -143,7 +188,13 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return this.jarEntry;
 	}
 
-	@Override
+	/**
+     * Returns the name of the entry associated with this JarURLConnection.
+     * 
+     * @return the name of the entry
+     * @throws NullPointerException if the jarFile is null
+     */
+    @Override
 	public String getEntryName() {
 		if (this.jarFile == null) {
 			throw NOT_FOUND_CONNECTION_EXCEPTION;
@@ -151,7 +202,15 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return this.jarEntryName.toString();
 	}
 
-	@Override
+	/**
+     * Returns an input stream for reading the contents of the JAR file entry specified by the entry name.
+     * 
+     * @return an input stream for reading the contents of the JAR file entry
+     * @throws IOException if an I/O error occurs while creating the input stream
+     * @throws FileNotFoundException if the JAR file is not found
+     * @throws IOException if no entry name is specified or if the entry name is empty
+     */
+    @Override
 	public InputStream getInputStream() throws IOException {
 		if (this.jarFile == null) {
 			throw FILE_NOT_FOUND_EXCEPTION;
@@ -168,14 +227,26 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return inputStream;
 	}
 
-	private void throwFileNotFound(Object entry, AbstractJarFile jarFile) throws FileNotFoundException {
+	/**
+     * Throws a {@link FileNotFoundException} if the specified JAR entry is not found in the given JAR file.
+     * 
+     * @param entry the JAR entry to check
+     * @param jarFile the JAR file to search in
+     * @throws FileNotFoundException if the JAR entry is not found in the JAR file
+     */
+    private void throwFileNotFound(Object entry, AbstractJarFile jarFile) throws FileNotFoundException {
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
 		throw new FileNotFoundException("JAR entry " + entry + " not found in " + jarFile.getName());
 	}
 
-	@Override
+	/**
+     * Returns the content length of the resource that this connection's URL references.
+     * 
+     * @return the content length of the resource, or -1 if the content length is greater than Integer.MAX_VALUE
+     */
+    @Override
 	public int getContentLength() {
 		long length = getContentLengthLong();
 		if (length > Integer.MAX_VALUE) {
@@ -184,7 +255,15 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return (int) length;
 	}
 
-	@Override
+	/**
+     * Returns the content length of the resource represented by this JarURLConnection.
+     * If the JarFile is null, returns -1.
+     * If the JarEntryName is empty, returns the size of the JarFile.
+     * Otherwise, returns the size of the JarEntry.
+     *
+     * @return the content length of the resource, or -1 if it cannot be determined
+     */
+    @Override
 	public long getContentLengthLong() {
 		if (this.jarFile == null) {
 			return -1;
@@ -201,18 +280,36 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 	}
 
-	@Override
+	/**
+     * Returns the content of the JarURLConnection.
+     * 
+     * @return the content of the JarURLConnection
+     * @throws IOException if an I/O error occurs while connecting
+     */
+    @Override
 	public Object getContent() throws IOException {
 		connect();
 		return this.jarEntryName.isEmpty() ? this.jarFile : super.getContent();
 	}
 
-	@Override
+	/**
+     * Returns the content type of the resource pointed to by this JarURLConnection.
+     * 
+     * @return the content type of the resource, or null if the content type is not available
+     */
+    @Override
 	public String getContentType() {
 		return (this.jarEntryName != null) ? this.jarEntryName.getContentType() : null;
 	}
 
-	@Override
+	/**
+     * Returns the permission associated with this JarURLConnection.
+     * 
+     * @return the permission associated with this JarURLConnection
+     * @throws IOException if an I/O error occurs
+     * @throws FileNotFoundException if the jar file is not found
+     */
+    @Override
 	public Permission getPermission() throws IOException {
 		if (this.jarFile == null) {
 			throw FILE_NOT_FOUND_EXCEPTION;
@@ -223,7 +320,12 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return this.permission;
 	}
 
-	@Override
+	/**
+     * Returns the last modified timestamp of the JAR file or entry.
+     * 
+     * @return the last modified timestamp in milliseconds since the epoch, or 0 if the JAR file or entry is not available or an error occurs
+     */
+    @Override
 	public long getLastModified() {
 		if (this.jarFile == null || this.jarEntryName.isEmpty()) {
 			return 0;
@@ -237,11 +339,24 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 	}
 
-	static void setUseFastExceptions(boolean useFastExceptions) {
+	/**
+     * Sets the flag indicating whether to use fast exceptions for JarURLConnection.
+     * 
+     * @param useFastExceptions the flag indicating whether to use fast exceptions
+     */
+    static void setUseFastExceptions(boolean useFastExceptions) {
 		JarURLConnection.useFastExceptions.set(useFastExceptions);
 	}
 
-	static JarURLConnection get(URL url, JarFile jarFile) throws IOException {
+	/**
+     * Returns a {@link JarURLConnection} object for the specified URL and {@link JarFile}.
+     * 
+     * @param url the URL to connect to
+     * @param jarFile the {@link JarFile} to use
+     * @return a {@link JarURLConnection} object
+     * @throws IOException if an I/O error occurs
+     */
+    static JarURLConnection get(URL url, JarFile jarFile) throws IOException {
 		StringSequence spec = new StringSequence(url.getFile());
 		int index = indexOfRootSpec(spec, jarFile.getPathFromRoot());
 		if (index == -1) {
@@ -266,7 +381,14 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return new JarURLConnection(url, jarFile.getWrapper(), jarEntryName);
 	}
 
-	private static int indexOfRootSpec(StringSequence file, String pathFromRoot) {
+	/**
+     * Returns the index of the root specification in the given file path.
+     * 
+     * @param file The file path to search in.
+     * @param pathFromRoot The root specification to search for.
+     * @return The index of the root specification in the file path, or -1 if not found.
+     */
+    private static int indexOfRootSpec(StringSequence file, String pathFromRoot) {
 		int separatorIndex = file.indexOf(SEPARATOR);
 		if (separatorIndex < 0 || !file.startsWith(pathFromRoot, separatorIndex)) {
 			return -1;
@@ -274,7 +396,13 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return separatorIndex + SEPARATOR.length() + pathFromRoot.length();
 	}
 
-	private static JarURLConnection notFound() {
+	/**
+     * Returns a {@code JarURLConnection} object representing a 404 Not Found response.
+     * 
+     * @return a {@code JarURLConnection} object representing a 404 Not Found response
+     * @throws IllegalStateException if an {@code IOException} occurs
+     */
+    private static JarURLConnection notFound() {
 		try {
 			return notFound(null, null);
 		}
@@ -283,7 +411,15 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 	}
 
-	private static JarURLConnection notFound(JarFile jarFile, JarEntryName jarEntryName) throws IOException {
+	/**
+     * Returns a JarURLConnection object representing a not found connection.
+     * 
+     * @param jarFile the JarFile object associated with the connection
+     * @param jarEntryName the JarEntryName object associated with the connection
+     * @return a JarURLConnection object representing a not found connection
+     * @throws IOException if an I/O error occurs
+     */
+    private static JarURLConnection notFound(JarFile jarFile, JarEntryName jarEntryName) throws IOException {
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
 			return NOT_FOUND_CONNECTION;
 		}
@@ -299,11 +435,23 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 		private String contentType;
 
-		JarEntryName(StringSequence spec) {
+		/**
+         * Constructs a new JarEntryName object with the specified name.
+         * 
+         * @param spec the string sequence used to decode the name
+         */
+        JarEntryName(StringSequence spec) {
 			this.name = decode(spec);
 		}
 
-		private StringSequence decode(StringSequence source) {
+		/**
+         * Decodes a given StringSequence by replacing any occurrences of '%' with their corresponding characters.
+         * If the source StringSequence is empty or does not contain any '%', the original StringSequence is returned.
+         * 
+         * @param source The StringSequence to be decoded
+         * @return The decoded StringSequence
+         */
+        private StringSequence decode(StringSequence source) {
 			if (source.isEmpty() || (source.indexOf('%') < 0)) {
 				return source;
 			}
@@ -313,7 +461,14 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return new StringSequence(AsciiBytes.toString(bos.toByteArray()));
 		}
 
-		private void write(String source, ByteArrayOutputStream outputStream) {
+		/**
+         * Writes the given source string to the provided output stream.
+         * 
+         * @param source the source string to be written
+         * @param outputStream the output stream to write the source string to
+         * @throws IllegalArgumentException if an invalid encoded sequence is encountered
+         */
+        private void write(String source, ByteArrayOutputStream outputStream) {
 			int length = source.length();
 			for (int i = 0; i < length; i++) {
 				int c = source.charAt(i);
@@ -335,7 +490,15 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			}
 		}
 
-		private char decodeEscapeSequence(String source, int i) {
+		/**
+         * Decodes an escape sequence in a given source string at a specified index.
+         * 
+         * @param source the source string containing the escape sequence
+         * @param i the index of the escape sequence in the source string
+         * @return the decoded character from the escape sequence
+         * @throws IllegalArgumentException if the encoded sequence is invalid
+         */
+        private char decodeEscapeSequence(String source, int i) {
 			int hi = Character.digit(source.charAt(i + 1), 16);
 			int lo = Character.digit(source.charAt(i + 2), 16);
 			if (hi == -1 || lo == -1) {
@@ -344,27 +507,53 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return ((char) ((hi << 4) + lo));
 		}
 
-		CharSequence toCharSequence() {
+		/**
+         * Returns the name of the JarEntryName as a CharSequence.
+         *
+         * @return the name of the JarEntryName as a CharSequence
+         */
+        CharSequence toCharSequence() {
 			return this.name;
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the object.
+         * 
+         * @return the name of the JarEntryName object as a string
+         */
+        @Override
 		public String toString() {
 			return this.name.toString();
 		}
 
-		boolean isEmpty() {
+		/**
+         * Returns true if the name of the JarEntryName object is empty, false otherwise.
+         * 
+         * @return true if the name is empty, false otherwise
+         */
+        boolean isEmpty() {
 			return this.name.isEmpty();
 		}
 
-		String getContentType() {
+		/**
+         * Returns the content type of the JarEntryName.
+         * If the content type is null, it deduces the content type and assigns it.
+         * 
+         * @return the content type of the JarEntryName
+         */
+        String getContentType() {
 			if (this.contentType == null) {
 				this.contentType = deduceContentType();
 			}
 			return this.contentType;
 		}
 
-		private String deduceContentType() {
+		/**
+         * Deduces the content type of the JarEntryName.
+         * 
+         * @return The deduced content type as a String.
+         */
+        private String deduceContentType() {
 			// Guess the content type, don't bother with streams as mark is not supported
 			String type = isEmpty() ? "x-java/jar" : null;
 			type = (type != null) ? type : guessContentTypeFromName(toString());
@@ -372,11 +561,24 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return type;
 		}
 
-		static JarEntryName get(StringSequence spec) {
+		/**
+         * Retrieves a JarEntryName object based on the given spec.
+         * 
+         * @param spec the string sequence representing the spec
+         * @return the JarEntryName object corresponding to the spec
+         */
+        static JarEntryName get(StringSequence spec) {
 			return get(spec, 0);
 		}
 
-		static JarEntryName get(StringSequence spec, int beginIndex) {
+		/**
+         * Returns a JarEntryName object based on the given spec and beginIndex.
+         * 
+         * @param spec        the StringSequence representing the spec
+         * @param beginIndex  the starting index for the substring of the spec
+         * @return            a JarEntryName object based on the spec and beginIndex
+         */
+        static JarEntryName get(StringSequence spec, int beginIndex) {
 			if (spec.length() <= beginIndex) {
 				return EMPTY_JAR_ENTRY_NAME;
 			}

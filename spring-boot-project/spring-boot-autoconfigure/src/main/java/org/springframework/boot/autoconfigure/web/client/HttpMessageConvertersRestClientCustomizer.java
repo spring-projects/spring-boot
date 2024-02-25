@@ -36,21 +36,42 @@ public class HttpMessageConvertersRestClientCustomizer implements RestClientCust
 
 	private final Iterable<? extends HttpMessageConverter<?>> messageConverters;
 
-	public HttpMessageConvertersRestClientCustomizer(HttpMessageConverter<?>... messageConverters) {
+	/**
+     * Constructs a new HttpMessageConvertersRestClientCustomizer with the specified message converters.
+     *
+     * @param messageConverters the message converters to be used by the RestClient
+     * @throws IllegalArgumentException if the messageConverters parameter is null
+     */
+    public HttpMessageConvertersRestClientCustomizer(HttpMessageConverter<?>... messageConverters) {
 		Assert.notNull(messageConverters, "MessageConverters must not be null");
 		this.messageConverters = Arrays.asList(messageConverters);
 	}
 
-	HttpMessageConvertersRestClientCustomizer(HttpMessageConverters messageConverters) {
+	/**
+     * Constructs a new HttpMessageConvertersRestClientCustomizer with the specified HttpMessageConverters.
+     * 
+     * @param messageConverters the HttpMessageConverters to be used by the RestClient
+     */
+    HttpMessageConvertersRestClientCustomizer(HttpMessageConverters messageConverters) {
 		this.messageConverters = messageConverters;
 	}
 
-	@Override
+	/**
+     * Customizes the RestClient.Builder by configuring the message converters.
+     * 
+     * @param restClientBuilder the RestClient.Builder to be customized
+     */
+    @Override
 	public void customize(RestClient.Builder restClientBuilder) {
 		restClientBuilder.messageConverters(this::configureMessageConverters);
 	}
 
-	private void configureMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
+	/**
+     * Configures the message converters for the HTTP message converters rest client.
+     * 
+     * @param messageConverters the list of HTTP message converters to be configured
+     */
+    private void configureMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
 		if (this.messageConverters != null) {
 			messageConverters.clear();
 			this.messageConverters.forEach(messageConverters::add);

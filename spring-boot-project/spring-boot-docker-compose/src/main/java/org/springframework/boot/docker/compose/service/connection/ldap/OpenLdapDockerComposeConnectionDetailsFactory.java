@@ -34,11 +34,24 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 class OpenLdapDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<LdapConnectionDetails> {
 
-	protected OpenLdapDockerComposeConnectionDetailsFactory() {
+	/**
+     * Constructs a new OpenLdapDockerComposeConnectionDetailsFactory object.
+     * 
+     * This constructor initializes the OpenLdapDockerComposeConnectionDetailsFactory object with the specified Docker image name "osixia/openldap".
+     * 
+     * @since 1.0
+     */
+    protected OpenLdapDockerComposeConnectionDetailsFactory() {
 		super("osixia/openldap");
 	}
 
-	@Override
+	/**
+     * Retrieves the connection details for connecting to an OpenLDAP server running in a Docker Compose environment.
+     * 
+     * @param source the DockerComposeConnectionSource object containing the details of the running service
+     * @return the LdapConnectionDetails object representing the connection details
+     */
+    @Override
 	protected LdapConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		return new OpenLdapDockerComposeConnectionDetails(source.getRunningService());
 	}
@@ -57,7 +70,12 @@ class OpenLdapDockerComposeConnectionDetailsFactory
 
 		private final String password;
 
-		OpenLdapDockerComposeConnectionDetails(RunningService service) {
+		/**
+         * Constructs a new OpenLdapDockerComposeConnectionDetails object with the provided RunningService.
+         * 
+         * @param service the RunningService object representing the running LDAP service
+         */
+        OpenLdapDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			Map<String, String> env = service.env();
 			boolean usesTls = Boolean.parseBoolean(env.getOrDefault("LDAP_TLS", "true"));
@@ -76,22 +94,42 @@ class OpenLdapDockerComposeConnectionDetailsFactory
 			this.username = "cn=admin,%s".formatted(this.base);
 		}
 
-		@Override
+		/**
+         * Returns an array of URLs.
+         *
+         * @return the array of URLs
+         */
+        @Override
 		public String[] getUrls() {
 			return this.urls;
 		}
 
-		@Override
+		/**
+         * Returns the base DN (Distinguished Name) for the LDAP connection.
+         * 
+         * @return the base DN for the LDAP connection
+         */
+        @Override
 		public String getBase() {
 			return this.base;
 		}
 
-		@Override
+		/**
+         * Returns the username associated with this OpenLdapDockerComposeConnectionDetails object.
+         *
+         * @return the username
+         */
+        @Override
 		public String getUsername() {
 			return this.username;
 		}
 
-		@Override
+		/**
+         * Returns the password associated with the OpenLdapDockerComposeConnectionDetails.
+         *
+         * @return the password associated with the OpenLdapDockerComposeConnectionDetails
+         */
+        @Override
 		public String getPassword() {
 			return this.password;
 		}

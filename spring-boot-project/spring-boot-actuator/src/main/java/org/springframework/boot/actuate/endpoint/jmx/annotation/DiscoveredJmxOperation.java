@@ -59,7 +59,14 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 
 	private final List<JmxOperationParameter> parameters;
 
-	DiscoveredJmxOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
+	/**
+     * Creates a new instance of DiscoveredJmxOperation.
+     * 
+     * @param endpointId the ID of the endpoint
+     * @param operationMethod the discovered operation method
+     * @param invoker the operation invoker
+     */
+    DiscoveredJmxOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
 		super(operationMethod, invoker);
 		Method method = operationMethod.getMethod();
 		this.name = method.getName();
@@ -68,7 +75,17 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 		this.parameters = getParameters(operationMethod);
 	}
 
-	private String getDescription(Method method, Supplier<String> fallback) {
+	/**
+     * Returns the description of the given method, if available. If the method is a managed operation and has a description
+     * specified in the ManagedOperation annotation, that description is returned. Otherwise, the fallback supplier is used
+     * to provide a default description.
+     *
+     * @param method   the method for which to retrieve the description
+     * @param fallback a supplier that provides a default description if the method does not have a managed operation
+     *                 annotation or if the annotation does not have a description
+     * @return the description of the method, or the default description provided by the fallback supplier
+     */
+    private String getDescription(Method method, Supplier<String> fallback) {
 		ManagedOperation managed = jmxAttributeSource.getManagedOperation(method);
 		if (managed != null && StringUtils.hasText(managed.getDescription())) {
 			return managed.getDescription();
@@ -76,7 +93,13 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 		return fallback.get();
 	}
 
-	private List<JmxOperationParameter> getParameters(OperationMethod operationMethod) {
+	/**
+     * Retrieves the parameters for the given operation method.
+     * 
+     * @param operationMethod The operation method for which to retrieve the parameters.
+     * @return The list of JmxOperationParameter objects representing the parameters of the operation method.
+     */
+    private List<JmxOperationParameter> getParameters(OperationMethod operationMethod) {
 		if (!operationMethod.getParameters().hasParameters()) {
 			return Collections.emptyList();
 		}
@@ -91,7 +114,14 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 		return mergeParameters(operationMethod.getParameters(), managed);
 	}
 
-	private List<JmxOperationParameter> mergeParameters(OperationParameters operationParameters,
+	/**
+     * Merges the given operation parameters with the managed parameters and returns a list of merged JmxOperationParameter objects.
+     * 
+     * @param operationParameters The OperationParameters object containing the operation parameters.
+     * @param managedParameters The array of ManagedOperationParameter objects representing the managed parameters.
+     * @return A list of merged JmxOperationParameter objects.
+     */
+    private List<JmxOperationParameter> mergeParameters(OperationParameters operationParameters,
 			ManagedOperationParameter[] managedParameters) {
 		List<JmxOperationParameter> merged = new ArrayList<>(managedParameters.length);
 		for (int i = 0; i < managedParameters.length; i++) {
@@ -100,27 +130,52 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 		return Collections.unmodifiableList(merged);
 	}
 
-	@Override
+	/**
+     * Returns the name of the DiscoveredJmxOperation.
+     *
+     * @return the name of the DiscoveredJmxOperation
+     */
+    @Override
 	public String getName() {
 		return this.name;
 	}
 
-	@Override
+	/**
+     * Returns the output type of the JMX operation.
+     *
+     * @return the output type of the JMX operation
+     */
+    @Override
 	public Class<?> getOutputType() {
 		return this.outputType;
 	}
 
-	@Override
+	/**
+     * Returns the description of the DiscoveredJmxOperation.
+     *
+     * @return the description of the DiscoveredJmxOperation
+     */
+    @Override
 	public String getDescription() {
 		return this.description;
 	}
 
-	@Override
+	/**
+     * Returns the list of JmxOperationParameter objects associated with this DiscoveredJmxOperation.
+     *
+     * @return the list of JmxOperationParameter objects
+     */
+    @Override
 	public List<JmxOperationParameter> getParameters() {
 		return this.parameters;
 	}
 
-	@Override
+	/**
+     * Appends the fields of the DiscoveredJmxOperation object to the ToStringCreator.
+     * 
+     * @param creator the ToStringCreator object to append the fields to
+     */
+    @Override
 	protected void appendFields(ToStringCreator creator) {
 		creator.append("name", this.name)
 			.append("outputType", this.outputType)
@@ -139,35 +194,66 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 
 		private final String description;
 
-		DiscoveredJmxOperationParameter(OperationParameter operationParameter) {
+		/**
+         * Creates a new instance of DiscoveredJmxOperationParameter using the provided OperationParameter.
+         * 
+         * @param operationParameter the OperationParameter to be used for creating the DiscoveredJmxOperationParameter
+         */
+        DiscoveredJmxOperationParameter(OperationParameter operationParameter) {
 			this.name = operationParameter.getName();
 			this.type = JmxType.get(operationParameter.getType());
 			this.description = null;
 		}
 
-		DiscoveredJmxOperationParameter(ManagedOperationParameter managedParameter,
+		/**
+         * Constructs a new DiscoveredJmxOperationParameter object based on the provided ManagedOperationParameter and OperationParameter.
+         * 
+         * @param managedParameter the ManagedOperationParameter object containing information about the parameter
+         * @param operationParameter the OperationParameter object containing information about the parameter
+         */
+        DiscoveredJmxOperationParameter(ManagedOperationParameter managedParameter,
 				OperationParameter operationParameter) {
 			this.name = managedParameter.getName();
 			this.type = JmxType.get(operationParameter.getType());
 			this.description = managedParameter.getDescription();
 		}
 
-		@Override
+		/**
+         * Returns the name of the DiscoveredJmxOperationParameter.
+         *
+         * @return the name of the DiscoveredJmxOperationParameter
+         */
+        @Override
 		public String getName() {
 			return this.name;
 		}
 
-		@Override
+		/**
+         * Returns the type of the JMX operation parameter.
+         * 
+         * @return the type of the JMX operation parameter
+         */
+        @Override
 		public Class<?> getType() {
 			return this.type;
 		}
 
-		@Override
+		/**
+         * Returns the description of the JMX operation parameter.
+         *
+         * @return the description of the JMX operation parameter
+         */
+        @Override
 		public String getDescription() {
 			return this.description;
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the DiscoveredJmxOperationParameter object.
+         * 
+         * @return a string representation of the object
+         */
+        @Override
 		public String toString() {
 			StringBuilder result = new StringBuilder(this.name);
 			if (this.description != null) {
@@ -184,7 +270,13 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 	 */
 	private static final class JmxType {
 
-		static Class<?> get(Class<?> source) {
+		/**
+         * Returns the class type based on the given source class.
+         * 
+         * @param source the source class
+         * @return the class type
+         */
+        static Class<?> get(Class<?> source) {
 			if (source.isEnum()) {
 				return String.class;
 			}

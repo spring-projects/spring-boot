@@ -41,7 +41,15 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 
 	private static final String BEAN_NAME = "servletComponentRegisteringPostProcessor";
 
-	@Override
+	/**
+     * Register the bean definitions for the ServletComponentScanRegistrar.
+     * This method is responsible for scanning the specified packages and adding the necessary
+     * post processors to the bean definition registry.
+     * 
+     * @param importingClassMetadata the metadata of the importing class
+     * @param registry the bean definition registry
+     */
+    @Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Set<String> packagesToScan = getPackagesToScan(importingClassMetadata);
 		if (registry.containsBeanDefinition(BEAN_NAME)) {
@@ -52,19 +60,38 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 		}
 	}
 
-	private void updatePostProcessor(BeanDefinitionRegistry registry, Set<String> packagesToScan) {
+	/**
+     * Updates the post processor for scanning servlet components.
+     * 
+     * @param registry the bean definition registry
+     * @param packagesToScan the set of package names to scan for servlet components
+     */
+    private void updatePostProcessor(BeanDefinitionRegistry registry, Set<String> packagesToScan) {
 		ServletComponentRegisteringPostProcessorBeanDefinition definition = (ServletComponentRegisteringPostProcessorBeanDefinition) registry
 			.getBeanDefinition(BEAN_NAME);
 		definition.addPackageNames(packagesToScan);
 	}
 
-	private void addPostProcessor(BeanDefinitionRegistry registry, Set<String> packagesToScan) {
+	/**
+     * Adds a post processor to the given bean definition registry for scanning the specified packages.
+     * This post processor is responsible for registering servlet components found in the packages.
+     *
+     * @param registry the bean definition registry to add the post processor to
+     * @param packagesToScan the set of packages to scan for servlet components
+     */
+    private void addPostProcessor(BeanDefinitionRegistry registry, Set<String> packagesToScan) {
 		ServletComponentRegisteringPostProcessorBeanDefinition definition = new ServletComponentRegisteringPostProcessorBeanDefinition(
 				packagesToScan);
 		registry.registerBeanDefinition(BEAN_NAME, definition);
 	}
 
-	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
+	/**
+     * Retrieves the packages to scan based on the provided annotation metadata.
+     * 
+     * @param metadata the annotation metadata
+     * @return a set of packages to scan
+     */
+    private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 		AnnotationAttributes attributes = AnnotationAttributes
 			.fromMap(metadata.getAnnotationAttributes(ServletComponentScan.class.getName()));
 		String[] basePackages = attributes.getStringArray("basePackages");
@@ -79,22 +106,42 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 		return packagesToScan;
 	}
 
-	static final class ServletComponentRegisteringPostProcessorBeanDefinition extends GenericBeanDefinition {
+	/**
+     * ServletComponentRegisteringPostProcessorBeanDefinition class.
+     */
+    static final class ServletComponentRegisteringPostProcessorBeanDefinition extends GenericBeanDefinition {
 
 		private final Set<String> packageNames = new LinkedHashSet<>();
 
-		ServletComponentRegisteringPostProcessorBeanDefinition(Collection<String> packageNames) {
+		/**
+         * Sets the bean class to ServletComponentRegisteringPostProcessor and sets the role to BeanDefinition.ROLE_INFRASTRUCTURE.
+         * Adds the given package names to the list of package names.
+         * 
+         * @param packageNames the collection of package names to be added
+         */
+        ServletComponentRegisteringPostProcessorBeanDefinition(Collection<String> packageNames) {
 			setBeanClass(ServletComponentRegisteringPostProcessor.class);
 			setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			addPackageNames(packageNames);
 		}
 
-		@Override
+		/**
+         * Returns a supplier that provides an instance of ServletComponentRegisteringPostProcessor.
+         * The supplier creates a new instance of ServletComponentRegisteringPostProcessor with the specified package names.
+         *
+         * @return a supplier that provides an instance of ServletComponentRegisteringPostProcessor
+         */
+        @Override
 		public Supplier<?> getInstanceSupplier() {
 			return () -> new ServletComponentRegisteringPostProcessor(this.packageNames);
 		}
 
-		private void addPackageNames(Collection<String> additionalPackageNames) {
+		/**
+         * Adds additional package names to the existing collection of package names.
+         * 
+         * @param additionalPackageNames the collection of package names to be added
+         */
+        private void addPackageNames(Collection<String> additionalPackageNames) {
 			this.packageNames.addAll(additionalPackageNames);
 		}
 

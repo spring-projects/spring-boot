@@ -48,7 +48,14 @@ import org.springframework.util.unit.DataSize;
 @EnableConfigurationProperties(WavefrontProperties.class)
 public class WavefrontSenderConfiguration {
 
-	@Bean
+	/**
+     * Creates a WavefrontSender bean if no other bean of type WavefrontSender is present and if the
+     * WavefrontTracingOrMetricsCondition is met.
+     *
+     * @param properties the WavefrontProperties object containing the necessary configuration properties
+     * @return a WavefrontSender object configured with the provided properties
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@Conditional(WavefrontTracingOrMetricsCondition.class)
 	public WavefrontSender wavefrontSender(WavefrontProperties properties) {
@@ -63,18 +70,31 @@ public class WavefrontSenderConfiguration {
 		return builder.build();
 	}
 
-	static final class WavefrontTracingOrMetricsCondition extends AnyNestedCondition {
+	/**
+     * WavefrontTracingOrMetricsCondition class.
+     */
+    static final class WavefrontTracingOrMetricsCondition extends AnyNestedCondition {
 
-		WavefrontTracingOrMetricsCondition() {
+		/**
+         * Constructor for the WavefrontTracingOrMetricsCondition class.
+         * Initializes the object with the ConfigurationPhase.REGISTER_BEAN value.
+         */
+        WavefrontTracingOrMetricsCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnEnabledTracing
+		/**
+         * TracingCondition class.
+         */
+        @ConditionalOnEnabledTracing
 		static class TracingCondition {
 
 		}
 
-		@ConditionalOnEnabledMetricsExport("wavefront")
+		/**
+         * MetricsCondition class.
+         */
+        @ConditionalOnEnabledMetricsExport("wavefront")
 		static class MetricsCondition {
 
 		}

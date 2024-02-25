@@ -69,7 +69,14 @@ public class UserDetailsServiceAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(UserDetailsServiceAutoConfiguration.class);
 
-	@Bean
+	/**
+     * Creates an instance of InMemoryUserDetailsManager using the provided SecurityProperties and PasswordEncoder.
+     * 
+     * @param properties the SecurityProperties object containing user details
+     * @param passwordEncoder the PasswordEncoder object used to encode the user's password
+     * @return an instance of InMemoryUserDetailsManager with the specified user details and roles
+     */
+    @Bean
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();
@@ -80,7 +87,17 @@ public class UserDetailsServiceAutoConfiguration {
 			.build());
 	}
 
-	private String getOrDeducePassword(SecurityProperties.User user, PasswordEncoder encoder) {
+	/**
+     * Retrieves the password for the given user or deduces it based on the provided encoder.
+     * If the user's password is generated, a warning message is logged.
+     * If an encoder is provided or the password matches the password algorithm pattern, the password is returned as is.
+     * Otherwise, the password is prefixed with a NOOP password prefix.
+     * 
+     * @param user The user for which to retrieve or deduce the password.
+     * @param encoder The password encoder to use for deducing the password.
+     * @return The retrieved or deduced password.
+     */
+    private String getOrDeducePassword(SecurityProperties.User user, PasswordEncoder encoder) {
 		String password = user.getPassword();
 		if (user.isPasswordGenerated()) {
 			logger.warn(String.format(
@@ -95,13 +112,24 @@ public class UserDetailsServiceAutoConfiguration {
 		return NOOP_PASSWORD_PREFIX + password;
 	}
 
-	static final class MissingAlternativeOrUserPropertiesConfigured extends AnyNestedCondition {
+	/**
+     * MissingAlternativeOrUserPropertiesConfigured class.
+     */
+    static final class MissingAlternativeOrUserPropertiesConfigured extends AnyNestedCondition {
 
-		MissingAlternativeOrUserPropertiesConfigured() {
+		/**
+         * Constructs a new instance of the MissingAlternativeOrUserPropertiesConfigured class.
+         * 
+         * This constructor calls the super constructor with the ConfigurationPhase.PARSE_CONFIGURATION parameter.
+         */
+        MissingAlternativeOrUserPropertiesConfigured() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnMissingClass({
+		/**
+         * MissingAlternative class.
+         */
+        @ConditionalOnMissingClass({
 				"org.springframework.security.oauth2.client.registration.ClientRegistrationRepository",
 				"org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector",
 				"org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository" })
@@ -109,12 +137,18 @@ public class UserDetailsServiceAutoConfiguration {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.user", name = "name")
+		/**
+         * NameConfigured class.
+         */
+        @ConditionalOnProperty(prefix = "spring.security.user", name = "name")
 		static final class NameConfigured {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.user", name = "password")
+		/**
+         * PasswordConfigured class.
+         */
+        @ConditionalOnProperty(prefix = "spring.security.user", name = "password")
 		static final class PasswordConfigured {
 
 		}

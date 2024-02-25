@@ -43,7 +43,14 @@ class RegistrationConfiguredCondition extends SpringBootCondition {
 	private static final Bindable<Map<String, Registration>> STRING_REGISTRATION_MAP = Bindable.mapOf(String.class,
 			Registration.class);
 
-	@Override
+	/**
+     * Determines the outcome of the condition for the Relying Party Registration.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("Relying Party Registration Condition");
 		Map<String, Registration> registrations = getRegistrations(context.getEnvironment());
@@ -53,7 +60,13 @@ class RegistrationConfiguredCondition extends SpringBootCondition {
 		return ConditionOutcome.match(message.found("registration", "registrations").items(registrations.keySet()));
 	}
 
-	private Map<String, Registration> getRegistrations(Environment environment) {
+	/**
+     * Retrieves the registrations from the given environment.
+     * 
+     * @param environment the environment to retrieve the registrations from
+     * @return a map of registrations, where the key is a string and the value is a Registration object
+     */
+    private Map<String, Registration> getRegistrations(Environment environment) {
 		return Binder.get(environment).bind(PROPERTY, STRING_REGISTRATION_MAP).orElse(Collections.emptyMap());
 	}
 

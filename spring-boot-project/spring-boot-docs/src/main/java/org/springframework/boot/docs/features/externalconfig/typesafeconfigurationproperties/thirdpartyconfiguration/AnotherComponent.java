@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.thirdpartyconfiguration;
 
+/**
+ * AnotherComponent class.
+ */
 class AnotherComponent {
 
 }

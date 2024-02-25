@@ -47,7 +47,15 @@ abstract class LenientObjectToEnumConverterFactory<T> implements ConverterFactor
 		ALIASES = Collections.unmodifiableMap(aliases);
 	}
 
-	@Override
+	/**
+     * Returns a converter that converts a given value to the specified enum type.
+     * 
+     * @param <E> the enum type
+     * @param targetType the target enum type
+     * @return a converter that converts a given value to the specified enum type
+     * @throws IllegalArgumentException if the target type does not refer to an enum
+     */
+    @Override
 	@SuppressWarnings("unchecked")
 	public <E extends Enum<?>> Converter<T, E> getConverter(Class<E> targetType) {
 		Class<?> enumType = targetType;
@@ -58,16 +66,31 @@ abstract class LenientObjectToEnumConverterFactory<T> implements ConverterFactor
 		return new LenientToEnumConverter<>((Class<E>) enumType);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * LenientToEnumConverter class.
+     */
+    @SuppressWarnings("unchecked")
 	private class LenientToEnumConverter<E extends Enum> implements Converter<T, E> {
 
 		private final Class<E> enumType;
 
-		LenientToEnumConverter(Class<E> enumType) {
+		/**
+         * Constructs a new LenientToEnumConverter with the specified enum type.
+         * 
+         * @param enumType the class object representing the enum type
+         */
+        LenientToEnumConverter(Class<E> enumType) {
 			this.enumType = enumType;
 		}
 
-		@Override
+		/**
+         * Converts a source object of type T to an enum object of type E.
+         * 
+         * @param source the source object to be converted
+         * @return the converted enum object, or null if the source object is empty
+         * @throws IllegalArgumentException if the source object cannot be converted to an enum object
+         */
+        @Override
 		public E convert(T source) {
 			String value = source.toString().trim();
 			if (value.isEmpty()) {
@@ -81,7 +104,14 @@ abstract class LenientObjectToEnumConverterFactory<T> implements ConverterFactor
 			}
 		}
 
-		private E findEnum(String value) {
+		/**
+         * Finds the enum constant with the specified value.
+         * 
+         * @param value the value to search for
+         * @return the enum constant with the specified value
+         * @throws IllegalArgumentException if no enum constant is found with the specified value
+         */
+        private E findEnum(String value) {
 			String name = getCanonicalName(value);
 			List<String> aliases = ALIASES.getOrDefault(name, Collections.emptyList());
 			for (E candidate : (Set<E>) EnumSet.allOf(this.enumType)) {
@@ -93,7 +123,13 @@ abstract class LenientObjectToEnumConverterFactory<T> implements ConverterFactor
 			throw new IllegalArgumentException("No enum constant " + this.enumType.getCanonicalName() + "." + value);
 		}
 
-		private String getCanonicalName(String name) {
+		/**
+         * Returns the canonical name of a given name.
+         * 
+         * @param name the name to get the canonical name for
+         * @return the canonical name of the given name
+         */
+        private String getCanonicalName(String name) {
 			StringBuilder canonicalName = new StringBuilder(name.length());
 			name.chars()
 				.filter(Character::isLetterOrDigit)

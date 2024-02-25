@@ -19,10 +19,18 @@ package smoketest.undertow.ssl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * SampleUndertowSslApplication class.
+ */
 @SpringBootApplication
 public class SampleUndertowSslApplication {
 
-	public static void main(String[] args) {
+	/**
+     * The main method of the SampleUndertowSslApplication class.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleUndertowSslApplication.class, args);
 	}
 

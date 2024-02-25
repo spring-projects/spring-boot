@@ -38,13 +38,28 @@ class RemoteDevtoolsSecurityConfiguration {
 
 	private final String url;
 
-	RemoteDevtoolsSecurityConfiguration(DevToolsProperties devToolsProperties, ServerProperties serverProperties) {
+	/**
+     * Constructs a new RemoteDevtoolsSecurityConfiguration object with the specified DevToolsProperties and ServerProperties.
+     * 
+     * @param devToolsProperties the DevToolsProperties object containing the configuration for DevTools
+     * @param serverProperties the ServerProperties object containing the configuration for the server
+     */
+    RemoteDevtoolsSecurityConfiguration(DevToolsProperties devToolsProperties, ServerProperties serverProperties) {
 		ServerProperties.Servlet servlet = serverProperties.getServlet();
 		String servletContextPath = (servlet.getContextPath() != null) ? servlet.getContextPath() : "";
 		this.url = servletContextPath + devToolsProperties.getRemote().getContextPath() + "/restart";
 	}
 
-	@Bean
+	/**
+     * Creates a security filter chain for the devtools endpoint.
+     * This filter chain allows anonymous access to all requests.
+     * CSRF protection is disabled for this endpoint.
+     *
+     * @param http the HttpSecurity object to configure the security filter chain
+     * @return the configured security filter chain
+     * @throws Exception if an error occurs while configuring the security filter chain
+     */
+    @Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
 	SecurityFilterChain devtoolsSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.securityMatcher(new AntPathRequestMatcher(this.url));

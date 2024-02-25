@@ -32,15 +32,31 @@ class SessionStoreDirectory {
 
 	private File directory;
 
-	File getDirectory() {
+	/**
+     * Returns the directory associated with this SessionStoreDirectory object.
+     *
+     * @return the directory associated with this SessionStoreDirectory object
+     */
+    File getDirectory() {
 		return this.directory;
 	}
 
-	void setDirectory(File directory) {
+	/**
+     * Sets the directory for the session store.
+     * 
+     * @param directory the directory to set
+     */
+    void setDirectory(File directory) {
 		this.directory = directory;
 	}
 
-	File getValidDirectory(boolean mkdirs) {
+	/**
+     * Retrieves a valid directory for storing session data.
+     * 
+     * @param mkdirs a boolean indicating whether to create the directory if it does not exist
+     * @return a File object representing the valid directory
+     */
+    File getValidDirectory(boolean mkdirs) {
 		File dir = getDirectory();
 		if (dir == null) {
 			return new ApplicationTemp().getDir("servlet-sessions");
@@ -55,7 +71,14 @@ class SessionStoreDirectory {
 		return dir;
 	}
 
-	private void assertDirectory(boolean mkdirs, File dir) {
+	/**
+     * Asserts that the given directory exists and is not a file.
+     * 
+     * @param mkdirs a boolean indicating whether the directory should be created if it does not exist
+     * @param dir the directory to be checked
+     * @throws IllegalStateException if the directory does not exist or if it is a file
+     */
+    private void assertDirectory(boolean mkdirs, File dir) {
 		Assert.state(!mkdirs || dir.exists(), () -> "Session dir " + dir + " does not exist");
 		Assert.state(!dir.isFile(), () -> "Session dir " + dir + " points to a file");
 	}

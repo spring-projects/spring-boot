@@ -45,7 +45,15 @@ public class DocumentDevtoolsPropertyDefaults extends DefaultTask {
 
 	private final RegularFileProperty outputFile;
 
-	public DocumentDevtoolsPropertyDefaults() {
+	/**
+     * Initializes the devtools property defaults for the document.
+     * 
+     * This method creates the devtools configuration and sets the output file for the generated documentation.
+     * The default output file location is "build/docs/generated/using/devtools-property-defaults.adoc".
+     * 
+     * It also adds the "spring-boot-devtools" project as a dependency to the devtools configuration with the "propertyDefaults" configuration.
+     */
+    public DocumentDevtoolsPropertyDefaults() {
 		this.devtools = getProject().getConfigurations().create("devtools");
 		this.outputFile = getProject().getObjects().fileProperty();
 		this.outputFile.convention(getProject().getLayout()
@@ -57,23 +65,46 @@ public class DocumentDevtoolsPropertyDefaults extends DefaultTask {
 		this.devtools.getDependencies().add(getProject().getDependencies().project(dependency));
 	}
 
-	@InputFiles
+	/**
+     * Returns the collection of devtools files.
+     *
+     * @return the collection of devtools files
+     */
+    @InputFiles
 	public FileCollection getDevtools() {
 		return this.devtools;
 	}
 
-	@OutputFile
+	/**
+     * Returns the output file property.
+     *
+     * @return the output file property
+     */
+    @OutputFile
 	public RegularFileProperty getOutputFile() {
 		return this.outputFile;
 	}
 
-	@TaskAction
+	/**
+     * This method is used to document the property defaults by loading the properties and
+     * documenting them using the JAVA Javadoc style.
+     *
+     * @throws IOException if there is an error while loading the properties
+     */
+    @TaskAction
 	void documentPropertyDefaults() throws IOException {
 		Map<String, String> properties = loadProperties();
 		documentProperties(properties);
 	}
 
-	private Map<String, String> loadProperties() throws IOException, FileNotFoundException {
+	/**
+     * Loads the properties from the devtools file and returns them as a sorted map.
+     * 
+     * @return a map containing the properties, sorted by their keys
+     * @throws IOException if an I/O error occurs while reading the file
+     * @throws FileNotFoundException if the devtools file is not found
+     */
+    private Map<String, String> loadProperties() throws IOException, FileNotFoundException {
 		Properties properties = new Properties();
 		Map<String, String> sortedProperties = new TreeMap<>();
 		try (FileInputStream stream = new FileInputStream(this.devtools.getSingleFile())) {
@@ -85,7 +116,14 @@ public class DocumentDevtoolsPropertyDefaults extends DefaultTask {
 		return sortedProperties;
 	}
 
-	private void documentProperties(Map<String, String> properties) throws IOException {
+	/**
+     * Generates a Javadoc style documentation comment for the {@code documentProperties} method.
+     * This method is declared in the {@code DocumentDevtoolsPropertyDefaults} class.
+     *
+     * @param properties a {@code Map} containing the properties to be documented
+     * @throws IOException if an I/O error occurs while writing the documentation
+     */
+    private void documentProperties(Map<String, String> properties) throws IOException {
 		try (PrintWriter writer = new PrintWriter(new FileWriter(this.outputFile.getAsFile().get()))) {
 			writer.println("[cols=\"3,1\"]");
 			writer.println("|===");

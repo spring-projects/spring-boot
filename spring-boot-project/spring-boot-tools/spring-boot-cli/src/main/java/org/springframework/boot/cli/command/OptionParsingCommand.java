@@ -34,27 +34,56 @@ public abstract class OptionParsingCommand extends AbstractCommand {
 
 	private final OptionHandler handler;
 
-	protected OptionParsingCommand(String name, String description, OptionHandler handler) {
+	/**
+     * Constructs a new OptionParsingCommand with the specified name, description, and handler.
+     * 
+     * @param name        the name of the command
+     * @param description the description of the command
+     * @param handler     the handler for the command
+     */
+    protected OptionParsingCommand(String name, String description, OptionHandler handler) {
 		super(name, description);
 		this.handler = handler;
 	}
 
-	@Override
+	/**
+     * Returns the help message for this command.
+     *
+     * @return the help message
+     */
+    @Override
 	public String getHelp() {
 		return this.handler.getHelp();
 	}
 
-	@Override
+	/**
+     * Returns a collection of OptionHelp objects that provide information about the available options for this command.
+     *
+     * @return a collection of OptionHelp objects
+     */
+    @Override
 	public Collection<OptionHelp> getOptionsHelp() {
 		return this.handler.getOptionsHelp();
 	}
 
-	@Override
+	/**
+     * Executes the command with the given arguments.
+     *
+     * @param args the command line arguments
+     * @return the exit status of the command
+     * @throws Exception if an error occurs during command execution
+     */
+    @Override
 	public final ExitStatus run(String... args) throws Exception {
 		return this.handler.run(args);
 	}
 
-	protected OptionHandler getHandler() {
+	/**
+     * Returns the OptionHandler associated with this OptionParsingCommand.
+     * 
+     * @return the OptionHandler associated with this OptionParsingCommand
+     */
+    protected OptionHandler getHandler() {
 		return this.handler;
 	}
 

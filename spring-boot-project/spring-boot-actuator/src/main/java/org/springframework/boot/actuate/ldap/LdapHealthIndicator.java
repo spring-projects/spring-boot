@@ -39,21 +39,43 @@ public class LdapHealthIndicator extends AbstractHealthIndicator {
 
 	private final LdapOperations ldapOperations;
 
-	public LdapHealthIndicator(LdapOperations ldapOperations) {
+	/**
+     * Constructs a new LdapHealthIndicator with the specified LdapOperations.
+     * 
+     * @param ldapOperations the LdapOperations to be used for health check
+     * @throws IllegalArgumentException if ldapOperations is null
+     */
+    public LdapHealthIndicator(LdapOperations ldapOperations) {
 		super("LDAP health check failed");
 		Assert.notNull(ldapOperations, "LdapOperations must not be null");
 		this.ldapOperations = ldapOperations;
 	}
 
-	@Override
+	/**
+     * Performs a health check on the LDAP server.
+     * 
+     * @param builder the Health.Builder object used to build the health status
+     * @throws Exception if an error occurs during the health check
+     */
+    @Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		String version = this.ldapOperations.executeReadOnly(versionContextExecutor);
 		builder.up().withDetail("version", version);
 	}
 
-	private static final class VersionContextExecutor implements ContextExecutor<String> {
+	/**
+     * VersionContextExecutor class.
+     */
+    private static final class VersionContextExecutor implements ContextExecutor<String> {
 
-		@Override
+		/**
+         * Executes the method with the given context.
+         * 
+         * @param ctx the directory context
+         * @return the LDAP version as a string
+         * @throws NamingException if there is an error with the naming operation
+         */
+        @Override
 		public String executeWithContext(DirContext ctx) throws NamingException {
 			Object version = ctx.getEnvironment().get("java.naming.ldap.version");
 			if (version != null) {

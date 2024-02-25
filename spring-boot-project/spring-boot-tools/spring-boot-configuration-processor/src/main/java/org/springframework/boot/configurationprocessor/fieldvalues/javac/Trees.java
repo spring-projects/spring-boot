@@ -29,16 +29,35 @@ import javax.lang.model.element.Element;
  */
 final class Trees extends ReflectionWrapper {
 
-	private Trees(Object instance) {
+	/**
+     * Constructs a new Trees object with the specified instance.
+     * 
+     * @param instance the instance to be associated with the Trees object
+     */
+    private Trees(Object instance) {
 		super("com.sun.source.util.Trees", instance);
 	}
 
-	Tree getTree(Element element) throws Exception {
+	/**
+     * Retrieves the tree associated with the given element.
+     * 
+     * @param element the element for which to retrieve the tree
+     * @return the tree associated with the element, or null if no tree is found
+     * @throws Exception if an error occurs during the retrieval process
+     */
+    Tree getTree(Element element) throws Exception {
 		Object tree = findMethod("getTree", Element.class).invoke(getInstance(), element);
 		return (tree != null) ? new Tree(tree) : null;
 	}
 
-	static Trees instance(ProcessingEnvironment env) throws Exception {
+	/**
+     * Returns an instance of the Trees class.
+     * 
+     * @param env the ProcessingEnvironment object used to obtain the instance
+     * @return an instance of the Trees class
+     * @throws Exception if an error occurs while obtaining the instance
+     */
+    static Trees instance(ProcessingEnvironment env) throws Exception {
 		try {
 			ClassLoader classLoader = env.getClass().getClassLoader();
 			Class<?> type = findClass(classLoader, "com.sun.source.util.Trees");
@@ -50,7 +69,14 @@ final class Trees extends ReflectionWrapper {
 		}
 	}
 
-	private static ProcessingEnvironment unwrap(ProcessingEnvironment wrapper) throws Exception {
+	/**
+     * Unwraps the delegate ProcessingEnvironment from the given wrapper ProcessingEnvironment.
+     * 
+     * @param wrapper the wrapper ProcessingEnvironment to unwrap
+     * @return the delegate ProcessingEnvironment
+     * @throws Exception if an error occurs during the unwrapping process
+     */
+    private static ProcessingEnvironment unwrap(ProcessingEnvironment wrapper) throws Exception {
 		Field delegateField = wrapper.getClass().getDeclaredField("delegate");
 		delegateField.setAccessible(true);
 		return (ProcessingEnvironment) delegateField.get(wrapper);

@@ -25,12 +25,20 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * SampleTomcatApplication class.
+ */
 @SpringBootApplication
 public class SampleTomcatApplication {
 
 	private static final Log logger = LogFactory.getLog(SampleTomcatApplication.class);
 
-	@Bean
+	/**
+     * Creates a ServletContextListener that logs the initialization and destruction of the ServletContext.
+     * 
+     * @return the ServletContextListener instance
+     */
+    @Bean
 	protected ServletContextListener listener() {
 		return new ServletContextListener() {
 
@@ -47,7 +55,13 @@ public class SampleTomcatApplication {
 		};
 	}
 
-	public static void main(String[] args) {
+	/**
+     * The main method is the entry point of the application.
+     * It starts the Spring Boot application by running the SpringApplication.run() method.
+     * 
+     * @param args the command line arguments passed to the application
+     */
+    public static void main(String[] args) {
 		SpringApplication.run(SampleTomcatApplication.class, args);
 	}
 

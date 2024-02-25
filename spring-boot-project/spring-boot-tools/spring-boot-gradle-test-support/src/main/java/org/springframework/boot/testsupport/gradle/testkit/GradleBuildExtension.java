@@ -40,7 +40,15 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 
 	private final Dsl dsl = Dsl.GROOVY;
 
-	@Override
+	/**
+     * This method is executed before each test in the GradleBuildExtension class.
+     * It extracts the GradleBuild object from the ExtensionContext and sets the default script and settings if available.
+     * It then calls the before() method of the GradleBuild object.
+     *
+     * @param context the ExtensionContext object representing the current test context
+     * @throws Exception if an error occurs during the execution of the method
+     */
+    @Override
 	public void beforeEach(ExtensionContext context) throws Exception {
 		GradleBuild gradleBuild = extractGradleBuild(context);
 		URL scriptUrl = findDefaultScript(context);
@@ -54,7 +62,14 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 		gradleBuild.before();
 	}
 
-	private GradleBuild extractGradleBuild(ExtensionContext context) throws Exception {
+	/**
+     * Extracts the GradleBuild object from the given ExtensionContext.
+     * 
+     * @param context the ExtensionContext from which to extract the GradleBuild object
+     * @return the extracted GradleBuild object
+     * @throws Exception if an error occurs during extraction
+     */
+    private GradleBuild extractGradleBuild(ExtensionContext context) throws Exception {
 		Object testInstance = context.getRequiredTestInstance();
 		Field gradleBuildField = ReflectionUtils.findField(testInstance.getClass(), "gradleBuild");
 		gradleBuildField.setAccessible(true);
@@ -62,7 +77,13 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 		return gradleBuild;
 	}
 
-	private URL findDefaultScript(ExtensionContext context) {
+	/**
+     * Finds the default script URL for the given ExtensionContext.
+     * 
+     * @param context the ExtensionContext to find the default script for
+     * @return the default script URL, or null if not found
+     */
+    private URL findDefaultScript(ExtensionContext context) {
 		URL scriptUrl = getScriptForTestMethod(context);
 		if (scriptUrl != null) {
 			return scriptUrl;
@@ -70,27 +91,58 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 		return getScriptForTestClass(context.getRequiredTestClass());
 	}
 
-	private URL getScriptForTestMethod(ExtensionContext context) {
+	/**
+     * Returns the URL of the script file for the test method.
+     * 
+     * @param context the ExtensionContext object representing the current test context
+     * @return the URL of the script file
+     */
+    private URL getScriptForTestMethod(ExtensionContext context) {
 		Class<?> testClass = context.getRequiredTestClass();
 		String name = testClass.getSimpleName() + "-" + removeGradleVersion(context.getRequiredTestMethod().getName())
 				+ this.dsl.getExtension();
 		return testClass.getResource(name);
 	}
 
-	private String removeGradleVersion(String methodName) {
+	/**
+     * Removes the Gradle version from the given method name.
+     * 
+     * @param methodName the method name to remove Gradle version from
+     * @return the method name without the Gradle version
+     */
+    private String removeGradleVersion(String methodName) {
 		return GRADLE_VERSION_PATTERN.matcher(methodName).replaceAll("").trim();
 	}
 
-	private URL getScriptForTestClass(Class<?> testClass) {
+	/**
+     * Returns the URL of the script file for the given test class.
+     * 
+     * @param testClass the test class for which to retrieve the script file
+     * @return the URL of the script file
+     */
+    private URL getScriptForTestClass(Class<?> testClass) {
 		return testClass.getResource(testClass.getSimpleName() + this.dsl.getExtension());
 	}
 
-	private URL getSettings(ExtensionContext context) {
+	/**
+     * Retrieves the URL of the settings.gradle file for the given ExtensionContext.
+     * 
+     * @param context the ExtensionContext representing the current test context
+     * @return the URL of the settings.gradle file
+     */
+    private URL getSettings(ExtensionContext context) {
 		Class<?> testClass = context.getRequiredTestClass();
 		return testClass.getResource("settings.gradle");
 	}
 
-	@Override
+	/**
+     * This method is called after each test execution.
+     * It extracts the Gradle build from the given context and calls the 'after' method on it.
+     *
+     * @param context the extension context
+     * @throws Exception if an error occurs during the 'after' method execution
+     */
+    @Override
 	public void afterEach(ExtensionContext context) throws Exception {
 		extractGradleBuild(context).after();
 	}

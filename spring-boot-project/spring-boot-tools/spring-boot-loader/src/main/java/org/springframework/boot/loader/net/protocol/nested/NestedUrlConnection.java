@@ -63,18 +63,38 @@ class NestedUrlConnection extends URLConnection {
 
 	private Map<String, List<String>> headerFields;
 
-	NestedUrlConnection(URL url) throws MalformedURLException {
+	/**
+     * Constructs a new NestedUrlConnection with the specified URL and default Cleaner.
+     *
+     * @param url the URL to connect to
+     * @throws MalformedURLException if the URL is malformed
+     */
+    NestedUrlConnection(URL url) throws MalformedURLException {
 		this(url, Cleaner.instance);
 	}
 
-	NestedUrlConnection(URL url, Cleaner cleaner) throws MalformedURLException {
+	/**
+     * Constructs a new NestedUrlConnection object with the specified URL and Cleaner.
+     * 
+     * @param url the URL to connect to
+     * @param cleaner the Cleaner object used for resource cleanup
+     * @throws MalformedURLException if the URL is malformed
+     */
+    NestedUrlConnection(URL url, Cleaner cleaner) throws MalformedURLException {
 		super(url);
 		NestedLocation location = parseNestedLocation(url);
 		this.resources = new NestedUrlConnectionResources(location);
 		this.cleanup = cleaner.register(this, this.resources);
 	}
 
-	private NestedLocation parseNestedLocation(URL url) throws MalformedURLException {
+	/**
+     * Parses the nested location from the given URL.
+     * 
+     * @param url the URL to parse the nested location from
+     * @return the parsed nested location
+     * @throws MalformedURLException if the URL is malformed or the nested location is invalid
+     */
+    private NestedLocation parseNestedLocation(URL url) throws MalformedURLException {
 		try {
 			return NestedLocation.parse(url.getPath());
 		}
@@ -83,26 +103,50 @@ class NestedUrlConnection extends URLConnection {
 		}
 	}
 
-	@Override
+	/**
+     * Returns the value of the specified header field.
+     * 
+     * @param name the name of the header field
+     * @return the value of the specified header field, or null if the header field does not exist
+     */
+    @Override
 	public String getHeaderField(String name) {
 		List<String> values = getHeaderFields().get(name);
 		return (values != null && !values.isEmpty()) ? values.get(0) : null;
 	}
 
-	@Override
+	/**
+     * Returns the value of the header field at the specified index.
+     * 
+     * @param n the index of the header field
+     * @return the value of the header field at the specified index, or null if the index is out of range or the header field does not exist
+     */
+    @Override
 	public String getHeaderField(int n) {
 		Entry<String, List<String>> entry = getHeaderEntry(n);
 		List<String> values = (entry != null) ? entry.getValue() : null;
 		return (values != null && !values.isEmpty()) ? values.get(0) : null;
 	}
 
-	@Override
+	/**
+     * Returns the key of the header field at the specified index.
+     * 
+     * @param n the index of the header field
+     * @return the key of the header field at the specified index, or null if the index is out of range
+     */
+    @Override
 	public String getHeaderFieldKey(int n) {
 		Entry<String, List<String>> entry = getHeaderEntry(n);
 		return (entry != null) ? entry.getKey() : null;
 	}
 
-	private Entry<String, List<String>> getHeaderEntry(int n) {
+	/**
+     * Returns the entry at the specified index in the header fields map.
+     * 
+     * @param n the index of the entry to retrieve
+     * @return the entry at the specified index, or null if the index is out of bounds
+     */
+    private Entry<String, List<String>> getHeaderEntry(int n) {
 		Iterator<Entry<String, List<String>>> iterator = getHeaderFields().entrySet().iterator();
 		Entry<String, List<String>> entry = null;
 		for (int i = 0; i < n; i++) {
@@ -111,7 +155,13 @@ class NestedUrlConnection extends URLConnection {
 		return entry;
 	}
 
-	@Override
+	/**
+     * Returns the header fields of the connection.
+     * 
+     * @return a map containing the header fields, or an empty map if an IOException occurs during connection
+     * @throws IOException if an error occurs while connecting
+     */
+    @Override
 	public Map<String, List<String>> getHeaderFields() {
 		try {
 			connect();
@@ -137,13 +187,23 @@ class NestedUrlConnection extends URLConnection {
 		return headerFields;
 	}
 
-	@Override
+	/**
+     * Returns the content length of the resource that this connection's URL references.
+     * 
+     * @return the content length of the resource, or -1 if the content length is greater than Integer.MAX_VALUE
+     */
+    @Override
 	public int getContentLength() {
 		long contentLength = getContentLengthLong();
 		return (contentLength <= Integer.MAX_VALUE) ? (int) contentLength : -1;
 	}
 
-	@Override
+	/**
+     * Returns the content length of the resource as a long value.
+     * 
+     * @return the content length of the resource, or -1 if the content length cannot be determined
+     */
+    @Override
 	public long getContentLengthLong() {
 		try {
 			connect();
@@ -154,12 +214,22 @@ class NestedUrlConnection extends URLConnection {
 		}
 	}
 
-	@Override
+	/**
+     * Returns the content type of the response.
+     *
+     * @return the content type of the response
+     */
+    @Override
 	public String getContentType() {
 		return CONTENT_TYPE;
 	}
 
-	@Override
+	/**
+     * Returns the last modified timestamp of the resource.
+     * 
+     * @return the last modified timestamp in milliseconds
+     */
+    @Override
 	public long getLastModified() {
 		if (this.lastModified == -1) {
 			try {
@@ -172,7 +242,13 @@ class NestedUrlConnection extends URLConnection {
 		return this.lastModified;
 	}
 
-	@Override
+	/**
+     * Retrieves the permission required to read the file associated with this NestedUrlConnection.
+     * 
+     * @return the permission object representing the read access to the file
+     * @throws IOException if an I/O error occurs while retrieving the permission
+     */
+    @Override
 	public Permission getPermission() throws IOException {
 		if (this.permission == null) {
 			File file = this.resources.getLocation().path().toFile();
@@ -181,13 +257,24 @@ class NestedUrlConnection extends URLConnection {
 		return this.permission;
 	}
 
-	@Override
+	/**
+     * Returns an input stream that reads from this connection.
+     * 
+     * @return an input stream that reads from this connection
+     * @throws IOException if an I/O error occurs while creating the input stream
+     */
+    @Override
 	public InputStream getInputStream() throws IOException {
 		connect();
 		return new ConnectionInputStream(this.resources.getInputStream());
 	}
 
-	@Override
+	/**
+     * Establishes a connection to the specified URL.
+     * 
+     * @throws IOException if an I/O error occurs while connecting
+     */
+    @Override
 	public void connect() throws IOException {
 		if (this.connected) {
 			return;
@@ -203,11 +290,21 @@ class NestedUrlConnection extends URLConnection {
 
 		private volatile boolean closing;
 
-		ConnectionInputStream(InputStream in) {
+		/**
+         * Constructs a new ConnectionInputStream object with the specified InputStream.
+         * 
+         * @param in the InputStream to be wrapped by this ConnectionInputStream
+         */
+        ConnectionInputStream(InputStream in) {
 			super(in);
 		}
 
-		@Override
+		/**
+         * Closes the input stream.
+         * 
+         * @throws IOException if an I/O error occurs while closing the stream
+         */
+        @Override
 		public void close() throws IOException {
 			if (this.closing) {
 				return;

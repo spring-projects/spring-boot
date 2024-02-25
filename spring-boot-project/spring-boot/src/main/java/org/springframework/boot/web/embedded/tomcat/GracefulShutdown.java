@@ -45,16 +45,31 @@ final class GracefulShutdown {
 
 	private volatile boolean aborted = false;
 
-	GracefulShutdown(Tomcat tomcat) {
+	/**
+     * Initiates a graceful shutdown of the specified Tomcat server.
+     * 
+     * @param tomcat the Tomcat server to be gracefully shutdown
+     */
+    GracefulShutdown(Tomcat tomcat) {
 		this.tomcat = tomcat;
 	}
 
-	void shutDownGracefully(GracefulShutdownCallback callback) {
+	/**
+     * Initiates a graceful shutdown of the application.
+     * 
+     * @param callback the callback function to be executed after the shutdown is complete
+     */
+    void shutDownGracefully(GracefulShutdownCallback callback) {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
 		new Thread(() -> doShutdown(callback), "tomcat-shutdown").start();
 	}
 
-	private void doShutdown(GracefulShutdownCallback callback) {
+	/**
+     * Performs a graceful shutdown of the server.
+     * 
+     * @param callback the callback to be invoked when the shutdown is complete
+     */
+    private void doShutdown(GracefulShutdownCallback callback) {
 		List<Connector> connectors = getConnectors();
 		connectors.forEach(this::close);
 		try {
@@ -79,7 +94,12 @@ final class GracefulShutdown {
 		callback.shutdownComplete(GracefulShutdownResult.IDLE);
 	}
 
-	private List<Connector> getConnectors() {
+	/**
+     * Retrieves a list of connectors from the Tomcat server.
+     * 
+     * @return A list of Connector objects representing the connectors found in the Tomcat server.
+     */
+    private List<Connector> getConnectors() {
 		List<Connector> connectors = new ArrayList<>();
 		for (Service service : this.tomcat.getServer().findServices()) {
 			Collections.addAll(connectors, service.findConnectors());
@@ -87,12 +107,27 @@ final class GracefulShutdown {
 		return connectors;
 	}
 
-	private void close(Connector connector) {
+	/**
+     * Closes the given connector gracefully.
+     * <p>
+     * This method pauses the given connector and then closes the server socket associated with the connector's protocol handler.
+     * </p>
+     *
+     * @param connector the connector to be closed gracefully
+     */
+    private void close(Connector connector) {
 		connector.pause();
 		connector.getProtocolHandler().closeServerSocketGraceful();
 	}
 
-	private boolean isActive(Container context) {
+	/**
+     * Checks if the given container is active.
+     * 
+     * @param context the container to check
+     * @return true if the container is active, false otherwise
+     * @throws RuntimeException if an exception occurs during the check
+     */
+    private boolean isActive(Container context) {
 		try {
 			if (((StandardContext) context).getInProgressAsyncCount() > 0) {
 				return true;
@@ -109,7 +144,11 @@ final class GracefulShutdown {
 		}
 	}
 
-	void abort() {
+	/**
+     * Aborts the execution of the program.
+     * Sets the 'aborted' flag to true.
+     */
+    void abort() {
 		this.aborted = true;
 	}
 

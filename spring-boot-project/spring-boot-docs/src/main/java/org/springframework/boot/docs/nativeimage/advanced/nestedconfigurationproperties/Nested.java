@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.nativeimage.advanced.nestedconfigurationproperties;
 
+/**
+ * Nested class.
+ */
 public class Nested {
 
 	private int number;
@@ -25,7 +28,12 @@ public class Nested {
 		return this.number;
 	}
 
-	public void setNumber(int number) {
+	/**
+     * Sets the number for the Nested class.
+     * 
+     * @param number the number to be set
+     */
+    public void setNumber(int number) {
 		this.number = number;
 	}
 	// @fold:off

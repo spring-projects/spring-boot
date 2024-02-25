@@ -23,10 +23,18 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MyDataSourceConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyDataSourceConfiguration {
 
-	@Bean
+	/**
+     * Creates a HikariDataSource object with the configuration properties specified in the "app.datasource" section.
+     * 
+     * @return the HikariDataSource object
+     */
+    @Bean
 	@ConfigurationProperties("app.datasource")
 	public HikariDataSource dataSource() {
 		return DataSourceBuilder.create().type(HikariDataSource.class).build();

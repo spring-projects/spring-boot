@@ -35,7 +35,13 @@ public final class ChangedFiles implements Iterable<ChangedFile> {
 
 	private final Set<ChangedFile> files;
 
-	public ChangedFiles(File sourceDirectory, Set<ChangedFile> files) {
+	/**
+     * Creates a new instance of the ChangedFiles class with the specified source directory and set of changed files.
+     * 
+     * @param sourceDirectory the source directory from which the files were changed
+     * @param files the set of changed files
+     */
+    public ChangedFiles(File sourceDirectory, Set<ChangedFile> files) {
 		this.sourceDirectory = sourceDirectory;
 		this.files = Collections.unmodifiableSet(files);
 	}
@@ -48,7 +54,12 @@ public final class ChangedFiles implements Iterable<ChangedFile> {
 		return this.sourceDirectory;
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the elements in this ChangedFiles object.
+     *
+     * @return an iterator over the elements in this ChangedFiles object
+     */
+    @Override
 	public Iterator<ChangedFile> iterator() {
 		return getFiles().iterator();
 	}
@@ -61,7 +72,13 @@ public final class ChangedFiles implements Iterable<ChangedFile> {
 		return this.files;
 	}
 
-	@Override
+	/**
+     * Compares this ChangedFiles object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
@@ -75,12 +92,22 @@ public final class ChangedFiles implements Iterable<ChangedFile> {
 		return super.equals(obj);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for the ChangedFiles object. The hash code is computed based on the hash code of the files list.
+     *
+     * @return the hash code value for the ChangedFiles object
+     */
+    @Override
 	public int hashCode() {
 		return this.files.hashCode();
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the ChangedFiles object.
+     * 
+     * @return a string representation of the ChangedFiles object, including the source directory and files
+     */
+    @Override
 	public String toString() {
 		return this.sourceDirectory + " " + this.files;
 	}

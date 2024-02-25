@@ -30,21 +30,45 @@ public class OsInfo {
 
 	private final String arch;
 
-	public OsInfo() {
+	/**
+     * Constructs a new instance of the OsInfo class.
+     * Retrieves the name, version, and architecture of the operating system
+     * using the System.getProperty() method.
+     * 
+     * @param name the name of the operating system
+     * @param version the version of the operating system
+     * @param arch the architecture of the operating system
+     */
+    public OsInfo() {
 		this.name = System.getProperty("os.name");
 		this.version = System.getProperty("os.version");
 		this.arch = System.getProperty("os.arch");
 	}
 
-	public String getName() {
+	/**
+     * Returns the name of the OsInfo object.
+     *
+     * @return the name of the OsInfo object
+     */
+    public String getName() {
 		return this.name;
 	}
 
-	public String getVersion() {
+	/**
+     * Returns the version of the operating system.
+     *
+     * @return the version of the operating system
+     */
+    public String getVersion() {
 		return this.version;
 	}
 
-	public String getArch() {
+	/**
+     * Returns the architecture of the operating system.
+     * 
+     * @return the architecture of the operating system
+     */
+    public String getArch() {
 		return this.arch;
 	}
 

@@ -166,13 +166,26 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 		return this.multipartConfig;
 	}
 
-	@Override
+	/**
+     * Returns the description of the servlet.
+     * 
+     * @return the description of the servlet
+     * @throws IllegalArgumentException if the servlet is null
+     */
+    @Override
 	protected String getDescription() {
 		Assert.notNull(this.servlet, "Servlet must not be null");
 		return "servlet " + getServletName();
 	}
 
-	@Override
+	/**
+     * Adds a dynamic servlet registration to the specified servlet context.
+     * 
+     * @param description the description of the servlet registration
+     * @param servletContext the servlet context to add the registration to
+     * @return the dynamic servlet registration
+     */
+    @Override
 	protected ServletRegistration.Dynamic addRegistration(String description, ServletContext servletContext) {
 		String name = getServletName();
 		return servletContext.addServlet(name, this.servlet);
@@ -207,7 +220,13 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 		return getOrDeduceName(this.servlet);
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the ServletRegistrationBean object.
+     * The string representation includes the servlet name and the list of URL mappings.
+     *
+     * @return a string representation of the ServletRegistrationBean object
+     */
+    @Override
 	public String toString() {
 		return getServletName() + " urls=" + getUrlMappings();
 	}

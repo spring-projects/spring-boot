@@ -68,19 +68,37 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 		this.validationQuery = validationQuery;
 	}
 
-	@Override
+	/**
+     * Performs a health check on the connection factory.
+     * 
+     * @param builder the builder used to configure the health check
+     * @return a Mono emitting the health status of the connection factory
+     */
+    @Override
 	protected final Mono<Health> doHealthCheck(Builder builder) {
 		return validate(builder).defaultIfEmpty(builder.build())
 			.onErrorResume(Exception.class, (ex) -> Mono.just(builder.down(ex).build()));
 	}
 
-	private Mono<Health> validate(Builder builder) {
+	/**
+     * Validates the health of the connection factory.
+     * 
+     * @param builder the builder used to create the health object
+     * @return a Mono containing the health status of the connection factory
+     */
+    private Mono<Health> validate(Builder builder) {
 		builder.withDetail("database", this.connectionFactory.getMetadata().getName());
 		return (StringUtils.hasText(this.validationQuery)) ? validateWithQuery(builder)
 				: validateWithConnectionValidation(builder);
 	}
 
-	private Mono<Health> validateWithQuery(Builder builder) {
+	/**
+     * Validates the connection with a query.
+     * 
+     * @param builder the builder used to construct the Health object
+     * @return a Mono emitting the Health object with the validation result
+     */
+    private Mono<Health> validateWithQuery(Builder builder) {
 		builder.withDetail("validationQuery", this.validationQuery);
 		Mono<Object> connectionValidation = Mono.usingWhen(this.connectionFactory.create(),
 				(conn) -> Flux.from(conn.createStatement(this.validationQuery).execute())
@@ -90,7 +108,13 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 		return connectionValidation.map((result) -> builder.up().withDetail("result", result).build());
 	}
 
-	private Mono<Health> validateWithConnectionValidation(Builder builder) {
+	/**
+     * Validates the connection using connection validation query.
+     * 
+     * @param builder the builder used to create the Health object
+     * @return a Mono emitting the Health object with the connection validation result
+     */
+    private Mono<Health> validateWithConnectionValidation(Builder builder) {
 		builder.withDetail("validationQuery", "validate(REMOTE)");
 		Mono<Boolean> connectionValidation = Mono.usingWhen(this.connectionFactory.create(),
 				(connection) -> Mono.from(connection.validate(ValidationDepth.REMOTE)), Connection::close,
@@ -98,7 +122,14 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 		return connectionValidation.map((valid) -> builder.status((valid) ? Status.UP : Status.DOWN).build());
 	}
 
-	private Object extractResult(Row row, RowMetadata metadata) {
+	/**
+     * Extracts the result from the given Row object based on the metadata.
+     * 
+     * @param row      the Row object containing the result
+     * @param metadata the metadata of the Row object
+     * @return the extracted result
+     */
+    private Object extractResult(Row row, RowMetadata metadata) {
 		return row.get(metadata.getColumnMetadatas().iterator().next().getName());
 	}
 

@@ -16,8 +16,16 @@
 
 package org.test;
 
+/**
+ * SampleLibrary class.
+ */
 public class SampleLibrary {
-	public static String getMessage() {
+	/**
+     * Returns the message "Launched".
+     * 
+     * @return the message "Launched"
+     */
+    public static String getMessage() {
 		return "Launched";
 	}
 }

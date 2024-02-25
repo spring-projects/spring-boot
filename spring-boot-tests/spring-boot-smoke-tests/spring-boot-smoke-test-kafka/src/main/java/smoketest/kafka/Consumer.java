@@ -22,18 +22,31 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * Consumer class.
+ */
 @Component
 public class Consumer {
 
 	private final List<SampleMessage> messages = new CopyOnWriteArrayList<>();
 
-	@KafkaListener(topics = "testTopic")
+	/**
+     * This method is annotated with @KafkaListener and is responsible for processing messages received from the "testTopic" topic.
+     * 
+     * @param message The SampleMessage object representing the received message.
+     */
+    @KafkaListener(topics = "testTopic")
 	void processMessage(SampleMessage message) {
 		this.messages.add(message);
 		System.out.println("Received sample message [" + message + "]");
 	}
 
-	public List<SampleMessage> getMessages() {
+	/**
+     * Retrieves the list of SampleMessage objects.
+     *
+     * @return the list of SampleMessage objects
+     */
+    public List<SampleMessage> getMessages() {
 		return this.messages;
 	}
 

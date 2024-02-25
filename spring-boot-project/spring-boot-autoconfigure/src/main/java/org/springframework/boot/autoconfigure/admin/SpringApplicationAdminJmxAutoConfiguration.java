@@ -54,7 +54,20 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 	 */
 	private static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=Admin,name=SpringApplication";
 
-	@Bean
+	/**
+     * Registers the SpringApplicationAdminMXBeanRegistrar bean if it is missing.
+     * This bean is responsible for registering the SpringApplicationAdminMXBean in the JMX server.
+     * The JMX name is retrieved from the environment property "spring.application.admin.jmx-name",
+     * or it falls back to the default name "org.springframework.boot:type=Admin,name=SpringApplication".
+     * If there are any MBeanExporters available, the JMX name is added to their excluded beans list
+     * to prevent duplicate registration.
+     *
+     * @param mbeanExporters the ObjectProvider of MBeanExporters
+     * @param environment the Environment object
+     * @return the SpringApplicationAdminMXBeanRegistrar bean
+     * @throws MalformedObjectNameException if the JMX name is malformed
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar(
 			ObjectProvider<MBeanExporter> mbeanExporters, Environment environment) throws MalformedObjectNameException {

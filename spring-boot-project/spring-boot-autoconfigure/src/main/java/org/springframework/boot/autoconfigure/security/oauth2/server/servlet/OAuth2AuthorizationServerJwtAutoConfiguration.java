@@ -53,14 +53,27 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class OAuth2AuthorizationServerJwtAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a JwtDecoder bean if the JwtDecoder class is present and no other bean of type JwtDecoder is already defined.
+     * 
+     * @param jwkSource the JWKSource used to decode JWT tokens
+     * @return the JwtDecoder bean
+     */
+    @Bean
 	@ConditionalOnClass(JwtDecoder.class)
 	@ConditionalOnMissingBean
 	JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
 		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
 	}
 
-	@Bean
+	/**
+     * Creates a JWKSource bean for providing JSON Web Key (JWK) set.
+     * This bean is responsible for generating and providing the RSA key for JWT token signing.
+     * If a custom JWKSource bean is already defined, this method will not be executed.
+     * 
+     * @return the JWKSource bean for providing JSON Web Key (JWK) set
+     */
+    @Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	@ConditionalOnMissingBean
 	JWKSource<SecurityContext> jwkSource() {
@@ -69,7 +82,12 @@ public class OAuth2AuthorizationServerJwtAutoConfiguration {
 		return new ImmutableJWKSet<>(jwkSet);
 	}
 
-	private static RSAKey getRsaKey() {
+	/**
+     * Generates an RSAKey object containing the RSA public and private keys.
+     * 
+     * @return RSAKey object containing the RSA public and private keys
+     */
+    private static RSAKey getRsaKey() {
 		KeyPair keyPair = generateRsaKey();
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
 		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
@@ -79,7 +97,13 @@ public class OAuth2AuthorizationServerJwtAutoConfiguration {
 		return rsaKey;
 	}
 
-	private static KeyPair generateRsaKey() {
+	/**
+     * Generates a new RSA key pair for use in OAuth2 authorization server.
+     *
+     * @return the generated RSA key pair
+     * @throws IllegalStateException if an error occurs during key pair generation
+     */
+    private static KeyPair generateRsaKey() {
 		KeyPair keyPair;
 		try {
 			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");

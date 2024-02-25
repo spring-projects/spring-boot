@@ -46,42 +46,83 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 
 	private final URI REPOSITORY_URI = URI.create("https://repo.spring.io/snapshot/");
 
-	@Inject
+	/**
+     * Constructs a new MoveToSnapshots object with the specified BomExtension.
+     * 
+     * @param bom the BomExtension to be used
+     */
+    @Inject
 	public MoveToSnapshots(BomExtension bom) {
 		super(bom, true);
 		getRepositoryUris().add(this.REPOSITORY_URI);
 	}
 
-	@Override
+	/**
+     * Upgrades the dependencies of the MoveToSnapshots class.
+     * This method overrides the upgradeDependencies() method from the superclass.
+     * It calls the superclass's upgradeDependencies() method using the super keyword.
+     */
+    @Override
 	@TaskAction
 	void upgradeDependencies() {
 		super.upgradeDependencies();
 	}
 
-	@Override
+	/**
+     * Generates the issue title for an upgrade.
+     * 
+     * @param upgrade the upgrade object containing the library and version information
+     * @return the issue title in the format "Upgrade to [library name] [release version]"
+     */
+    @Override
 	protected String issueTitle(Upgrade upgrade) {
 		String snapshotVersion = upgrade.getVersion().toString();
 		String releaseVersion = snapshotVersion.substring(0, snapshotVersion.length() - "-SNAPSHOT".length());
 		return "Upgrade to " + upgrade.getLibrary().getName() + " " + releaseVersion;
 	}
 
-	@Override
+	/**
+     * Generates a commit message for starting the build against a specific library upgrade and issue number.
+     * 
+     * @param upgrade the upgrade object containing information about the library upgrade
+     * @param issueNumber the issue number associated with the upgrade
+     * @return the commit message
+     */
+    @Override
 	protected String commitMessage(Upgrade upgrade, int issueNumber) {
 		return "Start building against " + upgrade.getLibrary().getName() + " " + releaseVersion(upgrade) + " snapshots"
 				+ "\n\nSee gh-" + issueNumber;
 	}
 
-	private String releaseVersion(Upgrade upgrade) {
+	/**
+     * Returns the release version of the given upgrade by removing the "-SNAPSHOT" suffix.
+     * 
+     * @param upgrade the upgrade object containing the version information
+     * @return the release version of the upgrade
+     */
+    private String releaseVersion(Upgrade upgrade) {
 		String snapshotVersion = upgrade.getVersion().toString();
 		return snapshotVersion.substring(0, snapshotVersion.length() - "-SNAPSHOT".length());
 	}
 
-	@Override
+	/**
+     * Checks if the given library is eligible for moving to snapshots.
+     * 
+     * @param library the library to check
+     * @return true if the library is eligible for moving to snapshots, false otherwise
+     */
+    @Override
 	protected boolean eligible(Library library) {
 		return library.isConsiderSnapshots() && super.eligible(library);
 	}
 
-	@Override
+	/**
+     * Determines the update predicates for the given milestone.
+     * 
+     * @param milestone The milestone for which to determine the update predicates.
+     * @return The list of update predicates.
+     */
+    @Override
 	protected List<BiPredicate<Library, DependencyVersion>> determineUpdatePredicates(Milestone milestone) {
 		ReleaseSchedule releaseSchedule = new ReleaseSchedule();
 		Map<String, List<Release>> releases = releaseSchedule.releasesBetween(OffsetDateTime.now(),

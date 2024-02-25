@@ -34,20 +34,39 @@ class AutoConfiguredReactiveHealthContributorRegistry extends DefaultReactiveHea
 
 	private final Collection<String> groupNames;
 
-	AutoConfiguredReactiveHealthContributorRegistry(Map<String, ReactiveHealthContributor> contributors,
+	/**
+     * Constructs a new AutoConfiguredReactiveHealthContributorRegistry with the specified contributors and group names.
+     * 
+     * @param contributors a map of contributors, where the key is the contributor name and the value is the contributor instance
+     * @param groupNames a collection of group names
+     */
+    AutoConfiguredReactiveHealthContributorRegistry(Map<String, ReactiveHealthContributor> contributors,
 			Collection<String> groupNames) {
 		super(contributors);
 		this.groupNames = groupNames;
 		contributors.keySet().forEach(this::assertDoesNotClashWithGroup);
 	}
 
-	@Override
+	/**
+     * Registers a contributor with the given name in the reactive health contributor registry.
+     * 
+     * @param name the name of the contributor
+     * @param contributor the reactive health contributor to be registered
+     * @throws IllegalArgumentException if the name clashes with an existing contributor group
+     */
+    @Override
 	public void registerContributor(String name, ReactiveHealthContributor contributor) {
 		assertDoesNotClashWithGroup(name);
 		super.registerContributor(name, contributor);
 	}
 
-	private void assertDoesNotClashWithGroup(String name) {
+	/**
+     * Asserts that the given name does not clash with any group names in the AutoConfiguredReactiveHealthContributorRegistry.
+     * 
+     * @param name the name to check for clashes
+     * @throws IllegalStateException if the name clashes with any group name
+     */
+    private void assertDoesNotClashWithGroup(String name) {
 		Assert.state(!this.groupNames.contains(name),
 				() -> "ReactiveHealthContributor with name \"" + name + "\" clashes with group");
 	}

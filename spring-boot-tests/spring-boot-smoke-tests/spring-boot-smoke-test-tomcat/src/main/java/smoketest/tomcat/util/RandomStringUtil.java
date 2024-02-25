@@ -19,12 +19,24 @@ package smoketest.tomcat.util;
 import java.util.Base64;
 import java.util.Random;
 
+/**
+ * RandomStringUtil class.
+ */
 public final class RandomStringUtil {
 
-	private RandomStringUtil() {
+	/**
+     * Private constructor for the RandomStringUtil class.
+     */
+    private RandomStringUtil() {
 	}
 
-	public static String getRandomBase64EncodedString(int length) {
+	/**
+     * Generates a random base64 encoded string of the specified length.
+     *
+     * @param length the length of the string to generate
+     * @return a random base64 encoded string
+     */
+    public static String getRandomBase64EncodedString(int length) {
 		byte[] responseHeader = new byte[length];
 		new Random().nextBytes(responseHeader);
 		return Base64.getEncoder().encodeToString(responseHeader);

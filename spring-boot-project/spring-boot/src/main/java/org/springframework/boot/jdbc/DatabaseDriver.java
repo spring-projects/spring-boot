@@ -95,7 +95,12 @@ public enum DatabaseDriver {
 	 */
 	HANA("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP", "SELECT 1 FROM SYS.DUMMY") {
 
-		@Override
+		/**
+     * Returns a collection of URL prefixes.
+     * 
+     * @return the collection of URL prefixes
+     */
+    @Override
 		protected Collection<String> getUrlPrefixes() {
 			return Collections.singleton("sap");
 		}
@@ -114,7 +119,13 @@ public enum DatabaseDriver {
 	SQLSERVER("Microsoft SQL Server", "com.microsoft.sqlserver.jdbc.SQLServerDriver",
 			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource", "SELECT 1") {
 
-		@Override
+		/**
+     * Checks if the given product name matches the product name of the database driver.
+     * 
+     * @param productName the product name to be checked
+     * @return true if the product name matches the database driver's product name, false otherwise
+     */
+    @Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName) || "SQL SERVER".equalsIgnoreCase(productName);
 		}
@@ -127,12 +138,24 @@ public enum DatabaseDriver {
 	FIREBIRD("Firebird", "org.firebirdsql.jdbc.FBDriver", "org.firebirdsql.ds.FBXADataSource",
 			"SELECT 1 FROM RDB$DATABASE") {
 
-		@Override
+		/**
+     * Returns a collection of URL prefixes for the Firebird database driver.
+     * The prefixes include "firebirdsql" and "firebird".
+     *
+     * @return a collection of URL prefixes
+     */
+    @Override
 		protected Collection<String> getUrlPrefixes() {
 			return Arrays.asList("firebirdsql", "firebird");
 		}
 
-		@Override
+		/**
+     * Checks if the given product name matches the name of the database driver.
+     * 
+     * @param productName the product name to be checked
+     * @return true if the product name matches the database driver name, false otherwise
+     */
+    @Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName)
 					|| productName.toLowerCase(Locale.ENGLISH).startsWith("firebird");
@@ -144,7 +167,13 @@ public enum DatabaseDriver {
 	 */
 	DB2("DB2", "com.ibm.db2.jcc.DB2Driver", "com.ibm.db2.jcc.DB2XADataSource", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
 
-		@Override
+		/**
+     * Checks if the given product name matches the product name of the DatabaseDriver.
+     * 
+     * @param productName the product name to be checked
+     * @return true if the product name matches, false otherwise
+     */
+    @Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName) || productName.toLowerCase(Locale.ENGLISH).startsWith("db2/");
 		}
@@ -156,17 +185,33 @@ public enum DatabaseDriver {
 	DB2_AS400("DB2 UDB for AS/400", "com.ibm.as400.access.AS400JDBCDriver",
 			"com.ibm.as400.access.AS400JDBCXADataSource", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
 
-		@Override
+		/**
+     * Returns the ID of the database driver.
+     *
+     * @return the ID of the database driver
+     */
+    @Override
 		public String getId() {
 			return "db2";
 		}
 
-		@Override
+		/**
+     * Returns a collection of URL prefixes for the AS400 database driver.
+     * 
+     * @return a collection of URL prefixes for the AS400 database driver
+     */
+    @Override
 		protected Collection<String> getUrlPrefixes() {
 			return Collections.singleton("as400");
 		}
 
-		@Override
+		/**
+     * Checks if the given product name matches the name of the AS/400 database driver.
+     * 
+     * @param productName the product name to be checked
+     * @return true if the product name matches the AS/400 database driver, false otherwise
+     */
+    @Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName) || productName.toLowerCase(Locale.ENGLISH).contains("as/400");
 		}
@@ -182,7 +227,13 @@ public enum DatabaseDriver {
 	 */
 	INFORMIX("Informix Dynamic Server", "com.informix.jdbc.IfxDriver", null, "select count(*) from systables") {
 
-		@Override
+		/**
+     * Returns a collection of URL prefixes for the Informix database driver.
+     * The URL prefixes include "informix-sqli" and "informix-direct".
+     *
+     * @return a collection of URL prefixes
+     */
+    @Override
 		protected Collection<String> getUrlPrefixes() {
 			return Arrays.asList("informix-sqli", "informix-direct");
 		}
@@ -200,7 +251,12 @@ public enum DatabaseDriver {
 	 */
 	TESTCONTAINERS(null, "org.testcontainers.jdbc.ContainerDatabaseDriver") {
 
-		@Override
+		/**
+     * Returns a collection of URL prefixes.
+     * 
+     * @return the collection of URL prefixes
+     */
+    @Override
 		protected Collection<String> getUrlPrefixes() {
 			return Collections.singleton("tc");
 		}
@@ -215,15 +271,36 @@ public enum DatabaseDriver {
 
 	private final String validationQuery;
 
-	DatabaseDriver(String productName, String driverClassName) {
+	/**
+     * Constructs a new DatabaseDriver with the specified product name and driver class name.
+     * 
+     * @param productName the name of the database product
+     * @param driverClassName the fully qualified class name of the database driver
+     */
+    DatabaseDriver(String productName, String driverClassName) {
 		this(productName, driverClassName, null);
 	}
 
-	DatabaseDriver(String productName, String driverClassName, String xaDataSourceClassName) {
+	/**
+     * Constructs a new DatabaseDriver with the specified product name, driver class name, and XA data source class name.
+     * 
+     * @param productName the name of the database product
+     * @param driverClassName the fully qualified class name of the JDBC driver
+     * @param xaDataSourceClassName the fully qualified class name of the XA data source
+     */
+    DatabaseDriver(String productName, String driverClassName, String xaDataSourceClassName) {
 		this(productName, driverClassName, xaDataSourceClassName, null);
 	}
 
-	DatabaseDriver(String productName, String driverClassName, String xaDataSourceClassName, String validationQuery) {
+	/**
+     * Constructs a new DatabaseDriver object with the specified parameters.
+     * 
+     * @param productName the name of the database product
+     * @param driverClassName the fully qualified class name of the JDBC driver
+     * @param xaDataSourceClassName the fully qualified class name of the XA data source
+     * @param validationQuery the SQL query used to validate the connection
+     */
+    DatabaseDriver(String productName, String driverClassName, String xaDataSourceClassName, String validationQuery) {
 		this.productName = productName;
 		this.driverClassName = driverClassName;
 		this.xaDataSourceClassName = xaDataSourceClassName;
@@ -246,7 +323,13 @@ public enum DatabaseDriver {
 		return Collections.singleton(name().toLowerCase(Locale.ENGLISH));
 	}
 
-	protected boolean matchProductName(String productName) {
+	/**
+     * Checks if the given product name matches the stored product name.
+     * 
+     * @param productName the product name to be checked
+     * @return true if the given product name matches the stored product name, false otherwise
+     */
+    protected boolean matchProductName(String productName) {
 		return this.productName != null && this.productName.equalsIgnoreCase(productName);
 	}
 

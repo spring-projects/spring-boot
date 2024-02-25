@@ -56,11 +56,25 @@ public class ConditionsReportEndpoint {
 
 	private final ConfigurableApplicationContext context;
 
-	public ConditionsReportEndpoint(ConfigurableApplicationContext context) {
+	/**
+     * Constructs a new ConditionsReportEndpoint with the specified ConfigurableApplicationContext.
+     * 
+     * @param context the ConfigurableApplicationContext to be used by the ConditionsReportEndpoint
+     */
+    public ConditionsReportEndpoint(ConfigurableApplicationContext context) {
 		this.context = context;
 	}
 
-	@ReadOperation
+	/**
+     * Returns the conditions descriptor for the current application context.
+     * 
+     * This method retrieves the conditions descriptor by iterating through the application context hierarchy
+     * and collecting the context condition evaluations for each context. The conditions descriptor provides
+     * information about the conditions that were evaluated for each context.
+     * 
+     * @return the conditions descriptor for the current application context
+     */
+    @ReadOperation
 	public ConditionsDescriptor conditions() {
 		Map<String, ContextConditionsDescriptor> contextConditionEvaluations = new HashMap<>();
 		ConfigurableApplicationContext target = this.context;
@@ -71,7 +85,13 @@ public class ConditionsReportEndpoint {
 		return new ConditionsDescriptor(contextConditionEvaluations);
 	}
 
-	private ConfigurableApplicationContext getConfigurableParent(ConfigurableApplicationContext context) {
+	/**
+     * Retrieves the configurable parent application context of the given application context.
+     * 
+     * @param context the application context to retrieve the parent from
+     * @return the configurable parent application context, or null if the parent is not a configurable application context
+     */
+    private ConfigurableApplicationContext getConfigurableParent(ConfigurableApplicationContext context) {
 		ApplicationContext parent = context.getParent();
 		if (parent instanceof ConfigurableApplicationContext configurableParent) {
 			return configurableParent;
@@ -86,11 +106,21 @@ public class ConditionsReportEndpoint {
 
 		private final Map<String, ContextConditionsDescriptor> contexts;
 
-		private ConditionsDescriptor(Map<String, ContextConditionsDescriptor> contexts) {
+		/**
+         * Constructs a new ConditionsDescriptor with the specified contexts.
+         *
+         * @param contexts a map of context names to ContextConditionsDescriptor objects
+         */
+        private ConditionsDescriptor(Map<String, ContextConditionsDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
-		public Map<String, ContextConditionsDescriptor> getContexts() {
+		/**
+         * Returns the map of contexts associated with this ConditionsDescriptor.
+         *
+         * @return the map of contexts
+         */
+        public Map<String, ContextConditionsDescriptor> getContexts() {
 			return this.contexts;
 		}
 
@@ -113,7 +143,12 @@ public class ConditionsReportEndpoint {
 
 		private final String parentId;
 
-		public ContextConditionsDescriptor(ConfigurableApplicationContext context) {
+		/**
+         * Constructs a new ContextConditionsDescriptor object with the given ConfigurableApplicationContext.
+         * 
+         * @param context the ConfigurableApplicationContext to use for constructing the ContextConditionsDescriptor
+         */
+        public ContextConditionsDescriptor(ConfigurableApplicationContext context) {
 			ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
 			this.positiveMatches = new LinkedMultiValueMap<>();
 			this.negativeMatches = new LinkedHashMap<>();
@@ -123,7 +158,13 @@ public class ConditionsReportEndpoint {
 			this.parentId = (context.getParent() != null) ? context.getParent().getId() : null;
 		}
 
-		private void add(String source, ConditionAndOutcomes conditionAndOutcomes) {
+		/**
+         * Adds a source and its corresponding condition and outcomes to the context conditions descriptor.
+         * 
+         * @param source The source to be added.
+         * @param conditionAndOutcomes The condition and outcomes associated with the source.
+         */
+        private void add(String source, ConditionAndOutcomes conditionAndOutcomes) {
 			String name = ClassUtils.getShortName(source);
 			if (conditionAndOutcomes.isFullMatch()) {
 				conditionAndOutcomes.forEach((conditionAndOutcome) -> this.positiveMatches.add(name,
@@ -134,23 +175,48 @@ public class ConditionsReportEndpoint {
 			}
 		}
 
-		public Map<String, List<MessageAndConditionDescriptor>> getPositiveMatches() {
+		/**
+         * Returns the positive matches stored in a map.
+         * 
+         * @return a map containing positive matches, where the keys are strings and the values are lists of MessageAndConditionDescriptor objects
+         */
+        public Map<String, List<MessageAndConditionDescriptor>> getPositiveMatches() {
 			return this.positiveMatches;
 		}
 
-		public Map<String, MessageAndConditionsDescriptor> getNegativeMatches() {
+		/**
+         * Returns the map of negative matches.
+         * 
+         * @return the map of negative matches
+         */
+        public Map<String, MessageAndConditionsDescriptor> getNegativeMatches() {
 			return this.negativeMatches;
 		}
 
-		public List<String> getExclusions() {
+		/**
+         * Returns the list of exclusions.
+         *
+         * @return the list of exclusions
+         */
+        public List<String> getExclusions() {
 			return this.exclusions;
 		}
 
-		public Set<String> getUnconditionalClasses() {
+		/**
+         * Returns the set of unconditional classes.
+         * 
+         * @return the set of unconditional classes
+         */
+        public Set<String> getUnconditionalClasses() {
 			return this.unconditionalClasses;
 		}
 
-		public String getParentId() {
+		/**
+         * Returns the parent ID of the ContextConditionsDescriptor.
+         *
+         * @return the parent ID of the ContextConditionsDescriptor
+         */
+        public String getParentId() {
 			return this.parentId;
 		}
 
@@ -166,7 +232,12 @@ public class ConditionsReportEndpoint {
 
 		private final List<MessageAndConditionDescriptor> matched = new ArrayList<>();
 
-		public MessageAndConditionsDescriptor(ConditionAndOutcomes conditionAndOutcomes) {
+		/**
+         * Constructs a new MessageAndConditionsDescriptor object with the given ConditionAndOutcomes.
+         * 
+         * @param conditionAndOutcomes the ConditionAndOutcomes to be used for constructing the object
+         */
+        public MessageAndConditionsDescriptor(ConditionAndOutcomes conditionAndOutcomes) {
 			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
 				List<MessageAndConditionDescriptor> target = (conditionAndOutcome.getOutcome().isMatch() ? this.matched
 						: this.notMatched);
@@ -174,11 +245,21 @@ public class ConditionsReportEndpoint {
 			}
 		}
 
-		public List<MessageAndConditionDescriptor> getNotMatched() {
+		/**
+         * Returns the list of MessageAndConditionDescriptors that did not match.
+         *
+         * @return the list of MessageAndConditionDescriptors that did not match
+         */
+        public List<MessageAndConditionDescriptor> getNotMatched() {
 			return this.notMatched;
 		}
 
-		public List<MessageAndConditionDescriptor> getMatched() {
+		/**
+         * Returns the list of MessageAndConditionDescriptor objects that have been matched.
+         *
+         * @return the list of matched MessageAndConditionDescriptor objects
+         */
+        public List<MessageAndConditionDescriptor> getMatched() {
 			return this.matched;
 		}
 
@@ -194,7 +275,12 @@ public class ConditionsReportEndpoint {
 
 		private final String message;
 
-		public MessageAndConditionDescriptor(ConditionAndOutcome conditionAndOutcome) {
+		/**
+         * Constructs a new MessageAndConditionDescriptor object with the given ConditionAndOutcome.
+         * 
+         * @param conditionAndOutcome the ConditionAndOutcome object containing the condition and outcome
+         */
+        public MessageAndConditionDescriptor(ConditionAndOutcome conditionAndOutcome) {
 			Condition condition = conditionAndOutcome.getCondition();
 			ConditionOutcome outcome = conditionAndOutcome.getOutcome();
 			this.condition = ClassUtils.getShortName(condition.getClass());
@@ -206,11 +292,21 @@ public class ConditionsReportEndpoint {
 			}
 		}
 
-		public String getCondition() {
+		/**
+         * Returns the condition of the MessageAndConditionDescriptor.
+         *
+         * @return the condition of the MessageAndConditionDescriptor
+         */
+        public String getCondition() {
 			return this.condition;
 		}
 
-		public String getMessage() {
+		/**
+         * Returns the message associated with this MessageAndConditionDescriptor.
+         *
+         * @return the message associated with this MessageAndConditionDescriptor
+         */
+        public String getMessage() {
 			return this.message;
 		}
 

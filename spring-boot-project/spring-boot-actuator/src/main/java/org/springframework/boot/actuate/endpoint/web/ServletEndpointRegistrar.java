@@ -44,25 +44,51 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 
 	private final Collection<ExposableServletEndpoint> servletEndpoints;
 
-	public ServletEndpointRegistrar(String basePath, Collection<ExposableServletEndpoint> servletEndpoints) {
+	/**
+     * Creates a new instance of ServletEndpointRegistrar with the specified base path and collection of servlet endpoints.
+     * 
+     * @param basePath the base path for the servlet endpoints
+     * @param servletEndpoints the collection of servlet endpoints to be registered
+     * @throws IllegalArgumentException if servletEndpoints is null
+     */
+    public ServletEndpointRegistrar(String basePath, Collection<ExposableServletEndpoint> servletEndpoints) {
 		Assert.notNull(servletEndpoints, "ServletEndpoints must not be null");
 		this.basePath = cleanBasePath(basePath);
 		this.servletEndpoints = servletEndpoints;
 	}
 
-	private static String cleanBasePath(String basePath) {
+	/**
+     * Cleans the base path by removing the trailing slash if present.
+     * 
+     * @param basePath the base path to be cleaned
+     * @return the cleaned base path
+     */
+    private static String cleanBasePath(String basePath) {
 		if (StringUtils.hasText(basePath) && basePath.endsWith("/")) {
 			return basePath.substring(0, basePath.length() - 1);
 		}
 		return (basePath != null) ? basePath : "";
 	}
 
-	@Override
+	/**
+     * This method is called during the startup of the application.
+     * It registers all the servlet endpoints specified in the servletEndpoints list.
+     *
+     * @param servletContext the ServletContext object representing the application's servlet context
+     * @throws ServletException if there is an error during the registration of servlet endpoints
+     */
+    @Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		this.servletEndpoints.forEach((servletEndpoint) -> register(servletContext, servletEndpoint));
 	}
 
-	private void register(ServletContext servletContext, ExposableServletEndpoint endpoint) {
+	/**
+     * Registers a servlet endpoint with the given servlet context.
+     * 
+     * @param servletContext The servlet context to register the endpoint with.
+     * @param endpoint The servlet endpoint to be registered.
+     */
+    private void register(ServletContext servletContext, ExposableServletEndpoint endpoint) {
 		String name = endpoint.getEndpointId().toLowerCaseString() + "-actuator-endpoint";
 		String path = this.basePath + "/" + endpoint.getRootPath();
 		String urlMapping = path.endsWith("/") ? path + "*" : path + "/*";

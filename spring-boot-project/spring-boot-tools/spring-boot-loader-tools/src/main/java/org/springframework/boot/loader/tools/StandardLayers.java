@@ -68,12 +68,22 @@ public abstract class StandardLayers implements Layers {
 		LAYERS = Collections.unmodifiableList(layers);
 	}
 
-	@Override
+	/**
+     * Returns an iterator over the elements in the LAYERS list.
+     *
+     * @return an iterator over the elements in the LAYERS list
+     */
+    @Override
 	public Iterator<Layer> iterator() {
 		return LAYERS.iterator();
 	}
 
-	@Override
+	/**
+     * Returns a sequential Stream with the elements of the LAYERS list as its source.
+     *
+     * @return a sequential Stream of Layer elements
+     */
+    @Override
 	public Stream<Layer> stream() {
 		return LAYERS.stream();
 	}

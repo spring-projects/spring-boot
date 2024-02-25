@@ -31,12 +31,23 @@ public interface SecurityContext {
 	 */
 	SecurityContext NONE = new SecurityContext() {
 
-		@Override
+		/**
+     * Returns the principal associated with the current security context.
+     * 
+     * @return the principal associated with the current security context, or null if none is set
+     */
+    @Override
 		public Principal getPrincipal() {
 			return null;
 		}
 
-		@Override
+		/**
+     * Returns whether the user has the specified role.
+     *
+     * @param role the role to check
+     * @return true if the user has the specified role, false otherwise
+     */
+    @Override
 		public boolean isUserInRole(String role) {
 			return false;
 		}

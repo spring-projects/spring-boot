@@ -27,6 +27,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.ws.test.client.RequestMatchers.payload;
 import static org.springframework.ws.test.client.ResponseCreators.withPayload;
 
+/**
+ * MyWebServiceClientTests class.
+ */
 @WebServiceClientTest(SomeWebService.class)
 class MyWebServiceClientTests {
 
@@ -36,7 +39,16 @@ class MyWebServiceClientTests {
 	@Autowired
 	private SomeWebService someWebService;
 
-	@Test
+	/**
+     * Test method to mock a server call.
+     * 
+     * <p>
+     * This method sets up a mock server call using the Spring TestRestTemplate. It expects a payload with a request XML and responds with a payload containing a response XML with a status code of 200. It then asserts that the status code returned by the someWebService.test() method is equal to 200.
+     * </p>
+     * 
+     * @throws Exception if an error occurs during the test
+     */
+    @Test
 	void mockServerCall() {
 		// @formatter:off
 		this.server

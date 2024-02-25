@@ -43,7 +43,15 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.Ite
  */
 public class JsonMarshaller {
 
-	public void write(ConfigurationMetadata metadata, OutputStream outputStream) throws IOException {
+	/**
+     * Writes the given ConfigurationMetadata to the specified OutputStream in JSON format.
+     * The metadata includes groups, properties, and hints.
+     *
+     * @param metadata     the ConfigurationMetadata to be written
+     * @param outputStream the OutputStream to write the JSON data to
+     * @throws IOException if an I/O error occurs while writing the data
+     */
+    public void write(ConfigurationMetadata metadata, OutputStream outputStream) throws IOException {
 		try {
 			JSONObject object = new JSONObject();
 			JsonConverter converter = new JsonConverter();
@@ -63,7 +71,14 @@ public class JsonMarshaller {
 		}
 	}
 
-	public ConfigurationMetadata read(InputStream inputStream) throws Exception {
+	/**
+     * Reads the configuration metadata from the given input stream.
+     * 
+     * @param inputStream the input stream to read from
+     * @return the configuration metadata
+     * @throws Exception if an error occurs while reading the input stream
+     */
+    public ConfigurationMetadata read(InputStream inputStream) throws Exception {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		JSONObject object = new JSONObject(toString(inputStream));
 		JsonPath path = JsonPath.root();
@@ -91,7 +106,16 @@ public class JsonMarshaller {
 		return metadata;
 	}
 
-	private ItemMetadata toItemMetadata(JSONObject object, JsonPath path, ItemType itemType) throws Exception {
+	/**
+     * Converts a JSONObject to an ItemMetadata object.
+     * 
+     * @param object the JSONObject to convert
+     * @param path the JsonPath of the object
+     * @param itemType the type of the item (GROUP or PROPERTY)
+     * @return the converted ItemMetadata object
+     * @throws Exception if an error occurs during conversion
+     */
+    private ItemMetadata toItemMetadata(JSONObject object, JsonPath path, ItemType itemType) throws Exception {
 		switch (itemType) {
 			case GROUP -> checkAllowedKeys(object, path, "name", "type", "description", "sourceType", "sourceMethod");
 			case PROPERTY -> checkAllowedKeys(object, path, "name", "type", "description", "sourceType", "defaultValue",
@@ -108,7 +132,15 @@ public class JsonMarshaller {
 				deprecation);
 	}
 
-	private ItemDeprecation toItemDeprecation(JSONObject object, JsonPath path) throws Exception {
+	/**
+     * Converts a JSONObject to an ItemDeprecation object.
+     * 
+     * @param object the JSONObject to convert
+     * @param path the JsonPath of the object
+     * @return the converted ItemDeprecation object
+     * @throws Exception if an error occurs during conversion
+     */
+    private ItemDeprecation toItemDeprecation(JSONObject object, JsonPath path) throws Exception {
 		if (object.has("deprecation")) {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			checkAllowedKeys(deprecationJsonObject, path.resolve("deprecation"), "level", "reason", "replacement",
@@ -123,7 +155,15 @@ public class JsonMarshaller {
 		return object.optBoolean("deprecated") ? new ItemDeprecation() : null;
 	}
 
-	private ItemHint toItemHint(JSONObject object, JsonPath path) throws Exception {
+	/**
+     * Converts a JSONObject to an ItemHint object.
+     * 
+     * @param object the JSONObject to convert
+     * @param path the JsonPath of the object
+     * @return the converted ItemHint object
+     * @throws Exception if there is an error during conversion
+     */
+    private ItemHint toItemHint(JSONObject object, JsonPath path) throws Exception {
 		checkAllowedKeys(object, path, "name", "values", "providers");
 		String name = object.getString("name");
 		List<ItemHint.ValueHint> values = new ArrayList<>();
@@ -143,14 +183,30 @@ public class JsonMarshaller {
 		return new ItemHint(name, values, providers);
 	}
 
-	private ItemHint.ValueHint toValueHint(JSONObject object, JsonPath path) throws Exception {
+	/**
+     * Converts a JSONObject to a ValueHint object.
+     * 
+     * @param object the JSONObject to convert
+     * @param path the JsonPath of the object
+     * @return the converted ValueHint object
+     * @throws Exception if an error occurs during conversion
+     */
+    private ItemHint.ValueHint toValueHint(JSONObject object, JsonPath path) throws Exception {
 		checkAllowedKeys(object, path, "value", "description");
 		Object value = readItemValue(object.get("value"));
 		String description = object.optString("description", null);
 		return new ItemHint.ValueHint(value, description);
 	}
 
-	private ItemHint.ValueProvider toValueProvider(JSONObject object, JsonPath path) throws Exception {
+	/**
+     * Converts a JSONObject to a ValueProvider object.
+     * 
+     * @param object the JSONObject to convert
+     * @param path the JsonPath of the object
+     * @return the converted ValueProvider object
+     * @throws Exception if there is an error during conversion
+     */
+    private ItemHint.ValueProvider toValueProvider(JSONObject object, JsonPath path) throws Exception {
 		checkAllowedKeys(object, path, "name", "parameters");
 		String name = object.getString("name");
 		Map<String, Object> parameters = new HashMap<>();
@@ -165,7 +221,14 @@ public class JsonMarshaller {
 		return new ItemHint.ValueProvider(name, parameters);
 	}
 
-	private Object readItemValue(Object value) throws Exception {
+	/**
+     * Reads the value of an item in a JSON object or array.
+     * 
+     * @param value the value of the item to be read
+     * @return the value of the item, or an array of values if the item is a JSON array
+     * @throws Exception if an error occurs during the reading process
+     */
+    private Object readItemValue(Object value) throws Exception {
 		if (value instanceof JSONArray array) {
 			Object[] content = new Object[array.length()];
 			for (int i = 0; i < array.length(); i++) {
@@ -176,11 +239,27 @@ public class JsonMarshaller {
 		return value;
 	}
 
-	private String toString(InputStream inputStream) throws IOException {
+	/**
+     * Converts an InputStream to a String using UTF-8 encoding.
+     * 
+     * @param inputStream the InputStream to be converted
+     * @return the converted String
+     * @throws IOException if an I/O error occurs while reading the InputStream
+     */
+    private String toString(InputStream inputStream) throws IOException {
 		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Checks if the given JSON object contains only the allowed keys.
+     * 
+     * @param object       the JSON object to check
+     * @param path         the JSON path of the object
+     * @param allowedKeys  the allowed keys
+     * 
+     * @throws IllegalStateException if additional keys are found in the JSON object
+     */
+    @SuppressWarnings("unchecked")
 	private void checkAllowedKeys(JSONObject object, JsonPath path, String... allowedKeys) {
 		Set<String> availableKeys = new TreeSet<>();
 		object.keys().forEachRemaining((key) -> availableKeys.add((String) key));
@@ -191,31 +270,61 @@ public class JsonMarshaller {
 		}
 	}
 
-	private static final class JsonPath {
+	/**
+     * JsonPath class.
+     */
+    private static final class JsonPath {
 
 		private final String path;
 
-		private JsonPath(String path) {
+		/**
+         * Constructs a new JsonPath object with the specified path.
+         * 
+         * @param path the path to be used for the JsonPath object
+         */
+        private JsonPath(String path) {
 			this.path = path;
 		}
 
-		JsonPath resolve(String path) {
+		/**
+         * Resolves the given path and returns a new JsonPath object.
+         * 
+         * @param path the path to be resolved
+         * @return a new JsonPath object with the resolved path
+         */
+        JsonPath resolve(String path) {
 			if (this.path.endsWith(".")) {
 				return new JsonPath(this.path + path);
 			}
 			return new JsonPath(this.path + "." + path);
 		}
 
-		JsonPath index(int index) {
+		/**
+         * Returns a new JsonPath object representing the index at the specified position.
+         *
+         * @param index the position of the index
+         * @return a new JsonPath object representing the index at the specified position
+         */
+        JsonPath index(int index) {
 			return resolve("[%d]".formatted(index));
 		}
 
-		@Override
+		/**
+         * Returns a string representation of the JsonPath object.
+         * 
+         * @return the path string of the JsonPath object
+         */
+        @Override
 		public String toString() {
 			return this.path;
 		}
 
-		static JsonPath root() {
+		/**
+         * Returns a new instance of JsonPath representing the root path.
+         * 
+         * @return a new instance of JsonPath representing the root path
+         */
+        static JsonPath root() {
 			return new JsonPath(".");
 		}
 

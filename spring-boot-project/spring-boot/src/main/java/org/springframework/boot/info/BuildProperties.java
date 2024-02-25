@@ -87,12 +87,26 @@ public class BuildProperties extends InfoProperties {
 		return getInstant("time");
 	}
 
-	private static Properties processEntries(Properties properties) {
+	/**
+     * This method processes the entries in the given Properties object.
+     * It coerces the value of the "time" property to a valid date format.
+     * 
+     * @param properties The Properties object containing the entries to be processed.
+     * @return The processed Properties object.
+     */
+    private static Properties processEntries(Properties properties) {
 		coerceDate(properties, "time");
 		return properties;
 	}
 
-	private static void coerceDate(Properties properties, String key) {
+	/**
+     * Coerces the value of a specified key in the given properties object to a valid date format.
+     * If the value is not in a valid date format, the original value is stored.
+     * 
+     * @param properties the properties object containing the key-value pairs
+     * @param key the key of the value to be coerced
+     */
+    private static void coerceDate(Properties properties, String key) {
 		String value = properties.getProperty(key);
 		if (value != null) {
 			try {
@@ -106,9 +120,18 @@ public class BuildProperties extends InfoProperties {
 		}
 	}
 
-	static class BuildPropertiesRuntimeHints implements RuntimeHintsRegistrar {
+	/**
+     * BuildPropertiesRuntimeHints class.
+     */
+    static class BuildPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
-		@Override
+		/**
+         * Registers the hints for runtime with the specified class loader.
+         * 
+         * @param hints the runtime hints to be registered
+         * @param classLoader the class loader to be used for loading resources
+         */
+        @Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources().registerPattern("META-INF/build-info.properties");
 		}

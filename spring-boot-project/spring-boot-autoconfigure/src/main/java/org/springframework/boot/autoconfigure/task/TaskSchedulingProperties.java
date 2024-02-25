@@ -40,44 +40,85 @@ public class TaskSchedulingProperties {
 	 */
 	private String threadNamePrefix = "scheduling-";
 
-	public Pool getPool() {
+	/**
+     * Returns the pool associated with this TaskSchedulingProperties object.
+     *
+     * @return the pool associated with this TaskSchedulingProperties object
+     */
+    public Pool getPool() {
 		return this.pool;
 	}
 
-	public Simple getSimple() {
+	/**
+     * Returns the Simple object associated with this TaskSchedulingProperties instance.
+     *
+     * @return the Simple object associated with this TaskSchedulingProperties instance
+     */
+    public Simple getSimple() {
 		return this.simple;
 	}
 
-	public Shutdown getShutdown() {
+	/**
+     * Returns the shutdown object.
+     *
+     * @return the shutdown object
+     */
+    public Shutdown getShutdown() {
 		return this.shutdown;
 	}
 
-	public String getThreadNamePrefix() {
+	/**
+     * Returns the thread name prefix used for task scheduling.
+     *
+     * @return the thread name prefix
+     */
+    public String getThreadNamePrefix() {
 		return this.threadNamePrefix;
 	}
 
-	public void setThreadNamePrefix(String threadNamePrefix) {
+	/**
+     * Sets the prefix for the names of the threads used for task scheduling.
+     * 
+     * @param threadNamePrefix the prefix to be set for thread names
+     */
+    public void setThreadNamePrefix(String threadNamePrefix) {
 		this.threadNamePrefix = threadNamePrefix;
 	}
 
-	public static class Pool {
+	/**
+     * Pool class.
+     */
+    public static class Pool {
 
 		/**
 		 * Maximum allowed number of threads.
 		 */
 		private int size = 1;
 
-		public int getSize() {
+		/**
+         * Returns the size of the pool.
+         *
+         * @return the size of the pool
+         */
+        public int getSize() {
 			return this.size;
 		}
 
-		public void setSize(int size) {
+		/**
+         * Sets the size of the pool.
+         * 
+         * @param size the size of the pool to be set
+         */
+        public void setSize(int size) {
 			this.size = size;
 		}
 
 	}
 
-	public static class Simple {
+	/**
+     * Simple class.
+     */
+    public static class Simple {
 
 		/**
 		 * Set the maximum number of parallel accesses allowed. -1 indicates no
@@ -85,17 +126,30 @@ public class TaskSchedulingProperties {
 		 */
 		private Integer concurrencyLimit;
 
-		public Integer getConcurrencyLimit() {
+		/**
+         * Returns the concurrency limit of the Simple class.
+         *
+         * @return the concurrency limit as an Integer
+         */
+        public Integer getConcurrencyLimit() {
 			return this.concurrencyLimit;
 		}
 
-		public void setConcurrencyLimit(Integer concurrencyLimit) {
+		/**
+         * Sets the concurrency limit for the Simple class.
+         * 
+         * @param concurrencyLimit the maximum number of concurrent operations allowed
+         */
+        public void setConcurrencyLimit(Integer concurrencyLimit) {
 			this.concurrencyLimit = concurrencyLimit;
 		}
 
 	}
 
-	public static class Shutdown {
+	/**
+     * Shutdown class.
+     */
+    public static class Shutdown {
 
 		/**
 		 * Whether the executor should wait for scheduled tasks to complete on shutdown.
@@ -107,19 +161,39 @@ public class TaskSchedulingProperties {
 		 */
 		private Duration awaitTerminationPeriod;
 
-		public boolean isAwaitTermination() {
+		/**
+         * Returns the value indicating whether the termination of the Shutdown instance is awaited.
+         *
+         * @return {@code true} if the termination is awaited, {@code false} otherwise.
+         */
+        public boolean isAwaitTermination() {
 			return this.awaitTermination;
 		}
 
-		public void setAwaitTermination(boolean awaitTermination) {
+		/**
+         * Sets whether the program should await termination of all threads before exiting.
+         * 
+         * @param awaitTermination true if the program should await termination, false otherwise
+         */
+        public void setAwaitTermination(boolean awaitTermination) {
 			this.awaitTermination = awaitTermination;
 		}
 
-		public Duration getAwaitTerminationPeriod() {
+		/**
+         * Returns the await termination period.
+         * 
+         * @return the await termination period
+         */
+        public Duration getAwaitTerminationPeriod() {
 			return this.awaitTerminationPeriod;
 		}
 
-		public void setAwaitTerminationPeriod(Duration awaitTerminationPeriod) {
+		/**
+         * Sets the await termination period for the Shutdown class.
+         * 
+         * @param awaitTerminationPeriod the duration to wait for termination
+         */
+        public void setAwaitTerminationPeriod(Duration awaitTerminationPeriod) {
 			this.awaitTerminationPeriod = awaitTerminationPeriod;
 		}
 

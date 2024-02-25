@@ -23,10 +23,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 
+/**
+ * MyRedisCacheManagerConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyRedisCacheManagerConfiguration {
 
-	@Bean
+	/**
+     * Customizes the RedisCacheManager builder by configuring cache configurations for cache1 and cache2.
+     * 
+     * @return the RedisCacheManagerBuilderCustomizer
+     */
+    @Bean
 	public RedisCacheManagerBuilderCustomizer myRedisCacheManagerBuilderCustomizer() {
 		// @formatter:off
 		return (builder) -> builder

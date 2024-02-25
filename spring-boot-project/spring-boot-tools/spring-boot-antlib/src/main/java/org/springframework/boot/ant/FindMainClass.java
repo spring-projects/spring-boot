@@ -43,11 +43,21 @@ public class FindMainClass extends Task {
 
 	private String property;
 
-	public FindMainClass(Project project) {
+	/**
+     * Sets the project for the FindMainClass object.
+     * 
+     * @param project the project to be set
+     */
+    public FindMainClass(Project project) {
 		setProject(project);
 	}
 
-	@Override
+	/**
+     * Executes the method and throws a BuildException if the main class cannot be determined.
+     * 
+     * @throws BuildException if the main class cannot be determined
+     */
+    @Override
 	public void execute() throws BuildException {
 		String mainClass = this.mainClass;
 		if (!StringUtils.hasText(mainClass)) {
@@ -59,7 +69,14 @@ public class FindMainClass extends Task {
 		handle(mainClass);
 	}
 
-	private String findMainClass() {
+	/**
+     * Finds the main class for the application.
+     * 
+     * @return The fully qualified name of the main class.
+     * @throws BuildException If either @mainClass or @classesRoot is not specified, or if @classesRoot does not exist.
+     * @throws BuildException If an I/O error occurs while searching for the main class.
+     */
+    private String findMainClass() {
 		if (this.classesRoot == null) {
 			throw new BuildException("one of @mainClass or @classesRoot must be specified");
 		}
@@ -78,7 +95,12 @@ public class FindMainClass extends Task {
 		}
 	}
 
-	private void handle(String mainClass) {
+	/**
+     * Handles the main class by setting it as a property in the project or logging it.
+     * 
+     * @param mainClass the main class to be handled
+     */
+    private void handle(String mainClass) {
 		if (StringUtils.hasText(this.property)) {
 			getProject().setProperty(this.property, mainClass);
 		}

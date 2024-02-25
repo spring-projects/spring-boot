@@ -41,11 +41,26 @@ class TomcatStarter implements ServletContainerInitializer {
 
 	private volatile Exception startUpException;
 
-	TomcatStarter(ServletContextInitializer[] initializers) {
+	/**
+     * Constructs a new TomcatStarter object with the specified initializers.
+     *
+     * @param initializers an array of ServletContextInitializer objects to be used for initializing the Tomcat server
+     */
+    TomcatStarter(ServletContextInitializer[] initializers) {
 		this.initializers = initializers;
 	}
 
-	@Override
+	/**
+     * This method is called during the startup of the Tomcat server.
+     * It iterates over the set of initializers and calls the onStartup method for each initializer.
+     * If an exception occurs during the startup process, it is caught and stored in the startUpException variable.
+     * The method also logs the error message for information purposes.
+     * 
+     * @param classes         a set of classes
+     * @param servletContext  the servlet context
+     * @throws ServletException if an exception occurs during the startup process
+     */
+    @Override
 	public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
 		try {
 			for (ServletContextInitializer initializer : this.initializers) {
@@ -63,7 +78,12 @@ class TomcatStarter implements ServletContainerInitializer {
 		}
 	}
 
-	Exception getStartUpException() {
+	/**
+     * Returns the start-up exception that occurred during the execution of the TomcatStarter class.
+     * 
+     * @return the start-up exception that occurred during the execution of the TomcatStarter class
+     */
+    Exception getStartUpException() {
 		return this.startUpException;
 	}
 

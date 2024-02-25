@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.using.springbeansanddependencyinjection.singleconstructor;
 
+/**
+ * RiskAssessor interface.
+ */
 public interface RiskAssessor {
 
 }

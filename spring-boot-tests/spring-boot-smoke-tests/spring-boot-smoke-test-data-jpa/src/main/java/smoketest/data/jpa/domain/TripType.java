@@ -16,6 +16,9 @@
 
 package smoketest.data.jpa.domain;
 
+/**
+ * TripType enum.
+ */
 public enum TripType {
 
 	BUSINESS, COUPLES, FAMILY, FRIENDS, SOLO

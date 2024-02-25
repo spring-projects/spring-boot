@@ -19,10 +19,18 @@ package smoketest.tomcat.ssl.web;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * SampleController class.
+ */
 @RestController
 public class SampleController {
 
-	@GetMapping("/")
+	/**
+     * Returns a greeting message "Hello, world".
+     *
+     * @return the greeting message
+     */
+    @GetMapping("/")
 	public String helloWorld() {
 		return "Hello, world";
 	}

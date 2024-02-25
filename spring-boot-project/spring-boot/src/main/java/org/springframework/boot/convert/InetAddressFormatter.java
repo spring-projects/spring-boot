@@ -30,12 +30,28 @@ import org.springframework.format.Formatter;
  */
 final class InetAddressFormatter implements Formatter<InetAddress> {
 
-	@Override
+	/**
+     * Returns the string representation of the specified InetAddress object.
+     * 
+     * @param object the InetAddress object to be printed
+     * @param locale the locale to be used for printing
+     * @return the string representation of the specified InetAddress object
+     */
+    @Override
 	public String print(InetAddress object, Locale locale) {
 		return object.getHostAddress();
 	}
 
-	@Override
+	/**
+     * Parses the given text into an InetAddress object.
+     * 
+     * @param text the text to be parsed
+     * @param locale the locale to be used for parsing
+     * @return the InetAddress object representing the parsed text
+     * @throws ParseException if the text cannot be parsed
+     * @throws IllegalStateException if the host is unknown
+     */
+    @Override
 	public InetAddress parse(String text, Locale locale) throws ParseException {
 		try {
 			return InetAddress.getByName(text);

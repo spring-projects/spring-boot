@@ -29,7 +29,13 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 class JdbcAdaptingFlywayConnectionDetailsFactory
 		implements ConnectionDetailsFactory<JdbcConnectionDetails, FlywayConnectionDetails> {
 
-	@Override
+	/**
+     * Returns the FlywayConnectionDetails object based on the provided JdbcConnectionDetails.
+     * 
+     * @param input the JdbcConnectionDetails object containing the connection details
+     * @return the FlywayConnectionDetails object with the same connection details as the input
+     */
+    @Override
 	public FlywayConnectionDetails getConnectionDetails(JdbcConnectionDetails input) {
 		return new FlywayConnectionDetails() {
 

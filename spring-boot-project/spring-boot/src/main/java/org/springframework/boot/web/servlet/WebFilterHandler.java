@@ -36,11 +36,22 @@ import org.springframework.util.StringUtils;
  */
 class WebFilterHandler extends ServletComponentHandler {
 
-	WebFilterHandler() {
+	/**
+     * Constructs a new WebFilterHandler object.
+     * This constructor calls the constructor of the superclass, passing the WebFilter class as a parameter.
+     */
+    WebFilterHandler() {
 		super(WebFilter.class);
 	}
 
-	@Override
+	/**
+     * Handles the registration of a web filter bean definition in the bean definition registry.
+     * 
+     * @param attributes the attributes of the web filter
+     * @param beanDefinition the annotated bean definition of the web filter
+     * @param registry the bean definition registry
+     */
+    @Override
 	public void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry) {
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(FilterRegistrationBean.class);
@@ -55,7 +66,13 @@ class WebFilterHandler extends ServletComponentHandler {
 		registry.registerBeanDefinition(name, builder.getBeanDefinition());
 	}
 
-	private EnumSet<DispatcherType> extractDispatcherTypes(Map<String, Object> attributes) {
+	/**
+     * Extracts the dispatcher types from the given attributes map.
+     * 
+     * @param attributes the attributes map containing the dispatcher types
+     * @return an EnumSet of DispatcherType representing the extracted dispatcher types
+     */
+    private EnumSet<DispatcherType> extractDispatcherTypes(Map<String, Object> attributes) {
 		DispatcherType[] dispatcherTypes = (DispatcherType[]) attributes.get("dispatcherTypes");
 		if (dispatcherTypes.length == 0) {
 			return EnumSet.noneOf(DispatcherType.class);
@@ -66,7 +83,16 @@ class WebFilterHandler extends ServletComponentHandler {
 		return EnumSet.of(dispatcherTypes[0], Arrays.copyOfRange(dispatcherTypes, 1, dispatcherTypes.length));
 	}
 
-	private String determineName(Map<String, Object> attributes, BeanDefinition beanDefinition) {
+	/**
+     * Determines the name of the filter based on the provided attributes and bean definition.
+     * If the "filterName" attribute is present and has text, it is used as the filter name.
+     * Otherwise, the bean class name is used as the filter name.
+     *
+     * @param attributes     the attributes associated with the filter
+     * @param beanDefinition the bean definition of the filter
+     * @return the name of the filter
+     */
+    private String determineName(Map<String, Object> attributes, BeanDefinition beanDefinition) {
 		return (String) (StringUtils.hasText((String) attributes.get("filterName")) ? attributes.get("filterName")
 				: beanDefinition.getBeanClassName());
 	}

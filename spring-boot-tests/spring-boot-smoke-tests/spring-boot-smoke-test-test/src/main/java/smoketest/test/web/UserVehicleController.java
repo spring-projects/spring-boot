@@ -38,29 +38,58 @@ public class UserVehicleController {
 
 	private final UserVehicleService userVehicleService;
 
-	public UserVehicleController(UserVehicleService userVehicleService) {
+	/**
+     * Constructs a new UserVehicleController with the specified UserVehicleService.
+     * 
+     * @param userVehicleService the UserVehicleService to be used by the controller
+     */
+    public UserVehicleController(UserVehicleService userVehicleService) {
 		this.userVehicleService = userVehicleService;
 	}
 
-	@GetMapping(path = "/{username}/vehicle", produces = MediaType.TEXT_PLAIN_VALUE)
+	/**
+     * Retrieves the vehicle details for a given username in plain text format.
+     * 
+     * @param username the username of the user
+     * @return the make and model of the user's vehicle
+     */
+    @GetMapping(path = "/{username}/vehicle", produces = MediaType.TEXT_PLAIN_VALUE)
 	public String getVehicleDetailsText(@PathVariable String username) {
 		VehicleDetails details = this.userVehicleService.getVehicleDetails(username);
 		return details.getMake() + " " + details.getModel();
 	}
 
-	@GetMapping(path = "/{username}/vehicle", produces = MediaType.APPLICATION_JSON_VALUE)
+	/**
+     * Retrieves the vehicle details for a given username.
+     * 
+     * @param username the username of the user
+     * @return the vehicle details in JSON format
+     */
+    @GetMapping(path = "/{username}/vehicle", produces = MediaType.APPLICATION_JSON_VALUE)
 	public VehicleDetails VehicleDetailsJson(@PathVariable String username) {
 		return this.userVehicleService.getVehicleDetails(username);
 	}
 
-	@GetMapping(path = "/{username}/vehicle.html", produces = MediaType.TEXT_HTML_VALUE)
+	/**
+     * Retrieves and returns the vehicle details of a user in HTML format.
+     * 
+     * @param username the username of the user
+     * @return the HTML representation of the vehicle details
+     */
+    @GetMapping(path = "/{username}/vehicle.html", produces = MediaType.TEXT_HTML_VALUE)
 	public String VehicleDetailsHtml(@PathVariable String username) {
 		VehicleDetails details = this.userVehicleService.getVehicleDetails(username);
 		String makeAndModel = details.getMake() + " " + details.getModel();
 		return "<html><body><h1>" + makeAndModel + "</h1></body></html>";
 	}
 
-	@ExceptionHandler
+	/**
+     * Handles the exception when a VehicleIdentificationNumberNotFoundException is thrown.
+     * Sets the response status to HttpStatus.NOT_FOUND.
+     * 
+     * @param ex the VehicleIdentificationNumberNotFoundException that was thrown
+     */
+    @ExceptionHandler
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	private void handleVinNotFound(VehicleIdentificationNumberNotFoundException ex) {
 	}

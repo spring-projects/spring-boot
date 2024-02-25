@@ -50,7 +50,16 @@ import org.springframework.web.server.WebHandler;
 @EnableConfigurationProperties
 public class WebTestClientAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a {@link WebTestClient} bean if no other bean of type {@link WebTestClient} is present in the application context.
+     * The {@link WebTestClient} is configured with the provided {@link ApplicationContext}, {@link WebTestClientBuilderCustomizer}s, and {@link MockServerConfigurer}s.
+     * 
+     * @param applicationContext the application context to bind the {@link WebTestClient} to
+     * @param customizers the list of {@link WebTestClientBuilderCustomizer}s to customize the {@link WebTestClient.Builder}
+     * @param configurers the list of {@link MockServerConfigurer}s to configure the {@link WebTestClient.MockServerSpec}
+     * @return the created {@link WebTestClient} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(WebHandler.class)
 	public WebTestClient webTestClient(ApplicationContext applicationContext,
@@ -66,7 +75,14 @@ public class WebTestClientAutoConfiguration {
 		return builder.build();
 	}
 
-	@Bean
+	/**
+     * Returns a SpringBootWebTestClientBuilderCustomizer bean that customizes the WebTestClient builder
+     * based on the properties prefixed with "spring.test.webtestclient".
+     * 
+     * @param codecCustomizers the ObjectProvider of CodecCustomizer beans
+     * @return the SpringBootWebTestClientBuilderCustomizer bean
+     */
+    @Bean
 	@ConfigurationProperties(prefix = "spring.test.webtestclient")
 	public SpringBootWebTestClientBuilderCustomizer springBootWebTestClientBuilderCustomizer(
 			ObjectProvider<CodecCustomizer> codecCustomizers) {

@@ -49,7 +49,17 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	private volatile ObservationRegistryConfigurer configurer;
 
-	ObservationRegistryPostProcessor(ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
+	/**
+     * Constructs a new ObservationRegistryPostProcessor with the specified dependencies.
+     *
+     * @param observationRegistryCustomizers the customizers for the observation registry
+     * @param observationPredicates the predicates for observation filtering
+     * @param observationConventions the conventions for global observations
+     * @param observationHandlers the handlers for observations
+     * @param observationHandlerGrouping the grouping strategy for observation handlers
+     * @param observationFilters the filters for observations
+     */
+    ObservationRegistryPostProcessor(ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
@@ -63,7 +73,15 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 		this.observationFilters = observationFilters;
 	}
 
-	@Override
+	/**
+     * This method is called after the initialization of a bean. It checks if the bean is an instance of ObservationRegistry and if so, it configures the registry using the configurer. 
+     * 
+     * @param bean the initialized bean
+     * @param beanName the name of the bean
+     * @return the initialized bean
+     * @throws BeansException if an error occurs during the post-processing
+     */
+    @Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof ObservationRegistry registry) {
 			getConfigurer().configure(registry);
@@ -71,7 +89,14 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 		return bean;
 	}
 
-	private ObservationRegistryConfigurer getConfigurer() {
+	/**
+     * Returns the ObservationRegistryConfigurer instance.
+     * If the configurer is null, it creates a new instance of ObservationRegistryConfigurer
+     * with the provided customizers, predicates, conventions, handlers, handler grouping, and filters.
+     * 
+     * @return the ObservationRegistryConfigurer instance
+     */
+    private ObservationRegistryConfigurer getConfigurer() {
 		if (this.configurer == null) {
 			this.configurer = new ObservationRegistryConfigurer(this.observationRegistryCustomizers,
 					this.observationPredicates, this.observationConventions, this.observationHandlers,

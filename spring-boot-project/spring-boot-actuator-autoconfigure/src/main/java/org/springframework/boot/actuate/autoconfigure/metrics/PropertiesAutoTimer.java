@@ -39,13 +39,23 @@ public class PropertiesAutoTimer implements AutoTimer {
 		this.properties = properties;
 	}
 
-	@Override
+	/**
+     * Applies the specified builder to configure the publishing of percentile histogram and percentiles.
+     * 
+     * @param builder the builder to apply
+     */
+    @Override
 	public void apply(Builder builder) {
 		builder.publishPercentileHistogram(this.properties.isPercentilesHistogram())
 			.publishPercentiles(this.properties.getPercentiles());
 	}
 
-	@Override
+	/**
+     * Returns a boolean value indicating whether the timer is enabled or not.
+     * 
+     * @return true if the timer is enabled, false otherwise
+     */
+    @Override
 	public boolean isEnabled() {
 		return this.properties.isEnabled();
 	}

@@ -56,12 +56,22 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 		this.settings = settings;
 	}
 
-	@Override
+	/**
+     * Sets the resource loader for this script database initializer.
+     * 
+     * @param resourceLoader the resource loader to be set
+     */
+    @Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
 
-	@Override
+	/**
+     * Initializes the database after all properties have been set.
+     * 
+     * @throws Exception if an error occurs during the initialization process
+     */
+    @Override
 	public void afterPropertiesSet() throws Exception {
 		initializeDatabase();
 	}
@@ -77,7 +87,12 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 		return applyDataScripts(locationResolver) || initialized;
 	}
 
-	private boolean isEnabled() {
+	/**
+     * Returns a boolean value indicating whether the database initialization is enabled.
+     * 
+     * @return {@code true} if the database initialization is enabled, {@code false} otherwise
+     */
+    private boolean isEnabled() {
 		if (this.settings.getMode() == DatabaseInitializationMode.NEVER) {
 			return false;
 		}
@@ -94,15 +109,35 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 				"Database initialization mode is '" + this.settings.getMode() + "' and database type is unknown");
 	}
 
-	private boolean applySchemaScripts(ScriptLocationResolver locationResolver) {
+	/**
+     * Applies the schema scripts using the provided location resolver.
+     * 
+     * @param locationResolver the script location resolver
+     * @return true if the scripts were successfully applied, false otherwise
+     */
+    private boolean applySchemaScripts(ScriptLocationResolver locationResolver) {
 		return applyScripts(this.settings.getSchemaLocations(), "schema", locationResolver);
 	}
 
-	private boolean applyDataScripts(ScriptLocationResolver locationResolver) {
+	/**
+     * Applies data scripts to the database using the provided location resolver.
+     * 
+     * @param locationResolver the script location resolver to use
+     * @return true if the data scripts were successfully applied, false otherwise
+     */
+    private boolean applyDataScripts(ScriptLocationResolver locationResolver) {
 		return applyScripts(this.settings.getDataLocations(), "data", locationResolver);
 	}
 
-	private boolean applyScripts(List<String> locations, String type, ScriptLocationResolver locationResolver) {
+	/**
+     * Applies the scripts to the database.
+     * 
+     * @param locations         the list of script locations
+     * @param type              the type of scripts to apply
+     * @param locationResolver  the script location resolver
+     * @return                  true if the scripts were applied successfully, false otherwise
+     */
+    private boolean applyScripts(List<String> locations, String type, ScriptLocationResolver locationResolver) {
 		List<Resource> scripts = getScripts(locations, type, locationResolver);
 		if (!scripts.isEmpty() && isEnabled()) {
 			runScripts(scripts);
@@ -111,7 +146,16 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 		return false;
 	}
 
-	private List<Resource> getScripts(List<String> locations, String type, ScriptLocationResolver locationResolver) {
+	/**
+     * Retrieves the scripts from the given locations based on the provided type and location resolver.
+     * 
+     * @param locations         the list of locations where the scripts are located
+     * @param type              the type of scripts to retrieve
+     * @param locationResolver  the resolver used to resolve the script locations
+     * @return                  the list of resources representing the scripts
+     * @throws IllegalStateException if no scripts are found at a non-optional location
+     */
+    private List<Resource> getScripts(List<String> locations, String type, ScriptLocationResolver locationResolver) {
 		if (CollectionUtils.isEmpty(locations)) {
 			return Collections.emptyList();
 		}
@@ -133,7 +177,15 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 		return resources;
 	}
 
-	private List<Resource> doGetResources(String location, ScriptLocationResolver locationResolver) {
+	/**
+     * Retrieves a list of resources from the specified location using the provided location resolver.
+     * 
+     * @param location the location of the resources to retrieve
+     * @param locationResolver the resolver used to resolve the location
+     * @return a list of resources retrieved from the specified location
+     * @throws IllegalStateException if unable to load resources from the specified location
+     */
+    private List<Resource> doGetResources(String location, ScriptLocationResolver locationResolver) {
 		try {
 			return locationResolver.resolve(location);
 		}
@@ -142,7 +194,12 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 		}
 	}
 
-	private void runScripts(List<Resource> resources) {
+	/**
+     * Runs the scripts using the provided list of resources.
+     * 
+     * @param resources the list of resources containing the scripts to be executed
+     */
+    private void runScripts(List<Resource> resources) {
 		runScripts(new Scripts(resources).continueOnError(this.settings.isContinueOnError())
 			.separator(this.settings.getSeparator())
 			.encoding(this.settings.getEncoding()));
@@ -155,15 +212,30 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 	 */
 	protected abstract void runScripts(Scripts scripts);
 
-	private static class ScriptLocationResolver {
+	/**
+     * ScriptLocationResolver class.
+     */
+    private static class ScriptLocationResolver {
 
 		private final ResourcePatternResolver resourcePatternResolver;
 
-		ScriptLocationResolver(ResourceLoader resourceLoader) {
+		/**
+         * Constructs a new ScriptLocationResolver with the specified ResourceLoader.
+         * 
+         * @param resourceLoader the ResourceLoader to be used for resolving resources
+         */
+        ScriptLocationResolver(ResourceLoader resourceLoader) {
 			this.resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(resourceLoader);
 		}
 
-		private List<Resource> resolve(String location) throws IOException {
+		/**
+         * Resolves the resources at the specified location.
+         * 
+         * @param location the location of the resources to resolve
+         * @return a list of resolved resources
+         * @throws IOException if an I/O error occurs while resolving the resources
+         */
+        private List<Resource> resolve(String location) throws IOException {
 			List<Resource> resources = new ArrayList<>(
 					Arrays.asList(this.resourcePatternResolver.getResources(location)));
 			resources.sort((r1, r2) -> {
@@ -194,39 +266,83 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 
 		private Charset encoding;
 
-		public Scripts(List<Resource> resources) {
+		/**
+         * Constructs a new instance of the Scripts class with the specified list of resources.
+         * 
+         * @param resources the list of resources to be assigned to the Scripts instance
+         */
+        public Scripts(List<Resource> resources) {
 			this.resources = resources;
 		}
 
-		@Override
+		/**
+         * Returns an iterator over the resources in this Scripts object.
+         *
+         * @return an iterator over the resources in this Scripts object
+         */
+        @Override
 		public Iterator<Resource> iterator() {
 			return this.resources.iterator();
 		}
 
-		public Scripts continueOnError(boolean continueOnError) {
+		/**
+         * Sets whether the script should continue executing even if an error occurs.
+         * 
+         * @param continueOnError true if the script should continue on error, false otherwise
+         * @return the Scripts object with the updated continueOnError value
+         */
+        public Scripts continueOnError(boolean continueOnError) {
 			this.continueOnError = continueOnError;
 			return this;
 		}
 
-		public boolean isContinueOnError() {
+		/**
+         * Returns a boolean value indicating whether the program should continue executing
+         * even if an error occurs.
+         *
+         * @return true if the program should continue executing on error, false otherwise
+         */
+        public boolean isContinueOnError() {
 			return this.continueOnError;
 		}
 
-		public Scripts separator(String separator) {
+		/**
+         * Sets the separator for the Scripts object.
+         * 
+         * @param separator the separator to be set
+         * @return the Scripts object with the separator set
+         */
+        public Scripts separator(String separator) {
 			this.separator = separator;
 			return this;
 		}
 
-		public String getSeparator() {
+		/**
+         * Returns the separator used in the Scripts class.
+         * 
+         * @return the separator used in the Scripts class
+         */
+        public String getSeparator() {
 			return this.separator;
 		}
 
-		public Scripts encoding(Charset encoding) {
+		/**
+         * Sets the encoding for the scripts.
+         * 
+         * @param encoding the charset encoding to be used
+         * @return the Scripts object with the updated encoding
+         */
+        public Scripts encoding(Charset encoding) {
 			this.encoding = encoding;
 			return this;
 		}
 
-		public Charset getEncoding() {
+		/**
+         * Returns the encoding used by the Scripts class.
+         * 
+         * @return the encoding used by the Scripts class
+         */
+        public Charset getEncoding() {
 			return this.encoding;
 		}
 

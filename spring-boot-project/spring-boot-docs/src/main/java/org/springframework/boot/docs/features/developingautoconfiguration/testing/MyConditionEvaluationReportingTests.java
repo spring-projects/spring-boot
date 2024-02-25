@@ -22,9 +22,19 @@ import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportL
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
+/**
+ * MyConditionEvaluationReportingTests class.
+ */
 class MyConditionEvaluationReportingTests {
 
-	@Test
+	/**
+     * Test method to verify the auto configuration functionality.
+     * 
+     * This method initializes the ApplicationContextRunner with a ConditionEvaluationReportLoggingListener
+     * for logging the condition evaluation report at the INFO log level. It then runs the test logic within
+     * the context, allowing for testing of the auto configuration functionality.
+     */
+    @Test
 	void autoConfigTest() {
 		new ApplicationContextRunner()
 			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))

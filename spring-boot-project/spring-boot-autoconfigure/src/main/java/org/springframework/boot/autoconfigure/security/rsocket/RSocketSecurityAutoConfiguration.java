@@ -41,16 +41,32 @@ import org.springframework.security.rsocket.core.SecuritySocketAcceptorIntercept
 @ConditionalOnClass(SecuritySocketAcceptorInterceptor.class)
 public class RSocketSecurityAutoConfiguration {
 
-	@Bean
+	/**
+     * Configures the RSocket server to use the provided SecuritySocketAcceptorInterceptor as an interceptor.
+     * 
+     * @param interceptor the SecuritySocketAcceptorInterceptor to be used as an interceptor
+     * @return the RSocketServerCustomizer that configures the RSocket server with the provided interceptor
+     */
+    @Bean
 	RSocketServerCustomizer springSecurityRSocketSecurity(SecuritySocketAcceptorInterceptor interceptor) {
 		return (server) -> server.interceptors((registry) -> registry.forSocketAcceptor(interceptor));
 	}
 
-	@ConditionalOnClass(AuthenticationPrincipalArgumentResolver.class)
+	/**
+     * RSocketSecurityMessageHandlerConfiguration class.
+     */
+    @ConditionalOnClass(AuthenticationPrincipalArgumentResolver.class)
 	@Configuration(proxyBeanMethods = false)
 	static class RSocketSecurityMessageHandlerConfiguration {
 
-		@Bean
+		/**
+         * Customizes the RSocket message handler to include an authentication principal argument resolver.
+         * This resolver is responsible for resolving the authentication principal from the RSocket message.
+         *
+         * @param messageHandler the RSocket message handler to be customized
+         * @return the customized RSocket message handler
+         */
+        @Bean
 		RSocketMessageHandlerCustomizer rSocketAuthenticationPrincipalMessageHandlerCustomizer() {
 			return (messageHandler) -> messageHandler.getArgumentResolverConfigurer()
 				.addCustomResolver(new AuthenticationPrincipalArgumentResolver());

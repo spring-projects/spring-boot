@@ -38,23 +38,49 @@ final class DelimitedStringToCollectionConverter implements ConditionalGenericCo
 
 	private final ConversionService conversionService;
 
-	DelimitedStringToCollectionConverter(ConversionService conversionService) {
+	/**
+     * Constructs a new DelimitedStringToCollectionConverter with the specified ConversionService.
+     * 
+     * @param conversionService the ConversionService to be used for converting the delimited string to a collection
+     * @throws IllegalArgumentException if the conversionService is null
+     */
+    DelimitedStringToCollectionConverter(ConversionService conversionService) {
 		Assert.notNull(conversionService, "ConversionService must not be null");
 		this.conversionService = conversionService;
 	}
 
-	@Override
+	/**
+     * Returns a set of convertible types for the DelimitedStringToCollectionConverter class.
+     * 
+     * @return a set containing a single ConvertiblePair object representing the conversion from String to Collection.
+     */
+    @Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(String.class, Collection.class));
 	}
 
-	@Override
+	/**
+     * Determines if the source type can be converted to the target type.
+     * 
+     * @param sourceType the TypeDescriptor of the source type
+     * @param targetType the TypeDescriptor of the target type
+     * @return true if the source type can be converted to the target type, false otherwise
+     */
+    @Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return targetType.getElementTypeDescriptor() == null
 				|| this.conversionService.canConvert(sourceType, targetType.getElementTypeDescriptor());
 	}
 
-	@Override
+	/**
+     * Converts the given source object to the specified target type.
+     * 
+     * @param source the source object to be converted
+     * @param sourceType the TypeDescriptor of the source object
+     * @param targetType the TypeDescriptor of the target type
+     * @return the converted object of the target type
+     */
+    @Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
@@ -62,7 +88,15 @@ final class DelimitedStringToCollectionConverter implements ConditionalGenericCo
 		return convert((String) source, sourceType, targetType);
 	}
 
-	private Object convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	/**
+     * Converts a delimited string to a collection of objects.
+     * 
+     * @param source the source string to be converted
+     * @param sourceType the type descriptor of the source string
+     * @param targetType the type descriptor of the target collection
+     * @return the converted collection of objects
+     */
+    private Object convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		Delimiter delimiter = targetType.getAnnotation(Delimiter.class);
 		String[] elements = getElements(source, (delimiter != null) ? delimiter.value() : ",");
 		TypeDescriptor elementDescriptor = targetType.getElementTypeDescriptor();
@@ -75,13 +109,28 @@ final class DelimitedStringToCollectionConverter implements ConditionalGenericCo
 		return target;
 	}
 
-	private Collection<Object> createCollection(TypeDescriptor targetType, TypeDescriptor elementDescriptor,
+	/**
+     * Creates a collection of objects based on the given target type, element descriptor, and length.
+     * 
+     * @param targetType the target type of the collection
+     * @param elementDescriptor the type descriptor of the elements in the collection
+     * @param length the length of the collection
+     * @return a collection of objects
+     */
+    private Collection<Object> createCollection(TypeDescriptor targetType, TypeDescriptor elementDescriptor,
 			int length) {
 		return CollectionFactory.createCollection(targetType.getType(),
 				(elementDescriptor != null) ? elementDescriptor.getType() : null, length);
 	}
 
-	private String[] getElements(String source, String delimiter) {
+	/**
+     * Splits the given source string into an array of elements using the specified delimiter.
+     * 
+     * @param source the source string to be split
+     * @param delimiter the delimiter used to split the source string
+     * @return an array of elements obtained by splitting the source string using the delimiter
+     */
+    private String[] getElements(String source, String delimiter) {
 		return StringUtils.delimitedListToStringArray(source, Delimiter.NONE.equals(delimiter) ? null : delimiter);
 	}
 

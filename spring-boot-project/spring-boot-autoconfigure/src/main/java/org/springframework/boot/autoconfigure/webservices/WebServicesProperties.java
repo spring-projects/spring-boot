@@ -39,22 +39,42 @@ public class WebServicesProperties {
 
 	private final Servlet servlet = new Servlet();
 
-	public String getPath() {
+	/**
+     * Returns the path of the web service.
+     *
+     * @return the path of the web service
+     */
+    public String getPath() {
 		return this.path;
 	}
 
-	public void setPath(String path) {
+	/**
+     * Sets the path for the web service.
+     * 
+     * @param path the path to be set
+     * @throws IllegalArgumentException if the path is null or has a length less than or equal to 1
+     * @throws IllegalArgumentException if the path does not start with '/'
+     */
+    public void setPath(String path) {
 		Assert.notNull(path, "Path must not be null");
 		Assert.isTrue(path.length() > 1, "Path must have length greater than 1");
 		Assert.isTrue(path.startsWith("/"), "Path must start with '/'");
 		this.path = path;
 	}
 
-	public Servlet getServlet() {
+	/**
+     * Returns the servlet associated with this WebServicesProperties object.
+     *
+     * @return the servlet associated with this WebServicesProperties object
+     */
+    public Servlet getServlet() {
 		return this.servlet;
 	}
 
-	public static class Servlet {
+	/**
+     * Servlet class.
+     */
+    public static class Servlet {
 
 		/**
 		 * Servlet init parameters to pass to Spring Web Services.
@@ -66,19 +86,39 @@ public class WebServicesProperties {
 		 */
 		private int loadOnStartup = -1;
 
-		public Map<String, String> getInit() {
+		/**
+         * Returns the initial map containing key-value pairs.
+         *
+         * @return the initial map containing key-value pairs
+         */
+        public Map<String, String> getInit() {
 			return this.init;
 		}
 
-		public void setInit(Map<String, String> init) {
+		/**
+         * Sets the initial parameters for the servlet.
+         * 
+         * @param init a Map containing the initial parameters as key-value pairs
+         */
+        public void setInit(Map<String, String> init) {
 			this.init = init;
 		}
 
-		public int getLoadOnStartup() {
+		/**
+         * Returns the value of the loadOnStartup property.
+         *
+         * @return the value of the loadOnStartup property
+         */
+        public int getLoadOnStartup() {
 			return this.loadOnStartup;
 		}
 
-		public void setLoadOnStartup(int loadOnStartup) {
+		/**
+         * Sets the value for the load on startup parameter.
+         * 
+         * @param loadOnStartup the value to set for the load on startup parameter
+         */
+        public void setLoadOnStartup(int loadOnStartup) {
 			this.loadOnStartup = loadOnStartup;
 		}
 

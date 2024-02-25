@@ -35,7 +35,13 @@ final class ApiVersion {
 
 	private final int minor;
 
-	private ApiVersion(int major, int minor) {
+	/**
+     * Constructs a new ApiVersion object with the specified major and minor version numbers.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     */
+    private ApiVersion(int major, int minor) {
 		this.major = major;
 		this.minor = minor;
 	}
@@ -101,7 +107,13 @@ final class ApiVersion {
 		return false;
 	}
 
-	@Override
+	/**
+     * Compares this ApiVersion object to the specified object for equality.
+     * 
+     * @param obj the object to compare to
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -113,12 +125,23 @@ final class ApiVersion {
 		return (this.major == other.major) && (this.minor == other.minor);
 	}
 
-	@Override
+	/**
+     * Returns the hash code value for this ApiVersion object.
+     * 
+     * @return the hash code value for this ApiVersion object
+     */
+    @Override
 	public int hashCode() {
 		return this.major * 31 + this.minor;
 	}
 
-	@Override
+	/**
+     * Returns a string representation of the ApiVersion object.
+     * The string representation consists of the major version number followed by a dot and the minor version number.
+     *
+     * @return a string representation of the ApiVersion object
+     */
+    @Override
 	public String toString() {
 		return this.major + "." + this.minor;
 	}
@@ -143,7 +166,14 @@ final class ApiVersion {
 		}
 	}
 
-	static ApiVersion of(int major, int minor) {
+	/**
+     * Creates an instance of {@code ApiVersion} with the specified major and minor version numbers.
+     *
+     * @param major the major version number
+     * @param minor the minor version number
+     * @return an instance of {@code ApiVersion} with the specified major and minor version numbers
+     */
+    static ApiVersion of(int major, int minor) {
 		return new ApiVersion(major, minor);
 	}
 

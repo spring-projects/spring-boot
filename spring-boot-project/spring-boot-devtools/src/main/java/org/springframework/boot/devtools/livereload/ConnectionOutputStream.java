@@ -30,16 +30,36 @@ import org.springframework.util.FileCopyUtils;
  */
 class ConnectionOutputStream extends FilterOutputStream {
 
-	ConnectionOutputStream(OutputStream out) {
+	/**
+     * Constructs a new ConnectionOutputStream object with the specified OutputStream.
+     * 
+     * @param out the OutputStream to be used for writing data
+     */
+    ConnectionOutputStream(OutputStream out) {
 		super(out);
 	}
 
-	@Override
+	/**
+     * Writes a specified number of bytes from the specified byte array starting at the specified offset to the underlying output stream.
+     * 
+     * @param b the byte array containing the data to be written
+     * @param off the starting offset in the byte array
+     * @param len the number of bytes to be written
+     * @throws IOException if an I/O error occurs while writing to the output stream
+     */
+    @Override
 	public void write(byte[] b, int off, int len) throws IOException {
 		this.out.write(b, off, len);
 	}
 
-	void writeHttp(InputStream content, String contentType) throws IOException {
+	/**
+     * Writes the HTTP response with the provided content and content type.
+     * 
+     * @param content     the input stream containing the content to be written
+     * @param contentType the content type of the response
+     * @throws IOException if an I/O error occurs while writing the response
+     */
+    void writeHttp(InputStream content, String contentType) throws IOException {
 		byte[] bytes = FileCopyUtils.copyToByteArray(content);
 		writeHeaders("HTTP/1.1 200 OK", "Content-Type: " + contentType, "Content-Length: " + bytes.length,
 				"Connection: close");
@@ -47,7 +67,13 @@ class ConnectionOutputStream extends FilterOutputStream {
 		flush();
 	}
 
-	void writeHeaders(String... headers) throws IOException {
+	/**
+     * Writes the given headers to the output stream.
+     * 
+     * @param headers the headers to be written
+     * @throws IOException if an I/O error occurs
+     */
+    void writeHeaders(String... headers) throws IOException {
 		StringBuilder response = new StringBuilder();
 		for (String header : headers) {
 			response.append(header).append("\r\n");

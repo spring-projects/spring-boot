@@ -66,15 +66,33 @@ class SpringApplicationShutdownHook implements Runnable {
 
 	private boolean inProgress;
 
-	SpringApplicationShutdownHandlers getHandlers() {
+	/**
+     * Returns the handlers registered in the SpringApplicationShutdownHook.
+     *
+     * @return the handlers registered in the SpringApplicationShutdownHook
+     */
+    SpringApplicationShutdownHandlers getHandlers() {
 		return this.handlers;
 	}
 
-	void enableShutdownHookAddition() {
+	/**
+     * Enables the addition of a shutdown hook.
+     * 
+     * This method sets the shutdownHookAdditionEnabled flag to true, allowing the addition of a shutdown hook.
+     * A shutdown hook is a thread that gets executed when the JVM is shutting down, allowing for cleanup tasks
+     * or other actions to be performed before the application exits.
+     */
+    void enableShutdownHookAddition() {
 		this.shutdownHookAdditionEnabled = true;
 	}
 
-	void registerApplicationContext(ConfigurableApplicationContext context) {
+	/**
+     * Registers the given application context with the shutdown hook.
+     * 
+     * @param context the application context to be registered
+     * @throws IllegalStateException if the shutdown hook is already in progress
+     */
+    void registerApplicationContext(ConfigurableApplicationContext context) {
 		addRuntimeShutdownHookIfNecessary();
 		synchronized (SpringApplicationShutdownHook.class) {
 			assertNotInProgress();
@@ -83,24 +101,57 @@ class SpringApplicationShutdownHook implements Runnable {
 		}
 	}
 
-	private void addRuntimeShutdownHookIfNecessary() {
+	/**
+     * Adds a runtime shutdown hook if necessary.
+     * 
+     * This method checks if the shutdown hook addition is enabled and if the shutdown hook has not already been added.
+     * If both conditions are met, it adds a runtime shutdown hook by calling the addRuntimeShutdownHook() method.
+     * 
+     * @see SpringApplicationShutdownHook#addRuntimeShutdownHook()
+     */
+    private void addRuntimeShutdownHookIfNecessary() {
 		if (this.shutdownHookAdditionEnabled && this.shutdownHookAdded.compareAndSet(false, true)) {
 			addRuntimeShutdownHook();
 		}
 	}
 
-	void addRuntimeShutdownHook() {
+	/**
+     * Adds a runtime shutdown hook to the current application.
+     * This hook is responsible for executing the necessary cleanup tasks
+     * when the application is shutting down.
+     * 
+     * @throws SecurityException if a security manager exists and its checkExit method doesn't allow the exit.
+     * @throws IllegalArgumentException if the specified hook has already been registered, or if it can't be registered.
+     * 
+     * @see Runtime#addShutdownHook(Thread)
+     * @see Thread
+     * @see SpringApplicationShutdownHook
+     */
+    void addRuntimeShutdownHook() {
 		Runtime.getRuntime().addShutdownHook(new Thread(this, "SpringApplicationShutdownHook"));
 	}
 
-	void deregisterFailedApplicationContext(ConfigurableApplicationContext applicationContext) {
+	/**
+     * Deregisters a failed application context.
+     * 
+     * @param applicationContext the application context to be deregistered
+     * @throws IllegalStateException if the application context is active
+     */
+    void deregisterFailedApplicationContext(ConfigurableApplicationContext applicationContext) {
 		synchronized (SpringApplicationShutdownHook.class) {
 			Assert.state(!applicationContext.isActive(), "Cannot unregister active application context");
 			SpringApplicationShutdownHook.this.contexts.remove(applicationContext);
 		}
 	}
 
-	@Override
+	/**
+     * This method is responsible for running the shutdown process of the application.
+     * It closes all the configurable application contexts, waits for them to close, and then executes any additional actions.
+     * 
+     * @Override
+     * @see java.lang.Runnable#run()
+     */
+    @Override
 	public void run() {
 		Set<ConfigurableApplicationContext> contexts;
 		Set<ConfigurableApplicationContext> closedContexts;
@@ -116,13 +167,24 @@ class SpringApplicationShutdownHook implements Runnable {
 		actions.forEach(Runnable::run);
 	}
 
-	boolean isApplicationContextRegistered(ConfigurableApplicationContext context) {
+	/**
+     * Checks if the given ConfigurableApplicationContext is registered in the SpringApplicationShutdownHook.
+     *
+     * @param context the ConfigurableApplicationContext to be checked
+     * @return true if the context is registered, false otherwise
+     */
+    boolean isApplicationContextRegistered(ConfigurableApplicationContext context) {
 		synchronized (SpringApplicationShutdownHook.class) {
 			return this.contexts.contains(context);
 		}
 	}
 
-	void reset() {
+	/**
+     * Resets the state of the SpringApplicationShutdownHook.
+     * This method clears the contexts, closedContexts, and handlers actions.
+     * It also sets the inProgress flag to false.
+     */
+    void reset() {
 		synchronized (SpringApplicationShutdownHook.class) {
 			this.contexts.clear();
 			this.closedContexts.clear();
@@ -162,7 +224,12 @@ class SpringApplicationShutdownHook implements Runnable {
 		}
 	}
 
-	private void assertNotInProgress() {
+	/**
+     * Asserts that the shutdown is not in progress.
+     * 
+     * @throws IllegalStateException if shutdown is in progress
+     */
+    private void assertNotInProgress() {
 		Assert.state(!SpringApplicationShutdownHook.this.inProgress, "Shutdown in progress");
 	}
 
@@ -173,7 +240,13 @@ class SpringApplicationShutdownHook implements Runnable {
 
 		private final Set<Runnable> actions = Collections.newSetFromMap(new IdentityHashMap<>());
 
-		@Override
+		/**
+         * Adds a new action to be executed during the shutdown of the application.
+         * 
+         * @param action the action to be executed
+         * @throws IllegalArgumentException if the action is null
+         */
+        @Override
 		public void add(Runnable action) {
 			Assert.notNull(action, "Action must not be null");
 			addRuntimeShutdownHookIfNecessary();
@@ -183,7 +256,14 @@ class SpringApplicationShutdownHook implements Runnable {
 			}
 		}
 
-		@Override
+		/**
+         * Removes the specified action from the list of actions to be executed.
+         * 
+         * @param action the action to be removed (must not be null)
+         * @throws IllegalArgumentException if the action is null
+         * @throws IllegalStateException if the application shutdown is already in progress
+         */
+        @Override
 		public void remove(Runnable action) {
 			Assert.notNull(action, "Action must not be null");
 			synchronized (SpringApplicationShutdownHook.class) {
@@ -192,11 +272,20 @@ class SpringApplicationShutdownHook implements Runnable {
 			}
 		}
 
-		Set<Runnable> getActions() {
+		/**
+         * Returns a set of Runnable actions.
+         *
+         * @return a set of Runnable actions
+         */
+        Set<Runnable> getActions() {
 			return this.actions;
 		}
 
-		@Override
+		/**
+         * This method is used to run the SpringApplicationShutdownHook.
+         * It calls the run() method of the SpringApplicationShutdownHook class and then resets it.
+         */
+        @Override
 		public void run() {
 			SpringApplicationShutdownHook.this.run();
 			SpringApplicationShutdownHook.this.reset();
@@ -209,7 +298,19 @@ class SpringApplicationShutdownHook implements Runnable {
 	 */
 	private final class ApplicationContextClosedListener implements ApplicationListener<ContextClosedEvent> {
 
-		@Override
+		/**
+         * This method is called when the application context is closed.
+         * It is triggered by the ContextClosedEvent.
+         * 
+         * The ContextClosedEvent is fired at the start of a call to close()
+         * and if that happens in a different thread then the context may still be
+         * active. To handle this, the context is added to a closedContexts set
+         * and removed from the contexts set. The closedContexts set is a weak set
+         * so that the context can be garbage collected once the close() method returns.
+         * 
+         * @param event The ContextClosedEvent that triggered this method
+         */
+        @Override
 		public void onApplicationEvent(ContextClosedEvent event) {
 			// The ContextClosedEvent is fired at the start of a call to {@code close()}
 			// and if that happens in a different thread then the context may still be

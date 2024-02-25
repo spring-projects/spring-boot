@@ -43,14 +43,27 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnAvailableEndpoint(endpoint = LiquibaseEndpoint.class)
 public class LiquibaseEndpointAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link LiquibaseEndpoint} if a bean of type {@link SpringLiquibase} is present in the application context and no bean of type {@link LiquibaseEndpoint} is already defined.
+     * 
+     * @param context the application context
+     * @return a new instance of {@link LiquibaseEndpoint}
+     */
+    @Bean
 	@ConditionalOnBean(SpringLiquibase.class)
 	@ConditionalOnMissingBean
 	public LiquibaseEndpoint liquibaseEndpoint(ApplicationContext context) {
 		return new LiquibaseEndpoint(context);
 	}
 
-	@Bean
+	/**
+     * Bean post processor that prevents the DataSource from being closed after Liquibase migration.
+     * This post processor is conditional on the presence of a SpringLiquibase bean.
+     * It sets the 'closeDataSourceOnceMigrated' property of the DataSourceClosingSpringLiquibase bean to false.
+     * 
+     * @return the BeanPostProcessor instance
+     */
+    @Bean
 	@ConditionalOnBean(SpringLiquibase.class)
 	public static BeanPostProcessor preventDataSourceCloseBeanPostProcessor() {
 		return new BeanPostProcessor() {

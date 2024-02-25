@@ -34,11 +34,23 @@ class RetryTemplateFactory {
 
 	private final List<RabbitRetryTemplateCustomizer> customizers;
 
-	RetryTemplateFactory(List<RabbitRetryTemplateCustomizer> customizers) {
+	/**
+     * Constructs a new RetryTemplateFactory with the specified list of RabbitRetryTemplateCustomizer objects.
+     * 
+     * @param customizers the list of RabbitRetryTemplateCustomizer objects to customize the RetryTemplate
+     */
+    RetryTemplateFactory(List<RabbitRetryTemplateCustomizer> customizers) {
 		this.customizers = customizers;
 	}
 
-	RetryTemplate createRetryTemplate(RabbitProperties.Retry properties, RabbitRetryTemplateCustomizer.Target target) {
+	/**
+     * Creates a RetryTemplate based on the provided RabbitProperties.Retry and RabbitRetryTemplateCustomizer.Target.
+     *
+     * @param properties the RabbitProperties.Retry object containing the retry configuration properties
+     * @param target the RabbitRetryTemplateCustomizer.Target object specifying the target for customization
+     * @return a RetryTemplate object configured with the provided properties and customizations
+     */
+    RetryTemplate createRetryTemplate(RabbitProperties.Retry properties, RabbitRetryTemplateCustomizer.Target target) {
 		PropertyMapper map = PropertyMapper.get();
 		RetryTemplate template = new RetryTemplate();
 		SimpleRetryPolicy policy = new SimpleRetryPolicy();

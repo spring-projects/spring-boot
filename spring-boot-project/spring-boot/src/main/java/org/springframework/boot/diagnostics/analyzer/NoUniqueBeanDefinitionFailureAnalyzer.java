@@ -36,12 +36,26 @@ class NoUniqueBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnal
 
 	private final ConfigurableBeanFactory beanFactory;
 
-	NoUniqueBeanDefinitionFailureAnalyzer(BeanFactory beanFactory) {
+	/**
+     * Constructs a new NoUniqueBeanDefinitionFailureAnalyzer with the specified bean factory.
+     * 
+     * @param beanFactory the bean factory to be used by the failure analyzer (must be an instance of ConfigurableBeanFactory)
+     * @throws IllegalArgumentException if the bean factory is not an instance of ConfigurableBeanFactory
+     */
+    NoUniqueBeanDefinitionFailureAnalyzer(BeanFactory beanFactory) {
 		Assert.isInstanceOf(ConfigurableBeanFactory.class, beanFactory);
 		this.beanFactory = (ConfigurableBeanFactory) beanFactory;
 	}
 
-	@Override
+	/**
+     * Analyzes the failure caused by a NoUniqueBeanDefinitionException.
+     * 
+     * @param rootFailure the root cause of the failure
+     * @param cause the NoUniqueBeanDefinitionException that caused the failure
+     * @param description the description of the failure
+     * @return a FailureAnalysis object containing the analysis of the failure
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoUniqueBeanDefinitionException cause,
 			String description) {
 		if (description == null) {
@@ -64,7 +78,13 @@ class NoUniqueBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnal
 		return new FailureAnalysis(message.toString(), action.toString(), cause);
 	}
 
-	private void buildMessage(StringBuilder message, String beanName) {
+	/**
+     * Builds a message with the description of a bean definition.
+     * 
+     * @param message the StringBuilder object to append the description to
+     * @param beanName the name of the bean to get the definition for
+     */
+    private void buildMessage(StringBuilder message, String beanName) {
 		try {
 			BeanDefinition definition = this.beanFactory.getMergedBeanDefinition(beanName);
 			message.append(getDefinitionDescription(beanName, definition));
@@ -74,7 +94,14 @@ class NoUniqueBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnal
 		}
 	}
 
-	private String getDefinitionDescription(String beanName, BeanDefinition definition) {
+	/**
+     * Returns the description of the bean definition.
+     * 
+     * @param beanName the name of the bean
+     * @param definition the bean definition
+     * @return the description of the bean definition
+     */
+    private String getDefinitionDescription(String beanName, BeanDefinition definition) {
 		if (StringUtils.hasText(definition.getFactoryMethodName())) {
 			return String.format("\t- %s: defined by method '%s' in %s%n", beanName, definition.getFactoryMethodName(),
 					getResourceDescription(definition));
@@ -82,12 +109,24 @@ class NoUniqueBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnal
 		return String.format("\t- %s: defined in %s%n", beanName, getResourceDescription(definition));
 	}
 
-	private String getResourceDescription(BeanDefinition definition) {
+	/**
+     * Returns the resource description of the given bean definition.
+     * 
+     * @param definition the bean definition to get the resource description from
+     * @return the resource description if available, otherwise returns "unknown location"
+     */
+    private String getResourceDescription(BeanDefinition definition) {
 		String resourceDescription = definition.getResourceDescription();
 		return (resourceDescription != null) ? resourceDescription : "unknown location";
 	}
 
-	private String[] extractBeanNames(NoUniqueBeanDefinitionException cause) {
+	/**
+     * Extracts the bean names from the given NoUniqueBeanDefinitionException.
+     * 
+     * @param cause the NoUniqueBeanDefinitionException to extract bean names from
+     * @return an array of bean names if found in the exception message, null otherwise
+     */
+    private String[] extractBeanNames(NoUniqueBeanDefinitionException cause) {
 		if (cause.getMessage().contains("but found")) {
 			return StringUtils.commaDelimitedListToStringArray(
 					cause.getMessage().substring(cause.getMessage().lastIndexOf(':') + 1).trim());

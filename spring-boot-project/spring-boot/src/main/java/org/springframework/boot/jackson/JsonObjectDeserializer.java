@@ -42,7 +42,16 @@ import org.springframework.util.Assert;
  */
 public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.databind.JsonDeserializer<T> {
 
-	@Override
+	/**
+     * Deserialize a JSON object into a Java object of type T.
+     * 
+     * @param jp    the JsonParser object used for reading JSON data
+     * @param ctxt  the DeserializationContext object for deserialization configuration
+     * @return      the deserialized Java object of type T
+     * @throws IOException              if an I/O error occurs during deserialization
+     * @throws JsonMappingException     if there is an error mapping the JSON data to the Java object
+     */
+    @Override
 	public final T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 		try {
 			ObjectCodec codec = jp.getCodec();

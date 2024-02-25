@@ -18,6 +18,9 @@ package smoketest.data.redis;
 
 import org.springframework.data.repository.CrudRepository;
 
+/**
+ * SampleRepository interface.
+ */
 interface SampleRepository extends CrudRepository<PersonHash, String> {
 
 }

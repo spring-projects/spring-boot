@@ -22,11 +22,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * ExampleRestControllerEndpoint class.
+ */
 @Component
 @RestControllerEndpoint(id = "example")
 public class ExampleRestControllerEndpoint {
 
-	@GetMapping("/echo")
+	/**
+     * Retrieves the echoed text based on the provided input text.
+     * 
+     * @param text the input text to be echoed
+     * @return a ResponseEntity object containing the echoed text as the response body and the echoed text as a header
+     */
+    @GetMapping("/echo")
 	public ResponseEntity<String> echo(@RequestParam("text") String text) {
 		return ResponseEntity.ok().header("echo", text).body(text);
 	}

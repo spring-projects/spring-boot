@@ -20,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
 import org.springframework.ldap.core.LdapTemplate;
 
+/**
+ * MyDataLdapTests class.
+ */
 @DataLdapTest
 class MyDataLdapTests {
 

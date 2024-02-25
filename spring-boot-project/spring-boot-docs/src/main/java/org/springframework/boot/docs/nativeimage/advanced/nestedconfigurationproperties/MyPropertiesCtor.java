@@ -19,6 +19,9 @@ package org.springframework.boot.docs.nativeimage.advanced.nestedconfigurationpr
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+/**
+ * MyPropertiesCtor class.
+ */
 @ConfigurationProperties(prefix = "my.properties")
 public class MyPropertiesCtor {
 
@@ -27,7 +30,13 @@ public class MyPropertiesCtor {
 	@NestedConfigurationProperty
 	private final Nested nested;
 
-	public MyPropertiesCtor(String name, Nested nested) {
+	/**
+     * Constructs a new instance of the MyPropertiesCtor class with the specified name and nested object.
+     * 
+     * @param name the name of the MyPropertiesCtor object
+     * @param nested the nested object of the MyPropertiesCtor object
+     */
+    public MyPropertiesCtor(String name, Nested nested) {
 		this.name = name;
 		this.nested = nested;
 	}
@@ -37,7 +46,12 @@ public class MyPropertiesCtor {
 		return this.name;
 	}
 
-	public Nested getNested() {
+	/**
+     * Returns the nested object.
+     *
+     * @return the nested object
+     */
+    public Nested getNested() {
 		return this.nested;
 	}
 	// @fold:off

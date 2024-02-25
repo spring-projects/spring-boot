@@ -16,9 +16,17 @@
 
 package smoketest.websocket.tomcat.client;
 
+/**
+ * SimpleGreetingService class.
+ */
 public class SimpleGreetingService implements GreetingService {
 
-	@Override
+	/**
+     * Returns the greeting message.
+     *
+     * @return the greeting message
+     */
+    @Override
 	public String getGreeting() {
 		return "Hello world!";
 	}

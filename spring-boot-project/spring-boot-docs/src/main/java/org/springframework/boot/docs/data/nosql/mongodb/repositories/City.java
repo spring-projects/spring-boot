@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.data.nosql.mongodb.repositories;
 
+/**
+ * City class.
+ */
 public class City {
 
 }

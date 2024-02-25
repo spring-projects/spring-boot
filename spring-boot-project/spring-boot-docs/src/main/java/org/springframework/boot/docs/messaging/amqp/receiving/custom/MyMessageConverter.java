@@ -21,14 +21,32 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
 
+/**
+ * MyMessageConverter class.
+ */
 class MyMessageConverter implements MessageConverter {
 
-	@Override
+	/**
+     * Converts the given object to a Message using the provided MessageProperties.
+     * 
+     * @param object the object to be converted
+     * @param messageProperties the properties to be used for the converted Message
+     * @return the converted Message, or null if the conversion fails
+     * @throws MessageConversionException if an error occurs during the conversion process
+     */
+    @Override
 	public Message toMessage(Object object, MessageProperties messageProperties) throws MessageConversionException {
 		return null;
 	}
 
-	@Override
+	/**
+     * Converts a Message object to an Object.
+     * 
+     * @param message the Message object to be converted
+     * @return the converted Object, or null if conversion fails
+     * @throws MessageConversionException if an error occurs during conversion
+     */
+    @Override
 	public Object fromMessage(Message message) throws MessageConversionException {
 		return null;
 	}

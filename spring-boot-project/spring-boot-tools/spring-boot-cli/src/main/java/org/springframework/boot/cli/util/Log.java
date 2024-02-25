@@ -26,35 +26,61 @@ public abstract class Log {
 
 	private static LogListener listener;
 
-	public static void info(String message) {
+	/**
+     * Prints the given message to the console and notifies the listener if available.
+     * 
+     * @param message the message to be printed
+     */
+    public static void info(String message) {
 		System.out.println(message);
 		if (listener != null) {
 			listener.info(message);
 		}
 	}
 
-	public static void infoPrint(String message) {
+	/**
+     * Prints the given message to the console and notifies the listener if available.
+     * 
+     * @param message the message to be printed
+     */
+    public static void infoPrint(String message) {
 		System.out.print(message);
 		if (listener != null) {
 			listener.infoPrint(message);
 		}
 	}
 
-	public static void error(String message) {
+	/**
+     * Prints the error message to the standard error stream and notifies the listener, if available.
+     * 
+     * @param message the error message to be printed
+     */
+    public static void error(String message) {
 		System.err.println(message);
 		if (listener != null) {
 			listener.error(message);
 		}
 	}
 
-	public static void error(Exception ex) {
+	/**
+     * Prints the stack trace of the given exception to the standard error stream.
+     * If a listener is registered, it also notifies the listener about the error.
+     *
+     * @param ex the exception to be handled
+     */
+    public static void error(Exception ex) {
 		ex.printStackTrace(System.err);
 		if (listener != null) {
 			listener.error(ex);
 		}
 	}
 
-	static void setListener(LogListener listener) {
+	/**
+     * Sets the LogListener for the Log class.
+     * 
+     * @param listener the LogListener to be set
+     */
+    static void setListener(LogListener listener) {
 		Log.listener = listener;
 	}
 

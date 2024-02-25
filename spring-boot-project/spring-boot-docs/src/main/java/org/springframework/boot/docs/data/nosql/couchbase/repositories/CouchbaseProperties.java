@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.data.nosql.couchbase.repositories;
 
+/**
+ * CouchbaseProperties class.
+ */
 class CouchbaseProperties {
 
 }

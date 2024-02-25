@@ -39,11 +39,21 @@ public class PemSslBundleProperties extends SslBundleProperties {
 	 */
 	private final Store truststore = new Store();
 
-	public Store getKeystore() {
+	/**
+     * Returns the keystore.
+     *
+     * @return the keystore
+     */
+    public Store getKeystore() {
 		return this.keystore;
 	}
 
-	public Store getTruststore() {
+	/**
+     * Returns the truststore used by this PemSslBundleProperties instance.
+     *
+     * @return the truststore used by this PemSslBundleProperties instance
+     */
+    public Store getTruststore() {
 		return this.truststore;
 	}
 
@@ -77,43 +87,93 @@ public class PemSslBundleProperties extends SslBundleProperties {
 		 */
 		private boolean verifyKeys;
 
-		public String getType() {
+		/**
+         * Returns the type of the store.
+         * 
+         * @return the type of the store
+         */
+        public String getType() {
 			return this.type;
 		}
 
-		public void setType(String type) {
+		/**
+         * Sets the type of the store.
+         * 
+         * @param type the type of the store
+         */
+        public void setType(String type) {
 			this.type = type;
 		}
 
-		public String getCertificate() {
+		/**
+         * Returns the certificate of the store.
+         *
+         * @return the certificate of the store
+         */
+        public String getCertificate() {
 			return this.certificate;
 		}
 
-		public void setCertificate(String certificate) {
+		/**
+         * Sets the certificate for the store.
+         * 
+         * @param certificate the certificate to be set
+         */
+        public void setCertificate(String certificate) {
 			this.certificate = certificate;
 		}
 
-		public String getPrivateKey() {
+		/**
+         * Returns the private key of the Store.
+         *
+         * @return the private key of the Store
+         */
+        public String getPrivateKey() {
 			return this.privateKey;
 		}
 
-		public void setPrivateKey(String privateKey) {
+		/**
+         * Sets the private key for the Store.
+         * 
+         * @param privateKey the private key to be set
+         */
+        public void setPrivateKey(String privateKey) {
 			this.privateKey = privateKey;
 		}
 
-		public String getPrivateKeyPassword() {
+		/**
+         * Returns the private key password.
+         *
+         * @return the private key password
+         */
+        public String getPrivateKeyPassword() {
 			return this.privateKeyPassword;
 		}
 
-		public void setPrivateKeyPassword(String privateKeyPassword) {
+		/**
+         * Sets the password for the private key.
+         * 
+         * @param privateKeyPassword the password for the private key
+         */
+        public void setPrivateKeyPassword(String privateKeyPassword) {
 			this.privateKeyPassword = privateKeyPassword;
 		}
 
-		public boolean isVerifyKeys() {
+		/**
+         * Returns the value of the verifyKeys variable.
+         * 
+         * @return true if the keys are verified, false otherwise.
+         */
+        public boolean isVerifyKeys() {
 			return this.verifyKeys;
 		}
 
-		public void setVerifyKeys(boolean verifyKeys) {
+		/**
+         * Sets the flag to verify keys.
+         * 
+         * @param verifyKeys the flag indicating whether to verify keys
+         */
+        public void setVerifyKeys(boolean verifyKeys) {
 			this.verifyKeys = verifyKeys;
 		}
 

@@ -40,12 +40,25 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 
 	private final Class<? extends Annotation> annotationType;
 
-	protected OnEndpointElementCondition(String prefix, Class<? extends Annotation> annotationType) {
+	/**
+     * Constructs a new OnEndpointElementCondition with the specified prefix and annotation type.
+     * 
+     * @param prefix the prefix to match against the endpoint element
+     * @param annotationType the type of annotation to match against the endpoint element
+     */
+    protected OnEndpointElementCondition(String prefix, Class<? extends Annotation> annotationType) {
 		this.prefix = prefix;
 		this.annotationType = annotationType;
 	}
 
-	@Override
+	/**
+     * Determines the outcome of the condition for a given endpoint element.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 			.fromMap(metadata.getAnnotationAttributes(this.annotationType.getName()));
@@ -57,7 +70,14 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 		return getDefaultOutcome(context, annotationAttributes);
 	}
 
-	protected ConditionOutcome getEndpointOutcome(ConditionContext context, String endpointName) {
+	/**
+     * Retrieves the outcome of the endpoint condition evaluation.
+     * 
+     * @param context The condition context.
+     * @param endpointName The name of the endpoint.
+     * @return The outcome of the condition evaluation.
+     */
+    protected ConditionOutcome getEndpointOutcome(ConditionContext context, String endpointName) {
 		Environment environment = context.getEnvironment();
 		String enabledProperty = this.prefix + endpointName + ".enabled";
 		if (environment.containsProperty(enabledProperty)) {

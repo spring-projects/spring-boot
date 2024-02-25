@@ -35,7 +35,13 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ EntityManagerFactory.class })
 public class TestEntityManagerAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of TestEntityManager if no other bean of type TestEntityManager is present.
+     * 
+     * @param entityManagerFactory the EntityManagerFactory used to create the TestEntityManager
+     * @return a new instance of TestEntityManager
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public TestEntityManager testEntityManager(EntityManagerFactory entityManagerFactory) {
 		return new TestEntityManager(entityManagerFactory);

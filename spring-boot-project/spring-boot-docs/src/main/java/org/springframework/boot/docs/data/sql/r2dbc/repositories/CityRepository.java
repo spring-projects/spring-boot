@@ -20,6 +20,9 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.data.repository.Repository;
 
+/**
+ * CityRepository interface.
+ */
 public interface CityRepository extends Repository<City, Long> {
 
 	Mono<City> findByNameAndStateAllIgnoringCase(String name, String state);

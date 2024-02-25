@@ -57,13 +57,26 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 public class ReactiveManagementChildContextConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of ReactiveManagementWebServerFactoryCustomizer with the provided ListableBeanFactory.
+     * 
+     * @param beanFactory the ListableBeanFactory used to create the ReactiveManagementWebServerFactoryCustomizer
+     * @return the ReactiveManagementWebServerFactoryCustomizer instance
+     */
+    @Bean
 	public ReactiveManagementWebServerFactoryCustomizer reactiveManagementWebServerFactoryCustomizer(
 			ListableBeanFactory beanFactory) {
 		return new ReactiveManagementWebServerFactoryCustomizer(beanFactory);
 	}
 
-	@Bean
+	/**
+     * Creates and configures an HttpHandler for the management server.
+     *
+     * @param applicationContext the application context
+     * @param properties the management server properties
+     * @return the configured HttpHandler
+     */
+    @Bean
 	public HttpHandler httpHandler(ApplicationContext applicationContext, ManagementServerProperties properties) {
 		HttpHandler httpHandler = WebHttpHandlerBuilder.applicationContext(applicationContext).build();
 		if (StringUtils.hasText(properties.getBasePath())) {
@@ -73,10 +86,18 @@ public class ReactiveManagementChildContextConfiguration {
 		return httpHandler;
 	}
 
-	static class ReactiveManagementWebServerFactoryCustomizer
+	/**
+     * ReactiveManagementWebServerFactoryCustomizer class.
+     */
+    static class ReactiveManagementWebServerFactoryCustomizer
 			extends ManagementWebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> {
 
-		ReactiveManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
+		/**
+         * Constructs a new ReactiveManagementWebServerFactoryCustomizer with the specified ListableBeanFactory.
+         * 
+         * @param beanFactory the ListableBeanFactory to be used for customization
+         */
+        ReactiveManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
 			super(beanFactory, ReactiveWebServerFactoryCustomizer.class, TomcatWebServerFactoryCustomizer.class,
 					TomcatReactiveWebServerFactoryCustomizer.class,
 					TomcatVirtualThreadsWebServerFactoryCustomizer.class, JettyWebServerFactoryCustomizer.class,

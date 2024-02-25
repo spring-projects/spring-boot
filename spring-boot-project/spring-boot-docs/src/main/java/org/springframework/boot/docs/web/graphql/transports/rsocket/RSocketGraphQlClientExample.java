@@ -29,7 +29,12 @@ public class RSocketGraphQlClientExample {
 
 	private final RSocketGraphQlClient graphQlClient;
 
-	public RSocketGraphQlClientExample(RSocketGraphQlClient.Builder<?> builder) {
+	/**
+     * Constructs a new RSocketGraphQlClientExample with the provided RSocketGraphQlClient.Builder.
+     * 
+     * @param builder the RSocketGraphQlClient.Builder used to build the RSocketGraphQlClient
+     */
+    public RSocketGraphQlClientExample(RSocketGraphQlClient.Builder<?> builder) {
 		this.graphQlClient = builder.tcp("example.spring.io", 8181).route("graphql").build();
 	}
 	// end::builder[]
@@ -43,7 +48,10 @@ public class RSocketGraphQlClientExample {
 		book.block(Duration.ofSeconds(5));
 	}
 
-	static class Book {
+	/**
+     * Book class.
+     */
+    static class Book {
 
 	}
 

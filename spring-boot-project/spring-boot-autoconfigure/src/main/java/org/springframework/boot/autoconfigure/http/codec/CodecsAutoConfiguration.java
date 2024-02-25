@@ -52,11 +52,22 @@ public class CodecsAutoConfiguration {
 
 	private static final MimeType[] EMPTY_MIME_TYPES = {};
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * JacksonCodecConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	static class JacksonCodecConfiguration {
 
-		@Bean
+		/**
+         * Creates a Jackson codec customizer bean that configures the default codecs for JSON decoding and encoding.
+         * This customizer is conditional on the presence of an ObjectMapper bean.
+         * The customizer sets the Jackson2JsonDecoder and Jackson2JsonEncoder with the provided ObjectMapper.
+         *
+         * @param objectMapper the ObjectMapper bean to be used for JSON decoding and encoding
+         * @return the codec customizer that configures the default codecs with the provided ObjectMapper
+         */
+        @Bean
 		@Order(0)
 		@ConditionalOnBean(ObjectMapper.class)
 		CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
@@ -69,10 +80,20 @@ public class CodecsAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * DefaultCodecsConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	static class DefaultCodecsConfiguration {
 
-		@Bean
+		/**
+         * Returns a CodecCustomizer bean that configures the default codecs for the application.
+         * The order of execution is set to 0.
+         * 
+         * @param codecProperties the properties for configuring the codecs
+         * @return the CodecCustomizer bean
+         */
+        @Bean
 		@Order(0)
 		CodecCustomizer defaultCodecCustomizer(CodecProperties codecProperties) {
 			return (configurer) -> {

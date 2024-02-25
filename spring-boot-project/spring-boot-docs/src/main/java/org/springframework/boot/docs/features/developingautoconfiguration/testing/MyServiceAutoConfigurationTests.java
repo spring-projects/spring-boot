@@ -26,6 +26,9 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * MyServiceAutoConfigurationTests class.
+ */
 class MyServiceAutoConfigurationTests {
 
 	// tag::runner[]
@@ -61,10 +64,18 @@ class MyServiceAutoConfigurationTests {
 		});
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * UserConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	static class UserConfiguration {
 
-		@Bean
+		/**
+         * Creates a custom instance of MyService with a specified name.
+         * 
+         * @return a new instance of MyService with the name "mine"
+         */
+        @Bean
 		MyService myCustomService() {
 			return new MyService("mine");
 		}

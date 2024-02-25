@@ -23,13 +23,19 @@ import org.springframework.boot.docs.web.graphql.runtimewiring.GreetingControlle
 import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
+/**
+ * GreetingControllerTests class.
+ */
 @GraphQlTest(GreetingController.class)
 class GreetingControllerTests {
 
 	@Autowired
 	private GraphQlTester graphQlTester;
 
-	@Test
+	/**
+     * Test case to verify that the greeting message is correct when a specific name is provided.
+     */
+    @Test
 	void shouldGreetWithSpecificName() {
 		this.graphQlTester.document("{ greeting(name: \"Alice\") } ")
 			.execute()
@@ -38,7 +44,10 @@ class GreetingControllerTests {
 			.isEqualTo("Hello, Alice!");
 	}
 
-	@Test
+	/**
+     * Test case to verify that the greeting endpoint returns the default greeting message when no name is provided.
+     */
+    @Test
 	void shouldGreetWithDefaultName() {
 		this.graphQlTester.document("{ greeting } ")
 			.execute()

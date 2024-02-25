@@ -27,7 +27,13 @@ import org.springframework.test.context.TestContextBootstrapper;
  */
 class JsonTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
-	@Override
+	/**
+     * Retrieves the properties from the given test class.
+     * 
+     * @param testClass the test class to retrieve properties from
+     * @return an array of properties if the test class is annotated with {@link JsonTest}, otherwise null
+     */
+    @Override
 	protected String[] getProperties(Class<?> testClass) {
 		JsonTest jsonTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, JsonTest.class);
 		return (jsonTest != null) ? jsonTest.properties() : null;

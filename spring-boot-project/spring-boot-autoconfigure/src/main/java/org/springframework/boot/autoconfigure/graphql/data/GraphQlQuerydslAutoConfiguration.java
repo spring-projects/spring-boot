@@ -51,7 +51,14 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 @ConditionalOnBean(GraphQlSource.class)
 public class GraphQlQuerydslAutoConfiguration {
 
-	@Bean
+	/**
+     * Customizes the GraphQlSourceBuilder by registering the QuerydslPredicateExecutor instances
+     * for auto-registration of Querydsl data fetchers.
+     * 
+     * @param executors the QuerydslPredicateExecutor instances provided by the application context
+     * @return the GraphQlSourceBuilderCustomizer to configure the runtime wiring
+     */
+    @Bean
 	public GraphQlSourceBuilderCustomizer querydslRegistrar(ObjectProvider<QuerydslPredicateExecutor<?>> executors) {
 		RuntimeWiringConfigurer configurer = QuerydslDataFetcher
 			.autoRegistrationConfigurer(executors.orderedStream().toList(), Collections.emptyList());

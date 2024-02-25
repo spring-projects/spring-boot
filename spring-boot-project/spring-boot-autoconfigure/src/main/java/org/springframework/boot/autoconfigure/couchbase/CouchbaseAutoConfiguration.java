@@ -68,17 +68,37 @@ public class CouchbaseAutoConfiguration {
 
 	private final CouchbaseProperties properties;
 
-	CouchbaseAutoConfiguration(CouchbaseProperties properties) {
+	/**
+     * Constructs a new instance of CouchbaseAutoConfiguration with the specified CouchbaseProperties.
+     *
+     * @param properties the CouchbaseProperties to be used for configuration
+     */
+    CouchbaseAutoConfiguration(CouchbaseProperties properties) {
 		this.properties = properties;
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link PropertiesCouchbaseConnectionDetails} if no bean of type {@link CouchbaseConnectionDetails} is present.
+     * 
+     * This method retrieves the connection details from the properties and initializes a new instance of {@link PropertiesCouchbaseConnectionDetails} with the retrieved values.
+     * 
+     * @return a new instance of {@link PropertiesCouchbaseConnectionDetails} initialized with the connection details from the properties
+     */
+    @Bean
 	@ConditionalOnMissingBean(CouchbaseConnectionDetails.class)
 	PropertiesCouchbaseConnectionDetails couchbaseConnectionDetails() {
 		return new PropertiesCouchbaseConnectionDetails(this.properties);
 	}
 
-	@Bean
+	/**
+     * Creates and configures a ClusterEnvironment bean for connecting to Couchbase.
+     * 
+     * @param connectionDetails the Couchbase connection details
+     * @param customizers the customizers for modifying the ClusterEnvironment builder
+     * @param sslBundles the SSL bundles for configuring secure connections
+     * @return the configured ClusterEnvironment bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public ClusterEnvironment couchbaseClusterEnvironment(CouchbaseConnectionDetails connectionDetails,
 			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers, ObjectProvider<SslBundles> sslBundles) {
@@ -87,7 +107,14 @@ public class CouchbaseAutoConfiguration {
 		return builder.build();
 	}
 
-	@Bean(destroyMethod = "disconnect")
+	/**
+     * Creates a Couchbase Cluster bean.
+     * 
+     * @param couchbaseClusterEnvironment The ClusterEnvironment bean for configuring the Couchbase cluster.
+     * @param connectionDetails The CouchbaseConnectionDetails bean containing the connection details for the cluster.
+     * @return The created Cluster bean.
+     */
+    @Bean(destroyMethod = "disconnect")
 	@ConditionalOnMissingBean
 	public Cluster couchbaseCluster(ClusterEnvironment couchbaseClusterEnvironment,
 			CouchbaseConnectionDetails connectionDetails) {
@@ -97,7 +124,14 @@ public class CouchbaseAutoConfiguration {
 		return Cluster.connect(connectionDetails.getConnectionString(), options);
 	}
 
-	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseConnectionDetails connectionDetails,
+	/**
+     * Initializes the ClusterEnvironment.Builder with the provided CouchbaseConnectionDetails and SslBundles.
+     * 
+     * @param connectionDetails The CouchbaseConnectionDetails containing the connection details for the cluster.
+     * @param sslBundles The SslBundles containing the SSL configuration for the cluster.
+     * @return The initialized ClusterEnvironment.Builder.
+     */
+    private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseConnectionDetails connectionDetails,
 			SslBundles sslBundles) {
 		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
 		Timeouts timeouts = this.properties.getEnv().getTimeouts();
@@ -120,7 +154,13 @@ public class CouchbaseAutoConfiguration {
 		return builder;
 	}
 
-	private void configureSsl(Builder builder, SslBundles sslBundles) {
+	/**
+     * Configures SSL for the Couchbase client.
+     * 
+     * @param builder The builder used to configure the Couchbase client.
+     * @param sslBundles The SSL bundles used for configuring SSL options.
+     */
+    private void configureSsl(Builder builder, SslBundles sslBundles) {
 		Ssl sslProperties = this.properties.getEnv().getSsl();
 		SslBundle sslBundle = (StringUtils.hasText(sslProperties.getBundle()))
 				? sslBundles.getBundle(sslProperties.getBundle()) : null;
@@ -135,15 +175,33 @@ public class CouchbaseAutoConfiguration {
 		});
 	}
 
-	private TrustManagerFactory getTrustManagerFactory(SslBundle sslBundle) {
+	/**
+     * Returns the TrustManagerFactory from the given SslBundle.
+     * 
+     * @param sslBundle the SslBundle containing the TrustManagerFactory
+     * @return the TrustManagerFactory from the SslBundle, or null if the SslBundle is null
+     */
+    private TrustManagerFactory getTrustManagerFactory(SslBundle sslBundle) {
 		return (sslBundle != null) ? sslBundle.getManagers().getTrustManagerFactory() : null;
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * JacksonConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	static class JacksonConfiguration {
 
-		@Bean
+		/**
+         * Returns a customizer for the ClusterEnvironmentBuilder that configures it with a Jackson ObjectMapper.
+         * This customizer is only applied if there is a single candidate for the ObjectMapper bean.
+         * The customizer creates a new instance of JacksonClusterEnvironmentBuilderCustomizer with a modified ObjectMapper
+         * that registers the JsonValueModule module.
+         *
+         * @param objectMapper the ObjectMapper bean to be used for customizing the ClusterEnvironmentBuilder
+         * @return a customizer for the ClusterEnvironmentBuilder that configures it with the modified ObjectMapper
+         */
+        @Bean
 		@ConditionalOnSingleCandidate(ObjectMapper.class)
 		ClusterEnvironmentBuilderCustomizer jacksonClusterEnvironmentBuilderCustomizer(ObjectMapper objectMapper) {
 			return new JacksonClusterEnvironmentBuilderCustomizer(
@@ -152,21 +210,39 @@ public class CouchbaseAutoConfiguration {
 
 	}
 
-	private static final class JacksonClusterEnvironmentBuilderCustomizer
+	/**
+     * JacksonClusterEnvironmentBuilderCustomizer class.
+     */
+    private static final class JacksonClusterEnvironmentBuilderCustomizer
 			implements ClusterEnvironmentBuilderCustomizer, Ordered {
 
 		private final ObjectMapper objectMapper;
 
-		private JacksonClusterEnvironmentBuilderCustomizer(ObjectMapper objectMapper) {
+		/**
+         * Constructs a new JacksonClusterEnvironmentBuilderCustomizer with the specified ObjectMapper.
+         *
+         * @param objectMapper the ObjectMapper to be used by the customizer
+         */
+        private JacksonClusterEnvironmentBuilderCustomizer(ObjectMapper objectMapper) {
 			this.objectMapper = objectMapper;
 		}
 
-		@Override
+		/**
+         * Customizes the JacksonClusterEnvironmentBuilder by configuring the JSON serializer with the provided ObjectMapper.
+         *
+         * @param builder the JacksonClusterEnvironmentBuilder to be customized
+         */
+        @Override
 		public void customize(Builder builder) {
 			builder.jsonSerializer(JacksonJsonSerializer.create(this.objectMapper));
 		}
 
-		@Override
+		/**
+         * Returns the order in which this customizer should be applied.
+         * 
+         * @return the order value
+         */
+        @Override
 		public int getOrder() {
 			return 0;
 		}
@@ -179,16 +255,27 @@ public class CouchbaseAutoConfiguration {
 	 */
 	static final class CouchbaseCondition extends AnyNestedCondition {
 
-		CouchbaseCondition() {
+		/**
+         * Constructs a new instance of CouchbaseCondition.
+         * 
+         * @param phase the configuration phase of the condition
+         */
+        CouchbaseCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.couchbase", name = "connection-string")
+		/**
+         * CouchbaseUrlCondition class.
+         */
+        @ConditionalOnProperty(prefix = "spring.couchbase", name = "connection-string")
 		private static final class CouchbaseUrlCondition {
 
 		}
 
-		@ConditionalOnBean(CouchbaseConnectionDetails.class)
+		/**
+         * CouchbaseConnectionDetailsCondition class.
+         */
+        @ConditionalOnBean(CouchbaseConnectionDetails.class)
 		private static final class CouchbaseConnectionDetailsCondition {
 
 		}
@@ -202,21 +289,41 @@ public class CouchbaseAutoConfiguration {
 
 		private final CouchbaseProperties properties;
 
-		PropertiesCouchbaseConnectionDetails(CouchbaseProperties properties) {
+		/**
+         * Initializes a new instance of the PropertiesCouchbaseConnectionDetails class with the specified CouchbaseProperties.
+         * 
+         * @param properties The CouchbaseProperties object containing the connection details.
+         */
+        PropertiesCouchbaseConnectionDetails(CouchbaseProperties properties) {
 			this.properties = properties;
 		}
 
-		@Override
+		/**
+         * Returns the connection string for the Couchbase database.
+         * 
+         * @return the connection string
+         */
+        @Override
 		public String getConnectionString() {
 			return this.properties.getConnectionString();
 		}
 
-		@Override
+		/**
+         * Returns the username associated with the Couchbase connection details.
+         *
+         * @return the username associated with the Couchbase connection details
+         */
+        @Override
 		public String getUsername() {
 			return this.properties.getUsername();
 		}
 
-		@Override
+		/**
+         * Returns the password for the Couchbase connection.
+         * 
+         * @return the password for the Couchbase connection
+         */
+        @Override
 		public String getPassword() {
 			return this.properties.getPassword();
 		}

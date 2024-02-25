@@ -42,31 +42,65 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 @ConditionalOnMissingBean(ConnectionFactory.class)
 class ArtemisConnectionFactoryConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * SimpleConnectionFactoryConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled", havingValue = "false",
 			matchIfMissing = true)
 	static class SimpleConnectionFactoryConfiguration {
 
-		@Bean(name = "jmsConnectionFactory")
+		/**
+         * Creates a JMS connection factory bean with the given properties, connection details, and bean factory.
+         * This method is annotated with @Bean and @ConditionalOnProperty to conditionally create the bean based on the
+         * value of the "spring.jms.cache.enabled" property. If the property is set to "false", the bean will be created.
+         * 
+         * @param properties         the ArtemisProperties object containing the JMS properties
+         * @param beanFactory        the ListableBeanFactory object used to access other beans
+         * @param connectionDetails  the ArtemisConnectionDetails object containing the connection details
+         * @return                   the created ActiveMQConnectionFactory bean
+         */
+        @Bean(name = "jmsConnectionFactory")
 		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "false")
 		ActiveMQConnectionFactory jmsConnectionFactory(ArtemisProperties properties, ListableBeanFactory beanFactory,
 				ArtemisConnectionDetails connectionDetails) {
 			return createJmsConnectionFactory(properties, connectionDetails, beanFactory);
 		}
 
-		private static ActiveMQConnectionFactory createJmsConnectionFactory(ArtemisProperties properties,
+		/**
+         * Creates a JMS connection factory using the provided Artemis properties, connection details, and bean factory.
+         * 
+         * @param properties the Artemis properties used to configure the connection factory
+         * @param connectionDetails the Artemis connection details used to establish the connection
+         * @param beanFactory the bean factory used to create the connection factory
+         * @return the created JMS connection factory
+         */
+        private static ActiveMQConnectionFactory createJmsConnectionFactory(ArtemisProperties properties,
 				ArtemisConnectionDetails connectionDetails, ListableBeanFactory beanFactory) {
 			return new ArtemisConnectionFactoryFactory(beanFactory, properties, connectionDetails)
 				.createConnectionFactory(ActiveMQConnectionFactory.class);
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		/**
+         * CachingConnectionFactoryConfiguration class.
+         */
+        @Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(CachingConnectionFactory.class)
 		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "true",
 				matchIfMissing = true)
 		static class CachingConnectionFactoryConfiguration {
 
-			@Bean(name = "jmsConnectionFactory")
+			/**
+             * Creates a caching JMS connection factory bean with the given JMS properties, Artemis properties,
+             * Artemis connection details, and bean factory.
+             *
+             * @param jmsProperties      the JMS properties
+             * @param properties         the Artemis properties
+             * @param connectionDetails  the Artemis connection details
+             * @param beanFactory        the bean factory
+             * @return the caching JMS connection factory bean
+             */
+            @Bean(name = "jmsConnectionFactory")
 			CachingConnectionFactory cachingJmsConnectionFactory(JmsProperties jmsProperties,
 					ArtemisProperties properties, ArtemisConnectionDetails connectionDetails,
 					ListableBeanFactory beanFactory) {
@@ -83,12 +117,23 @@ class ArtemisConnectionFactoryConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * PooledConnectionFactoryConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ JmsPoolConnectionFactory.class, PooledObject.class })
 	@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled", havingValue = "true")
 	static class PooledConnectionFactoryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		/**
+         * Creates a JmsPoolConnectionFactory bean with the specified properties.
+         *
+         * @param beanFactory        the ListableBeanFactory used to create the connection factory
+         * @param properties         the ArtemisProperties used to configure the connection factory
+         * @param connectionDetails  the ArtemisConnectionDetails used to establish the connection
+         * @return the JmsPoolConnectionFactory bean
+         */
+        @Bean(destroyMethod = "stop")
 		JmsPoolConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
 				ArtemisConnectionDetails connectionDetails) {
 			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(beanFactory, properties,

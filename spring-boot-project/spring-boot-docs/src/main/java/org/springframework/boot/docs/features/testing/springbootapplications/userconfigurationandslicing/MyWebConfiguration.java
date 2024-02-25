@@ -20,10 +20,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * MyWebConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyWebConfiguration {
 
-	@Bean
+	/**
+     * Returns a WebMvcConfigurer object for testing purposes.
+     * 
+     * @return a WebMvcConfigurer object
+     */
+    @Bean
 	public WebMvcConfigurer testConfigurer() {
 		return new WebMvcConfigurer() {
 			// ...

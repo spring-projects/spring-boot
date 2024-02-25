@@ -66,13 +66,27 @@ import org.springframework.transaction.TransactionManager;
 @ConditionalOnBean(Driver.class)
 public class Neo4jDataAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of Neo4jConversions if no other bean of the same type is present.
+     * 
+     * @return the Neo4jConversions bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public Neo4jConversions neo4jConversions() {
 		return new Neo4jConversions();
 	}
 
-	@Bean
+	/**
+     * Returns the Neo4jManagedTypes bean if it is missing in the application context.
+     * This bean is responsible for scanning the application context and identifying the initial entity classes.
+     * The initial entity classes are determined by scanning for classes annotated with @Node or @RelationshipProperties.
+     * 
+     * @param applicationContext the application context
+     * @return the Neo4jManagedTypes bean
+     * @throws ClassNotFoundException if a class cannot be found during the scanning process
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	Neo4jManagedTypes neo4jManagedTypes(ApplicationContext applicationContext) throws ClassNotFoundException {
 		Set<Class<?>> initialEntityClasses = new EntityScanner(applicationContext).scan(Node.class,
@@ -80,7 +94,14 @@ public class Neo4jDataAutoConfiguration {
 		return Neo4jManagedTypes.fromIterable(initialEntityClasses);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of {@link Neo4jMappingContext} if no other bean of the same type is present.
+     * 
+     * @param managedTypes The managed types for the mapping context.
+     * @param neo4jConversions The Neo4j conversions to be used by the mapping context.
+     * @return The created {@link Neo4jMappingContext} instance.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public Neo4jMappingContext neo4jMappingContext(Neo4jManagedTypes managedTypes, Neo4jConversions neo4jConversions) {
 		Neo4jMappingContext context = new Neo4jMappingContext(neo4jConversions);
@@ -88,7 +109,16 @@ public class Neo4jDataAutoConfiguration {
 		return context;
 	}
 
-	@Bean
+	/**
+     * Creates a {@link DatabaseSelectionProvider} bean if no other bean of the same type is present.
+     * The bean is created based on the provided {@link Neo4jDataProperties} instance.
+     * If the database property is not null, a {@link DatabaseSelectionProvider} is created using the provided database name.
+     * Otherwise, the default {@link DatabaseSelectionProvider} is returned.
+     *
+     * @param properties the {@link Neo4jDataProperties} instance used to determine the database name
+     * @return the created {@link DatabaseSelectionProvider} bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public DatabaseSelectionProvider databaseSelectionProvider(Neo4jDataProperties properties) {
 		String database = properties.getDatabase();
@@ -96,19 +126,41 @@ public class Neo4jDataAutoConfiguration {
 				: DatabaseSelectionProvider.getDefaultSelectionProvider();
 	}
 
-	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_CLIENT_BEAN_NAME)
+	/**
+     * Creates a Neo4jClient bean using the provided driver and databaseNameProvider.
+     * 
+     * @param driver The Neo4j driver to be used by the client.
+     * @param databaseNameProvider The provider for selecting the database to be used by the client.
+     * @return The created Neo4jClient bean.
+     */
+    @Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_CLIENT_BEAN_NAME)
 	@ConditionalOnMissingBean
 	public Neo4jClient neo4jClient(Driver driver, DatabaseSelectionProvider databaseNameProvider) {
 		return Neo4jClient.create(driver, databaseNameProvider);
 	}
 
-	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_TEMPLATE_BEAN_NAME)
+	/**
+     * Creates a new instance of Neo4jTemplate using the provided Neo4jClient and Neo4jMappingContext.
+     * 
+     * @param neo4jClient The Neo4jClient to be used by the Neo4jTemplate.
+     * @param neo4jMappingContext The Neo4jMappingContext to be used by the Neo4jTemplate.
+     * @return A new instance of Neo4jTemplate.
+     */
+    @Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_TEMPLATE_BEAN_NAME)
 	@ConditionalOnMissingBean(Neo4jOperations.class)
 	public Neo4jTemplate neo4jTemplate(Neo4jClient neo4jClient, Neo4jMappingContext neo4jMappingContext) {
 		return new Neo4jTemplate(neo4jClient, neo4jMappingContext);
 	}
 
-	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)
+	/**
+     * Creates a Neo4jTransactionManager bean if no other TransactionManager bean is present.
+     * 
+     * @param driver The Neo4j Driver used for database connections.
+     * @param databaseNameProvider The provider for selecting the database name.
+     * @param optionalCustomizers Optional customizers for the TransactionManager.
+     * @return The Neo4jTransactionManager bean.
+     */
+    @Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)
 	@ConditionalOnMissingBean(TransactionManager.class)
 	public Neo4jTransactionManager transactionManager(Driver driver, DatabaseSelectionProvider databaseNameProvider,
 			ObjectProvider<TransactionManagerCustomizers> optionalCustomizers) {

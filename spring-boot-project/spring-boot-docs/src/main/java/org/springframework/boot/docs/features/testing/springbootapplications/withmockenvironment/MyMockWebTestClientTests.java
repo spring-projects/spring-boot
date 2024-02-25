@@ -23,11 +23,21 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+/**
+ * MyMockWebTestClientTests class.
+ */
 @SpringBootTest
 @AutoConfigureWebTestClient
 class MyMockWebTestClientTests {
 
-	@Test
+	/**
+     * This is an example test method that tests the functionality of the web client.
+     * It uses the WebTestClient to send a GET request to the root URI ("/") and expects
+     * a response with status code 200 (OK) and a response body equal to "Hello World".
+     * 
+     * @param webClient the WebTestClient instance used for testing
+     */
+    @Test
 	void exampleTest(@Autowired WebTestClient webClient) {
 		// @formatter:off
 		webClient

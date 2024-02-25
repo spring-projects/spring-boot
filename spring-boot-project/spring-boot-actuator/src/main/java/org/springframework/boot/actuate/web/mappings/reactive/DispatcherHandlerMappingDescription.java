@@ -32,21 +32,43 @@ public class DispatcherHandlerMappingDescription {
 
 	private final DispatcherHandlerMappingDetails details;
 
-	DispatcherHandlerMappingDescription(String predicate, String handler, DispatcherHandlerMappingDetails details) {
+	/**
+     * Constructs a new DispatcherHandlerMappingDescription with the specified predicate, handler, and details.
+     * 
+     * @param predicate the predicate used to match the request
+     * @param handler the handler to be invoked for the matched request
+     * @param details the details of the handler mapping
+     */
+    DispatcherHandlerMappingDescription(String predicate, String handler, DispatcherHandlerMappingDetails details) {
 		this.predicate = predicate;
 		this.handler = handler;
 		this.details = details;
 	}
 
-	public String getHandler() {
+	/**
+     * Returns the handler associated with this DispatcherHandlerMappingDescription.
+     *
+     * @return the handler associated with this DispatcherHandlerMappingDescription
+     */
+    public String getHandler() {
 		return this.handler;
 	}
 
-	public String getPredicate() {
+	/**
+     * Returns the predicate of the DispatcherHandlerMappingDescription.
+     *
+     * @return the predicate of the DispatcherHandlerMappingDescription
+     */
+    public String getPredicate() {
 		return this.predicate;
 	}
 
-	public DispatcherHandlerMappingDetails getDetails() {
+	/**
+     * Returns the details of the DispatcherHandlerMapping.
+     *
+     * @return the details of the DispatcherHandlerMapping
+     */
+    public DispatcherHandlerMappingDetails getDetails() {
 		return this.details;
 	}
 

@@ -37,7 +37,14 @@ public class DefaultSourceDirectoryUrlFilter implements SourceDirectoryUrlFilter
 
 	private static final Pattern VERSION_PATTERN = Pattern.compile("^-\\d+(?:\\.\\d+)*(?:[.-].+)?$");
 
-	@Override
+	/**
+     * Checks if the given source directory matches the provided URL.
+     * 
+     * @param sourceDirectory the source directory to check
+     * @param url the URL to match against
+     * @return true if the source directory matches the URL, false otherwise
+     */
+    @Override
 	public boolean isMatch(String sourceDirectory, URL url) {
 		String jarName = getJarName(url);
 		if (!StringUtils.hasLength(jarName)) {
@@ -46,7 +53,13 @@ public class DefaultSourceDirectoryUrlFilter implements SourceDirectoryUrlFilter
 		return isMatch(sourceDirectory, jarName);
 	}
 
-	private String getJarName(URL url) {
+	/**
+     * Returns the name of the JAR file from the given URL.
+     * 
+     * @param url the URL of the JAR file
+     * @return the name of the JAR file, or null if not found
+     */
+    private String getJarName(URL url) {
 		Matcher matcher = URL_MODULE_PATTERN.matcher(url.toString());
 		if (matcher.find()) {
 			return matcher.group(1);
@@ -54,7 +67,14 @@ public class DefaultSourceDirectoryUrlFilter implements SourceDirectoryUrlFilter
 		return null;
 	}
 
-	private boolean isMatch(String sourceDirectory, String jarName) {
+	/**
+     * Checks if the given source directory matches the specified jar name.
+     * 
+     * @param sourceDirectory the source directory to check
+     * @param jarName the jar name to match against
+     * @return true if the source directory matches the jar name, false otherwise
+     */
+    private boolean isMatch(String sourceDirectory, String jarName) {
 		sourceDirectory = stripTrailingSlash(sourceDirectory);
 		sourceDirectory = stripCommonEnds(sourceDirectory);
 		String[] directories = StringUtils.delimitedListToStringArray(sourceDirectory, "/");
@@ -66,7 +86,14 @@ public class DefaultSourceDirectoryUrlFilter implements SourceDirectoryUrlFilter
 		return false;
 	}
 
-	private boolean isDirectoryMatch(String directory, String jarName) {
+	/**
+     * Checks if the given directory matches the specified jar name.
+     * 
+     * @param directory the directory to check
+     * @param jarName the jar name to match
+     * @return true if the directory matches the jar name, false otherwise
+     */
+    private boolean isDirectoryMatch(String directory, String jarName) {
 		if (!jarName.startsWith(directory)) {
 			return false;
 		}
@@ -74,14 +101,26 @@ public class DefaultSourceDirectoryUrlFilter implements SourceDirectoryUrlFilter
 		return version.isEmpty() || VERSION_PATTERN.matcher(version).matches();
 	}
 
-	private String stripTrailingSlash(String string) {
+	/**
+     * Removes the trailing slash from the given string if it exists.
+     *
+     * @param string the string to remove the trailing slash from
+     * @return the string without the trailing slash
+     */
+    private String stripTrailingSlash(String string) {
 		if (string.endsWith("/")) {
 			return string.substring(0, string.length() - 1);
 		}
 		return string;
 	}
 
-	private String stripCommonEnds(String string) {
+	/**
+     * Removes common endings from the given string.
+     * 
+     * @param string the string to be processed
+     * @return the processed string with common endings removed
+     */
+    private String stripCommonEnds(String string) {
 		for (String ending : COMMON_ENDINGS) {
 			if (string.endsWith(ending)) {
 				return string.substring(0, string.length() - ending.length());

@@ -16,6 +16,9 @@
 
 package smoketest.data.jpa.domain;
 
+/**
+ * Rating enum.
+ */
 public enum Rating {
 
 	TERRIBLE, POOR, AVERAGE, GOOD, EXCELLENT

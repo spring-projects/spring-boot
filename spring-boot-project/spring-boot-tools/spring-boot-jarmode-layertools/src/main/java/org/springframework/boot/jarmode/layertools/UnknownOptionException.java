@@ -25,11 +25,21 @@ class UnknownOptionException extends RuntimeException {
 
 	private final String optionName;
 
-	UnknownOptionException(String optionName) {
+	/**
+     * Constructs a new UnknownOptionException with the specified option name.
+     * 
+     * @param optionName the name of the unknown option
+     */
+    UnknownOptionException(String optionName) {
 		this.optionName = optionName;
 	}
 
-	@Override
+	/**
+     * Returns the message of the UnknownOptionException.
+     * 
+     * @return the message of the UnknownOptionException
+     */
+    @Override
 	public String getMessage() {
 		return "--" + this.optionName;
 	}

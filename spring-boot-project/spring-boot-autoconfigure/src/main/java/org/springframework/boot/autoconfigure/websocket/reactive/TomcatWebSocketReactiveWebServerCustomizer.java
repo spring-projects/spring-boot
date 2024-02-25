@@ -31,12 +31,25 @@ import org.springframework.core.Ordered;
 public class TomcatWebSocketReactiveWebServerCustomizer
 		implements WebServerFactoryCustomizer<TomcatReactiveWebServerFactory>, Ordered {
 
-	@Override
+	/**
+     * Customize the Tomcat Reactive Web Server Factory by adding a Servlet Container Initializer for WebSocket support.
+     * 
+     * @param factory the Tomcat Reactive Web Server Factory to customize
+     */
+    @Override
 	public void customize(TomcatReactiveWebServerFactory factory) {
 		factory.addContextCustomizers((context) -> context.addServletContainerInitializer(new WsSci(), null));
 	}
 
-	@Override
+	/**
+     * Returns the order value for this customizer.
+     * 
+     * The order value determines the order in which the customizers are applied.
+     * A lower value means higher priority.
+     * 
+     * @return the order value for this customizer
+     */
+    @Override
 	public int getOrder() {
 		return 0;
 	}

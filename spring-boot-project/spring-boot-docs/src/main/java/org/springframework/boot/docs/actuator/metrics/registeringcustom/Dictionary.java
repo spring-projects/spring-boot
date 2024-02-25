@@ -19,13 +19,26 @@ package org.springframework.boot.docs.actuator.metrics.registeringcustom;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Dictionary class.
+ */
 class Dictionary {
 
-	static Dictionary load() {
+	/**
+     * Loads a dictionary.
+     * 
+     * @return a new instance of the Dictionary class.
+     */
+    static Dictionary load() {
 		return new Dictionary();
 	}
 
-	List<String> getWords() {
+	/**
+     * Returns an empty list of words.
+     *
+     * @return an empty list of words
+     */
+    List<String> getWords() {
 		return Collections.emptyList();
 	}
 

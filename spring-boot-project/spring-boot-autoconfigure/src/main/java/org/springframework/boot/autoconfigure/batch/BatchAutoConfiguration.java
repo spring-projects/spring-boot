@@ -75,7 +75,16 @@ import org.springframework.util.StringUtils;
 @Import(DatabaseInitializationDependencyConfigurer.class)
 public class BatchAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a {@link JobLauncherApplicationRunner} bean if it is missing and the property "spring.batch.job.enabled" is set to true.
+     * 
+     * @param jobLauncher - The {@link JobLauncher} bean.
+     * @param jobExplorer - The {@link JobExplorer} bean.
+     * @param jobRepository - The {@link JobRepository} bean.
+     * @param properties - The {@link BatchProperties} bean.
+     * @return The created {@link JobLauncherApplicationRunner} bean.
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
 	public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
@@ -88,13 +97,21 @@ public class BatchAutoConfiguration {
 		return runner;
 	}
 
-	@Bean
+	/**
+     * Generates a JobExecutionExitCodeGenerator bean if no other bean of type ExitCodeGenerator is present.
+     * 
+     * @return the JobExecutionExitCodeGenerator bean
+     */
+    @Bean
 	@ConditionalOnMissingBean(ExitCodeGenerator.class)
 	public JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator() {
 		return new JobExecutionExitCodeGenerator();
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * SpringBootBatchConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	static class SpringBootBatchConfiguration extends DefaultBatchConfiguration {
 
 		private final DataSource dataSource;
@@ -107,7 +124,17 @@ public class BatchAutoConfiguration {
 
 		private final ExecutionContextSerializer executionContextSerializer;
 
-		SpringBootBatchConfiguration(DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
+		/**
+         * Constructs a new SpringBootBatchConfiguration with the specified parameters.
+         *
+         * @param dataSource The primary data source to be used for the batch processing.
+         * @param batchDataSource The optional data source specifically for batch processing.
+         * @param transactionManager The transaction manager to be used for the batch processing.
+         * @param properties The properties for the batch processing.
+         * @param batchConversionServiceCustomizers The customizers for the batch conversion service.
+         * @param executionContextSerializer The serializer for the execution context.
+         */
+        SpringBootBatchConfiguration(DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				PlatformTransactionManager transactionManager, BatchProperties properties,
 				ObjectProvider<BatchConversionServiceCustomizer> batchConversionServiceCustomizers,
 				ObjectProvider<ExecutionContextSerializer> executionContextSerializer) {
@@ -119,29 +146,57 @@ public class BatchAutoConfiguration {
 				.getIfAvailable(DefaultExecutionContextSerializer::new);
 		}
 
-		@Override
+		/**
+         * Returns the data source used by this SpringBootBatchConfiguration.
+         *
+         * @return the data source used by this configuration
+         */
+        @Override
 		protected DataSource getDataSource() {
 			return this.dataSource;
 		}
 
-		@Override
+		/**
+         * Returns the transaction manager used for managing transactions in the Spring Boot Batch Configuration.
+         *
+         * @return the transaction manager
+         */
+        @Override
 		protected PlatformTransactionManager getTransactionManager() {
 			return this.transactionManager;
 		}
 
-		@Override
+		/**
+         * Retrieves the table prefix from the properties and returns it.
+         * If the table prefix is not set, it returns the default table prefix.
+         *
+         * @return The table prefix to be used for database tables.
+         */
+        @Override
 		protected String getTablePrefix() {
 			String tablePrefix = this.properties.getJdbc().getTablePrefix();
 			return (tablePrefix != null) ? tablePrefix : super.getTablePrefix();
 		}
 
-		@Override
+		/**
+         * Retrieves the isolation level for creating a new transaction.
+         * 
+         * @return The isolation level for creating a new transaction.
+         */
+        @Override
 		protected Isolation getIsolationLevelForCreate() {
 			Isolation isolation = this.properties.getJdbc().getIsolationLevelForCreate();
 			return (isolation != null) ? isolation : super.getIsolationLevelForCreate();
 		}
 
-		@Override
+		/**
+         * Returns the configurable conversion service.
+         * 
+         * This method overrides the getConversionService() method from the parent class and adds customizations to the conversion service.
+         * 
+         * @return The configurable conversion service with customizations applied.
+         */
+        @Override
 		protected ConfigurableConversionService getConversionService() {
 			ConfigurableConversionService conversionService = super.getConversionService();
 			for (BatchConversionServiceCustomizer customizer : this.batchConversionServiceCustomizers) {
@@ -150,18 +205,34 @@ public class BatchAutoConfiguration {
 			return conversionService;
 		}
 
-		@Override
+		/**
+         * Returns the execution context serializer used by this SpringBootBatchConfiguration.
+         *
+         * @return the execution context serializer
+         */
+        @Override
 		protected ExecutionContextSerializer getExecutionContextSerializer() {
 			return this.executionContextSerializer;
 		}
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * DataSourceInitializerConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@Conditional(OnBatchDatasourceInitializationCondition.class)
 	static class DataSourceInitializerConfiguration {
 
-		@Bean
+		/**
+         * Creates a {@link BatchDataSourceScriptDatabaseInitializer} bean if no bean of type {@link BatchDataSourceScriptDatabaseInitializer} is already present.
+         * 
+         * @param dataSource The primary {@link DataSource} bean.
+         * @param batchDataSource An {@link ObjectProvider} for the {@link DataSource} bean annotated with {@link BatchDataSource}.
+         * @param properties The {@link BatchProperties} bean.
+         * @return A new instance of {@link BatchDataSourceScriptDatabaseInitializer}.
+         */
+        @Bean
 		@ConditionalOnMissingBean(BatchDataSourceScriptDatabaseInitializer.class)
 		BatchDataSourceScriptDatabaseInitializer batchDataSourceInitializer(DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource, BatchProperties properties) {
@@ -171,9 +242,22 @@ public class BatchAutoConfiguration {
 
 	}
 
-	static class OnBatchDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
+	/**
+     * OnBatchDatasourceInitializationCondition class.
+     */
+    static class OnBatchDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
 
-		OnBatchDatasourceInitializationCondition() {
+		/**
+         * Constructor for OnBatchDatasourceInitializationCondition.
+         * 
+         * @param name
+         *            the name of the condition
+         * @param systemProperty
+         *            the system property to check for
+         * @param environmentProperty
+         *            the environment property to check for
+         */
+        OnBatchDatasourceInitializationCondition() {
 			super("Batch", "spring.batch.jdbc.initialize-schema", "spring.batch.initialize-schema");
 		}
 

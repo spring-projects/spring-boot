@@ -56,7 +56,17 @@ import org.springframework.context.annotation.Import;
 @Import(WavefrontSenderConfiguration.class)
 public class WavefrontTracingAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a WavefrontSpanHandler bean if a WavefrontSender bean is present and tracing is enabled.
+     * The WavefrontSpanHandler is responsible for sending spans to Wavefront.
+     *
+     * @param properties       the WavefrontProperties object containing configuration properties
+     * @param wavefrontSender  the WavefrontSender bean used for sending spans to Wavefront
+     * @param spanMetrics      the SpanMetrics bean used for tracking span metrics
+     * @param applicationTags  the ApplicationTags bean containing application metadata
+     * @return the WavefrontSpanHandler bean
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(WavefrontSender.class)
 	@ConditionalOnEnabledTracing
@@ -66,11 +76,20 @@ public class WavefrontTracingAutoConfiguration {
 				properties.getSourceOrDefault(), applicationTags, properties.getTraceDerivedCustomTagKeys());
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * MeterRegistrySpanMetricsConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(MeterRegistry.class)
 	static class MeterRegistrySpanMetricsConfiguration {
 
-		@Bean
+		/**
+         * Creates a new instance of MeterRegistrySpanMetrics if no other bean of the same type is present.
+         * 
+         * @param meterRegistry the MeterRegistry to be used for creating the MeterRegistrySpanMetrics
+         * @return a new instance of MeterRegistrySpanMetrics
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		MeterRegistrySpanMetrics meterRegistrySpanMetrics(MeterRegistry meterRegistry) {
 			return new MeterRegistrySpanMetrics(meterRegistry);
@@ -78,11 +97,23 @@ public class WavefrontTracingAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * NoopSpanMetricsConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(MeterRegistry.class)
 	static class NoopSpanMetricsConfiguration {
 
-		@Bean
+		/**
+         * Returns a {@link SpanMetrics} bean if no other bean of the same type is present in the application context.
+         * If a bean of the same type is already present, this method will not be executed.
+         * 
+         * The returned {@link SpanMetrics} bean is a {@link SpanMetrics.NOOP} instance, which is a no-op implementation
+         * of the {@link SpanMetrics} interface. It does not perform any actual metric recording or reporting.
+         * 
+         * @return a {@link SpanMetrics} bean representing a no-op implementation of the {@link SpanMetrics} interface
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		SpanMetrics meterRegistrySpanMetrics() {
 			return SpanMetrics.NOOP;
@@ -90,11 +121,22 @@ public class WavefrontTracingAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * WavefrontBrave class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(SpanHandler.class)
 	static class WavefrontBrave {
 
-		@Bean
+		/**
+         * Creates a new instance of WavefrontBraveSpanHandler.
+         * This method is annotated with @Bean, @ConditionalOnMissingBean, and @ConditionalOnEnabledTracing.
+         * It takes a WavefrontSpanHandler as a parameter and returns a new instance of WavefrontBraveSpanHandler.
+         * 
+         * @param wavefrontSpanHandler The WavefrontSpanHandler to be used by the WavefrontBraveSpanHandler.
+         * @return A new instance of WavefrontBraveSpanHandler.
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledTracing
 		WavefrontBraveSpanHandler wavefrontBraveSpanHandler(WavefrontSpanHandler wavefrontSpanHandler) {
@@ -103,11 +145,21 @@ public class WavefrontTracingAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * WavefrontOpenTelemetry class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(SpanExporter.class)
 	static class WavefrontOpenTelemetry {
 
-		@Bean
+		/**
+         * Creates a new instance of WavefrontOtelSpanExporter with the provided WavefrontSpanHandler.
+         * This method is annotated with @Bean, @ConditionalOnMissingBean, and @ConditionalOnEnabledTracing.
+         * 
+         * @param wavefrontSpanHandler The WavefrontSpanHandler to be used by the WavefrontOtelSpanExporter.
+         * @return A new instance of WavefrontOtelSpanExporter.
+         */
+        @Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledTracing
 		WavefrontOtelSpanExporter wavefrontOtelSpanExporter(WavefrontSpanHandler wavefrontSpanHandler) {

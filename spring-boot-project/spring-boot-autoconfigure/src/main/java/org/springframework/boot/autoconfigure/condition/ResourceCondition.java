@@ -57,7 +57,14 @@ public abstract class ResourceCondition extends SpringBootCondition {
 		this.resourceLocations = resourceLocations;
 	}
 
-	@Override
+	/**
+     * Determines the outcome of a condition match based on the presence of a property in the environment.
+     * 
+     * @param context the condition context
+     * @param metadata the annotated type metadata
+     * @return the condition outcome
+     */
+    @Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		if (context.getEnvironment().containsProperty(this.property)) {
 			return ConditionOutcome.match(startConditionMessage().foundExactly("property " + this.property));
@@ -88,7 +95,12 @@ public abstract class ResourceCondition extends SpringBootCondition {
 		return ConditionOutcome.match(message);
 	}
 
-	protected final Builder startConditionMessage() {
+	/**
+     * Returns a new instance of the {@link Builder} class to create a condition message for the {@code ResourceCondition}.
+     * 
+     * @return a new instance of the {@link Builder} class
+     */
+    protected final Builder startConditionMessage() {
 		return ConditionMessage.forCondition("ResourceCondition", "(" + this.name + ")");
 	}
 

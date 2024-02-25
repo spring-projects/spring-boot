@@ -54,7 +54,12 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver {
 		setViewClass(requiredViewClass());
 	}
 
-	@Override
+	/**
+     * Returns the required view class for this MustacheViewResolver.
+     * 
+     * @return the required view class, which is MustacheView
+     */
+    @Override
 	protected Class<?> requiredViewClass() {
 		return MustacheView.class;
 	}
@@ -67,7 +72,14 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver {
 		this.charset = charset;
 	}
 
-	@Override
+	/**
+     * Builds a view with the given view name.
+     * 
+     * @param viewName the name of the view to be built
+     * @return the built view
+     * @throws Exception if an error occurs during view building
+     */
+    @Override
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
 		MustacheView view = (MustacheView) super.buildView(viewName);
 		view.setCompiler(this.compiler);
@@ -75,7 +87,14 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver {
 		return view;
 	}
 
-	@Override
+	/**
+     * Instantiates the view based on the view class.
+     * If the view class is MustacheView, it creates a new instance of MustacheView.
+     * Otherwise, it calls the super method to instantiate the view.
+     *
+     * @return the instantiated view
+     */
+    @Override
 	protected AbstractUrlBasedView instantiateView() {
 		return (getViewClass() == MustacheView.class) ? new MustacheView() : super.instantiateView();
 	}

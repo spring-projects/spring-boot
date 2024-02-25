@@ -30,7 +30,13 @@ class HealthEndpointWebExtensionRuntimeHints implements RuntimeHintsRegistrar {
 
 	private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
-	@Override
+	/**
+     * Registers runtime hints for the HealthEndpointWebExtension class.
+     * 
+     * @param hints The runtime hints to register.
+     * @param classLoader The class loader to use for reflection.
+     */
+    @Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		this.bindingRegistrar.registerReflectionHints(hints.reflection(), Health.class, SystemHealth.class,
 				CompositeHealth.class);

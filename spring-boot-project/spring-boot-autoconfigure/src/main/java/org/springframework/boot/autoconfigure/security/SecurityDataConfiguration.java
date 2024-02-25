@@ -32,7 +32,13 @@ import org.springframework.security.data.repository.query.SecurityEvaluationCont
 @ConditionalOnClass(SecurityEvaluationContextExtension.class)
 public class SecurityDataConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of the {@code SecurityEvaluationContextExtension} class if no other bean of the same type is present.
+     * This bean is conditional on the absence of a bean of the same type.
+     * 
+     * @return the {@code SecurityEvaluationContextExtension} instance
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
 		return new SecurityEvaluationContextExtension();

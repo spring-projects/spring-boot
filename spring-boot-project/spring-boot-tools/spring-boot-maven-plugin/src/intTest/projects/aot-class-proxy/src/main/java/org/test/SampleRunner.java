@@ -19,10 +19,16 @@ package org.test;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+/**
+ * SampleRunner class.
+ */
 @Component
 public class SampleRunner {
 
-	@Async
+	/**
+     * Runs the method asynchronously.
+     */
+    @Async
 	public void run() {
 
 	}

@@ -39,17 +39,35 @@ public class ElasticsearchReactiveHealthIndicator extends AbstractReactiveHealth
 
 	private final ReactiveElasticsearchClient client;
 
-	public ElasticsearchReactiveHealthIndicator(ReactiveElasticsearchClient client) {
+	/**
+     * Constructs a new ElasticsearchReactiveHealthIndicator with the specified ReactiveElasticsearchClient.
+     * 
+     * @param client the ReactiveElasticsearchClient used to check the health of Elasticsearch
+     */
+    public ElasticsearchReactiveHealthIndicator(ReactiveElasticsearchClient client) {
 		super("Elasticsearch health check failed");
 		this.client = client;
 	}
 
-	@Override
+	/**
+     * Performs a health check on the Elasticsearch cluster.
+     * 
+     * @param builder the Health.Builder object used to build the health status
+     * @return a Mono object representing the health status of the Elasticsearch cluster
+     */
+    @Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
 		return this.client.cluster().health((b) -> b).map((response) -> processResponse(builder, response));
 	}
 
-	private Health processResponse(Health.Builder builder, HealthResponse response) {
+	/**
+     * Processes the response from the health check and builds a Health object.
+     *
+     * @param builder the Health.Builder object used to build the Health object
+     * @param response the HealthResponse object containing the health check response
+     * @return the processed Health object
+     */
+    private Health processResponse(Health.Builder builder, HealthResponse response) {
 		if (!response.timedOut()) {
 			HealthStatus status = response.status();
 			builder.status((HealthStatus.Red == status) ? Status.OUT_OF_SERVICE : Status.UP);

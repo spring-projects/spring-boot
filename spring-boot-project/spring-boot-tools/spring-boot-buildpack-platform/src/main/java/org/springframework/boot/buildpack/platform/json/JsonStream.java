@@ -77,7 +77,15 @@ public class JsonStream {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+     * Reads a JSON value from the given JsonParser and converts it to the specified type.
+     * 
+     * @param parser the JsonParser to read from
+     * @param type the Class representing the desired type of the JSON value
+     * @return the JSON value converted to the specified type
+     * @throws IOException if an I/O error occurs while reading the JSON value
+     */
+    @SuppressWarnings("unchecked")
 	private <T> T read(JsonParser parser, Class<T> type) throws IOException {
 		if (ObjectNode.class.isAssignableFrom(type)) {
 			ObjectNode node = this.objectMapper.readTree(parser);

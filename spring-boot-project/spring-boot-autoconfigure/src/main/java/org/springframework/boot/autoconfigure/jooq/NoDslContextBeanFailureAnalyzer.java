@@ -25,16 +25,33 @@ import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.core.Ordered;
 
+/**
+ * NoDslContextBeanFailureAnalyzer class.
+ */
 class NoDslContextBeanFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchBeanDefinitionException>
 		implements Ordered {
 
 	private final BeanFactory beanFactory;
 
-	NoDslContextBeanFailureAnalyzer(BeanFactory beanFactory) {
+	/**
+     * Constructs a new NoDslContextBeanFailureAnalyzer with the specified beanFactory.
+     *
+     * @param beanFactory the BeanFactory to be used by the NoDslContextBeanFailureAnalyzer
+     */
+    NoDslContextBeanFailureAnalyzer(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 	}
 
-	@Override
+	/**
+     * Analyzes the failure caused by a NoSuchBeanDefinitionException and determines if it is related to the absence of a DSLContext bean.
+     * If the cause is related to the absence of a DSLContext bean and R2DBC auto-configuration is enabled, a FailureAnalysis object is returned with an explanation and recommended actions.
+     * If the cause is not related to the absence of a DSLContext bean or R2DBC auto-configuration is not enabled, null is returned.
+     *
+     * @param rootFailure The root cause of the failure
+     * @param cause The NoSuchBeanDefinitionException that caused the failure
+     * @return A FailureAnalysis object if the failure is related to the absence of a DSLContext bean and R2DBC auto-configuration is enabled, null otherwise
+     */
+    @Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause) {
 		if (DSLContext.class.equals(cause.getBeanType()) && hasR2dbcAutoConfiguration()) {
 			return new FailureAnalysis(
@@ -47,7 +64,12 @@ class NoDslContextBeanFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchBean
 		return null;
 	}
 
-	private boolean hasR2dbcAutoConfiguration() {
+	/**
+     * Checks if R2dbcAutoConfiguration is present in the bean factory.
+     * 
+     * @return true if R2dbcAutoConfiguration is present, false otherwise.
+     */
+    private boolean hasR2dbcAutoConfiguration() {
 		try {
 			this.beanFactory.getBean(R2dbcAutoConfiguration.class);
 			return true;
@@ -57,7 +79,12 @@ class NoDslContextBeanFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchBean
 		}
 	}
 
-	@Override
+	/**
+     * Returns the order of this bean failure analyzer.
+     * 
+     * @return the order of this bean failure analyzer
+     */
+    @Override
 	public int getOrder() {
 		return 0;
 	}

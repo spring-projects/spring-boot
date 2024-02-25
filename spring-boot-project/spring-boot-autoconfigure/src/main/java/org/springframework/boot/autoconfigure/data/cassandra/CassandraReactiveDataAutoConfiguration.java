@@ -46,19 +46,38 @@ import org.springframework.data.cassandra.core.cql.session.DefaultReactiveSessio
 @ConditionalOnBean(CqlSession.class)
 public class CassandraReactiveDataAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of ReactiveSession if no other bean of type ReactiveSession is present.
+     * 
+     * @param session the CqlSession to be used for creating the ReactiveSession
+     * @return a new instance of ReactiveSession
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public ReactiveSession reactiveCassandraSession(CqlSession session) {
 		return new DefaultBridgedReactiveSession(session);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of ReactiveSessionFactory if no other bean of the same type is present.
+     * 
+     * @param reactiveCassandraSession the ReactiveSession bean used to create the ReactiveSessionFactory
+     * @return a new instance of DefaultReactiveSessionFactory
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public ReactiveSessionFactory reactiveCassandraSessionFactory(ReactiveSession reactiveCassandraSession) {
 		return new DefaultReactiveSessionFactory(reactiveCassandraSession);
 	}
 
-	@Bean
+	/**
+     * Creates a new instance of ReactiveCassandraTemplate if there is no existing bean of type ReactiveCassandraOperations.
+     * 
+     * @param reactiveCassandraSession the ReactiveSession used for Cassandra operations
+     * @param converter the CassandraConverter used for converting objects to Cassandra types
+     * @return a new instance of ReactiveCassandraTemplate
+     */
+    @Bean
 	@ConditionalOnMissingBean(ReactiveCassandraOperations.class)
 	public ReactiveCassandraTemplate reactiveCassandraTemplate(ReactiveSession reactiveCassandraSession,
 			CassandraConverter converter) {

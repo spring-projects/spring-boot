@@ -44,11 +44,21 @@ class ConversionServiceDeducer {
 
 	private final ApplicationContext applicationContext;
 
-	ConversionServiceDeducer(ApplicationContext applicationContext) {
+	/**
+     * Constructs a new ConversionServiceDeducer with the specified ApplicationContext.
+     * 
+     * @param applicationContext the ApplicationContext to be used for dependency injection
+     */
+    ConversionServiceDeducer(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 
-	List<ConversionService> getConversionServices() {
+	/**
+     * Retrieves the list of conversion services.
+     * 
+     * @return The list of conversion services.
+     */
+    List<ConversionService> getConversionServices() {
 		if (hasUserDefinedConfigurationServiceBean()) {
 			return Collections.singletonList(this.applicationContext
 				.getBean(ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME, ConversionService.class));
@@ -59,7 +69,13 @@ class ConversionServiceDeducer {
 		return null;
 	}
 
-	private List<ConversionService> getConversionServices(ConfigurableApplicationContext applicationContext) {
+	/**
+     * Retrieves a list of ConversionService instances.
+     * 
+     * @param applicationContext The ConfigurableApplicationContext to retrieve the ConversionServices from.
+     * @return A list of ConversionService instances.
+     */
+    private List<ConversionService> getConversionServices(ConfigurableApplicationContext applicationContext) {
 		List<ConversionService> conversionServices = new ArrayList<>();
 		ConverterBeans converterBeans = new ConverterBeans(applicationContext);
 		if (!converterBeans.isEmpty()) {
@@ -83,13 +99,21 @@ class ConversionServiceDeducer {
 		return conversionServices;
 	}
 
-	private boolean hasUserDefinedConfigurationServiceBean() {
+	/**
+     * Checks if the application context has a user-defined configuration service bean.
+     * 
+     * @return true if the application context contains a user-defined configuration service bean, false otherwise
+     */
+    private boolean hasUserDefinedConfigurationServiceBean() {
 		String beanName = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
 		return this.applicationContext.containsBean(beanName) && this.applicationContext.getAutowireCapableBeanFactory()
 			.isTypeMatch(beanName, ConversionService.class);
 	}
 
-	private static class ConverterBeans {
+	/**
+     * ConverterBeans class.
+     */
+    private static class ConverterBeans {
 
 		@SuppressWarnings("rawtypes")
 		private final List<Converter> converters;
@@ -99,23 +123,47 @@ class ConversionServiceDeducer {
 		@SuppressWarnings("rawtypes")
 		private final List<Formatter> formatters;
 
-		ConverterBeans(ConfigurableApplicationContext applicationContext) {
+		/**
+         * Constructs a new ConverterBeans object with the given ConfigurableApplicationContext.
+         * 
+         * @param applicationContext the ConfigurableApplicationContext to use
+         */
+        ConverterBeans(ConfigurableApplicationContext applicationContext) {
 			ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 			this.converters = beans(Converter.class, ConfigurationPropertiesBinding.VALUE, beanFactory);
 			this.genericConverters = beans(GenericConverter.class, ConfigurationPropertiesBinding.VALUE, beanFactory);
 			this.formatters = beans(Formatter.class, ConfigurationPropertiesBinding.VALUE, beanFactory);
 		}
 
-		private <T> List<T> beans(Class<T> type, String qualifier, ListableBeanFactory beanFactory) {
+		/**
+         * Retrieves a list of beans of the specified type and qualifier from the given bean factory.
+         *
+         * @param <T> the type of beans to retrieve
+         * @param type the class object representing the type of beans to retrieve
+         * @param qualifier the qualifier string used to filter the beans
+         * @param beanFactory the bean factory from which to retrieve the beans
+         * @return a list of beans of the specified type and qualifier
+         */
+        private <T> List<T> beans(Class<T> type, String qualifier, ListableBeanFactory beanFactory) {
 			return new ArrayList<>(
 					BeanFactoryAnnotationUtils.qualifiedBeansOfType(beanFactory, type, qualifier).values());
 		}
 
-		boolean isEmpty() {
+		/**
+         * Checks if the converters, generic converters, and formatters lists are empty.
+         * 
+         * @return true if all the lists are empty, false otherwise
+         */
+        boolean isEmpty() {
 			return this.converters.isEmpty() && this.genericConverters.isEmpty() && this.formatters.isEmpty();
 		}
 
-		void addTo(FormatterRegistry registry) {
+		/**
+         * Adds the converters and formatters to the given registry.
+         * 
+         * @param registry the formatter registry to add the converters and formatters to
+         */
+        void addTo(FormatterRegistry registry) {
 			for (Converter<?, ?> converter : this.converters) {
 				registry.addConverter(converter);
 			}

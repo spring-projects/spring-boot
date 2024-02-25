@@ -43,7 +43,16 @@ class ConditionEvaluationDeltaLoggingListener
 
 	private volatile ApplicationContext context;
 
-	@Override
+	/**
+     * This method is called when the application is ready to start.
+     * It checks if the application context is the same as the current context.
+     * If it is, it retrieves the condition evaluation report and compares it with the previous report.
+     * If there are any changes in the condition evaluation, it logs the delta.
+     * Otherwise, it logs that the condition evaluation is unchanged.
+     * 
+     * @param event The ApplicationReadyEvent triggered when the application is ready to start.
+     */
+    @Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
 		if (!event.getApplicationContext().equals(this.context)) {
 			return;
@@ -66,7 +75,12 @@ class ConditionEvaluationDeltaLoggingListener
 		previousReports.put(event.getApplicationContext().getId(), report);
 	}
 
-	@Override
+	/**
+     * Sets the application context for this listener.
+     * 
+     * @param applicationContext the application context to set
+     */
+    @Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.context = applicationContext;
 	}

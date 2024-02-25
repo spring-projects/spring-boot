@@ -49,7 +49,14 @@ class CacheMetricsRegistrarConfiguration {
 
 	private final Map<String, CacheManager> cacheManagers;
 
-	CacheMetricsRegistrarConfiguration(MeterRegistry registry, Collection<CacheMeterBinderProvider<?>> binderProviders,
+	/**
+     * Constructs a new CacheMetricsRegistrarConfiguration with the specified parameters.
+     * 
+     * @param registry the MeterRegistry to register cache metrics with
+     * @param binderProviders the collection of CacheMeterBinderProviders to provide binders for cache metrics
+     * @param cacheManagers the map of cache managers to bind caches to
+     */
+    CacheMetricsRegistrarConfiguration(MeterRegistry registry, Collection<CacheMeterBinderProvider<?>> binderProviders,
 			Map<String, CacheManager> cacheManagers) {
 		this.registry = registry;
 		this.cacheManagers = cacheManagers;
@@ -57,21 +64,46 @@ class CacheMetricsRegistrarConfiguration {
 		bindCachesToRegistry();
 	}
 
-	@Bean
+	/**
+     * Returns the CacheMetricsRegistrar instance.
+     *
+     * @return the CacheMetricsRegistrar instance
+     */
+    @Bean
 	CacheMetricsRegistrar cacheMetricsRegistrar() {
 		return this.cacheMetricsRegistrar;
 	}
 
-	private void bindCachesToRegistry() {
+	/**
+     * Binds the cache managers to the registry.
+     * 
+     * This method iterates over the list of cache managers and binds each cache manager to the registry.
+     * 
+     * @see CacheMetricsRegistrarConfiguration#bindCacheManagerToRegistry(CacheManager)
+     */
+    private void bindCachesToRegistry() {
 		this.cacheManagers.forEach(this::bindCacheManagerToRegistry);
 	}
 
-	private void bindCacheManagerToRegistry(String beanName, CacheManager cacheManager) {
+	/**
+     * Binds the given CacheManager to the registry with the specified bean name.
+     * 
+     * @param beanName the name of the bean to bind the CacheManager to
+     * @param cacheManager the CacheManager to bind to the registry
+     */
+    private void bindCacheManagerToRegistry(String beanName, CacheManager cacheManager) {
 		cacheManager.getCacheNames()
 			.forEach((cacheName) -> bindCacheToRegistry(beanName, cacheManager.getCache(cacheName)));
 	}
 
-	private void bindCacheToRegistry(String beanName, Cache cache) {
+	/**
+     * Binds the specified cache to the registry with the given bean name and cache manager tag.
+     * 
+     * @param beanName the name of the cache bean
+     * @param cache the cache to be bound to the registry
+     * @throws IllegalArgumentException if the cache or cache manager tag is null
+     */
+    private void bindCacheToRegistry(String beanName, Cache cache) {
 		Tag cacheManagerTag = Tag.of("cache.manager", getCacheManagerName(beanName));
 		this.cacheMetricsRegistrar.bindCacheToRegistry(cache, cacheManagerTag);
 	}

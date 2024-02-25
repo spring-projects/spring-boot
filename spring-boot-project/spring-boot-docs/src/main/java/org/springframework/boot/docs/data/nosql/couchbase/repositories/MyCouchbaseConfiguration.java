@@ -23,10 +23,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.core.convert.CouchbaseCustomConversions;
 
+/**
+ * MyCouchbaseConfiguration class.
+ */
 @Configuration(proxyBeanMethods = false)
 public class MyCouchbaseConfiguration {
 
-	@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+	/**
+     * Returns the custom Couchbase conversions for the Couchbase configuration.
+     * 
+     * @return the custom Couchbase conversions
+     */
+    @Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
 	public CouchbaseCustomConversions myCustomConversions() {
 		return new CouchbaseCustomConversions(Arrays.asList(new MyConverter()));
 	}

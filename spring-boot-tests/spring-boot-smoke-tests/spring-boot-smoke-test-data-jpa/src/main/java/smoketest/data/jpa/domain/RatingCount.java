@@ -16,6 +16,9 @@
 
 package smoketest.data.jpa.domain;
 
+/**
+ * RatingCount interface.
+ */
 public interface RatingCount {
 
 	Rating getRating();

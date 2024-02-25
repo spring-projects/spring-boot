@@ -44,11 +44,23 @@ public class EndpointMapping {
 		return this.path;
 	}
 
-	public String createSubPath(String path) {
+	/**
+     * Creates a subpath by concatenating the current path with the provided path.
+     * 
+     * @param path the path to be appended to the current path
+     * @return the concatenated subpath
+     */
+    public String createSubPath(String path) {
 		return this.path + normalizePath(path);
 	}
 
-	private static String normalizePath(String path) {
+	/**
+     * Normalizes the given path by adding a leading slash if it is missing and removing a trailing slash if present.
+     * 
+     * @param path the path to be normalized
+     * @return the normalized path
+     */
+    private static String normalizePath(String path) {
 		if (!StringUtils.hasText(path)) {
 			return path;
 		}

@@ -72,7 +72,11 @@ public final class DockerImageNames {
 
 	private static final String ZIPKIN_VERSION = "2.24.1";
 
-	private DockerImageNames() {
+	/**
+     * This is a private constructor for the DockerImageNames class.
+     * It is used to prevent the instantiation of the class.
+     */
+    private DockerImageNames() {
 	}
 
 	/**

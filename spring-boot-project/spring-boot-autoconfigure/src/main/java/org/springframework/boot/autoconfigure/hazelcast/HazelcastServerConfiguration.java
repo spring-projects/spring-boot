@@ -53,19 +53,39 @@ class HazelcastServerConfiguration {
 
 	static final String HAZELCAST_LOGGING_TYPE = "hazelcast.logging.type";
 
-	private static HazelcastInstance getHazelcastInstance(Config config) {
+	/**
+     * Returns a HazelcastInstance based on the provided configuration.
+     * If the configuration has an instance name, it will return an existing HazelcastInstance with that name,
+     * otherwise it will create a new HazelcastInstance using the provided configuration.
+     *
+     * @param config the configuration for the HazelcastInstance
+     * @return the HazelcastInstance based on the provided configuration
+     */
+    private static HazelcastInstance getHazelcastInstance(Config config) {
 		if (StringUtils.hasText(config.getInstanceName())) {
 			return Hazelcast.getOrCreateHazelcastInstance(config);
 		}
 		return Hazelcast.newHazelcastInstance(config);
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * HazelcastServerConfigFileConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(Config.class)
 	@Conditional(ConfigAvailableCondition.class)
 	static class HazelcastServerConfigFileConfiguration {
 
-		@Bean
+		/**
+         * Creates and returns a Hazelcast instance based on the provided configuration properties.
+         *
+         * @param properties the Hazelcast properties
+         * @param resourceLoader the resource loader
+         * @param hazelcastConfigCustomizers the customizers for the Hazelcast configuration
+         * @return the Hazelcast instance
+         * @throws IOException if an I/O error occurs while loading the configuration
+         */
+        @Bean
 		HazelcastInstance hazelcastInstance(HazelcastProperties properties, ResourceLoader resourceLoader,
 				ObjectProvider<HazelcastConfigCustomizer> hazelcastConfigCustomizers) throws IOException {
 			Resource configLocation = properties.resolveConfigLocation();
@@ -75,7 +95,14 @@ class HazelcastServerConfiguration {
 			return getHazelcastInstance(config);
 		}
 
-		private Config loadConfig(Resource configLocation) throws IOException {
+		/**
+         * Loads the configuration from the given resource location.
+         * 
+         * @param configLocation the resource location of the configuration file
+         * @return the loaded configuration
+         * @throws IOException if an I/O error occurs while loading the configuration
+         */
+        private Config loadConfig(Resource configLocation) throws IOException {
 			URL configUrl = configLocation.getURL();
 			Config config = loadConfig(configUrl);
 			if (ResourceUtils.isFileURL(configUrl)) {
@@ -87,7 +114,14 @@ class HazelcastServerConfiguration {
 			return config;
 		}
 
-		private Config loadConfig(URL configUrl) throws IOException {
+		/**
+         * Loads the configuration from the specified URL.
+         *
+         * @param configUrl the URL of the configuration file
+         * @return the loaded configuration
+         * @throws IOException if an I/O error occurs while reading the configuration file
+         */
+        private Config loadConfig(URL configUrl) throws IOException {
 			try (InputStream stream = configUrl.openStream()) {
 				return Config.loadFromStream(stream);
 			}
@@ -95,22 +129,42 @@ class HazelcastServerConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * HazelcastServerConfigConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(Config.class)
 	static class HazelcastServerConfigConfiguration {
 
-		@Bean
+		/**
+         * Creates and returns a HazelcastInstance using the provided configuration.
+         *
+         * @param config the configuration to be used for creating the HazelcastInstance
+         * @return the created HazelcastInstance
+         */
+        @Bean
 		HazelcastInstance hazelcastInstance(Config config) {
 			return getHazelcastInstance(config);
 		}
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * SpringManagedContextHazelcastConfigCustomizerConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(SpringManagedContext.class)
 	static class SpringManagedContextHazelcastConfigCustomizerConfiguration {
 
-		@Bean
+		/**
+         * Returns a HazelcastConfigCustomizer bean that sets up a SpringManagedContext for the Hazelcast configuration.
+         * The SpringManagedContext is configured with the provided ApplicationContext.
+         * This allows Hazelcast to access Spring beans and manage their lifecycle within the Hazelcast cluster.
+         * 
+         * @param applicationContext the ApplicationContext to be set in the SpringManagedContext
+         * @return the HazelcastConfigCustomizer bean with the configured SpringManagedContext
+         */
+        @Bean
 		@Order(0)
 		HazelcastConfigCustomizer springManagedContextHazelcastConfigCustomizer(ApplicationContext applicationContext) {
 			return (config) -> {
@@ -122,11 +176,20 @@ class HazelcastServerConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	/**
+     * HazelcastLoggingConfigCustomizerConfiguration class.
+     */
+    @Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(org.slf4j.Logger.class)
 	static class HazelcastLoggingConfigCustomizerConfiguration {
 
-		@Bean
+		/**
+         * Returns a HazelcastConfigCustomizer that sets the logging type to "slf4j" if it is not already set.
+         * This customizer is ordered with a priority of 0.
+         *
+         * @return the HazelcastConfigCustomizer for logging configuration
+         */
+        @Bean
 		@Order(0)
 		HazelcastConfigCustomizer loggingHazelcastConfigCustomizer() {
 			return (config) -> {
@@ -144,7 +207,14 @@ class HazelcastServerConfiguration {
 	 */
 	static class ConfigAvailableCondition extends HazelcastConfigResourceCondition {
 
-		ConfigAvailableCondition() {
+		/**
+         * Initializes a new instance of the ConfigAvailableCondition class.
+         * 
+         * @param systemProperty the system property to check for the configuration file path
+         * @param fileConfigPaths the file paths to check for the configuration file
+         * @param classpathConfigPaths the classpath paths to check for the configuration file
+         */
+        ConfigAvailableCondition() {
 			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast.xml", "classpath:/hazelcast.xml", "file:./hazelcast.yaml",
 					"classpath:/hazelcast.yaml", "file:./hazelcast.yml", "classpath:/hazelcast.yml");
 		}

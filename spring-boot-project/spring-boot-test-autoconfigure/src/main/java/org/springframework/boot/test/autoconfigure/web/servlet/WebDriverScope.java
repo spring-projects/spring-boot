@@ -54,7 +54,16 @@ public class WebDriverScope implements Scope {
 
 	private final Map<String, Object> instances = new HashMap<>();
 
-	@Override
+	/**
+     * Retrieves an object from the scope with the given name.
+     * If the object does not exist in the scope, it creates a new instance using the provided object factory.
+     * The created instance is then stored in the scope for future retrieval.
+     *
+     * @param name          the name of the object to retrieve
+     * @param objectFactory the factory used to create a new instance if the object does not exist in the scope
+     * @return the retrieved or newly created instance
+     */
+    @Override
 	public Object get(String name, ObjectFactory<?> objectFactory) {
 		synchronized (this.instances) {
 			Object instance = this.instances.get(name);
@@ -66,23 +75,46 @@ public class WebDriverScope implements Scope {
 		}
 	}
 
-	@Override
+	/**
+     * Removes an instance from the WebDriverScope using the specified name.
+     * 
+     * @param name the name of the instance to be removed
+     * @return the removed instance, or null if no instance with the specified name exists
+     */
+    @Override
 	public Object remove(String name) {
 		synchronized (this.instances) {
 			return this.instances.remove(name);
 		}
 	}
 
-	@Override
+	/**
+     * Registers a destruction callback for the given name.
+     * 
+     * @param name     the name of the object to register the destruction callback for
+     * @param callback the callback to be executed when the object is destroyed
+     */
+    @Override
 	public void registerDestructionCallback(String name, Runnable callback) {
 	}
 
-	@Override
+	/**
+     * Resolves the contextual object for the given key.
+     * 
+     * @param key the key for the contextual object
+     * @return the resolved contextual object, or null if not found
+     */
+    @Override
 	public Object resolveContextualObject(String key) {
 		return null;
 	}
 
-	@Override
+	/**
+     * Returns the conversation ID associated with this WebDriverScope.
+     * 
+     * @return the conversation ID, or null if not available
+     */
+    @Override
 	public String getConversationId() {
 		return null;
 	}
@@ -121,7 +153,15 @@ public class WebDriverScope implements Scope {
 		context.addBeanFactoryPostProcessor(WebDriverScope::postProcessBeanFactory);
 	}
 
-	private static void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+	/**
+     * This method is used to post-process the bean factory by setting the scope of certain bean definitions.
+     * It iterates over a list of bean classes and for each bean class, it retrieves the bean names from the bean factory
+     * that match the resolved class name. For each matching bean definition, if the scope is not already set, it sets the
+     * scope to "NAME".
+     *
+     * @param beanFactory The configurable listable bean factory to be post-processed.
+     */
+    private static void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		for (String beanClass : BEAN_CLASSES) {
 			for (String beanName : beanFactory.getBeanNamesForType(ClassUtils.resolveClassName(beanClass, null))) {
 				BeanDefinition definition = beanFactory.getBeanDefinition(beanName);

@@ -39,7 +39,14 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnBean(MeterRegistry.class)
 public class StartupTimeMetricsListenerAutoConfiguration {
 
-	@Bean
+	/**
+     * Creates a new instance of {@link StartupTimeMetricsListener} if no other bean of the same type is present.
+     * This bean is conditional on the absence of a bean of the same type.
+     * 
+     * @param meterRegistry the {@link MeterRegistry} to be used by the {@link StartupTimeMetricsListener}
+     * @return a new instance of {@link StartupTimeMetricsListener}
+     */
+    @Bean
 	@ConditionalOnMissingBean
 	public StartupTimeMetricsListener startupTimeMetrics(MeterRegistry meterRegistry) {
 		return new StartupTimeMetricsListener(meterRegistry);

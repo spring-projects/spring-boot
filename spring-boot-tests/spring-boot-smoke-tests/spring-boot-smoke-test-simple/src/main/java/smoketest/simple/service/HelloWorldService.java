@@ -21,6 +21,9 @@ import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * HelloWorldService class.
+ */
 @Component
 public class HelloWorldService {
 
@@ -30,7 +33,12 @@ public class HelloWorldService {
 	@Value("${test.duration:10s}")
 	private Duration duration;
 
-	public String getHelloMessage() {
+	/**
+     * Returns a hello message with the name and duration.
+     * 
+     * @return the hello message with the name and duration
+     */
+    public String getHelloMessage() {
 		return "Hello " + this.name + " for " + this.duration.getSeconds() + " seconds";
 	}
 
