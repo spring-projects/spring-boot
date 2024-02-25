@@ -121,6 +121,7 @@ dependencies {
 	}
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("io.github.nettyplus:netty-leak-detector-junit-extension")
 	testImplementation("org.mariadb.jdbc:mariadb-java-client") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}

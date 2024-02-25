@@ -21,10 +21,12 @@ import java.net.SocketAddress;
 import java.time.Duration;
 import java.util.Arrays;
 
+import io.github.nettyplus.leakdetector.junit.NettyLeakDetectorExtension;
 import io.netty.channel.Channel;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import reactor.core.CoreSubscriber;
 import reactor.core.Disposable;
@@ -66,6 +68,7 @@ import static org.mockito.Mockito.mock;
  * @author Chris Bono
  * @author Moritz Halbritter
  */
+@ExtendWith(NettyLeakDetectorExtension.class)
 class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Test
