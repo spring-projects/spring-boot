@@ -1,0 +1,38 @@
+name: Windows Build
+on:
+  push:
+    branches:
+      - 3.1.x
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+jobs:
+  build:
+    name: 'Java 17 | Windows'
+    runs-on: 'windows-latest'
+    if: ${{ github.repository == 'spring-projects/spring-boot' }}
+    steps:
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'liberica'
+          java-version: 17
+      - name: Configure git
+        run: |
+          git config --global core.autocrlf true
+          git config --global core.longPaths true
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
+        with:
+          cache-read-only: false
+      - name: Stop Docker service
+        run: Stop-Service -name Docker
+      - name: Build
+        env:
+          CI: 'true'
+          GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
+          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+          GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
+          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
+        run: ./gradlew '-Dorg.gradle.internal.launcher.welcomeMessageEnabled=false' --no-daemon build
