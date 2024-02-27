@@ -36,6 +36,7 @@ jobs:
       - name: Stop Docker service
         run: Stop-Service -name Docker
       - name: Build
+        id: build
         env:
           CI: 'true'
           GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
@@ -43,3 +44,9 @@ jobs:
           GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
           GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
         run: ./gradlew build
+      - name: Send notification
+        uses: ./.github/actions/send-notification
+        if: always()
+        with:
+          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+          build-scan-url: ${{ steps.build.outputs.build-scan-url }}
