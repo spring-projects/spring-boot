@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Parameter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,14 +47,17 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -260,21 +264,23 @@ class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bindingExceptionWithErrors(String param) {
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, null, "/bind");
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class, null,
+				"/bind");
 		assertThat(entity.getBody()).containsKey("errors");
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bindingExceptionWithoutErrors(String param) {
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, null, "/bind");
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class, null,
+				"/bind");
 		assertThat(entity.getBody()).doesNotContainKey("errors");
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bindingExceptionWithMessage(String param) {
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class,
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class,
 				"Validation failed for object='test'. Error count: 1", "/bind");
 		assertThat(entity.getBody()).doesNotContainKey("errors");
 	}
@@ -282,7 +288,8 @@ class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bindingExceptionWithoutMessage(String param) {
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, null, "/bind");
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class, null,
+				"/bind");
 		assertThat(entity.getBody()).doesNotContainKey("errors");
 	}
 
@@ -428,10 +435,12 @@ class BasicErrorControllerIntegrationTests {
 			}
 
 			@RequestMapping("/bind")
-			String bind() throws Exception {
+			String bind(@RequestAttribute(required = false) String foo) throws Exception {
 				BindException error = new BindException(this, "test");
 				error.rejectValue("foo", "bar.error");
-				throw error;
+				Parameter fooParameter = ReflectionUtils.findMethod(Errors.class, "bind", String.class)
+					.getParameters()[0];
+				throw new MethodArgumentNotValidException(MethodParameter.forParameter(fooParameter), error);
 			}
 
 			@PostMapping(path = "/bodyValidation", produces = "application/json")
