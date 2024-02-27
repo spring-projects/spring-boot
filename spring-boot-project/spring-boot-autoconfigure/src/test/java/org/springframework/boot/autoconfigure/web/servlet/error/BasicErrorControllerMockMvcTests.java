@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Parameter;
 import java.util.Map;
 
 import jakarta.servlet.DispatcherType;
@@ -41,6 +42,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -49,7 +51,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -175,10 +180,12 @@ class BasicErrorControllerMockMvcTests {
 			}
 
 			@RequestMapping("/bind")
-			String bind() throws Exception {
+			String bind(@RequestAttribute(required = false) String foo) throws Exception {
 				BindException error = new BindException(this, "test");
 				error.rejectValue("foo", "bar.error");
-				throw error;
+				Parameter fooParameter = ReflectionUtils.findMethod(Errors.class, "bind", String.class)
+					.getParameters()[0];
+				throw new MethodArgumentNotValidException(MethodParameter.forParameter(fooParameter), error);
 			}
 
 			@RequestMapping("/noContent")
