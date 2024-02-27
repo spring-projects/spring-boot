@@ -27,7 +27,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
-import org.gradle.jvm.tasks.Jar;
+import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
 

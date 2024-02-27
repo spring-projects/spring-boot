@@ -35,8 +35,8 @@ import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.application.CreateStartScripts;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
-import org.gradle.jvm.application.tasks.CreateStartScripts;
 import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.run.BootRun;

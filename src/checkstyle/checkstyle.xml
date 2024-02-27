@@ -25,7 +25,7 @@
 			<property name="illegalClasses"
 				value="javax.annotation.PostConstruct, jakarta.annotation.PostConstruct"/>
 			<property name="illegalPkgs"
-				value="^io\.opentelemetry\.semconv.*"/>
+				value="^io\.opentelemetry\.semconv.*, ^org\.gradle\.(?!api).*\.tasks.*"/>
 		</module>
 		<module
 			name="com.puppycrawl.tools.checkstyle.checks.imports.ImportControlCheck">
