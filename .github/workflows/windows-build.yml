@@ -26,6 +26,13 @@ jobs:
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
         with:
           cache-read-only: false
+      - name: Configure Gradle properties
+        shell: bash
+        run: |
+          mkdir -p $HOME/.gradle
+          echo 'systemProp.user.name=spring-builds+github' >> $HOME/.gradle/gradle.properties
+          echo 'systemProp.org.gradle.internal.launcher.welcomeMessageEnabled=false' >> $HOME/.gradle/gradle.properties
+          echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
       - name: Stop Docker service
         run: Stop-Service -name Docker
       - name: Build
@@ -35,4 +42,4 @@ jobs:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
           GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
           GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-        run: ./gradlew '-Dorg.gradle.internal.launcher.welcomeMessageEnabled=false' --no-daemon build
+        run: ./gradlew build
