@@ -44,6 +44,9 @@ jobs:
           GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
           GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
         run: ./gradlew build
+      - name: Print JVM thread dumps when cancelled
+        uses: ./.github/actions/print-jvm-thread-dumps
+        if: cancelled()
       - name: Send notification
         uses: ./.github/actions/send-notification
         if: always()
