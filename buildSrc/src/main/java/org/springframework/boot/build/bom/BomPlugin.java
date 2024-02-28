@@ -66,8 +66,8 @@ public class BomPlugin implements Plugin<Project> {
 		project.getTasks().named("check").configure((check) -> check.dependsOn(checkBom));
 		project.getTasks().create("bomrUpgrade", UpgradeBom.class, bom);
 		project.getTasks().create("moveToSnapshots", MoveToSnapshots.class, bom);
+		project.getTasks().register("checkLinks", CheckLinks.class, bom);
 		new PublishingCustomizer(project, bom).customize();
-
 	}
 
 	private void createApiEnforcedConfiguration(Project project) {

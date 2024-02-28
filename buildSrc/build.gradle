@@ -47,6 +47,7 @@ dependencies {
 	implementation("commons-codec:commons-codec:${versions.commonsCodec}")
 	implementation("de.undercouch.download:de.undercouch.download.gradle.plugin:5.5.0")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
+	implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
 	implementation("org.apache.maven:maven-embedder:${versions.maven}")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.3.2")
 	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}")

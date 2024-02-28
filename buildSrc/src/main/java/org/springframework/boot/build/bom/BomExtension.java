@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -66,11 +67,14 @@ import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.mavenplugin.MavenExec;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.PropertyPlaceholderHelper;
+import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
 
 /**
  * DSL extensions for {@link BomPlugin}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 public class BomExtension {
 
@@ -119,7 +123,8 @@ public class BomExtension {
 						this.project, this.libraries, libraryHandler.groups)
 				: null;
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
-				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots, versionAlignment));
+				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots, versionAlignment,
+				libraryHandler.links));
 	}
 
 	public void effectiveBomArtifact() {
@@ -227,6 +232,8 @@ public class BomExtension {
 
 		private AlignWithVersionHandler alignWithVersion;
 
+		private final Map<String, Function<LibraryVersion, String>> links = new HashMap<>();
+
 		@Inject
 		public LibraryHandler(String version) {
 			this.version = version;
@@ -261,6 +268,12 @@ public class BomExtension {
 		public void alignWithVersion(Action<AlignWithVersionHandler> action) {
 			this.alignWithVersion = new AlignWithVersionHandler();
 			action.execute(this.alignWithVersion);
+		}
+
+		public void links(Action<LinksHandler> action) {
+			LinksHandler handler = new LinksHandler();
+			action.execute(handler);
+			this.links.putAll(handler.links);
 		}
 
 		public static class ProhibitedHandler {
@@ -394,6 +407,67 @@ public class BomExtension {
 				this.managedBy = managedBy;
 			}
 
+		}
+
+	}
+
+	public static class LinksHandler {
+
+		private final Map<String, Function<LibraryVersion, String>> links = new HashMap<>();
+
+		public void site(String linkTemplate) {
+			site(asFactory(linkTemplate));
+		}
+
+		public void site(Function<LibraryVersion, String> linkFactory) {
+			add("site", linkFactory);
+		}
+
+		public void github(String linkTemplate) {
+			github(asFactory(linkTemplate));
+		}
+
+		public void github(Function<LibraryVersion, String> linkFactory) {
+			add("github", linkFactory);
+		}
+
+		public void javadoc(String linkTemplate) {
+			javadoc(asFactory(linkTemplate));
+		}
+
+		public void javadoc(Function<LibraryVersion, String> linkFactory) {
+			add("javadoc", linkFactory);
+		}
+
+		public void reference(String linkTemplate) {
+			reference(asFactory(linkTemplate));
+		}
+
+		public void reference(Function<LibraryVersion, String> linkFactory) {
+			add("reference", linkFactory);
+		}
+
+		public void releaseNotes(String linkTemplate) {
+			releaseNotes(asFactory(linkTemplate));
+		}
+
+		public void releaseNotes(Function<LibraryVersion, String> linkFactory) {
+			add("releaseNotes", linkFactory);
+		}
+
+		public void add(String name, String linkTemplate) {
+			add(name, asFactory(linkTemplate));
+		}
+
+		public void add(String name, Function<LibraryVersion, String> linkFactory) {
+			this.links.put(name, linkFactory);
+		}
+
+		private Function<LibraryVersion, String> asFactory(String linkTemplate) {
+			return (version) -> {
+				PlaceholderResolver resolver = (name) -> "version".equals(name) ? version.toString() : null;
+				return new PropertyPlaceholderHelper("{", "}").replacePlaceholders(linkTemplate, resolver);
+			};
 		}
 
 	}
