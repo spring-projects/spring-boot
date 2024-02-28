@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.build;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -51,11 +52,11 @@ public final class BuildpackReference {
 		try {
 			URL url = new URL(this.value);
 			if (url.getProtocol().equals("file")) {
-				return Paths.get(url.getPath());
+				return Paths.get(url.toURI());
 			}
 			return null;
 		}
-		catch (MalformedURLException ex) {
+		catch (MalformedURLException | URISyntaxException ex) {
 			// not a URL, fall through to attempting to find a plain file path
 		}
 		try {
