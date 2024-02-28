@@ -15,12 +15,12 @@ runs:
     - shell: bash
       if: ${{ success() }}
       run: |
-        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|spring-boot-${{ github.ref_name }} ${{ github.job }} was successful> ${{ env.BUILD_SCAN }}"}'
+        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|spring-boot-${{ github.ref_name }} ${{ github.job }} was successful> ${{ env.BUILD_SCAN }}"}' || true
     - shell: bash
       if: ${{ failure() }}
       run: |
-        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<users/all> *<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|spring-boot-${{ github.ref_name }} ${{ github.job }} failed>* ${{ env.BUILD_SCAN }}"}'
+        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<users/all> *<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|spring-boot-${{ github.ref_name }} ${{ github.job }} failed>* ${{ env.BUILD_SCAN }}"}' || true
     - shell: bash
       if: ${{ cancelled() }}
       run: |
-        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|spring-boot-${{ github.ref_name }} ${{ github.job }} was cancalled>"}'
+        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|spring-boot-${{ github.ref_name }} ${{ github.job }} was cancalled>"}' || true
