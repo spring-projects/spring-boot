@@ -18,9 +18,11 @@ package org.springframework.boot.docker.compose.service.connection.mongo;
 
 import com.mongodb.ConnectionString;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Scott Frederick
  */
+@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64", disabledReason = "The image has no ARM support")
 class MongoBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	MongoBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests() {
