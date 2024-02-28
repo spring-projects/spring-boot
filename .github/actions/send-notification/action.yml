@@ -1,0 +1,26 @@
+name: Send notification
+description: Sends a Google Chat message as a notification of the job's outcome
+inputs:
+  webhook-url:
+    description: 'Google Chat Webhook URL'
+    required: true
+  build-scan-url:
+    description: 'URL of the build scan to include in the notification'
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        echo "BUILD_SCAN=${{ inputs.build-scan-url == '' && ' [build scan unavailable]' || format(' [<{0}|Build Scan>]', inputs.build-scan-url) }}" >> "$GITHUB_ENV"
+    - shell: bash
+      if: ${{ success() }}
+      run: |
+        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|spring-boot-${{ github.ref_name }} ${{ github.job }} was successful> ${{ env.BUILD_SCAN }}"}'
+    - shell: bash
+      if: ${{ failure() }}
+      run: |
+        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<users/all> *<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|spring-boot-${{ github.ref_name }} ${{ github.job }} failed>* ${{ env.BUILD_SCAN }}"}'
+    - shell: bash
+      if: ${{ cancelled() }}
+      run: |
+        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|spring-boot-${{ github.ref_name }} ${{ github.job }} was cancalled>"}'
