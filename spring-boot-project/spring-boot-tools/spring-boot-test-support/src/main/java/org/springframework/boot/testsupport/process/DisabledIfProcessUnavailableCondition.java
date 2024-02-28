@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.testsupport.process;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
@@ -67,7 +68,7 @@ class DisabledIfProcessUnavailableCondition implements ExecutionCondition {
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
 		try {
 			Process process = processBuilder.start();
-			process.waitFor();
+			Assert.isTrue(process.waitFor(30, TimeUnit.SECONDS), "Process did not exit within 30 seconds");
 			Assert.state(process.exitValue() == 0, () -> "Process exited with %d".formatted(process.exitValue()));
 			process.destroy();
 		}
