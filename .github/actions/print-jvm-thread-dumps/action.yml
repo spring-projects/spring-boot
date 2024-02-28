@@ -3,10 +3,15 @@ description: Prints a thread dump for all running JVMs
 runs:
   using: composite
   steps:
-    - shell: bash
+    - if: ${{ runner.os == 'Linux' }}
+      shell: bash
       run: |
-        for java_pid in $(jps -q -J-XX:+PerfDisableSharedMem); do
-          echo "------------------------ pid $java_pid ------------------------"
-          jcmd $java_pid Thread.print -l
+        for jvm_pid in $(jps -q -J-XX:+PerfDisableSharedMem); do
+          jcmd $java_pid Thread.print
         done
-        exit 0
+    - if: ${{ runner.os == 'Windows' }}
+      shell: powershell
+      run: |
+        foreach ($jvm_pid in $(jps -q -J-XX:+PerfDisableSharedMem)) {
+          jcmd $jvm_pid Thread.print
+        }
