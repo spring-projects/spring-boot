@@ -38,13 +38,13 @@ class ConnectionInputStreamTests {
 
 	@Test
 	void readHeader() throws Exception {
-		String header = "";
+		StringBuilder header = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
-			header += "x-something-" + i + ": xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+			header.append("x-something-").append(i).append(": xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 		}
 		String data = header + "\r\n\r\ncontent\r\n";
 		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(data.getBytes()));
-		assertThat(inputStream.readHeader()).isEqualTo(header);
+		assertThat(inputStream.readHeader()).isEqualTo(header.toString());
 	}
 
 	@Test
