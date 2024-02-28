@@ -10,4 +10,7 @@
 	<suppress files="jquery-[0-9]\.[0-9]\.[0-9].js" checks="NoHttp" />
 	<suppress files="[\\/]spring-boot-project.setup" checks="NoHttp" />
 	<suppress files="DockerHostTests\.java" checks="NoHttp" />
+	<suppress files="[\\/]\.gradle[\\/]nodejs[\\/]" checks="NoHttp" />
+	<suppress files="[\\/]\.gradle[\\/]npm[\\/]" checks="NoHttp" />
+	<suppress files="[\\/]\.gradle[\\/]_npx[\\/]" checks="NoHttp" />
 </suppressions>
