@@ -7,7 +7,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   build:
-    name: 'Java 17 | Windows'
+    name: 'Windows | Java 17'
     runs-on: 'windows-latest'
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     steps:
@@ -53,3 +53,4 @@ jobs:
         with:
           webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
           build-scan-url: ${{ steps.build.outputs.build-scan-url }}
+          run-name: ${{ format('{0} | Windows | Java 17', github.ref_name) }}
