@@ -62,7 +62,6 @@ jobs:
           echo systemProp.org.gradle.java.installations.auto-detect=false >> $HOME/.gradle/gradle.properties
           echo systemProp.org.gradle.java.installations.auto-download=false >> $HOME/.gradle/gradle.properties
           echo systemProp.org.gradle.java.installations.paths=${{ format('$JAVA_HOME_{0}_X64', matrix.java.version) }} >> $HOME/.gradle/gradle.properties
-          cat $HOME/.gradle/gradle.properties
       - name: Build
         id: build
         env:
