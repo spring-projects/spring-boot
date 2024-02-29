@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.data.web.config.SortHandlerMethodArgumentResolverCustomizer;
+import org.springframework.data.web.config.SpringDataWebSettings;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -42,6 +43,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  * @author Andy Wilkinson
  * @author Vedran Pavic
+ * @author Yanming Zhou
  * @since 1.2.0
  */
 @AutoConfiguration(after = RepositoryRestMvcAutoConfiguration.class)
@@ -77,6 +79,12 @@ public class SpringDataWebAutoConfiguration {
 	@ConditionalOnMissingBean
 	public SortHandlerMethodArgumentResolverCustomizer sortCustomizer() {
 		return (resolver) -> resolver.setSortParameter(this.properties.getSort().getSortParameter());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public SpringDataWebSettings springDataWebSettings() {
+		return new SpringDataWebSettings(this.properties.getPageable().getSerializationMode());
 	}
 
 }
