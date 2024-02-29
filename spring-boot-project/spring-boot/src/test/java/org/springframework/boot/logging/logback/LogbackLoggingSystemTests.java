@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -761,7 +761,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void applicationNameLoggingWhenHasApplicationName(CapturedOutput output) {
+	void applicationNameLoggingToConsoleWhenHasApplicationName(CapturedOutput output) {
 		this.environment.setProperty("spring.application.name", "myapp");
 		initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
@@ -769,12 +769,51 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void applicationNameLoggingWhenDisabled(CapturedOutput output) {
+	void applicationNameLoggingToConsoleWhenHasApplicationNameWithParenthesis(CapturedOutput output) {
+		this.environment.setProperty("spring.application.name", "myapp (dev)");
+		initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).contains("[myapp (dev)] ");
+	}
+
+	@Test
+	void applicationNameLoggingToConsoleWhenDisabled(CapturedOutput output) {
 		this.environment.setProperty("spring.application.name", "myapp");
 		this.environment.setProperty("logging.include-application-name", "false");
 		initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
-		assertThat(getLineWithText(output, "Hello world")).doesNotContain("myapp");
+		assertThat(getLineWithText(output, "Hello world")).doesNotContain("myapp").doesNotContain("null");
+	}
+
+	@Test
+	void applicationNameLoggingToFileWhenHasApplicationName() {
+		this.environment.setProperty("spring.application.name", "myapp");
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(this.initializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("[myapp] ");
+	}
+
+	@Test
+	void applicationNameLoggingToFileWhenHasApplicationNameWithParenthesis() {
+		this.environment.setProperty("spring.application.name", "myapp (dev)");
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(this.initializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("[myapp (dev)] ");
+	}
+
+	@Test
+	void applicationNameLoggingToFileWhenDisabled(CapturedOutput output) {
+		this.environment.setProperty("spring.application.name", "myapp");
+		this.environment.setProperty("logging.include-application-name", "false");
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(this.initializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).doesNotContain("myapp").doesNotContain("null");
 	}
 
 	@Test
