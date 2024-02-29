@@ -18,10 +18,14 @@ package org.springframework.boot.autoconfigure.http;
 
 import java.nio.charset.StandardCharsets;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.util.JsonRecyclerPools.LockFreePool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import jakarta.json.bind.Jsonb;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -290,6 +294,21 @@ class HttpMessageConvertersAutoConfigurationTests {
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "isForce")).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setForce")).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "shouldForce")).rejects(hints);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_21)
+	void shouldUseVirtualThreads() {
+		this.contextRunner.withUserConfiguration(JacksonObjectMapperBuilderConfig.class)
+			.withPropertyValues("spring.threads.virtual.enabled:true")
+			.run((context) -> {
+				MappingJackson2XmlHttpMessageConverter converter = context
+					.getBean("mappingJackson2XmlHttpMessageConverter", MappingJackson2XmlHttpMessageConverter.class);
+				assertThat(converter).extracting(MappingJackson2XmlHttpMessageConverter::getObjectMapper)
+					.extracting(ObjectMapper::getFactory)
+					.extracting(JsonFactory::_getRecyclerPool)
+					.isInstanceOf(LockFreePool.class);
+			});
 	}
 
 	private ApplicationContextRunner allOptionsRunner() {

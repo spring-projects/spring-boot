@@ -29,9 +29,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.core.util.JsonRecyclerPools.LockFreePool;
+import com.fasterxml.jackson.core.util.JsonRecyclerPools.ThreadLocalPool;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -53,6 +56,8 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.ReflectionHintsPredicates;
@@ -489,6 +494,27 @@ class JacksonAutoConfigurationTests {
 	void shouldRegisterPropertyNamingStrategyHints() {
 		shouldRegisterPropertyNamingStrategyHints(PropertyNamingStrategies.class, "LOWER_CAMEL_CASE",
 				"UPPER_CAMEL_CASE", "SNAKE_CASE", "UPPER_SNAKE_CASE", "LOWER_CASE", "KEBAB_CASE", "LOWER_DOT_CASE");
+	}
+
+	@Test
+	void shouldUseThreadLocalPool() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled:false").run((context) -> {
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			assertThat(mapper).extracting(ObjectMapper::getFactory)
+				.extracting(JsonFactory::_getRecyclerPool)
+				.isInstanceOf(ThreadLocalPool.class);
+		});
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_21)
+	void shouldUseVirtualThread() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled:true").run((context) -> {
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			assertThat(mapper).extracting(ObjectMapper::getFactory)
+				.extracting(JsonFactory::_getRecyclerPool)
+				.isInstanceOf(LockFreePool.class);
+		});
 	}
 
 	private void shouldRegisterPropertyNamingStrategyHints(Class<?> type, String... fieldNames) {

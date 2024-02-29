@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.http;
 
+import com.fasterxml.jackson.core.util.JsonRecyclerPools;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
@@ -23,8 +24,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
@@ -63,8 +66,13 @@ class JacksonHttpMessageConvertersConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter(
-				Jackson2ObjectMapperBuilder builder) {
-			return new MappingJackson2XmlHttpMessageConverter(builder.createXmlMapper(true).build());
+				Jackson2ObjectMapperBuilder builder, Environment environment) {
+			ObjectMapper om = builder.createXmlMapper(true).build();
+			if (Threading.VIRTUAL.isActive(environment)) {
+				om.getFactory().setRecyclerPool(JsonRecyclerPools.sharedLockFreePool());
+			}
+
+			return new MappingJackson2XmlHttpMessageConverter(om);
 		}
 
 	}

@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.util.JsonRecyclerPools;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -49,6 +50,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jackson.JacksonProperties.ConstructorDetectorStrategy;
+import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jackson.JsonComponentModule;
 import org.springframework.boot.jackson.JsonMixinModule;
@@ -59,6 +61,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -127,8 +130,13 @@ public class JacksonAutoConfiguration {
 		@Bean
 		@Primary
 		@ConditionalOnMissingBean
-		ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
-			return builder.createXmlMapper(false).build();
+		ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder, Environment environment) {
+			ObjectMapper om = builder.createXmlMapper(false).build();
+			if (Threading.VIRTUAL.isActive(environment)) {
+				om.getFactory().setRecyclerPool(JsonRecyclerPools.sharedLockFreePool());
+			}
+
+			return om;
 		}
 
 	}
