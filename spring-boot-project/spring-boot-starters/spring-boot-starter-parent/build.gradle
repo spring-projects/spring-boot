@@ -165,6 +165,7 @@ publishing.publications.withType(MavenPublication) {
 								}
 							}
 							configuration {
+								delegate.projectType('application')
 								delegate.outputDirectory('${project.build.outputDirectory}/META-INF/sbom')
 								delegate.outputFormat('json')
                         		delegate.outputName('application.cdx')
