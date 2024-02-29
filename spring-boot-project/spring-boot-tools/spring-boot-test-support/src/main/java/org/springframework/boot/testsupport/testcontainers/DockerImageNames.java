@@ -240,9 +240,7 @@ public final class DockerImageNames {
 	 * @return a docker image name for running redpanda
 	 */
 	public static DockerImageName redpanda() {
-		return DockerImageName.parse("redpandadata/redpanda")
-			.withTag(REDPANDA_VERSION)
-			.asCompatibleSubstituteFor("docker.redpanda.com/redpandadata/redpanda");
+		return DockerImageName.parse("redpandadata/redpanda").withTag(REDPANDA_VERSION);
 	}
 
 	/**
