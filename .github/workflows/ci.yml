@@ -1,4 +1,4 @@
-name: Windows Build
+name: CI
 on:
   push:
     branches:
@@ -6,20 +6,41 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
-  build:
-    name: 'Windows | Java 17'
-    runs-on: 'windows-latest'
+  ci:
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
+    strategy:
+      matrix:
+        os:
+          - id: ubuntu-latest
+            name: Linux
+          - id: windows-latest
+            name: Windows
+        java:
+          - version: 17
+            toolchain: false
+          - version: 21
+            toolchain: true
+        exclude:
+          - os:
+              name: Linux
+            java:
+              version: 17
+    name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'
+    runs-on: ${{ matrix.os.id }}
     steps:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'liberica'
-          java-version: 17
-      - name: Configure git
+          java-version: |
+            ${{ matrix.java.version }}
+            ${{ matrix.java.toolchain && '17' || '' }}
+      - name: Prepare Windows runner
+        if: ${{ runner.os == 'Windows' }}
         run: |
           git config --global core.autocrlf true
           git config --global core.longPaths true
+          Stop-Service -name Docker
       - name: Check out code
         uses: actions/checkout@v4
       - name: Set up Gradle
@@ -33,8 +54,15 @@ jobs:
           echo 'systemProp.user.name=spring-builds+github' >> $HOME/.gradle/gradle.properties
           echo 'systemProp.org.gradle.internal.launcher.welcomeMessageEnabled=false' >> $HOME/.gradle/gradle.properties
           echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
-      - name: Stop Docker service
-        run: Stop-Service -name Docker
+      - name: Configure toolchain properties
+        if: ${{ matrix.java.toolchain }}
+        shell: bash
+        run: |
+          echo toolchainVersion=${{ matrix.java.version }} >> $HOME/.gradle/gradle.properties
+          echo systemProp.org.gradle.java.installations.auto-detect=false >> $HOME/.gradle/gradle.properties
+          echo systemProp.org.gradle.java.installations.auto-download=false >> $HOME/.gradle/gradle.properties
+          echo systemProp.org.gradle.java.installations.paths=${{ format('$JAVA_HOME_{0}_X64', matrix.java.version) }} >> $HOME/.gradle/gradle.properties
+          cat $HOME/.gradle/gradle.properties
       - name: Build
         id: build
         env:
@@ -44,9 +72,6 @@ jobs:
           GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
           GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
         run: ./gradlew build
-      - name: Print JVM thread dumps when cancelled
-        uses: ./.github/actions/print-jvm-thread-dumps
-        if: cancelled()
       - name: Send notification
         uses: ./.github/actions/send-notification
         if: always()
@@ -54,4 +79,4 @@ jobs:
           webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
           status: ${{ job.status }}
           build-scan-url: ${{ steps.build.outputs.build-scan-url }}
-          run-name: ${{ format('{0} | Windows | Java 17', github.ref_name) }}
+          run-name: ${{ format('{0} | ${{ matrix.os.name }} | Java ${{ matrix.java.version}}', github.ref_name) }}
