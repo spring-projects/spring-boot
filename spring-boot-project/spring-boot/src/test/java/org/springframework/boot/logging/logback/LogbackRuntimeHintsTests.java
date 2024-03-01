@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.pattern.SyslogStartConverter;
+import ch.qos.logback.core.pattern.Converter;
 import ch.qos.logback.core.rolling.helper.DateTokenConverter;
 import ch.qos.logback.core.rolling.helper.IntegerTokenConverter;
 import org.junit.jupiter.api.Test;
@@ -30,6 +33,8 @@ import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeHint;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,11 +59,29 @@ class LogbackRuntimeHintsTests {
 	}
 
 	@Test
-	void registersHintsForSpringBootConverters() throws LinkageError {
+	void registersHintsForSpringBootConverters() throws IOException {
 		ReflectionHints reflection = registerHints();
-		assertThat(List.of(ColorConverter.class, ExtendedWhitespaceThrowableProxyConverter.class,
-				WhitespaceThrowableProxyConverter.class))
-			.allSatisfy(registeredForPublicConstructorInvocation(reflection));
+		assertThat(converterClasses()).allSatisfy(registeredForPublicConstructorInvocation(reflection));
+	}
+
+	@SuppressWarnings("unchecked")
+	private Stream<Class<Converter<?>>> converterClasses() throws IOException {
+		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+		return Stream.of(resolver.getResources("classpath:org/springframework/boot/logging/logback/*.class"))
+			.filter(Resource::isFile)
+			.map(this::loadClass)
+			.filter(Converter.class::isAssignableFrom)
+			.map((type) -> (Class<Converter<?>>) type);
+	}
+
+	private Class<?> loadClass(Resource resource) {
+		try {
+			return getClass().getClassLoader()
+				.loadClass("org.springframework.boot.logging.logback." + resource.getFilename().replace(".class", ""));
+		}
+		catch (ClassNotFoundException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@Test
