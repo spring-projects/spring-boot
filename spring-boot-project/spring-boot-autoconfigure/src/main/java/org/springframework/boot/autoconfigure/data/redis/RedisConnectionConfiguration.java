@@ -139,7 +139,7 @@ abstract class RedisConnectionConfiguration {
 	}
 
 	private List<String> getNodes(Cluster cluster) {
-		return cluster.getNodes().stream().map((node) -> "%s:%d".formatted(node.host(), node.port())).toList();
+		return cluster.getNodes().stream().map(Node::asString).toList();
 	}
 
 	protected final RedisProperties getProperties() {

@@ -185,6 +185,10 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 	 */
 	record Node(String host, int port) {
 
+		String asString() {
+			return (this.host != null && this.host.contains(":")) ? "[" + this.host + "]:" + this.port
+					: this.host + ":" + this.port;
+		}
 	}
 
 }
