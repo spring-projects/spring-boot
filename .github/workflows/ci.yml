@@ -20,8 +20,9 @@ jobs:
             toolchain: false
           - version: 21
             toolchain: true
-          - version: 22
+          - version: 22-ea
             toolchain: true
+            distribution: temurin
         exclude:
           - os:
               name: Linux
@@ -33,7 +34,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'liberica'
+          distribution: ${{ matrix.java.distribution || 'liberica' }}
           java-version: |
             ${{ matrix.java.version }}
             ${{ matrix.java.toolchain && '17' || '' }}
