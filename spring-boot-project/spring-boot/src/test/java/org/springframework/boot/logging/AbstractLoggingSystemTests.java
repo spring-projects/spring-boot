@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.MDC;
 
+import org.springframework.boot.ansi.AnsiOutput;
+import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.contentOf;
@@ -42,16 +44,37 @@ public abstract class AbstractLoggingSystemTests {
 
 	private String originalTempDirectory;
 
+	private AnsiOutput.Enabled ansiOutputEnabled;
+
 	@BeforeEach
-	void configureTempDir(@TempDir Path temp) {
+	void beforeEach(@TempDir Path temp) {
+		disableAnsiOutput();
+		configureTempDir(temp);
+	}
+
+	private void disableAnsiOutput() {
+		this.ansiOutputEnabled = AnsiOutput.getEnabled();
+		AnsiOutput.setEnabled(Enabled.NEVER);
+	}
+
+	private void configureTempDir(@TempDir Path temp) {
 		this.originalTempDirectory = System.getProperty(JAVA_IO_TMPDIR);
 		System.setProperty(JAVA_IO_TMPDIR, temp.toAbsolutePath().toString());
 		MDC.clear();
 	}
 
 	@AfterEach
-	void reinstateTempDir() {
+	void afterEach() {
+		reinstateTempDir();
+		restoreAnsiOutputEnabled();
+	}
+
+	private void reinstateTempDir() {
 		System.setProperty(JAVA_IO_TMPDIR, this.originalTempDirectory);
+	}
+
+	private void restoreAnsiOutputEnabled() {
+		AnsiOutput.setEnabled(this.ansiOutputEnabled);
 	}
 
 	@AfterEach
