@@ -77,7 +77,8 @@ public class UndertowWebServerFactoryCustomizer
 	public void customize(ConfigurableUndertowWebServerFactory factory) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		ServerOptions options = new ServerOptions(factory);
-		map.from(this.serverProperties::getMaxHttpRequestHeaderSize)
+		ServerProperties properties = this.serverProperties;
+		map.from(properties::getMaxHttpRequestHeaderSize)
 			.asInt(DataSize::toBytes)
 			.when(this::isPositive)
 			.to(options.option(UndertowOptions.MAX_HEADER_SIZE));
