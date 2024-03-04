@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,6 +82,7 @@ class LoaderIntegrationTests {
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.SEVENTEEN));
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY_ONE));
 		javaRuntimes.add(JavaRuntime.oracleJdk17());
+		javaRuntimes.add(JavaRuntime.openJdkEarlyAccess(JavaVersion.TWENTY_TWO));
 		return javaRuntimes.stream().filter(JavaRuntime::isCompatible);
 	}
 
@@ -110,6 +111,13 @@ class LoaderIntegrationTests {
 		@Override
 		public String toString() {
 			return this.name;
+		}
+
+		static JavaRuntime openJdkEarlyAccess(JavaVersion version) {
+			String imageVersion = version.toString();
+			DockerImageName image = DockerImageName.parse("openjdk:%s-ea-jdk".formatted(imageVersion));
+			return new JavaRuntime("OpenJDK Early Access " + imageVersion, version,
+					() -> new GenericContainer<>(image));
 		}
 
 		static JavaRuntime openJdk(JavaVersion version) {

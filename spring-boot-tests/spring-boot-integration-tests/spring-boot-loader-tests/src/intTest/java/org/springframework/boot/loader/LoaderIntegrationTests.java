@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,9 +108,9 @@ class LoaderIntegrationTests {
 	static Stream<JavaRuntime> javaRuntimes() {
 		List<JavaRuntime> javaRuntimes = new ArrayList<>();
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.SEVENTEEN));
-		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY));
+		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY_ONE));
 		javaRuntimes.add(JavaRuntime.oracleJdk17());
-		javaRuntimes.add(JavaRuntime.openJdkEarlyAccess(JavaVersion.TWENTY_ONE));
+		javaRuntimes.add(JavaRuntime.openJdkEarlyAccess(JavaVersion.TWENTY_TWO));
 		return javaRuntimes.stream().filter(JavaRuntime::isCompatible);
 	}
 
