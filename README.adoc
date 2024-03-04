@@ -10,6 +10,8 @@ We also provide a command-line tool that runs Spring scripts.
 
 Our primary goals are:
 
+dsadasdasdasda
+
 * Provide a radically faster and widely accessible getting started experience for all Spring development.
 * Be opinionated, but get out of the way quickly as requirements start to diverge from the defaults.
 * Provide a range of non-functional features common to large classes of projects (for example, embedded servers, security, metrics, health checks, externalized configuration).
