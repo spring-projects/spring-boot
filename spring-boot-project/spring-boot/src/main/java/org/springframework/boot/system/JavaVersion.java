@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,13 @@ public enum JavaVersion {
 	 * Java 21.
 	 * @since 2.7.16
 	 */
-	TWENTY_ONE("21", SortedSet.class, "getFirst");
+	TWENTY_ONE("21", SortedSet.class, "getFirst"),
+
+	/**
+	 * Java 22.
+	 * @since 3.2.4
+	 */
+	TWENTY_TWO("22", Console.class, "isTerminal");
 
 	private final String name;
 
