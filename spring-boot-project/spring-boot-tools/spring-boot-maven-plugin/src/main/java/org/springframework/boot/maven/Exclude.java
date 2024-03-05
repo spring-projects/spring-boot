@@ -16,6 +16,8 @@
 
 package org.springframework.boot.maven;
 
+import org.springframework.util.Assert;
+
 /**
  * A model for a dependency to exclude.
  *
@@ -23,5 +25,18 @@ package org.springframework.boot.maven;
  * @since 1.1.0
  */
 public class Exclude extends FilterableDependency {
+
+	// Maven looks for this public method if giving excludes as property
+	// e.g. -Dspring-boot.excludes=myGroupId:myArtifactId:my-optional-classifier,foo:baz
+	public void set(String propertyInput) {
+		String[] parts = propertyInput.split(":");
+		Assert.isTrue(parts.length == 2 || parts.length == 3,
+				"Exclude must be in the form groupId:artifactId:optional-classifier");
+		setGroupId(parts[0]);
+		setArtifactId(parts[1]);
+		if (parts.length == 3) {
+			setClassifier(parts[2]);
+		}
+	}
 
 }

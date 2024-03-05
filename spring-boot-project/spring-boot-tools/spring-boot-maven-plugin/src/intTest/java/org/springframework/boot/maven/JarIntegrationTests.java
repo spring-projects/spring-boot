@@ -175,8 +175,23 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
-				.doesNotHaveEntryWithName("BOOT-INF/lib/servlet-api-2.5.jar");
+				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-");
 		});
+	}
+
+	@TestTemplate
+	void whenAnEntryIsExcludedWithPropertyItDoesNotAppearInTheRepackagedJar(MavenBuild mavenBuild) {
+		mavenBuild.project("jar")
+			.systemProperty("spring-boot.excludes", "jakarta.servlet:jakarta.servlet-api")
+			.goals("install")
+			.execute((project) -> {
+				File repackaged = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar");
+				assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
+					.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-");
+			});
 	}
 
 	@TestTemplate
