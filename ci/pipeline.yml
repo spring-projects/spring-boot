@@ -323,16 +323,6 @@ jobs:
           <<: *slack-fail-params
   - put: repo-status-build
     params: { state: "success", commit: "git-repo" }
-  - put: artifactory-repo
-    params:
-      <<: *artifactory-repo-put-params
-    get_params:
-      threads: 8
-    on_failure:
-      do:
-      - put: slack-alert
-        params:
-          <<: *slack-fail-params
   - put: slack-alert
     params:
       <<: *slack-success-params
