@@ -68,12 +68,4 @@ abstract class FilterableDependency {
 		this.classifier = classifier;
 	}
 
-	// Maven looks for this method if giving excludes as property
-	// e.g. -Dspring-boot.excludes=foo:bar,foo:baz
-	public void set(String propertyInput) {
-		String[] parts = propertyInput.split(":");
-		groupId = parts[0];
-		artifactId = parts[1];
-	}
-
 }

@@ -24,4 +24,12 @@ package org.springframework.boot.maven;
  */
 public class Exclude extends FilterableDependency {
 
+	// Maven looks for this public method if giving excludes as property
+	// e.g. -Dspring-boot.excludes=foo:bar,foo:baz
+	public void set(String propertyInput) {
+		String[] parts = propertyInput.split(":");
+		setGroupId(parts[0]);
+		setArtifactId(parts[1]);
+	}
+
 }
