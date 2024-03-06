@@ -76,12 +76,11 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		}
 		if (config == null) {
 			config = getSpringInitializationConfig();
+			loadDefaults(initializationContext, logFile);
 		}
 		if (config != null) {
 			loadConfiguration(initializationContext, config, logFile);
-			return;
 		}
-		loadDefaults(initializationContext, logFile);
 	}
 
 	/**
