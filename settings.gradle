@@ -2,8 +2,8 @@ pluginManagement {
 	repositories {
 		maven { url "https://maven.aliyun.com/nexus/content/groups/public"}
 		maven { url "https://maven.aliyun.com/nexus/content/repositories/jcenter"}
-		mavenCentral()
-		gradlePluginPortal()
+//		mavenCentral()
+//		gradlePluginPortal()
 		maven {
 			url 'https://repo.spring.io/release'
 		}
@@ -23,31 +23,31 @@ pluginManagement {
 	}
 }
 
-plugins {
-	id "com.gradle.enterprise" version "3.9"
-	id "io.spring.ge.conventions" version "0.0.9"
-}
+//plugins {
+//	id "com.gradle.enterprise" version "3.9"
+//	id "io.spring.ge.conventions" version "0.0.9"
+//}
 
 rootProject.name="spring-boot-build"
 
-settings.gradle.projectsLoaded {
-	gradleEnterprise {
-		buildScan {
-			def toolchainVersion = settings.gradle.rootProject.findProperty('toolchainVersion')
-			if (toolchainVersion != null) {
-				value('Toolchain version', toolchainVersion)
-				tag("JDK-$toolchainVersion")
-			}
-			def buildDir = settings.gradle.rootProject.getBuildDir()
-			buildDir.mkdirs()
-			new File(buildDir, "build-scan-uri.txt").text = "build scan not generated"
-			buildScanPublished { scan ->
-				buildDir.mkdirs()
-				new File(buildDir, "build-scan-uri.txt").text = "<${scan.buildScanUri}|build scan>\n"
-			}
-		}
-	}
-}
+//settings.gradle.projectsLoaded {
+//	gradleEnterprise {
+//		buildScan {
+//			def toolchainVersion = settings.gradle.rootProject.findProperty('toolchainVersion')
+//			if (toolchainVersion != null) {
+//				value('Toolchain version', toolchainVersion)
+//				tag("JDK-$toolchainVersion")
+//			}
+//			def buildDir = settings.gradle.rootProject.getBuildDir()
+//			buildDir.mkdirs()
+//			new File(buildDir, "build-scan-uri.txt").text = "build scan not generated"
+//			buildScanPublished { scan ->
+//				buildDir.mkdirs()
+//				new File(buildDir, "build-scan-uri.txt").text = "<${scan.buildScanUri}|build scan>\n"
+//			}
+//		}
+//	}
+//}
 
 include "spring-boot-project:spring-boot-dependencies"
 include "spring-boot-project:spring-boot-parent"

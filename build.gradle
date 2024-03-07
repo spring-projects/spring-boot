@@ -8,25 +8,25 @@ buildscript{
 plugins {
 	id "base"
 	id "org.jetbrains.kotlin.jvm" apply false // https://youtrack.jetbrains.com/issue/KT-30276
-	id "io.spring.nohttp" version "0.0.10"
+//	id "io.spring.nohttp" version "0.0.10"
 }
 
 description = "Spring Boot Build"
 
 defaultTasks 'build'
 
-nohttp {
-	allowlistFile = project.file("src/nohttp/allowlist.lines")
-	source.exclude "**/bin/**"
-	source.exclude "**/build/**"
-	source.exclude "**/out/**"
-	source.exclude "**/target/**"
-	source.exclude "spring-boot-project/spring-boot-tools/spring-boot-buildpack-platform/src/test/resources/org/springframework/boot/buildpack/platform/docker/export.tar"
-}
+//nohttp {
+//	allowlistFile = project.file("src/nohttp/allowlist.lines")
+//	source.exclude "**/bin/**"
+//	source.exclude "**/build/**"
+//	source.exclude "**/out/**"
+//	source.exclude "**/target/**"
+//	source.exclude "spring-boot-project/spring-boot-tools/spring-boot-buildpack-platform/src/test/resources/org/springframework/boot/buildpack/platform/docker/export.tar"
+//}
 
-check {
-	dependsOn checkstyleNohttp
-}
+//check {
+//	dependsOn checkstyleNohttp
+//}
 
 allprojects {
 	group "org.springframework.boot"
