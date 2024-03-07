@@ -141,6 +141,7 @@ abstract class AbstractTests {
 			return stream.map((file) -> file.toAbsolutePath().toString())
 				.map((file) -> (file.length() >= substring) ? file.substring(substring) : "")
 				.filter(StringUtils::hasLength)
+				.map((file) -> file.replace(File.separatorChar, '/'))
 				.toList();
 		}
 	}
