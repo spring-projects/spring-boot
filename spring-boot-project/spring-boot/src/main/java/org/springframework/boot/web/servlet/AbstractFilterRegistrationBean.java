@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import jakarta.servlet.DispatcherType;
@@ -30,9 +31,7 @@ import jakarta.servlet.FilterRegistration.Dynamic;
 import jakarta.servlet.ServletContext;
 
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Abstract base {@link ServletContextInitializer} to register {@link Filter}s in a
@@ -167,17 +166,24 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 	 * @since 3.2.0
 	 */
 	public EnumSet<DispatcherType> determineDispatcherTypes() {
-		if (this.dispatcherTypes == null) {
-			T filter = getFilter();
-			if (ClassUtils.isPresent("org.springframework.web.filter.OncePerRequestFilter",
-					filter.getClass().getClassLoader()) && filter instanceof OncePerRequestFilter) {
-				return EnumSet.allOf(DispatcherType.class);
-			}
-			else {
-				return EnumSet.of(DispatcherType.REQUEST);
-			}
+		return Optional.ofNullable(this.dispatcherTypes)
+			.map(EnumSet::copyOf)
+			.orElseGet(() -> isOncePerRequestFilter() ? EnumSet.allOf(DispatcherType.class)
+					: EnumSet.of(DispatcherType.REQUEST));
+	}
+
+	private boolean isOncePerRequestFilter() {
+		return isFilterInstanceOf("org.springframework.web.filter.OncePerRequestFilter")
+				|| isFilterInstanceOf("org.springframework.session.web.http.OncePerRequestFilter");
+	}
+
+	private boolean isFilterInstanceOf(String className) {
+		try {
+			return Class.forName(className).isAssignableFrom(getFilter().getClass());
 		}
-		return EnumSet.copyOf(this.dispatcherTypes);
+		catch (ClassNotFoundException ignored) {
+			return false;
+		}
 	}
 
 	/**

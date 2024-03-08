@@ -28,6 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.servlet.mock.MockFilter;
+import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -92,6 +93,17 @@ class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanTests {
 		FilterRegistrationBean<?> bean = new FilterRegistrationBean<>(this.oncePerRequestFilter);
 		bean.onStartup(this.servletContext);
 		then(this.servletContext).should().addFilter(eq("oncePerRequestFilter"), eq(this.oncePerRequestFilter));
+		then(this.registration).should().setAsyncSupported(true);
+		then(this.registration).should().addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
+	}
+
+	@Test
+	void sessionRepositoryFilterHasAllDispatchTypes() throws Exception {
+		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.registration);
+		Filter sessionRepositoryFilter = new SessionRepositoryFilter();
+		FilterRegistrationBean<?> bean = new FilterRegistrationBean<>(sessionRepositoryFilter);
+		bean.onStartup(this.servletContext);
+		then(this.servletContext).should().addFilter(eq("sessionRepositoryFilter"), eq(sessionRepositoryFilter));
 		then(this.registration).should().setAsyncSupported(true);
 		then(this.registration).should().addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
 	}
