@@ -62,6 +62,8 @@ public class Library {
 
 	private final VersionAlignment versionAlignment;
 
+	private final String linkRootName;
+
 	private final Map<String, Function<LibraryVersion, String>> links;
 
 	/**
@@ -75,11 +77,13 @@ public class Library {
 	 * @param prohibitedVersions version of the library that are prohibited
 	 * @param considerSnapshots whether to consider snapshots
 	 * @param versionAlignment version alignment, if any, for the library
+	 * @param linkRootName the root name to use when generating link variable or
+	 * {@code null} to generate one based on the library {@code name}
 	 * @param links a list of HTTP links relevant to the library
 	 */
 	public Library(String name, String calendarName, LibraryVersion version, List<Group> groups,
 			List<ProhibitedVersion> prohibitedVersions, boolean considerSnapshots, VersionAlignment versionAlignment,
-			Map<String, Function<LibraryVersion, String>> links) {
+			String linkRootName, Map<String, Function<LibraryVersion, String>> links) {
 		this.name = name;
 		this.calendarName = (calendarName != null) ? calendarName : name;
 		this.version = version;
@@ -89,6 +93,7 @@ public class Library {
 		this.prohibitedVersions = prohibitedVersions;
 		this.considerSnapshots = considerSnapshots;
 		this.versionAlignment = versionAlignment;
+		this.linkRootName = linkRootName;
 		this.links = Collections.unmodifiableMap(links);
 	}
 
@@ -122,6 +127,10 @@ public class Library {
 
 	public VersionAlignment getVersionAlignment() {
 		return this.versionAlignment;
+	}
+
+	public String getLinkRootName() {
+		return this.linkRootName;
 	}
 
 	public Map<String, String> getLinks() {

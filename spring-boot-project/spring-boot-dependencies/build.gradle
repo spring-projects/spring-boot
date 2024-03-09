@@ -51,7 +51,7 @@ bom {
 		}
 		links {
 			site("https://activemq.apache.org")
-			reference("https://activemq.apache.org/components/classic/documentation")
+			docs("https://activemq.apache.org/components/classic/documentation")
 			releaseNotes { version -> "https://activemq.apache.org/components/classic/download/classic-%02d-%02d-%02d"
 				.formatted(version.componentInts()) }
 		}
@@ -131,7 +131,8 @@ bom {
 			]
 		}
 		links {
-			releaseNotes { version -> "https://github.com/awaitility/awaitility/wiki/ReleaseNotes%s.%s".formatted(version.major(), version.minor()) }
+			releaseNotes { version -> "https://github.com/awaitility/awaitility/wiki/ReleaseNotes%s.%s"
+				.formatted(version.major(), version.minor()) }
 		}
 	}
 	library("Zipkin Reporter", "3.3.0") {
@@ -176,7 +177,7 @@ bom {
 		}
 		links {
 			site("https://bytebuddy.net/")
-			reference("https://bytebuddy.net/#/tutorial")
+			docs("https://bytebuddy.net/#/tutorial")
 			releaseNotes("https://github.com/raphw/byte-buddy/releases/tag/byte-buddy-{version}")
 		}
 	}
@@ -207,7 +208,7 @@ bom {
 		}
 		links {
 			site("https://github.com/ben-manes/caffeine")
-			reference("https://github.com/ben-manes/caffeine/wiki")
+			docs("https://github.com/ben-manes/caffeine/wiki")
 			releaseNotes("https://github.com/ben-manes/caffeine/releases/tag/v{version}")
 		}
 	}
@@ -319,6 +320,7 @@ bom {
 		}
 		links {
 			site("https://github.com/spring-gradle-plugins/dependency-management-plugin")
+			docs("https://docs.spring.io/dependency-management-plugin/docs/{version}/reference/html/")
 			releaseNotes("https://github.com/spring-gradle-plugins/dependency-management-plugin/releases/tag/v{version}")
 		}
 	}
@@ -402,7 +404,8 @@ bom {
 		}
 		links {
 			site("https://freemarker.apache.org")
-			releaseNotes { version -> "https://freemarker.apache.org/docs/versions_%s.html".formatted(version.toString("_")) }
+			releaseNotes { version -> "https://freemarker.apache.org/docs/versions_%s.html"
+				.formatted(version.toString("_")) }
 		}
 	}
 	library("Git Commit ID Maven Plugin", "6.0.0") {
@@ -520,9 +523,14 @@ bom {
 		}
 		links {
 			site("https://hibernate.org/orm")
-			javadoc { version -> "https://docs.jboss.org/hibernate/orm/%s.%s/javadocs".formatted(version.major(), version.minor()) }
-			reference { version -> "https://hibernate.org/orm/documentation/%s.%s".formatted(version.major(), version.minor()) }
-			releaseNotes { version -> "https://github.com/hibernate/hibernate-orm/releases/tag/%s".formatted(version.toString().replace(".Final", "")) }
+			javadoc { version -> "https://docs.jboss.org/hibernate/orm/%s.%s/javadocs"
+				.formatted(version.major(), version.minor()) }
+			docs { version -> "https://hibernate.org/orm/documentation/%s.%s"
+				.formatted(version.major(), version.minor()) }
+			releaseNotes { version -> "https://github.com/hibernate/hibernate-orm/releases/tag/%s"
+				.formatted(version.toString().replace(".Final", "")) }
+			add("userguide") { version -> "https://docs.jboss.org/hibernate/orm/%s.%s/userguide/html_single/Hibernate_User_Guide.html"
+				.formatted(version.major(), version.minor()) }
 		}
 	}
 	library("Hibernate Validator", "8.0.1.Final") {
@@ -876,6 +884,7 @@ bom {
 		}
 		links {
 			site("https://www.jooq.org")
+			docs("https://www.jooq.org/doc/{jooq-version}/manual-single-page")
 			releaseNotes("https://github.com/jOOQ/jOOQ/releases/tag/version-{version}")
 		}
 	}
@@ -936,7 +945,7 @@ bom {
 		links {
 			site("https://junit.org/junit5")
 			javadoc("https://junit.org/junit5/docs/{version}/api")
-			reference("https://junit.org/junit5/docs/{version}/user-guide")
+			docs("https://junit.org/junit5/docs/{version}/user-guide")
 			releaseNotes("https://junit.org/junit5/docs/{version}/release-notes")
 		}
 	}
@@ -999,6 +1008,7 @@ bom {
 		}
 		links {
 			site("https://kotlinlang.org/")
+			docs("https://kotlinlang.org/docs/reference")
 			releaseNotes("https://github.com/JetBrains/kotlin/releases/tag/v{version}")
 		}
 	}
@@ -1032,6 +1042,7 @@ bom {
 		}
 		links {
 			site("https://github.com/lettuce-io/lettuce-core")
+			docs("https://lettuce.io/core/{version}/reference/index.html")
 			releaseNotes("https://github.com/lettuce-io/lettuce-core/releases/tag/{version}")
 		}
 	}
@@ -1091,7 +1102,8 @@ bom {
 		}
 		links {
 			site("https://mariadb.com/kb/en/mariadb-connector-j/")
-			releaseNotes { version -> "https://mariadb.com/kb/en/mariadb-connector-j-%s-release-notes/".formatted(version.toString("-")) }
+			releaseNotes { version -> "https://mariadb.com/kb/en/mariadb-connector-j-%s-release-notes/"
+				.formatted(version.toString("-")) }
 		}
 	}
 	library("Maven AntRun Plugin", "3.1.0") {
@@ -1234,7 +1246,8 @@ bom {
 		}
 		links {
 			site("https://micrometer.io")
-			reference { version -> "https://docs.micrometer.io/micrometer/reference/%s.%s".formatted(version.major(), version.minor()) }
+			docs { version -> "https://docs.micrometer.io/micrometer/reference/%s.%s"
+				.formatted(version.major(), version.minor()) }
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
 		}
 	}
@@ -1248,7 +1261,8 @@ bom {
 		}
 		links {
 			site("https://micrometer.io")
-			reference { version -> "https://docs.micrometer.io/tracing/reference/%s.%s".formatted(version.major(), version.minor()) }
+			docs { version -> "https://docs.micrometer.io/tracing/reference/%s.%s"
+				.formatted(version.major(), version.minor()) }
 			releaseNotes("https://github.com/micrometer-metrics/tracing/releases/tag/v{version}")
 		}
 	}
@@ -1416,7 +1430,8 @@ bom {
 		}
 		links {
 			site("https://pulsar.apache.org")
-			reference { version -> "https://pulsar.apache.org/docs/%s.%s.x".formatted(version.major(), version.minor()) }
+			docs { version -> "https://pulsar.apache.org/docs/%s.%s.x"
+				.formatted(version.major(), version.minor()) }
 			releaseNotes("https://pulsar.apache.org/release-notes/versioned/pulsar-{version}")
 		}
 	}
@@ -1457,7 +1472,8 @@ bom {
 		}
 		links {
 			site("https://github.com/querydsl/querydsl")
-			releaseNotes { version -> "https://github.com/querydsl/querydsl/releases/tag/QUERYDSL_%s".formatted(version.toString("_")) }
+			releaseNotes { version -> "https://github.com/querydsl/querydsl/releases/tag/QUERYDSL_%s"
+				.formatted(version.toString("_")) }
 		}
 	}
 	library("R2DBC H2", "1.0.0.RELEASE") {
@@ -1681,8 +1697,10 @@ bom {
 			site("https://spring.io/projects/spring-boot")
 			github("https://github.com/spring-projects/spring-boot")
 			javadoc("https://docs.spring.io/spring-boot/docs/{version}/api")
-			reference("https://docs.spring.io/spring-boot/docs/{version}/reference/htmlsingle")
+			docs("https://docs.spring.io/spring-boot/docs/{version}/reference/htmlsingle")
 			releaseNotes("https://github.com/spring-projects/spring-boot/releases/tag/v{version}")
+			add("layers-xsd") { version -> "layers-xsd: https://www.springframework.org/schema/boot/layers/layers-%s.%s.xsd"
+				.formatted(version.major(), version.minor()) }
 		}
 	}
 	library("SAAJ Impl", "3.0.3") {
@@ -1760,7 +1778,7 @@ bom {
 			site("https://spring.io/projects/spring-amqp")
 			github("https://github.com/spring-projects/spring-amqp")
 			javadoc("https://docs.spring.io/spring-amqp/docs/{version}/api")
-			reference("https://docs.spring.io/spring-amqp/reference/{version}")
+			docs("https://docs.spring.io/spring-amqp/reference/{version}")
 			releaseNotes("https://github.com/spring-projects/spring-amqp/releases/tag/v{version}")
 		}
 	}
@@ -1775,7 +1793,7 @@ bom {
 			site("https://spring.io/projects/spring-authorization-server")
 			github("https://github.com/spring-projects/spring-authorization-server")
 			javadoc("https://docs.spring.io/spring-authorization-server/docs/{version}/api")
-			reference { version -> "https://docs.spring.io/spring-authorization-server/reference/%s"
+			docs { version -> "https://docs.spring.io/spring-authorization-server/reference/%s"
 				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-authorization-server/releases/tag/{version}")
 		}
@@ -1791,7 +1809,8 @@ bom {
 			site("https://spring.io/projects/spring-batch")
 			github("https://github.com/spring-projects/spring-batch")
 			javadoc("https://docs.spring.io/spring-batch/docs/{version}/api")
-			reference { version -> "https://docs.spring.io/spring-batch/reference/%s".formatted(version.forAntora()) }
+			docs { version -> "https://docs.spring.io/spring-batch/reference/%s"
+				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-batch/releases/tag/v{version}")
 		}
 	}
@@ -1803,7 +1822,7 @@ bom {
 				"spring-data-bom"
 			]
 		}
-		links {
+		links("spring-data") {
 			site("https://spring.io/projects/spring-data")
 			github("https://github.com/spring-projects/spring-data-bom")
 			releaseNotes("https://github.com/spring-projects/spring-data-bom/releases/tag/{version}")
@@ -1820,7 +1839,7 @@ bom {
 			site("https://spring.io/projects/spring-framework")
 			github("https://github.com/spring-projects/spring-framework")
 			javadoc("https://docs.spring.io/spring-framework/docs/{version}/javadoc-api")
-			reference("https://docs.spring.io/spring-framework/reference/{version}")
+			docs("https://docs.spring.io/spring-framework/reference/{version}")
 			releaseNotes("https://github.com/spring-projects/spring-framework/releases/tag/v{version}")
 		}
 	}
@@ -1836,7 +1855,8 @@ bom {
 			site("https://spring.io/projects/spring-graphql")
 			github("https://github.com/spring-projects/spring-graphql")
 			javadoc("https://docs.spring.io/spring-graphql/docs/{version}/api")
-			reference { version -> "https://docs.spring.io/spring-graphql/reference/%s".formatted(version.forAntora()) }
+			docs { version -> "https://docs.spring.io/spring-graphql/reference/%s"
+				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-graphql/releases/tag/v{version}")
 		}
 	}
@@ -1851,7 +1871,7 @@ bom {
 			site("https://spring.io/projects/spring-hateoas")
 			github("https://github.com/spring-projects/spring-hateoas")
 			javadoc("https://docs.spring.io/spring-hateoas/docs/{version}/api")
-			reference("https://docs.spring.io/spring-hateoas/docs/{version}/reference/html")
+			docs("https://docs.spring.io/spring-hateoas/docs/{version}/reference/html")
 			releaseNotes("https://github.com/spring-projects/spring-hateoas/releases/tag/{version}")
 		}
 	}
@@ -1866,7 +1886,8 @@ bom {
 			site("https://spring.io/projects/spring-integration")
 			github("https://github.com/spring-projects/spring-integration")
 			javadoc("https://docs.spring.io/spring-integration/docs/{version}/api")
-			reference { version -> "https://docs.spring.io/spring-integration/reference/%s".formatted(version.forAntora()) }
+			docs { version -> "https://docs.spring.io/spring-integration/reference/%s"
+				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-integration/releases/tag/v{version}")
 		}
 	}
@@ -1882,7 +1903,8 @@ bom {
 			site("https://spring.io/projects/spring-kafka")
 			github("https://github.com/spring-projects/spring-kafka")
 			javadoc("https://docs.spring.io/spring-kafka/docs/{version}/api")
-			reference { version -> "https://docs.spring.io/spring-kafka/reference/%s".formatted(version.forAntora()) }
+			docs { version -> "https://docs.spring.io/spring-kafka/reference/%s"
+				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-kafka/releases/tag/v{version}")
 		}
 	}
@@ -1900,7 +1922,7 @@ bom {
 			site("https://spring.io/projects/spring-ldap")
 			github("https://github.com/spring-projects/spring-ldap")
 			javadoc("https://docs.spring.io/spring-ldap/docs/{version}/api")
-			reference("https://docs.spring.io/spring-ldap/reference/{version}")
+			docs("https://docs.spring.io/spring-ldap/reference/{version}")
 			releaseNotes("https://github.com/spring-projects/spring-ldap/releases/tag/{version}")
 		}
 	}
@@ -1915,7 +1937,7 @@ bom {
 			site("https://spring.io/projects/spring-pulsar")
 			github("https://github.com/spring-projects/spring-pulsar")
 			javadoc("https://docs.spring.io/spring-pulsar/docs/{version}/api/")
-			reference("https://docs.spring.io/spring-pulsar/docs/{version}/reference")
+			docs("https://docs.spring.io/spring-pulsar/docs/{version}/reference")
 			releaseNotes("https://github.com/spring-projects/spring-pulsar/releases/tag/v{version}")
 		}
 	}
@@ -1930,7 +1952,7 @@ bom {
 			site("https://spring.io/projects/spring-restdocs")
 			github("https://github.com/spring-projects/spring-restdocs")
 			javadoc("https://docs.spring.io/spring-restdocs/docs/{version}/api/")
-			reference("https://docs.spring.io/spring-restdocs/docs/{version}/reference/htmlsingle/")
+			docs("https://docs.spring.io/spring-restdocs/docs/{version}/reference/htmlsingle/")
 			releaseNotes("https://github.com/spring-projects/spring-restdocs/releases/tag/v{version}")
 		}
 	}
@@ -1957,7 +1979,8 @@ bom {
 			site("https://spring.io/projects/spring-security")
 			github("https://github.com/spring-projects/spring-security")
 			javadoc("https://docs.spring.io/spring-security/site/docs/{version}/api")
-			reference { version -> "https://docs.spring.io/spring-security/reference/%s".formatted(version.forAntora()) }
+			docs { version -> "https://docs.spring.io/spring-security/reference/%s"
+				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
 		}
 	}
@@ -1976,7 +1999,8 @@ bom {
 			site("https://spring.io/projects/spring-session")
 			github("https://github.com/spring-projects/spring-session")
 			javadoc("https://docs.spring.io/spring-session/docs/{version}/api")
-			reference { version -> "https://docs.spring.io/spring-session/reference/%s".formatted(version.forAntora()) }
+			docs { version -> "https://docs.spring.io/spring-session/reference/%s"
+				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-session/releases/tag/{version}")
 		}
 	}
@@ -1991,7 +2015,7 @@ bom {
 			site("https://spring.io/projects/spring-ws")
 			github("https://github.com/spring-projects/spring-ws")
 			javadoc("https://docs.spring.io/spring-ws/docs/{version}/api")
-			reference("https://docs.spring.io/spring-ws/docs/{version}/reference/html")
+			docs("https://docs.spring.io/spring-ws/docs/{version}/reference/html")
 			releaseNotes("https://github.com/spring-projects/spring-ws/releases/tag/v{version}")
 		}
 	}

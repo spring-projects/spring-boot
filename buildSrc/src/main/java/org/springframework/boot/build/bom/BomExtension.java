@@ -124,7 +124,7 @@ public class BomExtension {
 				: null;
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
 				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots, versionAlignment,
-				libraryHandler.links));
+				libraryHandler.linkRootName, libraryHandler.links));
 	}
 
 	public void effectiveBomArtifact() {
@@ -232,6 +232,8 @@ public class BomExtension {
 
 		private AlignWithVersionHandler alignWithVersion;
 
+		private String linkRootName;
+
 		private final Map<String, Function<LibraryVersion, String>> links = new HashMap<>();
 
 		@Inject
@@ -271,8 +273,13 @@ public class BomExtension {
 		}
 
 		public void links(Action<LinksHandler> action) {
+			links(null, action);
+		}
+
+		public void links(String linkRootName, Action<LinksHandler> action) {
 			LinksHandler handler = new LinksHandler();
 			action.execute(handler);
+			this.linkRootName = linkRootName;
 			this.links.putAll(handler.links);
 		}
 
@@ -431,20 +438,20 @@ public class BomExtension {
 			add("github", linkFactory);
 		}
 
+		public void docs(String linkTemplate) {
+			docs(asFactory(linkTemplate));
+		}
+
+		public void docs(Function<LibraryVersion, String> linkFactory) {
+			add("docs", linkFactory);
+		}
+
 		public void javadoc(String linkTemplate) {
 			javadoc(asFactory(linkTemplate));
 		}
 
 		public void javadoc(Function<LibraryVersion, String> linkFactory) {
 			add("javadoc", linkFactory);
-		}
-
-		public void reference(String linkTemplate) {
-			reference(asFactory(linkTemplate));
-		}
-
-		public void reference(Function<LibraryVersion, String> linkFactory) {
-			add("reference", linkFactory);
 		}
 
 		public void releaseNotes(String linkTemplate) {
