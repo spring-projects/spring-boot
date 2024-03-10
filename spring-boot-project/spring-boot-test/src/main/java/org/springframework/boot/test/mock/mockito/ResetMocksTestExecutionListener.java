@@ -43,7 +43,10 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 1.4.0
  * @see MockitoTestExecutionListener
+ * @deprecated since 3.4.0 in favor of
+ * {@link org.springframework.test.bean.override.mockito.MockitoResetTestExecutionListener}
  */
+@Deprecated(since = "3.4.0")
 public class ResetMocksTestExecutionListener extends AbstractTestExecutionListener {
 
 	private static final boolean MOCKITO_IS_PRESENT = ClassUtils.isPresent("org.mockito.MockSettings",

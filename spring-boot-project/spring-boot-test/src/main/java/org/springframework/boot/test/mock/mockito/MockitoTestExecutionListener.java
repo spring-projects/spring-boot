@@ -46,7 +46,11 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  * @author Moritz Halbritter
  * @since 1.4.2
  * @see ResetMocksTestExecutionListener
+ * @deprecated since 3.4.0 in favor of
+ * {@link org.springframework.test.bean.override.mockito.MockitoTestExecutionListener}
  */
+
+@Deprecated(since = "3.4.0")
 public class MockitoTestExecutionListener extends AbstractTestExecutionListener {
 
 	private static final String MOCKS_ATTRIBUTE_NAME = MockitoTestExecutionListener.class.getName() + ".mocks";

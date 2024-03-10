@@ -23,7 +23,9 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @see DefinitionsParser
+ * @deprecated since 3.4.0. See {@link SpyBean} and {@link MockBean} for more details.
  */
+@Deprecated(since = "3.4.0")
 abstract class Definition {
 
 	private static final int MULTIPLIER = 31;

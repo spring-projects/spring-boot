@@ -26,10 +26,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.bean.override.mockito.MockitoBean;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
-	@MockBean
+	@MockitoBean
 	private AuditEventRepository repository;
 
 	@Test

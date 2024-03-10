@@ -178,6 +178,7 @@ dependencies {
 	testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.yaml:snakeyaml")
+	testImplementation("org.springframework:spring-test")
 
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
 	testRuntimeOnly("jakarta.transaction:jakarta.transaction-api")

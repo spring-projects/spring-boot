@@ -76,7 +76,10 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andreas Neiser
  * @since 1.4.0
+ * @deprecated since 3.4.0 in favor of
+ * {@link org.springframework.test.bean.override.BeanOverrideBeanPostProcessor}
  */
+@Deprecated(since = "3.4.0")
 public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor, BeanClassLoaderAware,
 		BeanFactoryAware, BeanFactoryPostProcessor, Ordered {
 

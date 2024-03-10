@@ -33,10 +33,13 @@ import java.lang.annotation.Target;
  *
  * @author Phillip Webb
  * @since 1.4.0
+ * @deprecated since 3.4.0 in favor of
+ * {@link org.springframework.test.bean.override.mockito.MockitoBean}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
+@Deprecated(since = "3.4.0")
 public @interface MockBeans {
 
 	/**

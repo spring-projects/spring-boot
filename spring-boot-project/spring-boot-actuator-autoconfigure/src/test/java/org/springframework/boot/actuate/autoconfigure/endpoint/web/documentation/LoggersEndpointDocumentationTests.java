@@ -37,6 +37,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.bean.override.mockito.MockitoBean;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -63,7 +64,7 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 			.type(JsonFieldType.STRING)
 			.optional(), fieldWithPath("members").description("Loggers that are part of this group"));
 
-	@MockBean
+	@MockitoBean
 	private LoggingSystem loggingSystem;
 
 	@Autowired

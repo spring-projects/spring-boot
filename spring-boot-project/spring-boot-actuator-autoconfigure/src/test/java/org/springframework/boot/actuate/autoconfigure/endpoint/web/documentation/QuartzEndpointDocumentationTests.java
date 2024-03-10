@@ -179,7 +179,7 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 				.type(JsonFieldType.OBJECT)
 				.description("Job data map keyed by name, if any.") };
 
-	@MockBean
+	@MockitoBean
 	private Scheduler scheduler;
 
 	@Test

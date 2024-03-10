@@ -34,6 +34,7 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.MapSession;
 import org.springframework.session.Session;
+import org.springframework.test.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.mockito.BDDMockito.given;
@@ -73,7 +74,7 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 				.description("Maximum permitted period of inactivity, in seconds, before the session will expire."),
 			fieldWithPath("expired").description("Whether the session has expired."));
 
-	@MockBean
+	@MockitoBean
 	private FindByIndexNameSessionRepository<Session> sessionRepository;
 
 	@Test

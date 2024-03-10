@@ -37,7 +37,10 @@ import static org.mockito.Mockito.mock;
  * A complete definition that can be used to create a Mockito spy.
  *
  * @author Phillip Webb
+ * @deprecated since 3.4.0. See {@link SpyBean} for more details.
  */
+
+@Deprecated(since = "3.4.0")
 class SpyDefinition extends Definition {
 
 	private static final int MULTIPLIER = 31;

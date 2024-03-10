@@ -41,7 +41,10 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @deprecated since 3.4.0. See {@link SpyBean} and {@link MockBean} for more details.
  */
+
+@Deprecated(since = "3.4.0")
 class DefinitionsParser {
 
 	private final Set<Definition> definitions;

@@ -25,9 +25,9 @@ import smoketest.test.service.VehicleIdentificationNumberNotFoundException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.test.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -53,7 +53,7 @@ class UserVehicleControllerTests {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@MockBean
+	@MockitoBean
 	private UserVehicleService userVehicleService;
 
 	@Test
