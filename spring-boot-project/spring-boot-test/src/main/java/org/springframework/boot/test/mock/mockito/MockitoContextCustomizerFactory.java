@@ -27,7 +27,10 @@ import org.springframework.test.context.TestContextAnnotationUtils;
  * A {@link ContextCustomizerFactory} to add Mockito support.
  *
  * @author Phillip Webb
+ * @deprecated since 3.4.0 in favor of
+ * {@link org.springframework.test.bean.override.BeanOverrideContextCustomizerFactory}
  */
+@Deprecated(since = "3.4.0")
 class MockitoContextCustomizerFactory implements ContextCustomizerFactory {
 
 	@Override

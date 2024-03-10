@@ -41,6 +41,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -56,7 +57,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
  */
 class HttpExchangesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
-	@MockBean
+	@MockitoBean
 	private HttpExchangeRepository repository;
 
 	@Test

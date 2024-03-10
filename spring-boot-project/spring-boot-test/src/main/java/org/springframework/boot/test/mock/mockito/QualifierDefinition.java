@@ -34,7 +34,10 @@ import org.springframework.core.annotation.MergedAnnotations;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @see Definition
+ * @deprecated since 3.4.0. See {@link SpyBean} and {@link MockBean} for more details.
  */
+
+@Deprecated(since = "3.4.0")
 class QualifierDefinition {
 
 	private final Field field;

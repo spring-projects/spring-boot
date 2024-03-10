@@ -27,6 +27,7 @@ import org.springframework.boot.test.context.nestedtests.InheritedNestedTestConf
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
+import org.springframework.test.bean.override.mockito.MockitoBean;
 
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.times;
 @Import(ActionPerformer.class)
 class InheritedNestedTestConfigurationTests {
 
-	@MockBean
+	@MockitoBean
 	Action action;
 
 	@Autowired

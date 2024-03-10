@@ -24,7 +24,7 @@ import smoketest.test.service.VehicleDetails;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -40,7 +40,7 @@ class UserVehicleControllerSeleniumTests {
 	@Autowired
 	private WebDriver webDriver;
 
-	@MockBean
+	@MockitoBean
 	private UserVehicleService userVehicleService;
 
 	@Test

@@ -37,7 +37,9 @@ import static org.mockito.Mockito.mock;
  * A complete definition that can be used to create a Mockito mock.
  *
  * @author Phillip Webb
+ * @deprecated since 3.4.0. See {@link MockBean} for more details.
  */
+@Deprecated(since = "3.4.0")
 class MockDefinition extends Definition {
 
 	private static final int MULTIPLIER = 31;

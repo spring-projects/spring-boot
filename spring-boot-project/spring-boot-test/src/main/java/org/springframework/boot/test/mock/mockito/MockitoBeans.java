@@ -24,7 +24,9 @@ import java.util.List;
  * Beans created using Mockito.
  *
  * @author Andy Wilkinson
+ * @deprecated since 3.4.0. See {@link MockBean} for more details.
  */
+@Deprecated(since = "3.4.0")
 class MockitoBeans implements Iterable<Object> {
 
 	private final List<Object> beans = new ArrayList<>();

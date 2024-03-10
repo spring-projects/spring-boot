@@ -37,7 +37,11 @@ import org.springframework.util.ReflectionUtils;
  * @author Moritz Halbritter
  * @since 1.4.2
  * @see ResetMocksTestExecutionListener
+ * @deprecated since 3.4.0 in favor of
+ * {@link org.springframework.test.bean.override.mockito.MockitoTestExecutionListener}
  */
+
+@Deprecated(since = "3.4.0")
 public class MockitoTestExecutionListener extends AbstractTestExecutionListener {
 
 	@Override

@@ -89,7 +89,10 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @author Phillip Webb
  * @since 1.4.0
  * @see MockitoPostProcessor
+ * @deprecated since 3.4.0 in favor of
+ * {@link org.springframework.test.bean.override.mockito.MockitoSpyBean}
  */
+@Deprecated(since = "3.4.0")
 @Target({ ElementType.TYPE, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
