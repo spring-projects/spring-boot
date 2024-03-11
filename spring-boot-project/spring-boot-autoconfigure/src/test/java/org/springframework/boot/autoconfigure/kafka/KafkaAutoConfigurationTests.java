@@ -743,7 +743,7 @@ class KafkaAutoConfigurationTests {
 			assertThat(context).hasSingleBean(KafkaAwareTransactionManager.class);
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 				.getBean(ConcurrentKafkaListenerContainerFactory.class);
-			assertThat(factory.getContainerProperties().getTransactionManager())
+			assertThat(factory.getContainerProperties().getKafkaAwareTransactionManager())
 				.isSameAs(context.getBean(KafkaAwareTransactionManager.class));
 		});
 	}
@@ -758,7 +758,7 @@ class KafkaAutoConfigurationTests {
 			.run((context) -> {
 				ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
-				assertThat(factory.getContainerProperties().getTransactionManager())
+				assertThat(factory.getContainerProperties().getKafkaAwareTransactionManager())
 					.isSameAs(context.getBean("customTransactionManager"));
 			});
 	}

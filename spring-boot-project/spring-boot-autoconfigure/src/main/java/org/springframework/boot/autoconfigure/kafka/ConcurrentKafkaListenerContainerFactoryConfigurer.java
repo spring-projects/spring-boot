@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -237,7 +237,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(properties::isMissingTopicsFatal).to(container::setMissingTopicsFatal);
 		map.from(properties::isImmediateStop).to(container::setStopImmediate);
 		map.from(properties::isObservationEnabled).to(container::setObservationEnabled);
-		map.from(this.transactionManager).to(container::setTransactionManager);
+		map.from(this.transactionManager).to(container::setKafkaAwareTransactionManager);
 		map.from(this.rebalanceListener).to(container::setConsumerRebalanceListener);
 		map.from(this.listenerTaskExecutor).to(container::setListenerTaskExecutor);
 	}
