@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.micrometer.prometheus.HistogramFlavor;
-
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -33,6 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
+@SuppressWarnings("deprecation")
 @ConfigurationProperties(prefix = "management.prometheus.metrics.export")
 public class PrometheusProperties {
 
@@ -56,7 +55,7 @@ public class PrometheusProperties {
 	/**
 	 * Histogram type for backing DistributionSummary and Timer.
 	 */
-	private HistogramFlavor histogramFlavor = HistogramFlavor.Prometheus;
+	private io.micrometer.prometheus.HistogramFlavor histogramFlavor = io.micrometer.prometheus.HistogramFlavor.Prometheus;
 
 	/**
 	 * Step size (i.e. reporting frequency) to use.
@@ -71,11 +70,11 @@ public class PrometheusProperties {
 		this.descriptions = descriptions;
 	}
 
-	public HistogramFlavor getHistogramFlavor() {
+	public io.micrometer.prometheus.HistogramFlavor getHistogramFlavor() {
 		return this.histogramFlavor;
 	}
 
-	public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
+	public void setHistogramFlavor(io.micrometer.prometheus.HistogramFlavor histogramFlavor) {
 		this.histogramFlavor = histogramFlavor;
 	}
 

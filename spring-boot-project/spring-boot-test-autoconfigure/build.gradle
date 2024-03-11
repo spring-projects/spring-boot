@@ -69,7 +69,7 @@ dependencies {
 	testImplementation("com.h2database:h2")
 	testImplementation("com.unboundid:unboundid-ldapsdk")
 	testImplementation("io.lettuce:lettuce-core")
-	testImplementation("io.micrometer:micrometer-registry-prometheus")
+	testImplementation("io.micrometer:micrometer-registry-prometheus-simpleclient")
 	testImplementation("io.projectreactor.netty:reactor-netty-http")
 	testImplementation("io.projectreactor:reactor-core")
 	testImplementation("io.projectreactor:reactor-test")

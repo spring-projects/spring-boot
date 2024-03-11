@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import java.time.Duration;
 import java.util.Map;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.prometheus.PrometheusConfig;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exemplars.DefaultExemplarSampler;
 import io.prometheus.client.exemplars.ExemplarSampler;
@@ -60,26 +58,28 @@ import org.springframework.util.StringUtils;
  * @author Jonatan Ivanov
  * @since 2.0.0
  */
+@SuppressWarnings("deprecation")
 @AutoConfiguration(
 		before = { CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
 		after = MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
-@ConditionalOnClass(PrometheusMeterRegistry.class)
+@ConditionalOnClass(io.micrometer.prometheus.PrometheusMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("prometheus")
 @EnableConfigurationProperties(PrometheusProperties.class)
 public class PrometheusMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PrometheusConfig prometheusConfig(PrometheusProperties prometheusProperties) {
+	public io.micrometer.prometheus.PrometheusConfig prometheusConfig(PrometheusProperties prometheusProperties) {
 		return new PrometheusPropertiesConfigAdapter(prometheusProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PrometheusMeterRegistry prometheusMeterRegistry(PrometheusConfig prometheusConfig,
-			CollectorRegistry collectorRegistry, Clock clock, ObjectProvider<ExemplarSampler> exemplarSamplerProvider) {
-		return new PrometheusMeterRegistry(prometheusConfig, collectorRegistry, clock,
+	public io.micrometer.prometheus.PrometheusMeterRegistry prometheusMeterRegistry(
+			io.micrometer.prometheus.PrometheusConfig prometheusConfig, CollectorRegistry collectorRegistry,
+			Clock clock, ObjectProvider<ExemplarSampler> exemplarSamplerProvider) {
+		return new io.micrometer.prometheus.PrometheusMeterRegistry(prometheusConfig, collectorRegistry, clock,
 				exemplarSamplerProvider.getIfAvailable());
 	}
 

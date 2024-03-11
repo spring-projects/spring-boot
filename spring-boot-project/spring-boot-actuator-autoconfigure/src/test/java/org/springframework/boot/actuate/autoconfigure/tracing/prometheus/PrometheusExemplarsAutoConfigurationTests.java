@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 import io.prometheus.client.exporter.common.TextFormat;
 import org.junit.jupiter.api.Test;
@@ -84,12 +83,14 @@ class PrometheusExemplarsAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void prometheusOpenMetricsOutputShouldContainExemplars() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(SpanContextSupplier.class);
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation.start("test.observation", observationRegistry).stop();
-			PrometheusMeterRegistry prometheusMeterRegistry = context.getBean(PrometheusMeterRegistry.class);
+			io.micrometer.prometheus.PrometheusMeterRegistry prometheusMeterRegistry = context
+				.getBean(io.micrometer.prometheus.PrometheusMeterRegistry.class);
 			String openMetricsOutput = prometheusMeterRegistry.scrape(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
 
 			assertThat(openMetricsOutput).contains("test_observation_seconds_bucket");

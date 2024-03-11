@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.metrics.export.prometheus;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
 
@@ -135,8 +134,10 @@ class PrometheusScrapeEndpointIntegrationTests {
 		}
 
 		@Bean
+		@SuppressWarnings("deprecation")
 		MeterRegistry registry(CollectorRegistry registry) {
-			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry((k) -> null, registry, Clock.SYSTEM);
+			io.micrometer.prometheus.PrometheusMeterRegistry meterRegistry = new io.micrometer.prometheus.PrometheusMeterRegistry(
+					(k) -> null, registry, Clock.SYSTEM);
 			Counter.builder("counter1").register(meterRegistry);
 			Counter.builder("counter2").register(meterRegistry);
 			Counter.builder("counter3").register(meterRegistry);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.prometheus.PrometheusConfig;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exemplars.ExemplarSampler;
 import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
@@ -54,6 +52,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Jonatan Ivanov
  */
+@SuppressWarnings("deprecation")
 @ExtendWith(OutputCaptureExtension.class)
 class PrometheusMetricsExportAutoConfigurationTests {
 
@@ -62,60 +61,63 @@ class PrometheusMetricsExportAutoConfigurationTests {
 
 	@Test
 	void backsOffWithoutAClock() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(PrometheusMeterRegistry.class));
+		this.contextRunner.run((context) -> assertThat(context)
+			.doesNotHaveBean(io.micrometer.prometheus.PrometheusMeterRegistry.class));
 	}
 
 	@Test
 	void autoConfiguresItsConfigCollectorRegistryAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(PrometheusMeterRegistry.class)
+			.run((context) -> assertThat(context).hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
 				.hasSingleBean(CollectorRegistry.class)
-				.hasSingleBean(PrometheusConfig.class));
+				.hasSingleBean(io.micrometer.prometheus.PrometheusConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 			.withPropertyValues("management.defaults.metrics.export.enabled=false")
-			.run((context) -> assertThat(context).doesNotHaveBean(PrometheusMeterRegistry.class)
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
 				.doesNotHaveBean(CollectorRegistry.class)
-				.doesNotHaveBean(PrometheusConfig.class));
+				.doesNotHaveBean(io.micrometer.prometheus.PrometheusConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 			.withPropertyValues("management.prometheus.metrics.export.enabled=false")
-			.run((context) -> assertThat(context).doesNotHaveBean(PrometheusMeterRegistry.class)
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
 				.doesNotHaveBean(CollectorRegistry.class)
-				.doesNotHaveBean(PrometheusConfig.class));
+				.doesNotHaveBean(io.micrometer.prometheus.PrometheusConfig.class));
 	}
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(PrometheusMeterRegistry.class)
+			.run((context) -> assertThat(context).hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
 				.hasSingleBean(CollectorRegistry.class)
-				.hasSingleBean(PrometheusConfig.class)
+				.hasSingleBean(io.micrometer.prometheus.PrometheusConfig.class)
 				.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(PrometheusMeterRegistry.class)
+			.run((context) -> assertThat(context).hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
 				.hasBean("customRegistry")
 				.hasSingleBean(CollectorRegistry.class)
-				.hasSingleBean(PrometheusConfig.class));
+				.hasSingleBean(io.micrometer.prometheus.PrometheusConfig.class));
 	}
 
 	@Test
 	void allowsCustomCollectorRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomCollectorRegistryConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(PrometheusMeterRegistry.class)
+			.run((context) -> assertThat(context).hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
 				.hasBean("customCollectorRegistry")
 				.hasSingleBean(CollectorRegistry.class)
-				.hasSingleBean(PrometheusConfig.class));
+				.hasSingleBean(io.micrometer.prometheus.PrometheusConfig.class));
 	}
 
 	@Test
@@ -123,7 +125,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
 				.hasSingleBean(ExemplarSampler.class)
-				.hasSingleBean(PrometheusMeterRegistry.class));
+				.hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class));
 	}
 
 	@Test
@@ -140,7 +142,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(SpanContextSupplier.class)
 				.doesNotHaveBean(ExemplarSampler.class)
-				.hasSingleBean(PrometheusMeterRegistry.class));
+				.hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class));
 	}
 
 	@Test
@@ -255,7 +257,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		PrometheusConfig customConfig() {
+		io.micrometer.prometheus.PrometheusConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -266,9 +268,9 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		PrometheusMeterRegistry customRegistry(PrometheusConfig config, CollectorRegistry collectorRegistry,
-				Clock clock) {
-			return new PrometheusMeterRegistry(config, collectorRegistry, clock);
+		io.micrometer.prometheus.PrometheusMeterRegistry customRegistry(
+				io.micrometer.prometheus.PrometheusConfig config, CollectorRegistry collectorRegistry, Clock clock) {
+			return new io.micrometer.prometheus.PrometheusMeterRegistry(config, collectorRegistry, clock);
 		}
 
 	}

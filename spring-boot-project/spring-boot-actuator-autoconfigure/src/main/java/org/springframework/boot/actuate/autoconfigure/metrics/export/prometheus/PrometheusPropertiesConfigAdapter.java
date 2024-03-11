@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,18 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus
 
 import java.time.Duration;
 
-import io.micrometer.prometheus.HistogramFlavor;
-import io.micrometer.prometheus.PrometheusConfig;
-
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
- * Adapter to convert {@link PrometheusProperties} to a {@link PrometheusConfig}.
+ * Adapter to convert {@link PrometheusProperties} to a
+ * {@link io.micrometer.prometheus.PrometheusConfig}.
  *
  * @author Jon Schneider
  * @author Phillip Webb
  */
+@SuppressWarnings("deprecation")
 class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<PrometheusProperties>
-		implements PrometheusConfig {
+		implements io.micrometer.prometheus.PrometheusConfig {
 
 	PrometheusPropertiesConfigAdapter(PrometheusProperties properties) {
 		super(properties);
@@ -48,17 +47,18 @@ class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<Promethe
 
 	@Override
 	public boolean descriptions() {
-		return get(PrometheusProperties::isDescriptions, PrometheusConfig.super::descriptions);
+		return get(PrometheusProperties::isDescriptions, io.micrometer.prometheus.PrometheusConfig.super::descriptions);
 	}
 
 	@Override
-	public HistogramFlavor histogramFlavor() {
-		return get(PrometheusProperties::getHistogramFlavor, PrometheusConfig.super::histogramFlavor);
+	public io.micrometer.prometheus.HistogramFlavor histogramFlavor() {
+		return get(PrometheusProperties::getHistogramFlavor,
+				io.micrometer.prometheus.PrometheusConfig.super::histogramFlavor);
 	}
 
 	@Override
 	public Duration step() {
-		return get(PrometheusProperties::getStep, PrometheusConfig.super::step);
+		return get(PrometheusProperties::getStep, io.micrometer.prometheus.PrometheusConfig.super::step);
 	}
 
 }
