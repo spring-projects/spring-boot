@@ -49,6 +49,8 @@ jobs:
           folder: 'deployment-repository'
           signing-key: ${{ secrets.GPG_PRIVATE_KEY }}
           signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          artifact-properties: |
+            /**/spring-boot-docs-*.zip::zip.type=docs,zip.deployed=false
       - name: Send notification
         uses: ./.github/actions/send-notification
         if: always()
