@@ -22,12 +22,12 @@ runs:
     - shell: bash
       if: ${{ inputs.status == 'success' }}
       run: |
-        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<${{ env.RUN_URL }}|${{ inputs.run-name }}> was successful ${{ env.BUILD_SCAN }}"}' || true
+        curl -X POST '${{ inputs.webhook-url }}' -H 'Content-Type: application/json' -d '{ text: "<${{ env.RUN_URL }}|${{ inputs.run-name }}> was successful ${{ env.BUILD_SCAN }}"}' || true
     - shell: bash
       if: ${{ inputs.status == 'failure' }}
       run: |
-        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<users/all> *<${{ env.RUN_URL }}|${{ inputs.run-name }}> failed* ${{ env.BUILD_SCAN }}"}' || true
+        curl -X POST '${{ inputs.webhook-url }}' -H 'Content-Type: application/json' -d '{ text: "<users/all> *<${{ env.RUN_URL }}|${{ inputs.run-name }}> failed* ${{ env.BUILD_SCAN }}"}' || true
     - shell: bash
       if: ${{ inputs.status == 'cancelled' }}
       run: |
-        curl -X POST ${{ inputs.webhook-url }} -H 'Content-Type: application/json' -d '{ text: "<${{ env.RUN_URL }}|${{ inputs.run-name }}> was cancelled"}' || true
+        curl -X POST '${{ inputs.webhook-url }}' -H 'Content-Type: application/json' -d '{ text: "<${{ env.RUN_URL }}|${{ inputs.run-name }}> was cancelled"}' || true
