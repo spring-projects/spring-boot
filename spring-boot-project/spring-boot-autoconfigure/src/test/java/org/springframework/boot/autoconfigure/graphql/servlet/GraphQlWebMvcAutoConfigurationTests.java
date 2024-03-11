@@ -94,6 +94,22 @@ class GraphQlWebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	void SseSubscriptionShouldWork() {
+		testWith((mockMvc) -> {
+			String query = "{ booksOnSale(minPages: 50){ id name pageCount author } }";
+			mockMvc
+				.perform(post("/graphql").accept(MediaType.TEXT_EVENT_STREAM)
+					.content("{\"query\": \"subscription TestSubscription " + query + "\"}"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM))
+				.andExpect(content().string(Matchers.stringContainsInOrder("event:next",
+						"data:{\"data\":{\"booksOnSale\":{\"id\":\"book-1\",\"name\":\"GraphQL for beginners\",\"pageCount\":100,\"author\":\"John GraphQL\"}}}",
+						"event:next",
+						"data:{\"data\":{\"booksOnSale\":{\"id\":\"book-2\",\"name\":\"Harry Potter and the Philosopher's Stone\",\"pageCount\":223,\"author\":\"Joanne Rowling\"}}}")));
+		});
+	}
+
+	@Test
 	void httpGetQueryShouldBeSupported() {
 		testWith((mockMvc) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
@@ -207,8 +223,12 @@ class GraphQlWebMvcAutoConfigurationTests {
 
 		@Bean
 		RuntimeWiringConfigurer bookDataFetcher() {
-			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query")
-				.dataFetcher("bookById", GraphQlTestDataFetchers.getBookByIdDataFetcher()));
+			return (builder) -> {
+				builder.type(TypeRuntimeWiring.newTypeWiring("Query")
+					.dataFetcher("bookById", GraphQlTestDataFetchers.getBookByIdDataFetcher()));
+				builder.type(TypeRuntimeWiring.newTypeWiring("Subscription")
+					.dataFetcher("booksOnSale", GraphQlTestDataFetchers.getBooksOnSaleDataFetcher()));
+			};
 		}
 
 	}

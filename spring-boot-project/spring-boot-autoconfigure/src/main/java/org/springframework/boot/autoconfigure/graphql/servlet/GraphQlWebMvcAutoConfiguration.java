@@ -50,6 +50,7 @@ import org.springframework.graphql.server.WebGraphQlHandler;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.webmvc.GraphQlHttpHandler;
 import org.springframework.graphql.server.webmvc.GraphQlRequestPredicates;
+import org.springframework.graphql.server.webmvc.GraphQlSseHandler;
 import org.springframework.graphql.server.webmvc.GraphQlWebSocketHandler;
 import org.springframework.graphql.server.webmvc.GraphiQlHandler;
 import org.springframework.graphql.server.webmvc.SchemaHandler;
@@ -96,6 +97,12 @@ public class GraphQlWebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	public GraphQlSseHandler graphQlSseHandler(WebGraphQlHandler webGraphQlHandler) {
+		return new GraphQlSseHandler(webGraphQlHandler);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
 			ObjectProvider<WebGraphQlInterceptor> interceptors) {
 		return WebGraphQlHandler.builder(service).interceptors(interceptors.orderedStream().toList()).build();
@@ -104,11 +111,12 @@ public class GraphQlWebMvcAutoConfiguration {
 	@Bean
 	@Order(0)
 	public RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler httpHandler,
-			GraphQlSource graphQlSource, GraphQlProperties properties) {
+			GraphQlSseHandler sseHandler, GraphQlSource graphQlSource, GraphQlProperties properties) {
 		String path = properties.getPath();
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
 		builder.route(GraphQlRequestPredicates.graphQlHttp(path), httpHandler::handleRequest);
+		builder.route(GraphQlRequestPredicates.graphQlSse(path), sseHandler::handleRequest);
 		builder = builder.GET(path, this::onlyAllowPost);
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());

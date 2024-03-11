@@ -87,6 +87,7 @@ are detected by Spring Boot and considered as candidates for `DataFetcher` for m
 [[web.graphql.transports.http-websocket]]
 ==== HTTP and WebSocket
 The GraphQL HTTP endpoint is at HTTP POST `/graphql` by default.
+It also supports the `"text/event-stream"` media type over Server Sent Events for subscriptions only.
 The path can be customized with configprop:spring.graphql.path[].
 
 TIP: The HTTP endpoint for both Spring MVC and Spring WebFlux is provided by a `RouterFunction` bean with an `@Order` of `0`.

@@ -48,6 +48,7 @@ import org.springframework.graphql.server.WebGraphQlHandler;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.webflux.GraphQlHttpHandler;
 import org.springframework.graphql.server.webflux.GraphQlRequestPredicates;
+import org.springframework.graphql.server.webflux.GraphQlSseHandler;
 import org.springframework.graphql.server.webflux.GraphQlWebSocketHandler;
 import org.springframework.graphql.server.webflux.GraphiQlHandler;
 import org.springframework.graphql.server.webflux.SchemaHandler;
@@ -85,25 +86,32 @@ public class GraphQlWebFluxAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphQlHttpHandler graphQlHttpHandler(WebGraphQlHandler webGraphQlHandler) {
-		return new GraphQlHttpHandler(webGraphQlHandler);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
 			ObjectProvider<WebGraphQlInterceptor> interceptors) {
 		return WebGraphQlHandler.builder(service).interceptors(interceptors.orderedStream().toList()).build();
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	public GraphQlHttpHandler graphQlHttpHandler(WebGraphQlHandler webGraphQlHandler) {
+		return new GraphQlHttpHandler(webGraphQlHandler);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public GraphQlSseHandler graphQlSseHandler(WebGraphQlHandler webGraphQlHandler) {
+		return new GraphQlSseHandler(webGraphQlHandler);
+	}
+
+	@Bean
 	@Order(0)
 	public RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler httpHandler,
-			GraphQlSource graphQlSource, GraphQlProperties properties) {
+			GraphQlSseHandler sseHandler, GraphQlSource graphQlSource, GraphQlProperties properties) {
 		String path = properties.getPath();
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
 		builder.route(GraphQlRequestPredicates.graphQlHttp(path), httpHandler::handleRequest);
+		builder.route(GraphQlRequestPredicates.graphQlSse(path), sseHandler::handleRequest);
 		builder = builder.GET(path, this::onlyAllowPost);
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphQlHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
