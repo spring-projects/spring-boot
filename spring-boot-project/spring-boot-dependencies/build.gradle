@@ -1729,7 +1729,7 @@ bom {
 		}
 		links {
 			site("https://github.com/SeleniumHQ/htmlunit-driver")
-			releaseNotes("https://github.com/SeleniumHQ/htmlunit-driver/releases/tag/htmlunit3-driver-{version}")
+			releaseNotes("https://github.com/SeleniumHQ/htmlunit-driver/releases/tag/htmlunit-driver-{version}")
 		}
 	}
 	library("SendGrid", "4.10.2") {
