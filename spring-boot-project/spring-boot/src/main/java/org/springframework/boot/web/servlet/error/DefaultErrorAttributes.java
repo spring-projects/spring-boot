@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.RequestDispatcher;
@@ -29,6 +30,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.method.MethodValidationResult;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -62,6 +65,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Vedran Pavic
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -149,13 +153,20 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	private void addErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
-		BindingResult result = extractBindingResult(error);
-		if (result == null) {
-			addExceptionErrorMessage(errorAttributes, webRequest, error);
+		MethodValidationResult methodValidationResult = extractMethodValidationResult(error);
+		if (methodValidationResult != null) {
+			addMethodValidationResultErrorMessage(errorAttributes, methodValidationResult);
 		}
 		else {
-			addBindingResultErrorMessage(errorAttributes, result);
+			BindingResult bindingResult = extractBindingResult(error);
+			if (bindingResult != null) {
+				addBindingResultErrorMessage(errorAttributes, bindingResult);
+			}
+			else {
+				addExceptionErrorMessage(errorAttributes, webRequest, error);
+			}
 		}
+
 	}
 
 	private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
@@ -193,9 +204,27 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		errorAttributes.put("errors", result.getAllErrors());
 	}
 
+	private void addMethodValidationResultErrorMessage(Map<String, Object> errorAttributes,
+			MethodValidationResult result) {
+		List<? extends MessageSourceResolvable> errors = result.getAllErrors()
+			.stream()
+			.filter(ObjectError.class::isInstance)
+			.toList();
+		errorAttributes.put("message",
+				"Validation failed for method='" + result.getMethod() + "'. " + "Error count: " + errors.size());
+		errorAttributes.put("errors", errors);
+	}
+
 	private BindingResult extractBindingResult(Throwable error) {
 		if (error instanceof BindingResult bindingResult) {
 			return bindingResult;
+		}
+		return null;
+	}
+
+	private MethodValidationResult extractMethodValidationResult(Throwable error) {
+		if (error instanceof MethodValidationResult methodValidationResult) {
+			return methodValidationResult;
 		}
 		return null;
 	}

@@ -32,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.method.MethodValidationResult;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ResponseStatusException;
@@ -58,6 +59,7 @@ import org.springframework.web.server.ServerWebExchange;
  * @author Michele Mancioppi
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -117,6 +119,14 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (error instanceof BindingResult) {
 			return error.getMessage();
 		}
+		if (error instanceof MethodValidationResult methodValidationResult) {
+			long errorCount = methodValidationResult.getAllErrors()
+				.stream()
+				.filter(ObjectError.class::isInstance)
+				.count();
+			return "Validation failed for method: %s, with %d %s".formatted(methodValidationResult.getMethod(),
+					errorCount, (errorCount > 1) ? "errors" : "error");
+		}
 		if (error instanceof ResponseStatusException responseStatusException) {
 			return responseStatusException.getReason();
 		}
@@ -149,6 +159,12 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (error instanceof BindingResult result) {
 			if (result.hasErrors()) {
 				errorAttributes.put("errors", result.getAllErrors());
+			}
+		}
+		if (error instanceof MethodValidationResult result) {
+			if (result.hasErrors()) {
+				errorAttributes.put("errors",
+						result.getAllErrors().stream().filter(ObjectError.class::isInstance).toList());
 			}
 		}
 	}
