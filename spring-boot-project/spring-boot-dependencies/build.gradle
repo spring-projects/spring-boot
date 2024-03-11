@@ -563,8 +563,8 @@ bom {
 			]
 		}
 	}
-	library("HtmlUnit", "2.70.0") {
-		group("net.sourceforge.htmlunit") {
+	library("HtmlUnit", "4.2.0") {
+		group("org.htmlunit") {
 			modules = [
 				"htmlunit" {
 					exclude group: "commons-logging", module: "commons-logging"
@@ -1826,10 +1826,10 @@ bom {
 			releaseNotes("https://github.com/SeleniumHQ/selenium/releases/tag/selenium-{version}")
 		}
 	}
-	library("Selenium HtmlUnit", "4.13.0") {
+	library("Selenium HtmlUnit", "4.20.0") {
 		group("org.seleniumhq.selenium") {
 			modules = [
-				"htmlunit-driver"
+				"htmlunit3-driver"
 			]
 		}
 		links {
