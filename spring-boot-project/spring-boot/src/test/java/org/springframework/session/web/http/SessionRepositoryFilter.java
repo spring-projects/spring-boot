@@ -17,8 +17,9 @@
 package org.springframework.session.web.http;
 
 /**
- * Mimics SessionRepositoryFilter from spring-session-core
- * (just in that it's a OncePerRequestFilter in the right package).
+ * Mimics SessionRepositoryFilter from spring-session-core (just in that it's a
+ * OncePerRequestFilter in the right package).
  */
 public class SessionRepositoryFilter extends OncePerRequestFilter {
+
 }

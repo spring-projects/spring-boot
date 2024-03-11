@@ -19,8 +19,9 @@ package org.springframework.session.web.http;
 import org.springframework.boot.web.servlet.mock.MockFilter;
 
 /**
- * Mimics OncePerRequestFilter from spring-session-core
- * (just in that it's a Filter in the right package).
+ * Mimics OncePerRequestFilter from spring-session-core (just in that it's a Filter in the
+ * right package).
  */
 public class OncePerRequestFilter extends MockFilter {
+
 }
