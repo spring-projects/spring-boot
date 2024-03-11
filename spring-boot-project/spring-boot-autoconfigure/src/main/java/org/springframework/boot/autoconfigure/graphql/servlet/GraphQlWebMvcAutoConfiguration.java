@@ -49,6 +49,7 @@ import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.server.WebGraphQlHandler;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.webmvc.GraphQlHttpHandler;
+import org.springframework.graphql.server.webmvc.GraphQlRequestPredicates;
 import org.springframework.graphql.server.webmvc.GraphQlWebSocketHandler;
 import org.springframework.graphql.server.webmvc.GraphiQlHandler;
 import org.springframework.graphql.server.webmvc.SchemaHandler;
@@ -62,7 +63,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.function.RequestPredicates;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.RouterFunctions;
 import org.springframework.web.servlet.function.ServerRequest;
@@ -88,10 +88,6 @@ public class GraphQlWebMvcAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(GraphQlWebMvcAutoConfiguration.class);
 
-	@SuppressWarnings("removal")
-	private static final MediaType[] SUPPORTED_MEDIA_TYPES = new MediaType[] { MediaType.APPLICATION_GRAPHQL_RESPONSE,
-			MediaType.APPLICATION_JSON, MediaType.APPLICATION_GRAPHQL };
-
 	@Bean
 	@ConditionalOnMissingBean
 	public GraphQlHttpHandler graphQlHttpHandler(WebGraphQlHandler webGraphQlHandler) {
@@ -112,8 +108,7 @@ public class GraphQlWebMvcAutoConfiguration {
 		String path = properties.getPath();
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
-		builder = builder.POST(path, RequestPredicates.contentType(MediaType.APPLICATION_JSON)
-			.and(RequestPredicates.accept(SUPPORTED_MEDIA_TYPES)), httpHandler::handleRequest);
+		builder.route(GraphQlRequestPredicates.graphQlHttp(path), httpHandler::handleRequest);
 		builder = builder.GET(path, this::onlyAllowPost);
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());

@@ -47,28 +47,24 @@ import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.server.WebGraphQlHandler;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.webflux.GraphQlHttpHandler;
+import org.springframework.graphql.server.webflux.GraphQlRequestPredicates;
 import org.springframework.graphql.server.webflux.GraphQlWebSocketHandler;
 import org.springframework.graphql.server.webflux.GraphiQlHandler;
 import org.springframework.graphql.server.webflux.SchemaHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.config.CorsRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
-import org.springframework.web.reactive.function.server.RequestPredicate;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.socket.server.support.WebSocketUpgradeHandlerPredicate;
-
-import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
-import static org.springframework.web.reactive.function.server.RequestPredicates.contentType;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for enabling Spring GraphQL over
@@ -84,11 +80,6 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 @EnableConfigurationProperties(GraphQlCorsProperties.class)
 @ImportRuntimeHints(GraphQlWebFluxAutoConfiguration.GraphiQlResourceHints.class)
 public class GraphQlWebFluxAutoConfiguration {
-
-	@SuppressWarnings("removal")
-	private static final RequestPredicate SUPPORTS_MEDIATYPES = accept(MediaType.APPLICATION_GRAPHQL_RESPONSE,
-			MediaType.APPLICATION_JSON, MediaType.APPLICATION_GRAPHQL)
-		.and(contentType(MediaType.APPLICATION_JSON));
 
 	private static final Log logger = LogFactory.getLog(GraphQlWebFluxAutoConfiguration.class);
 
@@ -112,7 +103,7 @@ public class GraphQlWebFluxAutoConfiguration {
 		String path = properties.getPath();
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
-		builder = builder.POST(path, SUPPORTS_MEDIATYPES, httpHandler::handleRequest);
+		builder.route(GraphQlRequestPredicates.graphQlHttp(path), httpHandler::handleRequest);
 		builder = builder.GET(path, this::onlyAllowPost);
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphQlHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
