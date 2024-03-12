@@ -26,7 +26,6 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.dao.DefaultExecutionContextSerializer;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -118,8 +117,7 @@ public class BatchAutoConfiguration {
 			this.transactionManager = batchTransactionManager.getIfAvailable(() -> transactionManager);
 			this.properties = properties;
 			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers.orderedStream().toList();
-			this.executionContextSerializer = executionContextSerializer
-				.getIfAvailable(DefaultExecutionContextSerializer::new);
+			this.executionContextSerializer = executionContextSerializer.getIfAvailable();
 		}
 
 		@Override
@@ -155,7 +153,8 @@ public class BatchAutoConfiguration {
 
 		@Override
 		protected ExecutionContextSerializer getExecutionContextSerializer() {
-			return this.executionContextSerializer;
+			return (this.executionContextSerializer != null) ? this.executionContextSerializer
+					: super.getExecutionContextSerializer();
 		}
 
 	}
