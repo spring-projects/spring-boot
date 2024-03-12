@@ -113,7 +113,7 @@ class JarFileArchiveTests {
 		URL url = urls.iterator().next();
 		assertThat(url).isNotEqualTo(JarUrl.create(this.file, "nested.jar"));
 		// The unpack URL must be a raw file URL (see gh-38833)
-		assertThat(url.toString()).startsWith("file:").endsWith("/nested.jar").doesNotStartWith("jar:");
+		assertThat(url.toString()).startsWith("file:").endsWith("/nested.jar");
 	}
 
 	@Test

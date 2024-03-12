@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
  * observability.
  * <p>
  * If this annotation is applied to a sliced test, an in-memory {@code MeterRegistry}, a
- * no-op {@code Tracer} and an {@code ObservationRegistry} is added to the application
+ * no-op {@code Tracer} and an {@code ObservationRegistry} are added to the application
  * context.
  *
  * @author Moritz Halbritter
