@@ -545,7 +545,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
-	void shouldApplyingMaxConnectionUseConnector() throws Exception {
+	void shouldApplyMaxConnectionsToConnectors() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setMaxConnections(1);
 		this.webServer = factory.getWebServer();

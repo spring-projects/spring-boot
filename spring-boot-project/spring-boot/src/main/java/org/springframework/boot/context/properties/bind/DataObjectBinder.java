@@ -61,7 +61,7 @@ interface DataObjectBinder {
 	 * @param context the bind context
 	 * @param exception the exception about to be thrown
 	 */
-	default <T> void onUnableToCreateInstance(Bindable<T> target, Binder.Context context, RuntimeException exception) {
+	default <T> void onUnableToCreateInstance(Bindable<T> target, Context context, RuntimeException exception) {
 	}
 
 }

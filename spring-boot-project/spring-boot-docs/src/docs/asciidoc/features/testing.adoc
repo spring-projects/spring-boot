@@ -1055,7 +1055,7 @@ include::code:MyRedisConfiguration[]
 
 Spring Boot can't tell from `GenericContainer` which container image is used, so the `name` attribute from `@ServiceConnection` must be used to provide that hint.
 
-You can also can use the `name` attribute of `@ServiceConnection` to override which connection detail will be used, for example when using custom images.
+You can also use the `name` attribute of `@ServiceConnection` to override which connection detail will be used, for example when using custom images.
 If you are using the Docker image `registry.mycompany.com/mirror/myredis`, you'd use `@ServiceConnection(name="redis")` to ensure `RedisConnectionDetails` are created.
 
 
