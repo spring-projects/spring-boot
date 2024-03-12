@@ -62,13 +62,23 @@ class TestPrintStream extends PrintStream implements AssertProvider<PrintStreamA
 
 		void hasSameContentAsResource(String resource) {
 			try {
-				InputStream stream = this.actual.testClass.getResourceAsStream(resource);
-				String content = FileCopyUtils.copyToString(new InputStreamReader(stream, StandardCharsets.UTF_8));
-				Assertions.assertThat(this.actual).hasToString(content);
+				try (InputStream stream = this.actual.testClass.getResourceAsStream(resource)) {
+					Assertions.assertThat(stream).as("Resource '%s'", resource).isNotNull();
+					String content = FileCopyUtils.copyToString(new InputStreamReader(stream, StandardCharsets.UTF_8));
+					hasSameContent(content);
+				}
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(ex);
 			}
+		}
+
+		void hasSameContent(String content) {
+			Assertions.assertThat(this.actual).hasToString(content);
+		}
+
+		void contains(String text) {
+			Assertions.assertThat(this.actual.toString()).contains(text);
 		}
 
 	}

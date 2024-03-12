@@ -41,5 +41,5 @@ task listLayers(type: JavaExec) {
 task extractLayers(type: JavaExec) {
 	classpath = bootWar.outputs.files
 	systemProperties = [ "jarmode": "tools" ]
-	args "extract", "--layers", "--launcher"
+	args "extract", "--layers", "--launcher", "--destination", ".", "--force"
 }

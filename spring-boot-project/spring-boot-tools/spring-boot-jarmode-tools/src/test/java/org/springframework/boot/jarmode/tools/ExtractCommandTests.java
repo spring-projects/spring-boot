@@ -119,46 +119,46 @@ class ExtractCommandTests extends AbstractTests {
 	class Extract {
 
 		@Test
-		void extractLibrariesAndCreatesRunner() throws IOException {
+		void extractLibrariesAndCreatesApplication() throws IOException {
 			run(ExtractCommandTests.this.archive);
 			List<String> filenames = listFilenames();
-			assertThat(filenames).contains("lib/dependency-1.jar")
-				.contains("lib/dependency-2.jar")
-				.contains("lib/dependency-3-SNAPSHOT.jar")
-				.contains("runner.jar")
-				.doesNotContain("org/springframework/boot/loader/launch/JarLauncher.class");
+			assertThat(filenames).contains("test/lib/dependency-1.jar")
+				.contains("test/lib/dependency-2.jar")
+				.contains("test/lib/dependency-3-SNAPSHOT.jar")
+				.contains("test/test.jar")
+				.doesNotContain("test/org/springframework/boot/loader/launch/JarLauncher.class");
 		}
 
 		@Test
-		void extractLibrariesAndCreatesRunnerInDestination() throws IOException {
+		void extractLibrariesAndCreatesApplicationInDestination() throws IOException {
 			run(ExtractCommandTests.this.archive, "--destination", file("out").getAbsolutePath());
 			List<String> filenames = listFilenames();
 			assertThat(filenames).contains("out/lib/dependency-1.jar")
 				.contains("out/lib/dependency-2.jar")
 				.contains("out/lib/dependency-3-SNAPSHOT.jar")
-				.contains("out/runner.jar");
+				.contains("out/test.jar");
 		}
 
 		@Test
-		void runnerNameAndLibrariesDirectoriesCanBeCustomized() throws IOException {
-			run(ExtractCommandTests.this.archive, "--runner-filename", "runner-customized.jar", "--libraries",
+		void applicationNameAndLibrariesDirectoriesCanBeCustomized() throws IOException {
+			run(ExtractCommandTests.this.archive, "--application-filename", "application-customized.jar", "--libraries",
 					"dependencies");
 			List<String> filenames = listFilenames();
-			assertThat(filenames).contains("dependencies/dependency-1.jar")
-				.contains("dependencies/dependency-2.jar")
-				.contains("dependencies/dependency-3-SNAPSHOT.jar");
-			File runner = file("runner-customized.jar");
-			assertThat(runner).exists();
-			Map<String, String> attributes = getJarManifestAttributes(runner);
+			assertThat(filenames).contains("test/dependencies/dependency-1.jar")
+				.contains("test/dependencies/dependency-2.jar")
+				.contains("test/dependencies/dependency-3-SNAPSHOT.jar");
+			File application = file("test/application-customized.jar");
+			assertThat(application).exists();
+			Map<String, String> attributes = getJarManifestAttributes(application);
 			assertThat(attributes).containsEntry("Class-Path",
 					"dependencies/dependency-1.jar dependencies/dependency-2.jar dependencies/dependency-3-SNAPSHOT.jar");
 		}
 
 		@Test
-		void runnerContainsManifestEntries() throws IOException {
+		void applicationContainsManifestEntries() throws IOException {
 			run(ExtractCommandTests.this.archive);
-			File runner = file("runner.jar");
-			Map<String, String> attributes = getJarManifestAttributes(runner);
+			File application = file("test/test.jar");
+			Map<String, String> attributes = getJarManifestAttributes(application);
 			assertThat(attributes).containsEntry("Main-Class", "org.example.Main")
 				.containsEntry("Class-Path", "lib/dependency-1.jar lib/dependency-2.jar lib/dependency-3-SNAPSHOT.jar")
 				.containsEntry("Some-Attribute", "Some-Value")
@@ -167,27 +167,27 @@ class ExtractCommandTests extends AbstractTests {
 		}
 
 		@Test
-		void runnerContainsApplicationClassesAndResources() throws IOException {
+		void applicationContainsApplicationClassesAndResources() throws IOException {
 			run(ExtractCommandTests.this.archive);
-			File runner = file("runner.jar");
-			List<String> entryNames = getJarEntryNames(runner);
+			File application = file("test/test.jar");
+			List<String> entryNames = getJarEntryNames(application);
 			assertThat(entryNames).contains("application.properties");
 		}
 
 		@Test
 		void appliesFileTimes() {
 			run(ExtractCommandTests.this.archive);
-			assertThat(file("lib/dependency-1.jar")).exists().satisfies(ExtractCommandTests.this::timeAttributes);
-			assertThat(file("lib/dependency-2.jar")).exists().satisfies(ExtractCommandTests.this::timeAttributes);
-			assertThat(file("lib/dependency-3-SNAPSHOT.jar")).exists()
+			assertThat(file("test/lib/dependency-1.jar")).exists().satisfies(ExtractCommandTests.this::timeAttributes);
+			assertThat(file("test/lib/dependency-2.jar")).exists().satisfies(ExtractCommandTests.this::timeAttributes);
+			assertThat(file("test/lib/dependency-3-SNAPSHOT.jar")).exists()
 				.satisfies(ExtractCommandTests.this::timeAttributes);
 		}
 
 		@Test
-		void runnerDoesntContainLibraries() throws IOException {
+		void applicationDoesntContainLibraries() throws IOException {
 			run(ExtractCommandTests.this.archive);
-			File runner = file("runner.jar");
-			List<String> entryNames = getJarEntryNames(runner);
+			File application = file("test/test.jar");
+			List<String> entryNames = getJarEntryNames(application);
 			assertThat(entryNames).doesNotContain("BOOT-INF/lib/dependency-1.jar", "BOOT-INF/lib/dependency-2.jar");
 		}
 
@@ -197,7 +197,42 @@ class ExtractCommandTests extends AbstractTests {
 			try (FileWriter writer = new FileWriter(file)) {
 				writer.write("text");
 			}
-			assertThatIllegalStateException().isThrownBy(() -> run(file)).withMessageContaining("not compatible");
+			TestPrintStream out = run(file);
+			assertThat(out).contains("is not compatible; ensure jar file is valid and launch script is not enabled");
+		}
+
+		@Test
+		void shouldFailIfDirectoryIsNotEmpty() throws IOException {
+			File destination = file("out");
+			Files.createDirectories(destination.toPath());
+			Files.createFile(new File(destination, "file.txt").toPath());
+			TestPrintStream out = run(ExtractCommandTests.this.archive, "--destination", destination.getAbsolutePath());
+			assertThat(out).contains("already exists and is not empty");
+		}
+
+		@Test
+		void shouldNotFailIfDirectoryExistsButIsEmpty() throws IOException {
+			File destination = file("out");
+			Files.createDirectories(destination.toPath());
+			run(ExtractCommandTests.this.archive, "--destination", destination.getAbsolutePath());
+			List<String> filenames = listFilenames();
+			assertThat(filenames).contains("out/lib/dependency-1.jar")
+				.contains("out/lib/dependency-2.jar")
+				.contains("out/lib/dependency-3-SNAPSHOT.jar")
+				.contains("out/test.jar");
+		}
+
+		@Test
+		void shouldNotFailIfDirectoryIsNotEmptyButForceIsPassed() throws IOException {
+			File destination = file("out");
+			Files.createDirectories(destination.toPath());
+			Files.createFile(new File(destination, "file.txt").toPath());
+			run(ExtractCommandTests.this.archive, "--destination", destination.getAbsolutePath(), "--force");
+			List<String> filenames = listFilenames();
+			assertThat(filenames).contains("out/lib/dependency-1.jar")
+				.contains("out/lib/dependency-2.jar")
+				.contains("out/lib/dependency-3-SNAPSHOT.jar")
+				.contains("out/test.jar");
 		}
 
 	}
@@ -206,23 +241,23 @@ class ExtractCommandTests extends AbstractTests {
 	class ExtractWithLayers {
 
 		@Test
-		void extractLibrariesAndCreatesRunner() throws IOException {
+		void extractLibrariesAndCreatesApplication() throws IOException {
 			run(ExtractCommandTests.this.archive, "--layers");
 			List<String> filenames = listFilenames();
-			assertThat(filenames).contains("dependencies/lib/dependency-1.jar")
-				.contains("dependencies/lib/dependency-2.jar")
-				.contains("snapshot-dependencies/lib/dependency-3-SNAPSHOT.jar")
-				.contains("application/runner.jar");
+			assertThat(filenames).contains("test/dependencies/lib/dependency-1.jar")
+				.contains("test/dependencies/lib/dependency-2.jar")
+				.contains("test/snapshot-dependencies/lib/dependency-3-SNAPSHOT.jar")
+				.contains("test/application/test.jar");
 		}
 
 		@Test
 		void extractsOnlySelectedLayers() throws IOException {
 			run(ExtractCommandTests.this.archive, "--layers", "dependencies");
 			List<String> filenames = listFilenames();
-			assertThat(filenames).contains("dependencies/lib/dependency-1.jar")
-				.contains("dependencies/lib/dependency-2.jar")
-				.doesNotContain("snapshot-dependencies/lib/dependency-3-SNAPSHOT.jar")
-				.doesNotContain("application/runner.jar");
+			assertThat(filenames).contains("test/dependencies/lib/dependency-1.jar")
+				.contains("test/dependencies/lib/dependency-2.jar")
+				.doesNotContain("test/snapshot-dependencies/lib/dependency-3-SNAPSHOT.jar")
+				.doesNotContain("test/application/test.jar");
 		}
 
 		@Test
@@ -241,14 +276,14 @@ class ExtractCommandTests extends AbstractTests {
 		void extract() throws IOException {
 			run(ExtractCommandTests.this.archive, "--launcher");
 			List<String> filenames = listFilenames();
-			assertThat(filenames).contains("META-INF/MANIFEST.MF")
-				.contains("BOOT-INF/classpath.idx")
-				.contains("BOOT-INF/layers.idx")
-				.contains("BOOT-INF/lib/dependency-1.jar")
-				.contains("BOOT-INF/lib/dependency-2.jar")
-				.contains("BOOT-INF/lib/dependency-3-SNAPSHOT.jar")
-				.contains("BOOT-INF/classes/application.properties")
-				.contains("org/springframework/boot/loader/launch/JarLauncher.class");
+			assertThat(filenames).contains("test/META-INF/MANIFEST.MF")
+				.contains("test/BOOT-INF/classpath.idx")
+				.contains("test/BOOT-INF/layers.idx")
+				.contains("test/BOOT-INF/lib/dependency-1.jar")
+				.contains("test/BOOT-INF/lib/dependency-2.jar")
+				.contains("test/BOOT-INF/lib/dependency-3-SNAPSHOT.jar")
+				.contains("test/BOOT-INF/classes/application.properties")
+				.contains("test/org/springframework/boot/loader/launch/JarLauncher.class");
 		}
 
 		@Test
@@ -267,14 +302,14 @@ class ExtractCommandTests extends AbstractTests {
 		void extract() throws IOException {
 			run(ExtractCommandTests.this.archive, "--launcher", "--layers");
 			List<String> filenames = listFilenames();
-			assertThat(filenames).contains("application/META-INF/MANIFEST.MF")
-				.contains("application/BOOT-INF/classpath.idx")
-				.contains("application/BOOT-INF/layers.idx")
-				.contains("dependencies/BOOT-INF/lib/dependency-1.jar")
-				.contains("dependencies/BOOT-INF/lib/dependency-2.jar")
-				.contains("snapshot-dependencies/BOOT-INF/lib/dependency-3-SNAPSHOT.jar")
-				.contains("application/BOOT-INF/classes/application.properties")
-				.contains("spring-boot-loader/org/springframework/boot/loader/launch/JarLauncher.class");
+			assertThat(filenames).contains("test/application/META-INF/MANIFEST.MF")
+				.contains("test/application/BOOT-INF/classpath.idx")
+				.contains("test/application/BOOT-INF/layers.idx")
+				.contains("test/dependencies/BOOT-INF/lib/dependency-1.jar")
+				.contains("test/dependencies/BOOT-INF/lib/dependency-2.jar")
+				.contains("test/snapshot-dependencies/BOOT-INF/lib/dependency-3-SNAPSHOT.jar")
+				.contains("test/application/BOOT-INF/classes/application.properties")
+				.contains("test/spring-boot-loader/org/springframework/boot/loader/launch/JarLauncher.class");
 		}
 
 		@Test
@@ -288,14 +323,14 @@ class ExtractCommandTests extends AbstractTests {
 		void extractsOnlySelectedLayers() throws IOException {
 			run(ExtractCommandTests.this.archive, "--launcher", "--layers", "dependencies");
 			List<String> filenames = listFilenames();
-			assertThat(filenames).doesNotContain("application/META-INF/MANIFEST.MF")
-				.doesNotContain("application/BOOT-INF/classpath.idx")
-				.doesNotContain("application/BOOT-INF/layers.idx")
-				.contains("dependencies/BOOT-INF/lib/dependency-1.jar")
-				.contains("dependencies/BOOT-INF/lib/dependency-2.jar")
-				.doesNotContain("snapshot-dependencies/BOOT-INF/lib/dependency-3-SNAPSHOT.jar")
-				.doesNotContain("application/BOOT-INF/classes/application.properties")
-				.doesNotContain("spring-boot-loader/org/springframework/boot/loader/launch/JarLauncher.class");
+			assertThat(filenames).doesNotContain("test/application/META-INF/MANIFEST.MF")
+				.doesNotContain("test/application/BOOT-INF/classpath.idx")
+				.doesNotContain("test/application/BOOT-INF/layers.idx")
+				.contains("test/dependencies/BOOT-INF/lib/dependency-1.jar")
+				.contains("test/dependencies/BOOT-INF/lib/dependency-2.jar")
+				.doesNotContain("test/snapshot-dependencies/BOOT-INF/lib/dependency-3-SNAPSHOT.jar")
+				.doesNotContain("test/application/BOOT-INF/classes/application.properties")
+				.doesNotContain("test/spring-boot-loader/org/springframework/boot/loader/launch/JarLauncher.class");
 		}
 
 	}
