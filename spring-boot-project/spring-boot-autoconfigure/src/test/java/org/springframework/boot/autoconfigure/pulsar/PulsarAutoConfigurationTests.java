@@ -283,22 +283,29 @@ class PulsarAutoConfigurationTests {
 		}
 
 		@Test
-		void whenHasUseDefinedProducerInterceptorInjectsBean() {
+		<T> void whenHasUseDefinedProducerInterceptorInjectsBean() {
 			ProducerInterceptor interceptor = mock(ProducerInterceptor.class);
 			this.contextRunner.withBean("customProducerInterceptor", ProducerInterceptor.class, () -> interceptor)
-				.run((context) -> assertThat(context).getBean(PulsarTemplate.class)
-					.extracting("interceptors")
-					.asList()
-					.contains(interceptor));
+				.run((context) -> {
+					PulsarTemplate<?> pulsarTemplate = context.getBean(PulsarTemplate.class);
+					Customizers<ProducerBuilderCustomizer<T>, ProducerBuilder<T>> customizers = Customizers
+						.of(ProducerBuilder.class, ProducerBuilderCustomizer::customize);
+					assertThat(customizers.fromField(pulsarTemplate, "interceptorsCustomizers"))
+						.callsInOrder(ProducerBuilder::intercept, interceptor);
+				});
 		}
 
 		@Test
-		void whenHasUseDefinedProducerInterceptorsInjectsBeansInCorrectOrder() {
-			this.contextRunner.withUserConfiguration(InterceptorTestConfiguration.class)
-				.run((context) -> assertThat(context).getBean(PulsarTemplate.class)
-					.extracting("interceptors")
-					.asList()
-					.containsExactly(context.getBean("interceptorBar"), context.getBean("interceptorFoo")));
+		<T> void whenHasUseDefinedProducerInterceptorsInjectsBeansInCorrectOrder() {
+			this.contextRunner.withUserConfiguration(InterceptorTestConfiguration.class).run((context) -> {
+				ProducerInterceptor interceptorFoo = context.getBean("interceptorFoo", ProducerInterceptor.class);
+				ProducerInterceptor interceptorBar = context.getBean("interceptorBar", ProducerInterceptor.class);
+				PulsarTemplate<?> pulsarTemplate = context.getBean(PulsarTemplate.class);
+				Customizers<ProducerBuilderCustomizer<T>, ProducerBuilder<T>> customizers = Customizers
+					.of(ProducerBuilder.class, ProducerBuilderCustomizer::customize);
+				assertThat(customizers.fromField(pulsarTemplate, "interceptorsCustomizers"))
+					.callsInOrder(ProducerBuilder::intercept, interceptorBar, interceptorFoo);
+			});
 		}
 
 		@Test
