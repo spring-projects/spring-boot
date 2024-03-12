@@ -1503,7 +1503,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Authorization Server", "1.2.2") {
+	library("Spring Authorization Server", "1.2.3-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			modules = [
