@@ -298,6 +298,16 @@ public class UndertowWebServer implements WebServer {
 		return ports.get(0).getNumber();
 	}
 
+	/**
+	 * Returns the {@link Undertow Undertow server}. Returns {@code null} until the server
+	 * has been started.
+	 * @return the Undertow server or {@code null} if the server hasn't been started yet
+	 * @since 3.3.0
+	 */
+	public Undertow getUndertow() {
+		return this.undertow;
+	}
+
 	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
 		if (this.gracefulShutdown == null) {
