@@ -27,8 +27,6 @@ import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.ReaderBuilder;
 import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 import org.apache.pulsar.common.schema.SchemaType;
-import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -285,24 +283,29 @@ class PulsarAutoConfigurationTests {
 		}
 
 		@Test
-		@Disabled("Changes in https://github.com/spring-projects/spring-pulsar/issues/593 prevent introspection of the interceptors")
-		void whenHasUseDefinedProducerInterceptorInjectsBean() {
+		<T> void whenHasUseDefinedProducerInterceptorInjectsBean() {
 			ProducerInterceptor interceptor = mock(ProducerInterceptor.class);
 			this.contextRunner.withBean("customProducerInterceptor", ProducerInterceptor.class, () -> interceptor)
-				.run((context) -> assertThat(context).getBean(PulsarTemplate.class)
-					.extracting("interceptorsCustomizers")
-					.asInstanceOf(InstanceOfAssertFactories.LIST)
-					.contains(interceptor));
+				.run((context) -> {
+					PulsarTemplate<?> pulsarTemplate = context.getBean(PulsarTemplate.class);
+					Customizers<ProducerBuilderCustomizer<T>, ProducerBuilder<T>> customizers = Customizers
+						.of(ProducerBuilder.class, ProducerBuilderCustomizer::customize);
+					assertThat(customizers.fromField(pulsarTemplate, "interceptorsCustomizers"))
+						.callsInOrder(ProducerBuilder::intercept, interceptor);
+				});
 		}
 
 		@Test
-		@Disabled("Changes in https://github.com/spring-projects/spring-pulsar/issues/593 prevent introspection of the interceptors")
-		void whenHasUseDefinedProducerInterceptorsInjectsBeansInCorrectOrder() {
-			this.contextRunner.withUserConfiguration(InterceptorTestConfiguration.class)
-				.run((context) -> assertThat(context).getBean(PulsarTemplate.class)
-					.extracting("interceptorsCustomizers")
-					.asInstanceOf(InstanceOfAssertFactories.LIST)
-					.containsExactly(context.getBean("interceptorBar"), context.getBean("interceptorFoo")));
+		<T> void whenHasUseDefinedProducerInterceptorsInjectsBeansInCorrectOrder() {
+			this.contextRunner.withUserConfiguration(InterceptorTestConfiguration.class).run((context) -> {
+				ProducerInterceptor interceptorFoo = context.getBean("interceptorFoo", ProducerInterceptor.class);
+				ProducerInterceptor interceptorBar = context.getBean("interceptorBar", ProducerInterceptor.class);
+				PulsarTemplate<?> pulsarTemplate = context.getBean(PulsarTemplate.class);
+				Customizers<ProducerBuilderCustomizer<T>, ProducerBuilder<T>> customizers = Customizers
+					.of(ProducerBuilder.class, ProducerBuilderCustomizer::customize);
+				assertThat(customizers.fromField(pulsarTemplate, "interceptorsCustomizers"))
+					.callsInOrder(ProducerBuilder::intercept, interceptorBar, interceptorFoo);
+			});
 		}
 
 		@Test
