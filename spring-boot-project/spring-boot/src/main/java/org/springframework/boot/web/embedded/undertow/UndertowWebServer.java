@@ -299,9 +299,10 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	/**
-	 * Returns the undertow of the WebServer. Note, the return value will be null until
-	 * the server has been started.
-	 * @return undertow of the WebServer.
+	 * Returns the {@link Undertow Undertow server}. Returns {@code null} until the server
+	 * has been started.
+	 * @return the Undertow server or {@code null} if the server hasn't been started yet
+	 * @since 3.3.0
 	 */
 	public Undertow getUndertow() {
 		return this.undertow;
