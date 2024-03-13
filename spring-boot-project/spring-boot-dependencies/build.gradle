@@ -1266,7 +1266,7 @@ bom {
 			releaseNotes("https://github.com/micrometer-metrics/tracing/releases/tag/v{version}")
 		}
 	}
-	library("Mockito", "5.10.0") {
+	library("Mockito", "5.11.0") {
 		group("org.mockito") {
 			imports = [
 				"mockito-bom"
