@@ -112,7 +112,7 @@ class PulsarPropertiesMapperTests {
 		properties.getClient().setServiceUrl("https://used.example.com");
 		properties.getClient().getFailover().setFailoverPolicy(FailoverPolicy.ORDER);
 		properties.getClient().getFailover().setCheckInterval(Duration.ofSeconds(5));
-		properties.getClient().getFailover().setFailOverDelay(Duration.ofSeconds(30));
+		properties.getClient().getFailover().setFailoverDelay(Duration.ofSeconds(30));
 		properties.getClient().getFailover().setSwitchBackDelay(Duration.ofSeconds(30));
 		properties.getClient().getFailover().setBackupClusters(List.of(backupCluster1, backupCluster2));
 		PulsarConnectionDetails connectionDetails = mock(PulsarConnectionDetails.class);

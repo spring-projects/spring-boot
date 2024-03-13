@@ -144,7 +144,7 @@ class PulsarConfigurationTests {
 					customizeAction.accept(pulsarClientBuilderCustomizer, target);
 					InOrder ordered = inOrder(target);
 					ordered.verify(target).serviceUrlProvider(Mockito.any(AutoClusterFailover.class));
-					assertThat(pulsarProperties.getClient().getFailover().getFailOverDelay())
+					assertThat(pulsarProperties.getClient().getFailover().getFailoverDelay())
 						.isEqualTo(Duration.ofSeconds(15));
 					assertThat(pulsarProperties.getClient().getFailover().getSwitchBackDelay())
 						.isEqualTo(Duration.ofSeconds(30));
