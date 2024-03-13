@@ -1380,6 +1380,10 @@ bom {
 		}
 	}
 	library("Oracle Database", "21.9.0.0") {
+		prohibit {
+			versionRange "[21.10.0.0,21.13.0.0]"
+			because "they do not work in a JVM with assertions enabled"
+		}
 		group("com.oracle.database.jdbc") {
 			imports = [
 				"ojdbc-bom"
