@@ -105,7 +105,7 @@ class PulsarPropertiesTests {
 			Failover failoverProperties = properties.getFailover();
 			List<BackupCluster> backupClusters = properties.getFailover().getBackupClusters();
 			assertThat(properties.getServiceUrl()).isEqualTo("my-service-url");
-			assertThat(failoverProperties.getFailOverDelay()).isEqualTo(Duration.ofMillis(30000));
+			assertThat(failoverProperties.getFailoverDelay()).isEqualTo(Duration.ofMillis(30000));
 			assertThat(failoverProperties.getSwitchBackDelay()).isEqualTo(Duration.ofMillis(15000));
 			assertThat(failoverProperties.getCheckInterval()).isEqualTo(Duration.ofMillis(1000));
 			assertThat(backupClusters.get(0).getServiceUrl()).isEqualTo("backup-service-url-1");

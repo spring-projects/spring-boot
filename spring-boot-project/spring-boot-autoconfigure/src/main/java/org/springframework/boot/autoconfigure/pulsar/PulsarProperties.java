@@ -901,7 +901,7 @@ public class PulsarProperties {
 	public static class Failover {
 
 		/**
-		 * Cluster Failover Policy.
+		 * Cluster failover policy.
 		 */
 		private FailoverPolicy failoverPolicy = FailoverPolicy.ORDER;
 
@@ -909,7 +909,7 @@ public class PulsarProperties {
 		 * Delay before the Pulsar client switches from the primary cluster to the backup
 		 * cluster.
 		 */
-		private Duration failOverDelay;
+		private Duration failoverDelay;
 
 		/**
 		 * Delay before the Pulsar client switches from the backup cluster to the primary
@@ -923,7 +923,7 @@ public class PulsarProperties {
 		private Duration checkInterval;
 
 		/**
-		 * List of backupClusters The backup cluster is chosen in the sequence of the
+		 * List of backup clusters. The backup cluster is chosen in the sequence of the
 		 * given list. If all backup clusters are available, the Pulsar client chooses the
 		 * first backup cluster.
 		 */
@@ -937,12 +937,12 @@ public class PulsarProperties {
 			this.failoverPolicy = failoverPolicy;
 		}
 
-		public Duration getFailOverDelay() {
-			return this.failOverDelay;
+		public Duration getFailoverDelay() {
+			return this.failoverDelay;
 		}
 
-		public void setFailOverDelay(Duration failOverDelay) {
-			this.failOverDelay = failOverDelay;
+		public void setFailoverDelay(Duration failoverDelay) {
+			this.failoverDelay = failoverDelay;
 		}
 
 		public Duration getSwitchBackDelay() {
