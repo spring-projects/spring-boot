@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.domain.EntityScanner;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,6 +60,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Mark Paluch
+ * @author Jens Schauder
  * @since 2.1.0
  * @see EnableJdbcRepositories
  */
@@ -67,6 +69,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @ConditionalOnClass({ NamedParameterJdbcOperations.class, AbstractJdbcConfiguration.class })
 @ConditionalOnProperty(prefix = "spring.data.jdbc.repositories", name = "enabled", havingValue = "true",
 		matchIfMissing = true)
+@EnableConfigurationProperties(JdbcDataProperties.class)
 public class JdbcRepositoriesAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -82,8 +85,11 @@ public class JdbcRepositoriesAutoConfiguration {
 
 		private final ApplicationContext applicationContext;
 
-		SpringBootJdbcConfiguration(ApplicationContext applicationContext) {
+		private final JdbcDataProperties properties;
+
+		SpringBootJdbcConfiguration(ApplicationContext applicationContext, JdbcDataProperties properties) {
 			this.applicationContext = applicationContext;
+			this.properties = properties;
 		}
 
 		@Override
@@ -141,6 +147,10 @@ public class JdbcRepositoriesAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public Dialect jdbcDialect(NamedParameterJdbcOperations operations) {
+			JdbcDatabaseDialect dialectEnum = this.properties.getDialect();
+			if (dialectEnum != null) {
+				return dialectEnum.get();
+			}
 			return super.jdbcDialect(operations);
 		}
 
