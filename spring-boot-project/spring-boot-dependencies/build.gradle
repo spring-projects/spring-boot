@@ -1818,7 +1818,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-batch/releases/tag/v{version}")
 		}
 	}
-	library("Spring Data Bom", "2023.1.4-SNAPSHOT") {
+	library("Spring Data Bom", "2024.0.0-SNAPSHOT") {
 		considerSnapshots()
 		calendarName = "Spring Data Release"
 		group("org.springframework.data") {
