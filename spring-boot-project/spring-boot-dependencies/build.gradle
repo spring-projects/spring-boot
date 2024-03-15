@@ -1546,7 +1546,7 @@ bom {
 			]
 		}
 	}
-	library("Spring HATEOAS", "2.2.0") {
+	library("Spring HATEOAS", "2.2.1") {
 		considerSnapshots()
 		group("org.springframework.hateoas") {
 			modules = [
