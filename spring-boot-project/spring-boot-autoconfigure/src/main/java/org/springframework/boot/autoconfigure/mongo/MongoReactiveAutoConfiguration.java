@@ -129,10 +129,8 @@ public class MongoReactiveAutoConfiguration {
 			}
 		}
 
-		@SuppressWarnings("deprecation")
 		private boolean isCustomTransportConfiguration(MongoClientSettings settings) {
-			return settings != null
-					&& (settings.getTransportSettings() != null || settings.getStreamFactoryFactory() != null);
+			return settings != null && settings.getTransportSettings() != null;
 		}
 
 	}
