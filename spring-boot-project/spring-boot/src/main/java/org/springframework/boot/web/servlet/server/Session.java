@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ public class Session {
 
 	/**
 	 * Session cookie properties. This class is provided only for back-compatibility
-	 * reasons, consider using {@link org.springframework.boot.web.server.Cookie} whever
+	 * reasons, consider using {@link org.springframework.boot.web.server.Cookie} whenever
 	 * possible.
 	 */
 	public static class Cookie extends org.springframework.boot.web.server.Cookie {
