@@ -16,11 +16,10 @@
 
 package org.springframework.boot.autoconfigure.data.jdbc;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -149,16 +148,8 @@ public class JdbcRepositoriesAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public Dialect jdbcDialect(NamedParameterJdbcOperations operations) {
-			if (this.properties.getDialect() != null
-			) {
-				Class<?> dialectType = this.properties.getDialect();
-				try {
-					return (Dialect)dialectType.getDeclaredConstructor().newInstance();
-				}
-				catch (InstantiationException | IllegalAccessException |
-					   InvocationTargetException | NoSuchMethodException e) {
-					throw new BeanCreationException("Couldn't create instance of type " + dialectType, e);
-				}
+			if (this.properties.getDialect() != null) {
+				return BeanUtils.instantiateClass(this.properties.getDialect(), Dialect.class);
 			}
 			return super.jdbcDialect(operations);
 		}

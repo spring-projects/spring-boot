@@ -23,13 +23,14 @@ import org.springframework.data.relational.core.dialect.Dialect;
  * Configuration properties for Spring Data JDBC.
  *
  * @author Jens Schauder
- * @since 3.3
+ * @since 3.3.0
  */
 @ConfigurationProperties(prefix = "spring.data.jdbc")
 public class JdbcDataProperties {
 
 	/**
-	 * Dialect to use. By default, the dialect is determined by inspecting the database connection.
+	 * Dialect to use. By default, the dialect is determined by inspecting the database
+	 * connection.
 	 */
 	private Class<? extends Dialect> dialect;
 
