@@ -230,7 +230,6 @@ class MongoReactiveAutoConfigurationTests {
 				assertThat(settings.getApplicationName()).isEqualTo("custom-transport-settings");
 				assertThat(settings.getTransportSettings())
 					.isSameAs(SimpleTransportSettingsCustomizerConfig.transportSettings);
-				assertThat(settings.getStreamFactoryFactory()).isNull();
 			});
 	}
 
