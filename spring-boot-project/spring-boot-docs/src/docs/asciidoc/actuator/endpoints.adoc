@@ -1203,7 +1203,7 @@ The `info` endpoint publishes information about your Operating System, see {spri
 
 [[actuator.endpoints.info.process-information]]
 ==== Process Information
-The `info` endpoint publishes information about your process, see {spring-boot-module-api}/info/ProcessInfo.html[`Process`] for more details.
+The `info` endpoint publishes information about your process, see {spring-boot-module-api}/info/ProcessInfo.html[`ProcessInfo`] for more details.
 
 
 

@@ -104,7 +104,7 @@ public class Session {
 
 	/**
 	 * Session cookie properties. This class is provided only for back-compatibility
-	 * reasons, consider using {@link org.springframework.boot.web.server.Cookie} whever
+	 * reasons, consider using {@link org.springframework.boot.web.server.Cookie} whenever
 	 * possible.
 	 */
 	public static class Cookie extends org.springframework.boot.web.server.Cookie {
@@ -113,7 +113,7 @@ public class Session {
 
 	/**
 	 * Available session tracking modes (mirrors
-	 * {@link jakarta.servlet.SessionTrackingMode}.
+	 * {@link jakarta.servlet.SessionTrackingMode}).
 	 */
 	public enum SessionTrackingMode {
 

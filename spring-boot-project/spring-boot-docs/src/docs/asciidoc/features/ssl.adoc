@@ -80,7 +80,7 @@ When used to secure a client-side connection, a `truststore` is typically config
 [TIP]
 ====
 PEM content can be used directly for both the `certificate` and `private-key` properties.
-If the property values contains `BEGIN` and `END` markers then they will be treated as PEM content rather than a resource location.
+If the property values contain `BEGIN` and `END` markers then they will be treated as PEM content rather than a resource location.
 
 The following example shows how a truststore certificate can be defined:
 
