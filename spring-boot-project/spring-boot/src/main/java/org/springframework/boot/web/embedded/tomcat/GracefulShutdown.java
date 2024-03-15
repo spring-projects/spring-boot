@@ -67,26 +67,15 @@ final class GracefulShutdown {
 			List<Connector> connectors = getConnectors();
 			connectors.forEach(this::close);
 			shutdownUnderway.countDown();
-			try {
-				for (Container host : this.tomcat.getEngine().findChildren()) {
-					for (Container context : host.findChildren()) {
-						while (isActive(context)) {
-							if (this.aborted) {
-								logger.info("Graceful shutdown aborted with one or more requests still active");
-								callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
-								return;
-							}
-							Thread.sleep(50);
-						}
-					}
-				}
-
+			awaitInactiveOrAborted();
+			if (this.aborted) {
+				logger.info("Graceful shutdown aborted with one or more requests still active");
+				callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
 			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
+			else {
+				logger.info("Graceful shutdown complete");
+				callback.shutdownComplete(GracefulShutdownResult.IDLE);
 			}
-			logger.info("Graceful shutdown complete");
-			callback.shutdownComplete(GracefulShutdownResult.IDLE);
 		}
 		finally {
 			shutdownUnderway.countDown();
@@ -104,6 +93,22 @@ final class GracefulShutdown {
 	private void close(Connector connector) {
 		connector.pause();
 		connector.getProtocolHandler().closeServerSocketGraceful();
+	}
+
+	private void awaitInactiveOrAborted() {
+		try {
+			for (Container host : this.tomcat.getEngine().findChildren()) {
+				for (Container context : host.findChildren()) {
+					while (!this.aborted && isActive(context)) {
+						Thread.sleep(50);
+					}
+				}
+			}
+
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
 	}
 
 	private boolean isActive(Container context) {
