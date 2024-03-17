@@ -43,6 +43,11 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	 */
 	private static final String DEFAULT_APPLICATION_NAME = "unknown_service";
 
+	/**
+	 * Default value for application group if {@code spring.application.group} is not set.
+	 */
+	private static final String DEFAULT_APPLICATION_GROUP = "unknown_group";
+
 	private final OpenTelemetryProperties openTelemetryProperties;
 
 	private final OtlpMetricsConnectionDetails connectionDetails;
@@ -79,11 +84,16 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 		Map<String, String> result = new HashMap<>((!CollectionUtils.isEmpty(resourceAttributes)) ? resourceAttributes
 				: get(OtlpProperties::getResourceAttributes, OtlpConfig.super::resourceAttributes));
 		result.computeIfAbsent("service.name", (key) -> getApplicationName());
+		result.computeIfAbsent("service.group", (key) -> getApplicationGroup());
 		return Collections.unmodifiableMap(result);
 	}
 
 	private String getApplicationName() {
 		return this.environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
+	}
+
+	private String getApplicationGroup() {
+		return this.environment.getProperty("spring.application.group", DEFAULT_APPLICATION_GROUP);
 	}
 
 	@Override
